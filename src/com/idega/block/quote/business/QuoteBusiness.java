@@ -1,11 +1,15 @@
 package com.idega.block.quote.business;
 
-import java.sql.*;
-import com.idega.block.quote.data.*;
+import java.sql.SQLException;
+import com.idega.util.idegaTimestamp;
+import com.idega.block.quote.data.QuoteEntity;
+import com.idega.presentation.IWContext;
 
 public class QuoteBusiness{
 
+public static final String PARAMETER_QUOTE = "quote";
 public static final String PARAMETER_QUOTE_ID = "quote_id";
+public static final String PARAMETER_QUOTE_DATE = "quote_date";
 public static final String PARAMETER_LOCALE_ID = "locale_id";
 public static final String PARAMETER_QUOTE_TEXT = "quote_text";
 public static final String PARAMETER_QUOTE_AUTHOR = "quote_author";
@@ -17,27 +21,35 @@ public static final String PARAMETER_EDIT = "edit";
 public static final String PARAMETER_SAVE = "save";
 public static final String PARAMETER_CLOSE = "close";
 
-  public static QuoteEntity getRandomQuote(int localeID) {
-    try {
-      QuoteEntity[] quotes = (QuoteEntity[]) QuoteEntity.getStaticInstance(QuoteEntity.class).findAllByColumn(QuoteEntity.getColumnNameICLocaleID(),Integer.toString(localeID),"=");
-      if ( quotes != null ) {
-        if ( quotes.length > 0 ) {
-          int quoteNumber = (int) Math.round(Math.random() * (quotes.length - 1));
-          return quotes[quoteNumber];
-        }
-      }
-      return null;
-    }
-    catch (SQLException e) {
-      return null;
-    }
-  }
+  public static QuoteHolder getRandomQuote(IWContext iwc, int localeID) {
+    QuoteHolder holder = null;
+    QuoteHolder newHolder = null;
+    String date = null;
+    String dateNow = new idegaTimestamp().toSQLDateString();
 
-  public static QuoteEntity getQuote(int quoteID) {
     try {
-      return new QuoteEntity(quoteID);
+      holder = (QuoteHolder) iwc.getApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(localeID));
     }
-    catch (SQLException e) {
+    catch (Exception e) {
+      holder = null;
+    }
+
+    date = (String) iwc.getApplicationAttribute(PARAMETER_QUOTE_DATE+"_"+Integer.toString(localeID));
+
+    if ( date != null && holder != null && date.equalsIgnoreCase(dateNow) )
+      return holder;
+    else {
+      newHolder = QuoteFinder.getQuoteHolder(QuoteFinder.getRandomQuote(localeID));
+      if ( holder != null ) {
+	while ( holder.getQuoteID() == newHolder.getQuoteID() )
+	  newHolder = QuoteFinder.getQuoteHolder(QuoteFinder.getRandomQuote(localeID));
+      }
+
+      if ( newHolder != null ) {
+	iwc.setApplicationAttribute(PARAMETER_QUOTE+"_"+Integer.toString(localeID),newHolder);
+	iwc.setApplicationAttribute(PARAMETER_QUOTE_DATE+"_"+Integer.toString(localeID),dateNow);
+	return newHolder;
+      }
       return null;
     }
   }
@@ -50,10 +62,10 @@ public static final String PARAMETER_CLOSE = "close";
 
     QuoteEntity quote = null;
     if ( update ) {
-      quote = getQuote(quoteID);
+      quote = QuoteFinder.getQuote(quoteID);
       if ( quote == null ) {
-        quote = new QuoteEntity();
-        update = false;
+	quote = new QuoteEntity();
+	update = false;
       }
     }
     else {
@@ -73,18 +85,18 @@ public static final String PARAMETER_CLOSE = "close";
     if ( !update ) {
       quote.setICLocaleID(iLocaleID);
       try {
-        quote.insert();
+	quote.insert();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
       try {
-        quote.update();
+	quote.update();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
   }
@@ -92,7 +104,7 @@ public static final String PARAMETER_CLOSE = "close";
   public static void deleteQuote(int quoteID) {
     try {
       if ( quoteID != -1 ) {
-        new QuoteEntity(quoteID).delete();
+	new QuoteEntity(quoteID).delete();
       }
     }
     catch (SQLException e) {

@@ -12,7 +12,8 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.quote.business.QuoteBusiness;
-import com.idega.block.quote.data.QuoteEntity;
+import com.idega.block.quote.business.QuoteFinder;
+import com.idega.block.quote.business.QuoteHolder;
 
 public class QuoteEditor extends IWAdminWindow{
 
@@ -21,7 +22,7 @@ private boolean _isAdmin = false;
 private boolean _update = false;
 private boolean _save = false;
 private int _iLocaleID;
-private QuoteEntity _quote;
+private QuoteHolder _quote;
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.quote";
 private IWBundle _iwb;
@@ -43,7 +44,7 @@ public QuoteEditor(){
 
     try {
       _quoteID = Integer.parseInt(iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_ID));
-      _quote = QuoteBusiness.getQuote(_quoteID);
+      _quote = QuoteFinder.getQuoteHolder(_quoteID);
     }
     catch (NumberFormatException e) {
       _quoteID = -1;
@@ -53,7 +54,7 @@ public QuoteEditor(){
 
     if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_EDIT) ) {
       if ( _quoteID != -1 ) {
-        _update = true;
+	_update = true;
       }
       processForm();
     }
@@ -66,7 +67,7 @@ public QuoteEditor(){
     else if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_SAVE) ) {
       saveQuote(iwc);
     }
-	}
+  }
 
   private void processForm() {
     TextInput quoteOrigin = new TextInput(QuoteBusiness.PARAMETER_QUOTE_ORIGIN);
@@ -76,14 +77,14 @@ public QuoteEditor(){
     TextArea quoteText = new TextArea(QuoteBusiness.PARAMETER_QUOTE_TEXT,40,6);
 
     if ( _update && _quote != null ) {
-      if ( _quote.getQuoteOrigin() != null ) {
-        quoteOrigin.setContent(_quote.getQuoteOrigin());
+      if ( _quote.getOrigin() != null ) {
+	quoteOrigin.setContent(_quote.getOrigin());
       }
-      if ( _quote.getQuoteText() != null ) {
-        quoteText.setContent(_quote.getQuoteText());
+      if ( _quote.getText() != null ) {
+	quoteText.setContent(_quote.getText());
       }
-      if ( _quote.getQuoteAuthor() != null ) {
-        quoteAuthor.setContent(_quote.getQuoteAuthor());
+      if ( _quote.getAuthor() != null ) {
+	quoteAuthor.setContent(_quote.getAuthor());
       }
     }
 
