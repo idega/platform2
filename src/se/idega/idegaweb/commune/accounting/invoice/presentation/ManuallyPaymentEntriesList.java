@@ -227,64 +227,54 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	
 	private void handleSaveAction(IWContext iwc /*, School school*/){
 		Map errorMessages = new HashMap();
-				
-		Date from = parseDate(iwc.getParameter(PAR_FROM));
-		Date to = parseDate(iwc.getParameter(PAR_TO));
 		
-		if (from == null || to == null){
-			errorMessages.put(ERROR_DATE_FORMAT, localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm."));
-			handleEditAction(iwc, errorMessages);	
-		} else {
-		
-			PaymentRecord pay = null;
-			PaymentHeader payhdr = null;
-			InvoiceRecord inv = null;
-			
-		
+		PaymentRecord pay = null;
+		PaymentHeader payhdr = null;
+		InvoiceRecord inv = null;
 
-			try{
-				pay = getPaymentRecordHome().create();
-				payhdr = getPaymentHeaderHome().create();
-				inv = getInvoiceRecordHome().create();
-			}catch(CreateException ex2){
-				ex2.printStackTrace();
-				return;
-			}			
+		try{
+			pay = getPaymentRecordHome().create();
+			payhdr = getPaymentHeaderHome().create();
+			inv = getInvoiceRecordHome().create();
+		}catch(CreateException ex2){
+			ex2.printStackTrace();
+			return;
+		}			
 
-			pay.setPaymentHeader(payhdr);
-			pay.setTotalAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
-			
-			pay.setNotes(iwc.getParameter(PAR_REMARK));
+		pay.setPaymentHeader(payhdr);
+		pay.setTotalAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
+		
+		pay.setNotes(iwc.getParameter(PAR_REMARK));
 //			pay.setPlacing(iwc.getParameter(PAR_PLACING));
-			pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
-			if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
-				payhdr.setSchoolID(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
-			}
-			
-//			pay.setUser(getUser(iwc));
-			pay.setVATType(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
-			
-			try{
-				PostingBlock p = new PostingBlock(iwc);			
-				pay.setOwnPosting(p.getOwnPosting());
-				pay.setDoublePosting(p.getDoublePosting());
-			} catch (PostingParametersException e) {
-				errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
-			}	
-						
-			pay.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
-			pay.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+		pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
+		if (iwc.getParameter(PAR_SELECTED_PROVIDER) != null){
+			payhdr.setSchoolID(new Integer(iwc.getParameter(PAR_SELECTED_PROVIDER)).intValue());
+		}
 		
-			if (! errorMessages.isEmpty()){
-				handleEditAction(iwc, errorMessages);	
-			}else{		
+//			pay.setUser(getUser(iwc));
+		pay.setVATType(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
+		
+		try{
+			PostingBlock p = new PostingBlock(iwc);			
+			pay.setOwnPosting(p.getOwnPosting());
+			pay.setDoublePosting(p.getDoublePosting());
+		} catch (PostingParametersException e) {
+			errorMessages.put(ERROR_POSTING, localize(e.getTextKey(), e.getTextKey()) + e. getDefaultText());
+		}	
+					
+		pay.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
+		pay.setDoublePosting(iwc.getParameter(PAR_DOUBLE_ENTRY_ACCOUNT));
+	
+		if (! errorMessages.isEmpty()){
+			handleEditAction(iwc, errorMessages);	
+		}else{		
 
-				payhdr.store();		
-				pay.store();		
-				inv.store();		
-				//TODO return to calling page
-			}
-		}					
+			payhdr.store();		
+			pay.store();		
+			inv.store();		
+			//TODO return to calling page
+		}
+						
 	}
 
 
@@ -446,7 +436,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		String amount =(reg != null) ? ""+reg.getAmount() : getValue(iwc, PAR_AMOUNT_PR_MONTH);
 		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, amount, 1, row++);
 		//Vat is currently set to 0
-		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, ""+0, 1, row++);
+		addFloatField(table, PAR_VAT_PR_MONTH, KEY_VAT_PR_MONTH, "0", 1, row++);
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		table.mergeCells(2, row, 10, row);
 		addField(table, PAR_REMARK, KEY_REMARK, getValue(iwc, PAR_REMARK), 1, row++, 300);
