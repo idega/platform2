@@ -11,6 +11,9 @@ package com.idega.block;
 
 public interface IWBlock {
 
+public final static String IW_CORE_BUNDLE_IDENTIFIER="com.idega.core";
+
   public boolean deleteBlock(int ICObjectInstanceId);
+  public String getBundleIdentifier();
 
 }
