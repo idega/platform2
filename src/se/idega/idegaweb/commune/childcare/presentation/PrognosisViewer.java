@@ -22,8 +22,7 @@ public class PrognosisViewer extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	
-	private boolean showVacancies = false;
-	
+		
 	public void init(IWContext iwc) throws Exception {
 		if (getSession().hasPrognosis()) {
 			add(getPrognosisTable(iwc));
@@ -51,6 +50,7 @@ public class PrognosisViewer extends ChildCareBlock {
 		
 		int row = 1;
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(getSession().getChildCareID());
+		boolean showVacancies = getBusiness().getUseVacancies();
 		if (prognosis != null) {
 			int provierCapacity = prognosis.getProviderCapacity();
 			table.add(getSmallText(localize("child_care.provider_capacity","Provider capacity")+": "),1,row);
@@ -135,14 +135,8 @@ public class PrognosisViewer extends ChildCareBlock {
 		updatePrognosis.setWindowToOpen(ChildCareWindow.class);
 		updatePrognosis.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_UPDATE_PROGNOSIS);
 		updatePrognosis.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-		updatePrognosis.addParameterToWindow(ChildCareAdminWindow.PARAMETER_SHOW_VACANCIES, String.valueOf(showVacancies));
 		return updatePrognosis;
 	}
 	
-	public void setShowVacancies(boolean show){
-		showVacancies = show;
-	}
 	
-	
-
 }
