@@ -73,7 +73,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		}
 	}
 
-	public ChildCarePlaceOfferTable1(IWContext iwc, ChildCareCustomerApplicationTable parent, SortedSet applications, boolean hasOffer, boolean hasActivePlacement) throws RemoteException {
+	public ChildCarePlaceOfferTable1(IWContext iwc, ChildCareCustomerApplicationTable parent, SortedSet applications, boolean hasOffer, boolean hasActivePlacement, boolean hasAcceptedApplication) throws RemoteException {
 
 		initConstants(parent);
 		Iterator i = applications.iterator();
@@ -110,7 +110,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			alertTerminateContractScript.append(" || ");
 
 			//String[] scripts = addToTable(iwc, row, app, isOffer, offerPresented, disableAccept, iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID()) != null);
-			String[] scripts = addToTable(iwc, row, app, isOffer, offerPresented, disableAccept);
+			String[] scripts = addToTable(iwc, row, app, isOffer, offerPresented, disableAccept, hasAcceptedApplication);
 
 			validateDateScript.append(scripts[0]);
 			alertTerminateContractScript.append(scripts[1]);
@@ -166,7 +166,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	 * @param prognosis
 	 */
 	//private String[] addToTable(IWContext iwc, int row, ChildCareApplication app, boolean isOffer, boolean offerPresented, boolean disableAccept, boolean disableReqBtn) throws RemoteException {
-	private String[] addToTable(IWContext iwc, int row, ChildCareApplication app, boolean isOffer, boolean offerPresented, boolean disableAccept) throws RemoteException {
+	private String[] addToTable(IWContext iwc, int row, ChildCareApplication app, boolean isOffer, boolean offerPresented, boolean disableAccept, boolean hasAcceptedApplication) throws RemoteException {
 
 		int providerId = app.getProviderId();
 		int ownerId = ((Integer)app.getOwner().getPrimaryKey()).intValue();
@@ -218,6 +218,10 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 			if (disableAccept)
 				rb1.setDisabled(true);
+			
+			if (hasAcceptedApplication) {
+				rb1.setOnClick("alert('" + _page.localize("child_care.must_delete_accepted_offer", "You must delete accepted offer before you can choose a new offer.") + "'); return false;");
+			}
 
 			DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
 			date.setStyleAttribute("style", _page.getSmallTextFontStyle());
