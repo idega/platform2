@@ -160,7 +160,7 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 			productTable.setAlignment(4, pRow, Table.HORIZONTAL_ALIGN_RIGHT);
 			pRow++;
 			
-			productTable.setVerticalAlignment(1, pRow, Table.VERTICAL_ALIGN_TOP);
+			productTable.setRowVerticalAlignment(pRow, Table.VERTICAL_ALIGN_TOP);
 			productTable.add(teaser, 1, pRow);
 
 			if (metadata.containsKey(METADATA + "best_with")) {

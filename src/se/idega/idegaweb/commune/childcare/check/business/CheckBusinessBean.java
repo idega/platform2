@@ -147,7 +147,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public void sendMessageToArchive(Check check, int userID, String subject, String body) throws Exception {
+	public void sendMessageToArchive(Check check, int userID, String subject, String body) throws RemoteException {
 		try {
 			Message message = getMessageBusiness().createPrintArchivationMessage(userID, subject, body);
 			message.setParentCase(check);
@@ -157,7 +157,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public void sendMessageToPrinter(Check check, int userID, String subject, String body) throws Exception {
+	public void sendMessageToPrinter(Check check, int userID, String subject, String body) throws RemoteException {
 		try {
 			Message message = getMessageBusiness().createPrintedLetterMessage(userID, subject, body);
 			message.setParentCase(check);
@@ -267,7 +267,7 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 	
-	public void approveCheck(Check check,String subject,String body,User performer) throws Exception {
+	public void approveCheck(Check check,String subject,String body,User performer) throws RemoteException, CreateException {
 		changeCaseStatus(check, this.getCaseStatusGranted().getPrimaryKey().toString(), performer);
 		this.createGrantedCheck(check);
 		sendMessageToCitizen(check,getUserID(check),subject,body);

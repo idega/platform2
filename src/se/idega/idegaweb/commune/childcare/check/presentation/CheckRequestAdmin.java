@@ -5,6 +5,8 @@ import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
+
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
@@ -421,11 +423,20 @@ public class CheckRequestAdmin extends CommuneBlock {
 			subject.append(child.getName());
 		}
 		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body", "Your check has been granted");
-		getCheckBusiness(iwc).approveCheck(check, subject.toString(), body, iwc.getCurrentUser());
+		
+		try {
+			getCheckBusiness(iwc).approveCheck(check, subject.toString(), body, iwc.getCurrentUser());
+			add(getText(getResourceBundle(iwc).getLocalizedString("check.check_granted", "Check granted") + ": " + ((Integer) check.getPrimaryKey()).toString()));
+			add(new Break(2));
+			viewCheckList(iwc);
+		}
+		catch (CreateException e) {
+			e.printStackTrace();
+			add(getText(getResourceBundle(iwc).getLocalizedString("check.check_already_granted", "Child already has granted check") + ": " + ((Integer) check.getPrimaryKey()).toString()));
+			add(new Break(2));
+			viewCheckList(iwc);
+		}
 
-		add(getText(getResourceBundle(iwc).getLocalizedString("check.check_granted", "Check granted") + ": " + ((Integer) check.getPrimaryKey()).toString()));
-		add(new Break(2));
-		viewCheckList(iwc);
 	}
 
 	private void retrialCheck(IWContext iwc) throws Exception {

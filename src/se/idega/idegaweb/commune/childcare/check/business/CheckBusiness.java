@@ -20,7 +20,7 @@ public interface CheckBusiness extends com.idega.business.IBOService, CaseBusine
  public void sendMessageToPrinter(se.idega.idegaweb.commune.childcare.check.data.Check p0,int p1,java.lang.String p2,java.lang.String p3)throws java.lang.Exception, java.rmi.RemoteException;
  public java.util.Collection findAllChecksByUser(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.check.data.Check saveCheckRules(int p0,java.lang.String[] p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4)throws java.lang.Exception, java.rmi.RemoteException;
- public void approveCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3)throws java.lang.Exception, java.rmi.RemoteException;
+ public void approveCheck(se.idega.idegaweb.commune.childcare.check.data.Check p0,java.lang.String p1,java.lang.String p2,com.idega.user.data.User p3)throws javax.ejb.CreateException, java.rmi.RemoteException;
  public int getMethodSystem() throws java.rmi.RemoteException;
  public com.idega.user.data.User getUserById(int p0)throws java.lang.Exception, java.rmi.RemoteException;
  public int getCheckAmount() throws java.rmi.RemoteException;
