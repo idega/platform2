@@ -155,15 +155,15 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
     private List fieldList = new ArrayList();
 
-    private HashMatrix leagueKeyMatrix = new HashMatrix();
+    protected HashMatrix leagueKeyMatrix = new HashMatrix();
 
-    private Map accountKeyNameAccountKeyMap = new HashMap();
+    protected Map accountKeyNameAccountKeyMap = new HashMap();
 
     private Map accountKeyNumberAccountKeyMap = new HashMap();
 
     private Map accountKeyPrimaryKeyAccountKeyMap = new HashMap();
 
-    private Map specialFieldAccountKeyIdsPlus = new HashMap();
+    protected Map specialFieldAccountKeyIdsPlus = new HashMap();
 
     public WorkReportAccountEditor() {
         super();
@@ -191,6 +191,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
 
     protected void addBreakLine() {
+    	// do nothing in this class
     }
 
     private String parseAction(IWContext iwc) {
@@ -378,29 +379,37 @@ public class WorkReportAccountEditor extends WorkReportSelector {
                         .getKeyNumber());
                 // Object: (key, parent key)
                 if (firstParentKey == null && secondParentKey == null) {
-                    // first Object: (34, null), second Object: (12, null): 34 <
-                    // 12
+                 // first Object: (34, null), second Object: (12, null): 34 < 12
                     return firstKey.compareTo(secondKey);
-                } else if (firstParentKey != null && secondParentKey != null) {
+                } 
+                else if (firstParentKey != null && secondParentKey != null) {
                     if (firstParentKey.equals(secondParentKey)) {
-                        // firstObject: (76, 12), second Object: (65, 12): 76 <
-                        // 65
+                    // firstObject: (76, 12), second Object: (65, 12): 76 < 65
                         return firstKey.compareTo(secondKey);
-                    } else {
-                        // firstObject: (13, 4), second Object: (76, 3): 4 < 3
-                        Integer firstParent = new Integer(firstParentKey);
-                        Integer secondParent = new Integer(secondParentKey);
-                        return firstParent.compareTo(secondParent);
                     }
-                } else if (firstParentKey != null) { // and second parent key is
-                                                     // now null
+                     // firstObject: (13, 4), second Object: (76, 3): 4 < 3
+                    Integer firstParent = new Integer(firstParentKey);
+                    Integer secondParent = new Integer(secondParentKey);
+                    return firstParent.compareTo(secondParent);
+                } 
+                else if (firstParentKey != null) { 
+                	// and second parent key is now null
                     // first Object: (12, 3), second Object: (44, null): 3 < 44
                     Integer firstParent = new Integer(firstParentKey);
+                    if (firstParent.equals(secondKey)) {
+                    // if the parent is equal to the key, the object with the parent is less
+                    	return -1;
+                    }
                     return firstParent.compareTo(secondKey);
-                } else {
+                } 
+                else {
                     // first Object: (12, null), second Object: (44, 5): 12 < 5
                     Integer secondParent = new Integer(secondParentKey);
-                    return secondParent.compareTo(firstKey);
+                    if (firstKey.equals(secondParent)) {
+                    	// if the key is equal to the parent, the object with the parent is less
+                    	return 1;
+                    }
+                    return firstKey.compareTo(secondParent);
                 }
             }
         };
@@ -429,13 +438,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
 
     private PresentationObject getContent(IWContext iwc,
             IWResourceBundle resourceBundle, Form form) {
-        int workReportId = getWorkReportId();
+        int workReportIdTemp = getWorkReportId();
         WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
         WorkReport workReport = null;
         // get work report
         try {
-            workReport = workReportBusiness.getWorkReportById(workReportId);
-            isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportId);
+            workReport = workReportBusiness.getWorkReportById(workReportIdTemp);
+            isReadOnly = workReportBusiness.isWorkReportReadOnly(workReportIdTemp);
             editable = !(isReadOnly || workReport.isAccountPartDone());
         } catch (RemoteException ex) {
             String message = "[WorkReportAccountEditor]: Can't retrieve WorkReportBusiness.";
@@ -448,7 +457,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         List workReportLeagues;
         try {
             workReportLeagues = new ArrayList(workReportBusiness
-                    .getLeaguesOfWorkReportById(workReportId));
+                    .getLeaguesOfWorkReportById(workReportIdTemp));
         } catch (IDOException ex) {
             String message = "[WorkReportAccountEditor]: Can't retrieve leagues.";
             System.err.println(message + " Message is: " + ex.getMessage());
@@ -556,7 +565,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         Table errorMessageTable = new Table(1, 1);
         errorMessageTable.setCellpaddingAndCellspacing(0);
         errorMessageTable.setWidth(Table.HUNDRED_PERCENT);
-        errorMessageTable.setAlignment("center");
+        // errorMessageTable.setAlignment("center");
         errorMessageTable.setAlignment(1, 1, "center");
         errorMessageTable.setStyleClass(1, 1, errorMessageStyle);
 
@@ -781,11 +790,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
 
     private void setWorkReportAsFinished(boolean setAsFinished, IWContext iwc) {
-        int workReportId = getWorkReportId();
+        int workReportIdTemp = getWorkReportId();
         WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
         try {
             WorkReport workReport = workReportBusiness
-                    .getWorkReportById(workReportId);
+                    .getWorkReportById(workReportIdTemp);
             workReport.setAccountPartDone(setAsFinished);
             workReport.store();
         } catch (RemoteException ex) {
@@ -827,7 +836,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         return workReportGroupIdsOutOfBalance;
     }
 
-    private NumberFormat getCurrencyNumberFormat(IWContext iwc) {
+    protected NumberFormat getCurrencyNumberFormat(IWContext iwc) {
         if (currencyNumberFormat == null) {
             Locale locale = iwc.getCurrentLocale();
             // special case: If we are in Iceland do not show the currency
@@ -853,6 +862,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         String groupName;
 
         public WorkReportAccountGroupHelper() {
+        	// default constructor
         }
 
         public WorkReportAccountGroupHelper(Integer groupId, String groupName) {
