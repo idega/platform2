@@ -8,6 +8,7 @@ package se.agura.applications.vacation.business;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -134,7 +135,7 @@ public class VacationBusinessBean extends CaseBusinessBean  implements VacationB
 		int week = -1;
 		for (int i = 0; i < workingHours.length; i++) {
 			int day = stamp.getDayOfWeek();
-			if (week != stamp.getWeekOfYear()) {
+			if (week != stamp.getWeekOfYear() && !(stamp.getDayOfWeek() == Calendar.SUNDAY)) {
 				week = stamp.getWeekOfYear();
 				if (time != null) {
 					time.store();

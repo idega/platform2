@@ -373,7 +373,7 @@ public class VacationApplication extends VacationBlock {
 		int week = -1;
 		to.addDays(1);
 		while (from.isEarlierThan(to)) {
-			if (week != from.getWeekOfYear()) {
+			if (week != from.getWeekOfYear() && !(from.getDayOfWeek() == Calendar.SUNDAY)) {
 				row++;
 				week = from.getWeekOfYear();
 				workingDaysTable.add(getText(String.valueOf(from.getWeekOfYear())), 2, row);
@@ -477,7 +477,7 @@ public class VacationApplication extends VacationBlock {
 		int a = 0;
 		toDate.addDays(1);
 		while (fromDate.isEarlierThan(toDate)) {
-			if (week != fromDate.getWeekOfYear()) {
+			if (week != fromDate.getWeekOfYear() && !(fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
 				row++;
 				week = fromDate.getWeekOfYear();
 				table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
