@@ -316,13 +316,16 @@ private IWResourceBundle iwrb;
       idegaTimestamp pubTo = sPubTo!=null ?new idegaTimestamp(sPubTo):today;
       Vector V = null;
       ICFile F = null;
-      try {
-        F = new ICFile(iImageId);
-        V = new Vector(1);
-        V.add(F);
-      }
-      catch (SQLException ex) {
+      if(iImageId > 0){
+        try {
+          /** @todo  use finder */
+          F = new ICFile(iImageId);
+          V = new Vector(1);
+          V.add(F);
+        }
+        catch (Exception ex) {
 
+        }
       }
 
       //System.err.println(pubFrom.toSQLString());
