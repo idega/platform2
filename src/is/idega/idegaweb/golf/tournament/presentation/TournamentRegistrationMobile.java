@@ -7,13 +7,13 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
 import is.idega.idegaweb.golf.entity.Tournament;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.tournament.business.TournamentBusiness;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.text.Link;
@@ -30,7 +30,7 @@ import com.idega.util.IWTimestamp;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class TournamentRegistrationMobile extends Block {
+public class TournamentRegistrationMobile extends GolfBlock {
 	
 	public static final String PARAM_NAME_SEARCH_DAYS = "s_d";
 	
@@ -110,7 +110,7 @@ public class TournamentRegistrationMobile extends Block {
 				String val = Integer.toString(i);
 				menu.addMenuElement(val, val);
 			}
-			SubmitButton button = new SubmitButton();
+			SubmitButton button = new SubmitButton(localize("tournament.search","Search"));
 			
 			form.add(menuLabel);
 			form.add(menu);
