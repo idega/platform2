@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.7 2003/10/07 15:50:03 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.8 2003/10/08 09:41:21 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -30,10 +30,10 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2003/10/07 15:50:03 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/08 09:41:21 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -77,10 +77,10 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 			Iterator iter = schoolTypes.iterator();
 			while (iter.hasNext()) {
 				SchoolType st = (SchoolType) iter.next();
-				if (!schoolCategories.containsKey(st.getCategory())) {
+				String sc = st.getSchoolCategory();				
+				if (!schoolCategories.containsKey(sc)) {
 					continue;
 				}
-				String sc = st.getSchoolCategory();				
 				int schoolTypeId = ((Integer) st.getPrimaryKey()).intValue();
 				Collection schools = sb.findAllSchoolsByType(schoolTypeId);
 				Iterator iter2 = schools.iterator();
