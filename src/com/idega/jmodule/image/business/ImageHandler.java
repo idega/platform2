@@ -150,7 +150,7 @@ protected void updateOriginalInfo() throws SQLException{
   imageInfo.setWidth(Integer.toString(originalImage.getWidth()));
   imageInfo.setHeight(Integer.toString(originalImage.getHeight()));
   imageInfo.setSize(modifiedsize);
-  imageInfo.update();
+ // imageInfo.update();
 }
 
 private synchronized BufferedInputStream getBufferedInputStream(InputStream inputStream){
