@@ -1,6 +1,6 @@
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
-import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import com.idega.business.InputHandler;
 import com.idega.idegaweb.IWResourceBundle;
@@ -21,9 +21,9 @@ public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
 	private static final String LOCALIZED_UMFI_CLUB = "ClubTypeDropDownMenu.umfi_club";
 	private static final String LOCALIZED_INACTIVE_CLUB = "ClubTypeDropDownMenu.inactive_club";
 
-	public static final String TYPE_MULTI_DIVISION_CLUB = "1";
-	public static final String TYPE_SINGLE_DIVISION_CLUB = "2";
-	public static final String TYPE_NO_MEMBERS_CLUB = "3";
+	public static final String TYPE_MULTI_DIVISION_CLUB = IWMemberConstants.META_DATA_CLUB_STATUS_MULTI_DIVISION_CLUB;
+	public static final String TYPE_SINGLE_DIVISION_CLUB = IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB;
+	public static final String TYPE_NO_MEMBERS_CLUB = IWMemberConstants.META_DATA_CLUB_STATUS_NO_MEMBERS_CLUB;
 	public static final String TYPE_UMFI_CLUB = "umfi";
 	public static final String TYPE_INACTIVE_CLUB = "inactive";
 
@@ -92,9 +92,6 @@ public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
 			} else if(TYPE_INACTIVE_CLUB.equals(value)) {
 				return iwrb.getLocalizedString(LOCALIZED_INACTIVE_CLUB, "Inactive Club");
 			}
-		}
-		else{
-			displayName = iwrb.getLocalizedString("all_club_types", "All types");
 		}
 		return displayName;
 	}
