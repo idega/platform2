@@ -21,10 +21,15 @@ insert into ic_group_type(group_type,description,is_visible) values('iwme_club_p
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_trainer','A sports club trainer','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_staff','An employee of a club','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_committee','An member of a club committee','Y')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_club_main_committee','An member of a club main committee','Y')
 
-insert into ic_group_type_tree values ('iwme_club_division','iwme_club')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_club_division_trainer','A sports club division trainer','Y')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_club_division_staff','An employee of a clubs division','Y')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_club_division_committee','An member of a clubs divisions committee','Y')
+
 
 insert into ic_group_type(group_type,description,is_visible) values('alias','An alias to another group','Y')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_temporary','A temorary group that will delete itself','Y')
 
 //special group types collections
 insert into ic_group_type(group_type,description,is_visible) values('iwme_regional_union_collection','A collection of regional unions','Y')
@@ -36,34 +41,43 @@ insert into ic_group_type_tree values ('iwme_federation_staff','iwme_federation'
 insert into ic_group_type_tree values ('iwme_federation_committee','iwme_federation')
 insert into ic_group_type_tree values ('iwme_regional_union_collection','iwme_federation')
 insert into ic_group_type_tree values ('iwme_league_collection','iwme_federation')
+insert into ic_group_type_tree values ('general','iwme_federation')
+insert into ic_group_type_tree values ('iwme_temporary','iwme_federation')
 
 insert into ic_group_type_tree values ('iwme_union_staff','iwme_union')
 insert into ic_group_type_tree values ('iwme_union_committee','iwme_union')
 insert into ic_group_type_tree values ('iwme_regional_union_collection','iwme_union')
 insert into ic_group_type_tree values ('iwme_league_collection','iwme_union')
+insert into ic_group_type_tree values ('general','iwme_union')
+insert into ic_group_type_tree values ('iwme_temporary','iwme_union')
 
 insert into ic_group_type_tree values ('iwme_regional_union','iwme_regional_union_collection')
 insert into ic_group_type_tree values ('iwme_league','iwme_league_collection')
 
 insert into ic_group_type_tree values ('iwme_league_staff','iwme_league')
 insert into ic_group_type_tree values ('iwme_league_committee','iwme_league')
-//insert into ic_group_type_tree values ('iwme_club_division','iwme_league')
-//insert into ic_group_type_tree values ('iwme_club_division_template','iwme_league')
+insert into ic_group_type_tree values ('iwme_club_division_template','iwme_league')
+insert into ic_group_type_tree values ('general','iwme_league')
+insert into ic_group_type_tree values ('iwme_temporary','iwme_league')
 
 insert into ic_group_type_tree values ('iwme_regional_union_staff','iwme_regional_union')
 insert into ic_group_type_tree values ('iwme_regional_union_committee','iwme_regional_union')
 insert into ic_group_type_tree values ('iwme_club','iwme_regional_union')
+insert into ic_group_type_tree values ('general','iwme_regional_union')
+insert into ic_group_type_tree values ('iwme_temporary','iwme_regional_union')
 
-//insert into ic_group_type_tree values ('iwme_club_division','iwme_club')
+insert into ic_group_type_tree values ('iwme_club_division','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_member','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_player','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_trainer','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_staff','iwme_club')
 insert into ic_group_type_tree values ('iwme_club_committee','iwme_club')
+insert into ic_group_type_tree values ('general','iwme_club')
+insert into ic_group_type_tree values ('iwme_temporary','iwme_club')
 
-
-insert into ic_group_type_tree values ('iwme_','iwme_club_division')
-
-
-
+insert into ic_group_type_tree values ('iwme_club_division_trainer','iwme_club_division')
+insert into ic_group_type_tree values ('iwme_club_division_staff','iwme_club_division')
+insert into ic_group_type_tree values ('iwme_club_division_committee','iwme_club_division')
+insert into ic_group_type_tree values ('general','iwme_club_division')
+insert into ic_group_type_tree values ('iwme_temporary','iwme_club_division')
 
