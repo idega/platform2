@@ -50,6 +50,8 @@ private String _dateColor = "#000000";
 private String _noActionDay = "#999966";
 private String _actionDay = "#660000";
 private IBPage _page;
+private boolean _showMonth = false;
+private boolean _showMonthButton = false;
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.calendar";
 protected IWResourceBundle _iwrb;
@@ -117,12 +119,34 @@ public Calendar(idegaTimestamp timestamp){
       drawYear(iwc);
       break;
     }
-	}
+  }
+
+  private void getParameter(IWContext iwc) {
+    String string = iwc.getParameter(CalendarBusiness.PARAMETER_SHOW_CALENDAR);
+    if ( string != null && string.equalsIgnoreCase(CalendarBusiness.PARAMETER_TRUE) ) {
+      _showMonth = true;
+      iwc.setSessionAttribute(CalendarBusiness.PARAMETER_SHOW_CALENDAR,CalendarBusiness.PARAMETER_TRUE);
+    }
+    else if ( string != null && string.equalsIgnoreCase(CalendarBusiness.PARAMETER_FALSE) ) {
+      _showMonth = false;
+      iwc.removeSessionAttribute(CalendarBusiness.PARAMETER_SHOW_CALENDAR);
+    }
+    else if ( string == null ) {
+      if ( iwc.getSessionAttribute(CalendarBusiness.PARAMETER_SHOW_CALENDAR) != null )
+	_showMonth = true;
+    }
+  }
 
   private void drawDay(IWContext iwc) {
-    Table entriesTable = new Table();
+    getParameter(iwc);
+
+    Table outerTable = new Table();
+      outerTable.setCellpaddingAndCellspacing(0);
       if ( _width != null )
-      entriesTable.setWidth(_width);
+      outerTable.setWidth(_width);
+
+    Table entriesTable = new Table();
+      entriesTable.setWidth(Table.HUNDRED_PERCENT);
 
       String[] localeStrings = null;
       Text headlineText = null;
@@ -135,8 +159,8 @@ public Calendar(idegaTimestamp timestamp){
     ///// Permisson Area ////////////
     boolean buttonsAdded = false;
     if(hasAdd || hasEdit){
-        entriesTable.add(getAddIcon(),1,ypos);
-        buttonsAdded = true;
+	entriesTable.add(getAddIcon(),1,ypos);
+	buttonsAdded = true;
     }
     if(hasPref || hasEdit){
       entriesTable.add(getPropertiesIcon(),1,ypos);
@@ -163,88 +187,88 @@ public Calendar(idegaTimestamp timestamp){
       entries = CalendarFinder.getInstance().listOfWeekEntries(_stamp,_daysAhead,_daysBack,getCategoryIds());
       if ( entries != null) {
 	      if ( entries.size() > _numberOfShown )
-	        numberOfShown = _numberOfShown;
+		numberOfShown = _numberOfShown;
 	      else
-	        numberOfShown = entries.size();
+		numberOfShown = entries.size();
       }
     }
 
     if ( entries != null ) {
       CalendarEntry entry;
       for ( int a = 0; a < numberOfShown; a++ ) {
-        Image typeImage = null;
-        entry = (CalendarEntry) entries.get(a);
-        localeStrings = CalendarFinder.getInstance().getEntryStrings(entry,_iLocaleID);
-        imageID = CalendarFinder.getInstance().getImageID(entry.getEntryTypeID());
+	Image typeImage = null;
+	entry = (CalendarEntry) entries.get(a);
+	localeStrings = CalendarFinder.getInstance().getEntryStrings(entry,_iLocaleID);
+	imageID = CalendarFinder.getInstance().getImageID(entry.getEntryTypeID());
 
-        if ( imageID != -1 ) {
-          try {
-            typeImage = new Image(imageID);
-            typeImage.setHorizontalSpacing(3);
-          }
-          catch (Exception e) {
-            typeImage = null;
-          }
-        }
-        if ( typeImage == null ) {
-          typeImage = _iwbCalendar.getImage("shared/day_dot.gif");
-        }
+	if ( imageID != -1 ) {
+	  try {
+	    typeImage = new Image(imageID);
+	    typeImage.setHorizontalSpacing(3);
+	  }
+	  catch (Exception e) {
+	    typeImage = null;
+	  }
+	}
+	if ( typeImage == null ) {
+	  typeImage = _iwbCalendar.getImage("shared/day_dot.gif");
+	}
 
-        if ( localeStrings != null ) {
-          if ( localeStrings[0] != null )
-            headlineText = new Text(localeStrings[0]);
-          else
-            headlineText = null;
+	if ( localeStrings != null ) {
+	  if ( localeStrings[0] != null )
+	    headlineText = new Text(localeStrings[0]);
+	  else
+	    headlineText = null;
 
-          if ( localeStrings[1] != null )
-            bodyText = new Text(localeStrings[1]);
-          else
-            bodyText = null;
-        }
+	  if ( localeStrings[1] != null )
+	    bodyText = new Text(localeStrings[1]);
+	  else
+	    bodyText = null;
+	}
 
 	      int xpos = 1;
 
-        if ( headlineText != null ) {
-          if ( typeImage != null ) {
-            typeImage.setName(CalendarFinder.getInstance().getEntryTypeName(entry.getEntryTypeID(),_iLocaleID));
-            entriesTable.add(typeImage,xpos,ypos);
-            hasImage = true;
-            xpos++;
-          }
+	if ( headlineText != null ) {
+	  if ( typeImage != null ) {
+	    typeImage.setName(CalendarFinder.getInstance().getEntryTypeName(entry.getEntryTypeID(),_iLocaleID));
+	    entriesTable.add(typeImage,xpos,ypos);
+	    hasImage = true;
+	    xpos++;
+	  }
 
-        headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold; color: "+_headlineColor+";");
-        entriesTable.setWidth(xpos,ypos,"100%");
-        entriesTable.add(headlineText,xpos,ypos);
+	headlineText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 9pt; font-weight: bold; color: "+_headlineColor+";");
+	entriesTable.setWidth(xpos,ypos,"100%");
+	entriesTable.add(headlineText,xpos,ypos);
 
-        stamp = new idegaTimestamp(entry.getDate());
-        String date = TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear());
-        Text dateText = new Text(date);
-          dateText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: "+_dateColor+";");
+	stamp = new idegaTimestamp(entry.getDate());
+	String date = TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear());
+	Text dateText = new Text(date);
+	  dateText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: "+_dateColor+";");
 
-        xpos++;
-        entriesTable.setAlignment(xpos,ypos,"right");
-        entriesTable.add(dateText,xpos,ypos);
+	xpos++;
+	entriesTable.setAlignment(xpos,ypos,"right");
+	entriesTable.add(dateText,xpos,ypos);
 
-        // Checking permissions
-        if ( hasEdit || hasPref || this.iUserId == entry.getUserID()) {
-          xpos++;
-          entriesTable.add(getEditButtons(entry.getID()),xpos,ypos);
-        }
+	// Checking permissions
+	if ( hasEdit || hasPref || this.iUserId == entry.getUserID()) {
+	  xpos++;
+	  entriesTable.add(getEditButtons(entry.getID()),xpos,ypos);
+	}
 
-        if ( bodyText != null ) {
-          ypos++;
-          bodyText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; color: "+_bodyColor+";");
-          if ( hasImage ) {
-            entriesTable.mergeCells(2,ypos,entriesTable.getColumns(),ypos);
-            entriesTable.add(bodyText,2,ypos);
-          }
-          else {
-            entriesTable.mergeCells(1,ypos,entriesTable.getColumns(),ypos);
-            entriesTable.add(bodyText,1,ypos);
-          }
-        }
+	if ( bodyText != null ) {
+	  ypos++;
+	  bodyText.setFontStyle("font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; color: "+_bodyColor+";");
+	  if ( hasImage ) {
+	    entriesTable.mergeCells(2,ypos,entriesTable.getColumns(),ypos);
+	    entriesTable.add(bodyText,2,ypos);
+	  }
+	  else {
+	    entriesTable.mergeCells(1,ypos,entriesTable.getColumns(),ypos);
+	    entriesTable.add(bodyText,1,ypos);
+	  }
+	}
 
-        ypos++;
+	ypos++;
       }
       }
     }
@@ -259,7 +283,32 @@ public Calendar(idegaTimestamp timestamp){
       entriesTable.mergeCells(1,1,entriesTable.getColumns(),1);
     }
 
-    add(entriesTable);
+    if ( _showMonth ) {
+      SmallCalendar cal = getCalendar(_stamp);
+      cal.setICObjectInstanceID(this.getICObjectInstanceID());
+      cal.setWidth(100);
+      outerTable.setWidth(2,1,"6");
+      outerTable.setAlignment(3,1,Table.HORIZONTAL_ALIGN_RIGHT);
+      outerTable.add(cal,3,1);
+    }
+
+    if ( _showMonthButton ) {
+      outerTable.mergeCells(1,2,outerTable.getColumns(),2);
+      outerTable.setAlignment(1,2,Table.HORIZONTAL_ALIGN_RIGHT);
+      if ( _showMonth ) {
+	Link link = new Link(_iwrb.getLocalizedImageButton("hide_month","Hide month"));
+	  link.addParameter(CalendarBusiness.PARAMETER_SHOW_CALENDAR,CalendarBusiness.PARAMETER_FALSE);
+	outerTable.add(link,1,2);
+      }
+      else {
+	Link link = new Link(_iwrb.getLocalizedImageButton("show_month","Show month"));
+	  link.addParameter(CalendarBusiness.PARAMETER_SHOW_CALENDAR,CalendarBusiness.PARAMETER_TRUE);
+	outerTable.add(link,1,2);
+      }
+    }
+    outerTable.setColumnVerticalAlignment(1,Table.VERTICAL_ALIGN_TOP);
+
+    add(outerTable);
   }
 
   private void drawMonth(IWContext iwc) {
@@ -283,8 +332,8 @@ public Calendar(idegaTimestamp timestamp){
     ///// Permisson Area ////////////
     boolean buttonsAdded = false;
     if(hasAdd || hasEdit){
-        monthTable.add(getAddIcon(),1,ypos);
-        buttonsAdded = true;
+	monthTable.add(getAddIcon(),1,ypos);
+	buttonsAdded = true;
     }
     if(hasPref || hasEdit){
       monthTable.add(getPropertiesIcon(),1,ypos);
@@ -332,8 +381,8 @@ public Calendar(idegaTimestamp timestamp){
     ///// Permisson Area ////////////
     boolean buttonsAdded = false;
     if(hasEdit || hasAdd){
-        yearTable.add(getAddIcon(),1,ypos);
-        buttonsAdded = true;
+	yearTable.add(getAddIcon(),1,ypos);
+	buttonsAdded = true;
     }
     if(hasEdit || hasPref){
       yearTable.add(getPropertiesIcon(),1,ypos);
@@ -471,6 +520,10 @@ public Calendar(idegaTimestamp timestamp){
 
   public void setPage(IBPage page) {
     _page = page;
+  }
+
+  public void setShowMonthButton(boolean showButton) {
+    _showMonthButton = showButton;
   }
 
   public String getBundleIdentifier(){

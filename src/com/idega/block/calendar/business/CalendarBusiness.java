@@ -53,6 +53,8 @@ public static final String PARAMETER_MODE_EDIT = "edit";
 public static final String PARAMETER_MODE_CLOSE = "close";
 public static final String PARAMETER_MODE_SAVE = "save";
 public static final String PARAMETER_TRUE = "true";
+public static final String PARAMETER_FALSE = "false";
+public static final String PARAMETER_SHOW_CALENDAR = "show_calendar";
 
 public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
@@ -61,21 +63,21 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
     if(month != null && year != null){
       try {
-        int iDay = 1;
-        try {
-          iDay = Integer.parseInt(day);
-        }
-        catch (Exception e) {
-          iDay = 1;
-        }
+	int iDay = 1;
+	try {
+	  iDay = Integer.parseInt(day);
+	}
+	catch (Exception e) {
+	  iDay = 1;
+	}
 
-        int iMonth = Integer.parseInt(month);
-        int iYear = Integer.parseInt(year);
+	int iMonth = Integer.parseInt(month);
+	int iYear = Integer.parseInt(year);
 
-        stamp = new idegaTimestamp(iDay,iMonth,iYear);
+	stamp = new idegaTimestamp(iDay,iMonth,iYear);
       }
       catch (Exception ex) {
-        stamp = new idegaTimestamp();
+	stamp = new idegaTimestamp();
       }
     }
     else
@@ -112,12 +114,12 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
     if( list != null ) {
       for ( int a = 0; a < list.size(); a++) {
-        LocalizedText locText = TextFinder.getLocalizedText((CalendarEntryType)list.get(a),iLocaleId);
-        String locString = "No text in language";
-        if ( locText != null ) {
-          locString = locText.getHeadline();
-        }
-        drp.addMenuElement(((CalendarEntryType)list.get(a)).getID(),locString);
+	LocalizedText locText = TextFinder.getLocalizedText((CalendarEntryType)list.get(a),iLocaleId);
+	String locString = "No text in language";
+	if ( locText != null ) {
+	  locString = locText.getHeadline();
+	}
+	drp.addMenuElement(((CalendarEntryType)list.get(a)).getID(),locString);
       }
     }
 
@@ -135,8 +137,8 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     if ( update ) {
       entry = CalendarFinder.getInstance().getEntry(entryID);
       if ( entry == null ) {
-        entry = ((com.idega.block.calendar.data.CalendarEntryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy();
-        update = false;
+	entry = ((com.idega.block.calendar.data.CalendarEntryHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntry.class)).createLegacy();
+	update = false;
       }
     }
     else {
@@ -151,20 +153,20 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
     if ( !update ) {
       try {
-        entry.insert();
-        returnInt = entry.getID();
+	entry.insert();
+	returnInt = entry.getID();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
       try {
-        entry.update();
-        returnInt = entry.getID();
+	entry.update();
+	returnInt = entry.getID();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
 
@@ -181,19 +183,19 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     if ( newLocText ) {
       locText.setLocaleId(localeID);
       try {
-        locText.insert();
-        locText.addTo(entry);
+	locText.insert();
+	locText.addTo(entry);
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
       try {
-        locText.update();
+	locText.update();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
 
@@ -204,11 +206,11 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     CalendarEntry cal = CalendarFinder.getInstance().getEntry(entryID);
     if ( cal != null ) {
       try {
-        cal.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
-        cal.delete();
+	cal.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+	cal.delete();
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
   }
@@ -224,8 +226,8 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     if ( update ) {
       type = CalendarFinder.getInstance().getEntryType(typeID);
       if ( type == null ) {
-        type = ((com.idega.block.calendar.data.CalendarEntryTypeHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntryType.class)).createLegacy();
-        update = false;
+	type = ((com.idega.block.calendar.data.CalendarEntryTypeHome)com.idega.data.IDOLookup.getHomeLegacy(CalendarEntryType.class)).createLegacy();
+	update = false;
       }
     }
     else {
@@ -245,20 +247,20 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
     if ( !update ) {
       try {
-        type.insert();
-        returnInt = type.getID();
+	type.insert();
+	returnInt = type.getID();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
       try {
-        type.update();
-        returnInt = type.getID();
+	type.update();
+	returnInt = type.getID();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
 
@@ -274,19 +276,19 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     if ( newLocText ) {
       locText.setLocaleId(localeID);
       try {
-        locText.insert();
-        locText.addTo(type);
+	locText.insert();
+	locText.addTo(type);
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
     else {
       try {
-        locText.update();
+	locText.update();
       }
       catch (SQLException e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
 
@@ -297,17 +299,17 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     CalendarEntryType type = CalendarFinder.getInstance().getEntryType(typeID);
     if ( type != null ) {
       try {
-        CalendarEntry[] entries = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumn(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID(),typeID);
-        if ( entries != null )
-          for ( int a = 0; a < entries.length; a++ ) {
-            entries[a].removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
-            entries[a].delete();
-          }
-        type.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
-        type.delete();
+	CalendarEntry[] entries = (CalendarEntry[]) com.idega.block.calendar.data.CalendarEntryBMPBean.getStaticInstance().findAllByColumn(com.idega.block.calendar.data.CalendarEntryBMPBean.getColumnNameEntryTypeID(),typeID);
+	if ( entries != null )
+	  for ( int a = 0; a < entries.length; a++ ) {
+	    entries[a].removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+	    entries[a].delete();
+	  }
+	type.removeFrom(com.idega.block.text.data.LocalizedTextBMPBean.getStaticInstance(LocalizedText.class));
+	type.delete();
       }
       catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
   }
