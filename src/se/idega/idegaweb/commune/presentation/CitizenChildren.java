@@ -46,7 +46,7 @@ public class CitizenChildren extends CommuneBlock {
 	private String prmSubmitName = "submit_cits_child";
 	private boolean showSSNSearchForm = false;
 	private boolean showOutOfRangeChildren =true;
-	private int fromAge =-1, toAge = 1000;
+	private int fromAge = -1, toAge = 100;
 
 
 	public CitizenChildren() {
@@ -108,6 +108,9 @@ public class CitizenChildren extends CommuneBlock {
 	private PresentationObject getChildrenForm(IWContext iwc) throws java.rmi.RemoteException {
 		Form f = new Form();
 		Table T = new Table();
+		T.setCellpadding(0);
+		T.setCellspacing(0);
+		
 		int row = 1;
 		Collection childs = getChilds(iwc, this.user);
 		if (!childs.isEmpty()) {
@@ -117,25 +120,23 @@ public class CitizenChildren extends CommuneBlock {
 			ArrayList outOfRangeChilds = new ArrayList();
 			while (iter.hasNext()) {
 				child = (User) iter.next();
-				if (child.getDateOfBirth() != null) {
-					Age age = null;
-					if (child.getDateOfBirth() != null)
-						age = new Age(child.getDateOfBirth());
-					else
-						age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
-					if(age.getYears() <= toAge && age.getYears() >=fromAge){
-						//rad = new RadioButton(prmChildId, ((Integer) user.getPrimaryKey()).toString());
-						T.add(getChildLink(user), 1, row);
-						row++;
-					}
-					else{
-						outOfRangeChilds.add(child);
-					}
-				}else {
+				Age age = null;
+				if (child.getDateOfBirth() != null)
+					age = new Age(child.getDateOfBirth());
+				else
+					age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
+				
+				if(age.getYears() <= toAge && age.getYears() >=fromAge){
+					T.add(getChildLink(child), 1, row++);
+					if (iter.hasNext())
+						T.setHeight(row++,2);
+				}
+				else{
 					outOfRangeChilds.add(child);
 				}
 			}
 			if(showOutOfRangeChildren && !outOfRangeChilds.isEmpty()){
+				T.setHeight(row++,12);
 				T.add(getHeader(iwrb.getLocalizedString("citizen_children.out_of_range_childs","Children out of range:")),1,row);
 				Iterator iter2 = outOfRangeChilds.iterator();
 				++row;
@@ -148,13 +149,19 @@ public class CitizenChildren extends CommuneBlock {
 		}
 
 		if(showSSNSearchForm){
-			TextInput inputSSN = new TextInput(prmChildSSN);
+			Table submitTable = new Table(3,1);
+			submitTable.setCellpadding(0);
+			submitTable.setCellspacing(0);
+			submitTable.setWidth(2, "4");
+			
+			TextInput inputSSN = (TextInput) getStyledInterface(new TextInput(prmChildSSN));
 			String label = buttonLabel.getLocalizedText(iwc);
 
-			SubmitButton submit = new SubmitButton(label, prmSubmitName, "true");
-			T.add(inputSSN, 1, row);
-			row++;
-			T.add(submit, 1, row);
+			SubmitButton submit = (SubmitButton) getButton(new SubmitButton(label, prmSubmitName, "true"));
+			T.setHeight(row++,12);
+			submitTable.add(inputSSN, 1, 1);
+			submitTable.add(submit, 3, 1);
+			T.add(submitTable, 1, row);
 		}
 		f.add(T);
 		return f;
