@@ -472,6 +472,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			homepage = null;
 		}
 		row++;
+		
+		table.mergeCells(1, row, table.getColumns(), row);
 		table.add(sbUpdate, 1, row);
 		if (iPasswordPage != null) {
 			table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
