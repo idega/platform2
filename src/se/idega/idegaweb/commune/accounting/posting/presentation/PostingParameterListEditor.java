@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.32 2003/10/24 10:29:37 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.33 2003/10/24 11:28:28 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.32 2003/10/24 10:29:37 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.33 2003/10/24 11:28:28 laddi Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -138,11 +138,11 @@ public class PostingParameterListEditor extends AccountingBlock {
 			setDefaultParameters();
 			switch (action) {
 				case ACTION_DEFAULT :
-					viewMainForm(iwc, "");
+					viewMainForm(iwc);
 					break;
 				case ACTION_SAVE :
 					if (!saveData(iwc)) {
-						viewMainForm(iwc, _errorText);
+						viewMainForm(iwc);
 					}
 					break;
 				case ACTION_CANCEL :
@@ -285,7 +285,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	/*
 	 * Adds the default form to the block.
     */	
-	private void viewMainForm(IWContext iwc, String error) {
+	private void viewMainForm(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		PostingParameters pp = getThisPostingParameter(iwc);
 		
