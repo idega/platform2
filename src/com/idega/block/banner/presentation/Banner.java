@@ -48,6 +48,9 @@ public class Banner extends Block implements Builderaware {
 	private boolean _newWithAttribute = false;
 
 	private String _target;
+	
+	private int _maxWidth = -1;
+	
 
 	public Banner() {
 
@@ -196,6 +199,11 @@ public class Banner extends Block implements Builderaware {
 			}
 
 			if (image != null) {
+				
+				if(_maxWidth>0) {
+					image.setMaxImageWidth(_maxWidth);
+				}
+
 
 				bannerLink = new Link(getStyleObject(image, IMAGE_STYLE));
 
@@ -307,4 +315,11 @@ public class Banner extends Block implements Builderaware {
 		map.put(IMAGE_STYLE, DEFAULT_IMAGE_STYLE);
 		return map;
 	}
+	/**
+	 * @param width The _fixedWidth to set.
+	 */
+	public void setMaxWidth(int width) {
+		_maxWidth = width;
+	}
+
 }
