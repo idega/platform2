@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.38 2001/09/25 00:40:08 eiki Exp $
+ * $Id: Link.java,v 1.39 2001/09/25 00:57:32 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -556,6 +556,9 @@ public class Link extends Text {
     if( (file!=null) && (file.getID()!=-1) ){
       StringBuffer url = new StringBuffer();
       url.append(IWMainApplication.MEDIA_SERVLET_URL);
+      url.append('/');
+      url.append(file.getID());
+      url.append("media");
       url.append('?');
       url.append(com.idega.block.media.servlet.MediaServlet.PARAMETER_NAME);
       url.append('=');
