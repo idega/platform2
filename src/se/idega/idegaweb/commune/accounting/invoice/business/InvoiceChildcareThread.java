@@ -275,8 +275,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					log.info("created invoice record");
 
  					totalSum = postingDetail.getAmount()*placementTimes.getMonths();
-					int siblingOrder = getSiblingOrder(contract);
-					//int siblingOrder = getSiblingOrder(contract, siblingOrders);
+					int siblingOrder = getSiblingOrder(contract, siblingOrders);
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
 							new Integer(siblingOrder)));
 					log.info(" Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
@@ -423,8 +422,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.EJBError");
 					}
-				} catch (SiblingOrderException e) {
-					//} catch (UserInfoService.SiblingOrderException e) {
+				} catch (UserInfoService.SiblingOrderException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
 						createNewErrorMessage(errorRelated + " " + e.getMessage (),"invoice.CouldNotGetSiblingOrder");

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.58 2003/11/21 01:42:08 tryggvil Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.59 2003/12/16 14:51:23 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,11 +72,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/11/21 01:42:08 $ by $Author: tryggvil $
+ * Last modified: $Date: 2003/12/16 14:51:23 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.58 $
+ * @version $Revision: 1.59 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
@@ -425,13 +425,14 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final String streetName = applicant.getStreet();
 			final String postalCode = applicant.getZipCode();
 			final String postalName = applicant.getCity();
+			Address address = null;
 
 			if (streetName != null && postalCode != null && postalName != null) {
 				final Country sweden = ((CountryHome) getIDOHome(Country.class)).findByIsoAbbreviation("SE");
 				final AddressBusiness addressBusiness = (AddressBusiness) getServiceInstance(AddressBusiness.class);
 				final PostalCode code = addressBusiness.getPostalCodeAndCreateIfDoesNotExist(postalCode, postalName, sweden);
 				final AddressHome addressHome = addressBusiness.getAddressHome();
-				final Address address = addressHome.create();
+				address = addressHome.create();
 				final AddressType mainAddressType = addressHome.getAddressType1();
 				address.setAddressType(mainAddressType);
 				address.setCountry(sweden);
@@ -475,6 +476,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 					final IWTimestamp cohabitantTimestamp = cohabitantBirth != null ? new IWTimestamp(cohabitantBirth.getTime()) : null;
 					final User cohabitantUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp);
 					familyLogic.setAsSpouseFor(user, cohabitantUser);
+					if (null != address) cohabitantUser.addAddress (address);
 					final Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
 					phone.setNumber(cohabitant.getPhoneWork());
 					phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
@@ -497,6 +499,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 						final User childrenUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(children[i].getFirstName(), "", children[i].getLastName(), childrenSsn, childrenGender, childrenTimestamp);
 						familyLogic.setAsParentFor(user, childrenUser);
 						familyLogic.setAsCustodianFor(user, childrenUser);
+						if (null != address) childrenUser.addAddress (address);
 						if (homePhone != null) {
 							childrenUser.addPhone(homePhone);
 						}
