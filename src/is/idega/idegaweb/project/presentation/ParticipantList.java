@@ -150,11 +150,14 @@ public class ParticipantList extends AbstractContentList {
       table.setWidth(5,"12");
       table.setWidth(7,"6");
 
-      table.add(getAddAndRemoveGroupLinkIcon(iwc, iwb),2,1);
-      table.add(getAddAndRemoveGroupLink(iwc, iwrb),4,1);
+//      table.add(getAddAndRemoveGroupLinkIcon(iwc, iwb),2,1);
+//      table.add(getAddAndRemoveGroupLink(iwc, iwrb),4,1);
+//
+//      table.add(getAddAndRemoveUserLinkIcon(iwc, iwb),6,1);
+//      table.add(getAddAndRemoveUserLink(iwc, iwrb),8,1);
 
-      table.add(getAddAndRemoveUserLinkIcon(iwc, iwb),6,1);
-      table.add(getAddAndRemoveUserLink(iwc, iwrb),8,1);
+      table.add(getAddAndRemoveUserLinkIcon(iwc, iwb),2,1);
+      table.add(getAddAndRemoveUserLink(iwc, iwrb),4,1);
 
       this.add(table);
     }

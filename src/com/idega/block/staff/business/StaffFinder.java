@@ -466,6 +466,22 @@ public class StaffFinder {
 
       holder.setTitle(staffInfo.getTitle());
 
+    } else {//Legacy
+      try {
+
+        StaffInfo info = getStaffInfo(user.getID());
+
+        holder.setArea(info.getArea());
+
+        holder.setEducation(info.getEducation());
+
+        holder.setTitle(info.getTitle());
+
+      }
+      catch (Exception ex) {
+        //
+      }
+
     }
 
     if ( staffMeta != null ) {
