@@ -18,6 +18,9 @@ import com.idega.block.albumcollection.data.AlbumType;
 import com.idega.data.EntityFinder;
 import com.idega.util.text.TextSoap;
 import com.idega.util.idegaTimestamp;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+
 
 import java.util.List;
 import java.util.Iterator;
@@ -32,6 +35,8 @@ import java.util.Iterator;
  */
 
 public class AlbumDetails extends Block {
+
+  private final static String IW_BUNDLE_IDENTIFIER = AlbumCollection.IW_BUNDLE_IDENTIFIER;
 
   public final static String _PRM_ALBUM_ID = AlbumCollectionBusiness._PRM_ALBUM_ID;
   private Text trackNameTemplate;
@@ -62,7 +67,15 @@ public class AlbumDetails extends Block {
 
   }
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
   public void lineUpElements(IWContext iwc)throws Exception {
+
+    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWResourceBundle iwrb = this.getResourceBundle(iwc);
+
     Table frameTable = new Table(1,1);
     frameTable.setCellspacing(1);
     frameTable.setCellpadding(0);
@@ -183,7 +196,11 @@ public class AlbumDetails extends Block {
 
     contentTable.add(getTrackList(iwc),1,5);
 
-    contentTable.add(new BackButton("Til baka"),1,6);
+    Table backTable = new Table(1,1);
+    backTable.setCellpadding(4);
+    backTable.setCellspacing(4);
+    backTable.add(new BackButton(iwrb.getImage("back.gif","back")),1,1);
+    contentTable.add(backTable,1,6);
     contentTable.setAlignment(1,6,"right");
 
     frameTable.add(contentTable);
@@ -195,6 +212,10 @@ public class AlbumDetails extends Block {
   }
 
   public Table getTrackList(IWContext iwc)throws Exception {
+
+    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWResourceBundle iwrb = this.getResourceBundle(iwc);
+
     Table trackTable = null;
     int index=1;
     String albumId = iwc.getParameter(this._PRM_ALBUM_ID);
@@ -291,10 +312,12 @@ public class AlbumDetails extends Block {
           if(hasEditPermission()){
             info.resize(info.getColumns(),2);
             Link update = (Link)updateTrackLinkTemplate.clone();
+            update.setObject(core.getSharedImage("edit.gif","edit track"));
             update.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
-            info.add(update,7,2);
+            info.add(update,8,2);
 
             Link delete = (Link)deleteTrackLinkTemplate.clone();
+            delete.setObject(core.getSharedImage("delete.gif","delete track"));
             delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
             info.add(delete,9,2);
           }
@@ -341,7 +364,8 @@ public class AlbumDetails extends Block {
 
 
     if(hasEditPermission()){
-      Link addTrackLink = AlbumCollectionBusiness.getMainLinkClone("add track");
+      Link addTrackLink = AlbumCollectionBusiness.getMainLinkClone();
+      addTrackLink.setObject(core.getSharedImage("create.gif", "add track"));
       //addTrackLink.setFontColor("#EEEEEE");
       addTrackLink.setBold();
       addTrackLink.setWindowToOpen(AddTrack.class);

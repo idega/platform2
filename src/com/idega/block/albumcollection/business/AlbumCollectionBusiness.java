@@ -468,7 +468,7 @@ public class AlbumCollectionBusiness {
   }
 
   public static List getLyrics() throws SQLException {
-    return EntityFinder.findAll(Lyric.getStaticInstance(Lyric.class));
+    return EntityFinder.findAllOrdered(Lyric.getStaticInstance(Lyric.class),Lyric._COLUMNNAME_NAME);
   }
 
   public static Album getAlbum(int albumId) {

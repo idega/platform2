@@ -11,6 +11,9 @@ import com.idega.block.albumcollection.data.Lyric;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.data.EntityFinder;
 import com.idega.util.text.TextSoap;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +29,8 @@ import java.util.List;
 
 public class LyricViewer extends Block {
 
+  private final static String IW_BUNDLE_IDENTIFIER = AlbumCollection.IW_BUNDLE_IDENTIFIER;
+
   private Text headingText;
   private Text mainText;
 
@@ -36,7 +41,15 @@ public class LyricViewer extends Block {
 
   }
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
   public void main(IWContext iwc) throws Exception {
+
+
+    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     this.empty();
 
@@ -87,14 +100,16 @@ public class LyricViewer extends Block {
 
         if(hasEditPermission()){
 
-          Link updateLyricLink = AlbumCollectionBusiness.getMainLinkClone("Breyta");
+          Link updateLyricLink = AlbumCollectionBusiness.getMainLinkClone();
+          updateLyricLink.setObject(core.getSharedImage("edit.gif","edit lyric"));
           updateLyricLink.setWindowToOpen(InsertLyric.class);
           updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
           updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,lyric.getID());
 
           contentTable.add(updateLyricLink,1,6);
 
-          Link deleteTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Eyða");
+          Link deleteTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
+          deleteTrackLinkTemplate.setObject(core.getSharedImage("delete.gif","delete lyric"));
           deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
           deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
           deleteTrackLinkTemplate.addParameter(DeleteConfirmWindow._PRM_ID,lyric.getID());
@@ -111,7 +126,7 @@ public class LyricViewer extends Block {
       contentTable.add(AlbumCollectionBusiness.getMainTextClone("Texti finnst ekki"),1,2);
     }
 
-    contentTable.add(new BackButton("Til baka"),1,6);
+    contentTable.add(new BackButton(iwrb.getImage("back.gif","back")),1,6);
 
     this.add(Text.getBreak());
     this.add(Text.getBreak());

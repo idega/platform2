@@ -14,6 +14,8 @@ import com.idega.presentation.IWContext;
 
 public class AlbumCollection extends Block {
 
+  protected final static String IW_BUNDLE_IDENTIFIER="com.idega.block.albumcollection";
+
   public static final String _PRM_STATE = "ac_presentation_state_prm";
   public static final int _STATE_ALBUMLIST = 0;
   public static final int _STATE_ALBUMINFO = 1;
@@ -34,6 +36,10 @@ public class AlbumCollection extends Block {
 
   public AlbumCollection() {
 
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
   public void setInitialState(int state){

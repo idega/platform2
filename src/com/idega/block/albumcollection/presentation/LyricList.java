@@ -9,6 +9,9 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+
 
 import java.util.List;
 import java.util.Iterator;
@@ -24,6 +27,8 @@ import java.util.Iterator;
 
 public class LyricList extends Block {
 
+  private final static String IW_BUNDLE_IDENTIFIER = AlbumCollection.IW_BUNDLE_IDENTIFIER;
+
   private Link lyricViewerLinkTemplate;
   private Link updateLyricLinkTemplate;
   private Link deleteLyricLinkTemplate;
@@ -31,7 +36,6 @@ public class LyricList extends Block {
   public LyricList() {
     lyricViewerLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
     lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
-
 
     updateLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("U");
     updateLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
@@ -41,6 +45,10 @@ public class LyricList extends Block {
     deleteLyricLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
     deleteLyricLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
 
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
   public void main(IWContext iwc) throws Exception {
@@ -65,12 +73,13 @@ public class LyricList extends Block {
     this.add(Text.getBreak());
     this.add(Text.getBreak());
 
-
-
   }
 
 
   public Table getLyricList(IWContext iwc)throws Exception {
+
+    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     Table lyricTable = null;
     int index=1;
@@ -108,8 +117,8 @@ public class LyricList extends Block {
       Table info = (Table)lyricInfo.clone();
       //info.add(AlbumCollectionBusiness.getMainTextClone("nr."),1,1);
       info.add(AlbumCollectionBusiness.getMainTextClone("heiti"),2,1);
-      info.add(AlbumCollectionBusiness.getMainTextClone("höfundar"),3,1);
-      info.add(AlbumCollectionBusiness.getMainTextClone("flutt á"),4,1);
+      //info.add(AlbumCollectionBusiness.getMainTextClone("höfundar"),3,1);
+      //info.add(AlbumCollectionBusiness.getMainTextClone("flutt á"),4,1);
       lyricTable.add(info,1,index);
       index++;
       Iterator iter = lyrics.iterator();
@@ -129,7 +138,7 @@ public class LyricList extends Block {
         info.add(link,2,1);
 
 
-
+/*
         List authors = EntityFinder.findRelated(item,Author.getStaticInstance(Author.class));
         if(authors != null){
           Iterator iter2 = authors.iterator();
@@ -145,17 +154,19 @@ public class LyricList extends Block {
           }
           info.add(AlbumCollectionBusiness.getMainTextBoldClone(name),3,1);
         }
-
+*/
 
 
 
 
         if(hasEditPermission()){
           Link update = (Link)updateLyricLinkTemplate.clone();
+          update.setObject(core.getSharedImage("edit.gif","edit lyric"));
           update.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,item.getID());
           info.add(update,6,1);
 
           Link delete = (Link)deleteLyricLinkTemplate.clone();
+          delete.setObject(core.getSharedImage("delete.gif","delete lyric"));
           delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
           info.add(delete,7,1);
         }

@@ -11,6 +11,8 @@ import com.idega.presentation.Image;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.albumcollection.data.Performer;
 import com.idega.data.EntityFinder;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,9 @@ public class AlbumList extends Block {
   public Link deleteAlbumLinkTemplate;
   public AlbumList.DefaultLayout layout;
 
+  private final static String IW_BUNDLE_IDENTIFIER = AlbumCollection.IW_BUNDLE_IDENTIFIER;
+
+
   public AlbumList() {
     layout = new AlbumList.DefaultLayout();
     albumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
@@ -46,9 +51,18 @@ public class AlbumList extends Block {
   }
 
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
+
   public void main(IWContext iwc) throws Exception {
     List albumList = AlbumCollectionBusiness.getAlbums();
     this.empty();
+
+    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWResourceBundle iwrb = this.getResourceBundle(iwc);
+
     Table contentTable = null;
 
     if(albumList != null){
@@ -61,7 +75,8 @@ public class AlbumList extends Block {
       while (iter.hasNext()) {
         Album item = (Album)iter.next();
         Link link = (Link)albumLinkTemplate.clone();
-        link.setText("Nánar");
+        //link.setText("Nánar");
+        link.setObject(iwrb.getImage("more.gif"));
         link.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
         link.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_ALBUMINFO);
         AlbumList.DefaultLayout myLayout = (AlbumList.DefaultLayout)layout.clone();
@@ -99,11 +114,13 @@ public class AlbumList extends Block {
 
         if(hasEditPermission()){
           Link update = (Link)updateAlbumLinkTemplate.clone();
+          update.setObject(core.getSharedImage("edit.gif","edit album"));
           update.addParameter(AlbumCollectionBusiness._PRM_ALBUM_ID,item.getID());
           myLayout.setEditLink(update);
           //contentTable.add(update,2,index);
 
           Link delete = (Link)deleteAlbumLinkTemplate.clone();
+          delete.setObject(core.getSharedImage("delete.gif","delete album"));
           delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
           myLayout.setDeleteLink(delete);
           //contentTable.add(delete,3,index);
@@ -141,7 +158,8 @@ public class AlbumList extends Block {
     }
 
     if(hasEditPermission()){
-      Link createAlbumLink = AlbumCollectionBusiness.getMainLinkClone("create album");
+      Link createAlbumLink = AlbumCollectionBusiness.getMainLinkClone();
+      createAlbumLink.setObject(core.getSharedImage("create.gif", "create album"));
       //createAlbumLink.setFontColor("#EEEEEE");
       createAlbumLink.setBold();
       createAlbumLink.setWindowToOpen(com.idega.block.albumcollection.presentation.CreateAlbum.class);
@@ -257,7 +275,7 @@ public class AlbumList extends Block {
     }
 
     public void setEditLink(Link link){
-      tb4.add(link,1,3);
+      tb4.add(link,1,5);
     }
 
     public void setDeleteLink(Link link){
