@@ -42,18 +42,16 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 	pCat = (ICCategory) productCategories.get(i);
 	if (productCatalog._showCategoryName) {
 	  table.add(productCatalog.getCategoryText(pCat.getName()), 1,row);
-	  firstRow = 1;
 	}
 
 	if (productCatalog._hasEditPermission) {
 	  configCategory = productCatalog.getProductCategoryEditorLink(pCat);
 	  table.add(Text.getNonBrakingSpace(),1,row);
 	  table.add(configCategory, 1,row);
-	  firstRow = 1;
 	}
 
 	if (productCatalog._showCategoryName || productCatalog._hasEditPermission) {
-	  firstRow = 0;
+	  firstRow = 1;
 	  ++row;
 	}
 
@@ -85,9 +83,9 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 
 	  ++row;
 	}
-
-
-      }catch (Exception e) {
+	column = 1;
+      }
+      catch (Exception e) {
 	e.printStackTrace(System.err);
       }
     }
