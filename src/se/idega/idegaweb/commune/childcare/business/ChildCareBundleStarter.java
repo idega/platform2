@@ -35,7 +35,8 @@ public class ChildCareBundleStarter implements IWBundleStartable {
 	 */
 	public void start(IWBundle starterBundle) {
     _bundle = starterBundle;
-		int queueInterval = Integer.parseInt(_bundle.getProperty(BUNDLE_PROPERTY_NAME_QUEUE_INTERVAL, String.valueOf(86400000)));
+		int queueInterval = Integer.parseInt(_bundle.getProperty(BUNDLE_PROPERTY_NAME_QUEUE_INTERVAL, String.valueOf(1440)));
+		System.out.println("[CHILD CARE]: Queue interval = " + queueInterval + "minutes");
 		
 		if (timerManager==null) {
 			timerManager = new TimerManager();
