@@ -6,7 +6,7 @@ import is.idega.idegaweb.project.data.IPCategory;
 import is.idega.idegaweb.project.data.IPCategoryType;
 import is.idega.idegaweb.project.data.IPProject;
 import com.idega.core.data.ICObject;
-import com.idega.builder.dynamicpagetrigger.business.DPTriggerBusiness;
+import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
 import com.idega.data.EntityFinder;
@@ -202,7 +202,7 @@ public class ProjectBusiness {
 
     IPProject project = new IPProject(projectId);
 
-    DPTriggerBusiness business = DPTriggerBusiness.getInstance();
+    DPTTriggerBusiness business = DPTTriggerBusiness.getInstance();
 
 
     List l = EntityFinder.findAll(PageTriggerInfo.getStaticInstance(PageTriggerInfo.class));
