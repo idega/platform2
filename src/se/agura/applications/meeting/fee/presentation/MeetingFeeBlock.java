@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBlock.java,v 1.7 2004/12/14 07:18:05 laddi Exp $
+ * $Id: MeetingFeeBlock.java,v 1.8 2005/01/24 13:15:24 anna Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -29,6 +29,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
@@ -42,7 +43,7 @@ import com.idega.user.data.User;
  * Last modified: 25.11.2004 09:11:42 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public abstract class MeetingFeeBlock extends Block {
 	
@@ -313,8 +314,8 @@ public abstract class MeetingFeeBlock extends Block {
 		return calculateButton;
 	}
 	
-	public GenericButton getBackButton() {
-		GenericButton back = getButton(new GenericButton("back", getResourceBundle().getLocalizedString("meeting.fee.back", "Back")));
+	public BackButton getBackButton() {
+		BackButton back = (BackButton) getButton(new BackButton(getResourceBundle().getLocalizedString("meeting.fee.back", "Back")));
 		back.setToolTip(getResourceBundle().getLocalizedString("meeting.fee.back.tooltip","Moves back to previous page"));
 		return back;
 	} 
