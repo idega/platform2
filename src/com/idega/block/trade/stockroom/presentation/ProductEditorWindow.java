@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.block.text.business.TextFormatter;
 import com.idega.util.text.TextSoap;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -218,7 +219,9 @@ public class ProductEditorWindow extends IWAdminWindow {
            * @todo Fixa strengi .. <br> í staðinn fyrir \n
            */
 //           teaser = TextSoap.formatText(teaser);
-//           description = TextSoap.formatText(description);
+//          debug(description);
+//          description = TextFormatter.formatMSWordStringToIdegaWebString(description);
+
           _productId = ProductBusiness.createProduct(fileId, name, number, description, true, iLocaleID);
           _product = ProductBusiness.getProduct(_productId);
           ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
@@ -239,6 +242,8 @@ public class ProductEditorWindow extends IWAdminWindow {
            */
 //          teaser = TextSoap.formatText(teaser);
 //          description = TextSoap.formatText(description);
+//          debug(description);
+//          description = TextFormatter.formatMSWordStringToIdegaWebString(description);
 
           ProductBusiness.updateProduct(this._productId, fileId, name, number, description, true, iLocaleID);
           ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);

@@ -34,7 +34,7 @@ public class ProductCatalog extends CategoryBlock{
 
   int productsPerPage = 10;
   int currentPage = 1;
-  int orderBy = ProductComparator.NUMBER;
+  int orderBy = -1;
 
   IWResourceBundle iwrb;
   private IWBundle bundle;
@@ -331,12 +331,17 @@ public class ProductCatalog extends CategoryBlock{
   PresentationObject getNamePresentationObject(Product product) {
     return getNamePresentationObject(product, false);
   }
+
   PresentationObject getNamePresentationObject(Product product, boolean useCategoryStyle) {
+    return getNamePresentationObject(product, ProductBusiness.getProductName(product,_currentLocaleId), useCategoryStyle);
+  }
+
+  PresentationObject getNamePresentationObject(Product product, String displayString, boolean useCategoryStyle) {
     Text nameText = null;
     if (useCategoryStyle) {
-      nameText = getCategoryText(ProductBusiness.getProductName(product,_currentLocaleId));
+      nameText = getCategoryText(displayString);
     }else {
-      nameText = getText(ProductBusiness.getProductName(product,_currentLocaleId));
+      nameText = getText(displayString);
     }
     Link productLink;
     if (_productIsLink) {

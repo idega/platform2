@@ -23,10 +23,17 @@ public class TextFormatter {
    /**@todo implement when we have regular expressions
     *  returnString = TextSoap.findAndReplace(text,"1.	","*");
     */
-    returnString = TextSoap.findAndReplace(text,"-	","*");
-    returnString = TextSoap.findAndReplace(text,"·	","*");
+    //returnString = TextSoap.findAndReplace(text,"-	","*");
+    //returnString = TextSoap.findAndReplace(text,"·	","*");
     returnString = TextSoap.findAndReplace(text,"	"," ");//space in word tables
-
+    //returnString = TextSoap.findAndReplace(text,"o	","*");
+    //returnString = TextSoap.findAndReplace(text,"•	","*");
+    returnString = TextSoap.findAndReplace(text,"&#61553;","*");
+    returnString = TextSoap.findAndReplace(text,"&#61558;","*");
+    returnString = TextSoap.findAndReplace(text,"&#61607;","*");
+    returnString = TextSoap.findAndReplace(text,"&#61656;","*");
+//    returnString = TextSoap.findAndReplace(text,"?\t","*");
+//    returnString = TextSoap.findAndReplace(text,"o\t","*");
     return returnString;
   }
 
