@@ -1,0 +1,256 @@
+package com.idega.projects.golf.service;
+
+import java.sql.*;
+import com.idega.data.*;
+import com.idega.projects.golf.entity.*;
+import com.idega.util.*;
+import com.idega.jmodule.object.interfaceobject.*;
+import java.io.*;
+
+/**
+ * Title:        Golf<p>
+ * Description:  <p>
+ * Copyright:    Copyright (c) idega 2000 <p>
+ * Company:      idega margmiðlun<p>
+ * @author idega 2000 - idega team - gummi
+ * @version 1.0
+ */
+
+
+public class StartService{
+
+  private Startingtime startTime;                 //notaður sem almennur hlutur til að nalgast almenn föll ohað id
+  private StartingtimeFieldConfig fieldConfig;    //notaður sem almennur hlutur til að nalgast almenn föll ohað id
+  private Field field;		//notaður sem almennur hlutur til að nalgast almenn föll ohað id
+  private Union union;		//notaður sem almennur hlutur til að nalgast almenn föll ohað id
+
+//  private Connection conn;
+
+
+  //  ####  smiðir  #####
+
+  public StartService(){              //throws SQLException{
+  super();
+  startTime = new Startingtime();
+  fieldConfig = new StartingtimeFieldConfig();
+  field = new Field();
+  union = new Union();
+
+
+//  conn = getConnection();
+  }
+
+
+  // #### Private - Föll  ####
+
+
+
+
+  // #### Public - Föll  ####
+
+
+    // Start.jsp
+
+/*  public int getFirstField(int union_id)throws SQLException{
+    return ((Field[])field.findAll("SELECT * FROM " + field.getEntityName() + " WHERE union_id = " + union_id ))[0].getID();
+  }*/
+  public synchronized int getFirstField(String union_id)throws SQLException{
+    return ((Field[])field.findAll("SELECT * FROM " + field.getEntityName() + " WHERE union_id = " + union_id + " AND  ONLINE_STARTINGTIME='Y' " ))[0].getID();
+  }
+
+  // ##%%##%%##%%#%%## var að breyta DESC til að fa fyrstu menn fyrst, kanna hvort virkar eftir að Innskraning virkar
+  public synchronized Startingtime[] getTableEntries(String date, int first_group, int last_group, int field_id )throws SQLException{
+    return (Startingtime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date + " 00:00:00.0' and grup_num >= " + first_group + " and grup_num < " + last_group + " and field_id = " + field_id + " order by grup_num DESC, startingtime_id");
+//    return (Startingtime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE startingtime_date = '" + date + " 00:00:00.0' and grup_num >= " + first_group + " and grup_num < " + last_group + " and field_id = " + field_id + " order by grup_num DESC");
+  }
+
+  public synchronized Field[] getFields(String union_id)throws SQLException{
+    return (Field[])field.findAll("SELECT * FROM " + field.getEntityName() + " WHERE union_id = " + union_id + " AND  ONLINE_STARTINGTIME='Y' ORDER BY " + field.getIDColumnName());
+  }
+
+
+  public synchronized StartingtimeFieldConfig getFieldConfig(int field_id, String date)throws SQLException{
+    StartingtimeFieldConfig[] temp = (StartingtimeFieldConfig[])fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " WHERE begin_date <= '"+ date +" 23:59:59.0' and field_id = " + field_id + " ORDER BY begin_date DESC");
+    return temp[0];
+  }
+
+
+  // innskraning1.jsp
+
+
+  public synchronized void preSetStartingtime(int group_num, String date, String field_id)throws SQLException{
+    Startingtime insert = new Startingtime();
+
+    insert.setGroupNum(new Integer(group_num));
+    insert.setStartingtimeDate( new idegaTimestamp(date).getSQLDate() );
+    insert.setFieldID( new Integer(field_id) );
+
+    insert.insert();
+  }
+
+  public synchronized void setStartingtime(int group_num, String date, String field_id, String member_id, String player_name, String handicap, String union, String card, String card_no )throws SQLException{
+    Startingtime insert = new Startingtime();
+
+    String handic = handicap;
+
+    for (int i = 0; i < handic.length(); i++){
+      if  ( handic.charAt(i) == ',' ) {
+        handic = handicap.substring(0,i);
+        if(handicap.substring(i+1,i+2) != null)
+         handic = handic + "." + handicap.substring(i+1,i+2);
+        continue;
+      }
+    }
+//hér
+    insert.setCardName(card);
+    insert.setCardNum(card_no);
+    insert.setClubName(union);
+    insert.setFieldID( new Integer(field_id) );
+    insert.setGroupNum(new Integer(group_num));
+    insert.setHandicap(new Float(handic));
+    insert.setMemberID(new Integer(member_id));
+    insert.setPlayerName(player_name);
+    insert.setStartingtimeDate( new idegaTimestamp(date).getSQLDate() );
+
+    insert.insert();
+  }
+
+
+
+
+
+  public synchronized int entriesInGroup( int group_num, String field_id, String date )throws SQLException{
+//    System.out.println("SELECT * FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + new idegaTimestamp(date).toString() + "'");
+    int count = -1;
+	try{
+
+		if (startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + new idegaTimestamp(date).toString() + "'") == null)
+      	{
+			System.out.println("Skilar núll");
+			return 0;
+		}
+    	else{
+     		Startingtime[] temp = (Startingtime[])startTime.findAll("SELECT * FROM " + startTime.getEntityName() + " WHERE grup_num = '" + group_num + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + new idegaTimestamp(date).toString() + "'");
+			count = temp.length;
+			System.out.println(count);
+		}
+	 }
+	 catch(SQLException e){
+	 	e.printStackTrace();
+		System.out.print("SQLException: " + e.getMessage());
+    	System.out.print("SQLState:     " + e.getSQLState());
+    	System.out.print("VendorError:  " + e.getErrorCode());
+	 }
+	 catch(Throwable th){
+	 	System.err.println("Error in StartService.entriesInGroup: "+th.getMessage());
+		th.printStackTrace(System.err);
+	 }
+	 return count;
+  }
+
+
+
+
+   //  search.jsp
+
+    // nota getTableEntries(String date, int first_group, int last_group, int field_id ) fra start.jsp
+
+
+
+  public synchronized Union[] getStartingEntryUnion()throws SQLException{
+    return (Union[])union.findAll("SELECT distinct union_.name, union_.union_id FROM union_,field where field.ONLINE_STARTINGTIME='Y' and union_.union_id=field.union_id");
+  }
+
+
+  public synchronized Field[] getStartingEntryField()throws SQLException{
+    return (Field[])field.findAll("SELECT * FROM " + field.getEntityName() + " WHERE ONLINE_STARTINGTIME = 'Y' ORDER BY name");
+  }
+
+  public synchronized String getFieldName(int field_id)throws SQLException{
+    return new Field(field_id).getName();
+  }
+
+  public synchronized idegaTimestamp getFirstOpentime()throws SQLException{
+    return new idegaTimestamp(((StartingtimeFieldConfig[])fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY open_time" ))[0].getOpenTime() );
+  }
+
+  public synchronized int getMax_days_shown()throws SQLException{
+    return ((StartingtimeFieldConfig[])fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY days_shown" ))[0].getDaysShown();
+  }
+
+  public synchronized idegaTimestamp getLastClosetime()throws SQLException{
+    return new idegaTimestamp(((StartingtimeFieldConfig[])fieldConfig.findAll("SELECT * FROM " + fieldConfig.getEntityName() + " ORDER BY close_time" ))[0].getCloseTime() );
+  }
+
+  public synchronized int get_field_union( int field_id )throws SQLException{
+    return new Field(field_id).getUnionID();
+  }
+
+public Startingtime[] findAllPlayersInFieldOrdered(String field_id, String orderby_clause)throws IOException, SQLException{
+
+	Startingtime stime = new Startingtime();
+	Startingtime[] startingtimeimeArray = null;
+	try
+	{
+		startingtimeimeArray = (Startingtime[]) stime.findAll("select * from startingtime where field_id = "+field_id+" and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"' order by "+orderby_clause);
+	}
+	catch (SQLException E) {
+		E.printStackTrace();
+	}
+	return startingtimeimeArray;
+}
+
+public Startingtime[] findAllPlayersByMemberOrdered(String field_id, String member_id, String orderby_clause)throws IOException, SQLException{
+
+	Startingtime stime = new Startingtime();
+	Startingtime[] startingtimeimeArray = null;
+	try
+	{
+		startingtimeimeArray = (Startingtime[]) stime.findAll("select * from startingtime where field_id = "+field_id+" and member_id = "+member_id+" and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"' order by "+orderby_clause);
+	}
+	catch (SQLException E) {
+		E.printStackTrace();
+	}
+	return startingtimeimeArray;
+}
+
+public Startingtime[] getPlayersStartingToDay(String columnName, String toFind)throws SQLException
+{
+	Startingtime stime = new Startingtime();
+	Startingtime[] startArray = null;
+
+	try
+	{
+		startArray = (Startingtime[]) stime.findAll("select * from "+stime.getEntityName()+" where "+columnName+" like '"+toFind+"' and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"'");
+	}
+	catch (SQLException E) {
+		E.printStackTrace();
+    }
+	return startArray;
+}
+
+public Startingtime[] getPlayersStartingToDay(String column1, String toFind1, String column2, String toFind2)throws SQLException
+{
+	Startingtime stime = new Startingtime();
+	Startingtime[] startArray = null;
+
+	try
+	{
+		startArray = (Startingtime[]) stime.findAll("select * from "+stime.getEntityName()+" where "+column1+" like '"+toFind1+"' and "+column2+" like '"+toFind2+"' and startingtime_date >= '"+idegaTimestamp.RightNow().toSQLDateString()+"'");
+	}
+	catch (SQLException E) {
+		E.printStackTrace();
+    }
+	return startArray;
+}
+
+}   // class StartService
+
+
+
+
+
+
+
+
+
