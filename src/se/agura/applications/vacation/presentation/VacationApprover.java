@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.9 2004/12/20 10:47:01 anna Exp $ Created on
+ * $Id: VacationApprover.java,v 1.10 2005/01/14 15:21:38 laddi Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -34,7 +34,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class VacationApprover extends VacationBlock {
 
@@ -59,7 +59,7 @@ public class VacationApprover extends VacationBlock {
 		try {
 			parse(iwc);
 
-			if (action.equals(ACTION_SEND)) {
+			if (action.equals(ACTION_FORWARD_VIEW)) {
 				getSendToHandleForm(iwc);
 			}
 			else if (action.equals(ACTION_FORWARD)) {
@@ -182,12 +182,12 @@ public class VacationApprover extends VacationBlock {
 		form.add(forwardView(iwc));
 		form.add(new Break());
 		form.add(getCancelButton());
-		form.add(getSendButton());
+		form.add(getForwardButton());
 		return form;
 	}
 	
 	private Table forwardView(IWContext iwc) throws RemoteException {
-		Group parentGroup = getBusiness(iwc).getParentGroup(iwc.getCurrentUser());
+		Group parentGroup = (Group) getBusiness(iwc).getParentGroup(iwc.getCurrentUser()).getParentNode();
 		Table table = new Table();
 		table.setWidth(iWidth);
 		table.setCellpadding(iCellpadding);
@@ -262,7 +262,7 @@ public class VacationApprover extends VacationBlock {
 		form.add(getDeniedButton());
 		form.add(getApprovedButton());
 		if (vacationType.getAllowsForwarding()) {
-			form.add(getForwardButton());
+			form.add(getForwardViewButton());
 		}
 		return form;
 	}
@@ -289,17 +289,16 @@ public class VacationApprover extends VacationBlock {
 		return approvedButton;
 	}
 
-	public SubmitButton getSendButton() {
-		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.send_application", "Send"), PARAMETER_ACTION, ACTION_SEND));
-		sendButton.setToolTip(getResourceBundle().getLocalizedString("vacation.send.tooltip","Sends the application"));
-		sendButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.send.popup","Are you sure you want to send this application?"));
-		return sendButton;
-	}
-
 	private SubmitButton getForwardButton() {
 		SubmitButton forwardButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.forward_application", "Forward"), PARAMETER_ACTION, ACTION_FORWARD));
 		forwardButton.setToolTip(getResourceBundle().getLocalizedString("vacation.forward.tooltip","Forwards the application"));
 		forwardButton.setSubmitConfirm(getResourceBundle().getLocalizedString("vacation.forward.popup","Are you sure you want to forward this application?"));
+		return forwardButton;
+	}
+
+	private SubmitButton getForwardViewButton() {
+		SubmitButton forwardButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("vacation_approver.forward_application", "Forward"), PARAMETER_ACTION, ACTION_FORWARD_VIEW));
+		forwardButton.setToolTip(getResourceBundle().getLocalizedString("vacation.forward.tooltip","Forwards the application"));
 		return forwardButton;
 	}
 

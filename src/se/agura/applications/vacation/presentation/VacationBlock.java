@@ -72,6 +72,7 @@ public abstract class VacationBlock extends Block {
 	protected static final String ACTION_PAGE_FOUR = "page_four";
 	protected static final String ACTION_SAVE = "save";
 	protected static final String ACTION_FORWARD = "forward";
+	protected static final String ACTION_FORWARD_VIEW = "forward_view";
 	protected static final String ACTION_CLOSED = "closed";
 
 	private IWBundle iwb;
