@@ -36,7 +36,7 @@ import com.idega.util.IWTimestamp;
 
 public  class FinanceBusiness {
 
-
+/*
 
   public static int saveCategory(int iCategoryId,int iObjectInstanceId,String Name,String info){
 
@@ -733,7 +733,7 @@ public  class FinanceBusiness {
 
   }
 
-
+*/
 
 
 

@@ -1,9 +1,8 @@
 package com.idega.block.finance.data;
 
 
-public interface RoundInfo extends com.idega.data.IDOLegacyEntity
+public interface RoundInfo extends com.idega.data.IDOEntity
 {
- public void delete()throws java.sql.SQLException;
  public int getAccounts();
  public int getCategoryId();
  public int getGroupId();

@@ -8,11 +8,13 @@ import java.util.Vector;
 
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountHome;
 import com.idega.block.finance.data.AccountKey;
 import com.idega.block.finance.data.AccountPhoneEntry;
 import com.idega.block.finance.data.Entry;
 import com.idega.block.finance.data.TariffKey;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
 import com.idega.data.genericentity.Member;
 import com.idega.util.IWTimestamp;
 /**
@@ -32,7 +34,7 @@ public class AccountManager {
   public AccountManager() {
 
   }
-
+/*
   public static List listOfAccountEntries( int iAssessmentRoundId){
     try {
       return EntityFinder.findAllByColumnOrdered(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,com.idega.block.finance.data.AccountEntryBMPBean.getAccountIdColumnName());
@@ -185,9 +187,9 @@ public class AccountManager {
     else
       return null;
   }
-
+*/
   public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,String type,int iCategoryId)throws SQLException,java.rmi.RemoteException,javax.ejb.CreateException{
-    Account A = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHome(Account.class)).create();
+    Account A = ((AccountHome)IDOLookup.getHome(Account.class)).create();
     A.setBalance(0);
     A.setCreationDate(IWTimestamp.getTimestampRightNow() );
     A.setLastUpdated(IWTimestamp.getTimestampRightNow()) ;
@@ -217,4 +219,5 @@ public class AccountManager {
   public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{
    return makeNewAccount(iUserId,sName,sExtra,iCashierId,"",iCategoryId);
   }
+  
 }

@@ -1,8 +1,17 @@
 package com.idega.block.finance.presentation;
 
+import java.rmi.RemoteException;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+import javax.ejb.FinderException;
+
 import com.idega.block.finance.business.AccountBusiness;
-import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.data.Account;
+import com.idega.block.finance.data.AccountBMPBean;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.AccountInfo;
 import com.idega.block.finance.data.AccountPhoneEntry;
@@ -24,11 +33,6 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.util.TextFormat;
 import com.idega.util.IWTimestamp;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Title:
@@ -54,7 +58,7 @@ public class AccountViewer extends Finance {
   private final String prmFromDate = "from_date",prmToDate = "to_date";
   public static final String prmUserId = "user_id",prmAccountId = "fin_acc_id";
   public static final String prmClean = "av_clean";
-  private List listAccount = null;
+  private Collection listAccount = null;
   private User eUser = null;
   protected String styleAttribute = "font-size: 8pt";
   private int iUserId = -1,iAccountId = -1;
@@ -111,9 +115,9 @@ public class AccountViewer extends Finance {
     }
   }
 
-  private FinanceAccount getAccount(int iAccountId,List listOfAccounts)throws java.rmi.RemoteException{
+  private FinanceAccount getAccount(int iAccountId,Collection listOfAccounts)throws java.rmi.RemoteException{
     Iterator iter = listOfAccounts.iterator();
-    FinanceAccount account = (FinanceAccount) listOfAccounts.get(0);
+    FinanceAccount account = (FinanceAccount) iter.next();
     while(iter.hasNext()){
       FinanceAccount acc = (FinanceAccount) iter.next();
       if(acc.getAccountId() == iAccountId){
@@ -128,7 +132,7 @@ public class AccountViewer extends Finance {
     return new Text();
   }
 
-  public PresentationObject getAccountView(FinanceAccount eAccount,List listAccount,IWTimestamp FromDate,IWTimestamp ToDate,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
+  public PresentationObject getAccountView(FinanceAccount eAccount,Collection listAccount,IWTimestamp FromDate,IWTimestamp ToDate,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
     Table T = new Table(1,3);
     T.setWidth("100%");
     T.add(getEntrySearchTable(iAccountId,listAccount,FromDate,ToDate),1,2);
@@ -147,7 +151,7 @@ public class AccountViewer extends Finance {
     return stamp.getISLDate(".",true);
   }
 
-  public PresentationObject getEntrySearchTable(int iAccountId,List listAccount,IWTimestamp from,IWTimestamp to){
+  public PresentationObject getEntrySearchTable(int iAccountId,Collection listAccount,IWTimestamp from,IWTimestamp to){
     Table T = new Table(6,2);
     T.setWidth("100%");
     String sFromDate = getDateString(from);
@@ -198,7 +202,7 @@ public class AccountViewer extends Finance {
     return myForm;
   }
 
-  public PresentationObject getAccountTable(FinanceAccount eAccount,List listAccounts)throws java.rmi.RemoteException{
+  public PresentationObject getAccountTable(FinanceAccount eAccount,Collection listAccounts)throws java.rmi.RemoteException{
     if(eAccount != null){
       if( eUser.getID() != eAccount.getUserId()){
         eUser = com.idega.core.user.business.UserBusiness.getUser(eAccount.getUserId());
@@ -233,8 +237,17 @@ public class AccountViewer extends Finance {
         T.add(tf.format(getDateString(new IWTimestamp(account.getLastUpdated()))),col++,row);
         float b = eAccount.getBalance();
 
-        if(account.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typePhone)){
-          b = FinanceFinder.getInstance().getPhoneAccountBalance(account.getAccountId());
+        if(account.getAccountType().equals(AccountBMPBean.typePhone)){
+          try {
+			b = getFinanceService().getAccountInfoHome().findByPrimaryKey(new Integer(account.getAccountId())).getBalance();
+		} 
+          catch (RemoteException e) {
+			e.printStackTrace();
+		} 
+          catch (FinderException e) {
+			e.printStackTrace();
+		}
+         // b = FinanceFinder.getInstance().getPhoneAccountBalance(account.getAccountId());
           b = b*tax;
         }
 
@@ -253,10 +266,19 @@ public class AccountViewer extends Finance {
   }
 
    public PresentationObject getCleanAccountTable(int AccountId){
-    AccountInfo eAccount = FinanceFinder.getInstance().getAccountInfo(AccountId);
-    if(eAccount !=null)
-      eUser = FinanceFinder.getInstance().getUser(eAccount.getUserId());
+   	AccountInfo eAccount = null;
+	try {
+		eAccount = getFinanceService().getAccountInfoHome().findByPrimaryKey(new Integer(AccountId));
+		//AccountInfo eAccount = FinanceFinder.getInstance().getAccountInfo(AccountId);
+		if(eAccount !=null)
+			eUser = getFinanceService().getAccountUserHome().findByPrimaryKey(new Integer (eAccount.getUserId()));
+		 // eUser = FinanceFinder.getInstance().getUser(eAccount.getUserId());
 
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
     Table T = new Table(2,4);
     if(eAccount != null){
       T.setWidth("100%");
@@ -302,7 +324,7 @@ public class AccountViewer extends Finance {
   }
 
   private PresentationObject getEntryTable(FinanceAccount eAccount,IWTimestamp from,IWTimestamp to,boolean showallkeys,boolean clean)throws java.rmi.RemoteException{
-    List listEntries = null;
+    Collection listEntries = null;
     if(eAccount.getAccountType().equals(com.idega.block.finance.data.AccountBMPBean.typeFinancial)){
       if(showallkeys)
         listEntries = accBuiz.listOfAccountEntries(eAccount.getAccountId(),from,to);
@@ -323,7 +345,7 @@ public class AccountViewer extends Finance {
     else return new Text();
   }
 
-  private PresentationObject getPhoneEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
+  private PresentationObject getPhoneEntryTable(FinanceAccount eAccount,Collection listEntries,IWTimestamp from ,IWTimestamp to){
     int tableDepth = 4;
     int cols = 6;
     if(listEntries != null){
@@ -374,11 +396,12 @@ public class AccountViewer extends Finance {
     Text[] TableTexts = new Text[cols];
     boolean debet = false;
     if(listEntries != null){
-      int len = listEntries.size();
+      
       int totNight = 0,totDay = 0,totDur = 0;
       float totPrice = 0;
-      for(int j = 0; j < len; j++){
-        AccountPhoneEntry entry = (AccountPhoneEntry) listEntries.get(j);
+      for (Iterator iter = listEntries.iterator(); iter.hasNext();) {
+      	AccountPhoneEntry entry = (AccountPhoneEntry)  iter.next();
+		
         //TableTexts[0] = new Text(getDateString(new IWTimestamp(entry.getLastUpdated())));
         //TableTexts[1] = new Text(entry.getMainNumber());
         //TableTexts[0] = new Text(entry.getSubNumber());
@@ -438,7 +461,7 @@ public class AccountViewer extends Finance {
     return T;
   }
 
-  private PresentationObject getPhoneEntryReportTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
+  private PresentationObject getPhoneEntryReportTable(FinanceAccount eAccount,Collection listEntries,IWTimestamp from ,IWTimestamp to){
     String sMob1 = "8";
     String sMob2 = "6";
     String sFor = "00";
@@ -538,7 +561,7 @@ public class AccountViewer extends Finance {
     return T;
   }
 
-  private PresentationObject getFinanceEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to)throws java.rmi.RemoteException{
+  private PresentationObject getFinanceEntryTable(FinanceAccount eAccount,Collection listEntries,IWTimestamp from ,IWTimestamp to)throws java.rmi.RemoteException{
 
     int tableDepth = 5;
     if(listEntries != null){
@@ -573,10 +596,10 @@ public class AccountViewer extends Finance {
     Text[] TableTexts = new Text[4];
     boolean debet = false;
     if(listEntries != null){
-      int len = listEntries.size();
+     
       double totPrice = 0;
-      for(int j = 0; j < len; j++){
-        AccountEntry entry = (AccountEntry) listEntries.get(j);
+      for (Iterator iter = listEntries.iterator(); iter.hasNext();) {
+      	AccountEntry entry = (AccountEntry) iter.next();
         TableTexts[0] = new Text(getDateString(new IWTimestamp(entry.getLastUpdated())));
         TableTexts[1] = new Text(entry.getName());
         TableTexts[2] = new Text(entry.getInfo());
@@ -612,7 +635,7 @@ public class AccountViewer extends Finance {
     return T;
   }
 
-  private PresentationObject getCleanFinanceEntryTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
+  private PresentationObject getCleanFinanceEntryTable(FinanceAccount eAccount,Collection listEntries,IWTimestamp from ,IWTimestamp to){
 
     int tableDepth = 3;
     if(listEntries != null){
@@ -659,8 +682,8 @@ public class AccountViewer extends Finance {
       int len = listEntries.size();
       double totPrice = 0;
       int row = 3;
-      for(int j = 0; j < len; j++){
-        AccountEntry entry = (AccountEntry) listEntries.get(j);
+      for (Iterator iter = listEntries.iterator(); iter.hasNext();) {
+      	 AccountEntry entry = (AccountEntry) iter.next();
         double p = entry.getTotal();
         debet = p > 0 ? true : false ;
         totPrice += p;
@@ -735,7 +758,16 @@ public class AccountViewer extends Finance {
       eUser = iwc.getUser();
       iUserId = eUser.getID();
     }
-    listAccount = FinanceFinder.getInstance().listOfFinanceAccountsByUserId(iUserId);
+    try {
+		//listAccount = FinanceFinder.getInstance().listOfFinanceAccountsByUserId(iUserId);
+		listAccount = getFinanceService().getAccountHome().findAllByUserId(iUserId);
+	}
+    catch (RemoteException e) {
+		e.printStackTrace();
+	} 
+    catch (FinderException e) {
+		e.printStackTrace();
+	}
   }
 
   private Link getPrintableLink(PresentationObject obj,IWTimestamp from,IWTimestamp to){

@@ -7,37 +7,30 @@ public class TariffIndexHomeImpl extends com.idega.data.IDOFactory implements Ta
   return TariffIndex.class;
  }
 
+
  public TariffIndex create() throws javax.ejb.CreateException{
-  return (TariffIndex) super.idoCreate();
+  return (TariffIndex) super.createIDO();
  }
 
- public TariffIndex createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public TariffIndex findLastByType(java.lang.String p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((TariffIndexBMPBean)entity).ejbFindLastByType(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
 
- public TariffIndex findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (TariffIndex) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findLastTypeGrouped()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((TariffIndexBMPBean)entity).ejbFindLastTypeGrouped();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public TariffIndex findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (TariffIndex) super.idoFindByPrimaryKey(pk);
+  return (TariffIndex) super.findByPrimaryKeyIDO(pk);
  }
 
- public TariffIndex findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

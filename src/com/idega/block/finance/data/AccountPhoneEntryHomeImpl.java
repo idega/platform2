@@ -7,37 +7,30 @@ public class AccountPhoneEntryHomeImpl extends com.idega.data.IDOFactory impleme
   return AccountPhoneEntry.class;
  }
 
+
  public AccountPhoneEntry create() throws javax.ejb.CreateException{
-  return (AccountPhoneEntry) super.idoCreate();
+  return (AccountPhoneEntry) super.createIDO();
  }
 
- public AccountPhoneEntry createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findByAccountAndStatus(java.lang.Integer p0,java.lang.String p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((AccountPhoneEntryBMPBean)entity).ejbFindByAccountAndStatus(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public AccountPhoneEntry findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (AccountPhoneEntry) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findUnbilledByAccountAndPeriod(java.lang.Integer p0,java.sql.Date p1,java.sql.Date p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((AccountPhoneEntryBMPBean)entity).ejbFindUnbilledByAccountAndPeriod(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public AccountPhoneEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (AccountPhoneEntry) super.idoFindByPrimaryKey(pk);
+  return (AccountPhoneEntry) super.findByPrimaryKeyIDO(pk);
  }
 
- public AccountPhoneEntry findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

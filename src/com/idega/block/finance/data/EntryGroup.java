@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface EntryGroup extends com.idega.data.IDOLegacyEntity
+public interface EntryGroup extends com.idega.data.IDOEntity
 {
  public int getEntryIdFrom();
  public int getEntryIdTo();

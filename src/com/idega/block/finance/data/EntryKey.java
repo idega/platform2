@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface EntryKey extends com.idega.data.IDOLegacyEntity
+public interface EntryKey extends com.idega.data.IDOEntity
 {
  public java.lang.String getExtraInfo();
  public java.lang.String getName();

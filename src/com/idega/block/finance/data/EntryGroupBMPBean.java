@@ -1,6 +1,10 @@
 package com.idega.block.finance.data;
 
 import java.sql.*;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.*;
 
 /**
@@ -90,5 +94,11 @@ public class EntryGroupBMPBean extends CategoryEntityBMPBean implements com.ideg
   public void setGroupDate(java.sql.Date date){
     setColumn(getColumnNameGroupDate(),date);
   }
+  
+  public Collection ejbFindAll()throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect());
+  }
+  
+ 
 
 }

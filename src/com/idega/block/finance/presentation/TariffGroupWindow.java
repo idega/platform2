@@ -1,10 +1,19 @@
 package com.idega.block.finance.presentation;
 
 
-import com.idega.block.finance.business.FinanceBusiness;
-import com.idega.block.finance.business.FinanceFinder;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.block.finance.business.FinanceService;
 import com.idega.block.finance.data.TariffGroup;
+import com.idega.business.IBOLookup;
 import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -17,9 +26,6 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Title:
@@ -43,6 +49,7 @@ private static final String prefix ="tgrp_";
 public static final String prmCategory = prefix+"cat";
 public static final String prmGroup = prefix+"group";
 private static final String actSave = prefix+"save";
+private FinanceService finServ = null;
 
 private IWBundle iwb;
 private IWBundle core;
@@ -57,30 +64,44 @@ private IWResourceBundle iwrb;
 
   private void control(IWContext iwc)throws Exception{
     debugParameters(iwc);
-    int iCategoryId = Finance.parseCategoryId(iwc);
-    if(iCategoryId > 0){
-      int groupId = -1;
+    Integer iCategoryId = new Integer(Finance.parseCategoryId(iwc));
+    finServ = getFinanceService(iwc);
+    if(iCategoryId.intValue() > 0){
+      Integer groupId = null;
       if(iwc.isParameterSet(prmGroup))
-        groupId = Integer.parseInt(iwc.getParameter(prmGroup));
+        groupId = Integer.valueOf(iwc.getParameter(prmGroup));
       if(iwc.isParameterSet(actSave) || iwc.isParameterSet(actSave+".x")){
         groupId = processCategoryForm(iwc,iCategoryId,groupId);
       }
-      addCategoryFields(FinanceFinder.getInstance().getTariffGroup(groupId),iCategoryId);
+      addCategoryFields(finServ.getTariffGroupHome().findByPrimaryKey(groupId),iCategoryId);
     }
     else
       add("no category ");
   }
 
 
-  private int processCategoryForm(IWContext iwc,int iCategoryId,int iGroupId){
+  private Integer processCategoryForm(IWContext iwc,Integer categoryID,Integer groupId){
     String sName = iwc.getParameter("cat_name");
     String sInfo = iwc.getParameter("cat_info");
     boolean UseIndex = iwc.isParameterSet("use_index");
-    int handlerid = Integer.parseInt(iwc.getParameter("fhandler"));
-    return FinanceBusiness.saveTariffGroup(iGroupId,sName,sInfo,handlerid,UseIndex,iCategoryId);
+    Integer handlerId = Integer.valueOf(iwc.getParameter("fhandler"));
+    TariffGroup group = null;
+	try {
+		group = finServ.createOrUpdateTariffGroup(groupId,sName,sInfo,handlerId,UseIndex,categoryID);
+		return (Integer)group.getPrimaryKey();
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (CreateException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+	return null;
+	
+    //return FinanceBusiness.saveTariffGroup(groupId.intValue(),sName,sInfo,handlerid,UseIndex,iCategoryId);
   }
 
-  private void addCategoryFields(TariffGroup group,int iCategoryId){
+  private void addCategoryFields(TariffGroup group,Integer iCategoryId){
 
     String sGroup= iwrb.getLocalizedString("tariffgroup","Tariffgroup");
     String sName = iwrb.getLocalizedString("name","Name");
@@ -92,12 +113,24 @@ private IWResourceBundle iwrb;
     Link newLink = new Link(core.getImage("/shared/create.gif"));
     newLink.addParameter(prmCategory,-1);
 
-    List L = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
+    Collection L= null;
+	Collection L2 = null;
+	try {
+		L = finServ.getTariffGroupHome().findByCategory(iCategoryId);
+		L2 = finServ.getFinanceHandlerInfoHome().findAll();
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+    	//FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
     DropdownMenu groups = new DropdownMenu(L,prmGroup);
     groups.addMenuElementFirst("-1",sGroup);
     groups.setToSubmit();
 
-    List L2 = FinanceFinder.getInstance().listOfFinanceHandlers();
+    
+   
+    	// FinanceFinder.getInstance().listOfFinanceHandlers();
     DropdownMenu handlers = new DropdownMenu(L2,"fhandler");
     handlers.addMenuElementFirst("-1",sHandlers);
 
@@ -124,14 +157,14 @@ private IWResourceBundle iwrb;
     setStyle(handlers);
     addLeft(sIndex,useIndexes,true);
     addLeft(sDesc,handlers,true);
-    addLeft(Finance.getCategoryParameter(iCategoryId));
+    addLeft(Finance.getCategoryParameter(iCategoryId.intValue()));
     if(hasCategory){
-      int id = group.getID();
+      Integer id = (Integer)group.getPrimaryKey();
       if(group.getName()!=null)
         tiName.setContent(group.getName());
       if(group.getInfo()!=null)
         taDesc.setContent(group.getInfo());
-      groups.setSelectedElement(String.valueOf(id));
+      groups.setSelectedElement(id.toString());
       useIndexes.setChecked(group.getUseIndex());
       handlers.setSelectedElement(String.valueOf(group.getHandlerId()));
     }
@@ -156,6 +189,10 @@ private IWResourceBundle iwrb;
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("tariff_group_editor","Tariffgroup Editor"));
     control(iwc);
+  }
+  
+  public FinanceService getFinanceService(IWApplicationContext iwac)throws RemoteException{
+  	return (FinanceService)IBOLookup.getServiceInstance(iwac,FinanceService.class);
   }
 
   public String getBundleIdentifier(){

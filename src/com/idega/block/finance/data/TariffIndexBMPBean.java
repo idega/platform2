@@ -1,6 +1,9 @@
 package com.idega.block.finance.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  * Title:   idegaclasses
@@ -96,6 +99,24 @@ public class TariffIndexBMPBean extends com.idega.data.CategoryEntityBMPBean imp
   }
   public void setDate(java.sql.Timestamp use_date){
     setColumn(getColumnNameDate(),use_date);
+  }
+  
+  public Object ejbFindLastByType(String type)throws FinderException{
+  	return super.idoFindOnePKByQuery(super.idoQueryGetSelect().appendWhereEqualsQuoted(getColumnNameType(),type).appendOrderByDescending(getIDColumnName()));
+  }
+  
+  public Collection ejbFindLastTypeGrouped()throws FinderException{
+  		Collection coll = new java.util.ArrayList(indexType.length());
+		for (int i = 0; i < indexType.length(); i++) {
+			try {
+				coll.add(ejbFindLastByType(String.valueOf(indexType.charAt(i))));
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		}
+		if(!coll.isEmpty())
+			return coll;
+		throw new FinderException();
   }
 
 }

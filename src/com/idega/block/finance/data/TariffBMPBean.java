@@ -2,6 +2,9 @@ package com.idega.block.finance.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  * Title:
@@ -166,6 +169,14 @@ public class TariffBMPBean extends com.idega.data.GenericEntity implements com.i
 
   public java.util.Collection ejbFindAllByColumn(String column,int value)throws javax.ejb.FinderException{
     return super.idoFindPKsBySQL("select * from "+getEntityName()+" where "+column+" = "+value);
+  }
+  
+  public Collection ejbFindByTariffGroup(Integer groupId)throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getColumnTariffGroup(),groupId));
+  }
+  
+  public Collection ejbFindByAttribute(String attribute) throws FinderException{
+  		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getColumnAttribute(),attribute));
   }
 
 }

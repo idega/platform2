@@ -1,8 +1,12 @@
 package com.idega.block.finance.presentation;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.finance.business.AssessmentBusiness;
-import com.idega.block.finance.business.Finder;
 import com.idega.block.finance.data.AccountEntry;
 import com.idega.block.finance.data.EntryGroup;
 import com.idega.presentation.IWContext;
@@ -137,9 +141,17 @@ public class EntryGroups extends Finance {
 	private PresentationObject getTableOfGroups(IWContext iwc) throws java.rmi.RemoteException {
 		Table T = new Table();
 		int row = 2;
-		List L = Finder.listOfEntryGroups();
-		if (L != null) {
-			int len = L.size();
+		//List L = Finder.listOfEntryGroups();
+		Collection groups = null;
+		try {
+			groups = getFinanceService().getEntryGroupHome().findAll();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		if (groups != null) {
+			
 			T.add(Edit.formatText(iwrb.getLocalizedString("group_id", "Group id")), 1, 1);
 			T.add(Edit.formatText(iwrb.getLocalizedString("group_date", "Group date")), 2, 1);
 			T.add(Edit.formatText(iwrb.getLocalizedString("entry_from", "Entries from")), 3, 1);
@@ -150,10 +162,12 @@ public class EntryGroups extends Finance {
 			int col = 1;
 			row = 2;
 			EntryGroup EG;
-			for (int i = 0; i < len; i++) {
+			for (Iterator iter = groups.iterator(); iter.hasNext();) {
+				EG = (EntryGroup) iter.next();
+		
 				col = 1;
-				EG = (EntryGroup) L.get(i);
-				T.add(getGroupLink(EG.getName(), EG.getID()), col++, row);
+				
+				T.add(getGroupLink(EG.getName(), (Integer)EG.getPrimaryKey()), col++, row);
 				T.add(Edit.formatText(new IWTimestamp(EG.getGroupDate()).getLocaleDate(iwc)), col++, row);
 				T.add(Edit.formatText(EG.getEntryIdFrom()), col++, row);
 				T.add(Edit.formatText(EG.getEntryIdTo()), col++, row);
@@ -191,9 +205,22 @@ public class EntryGroups extends Finance {
 		Table T = new Table();
 		String id = iwc.getParameter("entry_group_id");
 		if (id != null) {
-			List L = Finder.listOfEntriesInGroup(Integer.parseInt(id));
-			if (L != null) {
-				int len = L.size();
+			//List L = Finder.listOfEntriesInGroup(Integer.parseInt(id));
+			Collection entries = null;
+			try {
+				entries = getFinanceService().getAccountEntryHome().findByEntryGroup(Integer.valueOf(id));
+			} 
+			catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
+			if (entries != null) {
+			
 				T.add(Edit.titleText(iwrb.getLocalizedString("entry_name", "Entry name")), 1, 1);
 				T.add(Edit.titleText(iwrb.getLocalizedString("last_updated", "Last updated")), 2, 1);
 				T.add(Edit.titleText(iwrb.getLocalizedString("amount", "Amount")), 3, 1);
@@ -201,9 +228,9 @@ public class EntryGroups extends Finance {
 				int row = 2;
 				AccountEntry A;
 				java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
-				for (int i = 0; i < len; i++) {
+				for (Iterator iter = entries.iterator(); iter.hasNext();) {
+					A = (AccountEntry) iter.next();
 					col = 1;
-					A = (AccountEntry) L.get(i);
 					T.add(Edit.formatText(A.getName()), col++, row);
 					T.add(Edit.formatText(new IWTimestamp(A.getLastUpdated()).getLocaleDate(iwc)), col++, row);
 					T.add(Edit.formatText(nf.format(A.getTotal())), col++, row);
@@ -267,10 +294,10 @@ public class EntryGroups extends Finance {
 	private PresentationObject makeEntryGroups() {
 		return new Text();
 	}
-	private Link getGroupLink(String name, int id) {
+	private Link getGroupLink(String name, Integer id) {
 		Link L = new Link(name);
 		L.addParameter(strAction, ACT4);
-		L.addParameter("entry_group_id", id);
+		L.addParameter("entry_group_id", id.toString());
 		L.setFontSize(Edit.textFontSize);
 		return L;
 	}

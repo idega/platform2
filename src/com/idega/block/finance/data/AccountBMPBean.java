@@ -1,8 +1,14 @@
 package com.idega.block.finance.data;
 
-import java.sql.*;
-import com.idega.data.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.CategoryEntityBMPBean;
+import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
 
 /**
  * Title:
@@ -13,7 +19,7 @@ import java.util.Collection;
  * @version 1.0
  */
 
-public class AccountBMPBean extends CategoryEntityBMPBean implements Account{
+public class AccountBMPBean extends CategoryEntityBMPBean implements Account,FinanceAccount{
 /*
 "FIN_ACCOUNT_ID"	INTEGER NOT NULL,
   "IC_USER_ID"	INTEGER,
@@ -219,32 +225,46 @@ public class AccountBMPBean extends CategoryEntityBMPBean implements Account{
 
   }
 
-  public Collection ejbFindByAssessmentRound(int roundid) throws javax.ejb.FinderException{
-    StringBuffer sql = new StringBuffer("select distinct a.* ");
-    sql.append(" from fin_account a,fin_acc_entry e,fin_assessment_round r ");
-    sql.append(" where a.fin_account_id = e.fin_account_id ");
-    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
-    sql.append(" and r.fin_assessment_round_id = ");
-    sql.append(roundid);
-    return super.idoFindPKsBySQL(sql.toString());
+  public Collection ejbFindByAssessmentRound(int roundid) throws FinderException{
+    return super.idoFindPKsBySQL(getByRoundSQL(new Integer(roundid)));
   }
 
   public Collection ejbFindBySQL(String sql)throws javax.ejb.FinderException{
     return super.idoFindPKsBySQL(sql);
   }
 
-  public int countByTypeAndCategory(String type,int iCategory)throws com.idega.data.IDOException{
-    StringBuffer sql = new StringBuffer("select count(*) from fin_account a");
-    sql.append(" where a.");
-    sql.append(com.idega.block.finance.data.AccountBMPBean.getTypeColumnName());
-    sql.append(" = '");
-    sql.append(type);
-    sql.append("' and a.");
-    sql.append(com.idega.block.finance.data.AccountBMPBean.getColumnCategoryId());
-    sql.append(" = ");
-    sql.append(iCategory);
-    return super.idoGetNumberOfRecords(sql.toString());
+  public int ejbHomeCountByTypeAndCategory(String type,Integer categoryID)throws IDOException{
+    IDOQuery query =  super.idoQueryGetSelectCount().appendWhereEqualsQuoted(getTypeColumnName(),type).appendAndEquals(getColumnCategoryId(),categoryID);
+    System.out.println(query.toString());
+  	return super.idoGetNumberOfRecords(query);
   }
+  
+  public int ejbHomeCountByAssessmentRound(Integer roundID)throws IDOException{
+    return super.idoGetNumberOfRecords(getCountByRoundSQL(roundID));
+  }
+  
+  private String getCountByRoundSQL(Integer roundID){
+  	return getByRoundEndingSQL(roundID,"select count(distinct a.fin_account_id  ) ");
+  }
+  
+  private String getByRoundSQL(Integer roundID){
+  	return getByRoundEndingSQL(roundID," select distinct a.* ");
+  }
+ 
+  private String getByRoundEndingSQL(Integer roundID,String start){
+  	StringBuffer sql = new StringBuffer(start);
+    sql.append(" from fin_account a,fin_acc_entry e ");
+    sql.append(" where a.fin_account_id = e.fin_account_id ");
+    sql.append(" and e.fin_assessment_round_id = ");
+    sql.append(roundID.toString());
+    return sql.toString();
+  }
+  
+  public Collection ejbFindByAssessmentRound(Integer roundID,int resultSize,int startindex)throws FinderException{
+  	return super.idoFindPKsBySQL(getByRoundSQL(roundID),resultSize,startindex);
+  }
+  
+  
 
 
 }

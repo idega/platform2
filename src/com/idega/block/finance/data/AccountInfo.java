@@ -1,7 +1,9 @@
 package com.idega.block.finance.data;
 
+import com.idega.data.CategoryEntity;
 
-public interface AccountInfo extends com.idega.data.IDOLegacyEntity,com.idega.block.finance.data.FinanceAccount
+
+public interface AccountInfo extends CategoryEntity,FinanceAccount
 {
  public int getAccountId();
  public java.lang.String getAccountName();

@@ -1,7 +1,15 @@
 package com.idega.block.finance.data;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:
@@ -196,5 +204,61 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   public String getFieldNameStatus(){
     return getColumnNameStatus();
   }
+  
+  public Collection ejbFindByAccountAndAssessmentRound(Integer accountID,Integer assessmentRoundID)throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountIdColumnName(),accountID).appendAndEquals(getRoundIdColumnName(),assessmentRoundID));
+  }
+  
+  public double ejbHomeGetTotalSumByAccountAndAssessmentRound(Integer accountID,Integer assessmentRoundID)throws SQLException{
+  	StringBuffer sql = new StringBuffer();
+  	sql.append("select sum(").append(getColumnTotal()).append(") from ");
+  	sql.append(getEntityTableName()).append( " where ").append(getAccountIdColumnName()).append("=").append(accountID);
+  	sql.append(" and ").append(getRoundIdColumnName()).append("=").append(assessmentRoundID);
+  	//select sum(total) from fin_acc_entry where fin_account_id = 165 and fin_assessment_round_id = 3187
+  	return (super.getDoubleTableValue(sql.toString()));
+  }
+  
+  public double ejbHomeGetTotalSumByAssessmentRound(Integer roundID)throws SQLException{
+  	StringBuffer sql = new StringBuffer();
+  	sql.append("select sum(").append(getColumnTotal()).append(") from ");
+  	sql.append(getEntityTableName()).append( " where ").append(getRoundIdColumnName()).append("=").append(roundID);  	
+  	return (super.getDoubleTableValue(sql.toString()));
+  }
+  
+  public Collection ejbFindByAssessmentRound(Integer assessmentRoundID)throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getRoundIdColumnName(),assessmentRoundID));
+  }
+  
+  public Collection ejbFindByAccountAndStatus(Integer accountID,String status, Date fromDate,Date toDate)throws FinderException{
+		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(getFieldNameAccountId(),accountID);
+		if(status!=null){
+			query.appendAndEquals(getColumnNameStatus(),status);
+		}
+		if(fromDate!=null && toDate!=null){
+			IWTimestamp from = new IWTimestamp(fromDate);
+			IWTimestamp to = new IWTimestamp(toDate);
+			to.setTime(23,59,59);
+			query.appendAnd();
+			query.appendWithinStamps(getFieldNameLastUpdated(), from.getTimestamp(),to.getTimestamp());
+		}
+		return super.idoFindPKsByQuery(query);
+}
+  
+  public int ejbHomeCountByGroup(Integer groupID)throws IDOException{
+  	return super.idoGetNumberOfRecords(super.idoQueryGetSelectCount().appendWhereEquals(getEntryGroupIdColumnName(),groupID));
+  }
+  
+  public Collection ejbFindUnGrouped(Date from,Date to)throws FinderException{
+  	IDOQuery query = super.idoQueryGetSelect();
+  	query.appendWhereIsNull(getEntryGroupIdColumnName());
+  	query.appendAnd();
+  	query.appendWithinDates(getLastUpdatedColumnName(),from,to);
+    return super.idoFindPKsByQuery(query);
+  }
+  
+  public Collection ejbFindByEntryGroup(Integer groupID)throws FinderException{
+  		return super.idoFindPKsByQuery(super.idoQueryGetSelectCount().appendWhereEquals(getEntryGroupIdColumnName(),groupID));
+  }
+
 }
 

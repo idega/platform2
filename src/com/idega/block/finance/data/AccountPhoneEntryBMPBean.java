@@ -1,7 +1,14 @@
 package com.idega.block.finance.data;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOQuery;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:
@@ -200,6 +207,33 @@ public class AccountPhoneEntryBMPBean extends com.idega.data.GenericEntity imple
    public String getFieldNameStatus(){
     return getColumnNameStatus();
   }
+   
+   public Collection ejbFindByAccountAndStatus(Integer accountID,String status, Date fromDate,Date toDate)throws FinderException{
+   		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(getColumnNameAccountId(),accountID);
+   		if(status!=null){
+   			query.appendAndEquals(getColumnNameStatus(),status);
+   		}
+   		if(fromDate!=null && toDate!=null){
+   			IWTimestamp from = new IWTimestamp(fromDate);
+   			IWTimestamp to = new IWTimestamp(toDate);
+   			to.setTime(23,59,59);
+   			query.appendAnd();
+   			query.appendWithinStamps(getColumnNamePhonedStamp(), from.getTimestamp(),to.getTimestamp());
+   		}
+   		return super.idoFindPKsByQuery(query);
+   }
+   
+   public Collection ejbFindUnbilledByAccountAndPeriod(Integer accountID,Date fromDate,Date toDate)throws FinderException{
+   		IDOQuery 	query = super.idoQueryGetSelect();
+   		query.appendWhereIsNull(getColumnNameAccountEntryId());
+   		if(accountID!=null){
+   			query.appendAndEquals(getColumnNameAccountId(),accountID);
+   		}
+   		IWTimestamp to = new IWTimestamp(toDate);
+   		to.setTime(23,59,59);
+   		query.appendAnd().appendWithinDates(getColumnNamePhonedStamp(),fromDate,to.getDate());
+   		return super.idoFindPKsByQuery(query);
+   }
 
 }
 

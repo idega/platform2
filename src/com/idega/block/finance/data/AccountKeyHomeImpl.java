@@ -7,37 +7,30 @@ public class AccountKeyHomeImpl extends com.idega.data.IDOFactory implements Acc
   return AccountKey.class;
  }
 
+
  public AccountKey create() throws javax.ejb.CreateException{
-  return (AccountKey) super.idoCreate();
+  return (AccountKey) super.createIDO();
  }
 
- public AccountKey createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
+public java.util.Collection findAll()throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((AccountKeyBMPBean)entity).ejbFindAll();
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
- public AccountKey findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (AccountKey) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByCategory(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((AccountKeyBMPBean)entity).ejbFindByCategory(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public AccountKey findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (AccountKey) super.idoFindByPrimaryKey(pk);
+  return (AccountKey) super.findByPrimaryKeyIDO(pk);
  }
 
- public AccountKey findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

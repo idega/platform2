@@ -1,6 +1,9 @@
 package com.idega.block.finance.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  * Title:
@@ -76,5 +79,9 @@ public class PaymentTypeBMPBean extends com.idega.data.CategoryEntityBMPBean imp
   }
   public void setPercentCost(float cost){
     setColumn(getColumnPercentCost(),cost);
+  }
+  
+  public Collection ejbFindAll()throws FinderException{
+  	return super.idoFindAllIDsBySQL();
   }
 }

@@ -7,37 +7,16 @@ public class FinanceCategoryHomeImpl extends com.idega.data.IDOFactory implement
   return FinanceCategory.class;
  }
 
+
  public FinanceCategory create() throws javax.ejb.CreateException{
-  return (FinanceCategory) super.idoCreate();
+  return (FinanceCategory) super.createIDO();
  }
 
- public FinanceCategory createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
- public FinanceCategory findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (FinanceCategory) super.idoFindByPrimaryKey(id);
- }
 
  public FinanceCategory findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (FinanceCategory) super.idoFindByPrimaryKey(pk);
+  return (FinanceCategory) super.findByPrimaryKeyIDO(pk);
  }
 
- public FinanceCategory findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

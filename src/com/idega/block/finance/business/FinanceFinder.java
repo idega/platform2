@@ -42,7 +42,7 @@ import com.idega.util.IWTimestamp;
  */
 
 public class FinanceFinder  {
-
+/*
   private static FinanceFinder instance;
 
   public static FinanceFinder getInstance(){
@@ -355,7 +355,7 @@ public class FinanceFinder  {
     }
     catch (Exception ex) {
       ex.printStackTrace();
-    }*/
+    }
     return 0;
   }
 
@@ -849,6 +849,7 @@ public class FinanceFinder  {
   public AccountHome getAccountHome()throws java.rmi.RemoteException{
     return (AccountHome) IDOLookup.getHome(Account.class);
   }
+  */
 /*
   public List listOfPhoneEntriesInAssessment(){
     StringBuffer sql = new StringBuffer("select * from ");

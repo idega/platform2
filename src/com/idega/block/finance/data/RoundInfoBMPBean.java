@@ -1,7 +1,12 @@
 package com.idega.block.finance.data;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOQuery;
 
 /**
  * Title:   idegaclasses
@@ -73,7 +78,12 @@ ass.status
     addAttribute(getColumnTotals(),"Totals",true,true,java.lang.Float.class);
     addAttribute(getColumnAccounts(),"Accounts",true,true,java.lang.Integer.class);
     addAttribute(getColumnStatus(),"Status",true,true,java.lang.String.class);
+    setAsPrimaryKey(getIDColumnName(),true);
 
+  }
+  
+  public String getIDColumnName(){
+  	return getColumnRoundId();
   }
   public String getEntityName() {
     return(getEntityTableName());
@@ -106,6 +116,17 @@ ass.status
 
   public String getStatus(){
     return getStringColumnValue(getColumnStatus());
+  }
+  
+  public java.util.Collection ejbFindByCategoryAndGroup(Integer categoryID,Integer groupID,Date from, Date to)throws FinderException{
+  		IDOQuery query = idoQueryGetSelect();
+  		query.appendWhereEquals(getColumnCategoryId(),categoryID);
+  		query.appendAndEquals(getColumnGroupId(),groupID);
+  		query.appendAnd();
+  		query.appendWithinDates(getColumnRoundStamp(),from,to);
+  		query.appendOrderBy(getColumnRoundStamp());
+  		System.out.println(query.toString());
+  		return super.idoFindPKsByQuery(query);
   }
 
   public void insert()throws SQLException{

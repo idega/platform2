@@ -1,6 +1,9 @@
 package com.idega.block.finance.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 /**
  * Title:
@@ -42,5 +45,13 @@ public class TariffKeyBMPBean extends com.idega.data.CategoryEntityBMPBean imple
   }
   public void setInfo(String info){
     setColumn(getColumnInfo(), info);
+  }
+  
+  public Collection ejbFindByCategory(Integer categoryID)throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getColumnCategoryId(),categoryID));
+  }
+  
+  public Collection ejbFindAll()throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect());
   }
 }

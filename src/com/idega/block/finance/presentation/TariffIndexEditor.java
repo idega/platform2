@@ -1,13 +1,17 @@
 package com.idega.block.finance.presentation;
 
 
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
-import com.idega.block.finance.business.FinanceBusiness;
-import com.idega.block.finance.business.FinanceFinder;
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
 import com.idega.block.finance.data.TariffIndex;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -112,7 +116,7 @@ public class TariffIndexEditor extends Finance {
 
   protected PresentationObject getMainTable(IWContext iwc,int iCategoryId){
     DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwc.getCurrentLocale());
-    List L = getIndices(iCategoryId);
+    Collection L = getIndices(iCategoryId);
     int count = 0;
     if(L!= null)
       count = L.size();
@@ -131,14 +135,17 @@ public class TariffIndexEditor extends Finance {
     keyTable.add(Edit.formatText(iwrb.getLocalizedString("type","Type")),6,1);
     if(isAdmin){
       if(count > 0){
-        for (int i = 0;i < count;i++){
-          TariffIndex ti = (TariffIndex) L.get(i);
-          keyTable.add(Edit.formatText( String.valueOf(i+1)),1,i+2);
-          keyTable.add(Edit.formatText(ti.getName()),2,i+2);
-          keyTable.add(Edit.formatText(ti.getInfo()),3,i+2);
-          keyTable.add(Edit.formatText(Float.toString(ti.getIndex())),4,i+2);
-          keyTable.add(Edit.formatText(dfLong.format(ti.getDate())),5,i+2);
-          keyTable.add(Edit.formatText(ti.getType()),6,i+2);
+      	int row = 2;
+      	int rowcount = 1;
+        for (Iterator iter = L.iterator(); iter.hasNext();) {
+        	 TariffIndex ti = (TariffIndex) iter.next();
+          keyTable.add(Edit.formatText( String.valueOf(rowcount++)),1,row);
+          keyTable.add(Edit.formatText(ti.getName()),2,row);
+          keyTable.add(Edit.formatText(ti.getInfo()),3,row);
+          keyTable.add(Edit.formatText(Float.toString(ti.getIndex())),4,row);
+          keyTable.add(Edit.formatText(dfLong.format(ti.getDate())),5,row);
+          keyTable.add(Edit.formatText(ti.getType()),6,row);
+          row++;
         }
       }
     }
@@ -148,7 +155,7 @@ public class TariffIndexEditor extends Finance {
   protected PresentationObject getChangeTable(IWContext iwc,int iCategoryId) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
-    List L= getIndices(iCategoryId);
+    Collection L= getIndices(iCategoryId);
     String t = com.idega.block.finance.data.TariffIndexBMPBean.indexType;
     int count = 0;
     if(L!= null)
@@ -167,7 +174,7 @@ public class TariffIndexEditor extends Finance {
     inputTable.add(Edit.formatText("Stuðull"),4,1);
     inputTable.add(Edit.formatText("Týpa"),5,1);
     inputTable.add(Edit.formatText("Eyða"),6,1);
-
+    Iterator iter = L.iterator();
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
       TextInput nameInput, infoInput,indexInput;
@@ -175,14 +182,14 @@ public class TariffIndexEditor extends Finance {
       CheckBox delCheck;
       DropdownMenu typeDrp;
       int pos;
-      if(i <= count ){
+      if(i <= count && iter.hasNext() ){
         pos = i-1;
-        TariffIndex ti = (TariffIndex) L.get(pos);
+        TariffIndex ti = (TariffIndex) iter.next();
         nameInput  = new TextInput("ti_nameinput"+i,(ti.getName()));
         infoInput = new TextInput("ti_infoinput"+i,(ti.getInfo()));
         indexInput = new TextInput("ti_indexinput"+i,(String.valueOf(ti.getIndex())));
         typeDrp = typeDrop("ti_typedrp"+i,ti.getType());
-        idInput = new HiddenInput("ti_idinput"+i,String.valueOf(ti.getID()));
+        idInput = new HiddenInput("ti_idinput"+i,ti.getPrimaryKey().toString());
         delCheck = new CheckBox("ti_delcheck"+i,"true");
         Edit.setStyle(delCheck);
         inputTable.add(delCheck,6,i+1);
@@ -223,7 +230,7 @@ public class TariffIndexEditor extends Finance {
   protected PresentationObject doUpdate(IWContext iwc,int iCategoryId) throws SQLException{
     int count = Integer.parseInt(iwc.getParameter("ti_count"));
     String sName,sInfo,sDel,sIndex,sType;
-    int ID;
+    Integer ID;
     float findex = 0;
     TariffIndex ti = null;
     for (int i = 1; i < count+1 ;i++){
@@ -232,7 +239,7 @@ public class TariffIndexEditor extends Finance {
       sIndex = iwc.getParameter("ti_indexinput"+i).trim();
       sDel = iwc.getParameter("ti_delcheck"+i);
       sType = iwc.getParameter("ti_typedrp"+i).trim();
-      ID = Integer.parseInt(iwc.getParameter("ti_idinput"+i));
+      ID = Integer.valueOf(iwc.getParameter("ti_idinput"+i));
       java.sql.Timestamp stamp = IWTimestamp.getTimestampRightNow();
       if(!"".equals(sIndex)){
         sIndex = sIndex.replace(',','.');
@@ -240,20 +247,38 @@ public class TariffIndexEditor extends Finance {
 
       }
 
-      if(ID != -1 ){
-        ti = FinanceFinder.getInstance().getTariffIndex(ID) ;
-        float oldvalue = ti.getNewValue();
-        if( sDel != null && sDel.equalsIgnoreCase("true")){
-            FinanceBusiness.deleteTariffIndex(ID);
-        }
-        else if(!sName.equalsIgnoreCase(ti.getName()) || !sInfo.equalsIgnoreCase(ti.getInfo()) ||
-                !sType.equalsIgnoreCase(ti.getType()) || !(findex == ti.getIndex())  ){
-          FinanceBusiness.saveTariffIndex(-1,sName,sInfo,sType,findex,oldvalue,stamp,iCategoryId);
-        }
-      }
-      else if(!"".equalsIgnoreCase(sName) && !"".equals(sIndex)){
-        FinanceBusiness.saveTariffIndex(-1,sName,sInfo,sType,findex,findex,stamp,iCategoryId);
-      }
+      try {
+		if(ID != null && ID.intValue()>0 ){
+		   // ti = FinanceFinder.getInstance().getTariffIndex(ID) ;
+		  	ti = getFinanceService().getTariffIndexHome().findByPrimaryKey(ID);
+		    float oldvalue = ti.getNewValue();
+		    if( sDel != null && sDel.equalsIgnoreCase("true")){
+		        //FinanceBusiness.deleteTariffIndex(ID);
+		    	getFinanceService().removeTariffIndex(ID);
+		    }
+		    else if(!sName.equalsIgnoreCase(ti.getName()) || !sInfo.equalsIgnoreCase(ti.getInfo()) ||
+		            !sType.equalsIgnoreCase(ti.getType()) || !(findex == ti.getIndex())  ){
+		      //FinanceBusiness.saveTariffIndex(-1,sName,sInfo,sType,findex,oldvalue,stamp,iCategoryId);
+		    	getFinanceService().createOrUpdateTariffIndex(null,sName,sInfo,sType,findex,oldvalue,stamp,getFinanceCategoryId());
+		    }
+		  }
+		  else if(!"".equalsIgnoreCase(sName) && !"".equals(sIndex)){
+		  	getFinanceService().createOrUpdateTariffIndex(null,sName,sInfo,sType,findex,findex,stamp,getFinanceCategoryId());
+		  	//FinanceBusiness.saveTariffIndex(-1,sName,sInfo,sType,findex,findex,stamp,iCategoryId);
+		  }
+	} 
+     catch (RemoteException e) {
+		e.printStackTrace();
+     } 
+     catch (FinderException e) {
+		e.printStackTrace();
+	}
+     catch (RemoveException e) {
+		e.printStackTrace();
+	} 
+     catch (CreateException e) {
+		e.printStackTrace();
+	}
     }// for loop
 
    return getMainTable(iwc,iCategoryId);
@@ -271,14 +296,24 @@ public class TariffIndexEditor extends Finance {
     return drp;
   }
 
-  private List getIndices(int iCategoryId){
-    Vector V = new Vector();
-    for (int i = 0; i < com.idega.block.finance.data.TariffIndexBMPBean.indexType.length(); i++) {
-      TariffIndex ti= FinanceFinder.getInstance().getTariffIndex(String.valueOf(com.idega.block.finance.data.TariffIndexBMPBean.indexType.charAt(i)),iCategoryId);
-      if(ti!= null)
-        V.add(ti);
-    }
-    return V;
+  private Collection getIndices(int iCategoryId){
+  	try {
+		/*
+		Vector V = new Vector();
+		for (int i = 0; i < com.idega.block.finance.data.TariffIndexBMPBean.indexType.length(); i++) {
+		  TariffIndex ti= FinanceFinder.getInstance().getTariffIndex(String.valueOf(com.idega.block.finance.data.TariffIndexBMPBean.indexType.charAt(i)),iCategoryId);
+		  if(ti!= null)
+		    V.add(ti);
+		}
+		return V;
+		*/
+		return getFinanceService().getTariffIndexHome().findLastTypeGrouped();
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+	return new Vector();
   }
 
 

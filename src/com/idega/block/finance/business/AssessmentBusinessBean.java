@@ -1,13 +1,16 @@
 package com.idega.block.finance.business;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 
 import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountEntryBMPBean;
 import com.idega.block.finance.data.AccountEntryHome;
 import com.idega.block.finance.data.AssessmentRound;
 import com.idega.block.finance.data.AssessmentRoundHome;
@@ -16,6 +19,7 @@ import com.idega.block.finance.data.EntryGroupHome;
 import com.idega.block.finance.data.Tariff;
 import com.idega.block.finance.data.TariffHome;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.SimpleQuerier;
@@ -36,6 +40,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 	public static final char cCategory = 'c';
 	public static final char cType = 't';
 	public static final char cApartment = 'p';
+	
 	public void groupEntriesWithSQL(IWTimestamp from, IWTimestamp to) throws Exception {
 		javax.transaction.UserTransaction t = this.getSessionContext().getUserTransaction();
 		//TransactionManager t = IdegaTransactionManager.getInstance();
@@ -43,29 +48,29 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 			t.begin();
 			///////////////////////////
 			AccountEntryHome ehome = (AccountEntryHome) IDOLookup.getHome(AccountEntry.class);
-			AccountEntry ae = ehome.create();
+			
 			EntryGroup EG = null;
 			int gid = -1;
 			try {
 				EG = ((EntryGroupHome) IDOLookup.getHome(EntryGroup.class)).create();
 				EG.setGroupDate(IWTimestamp.RightNow().getSQLDate());
 				EG.store();
-				gid = EG.getID();
+				gid = ((Integer)EG.getPrimaryKey()).intValue();
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
 				EG = null;
 			}
 			if (EG != null) {
-				String dateColummn = com.idega.block.finance.data.AccountEntryBMPBean.getPaymentDateColumnName();
+				String dateColummn = AccountEntryBMPBean.getPaymentDateColumnName();
 				StringBuffer sql = new StringBuffer("update ");
-				sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName());
+				sql.append(AccountEntryBMPBean.getEntityTableName());
 				sql.append(" set ");
-				sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntryGroupIdColumnName());
+				sql.append(AccountEntryBMPBean.getEntryGroupIdColumnName());
 				sql.append(" = ");
 				sql.append(gid);
 				sql.append(" where ");
-				sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntryGroupIdColumnName());
+				sql.append(AccountEntryBMPBean.getEntryGroupIdColumnName());
 				sql.append(" is null ");
 				if (from != null) {
 					sql.append(" and ").append(dateColummn).append(" >= '").append(from.getSQLDate());
@@ -79,18 +84,18 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 				}
 				String where =
 					" where "
-						+ com.idega.block.finance.data.AccountEntryBMPBean.getEntryGroupIdColumnName()
+						+ AccountEntryBMPBean.getEntryGroupIdColumnName()
 						+ " = "
 						+ gid;
 				String sMinSql =
 					"select min("
-						+ ae.getIDColumnName()
+						+ AccountEntryBMPBean.getEntityTableName()+"_ID"
 						+ ") from "
-						+ com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName()
+						+ AccountEntryBMPBean.getEntityTableName()
 						+ where;
 				String sMaxSql =
 					"select max("
-						+ ae.getIDColumnName()
+						+ AccountEntryBMPBean.getEntityTableName()+"_ID"
 						+ ") from "
 						+ com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName()
 						+ where;
@@ -124,26 +129,21 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		}
 	}
 	public void groupEntries(IWTimestamp from, IWTimestamp to) throws Exception {
-		List L = Finder.listOfFinanceEntriesWithoutGroup(from, to);
-		if (L != null) {
+		Collection entries = ((AccountEntryHome)getIDOHome(AccountEntry.class)).findUnGrouped(from.getDate(),to.getDate());
+		//List L = Finder.listOfFinanceEntriesWithoutGroup(from, to);
+		if (entries != null) {
 			int min = 0, max = 0;
 			EntryGroup EG = null;
 			try {
-				EG =
-					((com.idega.block.finance.data.EntryGroupHome) com
-						.idega
-						.data
-						.IDOLookup
-						.getHomeLegacy(EntryGroup.class))
-						.createLegacy();
+				EG =((EntryGroupHome) getIDOHome(EntryGroup.class)).create();
 				EG.setGroupDate(IWTimestamp.RightNow().getSQLDate());
-				EG.insert();
+				EG.store();
 				//System.err.println(" gid "+gid);
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
 				try {
-					EG.delete();
+					EG.remove();
 				}
 				catch (Exception ex2) {
 					ex2.printStackTrace();
@@ -157,26 +157,26 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 					//t.begin();
 					transaction.begin();
 					////////////////////////
-					Iterator It = L.iterator();
+					Iterator It = entries.iterator();
 					AccountEntry AE;
 					int aeid = 0;
 					AE = (AccountEntry) It.next();
-					aeid = AE.getID();
+					aeid = ((Integer)AE.getPrimaryKey()).intValue();
 					min = aeid;
 					max = aeid;
-					AE.setEntryGroupId(EG.getID());
-					AE.update();
+					AE.setEntryGroupId(((Integer)EG.getPrimaryKey()).intValue());
+					AE.store();
 					while (It.hasNext()) {
 						AE = (AccountEntry) It.next();
-						aeid = AE.getID();
+						aeid =((Integer)AE.getPrimaryKey()).intValue();
 						min = aeid < min ? aeid : min;
 						max = aeid > min ? aeid : max;
-						AE.setEntryGroupId(EG.getID());
-						AE.update();
+						AE.setEntryGroupId(((Integer)EG.getPrimaryKey()).intValue());
+						AE.store();
 					}
 					EG.setEntryIdFrom(min);
 					EG.setEntryIdTo(max);
-					EG.update();
+					EG.store();
 					//////////////////////////////
 					transaction.commit();
 				}
@@ -188,7 +188,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 						ex.printStackTrace();
 					}
 					try {
-						EG.delete();
+						EG.remove();
 					}
 					catch (Exception ex) {
 					}
@@ -200,19 +200,14 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 	public int getGroupEntryCount(EntryGroup entryGroup) {
 		int count = 0;
 		if (entryGroup != null) {
-			StringBuffer sql = new StringBuffer("select count(*) from ");
-			sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName());
-			sql.append(" where ");
-			sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntryGroupIdColumnName());
-			sql.append(" = ");
-			sql.append(entryGroup.getID());
-			//System.err.println(sql.toString());
 			try {
-				count = entryGroup.getNumberOfRecords(sql.toString());
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-				count = 0;
+				count = ((AccountEntryHome) getIDOHome(AccountEntry.class)).countByGroup((Integer)entryGroup.getPrimaryKey());
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (EJBException e) {
+				e.printStackTrace();
+			} catch (IDOException e) {
+				e.printStackTrace();
 			}
 		}
 		return count;
@@ -404,11 +399,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 		javax.transaction.UserTransaction t = this.getSessionContext().getUserTransaction();
 		try {
 			t.begin();
-			AssessmentRound AR =
-				(
-					(com.idega.block.finance.data.AssessmentRoundHome) com.idega.data.IDOLookup.getHomeLegacy(
-						AssessmentRound.class)).findByPrimaryKeyLegacy(
-					iAssessmentRoundId);
+			AssessmentRound AR = ((AssessmentRoundHome) getIDOHome(AssessmentRound.class)).findByPrimaryKey(new Integer(iAssessmentRoundId));
 			com.idega.data.SimpleQuerier.execute(sql.toString());
 			AR.delete();
 			t.commit();

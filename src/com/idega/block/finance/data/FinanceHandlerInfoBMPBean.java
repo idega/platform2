@@ -3,6 +3,9 @@ package com.idega.block.finance.data;
 
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
 
 
 
@@ -134,6 +137,10 @@ public class FinanceHandlerInfoBMPBean extends com.idega.data.GenericEntity impl
 
     setColumn(getColumnInfo(), ClassName);
 
+  }
+  
+  public Collection ejbFindAll()throws FinderException{
+  	return super.idoFindAllIDsBySQL();
   }
 
 }

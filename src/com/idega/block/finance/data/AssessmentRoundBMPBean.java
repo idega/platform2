@@ -2,9 +2,15 @@
 
 package com.idega.block.finance.data;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
 
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -147,5 +153,22 @@ public class AssessmentRoundBMPBean extends com.idega.data.CategoryEntityBMPBean
     setStatusReceived();
     setRoundStamp(IWTimestamp.getTimestampRightNow());
   }
+  
+  public Collection ejbFindByCategoryAndTariffGroup(Integer categoryID,Integer groupID,Date fromDate,Date toDate,int resultSetSize,int startIndex )throws FinderException{
+  		IDOQuery query = super.idoQueryGetSelect().appendWhereEquals(getColumnCategoryId(),categoryID);
+  		query.appendAndEquals(getColumnTariffGroupId(),groupID);
+  		query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
+  		
+  		return super.idoFindPKsByQuery(query,resultSetSize,startIndex);
+  }
+  
+  public int ejbHomeGetCountByCategoryAndTariffGroup(Integer categoryID,Integer groupID,Date fromDate,Date toDate)throws IDOException{
+  		IDOQuery query = super.idoQueryGetSelectCount().appendWhereEquals(getColumnCategoryId(),categoryID);
+		query.appendAndEquals(getColumnTariffGroupId(),groupID);
+		query.appendAnd().appendWithinDates(getRoundStampColumnName(),fromDate,toDate);
+		return super.idoGetNumberOfRecords(query);
+  }
+  
+
 
 }

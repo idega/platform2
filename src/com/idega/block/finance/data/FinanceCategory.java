@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface FinanceCategory extends com.idega.data.IDOLegacyEntity
+public interface FinanceCategory extends com.idega.data.IDOEntity
 {
  public java.lang.String getCategoryName();
  public java.sql.Date getDate();

@@ -7,37 +7,23 @@ public class RoundInfoHomeImpl extends com.idega.data.IDOFactory implements Roun
   return RoundInfo.class;
  }
 
+
  public RoundInfo create() throws javax.ejb.CreateException{
-  return (RoundInfo) super.idoCreate();
+  return (RoundInfo) super.createIDO();
  }
 
- public RoundInfo createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
 
- }
-
- public RoundInfo findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (RoundInfo) super.idoFindByPrimaryKey(id);
- }
+public java.util.Collection findByCategoryAndGroup(java.lang.Integer p0,java.lang.Integer p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((RoundInfoBMPBean)entity).ejbFindByCategoryAndGroup(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
  public RoundInfo findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (RoundInfo) super.idoFindByPrimaryKey(pk);
+  return (RoundInfo) super.findByPrimaryKeyIDO(pk);
  }
 
- public RoundInfo findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
-	}
-
- }
 
 
 }

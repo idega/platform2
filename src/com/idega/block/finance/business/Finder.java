@@ -37,6 +37,7 @@ public class Finder  {
     return count;
   }
 */
+	/*
   public static List listOfAssessments(){
     try {
       return EntityFinder.findAllDescendingOrdered(((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy(),com.idega.block.finance.data.AssessmentRoundBMPBean.getRoundStampColumnName());
@@ -58,6 +59,7 @@ public class Finder  {
     return count;
   }
 */
+	/*
   public static List listOfEntryGroups(){
     try {
       return EntityFinder.findAllDescendingOrdered(((com.idega.block.finance.data.EntryGroupHome)com.idega.data.IDOLookup.getHomeLegacy(EntryGroup.class)).createLegacy(),com.idega.block.finance.data.EntryGroupBMPBean.getColumnNameGroupDate());
@@ -173,6 +175,6 @@ public class Finder  {
   }
 
 
-
+*/
 
 }// class AccountKeyEditor

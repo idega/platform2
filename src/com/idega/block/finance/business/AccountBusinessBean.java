@@ -1,10 +1,22 @@
 package com.idega.block.finance.business;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.finance.data.Account;
+import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.AccountHome;
+import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.data.TariffKey;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
 import com.idega.util.IWTimestamp;
-import java.util.*;
-import com.idega.data.*;
-import com.idega.block.finance.data.*;
 
 /**
  * <p>Title: </p>
@@ -63,132 +75,190 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
     return null;
   }
 
-  public  List listOfAccountEntries( int iAssessmentRoundId){
+  public Collection listOfAccountEntries( Integer assessmentRoundId){
     try {
-      return EntityFinder.findAllByColumnOrdered(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,com.idega.block.finance.data.AccountEntryBMPBean.getAccountIdColumnName());
+    	return getFinanceService().getAccountEntryHome().findByAssessmentRound(assessmentRoundId);
+      //return EntityFinder.findAllByColumnOrdered(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,com.idega.block.finance.data.AccountEntryBMPBean.getAccountIdColumnName());
     }
-    catch (java.sql.SQLException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
       return null;
     }
   }
 
-  public  List listOfAccountEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
-    return listOfAccEntries(iAccountId,((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(), from,to,null);
+  public  Collection listOfAccountEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
+    return listOfAccEntries(iAccountId, from,to,null);
   }
-  public  List listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
+  public  Collection listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
     return listOfPhoneEntries(iAccountId, from,to,null);
   }
-  public  List listOfPhoneEntries(int iAccountId,IWTimestamp to,String status){
+  public  Collection listOfPhoneEntries(int iAccountId,IWTimestamp to,String status){
     return listOfPhoneEntries(iAccountId,null,to,status);
   }
-  private  List listOfAccEntries(int iAccountId,Entry entry,IWTimestamp from,IWTimestamp to,String status){
-    StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(entry.getTableName());
-    sql.append(" where ");
-    sql.append(entry.getFieldNameAccountId());
-    sql.append(" = ");
-    sql.append(iAccountId);
-    if(from !=null){
-      sql.append(" and ");
-      sql.append(entry.getFieldNameLastUpdated());
-      sql.append(" >= '");
-      sql.append(from.getSQLDate());
-      sql.append("'");
-    }
-    if(to != null){
-      sql.append(" and ");
-      sql.append(entry.getFieldNameLastUpdated());
-      sql.append(" <= '");
-      sql.append(to.getSQLDate());
-      sql.append(" 23:59:59'");
-    }
-    if(status!=null){
-      sql.append(" and ");
-      sql.append(entry.getFieldNameStatus());
-      sql.append(" = '");
-      sql.append(status);
-      sql.append("'");
-    }
-    //System.err.println(sql.toString());
-    List A = null;
-    try{
-      if(entry.getType().equals(entry.typeFinancial))
-        A = EntityFinder.findAll(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),sql.toString());
-      else if(entry.getType().equals(entry.typePhone)){
-        A = EntityFinder.findAll(((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy(),sql.toString());
-      }
-    }
-    catch(Exception e){A=null;}
-    return A;
+  private  Collection listOfAccEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status){
+    try {
+		/*
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(entry.getTableName());
+		sql.append(" where ");
+		sql.append(entry.getFieldNameAccountId());
+		sql.append(" = ");
+		sql.append(iAccountId);
+		if(from !=null){
+		  sql.append(" and ");
+		  sql.append(entry.getFieldNameLastUpdated());
+		  sql.append(" >= '");
+		  sql.append(from.getSQLDate());
+		  sql.append("'");
+		}
+		if(to != null){
+		  sql.append(" and ");
+		  sql.append(entry.getFieldNameLastUpdated());
+		  sql.append(" <= '");
+		  sql.append(to.getSQLDate());
+		  sql.append(" 23:59:59'");
+		}
+		if(status!=null){
+		  sql.append(" and ");
+		  sql.append(entry.getFieldNameStatus());
+		  sql.append(" = '");
+		  sql.append(status);
+		  sql.append("'");
+		}
+		//System.err.println(sql.toString());
+		List A = null;
+		try{
+		  if(entry.getType().equals(entry.typeFinancial))
+		    A = EntityFinder.findAll(((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy(),sql.toString());
+		  else if(entry.getType().equals(entry.typePhone)){
+		    A = EntityFinder.findAll(((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy(),sql.toString());
+		  }
+		}
+		catch(Exception e){A=null;}
+		return A;
+		*/
+		return getFinanceService().getAccountEntryHome().findByAccountAndStatus(new Integer(iAccountId),status,from.getDate(),to.getDate());
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+	return null;
   }
 
-  private  List listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status){
-    StringBuffer sql = new StringBuffer("select * from ");
-    sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getEntityTableName());
-    sql.append(" where ");
-    sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNameAccountId());
-    sql.append(" = ");
-    sql.append(iAccountId);
-    if(from !=null){
-      sql.append(" and ");
-      sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNamePhonedStamp());
-      sql.append(" >= '");
-      sql.append(from.getSQLDate());
-      sql.append("'");
-    }
-    if(to != null){
-      sql.append(" and ");
-      sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNamePhonedStamp());
-      sql.append(" <= '");
-      sql.append(to.getSQLDate());
-      sql.append(" 23:59:59'");
-    }
-    if(status!=null){
-      sql.append(" and ");
-      sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNameStatus());
-      sql.append(" = '");
-      sql.append(status);
-      sql.append("'");
-    }
-    //System.err.println(sql.toString());
-    List A = null;
-    try{
-        A = EntityFinder.findAll(((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy(),sql.toString());
-    }
-    catch(Exception e){A=null;}
-    return A;
+  private  Collection listOfPhoneEntries(int iAccountId,IWTimestamp from,IWTimestamp to,String status){
+    try {
+		/*
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getEntityTableName());
+		sql.append(" where ");
+		sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNameAccountId());
+		sql.append(" = ");
+		sql.append(iAccountId);
+		if(from !=null){
+		  sql.append(" and ");
+		  sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNamePhonedStamp());
+		  sql.append(" >= '");
+		  sql.append(from.getSQLDate());
+		  sql.append("'");
+		}
+		if(to != null){
+		  sql.append(" and ");
+		  sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNamePhonedStamp());
+		  sql.append(" <= '");
+		  sql.append(to.getSQLDate());
+		  sql.append(" 23:59:59'");
+		}
+		if(status!=null){
+		  sql.append(" and ");
+		  sql.append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNameStatus());
+		  sql.append(" = '");
+		  sql.append(status);
+		  sql.append("'");
+		}
+		//System.err.println(sql.toString());
+		List A = null;
+		try{
+		    A = EntityFinder.findAll(((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy(),sql.toString());
+		}
+		catch(Exception e){A=null;}
+		return A;
+		*/
+		return getFinanceService().getAccountPhoneEntryHome().findByAccountAndStatus(new Integer(iAccountId),status,from.getDate(),to.getDate());
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+	return null;
   }
 
 
 
-  public  List listOfAccountKeys(){
-   return FinanceFinder.getInstance().listOfAccountKeys();
+  public  Collection listOfAccountKeys(){
+		   try {
+			return getFinanceService().getAccountKeyHome().findAll();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
   }
 
-  public  List listOfTariffKeys(){
-    return FinanceFinder.getInstance().listOfTariffKeys();
+  public  Collection listOfTariffKeys(){
+	    try {
+			return getFinanceService().getTariffKeyHome().findAll();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return null;
   }
 
-  public  Map hashOfAccountKeys(){
-    return FinanceFinder.getInstance().mapOfAccountKeys();
+  public  Map mapOfAccountKeys(){
+  	 Collection L = listOfTariffKeys();
+     if(L != null){
+       int len = L.size();
+       Hashtable H = new Hashtable(len);
+       for (Iterator iter = L.iterator(); iter.hasNext();) {
+       	TariffKey AK = (TariffKey)  iter.next();
+         H.put((Integer)AK.getPrimaryKey(),AK);
+       }
+       return H;
+     }
+     else
+       return null;
   }
 
-  public Map hashOfTariffKeys(){
-    return FinanceFinder.getInstance().mapOfTariffKeys();
+  public Map mapOfTariffKeys(){
+  	    Collection L = listOfTariffKeys();
+  	    if(L != null){
+  	      int len = L.size();
+  	      Hashtable H = new Hashtable(len);
+  	      for (Iterator iter = L.iterator(); iter.hasNext();) {
+  	      	TariffKey AK = (TariffKey) iter.next();
+  	        H.put((Integer)(AK.getPrimaryKey()),AK);
+  	      }
+  	      return H;
+  	    }
+  	    else
+  	      return null;
   }
 
-  public List listOfKeySortedEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
-    Map acckeys = hashOfAccountKeys();
-    Map takeys = hashOfTariffKeys();
+
+  public Collection listOfKeySortedEntries(int iAccountId,IWTimestamp from,IWTimestamp to){
+    Map acckeys = mapOfAccountKeys();
+    Map takeys = mapOfTariffKeys();
     if(acckeys != null && takeys != null){
-      List entries = listOfAccountEntries(iAccountId,from,to);
+      Collection entries = listOfAccountEntries(iAccountId,from,to);
       if(entries != null){
         int len = entries.size();
         Hashtable hash = new Hashtable(len);
         AccountEntry AE;
-        for (int i = 0; i < len; i++) {
-          AE = (AccountEntry) entries.get(i);
+        for (Iterator iter = entries.iterator(); iter.hasNext();) {
+        	AE = (AccountEntry) iter.next();
           Integer AEid = new Integer(AE.getAccountKeyId());
           if(acckeys.containsKey(AEid)){
             AccountKey AK = (AccountKey) acckeys.get(AEid);
@@ -248,5 +318,9 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
 
   public Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws  java.rmi.RemoteException,javax.ejb.CreateException{
    return makeNewAccount(iUserId,sName,sExtra,iCashierId,"",iCategoryId);
+  }
+  
+  public FinanceService getFinanceService()throws RemoteException{
+  		return (FinanceService)getServiceInstance(FinanceService.class);
   }
 }

@@ -1,11 +1,13 @@
 package com.idega.block.finance.presentation;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.idega.block.finance.business.FinanceFinder;
+import javax.ejb.FinderException;
+
 import com.idega.block.finance.data.Account;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
@@ -201,7 +203,14 @@ public class Accounts extends Finance {
 		if (iwc.isParameterSet("sf_id"))
 			id = iwc.getParameter("sf_id");
 		if (id != null && !"".equals(id) && id.length() > 0) {
-			accounts = FinanceFinder.getInstance().searchAccounts(id, first, middle, last, type, iCategoryId);
+			try {
+				//accounts = FinanceFinder.getInstance().searchAccounts(id, first, middle, last, type, iCategoryId);
+				accounts = getFinanceService().getAccountHome().findBySearch(id,first,middle,last,type,getFinanceCategoryId().intValue());
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
 		}
 		// Else we try to lookup by name
 		else {
@@ -218,8 +227,17 @@ public class Accounts extends Finance {
 				hasSomething = true;
 			}
 			if (hasSomething) {
-				accounts = FinanceFinder.getInstance().searchAccounts(id, first, middle, last, type, iCategoryId);
-				accountUsers = FinanceFinder.getInstance().searchAccountUsers(first, middle, last);
+				try {
+					
+					accounts = getFinanceService().getAccountHome().findBySearch(id,first,middle,last,type,getFinanceCategoryId().intValue());
+					accountUsers = getFinanceService().getAccountUserHome().findBySearch(first,middle,last);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				} catch (FinderException e) {
+					e.printStackTrace();
+				}
+//				accounts = FinanceFinder.getInstance().searchAccounts(id, first, middle, last, type, iCategoryId);
+				//accountUsers = FinanceFinder.getInstance().searchAccountUsers(first, middle, last);
 			}
 		}
 
@@ -246,7 +264,7 @@ public class Accounts extends Finance {
 		int row = 1;
 		int col = 1;
 		Map M = mapOfUsers;
-		User U;
+		User U = null;
 		if (accounts != null) {
 
 			T.addTitle(iwrb.getLocalizedString("users_with_accounts", "Users with accounts"));
@@ -270,10 +288,15 @@ public class Accounts extends Finance {
 				if (M != null && M.containsKey(uid)) {
 					U = (User)M.get(uid);
 					M.remove(uid);
-				}
-				else
-					U = FinanceFinder.getInstance().getUser(uid.intValue());
-
+				} else{
+					try {
+						U = (User)getFinanceService().getAccountUserHome().findByPrimaryKey(uid);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					} catch (FinderException e) {
+						e.printStackTrace();
+					}
+			}
 				if (tarifferPageId > 0) {
 					tariffLink = new Link(Edit.format(A.getAccountId()));
 					tariffLink.addParameter(prmAccountId, A.getAccountId());

@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface FinanceHandlerInfo extends com.idega.data.IDOLegacyEntity
+public interface FinanceHandlerInfo extends com.idega.data.IDOEntity
 {
  public java.lang.String getClassName();
  public java.lang.String getHandlerName();

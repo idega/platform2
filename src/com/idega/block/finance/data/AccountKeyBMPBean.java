@@ -1,6 +1,11 @@
 package com.idega.block.finance.data;
 
 import java.sql.SQLException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.CategoryEntityBMPBean;
 
 /**
  * Title:
@@ -11,7 +16,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class AccountKeyBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.finance.data.AccountKey,com.idega.block.finance.business.Key {
+public class AccountKeyBMPBean extends CategoryEntityBMPBean implements AccountKey,com.idega.block.finance.business.Key {
 
   public AccountKeyBMPBean() {
     super();
@@ -52,5 +57,13 @@ public class AccountKeyBMPBean extends com.idega.data.CategoryEntityBMPBean impl
   }
   public void setInfo(String extra_info){
     setColumn(getInfoColumnName(), extra_info);
+  }
+  
+  public Collection ejbFindAll()throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect());
+  }
+  
+  public Collection ejbFindByCategory(Integer categoryID) throws FinderException{
+  	return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getColumnCategoryId(),categoryID));
   }
 }

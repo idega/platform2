@@ -1,7 +1,7 @@
 package com.idega.block.finance.data;
 
 
-public interface AccountEntry extends com.idega.data.IDOLegacyEntity,com.idega.block.finance.data.Entry
+public interface AccountEntry extends com.idega.data.IDOEntity,com.idega.block.finance.data.Entry
 {
  public int getAccountId();
  public int getAccountKeyId();
@@ -22,12 +22,12 @@ public interface AccountEntry extends com.idega.data.IDOLegacyEntity,com.idega.b
  public float getTotal();
  public java.lang.String getType();
  public float getVAT();
- public void setAccountId(int p0);
  public void setAccountId(java.lang.Integer p0);
+ public void setAccountId(int p0);
  public void setAccountKeyId(java.lang.Integer p0);
  public void setAccountKeyId(int p0);
- public void setCashierId(int p0);
  public void setCashierId(java.lang.Integer p0);
+ public void setCashierId(int p0);
  public void setEntryGroupId(int p0);
  public void setEntryType(java.lang.String p0);
  public void setInfo(java.lang.String p0);
@@ -37,8 +37,8 @@ public interface AccountEntry extends com.idega.data.IDOLegacyEntity,com.idega.b
  public void setPaymentDate(java.sql.Timestamp p0);
  public void setPrice(java.lang.Float p0);
  public void setPrice(float p0);
- public void setRoundId(int p0);
  public void setRoundId(java.lang.Integer p0);
+ public void setRoundId(int p0);
  public void setStatus(java.lang.String p0)throws java.lang.IllegalStateException;
  public void setTotal(java.lang.Float p0);
  public void setTotal(float p0);

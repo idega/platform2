@@ -1,8 +1,16 @@
 package com.idega.block.finance.presentation;
 
-import com.idega.block.finance.business.FinanceBusiness;
-import com.idega.block.finance.business.FinanceFinder;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
 import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.data.TariffKey;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -15,9 +23,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.util.Edit;
-
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * Title:   idegaclasses
@@ -49,17 +54,17 @@ public class AccountKeyEditor extends Finance {
         PresentationObject MO = new Text();
 
         if(iwc.getParameter(strAction) == null){
-          MO = getMain(iwc,iCategoryId);
+          MO = getMain(iwc);
         }
         if(iwc.getParameter(strAction) != null){
           String sAct = iwc.getParameter(strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
-            case ACT1 : MO = getMain(iwc,iCategoryId);        break;
-            case ACT2 : MO = getChange(iwc,iCategoryId);      break;
-            case ACT3 : MO = doUpdate(iwc,iCategoryId);      break;
-            default: MO = getMain(iwc,iCategoryId);           break;
+            case ACT1 : MO = getMain(iwc);        break;
+            case ACT2 : MO = getChange(iwc);      break;
+            case ACT3 : MO = doUpdate(iwc);      break;
+            default: MO = getMain(iwc);           break;
           }
         }
         Table T = new Table(1,3);
@@ -101,10 +106,20 @@ public class AccountKeyEditor extends Finance {
     return LinkTable;
   }
 
-  private PresentationObject getMain(IWContext iwc,int iCategoryId){
+  private PresentationObject getMain(IWContext iwc){
     Table keyTable = new Table();
-    List keys = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
-    if(keys !=null){
+    Collection keys = null;
+	java.util.Map hk = null;
+	try {
+		keys = getFinanceService().getAccountKeyHome().findByCategory(getFinanceCategoryId());;
+		hk = getFinanceService().getAccountBusiness().mapOfTariffKeys();
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+    //List keys = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
+    if(keys !=null && hk!=null){
       int count = keys.size();
       keyTable = new Table(4,count+1);
       keyTable.setWidth("100%");
@@ -117,18 +132,22 @@ public class AccountKeyEditor extends Finance {
       keyTable.add(Edit.formatText(iwrb.getLocalizedString("info","Info")),3,1);
       keyTable.add(Edit.formatText(iwrb.getLocalizedString("tariff_key","Tariff key")),4,1);
 
-      java.util.Map hk = FinanceFinder.getInstance().mapOfTariffKeys(iCategoryId);
+      //java.util.Map hk = FinanceFinder.getInstance().mapOfTariffKeys(iCategoryId);
+     
       if(isAdmin){
         if(count > 0){
           AccountKey key;
-          for (int i = 0;i < count;i++){
-            key = (AccountKey) keys.get(i);
-            keyTable.add(Edit.formatText(String.valueOf(i+1)),1,i+2);
-            keyTable.add(Edit.formatText(key.getName()),2,i+2);
-            keyTable.add(Edit.formatText(key.getInfo()),3,i+2);
+          int row = 2;
+          int rowcount = 1;
+          for (Iterator iter = keys.iterator(); iter.hasNext();) {
+          	key = (AccountKey) iter.next();
+            keyTable.add(Edit.formatText(String.valueOf(rowcount++)),1,row);
+            keyTable.add(Edit.formatText(key.getName()),2,row);
+            keyTable.add(Edit.formatText(key.getInfo()),3,row);
             Integer tkid = new Integer(key.getTariffKeyId());
             if(hk.containsKey(tkid))
-              keyTable.add( Edit.formatText( (String)hk.get( tkid) ),4,i+2);
+              keyTable.add( Edit.formatText( ((TariffKey)hk.get( tkid)).getName() ),4,row);
+            row++;
           }
         }
       }
@@ -136,13 +155,21 @@ public class AccountKeyEditor extends Finance {
     return(keyTable);
   }
 
-  private PresentationObject getChange(IWContext iwc,int iCategoryId) throws SQLException{
+  private PresentationObject getChange(IWContext iwc) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
-    List keys = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
-    List Tkeys = FinanceFinder.getInstance().listOfTariffKeys(iCategoryId);
+    Collection keys = null;
+	Collection Tkeys = null;
+	try {
+		keys = getFinanceService().getAccountKeyHome().findByCategory(getFinanceCategoryId());
+		Tkeys = getFinanceService().getTariffKeyHome().findByCategory(getFinanceCategoryId());
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
     int count = 0;
-    if(keys !=null)
+    if(keys !=null && Tkeys!=null)
        count = keys.size();
     int inputcount = count+5;
     Table inputTable =  new Table(5,inputcount+1);
@@ -159,6 +186,7 @@ public class AccountKeyEditor extends Finance {
     inputTable.add(Edit.formatText(iwrb.getLocalizedString("tariff_key","Tariff key")),4,1);
     inputTable.add(Edit.formatText(iwrb.getLocalizedString("delete","Delete")),5,1);
     AccountKey key;
+    Iterator iter = keys.iterator();
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
       TextInput nameInput, infoInput;
@@ -168,12 +196,12 @@ public class AccountKeyEditor extends Finance {
       iDrp.setName("ake_keydrp"+i);
       Edit.setStyle(iDrp);
       int pos;
-      if(i <= count ){
+      if(i <= count && iter.hasNext()){
         pos = i-1;
-        key  = (AccountKey) keys.get(pos);
+        key  = (AccountKey) iter.next();
         nameInput  = new TextInput("ake_nameinput"+i,(key.getName()));
         infoInput = new TextInput("ake_infoinput"+i,(key.getInfo()));
-        String sId = String.valueOf(key.getID());
+        String sId = key.getPrimaryKey().toString();
         idInput = new HiddenInput("ake_idinput"+i,sId);
         delCheck = new CheckBox("ake_delcheck"+i,"true");
         iDrp.setSelectedElement(String.valueOf(key.getTariffKeyId()));
@@ -208,30 +236,40 @@ public class AccountKeyEditor extends Finance {
     return (myForm);
   }
 
-  private PresentationObject doUpdate(IWContext iwc,int iCategoryId){
+  private PresentationObject doUpdate(IWContext iwc){
     int count = Integer.parseInt(iwc.getParameter("ake_count"));
     String sName,sInfo,sDel,sTKid;
-    int ID,TKid;
+    Integer ID,TKid;
 
     for (int i = 1; i < count+1 ;i++){
       sName = iwc.getParameter("ake_nameinput"+i ).trim();
       sInfo = iwc.getParameter("ake_infoinput"+i).trim();
       sDel = iwc.getParameter("ake_delcheck"+i);
       sTKid = iwc.getParameter("ake_keydrp"+i);
-      TKid = Integer.parseInt(sTKid);
-      ID = Integer.parseInt(iwc.getParameter("ake_idinput"+i));
-      if(sDel != null && sDel.equalsIgnoreCase("true")){
-        FinanceBusiness.deleteAccountKey(ID);
-      }
-      else if(!sName.equalsIgnoreCase("")){
-        FinanceBusiness.saveAccountKey(ID,sName,sInfo,TKid,iCategoryId);
-      }
+      TKid = Integer.valueOf(sTKid);
+      ID = Integer.valueOf(iwc.getParameter("ake_idinput"+i));
+      try {
+		if(sDel != null && sDel.equalsIgnoreCase("true")){
+		    getFinanceService().removeAccountKey(ID);
+		  }
+		  else if(!sName.equalsIgnoreCase("")){
+		  	getFinanceService().createOrUpdateAccountKey(ID,sName,sInfo,TKid,getFinanceCategoryId());
+		  }
+	} catch (RemoteException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	} catch (RemoveException e) {
+		e.printStackTrace();
+	} catch (CreateException e) {
+		e.printStackTrace();
+	}
     }// for loop
 
-   return getMain(iwc,iCategoryId);
+   return getMain(iwc);
   }
 
-  private DropdownMenu keyDrp(List TK){
+  private DropdownMenu keyDrp(Collection TK){
     DropdownMenu drp = new DropdownMenu();
     drp.addMenuElement(0,"--");
     if(TK != null)
