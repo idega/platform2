@@ -53,8 +53,10 @@ public class NewsBundleStarter implements IWBundleStartable{
 
   private Map makeICCategories(){
     Hashtable hash = new Hashtable();
-
-    String sql = "select * from nw_news_cat ";
+    String sql = "select cat.*  from nw_news n, nw_news_cat cat " +
+                  " where n.ic_category_id is null "+
+                  " and n.nw_news_cat_id = cat.nw_news_cat_id ";
+    //String sql = "select * from nw_news_cat ";
     String sql2 = "select IC_OBJECT_INSTANCE_ID from  NW_NEWS_CAT_IC_OBJECT_INSTANCE where NW_NEWS_CAT_ID = ";
     String type = new NewsCategory().getCategoryType();
     try{
@@ -75,7 +77,12 @@ public class NewsBundleStarter implements IWBundleStartable{
       oinst = SimpleQuerier.executeStringQuery(sql2+id,Conn);
       if(oinst !=null && oinst.length > 0)
         objectinstance_id = Integer.parseInt(oinst[0]);
-      CAT = CategoryBusiness.saveCategory(-1,name,info,objectinstance_id,type);
+      ICCategory cat = new ICCategory();
+      cat.setName(name);
+      cat.setDescription(info);
+      cat.setType(type);
+
+      CAT = CategoryBusiness.saveCategory(cat,objectinstance_id,false);
       hash.put(new Integer(id),new Integer(CAT.getID()));
     }
     if(RS!=null)
