@@ -10,9 +10,9 @@ import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.business.IBOLookup;
 import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.EmailHome;
+//import com.idega.core.contact.data.EmailHome;
 import com.idega.core.contact.data.Phone;
-import com.idega.core.contact.data.PhoneHome;
+//import com.idega.core.contact.data.PhoneHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.PresentationObject;
@@ -288,31 +288,33 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		Collection emails = user.getEmails();
 		if (emails != null) {
 			Iterator eIter = emails.iterator();
-			EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
+			//EmailHome eHome = (EmailHome) IDOLookup.getHome(Email.class);
 			Email email;
 			Link link;
 			int emSize = emails.size();
 			if (emSize == 1) {
-				try {
-					email = eHome.findByPrimaryKey(eIter.next());
+				//try {
+					email = (Email) eIter.next();
+					//email = eHome.findByPrimaryKey(eIter.next());
 					link = new Link(getText(name), "mailto:"+email.getEmailAddress());
 					table.add(link, 1, row);
-				} catch (FinderException e) {
-					e.printStackTrace(System.err);
-				}
+				//} catch (FinderException e) {
+				//	e.printStackTrace(System.err);
+				//}
 			}else if (emSize < 1) {
 				table.add(name, 1, row);
 			}else if (emSize > 1) {
 				table.add(name, 1, row);
 				while (eIter.hasNext()) {
-					try {
-						email = eHome.findByPrimaryKey(eIter.next());
+					//try {
+						email = (Email) eIter.next();
+						//email = eHome.findByPrimaryKey(eIter.next());
 						link = new Link(getText(email.getEmailAddress()), "mailto:"+email.getEmailAddress());
 						++row;
 						table.add(link, 1, row);
-					} catch (FinderException e) {
-						e.printStackTrace(System.err);
-					}
+					//} catch (FinderException e) {
+					//	e.printStackTrace(System.err);
+					//}
 				}
 			}
 		}
@@ -320,12 +322,13 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 		Collection phones = user.getPhones();
 		if (phones != null && phones.size() > 0) {
 			Iterator pIter = phones.iterator();	
-			PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
+			//PhoneHome pHome = (PhoneHome) IDOLookup.getHome(Phone.class);
 			Phone uPhone;
 			int phCounter = 1;
 			while (pIter.hasNext()) {
-				try {
-					uPhone = pHome.findByPrimaryKey(pIter.next());	
+				//try {
+					uPhone = (Phone) pIter.next();
+					//uPhone = pHome.findByPrimaryKey(pIter.next());	
 					++row;
 					if (phCounter == 1) {
 						table.add(getText(_iwrb.getLocalizedString("school.Tph","Tph")+": "+uPhone.getNumber()), 1, row);
@@ -334,9 +337,9 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 						table.add(getText(_iwrb.getLocalizedString("school.cell_phone","Mobil")+": "+uPhone.getNumber()), 1, row);
 					}
 					phCounter++;
-				} catch (FinderException e) {
-					e.printStackTrace(System.err);
-				}
+				//} catch (FinderException e) {
+				//	e.printStackTrace(System.err);
+				//}
 			}
 		}
 		return row;
