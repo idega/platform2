@@ -121,7 +121,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		return true;
 	}
 
-	public AfterSchoolChoice createAfterSchoolChoice(Integer userID, Integer childID, Integer providerID, Integer choiceNumber, String message, java.sql.Timestamp choiceDate, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season) throws CreateException, RemoteException, FinderException {
+	public AfterSchoolChoice createAfterSchoolChoice(User user, Integer childID, Integer providerID, Integer choiceNumber, String message, java.sql.Timestamp choiceDate, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season) throws CreateException, RemoteException, FinderException {
 		if (season == null) {
 			try {
 				season = getSchoolChoiceBusiness().getCurrentSeason();
@@ -148,12 +148,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			AfterSchoolChoiceHome home = this.getAfterSchoolChoiceHome();
 			choice = home.create();
 		}
-		try {
-			choice.setOwner(getUser(userID.intValue()));
-		}
-		catch (FinderException fex) {
-			throw new IDOCreateException(fex);
-		}
+		choice.setOwner(user);
 		choice.setChildId(childID.intValue());
 		if (providerID != null)
 			choice.setProviderId(providerID.intValue());
@@ -176,12 +171,13 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			choice.store();
 		}
 		catch (IDOStoreException idos) {
+			idos.printStackTrace();
 			throw new IDOCreateException(idos);
 		}
 		return choice;
 	}
 	
-	public List createAfterSchoolChoices(Integer userId, Integer childId, Integer[] providerIDs, String message, Date placementDate, SchoolSeason season) throws IDOCreateException {
+	public List createAfterSchoolChoices(User user, Integer childId, Integer[] providerIDs, String message, Date placementDate, SchoolSeason season) throws IDOCreateException {
 		int caseCount = 3;
 		IWTimestamp stamp = new IWTimestamp();
 		List returnList = new Vector(3);
@@ -193,7 +189,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			CaseStatus other = getCaseStatus(super.getCaseStatusInactive().getStatus());
 			AfterSchoolChoice choice = null;
 			for (int i = 0; i < caseCount; i++) {
-				choice = createAfterSchoolChoice(userId, childId, providerIDs[i], new Integer(i + 1), message, stamp.getTimestamp(), i == 0 ? first : other, choice, placementDate, season);
+				choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, stamp.getTimestamp(), i == 0 ? first : other, choice, placementDate, season);
 				returnList.add(choice);
 			}
 			trans.commit();
@@ -207,7 +203,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			catch (javax.transaction.SystemException e) {
 				throw new IDOCreateException(e.getMessage());
 			}
-			throw new IDOCreateException(ex.getMessage());
+			ex.printStackTrace();
+			throw new IDOCreateException(ex);
 		}
 	}
 }
