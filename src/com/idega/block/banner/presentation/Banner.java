@@ -1,8 +1,8 @@
 package com.idega.block.banner.presentation;
 
+import java.util.HashMap;
+import java.util.Map;
 
-
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.banner.business.BannerBusiness;
 import com.idega.block.banner.business.BannerFinder;
 import com.idega.block.banner.business.BannerListener;
@@ -12,350 +12,299 @@ import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 
-
-
 public class Banner extends Block implements Builderaware {
 
+	private static final String IMAGE_STYLE = "ImageStyle";
 
+	private static final String DEFAULT_IMAGE_STYLE = "";
 
-private int _bannerID = -1;
+	private int _bannerID = -1;
 
-private boolean _isAdmin = false;
+	private boolean _isAdmin = false;
 
-private String _attribute;
+	private String _attribute;
 
-private int _iLocaleID;
+	private int _iLocaleID;
 
+	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.banner";
 
+	private final static String IW_CORE_BUNDLE_IDENTIFIER = "com.idega.core";
 
-private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.banner";
+	protected IWResourceBundle _iwrb;
 
-private final static String IW_CORE_BUNDLE_IDENTIFIER="com.idega.core";
+	protected IWBundle _iwb;
 
-protected IWResourceBundle _iwrb;
+	private Table _myTable;
 
-protected IWBundle _iwb;
+	private boolean _newObjInst = false;
 
+	private boolean _newWithAttribute = false;
 
+	private String _target;
 
-private Table _myTable;
-
-private boolean _newObjInst = false;
-
-private boolean _newWithAttribute = false;
-
-
-
-private String _target;
-
-
-
-public Banner(){
-
-}
-
-
-
-public Banner(int bannerID){
-
-  this();
-
-	_bannerID = bannerID;
-
-}
-
-
-
-public Banner(String attribute){
-
-  this();
-
-	_attribute = attribute;
-
-}
-
-
-
-	public void main(IWContext iwc) throws Exception {
-
-    _iwrb = getResourceBundle(iwc);
-
-    _iwb = getBundle(iwc);
-
-
-
-    _isAdmin = iwc.hasEditPermission(this);
-
-    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
-
-
-
-    BannerEntity banner = null;
-
-
-
-    _myTable = new Table(1,2);
-
-      _myTable.setCellpadding(0);
-
-      _myTable.setCellspacing(0);
-
-      _myTable.setBorder(0);
-
-
-
-    if(_bannerID <= 0){
-
-      String sBannerID = iwc.getParameter(BannerBusiness.PARAMETER_BANNER_ID);
-
-      if(sBannerID != null)
-
-        _bannerID = Integer.parseInt(sBannerID);
-
-      else if(getICObjectInstanceID() > 0){
-
-        _bannerID = BannerFinder.getRelatedEntityId(getICObjectInstance());
-
-        if(_bannerID <= 0 ){
-
-          BannerBusiness.saveBanner(_bannerID,getICObjectInstanceID(),null);
-
-          _newObjInst = true;
-
-        }
-
-      }
-
-    }
-
-
-
-    if ( _newObjInst ) {
-
-      _bannerID = BannerFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
-
-    }
-
-
-
-    if(_bannerID > 0) {
-
-      banner = BannerFinder.getBanner(_bannerID);
-
-    }
-
-    else if ( _attribute != null ){
-
-      banner = BannerFinder.getBanner(_attribute);
-
-      if ( banner != null ) {
-
-        _bannerID = banner.getID();
-
-      }
-
-      else {
-
-        BannerBusiness.saveBanner(-1,-1,_attribute);
-
-      }
-
-      _newWithAttribute = true;
-
-    }
-
-
-
-    if ( _newWithAttribute ) {
-
-      _bannerID = BannerFinder.getBanner(_attribute).getID();
-
-    }
-
-
-
-    int row = 1;
-
-    if(_isAdmin){
-
-      _myTable.add(getAdminPart(iwc),1,row);
-
-      row++;
-
-    }
-
-
-
-    Link link = getBanner(iwc,banner);
-
-    if ( link != null )
-
-      _myTable.add(link,1,row);
-
-    add(_myTable);
+	public Banner() {
 
 	}
 
+	public Banner(int bannerID) {
 
+		this();
 
-  private Link getBanner(IWContext iwc,BannerEntity banner) {
+		_bannerID = bannerID;
 
-    Link bannerLink = null;
+	}
 
-    AdEntity ad = null;
+	public Banner(String attribute) {
 
-    Image image = null;
+		this();
 
+		_attribute = attribute;
 
+	}
 
-    if ( banner != null ) {
+	public void main(IWContext iwc) throws Exception {
 
-      ad = BannerBusiness.getCurrentAd(banner);
+		_iwrb = getResourceBundle(iwc);
 
-    }
+		_iwb = getBundle(iwc);
 
-    if ( ad != null ) {
+		_isAdmin = iwc.hasEditPermission(this);
 
-      int imageID = BannerBusiness.getImageID(ad);
+		_iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-      if ( imageID != -1 ) {
+		BannerEntity banner = null;
 
-        image = BannerBusiness.getImage(imageID);
+		_myTable = new Table(1, 2);
 
-      }
+		_myTable.setCellpadding(0);
 
+		_myTable.setCellspacing(0);
 
+		_myTable.setBorder(0);
 
-      if ( image != null ) {
+		if (_bannerID <= 0) {
 
-        bannerLink = new Link(image);
+			String sBannerID = iwc.getParameter(BannerBusiness.PARAMETER_BANNER_ID);
 
-        if ( _target != null ) {
+			if (sBannerID != null)
 
-          bannerLink.setTarget(_target);
+				_bannerID = Integer.parseInt(sBannerID);
 
-        }
+			else if (getICObjectInstanceID() > 0) {
 
-        else {
+				_bannerID = BannerFinder.getRelatedEntityId(getICObjectInstance());
 
-          bannerLink.setTarget(Link.TARGET_NEW_WINDOW);
+				if (_bannerID <= 0) {
 
-        }
+					BannerBusiness.saveBanner(_bannerID, getICObjectInstanceID(), null);
 
+					_newObjInst = true;
 
+				}
 
-        BannerBusiness.updateImpressions(iwc,ad);
+			}
 
+		}
 
+		if (_newObjInst) {
 
-        bannerLink.addParameter(BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_CLICKED);
+			_bannerID = BannerFinder.getRelatedEntityId(((com.idega.core.component.data.ICObjectInstanceHome) com.idega.data.IDOLookup.getHomeLegacy(ICObjectInstance.class)).findByPrimaryKeyLegacy(getICObjectInstanceID()));
 
-        bannerLink.addParameter(BannerBusiness.PARAMETER_AD_ID,ad.getID());
+		}
 
-        bannerLink.setEventListener(BannerListener.class);
+		if (_bannerID > 0) {
 
-      }
+			banner = BannerFinder.getBanner(_bannerID);
 
-    }
+		}
 
+		else if (_attribute != null) {
 
+			banner = BannerFinder.getBanner(_attribute);
 
-    if ( bannerLink != null )
+			if (banner != null) {
 
-      return bannerLink;
+				_bannerID = banner.getID();
 
+			}
 
+			else {
 
-    return null;
+				BannerBusiness.saveBanner(-1, -1, _attribute);
 
-  }
+			}
 
+			_newWithAttribute = true;
 
+		}
 
-  private Link getAdminPart(IWContext iwc) {
+		if (_newWithAttribute) {
 
-    Image createImage = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif");
+			_bannerID = BannerFinder.getBanner(_attribute).getID();
 
+		}
 
+		int row = 1;
 
-    Link createLink = new Link(createImage);
+		if (_isAdmin) {
 
-      createLink.setWindowToOpen(BannerEditorWindow.class);
+			_myTable.add(getAdminPart(iwc), 1, row);
 
-      createLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
+			row++;
 
+		}
 
+		Link link = getBanner(iwc, banner);
 
-    return createLink;
+		if (link != null)
 
-  }
+		_myTable.add(link, 1, row);
 
+		add(_myTable);
 
+	}
 
-  public boolean deleteBlock(int ICObjectInstanceID) {
+	private Link getBanner(IWContext iwc, BannerEntity banner) {
 
-    BannerEntity banner = BannerFinder.getObjectInstanceFromID(ICObjectInstanceID);
+		Link bannerLink = null;
 
-    if ( banner != null ) {
+		AdEntity ad = null;
 
-      return BannerBusiness.deleteBanner(banner);
+		Image image = null;
 
-    }
+		if (banner != null) {
 
-    return false;
+			ad = BannerBusiness.getCurrentAd(banner);
 
-  }
+		}
 
+		if (ad != null) {
 
+			int imageID = BannerBusiness.getImageID(ad);
 
-  public void setTarget(String target) {
+			if (imageID != -1) {
 
-    _target = target;
+				image = BannerBusiness.getImage(imageID);
 
-  }
+			}
 
+			if (image != null) {
 
+				bannerLink = new Link(this.getStyleObject(image, IMAGE_STYLE));
 
-  public String getBundleIdentifier(){
+				if (_target != null) {
 
-    return IW_BUNDLE_IDENTIFIER;
+					bannerLink.setTarget(_target);
 
-  }
+				}
 
+				else {
 
+					bannerLink.setTarget(Link.TARGET_NEW_WINDOW);
 
-  public Object clone() {
+				}
 
-    Banner obj = null;
+				BannerBusiness.updateImpressions(iwc, ad);
 
-    try {
+				bannerLink.addParameter(BannerBusiness.PARAMETER_MODE, BannerBusiness.PARAMETER_CLICKED);
 
-      obj = (Banner) super.clone();
+				bannerLink.addParameter(BannerBusiness.PARAMETER_AD_ID, ad.getID());
 
+				bannerLink.setEventListener(BannerListener.class);
 
+			}
 
-      if ( this._myTable != null ) {
+		}
 
-        obj._myTable = (Table) this._myTable.clone();
+		if (bannerLink != null)
 
-      }
+		return bannerLink;
 
-    }
+		return null;
 
-    catch (Exception ex) {
+	}
 
-      ex.printStackTrace(System.err);
+	private Link getAdminPart(IWContext iwc) {
 
-    }
+		Image createImage = iwc.getIWMainApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif");
 
-    return obj;
+		Link createLink = new Link(createImage);
 
-  }
+		createLink.setWindowToOpen(BannerEditorWindow.class);
 
+		createLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID, _bannerID);
+
+		return createLink;
+
+	}
+
+	public boolean deleteBlock(int ICObjectInstanceID) {
+
+		BannerEntity banner = BannerFinder.getObjectInstanceFromID(ICObjectInstanceID);
+
+		if (banner != null) {
+
+		return BannerBusiness.deleteBanner(banner);
+
+		}
+
+		return false;
+
+	}
+
+	public void setTarget(String target) {
+
+		_target = target;
+
+	}
+
+	public String getBundleIdentifier() {
+
+		return IW_BUNDLE_IDENTIFIER;
+
+	}
+
+	public Object clone() {
+
+		Banner obj = null;
+
+		try {
+
+			obj = (Banner) super.clone();
+
+			if (this._myTable != null) {
+
+				obj._myTable = (Table) this._myTable.clone();
+
+			}
+
+		}
+
+		catch (Exception ex) {
+
+			ex.printStackTrace(System.err);
+
+		}
+
+		return obj;
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.idega.presentation.Block#getStyleNames()
+	 */
+	public Map getStyleNames() {
+		Map map = new HashMap();
+		map.put(IMAGE_STYLE, DEFAULT_IMAGE_STYLE);
+		return map;
+	}
 }
