@@ -324,9 +324,9 @@ public class TourBookingForm extends BookingForm{
           table.add(pTable, 2, row);
 
           Text count = (Text) super.theSmallBoldText.clone();
-            count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
+            count.setText(iwrb.getLocalizedString("travel.number_of_seats","No.of seats"));
           Text unitPrice = (Text) super.theSmallBoldText.clone();
-            unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
+            unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price per seats"));
           Text amount = (Text) super.theSmallBoldText.clone();
             amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
 
@@ -843,9 +843,9 @@ public class TourBookingForm extends BookingForm{
           ++row;
 
           Text count = (Text) super.theSmallBoldText.clone();
-            count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
+            count.setText(iwrb.getLocalizedString("travel.number_of_seats","No.of seats"));
           Text unitPrice = (Text) super.theSmallBoldText.clone();
-            unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
+            unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price per seat"));
           Text amount = (Text) super.theSmallBoldText.clone();
             amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
           Text space = (Text) super.theSmallBoldText.clone();

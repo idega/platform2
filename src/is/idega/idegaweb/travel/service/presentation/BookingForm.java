@@ -1840,6 +1840,8 @@ public abstract class BookingForm extends TravelManager{
     String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
     if (day != null && month != null && year != null) {
       _stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+    }else if (day == null && month != null && year != null) {
+      _stamp = new IWTimestamp(1, Integer.parseInt(month), Integer.parseInt(year));
     }else {
       _stamp = new IWTimestamp(IWTimestamp.RightNow());
     }

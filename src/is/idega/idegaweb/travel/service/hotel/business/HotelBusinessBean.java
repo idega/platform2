@@ -97,6 +97,8 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 	}
 
   public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp, boolean includePast, boolean fixTimeframe) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException {
+			
+		if (timeframes == null || timeframes.length == 0) {
       boolean isDay = false;
       String key1 = Integer.toString(product.getID());
       String key2 = stamp.toSQLDateString();
@@ -143,27 +145,29 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
         isDay = ((Boolean) obj).booleanValue();
       }
       return isDay;
+	  }else {
+	  	return super.getIfDay(iwc, product, timeframes, stamp, includePast, fixTimeframe);
+	  }
+	  
   }
 
 	public List getDepartureDays(IWContext iwc,	Product product,	IWTimestamp fromStamp,	IWTimestamp toStamp,	boolean showPast)	throws FinderException, RemoteException, RemoteException {
     List returner = new Vector();
 		IWTimestamp stamp = new IWTimestamp(fromStamp);	
-		IWTimestamp now = new IWTimestamp(IWTimestamp.RightNow());
-		now.setMinute(0);
-		now.setHour(0);
-		now.setSecond(0);
-		now.setMilliSecond(0);
-		while (toStamp.isLaterThan( stamp)) {
-			if (stamp.isLaterThanOrEquals(now)) {
-				returner.add(new IWTimestamp(stamp));
-			}
-			stamp.addDays(1);
-		}
-		if (toStamp.isLaterThanOrEquals(now)) {
-			returner.add(toStamp);
-		}
 
-
+		
+		try {
+					Timeframe[] timeframes = product.getTimeframes();
+					while (toStamp.isLaterThanOrEquals( stamp)) {
+						if (getIfDay(iwc, product, timeframes, stamp, false, true)) {
+							returner.add(new IWTimestamp(stamp));
+						}
+						stamp.addDays(1);
+					}
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		
     return returner;
 	}
 
