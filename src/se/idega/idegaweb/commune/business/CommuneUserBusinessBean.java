@@ -1,6 +1,7 @@
 package se.idega.idegaweb.commune.business;
 
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.business.IBOServiceBean;
 
 import com.idega.user.business.UserBusiness;
@@ -10,6 +11,8 @@ import com.idega.core.accesscontrol.data.LoginTable;
 
 import java.rmi.RemoteException;
 import javax.ejb.*;
+
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 /**
  * Title:        idegaWeb
@@ -130,5 +133,34 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 
     return rootGroup;
   }
+  
+   /**
+   * Creates (if not available) and returns the default usergroup all citizens, read from imports, are members of.
+   * throws a CreateException if it failed to locate or create the group.
+   */
+  public Group getRootSchoolAdministratorGroup()throws CreateException,FinderException,RemoteException{
+    Group rootGroup = null;
+    //create the default group
+    String ROOT_SCHOOL_ADMINISTRATORS_GROUP = "shcool_administrators_group_id";
+    IWBundle bundle = this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+    String groupId = bundle.getProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP);
+    if( groupId!=null ){
+      rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
+    }
+    else{
+      System.err.println("trying to store Commune Root school administrators group");
+      /**@todo this seems a wrong way to do things**/
+      GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
+      GroupType type = typeHome.create();
+
+
+      rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Administrators","The Commune Root School Administrators Group.",type.getGeneralGroupTypeString());
+
+     bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP,rootGroup.getPrimaryKey().toString());
+    }
+
+    return rootGroup;
+  }
+
 
 }
