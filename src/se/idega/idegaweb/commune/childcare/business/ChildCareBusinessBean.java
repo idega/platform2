@@ -1933,9 +1933,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public int getNumberOfApplicationsForChildNotInactive(int childID) throws RemoteException {
+		return getNumberOfApplicationsForChildNotInactive(childID, null);
+	}
+	
+	public int getNumberOfApplicationsForChildNotInactive(int childID, String caseCode) throws RemoteException {
 		try {
 			String[] caseStatus = { getCaseStatusDeleted().getStatus(), getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusDenied().getStatus() };
-			return getChildCareApplicationHome().getNumberOfApplicationsForChildNotInStatus(childID, caseStatus);
+			return getChildCareApplicationHome().getNumberOfApplicationsForChildNotInStatus(childID, caseStatus, caseCode);
 		} 
 		catch (IDOException ie) {
 			return 0;
@@ -2632,8 +2636,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public boolean hasActiveApplication(int childID) throws RemoteException {
+		return hasActiveApplication(childID, null);
+	}
+		
+	public boolean hasActiveApplication(int childID, String caseCode) throws RemoteException {
 		try {
-			int numberOfApplications = getChildCareApplicationHome().getNumberOfActiveApplications(childID);
+			int numberOfApplications = getChildCareApplicationHome().getNumberOfActiveApplications(childID, caseCode);
 			if (numberOfApplications > 0)
 				return true;
 			return false;

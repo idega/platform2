@@ -80,6 +80,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public int getNumberOfApplicationsForChildByStatus(int p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfApplicationsForChildByStatus(int p0,java.lang.String p1, String p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfApplicationsForChildNotInactive(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public int getNumberOfApplicationsForChildNotInactive(int p0, String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfContractsForApplication(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getNumberOfFirstHandChoicesByProvider(int p0) throws java.rmi.RemoteException;
  public int getNumberOfFutureContracts(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
@@ -126,6 +127,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.lang.String getXMLContractPdfURL(com.idega.idegaweb.IWBundle p0,java.util.Locale p1) throws java.rmi.RemoteException;
  public java.lang.String getXMLContractTxtURL(com.idega.idegaweb.IWBundle p0,java.util.Locale p1) throws java.rmi.RemoteException;
  public boolean hasActiveApplication(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean hasActiveApplication(int p0,String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasActiveContract(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasActivePlacement(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasActivePlacementNotWithProvider(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;

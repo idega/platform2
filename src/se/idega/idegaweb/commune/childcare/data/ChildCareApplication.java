@@ -35,7 +35,6 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public java.sql.Date getQueueDate();
  public int getQueueOrder();
  public java.sql.Date getRejectionDate();
- public void initializeAttributes();
  public boolean isAcceptedByParent();
  public boolean isActive();
  public boolean isCancelledOrRejectedByParent();
@@ -46,8 +45,8 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setChild(com.idega.user.data.User p0);
  public void setChildId(int p0);
  public void setChoiceNumber(int p0);
- public void setContractFileId(java.lang.Integer p0);
  public void setContractFileId(int p0);
+ public void setContractFileId(java.lang.Integer p0);
  public void setContractId(int p0);
  public void setContractId(java.lang.Integer p0);
  public void setExtraContractMessage(java.lang.String p0);

@@ -675,11 +675,17 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public int ejbHomeGetNumberOfActiveApplications(int childID) throws IDOException {
+		return ejbHomeGetNumberOfActiveApplications(childID, null);
+	}
+	
+	public int ejbHomeGetNumberOfActiveApplications(int childID, String caseCode) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
-		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		if (caseCode != null) {
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
+		}
 		sql.appendAnd().appendEqualsQuoted("p.case_status", "KLAR");
 		return idoGetNumberOfRecords(sql);
 	}
@@ -733,14 +739,20 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 
 		return idoGetNumberOfRecords(sql);
 	}
-	
+
 	public int ejbHomeGetNumberOfApplicationsForChildNotInStatus(int childID, String[] caseStatus) throws IDOException {
+		return ejbHomeGetNumberOfApplicationsForChildNotInStatus(childID, caseStatus, null);
+	}
+	
+	public int ejbHomeGetNumberOfApplicationsForChildNotInStatus(int childID, String[] caseStatus, String caseCode) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		//sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		if (caseCode != null) {
+			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
+		}
 
 		return idoGetNumberOfRecords(sql);
 	}
