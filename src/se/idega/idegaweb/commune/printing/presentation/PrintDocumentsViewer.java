@@ -705,6 +705,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		viewUnprintedLink.addParameter(PARAM_VIEW_UNPRINTED, "true");
 		viewUnprintedLink.addParameter(PARAM_LETTER_TYPE, currentType);
 		addDateParametersToLink(viewUnprintedLink);
+		if (getDocumentBusiness(iwc).getUnprintedMessagesCountByType(currentType) == 0){
+			viewUnprintedLink.setToFormReset(pForm);
+		}
 		unPrintedLetterDocs.add(viewUnprintedLink);
 
 		uT.add(unPrintedLetterDocs, 1, urow++);
