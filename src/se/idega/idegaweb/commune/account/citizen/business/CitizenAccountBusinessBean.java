@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.45 2003/01/11 08:01:10 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.46 2003/01/11 09:04:44 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -35,11 +35,11 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2003/01/11 08:01:10 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/11 09:04:44 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.45 $
+ * @version $Revision: 1.46 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -60,7 +60,10 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                                       String phoneHome, String phoneWork)
         throws UserHasLoginException, RemoteException {
         CitizenAccount application = null;
+        UserTransaction transaction = null;
 		try {
+            transaction = getSessionContext ().getUserTransaction ();
+            transaction.begin ();
 			application = ((CitizenAccountHome) IDOLookup.getHome
                            (CitizenAccount.class)).create();
 			application.setSsn (ssn);
@@ -84,8 +87,16 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 			if (acceptApplicationOnCreation) {
                 acceptApplication(applicationID, user);
 			}
+            transaction.commit ();
 		}
 		catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback ();
+                } catch (SystemException se) {
+                    se.printStackTrace ();
+                } 
+            }
 			if (e instanceof UserHasLoginException) {
 				throw (UserHasLoginException) e;	
 			}
@@ -396,8 +407,10 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
         final IWTimestamp timestamp = birthDate != null
                 ? new IWTimestamp (birthDate.getTime ()) : null;
         final CommuneUserBusiness userBusiness = getUserBusiness ();
-        final boolean notNackaResident
-                = applicant.getApplicationReason().equals (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY);
+        final String applicationReason = applicant.getApplicationReason();
+        final boolean notNackaResident = applicationReason != null
+                && applicationReason.equals
+                (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY);
         final User user = notNackaResident ?
                 userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
                 (firstName, "", lastName, ssn, gender, timestamp)
@@ -405,25 +418,33 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                 (firstName, "", lastName, ssn, gender, timestamp);
         
         try {
-            String streetName = applicant.getStreet ();
-            String postalCode = applicant.getZipCode ();
-            String postalName = applicant.getCity ();
-            Country sweden = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("SE");
-            AddressBusiness addressBiz = (AddressBusiness) getServiceInstance(AddressBusiness.class);
-            PostalCode code = addressBiz.getPostalCodeAndCreateIfDoesNotExist(postalCode,postalName,sweden);
-            AddressHome addressHome = addressBiz.getAddressHome();
-            Address address = addressHome.create();
-            AddressType mainAddressType = addressHome.getAddressType1();
-            address.setAddressType(mainAddressType);
-            address.setCountry(sweden);
-            address.setPostalCode(code);
-            address.setProvince(postalName);
-            address.setCity(postalName);
-            address.setStreetName(streetName);
-            address.store();
-            user.addAddress(address);
+            final String streetName = applicant.getStreet ();
+            final String postalCode = applicant.getZipCode ();
+            final String postalName = applicant.getCity ();
 
-            Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
+            if (streetName != null && postalCode != null && postalName != null) {
+                final Country sweden = ((CountryHome) getIDOHome (Country.class))
+                        .findByIsoAbbreviation ("SE");
+                final AddressBusiness addressBusiness
+                        = (AddressBusiness) getServiceInstance
+                        (AddressBusiness.class);
+                final PostalCode code = addressBusiness
+                        .getPostalCodeAndCreateIfDoesNotExist
+                        (postalCode,postalName,sweden);
+                final AddressHome addressHome = addressBusiness.getAddressHome();
+                final Address address = addressHome.create();
+                final AddressType mainAddressType = addressHome.getAddressType1();
+                address.setAddressType(mainAddressType);
+                address.setCountry(sweden);
+                address.setPostalCode(code);
+                address.setProvince(postalName);
+                address.setCity(postalName);
+                address.setStreetName(streetName);
+                address.store();
+                user.addAddress(address);
+            }
+            final Email email
+                    = ((EmailHome) IDOLookup.getHome(Email.class)).create();
             email.setEmailAddress(applicant.getEmail());
             email.store();
             user.addEmail(email);
