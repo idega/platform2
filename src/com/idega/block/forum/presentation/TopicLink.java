@@ -27,7 +27,7 @@ public abstract class TopicLink extends ForumLink {
 		image.setPaddingRight(getImagePadding());
 		image.setAlignment(getImageAlignment());
 
-		if (hasPermission(iwc)) {
+		if (hasPermission()) {
 			Link imageLink = new Link(image);
 			if (getWindowClassToOpen() != null) {
 				imageLink.setWindowToOpen(getWindowClassToOpen());
@@ -70,7 +70,7 @@ public abstract class TopicLink extends ForumLink {
 		}
 	}
 	
-	public abstract boolean hasPermission(IWContext iwc);
+	public abstract boolean hasPermission();
 	public abstract String getLinkName(IWResourceBundle resourceBundle);
 	public abstract Image getLinkImage(IWBundle bundle);
 	public abstract Class getWindowClassToOpen();

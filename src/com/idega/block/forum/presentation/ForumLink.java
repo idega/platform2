@@ -25,10 +25,14 @@ public abstract class ForumLink extends Block {
 	private String imageAlignment = Image.ALIGNMENT_ABSOLUTE_MIDDLE;
 	
 	private boolean showImage = true;
+	private boolean iHasAddPermission = false;
+	private boolean iHasReplyPermission = false;
 
 	public void main(IWContext iwc) {
 		iwrb = getResourceBundle(iwc);
 		iwb = getBundle(iwc);
+		iHasAddPermission = hasAddPermission(iwc);
+		iHasReplyPermission = hasReplyPermission(iwc);
 
 		int topicID = -1;
 		try {
@@ -38,6 +42,22 @@ public abstract class ForumLink extends Block {
 		catch (NumberFormatException e) {
 			//topic is not set...
 		}
+	}
+	
+	private boolean hasAddPermission(IWContext iwc) {
+		return iwc.hasPermission(Forum.AddPermission, this);
+	}
+	
+	private boolean hasReplyPermission(IWContext iwc) {
+		return iwc.hasPermission(Forum.AddPermission, this);
+	}
+	
+	protected boolean hasReplyPermission() {
+		return iHasReplyPermission;
+	}
+	
+	protected boolean hasAddPermission() {
+		return iHasAddPermission;
 	}
 	
 	public String getBundleIdentifier() {

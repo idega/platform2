@@ -18,8 +18,8 @@ public class ThreadNewLink extends TopicLink {
 	
 	private Image iImage;
 
-	public boolean hasPermission(IWContext iwc) {
-		return iwc.hasPermission(Forum.AddPermission, this);
+	public boolean hasPermission() {
+		return hasAddPermission();
 	}
 
 	public String getLinkName(IWResourceBundle resourceBundle) {

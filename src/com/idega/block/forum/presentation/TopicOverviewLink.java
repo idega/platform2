@@ -18,7 +18,7 @@ import com.idega.presentation.Image;
 public class TopicOverviewLink extends TopicLink {
 	
 	//if hasPermission is set to true then everyone is allowed to open an overview - must be true
-	public boolean hasPermission(IWContext iwc) {
+	public boolean hasPermission() {
 		return true;
 	}
 
