@@ -121,7 +121,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				column = 1;
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
-				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
+				queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
 				queueOrder = getBusiness().getNumberInQueue(application);
 				if (application.getApplicationStatus() == getBusiness().getStatusSentIn())
