@@ -126,6 +126,16 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		return (Integer)idoFindOnePKByQuery(sql);
 	}
 	
+	public Integer ejbFindByCustodianAndMonth(User custodian, CalendarMonth month) throws FinderException {
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CUSTODIAN_ID, custodian.getPrimaryKey());
+		sql.appendAnd().append(COLUMN_DATE_CREATED).appendGreaterThanOrEqualsSign().append(start);
+		sql.appendAnd().append(COLUMN_DATE_CREATED).appendLessThanOrEqualsSign().append(end);
+		return (Integer)idoFindOnePKByQuery(sql);
+	}
+	
 	public Integer ejbFindByCustodianID(int custodianID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CUSTODIAN_ID, custodianID);
