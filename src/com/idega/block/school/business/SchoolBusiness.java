@@ -43,6 +43,8 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.SchoolClassMember findClassMemberInClass(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
 // public java.util.Collection findClassMemberInSchool(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClass findSchoolClass(java.lang.Object p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection findAllCentralizedAdministrated()throws RemoteException;
+ public java.util.Collection findAllCentralizedAdministratedByType(java.util.Collection p0)throws RemoteException;
  public java.util.Collection findSchoolClassesBySchool(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesBySchoolAndSeason(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesBySchoolAndSeasonAndTeacher(int p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;

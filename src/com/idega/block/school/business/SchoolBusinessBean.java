@@ -277,6 +277,27 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public java.util.Collection findAllCentralizedAdministrated()throws RemoteException{
+		try {
+			return getSchoolHome().findAllCentralizedAdministrated();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new java.util.HashSet();
+		}		
+	}
+	
+	public java.util.Collection findAllCentralizedAdministratedByType(Collection typeIds) throws RemoteException{	
+		try {
+			return getSchoolHome().findAllCentralizedAdministratedByType(typeIds);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new java.util.HashSet();
+		}		
+	}
+
+	
 	public School createSchool(String name, String address, String zipcode, String ziparea, String phone, int school_type) throws RemoteException {
 		/**
 		 * @todo figure out how to implement
