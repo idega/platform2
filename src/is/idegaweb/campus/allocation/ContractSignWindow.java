@@ -1,6 +1,7 @@
 package is.idegaweb.campus.allocation;
 
 import is.idegaweb.campus.allocation.business.ContractBusiness;
+import is.idegaweb.campus.allocation.business.ContractFinder;
 import is.idegaweb.campus.presentation.Edit;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -96,6 +97,7 @@ public class ContractSignWindow extends Window{
     int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
     try {
       Contract eContract = new Contract(iContractId);
+      List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(),Contract.statusSigned);
       User eUser = new User(eContract.getUserId().intValue());
       idegaTimestamp from = new idegaTimestamp(eContract.getValidFrom());
       idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
@@ -141,74 +143,89 @@ public class ContractSignWindow extends Window{
       T.add(Edit.headerText(iwrb.getLocalizedString("contractdate","Contract date")+" :"),1,row);
       T.add(Edit.formatText(from.getLocaleDate(iwc)+" "+to.getLocaleDate(iwc)),2,row);
       row++;
-      T.add(Edit.headerText(iwrb.getLocalizedString("email","Email")+" : "),1,row);
-      if(lEmails !=null){
-        //T.add(Edit.formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,row);
-        int pos = lEmails.size()-1;
-        email.setContent(((Email)lEmails.get(pos)).getEmailAddress());
-        T.add(email,2,row);
+      boolean canSign = true;
+      if(listOfContracts != null){
+        Contract C = (Contract) listOfContracts.get(0);
+        if(C.getID() != eContract.getID())
+          canSign = false;
       }
-      else{
-        T.add(email,2,row);
-      }
-      row++;
-      row++;
-      if(eGroup != null){
-        HiddenInput Hgroup = new HiddenInput("user_group",String.valueOf(eGroup.getID()));
-        T.add(Hgroup);
-        if(lFinanceAccounts == null){
-          T.add(accountCheck,2,row);
-          T.add(Edit.headerText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
+      if(canSign ){
+        T.add(Edit.headerText(iwrb.getLocalizedString("email","Email")+" : "),1,row);
+        if(lEmails !=null){
+          //T.add(Edit.formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,row);
+          int pos = lEmails.size()-1;
+          email.setContent(((Email)lEmails.get(pos)).getEmailAddress());
+          T.add(email,2,row);
         }
         else{
-          int len = lFinanceAccounts.size();
-          for (int i = 0; i < len; i++) {
-            T.add(Edit.headerText(iwrb.getLocalizedString("fin_account","Finance account")+" : "),1,row);
-            T.add(Edit.formatText( ((Account)lFinanceAccounts.get(i)).getName() +" "),2,row);
-          }
+          T.add(email,2,row);
         }
         row++;
-        if(lPhoneAccounts == null){
-          T.add(phoneAccountCheck,2,row);
-          T.add(Edit.headerText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
-        }
-        else{
-          int len = lPhoneAccounts.size();
-          for (int i = 0; i < len; i++) {
-            T.add(Edit.headerText(iwrb.getLocalizedString("phone_account","Phone account")+" : "),1,row);
-            T.add(Edit.formatText( ((Account)lPhoneAccounts.get(i)).getName() +" "),2,row);
-          }
-        }
         row++;
-        if(loginTable != null ){
-          T.add(Edit.headerText(iwrb.getLocalizedString("login","Login")+" : "),1,row);
-          T.add(Edit.formatText(loginTable.getUserLogin()),2,row);
+        if(eGroup != null){
+          HiddenInput Hgroup = new HiddenInput("user_group",String.valueOf(eGroup.getID()));
+          T.add(Hgroup);
+          if(lFinanceAccounts == null){
+            T.add(accountCheck,2,row);
+            T.add(Edit.headerText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
+          }
+          else{
+            int len = lFinanceAccounts.size();
+            for (int i = 0; i < len; i++) {
+              T.add(Edit.headerText(iwrb.getLocalizedString("fin_account","Finance account")+" : "),1,row);
+              T.add(Edit.formatText( ((Account)lFinanceAccounts.get(i)).getName() +" "),2,row);
+            }
+          }
           row++;
-          T.add(Edit.headerText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,row);
-          if(passwd != null)
-            T.add(Edit.formatText(passwd),2,row++);
+          if(lPhoneAccounts == null){
+            T.add(phoneAccountCheck,2,row);
+            T.add(Edit.headerText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
+          }
+          else{
+            int len = lPhoneAccounts.size();
+            for (int i = 0; i < len; i++) {
+              T.add(Edit.headerText(iwrb.getLocalizedString("phone_account","Phone account")+" : "),1,row);
+              T.add(Edit.formatText( ((Account)lPhoneAccounts.get(i)).getName() +" "),2,row);
+            }
+          }
+          row++;
+          if(loginTable != null ){
+            T.add(Edit.headerText(iwrb.getLocalizedString("login","Login")+" : "),1,row);
+            T.add(Edit.formatText(loginTable.getUserLogin()),2,row);
+            row++;
+            T.add(Edit.headerText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,row);
+            if(passwd != null)
+              T.add(Edit.formatText(passwd),2,row++);
+          }
+          else{
+            T.add(loginCheck,2,row);
+            T.add(Edit.headerText(iwrb.getLocalizedString("new_login","New login")),2,row);
+          }
+          row++;
+          HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
+          if(eContract.getStatus().equalsIgnoreCase(eContract.statusSigned))
+            T.add(save,2,row);
+          else
+            T.add(signed,2,row);
+          if(print){
+            T.add(PB,2,row);
+          }
+          T.add(close,2,row);
+
+          T.add(HI,1,row);
         }
         else{
-          T.add(loginCheck,2,row);
-          T.add(Edit.headerText(iwrb.getLocalizedString("new_login","New login")),2,row);
-        }
-        row++;
-        HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
-        if(eContract.getStatus().equalsIgnoreCase(eContract.statusSigned))
-          T.add(save,2,row);
-        else
-          T.add(signed,2,row);
-        if(print){
-          T.add(PB,2,row);
-        }
-        T.add(close,2,row);
-
-        T.add(HI,1,row);
-      }
-      else{
         T.add(Edit.formatText(iwrb.getLocalizedString("syspropserror","System property error")),2,row++);
         T.add(Edit.formatText(iwrb.getLocalizedString("no_default_group","No default group")),2,row++);
+        }
       }
+      else{
+        row++;
+        Text msg = Edit.formatText(iwrb.getLocalizedString("contractconflict","Apartment is still in rent"));
+        msg.setFontColor("#FF0000");
+        T.add(msg,2,row++);
+      }
+
       Form F = new Form();
       F.add(T);
       return F;

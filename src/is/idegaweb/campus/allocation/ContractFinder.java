@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.12 2001/09/30 13:30:44 aron Exp $
+ * $Id: ContractFinder.java,v 1.13 2001/10/30 12:53:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Iterator;
 import com.idega.core.user.data.User;
 import com.idega.block.application.data.Applicant;
+import com.idega.block.building.data.Apartment;
 
 /**
  *
@@ -27,7 +28,7 @@ import com.idega.block.application.data.Applicant;
  */
 public abstract class ContractFinder {
   public final  static int NAME = 0,SSN=1,APARTMENT = 2,FLOOR=3,BUILDING=4,
-      COMPLEX=5,CATEGORY=6,TYPE=7;
+      COMPLEX=5,CATEGORY=6,TYPE=7,CONTRACT = 8,APPLICANT = 9;
 
   public static List listOfContracts(){
     try {
@@ -108,6 +109,26 @@ public abstract class ContractFinder {
       return null;
   }
 
+  public static Map mapOfContracts(List listOfContracts,int keyType){
+    if(listOfContracts!=null){
+      Hashtable H = new Hashtable();
+      int len = listOfContracts.size();
+      for (int i = 0; i < len; i++) {
+        Contract C = (Contract) listOfContracts.get(i);
+        String key = String.valueOf(C.getID());
+        switch (keyType) {
+          case APARTMENT : key = String.valueOf(C.getApartmentId()); break;
+          case APPLICANT: key = String.valueOf(C.getApplicantId()); break;
+          case CONTRACT : key = String.valueOf(C.getID());break;
+        }
+        H.put(key,C);
+      }
+      return H;
+    }
+    else
+      return null;
+  }
+
   public static List listOfApplicantContracts(int iApplicantId){
     try {
       Contract C = new Contract();
@@ -134,6 +155,85 @@ public abstract class ContractFinder {
     }
     return order;
   }
+
+  public static List listOfNonContractApartments(int iApartmentTypeId, int iComplexId){
+    StringBuffer sql = new StringBuffer("select a.*");
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
+    sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
+    sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+    sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
+    sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+    sql.append(" and a.bu_apartment_id not in ( select bu_apartment_id from cam_contract");
+    if(iComplexId > 0){
+      sql.append(" and bu_complex_id  = ");
+      sql.append(iComplexId);
+    }
+    if(iApartmentTypeId  > 0){
+      sql.append(" and bu_aprt_type_id = ");
+      sql.append(iApartmentTypeId);
+    }
+    System.err.println(sql.toString());
+    try{
+      return  EntityFinder.findAll(new Contract(),sql.toString());
+    }
+    catch(SQLException ex){
+      return null;
+    }
+  }
+
+  public static List listOfAvailable(int entity,int iApartmentTypeId, int iComplexId){
+    StringBuffer sql = new StringBuffer("select ");
+    try{
+    if(entity == APARTMENT )
+      sql.append(" a.* ");
+    else if(entity == CONTRACT)
+      sql.append(" con.* ");
+    else
+      throw new IllegalArgumentException();
+    }
+    catch(IllegalArgumentException e){
+      e.printStackTrace();
+      return null;
+    }
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b,app_applicant p ");
+    sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
+    sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+    sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
+    sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+    sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+    sql.append(" and con.app_applicant_id = p.app_applicant_id");
+    sql.append(" and con.status in ('T','E') ");
+    if(iComplexId > 0){
+      sql.append(" and bu_complex_id  = ");
+      sql.append(iComplexId);
+    }
+    if(iApartmentTypeId  > 0){
+      sql.append(" and bu_aprt_type_id = ");
+      sql.append(iApartmentTypeId);
+    }
+    System.err.println(sql.toString());
+    try{
+      List L = null;
+      if(entity == CONTRACT)
+        L =  EntityFinder.findAll(new Contract(),sql.toString());
+      else if(entity== APARTMENT)
+        L =  EntityFinder.findAll(new Apartment(),sql.toString());
+      if(entity == APARTMENT){
+        List A = listOfNonContractApartments(iApartmentTypeId,iComplexId);
+        if(A != null)
+          L.addAll(A);
+      }
+      return L;
+    }
+    catch(SQLException ex){
+      return null;
+    }
+  }
+
 
   public static List listOfContracts(String sComplexId,String sBuildingId,String sFloorId,String sType,String sCategory,String status,int iOrder){
 
@@ -271,6 +371,8 @@ public abstract class ContractFinder {
     }
     return eUser;
   }
+
+
 }
 
 

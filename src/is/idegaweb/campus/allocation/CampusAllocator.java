@@ -23,6 +23,8 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idegaweb.campus.application.*;
 import is.idegaweb.campus.allocation.*;
+import is.idegaweb.campus.allocation.business.ContractFinder;
+import is.idegaweb.campus.allocation.business.ApartmentContracts;
 import is.idegaweb.campus.entity.*;
 import java.util.List;
 import java.util.ListIterator;
@@ -117,40 +119,51 @@ public class CampusAllocator extends PresentationObjectContainer{
     }
 
     Table Frame = new Table();
-    Frame.add(getHomeLink());
+    Frame.add(getHomeLink(),1,1);
+    int row = 2;
     if(isAdmin){
       if(iTypeId > 0 && iComplexId > 0){
 
         if(iwc.getParameter("allocate")!=null){
           int applicantId = Integer.parseInt(iwc.getParameter("allocate"));
-          Frame.add( getFreeApartments(iTypeId,iComplexId,applicantId,-1),3,1 );
-          Frame.add( getApplicantInfo(applicantId,iwc),1,1 );
+          Frame.add( getApartmentsForm(iTypeId,iComplexId,applicantId,-1),3,row );
+          Frame.add( getApplicantInfo(applicantId,iwc),1,row);
         }
         else if(iwc.getParameter("change")!=null){
           int iContractId = Integer.parseInt(iwc.getParameter("change"));
-          Frame.add( getFreeApartments(iTypeId,iComplexId,-1,iContractId),3,1 );
+          int applicantId = Integer.parseInt(iwc.getParameter("applicant"));
+          Frame.add( getApartmentsForm(iTypeId,iComplexId,applicantId,iContractId),3,row );
           //Frame.add( getContractTable(iContractId),3,1 );
-          Frame.add( getWaitingList(iTypeId,iComplexId,iContractId),1,1 );
+          Frame.add( getWaitingList(iTypeId,iComplexId,iContractId),1,row );
+        }
+        else if(iwc.getParameter("view_aprtmnt")!=null){
+          int iApartmentId = Integer.parseInt(iwc.getParameter("view_aprtmnt"));
+          int iContractId = Integer.parseInt(iwc.getParameter("contract"));
+          int iApplicantId = Integer.parseInt(iwc.getParameter("applicant"));
+          idegaTimestamp from = new idegaTimestamp(iwc.getParameter("from"));
+          Frame.add( getContractsForm(iApartmentId,iApplicantId,iContractId,from),3,row );
+          //Frame.add( getContractTable(iContractId),3,1 );
+          Frame.add( getApplicantInfo(iApplicantId,iwc),1,row );
         }
         else if(iwc.getParameter("save_allocation")!=null){
           if(saveAllocation(iwc))
             System.err.println("vistadist");
           else
              System.err.println("vistadist ekki");
-          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,1 );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
         }
         else if(iwc.getParameter("delete_allocation")!=null){
           deleteAllocation(iwc);
-          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,1 );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
         }
         else
-          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,1 );
+          Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,row );
 
       }
       else
-        Frame.add(getCategoryLists(),1,1);
+        Frame.add(getCategoryLists(),1,row);
 
-      Frame.setRowVerticalAlignment(1,"top");
+      Frame.setRowVerticalAlignment(2,"top");
       add(Frame);
   }
   else
@@ -341,7 +354,7 @@ public class CampusAllocator extends PresentationObjectContainer{
               redColorSet = true;
             }
             //Frame.add(formatText(getApartmentString(C)),4,i+1);
-            Frame.add(getChangeLink(C.getID()),col++,row);
+            Frame.add(getChangeLink(C.getID(),C.getApplicantId().intValue()),col++,row);
           }
           else{
             Frame.add(getAllocateLink(A.getID()),col++,row);
@@ -393,9 +406,23 @@ public class CampusAllocator extends PresentationObjectContainer{
     return L;
   }
 
-  private Link getChangeLink(int id){
+  private Link getApartmentContractsLink(Text display,int applicant_id,int contract_id,int apartment_id,idegaTimestamp from){
+    Link L = new Link(display);
+    L.addParameter("view_aprtmnt",String.valueOf(apartment_id));
+    L.addParameter("contract",String.valueOf(contract_id));
+    L.addParameter("applicant",String.valueOf(applicant_id));
+    L.addParameter("from",from.toString());
+    if(pTypeId!=null && pComplexId!=null){
+      L.addParameter(pTypeId);
+      L.addParameter(pComplexId);
+    }
+    return L;
+  }
+
+  private Link getChangeLink(int Contractid,int iApplicantId){
     Link L = new Link(new Image("/pics/green.gif"));
-    L.addParameter("change",String.valueOf(id));
+    L.addParameter("change",String.valueOf(Contractid));
+    L.addParameter("applicant",String.valueOf(iApplicantId));
     if(pTypeId!=null && pComplexId!=null){
       L.addParameter(pTypeId);
       L.addParameter(pComplexId);
@@ -444,27 +471,13 @@ public class CampusAllocator extends PresentationObjectContainer{
     return MO;
   }
 
-  private PresentationObject getFreeApartments(int aprtTypeId,int cmplxId,int applicant_id,int contract_id){
-    List L = BuildingFinder.listOfApartmentsInTypeAndComplex(aprtTypeId,cmplxId);
+  private PresentationObject getApartmentsForm(int aprtTypeId,int cmplxId,int applicant_id,int contract_id){
+    Form myForm = new Form();
     ApartmentType AT = BuildingCacher.getApartmentType(aprtTypeId);
     Complex CX = BuildingCacher.getComplex(cmplxId);
-    Hashtable HT = ContractFinder.hashOfApartmentsContracts();
-    ApartmentTypePeriods ATP = getPeriod(aprtTypeId);
-    Contract C = null;
-    boolean hasContract = false;
-    if(contract_id != -1){
-      try {
-        C = new Contract(contract_id);
-        hasContract = true;
-      }
-      catch (SQLException ex) {
-        hasContract = false;
-      }
-    }
+    Contract C = ContractFinder.getContract(contract_id);
+    ApartmentTypePeriods ATP = getPeriod(AT.getID());
 
-    boolean bcontracts = false;
-    if(HT !=null)
-      bcontracts = true;
     Table Frame = new Table();
     Table Header = new Table();
     Header.add(headerText(AT.getName()+" "),1,1);
@@ -473,33 +486,168 @@ public class CampusAllocator extends PresentationObjectContainer{
     Header.setRowColor(1,blueColor);
     Header.setWidth("100%");
     Frame.add(Header,1,1);
+    Frame.add(getContractMakingTable(C,ATP,applicant_id,null ));
+    Frame.add(getFreeApartments(AT,CX,applicant_id ,C),1,3);
+    myForm.add(Frame);
+    return myForm;
+  }
 
+  private PresentationObject getContractsForm(int apartmentId,int applicant_id,int contract_id,idegaTimestamp from){
+    Apartment A = BuildingCacher.getApartment(apartmentId );
+    Contract C = ContractFinder.getContract(contract_id);
+    ApartmentTypePeriods ATP = getPeriod(A.getApartmentTypeId());
+
+    Form myForm = new Form();
+    Table Frame = new Table();
+    Table Header = new Table();
+    StringBuffer sHeader = new StringBuffer(A.getName());
+    Floor F = BuildingCacher.getFloor(A.getFloorId());
+    sHeader.append(" ");
+    sHeader.append(F.getName());
+    sHeader.append(" ");
+    sHeader.append(BuildingCacher.getBuilding(F.getBuildingId()).getName());
+    Header.add(headerText(sHeader.toString()),1,1);
+    Header.setRowColor(1,blueColor);
+    Header.setWidth("100%");
+    Frame.add(Header,1,1);
+    Frame.add(getContractMakingTable(C,ATP,applicant_id ,from));
+    Frame.add(getApartmentContracts(A.getID()),1,3);
+    myForm.add(Frame);
+    return myForm;
+  }
+
+  private PresentationObject getApartmentContracts(int iApartmentId){
+    Table T = new Table();
+    List L = ContractFinder.listOfApartmentContracts(iApartmentId);
+    java.util.Map M = ContractFinder.mapOfApartmentUsersBy(ContractFinder.listOfApartmentUsers(iApartmentId));
+    if(L!= null){
+      java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT);
+      java.util.Iterator I = L.iterator();
+      Contract C ;
+      User user;
+      Integer UID;
+      idegaTimestamp temp = null;
+      int row = 1;
+      while(I.hasNext()){
+        C = (Contract) I.next();
+        UID = C.getUserId();
+        if(M!=null && M.containsKey(UID)){
+          user = (User) M.get(UID);
+          T.add(formatText(user.getName() ),1,row);
+        }
+        T.add(formatText(df.format((java.util.Date)C.getValidFrom())),2,row);
+        T.add(formatText(df.format((java.util.Date)C.getValidTo())),3,row);
+        T.add(formatText(getStatus(C.getStatus())),4,row);
+        T.add(new HiddenInput("apartmentid",String.valueOf(iApartmentId )));
+        row++;
+      }
+    }
+    return T;
+  }
+
+
+  private PresentationObject getFreeApartments(ApartmentType AT,Complex CX,int applicant_id,Contract C){
+
+    java.util.Map M =  ContractFinder.mapOfAvailableApartmentContracts(AT.getID() ,CX.getID() );
+    List L = ContractFinder.listOfAvailable(ContractFinder.APARTMENT,AT.getID() ,CX.getID() );
+    //List L = BuildingFinder.listOfApartmentsInTypeAndComplex(AT.getID() ,CX.getID());
+
+    boolean hasContract = C!= null?true:false;
+    int iContractId = hasContract ? C.getID():-1;
+    boolean bcontracts = false;
+    if(M!=null)
+      bcontracts = true;
+    Table T = new Table();
     if(L!=null){
-      Form myForm = new Form();
-      Table T = new Table();
       int len = L.size();
       Apartment A ;
       Floor F;
       Building B;
+
       int row = 1;
-      SubmitButton save = new SubmitButton("save_allocation","Save");
+      RadioButton RB1,RB2;
+      Integer apId;
+      boolean Available = false;
+      idegaTimestamp nextAvailable;
+      for (int i = 0; i < len; i++) {
+        A = (Apartment) L.get(i);
+        apId = new Integer(A.getID());
 
-      setStyle(save);
-      DateInput dateFrom = new DateInput("contract_date_from",true);
-      DateInput dateTo = new DateInput("contract_date_to",true);
+        RB1 = new RadioButton("apartmentid",apId.toString());
+        //RB2 = new RadioButton("next_apartmentid",apId.toString());
+        boolean isThis = false;
 
-      idegaTimestamp contractDateFrom = new idegaTimestamp();
-      idegaTimestamp contractDateTo = new idegaTimestamp();
-      if(hasContract){
-        contractDateTo = new idegaTimestamp(C.getValidTo());
-        contractDateFrom = new idegaTimestamp(C.getValidFrom());
+        // Mark current apartment
+        if(hasContract && C.getApartmentId().intValue() == apId.intValue()  ){
+          //if(C.getStatus().equals(C.statusCreated ) ||C.getStatus().equals(C.statusPrinted  ) )
+            RB1.setSelected();
+
+          isThis = true;
+          TextFontColor = "#FF0000";
+        }
+
+        // List all apartments and show next availability ( date )
+        nextAvailable = null;
+        if( M != null && M.containsKey(apId) ){
+          ApartmentContracts AC = (ApartmentContracts) M.get(apId);
+          //System.err.println(" contractcount "+AC.getContracts().size());
+          nextAvailable = AC.getNextDate();
+          Available = false;
+        }
+        else{
+          Available = true;
+        }
+
+        // If apartment is not in contract table:
+        if(Available || isThis){
+          if(A.getUnavailableUntil()!=null){
+            idegaTimestamp it = new idegaTimestamp(A.getUnavailableUntil());
+            if(! it.isLaterThan(idegaTimestamp.RightNow())){
+              T.add(RB1,1,row);
+            }
+          }
+          else{
+            T.add(RB1,1,row);
+          }
+        }
+
+
+        T.add(formatText(A.getName()),2,row);
+        F = BuildingCacher.getFloor(A.getFloorId());
+        T.add(formatText(F.getName()),3,row);
+        T.add(formatText((BuildingCacher.getBuilding(F.getBuildingId())).getName()),4,row);
+        if(nextAvailable != null){
+          Text text = formatText(nextAvailable.getISLDate());
+          T.add(getApartmentContractsLink(text,applicant_id ,iContractId,A.getID(),nextAvailable),5,row);
+        }
+
+        if(isThis)
+          TextFontColor = "#000000";
+        row++;
       }
-      else if(ATP!=null){
+
+      T.setHorizontalZebraColored(lightBlue,WhiteColor);
+      int lastrow = row;
+      T.setRowColor(row,redColor);
+      T.mergeCells(1,row,4,row);
+      T.add(formatText(" "),1,row);
+      T.setHeight(row,bottomThickness);
+      T.setWidth(1,"50");
+      T.setWidth("100%");
+    }
+    return T;
+  }
+
+  private idegaTimestamp stampFromPeriod(ApartmentTypePeriods ATP,boolean From){
+     idegaTimestamp contractDateFrom = idegaTimestamp.RightNow();
+     idegaTimestamp contractDateTo = idegaTimestamp.RightNow();
+     if(ATP!=null){
         // Period checking
-        System.err.println("ATP exists");
+        //System.err.println("ATP exists");
         boolean first = ATP.hasFirstPeriod();
         boolean second = ATP.hasSecondPeriod();
          idegaTimestamp today = new idegaTimestamp();
+
         // Two Periods
         if(first && second){
 
@@ -519,15 +667,44 @@ public class CampusAllocator extends PresentationObjectContainer{
         }
         // One Periods
         else if(first && !second){
-          System.err.println("two sectors");
+          //System.err.println("two sectors");
           contractDateFrom = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear());
           contractDateTo = new idegaTimestamp(ATP.getFirstDateDay(),ATP.getFirstDateMonth(),today.getYear()+1);
         }
         else if(!first && second){
-          System.err.println("two sectors");
+          //System.err.println("two sectors");
           contractDateFrom = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear());
           contractDateTo = new idegaTimestamp(ATP.getSecondDateDay(),ATP.getSecondDateMonth(),today.getYear()+1);
         }
+     }
+      if(From)
+        return contractDateFrom;
+      else
+        return contractDateTo;
+  }
+
+  private PresentationObject getContractMakingTable(Contract C,ApartmentTypePeriods ATP,int applicant_id,idegaTimestamp from){
+    Table T = new Table();
+      int row = 1;
+      SubmitButton save = new SubmitButton("save_allocation","Save");
+
+      setStyle(save);
+      DateInput dateFrom = new DateInput("contract_date_from",true);
+      DateInput dateTo = new DateInput("contract_date_to",true);
+
+      idegaTimestamp contractDateFrom = new idegaTimestamp();
+      idegaTimestamp contractDateTo = new idegaTimestamp();
+
+      if(C!=null){
+        contractDateTo = new idegaTimestamp(C.getValidTo());
+        contractDateFrom = new idegaTimestamp(C.getValidFrom());
+      }
+      else if(ATP!=null){
+        // Period checking
+        //System.err.println("ATP exists");
+        contractDateTo = stampFromPeriod(ATP,false);
+        contractDateFrom = stampFromPeriod(ATP,true);
+
         if(dayBuffer > 0){
         contractDateFrom.addDays(dayBuffer);
         }
@@ -542,7 +719,8 @@ public class CampusAllocator extends PresentationObjectContainer{
         contractDateTo = new idegaTimestamp();
         contractDateFrom = new idegaTimestamp();
       }
-
+      if(from != null)
+        contractDateFrom = from;
 
       dateFrom.setDate(contractDateFrom.getSQLDate());
       dateTo.setDate(contractDateTo.getSQLDate());
@@ -550,10 +728,11 @@ public class CampusAllocator extends PresentationObjectContainer{
       dateTo.setStyleAttribute("style",styleAttribute);
       if(applicant_id != -1){
         HiddenInput Hid = new HiddenInput("applicantid",String.valueOf(applicant_id));
-        myForm.add(Hid);
+        T.add(Hid);
       }
       T.add(formatText(iwrb.getLocalizedString("validfrom","Valid from")),1,row);
       T.add(dateFrom,3,row);
+
       T.mergeCells(1,row,2,row);
       T.mergeCells(3,row,4,row);
       row++;
@@ -562,7 +741,7 @@ public class CampusAllocator extends PresentationObjectContainer{
       T.mergeCells(1,row,2,row);
       T.mergeCells(3,row,4,row);
       row++;
-      if(hasContract){
+      if(C!=null){
         SubmitButton delete = new SubmitButton("delete_allocation","Delete");
         setStyle(delete);
         T.add(delete,1,row);
@@ -571,53 +750,9 @@ public class CampusAllocator extends PresentationObjectContainer{
       T.add(save,3,row);
       T.mergeCells(1,row,2,row);
       T.mergeCells(3,row,4,row);
-      row++;
-      for (int i = 0; i < len; i++) {
-        A = (Apartment) L.get(i);
-        int id = A.getID();
-        RadioButton RB = new RadioButton("apartmentid",String.valueOf(id));
-        boolean isThis = false;
-        if(hasContract && C.getApartmentId().intValue() == id){
-          RB.setSelected();
-          isThis = true;
-          TextFontColor = "#FF0000";
-        }
-        // If apartment is not in contract table:
-        if(!(bcontracts && HT.containsKey(new Integer(A.getID()))) || isThis){
-          if(A.getUnavailableUntil()!=null){
-            idegaTimestamp it = new idegaTimestamp(A.getUnavailableUntil());
-            if(! it.isLaterThan(idegaTimestamp.RightNow())){
-              T.add(RB,1,row);
-            }
-          }
-          else{
-            T.add(RB,1,row);
-          }
-
-        T.add(formatText(A.getName()),2,row);
-        F = BuildingCacher.getFloor(A.getFloorId());
-        T.add(formatText(F.getName()),3,row);
-        T.add(formatText((BuildingCacher.getBuilding(F.getBuildingId())).getName()),4,row);
-        if(isThis)
-          TextFontColor = "#000000";
-        row++;
-        }
-
-      }
-      T.setHorizontalZebraColored(lightBlue,WhiteColor);
-
-      int lastrow = row;
-      T.setRowColor(row,redColor);
-      T.mergeCells(1,row,4,row);
-      T.add(formatText(" "),1,row);
-      T.setHeight(row,bottomThickness);
-      T.setWidth(1,"50");
-      T.setWidth("100%");
-      myForm.add(T);
-      Frame.add(myForm,1,2);
-    }
-    return Frame;
+    return T;
   }
+
 
   private PresentationObject getContractTable(int iContractId){
     Table T = new Table();
@@ -834,6 +969,20 @@ public class CampusAllocator extends PresentationObjectContainer{
     sb.append(B.getName());sb.append(" ");
     sb.append(C.getName());
     return sb.toString();
+  }
+
+  private String getStatus(String status){
+    String r = "";
+    char c = status.charAt(0);
+    switch (c) {
+      case 'C': r = iwrb.getLocalizedString("created","Created"); break;
+      case 'P': r = iwrb.getLocalizedString("printed","Printed"); break;
+      case 'S': r = iwrb.getLocalizedString("signed","Signed");   break;
+      case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
+      case 'T': r = iwrb.getLocalizedString("terminated","Terminated");   break;
+      case 'E': r = iwrb.getLocalizedString("ended","Ended");  break;
+    }
+    return r;
   }
 
 public Text formatText(String s){

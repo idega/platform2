@@ -426,19 +426,19 @@ public class CampusApprover extends PresentationObjectContainer{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("applicant","Applicant")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("residence","Residence")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("po","PO")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("email","Email")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("income","Income")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("residence","Residence")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("po","PO")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("email","Email")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("income","Income")),col,row++);
 
       col = 2;
       row = 2;
@@ -480,19 +480,19 @@ public class CampusApprover extends PresentationObjectContainer{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("applicant","Applicant")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("residence","Residence")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("po","PO")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("email","Email")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("income","Income")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("legal_residence","Legal Residence")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("residence","Residence")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("po","PO")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("phone","Residence phone")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("email","Email")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("faculty","Faculty")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("income","Income")),col,row++);
 
       col = 2;
       row = 2;
@@ -635,13 +635,13 @@ public class CampusApprover extends PresentationObjectContainer{
       int col = 1;
       int row = 1;
       T.add(headerText(iwrb.getLocalizedString("spouse","Spouse")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("name","Name")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("school","School")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("income","Income")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("ssn","Socialnumber")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("school","School")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("studytrack","Study Track")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_begins","Study begins")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("study_ends","Study ends")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("income","Income")),col,row++);
       col = 2;
       row = 2;
 
@@ -847,16 +847,16 @@ public class CampusApprover extends PresentationObjectContainer{
         int len = lApplied.size();
         for (int i = 0; i < len; i++) {
           Applied A = (Applied) lApplied.get(i);
-          T.add(Edit.titleText(i+1),1,row);
+          T.add(Edit.formatText(i+1),1,row);
           T.add(Edit.formatText((BuildingCacher.getApartmentType(A.getApartmentTypeId().intValue()).getName())),2,row++);
         }
       }
       col = 3;
       row = 1;
        T.add(headerText(iwrb.getLocalizedString("requests","Requests")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
-      T.add(Edit.titleText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("housingfrom","Housing from")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("wantfurniture","Wants furniture")),col,row++);
+      T.add(Edit.formatText(iwrb.getLocalizedString("onwaitinglist","On waitinglist")),col,row++);
       col = 4;
       row = 2;
       idegaTimestamp iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
@@ -1061,11 +1061,11 @@ public class CampusApprover extends PresentationObjectContainer{
   public PresentationObject getViewApplication(Application eApplication){
     Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("application","Application")),1,1);
-      T.add(Edit.titleText(iwrb.getLocalizedString("submitted","Submitted")),1,2);
+      T.add(Edit.formatText(iwrb.getLocalizedString("submitted","Submitted")),1,2);
       T.add(Edit.formatText(eApplication.getSubmitted().toString()),2,2);
-      T.add(Edit.titleText(iwrb.getLocalizedString("changed","Status change")),1,3);
+      T.add(Edit.formatText(iwrb.getLocalizedString("changed","Status change")),1,3);
       T.add(Edit.formatText(eApplication.getStatusChanged().toString()),2,3);
-      T.add(Edit.titleText(iwrb.getLocalizedString("status","Status")),3,2);
+      T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),3,2);
       T.add(Edit.formatText(getStatus(eApplication.getStatus())),3,3);
 
 
