@@ -20,6 +20,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -34,7 +35,7 @@ public class ChildCareContracts extends ChildCareBlock {
 	private boolean _requiresPrognosis;
 	private int allowedFutureContracts = 2;
 	private boolean showEmplDrop = true;
-	//private boolean showCreateGroupBtn = true;
+	private boolean showCreateGroupBtn = true;
 	
 	protected static final int STATUS_ACTIVE = 1;
 	protected static final int STATUS_NOT_YET_ACTIVE = 2;
@@ -372,7 +373,19 @@ public class ChildCareContracts extends ChildCareBlock {
 					table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.contract_ended","Contract has termination date")), 1, row++);
 				}
 			}
-			
+			String localized = "";
+			if (getSession().getGroupID() != -1)
+				localized = localize("child_care.change_group", "Change group");
+			else
+				localized = localize("child_care.create_group", "Create group");
+			if (showCreateGroupBtn){
+				GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
+				createGroup.setWindowToOpen(ChildCareWindow.class);
+				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
+				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
+				table.setHeight(1, row++, "10");
+				table.add(createGroup, 1, row++);
+			}
 			add(table);		
 		}
 		else {
@@ -617,7 +630,7 @@ public class ChildCareContracts extends ChildCareBlock {
 					table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.contract_ended","Contract has termination date")), 1, row++);
 				}
 			}
-	
+	*/
 			/*String localized = "";
 			if (getSession().getGroupID() != -1)
 				localized = localize("child_care.change_group", "Change group");
@@ -760,10 +773,8 @@ public class ChildCareContracts extends ChildCareBlock {
 	 * @param showCreateGroupBtn The showCreateGroupBtn to set.
 	 */
 	public void setShowCreateGroupBtn(boolean showCreateGroupBtn) {
-		//this.showCreateGroupBtn = showCreateGroupBtn;
-		if (showCreateGroupBtn) {
-			//Nothing...
-		}
+		this.showCreateGroupBtn = showCreateGroupBtn;
+		
 	}
 	
 	public void setShowParentRadioButton(boolean show){
