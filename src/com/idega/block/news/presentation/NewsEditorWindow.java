@@ -24,6 +24,14 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 
+/**
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
+ * Company:      idega
+  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @version 1.1
+ */
 
 public class NewsEditorWindow extends IWAdminWindow{
 
