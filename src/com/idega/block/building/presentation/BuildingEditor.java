@@ -739,9 +739,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       T2.setAlignment("center");
       T2.setHeight("100%");
       T2.setWidth("100%");
-      T2.setVerticalAlignment(1,1,"top");
-      T2.setVerticalAlignment(1,2,"bottom");
-      T2.setAlignment(1,2,"center");
+      T2.setVerticalAlignment(1,1,"bottom");
+      T2.setAlignment(1,1,"center");
     Frame.add(T,1,1);
     Frame.add(T2,2,1);
 
@@ -933,9 +932,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       T2.setAlignment("center");
       T2.setHeight("100%");
       T2.setWidth("100%");
-      T2.setVerticalAlignment(1,1,"top");
-      T2.setVerticalAlignment(1,2,"bottom");
-      T2.setAlignment(1,2,"center");
+      T2.setVerticalAlignment(1,1,"bottom");
+      T2.setAlignment(1,1,"center");
     Frame.add(T,1,1);
     Frame.add(T2,2,1);
 
