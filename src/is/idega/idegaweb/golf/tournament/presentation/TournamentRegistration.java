@@ -377,7 +377,7 @@ public void getDirectRegistrationTable(IWContext modinfo, boolean view,IWResourc
 
         }
 
-        Link theSearch = new Link(iwrb.getImage("buttons/search_for_member.gif"));
+        Link theSearch = getLink(localize("tournament.search_for_member","Search for member"));
         		theSearch.setWindowToOpen(MemberSearchWindow.class);
             theSearch.addParameter("action","getSearch");
         table.add(theSearch,2,1);
@@ -1051,7 +1051,7 @@ public void searchBySocialSecurityNumber(IWContext modinfo,IWResourceBundle iwrb
 
     table2.add(numberInput,1,2);
     table2.add(hidden,1,3);
-    GenericButton leitaButton = getButton(new SubmitButton(iwrb.getImage("tournament.search","Search")));
+    GenericButton leitaButton = getButton(new SubmitButton(localize("tournament.search","Search")));
     table2.add(leitaButton,2,3);
 
     if (AccessControl.isClubAdmin(modinfo)) {

@@ -106,7 +106,7 @@ public class TournamentSelector extends TournamentBlock {
 				year.setSelectedElement(Integer.toString(iYear));
 				year.setToSubmit();
 			
-			    GenericButton aframButton = getButton(new SubmitButton(localize("tournament.continue","Close")));
+			    GenericButton aframButton = getButton(new SubmitButton(localize("tournament.continue","Continue")));
 				table.add(year, 1, 3);
 			    table.add(aframButton,2,3);
 			    
