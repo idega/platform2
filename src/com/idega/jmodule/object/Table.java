@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.9 2001/07/11 13:06:19 laddi Exp $
+ * $Id: Table.java,v 1.10 2001/07/12 09:01:01 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -305,6 +305,14 @@ public class Table extends ModuleObjectContainer {
 
   public void setBorder(int i){
     setBorder(Integer.toString(i));
+  }
+
+  public void setFrameHsides() {
+      setAttribute("FRAMES","hsides");
+  }
+
+  public void setFrameVsides() {
+      setAttribute("FRAMES","vsides");
   }
 
   public void setCellspacing(int i){

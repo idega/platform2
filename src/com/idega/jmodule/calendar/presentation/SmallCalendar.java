@@ -19,6 +19,7 @@ public class SmallCalendar extends JModuleObject{
 
   private boolean useNextAndPreviousLinks = true;
   private boolean daysAreLinks = false;
+  private boolean showNameOfDays = true;
 
   private String textColor = "#FFFFFD";
   private String headerTextColor = "#FFFFFD";
@@ -80,20 +81,31 @@ public class SmallCalendar extends JModuleObject{
     Text t = new Text();
     t.setFontColor(textColor);
     t.setFontSize(1);
-//    String[] s = {"S","M","Þ","M","F","F","L"};
-    for(int a = 1; a<8;a++){
-      t = new Text(cal.getNameOfDay(a,modinfo).substring(0,1));
-      t.setFontColor(textColor);
-      t.setFontSize(1);
-      T.setAlignment(a,1,"center");
-      T.add(t,a,1);
+    if (this.showNameOfDays) {
+      for(int a = 1; a<8;a++){
+        t = new Text(cal.getNameOfDay(a,modinfo).substring(0,1));
+        t.setFontColor(textColor);
+        t.setFontSize(1);
+        T.setAlignment(a,1,"center");
+        T.add(t,a,1);
+        T.setRowColor(1,headerColor);
+      }
     }
     int n = 1;
     int xpos = daynr;
-    int ypos = 2;
+    int ypos = 1;
+    if (showNameOfDays) {
+        ++ypos;
+    }
 
     int month = stamp.getMonth();
     int year = stamp.getYear();
+
+    for (int i = 1; i < daynr; i++) {
+      T.setColor(i,ypos,inactiveCellColor);
+      //System.err.println(i+","+ypos+","+inactiveCellColor);
+    }
+
 
     Link theLink;
 
@@ -102,6 +114,7 @@ public class SmallCalendar extends JModuleObject{
       t.setFontColor(textColor);
       t.setFontSize(1);
       T.setAlignment(xpos,ypos,"center");
+      //if (colorToday) ?
       if(n == today.getDay() && shadow )
         T.setColor(xpos,ypos,headerColor);
 
@@ -119,6 +132,7 @@ public class SmallCalendar extends JModuleObject{
       }
 
       if (T.getColor(xpos,ypos) == null) {
+          //System.err.println("...LITA BODYCOLOR x= "+xpos+", y="+ypos);
           setDayColor(year,month,n,bodyColor);
       }
 
@@ -127,7 +141,6 @@ public class SmallCalendar extends JModuleObject{
         ypos++;
       n++;
     }
-    T.setRowColor(1,headerColor);
     T2.add(T,2,2);
     add(T2);
     }
@@ -229,6 +242,10 @@ public class SmallCalendar extends JModuleObject{
         this.width = width;
     }
 
+    public void showNameOfDays(boolean show) {
+        this.showNameOfDays = show;
+    }
+
     public void setDayColor(int year, int month, int day, String color) {
         boolean perform = false;
         if (stamp != null) {
@@ -242,7 +259,10 @@ public class SmallCalendar extends JModuleObject{
         if (perform) {
 
             int startingX = 1;
-            int startingY = 2;
+            int startingY = 1;
+            if (showNameOfDays) {
+                ++startingY;
+            }
 
             int daynr = cal.getDayOfWeek(year,month,1);
 
