@@ -620,25 +620,33 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private void updateWorkReportDataAndBoardData(IWApplicationContext iwac) 
       throws RemoteException, FinderException, IDOException{
     WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwac);
-    WorkReport workReport = workReportBusiness.getWorkReportById(getWorkReportId());
-    
-    workReport.setNumberOfMembers(membersTotalSum);
-    workReport.setNumberOfPlayers(playersCount);
-    workReport.store();
-    
-    WorkReportDivisionBoardHome home = workReportBusiness.getWorkReportDivisionBoardHome();
-    Collection boards = home.findAllWorkReportDivisionBoardByWorkReportId(getWorkReportId());
-    
-    Iterator iterator = boards.iterator();
-    while (iterator.hasNext())  {
-      WorkReportDivisionBoard board = (WorkReportDivisionBoard) iterator.next();
-      WorkReportGroup workReportGroup = board.getLeague();
-      String leagueName = workReportGroup.getName();
-      Integer number = (Integer) leagueCountMap.get(leagueName);
-      board.setNumberOfPlayers(number.intValue());
-      board.store();
+    try {
+      workReportBusiness.updateWorkReportData(getWorkReportId());
     }
-  }
+    catch (Exception ex) {
+      String message =
+        "[WorkReportBoardMemberEditor]: Can't update work report data.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+    }
+//    WorkReport workReport = workReportBusiness.getWorkReportById(getWorkReportId());
+//    
+//    workReport.setNumberOfMembers(membersTotalSum);
+//    workReport.setNumberOfPlayers(playersCount);
+//    workReport.store();
+//    
+//    WorkReportDivisionBoardHome home = workReportBusiness.getWorkReportDivisionBoardHome();
+//    Collection boards = home.findAllWorkReportDivisionBoardByWorkReportId(getWorkReportId());
+//    
+//    Iterator iterator = boards.iterator();
+//    while (iterator.hasNext())  {
+//      WorkReportDivisionBoard board = (WorkReportDivisionBoard) iterator.next();
+//      WorkReportGroup workReportGroup = board.getLeague();
+//      String leagueName = workReportGroup.getName();
+//      Integer number = (Integer) leagueCountMap.get(leagueName);
+//      board.setNumberOfPlayers(number.intValue());
+//      board.store();
+    }
 
   private void setValuesOfWorkReportMember(EntityPathValueContainer valueContainer, WorkReportMember member, WorkReportBusiness workReportBusiness, IWApplicationContext iwac)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();
