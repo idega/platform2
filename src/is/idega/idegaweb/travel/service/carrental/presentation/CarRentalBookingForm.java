@@ -43,6 +43,7 @@ import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.business.IBOLookup;
 import com.idega.core.user.data.User;
+import com.idega.data.IDOException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -64,6 +65,7 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 /**
  * <p>Title: idega</p>
@@ -77,7 +79,7 @@ import com.idega.util.IWTimestamp;
 public class CarRentalBookingForm extends BookingForm {
 
 	private CarRental _carRental;
-	private String PARAMETER_PICKUP_PLACE = "crbf_ppp";
+	//private String PARAMETER_PICKUP_PLACE = "crbf_ppp";
 	private String PARAMETER_DROPOFF_PLACE = "crbf_pdp";
 	private String PARAMETER_PICKUP_TIME = "crbf_ppt";
 	private String PARAMETER_DROPOFF_TIME = "crbf_pdt";
@@ -304,7 +306,7 @@ public class CarRentalBookingForm extends BookingForm {
 			TimeInput dropoffTime = null;
 			try {
 				Collection coll;
-				pickupPlaces = new DropdownMenu( PARAMETER_PICKUP_PLACE );
+				pickupPlaces = new DropdownMenu( super.parameterPickupId );
 				coll = _carRental.getPickupPlaces();
 				if (coll != null && !coll.isEmpty()) {
 					Iterator iter = coll.iterator();
@@ -660,8 +662,8 @@ public class CarRentalBookingForm extends BookingForm {
 				if (dropoffPlaces != null) {
 					dropoffPlaces.setSelectedElement(Integer.toString(crBooking.getDropoffPlaceId()));
 					IWTimestamp stamp = new IWTimestamp(crBooking.getDropoffTime());
-					pickupTime.setHour(stamp.getHour());
-					pickupTime.setMinute(stamp.getMinute());
+					dropoffTime.setHour(stamp.getHour());
+					dropoffTime.setMinute(stamp.getMinute());
 				}
 			}
 	        
@@ -712,9 +714,9 @@ public class CarRentalBookingForm extends BookingForm {
 		  form.add(table);
 	
 		  if (_stamp != null) {
-			form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
-			form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
-			form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
+				form.addParameter(CalendarBusiness.PARAMETER_YEAR,_stamp.getYear());
+				form.addParameter(CalendarBusiness.PARAMETER_MONTH,_stamp.getMonth());
+				form.addParameter(CalendarBusiness.PARAMETER_DAY,_stamp.getDay());
 		  }
 	
 		  boolean isDay = true;
@@ -1129,51 +1131,80 @@ public class CarRentalBookingForm extends BookingForm {
 			  table.setVerticalAlignment(1,row,"top");
 			  table.setAlignment(2,row,"left");
 	
+				++row;
+				table.mergeCells(1, row, 6, row);
+				table.add(hr, 1, row);
+				++row;
+				table.mergeCells(1,row,6,row);
+				subHeader = (Text) theBoldText.clone();
+			  subHeader.setFontColor(WHITE);
+			  subHeader.setText(iwrb.getLocalizedString("travel.booking_pickup_info","Pickup infomation"));
+			  table.add(subHeader, 1, row);
 	
-			  PickupPlaceHome hppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
-			  Collection hotelPickup = hppHome.findHotelPickupPlaces(this._service);
-			  //HotelPickupPlace[] hotelPickup = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
-	//			HotelPickupPlace[] hotelPickup = tsb.getHotelPickupPlaces(this._service);
-			  if (hotelPickup.size() > 0) {
+				/** PICKUP/DROPOFF */ 
+			  DropdownMenu pickupPlaces = null;
+			  TimeInput pickupTime = null;
+			  DropdownMenu dropoffPlaces = null;
+			  TimeInput dropoffTime = null;
+			  try {
+				  Collection coll;
+				  pickupPlaces = new DropdownMenu( super.parameterPickupId );
+				  coll = _carRental.getPickupPlaces();
+				  if (coll != null && !coll.isEmpty()) {
+					  Iterator iter = coll.iterator();
+					  PickupPlace p;
+					  while (iter.hasNext()) {
+						  p = getPickupPlaceHome().findByPrimaryKey(iter.next());
+						  pickupPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
+					  }	
+				  }
+					pickupTime = new TimeInput( PARAMETER_PICKUP_TIME );
+				  pickupTime.setHour(8);
+				  pickupTime.setMinute(0);
+				
 				  ++row;
-				  table.mergeCells(1,row,6,row);
-				  table.add(hr,1,row);
+				  Text pickupPlaceText = (Text) theText.clone();
+				  pickupPlaceText.setText(iwrb.getLocalizedString("travel.pickup_place","Pickup place"));
+				  Text pickupTimeText = (Text) theText.clone();
+				  pickupTimeText.setText(iwrb.getLocalizedString("travel.pickup_time","Pickup time"));
+				  table.add(pickupPlaceText, 1, row);
+				  table.add(pickupPlaces, 2, row);
+				  table.add(pickupTimeText, 3, row);
+				  table.add(pickupTime, 4, row);
+				  table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+					table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+
+				  dropoffPlaces = new DropdownMenu( PARAMETER_DROPOFF_PLACE );
+				  coll = _carRental.getDropoffPlaces();
+				  if (coll != null && !coll.isEmpty()) {
+					  Iterator iter = coll.iterator();
+					  PickupPlace p;
+					  while (iter.hasNext()) {
+						  p = getPickupPlaceHome().findByPrimaryKey(iter.next());
+						  dropoffPlaces.addMenuElement(p.getPrimaryKey().toString(), p.getName());
+					  }	
+				  }
+				  dropoffTime = new TimeInput( PARAMETER_DROPOFF_TIME );
+				  dropoffTime.setHour(8);
+				  dropoffTime.setMinute(0);
+				
 				  ++row;
-				  table.mergeCells(1,row,6,row);
-				  subHeader = (Text) theBoldText.clone();
-					subHeader.setFontColor(WHITE);
-					subHeader.setText(iwrb.getLocalizedString("travel.booking_choose_pickup","If you choose to be picked up, select your preferred pickup place from the list below"));
-				  table.add(subHeader,1,row);
-				  table.setAlignment(1,row,"left");
-				  ++row;
-				  ++row;
-	
-						  DropdownMenu pickupMenu = null;
-						  TextInput roomNumber = null;
-	
-				  Text hotelText = (Text) theText.clone();
-					hotelText.setText(iwrb.getLocalizedString("travel.pickup_sm","pickup"));
-				  pickupMenu = new DropdownMenu(hotelPickup, parameterPickupId);
-					pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_pickup","No pickup"));
-	
-				  Text roomNumberText = (Text) theText.clone();
-					roomNumberText.setText(iwrb.getLocalizedString("travel.extra_info","extra info"));
-				  roomNumber = new TextInput(parameterPickupInf);
-					roomNumber.setSize(textInputSizeSm);
-	
-				  table.add(hotelText,1,row);
-				  table.add(pickupMenu,2,row);
-				  table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
-				  table.add(roomNumberText,3,row);
-				  table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,2,row);
-				  table.add(roomNumber,4,row);
-	
-				  table.setAlignment(1,row,"right");
-				  table.setAlignment(2,row,"left");
-				  table.setAlignment(3,row,"right");
-				  table.setAlignment(4,row,"left");
-				  table.mergeCells(4,row,6,row);
+				  Text dropoffPlaceText = (Text) theText.clone();
+				  dropoffPlaceText.setText(iwrb.getLocalizedString("travel.dropoff_place","Dropoff place"));
+				  Text dropoffTimeText = (Text) theText.clone();
+				  dropoffTimeText.setText(iwrb.getLocalizedString("travel.dropoff_time","Dropoff time"));
+				  table.add(dropoffPlaceText, 1, row);
+				  table.add(dropoffPlaces, 2, row);
+				  table.add(dropoffTimeText, 3, row);
+				  table.add(dropoffTime, 4, row);
+					table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+				  table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
+
+			  } catch (IDORelationshipException e1) {
+				  e1.printStackTrace(System.err);
 			  }
+
+	
 	
 			   table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 	
@@ -1333,7 +1364,10 @@ public class CarRentalBookingForm extends BookingForm {
 		String manyDays = iwc.getParameter(parameterManyDays);
 	    
 		String pickupId = iwc.getParameter(parameterPickupId);
-		String pickupInf = iwc.getParameter(parameterPickupInf);
+		String pickupTime = iwc.getParameter(PARAMETER_PICKUP_TIME);
+		String dropoffId = iwc.getParameter(PARAMETER_DROPOFF_PLACE);
+		String dropoffTime = iwc.getParameter(PARAMETER_DROPOFF_TIME);
+		
 	
 		String ccNumber = iwc.getParameter(parameterCCNumber);
 		String ccMonth = iwc.getParameter(parameterCCMonth);
@@ -1462,30 +1496,66 @@ public class CarRentalBookingForm extends BookingForm {
 			table.add(star, 2, row);
 		  }
 	
+	  ++row;
+	  table.setAlignment(1,row,"right");
+	  table.setAlignment(2,row,"left");
+	  table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
+	  table.add(getBoldTextWhite(telephoneNumber),2,row);
+
 		  ++row;
 		  table.setAlignment(1,row,"right");
 		  table.setAlignment(2,row,"left");
-		  table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
-		  table.add(getBoldTextWhite(telephoneNumber),2,row);
-	
-				if (pickupId != null) {
-					try {
-						PickupPlace pickup = ((PickupPlaceHome) IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(pickupId));
-				  ++row;
-				  table.setAlignment(1,row,"right");
-				  table.setAlignment(2,row,"left");
-				  table.add(getTextWhite(iwrb.getLocalizedString("travel.pickup","Pickup")),1,row);
-				  table.add(getBoldTextWhite(pickup.getAddress().getStreetName()),2,row);
-				  ++row;
-				  table.setAlignment(1,row,"right");
-				  table.setAlignment(2,row,"left");
-				  table.add(getTextWhite(iwrb.getLocalizedString("travel.pickup_info","Pickup  info")),1,row);
-				  table.add(getBoldTextWhite(pickupInf),2,row);
-					} catch (FinderException e) {
-						e.printStackTrace(System.err);
-					}
-					
-				}
+		  table.add(getTextWhite(iwrb.getLocalizedString("travel.pickup","Pickup")),1,row);
+			
+			
+			try {
+			  PickupPlace pickup = ((PickupPlaceHome) IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(pickupId));
+			  table.add(getBoldTextWhite(pickup.getAddress().getStreetName()),2,row);
+		  }catch (Exception e) {
+				e.printStackTrace(System.err);
+			  valid = false;
+			  table.add(star, 2, row);
+			}
+
+		  ++row;
+		  table.setAlignment(1,row,"right");
+		  table.setAlignment(2,row,"left");
+		  table.add(getTextWhite(iwrb.getLocalizedString("travel.pickup_time","Pickup  time")),1,row);
+		  try {
+		  	IWTimestamp pickupStamp = new IWTimestamp(fromStamp.toSQLDateString() +" "+pickupTime);
+		  	table.add(getBoldTextWhite(TextSoap.addZero(pickupStamp.getHour())+":"+TextSoap.addZero(pickupStamp.getMinute())),2,row);
+		  }catch (Exception e) {
+				e.printStackTrace(System.err);
+				valid = false;
+				table.add(star, 2, row);
+		  }
+
+		  ++row;
+		  table.setAlignment(1,row,"right");
+		  table.setAlignment(2,row,"left");
+		  table.add(getTextWhite(iwrb.getLocalizedString("travel.dropoff","Dropoff")),1,row);
+		  try {
+				PickupPlace dropoff = ((PickupPlaceHome) IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(dropoffId));
+		  	table.add(getBoldTextWhite(dropoff.getAddress().getStreetName()),2,row);
+		  }catch (Exception e) {
+			e.printStackTrace(System.err);
+		  	valid = false;
+		  	table.add(star, 2, row);	
+		  }
+		  
+		  ++row;
+		  table.setAlignment(1,row,"right");
+		  table.setAlignment(2,row,"left");
+		  table.add(getTextWhite(iwrb.getLocalizedString("travel.dropoff_time","Dropoff  time")),1,row);
+		  try {
+		  	IWTimestamp dropoffStamp = new IWTimestamp(fromStamp.toSQLDateString() +" "+dropoffTime);
+		  	table.add(getBoldTextWhite(TextSoap.addZero(dropoffStamp.getHour())+":"+TextSoap.addZero(dropoffStamp.getMinute())),2,row);
+		  }catch (Exception e) {
+		  	e.printStackTrace(System.err);
+		  	valid = false;
+		  	table.add(star, 2, row);	
+		  }
+
 	
 	/*      ++row;
 		  table.setAlignment(1,row,"right");
@@ -1645,8 +1715,35 @@ public class CarRentalBookingForm extends BookingForm {
 		return table;
   }
  
+  public void saveServiceBooking(IWContext iwc, int bookingId, IWTimestamp stamp) throws RemoteException, IDOException {
+		//System.out.println("[CarRentalBookingForm] bookingId = "+bookingId+" ..... stamp = "+stamp.toString());
+		String pickupPlaceId = iwc.getParameter( super.parameterPickupId );
+		String pickupTime = iwc.getParameter( PARAMETER_PICKUP_TIME );
+		String dropoffPlaceId = iwc.getParameter( PARAMETER_DROPOFF_PLACE );
+		String dropoffTime = iwc.getParameter( PARAMETER_DROPOFF_TIME );
+		int iPickupId = -1;
+		IWTimestamp pickupStamp = null;
+		int iDropoffId = -1;
+		IWTimestamp dropoffStamp = null;
+  	
+		try {
+		  iPickupId = Integer.parseInt(pickupPlaceId);
+		  pickupStamp = new IWTimestamp(stamp.toSQLDateString()+" "+pickupTime);	
+		}catch (Exception e) {
+			e.printStackTrace(System.err);	
+		}
+		try {
+		  iDropoffId = Integer.parseInt(dropoffPlaceId);
+		  dropoffStamp = new IWTimestamp(stamp.toSQLDateString()+" "+dropoffTime);	
+		}catch (Exception e) {
+			e.printStackTrace(System.err);	
+		}
+		
+		getCarRentalBooker(iwc).book(bookingId, iPickupId, pickupStamp, iDropoffId, dropoffStamp);		
+  	
+  }
+ /*
   public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException, TPosException {
-  	System.out.println("[CarRentalBookingForm] save(iwc)");
 	  String surname = iwc.getParameter("surname");
 	  String lastname = iwc.getParameter("lastname");
 	  String address = iwc.getParameter("address");
@@ -1704,6 +1801,10 @@ public class CarRentalBookingForm extends BookingForm {
 		int betw = 1;
 		try {
 		  betw = Integer.parseInt(manyDays);
+		  if (betw < 1) {
+			  betw = 1;			
+		  }
+		  System.out.println("[CarRentalBookingForm] betw = "+betw);
 		}catch (NumberFormatException e) {
 			e.printStackTrace(System.err);
 		}
@@ -1712,7 +1813,6 @@ public class CarRentalBookingForm extends BookingForm {
 		  iPickupId = Integer.parseInt(pickupPlaceId);
 		  pickupStamp = new IWTimestamp(_fromDate.toSQLDateString()+" "+pickupTime);	
 		}catch (Exception e) {
-			System.out.println("[CarRentalBookingForm] pickupTime = "+pickupTime);
 			e.printStackTrace(System.err);	
 		}
 		try {
@@ -1796,36 +1896,36 @@ public class CarRentalBookingForm extends BookingForm {
 
 
 		int[] bookingIds = new int[betw];
+		
+		System.out.println("[CarRentalBookingForm] betw = "+betw);
 
 		for (int i = 0; i < betw; i++) {
 		  if (iBookingId == -1) {
-			if (i != 0) {
-				_fromDate.addDays(1);
-			}
-			lbookingId = getCarRentalBooker(iwc).Book(_service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
+				if (i != 0) {
+					_fromDate.addDays(1);
+				}
+				lbookingId = getCarRentalBooker(iwc).Book(_service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
 		  }else {
 			//handle multiple...
-			List tempBookings = getCarRentalBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
-			if (tempBookings == null || tempBookings.size() < 2) {
-			  lbookingId = getCarRentalBooker(iwc).updateBooking(iBookingId, _service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
-			}else {
-			  GeneralBooking gBooking;
-			  for (int j = 0; j < tempBookings.size(); j++) {
-				gBooking = (GeneralBooking) tempBookings.get(j);
-				getCarRentalBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
-			  }
-			  lbookingId = iBookingId;
-
-
-			}
+				List tempBookings = getCarRentalBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
+				if (tempBookings == null || tempBookings.size() < 2) {
+				  lbookingId = getCarRentalBooker(iwc).updateBooking(iBookingId, _service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
+				}else {
+				  GeneralBooking gBooking;
+				  for (int j = 0; j < tempBookings.size(); j++) {
+						gBooking = (GeneralBooking) tempBookings.get(j);
+						getCarRentalBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
+				  }
+				  lbookingId = iBookingId;
+				}
 		  }
 		  bookingIds[i] = lbookingId;
 		}
 
 
-		/**
-		 * removing booking from resellers...
-		 */
+		
+		// removing booking from resellers...
+		 
 		for (int o = 0; o < bookingIds.length; o++) {
 		  try {
 			GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingIds[o]));
@@ -1835,9 +1935,9 @@ public class CarRentalBookingForm extends BookingForm {
 		  catch (IDORemoveRelationshipException sql) {debug(sql.getMessage());}
 		}
 
-		/**
-		 * adding booking to reseller if resellerUser is chosen from dropdown...
-		 */
+		
+		 // adding booking to reseller if resellerUser is chosen from dropdown...
+		 
 		int resId = -7;
 		try {
 		  if (!sUserId.equals("-1")) {
@@ -1952,7 +2052,7 @@ public class CarRentalBookingForm extends BookingForm {
 
 	  return returner;
   }
-
+*/
 
   private CarRentalBooker getCarRentalBooker(IWApplicationContext iwac) throws RemoteException {
   	return (CarRentalBooker) IBOLookup.getServiceInstance(iwac, CarRentalBooker.class);
@@ -1973,4 +2073,14 @@ public class CarRentalBookingForm extends BookingForm {
   private PickupPlaceHome getPickupPlaceHome() throws IDOLookupException {
   	return (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);	
   }
+
+	public Form getFormMaintainingAllParameters( IWContext iwc,	boolean withBookingAction, boolean withSAction) {
+		//System.out.println("[CarRentalBookingForm] getFormMaintainingAllParameters()");
+		Form form = super.getFormMaintainingAllParameters( iwc, withBookingAction, withSAction);
+		form.maintainParameter(this.PARAMETER_DROPOFF_PLACE);
+		form.maintainParameter(this.PARAMETER_DROPOFF_TIME);
+		form.maintainParameter(this.PARAMETER_PICKUP_TIME);
+		return form;
+	}
+
 }
