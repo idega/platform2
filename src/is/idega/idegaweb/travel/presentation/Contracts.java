@@ -94,17 +94,21 @@ public class Contracts extends TravelManager {
       */
 
       Table table = new Table();
-        form.add(new SubmitButton("T - new reseller", this.sAction,this.parameterNewReseller));
         form.add(table);
         table.setAlignment("center");
-        table.setWidth("80%");
+        table.setWidth("90%");
+        table.setCellspacing(0);
 
-      int row = 0;
+      int row = 1;
 
       Text resName;
       Text refNum;
       Link assign;
       Link edit;
+
+      ++row;
+        table.add(new SubmitButton(iwrb.getImage("buttons/newreseller.gif"), this.sAction,this.parameterNewReseller),1,row);
+        table.mergeCells(1,row,3,row);
 
       ++row;
       resName = (Text) theText.clone();
@@ -120,18 +124,20 @@ public class Contracts extends TravelManager {
         resellers = ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
       }
 
+      String theColor = super.GRAY;
       for (int i = 0; i < resellers.length; i++) {
           ++row;
+          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
           resName = (Text) theText.clone();
+            resName.setFontColor(super.backgroundColor);
             resName.setText(resellers[i].getName());
           refNum = (Text) theText.clone();
             refNum.setText(resellers[i].getReferenceNumber());
-          assign = new Link("T - assign");
-            assign.setFontColor(super.textColor);
+            refNum.setFontColor(super.backgroundColor);
+          assign = new Link(iwrb.getImage("buttons/closer.gif"));
             assign.addParameter(this.sAction,this.parameterAssignReseller);
             assign.addParameter(this.parameterResellerId,resellers[i].getID());
           edit = new Link(iwrb.getImage("buttons/change.gif"));
-            edit.setFontColor(super.textColor);
             edit.addParameter(this.sAction,this.parameterEditReseller);
             edit.addParameter(this.parameterResellerId,resellers[i].getID());
 
@@ -139,14 +145,16 @@ public class Contracts extends TravelManager {
           table.add(refNum,2,row);
           table.add(edit,3,row);
           table.add(assign,3,row);
-          table.setColor(1,row,super.backgroundColor);
-          table.setColor(2,row,super.backgroundColor);
+          table.setColor(1,row,theColor);
+          table.setColor(2,row,theColor);
+          table.setAlignment(3,row,"right");
 
       }
 //      table.add(resellers);
 
       add(form);
   }
+
 
   public void resellerCreation(int resellerId) throws SQLException{
   /*
@@ -227,7 +235,7 @@ public class Contracts extends TravelManager {
 
 
       SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveNewReseller);
-      BackButton back = new BackButton("Til baka");
+      BackButton back = new BackButton(iwrb.getImage("buttons/back.gif"));
 
 
 
@@ -269,7 +277,7 @@ public class Contracts extends TravelManager {
           if (eEmail != null) {
             email.setContent(eEmail.getEmailAddress());
           }
-          submit = new SubmitButton("update",this.sAction,this.parameterUpdateReseller);
+          submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction,this.parameterUpdateReseller);
       }
 
 
@@ -541,23 +549,30 @@ public class Contracts extends TravelManager {
 
     Timeframe timeframe;
 
-    Link closerLook = new Link("T- Nánar");
+    Link closerLook = new Link(iwrb.getImage("buttons/closer.gif"));
       closerLook.setFontColor(super.textColor);
       closerLook.addParameter(this.sAction, this.parameterAssignReseller);
       closerLook.addParameter(this.parameterResellerId , reseller.getID());
+
+    Link closeLook = new Link(iwrb.getImage("buttons/close.gif"));
+      closeLook.addParameter(this.sAction, this.parameterAssignReseller);
+      closeLook.addParameter(this.parameterResellerId , reseller.getID());
 
     Link temp;
 
     ++row;
     table.setAlignment(4,row,"left");
+    String theColor = super.GRAY;
+
     for (int i = 0; i < products.length; i++) {
         ++row;
+        theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+        table.setRowColor(row, theColor);
         pName = (Text) theBoldText.clone();
           pName.setText(products[i].getName());
-          pName.setFontColor(super.textColor);
+          pName.setFontColor(super.backgroundColor);
 
         table.add(pName,1,row);
-        table.setRowColor(row, super.backgroundColor);
         table.mergeCells(1,row,3,row);
 
         if (products[i].getID() == productId) {
@@ -566,9 +581,7 @@ public class Contracts extends TravelManager {
             form.add(new HiddenInput(this.parameterProductId , Integer.toString(products[i].getID())));
 
             table.setAlignment(4,row,"right");
-            temp = (Link) closerLook.clone();
-              temp.setText("T-Loka");
-              temp.setFontColor(super.backgroundColor);
+            temp = (Link) closeLook.clone();
             table.add(temp,4,row);
 
             pAlot = new TextInput("alotment");
@@ -688,7 +701,7 @@ public class Contracts extends TravelManager {
 
 
             pName.setFontColor(super.backgroundColor);
-            table.setRowColor(row, super.textColor);
+//            table.setRowColor(row, super.textColor);
 
             ++row;
             table.add(tDiscount,1,row);
@@ -723,8 +736,8 @@ public class Contracts extends TravelManager {
             table.add(tDaysBefore,3,row);
 
             ++row;
-            table.setRowColor(row, super.textColor);
-            SubmitButton submit = new SubmitButton("T-SAVE",this.sAction,this.parameterSaveProductInfo);
+            table.setRowColor(row, theColor);
+            SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
             table.add(submit,4,row);
             table.setAlignment(4,row,"right");
 

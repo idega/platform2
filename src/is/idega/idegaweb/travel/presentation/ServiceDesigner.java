@@ -101,6 +101,7 @@ public class ServiceDesigner extends TravelManager {
     /**
      * @todo implement for other types
      */
+     add(Text.BREAK);
     TourDesigner td = new TourDesigner(iwc);
 
     String id = iwc.getParameter(this.parameterUpdateServiceId);

@@ -136,7 +136,7 @@ public class ServiceOverview extends TravelManager {
         sb.setAlignment("center");
         sb.add(table);
 */
-      table.setWidth("95%");
+      table.setWidth("90%");
       String sYear = iwc.getParameter("year");
       if (sYear == null) {
           sYear = Text.emptyString().toString();
@@ -344,6 +344,16 @@ public class ServiceOverview extends TravelManager {
 
 
             table.setColor(1,row,super.backgroundColor);
+            ++row;
+            table.mergeCells(1,row,5,row);
+            table.setColor(1,row,super.backgroundColor);
+            HorizontalRule hr = new HorizontalRule("90%",1);
+              hr.setAlignment(hr.ALIGN_CENTER);
+              hr.setNoShade(true);
+              hr.setColor(super.textColor);
+            table.add(hr,1,row);
+
+            ++row;
 
             ++row;
             table.mergeCells(1,row,5,row);

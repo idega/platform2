@@ -112,9 +112,12 @@ public class Statistics extends TravelManager {
           */
           form.add(table);
 
-          Paragraph par = new Paragraph();
-            par.setAlign("right");
-            par.add(new PrintButton("TEMP-PRENTA"));
+          form.add(Text.BREAK);
+          Table par = new Table();
+            par.setAlignment(1,1,"right");
+            par.setAlignment("center");
+            par.setWidth("90%");
+            par.add(new PrintButton(iwrb.getImage("buttons/print.gif")));
           form.add(par);
             //sb.add(par);
       }
@@ -217,14 +220,14 @@ public class Statistics extends TravelManager {
       topTable.mergeCells(2,2,4,2);
 
       topTable.setAlignment(4,3,"right");
-      topTable.add(new SubmitButton("TEMP-Sækja"),4,3);
+      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif")),4,3);
 
       return topTable;
   }
 
   public Table getContentHeader(IWContext iwc) {
       Table table = new Table(2,3);
-      table.setWidth("95%");
+      table.setWidth("90%");
 
 
       String mode = iwc.getParameter("mode");
@@ -268,7 +271,7 @@ public class Statistics extends TravelManager {
 
   public Table getContentTable(IWContext iwc) {
       Table table = new Table();
-        table.setWidth("95%");
+        table.setWidth("90%");
         table.setBorder(1);
         table.setCellspacing(0);
         table.setCellpadding(2);

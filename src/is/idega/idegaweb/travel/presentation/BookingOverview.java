@@ -161,9 +161,12 @@ public class BookingOverview extends TravelManager {
         sb.add(getContentHeader(iwc));
         sb.add(table);
 */
-      Paragraph par = new Paragraph();
-        par.setAlign("right");
-        par.add(new PrintButton("TEMP-PRENTA"));
+      Table par = new Table(1,1);
+        par.setAlignment(1,1,"right");
+        par.setAlignment("center");
+        par.setWidth("90%");
+        par.add(new PrintButton(iwrb.getImage("buttons/print.gif")),1,1);
+        form.add(Text.BREAK);
         form.add(par);
 //        sb.add(par);
 
@@ -293,7 +296,7 @@ public class BookingOverview extends TravelManager {
       topTable.setWidth(4,3,"500");
 
       topTable.setAlignment(4,4,"right");
-      topTable.add(new SubmitButton("TEMP-Sækja"),4,4);
+      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif")),4,4);
 
       return topTable;
   }
@@ -325,10 +328,9 @@ public class BookingOverview extends TravelManager {
 
   public Table getContentTable(IWContext iwc) {
       Table table = new Table();
-        table.setWidth("95%");
-        table.setBorder(1);
         table.setCellspacing(0);
         table.setCellpadding(2);
+        table.setWidth("90%");
 
       int row = 1;
       if (product != null) {
@@ -362,8 +364,6 @@ public class BookingOverview extends TravelManager {
           Text bookedTextBold = (Text) theSmallBoldText.clone();
           Text availableTextBold = (Text) theSmallBoldText.clone();
 
-
-
           table.add(dateText,1,row);
           table.add(nameText,2,row);
           table.add(countText,3,row);
@@ -391,10 +391,17 @@ public class BookingOverview extends TravelManager {
           int iAvailable=0;
           int iAssigned=0;
 
+          String theColor = super.GRAY;
+
           idegaTimestamp tempStamp = new idegaTimestamp(fromStamp);
 
           toStamp.addDays(1);
           while (toStamp.isLaterThan(tempStamp)) {
+              if (theColor.equals(super.GRAY)) {
+                theColor = super.WHITE;
+              }else {
+                theColor = super.GRAY;
+              }
               dayOfWeek = cal.getDayOfWeek(tempStamp.getYear(), tempStamp.getMonth(), tempStamp.getDay());
               try {
                   if (viewAll) {
@@ -412,7 +419,17 @@ public class BookingOverview extends TravelManager {
               ++row;
               dateTextBold = (Text) theSmallBoldText.clone();
                   dateTextBold.setText(tempStamp.getLocaleDate(iwc));
+                  dateTextBold.setFontColor(super.backgroundColor);
               table.add(dateTextBold,1,row);
+
+              table.setColor(1,row,theColor);
+              table.setColor(2,row,theColor);
+              table.setColor(3,row,theColor);
+              table.setColor(4,row,theColor);
+              table.setColor(5,row,theColor);
+              table.setColor(6,row,theColor);
+              table.setColor(7,row,theColor);
+//              table.setColor(8,row,super.textColor);
 
               boolean bContinue= false;
 
@@ -463,6 +480,12 @@ public class BookingOverview extends TravelManager {
                               bookedTextBold.setText(Integer.toString(iBooked));
                           availableTextBold = (Text) theSmallBoldText.clone();
                               availableTextBold.setText(Integer.toString(iAvailable));
+                            nameTextBold.setFontColor(super.backgroundColor);
+                            countTextBold.setFontColor(super.backgroundColor);
+                            assignedTextBold.setFontColor(super.backgroundColor);
+                            inqTextBold.setFontColor(super.backgroundColor);
+                            bookedTextBold.setFontColor(super.backgroundColor);
+                            availableTextBold.setFontColor(super.backgroundColor);
 
                           Link btnNanar = new Link(iwrb.getImage("/buttons/closer.gif"));
                               btnNanar.addParameter(closerLookDateParameter,tempStamp.toSQLDateString());
@@ -481,11 +504,13 @@ public class BookingOverview extends TravelManager {
                             table.add(availableTextBold,7,row);
                           }
 
-                          table.setColor(3,row,super.backgroundColor);
-                          table.setColor(4,row,super.ORANGE);
-                          table.setColor(5,row,super.YELLOW);
-                          table.setColor(6,row,super.RED);
-                          table.setColor(7,row,super.LIGHTGREEN);
+                          table.setColor(1,row,theColor);
+                          table.setColor(2,row,theColor);
+                          table.setColor(3,row,theColor);
+                          table.setColor(4,row,theColor);
+                          table.setColor(5,row,theColor);
+                          table.setColor(6,row,theColor);
+                          table.setColor(7,row,theColor);
 
                           table.add(btnNanar,8,row);
                           if (supplier != null) {

@@ -106,7 +106,7 @@ public class TourDesigner extends TravelManager {
 */
     if (isDataValid) {
 
-      table.setWidth("95%");
+      table.setWidth("90%");
 
       int row = 0;
       idegaTimestamp stamp = idegaTimestamp.RightNow();

@@ -43,6 +43,8 @@ public class TravelManager extends Block {
     public static String LIGHTGREEN = "#CCFFCC";
     public static String LIGHTORANGE = "#FFCC99";
     public static String DARKBLUE = "#85839D";
+    public static String WHITE = "#FFFFFF";
+    public static String GRAY = "#CDCDCD";
 
     protected static String sAction = "travelManagerAction";
     protected static String parameterServiceDesigner = "lServiceDesigner";
@@ -243,16 +245,16 @@ public class TravelManager extends Block {
 
 
         theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-        theText.setFontFace(Text.FONT_FACE_ARIAL+", Helvetiva, sans-serif");
+        theText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         theText.setFontColor(this.textColor);
         theBoldText.setFontSize(Text.FONT_SIZE_10_HTML_2);
-        theBoldText.setFontFace(Text.FONT_FACE_ARIAL+", Helvetiva, sans-serif");
+        theBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         theBoldText.setBold();
         theBoldText.setFontColor(this.textColor);
         smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        smallText.setFontFace(Text.FONT_FACE_ARIAL+", Helvetiva, sans-serif");
+        smallText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         smallText.setFontColor(this.textColor);
-        theSmallBoldText.setFontFace(Text.FONT_FACE_ARIAL+", Helvetiva, sans-serif");
+        theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         theSmallBoldText.setBold();
         theSmallBoldText.setFontColor(this.textColor);
@@ -269,6 +271,23 @@ public class TravelManager extends Block {
       this.add(text);
     }
 
+    protected String getNextZebraColor(String color1, String color2, String currentColor) {
+      if (currentColor.equals(color1)) {
+        return color2;
+      }else{
+        return color1;
+      }
+    }
 
+    protected Link getBackLink(int backUpHowManyPages) {
+        Link backLink = new Link(iwrb.getImage("buttons/back.gif"),"#");
+            backLink.setAttribute("onClick","history.go(-"+backUpHowManyPages+")");
+
+        return backLink;
+    }
+
+    protected Link getBackLink() {
+        return getBackLink(1);
+    }
 
 }

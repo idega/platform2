@@ -128,10 +128,13 @@ public class DailyReport extends TravelManager {
           Table table = getContentTable(iwc);
             form.add(table);
 
-          Paragraph par = new Paragraph();
-            par.setAlign("right");
-            par.add(new PrintButton("TEMP-PRENTA"));
-            form.add(par);
+          form.add(Text.BREAK);
+          Table par = new Table();
+            par.setAlignment(1,1,"right");
+            par.setAlignment("center");
+            par.setWidth("90%");
+            par.add(new PrintButton(iwrb.getImage("buttons/print.gif")));
+          form.add(par);
 
         }
         else {
@@ -164,30 +167,23 @@ public class DailyReport extends TravelManager {
 
 
   public Table getTopTable(IWContext iwc) {
-      Table topTable = new Table(4,3);
+      Table topTable = new Table(5,2);
         topTable.setBorder(0);
         topTable.setWidth("90%");
-
-
 
       Text tframeText = (Text) theText.clone();
           tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
           tframeText.addToText(":");
 
-
       DropdownMenu trip = null;
         trip = new DropdownMenu(tsb.getProducts(supplier.getID()));
-
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
           }
 
-
-
       DateInput active_from = new DateInput("active_from");
           idegaTimestamp fromStamp = getFromIdegaTimestamp(iwc);
           active_from.setDate(fromStamp.getSQLDate());
-
 
       Text nameText = (Text) theText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.trip_name_lg","Name of trip"));
@@ -200,22 +196,24 @@ public class DailyReport extends TravelManager {
 
       topTable.setColumnAlignment(1,"right");
       topTable.setColumnAlignment(2,"left");
+      topTable.setColumnAlignment(3,"right");
+      topTable.setColumnAlignment(4,"left");
       topTable.add(nameText,1,1);
       topTable.add(trip,2,1);
-      topTable.add(timeframeText,1,2);
-      topTable.add(active_from,2,2);
-      topTable.mergeCells(2,1,4,1);
-      topTable.mergeCells(2,2,4,2);
+      topTable.add(timeframeText,3,1);
+      topTable.add(active_from,4,1);
+//      topTable.mergeCells(2,1,4,1);
+//     topTable.mergeCells(2,2,4,2);
 
-      topTable.setAlignment(4,3,"right");
-      topTable.add(new SubmitButton("TEMP-Sækja"),4,3);
+      topTable.setAlignment(5,1,"right");
+      topTable.add(new SubmitButton(iwrb.getImage("/buttons/get.gif")),5,1);
 
       return topTable;
   }
 
   public Table getContentHeader(IWContext iwc) {
       Table table = new Table(2,2);
-      table.setWidth("95%");
+      table.setWidth("90%");
 
 
 
@@ -253,7 +251,7 @@ public class DailyReport extends TravelManager {
 
       Table theTable = new Table();
           theTable.setBorder(0);
-          theTable.setWidth("95%");
+          theTable.setWidth("90%");
           if (closerLook) {
             theTable.add(new HiddenInput(this.parameterToggleCloser , this.parameterYes));
           }else {
@@ -262,7 +260,7 @@ public class DailyReport extends TravelManager {
 
       Table table = new Table();
         table.setWidth("100%");
-        table.setBorder(1);
+        table.setBorder(0);
         table.setCellspacing(0);
         table.setCellpadding(2);
 
@@ -312,7 +310,6 @@ public class DailyReport extends TravelManager {
       Text additionText = (Text) smallText.clone();
       Text totalText = (Text) smallText.clone();
 
-
       table.add(nameHText,1,1);
       table.add(payTypeHText,2,1);
       table.add(bookedHText,3,1);
@@ -345,9 +342,17 @@ public class DailyReport extends TravelManager {
 
       is.idega.travel.data.Booking[] bookings = Booker.getBookings(product.getID(),stamp,bookingTypeIds);
 
+      String theColor = super.GRAY;
+
       BookingEntry[] entries;
+      if (bookings.length == 0) {
+        row++;
+        table.setRowColor(row,theColor);
+      }
       for (int i = 0; i < bookings.length; i++) {
           row++;
+          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+
           attendance = 0;
           ibookings = 0;
           amount = 0;
@@ -375,6 +380,10 @@ public class DailyReport extends TravelManager {
           amountText = (Text) smallText.clone();
             amountText.setText(Integer.toString((int) amount));
 
+          nameText.setFontColor(super.backgroundColor);
+          bookedText.setFontColor(super.backgroundColor);
+          amountText.setFontColor(super.backgroundColor);
+
           table.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,row);
           table.add(nameText,1,row);
 
@@ -382,12 +391,15 @@ public class DailyReport extends TravelManager {
           table.add(attTextBox,4,row);
           table.add(amountText,5,row);
           table.setAlignment(2,row, "center");
+          table.setRowColor(row, theColor);
 
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
             for (int j = 0; j < entries.length; j++) {
               ++row;
+              theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+              table.setRowColor(row, theColor);
               price = entries[j].getProductPrice();
               iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
 
@@ -397,6 +409,11 @@ public class DailyReport extends TravelManager {
                 bookedText.setText(Integer.toString(entries[j].getCount()));
               amountText = (Text) smallText.clone();
                 amountText.setText(Integer.toString(iEntryCount));
+
+              nameText.setFontColor(super.backgroundColor);
+              bookedText.setFontColor(super.backgroundColor);
+              amountText.setFontColor(super.backgroundColor);
+
 
               entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
               entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
@@ -421,11 +438,11 @@ public class DailyReport extends TravelManager {
       table.setColumnAlignment(5,"center");
 
 
-
+      theColor = super.GRAY;
       Table addTable = new Table();
         int addRow = 0;
           addTable.setWidth("100%");
-          addTable.setBorder(1);
+          addTable.setBorder(0);
           addTable.setCellspacing(0);
           addTable.setBorderColor(super.textColor);
           addTable.setWidth(2,twoWidth);
@@ -434,6 +451,10 @@ public class DailyReport extends TravelManager {
           addTable.setWidth(5,fiveWidth);
 
       bookings = Booker.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
+      if (bookings.length == 0) {
+        addRow++;
+        addTable.setRowColor(addRow,theColor);
+      }
       for (int i = 0; i < bookings.length; i++) {
           ++addRow;
           addTable.setRowColor(addRow,super.backgroundColor);
@@ -460,18 +481,27 @@ public class DailyReport extends TravelManager {
           amountText = (Text) smallText.clone();
             amountText.setText(Integer.toString((int) amount));
 
+
+          nameText.setFontColor(super.backgroundColor);
+          bookedText.setFontColor(super.backgroundColor);
+          amountText.setFontColor(super.backgroundColor);
+
           addTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,addRow);
           addTable.add(nameText,1,addRow);
 
           addTable.add(bookedText,3,addRow);
           addTable.add(attTextBox,4,addRow);
           addTable.add(amountText,5,addRow);
+          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+          addTable.setRowColor(addRow, theColor);
 
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
             for (int j = 0; j < entries.length; j++) {
               ++addRow;
+              theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+              addTable.setRowColor(addRow, theColor);
               price = entries[j].getProductPrice();
               iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
 
@@ -481,6 +511,10 @@ public class DailyReport extends TravelManager {
                 bookedText.setText(Integer.toString(entries[j].getCount()));
               amountText = (Text) smallText.clone();
                 amountText.setText(Integer.toString(iEntryCount));
+
+              nameText.setFontColor(super.backgroundColor);
+              bookedText.setFontColor(super.backgroundColor);
+              amountText.setFontColor(super.backgroundColor);
 
               entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
               entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
@@ -505,10 +539,12 @@ public class DailyReport extends TravelManager {
 
 
       //---------------------CORRECTION----------------------
+
+      theColor = super.GRAY;
       Table correctionTable = new Table();
         int corrRow = 0;
           correctionTable.setWidth("100%");
-          correctionTable.setBorder(1);
+          correctionTable.setBorder(0);
           correctionTable.setCellspacing(0);
           correctionTable.setBorderColor(super.textColor);
           correctionTable.setWidth(2,twoWidth);
@@ -517,6 +553,10 @@ public class DailyReport extends TravelManager {
           correctionTable.setWidth(5,fiveWidth);
 
       bookings = Booker.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_CORRECTION);
+      if (bookings.length == 0) {
+        corrRow++;
+        correctionTable.setRowColor(corrRow,theColor);
+      }
       for (int i = 0; i < bookings.length; i++) {
           ++corrRow;
           correctionTable.setRowColor(corrRow,super.backgroundColor);
@@ -543,18 +583,26 @@ public class DailyReport extends TravelManager {
           amountText = (Text) smallText.clone();
             amountText.setText(Integer.toString((int) amount));
 
+          nameText.setFontColor(super.backgroundColor);
+          bookedText.setFontColor(super.backgroundColor);
+          amountText.setFontColor(super.backgroundColor);
+
           correctionTable.add(new HiddenInput("booking_id",Integer.toString(bookings[i].getID())),1,corrRow);
           correctionTable.add(nameText,1,corrRow);
 
           correctionTable.add(bookedText,3,corrRow);
           correctionTable.add(attTextBox,4,corrRow);
           correctionTable.add(amountText,5,corrRow);
+          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+          correctionTable.setRowColor(corrRow, theColor);
 
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
             for (int j = 0; j < entries.length; j++) {
               ++corrRow;
+              theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+              correctionTable.setRowColor(corrRow, theColor);
               price = entries[j].getProductPrice();
               iEntryCount = (int) Booker.getBookingEntryPrice(entries[j], bookings[i]);
 
@@ -564,6 +612,10 @@ public class DailyReport extends TravelManager {
                 bookedText.setText(Integer.toString(entries[j].getCount()));
               amountText = (Text) smallText.clone();
                 amountText.setText(Integer.toString(iEntryCount));
+
+              nameText.setFontColor(super.backgroundColor);
+              bookedText.setFontColor(super.backgroundColor);
+              amountText.setFontColor(super.backgroundColor);
 
               entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
               entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
@@ -587,9 +639,10 @@ public class DailyReport extends TravelManager {
       correctionTable.setColumnAlignment(5,"center");
 
 
+      theColor = super.GRAY;
       Table totalTable = new Table();
           totalTable.setWidth("100%");
-          totalTable.setBorder(1);
+          totalTable.setBorder(0);
           totalTable.setCellspacing(0);
           totalTable.setBorderColor(super.textColor);
           totalTable.setWidth(2,twoWidth);
@@ -610,6 +663,12 @@ public class DailyReport extends TravelManager {
           amountText = (Text) theSmallBoldText.clone();
             amountText.setText(Integer.toString((int) totalAmount));
 
+          nameText.setFontColor(super.backgroundColor);
+          bookedText.setFontColor(super.backgroundColor);
+          amountText.setFontColor(super.backgroundColor);
+
+          totalHText.setFontColor(super.backgroundColor);
+
           totalTable.add(totalHText,1,1);
           totalTable.add(bookedText,3,1);
           totalTable.add(attTextBox,4,1);
@@ -619,11 +678,15 @@ public class DailyReport extends TravelManager {
           int tRow = 1;
           int many;
 
+          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+          totalTable.setRowColor(tRow, theColor);
 
           if (closerLook)
           for (int i = 0; i < prices.length; i++) {
             try {
               ++tRow;
+              theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+              totalTable.setRowColor(tRow, theColor);
               many = ((Integer) map.get(prices[i].getPriceCategoryIDInteger())).intValue();
               nameText = (Text) smallText.clone();
                 nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE+prices[i].getPriceCategory().getName());
@@ -631,6 +694,10 @@ public class DailyReport extends TravelManager {
                 bookedText.setText(Integer.toString(many));
               amountText = (Text) smallText.clone();
                 amountText.setText(Integer.toString(many * ((int) tsb.getPrice(service.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()))));
+
+              nameText.setFontColor(super.backgroundColor);
+              bookedText.setFontColor(super.backgroundColor);
+              amountText.setFontColor(super.backgroundColor);
 
               totalTable.setAlignment(2,tRow,"left");
               totalTable.add(nameText,2,tRow);
@@ -647,8 +714,7 @@ public class DailyReport extends TravelManager {
           totalTable.setColumnAlignment(5,"center");
 
 
-      Link link = new Link();
-        link.setText(" t - add new");
+      Link link = new Link(iwrb.getImage("buttons/add.gif"));
         link.setFontColor(super.textColor);
         link.addParameter(AdditionalBooking.parameterServiceId,service.getID());
         link.addParameter(AdditionalBooking.parameterDate, stamp.toSQLDateString());
@@ -667,13 +733,13 @@ public class DailyReport extends TravelManager {
       theTable.add(correctionTable,1,5);
       theTable.add(totalTable,1,7);
 
-      SubmitButton submit = new SubmitButton("T update",this.sAction, this.parameterUpdate);
+      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction, this.parameterUpdate);
 
       SubmitButton open = null;
       if (this.closerLook) {
-        open = new SubmitButton("T close extra info",this.sAction, this.parameterNo);
+        open = new SubmitButton(iwrb.getImage("buttons/close.gif"),this.sAction, this.parameterNo);
       }else {
-        open = new SubmitButton("T extra info",this.sAction, this.parameterYes);
+        open = new SubmitButton(iwrb.getImage("buttons/closer.gif"),this.sAction, this.parameterYes);
       }
 
       theTable.setAlignment(1,8,"right");

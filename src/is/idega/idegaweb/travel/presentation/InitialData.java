@@ -136,7 +136,8 @@ public class InitialData extends TravelManager {
   public Table selectSupplier(IWContext iwc) throws SQLException {
       Table table = new Table();
         table.setBorder(0);
-        table.setWidth("80%");
+        table.setCellspacing(0);
+        table.setWidth("90%");
 
       int row=1;
 
@@ -172,8 +173,12 @@ public class InitialData extends TravelManager {
       table.add(suppLogin,2,row);
 
       Supplier[] supps = Supplier.getValidSuppliers();
+
+      String theColor = super.GRAY;
+
       for (int i = 0; i < supps.length; i++) {
         ++row;
+        theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
 
         link = (Link) editLink.clone();
           link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
@@ -186,8 +191,13 @@ public class InitialData extends TravelManager {
         table.add(link,4,row);
         table.setAlignment(4,row,"right");
 
+        table.setColor(1,row, theColor);
+        table.setColor(2,row, theColor);
+        table.setColor(3,row, theColor);
+
         suppNameText = (Text) theText.clone();
           suppNameText.setText(supps[i].getName());
+          suppNameText.setFontColor(super.backgroundColor);
 
         table.add(suppNameText,1,row);
 
@@ -200,14 +210,16 @@ public class InitialData extends TravelManager {
             for (int j = 0; j < users.size(); j++) {
               if (j > 0) ++row;
 
-              table.setRowColor(row,super.backgroundColor);
+              //table.setRowColor(row,super.backgroundColor);
 
               user = (User) users.get(j);
               logTable = LoginDBHandler.findUserLogin(user.getID());
               suppLoginText = (Text) theText.clone();
               suppLoginText.setText(logTable.getUserLogin());
+              suppLoginText.setFontColor(super.backgroundColor);
               suppPassText = (Text) theText.clone();
               suppPassText.setText(logTable.getUserPassword());
+              suppPassText.setFontColor(super.backgroundColor);
 
               table.add(suppLoginText,2,row);
               table.mergeCells(2,row,3,row);
@@ -236,7 +248,7 @@ public class InitialData extends TravelManager {
         table.setBorder(0);
 
       int row = 0;
-      Supplier supplier = null;
+      Supplier lSupplier = null;
 
       Text newSupplierText = (Text) theBoldText.clone();
         if (supplier_id == -1) newSupplierText.setText(iwrb.getLocalizedString("travel.new_supplier","New supplier"));
@@ -299,11 +311,11 @@ public class InitialData extends TravelManager {
       if (supplier_id != -1) {
         table.add(new HiddenInput(this.parameterSupplierId,Integer.toString(supplier_id)));
 
-        supplier = new Supplier(supplier_id);
-          name.setContent(supplier.getName());
-          description.setContent(supplier.getDescription());
+        lSupplier = new Supplier(supplier_id);
+          name.setContent(lSupplier.getName());
+          description.setContent(lSupplier.getDescription());
 
-          Address addr = supplier.getAddress();
+          Address addr = lSupplier.getAddress();
           if (addr != null) {
             String namer = addr.getStreetName();
             String number = addr.getStreetNumber();
@@ -314,7 +326,7 @@ public class InitialData extends TravelManager {
             }
           }
 
-          List phones = supplier.getHomePhone();
+          List phones = lSupplier.getHomePhone();
           if (phones != null) {
             if (phones.size() > 0) {
               Phone phone1 = (Phone) phones.get(0);
@@ -322,7 +334,7 @@ public class InitialData extends TravelManager {
             }
           }
 
-          phones = supplier.getFaxPhone();
+          phones = lSupplier.getFaxPhone();
           if (phones != null) {
             if (phones.size() > 0) {
               Phone phone2 = (Phone) phones.get(0);
@@ -330,7 +342,7 @@ public class InitialData extends TravelManager {
             }
           }
 
-          Email eEmail = supplier.getEmail();
+          Email eEmail = lSupplier.getEmail();
           if (eEmail != null) {
             email.setContent(eEmail.getEmailAddress());
           }
@@ -340,9 +352,10 @@ public class InitialData extends TravelManager {
       if (supplier_id == -1) {
         submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),"supplier_action","create");
       } else {
-        submit = new SubmitButton("update","supplier_action","update");
+        submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),"supplier_action","update");
       }
-      BackButton back = new BackButton("Til baka");
+      BackButton back = new BackButton(iwrb.getImage("buttons/back.gif"));
+      Link lBack = new Link(super.getBackLink());
 
 
       ++row;
@@ -390,8 +403,10 @@ public class InitialData extends TravelManager {
       }
 
       ++row;
-      table.setAlignment(1,row,"left");
-      table.add(back,1,row);
+      if (supplier == null ) {
+        table.setAlignment(1,row,"left");
+        table.add(lBack,1,row);
+      }
       table.setAlignment(2,row,"right");
       table.add(submit,2,row);
 

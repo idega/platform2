@@ -64,9 +64,9 @@ public class TravelWindow extends Window {
     jPage = super.getPage(iwc);
       jPage.setAllMargins(0);
 
-    table.setColor(1,1,TravelManager.DARKBLUE);
-    table.setColor(2,1,TravelManager.DARKBLUE);
-    table.setColor(3,1,TravelManager.DARKBLUE);
+    table.setColor(1,1,TravelManager.backgroundColor);
+    table.setColor(2,1,TravelManager.backgroundColor);
+    table.setColor(3,1,TravelManager.backgroundColor);
 
     Text header1 = new Text("idega");
       header1.setFontColor(TravelManager.LIGHTORANGE);

@@ -153,8 +153,10 @@ public class Booking extends TravelManager {
       Form form = new Form();
       Table topTable = getTopTable(iwc);
 
-      if ((supplier != null) || (reseller != null) || ((supplier == null) && (reseller == null) && (product == null)) )
+      if ((supplier != null) || (reseller != null) || ((supplier == null) && (reseller == null) && (product == null)) ) {
         form.add(topTable);
+        form.add(Text.BREAK);
+      }
 /*
       ShadowBox sb = new ShadowBox();
         form.add(sb);
@@ -165,9 +167,10 @@ public class Booking extends TravelManager {
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
               contentTable.add(getContentHeader(iwc));
+              contentTable.add(Text.BREAK);
               contentTable.add(getTotalTable(iwc));
               contentTable.add(getContentTable(iwc));
-              contentTable.setWidth("95%");
+              contentTable.setWidth("90%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
               contentTable.setBorderColor(super.textColor);
@@ -238,7 +241,7 @@ public class Booking extends TravelManager {
       topTable.add(year,4,1);
 
       topTable.setAlignment(5,1,"right");
-      topTable.add(new SubmitButton("TEMP-Sækja",this.BookingAction, ""),5,1);
+      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif"),this.BookingAction, ""),5,1);
 
       topTable.add(new HiddenInput("month",Integer.toString(stamp.getMonth()) ));
       topTable.add(new HiddenInput("day",Integer.toString(stamp.getDay())));
@@ -365,9 +368,9 @@ public class Booking extends TravelManager {
 
       }else {
         if (isExpired) {
-          table.add("TEMP - Frestur liðinn ");
+          table.add(iwrb.getLocalizedString("travel.time_for_booking_has_passed","Time for booking has passed"));
         }else {
-          table.add("TEMP - Ferð ekki farinn þennan dag : " + stamp.getLocaleDate(iwc));
+          table.add(iwrb.getLocalizedString("travel.trip_is_not_scheduled_this_day","Trip is not scheduled this day")+" : "+stamp.getLocaleDate(iwc));
         }
           table.mergeCells(1,row,5,row);
           table.setAlignment(1,row, "center");
@@ -879,39 +882,48 @@ public class Booking extends TravelManager {
 
 
           ++row;
+          table.mergeCells(2,row,4,row);
           table.add(surnameText,1,row);
           table.add(surname,2,row);
 
           ++row;
+          table.mergeCells(2,row,4,row);
           table.add(lastnameText,1,row);
           table.add(lastname,2,row);
 
           ++row;
+          table.mergeCells(2,row,4,row);
           table.add(addressText,1,row);
           table.add(address,2,row);
 
           ++row;
+          table.mergeCells(2,row,4,row);
           table.add(cityText,1,row);
           table.add(city,2,row);
 
           ++row;
+          table.mergeCells(2,row,4,row);
           table.add(areaCodeText,1,row);
           table.add(areaCode,2,row);
 
           ++row;
+          table.mergeCells(2,row,4,row);
           table.add(countryText,1,row);
           table.add(country,2,row);
 
           ++row;
+          table.mergeCells(2,row,4,row);
           table.add(emailText,1,row);
           table.add(email,2,row);
 
           ++row;
+          table.mergeCells(2,row,4,row);
           table.add(telNumberText,1,row);
           table.add(telNumber,2,row);
 
           if (tour.getIsHotelPickup()) {
               ++row;
+              table.mergeCells(2,row,4,row);
 
               Text hotelText = (Text) theText.clone();
                 hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
@@ -936,6 +948,9 @@ public class Booking extends TravelManager {
           ResultOutput pPriceText;
           TextInput pPriceMany;
           PriceCategory category;
+          Text txtPrice;
+          Text txtPerPerson = (Text) theText.clone();
+            txtPerPerson.setText(iwrb.getLocalizedString("travel.per_person","per person"));
 
           Text totalText = (Text) theBoldText.clone();
             totalText.setText("T - Total");
@@ -1002,7 +1017,11 @@ public class Booking extends TravelManager {
                   table.add(pPriceMany,2,row);
                   table.add(pPriceText, 2,row);
 
-                  table.add(Integer.toString(price),2,row);
+
+                  txtPrice = (Text) theText.clone();
+                    txtPrice.setText(Integer.toString(price));
+                  //table.add(txtPrice,3,row);
+                  //table.add(txtPerPerson,4,row);
 
 
               }catch (SQLException sql) {
@@ -1019,7 +1038,7 @@ public class Booking extends TravelManager {
           }
           table.add(TotalPassTextInput,2,row);
           table.add(TotalTextInput,2,row);
-          table.add(new HiddenInput("available",Integer.toString(available)),2,row);
+           table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
           ++row;
           if (reseller != null) {
@@ -1088,14 +1107,15 @@ public class Booking extends TravelManager {
 
           ++row;
           if (booking != null) {
-            table.add(new SubmitButton("TEMP UPDATE"),4,row);
+            table.add(new SubmitButton(iwrb.getImage("buttons/update.gif")),4,row);
           }else {
-            table.add(new SubmitButton("TEMP BÓKA"),4,row);
+            table.add(new SubmitButton(iwrb.getImage("buttons/book.gif")),4,row);
           }
           table.add(new HiddenInput(this.BookingAction,this.BookingParameter),4,row);
-          table.setAlignment(4,row,"right");
+          //table.setAlignment(4,row,"right");
       }else {
-          table.add("T - Verðflokkar ekki settir upp");
+        if (supplier != null || reseller != null)
+          table.add(iwrb.getLocalizedString("travel.pricecategories_not_set_up_right","Pricecategories not set up right"));
       }
 
 
@@ -1190,11 +1210,11 @@ public class Booking extends TravelManager {
         form.add(table);
 
       if (supplier != null) {
-        table.add("T- of margir, boka samt ?");
+        table.add(iwrb.getLocalizedString("travel.too_many_book_anyway","Too many, book anyway ?"));
         table.add(new SubmitButton(iwrb.getLocalizedString("travel.yes","Yes"),this.BookingAction, this.parameterBookAnyway));
         table.add(new BackButton(iwrb.getLocalizedString("travel.no","No")));
       }else if (reseller != null) {
-        table.add("T- of margir, senda fyrirspurn ?");
+        table.add(iwrb.getLocalizedString("travel.too_many_send_inquiry","Too many, send inquiry ?"));
         table.add(new SubmitButton(iwrb.getLocalizedString("travel.yes","Yes"),this.BookingAction, this.parameterSendInquery));
         table.add(new BackButton(iwrb.getLocalizedString("travel.no","No")));
       }
@@ -1319,7 +1339,6 @@ public class Booking extends TravelManager {
                 bEntry.insert();
               }
             }
-            //System.err.println("Unimplemented + update priceCount and other s**t");
           }
         }
 
