@@ -440,7 +440,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
           leaguesList.add(leagueName);
         }
         Integer memberId = (Integer) member.getPrimaryKey();
-        memberLeaguesMap.put(memberId, leagues);
+        memberLeaguesMap.put(memberId, leaguesList);
       }
       catch (IDOException ex) {
         System.err.println("[WorkReportMemberEditor] Can't get leagues. Message is: " + 
