@@ -268,6 +268,9 @@ public class ProductEditorBusiness extends IBOServiceBean{
         catch (Exception e) {
         }
       }
+    }else {
+      CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(defaultCurrency);
+      _currencies.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
     }
     return _currencies;
   }
