@@ -23,10 +23,13 @@ import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
+import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
@@ -84,16 +87,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			SchoolBusiness schoolBiz = (SchoolBusiness)getServiceInstance(SchoolBusiness.class);
 			School prov = schoolBiz.getSchool(new Integer(provider[0]));
 			UserBusiness userBiz = (UserBusiness)getServiceInstance(UserBusiness.class);
-System.out.println("Getting users for group " + prov.getHeadmasterGroupId());
 			Collection users = userBiz.getUsersInGroup(prov.getHeadmasterGroupId());
 	
 			if (users != null) {
-				System.out.println("Users not null");
 				MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
 				Iterator it = users.iterator();
 				while (it.hasNext()) {
 					User providerUser = (User)it.next();
-					System.out.println("Sending message to user " + providerUser.getName());
 					messageBiz.createUserMessage(providerUser,"New application","You have new mail");
 				}				
 			}
@@ -113,32 +113,157 @@ System.out.println("Getting users for group " + prov.getHeadmasterGroupId());
 			
 			return false;	
 		}
-//		try {
-//			CitizenAccount application = ((CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class)).create();
-//			application.setPID(pid);
-//			if (user != null)
-//				application.setOwner(user);
-//			application.setPhoneHome(phoneHome);
-//			if (email != null)
-//				application.setEmail(email);
-//			if (phoneWork != null)
-//				application.setPhoneWork(phoneWork);
-//			application.setCaseStatus(getCaseStatusOpen());
-//
-//			application.store();
-//
-//			int applicationID = ((Integer) application.getPrimaryKey()).intValue();
-//			if (acceptApplicationOnCreation) {
-//				acceptApplication(applicationID, user);
-//			}
-//		}
-//		catch (Exception e) {
-//			e.printStackTrace();
-//
-//			return false;
-//		}
 
 		return true;
 	}
 
+	public Collection getUnhandledApplicationsByProvider(int providerId) {
+		try {			
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			
+			return home.findAllCasesByProviderAndStatus(providerId,getCaseStatusOpen());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Collection getUnhandledApplicationsByProvider(School provider) {
+		try {
+			return getUnhandledApplicationsByProvider(((Integer)provider.getPrimaryKey()).intValue());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public Collection getUnhandledApplicationsByProvider(User provider) {
+		try {
+			SchoolChoiceBusiness schoolBiz = (SchoolChoiceBusiness)getServiceInstance(SchoolChoiceBusiness.class);
+			School school;
+			school = schoolBiz.getFirstProviderForUser(provider);
+
+			return getUnhandledApplicationsByProvider(((Integer)school.getPrimaryKey()).intValue());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Collection getUnsignedApplicationsByProvider(int providerId) {
+		try {
+			
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			
+			return home.findAllCasesByProviderAndStatus(providerId,this.getCaseStatusPreliminary());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Collection getUnsignedApplicationsByProvider(School provider) {
+		try {
+			return getUnsignedApplicationsByProvider(((Integer)provider.getPrimaryKey()).intValue());
+		}
+		catch (RemoteException e) {
+			return null;
+		}
+	}
+
+	public Collection getUnsignedApplicationsByProvider(User provider) {
+		try {
+			SchoolChoiceBusiness schoolBiz = (SchoolChoiceBusiness)getServiceInstance(SchoolChoiceBusiness.class);
+			School school;
+			school = schoolBiz.getFirstManagingSchoolForUser(provider);
+
+			return getUnsignedApplicationsByProvider(((Integer)school.getPrimaryKey()).intValue());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public boolean rejectApplication(ChildCareApplication application) {
+		return false;	
+	}
+	
+	public boolean rejectApplication(int applicationId) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			ChildCareApplication appl = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
+			return rejectApplication(appl);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public boolean acceptApplication(ChildCareApplication application) {
+		return false;	
+	}
+	
+	public boolean acceptApplication(int applicationId) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			ChildCareApplication appl = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
+
+			return acceptApplication(appl);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+	public boolean signApplication(ChildCareApplication application) {
+		return false;	
+	}
+	
+	public boolean signApplication(int applicationId) {
+		try {
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			ChildCareApplication appl = (ChildCareApplication)home.findByPrimaryKey(new Integer(applicationId));
+
+			return signApplication(appl);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
+	}	
 }

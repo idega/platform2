@@ -11,13 +11,19 @@ package se.idega.idegaweb.commune.childcare.data;
 
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
+import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolType;
 import com.idega.user.data.User;
 
 import se.idega.idegaweb.commune.childcare.check.data.Check;
 
+import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.FinderException;
 
 /**
  * This class does something very clever.....
@@ -190,5 +196,44 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public void setCheck(Check check) {
 		setColumn(CHECK_ID,check);	
+	}	
+
+	public Collection ejbFindAllCasesByProviderAndStatus(int providerId, CaseStatus caseStatus) throws FinderException, RemoteException {
+		return ejbFindAllCasesByProviderStatus(providerId, caseStatus.getStatus());
+	}
+
+	public Collection ejbFindAllCasesByProviderAndStatus(School provider, String caseStatus) throws FinderException, RemoteException {
+		return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus);
+	}
+	
+	public Collection ejbFindAllCasesByProviderAndStatus(School provider, CaseStatus caseStatus) throws FinderException, RemoteException {
+		return ejbFindAllCasesByProviderStatus(((Integer)provider.getPrimaryKey()).intValue(), caseStatus.getStatus());
+	}
+	
+	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus) throws FinderException, RemoteException {
+		Collection ids = super.ejbFindAllCasesByStatus(caseStatus);
+		
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(PROVIDER_ID);
+		sql.append(" = ");
+		sql.append(providerId);
+		sql.append(" and ");
+		sql.append(getIDColumnName());
+		sql.append(" in (");
+		
+		Iterator it = ids.iterator();
+		while (it.hasNext()) {
+			Integer id = (Integer)it.next();
+			sql.append(id);
+			if (it.hasNext())
+				sql.append(", ");
+		}
+		sql.append(")");
+		
+		System.out.println("sql = " + sql.toString());
+		
+		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}	
 }
