@@ -67,9 +67,13 @@ public Image(String name,String url, String overImageUrl){
 
 
 private String getImageURL(int image_id){
+  /*
 	 String URIString = IWMainApplication.IMAGE_SERVLET_URL;
             URIString += "?image"+image_id;
             URIString += "&image_id="+image_id;
+            return URIString;*/
+            String URIString = "/servlet/imageModule";
+            URIString += "?image"+image_id;
             return URIString;
 }
 
