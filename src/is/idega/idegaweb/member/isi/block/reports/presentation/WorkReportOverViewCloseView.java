@@ -391,6 +391,7 @@ public class WorkReportOverViewCloseView extends Block {
 			}
 			catch (FinderException e) {
 				hasData = false;
+				e.printStackTrace();
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();

@@ -152,6 +152,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		Group club = null;
 		
 		createOrUpdateLeagueWorkReportGroupsForYear(year);
+		
 
 		try {
 			report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(groupId, year);
