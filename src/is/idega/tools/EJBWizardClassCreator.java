@@ -26,14 +26,34 @@ public class EJBWizardClassCreator {
   private String _remoteInterfaceSuperInterface = "com.idega.data.IDOEntity";
 
   private boolean throwRemoteExceptions=true;
+  private boolean entityBeanClassAlreadyCreated=false;
+
 
   public EJBWizardClassCreator(String originalClassName)throws Exception{
-      this(Class.forName(originalClassName));
+    initialize(originalClassName);
   }
 
   public EJBWizardClassCreator(Class originalClass)throws Exception{
+    initialize(originalClass);
+  }
+
+  public void initialize(String originalClassName)throws Exception{
+    try{
+      initialize(Class.forName(originalClassName));
+    }
+    catch(java.lang.NoClassDefFoundError e){
+      initialize(Class.forName(originalClass.getName()+entityBeanClassSuffix));
+    }
+  }
+
+  public void initialize(Class originalClass)throws Exception{
     this.originalClass=originalClass;
-    this.introspector = new ClassIntrospector(originalClass);
+    Class beanClass = originalClass;
+    if(originalClass.isInterface()){
+      entityBeanClassAlreadyCreated=true;
+      beanClass = Class.forName(originalClass.getName()+entityBeanClassSuffix);
+    }
+    this.introspector = new ClassIntrospector(beanClass);
   }
 
   protected boolean throwRemoteExceptions(){
@@ -84,9 +104,19 @@ public class EJBWizardClassCreator {
       codeString+=getRemoteName()+ " extends "+getRemoteInterfaceSuperInterface();
       Class[] superInterfaces = this.introspector.getImplementedInterfaces();
       if(superInterfaces!=null){
+        String thisInterfaceWithFullPackageName = introspector.getPackage()+"."+getRemoteName();
         for (int i = 0; i < superInterfaces.length; i++) {
           String interfaceName = superInterfaces[i].getName();
-          if(!getRemoteInterfaceSuperInterface().equals(interfaceName)){
+          if(interfaceName.equals(thisInterfaceWithFullPackageName)){
+            //nothing
+          }
+          else if(interfaceName.equals(this.getRemoteInterfaceSuperInterface())){
+            //nothing
+          }
+          else if(interfaceName.equals(this.getRemoteName())){
+            //nothing
+          }
+          else{
             codeString+=","+interfaceName;
           }
         }
@@ -96,22 +126,11 @@ public class EJBWizardClassCreator {
       codeString+="{\n";
 
       // -- public methods --
-      String[] methods=this.introspector.getMethods();
+      String[] methods=this.introspector.getInterfaceMethods();
       for (int i=0; i<methods.length; i++)
       {
-        if(throwRemoteExceptions()){
-          if (methods[i].indexOf("throws")>=0)
-          {
-            codeString+=" "+methods[i]+", java.rmi.RemoteException;\n";
-          }
-          else
-          {
-            codeString+=" "+methods[i]+" throws java.rmi.RemoteException;\n";
-          }
-        }
-        else{
-          codeString+=" "+methods[i] +";\n";
-        }
+        String methodString = methods[i];
+        codeString += " " + getMethodSignatureWithAddedThrowsClause(methodString);
       }
 
       codeString=codeString+"}\n";
@@ -169,6 +188,22 @@ public class EJBWizardClassCreator {
           }
           codeString+=";\n";
         }
+
+      // -- finder methods --
+      String[] methods=this.introspector.getFinderMethods();
+      for (int i=0; i<methods.length; i++)
+      {
+        String methodString = methods[i];
+        codeString += " " + getMethodSignatureWithAddedThrowsClause(methodString);
+      }
+
+      // -- home methods --
+      methods=this.introspector.getHomeMethods();
+      for (int i=0; i<methods.length; i++)
+      {
+        String methodString = methods[i];
+        codeString += " " + getMethodSignatureWithAddedThrowsClause(methodString);
+      }
 
 
     codeString +="\n}";
@@ -243,6 +278,21 @@ public class EJBWizardClassCreator {
           codeString+="\n }\n\n";
         }
 
+        //FinderMethod implementations
+        String[] methods = introspector.getFinderMethodImplementations();
+        for (int i = 0; i < methods.length; i++) {
+          codeString += methods[i];
+          codeString += "\n";
+        }
+
+        //HomeMethod implementations
+        methods = introspector.getHomeMethodImplementations();
+        for (int i = 0; i < methods.length; i++) {
+          codeString += methods[i];
+          codeString += "\n";
+        }
+
+
     codeString +="\n}";
     return codeString;
   }
@@ -302,22 +352,25 @@ public class EJBWizardClassCreator {
   }
 
   public boolean moveEntityBean(){
-    String javaFilename = this.getBaseName()+".java";
-    File f = new File(javaFilename);
-    if(f.exists()){
-      String testString = "public class "+this.getBaseName();
-      try{
-        boolean isClassValid=true;
-        if(isClassValid){
-          String newFileName = this.getEntityBeanName()+".java";
-          com.idega.util.FileUtil.copyFile(f,newFileName);
+    if(!entityBeanClassAlreadyCreated){
+      String javaFilename = this.getBaseName()+".java";
+      File f = new File(javaFilename);
+      if(f.exists()){
+        String testString = "public class "+this.getBaseName();
+        try{
+          boolean isClassValid=true;
+          if(isClassValid){
+            String newFileName = this.getEntityBeanName()+".java";
+            com.idega.util.FileUtil.copyFile(f,newFileName);
+          }
+        }
+        catch(Exception e){
+          return false;
         }
       }
-      catch(Exception e){
-        return false;
-      }
+      return true;
     }
-    return true;
+    return false;
   }
 
   public String getBaseName(){
@@ -334,5 +387,22 @@ public class EJBWizardClassCreator {
 
   public File getWorkingDirectory(){
     return workingDir;
+  }
+
+  private String getMethodSignatureWithAddedThrowsClause(String methodString){
+    if(throwRemoteExceptions()){
+      if (methodString.indexOf("throws")>=0)
+      {
+        methodString += ", java.rmi.RemoteException;\n";
+      }
+      else
+      {
+        methodString +=" throws java.rmi.RemoteException;\n";
+      }
+    }
+    else{
+      methodString += ";\n";
+    }
+    return methodString;
   }
 }
