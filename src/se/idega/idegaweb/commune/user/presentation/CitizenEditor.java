@@ -439,8 +439,11 @@ public class CitizenEditor extends UserEditor {
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.presentation.UserEditor#isValidPersonalID(java.lang.String)
 	 */
-	protected boolean isValidPersonalID(String string) {
-		return PIDChecker.getInstance().isValid(string,true);
+	protected boolean isValidPersonalID(String pid) {
+		if(pid.length()==12)
+			return PIDChecker.getInstance().isValid(pid,true);
+		return false;
+
 	}
 
 	protected CommuneBusiness getCommuneBusiness(IWContext iwc) {
