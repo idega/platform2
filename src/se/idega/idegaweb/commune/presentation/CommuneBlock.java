@@ -2,10 +2,8 @@ package se.idega.idegaweb.commune.presentation;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.Constants;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.builder.data.ICPage;
@@ -14,6 +12,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWResourceMessage;
+import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -170,6 +169,14 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	
 	public IWResourceBundle getResourceBundle() {
 		return this.iwrb;
+	}
+
+	protected Help getHelpButton(String key) {
+		Help help = new Help();
+		help.setHelpTextBundle(Constants.IW_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(key);
+		help.setImage(getBundle().getImage("help.gif"));
+		return help;
 	}
 
 	public IWBundle getBundle() {
