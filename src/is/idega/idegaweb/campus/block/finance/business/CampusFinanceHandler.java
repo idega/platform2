@@ -240,7 +240,10 @@ public class CampusFinanceHandler implements FinanceHandler{
   }
 
   /**
-   *
+   *  Returns a multiplying factor to entry prices, for each contract
+   *  The factor makes use of the contract begin and end dates.
+   *  if the contract has a delivertime, that is the begin date,
+   *  if the contract has a returntime , that is the end date.
    */
   public double getFactor(ContractAccountApartment con,idegaTimestamp start,idegaTimestamp end   ){
     double ret = 0;

@@ -319,6 +319,7 @@ public class Emailer extends Block {
                 types.setSelectedElement(letter.getType());
             }
             parse.setChecked(letter.getParse());
+            useronly.setChecked(letter.getOnlyUser());
             dTable.add(new HiddenInput(prmLetter, String.valueOf(letter.getID())));
         }
         int col_1 = 1;

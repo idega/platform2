@@ -1,5 +1,5 @@
 /*
- * $Id: BuildingAccountEntryBMPBean.java,v 1.1 2002/07/04 01:06:34 aron Exp $
+ * $Id: BuildingAccountEntryBMPBean.java,v 1.2 2002/07/07 17:11:24 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
