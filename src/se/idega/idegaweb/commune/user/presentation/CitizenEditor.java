@@ -18,6 +18,7 @@ import javax.ejb.EJBException;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
@@ -381,5 +382,21 @@ public class CitizenEditor extends UserEditor {
 		tNo.setStyleClass(textFontStyleName);
 		groupTable.add(tNo, 2, 3);
 		addToMainPart(groupTable);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserEditor#isAllowPersonalIdEdit(com.idega.user.data.User)
+	 */
+	public boolean isAllowPersonalIdEdit(User user) {
+		if (user != null) {
+			if (user.getPersonalID().indexOf("TF") != -1)
+				return true;
+		}
+		return false;
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserEditor#isValidPersonalID(java.lang.String)
+	 */
+	protected boolean isValidPersonalID(String string) {
+		return PIDChecker.getInstance().isValid(string);
 	}
 }
