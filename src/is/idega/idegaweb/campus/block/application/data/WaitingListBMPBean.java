@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.12 2004/06/06 11:57:13 gimmi Exp $
+ * $Id: WaitingListBMPBean.java,v 1.13 2004/06/24 13:23:33 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -318,7 +318,7 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
     sql.append(", ");
     sql.append(getOrderColumnName());
 
-    return super.idoFindIDsBySQL(sql.toString());
+    return super.idoFindPKsBySQL(sql.toString());
   }
 
   public Collection ejbFindByApartmentTypeAndComplexForTransferType(int aprtId, int complexId) throws FinderException {
@@ -341,7 +341,7 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
     sql.append(", ");
     sql.append(getOrderColumnName());
 
-    return super.idoFindIDsBySQL(sql.toString());
+    return super.idoFindPKsBySQL(sql.toString());
   }
 
   public Collection ejbFindByApartmentTypeAndComplex(int aprtId, int complexId) throws FinderException {
@@ -360,7 +360,7 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
     sql.append(", ");
     sql.append(getOrderColumnName());
 
-    return super.idoFindIDsBySQL(sql.toString());
+    return super.idoFindPKsBySQL(sql.toString());
   }
   
 	public Collection ejbFindNextForTransferByApartmentTypeAndComplex(int aprtId, int complexId, int orderedFrom) throws FinderException {
@@ -383,7 +383,7 @@ public class WaitingListBMPBean extends GenericEntity implements WaitingList {
 		sql.append(" order by ");
 		sql.append(getOrderColumnName());
 
-		return super.idoFindIDsBySQL(sql.toString());
+		return super.idoFindPKsBySQL(sql.toString());
 	}  
 	
 	public Collection ejbFindByApplicantID(Integer ID)throws FinderException{
