@@ -391,7 +391,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school, contract);
 	
 							//Need to store the subvention row, so that it can be adjusted later if needed
-							if(postingDetail.getRuleSpecType().equalsIgnoreCase(RegSpecConstant.SUBVENTION)){
+							if(postingDetail.getRuleSpecType().equalsIgnoreCase(RegSpecConstant.SUBVENTION) || regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(RegSpecConstant.SUBVENTION)){
 								subvention = invoiceRecord;
 							}
 							totalSum += AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths());
