@@ -4,6 +4,8 @@ import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.IWContext;
 import is.idega.idegaweb.tracker.business.TrackerBusiness;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Title:        is.idega.idegaweb.tracker.presentation.PageCounter
@@ -20,6 +22,7 @@ public class PageCounter extends PresentationObjectContainer {
   private boolean tph = false;
   private boolean tps = false;
   private boolean update = true;
+  private Map ipFilter = new HashMap();/**clone**/
 
   public PageCounter() {
   }
@@ -29,7 +32,7 @@ public class PageCounter extends PresentationObjectContainer {
   }
 
   public void main(IWContext iwc) throws Exception{
-    if(update){
+    if(update && updateStats(iwc.getRequest().getRemoteAddr())){
       TrackerBusiness.runThroughTheStatsMachine(iwc);
     }
 
@@ -83,5 +86,18 @@ public class PageCounter extends PresentationObjectContainer {
     this.update = update;
   }
 
+  public void setIpFilterNumber(String ipNumber){
+   ipFilter.put(ipNumber,ipNumber);
+  }
+
+  public void removeIpFilterNumber(String ipNumber){
+   ipFilter.remove(ipNumber);
+  }
+
+  private boolean updateStats(String ipNumber){
+    String ip = (String)ipFilter.get(ipNumber);
+    if(ip==null) return true;
+    else return false;//dont update
+  }
 
 }
