@@ -230,7 +230,7 @@ public class GenericImportFile implements ImportFile{
 		String value = null;
 		while( tokens.hasMoreTokens() && i<=index ){
 			value = tokens.nextToken();	
-			System.out.println("GenericImportFile : index = "+index+" value = "+value);
+			//System.out.println("GenericImportFile : index = "+index+" value = "+value);
 			i++;
 		}
 		
@@ -253,7 +253,7 @@ public class GenericImportFile implements ImportFile{
 			if(values==null) values = new ArrayList();
 			value = tokens.nextToken();
 			values.add(value);	
-			System.out.println("GenericImportFile : value = "+value);
+			//System.out.println("GenericImportFile : value = "+value);
 		}
 		
 		
