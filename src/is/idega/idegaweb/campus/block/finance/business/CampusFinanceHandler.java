@@ -7,6 +7,7 @@ import is.idega.idegaweb.campus.data.BatchContractHome;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
 
+import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.Collection;
@@ -227,55 +228,66 @@ public class CampusFinanceHandler implements FinanceHandler {
 	 * has a returntime , that is the end date.
 	 */
 	public double getFactor(ContractAccountApartment con, IWTimestamp start, IWTimestamp end) {
-		double ret = 0;
+		
 		start.setTime(0, 0, 0);
 		end.setTime(23, 59, 59);
 		long begin = start.getTimestamp().getTime();
 		long endin = end.getTimestamp().getTime();
-		long del = endin - begin;
+
 		long valfr = con.getValidFrom().getTime();
 		long valto = con.getValidTo().getTime();
-		/*
-		 * if(con.getDeliverTime()!=null ){ valfr =
-		 * con.getDeliverTime().getTime(); } if(con.getReturnTime() !=null){
-		 * valto = con.getReturnTime().getTime();
-		 */
-		/*
-		 * System.err.print("Valfr: "+con.getValidFrom().toString());
-		 * System.err.print(" Valto: "+con.getValidTo().toString());
-		 * System.err.print(" start: "+start.toString()); System.err.print("
-		 * end: "+end.toString());
-		 */
-		// if contract begins and ends within period
-		//if (begin <= valfr && valto <= endin) {
-		//System.out.println("begins and ends within period");
-		//	begin = valfr;
-		//	endin = valto;
+		double ret = getFactor(begin,endin,valfr,valto);
+		//if(ret<1){
+		//	System.out.println("factor for contract "+con.getContractId()+" aprt:"+con.getApartmentId() +" start:"+(new java.util.Date(begin)).toGMTString()+" ("+begin+")  end: "+(new java.util.Date(endin)).toGMTString()+" ("+endin+") factor: "+ret);
 		//}
-		// if contract ends within period
-		//else
+		return ret;
+	}
+	
+	private double getFactor(long begin,long endin,long valfr,long valto){
+		long del = endin - begin;
 		if (begin <= valto && valto <= endin) {
 			//System.out.println("ends within period");
 			endin = valto;
 		}
-		// if contract begins within period
-		//else
 		if (begin <= valfr && valfr <= endin) {
 			//System.out.println("begins within period");
 			begin = valfr;
 		}
-		// if contract begins and ends outside period
-		//else if (valfr < begin && endin < valto) {
-		//System.out.println("begins and ends outside period");
-		// donothing
-		//}
-		double diff = endin - begin;
-		ret = (diff) / del;
-		//System.out.println("factor for contract "+con.getContractId()+"
-		// aprt:"+con.getApartmentId() +" start:"+(new
-		// Date(begin)).toGMTString()+" end: "+(new
-		// Date(endin)).toGMTString()+" factor: "+ret);
-		return ret;
+		IWTimestamp theBegin = new IWTimestamp(begin);
+		theBegin.setTime(0,0,0,0);
+		IWTimestamp theEnd = new IWTimestamp(endin);
+		theEnd.setTime(23,59,59);
+		begin = theBegin.getDate().getTime();
+		endin = theEnd.getDate().getTime();
+		BigDecimal ret = new BigDecimal(endin - begin);
+		if(IWTimestamp.getDaysBetween(theBegin,theEnd)>0){
+			ret = ret.divide(new BigDecimal(del),2,BigDecimal.ROUND_HALF_EVEN);
+			//ret = (diff) / del;
+		}
+		else
+			ret=new BigDecimal(0);
+		return ret.doubleValue();
+	}
+	
+	public static void main(String[] args){
+		IWTimestamp begin = new IWTimestamp(1,7,2004);
+		IWTimestamp end = new IWTimestamp(31,7,2004);
+		
+		IWTimestamp from = new IWTimestamp(1,7,2004);
+		IWTimestamp to = new IWTimestamp(1,7,2004);
+		for (int day = 1; day < 31; day++) {
+			to = new IWTimestamp(day,7,2004);
+			to.setTime(23,59,59);
+			CampusFinanceHandler handler = new CampusFinanceHandler();
+			double ret = handler.getFactor(begin.getDate().getTime(),end.getDate().getTime(),from.getDate().getTime(),to.getDate().getTime());
+			System.out.print(" Begin: "+begin.toString()+" End "+end.toString());
+			System.out.print(" From:"+from.toString()+" To: "+to.toString());
+			System.out.println(" Factor "+ret);
+		}
+		
+		
+		
+		
 	}
 	public Collection listOfAssessmentTariffPreviews(IWApplicationContext iwac,Integer tariffGroupId, IWTimestamp start, IWTimestamp end)
 			throws java.rmi.RemoteException {
@@ -404,7 +416,11 @@ public class CampusFinanceHandler implements FinanceHandler {
 			AE.setCashierId(cashierId);
 			AE.setLastUpdated(IWTimestamp.getTimestampRightNow());
 			/** @todo skeptical precision cut */
-			AE.setTotal((int) (-T.getPrice() * factor));
+			BigDecimal price = new BigDecimal(-T.getPrice());
+			price.multiply(new BigDecimal(factor));
+			
+			AE.setTotal(price.toBigInteger().floatValue());
+			//AE.setTotal((int) (-T.getPrice() * factor));
 			AE.setRoundId(roundId);
 			AE.setName(T.getName());
 			if (T.getInfo() != null)
