@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.13 2001/07/16 13:24:55 tryggvil Exp $
+ * $Id: ModuleObject.java,v 1.14 2001/07/19 17:21:26 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -52,7 +52,7 @@ public class ModuleObject extends Object implements Cloneable {
   private int ib_object_instance_id;
   private static String emptyString = "";
   public static String sessionEventStorageName = IWMainApplication.IWEventSessionAddressParameter;
-  public EventListenerList listenerList = new EventListenerList();
+  public EventListenerList listenerList = null;
   private Hashtable eventAttributes = null;
   private static long InstnceUniqueID;
   private String UniqueInstnceName;
@@ -458,19 +458,31 @@ public class ModuleObject extends Object implements Cloneable {
   }
 
   public void addIWLinkListener(IWLinkListener l,ModuleInfo modinfo) {
-    System.err.println(this.getClass().getName() + " : listener added of type -> " + l.getClass().getName());
+    //System.err.println(this.getClass().getName() + " : listener added of type -> " + l.getClass().getName());
+    if (listenerList == null){
+      listenerList = new EventListenerList();
+    }
     listenerList.add(IWLinkListener.class,l);
   }
 
   public IWLinkListener[] getIWLinkListeners() {
+    if (listenerList == null){
+      listenerList = new EventListenerList();
+    }
     return (IWLinkListener[])listenerList.getListeners(IWLinkListener.class);
   }
 
   public void addIWSubmitListener(IWSubmitListener l,ModuleInfo modinfo){
+    if (listenerList == null){
+      listenerList = new EventListenerList();
+    }
     listenerList.add(IWSubmitListener.class,l);
   }
 
     public IWSubmitListener[] getIWSubmitListeners(){
+      if (listenerList == null){
+        listenerList = new EventListenerList();
+      }
       return (IWSubmitListener[])listenerList.getListeners(IWSubmitListener.class);
     }
 
