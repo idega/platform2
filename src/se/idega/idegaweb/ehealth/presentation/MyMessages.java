@@ -42,12 +42,13 @@ public class MyMessages extends EHealthBlock {
 	
 	private String prefix = "patient_";
 	private String prmForm = "form_messages";
-	private String prmCase = prefix + "case";
-	private String prmDate= prefix + "date";
+	private String keyCase = prefix + "case";
+	private String keyCaseNo = prefix + "case_no";
+	private String keyDate= prefix + "date";
 	
-	private String prmReceiver = prefix + "receiver";
-	private String prmSender = prefix + "sender";
-	private String prmCareUnit = prefix + "care_unit";
+	private String keyReceiver = prefix + "receiver";
+	private String keySender = prefix + "sender";
+	private String keyCareUnit = prefix + "care_unit";
 	
 	//private String prmReply = prefix + "reply";
 	//private String prmClear = prefix + "clear";
@@ -235,7 +236,7 @@ public class MyMessages extends EHealthBlock {
 		layerInfo.setHeight("100");
 		layerInfo.setMarkupAttribute("class", "ehealth_div");
 		
-		Table tableInfo = new Table(11, 10);
+		Table tableInfo = new Table(13, 10);
 		tableInfo.setNoWrap();
 		tableInfo.setCellpadding(0);
 		tableInfo.setCellspacing(0);
@@ -243,22 +244,24 @@ public class MyMessages extends EHealthBlock {
 		tableInfo.setWidth(570);
 		int column = 1;
 		tableInfo.setWidth(column++, 1, "15");
-		tableInfo.setWidth(column++, 1, "15");
+		tableInfo.setWidth(column++, 1, "5");
+		tableInfo.setWidth(column++, 1, "45"); //case no
+		tableInfo.setWidth(column++, 1, "5");
+		tableInfo.setWidth(column++, 1, "110");
+		tableInfo.setWidth(column++, 1, "5");
 		tableInfo.setWidth(column++, 1, "100");
-		tableInfo.setWidth(column++, 1, "15");
-		tableInfo.setWidth(column++, 1, "70");
-		tableInfo.setWidth(column++, 1, "15");
+		tableInfo.setWidth(column++, 1, "5");
 		tableInfo.setWidth(column++, 1, "100");
-		tableInfo.setWidth(column++, 1, "15");
-		tableInfo.setWidth(column++, 1, "120");
-		tableInfo.setWidth(column++, 1, "15");
+		tableInfo.setWidth(column++, 1, "5");
+		tableInfo.setWidth(column++, 1, "110");
+		tableInfo.setWidth(column++, 1, "5");
 		tableInfo.setWidth(column++, 1, "90");
 		
-	
+		tableInfo.setNoWrap();
 		
 		
 		Image transpImg = Table.getTransparentCell(_iwc);
-		transpImg.setWidth(15);
+		transpImg.setWidth(5);
 		transpImg.setHeight(16);
 		
 		
@@ -275,12 +278,23 @@ public class MyMessages extends EHealthBlock {
 		int theColumn = 1;
 		
 		ArrayList cases = new ArrayList();
+		ArrayList caseNo = new ArrayList();
 		ArrayList dates = new ArrayList();		
 		ArrayList receivers = new ArrayList();
 		ArrayList senders = new ArrayList();
 		ArrayList careunits = new ArrayList();
 		
-		if (user !=null && user.getGroupID() == 142 ) {
+		if (user !=null && userID == 45 || userID == 46) {
+			caseNo.add("0241");
+			caseNo.add("0241");
+			caseNo.add("0214");
+			caseNo.add("0214");
+			caseNo.add("0178");
+			caseNo.add("0178");
+			caseNo.add("0165");
+			caseNo.add("0165");
+			caseNo.add("0124");
+			caseNo.add("0124");
 			cases.add("Ont i foten");
 			cases.add("Sv:Ont i foten");
 			cases.add("Halsont");
@@ -334,6 +348,16 @@ public class MyMessages extends EHealthBlock {
 			careunits.add("Gimo VC");			
 		}
 		else if (age != null && age.getYears() >= 70){
+			caseNo.add("0241");
+			caseNo.add("0241");
+			caseNo.add("0214");
+			caseNo.add("0214");
+			caseNo.add("0178");
+			caseNo.add("0178");
+			caseNo.add("0165");
+			caseNo.add("0165");
+			caseNo.add("0124");
+			caseNo.add("0124");
 			cases.add("Ont i foten");
 			cases.add("Sv:Ont i foten");
 			cases.add("Halsont");
@@ -388,6 +412,16 @@ public class MyMessages extends EHealthBlock {
 			
 		}
 		else{
+			caseNo.add("0241");
+			caseNo.add("0241");
+			caseNo.add("0214");
+			caseNo.add("0214");
+			caseNo.add("0178");
+			caseNo.add("0178");
+			caseNo.add("0165");
+			caseNo.add("0165");
+			caseNo.add("0124");
+			caseNo.add("0124");
 			cases.add("Ont i foten");
 			cases.add("Sv:Ont i foten");
 			cases.add("Halsont");
@@ -441,7 +475,8 @@ public class MyMessages extends EHealthBlock {
 			
 		}
 		
-		Iterator icases = cases.iterator();
+		Iterator icaseNo = caseNo.iterator();
+		Iterator icases = cases.iterator();		
 		Iterator idates = dates.iterator();
 		Iterator ireceivers = receivers.iterator();
 		Iterator isenders = senders.iterator();
@@ -450,12 +485,12 @@ public class MyMessages extends EHealthBlock {
 					
 		while (idates.hasNext()) {		
 			
-			for (theColumn = 1; theColumn <= 11; theColumn++) {
+			for (theColumn = 1; theColumn <= 13; theColumn++) {
 				Layer layers = (Layer) layer.clone();
 				layers.setID("lay" + theRow + "_"+ theColumn);
 				if (theColumn % 2 == 0){
 					layers.add(transpImg);
-					layers.setWidth("15");
+					layers.setWidth("5");
 				}
 				else if (theColumn == 1){
 					if (user !=null && user.getGroupID() == 142 ) {
@@ -476,22 +511,27 @@ public class MyMessages extends EHealthBlock {
 				}
 				
 				else if (theColumn == 3){
+					String theCaseNo = (String) icaseNo.next();
+					layers.add(theCaseNo);
+				}
+				
+				else if (theColumn == 5){
 					String theCase = (String) icases.next();
 					layers.add(theCase);
 				}
-				else if (theColumn == 5){
+				else if (theColumn == 7){
 					String theDate = (String) idates.next();
 					layers.add(theDate);
 				}
-				else if (theColumn == 7){
+				else if (theColumn == 9){
 					String theReceiver = (String) ireceivers.next();
 					layers.add(theReceiver);
 				}
-				else if (theColumn == 9){
+				else if (theColumn == 11){
 					String theSender = (String) isenders.next();
 					layers.add(theSender);
 				}
-				else if (theColumn == 11){
+				else if (theColumn == 13){
 					String theCU = (String) icareunits.next();
 					layers.add(theCU);
 				}
@@ -511,7 +551,7 @@ public class MyMessages extends EHealthBlock {
 		Layer layerHead = new Layer(Layer.DIV);
 		layerHead.setMarkupAttribute("class", "ehealth_div_no_border");
 		
-		Table table = new Table(11, 1);
+		Table table = new Table(13, 1);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setBorder(0);
@@ -521,32 +561,40 @@ public class MyMessages extends EHealthBlock {
 		
 		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		
-		
+		int row = 3;
 		int column = 1;
 		table.setWidth(column++, 1, "15");
-		table.setWidth(column++, 1, "15");
+		table.setWidth(column++, 1, "5");
+		table.setWidth(column++, 1, "45");
+		table.setWidth(column++, 1, "5");
+		table.setWidth(column++, 1, "110");
+		table.setWidth(column++, 1, "5");
 		table.setWidth(column++, 1, "100");
-		table.setWidth(column++, 1, "15");
-		table.setWidth(column++, 1, "70");
-		table.setWidth(column++, 1, "15");
+		table.setWidth(column++, 1, "5");
 		table.setWidth(column++, 1, "100");
-		table.setWidth(column++, 1, "15");
-		table.setWidth(column++, 1, "120");
-		table.setWidth(column++, 1, "15");
+		table.setWidth(column++, 1, "5");
+		table.setWidth(column++, 1, "110");
+		table.setWidth(column++, 1, "5");
 		table.setWidth(column++, 1, "90");
 		
-		Text tcase = getLocalizedSmallHeader(prmCase,"Case");
-		Text date = getLocalizedSmallHeader(prmDate,"Date");
-		Text receiver = getLocalizedSmallHeader(prmReceiver,"Receiver");
-		Text sender = getLocalizedSmallHeader(prmSender,"Sender");
-		Text careunit = getLocalizedSmallHeader(prmCareUnit,"Care unit");
+		Text tcase = getLocalizedSmallHeader(keyCase,"Case");
+		Text tcaseNo = getLocalizedSmallHeader(keyCaseNo,"No");
+		Text date = getLocalizedSmallHeader(keyDate,"Date");
+		Text receiver = getLocalizedSmallHeader(keyReceiver,"Receiver");
+		Text sender = getLocalizedSmallHeader(keySender,"Sender");
+		Text careunit = getLocalizedSmallHeader(keyCareUnit,"Care unit");
 		
-		
-		table.add(tcase, 3, 1);
-		table.add(date, 5, 1);
-		table.add(receiver, 7, 1);
-		table.add(sender, 9, 1);
-		table.add(careunit, 11, 1);		
+		table.add(tcaseNo, row++, 1);
+		row++;
+		table.add(tcase, row++, 1);
+		row++;
+		table.add(date, row++, 1);
+		row++;
+		table.add(receiver, row++, 1);
+		row++;
+		table.add(sender, row++, 1);
+		row++;
+		table.add(careunit, row++, 1);	
 		layerHead.add(table);
 		
 		return layerHead;
@@ -568,7 +616,7 @@ public class MyMessages extends EHealthBlock {
 		s.append("}").append("\n\t");
 		s.append("document.all.tags('div')[i].style.backgroundColor = '#ffffff';");
 		s.append("}").append("\n\t");
-		s.append("for (i = 1; i <= 11; i++){").append(" \n\t");
+		s.append("for (i = 1; i <= 13; i++){").append(" \n\t");
 		s.append("elementName = eval(elementBase + i);").append(" \n\t");		
 		s.append("document.getElementById(elementName.id).style.backgroundColor = '#CCCCCC';").append(" \n\t");
 		s.append("}").append("\n\t");
