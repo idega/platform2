@@ -8,10 +8,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
-import com.idega.builder.data.IBPage;
-import com.idega.core.data.Address;
-import com.idega.core.data.Email;
-import com.idega.core.data.Phone;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -37,7 +37,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	private User child;
 	private ChildCareApplication application;
 	private boolean isAdministrator;
-	private IBPage contractsPage;
+	private ICPage contractsPage;
 	private Boolean _canEdit;
 	
 	/**
@@ -434,7 +434,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		getBusiness().saveComments(getSession().getApplicationID(), iwc.getParameter(PARAMETER_COMMENTS));
 	}
 
-	public void setContractsPage(IBPage page) {
+	public void setContractsPage(ICPage page) {
 		contractsPage = page;
 	}
 

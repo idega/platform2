@@ -12,7 +12,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.core.data.PostalCode;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;

@@ -7,9 +7,9 @@ import is.idega.idegaweb.tracker.data.*;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWCacheManager;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.data.IBDomain;
-import com.idega.builder.data.IBPage;
 import com.idega.util.IWTimestamp;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 
  //synchronized
@@ -30,7 +30,7 @@ public class TrackerBusiness {
   public static final String IW_BUNDLE_IDENTIFIER = "is.idega.tracker";
 
   private static IWCacheManager cm;
-  private static IBDomain domainEntity;
+  private static ICDomain domainEntity;
   private static String TR_USER_AGENT_KEY = "tr.ua";
   private static String TR_PAGE_CACHE_KEY = "tr.pg";
   private static String TR_PAGE_TOTAL_CACHE_KEY = "tr.pgt";

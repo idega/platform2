@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.13 2003/09/30 12:22:56 anders Exp $
+ * $Id: ProviderEditor.java,v 1.14 2003/10/03 01:53:11 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -28,12 +28,12 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.CountryDropdownMenu;
 
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 
-import com.idega.core.data.Commune;
-import com.idega.core.data.CommuneHome;
-import com.idega.core.data.Country;
-import com.idega.core.data.CountryHome;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
+import com.idega.core.location.data.Country;
+import com.idega.core.location.data.CountryHome;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -60,10 +60,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/30 12:22:56 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/03 01:53:11 $ by $Author: tryggvil $
  *
  * @author Anders Lindman
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -480,7 +480,7 @@ public class ProviderEditor extends AccountingBlock {
 	private ButtonPanel getButtonPanel(IWContext iwc) {
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "New");
-		IBPage homePage = iwc.getCurrentUser().getHomePage();
+		ICPage homePage = iwc.getCurrentUser().getHomePage();
 		if (homePage == null) {
 			homePage = iwc.getCurrentUser().getPrimaryGroup().getHomePage();
 		}

@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;

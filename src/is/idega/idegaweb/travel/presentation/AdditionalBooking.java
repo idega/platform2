@@ -8,7 +8,8 @@ import java.rmi.RemoteException;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
+
 import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;

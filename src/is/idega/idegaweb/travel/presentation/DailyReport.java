@@ -18,7 +18,8 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
 import java.util.*;
 
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
+
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.tour.data.*;

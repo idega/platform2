@@ -31,7 +31,7 @@ public class MailingListBMPBean extends com.idega.data.CategoryEntityBMPBean imp
     addAttribute(this.getIDColumnName());
     addAttribute(NAME , "Name", true, true, String.class);
     addAttribute(CREATED , "Created", true, true, Timestamp.class);
-    addManyToManyRelationShip(com.idega.core.data.Email.class);
+    addManyToManyRelationShip(com.idega.core.contact.data.Email.class);
 
   }
   public String getEntityName() {

@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.presentation;
-import com.idega.core.data.Email;
-import com.idega.core.data.Phone;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;

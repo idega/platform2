@@ -31,7 +31,7 @@ public class CommuneCopier extends IDOCopier {
 	}
 	public CommuneCopier(String fromDatasource) {
 		super();
-		GenericEntity instance1 = createEntityInstance(com.idega.builder.data.IBDomain.class);
+		GenericEntity instance1 = createEntityInstance(com.idega.core.builder.data.ICDomain.class);
 		//GenericEntity instance1 = ((com.idega.builder.data.IBDomainHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.builder.data.IBDomain.class)).createLegacy();
 		((IDOEntityBean)instance1).setDatasource(fromDatasource);
 		GenericEntity instance2 = createEntityInstance(com.idega.core.accesscontrol.data.LoginTable.class);
@@ -40,7 +40,7 @@ public class CommuneCopier extends IDOCopier {
 		GenericEntity instance2b = createEntityInstance(com.idega.core.accesscontrol.data.LoginInfo.class);
 		//GenericEntity instance2b = ((com.idega.core.accesscontrol.data.LoginInfoHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.LoginInfo.class)).createLegacy();
 		((IDOEntityBean)instance2b).setDatasource(fromDatasource);
-		GenericEntity instance3 = createEntityInstance(com.idega.core.data.ICObjectInstance.class);
+		GenericEntity instance3 = createEntityInstance(com.idega.core.component.data.ICObjectInstance.class);
 		((IDOEntityBean)instance3).setDatasource(fromDatasource);
 		GenericEntity instance4 = createEntityInstance(com.idega.core.accesscontrol.data.ICPermission.class);
 		//GenericEntity instance4 = ((com.idega.core.accesscontrol.data.ICPermissionHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.ICPermission.class)).createLegacy();

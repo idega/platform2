@@ -1,8 +1,8 @@
 package is.idega.idegaweb.tracker.presentation;
 
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.IDOLookup;
-import com.idega.builder.data.IBPageHome;
-import com.idega.builder.data.IBPage;
 import java.util.*;
 import com.idega.presentation.Block;
 import com.idega.presentation.*;
@@ -79,8 +79,8 @@ public class PageCounter extends Block {
 
       Iterator pageList = pageHits.iterator();
       PageStatistics item;
-      IBPageHome pHome = (IBPageHome)IDOLookup.getHome(IBPage.class);
-      IBPage thePage;
+      ICPageHome pHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
+      ICPage thePage;
       while (pageList.hasNext()) {
         item = (PageStatistics) pageList.next();
         thePage = pHome.findByPrimaryKey(new Integer(item.getPageId()));

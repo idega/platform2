@@ -16,7 +16,7 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 public interface MessageBusiness extends CaseBusiness
 {
  public se.idega.idegaweb.commune.message.data.Message createPrintArchivationMessage(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public se.idega.idegaweb.commune.message.data.SystemArchivationMessage createPrintArchivationMessage(com.idega.user.data.User p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3,com.idega.core.data.ICFile p4)throws javax.ejb.CreateException, java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.message.data.SystemArchivationMessage createPrintArchivationMessage(com.idega.user.data.User p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3,com.idega.core.file.data.ICFile p4)throws javax.ejb.CreateException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.SystemArchivationMessage createPrintArchivationMessage(int p0,int p1,java.lang.String p2,java.lang.String p3,int p4)throws javax.ejb.CreateException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createPrintArchivationMessage(int p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.Message createPrintedLetterMessage(com.idega.user.data.User p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;

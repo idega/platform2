@@ -10,12 +10,12 @@ import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
 
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginRecord;
 import com.idega.core.accesscontrol.data.LoginRecordHome;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -94,12 +94,12 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
   private final static String COLOR_RED = "#ff0000";
 
 	/** Contains the page where the user can apply for a new account. */
-  private IBPage citizenAccountApplicationPage;
+  private ICPage citizenAccountApplicationPage;
 
   /** Sets the page where a user can apply for a new account.
    * @param citizenAccountApplicationPage the page where the user can apply for a new account.
    */
-  public void setCitizenAccountApplicationPage(IBPage citizenAccountApplicationPage) {
+  public void setCitizenAccountApplicationPage(ICPage citizenAccountApplicationPage) {
     this.citizenAccountApplicationPage = citizenAccountApplicationPage;
   }
 

@@ -10,9 +10,9 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 import com.idega.block.school.data.School;
-import com.idega.core.data.Address;
-import com.idega.core.data.Email;
-import com.idega.core.data.Phone;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;

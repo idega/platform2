@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.data;
 
+
 import is.idega.idegaweb.travel.interfaces.Booking;
 
 import java.rmi.RemoteException;
@@ -20,7 +21,7 @@ import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.block.trade.stockroom.data.TravelAddressBMPBean;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
 import com.idega.data.EntityControl;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
@@ -31,6 +32,7 @@ import com.idega.data.SimpleQuerier;
 import com.idega.presentation.IWContext;
 import com.idega.util.CypherText;
 import com.idega.util.IWTimestamp;
+
 import com.idega.util.text.TextSoap;
 
 /**

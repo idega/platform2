@@ -25,9 +25,9 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.Address;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.ExceptionWrapper;
@@ -85,7 +85,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private String prmAction = prefix + "snd_frm";
 
 	protected User _user = null;
-	protected IBPage _presentationPage = null;
+	protected ICPage _presentationPage = null;
 	protected IWBundle _iwb;
 	protected IWResourceBundle _iwrb;
 
@@ -387,11 +387,11 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			add(new Text(localize(APPLICATION_FAILURE, "Failed to submit application")));
 	}
 
-	public void setProviderPresentationLink(IBPage page) {
+	public void setProviderPresentationLink(ICPage page) {
 		_presentationPage = page;
 	}
 
-	public IBPage getProviderPresentationLink() {
+	public ICPage getProviderPresentationLink() {
 		return _presentationPage;
 	}
 

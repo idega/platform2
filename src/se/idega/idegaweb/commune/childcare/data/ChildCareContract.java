@@ -9,7 +9,7 @@ public interface ChildCareContract extends com.idega.data.IDOEntity
  public com.idega.user.data.User getChild();
  public int getChildID();
  public com.idega.block.contract.data.Contract getContract();
- public com.idega.core.data.ICFile getContractFile();
+ public com.idega.core.file.data.ICFile getContractFile();
  public int getContractFileID();
  public int getContractID();
  public java.sql.Date getCreatedDate();
@@ -23,7 +23,7 @@ public interface ChildCareContract extends com.idega.data.IDOEntity
  public void setChild(com.idega.user.data.User p0);
  public void setChildID(int p0);
  public void setContract(com.idega.block.contract.data.Contract p0);
- public void setContractFile(com.idega.core.data.ICFile p0);
+ public void setContractFile(com.idega.core.file.data.ICFile p0);
  public void setContractFileID(int p0);
  public void setContractID(int p0);
  public void setCreatedDate(java.sql.Date p0);

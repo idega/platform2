@@ -42,7 +42,7 @@ import com.idega.block.entity.presentation.converters.DropDownPostalCodeConverte
 import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
-import com.idega.core.data.PostalCode;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;

@@ -1,6 +1,6 @@
 /*
 
- *  $Id: IShopTemplateBeanBMPBean.java,v 1.1 2002/04/06 19:11:21 tryggvil Exp $
+ *  $Id: IShopTemplateBeanBMPBean.java,v 1.2 2003/10/03 01:52:42 tryggvil Exp $
 
  *
 
@@ -20,9 +20,9 @@ package is.idega.idegaweb.intershop.data;
 
 
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLegacyEntity;
 
-import com.idega.builder.data.IBPage;
 
 import java.sql.SQLException;
 
@@ -94,7 +94,7 @@ public class IShopTemplateBeanBMPBean extends com.idega.data.GenericEntity imple
 
     addAttribute(getIShopDescriptionColumnName(),"",true,true,String.class,255);
 
-    addAttribute(getPageIdColumnName(),"",true,true,Integer.class,com.idega.data.GenericEntity.ONE_TO_ONE,IBPage.class);
+    addAttribute(getPageIdColumnName(),"",true,true,Integer.class,com.idega.data.GenericEntity.ONE_TO_ONE,ICPage.class);
 
   }
 

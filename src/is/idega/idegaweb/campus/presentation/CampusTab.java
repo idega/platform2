@@ -4,9 +4,9 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.Table;
 import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
-import com.idega.builder.data.IBPage;
-import com.idega.core.ICTreeNode;
 import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.data.ICTreeNode;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Block;
 
@@ -58,7 +58,7 @@ public class CampusTab extends Block implements Campus{
   }
 
 
-  public void setPage(IBPage page){
+  public void setPage(ICPage page){
     pageId = page.getID();
   }
 

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 
-import com.idega.core.data.PostalCode;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.*;
 import com.idega.util.ListUtil;
 import com.idega.block.process.data.*;

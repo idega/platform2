@@ -13,7 +13,7 @@ import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException
 
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.SchoolArea;
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;

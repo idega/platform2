@@ -18,8 +18,8 @@ import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
 import com.idega.block.contract.data.ContractCategoryHome;
 import com.idega.block.contract.data.ContractHome;
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;
@@ -183,13 +183,13 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 		return image;
 	}
 
-	private static IBPage _page;	
+	private static ICPage _page;	
 
-	public void setResponsePage(IBPage page){
+	public void setResponsePage(ICPage page){
 		_page = page;
 	}
 	
-	public IBPage getResponsePage(){
+	public ICPage getResponsePage(){
 		return _page;
 	}
 	

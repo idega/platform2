@@ -6,9 +6,9 @@ import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.presentation.StaffEditor;
 import com.idega.block.staff.presentation.StaffPropertyWindow;
 import com.idega.business.IDOLegacyEntityComparator;
-import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -511,7 +511,7 @@ public class ParticipantList extends AbstractContentList {
       } else {
         UserList uList = new UserList(_USERS_RELATED);
 
-        List lDirect = com.idega.core.business.UserGroupBusiness.getUsersContainedDirectlyRelated(groupId);
+        List lDirect = com.idega.core.user.business.UserGroupBusiness.getUsersContainedDirectlyRelated(groupId);
         Set direct = new HashSet();
         if(lDirect != null){
           Iterator iter = lDirect.iterator();
@@ -522,7 +522,7 @@ public class ParticipantList extends AbstractContentList {
         }
         uList.setDirectlyRelatedUserIds(direct);
 
-        List lNotDirect = com.idega.core.business.UserGroupBusiness.getUsersContainedNotDirectlyRelated(groupId);
+        List lNotDirect = com.idega.core.user.business.UserGroupBusiness.getUsersContainedNotDirectlyRelated(groupId);
         Set notDirect = new HashSet();
         if(lNotDirect != null){
           Iterator iter2 = lNotDirect.iterator();

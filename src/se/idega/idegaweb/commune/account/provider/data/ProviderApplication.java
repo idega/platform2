@@ -13,7 +13,7 @@ public interface ProviderApplication extends com.idega.data.IDOEntity,com.idega.
  public void setPostalCode(int p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setAdditionalInfo(java.lang.String p0) throws java.rmi.RemoteException;
  public void initializeAttributes() throws java.rmi.RemoteException;
- public void setPostalCode(com.idega.core.data.PostalCode p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void setPostalCode(com.idega.core.location.data.PostalCode p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public java.lang.String getManagerName() throws java.rmi.RemoteException;
  public java.util.Collection getSchoolTypes() throws java.rmi.RemoteException;
  public java.lang.String getAddress() throws java.rmi.RemoteException;
@@ -21,7 +21,7 @@ public interface ProviderApplication extends com.idega.data.IDOEntity,com.idega.
  public com.idega.block.school.data.SchoolArea getSchoolArea() throws java.rmi.RemoteException;
  public void setSchoolTypes(int[] p0) throws java.rmi.RemoteException;
  public void setNumberOfPlaces(int p0) throws java.rmi.RemoteException;
- public com.idega.core.data.PostalCode getPostalCode() throws java.rmi.RemoteException;
+ public com.idega.core.location.data.PostalCode getPostalCode() throws java.rmi.RemoteException;
  public void setApplicantName(java.lang.String p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void setPhone(java.lang.String p0) throws java.rmi.RemoteException;
  public void addSchoolType(com.idega.block.school.data.SchoolType p0) throws java.rmi.RemoteException;

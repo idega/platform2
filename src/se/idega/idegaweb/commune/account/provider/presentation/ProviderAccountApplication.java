@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplication.java,v 1.10 2003/04/02 20:47:26 laddi Exp $
+ * $Id: ProviderAccountApplication.java,v 1.11 2003/10/03 01:53:10 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -19,7 +19,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.PostalCode;
+import com.idega.core.location.data.PostalCode;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;

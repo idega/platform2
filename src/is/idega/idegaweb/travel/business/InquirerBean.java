@@ -5,7 +5,8 @@ import com.idega.business.IBOServiceBean;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import java.rmi.RemoteException;
-import com.idega.core.data.Email;
+
+import com.idega.core.contact.data.Email;
 import com.idega.util.SendMail;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import javax.mail.MessagingException;

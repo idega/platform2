@@ -7,11 +7,11 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOServiceBean;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.ICCategory;
-import com.idega.core.data.ICCategoryHome;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileHome;
+import com.idega.core.category.business.CategoryFinder;
+import com.idega.core.category.data.ICCategory;
+import com.idega.core.category.data.ICCategoryHome;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;

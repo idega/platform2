@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.8 2003/09/25 10:23:10 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.9 2003/10/03 01:53:10 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -23,7 +23,7 @@ import java.lang.reflect.*;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.user.data.User;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.DropdownMenu;
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.8 2003/09/25 10:23:10 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.9 2003/10/03 01:53:10 tryggvil Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -116,14 +116,14 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String PARAM_SELECTOR_PAYMENT_FLOW_TYPE = "param_pay_flow_sel";	 
 
 
-	private IBPage _responsePage;
+	private ICPage _responsePage;
 	private String _errorText = "";
 	
-	public void setResponsePage(IBPage page) {
+	public void setResponsePage(ICPage page) {
 		_responsePage = page;
 	}
 
-	public IBPage getResponsePage() {
+	public ICPage getResponsePage() {
 		return _responsePage;
 	}
 	

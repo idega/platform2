@@ -6,8 +6,8 @@ import java.util.Map;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWResourceBundle;
@@ -124,7 +124,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
 	private IWResourceBundle iwrb = null;
 	private IWBundle iwb = null;
-	private IBPage formResponsePage;
+	private ICPage formResponsePage;
 
 	private String _width = "600";
 
@@ -322,11 +322,11 @@ public class CommuneBlock extends com.idega.presentation.Block {
 		return (InterfaceObjectContainer) setStyle(obj, this.STYLENAME_INTERFACE);
 	}
 	
-	public IBPage getResponsePage() {
+	public ICPage getResponsePage() {
 		return this.formResponsePage;
 	}
 
-	public void setResponsePage(IBPage page) {
+	public void setResponsePage(ICPage page) {
 		this.formResponsePage = page;
 	}
 	

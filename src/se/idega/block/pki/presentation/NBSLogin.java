@@ -15,9 +15,9 @@ import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
 
 import com.idega.block.login.presentation.Login;
-import com.idega.builder.data.IBPage;
 import com.idega.core.accesscontrol.business.LoggedOnInfo;
 import com.idega.core.accesscontrol.business.LoginBusinessBean;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -48,9 +48,9 @@ public class NBSLogin extends Login {
 	//private String _errorPageID = null;
 	//private String _loggedOnPageID = null;
 
-	private static IBPage _page;
+	private static ICPage _page;
 	
-	private static IBPage _applicationPage;
+	private static ICPage _applicationPage;
 	private boolean _showErrorCode = false;
 	
 	
@@ -383,19 +383,19 @@ public class NBSLogin extends Login {
 		return null;
 	}
 
-	public void setGotoPage(IBPage page) {
+	public void setGotoPage(ICPage page) {
 		_page = page;
 	}
 
-	public IBPage getGotoPage() {
+	public ICPage getGotoPage() {
 		return _page;
 	}
 	
-	public void setApplicationPage(IBPage page) {
+	public void setApplicationPage(ICPage page) {
 		_applicationPage = page;
 	}
 
-	public IBPage getApplicationPage() {
+	public ICPage getApplicationPage() {
 		return _applicationPage;
 	}
 	

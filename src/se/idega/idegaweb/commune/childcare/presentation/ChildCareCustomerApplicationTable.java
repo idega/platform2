@@ -21,7 +21,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.52 2003/09/11 09:35:33 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.53 2003/10/03 01:53:10 tryggvil Exp $
  * @since 12.2.2003 
  */
 
@@ -778,18 +778,18 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return getSmallHeader(localize(key, defaultValue));
 	}
 
-	private IBPage _endPage;
+	private ICPage _endPage;
 
 	/**
 	 * 
 	 * Property method
 	 * @param page The page to return after finshed or cancelled
 	 */
-	public void setEndPage(IBPage page) {
+	public void setEndPage(ICPage page) {
 		_endPage = page;
 	}
 
-	public IBPage getEndPage() {
+	public ICPage getEndPage() {
 		return _endPage;
 	}
 

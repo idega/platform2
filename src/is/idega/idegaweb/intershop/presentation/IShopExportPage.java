@@ -1,5 +1,5 @@
 /*
- * $Id: IShopExportPage.java,v 1.6 2003/08/05 19:45:27 tryggvil Exp $
+ * $Id: IShopExportPage.java,v 1.7 2003/10/03 01:52:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,9 +10,9 @@
 package is.idega.idegaweb.intershop.presentation;
 
 import com.idega.builder.business.BuilderLogic;
-import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBPageHome;
 import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.builder.data.ICPageHome;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
@@ -44,11 +44,11 @@ public class IShopExportPage extends IWAdminWindow {
     path.append(bundle.getProperty("sybaseproperties","sybasedb.properties"));
 
     String ib_page_id = Integer.toString(bservice.getCurrentPageId(iwc));
-    IBPage ibpage = null;
+    ICPage ibpage = null;
     int page_id = -1;
     try {
       page_id = Integer.parseInt(ib_page_id);
-      IBPageHome ibPageHome = (IBPageHome)IDOLookup.getHome(IBPage.class);
+      ICPageHome ibPageHome = (ICPageHome)IDOLookup.getHome(ICPage.class);
       ibpage = ibPageHome.findByPrimaryKey(page_id);
     }
     catch(Exception e) {

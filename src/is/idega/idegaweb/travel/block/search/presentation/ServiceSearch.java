@@ -11,8 +11,8 @@ import javax.ejb.FinderException;
 import is.idega.idegaweb.travel.business.TravelSessionManager;
 
 import com.idega.business.IBOLookup;
-import com.idega.core.data.ICObject;
-import com.idega.core.data.ICObjectHome;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectHome;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;

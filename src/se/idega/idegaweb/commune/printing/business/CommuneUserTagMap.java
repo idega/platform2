@@ -6,7 +6,7 @@ import java.text.DateFormat;
 import java.util.HashMap;
 
 import com.idega.business.IBOLookup;
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;

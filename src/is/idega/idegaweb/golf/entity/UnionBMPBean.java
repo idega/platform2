@@ -20,7 +20,7 @@ import com.idega.data.*;
 
 import com.idega.util.datastructures.idegaTreeNode;
 
-import com.idega.core.ICTreeNode;
+import com.idega.core.data.ICTreeNode;
 
 
 
@@ -32,7 +32,7 @@ import com.idega.core.ICTreeNode;
 
 */
 
-public class UnionBMPBean extends com.idega.data.TreeableEntityBMPBean implements is.idega.idegaweb.golf.entity.Union,com.idega.util.datastructures.idegaTreeNode,com.idega.core.ICTreeNode {
+public class UnionBMPBean extends com.idega.data.TreeableEntityBMPBean implements is.idega.idegaweb.golf.entity.Union,com.idega.util.datastructures.idegaTreeNode,com.idega.core.data.ICTreeNode {
 
 
 

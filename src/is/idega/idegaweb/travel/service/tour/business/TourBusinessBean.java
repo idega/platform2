@@ -11,6 +11,7 @@ import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
+import com.idega.core.location.data.*;
 import com.idega.util.*;
 import java.sql.SQLException;
 import java.util.*;
@@ -52,7 +53,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       if (super.timeframe == null) isError = true;
       if (activeDays.length == 0) isError = true;
 
-      int hotelPickupAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueHotelPickupAddressType);
+      int hotelPickupAddressTypeId = com.idega.core.location.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueHotelPickupAddressType);
 
 
       int[] departureAddressIds = setDepartureAddress(tourId, departureFrom, departureTime);

@@ -16,7 +16,9 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.*;
+import com.idega.core.contact.data.*;
 import com.idega.core.data.*;
+import com.idega.core.location.data.*;
 import com.idega.presentation.IWContext;
 
 /**
@@ -393,7 +395,7 @@ public class ResellerCreator extends TravelManager {
               Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
 
               Phone ph;
-              List phones = reseller.getPhones(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
+              List phones = reseller.getPhones(com.idega.core.contact.data.PhoneBMPBean.getHomeNumberID());
               if (phones != null) {
                 if (phones.size() > 0) {
                   for (int i = 0; i < phones.size(); i++) {
@@ -403,15 +405,15 @@ public class ResellerCreator extends TravelManager {
                     phoneIDS.add(new Integer(ph.getID()));
                   }
                 }else {
-                  ph = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
+                  ph = ((com.idega.core.contact.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     ph.setNumber(phone);
-                    ph.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
+                    ph.setPhoneTypeId(com.idega.core.contact.data.PhoneBMPBean.getHomeNumberID());
                   ph.insert();
                   phoneIDS.add(new Integer(ph.getID()));
                 }
               }
 
-              phones = reseller.getPhones(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
+              phones = reseller.getPhones(com.idega.core.contact.data.PhoneBMPBean.getFaxNumberID());
               if (phones != null) {
                 if (phones.size() > 0 ) {
                   for (int i = 0; i < phones.size(); i++) {
@@ -421,9 +423,9 @@ public class ResellerCreator extends TravelManager {
                     phoneIDS.add(new Integer(ph.getID()));
                   }
                 }else {
-                  ph = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
+                  ph = ((com.idega.core.contact.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     ph.setNumber(fax);
-                    ph.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
+                    ph.setPhoneTypeId(com.idega.core.contact.data.PhoneBMPBean.getFaxNumberID());
                   ph.insert();
                   phoneIDS.add(new Integer(ph.getID()));
                 }
@@ -466,16 +468,16 @@ public class ResellerCreator extends TravelManager {
 
                 Vector phoneIDS = new Vector();
                 if (phone.length() > 0) {
-                  Phone phonePhone = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
+                  Phone phonePhone = ((com.idega.core.contact.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     phonePhone.setNumber(phone);
-                    phonePhone.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
+                    phonePhone.setPhoneTypeId(com.idega.core.contact.data.PhoneBMPBean.getHomeNumberID());
                   phonePhone.insert();
                   phoneIDS.add(new Integer(phonePhone.getID()));
                 }
                 if (fax.length() > 0) {
-                  Phone faxPhone = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
+                  Phone faxPhone = ((com.idega.core.contact.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     faxPhone.setNumber(fax);
-                    faxPhone.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
+                    faxPhone.setPhoneTypeId(com.idega.core.contact.data.PhoneBMPBean.getFaxNumberID());
                   faxPhone.insert();
                   phoneIDS.add(new Integer(faxPhone.getID()));
                 }
@@ -487,7 +489,7 @@ public class ResellerCreator extends TravelManager {
                 }
 
                 int[] addressIds = new int[1];
-                Address addressAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+                Address addressAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
                     addressAddress.setStreetName(address);
 										if (iPostalCode != -1) {
 											addressAddress.setPostalCodeID(iPostalCode);
@@ -496,7 +498,7 @@ public class ResellerCreator extends TravelManager {
                 addressIds[0] = addressAddress.getID();
 
                 int[] emailIds = new int[1];
-                Email eEmail = ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
+                Email eEmail = ((com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
                   eEmail.setEmailAddress(email);
                   eEmail.insert();
                 emailIds[0] = eEmail.getID();

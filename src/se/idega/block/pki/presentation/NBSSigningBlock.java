@@ -24,8 +24,8 @@ import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.NBSSignResult;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
 
-import com.idega.builder.data.IBPage;
 import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
@@ -134,13 +134,13 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		}
 	}
 	
-	private static IBPage _page;	
+	private static ICPage _page;	
 		
-	public void setGotoPage(IBPage page){
+	public void setGotoPage(ICPage page){
 		_page = page;
 	}
 	
-	public IBPage getGotoPage(){
+	public ICPage getGotoPage(){
 		return _page;
 	}
 			
@@ -205,7 +205,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		return new NBSLoginBusinessBean().getNBSServer(iwc);
 	}
 
-	protected void forwardToIBPage(IWContext iwc,Page fromPage,IBPage pageTo){
+	protected void forwardToIBPage(IWContext iwc,Page fromPage,ICPage pageTo){
 		StringBuffer URL = new StringBuffer();
 		BuilderService bservice;
 		try

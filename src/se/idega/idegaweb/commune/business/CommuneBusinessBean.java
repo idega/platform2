@@ -6,8 +6,8 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOServiceBean;
-import com.idega.core.data.Commune;
-import com.idega.core.data.CommuneHome;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 

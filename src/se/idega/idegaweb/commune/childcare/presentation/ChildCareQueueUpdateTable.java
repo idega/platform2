@@ -16,7 +16,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHomeImpl;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -27,7 +27,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareQueueUpdateTable
  * @author <a href="mailto:joakim@idega.is">Joakim</a>
- * @version $Id: ChildCareQueueUpdateTable.java,v 1.4 2003/04/25 12:31:46 laddi Exp $
+ * @version $Id: ChildCareQueueUpdateTable.java,v 1.5 2003/10/03 01:53:10 tryggvil Exp $
  * @since 12.2.2003 
  */
 public class ChildCareQueueUpdateTable extends CommuneBlock {
@@ -39,7 +39,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	public final static int PAGE_3 = 3;
 	public final static String STATUS_UBEH = "UBEH";
 	private String prmChildId = CitizenChildren.getChildIDParameterName();
-	private IBPage _endPage;
+	private ICPage _endPage;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
@@ -279,11 +279,11 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 		return getSmallHeader(localize(key, defaultValue));
 	}
 
-	public void setEndPage(IBPage page) {
+	public void setEndPage(ICPage page) {
 		_endPage = page;
 	}
 
-	public IBPage getEndPage() {
+	public ICPage getEndPage() {
 		return _endPage;
 	}
 

@@ -14,9 +14,9 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
-import com.idega.builder.data.IBPage;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.Address;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
@@ -103,7 +103,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private int count_p = 10;
 	private int count_u = 10;
 	private String UserIDPreferenceParameterName = "user_id";
-	private  IBPage userPrefPage = null;
+	private  ICPage userPrefPage = null;
 
 	private String statusPrinted, statusUnprinted, statusDeleted;
 
@@ -1235,7 +1235,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		this.defaultDays = number;
 	}
 	
-	public void setUserPreferencesPage(IBPage page){
+	public void setUserPreferencesPage(ICPage page){
 		this.userPrefPage = page;
 	}
 	

@@ -11,10 +11,10 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.business.IBOServiceBean;
-import com.idega.core.data.Country;
-import com.idega.core.data.CountryHome;
-import com.idega.core.data.PostalCode;
-import com.idega.core.data.PostalCodeHome;
+import com.idega.core.location.data.Country;
+import com.idega.core.location.data.CountryHome;
+import com.idega.core.location.data.PostalCode;
+import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOLookup;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;

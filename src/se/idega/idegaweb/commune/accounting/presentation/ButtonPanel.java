@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.15 2003/09/21 21:29:05 palli Exp $
+ * $Id: ButtonPanel.java,v 1.16 2003/10/03 01:53:10 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package se.idega.idegaweb.commune.accounting.presentation;
 
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -20,10 +20,10 @@ import com.idega.presentation.ui.SubmitButton;
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/09/21 21:29:05 $
+ * Last modified: $Date: 2003/10/03 01:53:10 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -92,7 +92,7 @@ public class ButtonPanel extends AccountingBlock {
 	 * @param page an IBPage to be opened when clicked
 	 * @author <a href="http://www.lindman.se">Kjell Lindman</a>
 	 */
-	public void addLocalizedButton(String parameter, String textKey, String defaultText, IBPage page) {
+	public void addLocalizedButton(String parameter, String textKey, String defaultText, ICPage page) {
 		GenericButton button = new GenericButton(parameter, localize(textKey, defaultText));
 		button.setPageToOpen(page);
 		addButton(button);

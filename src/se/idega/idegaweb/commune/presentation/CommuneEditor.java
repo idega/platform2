@@ -7,8 +7,8 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.business.CommuneBusiness;
 
 import com.idega.business.IBOLookup;
-import com.idega.core.data.Commune;
-import com.idega.core.data.CommuneHome;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;

@@ -27,8 +27,8 @@ import javax.ejb.FinderException;
 
 import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileHome;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.user.data.User;
 import com.idega.core.user.data.UserHome;

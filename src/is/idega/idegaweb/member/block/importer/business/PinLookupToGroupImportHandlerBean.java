@@ -13,7 +13,7 @@ import javax.transaction.UserTransaction;
 import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOSessionBean;
-import com.idega.core.business.AddressBusiness;
+import com.idega.core.location.business.AddressBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.Group;

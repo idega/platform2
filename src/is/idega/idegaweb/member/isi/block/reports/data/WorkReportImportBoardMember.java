@@ -11,7 +11,7 @@ public interface WorkReportImportBoardMember extends com.idega.data.IDOEntity
  public is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup getLeague()throws com.idega.data.IDOException;
  public java.lang.String getName();
  public java.lang.String getPersonalId();
- public com.idega.core.data.PostalCode getPostalCode()throws java.sql.SQLException;
+ public com.idega.core.location.data.PostalCode getPostalCode()throws java.sql.SQLException;
  public int getPostalCodeID();
  public int getReportId();
  public java.lang.String getStatus();
@@ -34,7 +34,7 @@ public interface WorkReportImportBoardMember extends com.idega.data.IDOEntity
  public void setLeague(int p0);
  public void setName(java.lang.String p0);
  public void setPersonalId(java.lang.String p0);
- public void setPostalCode(com.idega.core.data.PostalCode p0);
+ public void setPostalCode(com.idega.core.location.data.PostalCode p0);
  public void setPostalCodeID(int p0);
  public void setReportId(int p0);
  public void setStatus(java.lang.String p0);

@@ -12,7 +12,7 @@ public interface WorkReportImportDivisionBoard extends com.idega.data.IDOEntity
  public int getNumberOfCompetitors();
  public int getNumberOfPlayers();
  public java.lang.String getPersonalId();
- public com.idega.core.data.PostalCode getPostalCode()throws java.sql.SQLException;
+ public com.idega.core.location.data.PostalCode getPostalCode()throws java.sql.SQLException;
  public int getPostalCodeID();
  public int getReportId();
  public java.lang.String getSecondPhone();
@@ -30,7 +30,7 @@ public interface WorkReportImportDivisionBoard extends com.idega.data.IDOEntity
  public void setNumberOfCompetitors(int p0);
  public void setNumberOfPlayers(int p0);
  public void setPersonalId(java.lang.String p0);
- public void setPostalCode(com.idega.core.data.PostalCode p0);
+ public void setPostalCode(com.idega.core.location.data.PostalCode p0);
  public void setPostalCodeID(int p0);
  public void setReportId(int p0);
  public void setSecondPhone(java.lang.String p0);

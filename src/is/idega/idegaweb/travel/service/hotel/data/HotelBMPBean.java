@@ -12,10 +12,10 @@ import com.idega.block.trade.stockroom.data.ProductBMPBean;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierBMPBean;
-import com.idega.core.data.Address;
-import com.idega.core.data.AddressBMPBean;
-import com.idega.core.data.PostalCode;
-import com.idega.core.data.PostalCodeBMPBean;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressBMPBean;
+import com.idega.core.location.data.PostalCode;
+import com.idega.core.location.data.PostalCodeBMPBean;
 import com.idega.data.*;
 import com.idega.util.IWTimestamp;
 

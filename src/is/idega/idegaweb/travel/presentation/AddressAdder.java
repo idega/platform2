@@ -10,6 +10,7 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.core.data.*;
+import com.idega.core.location.data.*;
 import com.idega.util.IWTimestamp;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
@@ -106,9 +107,9 @@ public class AddressAdder extends TravelWindow {
           refill = iwc.getParameter(parameterRefill+counter);
           if (ids[i].equals("-1") ) {
             if (!name[i].equals("")) {
-              Address newAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+              Address newAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
                 newAddress.setStreetName(name[i]);
-                newAddress.setAddressTypeID(com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueDepartureAddressType));
+                newAddress.setAddressTypeID(com.idega.core.location.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueDepartureAddressType));
               newAddress.insert();
 
               TravelAddress tAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).createLegacy();
@@ -127,7 +128,7 @@ public class AddressAdder extends TravelWindow {
           }else {
             if (iwc.getParameter(this._parameterDelete+ids[i]) != null) {
               TravelAddress tAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(Integer.parseInt(ids[i]));
-              Address newAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tAddress.getAddressId());
+              Address newAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tAddress.getAddressId());
 //                tAddress.removeFrom(_product);
                 _product.removeTravelAddress(tAddress);
                 tAddress.delete();
@@ -141,7 +142,7 @@ public class AddressAdder extends TravelWindow {
                   tAddress.setRefillStock(false);
                 }
 
-              Address newAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tAddress.getAddressId());
+              Address newAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tAddress.getAddressId());
                 newAddress.setStreetName(name[i]);
                 newAddress.update();
               tAddress.update();

@@ -1,5 +1,5 @@
 /*
- * $Id: IShopCreatePageWindow.java,v 1.5 2003/08/05 19:45:27 tryggvil Exp $
+ * $Id: IShopCreatePageWindow.java,v 1.6 2003/10/03 01:52:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,8 +14,8 @@ import com.idega.builder.business.IBPropertyHandler;
 import com.idega.builder.business.IBXMLPage;
 import com.idega.builder.business.PageTreeNode;
 import com.idega.builder.business.IBPageHelper;
-import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBDomain;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;

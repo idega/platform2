@@ -3,8 +3,8 @@ package is.idega.demo.textviewer.presentation;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileHome;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
 
 import com.idega.idegaweb.*;
 import is.idega.demo.textviewer.business.*;

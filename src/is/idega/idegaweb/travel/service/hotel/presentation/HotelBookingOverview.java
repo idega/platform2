@@ -439,7 +439,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
           if (emails != null) {
             for (int j = 0; j < emails.size(); j++) {
               if (j > 0) Temail.addToText(", ");
-              Temail.addToText( ((com.idega.core.data.Email) emails.get(j)).getEmailAddress());
+              Temail.addToText( ((com.idega.core.contact.data.Email) emails.get(j)).getEmailAddress());
             }
           }
           }catch (SQLException sql) {sql.printStackTrace(System.err);}

@@ -1,10 +1,11 @@
 package is.idega.idegaweb.tracker.data;
 
-import com.idega.core.data.ICLocale;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.localisation.data.ICLocale;
+
 import java.sql.Timestamp;
 import java.sql.SQLException;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.builder.data.IBPage;
 import com.idega.core.user.data.User;
 
 /**
@@ -28,7 +29,7 @@ public class PageTotalStatisticsBMPBean extends com.idega.data.GenericEntity imp
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getColumnNamePageId(),"Page",true,true,Integer.class,"many-to-one",IBPage.class);
+    addAttribute(getColumnNamePageId(),"Page",true,true,Integer.class,"many-to-one",ICPage.class);
     addAttribute(getColumnNameLocaleId(),"Locale",true,true, Integer.class,"many-to-one",ICLocale.class);
     addAttribute(getColumnNameHits(),"Number of hits on page",true,true,java.lang.Integer.class);
     addAttribute(getColumnNameSessions(),"Number of unique hits",true,true,java.lang.Integer.class);

@@ -1,6 +1,6 @@
 /*
 
- * $Id: Menu.java,v 1.3 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: Menu.java,v 1.4 2003/10/03 01:52:42 tryggvil Exp $
 
  *
 
@@ -366,7 +366,7 @@ public class Menu extends Block{
 
 
 
-	public void setTemplate(com.idega.builder.data.IBPage templatePage){
+	public void setTemplate(com.idega.core.builder.data.ICPage templatePage){
 
 	  templateId = templatePage.getID();
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopBundleStarter.java,v 1.7 2002/12/06 22:41:45 laddi Exp $
+ *  $Id: IShopBundleStarter.java,v 1.8 2003/10/03 01:52:42 tryggvil Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,9 +10,9 @@
 package is.idega.idegaweb.intershop.business;
 
 import com.idega.builder.app.IBApplication;
-import com.idega.builder.data.IBPage;
-import com.idega.builder.data.IBDomain;
 import com.idega.builder.business.IBPageHelper;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
 import com.idega.idegaweb.IWBundleStartable;
@@ -20,7 +20,6 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
 import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
-import is.idega.idegaweb.intershop.business.IShopTemplateHome;
 import is.idega.idegaweb.intershop.presentation.IShopToolbarButton;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -88,16 +87,16 @@ public class IShopBundleStarter implements IWBundleStartable {
   private void insertInitialData(String pathToPropertiesFile, IWBundle starterBundle) {
     List l = null;
     try {
-      l = EntityFinder.getInstance().findAll(IBDomain.class);
+      l = EntityFinder.getInstance().findAll(ICDomain.class);
     }
     catch(IDOFinderException e) {
       e.printStackTrace();
       return;
     }
 
-    IBDomain main = null;
+    ICDomain main = null;
     if (l.size() > 0)
-      main = (IBDomain)l.get(0);
+      main = (ICDomain)l.get(0);
     else
       return;
 

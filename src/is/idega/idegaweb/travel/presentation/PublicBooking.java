@@ -6,7 +6,8 @@ import javax.ejb.FinderException;
 import java.rmi.RemoteException;
 import com.idega.business.IBOLookup;
 import javax.mail.MessagingException;
-import com.idega.core.data.Email;
+
+import com.idega.core.contact.data.Email;
 import com.idega.data.IDOLookup;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
@@ -20,7 +21,7 @@ import is.idega.idegaweb.travel.business.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import com.idega.block.calendar.business.CalendarBusiness;
-import com.idega.core.data.Address;
+import com.idega.core.location.data.Address;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.data.*;

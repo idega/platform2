@@ -7,8 +7,7 @@ import is.idega.idegaweb.project.data.IPCategoryType;
 import is.idega.idegaweb.project.data.IPProject;
 import is.idega.idegaweb.project.data.IPParticipantGroup;
 
-import com.idega.core.ICTreeNode;
-import com.idega.core.data.ICObject;
+import com.idega.core.component.data.ICObject;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
@@ -16,6 +15,7 @@ import com.idega.data.EntityFinder;
 import com.idega.event.EventLogic;
 import com.idega.presentation.IWContext;
 import com.idega.core.data.GenericGroup;
+import com.idega.core.data.ICTreeNode;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.data.ICPermission;

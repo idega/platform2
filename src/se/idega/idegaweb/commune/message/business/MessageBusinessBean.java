@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.40 2003/04/02 16:12:22 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.41 2003/10/03 01:53:10 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,8 +30,8 @@ import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.data.Email;
-import com.idega.core.data.ICFile;
+import com.idega.core.contact.data.Email;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;

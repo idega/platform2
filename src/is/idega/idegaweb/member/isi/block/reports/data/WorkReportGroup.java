@@ -12,7 +12,7 @@ public interface WorkReportGroup extends com.idega.data.IDOEntity
  public java.lang.String getName();
  public java.lang.String getNumber();
  public java.lang.String getPersonalId();
- public com.idega.core.data.PostalCode getPostalCode()throws java.sql.SQLException;
+ public com.idega.core.location.data.PostalCode getPostalCode()throws java.sql.SQLException;
  public int getPostalCodeID();
  public java.lang.String getShortName();
  public java.lang.String getStreetName();
@@ -28,7 +28,7 @@ public interface WorkReportGroup extends com.idega.data.IDOEntity
  public void setName(java.lang.String p0);
  public void setNumber(java.lang.String p0);
  public void setPersonalId(java.lang.String p0);
- public void setPostalCode(com.idega.core.data.PostalCode p0);
+ public void setPostalCode(com.idega.core.location.data.PostalCode p0);
  public void setPostalCodeID(int p0);
  public void setShortName(java.lang.String p0);
  public void setStreetName(java.lang.String p0);

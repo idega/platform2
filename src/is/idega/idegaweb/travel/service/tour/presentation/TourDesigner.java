@@ -11,6 +11,7 @@ import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.business.*;
 import com.idega.core.data.*;
+import com.idega.core.location.data.*;
 import com.idega.data.*;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;

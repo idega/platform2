@@ -14,7 +14,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
 import com.idega.idegaweb.IWBundle;
 
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
 
 import com.idega.core.user.data.User;
 

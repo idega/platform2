@@ -1,5 +1,5 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.data.EntityFinder;
 import com.idega.idegaweb.IWBundle;
@@ -53,7 +53,7 @@ public class MailingListBusiness {
      */
     public static void removeEmail(MailingList mlist, int email_id) {
         try {
-            ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).findByPrimaryKeyLegacy(email_id).removeFrom(mlist);
+            ((com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).findByPrimaryKeyLegacy(email_id).removeFrom(mlist);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -149,7 +149,7 @@ public class MailingListBusiness {
      */
     public static boolean addEmail(int iMailingListId, String address) {
         try {
-            Email email = ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
+            Email email = ((com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
             email.setEmailAddress(address);
             email.insert();
             MailingList mlist = ((is.idega.idegaweb.campus.block.mailinglist.data.MailingListHome)com.idega.data.IDOLookup.getHomeLegacy(MailingList.class)).findByPrimaryKeyLegacy(iMailingListId);
@@ -172,7 +172,7 @@ public class MailingListBusiness {
     public static boolean addEmail(MailingList mlist, String address) {
         if (mlist != null) {
             try {
-                Email email = ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
+                Email email = ((com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
                 email.setEmailAddress(address);
                 email.insert();
                 email.addTo(mlist);
@@ -302,7 +302,7 @@ public class MailingListBusiness {
                 List temp;
                 while (mIter.hasNext()) {
                     mlist = (MailingList) mIter.next();
-                    temp = EntityFinder.findRelated(mlist, ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy());
+                    temp = EntityFinder.findRelated(mlist, ((com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy());
                     if (temp != null) {
                         emails.addAll(temp);
                     }
@@ -495,7 +495,7 @@ public class MailingListBusiness {
     public static void deleteMailingList(MailingList list) {
         if (list != null) {
             try {
-                list.removeFrom(((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy());
+                list.removeFrom(((com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy());
                 list.delete();
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -584,7 +584,7 @@ public class MailingListBusiness {
      */
     public static List listOfEmails(MailingList mlist) {
         try {
-            return EntityFinder.findRelated(mlist, ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy());
+            return EntityFinder.findRelated(mlist, ((com.idega.core.contact.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy());
         } catch (SQLException ex) {}
         return null;
     }

@@ -9,6 +9,7 @@ import javax.ejb.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.data.*;
+import com.idega.core.location.data.*;
 import com.idega.data.*;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
@@ -68,8 +69,8 @@ public class HotelPickupPlaceDesigner extends TravelManager {
       for (int i = 0; i < hppNames.length; i++) {
         if (hppIds[i].equals("-1")) {
           if  ( (hppNames[i] != null) && (!hppNames[i].equals("")) ) {
-            Address hotelPickupAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
-              hotelPickupAddress.setAddressTypeID(com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueHotelPickupAddressType));
+            Address hotelPickupAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+              hotelPickupAddress.setAddressTypeID(com.idega.core.location.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueHotelPickupAddressType));
               hotelPickupAddress.setStreetName(hppNames[i]);
               hotelPickupAddress.insert();
 

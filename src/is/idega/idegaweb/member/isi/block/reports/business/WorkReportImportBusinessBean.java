@@ -56,9 +56,9 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import com.idega.block.media.business.MediaBusiness;
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileHome;
-import com.idega.core.data.PostalCode;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileHome;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;

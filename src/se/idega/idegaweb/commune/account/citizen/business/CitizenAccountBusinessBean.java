@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.54 2003/09/08 08:10:06 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.55 2003/10/03 01:53:10 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -46,18 +46,18 @@ import se.idega.util.PIDChecker;
 
 import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.business.AddressBusiness;
-import com.idega.core.data.Address;
-import com.idega.core.data.AddressHome;
-import com.idega.core.data.AddressType;
-import com.idega.core.data.Country;
-import com.idega.core.data.CountryHome;
-import com.idega.core.data.Email;
-import com.idega.core.data.EmailHome;
-import com.idega.core.data.Phone;
-import com.idega.core.data.PhoneBMPBean;
-import com.idega.core.data.PhoneHome;
-import com.idega.core.data.PostalCode;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.EmailHome;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.contact.data.PhoneBMPBean;
+import com.idega.core.contact.data.PhoneHome;
+import com.idega.core.location.business.AddressBusiness;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressHome;
+import com.idega.core.location.data.AddressType;
+import com.idega.core.location.data.Country;
+import com.idega.core.location.data.CountryHome;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
@@ -69,11 +69,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/09/08 08:10:06 $ by $Author: laddi $
+ * Last modified: $Date: 2003/10/03 01:53:10 $ by $Author: tryggvil $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.54 $
+ * @version $Revision: 1.55 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;

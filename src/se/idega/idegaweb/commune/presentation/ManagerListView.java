@@ -2,7 +2,7 @@ package se.idega.idegaweb.commune.presentation;
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
@@ -286,7 +286,7 @@ public class ManagerListView extends CommuneBlock {
 	}*/
 	
 	
-	public void setManagerViewPage(IBPage page) {
+	public void setManagerViewPage(ICPage page) {
 		setManagerViewPage(((Integer)page.getPrimaryKey()).intValue());
 	}
 	public void setManagerViewPage(int ib_page_id) {

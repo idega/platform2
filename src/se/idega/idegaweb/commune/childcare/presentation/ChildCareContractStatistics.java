@@ -8,7 +8,7 @@ import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.business.ChildCareStatisticsWriter;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;

@@ -10,15 +10,10 @@ import javax.transaction.UserTransaction;
 
 import com.idega.block.importer.data.ImportFile;
 import com.idega.business.IBOServiceBean;
-import com.idega.core.business.AddressBusiness;
-import com.idega.core.data.Address;
-import com.idega.core.data.AddressHome;
-import com.idega.core.data.AddressType;
-import com.idega.core.data.Country;
-import com.idega.core.data.CountryHome;
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.*;
 import com.idega.core.data.*;
-import com.idega.core.data.PostalCode;
+import com.idega.core.location.business.AddressBusiness;
+import com.idega.core.location.data.*;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;

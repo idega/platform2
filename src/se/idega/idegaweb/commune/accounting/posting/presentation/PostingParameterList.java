@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.21 2003/09/25 22:59:47 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.22 2003/10/03 01:53:10 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -16,7 +16,7 @@ import java.sql.Date;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.builder.data.IBPage;
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.TextInput;
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.21 2003/09/25 22:59:47 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.22 2003/10/03 01:53:10 tryggvil Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -88,21 +88,21 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String PARAM_DELETE_ID = "param_delete_id";
 	private final static String PARAM_EDIT_ID = "param_edit_id";
 
-	private IBPage _editPage;
+	private ICPage _editPage;
 	private Date _currentFromDate;
 	private Date _currentToDate;
 
 	/**
 	 * Handles the property editPage
 	 */
-	public void setEditPage(IBPage page) {
+	public void setEditPage(ICPage page) {
 		_editPage = page;
 	}
 
 	/**
 	 * Handles the property editPage
 	 */
-	public IBPage getEditPage() {
+	public ICPage getEditPage() {
 		return _editPage;
 	}
 

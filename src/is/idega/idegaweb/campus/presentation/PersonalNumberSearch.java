@@ -1,5 +1,5 @@
 /*
- * $Id: PersonalNumberSearch.java,v 1.1 2002/07/09 23:38:50 aron Exp $
+ * $Id: PersonalNumberSearch.java,v 1.2 2003/10/03 01:52:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -295,7 +295,7 @@ public class PersonalNumberSearch extends Block {
     _textStyles=styleAttribute;
   }
 
-  public void setPage(com.idega.builder.data.IBPage page){
+  public void setPage(com.idega.core.builder.data.ICPage page){
     _pageId = page.getID();
   }
 

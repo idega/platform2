@@ -430,7 +430,7 @@ public class CampusMenu extends Block implements Campus{
 
 
 
-  public void setTemplate(com.idega.builder.data.IBPage templatePage){
+  public void setTemplate(com.idega.core.builder.data.ICPage templatePage){
 
     templateId = templatePage.getID();
 

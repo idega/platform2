@@ -2,9 +2,9 @@ package is.idega.idegaweb.member.presentation;
 
 import java.sql.SQLException;
 
-import com.idega.core.data.Email;
-import com.idega.core.data.Phone;
-import com.idega.core.data.PhoneType;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.contact.data.PhoneType;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -113,7 +113,7 @@ public class GroupOfficeContactTab extends UserGroupTab {
 	public void initializeFields() {
 		PhoneType[] phoneTypes = null;
 		try {
-			phoneTypes = (PhoneType[]) com.idega.core.data.PhoneTypeBMPBean.getStaticInstance(PhoneType.class).findAll();
+			phoneTypes = (PhoneType[]) com.idega.core.contact.data.PhoneTypeBMPBean.getStaticInstance(PhoneType.class).findAll();
 		}
 		catch (SQLException ex) {
 			ex.printStackTrace();

@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.data.*;
+import com.idega.core.location.data.*;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 

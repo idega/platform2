@@ -8,10 +8,10 @@ public interface Service extends com.idega.data.IDOLegacyEntity
  public int getID();
  public java.sql.Timestamp getArrivalTime();
  public void initializeAttributes();
- public com.idega.core.data.Address[] getAddresses()throws java.sql.SQLException;
+ public com.idega.core.location.data.Address[] getAddresses()throws java.sql.SQLException;
  public java.lang.String getDescription(int p0)throws java.rmi.RemoteException;
  public void setPrimaryKey(java.lang.Integer p0);
- public com.idega.core.data.Address getAddress()throws java.sql.SQLException;
+ public com.idega.core.location.data.Address getAddress()throws java.sql.SQLException;
  public java.util.Collection getAddressesColl()throws com.idega.data.IDORelationshipException;
  public void removeAllHotelPickupPlaces()throws com.idega.data.IDORemoveRelationshipException;
  public void setAttivalTime(java.sql.Timestamp p0);

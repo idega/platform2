@@ -7,7 +7,7 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;

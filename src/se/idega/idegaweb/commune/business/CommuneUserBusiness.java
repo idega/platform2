@@ -3,8 +3,8 @@ package se.idega.idegaweb.commune.business;
 import java.rmi.RemoteException;
 import javax.ejb.*;
 
-import com.idega.core.data.Email;
-import com.idega.core.data.Phone;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.Group;
@@ -39,12 +39,12 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
     public com.idega.user.data.Group getRootCustomerChoiceGroup () throws javax.ejb.CreateException, javax.ejb.FinderException, java.rmi.RemoteException;
  public boolean hasCitizenAccount(com.idega.user.data.User user)throws RemoteException;
  public boolean hasCitizenAccount(int userID)throws RemoteException;
- public com.idega.core.data.Phone getChildHomePhone(User child) throws RemoteException;
- public com.idega.core.data.Phone getChildHomePhone(int childId) throws RemoteException;
+ public com.idega.core.contact.data.Phone getChildHomePhone(User child) throws RemoteException;
+ public com.idega.core.contact.data.Phone getChildHomePhone(int childId) throws RemoteException;
  public java.util.Collection getParentsForChild(User child) throws RemoteException;
  public java.util.Collection getChildrenForUser(User user) throws RemoteException;
  public is.idega.idegaweb.member.business.MemberFamilyLogic getMemberFamilyLogic() throws RemoteException;
- public boolean getIfUserAddressesMatch(com.idega.core.data.Address userAddress, com.idega.core.data.Address userAddressToCompare) throws RemoteException;
+ public boolean getIfUserAddressesMatch(com.idega.core.location.data.Address userAddress, com.idega.core.location.data.Address userAddressToCompare) throws RemoteException;
  public Group getRootSpecialCitizenGroup() throws CreateException, FinderException, RemoteException;
  public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	 String firstName,

@@ -8,8 +8,8 @@ import javax.ejb.FinderException;
 
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
-import com.idega.core.data.Email;
-import com.idega.core.data.EmailHome;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.EmailHome;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;

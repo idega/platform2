@@ -8,7 +8,7 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 
 import javax.ejb.FinderException;
 
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;

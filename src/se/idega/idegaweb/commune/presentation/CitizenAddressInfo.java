@@ -1,7 +1,7 @@
 package se.idega.idegaweb.commune.presentation;
 import com.idega.business.IBOLookup;
-import com.idega.core.data.Address;
-import com.idega.core.data.PostalCode;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.PostalCode;
 import com.idega.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;

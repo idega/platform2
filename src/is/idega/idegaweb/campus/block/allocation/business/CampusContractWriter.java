@@ -11,7 +11,7 @@ import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 import com.idega.block.application.data.*;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
@@ -167,7 +167,7 @@ public class CampusContractWriter{
           }
         }
 
-				pdfFile = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				pdfFile = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 				//System.err.println("available "+mis.available());
 				pdfFile.setFileValue(mis);
 				pdfFile.setMimeType("application/pdf");

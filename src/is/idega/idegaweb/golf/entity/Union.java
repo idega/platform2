@@ -4,7 +4,7 @@ import javax.ejb.*;
 
 import com.idega.data.IDOLegacyEntity;
 
-public interface Union extends com.idega.data.TreeableEntity,IDOLegacyEntity,com.idega.util.datastructures.idegaTreeNode,com.idega.core.ICTreeNode
+public interface Union extends com.idega.data.TreeableEntity,IDOLegacyEntity,com.idega.util.datastructures.idegaTreeNode,com.idega.core.data.ICTreeNode
 {
  public java.util.Enumeration children();
  public void delete()throws java.sql.SQLException;
@@ -17,13 +17,13 @@ public interface Union extends com.idega.data.TreeableEntity,IDOLegacyEntity,com
  public java.util.List getAllMembersInUnion();
  public boolean getAllowsChildren();
  public com.idega.util.datastructures.idegaTreeNode getChildAt(int p0);
- public com.idega.core.ICTreeNode getChildAtIndex(int p0);
+ public com.idega.core.data.ICTreeNode getChildAtIndex(int p0);
  public int getChildCount();
  public java.util.Iterator getChildren();
  public java.util.List getGroups(java.lang.String p0);
  public java.lang.String getIDColumnName();
  public java.util.List getInActiveMembers();
- public int getIndex(com.idega.core.ICTreeNode p0);
+ public int getIndex(com.idega.core.data.ICTreeNode p0);
  public int getIndex(com.idega.util.datastructures.idegaTreeNode p0);
  public java.util.List getMembersInUnion();
  public java.lang.String getName();
@@ -32,7 +32,7 @@ public interface Union extends com.idega.data.TreeableEntity,IDOLegacyEntity,com
  public int getNumber();
  public java.util.List getOwningFields()throws java.sql.SQLException;
  public com.idega.util.datastructures.idegaTreeNode getParent();
- public com.idega.core.ICTreeNode getParentNode();
+ public com.idega.core.data.ICTreeNode getParentNode();
  public int getSiblingCount();
  public java.util.List getTournamentGroups();
  public java.util.List getTournamentGroupsRecursive();

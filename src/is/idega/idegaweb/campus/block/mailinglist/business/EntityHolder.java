@@ -7,7 +7,7 @@ import is.idega.idegaweb.campus.block.application.business.CampusApplicationHold
 import com.idega.block.building.business.ApartmentHolder;
 import com.idega.core.user.data.User;
 import com.idega.core.user.business.UserBusiness;
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
 import com.idega.block.application.data.Applicant;
 //import com.idega.block.application.data.ApplicantBean;
 import com.idega.block.application.data.Application;

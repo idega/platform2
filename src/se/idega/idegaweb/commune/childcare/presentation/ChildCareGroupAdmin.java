@@ -11,8 +11,8 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareGroupWriter;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.block.school.data.SchoolClassMember;
-import com.idega.core.data.Address;
-import com.idega.core.data.Phone;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;

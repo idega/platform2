@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.idega.business.IBOLookup;
-import com.idega.core.data.Email;
-import com.idega.core.data.Phone;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
 import com.idega.event.IWPresentationEvent;
 import com.idega.event.IWPresentationState;
 import com.idega.event.IWStateMachine;

@@ -44,7 +44,7 @@ import com.idega.util.IWTimestamp;
 
 import java.sql.SQLException;
 
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
 
 import com.idega.core.user.business.UserBusiness;
 

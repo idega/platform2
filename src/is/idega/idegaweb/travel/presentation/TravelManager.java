@@ -424,7 +424,7 @@ public class TravelManager extends Block {
           }
 
           if (pGroup != null) {
-            com.idega.core.business.UserGroupBusiness ugb = new com.idega.core.business.UserGroupBusiness();
+            com.idega.core.user.business.UserGroupBusiness ugb = new com.idega.core.user.business.UserGroupBusiness();
             List allUsers = ugb.getUsersContained(pGroup);
             if (allUsers != null) {
               return allUsers.contains(user);

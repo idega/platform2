@@ -1,5 +1,5 @@
 package is.idega.idegaweb.campus.block.mailinglist.presentation;
-import com.idega.core.data.Email;
+import com.idega.core.contact.data.Email;
 import com.idega.development.presentation.Localizer;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

@@ -12,6 +12,8 @@ import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.data.*;
 import java.sql.Timestamp;
 import com.idega.core.data.*;
+import com.idega.core.location.data.*;
+
 import is.idega.idegaweb.travel.data.PickupPlace;
 import java.sql.SQLException;
 import com.idega.util.*;
@@ -1070,13 +1072,13 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
   protected int[] setDepartureAddress(int serviceId, String departureFrom, IWTimestamp departureTime) throws RemoteException, FinderException, SQLException, IDOFinderException{
-    int departureAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueDepartureAddressType);
+    int departureAddressTypeId = com.idega.core.location.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueDepartureAddressType);
     TravelAddress departureAddress = null;
     Address address = null;
 
     if (serviceId == -1) {
 
-      address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+      address = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
       address.setAddressTypeID(departureAddressTypeId);
       address.setStreetName(departureFrom);
       address.insert();
@@ -1097,11 +1099,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
         departureAddress.setTime(departureTime);
         departureAddress.update();
 
-        address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(departureAddress.getAddressId());
+        address = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(departureAddress.getAddressId());
         address.setStreetName(departureFrom);
         address.update();
       }else {
-        address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+        address = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
         address.setAddressTypeID(departureAddressTypeId);
         address.setStreetName(departureFrom);
         address.insert();
@@ -1119,12 +1121,12 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
   protected int[] setArrivalAddress(int serviceId, String arrivalAt) throws RemoteException, FinderException, SQLException, IDOFinderException{
-    int arrivalAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueArrivalAddressType);
+    int arrivalAddressTypeId = com.idega.core.location.data.AddressTypeBMPBean.getId(ProductBusinessBean.uniqueArrivalAddressType);
     Address arrivalAddress = null;
     Address address = null;
 
     if (serviceId == -1) {
-      arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+      arrivalAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
       arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
       arrivalAddress.setStreetName(arrivalAt);
       arrivalAddress.insert();
@@ -1133,12 +1135,12 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
       Address[] tempAddresses = getProductBusiness().getArrivalAddresses(product);// (Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
       if (tempAddresses.length > 0) {
-        arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
+        arrivalAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
         arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
         arrivalAddress.setStreetName(arrivalAt);
         arrivalAddress.update();
       }else {
-        arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+        arrivalAddress = ((com.idega.core.location.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
         arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
         arrivalAddress.setStreetName(arrivalAt);
         arrivalAddress.insert();

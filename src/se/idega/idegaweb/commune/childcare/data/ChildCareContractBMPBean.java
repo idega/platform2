@@ -10,7 +10,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.school.data.SchoolClassMember;
-import com.idega.core.data.ICFile;
+import com.idega.core.file.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;

@@ -1,10 +1,11 @@
 package is.idega.idegaweb.tracker.data;
 
-import com.idega.core.data.ICLocale;
+import com.idega.core.builder.data.ICDomain;
+import com.idega.core.localisation.data.ICLocale;
+
 import java.sql.Timestamp;
 import java.sql.SQLException;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.builder.data.IBDomain;
 
 
 /**
@@ -28,7 +29,7 @@ public class DomainStatisticsBMPBean extends com.idega.data.GenericEntity implem
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getColumnNameDomainId(),"Domain",true,true,Integer.class,"many-to-one",IBDomain.class);
+    addAttribute(getColumnNameDomainId(),"Domain",true,true,Integer.class,"many-to-one",ICDomain.class);
     addAttribute(getColumnNameLocaleId(),"Locale",true,true, Integer.class,"many-to-one",ICLocale.class);
     addAttribute(getColumnNameHits(),"Number of hits on Domain",true,true,Integer.class);
     addAttribute(getColumnNameSessions(),"Number of unique hits",true,true,Integer.class);

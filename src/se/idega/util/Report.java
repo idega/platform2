@@ -1,5 +1,5 @@
 /*
- * $Id: Report.java,v 1.2 2003/07/01 14:07:24 gummi Exp $
+ * $Id: Report.java,v 1.3 2003/10/03 01:53:10 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,9 +15,9 @@ import java.sql.SQLException;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import com.idega.core.data.ICFile;
-import com.idega.core.data.ICFileBMPBean;
-import com.idega.core.data.ICFileHome;
+import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileBMPBean;
+import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookupException;
 
 /**
@@ -85,7 +85,7 @@ public class Report
 			
 		ICFile reportFile;
 		try {
-			reportFile = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+			reportFile = ((com.idega.core.file.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 			byte[] bytes = text.toString().getBytes();
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);

@@ -1,7 +1,7 @@
 package is.idega.idegaweb.member.presentation;
 
 import com.idega.user.event.*;
-import com.idega.builder.data.IBDomain;
+import com.idega.core.builder.data.ICDomain;
 import com.idega.presentation.event.ResetPresentationEvent;
 import com.idega.user.data.Group;
 import com.idega.presentation.event.TreeViewerEvent;

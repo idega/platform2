@@ -16,14 +16,14 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
-import com.idega.core.business.AddressBusiness;
-import com.idega.core.data.Address;
-import com.idega.core.data.AddressHome;
-import com.idega.core.data.AddressType;
-import com.idega.core.data.Email;
-import com.idega.core.data.EmailHome;
-import com.idega.core.data.Phone;
-import com.idega.core.data.PhoneHome;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.EmailHome;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.contact.data.PhoneHome;
+import com.idega.core.location.business.AddressBusiness;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.AddressHome;
+import com.idega.core.location.data.AddressType;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
@@ -34,7 +34,7 @@ import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.util.IWTimestamp;
-import com.idega.util.ListUtil; 
+import com.idega.util.ListUtil;
 
 
 /**

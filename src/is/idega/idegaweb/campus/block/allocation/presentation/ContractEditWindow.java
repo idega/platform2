@@ -19,7 +19,8 @@ import com.idega.block.application.data.Applicant;
 
 import com.idega.util.IWTimestamp;
 import java.sql.SQLException;
-import com.idega.core.data.Email;
+
+import com.idega.core.contact.data.Email;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.block.finance.business.AccountManager;
 import com.idega.block.finance.data.Account;
