@@ -41,7 +41,7 @@ public class TariffIndexEditor extends Block {
   public static String[] Types = {RentType,ElType,HeatType};
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   protected boolean isAdmin = false;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.finance";
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
