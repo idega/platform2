@@ -107,7 +107,7 @@ public class GolfMemberEditor extends Editor{
 
     //BorderTable memberTable = getMemberTable();
     AddressInput AI = new AddressInput();
-    BorderTable addressTable = AI.getAddressTable(this.profile);
+    ModuleObject addressTable = AI.getAddressTable(this.profile);
     System.err.println("hallo");
     form.add(addressTable);
     /*
@@ -220,6 +220,10 @@ public class GolfMemberEditor extends Editor{
   }
   public Text headerText(int i){
     return headerText(String.valueOf(i));
+  }
+
+  public void main(ModuleInfo modinfo){
+    control(modinfo);
   }
 
 

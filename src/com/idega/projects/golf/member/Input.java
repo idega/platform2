@@ -7,13 +7,13 @@ import com.idega.jmodule.object.textObject.*;
 
 public class Input{
 
-  private int bodyFontSize = 1;
-  private int fontSize = 2;
+  private static int bodyFontSize = 1;
+  private static int fontSize = 2;
  // private String  DarkColor = "#336660",LightColor = "#CEDFD0", MiddleColor = "#ADCAB1";
-  private String bodyFontColor =  "#336660";
-  private String backGroundColor = "#CEDFD0";
-  private String styleAttribute = "font-size: 8pt";
-  private boolean bodyFontBold = true;
+  private static String bodyFontColor =  "#336660";
+  private static String backGroundColor = "#CEDFD0";
+  private static String styleAttribute = "font-size: 8pt";
+  private static boolean bodyFontBold = true;
 
   public void setBodyFontColor(String color){
     this.bodyFontColor = color;
@@ -25,23 +25,23 @@ public class Input{
     this.bodyFontBold = bold;
   }
   public void setStyleAttribute(String style){
-    this.styleAttribute = style;
+    styleAttribute = style;
   }
-  public Text bodyText(String s){
+  public static Text bodyText(String s){
     Text T= new Text();
     if(s!=null){
       T= new Text(s);
-      T.setFontColor(this.bodyFontColor);
-      T.setFontSize(this.bodyFontSize);
-      if(this.bodyFontBold)
+      T.setFontColor(bodyFontColor);
+      T.setFontSize(bodyFontSize);
+      if(bodyFontBold)
         T.setBold();
     }
     return T;
   }
-  public Text bodyText(int i){
+  public static Text bodyText(int i){
     return bodyText(String.valueOf(i));
   }
-   protected void setStyle(InterfaceObject O){
-    O.setAttribute("style",this.styleAttribute);
+   protected static void setStyle(InterfaceObject O){
+    O.setAttribute("style",styleAttribute);
   }
 }

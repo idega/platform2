@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.10 2001/09/11 00:00:57 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.11 2001/09/30 13:30:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -367,6 +367,7 @@ public class CampusTariffEditor extends ModuleObjectContainer{
           iPrice = Math.round((double)iPrice);
 
         nameInput.setContent(tariffs[pos].getName());
+        if(tariffs[pos].getInfo()!=null)
         infoInput.setContent(tariffs[pos].getInfo());
 
         priceInput.setContent(String.valueOf(iPrice));

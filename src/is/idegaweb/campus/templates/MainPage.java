@@ -1,5 +1,5 @@
 /*
- * $Id: MainPage.java,v 1.3 2001/08/29 21:15:45 aron Exp $
+ * $Id: MainPage.java,v 1.4 2001/09/30 13:30:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,7 +44,7 @@ public class MainPage extends Page{
     super();
     content = new Table(1,4);
     initContent();
-    super.add(content);
+
   }
 
   public String getBundleIdentifier(){
@@ -59,11 +59,14 @@ public class MainPage extends Page{
     BORDER = iBorder;
   }
   private void initTilers(){
-    HeaderTiler = new Image("/pics/template/headertiler.gif");
-    SubHeaderTiler = new Image("/pics/template/subtiler.gif");
-    TitleTiler = new Image("/pics/template/titletiler.gif");
+
+    HeaderTiler = iwb.getImage("/template/headertiler.gif");
+    SubHeaderTiler = iwb.getImage("/template/subtiler.gif");
+    TitleTiler = iwb.getImage("/template/titletiler.gif");
   }
   private void initLogos(){
+    Face = iwb.getImage("/template/face.gif");
+    BottomLogo = iwb.getImage("/template/bottomlogo.gif");
     Face.setWidth(130);
     Face.setHeight(79);
     BottomLogo.setWidth(135);
@@ -89,11 +92,7 @@ public class MainPage extends Page{
     //content.setWidth(1,"100%");
     content.setVerticalAlignment(1,3,"top");
     initTables();
-    content.add(getHeaderTable(),1,1);
-    content.add(getSubHeaderTable(),1,2);
-    content.add(getTitleTable(),1,3);
-    content.add(getMainTable(),1,4);
-    Content();
+
   }
 
   public void Content(){
@@ -124,7 +123,9 @@ public class MainPage extends Page{
     MainTable.setWidth("100%");
     MainTable.setWidth(1,"130");
     MainTable.setWidth(2,"100%");
+  }
 
+  private void mainInit(){
     if(useRightTable){
       MainTable.add(getRightTable(),3,1);
       MainTable.setWidth(3,"130");
@@ -133,6 +134,14 @@ public class MainPage extends Page{
 
     MainTable.add(getMyTable(),2,1);
     MainTable.add(getLeftTable(),1,1);
+    content.add(getHeaderTable(),1,1);
+    content.add(getSubHeaderTable(),1,2);
+    content.add(getTitleTable(),1,3);
+    content.add(getMainTable(),1,4);
+
+    initLogos();
+    Content();
+
   }
 
   public void initMyTable(){
@@ -251,7 +260,8 @@ public class MainPage extends Page{
   }
   public void InsertTopLogo(){
     int num = (int) (Math.random() * 14) ;
-    Image image = new Image("/pics/template/faces/face"+(num)+".jpg");
+    Image image = iwb.getImage("/template/face/face"+(num)+".jpg");
+    //Image image = new Image("/pics/template/faces/face"+(num)+".jpg");
     image.setWidth(130) ;
     image.setHeight(79) ;
     this.addLogo(image) ;
@@ -272,25 +282,25 @@ public class MainPage extends Page{
       this.addLowerLogo(BottomLogo);
   }
   public void InsertBanners() {
-    Image Header = new Image("/pics/template/header.gif");
+    Image Header = iwb.getImage("/template/header.gif");
     Header.setHeight(54);
     Header.setWidth(130);
     HeaderTable.add(Header,1,1);
-    Image RightHeader = new Image("/pics/template/header2.gif");
+    Image RightHeader = iwb.getImage("/template/header2.gif");
     RightHeader.setHeight(54);
     RightHeader.setWidth(250);
     HeaderTable.add(RightHeader,3,1);
-    Image Boxes = new Image("/pics/template/boxes.gif");
+    Image Boxes = iwb.getImage("/template/boxes.gif");
     Boxes.setWidth(300);
     Boxes.setHeight(79);
     SubHeaderTable.add(Boxes,2,1);
   }
   public void InsertTitles(){
-    MenuTitle = new Image("/pics/template/menutitle.gif");
+    MenuTitle = iwb.getImage("/template/menutitle.gif");
     this.addMenuTitle(MenuTitle) ;
-    MainTitle = new Image("/pics/template/maintitle.gif");
+    MainTitle = iwb.getImage("/template/maintitle.gif");
     this.addMainTitle(MainTitle) ;
-    RightTitle = new Image("/pics/template/logintitle.gif");
+    RightTitle = iwb.getImage("/template/logintitle.gif");
     this.addRightTitle(RightTitle);
   }
   public boolean isAdmin(ModuleInfo modinfo) {
@@ -316,13 +326,22 @@ public class MainPage extends Page{
       dividerTable.setCellspacing(0);
       dividerTable.setAlignment("center");
 
-    Image divider = new Image("/pics/line.gif","",99,3);
+    Image divider  = iwb.getImage("/template/line.gif",99,3);
+    //Image divider = new Image("/pics/line.gif","",99,3);
       divider.setAlignment("center");
       divider.setVerticalSpacing(8);
 
     dividerTable.add(divider);
 
     return dividerTable;
+  }
+
+  public void main(ModuleInfo modinfo)throws Exception {
+    iwb = getBundle(modinfo);
+    //initContent();
+    mainInit();
+    super.add(content);
+
   }
 
   public void setFaceLogo(Image FaceLogo){

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusPage.java,v 1.6 2001/08/29 22:27:57 laddi Exp $
+ * $Id: CampusPage.java,v 1.7 2001/09/30 13:30:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,8 +44,10 @@ public class CampusPage extends MainPage{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(ModuleInfo modinfo) throws Exception{
+    super.main(modinfo);
     iwb = getBundle(modinfo);
+
   }
 
 
@@ -103,4 +105,5 @@ public class CampusPage extends MainPage{
     addMainTitle(new Title());
     addTabs(new Tabber());
   }
+
 }

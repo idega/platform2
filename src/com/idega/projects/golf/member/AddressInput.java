@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class AddressInput extends Input{
 
-  public BorderTable getAddressTable(GolfMemberProfile profile) {
+  public static ModuleObject getAddressTable(GolfMemberProfile profile) {
     Address eAddress1 = null,eAddress2 = null;
     boolean a1 = false,a2 = false;
     if(profile.bHasAddresses){
@@ -25,9 +25,7 @@ public class AddressInput extends Input{
         a2 = true;
       }
     }
-    BorderTable hTable = new BorderTable();
     Table table = new Table(2, 6);
-    hTable.add(table);
 
     TextInput Street1 = new TextInput("street1",a1? eAddress1.getStreet():"");
     HiddenInput HiddenStreet1  = new HiddenInput("hstreet1",a1? eAddress1.getStreet():"");
@@ -43,6 +41,13 @@ public class AddressInput extends Input{
     HiddenInput HiddenCountry1 = new HiddenInput("hcountry1", a1? String.valueOf(eAddress1.getCountryId()):"");
     DropdownMenu Country2 = CountryDrp("country1", a2? String.valueOf(eAddress2.getCountryId()):"");
     HiddenInput HiddenCountry2 = new HiddenInput("hcountry1", a2? String.valueOf(eAddress2.getCountryId()):"");
+
+    setStyle(Street1);
+    setStyle(Zip1);
+    setStyle(Country1);
+    setStyle(Street2);
+    setStyle(Zip2);
+    setStyle(Country2);
 
     table.add(bodyText("Heimili"), 1, 1);
     table.add(Street1,2,1);
@@ -64,7 +69,7 @@ public class AddressInput extends Input{
     table.add(Country2, 2, 6);
     table.add(HiddenCountry2, 2, 6);
 
-    return hTable;
+    return table;
   }
 
   public void AddressUpdate(ModuleInfo modinfo,GolfMemberProfile profile){
@@ -139,7 +144,7 @@ public class AddressInput extends Input{
     }
   }
 
-   public DropdownMenu CountryDrp(String name, String selected) {
+   public static DropdownMenu CountryDrp(String name, String selected) {
     DropdownMenu drp = new DropdownMenu(name);
     Country country = new Country();
     try {
@@ -155,7 +160,7 @@ public class AddressInput extends Input{
     return drp;
   }
 
-  public DropdownMenu ZipDrp(String name, String selected) {
+  public  static DropdownMenu ZipDrp(String name, String selected) {
     DropdownMenu drp = new DropdownMenu(name);
     ZipCode zip = new ZipCode();
     try {

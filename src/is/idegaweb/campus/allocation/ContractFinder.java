@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.11 2001/09/26 23:42:11 aron Exp $
+ * $Id: ContractFinder.java,v 1.12 2001/09/30 13:30:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -236,6 +236,7 @@ public abstract class ContractFinder {
 
   public static Applicant findApplicant(User eUser){
     Applicant eApplicant = null;
+    if(eUser != null){
     StringBuffer sql = new StringBuffer("select a.* from app_applicant a,cam_contract c");
     sql.append(" where c.app_applicant_id = a.app_applicant_id ");
     sql.append(" and c.ic_user_id =  ");
@@ -248,6 +249,7 @@ public abstract class ContractFinder {
     catch (SQLException ex) {
       ex.printStackTrace();
       eApplicant = null;
+    }
     }
     return eApplicant;
   }
