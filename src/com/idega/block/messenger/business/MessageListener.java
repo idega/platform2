@@ -3,6 +3,7 @@ package com.idega.block.messenger.business;
 import com.idega.block.messenger.presentation.MessengerApplet;
 import com.idega.block.messenger.presentation.MessageDialog;
 import java.util.Vector;
+import java.awt.event.ActionEvent;
 
 /**
  * Title:        com.idega.block.messenger.business
@@ -31,8 +32,10 @@ public class MessageListener implements Runnable{
   public void run(){
     while(runThread){
       try {
-        client.cycle();
+        client.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"iw-cycle"));
+        //client.cycle();
         t.sleep(threadSleep);
+
       }
       catch (Exception e) {
         e.printStackTrace(System.out);

@@ -349,6 +349,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       SingleLineItem item = new SingleLineItem(this);
       item.setId(sendToId);
       item.setWindowToOpen(dialog);
+      item.addActionListener(this);
 
       if( faceLabel!= null ) item.add(faceLabel);
 
@@ -382,8 +383,16 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
   public void actionPerformed(ActionEvent e){
-    MessageDialog d = (MessageDialog) e.getSource();
-    getMessagesFromDialog(d);
+    String action = e.getActionCommand();
+
+    if(action.equalsIgnoreCase("iw-send")){
+      MessageDialog d = (MessageDialog) e.getSource();
+      getMessagesFromDialog(d);
+    }
+    else if(action.equalsIgnoreCase("iw-cycle")){
+     cycle();
+    }
+
     repaint();
   }
 

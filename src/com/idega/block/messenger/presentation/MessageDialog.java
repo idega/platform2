@@ -111,7 +111,7 @@ public class MessageDialog extends Dialog implements ActionListener{
         storeMessageString();
         replyMessage.requestFocus();
 
-        if( listener!=null ) listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"send"));
+        if( listener!=null ) listener.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,"iw-send"));
 
         }
   }
@@ -164,8 +164,12 @@ public class MessageDialog extends Dialog implements ActionListener{
     super.paint(g);
   }
 
-  public void addActionListener(ActionListener listener){
-    this.listener = listener;
+  public void addActionListener(ActionListener l) {
+      listener = AWTEventMulticaster.add(listener, l);
+  }
+
+  public void removeActionListener(ActionListener l) {
+      listener = AWTEventMulticaster.remove(listener, l);
   }
 
   private ActionListener getActionListener(){
