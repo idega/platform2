@@ -41,6 +41,9 @@ public class DisplayHelp extends PresentationObjectContainer {
 	private static final String BUNDLE_IDENTIFIER = "com.idega.block.help";
 	
 	private static final String HELP_NO_HELP_SELECTED = "hlp_no_help_available";
+	
+	private static final String DEFAULT_HELP_KEY = "hlp_default_key";
+	private static final String DEFAULT_HELP_BUNDLE = "hlp_default_bundle";
 
 	private String _localizedTitle = null;
 	private String _localizedHelpText = null;
@@ -79,8 +82,18 @@ public class DisplayHelp extends PresentationObjectContainer {
 
     Locale loc = iwc.getCurrentLocale();
 
-		if (key != null && bundle != null) 
+		/*
+		 * Get the default values if either values are null
+		 */
+		if (key == null || bundle == null) {
+			IWBundle help_bundle = getBundle(iwc);
+			key = help_bundle.getProperty(DEFAULT_HELP_KEY);
+			bundle = help_bundle.getProperty(DEFAULT_HELP_BUNDLE);			
+		}
+
+		if (key != null && bundle != null) {
 			getHelpText(iwc, key, bundle, loc);
+		}
 
 		Text title = null;
 		if (_localizedTitle != null) {
@@ -109,7 +122,7 @@ public class DisplayHelp extends PresentationObjectContainer {
 		
 		if (_localizedTitle != null || _localizedHelpText != null)				
 			add(t);	
-		else {
+		else {			
 			add(getResourceBundle(iwc).getLocalizedString(HELP_NO_HELP_SELECTED,"Select help item from the tree"));
 		}
 	}
