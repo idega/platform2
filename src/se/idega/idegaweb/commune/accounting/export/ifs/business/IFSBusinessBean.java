@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
@@ -26,7 +24,6 @@ import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecord;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecordHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLog;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLogHome;
-import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
@@ -312,60 +309,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 	}
 
-	/**
-	 * A method to send the files created to the IFS system. Also updates the
-	 * status of PaymentHeaders/InvoiceHeaders from L to H.
-	 * 
-	 * @param schoolCategory
-	 *          The string primary key representing the school category we are
-	 *          sending files for.
-	 * 
-	 * @author palli
-	 */
-	public Map sendFiles(String schoolCategory, User user) {
-		UserTransaction trans = null;
-		Map result = new HashMap ();
-		try {
-			trans = getSessionContext().getUserTransaction();
-			trans.begin();
-
-			IWTimestamp now = IWTimestamp.RightNow();
-			JournalLog log = ((JournalLogHome) IDOLookup.getHome(JournalLog.class)).create();
-			log.setSchoolCategoryString(schoolCategory);
-			log.setEventFileSent();
-			log.setEventDate(now.getTimestamp());
-			log.setUser(user);
-			log.store();
-
-			// Palli, thu verdur bara ad drepa mig seinna fyrir ad hafa sett
-			// IWContext.getInstance() tharna
-			// en klukkan er bara svo mange...
-			// Eg geri rad fyrir ad herna fyrir nedan komi kodinn sem breytir
-			// status
-			// ur L i e-d annad.
-			result = getCheckAmountBusiness().sendCheckAmountLists(user,schoolCategory);
-
-			//copy files from folder A to folder B. Must get folder info from
-			// ExportMappingBean!!!
-			//ExportDataMapping mapping =
-			// getExportBusiness().getExportDataMapping(schoolCategory);
-
-			trans.commit();
-		}
-		catch (Exception e) {
-			if (trans != null) {
-				try {
-					trans.rollback();
-					result = new HashMap ();
-				}
-				catch (SystemException se) {
-					se.printStackTrace();
-				}
-			}
-		}
-		return result;
-	}
-
 	public ExportBusiness getExportBusiness() {
 		try {
 			return (ExportBusiness) getServiceInstance(ExportBusiness.class);
@@ -405,15 +348,6 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	public ProviderBusiness getProviderBusiness() {
 		try {
 			return (ProviderBusiness) getServiceInstance(ProviderBusiness.class);
-		}
-		catch (RemoteException e) {
-			throw new IBORuntimeException(e.getMessage());
-		}
-	}
-
-	private CheckAmountBusiness getCheckAmountBusiness() {
-		try {
-			return (CheckAmountBusiness) getServiceInstance(CheckAmountBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());

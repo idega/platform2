@@ -39,17 +39,21 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLog;
+import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLogHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountBroadcast;
+import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountBroadcastHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountReceivingSchool;
+import se.idega.idegaweb.commune.accounting.invoice.data.CheckAmountReceivingSchoolHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -65,11 +69,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/03/09 16:34:51 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/22 13:01:14 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.29 $
+ * @version $Revision: 1.30 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -86,60 +90,91 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		= new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 	private static final Color LIGHT_BLUE = new Color (0xf4f4f4);
 
-	public Map sendCheckAmountLists(User currentUser, String schoolCategoryPK) {
-		final Map result = new TreeMap ();
-		final Collection filesSentByEmail = new TreeSet ();
-		final Collection filesSentByPapermail = new TreeSet ();
-		final Collection noMailSentSinceNoPaymentRecords = new TreeSet ();
-		result.put (FILES_SENT_BY_EMAIL_KEY, filesSentByEmail);
-		result.put (FILES_SENT_BY_PAPERMAIL_KEY, filesSentByPapermail);
-		result.put (NO_MAIL_SENT_SINCE_NO_PAYMENT_RECORDS_KEY,
-								noMailSentSinceNoPaymentRecords);
-		try {
-			SchoolCategory schoolCategory
-					= getSchoolCategoryHome ().findByPrimaryKey (schoolCategoryPK);
-			Collection schools = getSchoolHome ().findAllByCategory (schoolCategory);
-			if (schools != null && !schools.isEmpty()) {
-				final MemoryFileBuffer checkAmountListsBuffer = new MemoryFileBuffer();
+	public void sendCheckAmountLists
+		(final User currentUser, final String schoolCategoryPK)
+		throws RemoteException, FinderException, CreateException {
+		final SchoolCategory schoolCategory
+				= getSchoolCategoryHome ().findByPrimaryKey (schoolCategoryPK);
+		final Collection schools
+				= getSchoolHome ().findAllByCategory (schoolCategory);
+		final CheckAmountBroadcast broadcastInfo
+				= getCheckAmountBroadcastHome ().create ();
+		broadcastInfo.setSchoolCategory (schoolCategory);
+		broadcastInfo.setStartTime (new Timestamp (System.currentTimeMillis ()));
+		broadcastInfo.setSchoolCount (null == schools ? 0 : schools.size ());
+		broadcastInfo.store ();
+		
+		new Thread () { public void run () { try {
+			if (schools != null && !schools.isEmpty ()) {
+				final MemoryFileBuffer checkAmountListsBuffer = new MemoryFileBuffer ();
 				final OutputStream outStream
 						= new MemoryOutputStream (checkAmountListsBuffer);
 				final Document document = createPdfDocument ();
-				final PdfWriter writer = createPdfWriter(document, outStream);
-				document.addCreationDate();
-				document.open();
+				final PdfWriter writer = createPdfWriter (document, outStream);
+				document.addCreationDate ();
+				document.open ();
+				final CheckAmountReceivingSchoolHome  recievingSchoolHome
+						= getCheckAmountReceivingSchoolHome ();
 				for (Iterator i = schools.iterator (); i.hasNext();) {
 					final School school = (School) i.next();
-					final PaymentRecord[] records
-							= getLockedPaymentRecords(schoolCategory, school);
-					if (0 >= records.length) {
-						noMailSentSinceNoPaymentRecords.add (school.getName ());
-					} else {
-						Collection emailReceivers = findEmailReceiversAndNotifyThem
-								(currentUser, school);					
+					final PaymentRecord [] records
+							= getLockedPaymentRecords (schoolCategory, school);
+					final Collection emailReceivers = new HashSet ();
+					if (0 < records.length) {
+						emailReceivers.addAll (findEmailReceiversAndNotifyThem
+																	 (currentUser, school));					
 						if (emailReceivers.isEmpty ()) {
 							addCheckAmountListToDocument (writer, document, schoolCategory,
 																						school, records);
-							filesSentByPapermail.add (school.getName ());
 						} else {
 							sendEmails(schoolCategory, school, records, emailReceivers);
-							filesSentByEmail.add (school.getName ());
 						}
 						setStatusToHistory (records);
 					}
+					createCheckAmountReceivingSchool
+							(broadcastInfo, school, records, emailReceivers,
+							 recievingSchoolHome);
 				}
 				document.close();
 				writer.close ();
 				outStream.close ();
 				putCheckAmountListsInPrinterQueue(checkAmountListsBuffer, currentUser,
 																					schoolCategory);
+				createJournalLog(currentUser, schoolCategoryPK);
 			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-		return result;
+			broadcastInfo.setEndTime (new Timestamp (System.currentTimeMillis ()));
+			broadcastInfo.store ();
+		} catch (Exception e) { e.printStackTrace (); }}}.start ();
 	}
 
+
+	private void createJournalLog
+		(final User currentUser, final String schoolCategoryPK)
+		throws CreateException, IDOLookupException {
+		IWTimestamp now = IWTimestamp.RightNow();
+		JournalLog log
+				= ((JournalLogHome) IDOLookup.getHome (JournalLog.class)).create();
+		log.setSchoolCategoryString(schoolCategoryPK);
+		log.setEventFileSent();
+		log.setEventDate(now.getTimestamp());
+		log.setUser(currentUser);
+		log.store();
+	}
+
+	private void createCheckAmountReceivingSchool
+		(final CheckAmountBroadcast broadcastInfo, final School school,
+		 final PaymentRecord[] records, final Collection emailReceivers,
+		 final CheckAmountReceivingSchoolHome recievingSchoolHome)
+		throws CreateException, RemoteException {
+		final CheckAmountReceivingSchool receivingSchool
+				= recievingSchoolHome.create ();
+		receivingSchool.setSchool (school);
+		receivingSchool.setCheckAmountBroadcast (broadcastInfo);
+		receivingSchool.setPaymentRecordCount (records.length);
+		receivingSchool.setIsByEmail (!emailReceivers.isEmpty ());
+		receivingSchool.store ();
+	}
+	
 	private static void setStatusToHistory (final PaymentRecord[] records) {
 		for (int i = 0; records.length > i; i++) {
 			final PaymentRecord record = records [i];
@@ -254,14 +289,14 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	}
 
 	private Collection findEmailReceiversAndNotifyThem
-		(User currentUser, School school)
+		(final User currentUser, final School school)
 		throws IBOLookupException, RemoteException, FinderException {
-		SchoolUserBusiness sub = getSchoolUserBusiness ();
-		Collection users = new HashSet();
-		users.addAll(sub.getHeadmasters(school));
-		users.addAll(sub.getAssistantHeadmasters(school));
-		users.addAll(sub.getEconomicalResponsibles(school));
-		Collection emailReceivers = new HashSet();
+		final SchoolUserBusiness sub = getSchoolUserBusiness ();
+		final Collection users = new HashSet ();
+		users.addAll (sub.getHeadmasters (school));
+		users.addAll (sub.getAssistantHeadmasters (school));
+		users.addAll (sub.getEconomicalResponsibles (school));
+		final Collection emailReceivers = new HashSet();
 		if (users.size() > 0) {
 			for (Iterator i = users.iterator(); i.hasNext();) {
 				final User user = (User) i.next();
@@ -693,6 +728,18 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
  
 	private SchoolHome getSchoolHome () throws IDOLookupException {
 		return (SchoolHome) IDOLookup.getHome (School.class);
+	}
+ 
+	private CheckAmountBroadcastHome getCheckAmountBroadcastHome ()
+		throws IDOLookupException {
+		return (CheckAmountBroadcastHome) IDOLookup.getHome
+				(CheckAmountBroadcast.class);
+	}
+ 
+	private CheckAmountReceivingSchoolHome getCheckAmountReceivingSchoolHome ()
+		throws IDOLookupException {
+		return (CheckAmountReceivingSchoolHome) IDOLookup.getHome
+				(CheckAmountReceivingSchool.class);
 	}
  
 	private String localize(String textKey, String defaultText) {

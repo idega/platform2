@@ -16,5 +16,4 @@ public interface IFSBusiness extends com.idega.business.IBOService
  public se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness getProviderBusiness() throws java.rmi.RemoteException;
  public com.idega.block.school.business.SchoolBusiness getSchoolBusiness() throws java.rmi.RemoteException;
  public com.idega.user.business.UserBusiness getUserBusiness() throws java.rmi.RemoteException;
- public java.util.Map sendFiles(java.lang.String p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
 }
