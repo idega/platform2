@@ -10,6 +10,7 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public java.sql.Date getDateTransaction();
  public java.lang.String getDoublePosting();
  public java.lang.String getNotes();
+ public int getOrderId();
  public java.lang.String getOwnPosting();
  public int getPaymentHeader();
  public java.lang.String getPaymentText();
@@ -28,6 +29,7 @@ public interface PaymentRecord extends com.idega.data.IDOEntity
  public void setDateTransaction(java.sql.Date p0);
  public void setDoublePosting(java.lang.String p0);
  public void setNotes(java.lang.String p0);
+ public void setOrderId(int orderId);
  public void setOwnPosting(java.lang.String p0);
  public void setPaymentHeader(se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader p0);
  public void setPaymentHeader(int p0);

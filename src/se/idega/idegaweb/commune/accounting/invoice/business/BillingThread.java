@@ -155,6 +155,7 @@ public abstract class BillingThread extends Thread{
 			paymentRecord.setOwnPosting(ownPosting);
 			paymentRecord.setDoublePosting(doublePosting);
 			paymentRecord.setVATType(postingDetail.getVatRegulationID());
+			paymentRecord.setOrderId (postingDetail.getOrderID());
 			paymentRecord.store();
 		}
 		return paymentRecord;
