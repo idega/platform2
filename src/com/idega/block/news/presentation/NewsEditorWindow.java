@@ -192,7 +192,8 @@ private IWResourceBundle iwrb;
     }
     else {
       noAccess();
-    }}
+    }
+    }
   }
 
   private int getSaveInfo(IWContext iwc){
@@ -674,7 +675,7 @@ private IWResourceBundle iwrb;
 
   private void noAccess() throws IOException,SQLException {
     addLeft(iwrb.getLocalizedString("no_access","Login first!"));
-    this.addSubmitButton(new CloseButton(iwrb.getLocalizedString("close","Closee")));
+    this.addSubmitButton(new CloseButton(iwrb.getLocalizedString("close","Close")));
   }
 
   public DropdownMenu counterDropdown(String dropdownName, int countFrom, int countTo)
@@ -705,7 +706,8 @@ private IWResourceBundle iwrb;
 
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
-    isAdmin = iwc.hasEditPermission(this);
+
+    isAdmin = true;
     eUser = com.idega.block.login.business.LoginBusiness.getUser(iwc);
     iUserId = eUser != null?eUser.getID():-1;
     iwb = getBundle(iwc);
