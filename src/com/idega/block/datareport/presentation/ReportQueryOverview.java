@@ -83,7 +83,8 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   public static final String PDF_KEY = "pdf_key";
   public static final String EXCEL_KEY = "excel_key";
   public static final String HTML_KEY = "html_key";
-  public static final String EDIT_QUERY_KEY = "edit_key";
+  public static final String EDIT_QUERY_SIMPLE_MODE_KEY = "edit_simple_mode_key";
+  public static final String EDIT_QUERY_EXPERT_MODE_KEY ="edit_expert_mode_key";
 
   public static final String DELETE_ITEMS_KEY = "delete_items_key";
   
@@ -114,13 +115,15 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	
 	// sets the investigation level of the query builder (0,1,2,3... means that the query builder is shown in the expert mode)
 	// be careful: high numbers need much performance and time!
-	private static final int EXPERT_MODE = 6;
+	private static final int EXPERT_MODE = 3;
 
 	private ICFile designFolder;
 	
 	private int showOnlyOneQueryWithId = -1;
 	
 	private Map parameterMap = new HashMap();
+	
+	private boolean isAdmin = false;
 	
 	// values of the parameter map
 	private static final String CURRENT_QUERY_ID = "current_query_id";
@@ -134,9 +137,19 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
-
 	
   public void main(IWContext iwc) throws Exception {
+		try {
+			isAdmin = iwc.getAccessController().isAdmin(iwc);
+		} 
+		catch (Exception ex) {
+			String message =
+				"[ReportOverview]: Can't retrieve AccessController.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			isAdmin = false;
+		}
+
   	IWBundle bundle = getBundle(iwc);
     IWResourceBundle resourceBundle = getResourceBundle(iwc);
     String action = parseAction(iwc);
@@ -290,7 +303,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   		}
   	}
   	Form form = new Form();
-  	EntityBrowser browser = getBrowser(new Vector(queryRepresentations.values()), bundle, form);
+  	EntityBrowser browser = getBrowser(new Vector(queryRepresentations.values()), bundle, resourceBundle, form);
   	addParametersToBrowser(browser);
   	addParametersToForm(form);
   	if (showOnlyOneQueryWithId != -1)	{
@@ -303,7 +316,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	} 
   	Table table = new Table(1,2);
   	table.add(browser, 1,1);
-  	table.add(getButtonBar(resourceBundle, iwc), 1,2);
+  	table.add(getButtonBar(resourceBundle), 1,2);
   	form.add(table);
   	add(form);
   }
@@ -354,7 +367,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	return publicFolderName;
 }
 
-	private PresentationObject getButtonBar(IWResourceBundle resourceBundle, IWContext iwc )	{
+	private PresentationObject getButtonBar(IWResourceBundle resourceBundle)	{
 		Table table = new Table(5,1);
 		// new button for query builder (simple mode)
 		String simpleModeText = resourceBundle.getLocalizedString("ro_create_simple_mode", "New (simple mode)");
@@ -365,16 +378,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 		simpleModeLink.setAsImageButton(true);
 		
-		boolean isAdmin = false;
-		try {
-			isAdmin = iwc.getAccessController().isAdmin(iwc);
-		} 
-		catch (Exception ex) {
-			String message =
-				"[ReportOverview]: Can't retrieve AccessController.";
-			System.err.println(message + " Message is: " + ex.getMessage());
-			ex.printStackTrace(System.err);
-		}
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
   	SubmitButton delete = new SubmitButton(deleteText, DELETE_ITEMS_KEY, DELETE_ITEMS_KEY);
@@ -411,7 +414,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 
 		
   	
-	private EntityBrowser getBrowser(List queryRepresentations, IWBundle bundle, Form form)	{
+	private EntityBrowser getBrowser(List queryRepresentations, IWBundle bundle, IWResourceBundle resourceBundle, Form form)	{
 		EntityBrowser browser = new EntityBrowser();
 		browser.setAcceptUserSettingsShowUserSettingsButton(false, false);
 		browser.setUseExternalForm(true);
@@ -429,8 +432,11 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		dropDownLayoutConverter.setOptionProvider(getLayoutOptionProvider());
 		dropDownLayoutConverter.setShowAlwaysDropDownMenu(true);
 		// edit query converter
-		//String display = resourceBundle.getLocalizedString("ro_edit_query", "Edit query");
-		//EditQueryConverter editQueryConverter = new EditQueryConverter(display);
+		String simpleModeDisplay = resourceBundle.getLocalizedString("ro_edit_query_simple_mode", "Edit (simple mode)");
+		String expertModeDisplay = (isAdmin) ? resourceBundle.getLocalizedString("ro_edit_query_expert_mode", "Edit (expert mode)") : null;
+		EditQueryConverter simpleEditQueryConverter = new EditQueryConverter(simpleModeDisplay, SIMPLE_MODE);
+		EditQueryConverter expertEditQueryConverter = (isAdmin) ? new EditQueryConverter(expertModeDisplay, EXPERT_MODE) : null;
+			
 		// checkbox converter
 		ButtonConverter htmlConverter = new ButtonConverter(bundle.getImage("/shared/txt.gif"));
 		ButtonConverter pdfConverter = new ButtonConverter(bundle.getImage("/shared/pdf.gif"));
@@ -446,7 +452,10 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		browser.setMandatoryColumnWithConverter(7, PDF_KEY, pdfConverter);
 		browser.setMandatoryColumnWithConverter(8, EXCEL_KEY, excelConverter);
 		
-//		browser.setMandatoryColumnWithConverter(9, EDIT_QUERY_KEY, editQueryConverter);
+		browser.setMandatoryColumnWithConverter(9, EDIT_QUERY_SIMPLE_MODE_KEY, simpleEditQueryConverter);
+		if (isAdmin) {
+			browser.setMandatoryColumnWithConverter(10, EDIT_QUERY_EXPERT_MODE_KEY, expertEditQueryConverter);
+		}
 		return browser;
 	}		
   		
@@ -456,9 +465,11 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			Map optionMap = null;
 			
 			public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc)	{
+				IWResourceBundle resourceBundle = getResourceBundle(iwc);
+				String dynamicLayout = resourceBundle.getLocalizedString("ro_dynamic_layout","dynamic layout");
 				if (optionMap == null) {
 					optionMap = new LinkedHashMap();
-					optionMap.put("-1", "dynamic");
+					optionMap.put("-1", dynamicLayout);
 					if(designFolder!=null){
 		  				Iterator iterator = designFolder.getChildren();
 		  				while (iterator.hasNext())	{
@@ -974,9 +985,11 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   class  EditQueryConverter implements EntityToPresentationObjectConverter	{
   	
   	private String display;
+  	private int searchDepth;
   	
-  	public EditQueryConverter(String display)	{
+  	public EditQueryConverter(String display, int searchDepth)	{
   		this.display = display;
+  		this.searchDepth = searchDepth;
   	}
   	
 		public PresentationObject getHeaderPresentationObject(
@@ -990,19 +1003,22 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	 	* @see com.idega.block.entity.business.EntityToPresentationObjectConverter#getPresentationObject(java.lang.Object, com.idega.block.entity.data.EntityPath, com.idega.block.entity.presentation.EntityBrowser, com.idega.presentation.IWContext)
 	 	*/
 		public PresentationObject getPresentationObject(
-			Object value,
+			Object entity,
 			EntityPath path,
 			EntityBrowser browser,
 			IWContext iwc) {
 			//String shortKeyPath = path.getShortKey();
-			EntityRepresentation idoEntity = (EntityRepresentation) value;
-			Link link = new Link(display);
-			link.addParameter(ReportQueryBuilder.SHOW_WIZARD, ReportQueryBuilder.SHOW_WIZARD);
-			link.addParameter(ReportQueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
-			link.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-			link.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
-			link.setAsImageButton(true);
-			return link;
+			if (((QueryRepresentation) entity).belongsToUser()) {
+				EntityRepresentation idoEntity = (EntityRepresentation) entity;
+				Link link = new Link(display);
+				link.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(searchDepth));
+				link.addParameter(ReportQueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
+				link.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+				link.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+				link.setAsImageButton(true);
+				return link;
+			}
+			return Text.emptyString();
 		}
   }
  	
