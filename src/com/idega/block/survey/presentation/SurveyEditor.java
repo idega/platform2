@@ -40,7 +40,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Fieldset;
+import com.idega.presentation.ui.FieldSet;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
@@ -777,8 +777,7 @@ public class SurveyEditor extends FolderBlock {
 	}
 	
 	private PresentationObject getQuestionFieldset(int no, String question, String selectedAnsType,String numberOfAns){
-		Fieldset fs = new Fieldset();
-		fs.setName(_iwrb.getLocalizedString("Question","Question")+" "+no);
+		FieldSet fs = new FieldSet(_iwrb.getLocalizedString("Question","Question")+" "+no);
 		Table qt = new Table(2,3);
 		qt.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
 		
@@ -801,8 +800,7 @@ public class SurveyEditor extends FolderBlock {
 	}
 	
 	private PresentationObject getAnswerFieldset(int no, String questionText, char answerType, int numberOfAnswers){
-		Fieldset fs = new Fieldset();
-		fs.setName(_iwrb.getLocalizedString("Question","Question")+" "+no);
+		FieldSet fs = new FieldSet(_iwrb.getLocalizedString("Question","Question")+" "+no);
 		Table qt = new Table();
 		qt.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
 		
