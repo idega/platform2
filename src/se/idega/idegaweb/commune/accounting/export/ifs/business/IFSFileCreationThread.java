@@ -31,6 +31,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
+import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.business.PaymentComparator;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
@@ -528,7 +529,7 @@ public class IFSFileCreationThread extends Thread {
 					float sum = 0;
 					while (sumIt.hasNext()) {
 						PaymentRecord r = (PaymentRecord) sumIt.next();
-						sum += r.getTotalAmount();
+						sum += AccountingUtil.roundAmount(r.getTotalAmount());
 					}
 
 					String giro = prov.getAccountingProperties().getBankgiro();
@@ -664,9 +665,9 @@ public class IFSFileCreationThread extends Thread {
 							//empty
 							bWriter.write("-");
 							bWriter.write(";");
-							bWriter.write(format.format(pRec.getTotalAmount()));
+							bWriter.write(format.format(AccountingUtil.roundAmount(pRec.getTotalAmount())));
 							bWriter.write(";");
-							bWriter.write(format.format(pRec.getTotalAmount()));
+							bWriter.write(format.format(AccountingUtil.roundAmount(pRec.getTotalAmount())));
 							bWriter.write(";");
 							//empty
 							bWriter.write("-");
@@ -917,7 +918,7 @@ public class IFSFileCreationThread extends Thread {
 								else
 									bWriter.write(' ');
 								//Belopp
-								am = Math.abs(am * 100);
+								am = AccountingUtil.roundAmount(Math.abs(am * 100));
 								bWriter.write(format.format(am));
 								//Antal, pris,
 								bWriter.write("000000000000000");
@@ -932,6 +933,8 @@ public class IFSFileCreationThread extends Thread {
 								boolean insertLRow = false;
 								String LText = null;
 								String text = iRec.getInvoiceText();
+								if (text == null)
+									text = "";
 								if (text.length() < 36) {
 									StringBuffer t = new StringBuffer(text);
 									while (t.length() < 36) {
@@ -940,10 +943,12 @@ public class IFSFileCreationThread extends Thread {
 									text = t.toString();
 								}
 								else if (text.length() > 36) {
-									insertLRow = true;
-									LText = text.substring(36);
 									text = text.substring(0, 36);
 								}
+								
+								LText = iRec.getInvoiceText2();
+								if (LText != null && !"".equals(LText))
+									insertLRow = true;
 
 								bWriter.write(text);
 								//Filler

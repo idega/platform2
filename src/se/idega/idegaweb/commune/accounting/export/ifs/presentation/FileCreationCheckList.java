@@ -32,6 +32,8 @@ public class FileCreationCheckList extends AccountingBlock {
 	protected final static String KEY_HEADER_OPERATION = "cacc_check_list_operation";
 	protected final static String KEY_HEADER_STATUS = "cacc_check_list_status";
 	protected final static String KEY_HEADER_EVENT_DATE = "cacc_check_list_date";
+	protected final static String KEY_HEADER_START_TIME = "cacc_check_list_start";
+	protected final static String KEY_HEADER_END_TIME = "cacc_check_list_end";
 	protected final static String KEY_HEADER_EXCEL = "cacc_check_list_excel";
 	protected final static String KEY_NUMBER = "cacc_check_list_number";
 	protected final static String KEY_OBJECT = "cacc_check_list_object";
@@ -71,6 +73,8 @@ public class FileCreationCheckList extends AccountingBlock {
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_LEFT);
+		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_LEFT);
+		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		
@@ -98,6 +102,14 @@ public class FileCreationCheckList extends AccountingBlock {
 		if (header != null)
 			table.add(header.getEventDate().toString(), 2, 3);
 
+		table.add(getLocalizedLabel(KEY_HEADER_START_TIME, "Start time"), 1, 4);
+		if (header != null)
+			table.add(header.getEventStartTime().toString(), 2, 4);
+
+		table.add(getLocalizedLabel(KEY_HEADER_END_TIME, "End time"), 1, 5);
+		if (header != null)
+			table.add(header.getEventEndTime().toString(), 2, 5);
+		
 		return table;
 	}
 	
