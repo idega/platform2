@@ -138,14 +138,13 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
     //variables
     String name = (String) userProperties.get(NAME_COLUMN);
     String PIN = (String) userProperties.get(PIN_COLUMN);
+		String statusId = (String) userProperties.get(STATUS_COLUMN);
     
     if(PIN == null ) return false;
 		
    // Gender gender = getGenderFromPin(PIN);
     //IWTimestamp dateOfBirth = getBirthDateFromPin(PIN);
     
-    boolean updateName = false;
-
     try{
      user = userBiz.getUser(PIN);
     }
@@ -157,6 +156,13 @@ public class PinLookupToGroupImportHandlerBean extends IBOSessionBean implements
 
 		rootGroup.addGroup(user);
     
+    if(name!=null ) user.setFullName(name);
+    if(statusId!=null){
+    	
+    	
+    	
+    	
+    }
 			/*
     
         String streetName = addressBiz.getStreetNameFromAddressString(addressLine);
