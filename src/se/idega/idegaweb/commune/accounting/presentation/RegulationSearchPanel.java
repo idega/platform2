@@ -147,16 +147,11 @@ public class RegulationSearchPanel extends AccountingBlock {
 				String regId = iwc.getParameter(PAR_ENTRY_PK);
 				//regId and _currentRegulation will get a value only after choosing a regulation (by clicking a link)
 				if (regId != null){
-					SchoolType type = null;
 					_currentRegulation = getRegulation(regId);
 					try{
-						RegulationsBusiness biz = (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
-						type = biz.getSchoolType(_currentRegulation);
-					}catch(RemoteException ex){
-						ex.printStackTrace();
-					}
-					try{
+						RegulationsBusiness regBiz = (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 						PostingBusiness postingBiz = (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
+						SchoolType type = regBiz.getSchoolType(_currentRegulation);
 						_currentPosting = postingBiz.getPostingStrings(getCurrentSchoolCategory(iwc), type, ((Integer) _currentRegulation.getRegSpecType().getPrimaryKey()).intValue(), new Provider(_currentSchool), _validDate);	
 					}catch (RemoteException ex){
 						ex.printStackTrace();
