@@ -135,7 +135,7 @@ public class ProductCategoryEditor extends CategoryWindow {
       // HEF VALIN PRODUCT ÖLL Í LISTANUM... (ekkert filterað eða neitt)
       List products = getProductBusiness(iwc).getProducts(_productCategory);
 /** @todo skoða betur, er öruggt að casta yfir i list ? */
-      List allProducts = ( List ) ((ProductHome) IDOLookup.getHome(Product.class)).getProducts(-1, -1, null, null, LocalizedTextBMPBean.getEntityTableName() + "." + LocalizedTextBMPBean.getColumnNameHeadline(), iLocale, iFilter);
+      List allProducts = ( List ) ((ProductHome) IDOLookup.getHome(Product.class)).getProducts(-1, -1, null, null, null, iLocale, iFilter);
 //      List allProducts = getProductBusiness(iwc).getProducts();
 
       allProducts.removeAll(products);
