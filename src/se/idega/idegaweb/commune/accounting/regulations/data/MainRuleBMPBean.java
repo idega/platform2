@@ -1,5 +1,5 @@
 /*	
- * $Id: MainRuleBMPBean.java,v 1.7 2003/11/30 23:17:18 palli Exp $
+ * $Id: MainRuleBMPBean.java,v 1.8 2004/01/09 14:51:00 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,6 +14,8 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDOLookup;
@@ -24,15 +26,16 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.regulation.data.RegulationSpecTypeBMPBean# 
  * <p>
- * $Id: MainRuleBMPBean.java,v 1.7 2003/11/30 23:17:18 palli Exp $
+ * $Id: MainRuleBMPBean.java,v 1.8 2004/01/09 14:51:00 tryggvil Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class MainRuleBMPBean extends GenericEntity implements MainRule {
 	
-	private static final String ENTITY_NAME = "cacc_main_rule";
-	private static final String COLUMN_MAIN_RULE = "main_rule";
+	static final String ENTITY_NAME = "CACC_MAIN_RULE";
+	static final String COLUMN_MAIN_RULE = "MAIN_RULE";
+	static final String COLUMN_MAIN_RULE_ID = ENTITY_NAME+"_ID";
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -45,10 +48,10 @@ public class MainRuleBMPBean extends GenericEntity implements MainRule {
 
 		MainRuleHome home
 				= (MainRuleHome) IDOLookup.getHome(MainRule.class);
-		final String [] data = { "check", "resurs", "subvention", "checktaxa", "moms" };
+		final String [] data = { RegSpecConstant.MAIN_RULE_CHECK, RegSpecConstant.MAIN_RULE_RESOURCE, RegSpecConstant.MAIN_RULE_SUBVENTION, RegSpecConstant.MAIN_RULE_CHECKTAX, RegSpecConstant.MAIN_RULE_VAT };
 		for (int i = 0; i < data.length; i++) {
 			MainRule mainrule = home.create();
-			mainrule.setMainRule(ENTITY_NAME + "." + data[i]);
+			mainrule.setMainRule(data[i]);
 			mainrule.store();
 		}
 	}

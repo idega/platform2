@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.27 2004/01/06 14:03:14 tryggvil Exp $
+ * $Id: RegulationBMPBean.java,v 1.28 2004/01/09 14:51:00 tryggvil Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import com.idega.util.CalendarMonth;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.27 2004/01/06 14:03:14 tryggvil Exp $
+ * $Id: RegulationBMPBean.java,v 1.28 2004/01/09 14:51:00 tryggvil Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -552,4 +552,31 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		
 		return idoFindPKsByQuery(sql);
 	}
+	
+	/**
+	 * Finds all Regulations whith given regSpecTypeKey
+	 * @param regSpecTypeKey a refence to a value in the REG_SPEC_TYPE column in table CACC_REG_SPEC_TYPE
+	 * @return
+	 * @throws FinderException if nothing is found
+	 */
+	public Collection ejbFindAllByMainRule(String mainRuleKey) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.append("select r.* from ");
+		sql.append(ENTITY_NAME);
+		sql.append(" r ");
+		//if (regSpecTypeID != -1 || mainRuleId != -1) {
+		sql.append(", cacc_reg_spec_type t ");
+		sql.append(", cacc_main_rule m ");
+		//}
+
+		//sql.appendWhere("r."+COLUMN_PERIOD_TO);
+		//sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
+		//sql.appendAnd();
+		//sql.append("r."+COLUMN_PERIOD_FROM);
+		//sql.appendLessThanOrEqualsSign().append("'" + to + "'");
+		sql.append(" where t."+RegulationSpecTypeBMPBean.COLUMN_REG_SPEC_TYPE_ID+"=r."+COLUMN_REG_SPEC_TYPE_ID);
+		sql.append(" and t."+RegulationSpecTypeBMPBean.COLUMN_MAIN_RULE_ID+"=m."+MainRuleBMPBean.COLUMN_MAIN_RULE_ID);
+		sql.append(" and m."+MainRuleBMPBean.COLUMN_MAIN_RULE+"='"+mainRuleKey+"'");
+		return idoFindPKsByQuery(sql);
+	}	
 }

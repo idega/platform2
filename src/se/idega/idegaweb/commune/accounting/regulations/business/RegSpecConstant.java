@@ -21,4 +21,11 @@ public class RegSpecConstant {
 	public static final String SIBLING_REBATE ="cacc_reg_spec_type.syskonrabatt";
 	public static final String MAXLIMIT ="cacc_reg_spec_type.maxtaxa";
 */
+	
+	public static final String MAIN_RULE_CHECK="cacc_main_rule.check";
+	public static final String MAIN_RULE_RESOURCE="cacc_main_rule.resurs";
+	public static final String MAIN_RULE_SUBVENTION="cacc_main_rule.subvention";
+	public static final String MAIN_RULE_CHECKTAX="cacc_main_rule.checktaxa";
+	public static final String MAIN_RULE_VAT="cacc_main_rule.moms";
+	
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.111 2004/01/08 19:05:08 tryggvil Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.112 2004/01/09 14:51:00 tryggvil Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1169,7 +1169,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection findAllVATRuleRegulations() {
 		try {
 			RegulationHome home = this.getRegulationHome();
-			Collection c = home.findAllByRegulationSpecType(RegSpecConstant.MOMS);
+			Collection c = home.findAllByMainRule(RegSpecConstant.MAIN_RULE_VAT);
 			return c;
 		}
 		catch (RemoteException e) {
