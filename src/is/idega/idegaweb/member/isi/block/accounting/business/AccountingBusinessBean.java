@@ -23,6 +23,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.PaymentType;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentTypeHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCard;
 import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCardHome;
+import is.idega.idegaweb.member.isi.block.accounting.presentation.plugin.CreditCardExtraInfo;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
@@ -797,6 +798,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             contract.setNumberOfPayments(nop);
             contract.setUser(contractUser);
             contract.store();
+         
             
             int totalAmount = 0;
             for (int i = 0; i < nop; i++) {
@@ -804,6 +806,16 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             }
             
             Map users = equalizeBasket(basket, totalAmount, iwuc);
+            
+            CreditCardExtraInfo ccinfo = new CreditCardExtraInfo(contract, amount);
+            
+            BasketBusiness bBiz = getBasketBusiness(iwuc);
+            try {
+                bBiz.addExtraInfo(ccinfo);
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            }
+
             Iterator it = users.values().iterator();
             while (it.hasNext()) {
                 Map divisions = (HashMap) it.next();

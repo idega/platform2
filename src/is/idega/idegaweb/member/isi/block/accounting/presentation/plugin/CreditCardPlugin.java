@@ -123,7 +123,7 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
                     .getParameter(LABEL_DATE_OF_FIRST_PAYMENT);
 
             User ssnUser = null;
-            
+
             if (paramSSN == null || "".equals(paramSSN)) {
                 errorList.add(ERROR_NO_SSN_ENTERED);
             } else {
@@ -190,8 +190,9 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
                 }
 
                 Map basket = getBasketBusiness(iwc).getBasket();
-                getAccountingBusiness(iwc).insertPayment(getClub(), getDivision(), ssnUser, paramCardNumber,
-                        paramCardType, expires, dofp, nop, type, amountArray,
+                getAccountingBusiness(iwc).insertPayment(getClub(),
+                        getDivision(), ssnUser, paramCardNumber, paramCardType,
+                        expires, dofp, nop, type, amountArray,
                         iwc.getCurrentUser(), basket, iwc);
 
                 return true;
@@ -500,34 +501,54 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
                 e1.printStackTrace();
             }
 
+            CreditCardExtraInfo ccinfo = null;
+            
             if (paid != null && !paid.isEmpty()) {
                 Iterator it = paid.iterator();
                 double sum = 0;
                 while (it.hasNext()) {
-                    FinanceExtraBasketInfo info = (FinanceExtraBasketInfo) it
-                            .next();
-                    if (info.getDivision() != null) {
-                        t.add(info.getDivision().getName(), 1, row);
+                    Object tmp = it.next();
+                    if (tmp instanceof CreditCardExtraInfo) {
+                        ccinfo = (CreditCardExtraInfo) tmp;
+                    } else {
+                        FinanceExtraBasketInfo info = (FinanceExtraBasketInfo) tmp;
+                        if (info.getDivision() != null) {
+                            t.add(info.getDivision().getName(), 1, row);
+                        }
+                        if (info.getGroup() != null) {
+                            t.add(info.getGroup().getName(), 2, row);
+                        }
+                        t.add(info.getUser().getName(), 3, row);
+                        if (info.getInfo() != null) {
+                            t.add(info.getInfo(), 4, row);
+                        }
+                        t
+                                .add(nf.format(info.getAmount().doubleValue()),
+                                        5, row);
+                        t.setAlignment(5, row, "RIGHT");
+                        t.add(nf.format(info.getAmountPaid()), 6, row);
+                        t.setAlignment(6, row, "RIGHT");
+                        sum += info.getAmountPaid();
+                        row++;
                     }
-                    if (info.getGroup() != null) {
-                        t.add(info.getGroup().getName(), 2, row);
-                    }
-                    t.add(info.getUser().getName(), 3, row);
-                    if (info.getInfo() != null) {
-                        t.add(info.getInfo(), 4, row);
-                    }
-                    t.add(nf.format(info.getAmount().doubleValue()), 5, row);
-                    t.setAlignment(5, row, "RIGHT");
-                    t.add(nf.format(info.getAmountPaid()), 6, row);
-                    t.setAlignment(6, row, "RIGHT");
-                    sum += info.getAmountPaid();
-                    row++;
                 }
                 t.mergeCells(1, row, 6, row);
                 t.add("<hr>", 1, row++);
                 t.add(labelSum, 5, row);
                 t.add(nf.format(sum), 6, row);
                 t.setAlignment(6, row, "RIGHT");
+                
+                if (ccinfo != null) {
+                    row += 3;
+                
+                    IWTimestamp start = new IWTimestamp(ccinfo.contract.getFirstPayment());
+                    for (int i = 0; i < ccinfo.contract.getNumberOfPayments(); i++) {
+                        IWTimestamp next = new IWTimestamp(start);
+                        next.addMonths(i);
+                        t.add(next.getDateString("dd.MM.yyyy"), 1, row);
+                        t.add(Integer.toString(ccinfo.amount[i]), 2, row++);
+                    }
+                }
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -536,7 +557,7 @@ public class CreditCardPlugin extends CashierSubWindowTemplate implements
         returnObject.add(t);
         Link receipt = new Link(iwrb.getLocalizedString(LABEL_RECEIPT,
                 "Receipt"));
-        receipt.setWindowToOpen(DefaultCheckoutReceiptWindow.class);
+        receipt.setWindowToOpen(CreditCardPluginReceiptWindow.class);
         returnObject.add(receipt);
 
         return returnObject;
