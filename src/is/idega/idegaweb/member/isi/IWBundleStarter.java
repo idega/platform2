@@ -1,5 +1,7 @@
 package is.idega.idegaweb.member.isi;
 
+import is.idega.idegaweb.member.util.IWMemberConstants;
+import com.idega.block.dataquery.business.DataqueryConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.user.presentation.UserConstants;
@@ -21,6 +23,15 @@ public class IWBundleStarter implements IWBundleStartable {
 		UserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
 		// changing constants, setting the right help bundle in the com.idega.core.bundle
 		ICUserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
+		// setting the group types of the highest top nodes for the query builder
+		DataqueryConstants.highestTopNodeGroupTypes = new String[] {
+				IWMemberConstants.GROUP_TYPE_FEDERATION,
+				IWMemberConstants.GROUP_TYPE_UNION,
+				IWMemberConstants.GROUP_TYPE_REGIONAL_UNION,
+				IWMemberConstants.GROUP_TYPE_LEAGUE,
+				IWMemberConstants.GROUP_TYPE_CLUB,
+				IWMemberConstants.GROUP_TYPE_CLUB_DIVISION};
+
 	}
 	
 	public void stop(IWBundle starterBundle) {
