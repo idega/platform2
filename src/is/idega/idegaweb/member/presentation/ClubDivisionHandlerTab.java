@@ -36,7 +36,7 @@ import com.idega.util.IWTimestamp;
 public class ClubDivisionHandlerTab extends UserGroupTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	
-	private static final String TAB_NAME = "cdivh_name";
+	private static final String TAB_NAME = "cdivh_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Club Division Handler";
 	
 	private TextInput _numberField;
@@ -77,7 +77,7 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 	public void initializeFieldNames() {
 		_numberFieldName = "cdivh_number";
 		_nameFieldName = "cdivh_name";
-		_divFieldName = "cdivh_founded";
+		_divFieldName = "cdivh_div";
 		_contactFieldName = "cdivh_contact";
 	}
 
@@ -138,8 +138,8 @@ public class ClubDivisionHandlerTab extends UserGroupTab {
 		t.add(_nameField, 2, 2);
 		t.add(_divText, 1, 3);
 		t.add(_divField, 2, 3);
-		t.add(_contactText, 1, 3);
-		t.add(_contactField, 2, 3);
+		t.add(_contactText, 1, 4);
+		t.add(_contactField, 2, 4);
 
 		add(t);
 	}

@@ -38,7 +38,7 @@ import com.idega.util.IWTimestamp;
 public class ClubInformationTab extends UserGroupTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
-	private static final String TAB_NAME = "cit_name";
+	private static final String TAB_NAME = "cit_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Club Information";
 
 	private TextInput _numberField;
