@@ -49,6 +49,7 @@ import com.idega.core.location.data.Commune;
 import com.idega.core.location.data.CommuneHome;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
@@ -57,11 +58,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/08 16:13:56 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/09 08:32:38 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.35 $
+ * @version $Revision: 1.36 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -70,32 +71,32 @@ import com.idega.util.IWTimestamp;
 public abstract class PaymentThreadSchool extends BillingThread {
 	Logger log = Logger.getLogger(this.getClass().getName());
 	PaymentHeader paymentHeader;
-
+    
 	//This is a horrible solution... This class should not have to know the localization keys!!!	
 	private static final String OPPEN_VERKSAMHET = "sch_type.school_type_oppen_verksamhet";
 	private static final String FRITIDSKLUBB = "sch_type.school_type_fritidsklubb";
-
+    
 	public PaymentThreadSchool(Date month, IWContext iwc) {
 		super(month, iwc);
 		currentDate = month;
 	}
-
+    
 	public boolean isInDefaultCommune(User user) throws RemoteException, FinderException {
 		Address address = getCommuneUserBusiness().getUsersMainAddress(user);
 		Commune commmune = getCommuneHome().findByPrimaryKey(new Integer(address.getCommuneID()));
 		return commmune.getIsDefault();
 	}
-
+    
 	private CommuneHome getCommuneHome() throws RemoteException {
 		return (CommuneHome) IDOLookup.getHome(Commune.class);
 	}
-
+    
 	long start, stop, time;
 	private void timerStart() {
 		start = System.currentTimeMillis();
 		stop = start;
 	}
-
+    
 	private void dispTime(String s) {
 		long t = System.currentTimeMillis();
 		long tt;
@@ -104,18 +105,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		log.info(s + "  total time:" + (tt / 1000f) + "  from last stop, time:" + (time / 1000f));
 		stop = t;
 	}
-
+    
 	protected void contracts() {
-		//		Collection regulationArray = new ArrayList();
-		ArrayList conditions = new ArrayList();
-		//		conditions = new ArrayList();
-		//		Iterator schoolTypeIter = school.getSchoolTypes().iterator();
-		//		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,));
-		//		boolean first;
-		//		ExportDataMapping categoryPosting;
-		Regulation regulation = null;
-		PostingDetail postingDetail = null;
-
 		try {
 			timerStart();
 			//Set the category parameter to ElementarySchool
@@ -125,9 +116,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			if (getPaymentRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), currentDate) > 0) {
 				throw new NotEmptyException("invoice.must_first_empty_old_data");
 			}
-
+            
 			int privateType = ((Integer) providerType.getPrimaryKey()).intValue();
-
+            
 			RegulationsBusiness regBus = getRegulationsBusiness();
 			Iterator schoolIter = getSchoolHome().findAllInHomeCommuneByCategory(category).iterator();
 			//Go through all elementary schools
@@ -145,216 +136,16 @@ public abstract class PaymentThreadSchool extends BillingThread {
 						Iterator schoolClassMemberIter = getSchoolClassMemberHome().findBySchool(((Integer) school.getPrimaryKey()).intValue(), -1, category.getCategory(), currentDate).iterator();
 						while (schoolClassMemberIter.hasNext()) {
 							try{
-							SchoolClassMember schoolClassMember = null;
-							schoolClassMember = (SchoolClassMember) schoolClassMemberIter.next();
-							errorRelated.append("Student "+schoolClassMember.getStudent().getName()+"<br>");
-
-							dispTime("Found " + schoolClassMember.getStudent().getName());
-							if (getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent())) {
-								conditions = new ArrayList();
-								conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
-								conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
-								errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName()+"<br>");
-								errorRelated.append("School Year "+schoolClassMember.getSchoolYear().getName()+"<br>");
-								int studyPathId = schoolClassMember.getStudyPathId();
-								if(studyPathId!=-1){
-									conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH,new Integer(studyPathId)));
-									errorRelated.append("Study path "+schoolClassMember.getStudyPathId()+"<br>");
-								}
-
-								System.out.println(
-									"Getting regulations for school "+ school.getName()
-										+ "\n  Category "+ category.getCategory()
-										+ "\n  PaymentFlowConstant.OUT "+ PaymentFlowConstant.OUT
-										+ "\n  "+ currentDate.toString()
-										+ "\n  RuleTypeConstant.DERIVED "+ RuleTypeConstant.DERIVED
-										+ "\n  #conditions "+ conditions.size()
-										+ "\n  "+ conditions.toString()
-										+ "\n  Condition Operation "+schoolClassMember.getSchoolType().getLocalizationKey()
-										+ "\n  Condition Year "+schoolClassMember.getSchoolYear().getName()
-										);
-								//Get the check
-								postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-										category.getCategory(),		//The ID that selects barnomsorg in the regulation
-										PaymentFlowConstant.OUT, 	//The payment flow is out
-										currentDate, 					//Current date to select the correct date range
-										RuleTypeConstant.DERIVED,	//The conditiontype
-										RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
-										conditions,						//The conditions that need to fulfilled
-										0,									//Sent in to be used for "Specialutrakning"
-										null);							//Sent in to be used for "Specialutrakning"
-
-
-								Date sDate = null;
-								Date eDate = null;
-								if (schoolClassMember.getRegisterDate() != null) {
-									sDate = new Date(schoolClassMember.getRegisterDate().getTime());
-								}
-								if (schoolClassMember.getRemovedDate() != null) {
-									eDate = new Date(schoolClassMember.getRemovedDate().getTime());
-								}
-								calculateTime(sDate, eDate);
-								RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-								System.out.println(
-									"Getting posting string for"
-										+ "\n category: "+ category.getCategory()
-										+ "\n  Type "+ schoolClassMember.getSchoolType()
-										+ "\n  RegSpecType "+ ((Integer) regSpecType.getPrimaryKey()).intValue()
-										+ "\n  provider "+ provider.getSchool().getName()
-										+ "\n  Date "+ currentDate.toString()
-										);
-								String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, schoolClassMember.getSchoolYear().getName());
-//								dispTime("about to create payment record");
-								createPaymentRecord(postingDetail, postings[0], postings[1]);
-//								dispTime("created payment record");
-
-								SchoolType schoolType = null;
-								//Find the oppen verksamhet and fritidsklubb
-								try {
-									int schoolYear = Integer.parseInt(schoolClassMember.getSchoolYear().getName());
-
-									if (schoolYear <= 3) {
-										Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
-										while (typeIter.hasNext()) {
-											schoolType = (SchoolType) typeIter.next();
-											if (schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)) {
-												ArrayList oppenConditions = new ArrayList();
-												oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, OPPEN_VERKSAMHET));
-													Collection regulationForTypeArray =
-														regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), //The ID that selects barnomsorg in the regulation
-															PaymentFlowConstant.OUT, //The payment flow is out
-															currentDate, //Current date to select the correct date range
-															RuleTypeConstant.DERIVED, //The conditiontype
-															null,
-															oppenConditions //The conditions that need to fulfilled
-														);
-												Iterator regulationForTypeIter = regulationForTypeArray.iterator();
-												while (regulationForTypeIter.hasNext()) {
-													try {
-														regulation = (Regulation) regulationForTypeIter.next();
-														postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
-														regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-														postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,schoolClassMember.getSchoolYear().getName());
-														createPaymentRecord(postingDetail, postings[0], postings[1]);
-														System.out.println("created payment info for oppen verksamhet " + schoolClassMember.getStudent().getName());
-													}
-													catch (BruttoIncomeException e) {
-														//Who cares!!!
-													}
-													catch (LowIncomeException e) {
-														
-													}
-												}
-											}
-										}
-									}
-									else if (schoolYear <= 6) {
-										Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
-										while (typeIter.hasNext()) {
-											schoolType = (SchoolType) typeIter.next();
-											if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)) {
-												ArrayList oppenConditions = new ArrayList();
-												oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, FRITIDSKLUBB));
-													Collection regulationForTypeArray =
-														regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), //The ID that selects barnomsorg in the regulation
-															PaymentFlowConstant.OUT, //The payment flow is out
-															currentDate, //Current date to select the correct date range
-															RuleTypeConstant.DERIVED, //The conditiontype
-															null,
-															oppenConditions //The conditions that need to fulfilled
-														);
-												Iterator regulationForTypeIter = regulationForTypeArray.iterator();
-												while (regulationForTypeIter.hasNext()) {
-													try {
-													regulation = (Regulation) regulationForTypeIter.next();
-													postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
-													regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-													postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, schoolClassMember.getSchoolYear().getName());
-													createPaymentRecord(postingDetail, postings[0], postings[1]);
-													System.out.println("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName());
-													}
-													catch (BruttoIncomeException e) {
-														//Who cares!!!
-													}
-													catch (LowIncomeException e) {
-														
-													}
-												}
-											}
-										}
-									}
-								}
-								catch (NumberFormatException e) {
-									//That's OK I only want years 1-6
-								}
-								catch (IDORelationshipException e) {
-									e.printStackTrace();
-									if(errorRelated!=null)
-									{
-										createNewErrorMessage(errorRelated.toString(), "invoice.DBRelationshipError");
-									}else{
-										createNewErrorMessage(createRelatedString(category,schoolClassMember.getSchoolType(),school,schoolClassMember.getStudent()), "invoice.DBRelationshipError");
-									}
-								}
-//								dispTime("Done with oppen verksamhet + fritidsverksamhet");
-
-
-								//Get all the resources for the child
-								Collection resources = getResourceBusiness().getResourcePlacementsByMemberId((Integer) schoolClassMember.getPrimaryKey());
-								log.info("Found "+resources.size()+" resources for "+schoolClassMember.getStudent().getName());
-								Iterator resourceIter = resources.iterator();
-								while (resourceIter.hasNext()) {
-									ResourceClassMember resource = (ResourceClassMember) resourceIter.next();
-									dispTime("Found resource " + resource.getResource().getResourceName()+
-										"\nschClassMem "+schoolClassMember.getPrimaryKey()+
-										"\nschClass "+schoolClassMember.getSchoolClass().getName()+
-										"\nschType "+schoolClassMember.getSchoolClass().getSchoolType().getLocalizationKey());
-									ArrayList resourceConditions = new ArrayList();
-									resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolClass().getSchoolType().getLocalizationKey()));
-									resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE, resource.getResource().getResourceName()));
-									resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
-
-										Collection regulationForResourceArray =
-											regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-												category.getCategory(),		//The ID that selects barnomsorg in the regulation
-												PaymentFlowConstant.OUT,	//The payment flow is out
-												currentDate,					//Current date to select the correct date range
-												RuleTypeConstant.DERIVED,	//The conditiontype
-												RegSpecConstant.RESOURCE,
-												resourceConditions			//The conditions that need to fulfilled
-											);
-
-									dispTime("Getting regulations for resource of size " + regulationForResourceArray.size());
-									Iterator regulationForResourceIter = regulationForResourceArray.iterator();
-									while (regulationForResourceIter.hasNext()) {
-										try {
-											regulation = (Regulation) regulationForResourceIter.next();
-											log.info("Found regulation '"+regulation.getName()+"' for resource "+resource.getResource().getResourceName());
-											postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
-											regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-											postings = getPostingBusiness().getPostingStrings(
-												category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,schoolClassMember.getSchoolYear().getName());
-											createPaymentRecord(postingDetail, postings[0], postings[1]);
-											log.info("Payment record created "+postingDetail.getTerm());
-										}
-										catch (BruttoIncomeException e) {
-											//Who cares!!!
-										}										
-										catch (LowIncomeException e) {
-											
-										}
-									}
-									dispTime("Done regulations for resource");
-								}
-							}
-							}catch(NullPointerException e){
+                                SchoolClassMember schoolClassMember = null;
+                                schoolClassMember = (SchoolClassMember) schoolClassMemberIter.next();
+                                billSchoolClassMember(regBus, provider, schoolClassMember);
+							} catch(NullPointerException e){
 								e.printStackTrace();
 								createNewErrorMessage("invoice.PaymentSchool","invoice.nullpointer");
 							}
 						}
 					}
-				}
-				catch (RemoteException e) {
+				} catch (RemoteException e) {
 					e.printStackTrace();
 					if(errorRelated!=null)
 					{
@@ -362,8 +153,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					}else{
 						createNewErrorMessage(school.getName(), "invoice.DBError_Creating_contracts_for_school");
 					}
-				}
-				catch (FinderException e) {
+				} catch (FinderException e) {
 					e.printStackTrace();
 					if(errorRelated!=null)
 					{
@@ -371,8 +161,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					}else{
 						createNewErrorMessage(school.getName(), "invoice.CouldNotFindContractForSchool");
 					}
-				}
-				catch (CreateException e) {
+				} catch (CreateException e) {
 					e.printStackTrace();
 					if(errorRelated!=null)
 					{
@@ -380,8 +169,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					}else{
 						createNewErrorMessage(school.getName(), "invoice.CouldNotInsertIntoDatabase");
 					}
-				}
-				catch (PostingException e) {
+				} catch (PostingException e) {
 					e.printStackTrace();
 					if(errorRelated!=null)
 					{
@@ -389,8 +177,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					}else{
 						createNewErrorMessage(school.getName(), "invoice.PostingString");
 					}
-				}
-				catch (RegulationException e) {
+				} catch (RegulationException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					if(errorRelated!=null)
@@ -403,33 +190,233 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				dispTime("Getting regulations for resource");
 				timerStart();
 			}
-		}
-		catch (RemoteException e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_DBError");
-		}
-		catch (FinderException e) {
+		} catch (FinderException e) {
 			e.printStackTrace();
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindSchoolCategory");
-		}
-		catch (EJBException e) {
+		} catch (EJBException e) {
 			e.printStackTrace();
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
-		}
-		catch (CreateException e) {
+		} catch (CreateException e) {
 			e.printStackTrace();
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
-		}
-		catch (IDOException e) {
+		} catch (IDOException e) {
 			e.printStackTrace();
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_IDOException");
-		}
-		catch (NotEmptyException e) {
+		} catch (NotEmptyException e) {
 			createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_MustFirstEmptyOldData");
 			e.printStackTrace();
 		}
 	}
 	
+	private void billSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember) throws RemoteException, FinderException, RegulationException, EJBException, PostingException, CreateException, IDOLookupException {
+		ArrayList conditions;
+		PostingDetail postingDetail;
+		errorRelated.append("Student "+schoolClassMember.getStudent().getName()+"<br>");
+        
+		dispTime("Found " + schoolClassMember.getStudent().getName());
+		if (getCommuneUserBusiness().isInDefaultCommune(schoolClassMember.getStudent())) {
+			conditions = new ArrayList();
+			conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
+			conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
+			errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName()+"<br>");
+			errorRelated.append("School Year "+schoolClassMember.getSchoolYear().getName()+"<br>");
+			int studyPathId = schoolClassMember.getStudyPathId();
+			if(studyPathId!=-1){
+				conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH,new Integer(studyPathId)));
+				errorRelated.append("Study path "+schoolClassMember.getStudyPathId()+"<br>");
+			}
+            
+			System.out.println(
+                               "Getting regulations for school "+ school.getName()
+                               + "\n  Category "+ category.getCategory()
+                               + "\n  PaymentFlowConstant.OUT "+ PaymentFlowConstant.OUT
+                               + "\n  "+ currentDate.toString()
+                               + "\n  RuleTypeConstant.DERIVED "+ RuleTypeConstant.DERIVED
+                               + "\n  #conditions "+ conditions.size()
+                               + "\n  "+ conditions.toString()
+                               + "\n  Condition Operation "+schoolClassMember.getSchoolType().getLocalizationKey()
+                               + "\n  Condition Year "+schoolClassMember.getSchoolYear().getName()
+                               );
+			//Get the check
+			postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+                                                                                                 category.getCategory(),		//The ID that selects barnomsorg in the regulation
+                                                                                                 PaymentFlowConstant.OUT, 	//The payment flow is out
+                                                                                                 currentDate, 					//Current date to select the correct date range
+                                                                                                 RuleTypeConstant.DERIVED,	//The conditiontype
+                                                                                                 RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
+                                                                                                 conditions,						//The conditions that need to fulfilled
+                                                                                                 0,									//Sent in to be used for "Specialutrakning"
+                                                                                                 null);							//Sent in to be used for "Specialutrakning"
+            
+            
+			Date sDate = null;
+			Date eDate = null;
+			if (schoolClassMember.getRegisterDate() != null) {
+				sDate = new Date(schoolClassMember.getRegisterDate().getTime());
+			}
+			if (schoolClassMember.getRemovedDate() != null) {
+				eDate = new Date(schoolClassMember.getRemovedDate().getTime());
+			}
+			calculateTime(sDate, eDate);
+			RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+			System.out.println(
+                               "Getting posting string for"
+                               + "\n category: "+ category.getCategory()
+                               + "\n  Type "+ schoolClassMember.getSchoolType()
+                               + "\n  RegSpecType "+ ((Integer) regSpecType.getPrimaryKey()).intValue()
+                               + "\n  provider "+ provider.getSchool().getName()
+                               + "\n  Date "+ currentDate.toString()
+                               );
+			String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, schoolClassMember.getSchoolYear().getName());
+            //								dispTime("about to create payment record");
+			createPaymentRecord(postingDetail, postings[0], postings[1]);
+            //								dispTime("created payment record");
+            
+			SchoolType schoolType = null;
+			//Find the oppen verksamhet and fritidsklubb
+			try {
+				int schoolYear = Integer.parseInt(schoolClassMember.getSchoolYear().getName());
+                
+				if (schoolYear <= 3) {
+					Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
+					while (typeIter.hasNext()) {
+						schoolType = (SchoolType) typeIter.next();
+						if (schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)) {
+							createPaymentsForOppenVerksamhet(regBus, provider, schoolClassMember, conditions);
+						}
+					}
+				}else if (schoolYear <= 6) {
+					Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
+					while (typeIter.hasNext()) {
+						schoolType = (SchoolType) typeIter.next();
+						if (schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB))
+							createPaymentsForFritidsklubb(regBus, provider, schoolClassMember, conditions);
+					}
+				}
+			} catch (NumberFormatException e) {
+				//That's OK I only want years 1-6
+			} catch (IDORelationshipException e) {
+				e.printStackTrace();
+				if(errorRelated!=null)
+				{
+					createNewErrorMessage(errorRelated.toString(), "invoice.DBRelationshipError");
+				}else{
+					createNewErrorMessage(createRelatedString(category,schoolClassMember.getSchoolType(),school,schoolClassMember.getStudent()), "invoice.DBRelationshipError");
+				}
+			}
+            //								dispTime("Done with oppen verksamhet + fritidsverksamhet");
+            
+            
+			//Get all the resources for the child
+			Collection resources = getResourceBusiness().getResourcePlacementsByMemberId((Integer) schoolClassMember.getPrimaryKey());
+			log.info("Found "+resources.size()+" resources for "+schoolClassMember.getStudent().getName());
+			Iterator resourceIter = resources.iterator();
+			while (resourceIter.hasNext()) {
+				ResourceClassMember resource = (ResourceClassMember) resourceIter.next();
+				createPaymentsForResource(regBus, provider, schoolClassMember, conditions, resource);
+			}
+		}
+	}
+    
+	private void createPaymentsForResource(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, ResourceClassMember resource) throws EJBException, RemoteException, FinderException, PostingException, CreateException, IDOLookupException {
+		dispTime("Found resource " + resource.getResource().getResourceName()+
+                 "\nschClassMem "+schoolClassMember.getPrimaryKey()+
+                 "\nschClass "+schoolClassMember.getSchoolClass().getName()+
+                 "\nschType "+schoolClassMember.getSchoolClass().getSchoolType().getLocalizationKey());
+		ArrayList resourceConditions = new ArrayList();
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolClass().getSchoolType().getLocalizationKey()));
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE, resource.getResource().getResourceName()));
+		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
+        
+        Collection regulationForResourceArray =
+				regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+                                                                                      category.getCategory(),		//The ID that selects barnomsorg in the regulation
+                                                                                      PaymentFlowConstant.OUT,	//The payment flow is out
+                                                                                      currentDate,					//Current date to select the correct date range
+                                                                                      RuleTypeConstant.DERIVED,	//The conditiontype
+                                                                                      RegSpecConstant.RESOURCE,
+                                                                                      resourceConditions			//The conditions that need to fulfilled
+                                                                                      );
+        
+		dispTime("Getting regulations for resource of size " + regulationForResourceArray.size());
+		Iterator regulationForResourceIter = regulationForResourceArray.iterator();
+		while (regulationForResourceIter.hasNext()) {
+			try {
+				Regulation regulation = (Regulation) regulationForResourceIter.next();
+				log.info("Found regulation '"+regulation.getName()+"' for resource "+resource.getResource().getResourceName());
+				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
+				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+				String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,schoolClassMember.getSchoolYear().getName());
+				createPaymentRecord(postingDetail, postings[0], postings[1]);
+				log.info("Payment record created "+postingDetail.getTerm());
+			} catch (BruttoIncomeException e) {
+				//Who cares!!!
+			} catch (LowIncomeException e) {
+				
+			}
+		}
+		dispTime("Done regulations for resource");
+	}
+    
+	private void createPaymentsForFritidsklubb(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions) throws RemoteException, FinderException, PostingException, EJBException, CreateException, IDOLookupException {
+        ArrayList oppenConditions = new ArrayList();
+        oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, FRITIDSKLUBB));
+        Collection regulationForTypeArray =
+                regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), //The ID that selects barnomsorg in the regulation
+                                                                                      PaymentFlowConstant.OUT, //The payment flow is out
+                                                                                      currentDate, //Current date to select the correct date range
+                                                                                      RuleTypeConstant.DERIVED, //The conditiontype
+                                                                                      null,
+                                                                                      oppenConditions //The conditions that need to fulfilled
+                                                                                      );
+        Iterator regulationForTypeIter = regulationForTypeArray.iterator();
+        while (regulationForTypeIter.hasNext()) {
+            try {
+                Regulation regulation = (Regulation) regulationForTypeIter.next();
+                PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
+                RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+                String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, schoolClassMember.getSchoolYear().getName());
+                createPaymentRecord(postingDetail, postings[0], postings[1]);
+                System.out.println("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName());
+            } catch (BruttoIncomeException e) {
+                //Who cares!!!
+            } catch (LowIncomeException e) {
+                
+            }
+        }
+    }
+    
+	private void createPaymentsForOppenVerksamhet(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions) throws RemoteException, FinderException, PostingException, EJBException, CreateException, IDOLookupException {
+		ArrayList oppenConditions = new ArrayList();
+		oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, OPPEN_VERKSAMHET));
+        Collection regulationForTypeArray =
+				regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(category.getCategory(), //The ID that selects barnomsorg in the regulation
+                                                                                      PaymentFlowConstant.OUT, //The payment flow is out
+                                                                                      currentDate, //Current date to select the correct date range
+                                                                                      RuleTypeConstant.DERIVED, //The conditiontype
+                                                                                      null,
+                                                                                      oppenConditions //The conditions that need to fulfilled
+                                                                                      );
+		Iterator regulationForTypeIter = regulationForTypeArray.iterator();
+		while (regulationForTypeIter.hasNext()) {
+			try {
+				Regulation regulation = (Regulation) regulationForTypeIter.next();
+				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
+				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
+				String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,schoolClassMember.getSchoolYear().getName());
+				createPaymentRecord(postingDetail, postings[0], postings[1]);
+				System.out.println("created payment info for oppen verksamhet " + schoolClassMember.getStudent().getName());
+			} catch (BruttoIncomeException e) {
+				//Who cares!!!
+			} catch (LowIncomeException e) {
+				
+			}
+		}
+	}
+    
 	/**
 	 * Used to create a description of every entity that is related 
 	 * @param cat
@@ -463,14 +450,14 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 		return ret.toString();
 	}
-
+    
 	/**
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the Regular payments
 	 */
 	protected void regularPayment() {
 		PostingDetail postingDetail = null;
-
+        
 		try {
 			Iterator regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriode(startPeriod.getDate(), endPeriod.getDate()).iterator();
 			//Go through all the regular payments
@@ -479,18 +466,16 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			if (postingDetail != null) {
 				createNewErrorMessage(postingDetail.getTerm(), "payment.DBSetupProblem");
-			}
-			else {
+			} else {
 				createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
 			}
 		}
 	}
-
+    
 	/*
 	 * Overridden function until billing is done by period instead of date (non-Javadoc)
 	 * Now we always bill for the whole month...
@@ -514,33 +499,33 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		months = 1.0f;
 		days = IWTimestamp.getDaysBetween(startTime, endTime);
 	}
-
+    
 	private SchoolClassMemberHome getSchoolClassMemberHome() throws RemoteException {
 		return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
 	}
-
+    
 	protected SchoolTypeHome getSchoolTypeHome() throws RemoteException {
 		return (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 	}
-
+    
 	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
-
+    
 	private ResourceBusiness getResourceBusiness() throws RemoteException {
 		return (ResourceBusiness) IBOLookup.getServiceInstance(iwc, ResourceBusiness.class);
 	}
-
+    
 	private SchoolHome getSchoolHome() throws RemoteException {
 		return (SchoolHome) IDOLookup.getHome(School.class);
 	}
-
+    
 	protected SchoolCategoryHome getSchoolCategoryHome() throws RemoteException {
 		return (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 	}
-
+    
 	protected ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
 		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 	}
-
+    
 }
