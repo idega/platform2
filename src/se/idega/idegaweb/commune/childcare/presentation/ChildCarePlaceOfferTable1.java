@@ -107,7 +107,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 			validateDateScript.append(" || ");
 			alertTerminateContractScript.append(" || ");
 
-			String[] scripts = addToTable(iwc, row, app, isOffer, offerPresented, disableAccept, iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID()) != null);
+			//String[] scripts = addToTable(iwc, row, app, isOffer, offerPresented, disableAccept, iwc.getSessionAttribute(_page.REQ_BUTTON + app.getNodeID()) != null);
+			String[] scripts = addToTable(iwc, row, app, isOffer, offerPresented, disableAccept);
 
 			validateDateScript.append(scripts[0]);
 			alertTerminateContractScript.append(scripts[1]);
@@ -161,7 +162,8 @@ class ChildCarePlaceOfferTable1 extends Table {
 	 * @param status
 	 * @param prognosis
 	 */
-	private String[] addToTable(IWContext iwc, int row, ChildCareApplication app, boolean isOffer, boolean offerPresented, boolean disableAccept, boolean disableReqBtn) throws RemoteException {
+	//private String[] addToTable(IWContext iwc, int row, ChildCareApplication app, boolean isOffer, boolean offerPresented, boolean disableAccept, boolean disableReqBtn) throws RemoteException {
+	private String[] addToTable(IWContext iwc, int row, ChildCareApplication app, boolean isOffer, boolean offerPresented, boolean disableAccept) throws RemoteException {
 
 		int providerId = app.getProviderId();
 		int ownerId = app.getOwner().getID();
