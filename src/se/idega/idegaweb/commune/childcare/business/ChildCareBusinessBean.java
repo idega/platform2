@@ -1109,7 +1109,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public void moveToGroup(int childID, int providerID , int schoolClassID) throws RemoteException {
+	public void moveToGroup(int childID, int providerID , int schoolClassID) {
 		try {
 			SchoolClassMember classMember = getLatestPlacement(childID, providerID);
 			classMember.setSchoolClassId(schoolClassID);
@@ -2570,6 +2570,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public int getQueueByProvider(int providerID) {
 		try {
 			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, getCaseStatusOpenString());
+		}
+		catch (IDOException e) {
+			return 0;
+		}
+	}
+	
+	public int getQueueTotalByProviderWithinMonths(int providerID, int months) {
+		try {
+			IWTimestamp to = IWTimestamp.RightNow();
+			to.addMonths(months);
+			Date toDate = to.getDate();
+			String[] caseStatus = { getCaseStatusDeletedString(), getCaseStatusInactiveString(), getCaseStatusCancelledString(), getCaseStatusReadyString() };
+			return getChildCareApplicationHome().getQueueSizeNotInStatus(providerID, caseStatus, null, toDate);
 		}
 		catch (IDOException e) {
 			return 0;
