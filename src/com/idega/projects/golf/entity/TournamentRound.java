@@ -1,5 +1,5 @@
 /*
- * $Id: TournamentRound.java,v 1.6 2001/06/07 22:12:42 gimmi Exp $
+ * $Id: TournamentRound.java,v 1.7 2001/06/20 06:24:19 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,7 +15,6 @@ import java.util.List;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
-*@version 1.2
 */
 public class TournamentRound extends GolfEntity{
 
@@ -35,13 +34,22 @@ public class TournamentRound extends GolfEntity{
 		addAttribute("round_date","Dagsetning hrings",true,true,"java.sql.Timestamp");
 		addAttribute("increase_handicap","Spilað til hækkunar",true,true,"java.lang.Boolean");
 		addAttribute("decrease_handicap","Spilað til lækkunar",true,true,"java.lang.Boolean");
-                addAttribute("round_end_date","Hring lýkur",true,true,"java.sql.Timestamp");
+		addAttribute("round_end_date","Hring lýkur",true,true,"java.sql.Timestamp");
+		// added 19.06.2001
+		addAttribute("startingtees","Fjöldi teiga",true,true,"java.sql.Integer");
 
 	}
 
 	public String getEntityName(){
 		return "tournament_round";
 	}
+
+	public void setDefaultValues() {
+		setIncreaseHandicap(false);
+		setDecreaseHandicap(false);
+		setStartingtees(1);
+	}
+
 
 	public String getName(){
 		return "Hringur "+getRoundNumber();
@@ -103,7 +111,14 @@ public class TournamentRound extends GolfEntity{
 		setColumn("decrease_handicap",new Boolean(decrease_handicap));
 	}
 
+	/*
+	public Startingtime[] getStartingtimes() throws SQLException {
+		return (Startingtime[]) (Startingtime.getStaticInstance("com.idega.projects.golf.entity.Startingtime")).findRelated(this);
+	}
+	*/
+
   public void delete() throws SQLException {
+
     try {
       List scorecards = EntityFinder.findAllByColumn(new Scorecard(),"TOURNAMENT_ROUND_ID", this.getID());
       Scorecard scorecard = null;
@@ -118,7 +133,29 @@ public class TournamentRound extends GolfEntity{
       e.printStackTrace();
     }
 
+    try {
+      Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT startingtime.* from startingtime s, tournament_round_startingtime trs where s.startingtime_id = trs.startingtime_id AND trs.tournament_round_id = "+this.getID());
+      if (startingtimes != null) {
+        for (int j = 0; j < startingtimes.length; j++) {
+          startingtimes[j].removeFrom(this);
+          startingtimes[j].delete();
+        }
+      }
+    }
+    catch (java.sql.SQLException e) {
+      e.printStackTrace();
+    }
+
     super.delete();
   }
+
+
+	public void setStartingtees(int numberOfStartingtees) {
+		setColumn("startingtees",numberOfStartingtees);
+	}
+
+	public int getStartingtees() {
+		return getIntColumnValue("startingtees");
+	}
 
 }

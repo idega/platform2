@@ -33,6 +33,11 @@ public class TournamentTournamentGroup extends GolfEntity{
 		return "tournament_tournament_group";
 	}
 
+        public String getIDColumnName() {
+                return "tournament_id";
+        }
+
+
         public void setTournamentId(int tournament_id) {
             setColumn("tournament_id",tournament_id);
         }

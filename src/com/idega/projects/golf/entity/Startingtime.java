@@ -34,6 +34,8 @@ public class Startingtime extends GolfEntity{
     addAttribute("card_num","Kortanumer",true,true,"java.lang.String");
     addAttribute("grup_num","Hopnumer",true,true,"java.lang.Integer");
     addAttribute("owner_id","Numer eiganda",true,true,"java.lang.Integer");
+    // added 19.06.2001 by Gimmi
+    addAttribute("tee_number","Númer teigs",true,true,"java.lang.Integer");
   }
 
   public String getEntityName(){
@@ -44,11 +46,11 @@ public class Startingtime extends GolfEntity{
     this.setHandicap(Float.parseFloat("-1.0"));
     this.setMemberID(1);
     this.setOwnerID(1);
+    this.setTeeNumber(1);
   }
 
 
   // ### get- & set-Föll ###
-
 
 
   public int getFieldID(){
@@ -165,6 +167,13 @@ public class Startingtime extends GolfEntity{
   }
 
 
+	public void setTeeNumber(int teeNumber) {
+		setColumn("tee_number",teeNumber);
+	}
+
+	public int getTeeNumber() {
+		return getIntColumnValue("tee_number");
+	}
 
 
 }   // class Startingtime
