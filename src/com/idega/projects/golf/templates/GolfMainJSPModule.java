@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.11 2001/05/22 19:30:13 haffi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.12 2001/05/22 19:46:59 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,7 +93,9 @@ public class GolfMainJSPModule extends MainSideJSPModule {
     topTable.setHeight("90");
     topTable.add(getLogin(),1,1);
     topTable.add(getHBanner(),2,1);
-    topTable.add(new Image("/pics/templates/toyotalogo.gif"),3,1);
+
+
+    topTable.add(iwrb.getImage("/banners/small_ad.gif"),3,1);
 
     topTable.setAlignment(2,1,"center");
     topTable.setAlignment(3,1,"center");
