@@ -133,7 +133,7 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	protected DropdownMenu getGroups(int groupID, int groupToIgnoreID) throws RemoteException {
 		DropdownMenu menu = new DropdownMenu(getSession().getParameterGroupID());
 		
-		Collection groups = getBusiness().getSchoolBusiness().findSchoolClassesBySchool(getSession().getChildCareID());
+		Collection groups = getBusiness().getSchoolBusiness().findChildcareClassesBySchool(getSession().getChildCareID());
 		Iterator iter = groups.iterator();
 		while (iter.hasNext()) {
 			SchoolClass element = (SchoolClass) iter.next();
