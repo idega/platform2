@@ -24,26 +24,11 @@ public class SQLQueryer extends JModuleObject{
     private static String queryParameter="SQLQUERYSTRING";
     private FramePane queryPane;
     private FramePane resultsPane;
+    private String query;
+    private boolean displayForm = true;
+    private String resultName = "Result";
 
     public SQLQueryer(){
-      queryPane = new FramePane("Query");
-      super.add(queryPane);
-      Form form = new Form();
-      queryPane.add(form);
-      TextArea input = new TextArea(queryParameter);
-      input.setWidth(50);
-      input.setHeight(4);
-      Table innertTable =new Table(1,2);
-      form.add(innertTable);
-      innertTable.add(input,1,1);
-      innertTable.add(new SubmitButton("Execute"),1,2);
-
-      resultsPane = new FramePane("Result");
-      super.add(resultsPane);
-
-      setWidth(500);
-
-
     }
 
     public void add(ModuleObject obj){
@@ -52,88 +37,118 @@ public class SQLQueryer extends JModuleObject{
 
 
     public void setWidth(int width){
-      this.queryPane.setWidth(width);
-      this.resultsPane.setWidth(width);
+      if(queryPane!=null) queryPane.setWidth(width);
+      if(resultsPane!=null) resultsPane.setWidth(width);
+    }
+
+    public void setSQLQuery(String query){
+      this.query = query;
+      this.displayForm = false;
+    }
+
+    public void setResultName(String resultName){
+      this.resultName = resultName;
     }
 
     public void main(ModuleInfo modinfo)throws Exception{
-                Connection conn=getConnection();
-                String  queryString = modinfo.getParameter (queryParameter);
-                try {
-	    if ((queryString != "") && (queryString != null))
-		{
-                                                add("Your query was:");
-                                                add(Text.getBreak());
-                                                Text text = new Text(queryString);
-						text.setBold();
-						add(text);
-                                                addBreak();
-						Table table = new Table();
-                                                table.setColor("white");
-						add(table);
-                                                Statement stmt = conn.createStatement();
-                                                if(queryString.toLowerCase().indexOf("select")==-1){
-                                                    int i = stmt.executeUpdate(queryString);
-                                                    //if (i>0){
-                                                            add(i+" rows altered");
-                                                    //}
-                                                    //else{
+      resultsPane = new FramePane(resultName);
 
-                                                    //}
-                                                }
-                                                else{
+      if(displayForm){
+        queryPane = new FramePane("Query");
+        super.add(queryPane);
+        Form form = new Form();
+        queryPane.add(form);
+        TextArea input = new TextArea(queryParameter);
+        input.setWidth(50);
+        input.setHeight(4);
+        Table innertTable =new Table(1,2);
+        form.add(innertTable);
+        innertTable.add(input,1,1);
+        innertTable.add(new SubmitButton("Execute"),1,2);
+      }
 
 
-                                                    ResultSet rs = stmt.executeQuery(queryString);
-                                                    ResultSetMetaData rsMeta = rs.getMetaData();
-                                                    // Get the N of Cols in the ResultSet
-                                                    int noCols = rsMeta.getColumnCount();
-                                                    //out.println("<tr>");
-                                                    int y=1;
-                                                    int x=1;
-                                                    for (int c=1; c<=noCols; c++) {
-                                                        String el = rsMeta.getColumnLabel(c);
-                                                        //out.println("<th> " + el + " </th>");
-                                                        table.add(el,x,y);
-                                                        x++;
-                                                    }
-                                                    //out.println("</tr>");
-                                                    y++;
+      Connection conn=getConnection();
+      String  queryString = modinfo.getParameter (queryParameter);
+      if(queryString == null) queryString = query;
 
-						    table.setRowColor(1,"#D0D0D0");
-						    while (rs.next()) {
-                                                        //out.println("<tr>");
-                                                        x=1;
-                                                        for (int c=1; c<=noCols; c++) {
-                                                            String el = rs.getString(c);
-                                                            table.add(el,x,y);
-                                                            x++;
-                                                            //out.println("<td> " + el + " </td>");
+      try {
+        if (queryString != null){
+          super.add(resultsPane);
+          if( displayForm ){
+            add("Your query was:");
+            add(Text.getBreak());
+            Text text = new Text(queryString);
+            text.setBold();
+            add(text);
+            addBreak();
+          }
+          Table table = new Table();
+          table.setColor("white");
+          add(table);
+          Statement stmt = conn.createStatement();
+            if(queryString.toLowerCase().indexOf("select")==-1){
+                int i = stmt.executeUpdate(queryString);
+                //if (i>0){
+                        add(i+" rows altered");
+                //}
+                //else{
 
-                                                        }
-                                                        y++;
-                                                        //out.println("</tr>");
-                                                    }
-                                                }
-		    //out.println("</table>");
-		}
-	} catch (SQLException ex ) {
-	    //out.println ( "<P><PRE>" );
-	      while (ex != null) {
-		  add("Message:   " + ex.getMessage ());
+                //}
+            }
+            else{
+                ResultSet rs = stmt.executeQuery(queryString);
+                ResultSetMetaData rsMeta = rs.getMetaData();
+                // Get the N of Cols in the ResultSet
+                int noCols = rsMeta.getColumnCount();
+                //out.println("<tr>");
+                int y=1;
+                int x=1;
+                for (int c=1; c<=noCols; c++) {
+                    String el = rsMeta.getColumnLabel(c);
+                    //out.println("<th> " + el + " </th>");
+                    table.add(el,x,y);
+                    x++;
+                }
+                //out.println("</tr>");
+                y++;
+
+                table.setRowColor(1,"#D0D0D0");
+                while (rs.next()) {
+                    //out.println("<tr>");
+                    x=1;
+                    for (int c=1; c<=noCols; c++) {
+                        String el = rs.getString(c);
+                        table.add(el,x,y);
+                        x++;
+                        //out.println("<td> " + el + " </td>");
+
+                    }
+                    y++;
+                    //out.println("</tr>");
+                }
+            }
+                //out.println("</table>");
+          }//end if querystring
+
+        }//end of try
+        catch (SQLException ex ) {
+            //out.println ( "<P><PRE>" );
+              while (ex != null) {
+                  add("Message:   " + ex.getMessage ());
                                               this.addBreak();
-		  add("SQLState:  " + ex.getSQLState ());
+                  add("SQLState:  " + ex.getSQLState ());
                                               this.addBreak();
-		  add("ErrorCode: " + ex.getErrorCode ());
+                  add("ErrorCode: " + ex.getErrorCode ());
                                               this.addBreak();
-		  ex = ex.getNextException();
-		  //out.println("");
-	      }
-	      //out.println ( "</PRE><P>" );
-	}
-                      finally{
-                        this.freeConnection(conn);
-                      }
+                  ex = ex.getNextException();
+                  //out.println("");
+              }
+              //out.println ( "</PRE><P>" );
+        }
+        finally{
+          this.freeConnection(conn);
+        }
 	//out.println ("<hr>You can now try to retrieve something.");
 	//out.println("<FORM METHOD=POST ACTION=\"/servlet/CoffeeBreakServlet\">");
 	//out.println("<FORM METHOD=POST ACTION=\""+req.getRequestURI()+"\">");
@@ -151,4 +166,21 @@ public class SQLQueryer extends JModuleObject{
 
 
     }
+
+  public synchronized Object clone() {
+    SQLQueryer obj = null;
+    try {
+      obj = (SQLQueryer)super.clone();
+      obj.queryParameter = this.queryParameter;
+      obj.queryPane = this.queryPane;
+      obj.resultsPane = this.resultsPane;
+      obj.query = this.query;
+      obj.displayForm = this.displayForm;
+      obj.resultName = this.resultName;
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
 }
