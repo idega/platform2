@@ -388,7 +388,10 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private List getGroupIdListFromLeagueGroupCollection(final Integer year, Collection leaguesFilter, boolean returnWithMainBoard) throws RemoteException {
 		//Don't display the main board
 		WorkReportGroup mainBoard = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
-		Integer mainGroupId = mainBoard.getGroupId();
+		Integer mainGroupId = null;
+		if(mainBoard!=null) {
+			mainGroupId = mainBoard.getGroupId();
+		}
 		
 		List leagueGroupIdList = null;
 		if (leaguesFilter != null && !leaguesFilter.isEmpty()) {
@@ -3998,11 +4001,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(clubName);
 		
 		ReportableField memberCount = new ReportableField(FIELD_NAME_MEMBERS, Integer.class);
-		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEMBERS, "all"), currentLocale);
+		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEMBERS, "members"), currentLocale);
 		reportCollection.addField(memberCount);
 
 		ReportableField playerCount = new ReportableField(FIELD_NAME_PLAYERS, Integer.class);
-		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS, "all"), currentLocale);
+		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS, "players"), currentLocale);
 		reportCollection.addField(playerCount);
 		
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
@@ -4131,11 +4134,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(clubName);
 
 		ReportableField memberCount = new ReportableField(FIELD_NAME_MEMBERS, Integer.class);
-		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEMBERS, "all"), currentLocale);
+		memberCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEMBERS, "members"), currentLocale);
 		reportCollection.addField(memberCount);
 
 		ReportableField playerCount = new ReportableField(FIELD_NAME_PLAYERS, Integer.class);
-		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS, "all"), currentLocale);
+		playerCount.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS, "players"), currentLocale);
 		reportCollection.addField(playerCount);
 
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), null);
