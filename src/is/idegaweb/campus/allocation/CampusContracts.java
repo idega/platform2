@@ -7,6 +7,7 @@ import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.finance.presentation.*;
 import com.idega.core.user.data.User;
+import com.idega.data.GenericEntity;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationSubject;
 import is.idegaweb.campus.entity.*;
@@ -44,11 +45,17 @@ public class CampusContracts extends KeyEditor{
   private String redColor = "#942829";
   private String blueColor = "#27324B",lightBlue ="#ECEEF0";
   private int iSubjectId = -1;
-  private String sGlobalStatus = "C";
+  private String sGlobalStatus = "C", sCLBU="-1",sCLFL="-1",sCLCX="-1",sCLTP="-1",sCLCT="-1";
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
   private String bottomThickness = "8";
   private String conPrm = "contract_status";
+  private final String prmCx = "cl_clx",prmBu = "cl_bu",prmFl = "cl_fl",prmTp="cl_tp",prmCt="cl_ct";
+  private final String sessCx = "s_clx",sessBu = "s_bu",sessFl = "s_fl",sessTp="s_tp",sessCt="s_ct";
+  private String[] prmArray = { prmCx ,prmBu ,prmFl,prmTp,prmCt};
+  private String[] sessArray = {sessCx ,sessBu ,sessFl ,sessTp,sessCt};
+  private String[] sValues = {sCLBU,sCLFL,sCLCX,sCLTP,sCLCT};
+
   private String sessConPrm = "sess_con_status";
 
   /*
@@ -66,6 +73,15 @@ public class CampusContracts extends KeyEditor{
     iwrb = getResourceBundle(modinfo);
     iwb = getBundle(modinfo);
     this.fontSize = 1;
+    for (int i = 0; i < prmArray.length; i++) {
+      if(modinfo.getParameter(prmArray[i])!=null){
+      sValues[i] = (modinfo.getParameter(prmArray[i]));
+      modinfo.setSessionAttribute(sessConPrm,sValues[i]);
+      }
+      else if(modinfo.getSessionAttribute(sessArray[i])!=null){
+        sValues[i] = ((String)modinfo.getSessionAttribute(sessArray[i]));
+      }
+    }
 
     if(modinfo.getParameter(conPrm)!=null){
       this.sGlobalStatus= (modinfo.getParameter(conPrm));
@@ -117,12 +133,83 @@ public class CampusContracts extends KeyEditor{
   private Form statusForm(){
     Form myForm = new Form();
     DropdownMenu status = statusDrop(conPrm,sGlobalStatus);
-    status.setToSubmit();
+    DropdownMenu complex = drpLodgings(new Complex(),prmArray[0],iwrb.getLocalizedString("complex","Complex"),sValues[0]);
+    DropdownMenu building = drpLodgings(new Building(),prmArray[1],iwrb.getLocalizedString("building","Building"),sValues[1]);
+    DropdownMenu floor = drpFloors(prmArray[2],iwrb.getLocalizedString("floor","Floor"),sValues[2],true);
+    DropdownMenu cat = drpLodgings(new ApartmentCategory(),prmArray[3],iwrb.getLocalizedString("category","Category"),sValues[3]);
+    DropdownMenu type = drpLodgings(new ApartmentType(),prmArray[4],iwrb.getLocalizedString("type","Type"),sValues[4]);
     setStyle(status);
-    myForm.add(status);
+    setStyle(complex);
+    setStyle(building);
+    setStyle(floor);
+    setStyle(cat);
+    setStyle(type);
+    Table T = new Table();
+      T.add(formatText(iwrb.getLocalizedString("status","Status")),1,1);
+      T.add(formatText(iwrb.getLocalizedString("complex","Complex")),2,1);
+      T.add(formatText(iwrb.getLocalizedString("building","Building")),3,1);
+      T.add(formatText(iwrb.getLocalizedString("floor","Floor")),4,1);
+      T.add(formatText(iwrb.getLocalizedString("category","Category")),5,1);
+      T.add(formatText(iwrb.getLocalizedString("type","Type")),6,1);
+      T.add(status,1,2);
+      T.add(complex,2,2);
+      T.add(building,3,2);
+      T.add(floor,4,2);
+      T.add(cat,5,2);
+      T.add(type,6,2);
+      SubmitButton get = new SubmitButton("conget",iwrb.getLocalizedString("get","Get"));
+      setStyle(get);
+      T.add(get,7,2);
+
+    myForm.add(T);
     return myForm;
   }
 
+  private DropdownMenu drpLodgings(GenericEntity lodgings,String name,String display,String selected) {
+    GenericEntity[] lods = new GenericEntity[0];
+    try{
+      lods =  (lodgings).findAll();
+    }
+    catch(SQLException e){}
+    DropdownMenu drp = new DropdownMenu(name);
+    if(!"".equals(display))
+      drp.addDisabledMenuElement("-1",display);
+    int len = lods.length;
+    if(len > 0){
+      for(int i = 0; i < len ; i++){
+        drp.addMenuElement(lods[i].getID(),lods[i].getName());
+      }
+      if(!"".equalsIgnoreCase(selected)){
+        drp.setSelectedElement(selected);
+      }
+    }
+    return drp;
+  }
+
+  private DropdownMenu drpFloors(String name,String display,String selected,boolean withBuildingName) {
+    Floor[] lods = new Floor[1];
+    try{
+      lods =  (Floor[])(new Floor()).findAll();
+    }
+    catch(SQLException e){}
+    DropdownMenu drp = new DropdownMenu(name);
+    if(!"".equals(display))
+      drp.addDisabledMenuElement("-1",display);
+    drp.addDisabledMenuElement("0",display);
+    for(int i = 0; i < lods.length ; i++){
+      if(withBuildingName){
+        try{
+        drp.addMenuElement(lods[i].getID() ,lods[i].getName()+" "+(BuildingCacher.getBuilding(lods[i].getBuildingId()).getName()));
+        }
+        catch(Exception e){}}
+      else
+        drp.addMenuElement(lods[i].getID() ,lods[i].getName());
+    }
+    if(!"".equalsIgnoreCase(selected)){
+      drp.setSelectedElement(selected);
+    }
+    return drp;
+  }
 
   private DropdownMenu contractDrop(String selected){
     List L = ContractFinder.listOfStatusContracts(this.sGlobalStatus);
@@ -147,8 +234,8 @@ public class CampusContracts extends KeyEditor{
   }
 
   private ModuleObject getContractTable(ModuleInfo modinfo){
-
-    List L = ContractFinder.listOfStatusContracts(this.sGlobalStatus);
+    List L = ContractFinder.listOfContracts(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],sGlobalStatus);
+    //List L = ContractFinder.listOfStatusContracts(this.sGlobalStatus);
     Contract C = null;
     User U = null;
     Applicant Ap = null;

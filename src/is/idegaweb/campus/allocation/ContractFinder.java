@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.5 2001/07/30 09:47:19 aron Exp $
+ * $Id: ContractFinder.java,v 1.6 2001/08/18 21:43:44 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -93,6 +93,53 @@ public abstract class ContractFinder {
     }
     catch(SQLException e){
       return(null);
+    }
+  }
+
+  public static List listOfContracts(String sComplexId,String sBuildingId,String sFloorId,String sType,String sCategory,String status){
+
+    StringBuffer sql = new StringBuffer("select con.* ");
+    sql.append(" from bu_apartment a,bu_floor f,bu_building b");
+    sql.append(",bu_complex c,bu_aprt_type t,bu_aprt_cat y,cam_contract con ");
+    sql.append(" where a.bu_aprt_type_id = t.bu_aprt_type_id ");
+    sql.append(" and t.bu_aprt_cat_id = y.bu_aprt_cat_id");
+    sql.append(" and a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and b.bu_complex_id = c.bu_complex_id ");
+    sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+    if(status !=null && !"".equals(status)){
+      sql.append(" and con.status = '");
+      sql.append(status);
+      sql.append("' ");
+    }
+    if(sComplexId !=null && !"-1".equals(sComplexId)){
+      sql.append(" and bu_complex_id  = ");
+      sql.append(sComplexId);
+    }
+    if(sBuildingId !=null && !"-1".equals(sBuildingId)){
+      sql.append(" and bu_building_id = ");
+      sql.append(sBuildingId);
+    }
+    if(sFloorId !=null && !"-1".equals(sFloorId)){
+      sql.append(" and bu_floor_id = ");
+      sql.append(sFloorId);
+    }
+    if(sType !=null && !"-1".equals(sType)){
+      sql.append(" and bu_aprt_type_id = ");
+      sql.append(sType);
+    }
+    if(sCategory !=null && !"-1".equals(sCategory)){
+      sql.append(" and bu_aprt_cat_id = ");
+      sql.append(sCategory);
+    }
+    sql.append(" order by con.bu_apartment_id");
+    String sSQL = sql.toString();
+    System.err.println(sSQL);
+    try{
+      return  EntityFinder.findAll(new Contract(),sql.toString());
+    }
+    catch(SQLException ex){
+      return null;
     }
   }
 
