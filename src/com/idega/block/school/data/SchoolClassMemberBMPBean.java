@@ -171,6 +171,30 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
     //System.err.println(sql.toString());
     return super.idoFindPKsBySQL(sql.toString());
   }
+  
+  public Collection ejbFindAllBySeasonAndMaximumAge(int seasonID,int maxAge)throws FinderException,RemoteException{
+        final StringBuffer sql = new StringBuffer ();
+        sql.append ("select student.*");
+        sql.append (" from sch_school_sch_school_year school,sch_school_year schoolyear, sch_school_class class, " + getTableName () + "student");
+        sql.append (" where school.sch_school_year_id = schoolyear.sch_school_year_id");
+        sql.append (" and class.sch_school_year_id = school.sch_school_year_id");
+        sql.append (" and class.school_id = school.sch_school_id");
+        sql.append (" and class.sch_school_season_id = " + seasonID);
+        sql.append (" and class.sch_school_class_id = student." + SCHOOLCLASS);
+        sql.append (" and exists");
+        sql.append (" (");
+        sql.append (" select s.sch_school_id, max (y.year_age)");
+        sql.append (" from sch_school_sch_school_year s, sch_school_year y");
+        sql.append (" where s.sch_school_year_id = y.sch_school_year_id");
+        sql.append (" group by s.sch_school_id");
+        sql.append (" having max (y.year_age) <=").append(maxAge);
+        sql.append (" and schoolyear.year_age = max (y.year_age)");
+        sql.append (" and school.sch_school_year_id =s.sch_school_year_id");
+        sql.append (" and school.sch_school_id = s.sch_school_id");
+        sql.append (" )");
+        return idoFindIDsBySQL (sql.toString ());
+  }
+
 
 
 }
