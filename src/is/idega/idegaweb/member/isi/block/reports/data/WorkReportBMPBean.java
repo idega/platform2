@@ -248,6 +248,10 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return (Integer) this.idoFindOnePKByQuery(sql);
 	}
 	
+	public Collection ejbFindAllWorkReportsByYearOrderedByGroupType(int yearOfReport) throws FinderException{
+		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_WORK_REPORT_YEAR,yearOfReport,COLUMN_NAME_GROUP_TYPE);
+	}
+	
 	public Collection getLeagues() throws IDOException {
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}
