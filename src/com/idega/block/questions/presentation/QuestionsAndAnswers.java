@@ -270,9 +270,10 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		T.add(new HiddenInput("save_cat",id));
 		T.add(new HiddenInput("ent_id"+id,String.valueOf(entID)));
 		if(ansID <= 0 || questID <=0)
-			T.add(new SubmitButton(iwb.getImage("save.gif",iwrb.getLocalizedString("button_save_created","Save created content")),"save_quest","true"),5,1 );
+			T.add(new SubmitButton(iwb.getImage("save.gif",iwrb.getLocalizedString("button_save_created","Save created content")),"save_quest"),5,1 );
 		if(entID>0 && showDeleteButton){
-			T.add(new SubmitButton(iwb.getImage("delete.gif",iwrb.getLocalizedString("button_invalidate","Remove from list")),"delete_quest","true"),5,1);
+			T.add(new SubmitButton(iwb.getImage("trashcan_empty.gif",iwrb.getLocalizedString("button_invalidate","Trashcan")),"delete_quest"),5,1);
+			T.add(new SubmitButton(iwb.getImage("delete.gif",iwrb.getLocalizedString("button_remove","Remove from list")),"remove_quest"),5,1);
 		}
 		if(showMoveButtons){
 			if(previous!=null){
@@ -287,7 +288,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		if(!isForOneQuestion && isAdmin && showDeletedQuestions){
 			T.add(getInvalidQuestions("inv_quest"+id,Integer.valueOf(id).intValue()),5,1);
 			
-			T.add(new SubmitButton(iwb.getImage("validate.gif",iwrb.getLocalizedString("button_validate","Validate  selected")),"validate_quest","true"),6,1);
+			T.add(new SubmitButton(iwb.getImage("validate.gif",iwrb.getLocalizedString("button_validate","Validate  selected")),"validate_quest"),6,1);
 		}
 		if(!showAllCategories && valViewCategory!=null)
 			T.add(new HiddenInput(prmViewCategory,valViewCategory));
@@ -342,13 +343,16 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			}catch (Exception e) {}
 			
 			
-			if(q_id>0 && iwc.isParameterSet("save_quest") && iwc.getParameter("save_quest").equals("true") ){
+			if(q_id>0 && iwc.isParameterSet("save_quest.x")){// && iwc.getParameter("save_quest").equals("true") ){
 				questionsService.storeQuestion(ent_id,q_id,a_id,cat_id);
 			}
-			else if(ent_id>0 && iwc.isParameterSet("delete_quest") && iwc.getParameter("delete_quest").equals("true")){
+			else if(ent_id>0 && iwc.isParameterSet("delete_quest.x")){// && iwc.getParameter("delete_quest").equals("true")){
 				questionsService.invalidateQuestion(ent_id);
 			}
-			else if(iwc.isParameterSet("validate_quest") && iwc.getParameter("validate_quest").equals("true")){
+			else if(ent_id>0 && iwc.isParameterSet("remove_quest.x")){// && iwc.getParameter("delete_quest").equals("true")){
+				questionsService.removeQuestion(ent_id);
+			}
+			else if(iwc.isParameterSet("validate_quest.x")){// && iwc.getParameter("validate_quest").equals("true")){
 				int inv_quest_id = Integer.parseInt(iwc.getParameter("inv_quest"+cat_id));
 				if(inv_quest_id>0)
 				questionsService.validateQuestion(inv_quest_id);
