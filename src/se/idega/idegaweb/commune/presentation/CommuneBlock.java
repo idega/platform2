@@ -122,12 +122,15 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private final static String CELLPADDING_PROPERTY = "cellpadding";
 	private final static String CELLSPACING_PROPERTY = "cellspacing";
 
+	private static boolean initRefresh= true;
+	
 	private IWResourceBundle iwrb = null;
 	private IWBundle iwb = null;
 	private ICPage formResponsePage;
 	private ICPage formBackPage;
 
-	private String _width = "600";
+	private static String _width = "600";
+	//private String _width = iwb.getProperty("table.width"); 
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -581,6 +584,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	public String getWidth() {
+		_width = iwb.getProperty("table.width", "600"); 
 		return _width;
 	}
 	
@@ -602,4 +606,6 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
+	
+	
 }
