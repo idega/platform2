@@ -241,7 +241,7 @@ private Link textLink = new Link();
       Text date2 = ((Text) tableText.clone());
       date2.setText(date.getDate()+"/"+date.getMonth()+"/"+String.valueOf(date.getYear()).substring(2,4));
 
-      Window deleteWindow = new Window(iwrb.getLocalizedString("handicap.scorecard_delete","Delete scorecard"),400,220,"/handicap/handicap_delete.jsp?");
+      Window deleteWindow = new Window(iwrb.getLocalizedString("handicap.scorecard_delete","Delete scorecard"),400,220,"/handicap/handicap_delete.jsp");
 
 /*Mynd-Link*/      Link eyda = new Link(iwb.getImage("shared/trash.gif",iwrb.getLocalizedString("handicap.scorecard_delete","Delete scorecard"),9,13),deleteWindow);
               eyda.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
@@ -431,9 +431,9 @@ private Link textLink = new Link();
         canWrite = true;
       }
 
-			Window scorecardWindow = new Window(iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),650,475,"/handicap/handicap_skor.jsp?");
-			Window updateWindow = new Window(iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),600,600,"/handicap/handicap.jsp?");
-			Window updateWindow2 = new Window(iwrb.getLocalizedString("handicap.register_statistics","Register statistics"),600,350,"/handicap/handicap_statistics.jsp?");
+			Window scorecardWindow = new Window(iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),650,475,"/handicap/handicap_skor.jsp");
+			Window updateWindow = new Window(iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),600,600,"/handicap/handicap.jsp");
+			Window updateWindow2 = new Window(iwrb.getLocalizedString("handicap.register_statistics","Register statistics"),600,350,"/handicap/handicap_statistics.jsp");
 
 /*MYNDA LINKUR*/		Link tengill = new Link(iwb.getImage(viewScoreIceonUrlInBundle, iwrb.getLocalizedString("handicap.view_scorecard","View scorecard"),13,13),scorecardWindow);  //
         /*if ( noIcons ) {
@@ -504,7 +504,7 @@ private Link textLink = new Link();
                 myTable.setHeight(rows+1,"100%");
 		getForm();
 
-    Window recalculate = new Window(iwrb.getLocalizedString("handicap.recalculate","Recalculate"),350,200,"/handicap/recalculate.jsp?");
+    Window recalculate = new Window(iwrb.getLocalizedString("handicap.recalculate","Recalculate"),350,200,"/handicap/recalculate.jsp");
 
 /*MYNDA LINKUR*/  Link recalculateLink = new Link(iwrb.getImage("buttons/update.gif",iwrb.getLocalizedString("handicap.update_handicap","Update handicap"),76,19),recalculate);  //
             recalculateLink.addParameter("member_id",member_id);

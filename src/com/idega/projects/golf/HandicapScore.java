@@ -185,13 +185,13 @@ private Form myForm;
         select_tee.keepStatusOnAction();
         select_tee.setSelectedElement(tee_number);
 
-      Window memberWindow = new Window("",400,220,"/handicap/select_member.jsp?");
+      Window memberWindow = new Window("",400,220,"/handicap/select_member.jsp");
       Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif","handicap.select","Select member");
         selectMemberImage.setAttribute("hspace","10");
       Link selectMember = new Link(selectMemberImage,memberWindow);
         selectMember.clearParameters();
 
-      Window fieldWindow = new Window("",400,220,"/handicap/select_field.jsp?");
+      Window fieldWindow = new Window("",400,220,"/handicap/select_field.jsp");
       Image selectFieldImage =  iwrb.getImage("buttons/choose.gif","handicap.select_course","Select course");
         selectFieldImage.setAttribute("hspace","10");
       Link selectField = new Link(selectFieldImage,fieldWindow);
