@@ -81,11 +81,11 @@ import com.lowagie.text.DocumentException;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/05/12 16:00:58 $ by $Author: roar $
+ * Last modified: $Date: 2004/11/03 10:07:14 $ by $Author: gimmi $
  * 
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson </a>
- * @version $Revision: 1.110 $
+ * @version $Revision: 1.111 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1499,9 +1499,9 @@ public class PaymentRecordMaintenance extends AccountingBlock implements
         message.append("Exception caught in " + getClass().getName() + " "
                 + (new java.util.Date()) + '\n');
         message.append("Parameters:\n");
-        final java.util.Enumeration enum = context.getParameterNames();
-        while (enum.hasMoreElements()) {
-            final String key = (String) enum.nextElement();
+        final java.util.Enumeration enumer = context.getParameterNames();
+        while (enumer.hasMoreElements()) {
+            final String key = (String) enumer.nextElement();
             message.append('\t' + key + "='" + context.getParameter(key)
                     + "'\n");
         }

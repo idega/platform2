@@ -115,11 +115,11 @@ public class MessengerApplet extends Applet implements  ActionListener{
    * Iterate over the vector of Messages and display
    */
   private void dispatchMessagesToDialogs(Vector MessageVector){
-    Enumeration enum = MessageVector.elements();
+    Enumeration enumer = MessageVector.elements();
     Message aMessage = null;
 
-    while (enum.hasMoreElements()){
-      aMessage = (Message) enum.nextElement();
+    while (enumer.hasMoreElements()){
+      aMessage = (Message) enumer.nextElement();
       MessageDialog messageDialog = (MessageDialog) dialogs.get(Integer.toString(aMessage.getId()));
       if( messageDialog == null ) { //create a new dialog
         messageDialog = createAMessageDialog(false,aMessage);

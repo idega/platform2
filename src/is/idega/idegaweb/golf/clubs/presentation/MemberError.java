@@ -28,8 +28,8 @@ public class MemberError extends GolfBlock {
 			table = new Table(1, vError.size() + 4);
 			int i = 0;
 			table.addText("<h4>Eftirfarandi upplýsingar vantar: ", 1, 1);
-			for (Enumeration enum = vError.elements(); enum.hasMoreElements();) {
-				errorString = (String) enum.nextElement();
+			for (Enumeration enumer = vError.elements(); enumer.hasMoreElements();) {
+				errorString = (String) enumer.nextElement();
 				table.addText(errorString, 1, i + 3);
 				i++;
 			}

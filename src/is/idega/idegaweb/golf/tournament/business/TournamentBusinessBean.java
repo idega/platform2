@@ -171,11 +171,11 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 	}
 
 	public void removeTournamentTableApplicationAttribute(IWContext modinfo) {
-		Enumeration enum = modinfo.getServletContext().getAttributeNames();
+		Enumeration enumer = modinfo.getServletContext().getAttributeNames();
 		String myString = "";
 		List v = new Vector();
-		while (enum.hasMoreElements()) {
-			v.add(enum.nextElement());
+		while (enumer.hasMoreElements()) {
+			v.add(enumer.nextElement());
 		}
 		Iterator iter = v.iterator();
 		while (iter.hasNext()) {

@@ -242,9 +242,9 @@ public class GroupMemberInsertWindow extends com.idega.presentation.ui.Window{
       }
 
       if(H!=null && !H.isEmpty()){
-        Enumeration enum = H.keys();
-        while(enum.hasMoreElements()){
-          member.addTo(Group.class,((Integer) enum.nextElement()).intValue());
+        Enumeration enumer = H.keys();
+        while(enumer.hasMoreElements()){
+          member.addTo(Group.class,((Integer) enumer.nextElement()).intValue());
         }
       }
 

@@ -90,10 +90,10 @@ import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/10/14 10:53:12 $ by $Author: thomas $
+ * Last modified: $Date: 2004/11/03 10:07:13 $ by $Author: gimmi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.135 $
+ * @version $Revision: 1.136 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -2303,9 +2303,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		message.append ("Exception caught in " + getClass ().getName ()
 										+ " " + (new java.util.Date ()) + '\n');
 		message.append ("Parameters:\n");
-		final java.util.Enumeration enum = context.getParameterNames ();
-		while (enum.hasMoreElements ()) {
-			final String key = (String) enum.nextElement ();
+		final java.util.Enumeration enumer = context.getParameterNames ();
+		while (enumer.hasMoreElements ()) {
+			final String key = (String) enumer.nextElement ();
 			message.append ('\t' + key + "='"
 											+ context.getParameter (key) + "'\n");
 		}

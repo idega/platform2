@@ -159,12 +159,12 @@ public class BSHEngineBean extends IBOServiceBean implements BSHEngine{
 	
 
 	private Interpreter getInterpreterWithRequestParametersAndContextSet(IWContext iwc) throws EvalError {
-		Enumeration enum = iwc.getParameterNames();
+		Enumeration enumer = iwc.getParameterNames();
 		Interpreter engine = getBSHInterpreter();
 
-		if (enum != null) {
-			while (enum.hasMoreElements()) {
-				String key = (String) enum.nextElement();
+		if (enumer != null) {
+			while (enumer.hasMoreElements()) {
+				String key = (String) enumer.nextElement();
 
 				String[] values = iwc.getParameterValues(key);
 

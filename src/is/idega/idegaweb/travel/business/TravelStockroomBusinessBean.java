@@ -1238,15 +1238,15 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
   
   public void removeDepartureDaysApplication(IWApplicationContext iwac, Product product) throws RemoteException{
-    Enumeration enum = iwac.getIWMainApplication().getAttributeNames();
+    Enumeration enumer = iwac.getIWMainApplication().getAttributeNames();
     List names = new Vector();
     String index2check = "prodDepDays";
     if (product != null) {
     	index2check = "prodDepDays"+product.getPrimaryKey().toString()+"_";
     }
     String name;
-    while (enum.hasMoreElements()) {
-      name = (String) enum.nextElement();
+    while (enumer.hasMoreElements()) {
+      name = (String) enumer.nextElement();
       if (name.indexOf(index2check) != -1) {
       	names.add(name);
       }

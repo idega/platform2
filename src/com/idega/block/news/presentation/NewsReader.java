@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.137 2004/08/08 21:46:59 laddi Exp $
+ * $Id: NewsReader.java,v 1.138 2004/11/03 10:05:20 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -221,9 +221,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 		boolean beInvisible = false;
 		if (viewNews) {
 			if(visibleNewsRangeStart>0) {
-				Enumeration enum = iwc.getParameterNames();
-				while (enum.hasMoreElements()) {
-					String pName = (String) enum.nextElement();
+				Enumeration enumer = iwc.getParameterNames();
+				while (enumer.hasMoreElements()) {
+					String pName = (String) enumer.nextElement();
 					if(pName.startsWith(prmMore)) {
 						if(visibleNewsRangeStart==1) {
 							sNewsId = iwc.getParameter(pName);
@@ -1319,9 +1319,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 		} else {
 			if (viewNews) {
 				if(visibleNewsRangeStart>0) {
-					Enumeration enum = iwc.getParameterNames();
-					while (enum.hasMoreElements()) {
-						String pName = (String) enum.nextElement();
+					Enumeration enumer = iwc.getParameterNames();
+					while (enumer.hasMoreElements()) {
+						String pName = (String) enumer.nextElement();
 						if(pName.startsWith(prmMore)) {
 							returnString += pName+"="+iwc.getParameter(pName);
 							break;

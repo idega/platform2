@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2004/09/21 19:01:35 $ by $Author: eiki $
+ * Last modified: $Date: 2004/11/03 10:07:17 $ by $Author: gimmi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.50 $
+ * @version $Revision: 1.51 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -212,9 +212,9 @@ public class ViewpointForm extends CommuneBlock {
             logWarning ("Exception caught in " + getClass ().getName ()
                                 + " " + (new Date ()).toString ());
             logWarning ("Parameters:");
-            final Enumeration enum = context.getParameterNames ();
-            while (enum.hasMoreElements ()) {
-                final String key = (String) enum.nextElement ();
+            final Enumeration enumer = context.getParameterNames ();
+            while (enumer.hasMoreElements ()) {
+                final String key = (String) enumer.nextElement ();
                 logWarning ('\t' + key + "='"
                                     + context.getParameter (key) + "'");
             }

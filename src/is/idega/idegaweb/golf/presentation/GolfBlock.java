@@ -769,9 +769,9 @@ public abstract class GolfBlock extends Block {
 	
 	
 	public void maintainParentReloadURL(IWContext iwc, Form myForm) {			
-		Enumeration enum = iwc.getParameterNames();
-		while (enum.hasMoreElements()) {
-			String pName = (String) enum.nextElement();
+		Enumeration enumer = iwc.getParameterNames();
+		while (enumer.hasMoreElements()) {
+			String pName = (String) enumer.nextElement();
 			if(pName != null && pName.startsWith(PRM_PARENT_PREFIX)) {
 				String value = iwc.getParameter(pName);
 				myForm.addParameter(pName,value);
@@ -789,9 +789,9 @@ public abstract class GolfBlock extends Block {
 		if(parentClass != null) {
 			URLUtil url = new URLUtil(iwc.getIWMainApplication().getObjectInstanciatorURI(IWMainApplication.decryptClassName(parentClass)));
 			
-			Enumeration enum = iwc.getParameterNames();
-			while (enum.hasMoreElements()) {
-				String pName = (String) enum.nextElement();
+			Enumeration enumer = iwc.getParameterNames();
+			while (enumer.hasMoreElements()) {
+				String pName = (String) enumer.nextElement();
 				if(pName != null && pName.startsWith(PRM_PARENT_PREFIX)) {
 					String value = iwc.getParameter(pName);
 					url.addParameter(pName.substring(PRM_PARENT_PREFIX.length()),value);

@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2004/04/13 08:06:00 $ by $Author: staffan $
+ * Last modified: $Date: 2004/11/03 10:07:16 $ by $Author: gimmi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.72 $
+ * @version $Revision: 1.73 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -696,10 +696,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 				}
 				
 				Link unlockLink = new Link(unlockString);
-				Enumeration enum = iwc.getParameterNames();
-				if(enum != null){
-					while(enum.hasMoreElements()){
-						String parameterName = (String)enum.nextElement();
+				Enumeration enumer = iwc.getParameterNames();
+				if(enumer != null){
+					while(enumer.hasMoreElements()){
+						String parameterName = (String)enumer.nextElement();
 						unlockLink.maintainParameter(parameterName,iwc);
 					}
 				}
