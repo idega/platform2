@@ -1653,7 +1653,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   	return getWorkReportById(workReportId).getSentReportText();
   } 
   
-	public boolean unSendWorkReport(int workReportId, String reportText){
+	public boolean unSendWorkReport(int workReportId){
 		WorkReport report = getWorkReportById(workReportId);
 		report.setAsSent(false);
 	

@@ -47,16 +47,16 @@ public class WorkReportSender extends WorkReportSelector {
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 			
-			
+			//reopen
+			if(iwc.isParameterSet(PARAM_UNSEND)){
+				this.getWorkReportBusiness(iwc).unSendWorkReport(getWorkReportId());
+			}
 			
 			if(iwc.isParameterSet(PARAM_CHECK)){//start the check
 				add(checkWorkReport(iwc));
 			}
-			else if(iwc.isParameterSet(PARAM_UNSEND)){//confirming the send
+			else if(iwc.isParameterSet(PARAM_SEND)){//confirming the send
 				sendWorkReport(iwc);
-			}
-			else if(iwc.isParameterSet(PARAM_SEND)){
-				
 			}
 			else{//show the first message and the check button
 				boolean readOnly = getWorkReportBusiness(iwc).isWorkReportReadOnly(getWorkReportId());
@@ -64,9 +64,13 @@ public class WorkReportSender extends WorkReportSelector {
 				if(readOnly){//ALREADY SENT
 					add(iwrb.getLocalizedString("workreportsender.report_is_read_only","The work report has already been sent with these comments : "));
 					addBreak();
-					add(getWorkReportBusiness(iwc).getWorkReportSentText(getWorkReportId()));
+					String comments = getWorkReportBusiness(iwc).getWorkReportSentText(getWorkReportId());
+					if( comments == null){
+						comments = iwrb.getLocalizedString("workreportsender.no_comments","No comments.");
+					}
+					add( comments);
 					
-					//TODO Eiki is ISI user
+					
 					if(iwc.isSuperAdmin() || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(getUserType())){
 						Form form = new Form();
 						form.addBreak();
