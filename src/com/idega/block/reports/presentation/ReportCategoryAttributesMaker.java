@@ -57,7 +57,7 @@ public class ReportCategoryAttributesMaker extends JModuleObject{
 
   private void doSome(ModuleInfo modinfo){
     int id = 0;
-    String sIndex = modinfo.getParameter("rep_cat_drp");
+    String sIndex = modinfo.getParameter(prefix+"drp");
     if(sIndex != null){
       id = Integer.parseInt(sIndex);
       if(id != 0){
@@ -70,6 +70,9 @@ public class ReportCategoryAttributesMaker extends JModuleObject{
         catch (Exception ex) {
         }
       }
+      else{
+        String sId = modinfo.getParameter(prefix+"drp2");
+      }
     }
   }
 
@@ -80,13 +83,13 @@ public class ReportCategoryAttributesMaker extends JModuleObject{
     Form myForm = new Form();
     if(sIndex == null)
       sIndex = "0";
-     if(sId == null)
+     if(sId == null)// || sIndex == "0")
       sId = "0";
     DropdownMenu drp2 = this.drpCategories(prefix+"drp2",sId);
     DropdownMenu drp = this.drpAttributes(prefix+"drp",sIndex);
     drp.setToSubmit();
     TextInput tiName = new TextInput(prefix+"name",sName);
-    TextInput tiId = new TextInput(prefix+"attid",sInfo);
+    TextInput tiId = new TextInput(prefix+"attid",sAttId);
     SubmitButton submit= new SubmitButton("Save",this.sAction,String.valueOf(this.ACT1));
     SubmitButton delete= new SubmitButton("Del",this.sAction,String.valueOf(this.ACT2));
     Table T2 = new Table();
@@ -111,13 +114,16 @@ public class ReportCategoryAttributesMaker extends JModuleObject{
     String sIndex = modinfo.getParameter(prefix+"drp");
     if(sIndex != null)
        id = Integer.parseInt(sIndex);
-    sAttId = modinfo.getParameter(prefix+"drp2");
+    sId = modinfo.getParameter(prefix+"drp2");
     sName = modinfo.getParameter(prefix+"name");
-    sInfo = modinfo.getParameter(prefix+"attid");
+    sAttId = modinfo.getParameter(prefix+"attid");
+    add(sAttId +" "+ sName +" "+ sId);
+
     if(id == 0)
-      this.saveCategory(sName,sAttId,sId);
+      this.saveAttribute(sName,sAttId,sId);
     else
-      this.updateCategory(id,sName,sAttId,sId);
+      this.updateAttribute(id,sName,sAttId,sId);
+
   }
 
   private void doAct2(ModuleInfo modinfo){
@@ -126,12 +132,12 @@ public class ReportCategoryAttributesMaker extends JModuleObject{
     if(sIndex != null)
        id = Integer.parseInt(sIndex);
     if(id != 0)
-      this.deleteCategory(id);
+      this.deleteAttribute(id);
     sName = "";
     sInfo = "";
   }
 
-  private boolean saveCategory(String sAttName,String sAttID,String cid){
+  private boolean saveAttribute(String sAttName,String sAttID,String cid){
     try {
       int tid = Integer.parseInt(cid);
       int attid = Integer.parseInt(sAttID);
@@ -146,11 +152,11 @@ public class ReportCategoryAttributesMaker extends JModuleObject{
       else
         return false;
     }
-    catch (Exception ex) {
+    catch (Exception ex) {ex.printStackTrace();
       return false;
     }
   }
-  private boolean updateCategory(int id,String sAttName,String sAttID,String cid){
+  private boolean updateAttribute(int id,String sAttName,String sAttID,String cid){
      try {
       int tid = Integer.parseInt(cid);
       int attid = Integer.parseInt(sAttID);
@@ -169,9 +175,9 @@ public class ReportCategoryAttributesMaker extends JModuleObject{
       return false;
     }
   }
-  private boolean deleteCategory(int id){
+  private boolean deleteAttribute(int id){
     try {
-      ReportCategory rc = new ReportCategory(id);
+      ReportCategoryAttributes rc = new ReportCategoryAttributes(id);
       rc.delete();
       return true;
     }

@@ -13,6 +13,8 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Script;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.Image;
+
 
 /**
  * Title:
@@ -95,43 +97,51 @@ public class Reporter extends Editor{
       Report[] R = ReportEntityHandler.findReports(iCategory);
       //modinfo.setSessionAttribute(prefix+"force",R);
       int len = R.length;
-      Table T = new Table(5,len+2);
+      Table T = new Table(4,len+2);
       T.setCellpadding(2);
       T.setCellspacing(1);
       T.setBorder(0);
-      T.setVerticalZebraColored(this.LightColor,this.MiddleColor);
+      T.setHorizontalZebraColored(this.LightColor,this.MiddleColor);
+
+      T.setRowColor(1,DarkColor);
+      T.setRowColor(len+2,WhiteColor);
+      T.setColumnColor(1,WhiteColor);
       T.setWidth("100%");
+      T.setWidth(1,"20");
       T.setWidth(3,"50%");
-      Text tName = new Text("Name");
-      Text tInfo = new Text("Info");
-      Text tAction = new Text("Action");
-      Text tDelete = new Text("Delete");
+      T.setWidth(4,"40");
+      T.setColumnAlignment(1,"center");
+      T.setColumnAlignment(4,"center");
+
+      this.setTextFontColor("#FFFFFF");
       int a = 2;
-      T.add(tName,a++,1);
-      T.add(tInfo,a++,1);
-      T.add(tAction,a++,1);
-      T.add(tDelete,a++,1);
+
+      T.add(formatText("Name"),a++,1);
+      T.add(formatText("Info"),a++,1);
+      T.add(formatText("Delete"),a++,1);
       String prm = prefix+"chk";
       HiddenInput countHidden = new HiddenInput(prefix+"count",String.valueOf(len));
       T.add(countHidden);
+      this.setTextFontColor("#000000");
       for (int i = 0; i < len; i++) {
-        int col = 2;
+        int col = 1;
         int row = i+2;
-        T.add(R[i].getName(),col++,row);
-        T.add(R[i].getInfo(),col++,row);
         T.add(getLink(R[i].getID()),col++,row);
+        T.add(formatText(R[i].getName()),col++,row);
+        T.add(formatText(R[i].getInfo()),col++,row);
         T.add(getCheckBox(prm+i,R[i].getID()),col++,row);
 
       }
-      SubmitButton deleteButtton = new SubmitButton("Delete");
+      SubmitButton deleteButtton = new SubmitButton(new Image("/reports/pics/delete.gif"));
       T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
-      T.add(deleteButtton,5,len+2);
+      T.add(deleteButtton,4,len+2);
       Form form = new Form();
-      form.add( new Link("New","/reports/reportedit.jsp"));
+      Link back =  new Link(new Image("/reports/pics/new.gif"),"/reports/reportedit.jsp");
       form.add(T);
-
-
-
+      addToHeader(back);
+      this.setTextFontColor(DarkColor);
+      this.setTextFontBold(true);
+      addToHeader(formatText(" Reports"));
       addMain(form);
     }
     else
@@ -144,7 +154,7 @@ public class Reporter extends Editor{
   }
 
   private Link getLink(int id){
-    Link L = new Link("L","/reports/reportview.jsp");
+    Link L = new Link(new Image("/reports/pics/view.gif"),"/reports/reportview.jsp");
     L.addParameter("report",id);
     return L;
   }

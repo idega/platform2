@@ -121,6 +121,9 @@ public class ReportContentViewer extends Editor{
       }
       else
         addMain(new Text(" nothing to show"));
+      Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+      this.addToHeader(back);
+
     }
     else{
       doTable(modinfo);
@@ -163,6 +166,7 @@ public class ReportContentViewer extends Editor{
       modinfo.getSession().setAttribute(prefix+"lastorder",sOrder);
 
       this.makeView();
+
       if(v != null){
         addMain(this.doView(headers,v,listStart));
         this.addHeader(this.doHeader(eReport));
@@ -170,6 +174,8 @@ public class ReportContentViewer extends Editor{
       }
       else
         addMain(new Text(" nothing to show"));
+      Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+      this.addToHeader(back);
     }
   }
   private ModuleObject doHeader(Report R){
@@ -252,7 +258,7 @@ public class ReportContentViewer extends Editor{
       Link L = new Link(getHeaderText(headers[j]));
       L.addParameter(this.sAction,this.ACT2);
       L.addParameter("order",String.valueOf(j));
-      L.setFontColor(this.LightColor);
+      L.setFontColor(WhiteColor);
       T.add(L,j+2,1);
     }
 
@@ -274,14 +280,14 @@ public class ReportContentViewer extends Editor{
 
   private Text getHeaderText(String text){
     Text T = new Text(text,true,false,false);
-    T.setFontColor(this.LightColor);
+    T.setFontColor(WhiteColor);
     T.setFontSize(2);
     return T;
   }
 
   private Text getBodyText(String text){
     Text T = new Text(text,true,false,false);
-    T.setFontColor(this.DarkColor);
+    T.setFontColor("#000000");
     T.setFontSize(2);
     return T;
   }

@@ -13,6 +13,7 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Script;
 import com.idega.jmodule.object.ModuleObject;
+import com.idega.jmodule.object.Image;
 
 
 public class ReportEditor extends Editor{
@@ -83,8 +84,12 @@ public class ReportEditor extends Editor{
     if(iCategory > 0){
     ReportCondition[] RC = ReportEntityHandler.getConditions(iCategory);
     modinfo.setSessionAttribute(prefix+"force",RC);
-
+    //this.BORDER = 0;
     Table T = new Table();
+    T.setWidth("100%");
+    T.setBorder(BORDER);
+    T.setCellpadding(0);
+    T.setCellspacing(0);
     Form form = new Form();
     form.add(T);
     SelectionDoubleBox box = new SelectionDoubleBox("box","Fields","Order");
@@ -93,6 +98,21 @@ public class ReportEditor extends Editor{
     Table M = new Table();
     Table ML = new Table();
     Table B = new Table();
+    U.setBorder(BORDER);
+    U.setCellpadding(0);
+    U.setCellspacing(0);
+    M.setBorder(BORDER);
+    M.setCellpadding(0);
+    M.setCellspacing(0);
+    ML.setBorder(BORDER);
+    ML.setCellpadding(0);
+    ML.setCellspacing(0);
+
+    B.setBorder(BORDER);
+    B.setCellpadding(0);
+    B.setCellspacing(0);
+    M.setWidth("100%");
+    M.setWidth(1,"40%");
     M.add(box,1,1);
     M.add(ML,2,1);
     T.add(U,1,1);
@@ -123,12 +143,17 @@ public class ReportEditor extends Editor{
     box1.setHeight(20);
     box2.setHeight(20);
     box2.selectAllOnSubmit();
-    B.add(new SubmitButton("OK",sAction, String.valueOf(ACT4)));
+    B.add(new SubmitButton(new Image("/reports/pics/ok.gif")));
+    B.add(new HiddenInput(sAction, String.valueOf(ACT4)));
 
     addMain(form);
     }
     else
       addMain(new Text("Nothing to show"));
+    Link back =  new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
+
+    this.addToHeader(back);
+    this.addToHeader(formatText("Report Editor"));
   }
   protected void doChange(ModuleInfo modinfo) throws SQLException{
 
@@ -186,9 +211,9 @@ public class ReportEditor extends Editor{
 
   }
   public void makeAnswer(Report R){
-    Link L = new Link("Skoða","/reports/index.jsp");
+    Link L = new Link(new Image("/reports/pics/newlist.gif"),"/reports/index.jsp");
     add(L);
     add("<br>");
-    add(R.getSQL());
+    //add(R.getSQL());
   }
 }
