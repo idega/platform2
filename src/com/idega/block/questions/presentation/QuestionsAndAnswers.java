@@ -29,6 +29,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Anchor;
 import com.idega.presentation.text.AnchorLink;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HelpButton;
@@ -131,7 +132,13 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		
 		
 		if(layout==QAndALayoutHandler.SINGLE_RANDOM_LAYOUT){
+		    if(isAdmin){
+		        
+	      		add(getAdminPart(iwc));
+	      		add(Text.getBreak());
+		    }
 		    add(getRandomQAndA(iwc));
+		    
 		}
 		else{
 			valViewCategory = iwc.getParameter(prmViewCategory);
