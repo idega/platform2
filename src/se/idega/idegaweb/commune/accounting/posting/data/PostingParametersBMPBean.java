@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.13 2003/09/08 08:10:07 laddi Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.14 2003/09/12 00:15:50 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolYear;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
 
@@ -38,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.13 2003/09/08 08:10:07 laddi Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.14 2003/09/12 00:15:50 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -56,29 +57,11 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	private static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type_id";
 	private static final String COLUMN_COMPANY_TYPE = "company_type_id";
 	private static final String COLUMN_COMMUNE_BELONGING_ID = "commune_belonging_id";
+	private static final String COLUMN_SCHOOL_YEAR1_ID = "school_year1_id";
+	private static final String COLUMN_SCHOOL_YEAR2_ID = "school_year2_id";
 	
 	private static final String COLUMN_OWN_POSTING_STRING = "own_posting_string";
 	private static final String COLUMN_DOUBLE_POSTING_STRING = "double_posting_string";
-	
-// Commented out because never used...
-/*	private static final String COLUMN_OWN_ACCOUNT = "own_account";
-	private static final String COLUMN_OWN_LIABILITY = "own_liability";
-	private static final String COLUMN_OWN_RESOURCE = "own_resource";
-	private static final String COLUMN_OWN_ACTIVITY_CODE = "own_activity_code";
-	private static final String COLUMN_OWN_DOUBLE_ENTRY = "own_double_entry";
-	private static final String COLUMN_OWN_ACTIVITY = "own_activity";
-	private static final String COLUMN_OWN_PROJECT = "own_project";
-	private static final String COLUMN_OWN_OBJECT = "own_object";
-
-	private static final String COLUMN_DOUBLE_ACCOUNT = "double_account";
-	private static final String COLUMN_DOUBLE_LIABILITY = "double_liability";
-	private static final String COLUMN_DOUBLE_RESOURCE = "double_resource";
-	private static final String COLUMN_DOUBLE_ACTIVITY_CODE = "double_activity_code";
-	private static final String COLUMN_DOUBLE_DOUBLE_ENTRY = "double_double_entry";
-	private static final String COLUMN_DOUBLE_ACTIVITY = "double_activity";
-	private static final String COLUMN_DOUBLE_PROJECT = "double_project";
-	private static final String COLUMN_DOUBLE_OBJECT = "double_object";
-*/
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -103,13 +86,19 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		addAttribute(COLUMN_COMMUNE_BELONGING_ID, "Kommuntillhörighet", true, true, 
 						Integer.class, "many-to-one", CommuneBelongingType.class);
 
+		addAttribute(COLUMN_SCHOOL_YEAR1_ID, "SkolŒr 1", true, true, 
+						Integer.class, "many-to-one", SchoolYear.class);
 
+		addAttribute(COLUMN_SCHOOL_YEAR2_ID, "SkolŒr 2", true, true, 
+						Integer.class, "many-to-one", SchoolYear.class);
+	
 		addAttribute(COLUMN_OWN_POSTING_STRING, "Egen konteringsstring", true, true, String.class);
 		addAttribute(COLUMN_DOUBLE_POSTING_STRING, "Mot konteringsstring", true, true, String.class);
 		
 		setNullable (COLUMN_ACTIVITY_ID, true);
 		setNullable (COLUMN_REG_SPEC_TYPE_ID, true);
 		setNullable (COLUMN_COMPANY_TYPE, true);
+		setNullable (COLUMN_COMMUNE_BELONGING_ID, true);
 		setNullable (COLUMN_COMMUNE_BELONGING_ID, true);
 	}
 	
@@ -159,7 +148,15 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	public void setCommuneBelonging(int id) { 
 		setColumn(COLUMN_COMMUNE_BELONGING_ID, id); 
 	}
-	
+
+	public void setSchoolYear1(int id) { 
+		setColumn(COLUMN_SCHOOL_YEAR1_ID, id); 
+	}
+
+	public void setSchoolYear2(int id) { 
+		setColumn(COLUMN_SCHOOL_YEAR2_ID, id); 
+	}
+
 	public Date getPeriodeFrom() {
 		return (Date) getColumnValue(COLUMN_PERIODE_FROM);
 	}
@@ -178,6 +175,14 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	
 	public SchoolManagementType getCompanyType() {
 		return (SchoolManagementType) getColumnValue(COLUMN_COMPANY_TYPE);
+	}
+
+	public SchoolYear getSchoolYear1() {
+		return (SchoolYear) getColumnValue(COLUMN_SCHOOL_YEAR1_ID);
+	}
+
+	public SchoolYear getSchoolYear2() {
+		return (SchoolYear) getColumnValue(COLUMN_SCHOOL_YEAR2_ID);
 	}
 
 	public CommuneBelongingType getCommuneBelonging() {
