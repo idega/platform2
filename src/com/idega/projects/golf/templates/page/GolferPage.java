@@ -40,6 +40,7 @@ public class GolferPage extends Page{
   public final String fakeSideMenuParameterName = "fakeSideMenuParameterName";
   public final String fakeSideMenuNewsParameterValue = "fakeSideMenuNewsParameterValue";
   public final String fakeSideMenuProfileParameterValue = "fakeSideMenuProfileParameterValue";
+  public final String sSubmitParameterValue = "sSubmitParameterValue";
 
   private int memberId = 3152;
 
@@ -56,7 +57,8 @@ public class GolferPage extends Page{
   //Variables to set!
   public String cornerLogoImageUrlInBundle;
   public int cornerLogoImageWidth, cornerLogoImageHeight;
-  private int profileTextReaderId, golfbagTextReaderId, homeNewsReaderId;
+  private int profileTextReaderId, golfbagTextReaderId, statisticsTextReaderId,
+    homeNewsReaderId, supportTextReaderId;
 
   //The text objects in the side menu are cloned from this text.
   Text theText = new Text();
@@ -87,29 +89,36 @@ public class GolferPage extends Page{
     this.setHoverColor("#FF9310");
     this.setTextDecoration("none");
     this.setStyleSheetURL("/style/GolferPageView.css");
+
     Maintable = new Table(3,5);
     Maintable.mergeCells(3,3,3,4);
-//    Maintable.mergeCells(1,5,3,5);
     Maintable.mergeCells(2,3,2,4);
     Maintable.mergeCells(2,1,2,2);
     Maintable.mergeCells(1,5,3,5);
     Maintable.mergeCells(1,3,1,4);
+
+
+    Maintable.setWidth("100%");
+    Maintable.setWidth(1,1,"120");
+    Maintable.setWidth(1,2,"120");
+    Maintable.setWidth(1,3,"120");
+
     Maintable.setAlignment(1,5,"center");
+//    Maintable.setAlignment(1,2,"left");
+//    Maintable.setAlignment(3,3, "left");
+    Maintable.setAlignment(2,3,"left");
+    Maintable.setAlignment(1,3,"left");
+    Maintable.setAlignment(1,3,"center");
     Maintable.setVerticalAlignment(1,3,"top");
     Maintable.setVerticalAlignment(1,4,"top");
     Maintable.setVerticalAlignment(3,3,"top");
     Maintable.setVerticalAlignment(3,4,"top");
-    Maintable.setWidth("100%");
-    Maintable.setAlignment(1,2,"left");
-    Maintable.setWidth(1,2,"120");
+
     Maintable.add(Text.emptyString(),2,1);
     Maintable.add(Text.emptyString(),2,3);
-    Maintable.setVerticalAlignment(1,3,"top");
     Maintable.setCellpadding(0);
     Maintable.setCellspacing(0);
-    Maintable.setAlignment(1,3,"center");
     Maintable.addBreak(1,5);
-    Maintable.setAlignment(3,3, "left");
    /* innerMainTable = new Table(1,2);
     innerMainTable.setCellpadding(0);
     innerMainTable.setCellspacing(10);*/
@@ -118,7 +127,6 @@ public class GolferPage extends Page{
     innerLeftTable.setCellspacing(0);
     Maintable.add(innerLeftTable,1,3);
     //Maintable.add(innerMainTable,3,3);
-    Maintable.setVerticalAlignment(3,3,"top");
    /* Table dummyTable = new Table(1,1);
     dummyTable.setCellpadding(10);
     dummyTable.setCellspacing(0);
@@ -251,6 +259,14 @@ public class GolferPage extends Page{
     this.golfbagTextReaderId = golfbagTextReaderId;
   }
 
+  public void setStatisticsTextReaderId(int statisticsTextReaderId){
+    this.statisticsTextReaderId = statisticsTextReaderId;
+  }
+
+  public void setSupporterTextReaderId(int supportTextReaderId){
+    this.supportTextReaderId = supportTextReaderId;
+  }
+
   public void setHomeNewsReaderId(int homeNewsReaderId){
     this.homeNewsReaderId = homeNewsReaderId;
   }
@@ -295,14 +311,14 @@ public class GolferPage extends Page{
     topTable.setCellspacing(0);
 
     topTable.add(lInfo,1,1);
-    /*topTable.add(lRecord,2,1);
+    //topTable.add(lRecord,2,1);
     topTable.add(lInterviews,3,1);
-    topTable.add(lStatistics,4,1);
-    topTable.add(lPictures,5,1);*/
+    //topTable.add(lStatistics,4,1);
+    //topTable.add(lPictures,5,1);
     topTable.add(lHome,6,1);
 
     topTable.add(iRecord,2,1);
-    topTable.add(iInterviews,3,1);
+    //topTable.add(iInterviews,3,1);
     topTable.add(iStatistics,4,1);
     topTable.add(iPictures,5,1);
 
@@ -312,6 +328,9 @@ public class GolferPage extends Page{
     topTable.setWidth(4,1,"20");
     topTable.setWidth(5,1,"20");
     topTable.setWidth(6,1,"20");
+
+    topTable.setWidth("100%");
+    topTable.setAlignment("left");
 
     topTable.setVerticalAlignment(1,1,"bottom");
     topTable.setVerticalAlignment(2,1,"bottom");
@@ -324,13 +343,13 @@ public class GolferPage extends Page{
     topTable.setCellspacing(0);
 
     lInfo.addParameter(sTopMenuParameterName, sInfoParameterValue);
-    //lRecord.addParameter(sTopMenuParameterName, sRecordParameterValue);
-    //lInterviews.addParameter(sTopMenuParameterName, sInterviewsParameterValue);
-    //lStatistics.addParameter(sTopMenuParameterName, sStatisticsParameterValue);
-    //lPictures.addParameter(sTopMenuParameterName, sPicturesParameterValue);
+    lRecord.addParameter(sTopMenuParameterName, sRecordParameterValue);
+    lInterviews.addParameter(sTopMenuParameterName, sInterviewsParameterValue);
+    lInterviews.addParameter(sTopMenuParameterName, sSubmitParameterValue);
+    lStatistics.addParameter(sTopMenuParameterName, sStatisticsParameterValue);
+    lPictures.addParameter(sTopMenuParameterName, sPicturesParameterValue);
     lHome.addParameter(sTopMenuParameterName, sHomeParameterValue);
 
-    topTable.setWidth("100%");
 
     addMenuLinks(topTable);
 
@@ -340,40 +359,37 @@ public class GolferPage extends Page{
 
     if (modinfo.isParameterSet(sTopMenuParameterName)) {
 
-      String chosenParameterValue = new String(modinfo.getParameter(sTopMenuParameterName));
+      String[] chosenParameterValue;
+       chosenParameterValue = modinfo.getParameterValues(sTopMenuParameterName);
 
       //INFO
-      if (chosenParameterValue.equals(sInfoParameterValue)) {
+      if (chosenParameterValue[0].equals(sInfoParameterValue)) {
         setInfoView();
       }
 
       //RECORD
-      else if (chosenParameterValue.equals(sRecordParameterValue)) {
+      else if (chosenParameterValue[0].equals(sRecordParameterValue)) {
         setRecordView();
       }
 
-      //INTERVIEWS
-      else if (chosenParameterValue.equals(sInterviewsParameterValue)) {
-        setInterviewsView();
-      }
-
       //STATISTICS
-      else if (chosenParameterValue.equals(sStatisticsParameterValue)) {
+      else if (chosenParameterValue[0].equals(sStatisticsParameterValue)) {
         setStatisticsView();
       }
 
       //PICTURES
-      else if (chosenParameterValue.equals(sPicturesParameterValue)) {
+      else if (chosenParameterValue[0].equals(sPicturesParameterValue)) {
         setPictureView();
       }
 
       //HOME
-      else if (chosenParameterValue.equals(sHomeParameterValue)) {
+      else if (chosenParameterValue[0].equals(sHomeParameterValue)) {
         setHomeView(modinfo);
       }
 
-      if (chosenParameterValue.equals(sStatisticsParameterValue)) {
-        this.setStyleSheetURL("/style/StatisticsView.css");
+      //INTERVIEWS
+      else if ((chosenParameterValue[0].equals(sInterviewsParameterValue)) || (chosenParameterValue[0].equals(sSubmitParameterValue))) {
+        setInterviewsView();
       }
       /*else{
         this.setStyleSheetURL("/style/idega.css");
@@ -384,7 +400,7 @@ public class GolferPage extends Page{
       setHomeView(modinfo);
     }
     else{
-//b      this.setStyleSheetURL("/style/StatisticsView.css");
+//      this.setStyleSheetURL("/style/StatisticsView.css");
       setHomeView(modinfo);
     }
     getSideMenuViewType(modinfo);
@@ -392,7 +408,8 @@ public class GolferPage extends Page{
 
   //HOME_VIEW
 
-  public void setHomeView(ModuleInfo modinfo){
+  private void setHomeView(ModuleInfo modinfo){
+    this.setStyleSheetURL("/style/GolferPageView.css");
     Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
     this.addLeftLogo(iWelcomeLogo);
    /* sidemenu.setConnectionAttributes(sideMenuAttributeName,1);
@@ -449,8 +466,6 @@ public class GolferPage extends Page{
 
     Image golferImage = new Image();
     golferImage = iwb.getImage("shared/mynd.jpg");
-//    setTopPicture(true);
-//    addTopPicture(golferImage);
     Table pictureTable = new Table(1,2);
     pictureTable.setCellpadding(10);
     pictureTable.setCellspacing(0);
@@ -465,70 +480,10 @@ public class GolferPage extends Page{
     homeTable.add(pictureTable,1,1);
     homeTable.setVerticalAlignment(1,1,"top");
     add(homeTable);
-
-    /*if (modinfo.getParameter("module_object") == null && !(modinfo.isParameterSet(fakeSideMenuParameterName))){
-      golferImage = new Image();
-      golferImage = iwb.getImage("shared/mynd.jpg");
-      setTopPicture(true);
-      addTopPicture(golferImage);
-      TextReader text = new TextReader(753);
-      text.setWidth("100%");
-      text.setTableTextSize(2);
-      add(text);
-    }
-    else if (modinfo.getParameter("module_object").equalsIgnoreCase("com.idega.jmodule.text.presentation.TextReader")) {
-      golferImage = new Image();
-      golferImage = iwb.getImage("shared/mynd.jpg");
-      setTopPicture(true);
-      addTopPicture(golferImage);
-    }
-    else if (modinfo.isParameterSet(fakeSideMenuParameterName)) {
-      if (modinfo.getParameter(fakeSideMenuParameterName).equalsIgnoreCase(fakeSideMenuNewsParameterValue)){
-        setTopPicture(false);
-        NewsReader news = new NewsReader();
-        news.setConnectionAttributes("golfer_page", 227);
-        news.setNewsEditorURL("/golfers/newsIndex.jsp");
-        news.setNumberOfDays(4);
-        news.setWidth("100%");
-        news.setNewsReaderURLAsSamePage(modinfo);
-        news.setNumberOfExpandedNews(3);
-        news.setNumberOfDisplayedNews(3);
-        news.setNumberOfLetters(250);
-        news.getTextProxy().setFontSize(1);
-        news.getHeadlineProxy().setFontSize(1);
-        news.setShowImages(false);
-        news.setShowOnlyDates(true);
-        news.setHeadlineAsLink(true);
-        this.add(news);
-      }
-      else if (modinfo.getParameter(fakeSideMenuParameterName).equalsIgnoreCase(fakeSideMenuProfileParameterValue)) {
-
-      }
-      else{
-        golferImage = new Image();
-        golferImage = iwb.getImage("shared/mynd.jpg");
-        setTopPicture(true);
-        addTopPicture(golferImage);
-        TextReader text = new TextReader(753);
-        text.setWidth("100%");
-        text.setTableTextSize(2);
-        add(text);
-      }
-    }
-    else{
-      golferImage = new Image();
-      golferImage = iwb.getImage("shared/mynd.jpg");
-      setTopPicture(true);
-      addTopPicture(golferImage);
-      TextReader text = new TextReader(753);
-      text.setWidth("100%");
-      text.setTableTextSize(2);
-      add(text);
-    }*/
   }
 
   //Golfpokinn
-  public void setInfoView(){
+  private void setInfoView(){
 
     Table dummyTable = new Table(2,1);
     dummyTable.setCellpadding(24);
@@ -551,34 +506,154 @@ public class GolferPage extends Page{
   }
 
   //Árangur
-  public void setRecordView(){
+  private void setRecordView(){
+    this.setStyleSheetURL("/style/GolferStatisticsView.css");
+    Table dummyTable = new Table(1,2);
+    dummyTable.setWidth("100%");
+    dummyTable.setCellpadding(10);
+    dummyTable.setAlignment(1,1,"center");
+    dummyTable.setVerticalAlignment(1,2,"top");
     Image iRecordLogo = iwrb.getImage("/golferpage/ferill.gif");
     this.addLeftLogo(iRecordLogo);
+    Text handicapText = new Text("Forgjafar Yfirlit Björgvins");
+    handicapText.setFontSize(3);
+    handicapText.setBold();
+    dummyTable.add(handicapText);
+
     HandicapOverview hOverview = new HandicapOverview(memberId);
-    add(hOverview);
+      hOverview.noIcons();
+      hOverview.setGetOverviewButtonImageUrl("/golferpage/skratakki.gif");
+      hOverview.setViewScoreIconUrlInBundle("/shared/bullet.gif");
+      Text headerText = new Text();
+      headerText.setFontColor("#FF6000");
+      headerText.setFontSize(2);
+      headerText.setBold();
+      headerText.setFontStyle(Text.FONT_FACE_VERDANA);
+      hOverview.setHeaderTextProperties(headerText);
+      Text tableText = new Text();
+      tableText.setBold();
+      tableText.setFontColor("000000");
+      tableText.setFontSize(1);
+      tableText.setFontStyle(Text.FONT_FACE_VERDANA);
+      hOverview.setTableTextProperties(tableText);
+      Link textLink = new Link();
+      textLink.setBold();
+      //textLink.setFontColor("000000");
+      textLink.setFontSize(1);
+      textLink.setFontStyle(Text.FONT_FACE_VERDANA);
+      hOverview.setTextLinkProperties(textLink);
+      hOverview.setHeaderColor("#FFFFFF");
+      hOverview.setTeeTextColor("#000000");
+    dummyTable.add(hOverview,1,2);
+    add(dummyTable);
     /*TextReader recordText = new TextReader(756);
     add(recordText);*/
   }
 
-  //Stuðningsaðilar
-  public void setInterviewsView(){
+  //STUÐNINGSAÐILAR
+  private void setInterviewsView(){
     Image iInterviewsLogo = iwrb.getImage("/golferpage/velkomin.gif");
     this.addLeftLogo(iInterviewsLogo);
+
+    Table interviewsTable = new Table(3,1);
+    interviewsTable.setWidth("100%");
+    interviewsTable.setCellpadding(0);
+    interviewsTable.setCellspacing(0);
+    Image dotLineBackgroundImage;
+    dotLineBackgroundImage = iwb.getImage("shared/brotalina.gif");
+    interviewsTable.setBackgroundImage(2,1,dotLineBackgroundImage);
+    interviewsTable.setWidth(1,1,"410");
+    interviewsTable.setWidth(2,1,"1");
+    interviewsTable.add(Text.emptyString(),2,1);
+    interviewsTable.setVerticalAlignment(1,1,"top");
+
+
+   // interviewsTable.add(news,3,1);
+    interviewsTable.setVerticalAlignment(3,1,"top");
+    interviewsTable.setAlignment( 3, 1, "center");
+    Text supportHeadlineText = new Text("Styrktaraðilar:");
+    supportHeadlineText.setFontSize(2);
+    supportHeadlineText.setBold();
+    supportHeadlineText.setFontColor("FF6000");
+
+    Text supportText1 = new Text("Íslensk Ameríska");
+    supportText1.setFontSize(1);
+    supportText1.setBold();
+//    supportText1.setFontColor("FF6000");
+
+    Text supportText2 = new Text("Fjarðarkaup");
+    supportText2.setFontSize(1);
+    supportText2.setBold();
+//    supportText2.setFontColor("FF6000");
+
+    Text supportText3 = new Text("Sjúkraþjálfun Reykjavíkur");
+    supportText3.setFontSize(1);
+    supportText3.setBold();
+//    supportText3.setFontColor("FF6000");
+
+    Text supportText4 = new Text("idega Margmiðlun");
+    supportText4.setFontSize(1);
+    supportText4.setBold();
+//    supportText4.setFontColor("FF6000");
+
+    Table dummyTable = new Table(1,5);
+    dummyTable.setCellpadding(5);
+    dummyTable.setAlignment( 1, 1, "center");
+    dummyTable.setAlignment( 1, 2, "center");
+    dummyTable.setAlignment( 1, 3, "center");
+    dummyTable.setAlignment( 1, 4, "center");
+    dummyTable.setAlignment( 1, 5, "center");
+
+    dummyTable.add(supportHeadlineText, 1, 1);
+    dummyTable.add(supportText1, 1, 2);
+    dummyTable.add(supportText2, 1, 3);
+    dummyTable.add(supportText3, 1, 4);
+    dummyTable.add(supportText4, 1, 5);
+    dummyTable.addBreak( 1, 1);
+    interviewsTable.add(dummyTable, 3, 1);
+
+    /*Image sponsorsImage;
+    sponsorsImage = iwb.getImage("/shared/studningsMynd.gif");
+    interviewsTable.add(sponsorsImage,3,1);*/
+
+
+//    Image golferImage = new Image();
+/*    golferImage = iwb.getImage("shared/mynd.jpg");
+    Table pictureTable = new Table(1,2);
+    pictureTable.setCellpadding(10);
+    pictureTable.setCellspacing(0);
+    pictureTable.add(golferImage,1,1);*/
+    GolferFriendsSigningSheet golferFriendsSigningSheet = new GolferFriendsSigningSheet(supportTextReaderId,
+      "Björgvins",sTopMenuParameterName,sInterviewsParameterValue, sSubmitParameterValue);
+    interviewsTable.add(golferFriendsSigningSheet,1,1);
+    add(interviewsTable);
     /*TextReader interviewText = new TextReader(757);
     add(interviewText);*/
   }
 
   //STATISTICS_VIEW
-  public void setStatisticsView(){
+  private void setStatisticsView(){
+    Table dummyTable = new Table(2,1);
+    dummyTable.setCellpadding(24);
     Image iStatisticsLogo = iwrb.getImage("/golferpage/tolfraedi.gif");
     this.addLeftLogo(iStatisticsLogo);
-
-    /*    TextReader statisticText = new TextReader(759);
-    add(statisticText);*/
+    TextReader statisticText = new TextReader(statisticsTextReaderId);
+    statisticText.setWidth("100%");
+    statisticText.setTableTextSize(1);
+    statisticText.setTextSize(1);
+    statisticText.setTextStyle(Text.FONT_FACE_ARIAL);
+    statisticText.setHeadlineSize(1);
+    dummyTable.add(statisticText,1,1);
+    Image statisticsImage;
+    statisticsImage = iwb.getImage("/shared/tolfraediMynd.gif");
+    dummyTable.add(statisticsImage,2,1);
+    dummyTable.setVerticalAlignment(2,1,"top");
+    dummyTable.setAlignment(2,1,"right");
+    add(dummyTable);
   }
 
   //PICTURES_VIEW
-  public void setPictureView(){
+  private void setPictureView(){
     Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
     this.addLeftLogo(iWelcomeLogo);
     /*sidemenu.setConnectionAttributes(sideMenuAttributeName,2);
@@ -604,7 +679,7 @@ public class GolferPage extends Page{
       catch (Exception e) {
           //add(getNews(modinfo));
       }
-  }
+    }
   }
 
 
