@@ -899,13 +899,30 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_SSN);
 				ssn = TextSoap.findAndCut(ssn, "-");
 				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
+				String first_name = "";
+				try {
+					if (name != null) {
+				 		int first_space = name.indexOf(" ");
+						first_name = name.substring(0,first_space);
+					}
+				}
+				catch(Exception e) {
+					//Who cares!
+				}
 				
 				String streetName = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_MEMBER_POSTAL_CODE);
 
 				try {
 					//the user must already exist in the database
-					User user = this.getUser(ssn);
+					User user = null;
+					try {
+						user = getUser(ssn);
+					}
+					catch(Exception e) {
+						user = getUserByPartOfPersonalIdAndFirstName(ssn,first_name);
+					}
+					
 					try {
 						membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(), workReportId);
 					}

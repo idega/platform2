@@ -206,6 +206,8 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 		sql.appendWhereEquals(COLUMN_NAME_GROUP_ID,groupId);
 		sql.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
 		
+		System.out.println("sql = " + sql.toString());
+		
 		return (Integer) this.idoFindOnePKByQuery(sql);
 	}	
 }
