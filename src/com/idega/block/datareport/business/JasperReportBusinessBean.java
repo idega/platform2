@@ -629,13 +629,6 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	}
 
 	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
-	 */
-	public Class getPresentationObjectClass() throws RemoteException {
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
 	 */
 	public PresentationObject instanciateEditor(Group group) throws RemoteException {
@@ -680,20 +673,6 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	}
 
 	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
-	 */
-	public Collection getListViewerFields() throws RemoteException {
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
-	 */
-	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
-		return null;
-	}
-
-	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
 	 */
 	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
@@ -704,6 +683,13 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
 	 */
 	public String isUserSuitedForGroup(User user, Group targetGroup) {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#canCreateSubGroup(com.idega.user.data.Group)
+	 */
+	public String canCreateSubGroup(Group group) throws RemoteException {
 		return null;
 	}
     
