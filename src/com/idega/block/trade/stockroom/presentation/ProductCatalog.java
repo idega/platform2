@@ -122,6 +122,7 @@ public class ProductCatalog extends CategoryBlock{
     try {
       Link createLink = ProductEditorWindow.getEditorLink(-1);
         createLink.setImage(iCreate);
+        createLink.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, getICObjectInstanceID());
       Link detachLink = getCategoryLink(ProductCategory.CATEGORY_TYPE_PRODUCT);
         detachLink.setImage(iDetach);
 
@@ -159,59 +160,57 @@ public class ProductCatalog extends CategoryBlock{
 
 
   Table getPagesTable(int pages, List parameters) {
-    Table pagesTable = new Table(pages+2, 1);
-      pagesTable.setCellpadding(2);
-      pagesTable.setCellspacing(2);
+      Table pagesTable = new Table(pages+2, 1);
+        pagesTable.setCellpadding(2);
+        pagesTable.setCellspacing(2);
 
-    if (parameters == null) parameters = new Vector();
-    Parameter parameter;
-    /**
-     *  @todo Og skoða sorteringu eftir price
-     */
-    Text pageText;
-    if (currentPage > 1) {
-      pageText = getText(iwrb.getLocalizedString("travel.previous","Previous"));
-      Link prevLink = new Link(pageText);
-        prevLink.addParameter(_VIEW_PAGE, currentPage -1);
-        for (int l = 0; l < parameters.size(); l++) {
-          parameter = (Parameter) parameters.get(l);
-          prevLink.addParameter(parameter);
-        }
+      if (parameters == null) parameters = new Vector();
+      Parameter parameter;
 
-      pagesTable.add(prevLink, 1, 1);
-    }
+      Text pageText;
+      if (currentPage > 1) {
+        pageText = getText(iwrb.getLocalizedString("travel.previous","Previous"));
+        Link prevLink = new Link(pageText);
+          prevLink.addParameter(_VIEW_PAGE, currentPage -1);
+          for (int l = 0; l < parameters.size(); l++) {
+            parameter = (Parameter) parameters.get(l);
+            prevLink.addParameter(parameter);
+          }
 
-    Link pageLink;
-    for (int i = 1; i <= pages; i++) {
-      if (i == currentPage) {
-        pageText = getText(Integer.toString(i));
-        pageText.setBold(true);
-      }else {
-        pageText = getText(Integer.toString(i));
+        pagesTable.add(prevLink, 1, 1);
       }
-      pageLink = new Link(pageText);
-        pageLink.addParameter(_VIEW_PAGE, i);
-        for (int l = 0; l < parameters.size(); l++) {
-          parameter = (Parameter) parameters.get(l);
-          pageLink.addParameter(parameter);
+
+      Link pageLink;
+      for (int i = 1; i <= pages; i++) {
+        if (i == currentPage) {
+          pageText = getText(Integer.toString(i));
+          pageText.setBold(true);
+        }else {
+          pageText = getText(Integer.toString(i));
         }
+        pageLink = new Link(pageText);
+          pageLink.addParameter(_VIEW_PAGE, i);
+          for (int l = 0; l < parameters.size(); l++) {
+            parameter = (Parameter) parameters.get(l);
+            pageLink.addParameter(parameter);
+          }
 
 
-      pagesTable.add(pageLink, i+1, 1);
-    }
+        pagesTable.add(pageLink, i+1, 1);
+      }
 
-    if (currentPage < pages) {
-      pageText = getText(iwrb.getLocalizedString("travel.next","Next"));
-      Link nextLink = new Link(pageText);
-        nextLink.addParameter(_VIEW_PAGE, currentPage + 1);
-        for (int l = 0; l < parameters.size(); l++) {
-          parameter = (Parameter) parameters.get(l);
-          nextLink.addParameter(parameter);
-        }
-      pagesTable.add(nextLink, pages + 2, 1);
-    }
+      if (currentPage < pages) {
+        pageText = getText(iwrb.getLocalizedString("travel.next","Next"));
+        Link nextLink = new Link(pageText);
+          nextLink.addParameter(_VIEW_PAGE, currentPage + 1);
+          for (int l = 0; l < parameters.size(); l++) {
+            parameter = (Parameter) parameters.get(l);
+            nextLink.addParameter(parameter);
+          }
+        pagesTable.add(nextLink, pages + 2, 1);
+      }
 
-    return pagesTable;
+      return pagesTable;
   }
 
   public void setFontStyle(String fontStyle) {
@@ -397,6 +396,7 @@ public class ProductCatalog extends CategoryBlock{
   Link getProductEditorLink(Product product) {
     Link link =  ProductEditorWindow.getEditorLink(product.getID());
       link.setImage(this.iEdit);
+      link.addParameter(ProductEditorWindow.PRODUCT_CATALOG_OBJECT_INSTANCE_ID, this.getICObjectInstanceID());
     return link;
   }
 

@@ -591,7 +591,15 @@ public class ProductBusiness {
     return menu;
   }
 
+  /**
+   * @deprecated
+   */
   public static List getProductCategories() throws IDOFinderException{
     return EntityFinder.getInstance().findAllOrdered(ProductCategory.class, ProductCategory.getColumnName());
   }
+
+  public static List getProductCategories(Product product) throws IDOFinderException{
+    return EntityFinder.getInstance().findRelated(product, ProductCategory.class);
+  }
+
 }
