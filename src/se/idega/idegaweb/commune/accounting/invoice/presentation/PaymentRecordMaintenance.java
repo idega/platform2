@@ -64,11 +64,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/04 20:07:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/04 21:12:34 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -663,7 +663,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         int row = 2; // first row is reserved for setting column widths
         addOperationalFieldDropdown (context, table, row++);
         addProviderDropdown (context, table, row++);
-        addPeriodForm (table, row);
+        addPeriodForm (context, table, row);
         final int columnCount = table.getColumns ();
         table.setAlignment (columnCount, row, Table.HORIZONTAL_ALIGN_RIGHT);
         table.add (getSubmitButton (ACTION_SHOW_PAYMENT + "",
@@ -675,15 +675,19 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         context.setSessionAttribute (PROVIDER_KEY, null);
         context.setSessionAttribute (MAIN_ACTIVITY_KEY, null);
         if (null != schoolCategory && null != providerId) {
+            final InvoiceBusiness business = getInvoiceBusiness (context);
             final Date startPeriod
                     = getPeriodParameter (context, START_PERIOD_KEY);
             final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
-            final InvoiceBusiness business = getInvoiceBusiness (context);
             final PaymentRecord [] records = business
                     .getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
                     (schoolCategory, providerId,
-                     new java.sql.Date (startPeriod.getTime ()),
-                     new java.sql.Date (endPeriod.getTime ()));
+                     new java.sql.Date
+                     (startPeriod != null ? startPeriod.getTime ()
+                      : System.currentTimeMillis ()),
+                     new java.sql.Date
+                     (endPeriod != null ? endPeriod.getTime ()
+                      : System.currentTimeMillis ()));
             table.mergeCells (1, row, columnCount, row);
             if (0 < records.length) {
                 table.setAlignment (columnCount, 2,
@@ -1377,15 +1381,20 @@ public class PaymentRecordMaintenance extends AccountingBlock {
         return dropdown;
     }
     
-    private void addPeriodForm (final Table table, final int row) {
+    private void addPeriodForm (final IWContext context, final Table table,
+                                final int row) {
         int col = 1;
         addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
         final Date now = new Date (System.currentTimeMillis ());
-        table.add (getStyledInput (START_PERIOD_KEY, getFormattedPeriod
-                                   (now)), col, row);
+        final Date startDate = getPeriodParameter (context, START_PERIOD_KEY);
+        final Date endDate = getPeriodParameter (context, END_PERIOD_KEY);
+        table.add (getStyledInput
+                   (START_PERIOD_KEY, getFormattedPeriod
+                    (startDate == null ? now : startDate)), col, row);
         table.add (new Text (" - "), col, row);
-        table.add (getStyledInput (END_PERIOD_KEY, getFormattedPeriod
-                                   (now)), col, row);
+        table.add (getStyledInput
+                   (END_PERIOD_KEY, getFormattedPeriod
+                    (endDate == null ? now : endDate)), col, row);
     }
     
     private String getSchoolCategoryName (final IWContext context,
