@@ -28,10 +28,6 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 
     protected final static String COLUMN_NAME_AMOUNT = "ACC_AMOUNT";
 
-    protected final static String COLUMN_NAME_AMOUNT_TEST = "ACC_AMOUNT_THOMAS";
-
-    protected final static String COLUMN_NAME_AMOUNT_TEST2 = "ACC_AMOUNT_THOMAS2";
-
     protected final static String COLUMN_NAME_ACCOUNT_KEY_ID = "ACC_KEY_ID";
 
     public WorkReportClubAccountRecordBMPBean() {
@@ -45,10 +41,6 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
         addAttribute(COLUMN_NAME_WORK_REPORT_GROUP, "The league id / club",
                 true, true, Integer.class, "many-to-one", WorkReportGroup.class);
         addAttribute(COLUMN_NAME_AMOUNT, "Amount", true, true, Double.class);
-        addAttribute(COLUMN_NAME_AMOUNT_TEST, "Amount2", true, true,
-                Float.class);
-        addAttribute(COLUMN_NAME_AMOUNT_TEST2, "Amount3", true, true,
-                Double.class);
         addAttribute(COLUMN_NAME_ACCOUNT_KEY_ID, "Account key", true, true,
                 Integer.class, "many-to-one", WorkReportAccountKey.class);
 
