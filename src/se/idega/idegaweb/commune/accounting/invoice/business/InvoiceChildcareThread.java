@@ -48,6 +48,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.accounting.userinfo.business.SiblingOrderException;
 import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
+import se.idega.idegaweb.commune.accounting.userinfo.data.DateOfBirthMissingException;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 import se.idega.util.ErrorLogger;
@@ -76,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/03/11 17:01:15 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/11 18:52:57 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.140 $
+ * @version $Revision: 1.141 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -400,6 +401,10 @@ public class InvoiceChildcareThread extends BillingThread{
 						errorRelated.append(e.getMessage());
 						errorRelated.append(e);
 						createNewErrorMessage(errorRelated,getLocalizedString("invoice.CouldNotGetSiblingOrder","Could not get sibling Order"));
+						siblingOrder = 1;
+					} catch (DateOfBirthMissingException e){
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.CouldNotGetSiblingOrder","Could not get sibling Order")+
+								". "+getLocalizedString("invoice.MissingDateOfBirth","Missing date of birth"));
 						siblingOrder = 1;
 					}
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,

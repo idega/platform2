@@ -22,8 +22,11 @@ public class SortableSibling implements Comparable{
 	/**
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(Object o) {
+	public int compareTo(Object o) throws DateOfBirthMissingException {
 		SortableSibling other = (SortableSibling)o;
+		if(null==sibling.getDateOfBirth() || null==other.getSibling().getDateOfBirth()){
+			throw new DateOfBirthMissingException("Date of birth missing");
+		}
 		if(sibling.getDateOfBirth().after(other.getSibling().getDateOfBirth())){
 			return -1;
 		} else if(sibling.getDateOfBirth().before(other.getSibling().getDateOfBirth())){
