@@ -3,14 +3,11 @@ package is.idega.idegaweb.travel.presentation;
 import is.idega.idegaweb.travel.business.Booker;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 import is.idega.idegaweb.travel.data.GeneralBookingHome;
-
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.creditcard.business.CreditCardAuthorizationException;
 import com.idega.block.creditcard.business.CreditCardBusiness;
 import com.idega.block.creditcard.business.CreditCardClient;
@@ -18,7 +15,6 @@ import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.Supplier;
-import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -64,6 +60,7 @@ public class BookingRefunder extends TravelBlock {
   private int tableWidth = 400;
 
   private GeneralBooking booking = null;
+  private Product product = null;
 	private CreditCardAuthorizationEntry ccAuthEntry = null;
 	private CreditCardClient ccClient = null;
 	private IWResourceBundle iwrb = null;
@@ -94,18 +91,16 @@ public class BookingRefunder extends TravelBlock {
 				if ( coll != null && !coll.isEmpty()) {
 					Iterator iter = coll.iterator();
 					booking = (GeneralBooking) iter.next();
-					bookingSupplier = booking.getService().getProduct().getSupplier();
+					product = booking.getService().getProduct();
+					System.out.println("[BookingRefunder] is product ("+product.getID()+") refundable = "+product.getRefundable());
+					bookingSupplier = product.getSupplier();
 				}
 			} catch (FinderException e) {
 			}
 
-			Supplier supplier = null;
 			try {
-				SupplierHome supplierHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
-				Product product = getProductBusiness(iwc).getProduct(booking.getServiceID());
-				supplier = supplierHome.findByPrimaryKey(product.getSupplierId());
-				ccAuthEntry = getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, booking.getCreditcardAuthorizationNumber(), new IWTimestamp(booking.getDateOfBooking()));
-				ccClient = getCreditCardBusiness(iwc).getCreditCardClient(supplier, new IWTimestamp(booking.getDateOfBooking()));
+				ccAuthEntry = getCreditCardBusiness(iwc).getAuthorizationEntry(bookingSupplier, booking.getCreditcardAuthorizationNumber(), new IWTimestamp(booking.getDateOfBooking()));
+				ccClient = getCreditCardBusiness(iwc).getCreditCardClient(bookingSupplier, new IWTimestamp(booking.getDateOfBooking()));
 			} catch (Exception e) {
 			}
 			
@@ -135,7 +130,11 @@ public class BookingRefunder extends TravelBlock {
 				complete(iwc, table, row);
 			}
 		} else {
-			if (isTooLateToRefund()) {
+			if (!product.getRefundable()) { 
+				table.add(getHeaderText(iwrb.getLocalizedString("travel.cannot_refund", "Can not refund")), 1, row);
+				++row;
+				table.add(getErrorText(iwrb.getLocalizedString("travel.product_not_refundable", "This booking can not be refunded, please contact the supplier.")), 1, row);
+			} else if (isTooLateToRefund()) {
 				table.add(getHeaderText(iwrb.getLocalizedString("travel.time_has_passed", "Time has passed")), 1, row);
 				++row;
 				table.add(getErrorText(iwrb.getLocalizedString("travel.time_has_passed_long", "Too much time (more than "+HOURS_BEFORE_REFUND_EXPIRES+" hours) has passed since you made your booking.  In order to cancel your booking you must contact the supplier.")), 1, row);
