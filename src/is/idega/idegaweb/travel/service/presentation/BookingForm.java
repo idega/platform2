@@ -83,6 +83,7 @@ public abstract class BookingForm extends TravelManager{
 	protected int pWidthLeft = 60;
 	protected int pWidthCenter = 60;
 	protected int pWidthRight = 75;
+	public TPosClient _TPosClient;
 
 
   protected boolean _useInquiryForm = false;
@@ -2382,6 +2383,7 @@ public abstract class BookingForm extends TravelManager{
 		}else {
 			t = new com.idega.block.tpos.business.TPosClient(iwc, merchant);
 		}
+		_TPosClient = t;
 		return t;
 	}
 
