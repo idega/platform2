@@ -130,8 +130,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 }
 
 public void main(ModuleInfo modinfo)throws Exception{
- // isAdmin= isAdministrator(modinfo);
-  isAdmin= true;
+  isAdmin= isAdministrator(modinfo);
+
   setSpokenLanguage(modinfo);
   ImageEntity[] image =  new ImageEntity[1];
   String imageId = modinfo.getParameter("image_id");
