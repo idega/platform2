@@ -17,6 +17,7 @@ public class TPosClient {
   public static final String TPOS_LOCATION_ID = "tpos_locationid";
   public static final String TPOS_POS_ID = "tpos_posid";
   public static final String TPOS_KEY_RECEIVE_PASSWD = "tpos_keyreceivepasswd";
+  public static final String TPOS_IP_SET = "tpos_ipset";
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.tpos";
   private TPOS3Client _client = null;
   private IWBundle _iwb = null;
@@ -49,7 +50,8 @@ public class TPosClient {
 
     try {
       _client = new TPOS3Client(path);
-      _client.setIPSet(2);
+      String ipset = _iwb.getProperty(TPOS_IP_SET);
+      _client.setIPSet(Integer.parseInt(ipset));
       _userId = _iwb.getProperty(TPOS_USER_ID);
       _passwd = _iwb.getProperty(TPOS_PASSWD);
       _merchantId = _iwb.getProperty(TPOS_MERCHANT_ID);
