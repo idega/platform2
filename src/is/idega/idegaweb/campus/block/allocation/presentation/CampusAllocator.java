@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.66 2004/06/25 11:09:45 aron Exp $
+ * $Id: CampusAllocator.java,v 1.67 2004/06/28 17:03:08 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1201,12 +1201,14 @@ public class CampusAllocator extends CampusBlock implements Campus {
 	private PresentationObject getWaitingList(IWContext iwc, Integer conID)
 		throws FinderException, RemoteException {
 		Image registerImage = getBundle().getImage("/pen.gif", localize("sign", "Sign"));
-		DataTable Frame = new DataTable();
-		
-		Frame.addTitle(localize("applicants", "Applicants") + " " + apartmentType.getName());
-		Frame.setTitlesHorizontal(true);
-		int row = 1;
+		Table Frame = new Table();
+		Frame.setCellpadding(3);
+	    Frame.setCellspacing(1);
+		//Frame.addTitle(localize("applicants", "Applicants") + " " + apartmentType.getName());
+		//Frame.setTitlesHorizontal(true);
+		int row = 2;
 		int col = 1;
+		
 		boolean ifLong = conID.intValue() < 0 ? true : false;
 		Frame.add(getHeader(localize("nr", "Nr")), col++, row);
 		Frame.add(getHeader(localize("priority", "Pr")), col++, row);
@@ -1219,6 +1221,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			Frame.add(getHeader(localize("legal_residence", "Legal residence")), col++, row);
 		Frame.add(getHeader(localize("mobile_phone", "Mobile phone")), col++, row);
 		Frame.add(getHeader(localize("phone", "Phone")), col++, row);
+	
 		Collection waitingLists =
 			getWaitingListHome().findByApartmentTypeAndComplex(typeID.intValue(), complexID.intValue());
 		//java.util.Collection w_application = CampusApplicationFinder.listOfWaitinglistForTypeApplication(aprtTypeId, cmplxId);
@@ -1236,15 +1239,19 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				java.util.Iterator it = waitingLists.iterator();
 				ApplicationHome applicationHome = (ApplicationHome) IDOLookup.getHome(Application.class);
 				ApplicantHome applicantHome = (ApplicantHome) IDOLookup.getHome(Applicant.class);
-				row = 2;
+				row++;
 				String TempColor = "#000000";
 				int con_id = -1;
 				boolean redColorSet = false;
 				int numberOnList = 1;
 				IWTimestamp now = IWTimestamp.RightNow();
+				
 				ReferenceNumberHandler h =	new ReferenceNumberHandler();
 				String key = ReferenceNumberHandler.getCypherKey(iwc);
 				com.idega.util.CypherText ct = new com.idega.util.CypherText();
+				
+				Map colorMap = new HashMap();
+				
 				while (it.hasNext()) {
 					col = 1;
 					con_id = -1;
@@ -1273,8 +1280,10 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						if(application!=null){
 							String subjectColor = getSubjectColor(new Integer(application.getSubjectId()));
 							//System.out.println(application.getSubjectId()+ " subjectcolor = "+subjectColor);
-							if(subjectColor!=null)
-								TextFontColor = subjectColor;
+							//if(subjectColor!=null)
+							//	TextFontColor = subjectColor;
+							colorMap.put(new Integer(row),subjectColor);
+							//Frame.getContentTable().setRowColor(row,subjectColor);
 						}
 						//Frame.add(getText(String.valueOf(numberOnList)), col++, row);
 						Frame.add(getWaitingListOrderLink(WL.getPrimaryKey().toString(),numberOnList,typeID.intValue(), complexID.intValue(),listSize), col++, row);
@@ -1345,6 +1354,21 @@ public class CampusAllocator extends CampusBlock implements Campus {
 					}
 					row++;
 				}
+				Frame.setHorizontalZebraColored(getZebraColor1(),getZebraColor2());
+				Collection coloredRows = colorMap.entrySet();
+				for (Iterator iter = coloredRows.iterator(); iter.hasNext();) {
+					Map.Entry colorRow = (Map.Entry) iter.next();
+					Frame.setRowColor(((Integer)colorRow.getKey()).intValue(),(String)colorRow.getValue());
+					
+					
+				}
+				  Text title = new Text(localize("applicants", "Applicants") + " " + apartmentType.getName(),true,false,false);
+				    title.setFontColor("#FFFFFF");
+				Frame.add(title,1,1);
+				Frame.mergeCells(1,1,Frame.getColumns(),1);
+				Frame.setRowColor(1,"#27334B");
+				Frame.setRowColor(2,getHeaderColor());
+				
 			}
 			catch (IDOLookupException e) {
 				e.printStackTrace();
