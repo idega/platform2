@@ -7,6 +7,9 @@
 package se.idega.idegaweb.commune.provider.presentation;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -14,6 +17,7 @@ import se.idega.idegaweb.commune.provider.business.ProviderSession;
 import se.idega.idegaweb.commune.provider.event.ProviderEventListener;
 
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -124,7 +128,9 @@ public abstract class ProviderBlock extends CommuneBlock {
 		table.add(seasons, 2, row);
 		
 		table.add(getSmallHeader(localize("school.year","Year")+":"+Text.NON_BREAKING_SPACE),4,row);
-		DropdownMenu years = (DropdownMenu) getStyledInterface(selector.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterYearID()), getSchoolBusiness().findAllSchoolYearsInSchool(getProviderID()), "getSchoolYearName"));
+		List schoolYears = new ArrayList(getSchoolBusiness().findAllSchoolYearsInSchool(getProviderID()));
+		Collections.sort(schoolYears, new SchoolYearComparator());
+		DropdownMenu years = (DropdownMenu) getStyledInterface(selector.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterYearID()), schoolYears, "getSchoolYearName"));
 		years.addMenuElementFirst("-1","");
 		years.setToSubmit();
 		if (getSession().getYearID() != -1)
