@@ -90,4 +90,4 @@ public class TournamentType extends GolfEntity{
           }
         }
 
-}>>>>>>> 1.2
+}
