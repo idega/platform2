@@ -181,7 +181,7 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	}
 	
 	protected DropdownMenu getRejectedStatuses() throws RemoteException {
-		DropdownMenu menu = new DropdownMenu(getSession().getParameterStatus());
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(getSession().getParameterStatus()));
 		menu.addMenuElement(STATUS_ALL, localize("child_care.all_rejected_applications", "Show all rejected"));
 		menu.addMenuElement(String.valueOf(getBusiness().getStatusCancelled()), getStatusString(getBusiness().getStatusCancelled()));
 		menu.addMenuElement(String.valueOf(getBusiness().getStatusDenied()), getStatusString(getBusiness().getStatusDenied()));
