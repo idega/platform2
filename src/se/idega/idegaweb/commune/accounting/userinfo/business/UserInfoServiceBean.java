@@ -191,7 +191,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 				family.setAddress(address);
 				if(spouse!=null){
 					addr = userService.getUserAddress1(((Integer)spouse.getPrimaryKey()).intValue());
-					if(address.isEqualTo(addr)){
+					if(isEqual(address,addr)){
 						family.setSpouse(spouse);
 					}
 				}
@@ -199,7 +199,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					// is spouse the same person as cohabitant
 					//if(spouse!=null && !spouse.getPrimaryKey().toString().equals(cohabitant.getPrimaryKey().toString()) ){
 						addr = userService.getUserAddress1(((Integer)cohabitant.getPrimaryKey()).intValue());
-						if(address.isEqualTo(addr))
+						if(isEqual(address,addr))
 							family.setCohabitant(cohabitant);
 					//}
 				}
@@ -208,7 +208,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					for (Iterator iter = parentialChildren.iterator(); iter.hasNext();) {
 						User child = (User) iter.next();
 						addr = userService.getUserAddress1(((Integer)child.getPrimaryKey()).intValue());
-						if(address.isEqualTo(addr)){
+						if(isEqual(address,addr)){
 							childs.add(child);
 						}
 					}
@@ -220,7 +220,7 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 					for (Iterator iter = custodyChildren.iterator(); iter.hasNext();) {
 						User child = (User) iter.next();
 						addr = userService.getUserAddress1(((Integer)child.getPrimaryKey()).intValue());
-						if(address.isEqualTo(addr)){
+						if(isEqual(address,addr)){
 							childs.add(child);
 						}
 					}
@@ -381,7 +381,8 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 	/**
 	 * Compares two addresses on street name, the number part of street number,
 	 * postal code and country. Address.isEqualTo compares the whole number part,
-	 * including nb, 1tr etc. which isn't sufficiant here.
+	 * including nb, 1tr etc., which isn't sufficiant here. This a formal request
+	 * from the customer.
 	 */
 	private static boolean _isEqual (final Address address1,
 																	 final Address address2) {
