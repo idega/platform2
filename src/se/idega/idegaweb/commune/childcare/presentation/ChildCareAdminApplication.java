@@ -447,7 +447,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						createContract.setSingleSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
 					}
 					form.setToDisableOnSubmit(createContract, true);*/
-					createContract.setWindowToOpen(ChildCareAdminWindow.class);
+					createContract.setWindowToOpen(ChildCareWindow.class);
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
@@ -463,7 +463,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						createContract.setSingleSubmitConfirm(localize("child_care.confirm_create_contract", "OK to proceed with creating contract?"));
 					}
 					form.setToDisableOnSubmit(createContract, true);*/
-					createContract.setWindowToOpen(ChildCareAdminWindow.class);
+					createContract.setWindowToOpen(ChildCareWindow.class);
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					createContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
