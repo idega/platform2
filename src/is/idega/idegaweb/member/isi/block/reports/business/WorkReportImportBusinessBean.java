@@ -1133,10 +1133,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				ssn = TextSoap.removeWhiteSpace(ssn);
 				ssn = (ssn.length() == 9) ? "0" + ssn : ssn;
 				String first_name = "";
+				String last_name = "";
 				try {
 					if (name != null) {
+						//name = TextSoap.removeWhiteSpaceFromBeginningAndEndOfString(name);
 						int first_space = name.indexOf(" ");
 						first_name = name.substring(0, first_space);
+						int last_space = name.lastIndexOf(" ");
+						last_name = name.substring(last_space+1, name.length());
 					}
 				}
 				catch (Exception e) {
@@ -1152,7 +1156,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					}
 					catch (Exception e) {
 						if (ssn.length() >= 6) {
-							user = findByFirstSixLettersOfPersonalIDAndFirstName(ssn, first_name);
+						    user = findByFirstSixLettersOfPersonalIDAndFirstNameAndLastName(ssn, first_name, last_name);
 						}
 						else {
 							throw new FinderException("SSN shorter than 6 letters");
@@ -1318,7 +1322,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 						workReportId, wrGroupId.intValue());
 			}
 			catch (FinderException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+			    System.out.println(e.getMessage()+"\nNo WorkReportDivisionBoard for this WorkReport found. New one created");
 				try {
 					board = (WorkReportDivisionBoard) getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
 				}
