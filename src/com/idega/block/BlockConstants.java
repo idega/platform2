@@ -1,9 +1,5 @@
 package com.idega.block;
 
-import com.idega.util.text.TextStyler;
-import com.idega.presentation.text.Text;
-import java.util.StringTokenizer;
-
 /**
  * Title:
  * Description:

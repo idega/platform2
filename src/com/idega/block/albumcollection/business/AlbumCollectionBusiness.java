@@ -8,7 +8,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
 
 import java.util.List;
-import java.util.Vector;
 import java.util.Iterator;
 import java.sql.SQLException;
 import java.util.Map;
