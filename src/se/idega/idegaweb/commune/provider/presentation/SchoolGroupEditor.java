@@ -41,7 +41,7 @@ import com.idega.user.presentation.UserChooser;
  */
 public class SchoolGroupEditor extends ProviderBlock {
 
-	private final String PARAMETER_ACTION = "sge_action";
+	public final static String PARAMETER_ACTION = "sge_action";
 	private final String PARAMETER_GROUP_ID = "sge_group_id";
 	private final String PARAMETER_GROUP_NAME ="sge_group_name";
 	private final String PARAMETER_SCHOOL_YEARS ="sge_school_years";
@@ -50,7 +50,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private final String PARAMETER_TYPE_ID ="sge_type_id";
 	private final String PARAMETER_IS_SUBGROUP = "sge_is_subgroup";
 	
-	private final int ACTION_VIEW = 1;
+	public final static int ACTION_VIEW = 1;
 	private final int ACTION_EDIT = 2;
 	private final int ACTION_DELETE = 3;
 	private final int ACTION_SAVE = 4;
@@ -59,6 +59,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private int _groupID = -1;
 	private SchoolClass _group;
 	private School _provider;
+
+	public final static String PARAMETER_PROVIDER_ID = "Goran please fix this, ACTION_VIEW and PARAMETER_ACTION";
+	
 
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#_main(com.idega.presentation.IWContext)
