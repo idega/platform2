@@ -210,7 +210,7 @@ public class UnionCorrect extends Editor {
    public void setMainUnion(Member member,int iUnionId) throws SQLException {
 
     UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn("member_id",member.getID());
-
+    boolean needToCreateUnionMemberInfo = true;
     for (int i = 0; i < unies.length; i++) {
 
       if(unies[i].getCardId()==0)
@@ -221,10 +221,15 @@ public class UnionCorrect extends Editor {
         unies[i].setMembershipType("sub");
       }
       else {
+        needToCreateUnionMemberInfo = false;
         unies[i].setMembershipType("main");
         unies[i].setMemberStatus("A");
       }
       unies[i].update();
+    }
+    
+    if(needToCreateUnionMemberInfo){
+    		makeNewMainUMI(member,iUnionId);
     }
   }
    
@@ -264,8 +269,27 @@ public class UnionCorrect extends Editor {
       umi.insert();
     }
     catch (Exception ex) {
-
+    		ex.printStackTrace();
     }
 
   }
+  
+  public void makeNewMainUMI(Member eMember, int unionId){
+    UnionMemberInfo umi = (UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class);
+    umi.setUnionID(unionId);
+    umi.setMemberID(eMember.getID());
+    umi.setCardId(1);
+    umi.setPaymentTypeID(1);
+    umi.setMembershipType("main");
+    umi.setMemberStatus("A");
+    try {
+      umi.insert();
+    }
+    catch (Exception ex) {
+    		ex.printStackTrace();
+    }
+  }
+    
+  
+  
 }
