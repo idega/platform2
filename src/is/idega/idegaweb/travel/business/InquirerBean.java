@@ -1,30 +1,43 @@
 package is.idega.idegaweb.travel.business;
 
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOServiceBean;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.Inquery;
+import is.idega.idegaweb.travel.data.InqueryHome;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.interfaces.Booking;
+import is.idega.idegaweb.travel.presentation.LinkGenerator;
+import is.idega.idegaweb.travel.presentation.TravelManager;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import java.rmi.RemoteException;
-
-import com.idega.core.contact.data.Email;
-import com.idega.util.SendMail;
-import com.idega.block.trade.stockroom.business.ProductBusiness;
 import javax.mail.MessagingException;
-import java.sql.SQLException;
-import java.util.*;
-import com.idega.util.IWTimestamp;
-import com.idega.data.*;
-import com.idega.block.trade.stockroom.data.*;
-import is.idega.idegaweb.travel.data.Inquery;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-
-import is.idega.idegaweb.travel.presentation.TravelManager;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductHome;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Settings;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOServiceBean;
+import com.idega.core.contact.data.Email;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.interfaces.Booking;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.transaction.IdegaTransactionManager;
+import com.idega.util.IWTimestamp;
+import com.idega.util.SendMail;
 
 
 /**
@@ -37,6 +50,9 @@ import is.idega.idegaweb.travel.interfaces.Booking;
  */
 
 public class InquirerBean extends IBOServiceBean implements Inquirer{
+	
+	public static final String INQUERYTYPE_CREDITCARD = "inq_type_cc";
+	public static final String INQUERYTYPE_GENERAL = "inq_type_gen";
 
   public InquirerBean() {
   }
@@ -66,7 +82,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
     return this.collectionToInqueryArray(getInquiryHome().findInqueries(serviceId, stamp,-1, unansweredOnly, travelAddress, orderBy ));
   }
 
-  public int sendInquery(String name,String email, IWTimestamp inqueryDate, int productId, int numberOfSeats, String comment, int bookingId, Reseller reseller)  throws RemoteException, FinderException, CreateException {
+  public int sendInquery(String name,String email, IWTimestamp inqueryDate, int productId, int numberOfSeats, String comment, int bookingId, Reseller reseller, String referenceString)  throws RemoteException, FinderException, CreateException {
   		if ( comment == null || comment.equals("")) {
   			comment = "Are the available seats this day";
   		}
@@ -77,11 +93,19 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
             inq.setEmail(email);
             inq.setInqueryDate(inqueryDate.getTimestamp());
             inq.setInquery(comment);
-            inq.setInqueryPostDate(IWTimestamp.getTimestampRightNow());
+            IWTimestamp postDate = new IWTimestamp(IWTimestamp.RightNow().getDate());
+            inq.setInqueryPostDate(postDate.getTimestamp());
             inq.setName(name);
             inq.setServiceID(productId);
             inq.setNumberOfSeats(numberOfSeats);
             inq.setBookingId(bookingId);
+            if(referenceString != null) {
+            	inq.setAuthorizationString(referenceString);
+            	inq.setInqueryType(INQUERYTYPE_CREDITCARD);
+            }
+            else {
+            		inq.setInqueryType(INQUERYTYPE_GENERAL);
+            }
           inq.store();
 
           if (reseller != null) {
@@ -89,7 +113,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
   //          inq.addTo(reseller);
           }
         returner = ((Integer)inq.getPrimaryKey()).intValue();
-        System.err.println("Inquirer : inq.getID() = "+returner);
+//        System.err.println("Inquirer : inq.getID() = "+returner);
         return returner;
     }catch (IDOAddRelationshipException are) {
       throw new CreateException(are.getMessage());
@@ -142,7 +166,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
         responseString.append("\n\n");
 
         /**
-         * @todo hondlar svara inquiry sem er hluti af grúbbu....
+         * @todo hondlar svara inquiry sem er hluti af grï¿½bbu....
          */
 
 
@@ -201,7 +225,7 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
                     responseString.append(iwrb.getLocalizedString("travel.request_is_granted_booking_confirmed","Request is granted. Booking has been confimed"));
                 }
 
-                //responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
+                //responseString.append("T - Svar viï¿½ fyrirspurn varï¿½andi "+inquery.getNumberOfSeats()+" sï¿½ti fyrir \""+inquery.getName()+"\" ï¿½ ferï¿½ina \""+tempService.getName()+"\" ï¿½ann "+new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
                 for (int i = 0; i < resellers.length; i++) {
                   if (resellers[i].getEmail() != null) {
                     if (sendMail) {
@@ -228,6 +252,92 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
         //displayForm(iwc, getInquiryResponseError());
       }
 
+  }
+  
+  public int getCreditcardInqueryRespons(IWContext iwc, IWResourceBundle iwrb, int inquiryId, boolean book, boolean sendMail, Supplier supplier, Reseller reseller) {
+  		String mailHost = "mail.idega.is";
+
+    String mailSubject = iwrb.getLocalizedString("travel.booking_confirm","Booking confirmation");
+    StringBuffer responseString = new StringBuffer();
+
+    TransactionManager tm = IdegaTransactionManager.getInstance();
+    
+    try {
+			tm.begin();
+			SendMail sm = new SendMail();
+			Inquery inquery = ((is.idega.idegaweb.travel.data.InqueryHome)com.idega.data.IDOLookup.getHome(Inquery.class)).findByPrimaryKey(new Integer(inquiryId));
+      GeneralBooking booking = inquery.getBooking();
+      List inqueries = getInquiryHome().create().getMultibleInquiries(inquery);
+      Service tempService = booking.getService();
+      
+      if(inquery !=  null) {
+	  			responseString.append(iwrb.getLocalizedString("travel.dear","Dear"));
+	  			responseString.append(" ").append(inquery.getName()).append(",\n\n");
+    			responseString.append(iwrb.getLocalizedString("travel.your_booking_for","Your booking for"));
+    			responseString.append(" ").append(tempService.getName(iwc.getCurrentLocaleId())).append(" ");
+
+
+      		if(!book) {
+      			responseString.append(iwrb.getLocalizedString("travel.was_cancelled", "was cancelled."));
+      			responseString.append(" ").append(iwrb.getLocalizedString("travel.service_not_available", "The service was not available.")).append("\n");
+      			responseString.append(" "+iwrb.getLocalizedString("travel.payment_not_processed", "The payment was also cancelled."));
+      		}
+      		else if(book){
+      			responseString.append(iwrb.getLocalizedString("travel.confirmed", "has been confirmed.")).append("\n");
+      			responseString.append(iwrb.getLocalizedString("travel.booking_info", "Booking information")).append(":").append("\n");
+      			responseString.append(iwrb.getLocalizedString("travel.name","Name")).append(": ").append(inquery.getName()).append("\n");
+      			responseString.append(iwrb.getLocalizedString("travel.service", "Service")).append(": ").append(tempService.getName(iwc.getCurrentLocaleId())).append("\n");
+ 
+	   			if (inqueries.size() == 1) {
+	   				responseString.append(iwrb.getLocalizedString("travel.date", "Date")).append(": ").append(new IWTimestamp(booking.getBookingDate()).getLocaleDate(iwc)).append("\n");
+	        }else {
+	        		responseString.append(iwrb.getLocalizedString("travel.dates", "Dates")).append(": ").append("\n");
+	        		Iterator i = inqueries.iterator();
+	        		while(i.hasNext()) {
+	        			Inquery inq = getInquiryHome().findByPrimaryKey(i.next());
+	        			responseString.append("\t").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc)).append("\n");
+	        		}
+	        		
+	        		
+	        }
+	   			responseString.append(iwrb.getLocalizedString("travel.quantity", "Quantity")).append(": ").append(inquery.getNumberOfSeats()).append("\n");
+	   			responseString.append(iwrb.getLocalizedString("travel.payment_done", "The payment has been processed from your creditcard")).append("\n");
+	   			responseString.append(iwrb.getLocalizedString("travel.click_on_voucher_link", "Click on the link below to view your voucher")).append(": ").append("\n");
+	   			responseString.append(LinkGenerator.getVoucherLink(booking.getReferenceNumber()));
+ 
+      		}
+      		
+      		if(inqueries != null) {
+    				Iterator iter = inqueries.iterator();
+    				while(iter.hasNext()) {
+    					Inquery inq = getInquiryHome().findByPrimaryKey(iter.next());
+    					inq.setAnswered(true);
+    					inq.setAnswerDate(IWTimestamp.getTimestampRightNow());
+    					inq.store();
+    					if (book) {
+                booking = inquery.getBooking();
+                booking.setIsValid(true);
+                booking.store();
+              }
+    				}
+    			}
+      	  
+        sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
+
+      }
+            
+			tm.commit();                               
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			try {
+				tm.rollback();
+			}
+			catch (SystemException e1) {
+				e1.printStackTrace();
+			}
+		}
+	  		return 1;
   }
 
   public Table getInquiryResponseError(IWResourceBundle iwrb) {
@@ -280,6 +390,8 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
       List inqs = getInquiryHome().create().getMultibleInquiries(inq);
       int inqsSize = inqs.size();
       Inquery tempInq;
+      
+      String mailSubject = "";
 
 
       Email sEmail = suppl.getEmail();
@@ -290,34 +402,70 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
       String inqEmail = inq.getEmail();
 
       if (settings.getIfDoubleConfirmation()) {
+	      	sendEmail = true;
+	      	StringBuffer mailText = new StringBuffer();
         try {
-          sendEmail = true;
-          StringBuffer mailText = new StringBuffer();
-//          mailText.append(iwrb.getLocalizedString("travel.inquiry.this_is_an_automatic_response_to_your_inquiry","This is an automatic response to your inquiry."));
-          mailText.append(iwrb.getLocalizedString("travel.inquiry_double_confirmation","This is an automatic response to your inquiry.\nIt will be answered as soon as possible."));
+	        	if(inq.getInqueryType().equals(INQUERYTYPE_CREDITCARD)) {
+	        		mailSubject = iwrb.getLocalizedString("travel.your_booking", "Your booking");
+	        		mailText.append(iwrb.getLocalizedString("travel.dear","Dear"));
+	        		mailText.append(" ").append(inq.getName()).append(",\n\n");
+	        		mailText.append(iwrb.getLocalizedString("travel.your_booking_for","Your booking for"));
+	        		mailText.append(" ").append(inq.getBooking().getService().getName(iwc.getCurrentLocaleId())).append(" ");
+	        		mailText.append(iwrb.getLocalizedString("travel.received", "has been received.")).append("\n");
+	        		mailText.append(iwrb.getLocalizedString("travel.booking_info", "Booking information")).append(":").append("\n");
+	        		mailText.append(iwrb.getLocalizedString("travel.name","Name")).append(": ").append(inq.getName()).append("\n");
+	        		mailText.append(iwrb.getLocalizedString("travel.service", "Service")).append(": ").append(inq.getBooking().getService().getName(iwc.getCurrentLocaleId())).append("\n");
+	 
+		   			if (inqs.size() == 1) {
+		   				mailText.append(iwrb.getLocalizedString("travel.date", "Date")).append(": ").append(new IWTimestamp(inq.getBooking().getBookingDate()).getLocaleDate(iwc)).append("\n");
+		        }else {
+		        	mailText.append(iwrb.getLocalizedString("travel.dates", "Dates")).append(": ").append("\n");
+		        		Iterator i = inqs.iterator();
+		        		while(i.hasNext()) {
+		        			Inquery inquery = getInquiryHome().findByPrimaryKey(i.next());
+		        			mailText.append("\t").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc)).append("\n");
+		        		}
+		        		
+		        		
+		        }
+		   			mailText.append(iwrb.getLocalizedString("travel.quantity", "Quantity")).append(": ").append(inq.getNumberOfSeats()).append("\n");
 
-          mailText.append("\n\n").append(iwrb.getLocalizedString("travel.your_inquiry_was",   "Your inquiry was")).append(" : ");
-          mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(inq.getName());
-          mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness().getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
-          if (inqsSize == 1) {
-            mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
-          }else {
-            for (int i = 0; i < inqsSize; i++) {
-              tempInq = getInquiryHome().findByPrimaryKey(inqs.get(i));
-//              tempInq = (Inquery) inqs.get(i);
-              if (i == 0) {
-                mailText.append("\n").append(iwrb.getLocalizedString("travel.dates",   "Dates :"));
-              }
-              mailText.append("\n\t").append(new IWTimestamp(tempInq.getInqueryDate()).getLocaleDate(iwc));
-            }
-          }
-          mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(inq.getNumberOfSeats());
+	        		mailText.append(iwrb.getLocalizedString("travel.booking_being_handled", "As previously stated your booking is now being handled.")).append("\n");
+	        		mailText.append(iwrb.getLocalizedString("travel.payment_not_pocessed", "The payment has not been processed.")).append("\n");
+	        		mailText.append(iwrb.getLocalizedString("travel.receive_email", "You will receive an email as soon as the booking is confirmed."));
 
-          mailText.append("\n\n").append(iwrb.getLocalizedString("travel.inquiry.reply_to_this_email_if_you_wish","Please reply to this email if you wish to make changes to your inquiry or if the information is incorrect."));
+		      		
+		      	}
+	        	else {
+	        		mailSubject = iwrb.getLocalizedString("travel.inquery", "Inquery");
+//	          mailText.append(iwrb.getLocalizedString("travel.inquiry.this_is_an_automatic_response_to_your_inquiry","This is an automatic response to your inquiry."));
+	          mailText.append(iwrb.getLocalizedString("travel.inquiry_double_confirmation","This is an automatic response to your inquiry.\nIt will be answered as soon as possible."));
+
+	          mailText.append("\n\n").append(iwrb.getLocalizedString("travel.your_inquiry_was",   "Your inquiry was")).append(" : ");
+	          mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(inq.getName());
+	          mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(getProductBusiness().getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+	          if (inqsSize == 1) {
+	            mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new IWTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
+	          }else {
+	            for (int i = 0; i < inqsSize; i++) {
+	              tempInq = getInquiryHome().findByPrimaryKey(inqs.get(i));
+//	              tempInq = (Inquery) inqs.get(i);
+	              if (i == 0) {
+	                mailText.append("\n").append(iwrb.getLocalizedString("travel.dates",   "Dates :"));
+	              }
+	              mailText.append("\n\t").append(new IWTimestamp(tempInq.getInqueryDate()).getLocaleDate(iwc));
+	            }
+	          }
+	          mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(inq.getNumberOfSeats());
+
+	          mailText.append("\n\n").append(iwrb.getLocalizedString("travel.inquiry.reply_to_this_email_if_you_wish","Please reply to this email if you wish to make changes to your inquiry or if the information is incorrect."));
 
 
+	        	}
+          
+          
           SendMail sm = new SendMail();
-            sm.send(suppEmail, inqEmail, "", "", "mail.idega.is", "Inquiry",mailText.toString());
+            sm.send(suppEmail, inqEmail, "", "", "mail.idega.is", mailSubject,mailText.toString());
           doubleSendSuccessful = true;
         }catch (MessagingException me) {
           doubleSendSuccessful = false;
@@ -381,6 +529,8 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
   public Inquery[] collectionToInqueryArray(Collection coll) {
     return (Inquery[]) coll.toArray(new Inquery[]{});
   }
+  
+
 
   private ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
