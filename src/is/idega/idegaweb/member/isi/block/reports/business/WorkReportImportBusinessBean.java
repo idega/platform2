@@ -1309,6 +1309,14 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 		//iterate through the rows that contain the actual data and create the
 		// records in the database
+		int countryIDForIceland = 0;
+        try {
+            countryIDForIceland = ((Integer) getAddressBusiness().getCountryHome().findByCountryName("Iceland").getPrimaryKey()).intValue();
+        } catch (FinderException e) {
+            e.printStackTrace();
+        }
+        HashMap postalCodeMap = new HashMap();
+        HashMap mainBoardMap = new HashMap();
 		for (int i = (firstRow + 1); i <= lastRow; i++) {
 			HSSFRow row = (HSSFRow) members.getRow(i);
 
@@ -1328,7 +1336,13 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 						COLUMN_MEMBER_SSN);
 
 				ssn = TextSoap.findAndCut(ssn, "-");
-				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
+				try {
+				    ssn = TextSoap.removeWhiteSpace(ssn);
+				}
+				catch (Exception e) {
+				    System.out.println(e.getMessage());
+				}
+				ssn = (ssn.length() == 9) ? "0" + ssn : ssn;
 				String first_name = "";
 				try {
 					if (name != null) {
@@ -1362,23 +1376,23 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 						//this should happen, we don't want them created twice
 
 						WorkReportMember member = getWorkReportBusiness()
-								.createWorkReportMember(workReportId, ssn); //sets
+								.createWorkReportMember(workReportId, user); //sets
 						// basic
 						// data
 						if (streetName != null && !"".equals(streetName)) {
 							member.setStreetName(streetName);
 
 							try {
-								PostalCode postal = getAddressBusiness()
-										.getPostalCodeHome()
-										.findByPostalCodeAndCountryId(
-												postalCode,
-												((Integer) getAddressBusiness()
-														.getCountryHome()
-														.findByCountryName(
-																"Iceland")
-														.getPrimaryKey())
-														.intValue());
+							    PostalCode postal = null;
+								if(postalCode != null && !postalCode.equals("")) {
+							    	if (!postalCodeMap.containsKey(postalCode)) {
+								        postal = getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(postalCode, countryIDForIceland);
+								        postalCodeMap.put(postalCode, postal);
+								    }
+								    else {
+								        postal = (PostalCode)postalCodeMap.get(postalCode);
+								    }
+								}
 								member.setPostalCode(postal);
 							} catch (FinderException e3) {
 								//e3.printStackTrace();
@@ -1393,14 +1407,20 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 						memberCount++;
 
 						WorkReportGroup mainBoard = null;
-						try {
-							mainBoard = getWorkReportBusiness()
-									.getWorkReportGroupHome()
-									.findWorkReportGroupByNameAndYear(
-											mainBoardName, year);
-						} catch (FinderException e1) {
-							throw new WorkReportImportException(
-									"workreportimportexception.main_board_not_found");
+						String mainBoardLookupString = mainBoardName+String.valueOf(year);
+						if (!mainBoardMap.containsKey(mainBoardLookupString)) {
+							try {
+								mainBoard = getWorkReportBusiness()
+										.getWorkReportGroupHome()
+										.findWorkReportGroupByNameAndYear(
+												mainBoardName, year);
+								mainBoardMap.put(mainBoardLookupString, mainBoard);
+							} catch (FinderException e1) {
+								throw new WorkReportImportException(
+										"workreportimportexception.main_board_not_found");
+							}
+						} else {
+						    mainBoard = (WorkReportGroup)mainBoardMap.get(mainBoardLookupString);
 						}
 
 						try {
@@ -1473,7 +1493,11 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				} catch (FinderException e) {
 					//					System.err.println("User not found for ssn : " + ssn + "
 					// skipping...");
-					notRead.add(name + " " + ssn);
+				    //String emptySSNCellString = iwrb.getLocalizedString("WorkReportBusinessBean.empty_ssn_cell", "Empty ssn cell");
+					if (ssn != null && ssn.equals("")) {
+					    ssn = "Engin kennitala";
+					}
+				    notRead.add(name + " (" + ssn+")");
 				}
 			}
 		}
