@@ -356,11 +356,11 @@ public class ClubInformationTab extends UserGroupTab {
 			if (memberUMFI != null)
 				group.setMetaData(IWMemberConstants.META_DATA_CLUB_IN_UMFI, memberUMFI.toString());
 			group.setMetaData(IWMemberConstants.META_DATA_CLUB_MAKE, make);
-			System.out.println("make = " + make);
+//			System.out.println("make = " + make);
 			if (make.equals(IWMemberConstants.META_DATA_CLUB_STATUS_SINGLE_DIVISION_CLUB )) {
 				String oldConnection = group.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
-				System.out.println("connection = " + connection);
-				System.out.println("oldConnection = " + oldConnection);
+//				System.out.println("connection = " + connection);
+//				System.out.println("oldConnection = " + oldConnection);
 				
 				if (oldConnection == null && connection != null) {
 					getClubInformationPluginBusiness(iwc).createSpecialConnection(connection, getGroupId(), group.getName(), iwc);
