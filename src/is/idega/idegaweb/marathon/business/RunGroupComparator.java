@@ -29,22 +29,17 @@ public class RunGroupComparator implements Comparator {
 		RunGroup r0 = (RunGroup) arg0;
 		RunGroup r1 = (RunGroup) arg1;
 		
-		Counter counter1 = r0.getCounter();
-		if (counter1 == null) {
-			counter1 = new Counter();
-			int index = 0;
-			Iterator iter = map.getCollection(r0).iterator();
-			while (iter.hasNext()) {
-				Run element = (Run) iter.next();
-				if (index < 3) {
-					counter1.addSeconds(element.getRunTime());
-				}
-				index++;
-			}
-			r0.setCounter(counter1);
-		}
-
-		Counter counter2 = r1.getCounter();
+		Counter counter1 = initializeCounter(r0, r0.getCounter());
+		Counter counter2 = initializeCounter(r1, r1.getCounter());
+		
+		return counter1.compareTo(counter2);
+	}
+	/**
+	 * @param r1
+	 * @param counter2
+	 * @return
+	 */
+	private Counter initializeCounter(RunGroup r1, Counter counter2) {
 		if (counter2 == null) {
 			counter2 = new Counter();
 			int index = 0;
@@ -54,12 +49,14 @@ public class RunGroupComparator implements Comparator {
 				if (index < 3) {
 					counter2.addSeconds(element.getRunTime());
 				}
+				else {
+					iter.remove();
+				}
 				index++;
 			}
 			r1.setCounter(counter2);
 		}
-		
-		return counter1.compareTo(counter2);
+		return counter2;
 	}
 
 }
