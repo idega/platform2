@@ -63,19 +63,23 @@ public class ServiceViewer extends Window {
 
   private idegaTimestamp dateFrom,dateTo;
   private String width,height,color1,color2;
-  private int windowWidth = 700;
-  private int windowHeight = 500;
+  private int windowWidth = 600;
+  private int windowHeight = 480;
   private Link link;
   private Text text;
   private Text boldText;
-  private boolean showBuyButton = true;
+  private boolean showBuyButton = false;
   private boolean showMoreButton = true;
   private boolean listView = false;
 
   private String sService = null;
   private String sSupplier = null;
 
-
+  public ServiceViewer(){
+    super.setWidth(windowWidth);
+    super.setHeight(windowHeight);
+    setAllMargins(0);
+  }
 
   private void init(IWContext iwc) {
     iwb = this.getBundle(iwc);
@@ -83,9 +87,6 @@ public class ServiceViewer extends Window {
 
     sService = iwc.getParameter(IW_TRAVEL_SERVICE_ID);
     sSupplier = iwc.getParameter(IW_TRAVEL_SUPPLIER_ID);
-
-    super.setWidth(windowWidth);
-    super.setHeight(windowHeight);
 
     if( sService!=null ){
       if( iwc.getSessionAttribute(IW_TRAVEL_ADD_MORE_BUTTON+sService)!=null ) showMoreButton = true;
@@ -304,6 +305,7 @@ public class ServiceViewer extends Window {
 
   private Table getServiceInfoTable(IWContext iwc){
     Table content = new Table();
+    content.setWidth("100%");
     content.setCellspacing(0);
     content.setCellpadding(2);
 
