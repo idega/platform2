@@ -605,7 +605,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		String subject = localize("child_care.placing_subject","Your child placed in child care.");
 		String body = localize("child_care.placing_body","{0} has been placed in a group at {1}.");
-		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, iwc.getCurrentUser());
+		getBusiness().placeApplication(getSession().getApplicationID(), subject, body, childCareTime, groupID, iwc.getCurrentUser(), iwc.getCurrentLocale());
 
 		close();
 	}

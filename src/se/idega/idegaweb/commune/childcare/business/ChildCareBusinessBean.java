@@ -492,14 +492,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, User user) throws RemoteException {
+	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, User user, Locale locale) throws RemoteException {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 			application.setApplicationStatus(getStatusReady());
-			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
-			
+			int oldFileID = application.getContractFileId();
 			IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
+
+			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
+			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, fromDate, false), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+
+			application.setContractFileId(fileID);
+			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
+			addContractToArchive(oldFileID, application, fromDate.getDate());
 			
 			try {
 				SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findByUserAndSchool(application.getChildId(), application.getProviderId());
@@ -818,7 +824,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 
 			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
-			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, validFrom), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
+			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, validFrom, !changeStatus), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 
 			application.setContractFileId(fileID);
 			if (changeStatus) {
@@ -827,7 +833,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			else
 				application.store();
-			addContractToArchive(application, validFrom.getDate());
+			addContractToArchive(-1, application, validFrom.getDate());
 
 			transaction.commit();
 		}
@@ -1043,7 +1049,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		throw new ClassCastException("Case with casecode: " + caseCode + " cannot be converted to a schoolchoice");
 	}
 	
-	protected HashMap getTagMap(ChildCareApplication application, Locale locale, IWTimestamp validFrom) throws RemoteException {
+	protected HashMap getTagMap(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean isChange) throws RemoteException {
 		HashMap map = new HashMap();
 		User child = application.getChild();
 		User parent1 = application.getOwner();
@@ -1105,10 +1111,17 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		map.put(peer.getAlias(), peer);
      
 		peer = new XmlPeer(ElementTags.CHUNK, "careTime");
-		if (application.getCareTime() != -1)
+		if (application.getCareTime() != -1 && !isChange)
 			peer.setContent(String.valueOf(application.getCareTime()));
 		else
-			peer.setContent("...........");
+			peer.setContent("....");
+		map.put(peer.getAlias(), peer);
+     
+		peer = new XmlPeer(ElementTags.CHUNK, "careTimeChange");
+		if (application.getCareTime() != -1 && isChange)
+			peer.setContent(String.valueOf(application.getCareTime()));
+		else
+			peer.setContent("....");
 		map.put(peer.getAlias(), peer);
      
 		peer = new XmlPeer(ElementTags.CHUNK, "childName");
@@ -1186,9 +1199,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	private void addContractToArchive(ChildCareApplication application, Date validFrom) {
+	private void addContractToArchive(int contractFileID, ChildCareApplication application, Date validFrom) {
 		try {
-			ChildCareContractArchive archive = getChildCareContractArchiveHome().create();
+			ChildCareContractArchive archive = null;
+			if (contractFileID != -1)
+				archive = getChildCareContractArchiveHome().findByContractFileID(contractFileID);
+			else
+				archive = getChildCareContractArchiveHome().create();
+				
 			archive.setChildID(application.getChildId());
 			archive.setContractFileID(application.getContractFileId());
 			archive.setApplication(application);
@@ -1196,6 +1214,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			archive.setValidFromDate(validFrom);
 			archive.setCareTime(application.getCareTime());
 			archive.store();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
 		}
 		catch (IDOStoreException e) {
 			e.printStackTrace();
