@@ -4,7 +4,6 @@
 package com.idega.block.blog.business;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOEntity;

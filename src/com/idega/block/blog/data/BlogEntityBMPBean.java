@@ -1,21 +1,15 @@
 package com.idega.block.blog.data;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.text.data.Content;
-import com.idega.core.category.data.ICCategory;
 import com.idega.core.category.data.ICInformationCategory;
 import com.idega.core.category.data.ICInformationFolder;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.localisation.data.ICLocale;
-import com.idega.data.IDOEntity;
-import com.idega.data.IDOHome;
-import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDOTranslatedEntityBMPBean;

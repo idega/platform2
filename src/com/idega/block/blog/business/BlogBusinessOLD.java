@@ -3,7 +3,6 @@ package com.idega.block.blog.business;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.CreateException;
@@ -15,7 +14,6 @@ import com.idega.block.blog.data.BlogEntity;
 import com.idega.block.text.business.ContentBusiness;
 import com.idega.block.text.data.Content;
 import com.idega.core.category.data.InformationCategory;
-import com.idega.core.component.data.ICObjectInstance;
 import com.idega.data.IDOLookupException;
 
 /**
@@ -86,15 +84,12 @@ public class BlogBusinessOLD {
 
 	public static BlogEntity saveBlog(int iBlogEntityId, int iLocalizedTextId, int iWorkFolderId, String sHeadline, String sTitle, String sAuthor, String sSource, String sBody, int iLocaleId, int iUserId, int InstanceId, Timestamp tsPubFrom, Timestamp tsPubTo, List listOfFiles, Timestamp blogDate) throws CreateException, IDOLookupException, FinderException {
 
-		boolean update = false;
 
 		BlogEntity eBlogEntity = ((com.idega.block.blog.data.BlogEntityHome) com.idega.data.IDOLookup.getHome(BlogEntity.class)).create();
 
 		if (iBlogEntityId > 0) {
 
 			eBlogEntity = ((com.idega.block.blog.data.BlogEntityHome) com.idega.data.IDOLookup.getHome(BlogEntity.class)).findByPrimaryKey(new Integer(iBlogEntityId));
-
-			update = true;
 
 		}
 

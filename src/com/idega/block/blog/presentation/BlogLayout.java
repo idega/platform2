@@ -5,8 +5,6 @@ package com.idega.block.blog.presentation;
 
 import java.util.Collection;
 
-import javax.faces.component.UIComponent;
-
 //import com.idega.presentation.Presentable;
 
 /**

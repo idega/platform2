@@ -1,8 +1,5 @@
 package com.idega.block.blog.presentation;
 
-import com.idega.idegaweb.block.business.FolderBlockBusiness;
-import com.idega.idegaweb.block.presentation.Builderaware;
-
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.Collections;
@@ -12,11 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
-import com.idega.idegaweb.block.presentation.Builderaware;
-import com.idega.idegaweb.block.presentation.FolderBlock;
-import com.idega.idegaweb.block.presentation.ImageWindow;
 import com.idega.block.blog.BlogBundle;
-import com.idega.block.blog.business.BlogBusinessOLD;
 import com.idega.block.blog.business.BlogFinder;
 import com.idega.block.blog.business.BlogFormatter;
 import com.idega.block.blog.business.BlogHelper;
@@ -26,13 +19,15 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.core.category.data.InformationFolder;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
+import com.idega.idegaweb.block.presentation.FolderBlock;
+import com.idega.idegaweb.block.presentation.ImageWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;

@@ -3,10 +3,7 @@
  */
 package com.idega.block.blog.business;
 
-import java.util.Hashtable;
-
 import com.idega.block.blog.data.BlogEntity;
-import com.idega.block.blog.data.BlogEntityTranslation;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOEntity;
 

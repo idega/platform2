@@ -33,11 +33,9 @@ public class BlogBusinessBean extends FolderBlockBusinessBean implements BlogBus
 	
 	public BlogEntity saveBlog(int iBlogEntityId, int iLocalizedTextId, int iWorkFolderId, int iCategoryId, String sHeadline, String sTitle, String sAuthor, String sSource, String sBody, int iLocaleId, int iUserId, int InstanceId, Timestamp tsPubFrom, Timestamp tsPubTo, List listOfFiles, Timestamp blogDate) throws CreateException, IDOLookupException, FinderException {
 
-		boolean update = false;
 		BlogEntity eBlogEntity = ((com.idega.block.blog.data.BlogEntityHome) com.idega.data.IDOLookup.getHome(BlogEntity.class)).create();
 		if (iBlogEntityId > 0) {
 			eBlogEntity = ((com.idega.block.blog.data.BlogEntityHome) com.idega.data.IDOLookup.getHome(BlogEntity.class)).findByPrimaryKey(new Integer(iBlogEntityId));
-			update = true;
 		}
 		Content eContent = ContentBusiness.saveContent(eBlogEntity.getContentId(), iLocalizedTextId, iLocaleId, iUserId, tsPubFrom, tsPubTo, sHeadline, sBody, sTitle, listOfFiles, blogDate);
 		if (eContent != null) {

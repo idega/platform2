@@ -1,6 +1,5 @@
 package com.idega.block.blog.business;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -15,10 +14,8 @@ import com.idega.block.text.data.Content;
 import com.idega.block.text.data.ContentBMPBean;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.data.LocalizedTextBMPBean;
-import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.IDOLookupException;
-import com.idega.data.IDORelationshipException;
 import com.idega.data.query.AND;
 import com.idega.data.query.InCriteria;
 import com.idega.data.query.MatchCriteria;
