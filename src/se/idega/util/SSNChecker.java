@@ -95,6 +95,13 @@ public class SSNChecker {
 		return ssn;
 	}	
 	
+	/**
+	 * A method that checks if the owner of a ssn is female.
+	 * 
+	 * @param ssn A string representation of the ssn. Can be of the form
+	 *            [XX]XXXXXX[-]XXXX
+	 * @return true if the owner is female, false otherwise. Also returns false if the ssn is invalid.
+	 */
 	public boolean isFemale(String ssn) {
 		ssn = trimSSN(ssn);
 		if (ssn.length() != 10) 
@@ -108,6 +115,13 @@ public class SSNChecker {
 			return false;
 	}
 	
+	/**
+	 * A method that checks if the owner of a ssn is male.
+	 * 
+	 * @param ssn A string representation of the ssn. Can be of the form
+	 *            [XX]XXXXXX[-]XXXX
+	 * @return true if the owner is male, false otherwise. Also returns false if the ssn is invalid.
+	 */
 	public boolean isMale(String ssn) {
 		return !isFemale(ssn);
 	}
@@ -116,8 +130,13 @@ public class SSNChecker {
 		SSNChecker checker = SSNChecker.getInstance();
 		
 		System.out.println("Checking ssn = " + blabla[0]);
-		if (checker.isValid(blabla[0]))
+		if (checker.isValid(blabla[0])) {
 			System.out.println(blabla[0] + " is valid");
+			if (checker.isFemale(blabla[0]))
+				System.out.println(blabla[0] + " belongs to a female");
+			else
+				System.out.println(blabla[0] + " belongs to a male");
+		}
 		else
 			System.out.println(blabla[0] + " is not valid");
 	}
