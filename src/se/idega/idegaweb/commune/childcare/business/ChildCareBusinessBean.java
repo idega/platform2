@@ -3092,14 +3092,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if (oldStudent == null && oldArchive != null) {
 						oldStudent = oldArchive.getSchoolClassMember();
 					}
-					if (oldStudent == null) {
-						oldStudent = getLatestPlacement(application.getChildId(), application.getProviderId());
-					}
 					if (oldStudent != null) {
 						IWTimestamp endDate = new IWTimestamp(validFrom);
 						endDate.addDays(-1);
 						SchoolClass oldSchoolClass = oldStudent.getSchoolClass();
 						getSchoolBusiness().addToSchoolClassMemberLog(oldStudent, oldSchoolClass, endDate.getDate(), user);
+					}
+					if (oldStudent == null) {
+						oldStudent = getLatestPlacement(application.getChildId(), application.getProviderId());
 					}
 					if (createNewStudent && oldStudent != null && oldStudent.getSchoolTypeId() != schoolTypeId) {
 						// end old placement with the chosen date -1 and create new
@@ -4272,8 +4272,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 				if (schoolTypeID == -1)
 					schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
-				if (finalize)
-					getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
+				getSchoolBusiness().storeSchoolClassMemberCC(childID, groupID, schoolTypeID, fromDate.getTimestamp(), removedDate, ((Integer) admin.getPrimaryKey()).intValue(), comment);
 			}
 
 			if (finalize) {
