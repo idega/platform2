@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.110 2002/12/29 16:03:58 laddi Exp $
+ * $Id: NewsReader.java,v 1.111 2003/01/04 12:57:54 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -765,7 +765,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 
    private Link getBackLink(PresentationObject obj){
     Link backLink = new Link(obj);
-    //backLink.setAsBackLink();
+    backLink.setAsBackLink(1);
     return backLink;
   }
 
