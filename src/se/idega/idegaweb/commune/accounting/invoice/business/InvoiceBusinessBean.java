@@ -40,10 +40,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/05 14:46:56 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/05 15:01:16 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.31 $
+ * @version $Revision: 1.32 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -264,7 +264,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             header.setDoublePosting (doublePosting);
             header.setOwnPosting (ownPosting);
             header.setPeriod (period);
-            //            header.setStatus (ConstantStatus.PRELIMINARY);
+            header.setStatus (ConstantStatus.PRELIMINARY);
             header.store ();
         } catch (RemoteException e) {
             e.printStackTrace ();

@@ -109,7 +109,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 		setColumn(COLUMN_CUSTODIAN_ID, u);
 	}
 	public void setStatus(char c) {
-		setColumn(COLUMN_STATUS, c);
+		setColumn(COLUMN_STATUS, c + "");
 	}
 	public void setDateCreated(Date d) {
 		setColumn(COLUMN_DATE_CREATED, d);
