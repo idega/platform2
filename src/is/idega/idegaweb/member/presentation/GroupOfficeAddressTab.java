@@ -176,15 +176,14 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		add(addressTable);
 		//    fpane.add(addressTable);
 
-		Table addressTable2 = new Table(4, 1);
+		Table addressTable2 = new Table(2, 2);
 
 		addressTable2.setWidth("100%");
 		addressTable2.setCellpadding(0);
 		addressTable2.setCellspacing(0);
 		addressTable2.setHeight(1, rowHeight);
+		addressTable2.setHeight(2, rowHeight);
 		addressTable2.setWidth(1, "70");
-		addressTable2.setWidth(2, "70");
-		addressTable2.setWidth(3, "70");
 
 		addressTable2.add(postalCodeText, 1, 1);
 		addressTable2.add(postalCodeField, 2, 1);
@@ -193,8 +192,8 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 		editPostalCodeLink.setWindowToOpen(PostalCodeEditorWindow.class);
 		addressTable2.add(editPostalCodeLink, 2, 1);
 				
-		addressTable2.add(poBoxText, 3, 1);
-		addressTable2.add(poBoxField, 4, 1);
+		addressTable2.add(poBoxText, 1, 2);
+		addressTable2.add(poBoxField, 2, 2);
 
 		add(addressTable2);
 		//    fpane.add(addressTable2);
