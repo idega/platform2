@@ -68,7 +68,7 @@ public BoxEditorWindow(){
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("box_admin","Box Admin"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
-    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
+    iwc.removeSessionAttribute(BoxBusiness.PARAMETER_CATEGORY_ID);
 
     try {
       _userID = LoginBusiness.getUser(iwc).getID();
@@ -131,7 +131,7 @@ public BoxEditorWindow(){
     if ( iwc.getParameter(BoxBusiness.PARAMETER_LINK_ID) != null ) {
       try {
         _linkID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_LINK_ID));
-        iwc.setApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(_linkID));
+        iwc.setSessionAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(_linkID));
       }
       catch (NumberFormatException e) {
         _linkID = -1;
@@ -358,14 +358,14 @@ public BoxEditorWindow(){
 
   private void deleteBoxLink(IWContext iwc) {
     System.out.println("Deleting...");
-    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
+    iwc.removeSessionAttribute(BoxBusiness.PARAMETER_LINK_ID);
     BoxBusiness.deleteLink(_linkID);
     setParentToReload();
     close();
   }
 
   private void closeEditor(IWContext iwc) {
-    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
+    iwc.removeSessionAttribute(BoxBusiness.PARAMETER_LINK_ID);
     if ( this._newObjInst ) {
       deleteBoxLink(iwc);
     }
