@@ -16,6 +16,7 @@ import com.idega.xml.XMLElement;
 import com.idega.xml.XMLException;
 import com.idega.xml.XMLParser;
 
+
 /**
  * <p>Title: idegaWeb</p>
  * <p>Description: A helper class for Query objects</p>
@@ -33,16 +34,27 @@ public class QueryHelper {
 	private List listOfRelatedEntities = null;
 	private List listOfFields = null;
 	private List listOfConditions = null;
-			
+		
+	public QueryHelper(){
+	}
+		
 	public QueryHelper(InputStream stream) throws XMLException,Exception{
-			doc = new XMLParser().parse(stream);
-			init();
+		doc = new XMLParser().parse(stream);
+		init();
+	}
+	
+	public QueryHelper(XMLDocument document){
+		doc = document;
+		init();
 	}
 	
 	private void init(){
 		root = doc.getRootElement();
+		if(root!=null){
+		
 		XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
 		if(source!=null){
+			// SOURCE ENTITY PART (STEP 1)
 			XMLElement entity = source.getChild(QueryXMLConstants.ENTITY);
 			if(entity !=null){
 				sourceEntity = new QueryEntityPart(entity);
@@ -82,9 +94,73 @@ public class QueryHelper {
 				}
 			}			
 		}
+		}
 	}
 	
+	private XMLElement getRootElement(){
+		if(root==null)
+			root =  new XMLElement(QueryXMLConstants.ROOT);
+		return root;
+	}
 	
+	private XMLElement getRelatedElement(){
+		return new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
+	}
+	private XMLElement getFieldsElement(){
+		return new XMLElement(QueryXMLConstants.FIELDS);
+	}
+	
+	public XMLDocument createDocument(){
+		if(doc == null)
+			doc = new XMLDocument(getRootElement());
+		//		SOURCE ENTITY PART (STEP 1)
+		if(sourceEntity!=null){
+			root.addContent(sourceEntity.getQueryElement());
+			//	RELATED PART ( STEP 2)
+			if(listOfRelatedEntities!=null && !listOfRelatedEntities.isEmpty()){
+				Iterator iter = listOfRelatedEntities.iterator();
+				XMLElement related = new XMLElement(QueryXMLConstants.RELATED_ENTITIES);
+				while(iter.hasNext()){
+					related.addContent(((QueryPart)iter.next()).getQueryElement());
+				}
+				root.addContent(related);
+				
+				//	FIELD PART (STEP 3)
+				if(listOfFields!=null && !listOfFields.isEmpty()){
+					iter = listOfFields.iterator();
+					XMLElement fields = new XMLElement(QueryXMLConstants.FIELDS);
+					while(iter.hasNext()){
+						fields.addContent(((QueryPart)iter.next()).getQueryElement());
+					}
+					root.addContent(fields);
+					
+					//					CONDITION PART (STEP 4)
+					if(listOfConditions!=null && !listOfConditions.isEmpty()){
+						iter = listOfConditions.iterator();
+						XMLElement conditions = new XMLElement(QueryXMLConstants.CONDITIONS);
+						while(iter.hasNext()){
+							conditions.addContent(((QueryPart)iter.next()).getQueryElement());
+						}
+						root.addContent(conditions);
+					}
+				}
+			}
+		}
+		return doc;
+	}
+	
+	public boolean hasSourceEntity(){
+		return sourceEntity!=null;
+	}
+	public boolean hasRelatedEntities(){
+		return listOfRelatedEntities !=null;
+	}
+	public boolean hasFields(){
+		return listOfFields!=null;
+	}
+	public boolean hasCondtions(){
+		return listOfConditions!=null;
+	}
 
 	/**
 	 * @return
@@ -168,6 +244,34 @@ public class QueryHelper {
 	 */
 	public void setSourceEntity(QueryEntityPart part) {
 		sourceEntity = part;
+	}
+	
+	public void addRelatedEntity(QueryEntityPart entity){
+		if(listOfRelatedEntities==null)
+			listOfRelatedEntities = new ArrayList();
+		listOfRelatedEntities.add(entity);
+	}
+	
+	public void addField(QueryFieldPart field){
+		if(listOfFields!=null)
+			listOfFields = new ArrayList();
+		listOfFields.add(field);
+	}
+	
+	public void addCondition(QueryConditionPart condition){
+		if(listOfConditions== null)
+			listOfConditions = new ArrayList();
+		listOfConditions.add(condition);
+	}
+	
+	public void clearRelatedEntities(){
+		listOfRelatedEntities = null;
+	}
+	public void clearFields(){
+		listOfFields = null;
+	}
+	public void clearConditions(){
+		listOfConditions = null;
 	}
 
 }
