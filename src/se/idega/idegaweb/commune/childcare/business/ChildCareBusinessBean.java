@@ -1269,6 +1269,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				childcareContract.setTerminatedDate(null);
 				childcareContract.store();
 				
+				SchoolClassMember member = childcareContract.getSchoolClassMember();
+				if (member != null) {
+					member.setRemovedDate(null);
+					member.store();
+				}
+				
 				changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
 				
 				return true;
