@@ -148,6 +148,8 @@ public class ApplicationEditor extends ChildCareBlock {
 			case ChildCareBusiness.STATUS_NEW_CHOICE :
 				break;
 			case ChildCareBusiness.STATUS_NOT_ANSWERED :
+				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_ACCEPTED), this.getStatusString(ChildCareBusiness.STATUS_ACCEPTED));
+				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_SENT_IN), this.getStatusString(ChildCareBusiness.STATUS_SENT_IN));
 				break;
 			case ChildCareBusiness.STATUS_PARENTS_ACCEPT :
 				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_REJECTED), this.getStatusString(ChildCareBusiness.STATUS_REJECTED));
