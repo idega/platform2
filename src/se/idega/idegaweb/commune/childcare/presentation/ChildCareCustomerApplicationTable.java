@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.17 2003/04/16 11:35:51 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.18 2003/04/16 16:36:26 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -66,7 +66,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				break;
 			
 			case CCConstants.ACTION_SUBMIT_CONFIRM:
-				createPagePhase1(iwc, layoutTbl); 				
+				form.setOnSubmit(createPagePhase1(iwc, layoutTbl)); 				
 				break;
 				
 			case CCConstants.ACTION_CANCEL_1: 
@@ -110,12 +110,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			default: 
 				/**@todo: What should happen here? */ 
-				createPagePhase1(iwc, layoutTbl); 			
+				form.setOnSubmit(createPagePhase1(iwc, layoutTbl)); 		
+				
 
 		}
 
 		form.add(layoutTbl);		
 		add(form);		
+		
 	}
 
 //	private void createSubmitPage(IWContext iwc, Table layoutTbl) throws RemoteException{
@@ -384,10 +386,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		layoutTbl.setAlignment(1, 2, "right");
 	}
 			
-	private void createPagePhase1(IWContext iwc, Table layoutTbl) throws RemoteException{
+	private String createPagePhase1(IWContext iwc, Table layoutTbl) throws RemoteException{
 		Collection applications = findApplications(iwc);
 		if (applications.size() == 0){
 			layoutTbl.add(new Text("No application found"));
+			return "";
 				
 		
 		}else{
@@ -403,12 +406,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	//		cancelBtn.setName(CANCEL[0] + PAGE_1);
 			cancelBtn.setAsImageButton(true);	
 			
+			
 			layoutTbl.add(appTable, 1, 1);
 			layoutTbl.add(submitBtn, 1, 3);
 			layoutTbl.add(cancelBtn, 1, 3);
 			layoutTbl.setAlignment(1, 3, "right");
 			layoutTbl.add(getHelpTextPage1(), 1, 4);
 			layoutTbl.setStyle(1, 4, "padding-top", "15px");
+			return ((ChildCarePlaceOfferTable1) appTable).getOnSubmitHandler();
 		}
 		
 	}
