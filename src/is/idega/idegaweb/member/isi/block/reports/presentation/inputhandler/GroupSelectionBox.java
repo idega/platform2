@@ -163,7 +163,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 		return groups;
 	}
 
-	private boolean checkMetaData(Group group, Map metaData) {
+	protected boolean checkMetaData(Group group, Map metaData) {
 		Iterator keyIter = metaData.keySet().iterator();
 		while(keyIter.hasNext()) {
 			String key = (String) keyIter.next();
