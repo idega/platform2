@@ -112,7 +112,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 				Iterator iterator = leagues.iterator();
 				while (iterator.hasNext()) {
 					WorkReportGroup group = (WorkReportGroup) iterator.next();
-					CheckBox box = new CheckBox(group.getGroupId().toString());
+					CheckBox box = new CheckBox(group.getPrimaryKey().toString());
 					if (memberLeagues != null && memberLeagues.contains(group))
 						box.setChecked(true);
 						
