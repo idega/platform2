@@ -115,7 +115,7 @@ private IWResourceBundle iwrb;
   }
 
   public void deleteNews(String news_id) throws SQLException{
-    News news = new News(Integer.parseInt(news_id));
+    com.idega.block.news.data.News news = new com.idega.block.news.data.News(Integer.parseInt(news_id));
     news.delete();
 
     getParentPage().setParentToReload();
@@ -190,11 +190,11 @@ private IWResourceBundle iwrb;
     String news_id = modinfo.getParameter("news_id");
     String category_id = modinfo.getParameter("category_id");
 
-    News news=null;
+    com.idega.block.news.data.News news=null;
     HiddenInput newsHidden;
 
     if(news_id != null){
-      news = new News(Integer.parseInt(news_id));
+      news = new com.idega.block.news.data.News(Integer.parseInt(news_id));
       update = true;
       newsHidden = new HiddenInput("news_id",news_id);
     }
@@ -351,11 +351,11 @@ private IWResourceBundle iwrb;
         return false;
     }
 
-    News news = null;
+    com.idega.block.news.data.News news = null;
     if (update)
-      news = new News(Integer.parseInt(news_id));
+      news = new com.idega.block.news.data.News(Integer.parseInt(news_id));
     else
-      news = new News();
+      news = new com.idega.block.news.data.News();
 
     news.setHeadline(newsHeader);
     news.setText(newsText);
@@ -498,22 +498,22 @@ private IWResourceBundle iwrb;
 
     Statement Stmt = Conn.createStatement();
     StringBuffer sql = new StringBuffer( "select ");
-    sql.append(News.getNewsTableName());
+    sql.append(com.idega.block.news.data.News.getNewsTableName());
     sql.append("_id,");
-    sql.append(News.getHeadLineColumnName());
+    sql.append(com.idega.block.news.data.News.getHeadLineColumnName());
     sql.append(" from ");
-    sql.append(News.getNewsTableName());
+    sql.append(com.idega.block.news.data.News.getNewsTableName());
     sql.append(" where ");
     sql.append(NewsCategory.getNewsCategoryTableName());
     sql.append("_id = '");
     sql.append(cotgegoryId);
     sql.append("' ORDER BY ");
-    sql.append(News.getHeadLineColumnName());
+    sql.append(com.idega.block.news.data.News.getHeadLineColumnName());
     System.err.println(sql.toString());
     ResultSet RS = Stmt.executeQuery(sql.toString());
     myDropdown.addMenuElement("-1", "Veldu frétt" );
     while(RS.next()){
-      myDropdown.addMenuElement(RS.getString(News.getNewsTableName()+"_id"), RS.getString(News.getHeadLineColumnName()));
+      myDropdown.addMenuElement(RS.getString(com.idega.block.news.data.News.getNewsTableName()+"_id"), RS.getString(com.idega.block.news.data.News.getHeadLineColumnName()));
     }
     myDropdown.keepStatusOnAction();
     myDropdown.setToSubmit();
