@@ -9,6 +9,7 @@ package com.idega.block.staff.presentation;
  * @version 1.2
  */
 
+import com.idega.builder.data.IBPage;
 import java.util.List;
 import java.util.Collections;
 import java.lang.NumberFormatException;
@@ -91,6 +92,9 @@ private String _alphabetHoverStyle;
 private String _textStyle;
 private String _headlineStyle;
 private String _divisionStyle;
+
+private IBPage _page;
+private IBPage _backPage;
 
 private IWBundle _iwb;
 private IWResourceBundle _iwrb;
@@ -438,6 +442,8 @@ private Table _myTable;
     Link nextLink = getNextUserLink(users,index);
     Link previousLink = getPreviousUserLink(users,index);
     Link backLink = new Link("< "+_iwrb.getLocalizedString("back","Back")+" >");
+      if ( _backPage != null )
+        backLink.setPage(_backPage);
       backLink.setStyle(_name);
 
     if ( previousLink != null )
@@ -503,6 +509,9 @@ private Table _myTable;
       if ( _styles )
         link.setStyle(_name);
       link.addParameter(StaffBusiness.PARAMETER_USER_ID,userID);
+      if ( _page != null ) {
+        link.setPage(_page);
+      }
 
     return link;
   }
@@ -763,6 +772,14 @@ private Table _myTable;
 
   public void setSelectedLetterColor(String color) {
     _selectedLetterColor = color;
+  }
+
+  public void setStaffPage(IBPage page) {
+    _page = page;
+  }
+
+  public void setBackPage(IBPage page) {
+    _backPage = page;
   }
 
   public void setZebraColors(String color1,String color2) {
