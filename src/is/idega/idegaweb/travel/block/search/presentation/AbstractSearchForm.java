@@ -48,6 +48,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
+import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -73,7 +74,6 @@ import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 import com.idega.util.SendMail;
-import com.idega.util.text.TextSoap;
 
 /**
  * @author gimmi
@@ -492,6 +492,16 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 		formTable.mergeCells(1, row, 3, row);
 		formTable.add(getHeaderText(supplier.getName()), 1, row);
+		try {
+		  Address a = supplier.getAddress();
+		  if (a != null) {
+		  		formTable.add(getHeaderText(", "+a.getStreetName()), 1, row);
+		  		if (a.getStreetNumber() != null) {
+		  			formTable.add(getHeaderText(" "+a.getStreetNumber()), 1, row);
+		  		}
+		  }
+		} catch (Exception e) {}
+		
 		++row;
 		formTable.mergeCells(1, row, 3, row);
 		formTable.add(getHeaderText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
