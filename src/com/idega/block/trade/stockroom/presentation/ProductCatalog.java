@@ -143,9 +143,10 @@ public class ProductCatalog extends CategoryBlock{
       pagesTable.setCellspacing(2);
 
     if (parameters == null) parameters = new Vector();
-
+    /** @todo PARAMETERAR :::::: LAGA
+     *  @todo Og skoða sorteringu eftir price
+     */
     Text pageText;
-
     if (currentPage > 1) {
       pageText = getText(iwrb.getLocalizedString("travel.previous","Previous"));
       Link prevLink = new Link(pageText);

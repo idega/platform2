@@ -79,7 +79,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
     return getPrice(productPriceId, productId, priceCategoryId, currencyId,time, -1, -1);
   }
 
-  public static float getPrice(Product product) {
+  public static ProductPrice getPrice(Product product) {
     ProductPrice pPrice = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
     StringBuffer buffer = new StringBuffer();
       buffer.append("SELECT * FROM "+ProductPrice.getProductPriceTableName());
@@ -92,13 +92,13 @@ public class StockroomBusiness /* implements SupplyManager */ {
     try {
       List prices = EntityFinder.getInstance().findAll(ProductPrice.class, buffer.toString());
       if (prices.size() > 0) {
-        return ((ProductPrice)prices.get(0)).getPrice();
+        return ((ProductPrice)prices.get(0));
       }
     }catch (IDOFinderException ido) {
       ido.printStackTrace(System.err);
     }
 
-    return 0;
+    return null;
   }
 
   public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, int timeframeId, int addressId) throws SQLException  {

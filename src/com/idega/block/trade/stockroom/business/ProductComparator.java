@@ -117,14 +117,26 @@ public class ProductComparator implements Comparator {
     Product p1 = (Product) o1;
     Product p2 = (Product) o2;
 
-    ProductPrice[] prices1 = ProductPrice.getProductPrices(p1.getID(), false);
-    ProductPrice[] prices2 = ProductPrice.getProductPrices(p2.getID(), false);
+    ProductPrice price1 = StockroomBusiness.getPrice(p1);
+    ProductPrice price2 = StockroomBusiness.getPrice(p2);
 
+    float pr1 = 0;
+    if (price1 != null) pr1 = price1.getPrice();
+    float pr2 = 0;
+    if (price2 != null) pr2 = price2.getPrice();
+
+    if (price1 == null)
+    System.err.println("Price 1 == null");
+    if (price2 == null)
+    System.err.println("Price 2 == null");
+    System.err.println(ProductBusiness.getProductName(p1)+" - pr1 : "+pr1+" , "+ProductBusiness.getProductName(p2)+" - pr2 : "+pr2);
+
+    if (pr1 < pr2) return 1;
+    else if (pr2 < pr1) return -1;
+    else return 0;
     /**
-     * @todo implementa ...
+     * @todo implementa fyrir mörg verð...
      */
-
-    return 0;
   }
 
   public boolean equals(Object obj) {

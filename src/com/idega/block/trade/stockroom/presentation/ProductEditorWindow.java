@@ -123,7 +123,12 @@ public class ProductEditorWindow extends IWAdminWindow {
       if (imageId != -1) {
         imageInserter = new ImageInserter(imageId, PAR_IMAGE);
       }
-      price.setContent(Integer.toString((int) StockroomBusiness.getPrice(_product)));
+      ProductPrice pPrice = StockroomBusiness.getPrice(_product);
+      if (pPrice != null) {
+        price.setContent(Integer.toString((int) pPrice.getPrice()));
+      }else {
+        price.setContent("0");
+      }
     }
     imageInserter.setHasUseBox(false);
 
@@ -192,7 +197,11 @@ public class ProductEditorWindow extends IWAdminWindow {
 
   private boolean setPrice(String price) {
     try {
-      int oldP = (int) StockroomBusiness.getPrice(_product);
+      ProductPrice pPri = StockroomBusiness.getPrice(_product);
+      int oldP = 0;
+      if (pPri != null) {
+        oldP = (int) pPri.getPrice();
+      }
       int newP = Integer.parseInt(price);
       if (oldP != newP) {
         ProductPrice pPrice = new ProductPrice();
