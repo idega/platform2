@@ -16,6 +16,10 @@ import com.idega.util.IWTimestamp;
 
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusinessHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchiveHome;
 
@@ -26,8 +30,9 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchiveHome;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class InvoiceBusinessBean {
-	private static final String BATCH = "Härledd uppgift";
-
+	private static final String BATCH_TEXT = "Härledd uppgift";		//Localize this text in the user interface
+	private static final String HOURS_PER_WEEK = "tim/v";		//Localize this text in the user interface
+	
 	public void createInvoicingData(Date startPeriod, Date endPeriod){
 		
 		ChildCareContractArchive contract;
@@ -51,12 +56,12 @@ public class InvoiceBusinessBean {
 			// TODO (JJ) create feedback that no contracts were found
 			e.printStackTrace();
 		}
-		Iterator iter = archive.iterator();
+		Iterator archiveIter = archive.iterator();
 
 		//Loop through all contracts
-		while(iter.hasNext())
+		while(archiveIter.hasNext())
 		{
-			contract = (ChildCareContractArchive)iter.next();
+			contract = (ChildCareContractArchive)archiveIter.next();
 			
 			try {
 				//**Fetch invoice receiver
@@ -64,6 +69,7 @@ public class InvoiceBusinessBean {
 				//**Fetch the reference at the provider
 				provider = contract.getApplication().getProvider();
 				//**Create the invoice header
+				//TODO (JJ) This should not always be done! Sometimes the header might already be created...
 				InvoiceHeader invoiceHeader = getInvoiceHeaderHome().create();
 				//Fill in all the field available at this time
 				//TODO (JJ) invoiceHeader.setMainActivity()
@@ -71,7 +77,7 @@ public class InvoiceBusinessBean {
 				invoiceHeader.setCustodianId(custodian);
 				invoiceHeader.setReference(provider);//TODO (JJ) Check if this is right. Supposed to be "Responcible person cenrally = BUN"...
 				invoiceHeader.setDateCreated(currentDate);
-				invoiceHeader.setCreatedBy(BATCH);	//TODO (JJ) Find out how the localization should be done
+				invoiceHeader.setCreatedBy(BATCH_TEXT);
 				//TODO (JJ) invoiceHeader.setOwnPosting();
 				//TODO (JJ) invoiceHeader.setDoublePosting();
 				invoiceHeader.setTotalAmountWithoutVAT(0);
@@ -98,15 +104,37 @@ public class InvoiceBusinessBean {
 					months -= 1.0 - percentOfMonthDone(endTime);
 					days = IWTimestamp.getDaysBetween(startTime, endTime);
 //				}
-				
-			
 
+/*
+				//Get all the rules for this contract
+				//TODO (JJ) This is a func that Thomas will provide.
+				PostingBusiness postingBusiness = getPostingBusinessHome().create();
+				postingBusiness.getPostingParameter(new Date(),);
+				Rule rule = (Rule)ruleIter.next();
+				//**Create the invoice record
+				InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
+				invoiceRecord.setAmount(rule.getAmount());
+				invoiceRecord.setInvoiceText(provider.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK);
+				invoiceRecord.setRuleText(rule.getText());
+				//TODO (JJ) get the "huvudverksamhet" object that laddi will create.
+				invoiceRecord.setDateCreated(currentDate);
+				invoiceRecord.setCreatedBy(BATCH_TEXT);
+				//TODO (JJ) Create a "utbetalningspost" waiting for description from Lotta
+				//TODO (JJ) set the reference to utbetalningsposten
+				invoiceRecord.setInvoiceHeader(invoiceHeader);
+				//TODO (JJ) Some VAT stuff needed here...
 
+				//TODO (JJ) This is a func that Thomas will provide.
+				Iterator ruleIter = rule.iterator();
+				while(ruleIter.hasNext()){
+					Rule rule = (Rule)ruleIter.next();
+				}
+*/				
 			} catch (RemoteException e1) {
-				// TODO Auto-generated catch block
+				// TODO (JJ) Auto-generated catch block
 				e1.printStackTrace();
 			} catch (CreateException e) {
-				// TODO Auto-generated catch block
+				// TODO (JJ) Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -133,6 +161,14 @@ public class InvoiceBusinessBean {
 
 	public InvoiceHeaderHome getInvoiceHeaderHome() throws RemoteException {
 		return (InvoiceHeaderHome) IDOLookup.getHome(InvoiceHeader.class);
+	}
+
+	public InvoiceRecordHome getInvoiceRecordHome() throws RemoteException {
+		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
+	}
+
+	public PostingBusinessHome getPostingBusinessHome() throws RemoteException {
+		return (PostingBusinessHome) IDOLookup.getHome(PostingBusiness.class);
 	}
 
 }

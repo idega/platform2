@@ -4,12 +4,12 @@ import java.sql.Date;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
-import com.idega.user.data.*;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 
 /**
  * @author Joakim
- * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" in the 
- * Kravspecifikation Check and Peng. 
+ * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" 
+ * (They are all the same thign) in the Kravspecifikation Check and Peng. 
  */
 public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord, IDOLegacyEntity {
 	private static final String ENTITY_NAME = "cacc_invoice_record";
@@ -17,7 +17,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	private static final String COLUMN_INVOICE_HEADER = "invoice_header";
 	private static final String COLUMN_PAYMENT_RECORD_ID = "payment_record_id";
 	private static final String COLUMN_PROVIDER_ID = "provider_id";
-	private static final String COLUMN_USER_ID = "user_id";
+	private static final String COLUMN_CONTRACT_ID = "contract_id";
 	private static final String COLUMN_INVOICE_TEXT = "invoice_text";
 	private static final String COLUMN_RULE_TEXT = "rule_text";
 	private static final String COLUMN_DAYS = "days";
@@ -50,7 +50,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_INVOICE_HEADER, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PAYMENT_RECORD_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PROVIDER_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_USER_ID, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_CONTRACT_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_INVOICE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_RULE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DAYS, "", true, true, java.lang.Integer.class);
@@ -71,7 +71,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
 
 		addManyToOneRelationship(COLUMN_INVOICE_HEADER, InvoiceHeader.class);
-		addManyToOneRelationship(COLUMN_USER_ID, User.class);
+		addManyToOneRelationship(COLUMN_CONTRACT_ID, ChildCareContractArchive.class);
 	}
 	public int getInvoiceheader() {
 		return getIntColumnValue(COLUMN_INVOICE_HEADER);
@@ -82,8 +82,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public int getProviderId() {
 		return getIntColumnValue(COLUMN_PROVIDER_ID);
 	}
-	public int getUserId() {
-		return getIntColumnValue(COLUMN_USER_ID);
+	public int getContractId() {
+		return getIntColumnValue(COLUMN_CONTRACT_ID);
 	}
 	public String getInvoiceText() {
 		return getStringColumnValue(COLUMN_INVOICE_TEXT);
@@ -144,14 +144,17 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	public void setInvoiceHeader(int i) {
 		setColumn(COLUMN_INVOICE_HEADER, i);
 	}
+	public void setInvoiceHeader(InvoiceHeader i){
+		setColumn(COLUMN_INVOICE_HEADER, i);
+	}
 	public void setPaymentRecordId(int i) {
 		setColumn(COLUMN_PAYMENT_RECORD_ID, i);
 	}
 	public void setColumnProviderId(int i) {
 		setColumn(COLUMN_PROVIDER_ID, i);
 	}
-	public void setUserId(int i) {
-		setColumn(COLUMN_USER_ID, i);
+	public void setContractId(int i) {
+		setColumn(COLUMN_CONTRACT_ID, i);
 	}
 	public void setInvoiceText(String s) {
 		setColumn(COLUMN_INVOICE_TEXT, s);
