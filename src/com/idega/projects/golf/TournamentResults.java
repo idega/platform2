@@ -256,15 +256,15 @@ private String gender;
 
         myTable.add(seeScores,2,a+2);
         myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",strokesScores.length+4,a+2);
-        myTable.add(strokesScores[a].getStrokesWithHandicap()+"",strokesScores.length+5,a+2);
+        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",tournamentRounds.length+4,a+2);
+        myTable.add(strokesScores[a].getStrokesWithHandicap()+"",tournamentRounds.length+5,a+2);
       }
 
       myTable.add(positionText,1,1);
       myTable.add(memberText,2,1);
       myTable.add(unionText,3,1);
-      myTable.add(bruttoText,strokesScores.length+4,1);
-      myTable.add(nettoText,strokesScores.length+5,1);
+      myTable.add(bruttoText,tournamentRounds.length+4,1);
+      myTable.add(nettoText,tournamentRounds.length+5,1);
 
       for ( int c = 1; c <= myTable.getColumns(); c++ ) {
         myTable.setColumnAlignment(c,"center");
@@ -338,15 +338,15 @@ private String gender;
 
         myTable.add(seeScores,2,a+2);
         myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",strokesScores.length+4,a+2);
-        myTable.add(out_differ,strokesScores.length+5,a+2);
+        myTable.add(strokesScores[a].getStrokesWithoutHandicap()+"",tournamentRounds.length+4,a+2);
+        myTable.add(out_differ,tournamentRounds.length+5,a+2);
       }
 
       myTable.add(positionText,1,1);
       myTable.add(memberText,2,1);
       myTable.add(unionText,3,1);
-      myTable.add(strokesText,strokesScores.length+4,1);
-      myTable.add(differenceText,strokesScores.length+5,1);
+      myTable.add(strokesText,tournamentRounds.length+4,1);
+      myTable.add(differenceText,tournamentRounds.length+5,1);
 
       for ( int c = 1; c <= myTable.getColumns(); c++ ) {
         myTable.setColumnAlignment(c,"center");
@@ -421,13 +421,13 @@ private String gender;
 
         myTable.add(seeScores,2,a+2);
         myTable.add(strokesScores[a].getAbbrevation(),3,a+2);
-        myTable.add(strokesScores[a].getTotalPoints()+"",strokesScores.length+4,a+2);
+        myTable.add(strokesScores[a].getTotalPoints()+"",tournamentRounds.length+4,a+2);
       }
 
       myTable.add(positionText,1,1);
       myTable.add(memberText,2,1);
       myTable.add(unionText,3,1);
-      myTable.add(pointsText,strokesScores.length+4,1);
+      myTable.add(pointsText,tournamentRounds.length+4,1);
 
       for ( int c = 1; c <= myTable.getColumns(); c++ ) {
         myTable.setColumnAlignment(c,"center");
@@ -493,6 +493,10 @@ private String gender;
 
   public void setNumberOfGolfers(int numberOfGolfers){
     this.numberOfGolfers=numberOfGolfers;
+  }
+
+  public void showAll(){
+    this.numberOfGolfers=0;
   }
 
   public void setShowHeader(boolean showHeader){
