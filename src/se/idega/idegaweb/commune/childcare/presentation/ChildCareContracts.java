@@ -134,7 +134,7 @@ public class ChildCareContracts extends ChildCareBlock {
 			
 			Collection students = null;
 			if (sort != -1)
-				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate(), showNotYetActive);
+				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDateChildcare(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate(), showNotYetActive);
 			else
 				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate());
 			
@@ -161,9 +161,9 @@ public class ChildCareContracts extends ChildCareBlock {
 					//registered = new IWTimestamp(student.getRegisterDate());
 					
 					
-					//contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
-					
-					contract= getBusiness().getLatestContract(((Integer)child.getPrimaryKey()).intValue());
+					contract = getBusiness().getValidContractForChild(((Integer)child.getPrimaryKey()).intValue());
+					if (contract == null)
+						contract = getBusiness().getLatestContract(((Integer)child.getPrimaryKey()).intValue());
 					
 
 					if (useStyleNames()) {
