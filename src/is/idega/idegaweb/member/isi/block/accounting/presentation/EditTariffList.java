@@ -39,7 +39,8 @@ import com.idega.util.IWTimestamp;
  */
 public class EditTariffList extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "etl_submit";
-
+	protected static final String ACTION_DELETE = "etl_delete";
+	
 	protected static final String LABEL_GROUP = "isi_acc_etl_group";
 	protected static final String LABEL_TARIFF_TYPE = "isi_acc_etl_tariff_type";
 	protected static final String LABEL_TEXT = "isi_acc_etl_text";
@@ -48,8 +49,6 @@ public class EditTariffList extends CashierSubWindowTemplate {
 	protected static final String LABEL_TO = "isi_acc_etl_to";
 	protected static final String LABEL_CHILDREN = "isi_acc_etl_appl_children";
 	
-	protected static final String LABEL_DELETE = "isi_acc_etl_delete";
-
 	/**
 	 *  
 	 */
@@ -134,6 +133,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		Collection col = null;
 		Collection types = null;
 		try {
+			System.out.println("EditTariffList.getClub() = " + getClub());
 			if (getClub() != null) {
 				col = getAccountingBusiness(iwc).findAllTariffByClub(getClub());
 				types = getAccountingBusiness(iwc).findAllTariffTypeByClub(getClub());
@@ -180,7 +180,7 @@ public class EditTariffList extends CashierSubWindowTemplate {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				ClubTariff tariff = (ClubTariff) it.next();
-				CheckBox delete = new CheckBox(LABEL_DELETE, tariff.getPrimaryKey().toString());
+				CheckBox delete = new CheckBox(ACTION_DELETE, tariff.getPrimaryKey().toString());
 				t.add(delete, 1, row);
 				
 				Group group = tariff.getGroup();

@@ -97,6 +97,7 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
 		Collection col = null;
 		Collection types = null;
 		try {
+			System.out.println("ClubCreditCardContract.getClub() = " + getClub());
 			if (getClub() != null) {
 				col = getAccountingBusiness(iwc).findAllCreditCardContractByClub(getClub());
 				types = getAccountingBusiness(iwc).findAllCreditCardType();

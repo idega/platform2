@@ -36,6 +36,7 @@ import com.idega.user.presentation.StyledIWAdminWindow;
 public class CashierWindow extends StyledIWAdminWindow {
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi.block.accounting";
 	public static final String PARAMETER_GROUP_ID = GroupPropertyWindow.PARAMETERSTRING_GROUP_ID;
+	public static final String PARAMETER_DIVISION_ID = "cashier_div_id";
 	public static final String PARAMETER_USER_ID = "cashier_user_id";
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
 	
@@ -88,7 +89,6 @@ public class CashierWindow extends StyledIWAdminWindow {
 
 	private void init(IWContext iwc) {
 		String sGroupId = iwc.getParameter(PARAMETER_GROUP_ID);
-		System.out.println("CashierWindow : sGroupId = " + sGroupId);
 		if (sGroupId != null) {
 			try {
 				_group = getGroupBusiness(iwc).getGroupByGroupID(new Integer(sGroupId).intValue());
@@ -355,11 +355,13 @@ public class CashierWindow extends StyledIWAdminWindow {
 			}
 			else if (action.equals(ACTION_MEMBER_CREDITCARD)) {
 				addTitle(iwrb.getLocalizedString(ACTION_MEMBER_CREDITCARD, "Edit users creditcard info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
-				subWindow = new EditTariffList();
+				subWindow = new UserCreditcard();
 			}
 
 			if (subWindow != null) {
 				subWindow.setClub(_group);
+				if (_user != null)
+					subWindow.setUser(_user);
 				table.add(subWindow, 2, 1);
 			}
 		}

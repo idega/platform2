@@ -171,6 +171,7 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
 		
 		Collection col = null;
 		try {
+			System.out.println("AutomaticAssessment.getClub() = " + getClub());
 			if (getClub() != null) {
 				col = getAccountingBusiness(iwc).findAllAssessmentRoundByClubAndDivision(getClub(), getDivision());
 			}

@@ -30,10 +30,9 @@ import com.idega.presentation.ui.TextInput;
  */
 public class EditTariffType extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "ett_submit";
-
-	protected static final String LABEL_TARIFF_TYPE = "isi_acc_ett_tariff_type";
+	protected static final String ACTION_DELETE = "ett_delete";
+	
 	protected static final String LABEL_NAME = "isi_acc_ett_name";
-	protected static final String LABEL_LOC_KEY = "isi_acc_ett_loc_key";
 
 	/**
 	 *  
@@ -43,12 +42,10 @@ public class EditTariffType extends CashierSubWindowTemplate {
 	}
 
 	private void saveTariffType(IWContext iwc) {
-		String type = iwc.getParameter(LABEL_TARIFF_TYPE);
 		String name = iwc.getParameter(LABEL_NAME);
-		String locKey = iwc.getParameter(LABEL_LOC_KEY);
 
 		try {
-			getAccountingBusiness(iwc).insertTariffType(type,name,locKey,getClub());
+			getAccountingBusiness(iwc).insertTariffType(null,name,null,getClub());
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -69,28 +66,23 @@ public class EditTariffType extends CashierSubWindowTemplate {
 		inputTable.setCellpadding(5);
 
 		int row = 1;
-		Text labelType = new Text(iwrb.getLocalizedString(LABEL_TARIFF_TYPE, "Tariff type"));
-		labelType.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelName = new Text(iwrb.getLocalizedString(LABEL_NAME, "Name"));
 		labelName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		
-		inputTable.add(labelType, 1, row);
-		inputTable.add(labelName, 2, row++);
+		inputTable.add(labelName, 1, row++);
 		
-		TextInput typeInput = new TextInput(LABEL_TARIFF_TYPE);
 		TextInput nameInput = new TextInput(LABEL_NAME);
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
 
-		inputTable.add(typeInput, 1, row);
-		inputTable.add(nameInput, 2, row);
-		inputTable.add(submit, 3, row);
+		inputTable.add(nameInput, 1, row);
+		inputTable.add(submit, 2, row);
 		
 		row = 1;
-		t.add(labelType, 2, row);
-		t.add(labelName, 3, row++);
+		t.add(labelName, 2, row++);
 
 		Collection col = null;
 		try {
+			System.out.println("EditTariffType.getClub() = " + getClub());
 			if (getClub() != null) {
 				col = getAccountingBusiness(iwc).findAllTariffTypeByClub(getClub());
 			}
@@ -103,10 +95,12 @@ public class EditTariffType extends CashierSubWindowTemplate {
 			Iterator it = col.iterator();
 			while (it.hasNext()) {
 				ClubTariffType type = (ClubTariffType) it.next();
-				t.add(type.getTariffType(), 2, row);
-				t.add(type.getName(), 3, row);
+				t.add(type.getName(), 2, row);
 				row++;
 			}
+			
+			SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
+			t.add(delete, 10, row);
 		}
 
 		f.maintainParameter(CashierWindow.ACTION);
