@@ -75,7 +75,7 @@ public class PageCounter extends Block {
       page.add("Page name",1,y);
       page.add("Count",2,y);
 
-      ArrayList pageHits =  TrackerBusiness.getPageHitsArrayListSortedBySessions();
+      ArrayList pageHits =  TrackerBusiness.getPageHitsArrayListSortedByHits();
 
       Iterator pageList = pageHits.iterator();
       PageStatistics item;
