@@ -35,6 +35,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
     Product product;
     int fileId;
     Image image;
+    String teaser;
 
     List catProducts;
     Link configCategory;
@@ -48,6 +49,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
       try {
         pCat = (ICCategory) productCategories.get(i);
         if (productCatalog._showCategoryName) {
+          table.mergeCells(1, row, 2, row);
           table.add(productCatalog.getCategoryText(pCat.getName()), 1,row);
         }
 
@@ -55,7 +57,8 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
           configCategory = new Link(productCatalog.iDetach);
             configCategory.setWindowToOpen(ProductCategoryEditor.class);
             configCategory.addParameter(ProductCategoryEditor.SELECTED_CATEGORY, pCat.getID());
-          table.add(configCategory, 2,row);
+          table.add(configCategory, 3,row);
+          table.setAlignment(3, row, "right");
         }
 
         if (!productCatalog._showCategoryName && !productCatalog._hasEditPermission) {
@@ -65,13 +68,14 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
         catProducts = ProductBusiness.getProducts(pCat);//.getInstance().findRelated(pCat, Product.class);
         for (int j = 0; j < catProducts.size(); j++) {
           ++row;
+          table.mergeCells(1, row, 3, row);
           try {
             product = (Product) catProducts.get(j);
             fileId = product.getFileId();
             //table.add(getText(product.getNumber()), 1,row);
 
             if (productCatalog._productIsLink) {
-              productLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product)));
+              productLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
               productLink.addParameter(ProductViewer.PRODUCT_ID, product.getID());
               if (productCatalog._productLinkPage != null) {
                 productLink.setPage(productCatalog._productLinkPage);
@@ -80,7 +84,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
               }
               table.add(productLink, 1,row);
             }else {
-              table.add(productCatalog.getText(ProductBusiness.getProductName(product)), 1,row);
+              table.add(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)), 1,row);
             }
 
             if (fileId != -1) {
@@ -89,15 +93,23 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
               //table.add("MYND FYLGIR", 4, row);
             }
 
+            if (productCatalog._showTeaser) {
+              teaser = ProductBusiness.getProductTeaser(product, productCatalog._currentLocaleId);
+              if (!teaser.equals("")) {
+                ++row;
+                table.setWidth(2, row, "100%");
+                table.mergeCells(2, row, 3, row);
+                table.add(productCatalog.getText(teaser), 2,row);
+              }
+            }
+
           }catch (Exception e) {
-            table.add("Villa", 1, row);
             e.printStackTrace(System.err);
           }
         }
 
 
       }catch (Exception e) {
-        table.add("Villa", 1, row);
         e.printStackTrace(System.err);
       }
     }
@@ -105,6 +117,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 
 //    add(getPagesTable(totalPages));
     //add(form);
+
     return form;
   }
 

@@ -125,12 +125,6 @@ public class ProductComparator implements Comparator {
     float pr2 = 0;
     if (price2 != null) pr2 = price2.getPrice();
 
-    if (price1 == null)
-    System.err.println("Price 1 == null");
-    if (price2 == null)
-    System.err.println("Price 2 == null");
-    System.err.println(ProductBusiness.getProductName(p1)+" - pr1 : "+pr1+" , "+ProductBusiness.getProductName(p2)+" - pr2 : "+pr2);
-
     if (pr1 < pr2) return 1;
     else if (pr2 < pr1) return -1;
     else return 0;

@@ -107,7 +107,9 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     table.add(number, 1,row);
     table.add(name, 2,row);
     table.add(lPrice, 3,row);
-    table.add(_productCatalog.getCategoryText(_iwrb.getLocalizedString("thumbnail","Thumbnail")), 4,row);
+    if (_productCatalog._showImage) {
+      table.add(_productCatalog.getCategoryText(_iwrb.getLocalizedString("thumbnail","Thumbnail")), 4,row);
+    }
 
     for (int i = startProductId; i < stopProductId; i++) {
 //    for (int i = 0; i < products.size(); i++) {
@@ -124,7 +126,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
         table.add(_productCatalog.getText(product.getNumber()), 1,row);
 
         if (_productCatalog._productIsLink) {
-          productLink = new Link(_productCatalog.getText(ProductBusiness.getProductName(product)));
+          productLink = new Link(_productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId)));
           productLink.addParameter(ProductViewer.PRODUCT_ID, product.getID());
           if (_productCatalog._productLinkPage != null) {
             productLink.setPage(_productCatalog._productLinkPage);
@@ -133,7 +135,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
           }
           table.add(productLink, 2,row);
         }else {
-          table.add(_productCatalog.getText(ProductBusiness.getProductName(product)), 2,row);
+          table.add(_productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId)), 2,row);
         }
 //        table.add(ProductCatalog.getText(ProductBusiness.getProductName(product)), 2,row);
 
@@ -149,6 +151,11 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
           table.add(_productCatalog.getText(Integer.toString((int) price)), 3, row);
         }else {
           table.add(_productCatalog.getText("0"), 3, row);
+        }
+
+        if (_productCatalog._showTeaser) {
+          table.mergeCells(4, row, 4, ++row);
+          table.add(_productCatalog.getText(ProductBusiness.getProductTeaser(product, _productCatalog._currentLocaleId)), 2, row);
         }
 
 

@@ -1,5 +1,8 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.core.localisation.presentation.ICLocalePresentation;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import java.util.Locale;
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -34,6 +37,7 @@ public class ProductEditorWindow extends IWAdminWindow {
   private static final String PAR_NUMBER = "prod_edit_number";
   private static final String PAR_NAME = "prod_edit_name";
   private static final String PAR_DESCRIPTION = "prod_edit_description";
+  private static final String PAR_TEASER = "prod_edit_teaser";
   private static final String PAR_PRICE = "prod_edit_price";
   private static final String PAR_IMAGE = "prod_edit_image";
 
@@ -42,11 +46,13 @@ public class ProductEditorWindow extends IWAdminWindow {
 
   private Product _product = null;
   private int _productId = -1;
+  private int iLocaleID = -1;
 
   public ProductEditorWindow() {
     setUnMerged();
     setWidth(500);
     setTitle("Product Editor");
+    //super.addTitle("Product Editor");
   }
 
 
@@ -91,6 +97,21 @@ public class ProductEditorWindow extends IWAdminWindow {
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
+
+    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
+
+    String sLocaleId = iwc.getParameter(ProductBusiness.PARAMETER_LOCALE_DROP);
+
+    iLocaleID = -1;
+    if(sLocaleId!= null){
+      iLocaleID = Integer.parseInt(sLocaleId);
+      chosenLocale = ICLocaleBusiness.getLocale(iLocaleID);
+    }
+    else{
+      chosenLocale = currentLocale;
+      iLocaleID = ICLocaleBusiness.getLocaleId(chosenLocale);
+    }
+
   }
 
   public static Link getEditorLink(int productId) {
@@ -109,16 +130,22 @@ public class ProductEditorWindow extends IWAdminWindow {
     TextInput number = new TextInput(PAR_NUMBER);
     TextInput name = new TextInput(PAR_NAME);
     TextArea description = new TextArea(PAR_DESCRIPTION);
+    TextArea teaser = new TextArea(PAR_TEASER);
     TextInput price = new TextInput(PAR_PRICE);
     ImageInserter imageInserter = new ImageInserter(PAR_IMAGE);
       name.setSize(50);
       description.setWidth(50);
       description.setHeight(5);
+      teaser.setWidth(50);
 
     if (_product != null) {
+      /**
+       * @todo addTeaser;
+       */
       number.setContent(_product.getNumber());
-      name.setContent(ProductBusiness.getProductName(_product));
-      description.setContent(ProductBusiness.getProductDescription(_product));
+      name.setContent(ProductBusiness.getProductName(_product, iLocaleID));
+      description.setContent(ProductBusiness.getProductDescription(_product, iLocaleID));
+      teaser.setContent(ProductBusiness.getProductTeaser(_product, iLocaleID));
       int imageId = _product.getFileId();
       if (imageId != -1) {
         imageInserter = new ImageInserter(imageId, PAR_IMAGE);
@@ -132,11 +159,16 @@ public class ProductEditorWindow extends IWAdminWindow {
     }
     imageInserter.setHasUseBox(false);
 
+    DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(ProductBusiness.PARAMETER_LOCALE_DROP);
+      localeDrop.setToSubmit();
+      localeDrop.setSelectedElement(Integer.toString(iLocaleID));
+    super.addLeft(iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
 
     super.addHiddenInput(new HiddenInput(this.PRODUCT_ID, Integer.toString(_productId)));
 
     super.addLeft(iwrb.getLocalizedString("item_number","Item number"), number, true);
     super.addLeft(iwrb.getLocalizedString("name","Name"), name, true);
+    super.addLeft(iwrb.getLocalizedString("teaser","Teaser"), teaser, true);
     super.addLeft(iwrb.getLocalizedString("description","Description"), description, true);
     super.addLeft(iwrb.getLocalizedString("price","Price"), price, true);
 
@@ -156,6 +188,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     String number = iwc.getParameter(PAR_NUMBER);
     String name = iwc.getParameter(PAR_NAME);
     String description = iwc.getParameter(PAR_DESCRIPTION);
+    String teaser = iwc.getParameter(PAR_TEASER);
     String price = iwc.getParameter(PAR_PRICE);
     String image = iwc.getParameter(PAR_IMAGE);
 
@@ -167,8 +200,9 @@ public class ProductEditorWindow extends IWAdminWindow {
     if (!name.equals("")) {
       if (_product == null) {
         try {
-          _productId = ProductBusiness.createProduct(fileId, name, number, description, true);
+          _productId = ProductBusiness.createProduct(fileId, name, number, description, true, iLocaleID);
           _product = ProductBusiness.getProduct(_productId);
+          ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
           if (setPrice(price)) {
             return true;
           }else {
@@ -180,7 +214,8 @@ public class ProductEditorWindow extends IWAdminWindow {
         }
       }else {
         try {
-          ProductBusiness.updateProduct(this._productId, fileId, name, number, description, true);
+          ProductBusiness.updateProduct(this._productId, fileId, name, number, description, true, iLocaleID);
+          ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
           if (setPrice(price)) {
             return true;
           }else {

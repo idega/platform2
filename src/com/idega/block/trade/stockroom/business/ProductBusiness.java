@@ -46,22 +46,30 @@ public class ProductBusiness {
   }
 
   public static int updateProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
-    return createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+    return createProduct(productId,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId, -1);
   }
 
-  public static int updateProduct(int productId, Integer fileId, String productName, String number, String productDescription, boolean isValid) throws Exception{
-    return createProduct(productId,-1, fileId, productName, number, productDescription, isValid, null, -1);
+  public static int updateProduct(int productId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int localeId) throws Exception{
+    return createProduct(productId,-1, fileId, productName, number, productDescription, isValid, null, -1, localeId);
+  }
+
+  public static int createProduct(Integer fileId, String productName, String number, String productDescription, boolean isValid, int localeId) throws Exception{
+    return createProduct(-1,-1, fileId, productName, number, productDescription, isValid, null, -1, localeId);
   }
 
   public static int createProduct(Integer fileId, String productName, String number, String productDescription, boolean isValid) throws Exception{
-    return createProduct(-1,-1, fileId, productName, number, productDescription, isValid, null, -1);
+    return createProduct(-1,-1, fileId, productName, number, productDescription, isValid, null, -1, -1);
   }
 
   public static int createProduct(int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
-    return createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+    return createProduct(-1,supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId, -1);
   }
 
   static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId) throws Exception{
+    return createProduct(productId, supplierId, fileId, productName, number, productDescription, isValid, addressIds, discountTypeId);
+  }
+
+  static int createProduct(int productId, int supplierId, Integer fileId, String productName, String number, String productDescription, boolean isValid, int[] addressIds, int discountTypeId, int localeId) throws Exception{
     Product product= null;
     if (productId == -1) {
       product = new Product();
@@ -89,8 +97,13 @@ public class ProductBusiness {
       //product.update();
     }
 
-    ProductBusiness.setProductName(product, productName);
-    ProductBusiness.setProductDescription(product, productDescription);
+    if (localeId == -1) {
+      ProductBusiness.setProductName(product, productName);
+      ProductBusiness.setProductDescription(product, productDescription);
+    }else {
+      ProductBusiness.setProductName(product, localeId, productName);
+      ProductBusiness.setProductDescription(product, localeId, productDescription);
+    }
 
     if(addressIds != null){
       for (int i = 0; i < addressIds.length; i++) {
@@ -155,6 +168,25 @@ public class ProductBusiness {
     }
   }
 
+  public static String getProductTeaser(Product product) {
+    return getProductTeaser(product, IWContext.getInstance());
+  }
+
+  public static String getProductTeaser(Product product, IWContext iwc) {
+    return getProductTeaser(product, getSelectedLocaleId(iwc));
+  }
+
+  public static String getProductTeaser(Product product, int localeId) {
+    LocalizedText text = TextFinder.getLocalizedText(product, localeId);
+    if (text == null) text = TextFinder.getLocalizedText(product, defaultLocaleId);
+    String teaser = "";
+    if (text != null) {
+      teaser = text.getTitle();
+      if (teaser == null) teaser = "";
+    }
+    return teaser;
+  }
+
   public static String getProductDescription(Product product, IWContext iwc) {
     return getProductDescription(product, getSelectedLocaleId(iwc));
   }
@@ -171,6 +203,41 @@ public class ProductBusiness {
       description = text.getBody();
     }
     return description;
+  }
+
+  public static void setProductTeaser(Product product, String teaser) {
+    IWContext iwc = IWContext.getInstance();
+      setProductTeaser(product, getSelectedLocaleId(iwc), teaser);
+  }
+
+  public static void setProductTeaser(Product product, int localeId, String teaser) {
+    LocalizedText locText = TextFinder.getLocalizedText(product,localeId);
+    boolean newLocText = false;
+    if ( locText == null ) {
+      locText = new LocalizedText();
+      newLocText = true;
+    }
+
+    locText.setTitle(teaser);
+
+    if ( newLocText ) {
+      locText.setLocaleId(localeId);
+      try {
+        locText.insert();
+        locText.addTo(product);
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
+    }
+    else {
+      try {
+        locText.update();
+      }
+      catch (SQLException e) {
+        e.printStackTrace(System.err);
+      }
+    }
   }
 
   public static void setProductName(Product product, String name) {

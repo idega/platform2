@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.core.localisation.business.*;
 import com.idega.core.data.*;
 import com.idega.block.category.business.CategoryBusiness;
 import com.idega.builder.data.IBPage;
@@ -50,9 +51,13 @@ public class ProductCatalog extends CategoryBlock{
   boolean _productIsLink = false;
   boolean _showCategoryName = true;
   boolean _showImage = false;
+  boolean _showTeaser = false;
 
+  Locale _currentLocale = null;
+  int _currentLocaleId = -1;
   boolean _hasEditPermission = false;
   boolean _allowMulitpleCategories = true;
+
 
   private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
 
@@ -73,6 +78,9 @@ public class ProductCatalog extends CategoryBlock{
     iwrb = bundle.getResourceBundle(iwc);
 
     setAutoCreate(false);
+
+    this._currentLocale = iwc.getCurrentLocale();
+    this._currentLocaleId = ICLocaleBusiness.getLocaleId(_currentLocale);
 
     this._hasEditPermission = this.hasEditPermission();
 
@@ -143,7 +151,8 @@ public class ProductCatalog extends CategoryBlock{
       pagesTable.setCellspacing(2);
 
     if (parameters == null) parameters = new Vector();
-    /** @todo PARAMETERAR :::::: LAGA
+    Parameter parameter;
+    /**
      *  @todo Og skoða sorteringu eftir price
      */
     Text pageText;
@@ -151,6 +160,11 @@ public class ProductCatalog extends CategoryBlock{
       pageText = getText(iwrb.getLocalizedString("travel.previous","Previous"));
       Link prevLink = new Link(pageText);
         prevLink.addParameter(_VIEW_PAGE, currentPage -1);
+        for (int l = 0; l < parameters.size(); l++) {
+          parameter = (Parameter) parameters.get(l);
+          prevLink.addParameter(parameter);
+        }
+
       pagesTable.add(prevLink, 1, 1);
     }
 
@@ -164,6 +178,10 @@ public class ProductCatalog extends CategoryBlock{
       }
       pageLink = new Link(pageText);
         pageLink.addParameter(_VIEW_PAGE, i);
+        for (int l = 0; l < parameters.size(); l++) {
+          parameter = (Parameter) parameters.get(l);
+          pageLink.addParameter(parameter);
+        }
 
 
       pagesTable.add(pageLink, i+1, 1);
@@ -173,6 +191,10 @@ public class ProductCatalog extends CategoryBlock{
       pageText = getText(iwrb.getLocalizedString("travel.next","Next"));
       Link nextLink = new Link(pageText);
         nextLink.addParameter(_VIEW_PAGE, currentPage + 1);
+        for (int l = 0; l < parameters.size(); l++) {
+          parameter = (Parameter) parameters.get(l);
+          nextLink.addParameter(parameter);
+        }
       pagesTable.add(nextLink, pages + 2, 1);
     }
 
@@ -234,6 +256,10 @@ public class ProductCatalog extends CategoryBlock{
 
   public void setShowImage(boolean showImage) {
     this._showImage = showImage;
+  }
+
+  public void setShowTeaser(boolean showTeaser) {
+    this._showTeaser = showTeaser;
   }
 
   public boolean getMultible() {

@@ -44,7 +44,7 @@ public class ProductViewer extends Block {
 
     }else {
 
-      add("product == null");
+      add("product er samasem null");
 
     }
   }
@@ -59,10 +59,12 @@ public class ProductViewer extends Block {
 
     try {
       String sProductId = iwc.getParameter(this.PRODUCT_ID);
-      _productId = Integer.parseInt(sProductId);
-      _product = ProductBusiness.getProduct(_productId);
-      if (!_product.getIsValid()) {
-        _product = null;
+      if (sProductId != null) {
+        _productId = Integer.parseInt(sProductId);
+        _product = ProductBusiness.getProduct(_productId);
+        if (!_product.getIsValid()) {
+          _product = null;
+        }
       }
     }catch (Exception e) {
       e.printStackTrace(System.err);
