@@ -1,7 +1,7 @@
 /*
  * Created on Jan 20, 2005
  */
-package com.idega.user.business;
+package is.idega.idegaweb.member.business;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -26,6 +26,8 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;

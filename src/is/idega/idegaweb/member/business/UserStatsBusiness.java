@@ -2,7 +2,7 @@
  * Created on Jan 20, 2005
  *
  */
-package com.idega.user.business;
+package is.idega.idegaweb.member.business;
 
 import com.idega.business.IBOSession;
 
