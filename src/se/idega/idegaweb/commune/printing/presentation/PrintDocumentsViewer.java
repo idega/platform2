@@ -428,8 +428,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
   }
   
   private void addDocumentsList(IWContext iwc)throws Exception{
-  	Form uForm = new Form("uform");
-  	Form pForm = new Form("pform");
+  	Form uForm = new Form();
+  	Form pForm = new Form();
 	Table  uT = new Table();
 	Table pT = new Table();
 	uForm.add(uT);
@@ -467,7 +467,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		uT.add(unPrintedLetterDocs,1,urow++);
 		uT.add(Text.getBreak(),1,urow++);
 	
-		ColumnList printedLetterDocs = new ColumnList(3);
+		ColumnList printedLetterDocs = new ColumnList(4);
 		
 		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType,pFrom,pTo);
 		
@@ -477,20 +477,23 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	pT.add(printedLetterDocs,1,prow++);
 	pT.add(getCursorLinks(iwc,printDocs.size(),cursor_p,PRM_CURSOR_P,count_p),1,prow++);
 			
-			printedLetterDocs.setHeader(localize("printdoc.printed_date","Printing date"),1);
-			printedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
+			printedLetterDocs.setHeader("#",1);
+			printedLetterDocs.setHeader(localize("printdoc.printed_date","Printing date"),2);
+			printedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),3);
 			printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 			
 			Iterator iter = printDocs.iterator();
-			int count = 0;
+			int count = cursor_p+1;
+			int ccp = count_p+cursor_p;
 			if(cursor_p >0){
-				while(iter.hasNext() && cursor_u>0){
+				while(iter.hasNext() && cursor_p>0){
 					iter.next();
 					cursor_p--;
 				}
 			}
-			while (iter.hasNext() && count < defaultShown) {
+			while (iter.hasNext() && count <= ccp) {
 				PrintDocuments doc = (PrintDocuments)iter.next();
+				printedLetterDocs.add(String.valueOf(count));
 				printedLetterDocs.add(doc.getCreated().toString());
 				//messageList.add("-");
 				printedLetterDocs.add(Integer.toString(doc.getNumberOfSubDocuments()));
