@@ -63,8 +63,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * @version 1.0
  */
 public class CitizenAccountPreferencesEHealth extends EHealthBlock {
-	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
-
+	
 	private final static int ACTION_VIEW_FORM = 1;
 	private final static int ACTION_FORM_SUBMIT = 2;
 	private final static int ACTION_CANCEL = 3;
@@ -179,10 +178,6 @@ public class CitizenAccountPreferencesEHealth extends EHealthBlock {
     private boolean removeEmailWhenEmpty = true;
 		
 	public CitizenAccountPreferencesEHealth() {
-	}
-
-	public String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
 	}
 
 	public void main(IWContext iwc) {
