@@ -78,6 +78,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORuntimeException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.io.MemoryFileBuffer;
@@ -386,7 +387,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private boolean hasQueuePriority(User child, int providerID) throws RemoteException {
 		SchoolClassMember member = null;
 		try {
-			member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(((Integer) child.getPrimaryKey()).intValue(), providerID);
+			member = getLatestPlacement(((Integer) child.getPrimaryKey()).intValue(), providerID);
 			if (member != null && member.getNeedsSpecialAttention())
 				return true;
 		}
@@ -407,7 +408,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						User sibling = (User) iterator.next();
 						if (((Integer)child.getPrimaryKey()).intValue() != ((Integer)sibling.getPrimaryKey()).intValue()) {
 							try {
-								member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(((Integer) sibling.getPrimaryKey()).intValue(), providerID);
+								member = getLatestPlacement(((Integer) sibling.getPrimaryKey()).intValue(), providerID);
 							}
 							catch (FinderException e) {
 								member = null;
@@ -935,7 +936,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		addContractToArchive(oldFileID, application, -1, fromDate.getDate());
 		
 		try {
-			SchoolClassMember member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(application.getChildId(), application.getProviderId());
+			SchoolClassMember member = getLatestPlacement(application.getChildId(), application.getProviderId());
 			member.setRegisterDate(fromDate.getTimestamp());
 			member.store();
 		}
@@ -958,9 +959,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public void removeFromProvider(int childID, int providerID, Timestamp date, boolean parentalLeave, String message) throws RemoteException {
+	public void removeFromProvider(int childID, int providerID, Timestamp date, boolean parentalLeave, String message) {
 		try {
-			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(childID, providerID);
+			SchoolClassMember classMember = getLatestPlacement(childID, providerID);
 			classMember.setRemovedDate(date);
 			classMember.setNeedsSpecialAttention(parentalLeave);
 			classMember.setNotes(message);
@@ -973,10 +974,19 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 		}
 	}
-
-	private void deleteFromProvider(int childID, int providerID) throws RemoteException {
+	
+	private SchoolClassMember getLatestPlacement(int childID, int providerID) throws FinderException {
 		try {
-			SchoolClassMember classMember = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(childID, providerID);
+			return getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(childID, providerID);
+		}
+		catch (RemoteException e) {
+			throw new IDORuntimeException(e.getMessage());
+		}
+	}
+
+	private void deleteFromProvider(int childID, int providerID) {
+		try {
+			SchoolClassMember classMember = getLatestPlacement(childID, providerID);
 			classMember.remove();
 		}
 		catch (RemoveException e) {
@@ -1975,6 +1985,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (application.getRejectionDate() != null)
 				archive.setTerminatedDate(application.getRejectionDate());
 			archive.setCareTime(application.getCareTime());
+			try {
+				SchoolClassMember student = getLatestPlacement(application.getChildId(), application.getProviderId());
+				archive.setSchoolClassMember(student);
+			}
+			catch (FinderException fe) {
+			}
 			archive.store();
 			
 			if (contractFileID != -1) {
