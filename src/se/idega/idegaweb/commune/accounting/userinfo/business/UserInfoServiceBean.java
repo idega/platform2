@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeSet;
@@ -129,6 +130,35 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		return isInvoiceReceiver(userId);
 	}
 
+	public boolean isSameAddress (final Address address1,
+																final Address address2) {
+		if (null == address1 || null == address2) return false;
+		final boolean isSameStreet = address1.getStreetAddress ()
+				.equalsIgnoreCase	(address2.getStreetAddress ());
+		final boolean isSameZipCode = address1.getPostalCode ().getPostalCode ()
+				.equals (address2.getPostalCode ().getPostalCode ());
+		return isSameStreet && isSameZipCode;
+	}
+
+	/**
+	 * Returns the sibling order according to Check & Peng rules.
+	 * Most importantly, it only involves children i pre-school
+	 */
+	public int getSiblingOrder(User child, IWTimestamp startPeriod) throws RemoteException, SiblingOrderException {
+		return getSiblingOrder (child, new HashMap (), startPeriod);
+	}
+
+	private boolean hasValidContract
+		(final User child, final IWTimestamp startPeriod) throws RemoteException {
+		try {
+			getChildCareContractHome ().findValidContractByChild
+					(((Integer) child.getPrimaryKey()).intValue(),startPeriod.getDate());
+			return true;
+		} catch (FinderException e) {
+			return false;
+		}
+	}
+
 	/**
 	 * Returns the sibling order according to Check & Peng rules.
 	 * Most importantly, it only involves children i pre-school
@@ -141,7 +171,9 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		{
 			return order.intValue();	//Sibling order already calculated.
 		}
-	
+		if (!hasValidContract (child, startPeriod)) {
+			throw new SiblingOrderException (child.getName() + " has no contract");
+		}	
 		TreeSet sortedSiblings = new TreeSet();		//Container for the siblings that keeps them in sorted order
 		Address childAddress = userBus.getUsersMainAddress(child);
 		if (null == childAddress) {
@@ -170,10 +202,12 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 			try {
 				adults.add(familyLogic.getCohabitantFor(parent));
 			} catch (NoCohabitantFound e) {
+				// no problem, custodian don't need to have cohabitant
 			}
 			try {
 				adults.add(familyLogic.getSpouseFor(parent));
 			} catch (NoSpouseFound e) {
+				// no problem, custodian don't need to have spouse
 			}
 		}
 
@@ -187,28 +221,17 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 				//Itterate through their kids
 				while(siblingsIter.hasNext())
 				{
-					User sibling = (User) siblingsIter.next();
-			
-					//Check if the sibling has a valid contract of right type
+					User sibling = (User) siblingsIter.next();		
 					try {
-						getChildCareContractHome().findValidContractByChild(((Integer)sibling.getPrimaryKey()).intValue(),startPeriod.getDate());
-						//If kids have same address add to collection
 						Address siblingAddress = userBus.getUsersMainAddress(sibling);
-						if (null == siblingAddress) {
-							throw new SiblingOrderException ("Sibling " + sibling.getPersonalID() + " " + sibling.getName() + " has no Address");
-						}
-						if(childAddress.getPostalCode().getPostalCode ().equals(siblingAddress.getPostalCode().getPostalCode ()) &&
-							childAddress.getStreetAddress().equalsIgnoreCase(siblingAddress.getStreetAddress())){
-
+						if (hasValidContract (sibling, startPeriod)
+								&& isSameAddress (childAddress, siblingAddress)) {
 							SortableSibling sortableSibling = new SortableSibling(sibling);
 							if(!sortedSiblings.contains(sortableSibling)){
 								sortedSiblings.add(sortableSibling);
 							}
 						}
-					} catch (FinderException e) {
-						//If sibling don't have a childcare contract we just ignore it
 					} catch (NullPointerException e) {
-						//If sibling doesn't have an address or contract, it won't be counted in the sibling order
 						e.printStackTrace ();
 						String childName = child.getPersonalID() + " " + child.getName () + (child.getPrimaryKey ().equals (sibling.getPrimaryKey ()) ? "" : " or " + sibling.getPersonalID() + " " + sibling.getName ());
 						throw new SiblingOrderException (childName + " probably has missing fields in address");

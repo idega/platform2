@@ -371,8 +371,7 @@ public class HouseHoldViewer extends AccountingBlock {
 					table.skip();
 				}
 				try {
-					Map siblingOrders = new HashMap ();
-					int siblingOrder = getUserInfoService (iwc).getSiblingOrder (child, siblingOrders, new IWTimestamp (System.currentTimeMillis()));
+					int siblingOrder = getUserInfoService (iwc).getSiblingOrder (child, new IWTimestamp (System.currentTimeMillis()));
 					table.add(getText(siblingOrder + ""));
 				} catch (Exception e) {
 					table.skip();
