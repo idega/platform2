@@ -47,8 +47,8 @@ public String getCheckedString(){
 
 public void handleKeepStatus(ModuleInfo modinfo){
 	if (statusKeptOnAction()){
-		if(modinfo.getRequest().getParameter(this.getName()) != null){
-			if(modinfo.getRequest().getParameter(this.getName()).equals(this.getValue())){
+		if(modinfo.getParameter(this.getName()) != null){
+			if(modinfo.getParameter(this.getName()).equals(this.getValue())){
 				setChecked(true);
 			}
 		}
