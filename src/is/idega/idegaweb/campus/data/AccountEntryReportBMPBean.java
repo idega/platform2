@@ -89,13 +89,13 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
       conn = ConnectionBroker.getConnection();
       Stmt = conn.createStatement();
 
-      //System.err.println(sql);
+      System.err.println(sql);
       ResultSet RS = Stmt.executeQuery(sql);
       metaData = RS.getMetaData();
       int count = 1;
       while (RS.next() ){
         AccountEntryReportBMPBean tempObj= new AccountEntryReportBMPBean() ;
-
+        //ACC_ID 	BUILD_ID 	BUILDING 	FIRST_NAME 	MIDDLE_NAME 	LAST_NAME 	PERSONAL_ID 	KEYID 	KEYCODE 	KEYINFO 	TOTAL
         if(tempObj != null){
           String columnName = null;
           tempObj.setAccountID(new Integer(RS.getInt(1)));//COLUMN_ACCOUNT_ID)));
@@ -108,7 +108,7 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
           tempObj.setKeyID(new Integer(RS.getInt(8)));//RS.getInt(COLUMN_KEYID)));
           tempObj.setKeyCode(RS.getString(9));//COLUMN_KEYCODE));
           tempObj.setKeyInfo(RS.getString(10));//COLUMN_KEYINFO));
-          tempObj.setTotal(new Float(11));//RS.getFloat(COLUMN_TOTAL)));
+          tempObj.setTotal(new Float(RS.getFloat(11)));//RS.getFloat(COLUMN_TOTAL)));
         
         }
         if(vector==null){
