@@ -131,7 +131,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 	}
 	public void setStreetName(String streetName) {
 		setColumn(COLUMN_NAME_STREET_NAME, streetName);
-	}
+	} 
 
 	public PostalCode getPostalCode() throws SQLException {
 		return (PostalCode)getColumnValue(COLUMN_NAME_POSTAL_CODE_ID);
@@ -180,7 +180,7 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 		return getStringColumnValue(COLUMN_NAME_EMAIL);
 	}
 
-	public void setWorKReportGroupID(int workReportGroupID) {
+	public void setWorkReportGroupID(int workReportGroupID) {
 		setColumn(COLUMN_NAME_WORK_REPORT_GROUP_ID, workReportGroupID);
 	}
 
@@ -200,14 +200,14 @@ public class WorkReportDivisionBoardBMPBean extends GenericEntity implements Wor
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID, reportId);
 	}
 	
-	public Integer ejbFindWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(int reportId, int groupId) throws FinderException{
+	public Integer ejbFindWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(int reportId, int wrGroupId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getEntityName());
-		sql.appendWhereEquals(COLUMN_NAME_GROUP_ID,groupId);
+		sql.appendWhereEquals(COLUMN_NAME_WORK_REPORT_GROUP_ID,wrGroupId);
 		sql.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
 		
-		System.out.println("sql = " + sql.toString());
 		
 		return (Integer) this.idoFindOnePKByQuery(sql);
 	}	
+	
 }

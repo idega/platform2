@@ -478,16 +478,17 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		//Store work-report division thingie........ HOW!!!???!!!		
 		Iterator it = leaguesMap.keySet().iterator();
 		while (it.hasNext()) {
-			Integer id = (Integer)it.next();
-
+			Integer key = (Integer)it.next();
+			int WRGroupId = ((Integer)((WorkReportGroup)leaguesMap.get(key)).getPrimaryKey()).intValue();
 			WorkReportDivisionBoard board = null;
 			try {
-				board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, id.intValue());
+				board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, WRGroupId);
 			}
 			catch (FinderException e) {
 				try {
 					board = (WorkReportDivisionBoard)getWorkReportBusiness().getWorkReportDivisionBoardHome().create();
-					board.setGroupId(id.intValue());
+					board.setWorkReportGroupID(WRGroupId);
+					board.setReportId(workReportId);
 				}
 				catch (CreateException e1) {
 					e1.printStackTrace();
@@ -842,7 +843,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 				board.setSecondPhone(tel2);
 				board.setFax(fax);
 				board.setEmail(email);
-				board.setWorKReportGroupID(((Integer)group.getPrimaryKey()).intValue());
+				board.setWorkReportGroupID(((Integer)group.getPrimaryKey()).intValue());
 				board.setReportId(workReportId);
 				if (champ != null && !"".equals(champ.trim()))
 					board.setHasNationalLeague(true);
@@ -1059,7 +1060,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			}
 
 			board.setReportId(workReportId);
-			board.setWorKReportGroupID(wrGroupId.intValue());
+			board.setWorkReportGroupID(wrGroupId.intValue());
 			if (val != null)
 				board.setNumberOfPlayers(val.intValue());
 			else

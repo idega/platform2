@@ -697,7 +697,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		// league
 		if (league != null) {
 			int pk = ((Integer)league.getPrimaryKey()).intValue();
-			workReportDivisionBoard.setWorKReportGroupID(pk);
+			workReportDivisionBoard.setWorkReportGroupID(pk);
 		}
 		// +++++++++++++++++++++++++++++++
 		// add league to work report group
