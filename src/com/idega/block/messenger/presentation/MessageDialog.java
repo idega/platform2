@@ -18,7 +18,7 @@ import java.applet.AudioClip;
  * @version 1.0
  */
 
-public class MessageDialog extends Dialog implements ActionListener{
+public class MessageDialog extends Frame implements ActionListener{
   Panel panel = new Panel();
   Label senderNameLabel = new Label();
   TextArea messageArea = new TextArea();
@@ -33,7 +33,8 @@ public class MessageDialog extends Dialog implements ActionListener{
   AudioClip alertSound;
 
   public MessageDialog(String title, Message message) {
-    super(new Frame(), title, false);
+    super(title);
+    //super(new Frame(), title, false);
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     this.message = message;
     try {
@@ -101,7 +102,9 @@ public class MessageDialog extends Dialog implements ActionListener{
     super.processWindowEvent(e);
   }
   void cancel() {
-    dispose();
+    //dispose();
+    setState ( Frame.ICONIFIED );
+
   }
 
   public void actionPerformed(ActionEvent e) {
