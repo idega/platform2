@@ -255,8 +255,13 @@ public class InvoiceChildcareThread extends BillingThread{
 					errorRelated.append("Child "+contract.getChild().getName());
 //					errorRelated.append("SchoolClassMemberid "+schoolClassMember.getPrimaryKey());
 					SchoolType schoolType = schoolClassMember.getSchoolType();
+					String childcareType = null;
+					try {
+						childcareType =schoolType.getLocalizationKey();
+					}catch (NullPointerException e){
+						throw new NoSchoolTypeException("");
+					}
 					errorRelated.append("SchoolType "+schoolType.getName());
-					String childcareType =schoolType.getLocalizationKey();
 					errorRelated.append("Child P# "+contract.getChild().getPersonalID());
 	
 					
@@ -479,6 +484,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					e1.printStackTrace();
 						errorRelated.append(e1);
 						createNewErrorMessage(errorRelated,"invoice.SchoolClassMemberNotSetForContract");
+				}catch (NoSchoolTypeException e1) {
+					e1.printStackTrace();
+						errorRelated.append(e1);
+						createNewErrorMessage(errorRelated,"invoice.SchoolTypeNotSetForSchoolClassMember");
 				}catch (NullPointerException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){

@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/15 09:23:49 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/15 09:56:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.72 $
+ * @version $Revision: 1.73 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -487,7 +487,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final PdfPTable summaryTable
 				= new PdfPTable (new float [] { 7.0f, 3.6f, 3.0f });
 		summaryTable.getDefaultCell ().setBorder (0);
-		final PaymentSummary summary = new PaymentSummary (records, getSchoolBusiness (context), getInvoiceBusiness (context));
+		final PaymentSummary summary = new PaymentSummary (records);
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_PLACEMENTS_KEY,
 												 TOTAL_AMOUNT_PLACEMENTS_DEFAULT) + ": ");
@@ -998,7 +998,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private Table getPaymentSummaryTable (final IWContext context,
 																				final PaymentRecord [] records)
 		throws RemoteException, FinderException {
-		final PaymentSummary summary = new PaymentSummary (records, getSchoolBusiness (context), getInvoiceBusiness (context));
+		final PaymentSummary summary = new PaymentSummary (records);
 
 		// render
 		final Table table = createTable (3);

@@ -1,8 +1,8 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.data.IDOLookup;
 import com.idega.user.data.User;
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -15,10 +15,10 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 
 /**
- * Last modified: $Date: 2004/01/15 09:23:49 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/15 09:56:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class PaymentSummary {
 	private int placementCount = 0;
@@ -26,13 +26,15 @@ public class PaymentSummary {
 	private long totalAmountVatExcluded = 0;
 	private long totalAmountVat = 0;
 
-	public PaymentSummary (final PaymentRecord [] records, final SchoolBusiness schoolBusiness, final InvoiceBusiness invoiceBusiness)
+	public PaymentSummary (final PaymentRecord [] records)
 		throws RemoteException, FinderException {
 		// get home objects
 		final SchoolClassMemberHome placementHome
-				= schoolBusiness.getSchoolClassMemberHome ();
-		final InvoiceRecordHome home = invoiceBusiness.getInvoiceRecordHome ();
+				= (SchoolClassMemberHome) IDOLookup.getHome (SchoolClassMember.class);
+		final InvoiceRecordHome home
+				= (InvoiceRecordHome) IDOLookup.getHome (InvoiceRecord.class);
 
+		// count values
 		for (int i = 0; i < records.length; i++) {
 			final PaymentRecord paymentRecord = records [i];
 			placementCount += paymentRecord.getPlacements ();
