@@ -168,6 +168,8 @@ public class SchoolUserEditor extends Block {
 				contTable.add(getUserForm(1), 1, 2);	
 			}
 
+			/** Attention !!! **/
+			int assistantHeadmasterId = -1;
 /*			
 			contTable.add(_tFormat.format(_iwrb.getLocalizedString("school.assistant_headmaster","Assistant headmaster"), TextFormat.TITLE), 1, 3);
 				int assistantHeadmasterId = _school.getAssistantHeadmasterUserId();
@@ -189,7 +191,10 @@ public class SchoolUserEditor extends Block {
 				int row = 1;
 				while (iter.hasNext()) {
 					User hm = (User) iter.next();
-					row = insertUserIntoTable(table, row, hm, 3);
+					int userId = ((Integer) hm.getPrimaryKey()).intValue();
+					if (userId != headmasterId && userId != assistantHeadmasterId) {
+						row = insertUserIntoTable(table, row, hm, 3);
+					}
 				}
 				contTable.add(table, 1, 5);
 			}
@@ -388,11 +393,12 @@ public class SchoolUserEditor extends Block {
 				break;	
 		}
 
-				/** Updateing headmasters */
+		/** Updateing headmasters */
 		try {
 			String[] hIds = iwc.getParameterValues(sid);
 			
 			if (hIds != null) {
+				Group priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
 				UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
 				User user;
 				for (int i = 0; i < hIds.length; i++) {
@@ -404,9 +410,13 @@ public class SchoolUserEditor extends Block {
 						school.getHeadmasterGroup().removeUser(user);
 //						getUserBusiness(iwc).deleteUser((new Integer(hIds[i])).intValue());
 					}else {
-						getUserBusiness(iwc).updateUser(user, name, "", "", null, null, null, null, null, null);
-//						user.setName(name);	
-//						user.store();
+						getUserBusiness(iwc).updateUser(user, name, "", "", null, null, null, null, null, (Integer) priGroup.getPrimaryKey());
+
+						try {
+							getSchoolBusiness(iwc).addHeadmaster(school, user);
+						} catch (Exception e) {
+							debug("User already in headmasterGroup");
+						}
 						
 						Collection emails = user.getEmails();
 						Collection phones =	user.getPhones();
@@ -476,6 +486,7 @@ public class SchoolUserEditor extends Block {
 			if (headmaster != null && !headmaster.equals("")) {
 				Group priGroup = getSchoolBusiness(iwc).getRootSchoolAdministratorGroup();
 				User user = getUserBusiness(iwc).createUser(headmaster, "","", ((Integer)priGroup.getPrimaryKey()).intValue());
+				getSchoolBusiness(iwc).addHeadmaster(school, user);
 				
 				if (hmEmail != null && !hmEmail.equals("")) {
 					Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
@@ -500,9 +511,9 @@ public class SchoolUserEditor extends Block {
 				}/*else if (userType == 2) {
 					_school.setAssistantHeadmasterUserId( ((Integer)user.getPrimaryKey()).intValue());
 					_school.store();
-				}*/else if (userType ==3) {
+				}else if (userType ==3) {
 					getSchoolBusiness(iwc).addHeadmaster(school, user);
-				}
+				}*/
 				
 			}
 			
