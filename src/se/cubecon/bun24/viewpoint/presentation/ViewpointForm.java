@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2004/02/23 14:36:06 $ by $Author: staffan $
+ * Last modified: $Date: 2004/09/21 19:01:35 $ by $Author: eiki $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.49 $
+ * @version $Revision: 1.50 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -862,8 +862,10 @@ public class ViewpointForm extends CommuneBlock {
         try {
             final GroupBusiness groupBusiness = (GroupBusiness)
                     IBOLookup.getServiceInstance (context, GroupBusiness.class);
-            final GroupHome groupHome = groupBusiness.getGroupHome ();
-            result = groupHome.findByName (groupName);
+            Collection col = groupBusiness.getGroupHome().findGroupsByName(groupName);
+            if(col!=null && col.isEmpty()){
+            		result = (Group) col.iterator().next();	
+            }
         } catch (RemoteException dummy) {
             // nothing, since algorithm is in finally clause
         } finally {
