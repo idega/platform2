@@ -250,14 +250,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 
 	public WorkReportMember createWorkReportMember(int reportID, User user) throws CreateException {
-		Age age = new Age(user.getDateOfBirth());
+		Age age = null;
+		if (user.getDateOfBirth() != null)
+			age = new Age(user.getDateOfBirth());
 
 		WorkReportMember member = getWorkReportMemberHome().create();
 		member.setReportId(reportID);
 		member.setName(user.getName());
 		member.setPersonalId(user.getPersonalID());
-		member.setAge(age.getYears());
-		member.setDateOfBirth((new IWTimestamp(user.getDateOfBirth())).getTimestamp());
+		if (age != null) {
+			member.setAge(age.getYears());
+			member.setDateOfBirth((new IWTimestamp(user.getDateOfBirth())).getTimestamp());
+		}
 		member.setUserId(((Integer)user.getPrimaryKey()).intValue());
 		int gender = user.getGenderID();
 		try {
