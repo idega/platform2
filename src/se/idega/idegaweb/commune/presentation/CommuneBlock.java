@@ -122,8 +122,6 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	private final static String CELLPADDING_PROPERTY = "cellpadding";
 	private final static String CELLSPACING_PROPERTY = "cellspacing";
 
-	private static boolean initRefresh= true;
-	
 	private IWResourceBundle iwrb = null;
 	private IWBundle iwb = null;
 	private ICPage formResponsePage;
