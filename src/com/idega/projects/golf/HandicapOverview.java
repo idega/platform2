@@ -176,7 +176,7 @@ private String headerTextColor = "#FFFFFF";
                     Text date2 = new Text(date.getDate()+"/"+date.getMonth()+"/"+String.valueOf(date.getYear()).substring(2,4));
                             date2.setFontSize("1");
 
-                    Window deleteWindow = new Window("Eyða skorkorti",400,220,"/handicap/handicap_delete.jsp?");
+                    Window deleteWindow = new Window(iwrb.getLocalizedString("handicap.delete_scorecard","delete scorecard"),400,220,"/handicap/handicap_delete.jsp?");
 
                     Link eyda = new Link(new Image("/pics/handicap/trash.gif","Eyða skorkorti",9,13),deleteWindow);
                             eyda.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
