@@ -191,24 +191,28 @@ public class InitialData extends TravelManager {
 
 
         pGroup = SupplierManager.getPermissionGroup(supps[i]);
-        users = UserGroupBusiness.getUsersContained(pGroup);
-        if (users != null) {
-          for (int j = 0; j < users.size(); j++) {
-            if (j > 0) ++row;
+        try {
+          users = UserGroupBusiness.getUsersContained(pGroup);
+          if (users != null) {
+            for (int j = 0; j < users.size(); j++) {
+              if (j > 0) ++row;
 
-            table.setRowColor(row,super.backgroundColor);
+              table.setRowColor(row,super.backgroundColor);
 
-            user = (User) users.get(j);
-            logTable = LoginDBHandler.findUserLogin(user.getID());
-            suppLoginText = (Text) theText.clone();
-            suppLoginText.setText(logTable.getUserLogin());
-            suppPassText = (Text) theText.clone();
-            suppPassText.setText(logTable.getUserPassword());
+              user = (User) users.get(j);
+              logTable = LoginDBHandler.findUserLogin(user.getID());
+              suppLoginText = (Text) theText.clone();
+              suppLoginText.setText(logTable.getUserLogin());
+              suppPassText = (Text) theText.clone();
+              suppPassText.setText(logTable.getUserPassword());
 
-            table.add(suppLoginText,2,row);
-            table.mergeCells(2,row,3,row);
+              table.add(suppLoginText,2,row);
+              table.mergeCells(2,row,3,row);
+            }
+
           }
-
+        }catch (Exception e) {
+          e.printStackTrace(System.err);
         }
 
 
