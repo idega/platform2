@@ -61,34 +61,24 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
   
-  // do not use -1 (-1 means null or new entity)
-  // dummy keys for primary entries
   private static final String LEAGUE_NAME = "FIN_league_name";
-  private static final String INCOME_SUM_KEY = "FIN_income_sum";
-  private static final String EXPONSES_SUM_KEY = "FIN_exponses_sum";
-  private static final String INCOME_EXPONSES_SUM_KEY = "FIN_income_exponses_sum";
-  private static final String ASSET_SUM_KEY = "FIN_asset_sum";
-  private static final String DEBT_SUM_KEY = "FIN_debt_sum";
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
   private static final String CHECK_BOX = "checkBox";
   private static final String OKAY_BUTTON = "okayButton";
   
-  // -1 is reserved for "new entity"
-  private static final Integer NULL_GROUP_ID = new Integer(-42);
+  private List specialFieldList;
   
-  private static final List specialFieldList;
-  
-  static { 
+  { 
     specialFieldList = new ArrayList();
     
     specialFieldList.add(LEAGUE_NAME);
-    specialFieldList.add(INCOME_SUM_KEY);
-    specialFieldList.add(EXPONSES_SUM_KEY);
-    specialFieldList.add(INCOME_EXPONSES_SUM_KEY);
-    specialFieldList.add(ASSET_SUM_KEY);
-    specialFieldList.add(DEBT_SUM_KEY); 
+    specialFieldList.add(IWMemberConstants.INCOME_SUM_KEY);
+    specialFieldList.add(IWMemberConstants.EXPONSES_SUM_KEY);
+    specialFieldList.add(IWMemberConstants.INCOME_EXPONSES_SUM_KEY);
+    specialFieldList.add(IWMemberConstants.ASSET_SUM_KEY);
+    specialFieldList.add(IWMemberConstants.DEBT_SUM_KEY); 
   }   
 
   private List fieldList = new ArrayList();
@@ -110,7 +100,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     if (this.getWorkReportId() != -1) {
       //sets this step as bold, if another class calls it this will be overwritten 
       setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
-      initialize(iwc);
+      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+      initializeLeagueData(workReportBusiness, iwc);
+      initializeAccountKeyData(workReportBusiness, iwc);
       String action = parseAction(iwc);
       Form form = new Form();
       PresentationObject pres = getContent(iwc, resourceBundle, form, action);
@@ -193,8 +185,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     return action;
   }
   
-  private void initialize(IWContext iwc) {
-    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+  private void initializeLeagueData(WorkReportBusiness workReportBusiness, IWContext iwc) {
     try {
       // create data from the database
       workReportBusiness.createWorkReportData(getWorkReportId());
@@ -233,40 +224,18 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     while (workReportClubAccountRecordsIterator.hasNext())  {
       WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) workReportClubAccountRecordsIterator.next();
       // note: workReportGroupId is -1 if the record belongs to the main board
+      // (the column value is null but the getIntValue-method returns -1 
       Integer groupId = new Integer(record.getWorkReportGroupId());
+      if (groupId.intValue() == -1) {
+        groupId = IWMemberConstants.MAIN_BOARD_ID;
+      }
       Integer accountKey = new Integer(record.getAccountKeyId());
       leagueKeyMatrix.put(groupId, accountKey, record);
     }
-  }    
+  }
   
-  private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form, String action) {
-    int workReportId = getWorkReportId();
-    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-    WorkReport workReport = null;
-    // get work report 
-    try {
-      workReport = workReportBusiness.getWorkReportById(workReportId);
-    }
-    catch (RemoteException ex) {
-      String message =
-        "[WorkReportAccountEditor]: Can't retrieve WorkReportBusiness.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException(message);
-    }
-    // get leagues of the workreport
-    // needs to be converted to a list because of sorting 
-    List workReportLeagues;
-    try {
-      workReportLeagues = new ArrayList(workReport.getLeagues());
-    }
-    catch (IDOException ex) {
-      String message =
-        "[WorkReportAccountEditor]: Can't retrieve leagues.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-      workReportLeagues = new ArrayList();
-    }
+  private void initializeAccountKeyData(WorkReportBusiness workReportBusiness, IWContext iwc)  {
+    
     // income, exponses, asset and debt keys 
     WorkReportAccountKeyHome accountKeyHome;
     try {
@@ -343,14 +312,45 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // add sorted keys to the fields
     fieldList.add(LEAGUE_NAME);
     addKeys(incomeKeys);
-    fieldList.add(INCOME_SUM_KEY);
+    fieldList.add(IWMemberConstants.INCOME_SUM_KEY);
     addKeys(exponsesKeys);
-    fieldList.add(EXPONSES_SUM_KEY);
-    fieldList.add(INCOME_EXPONSES_SUM_KEY);
+    fieldList.add(IWMemberConstants.EXPONSES_SUM_KEY);
+    fieldList.add(IWMemberConstants.INCOME_EXPONSES_SUM_KEY);
     addKeys(assetKeys);
-    fieldList.add(ASSET_SUM_KEY);
+    fieldList.add(IWMemberConstants.ASSET_SUM_KEY);
     addKeys(debtKeys);
-    fieldList.add(DEBT_SUM_KEY);
+    fieldList.add(IWMemberConstants.DEBT_SUM_KEY);
+
+  }    
+  
+  private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form, String action) {
+    int workReportId = getWorkReportId();
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    WorkReport workReport = null;
+    // get work report 
+    try {
+      workReport = workReportBusiness.getWorkReportById(workReportId);
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve WorkReportBusiness.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
+    // get leagues of the workreport
+    // needs to be converted to a list because of sorting 
+    List workReportLeagues;
+    try {
+      workReportLeagues = new ArrayList(workReport.getLeagues());
+    }
+    catch (IDOException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve leagues.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      workReportLeagues = new ArrayList();
+    }
 
     // sort league collection
     Comparator leagueComparator = new Comparator()  {
@@ -362,7 +362,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     };
     // sort leagues
     Collections.sort(workReportLeagues, leagueComparator);
-    // add the main board (represented by null)
+    //
+    // !!!  add the main board (represented by null)
+    //
     workReportLeagues.add(null);
     // create helper 
     // iterate over leagues
@@ -372,7 +374,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
       // handle the special case that the group id is null
       String groupName = (group == null) ? IWMemberConstants.MAIN_BOARD : group.getName();
-      Integer groupId = (group == null) ? NULL_GROUP_ID : group.getGroupId();
+      Integer groupId = (group == null) ? IWMemberConstants.MAIN_BOARD_ID : group.getGroupId();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }
