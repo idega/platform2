@@ -243,6 +243,7 @@ public class SupplyPoolEditor extends TravelBlock {
 			
 			super.getTravelStockroomBusiness(iwc).removeServiceDayHashtable(iwc);
 			super.getTravelStockroomBusiness(iwc).removeDepartureDaysApplication(iwc, null);
+			super.getTravelStockroomBusiness(iwc).invalidateMaxDayCache(pool);
 
 		}
 		catch (NumberFormatException e) {
@@ -264,14 +265,24 @@ public class SupplyPoolEditor extends TravelBlock {
 	
 	private void savePoolMonthDays(IWContext iwc, IWTimestamp stamp) throws RemoteException {
 		String sPoolID = iwc.getParameter(PARAMETER_POOL_ID);
+		SupplyPool pool = null;
+		Integer poolPK = null;
+
+		if(sPoolID != null && !sPoolID.equals("")) {
+			try {
+				pool = getSupplyPoolHome().findByPrimaryKey(new Integer(sPoolID));
+				poolPK = (Integer) pool.getPrimaryKey();
+			} catch (FinderException e) {
+				e.printStackTrace();
+			}
+		} 
+
 		IWCalendar calendar = new IWCalendar();
 		int daycount = calendar.getLengthOfMonth(stamp.getMonth(),stamp.getYear()); 
 		int n = 1;
-		while(n <= daycount) {
-			if(sPoolID != null && !sPoolID.equals("")) {
+		if(pool != null && poolPK != null) {
+			while(n <= daycount) {
 				try {
-					SupplyPool pool = getSupplyPoolHome().findByPrimaryKey(new Integer(sPoolID));
-					Integer poolPK = (Integer) pool.getPrimaryKey();
 
 					String countString = iwc.getParameter(PARAMETER_EST_MONTH + n); 
 					IWTimestamp date = new IWTimestamp(n, stamp.getMonth(), stamp.getYear());
@@ -312,11 +323,11 @@ public class SupplyPoolEditor extends TravelBlock {
 				catch (EJBException e) {
 					e.printStackTrace();
 				}
-				catch (FinderException e) {
-					e.printStackTrace();
-				}
+				n++;
 			}
-			n++;
+			super.getTravelStockroomBusiness(iwc).removeServiceDayHashtable(iwc);
+			super.getTravelStockroomBusiness(iwc).removeDepartureDaysApplication(iwc, null);
+			super.getTravelStockroomBusiness(iwc).invalidateMaxDayCache(pool);
 		}
 	}
 	
