@@ -1,33 +1,49 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.data.IDORelationshipException;
-import javax.ejb.CreateException;
-import javax.ejb.FinderException;
-import com.idega.business.IBOLookup;
-import com.idega.idegaweb.*;
-import com.idega.idegaweb.presentation.CalendarParameters;
-import com.idega.idegaweb.presentation.SmallCalendar;
+import is.idega.idegaweb.travel.business.ServiceNotFoundException;
+import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
+import is.idega.idegaweb.travel.data.Contract;
+import is.idega.idegaweb.travel.data.GeneralBooking;
+import is.idega.idegaweb.travel.data.Inquery;
+import is.idega.idegaweb.travel.data.InqueryHome;
+import is.idega.idegaweb.travel.data.Service;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
+import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
 
 import java.rmi.RemoteException;
-import com.idega.data.IDOLookup;
-import com.idega.block.calendar.business.CalendarBusiness;
-import com.idega.presentation.Block;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
-import com.idega.core.accesscontrol.business.AccessControl;
-import is.idega.idegaweb.travel.business.*;
-import com.idega.util.text.*;
 import java.sql.SQLException;
-import java.util.*;
-import is.idega.idegaweb.travel.data.*;
-import is.idega.idegaweb.travel.service.presentation.*;
-import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
-import is.idega.idegaweb.travel.service.business.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
+import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
+import com.idega.block.creditcard.presentation.Receipt;
+import com.idega.block.creditcard.presentation.ReceiptWindow;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.block.trade.stockroom.data.TravelAddressHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.presentation.CalendarParameters;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.IWTimestamp;
 
 
 
@@ -918,7 +934,7 @@ public class Booking extends TravelManager {
 		Text bookingFailed = (Text) super.theBoldText.clone();
 		bookingFailed.setText(iwrb.getLocalizedString("travel.booking_failed","Booking failed"));
 
-		e.printStackTrace(System.err);
+		//e.printStackTrace(System.err);
 
 		Text reason = (Text) super.theText.clone();
 			reason.setText(e.getMessage());
@@ -959,10 +975,36 @@ public class Booking extends TravelManager {
       Text voucher = (Text) super.theBoldText.clone();
         voucher.setText(iwrb.getLocalizedString("travel.voucher","Voucher"));
         voucher.setFontColor(super.BLACK);
+    	Text receiptText = (Text) super.theBoldText.clone();
+    	receiptText.setText(iwrb.getLocalizedString("travel.receipt","Receipt"));
+    	receiptText.setFontColor(super.BLACK);
       Link voucherLink = new Link(voucher);
         voucherLink.setWindowToOpen(VoucherWindow.class);
         voucherLink.addParameter(VoucherWindow.parameterBookingId, bookingId);
+        
+    Link printCCReceipt = new Link(receiptText);
 
+    try {
+      CreditCardAuthorizationEntry entry = this.getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, booking.getCreditcardAuthorizationNumber(),  new IWTimestamp(booking.getDateOfBooking()));
+        if (entry != null) {
+          Receipt r = new Receipt(entry, supplier);
+          iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
+
+            printCCReceipt.setWindowToOpen(ReceiptWindow.class);
+          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
+          table.add(printCCReceipt, 1, 2);
+        }
+		  } catch (Exception e) {
+		  		e.printStackTrace(System.err);
+		  }
+
+/*      ReceiptWindow rw = new ReceiptWindow();
+      Receipt r = new Receipt(getCreditCardBusiness(iwc).getAuthorizationEntry(supplier, booking.getCreditcardAuthorizationNumber(), new IWTimestamp(booking.getDateOfBooking())), supplier);
+      rw.add(r);
+      
+      Link receiptLink = new Link(rw);
+      receiptLink.setText(receiptText);
+   */   
       Text refNum = (Text) super.theBoldText.clone();
         refNum.setText(referenceNumber);
         refNum.setFontColor(super.BLACK);
@@ -984,7 +1026,8 @@ public class Booking extends TravelManager {
         table.add(voucherNumTxt, 1, 3);
         table.add(voucherNum, 2, 3);
         table.add(voucherLink, 1, 4);
-        table.add(Text.NON_BREAKING_SPACE, 1, 5);
+        table.add(printCCReceipt, 1, 5);
+//        table.add(receiptLink, 1, 5);
         table.add(backLink, 1, 6);
 
         table.mergeCells(1,1,2,1);

@@ -313,10 +313,10 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 
   public  Booking[] getBookings(List products, int[] bookingTypeIds, IWTimestamp fromStamp, IWTimestamp toStamp, String columnName, String columnValue) throws RemoteException, FinderException {
-    return getBookings(products, bookingTypeIds, fromStamp, toStamp, columnName, columnValue, false);
+    return getBookings(products, bookingTypeIds, fromStamp, toStamp, columnName, columnValue, false, true);
   }
 
-  public  Booking[] getBookings(List products, int[] bookingTypeIds, IWTimestamp fromStamp, IWTimestamp toStamp, String columnName, String columnValue, boolean searchByDateOfBooking) throws RemoteException, FinderException {
+  public  Booking[] getBookings(List products, int[] bookingTypeIds, IWTimestamp fromStamp, IWTimestamp toStamp, String columnName, String columnValue, boolean searchByDateOfBooking, boolean validOnly) throws RemoteException, FinderException {
     if (products != null) {
       int[] ids = new int[products.size()];
       Product prod;
@@ -325,9 +325,9 @@ public class BookerBean extends IBOServiceBean implements Booker{
         ids[i] = prod.getID();
       }
       if (searchByDateOfBooking) {
-        return this.collectionToBookingsArray(getGeneralBookingHome().findBookingsByDateOfBooking(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue, null));
+        return this.collectionToBookingsArray(getGeneralBookingHome().findBookingsByDateOfBooking(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue, null, null, validOnly));
       }else {
-        return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue, null));
+        return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(ids, fromStamp, toStamp,bookingTypeIds, columnName, columnValue, null, null, validOnly));
       }
     }
     return new Booking[]{};
@@ -358,7 +358,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return getBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null);
   }
   public  Booking[] getBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, TravelAddress address) throws RemoteException, FinderException{
-    return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null, null, address));
+    return this.collectionToBookingsArray(getGeneralBookingHome().findBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, null, null, address, null, true));
   }
 
 
@@ -433,7 +433,11 @@ public class BookerBean extends IBOServiceBean implements Booker{
   public  float getBookingPrice(Booking[] bookings) throws RemoteException, FinderException{
     float price = 0;
     for (int i = 0; i < bookings.length; i++) {
-      price += getBookingPrice(bookings[i]);
+    		//if (bookings[i].getIsValid()) {
+    			price += getBookingPrice(bookings[i]);
+    		//} else {
+    		//	price -= getBookingPrice(bookings[i]);
+    		//}
     }
     return price;
   }
@@ -550,7 +554,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 					TravelAddress ta;
 					Iterator iter = coll.iterator();
 					while (iter.hasNext() && cont) {
-						ta = ((TravelAddressHome) IDOLookup.getHome(TravelAddress.class)).findByPrimaryKey(iter.next());
+						ta = (TravelAddress) iter.next();
 							if (ta.getAddressType() == TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE) {
 								return ta;
 							}

@@ -642,15 +642,19 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     return returner;
   }
 
-  public Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
-    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnValue, address,getBookingDateColumnName() , null);
+  public Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String code, boolean validOnly) throws FinderException, RemoteException{
+    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnValue, address,getBookingDateColumnName() , code, validOnly);
   }
 
-  public Collection ejbFindBookingsByDateOfBooking(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address) throws FinderException, RemoteException{
-    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnValue, address,this.getDateOfBookingColumnName() , null);
+  public Collection ejbFindBookingsByDateOfBooking(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String code, boolean validOnly) throws FinderException, RemoteException{
+    return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnValue, address,this.getDateOfBookingColumnName() , code, validOnly);
   }
 
   public Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String dateColumn, String code) throws FinderException, RemoteException{
+  		return ejbFindBookings(serviceIds, fromStamp, toStamp, bookingTypeIds, columnName, columnValue, address, dateColumn, code, true);
+  }
+  	
+  	public Collection ejbFindBookings(int[] serviceIds, IWTimestamp fromStamp, IWTimestamp toStamp,int[] bookingTypeIds, String columnName, String columnValue, TravelAddress address, String dateColumn, String code, boolean validOnly) throws FinderException, RemoteException{
     Collection returner = null;
 
     if (serviceIds.length == 0) {
@@ -687,7 +691,15 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
       sql.append("b."+this.getIDColumnName() +" = am."+this.getIDColumnName());
       sql.append(" and ");
     }
-    sql.append("b."+getIsValidColumnName()+" = 'Y'");
+    
+    if (validOnly) {
+    		sql.append("b."+getIsValidColumnName()+" = 'Y'");
+    } else {
+  			sql.append("b."+getIsValidColumnName()+" is not null");
+    }
+    /*else {
+  			sql.append("b."+getIsValidColumnName()+" = 'N'");
+    }*/
     if (fromStamp != null && toStamp == null) {
       sql.append(" and ");
 //      sql.append("b."+dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
