@@ -16,8 +16,12 @@ import com.idega.core.accesscontrol.data.PermissionGroup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.user.data.User;
+import com.idega.data.IDOLookup;
+
 import java.sql.SQLException;
 import java.util.*;
+
+import javax.ejb.FinderException;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -146,7 +150,7 @@ public class InitialData extends TravelManager {
     return form;
   }
 
-  public void displayForm(IWContext iwc) throws SQLException , RemoteException{
+  public void displayForm(IWContext iwc) throws SQLException , RemoteException, FinderException{
       add(Text.getBreak());
 
       String action = iwc.getParameter(this.sAction);
@@ -421,7 +425,7 @@ public class InitialData extends TravelManager {
   }
 
 
-  public Form getSupplierCreation(IWContext iwc, int supplier_id) throws SQLException, RemoteException{
+  public Form getSupplierCreation(IWContext iwc, int supplier_id) throws SQLException, RemoteException, FinderException{
       Form form = new Form();
 
       Table table = new Table();
@@ -455,6 +459,11 @@ public class InitialData extends TravelManager {
           addressText.setText(iwrb.getLocalizedString("travel.address_long","Address"));
           addressText.addToText(":");
 
+			Text postalText = (Text) theBoldText.clone();
+			postalText.setFontColor(super.BLACK);
+			postalText.setText(iwrb.getLocalizedString("travel.postal_code_long","Postal code"));
+			postalText.addToText(":");
+		
       Text phoneText = (Text) theBoldText.clone();
         phoneText.setFontColor(super.BLACK);
           phoneText.setText(iwrb.getLocalizedString("travel.telephone_number_lg","Telephone number"));
@@ -490,6 +499,16 @@ public class InitialData extends TravelManager {
         description.setHeight("80");
       TextInput address = new TextInput("supplier_address");
         address.setSize(inputSize);
+        
+			DropdownMenu postalCode = new DropdownMenu("supplier_postal_code");
+      PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+      Collection allPostalCodes = pch.findAllOrdererByCode();
+      Iterator iter = allPostalCodes.iterator();
+      PostalCode pc;
+      while (iter.hasNext()) {
+      	pc = (PostalCode) iter.next();
+      	postalCode.addMenuElement(pc.getPrimaryKey().toString(), pc.getPostalCode()+" "+pc.getName());
+      }
       TextInput phone = new TextInput("supplier_phone");
         phone.setSize(inputSize);
       TextInput fax = new TextInput("supplier_fax");
@@ -505,7 +524,7 @@ public class InitialData extends TravelManager {
       if (supplier_id != -1) {
         table.add(new HiddenInput(this.parameterSupplierId,Integer.toString(supplier_id)));
 
-        lSupplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplier_id);
+        lSupplier = ((com.idega.block.trade.stockroom.data.SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplier_id);
           name.setContent(lSupplier.getName());
           description.setContent(lSupplier.getDescription());
 
@@ -517,6 +536,10 @@ public class InitialData extends TravelManager {
                 address.setContent(namer);
             }else {
                 address.setContent(namer+" "+number);
+            }
+            int iPostalCodeId = addr.getPostalCodeID();
+            if (iPostalCodeId != -1){
+            	postalCode.setSelectedElement(iPostalCodeId);
             }
           }
 
@@ -579,6 +602,13 @@ public class InitialData extends TravelManager {
       table.setAlignment(1,row,"left");
       table.setAlignment(2,row,"left");
       table.setRowColor(row,super.GRAY);
+
+			++row;
+			table.add(postalText,1,row);
+			table.add(postalCode,2,row);
+			table.setAlignment(1,row,"left");
+			table.setAlignment(2,row,"left");
+			table.setRowColor(row,super.GRAY);
 
       ++row;
       table.add(phoneText,1,row);
@@ -657,6 +687,7 @@ public class InitialData extends TravelManager {
           String name = iwc.getParameter("supplier_name");
           String description = iwc.getParameter("supplier_description");
           String address = iwc.getParameter("supplier_address");
+          String postalCode = iwc.getParameter("supplier_postal_code");
           String phone = iwc.getParameter("supplier_phone");
           String fax = iwc.getParameter("supplier_fax");
           String email = iwc.getParameter("supplier_email");
@@ -666,7 +697,13 @@ public class InitialData extends TravelManager {
           String passOne = iwc.getParameter("supplier_password_one");
           String passTwo = iwc.getParameter("supplier_password_two");
 
-
+					int iPostalCode = -1;
+					try {
+						if (postalCode != null){
+							iPostalCode = Integer.parseInt(postalCode);
+						}
+					}catch (NumberFormatException e) {
+					}
 
 
               boolean isUpdate = false;
@@ -721,6 +758,9 @@ public class InitialData extends TravelManager {
 
                   Address addr = supplier.getAddress();
                     addr.setStreetName(address);
+                    if (iPostalCode != -1) {
+                    	addr.setPostalCodeID(iPostalCode);
+                    }
                   addr.update();
 
                   int[] addressIds = new int[1];
@@ -769,6 +809,9 @@ public class InitialData extends TravelManager {
                       int[] addressIds = new int[1];
                       Address addressAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
                           addressAddress.setStreetName(address);
+													if (iPostalCode != -1) {
+														addressAddress.setPostalCodeID(iPostalCode);
+													}
                           addressAddress.insert();
                       addressIds[0] = addressAddress.getID();
 

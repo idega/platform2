@@ -4,10 +4,14 @@ import java.util.*;
 import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.text.Link;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import java.sql.SQLException;
+
+import javax.ejb.FinderException;
+
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -114,7 +118,7 @@ public class ResellerCreator extends TravelManager {
 //      table.add(iwrb.getLocalizedImageButton("travel.new_reseller","New Reseller"),1, 1);
   }*/
 
-  private void resellerCreation(int resellerId) throws SQLException{
+  private void resellerCreation(int resellerId) throws SQLException, RemoteException, FinderException{
       Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -150,6 +154,11 @@ public class ResellerCreator extends TravelManager {
           addressText.addToText(":");
           addressText.setFontColor(super.BLACK);
 
+			Text postalText = (Text) theBoldText.clone();
+			postalText.setFontColor(super.BLACK);
+			postalText.setText(iwrb.getLocalizedString("travel.postal_code_long","Postal code"));
+			postalText.addToText(":");
+	
       Text phoneText = (Text) theBoldText.clone();
           phoneText.setText(iwrb.getLocalizedString("travel.telephone_number_lg","Telephone number"));
           phoneText.addToText(":");
@@ -184,6 +193,15 @@ public class ResellerCreator extends TravelManager {
         description.setHeight("5");
       TextInput address = new TextInput("reseller_address");
         address.setSize(inputSize);
+		  DropdownMenu postalCode = new DropdownMenu("reseller_postal_code");
+			PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+			Collection allPostalCodes = pch.findAllOrdererByCode();
+			Iterator iter = allPostalCodes.iterator();
+			PostalCode pc;
+			while (iter.hasNext()) {
+			  pc = (PostalCode) iter.next();
+			  postalCode.addMenuElement(pc.getPrimaryKey().toString(), pc.getPostalCode()+" "+pc.getName());
+			}
       TextInput phone = new TextInput("reseller_phone");
         phone.setSize(inputSize);
       TextInput fax = new TextInput("reseller_fax");
@@ -216,6 +234,10 @@ public class ResellerCreator extends TravelManager {
             }else {
                 address.setContent(namer+" "+number);
             }
+						int iPostalCodeId = addr.getPostalCodeID();
+						if (iPostalCodeId != -1){
+							postalCode.setSelectedElement(iPostalCodeId);
+						}
           }
 
           List phones = reseller.getHomePhone();
@@ -265,6 +287,11 @@ public class ResellerCreator extends TravelManager {
       table.add(addressText,1,row);
       table.add(address,2,row);
       table.setRowColor(row,super.GRAY);
+
+			++row;
+			table.add(postalText,1,row);
+			table.add(postalCode,2,row);
+			table.setRowColor(row,super.GRAY);
 
       ++row;
       table.add(phoneText,1,row);
@@ -339,6 +366,7 @@ public class ResellerCreator extends TravelManager {
           String name = iwc.getParameter("reseller_name");
           String description = iwc.getParameter("reseltler_description");
           String address = iwc.getParameter("reseller_address");
+					String postalCode = iwc.getParameter("reseller_postal_code");
           String phone = iwc.getParameter("reseller_phone");
           String fax = iwc.getParameter("reseller_fax");
           String email = iwc.getParameter("reseller_email");
@@ -347,6 +375,15 @@ public class ResellerCreator extends TravelManager {
           String passOne = iwc.getParameter("reseller_password_one");
           String passTwo = iwc.getParameter("reseller_password_two");
 //                  tm.begin();
+
+					int iPostalCode = -1;
+					try {
+						if (postalCode != null){
+							iPostalCode = Integer.parseInt(postalCode);
+						}
+					}catch (NumberFormatException e) {
+					}
+
           boolean isUpdate = false;
           if (resellerId != -1) isUpdate = true;
 
@@ -400,6 +437,9 @@ public class ResellerCreator extends TravelManager {
 
               Address addr = reseller.getAddress();
                 addr.setStreetName(address);
+								if (iPostalCode != -1) {
+									addr.setPostalCodeID(iPostalCode);
+								}
               addr.update();
 
               int[] addressIds = new int[1];
@@ -449,6 +489,9 @@ public class ResellerCreator extends TravelManager {
                 int[] addressIds = new int[1];
                 Address addressAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
                     addressAddress.setStreetName(address);
+										if (iPostalCode != -1) {
+											addressAddress.setPostalCodeID(iPostalCode);
+										}
                     addressAddress.insert();
                 addressIds[0] = addressAddress.getID();
 
