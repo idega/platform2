@@ -20,6 +20,13 @@ public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderEx
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllBySchoolTypes(java.util.Collection p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolAreaBMPBean)entity).ejbFindAllBySchoolTypes(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllSchoolAreas()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolAreaBMPBean)entity).ejbFindAllSchoolAreas();

@@ -116,6 +116,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
+
+	public Collection findAllSchoolsByAreaAndTypes(int area, Collection types) throws RemoteException {
+		try {
+			SchoolHome shome = getSchoolHome();
+			return shome.findAllByAreaAndTypes(area, types);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+			return new Vector();
+		}
+	}
 	
 	public School createSchool(String name, String address, String zipcode, String ziparea, String phone, int school_type) throws RemoteException {
 		/**
