@@ -39,6 +39,7 @@ public class ProductViewerLayoutTeaser extends AbstractProductViewerLayout {
 	
 	private Product _product = null;
 	private ProductItemPrice _price = null;
+	private ProductItemThumbnail _thumb = null;
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.trade.stockroom.presentation.AbstractProductViewerLayout#getDemo(com.idega.block.trade.stockroom.presentation.ProductViewer, com.idega.presentation.IWContext)
@@ -58,6 +59,16 @@ public class ProductViewerLayoutTeaser extends AbstractProductViewerLayout {
 		}
 		_price.setShowCurrency(productViewer._showCurrency);
 		_price.setShowLocalized(true);
+
+		_thumb = new ProductItemThumbnail(_product);
+		_thumb.setAddBorder(productViewer._showBorder);
+		if (productViewer._imageWidth != null) {
+			try {
+				_thumb.setWidth(Integer.parseInt(productViewer._imageWidth));
+			}
+			catch (NumberFormatException e) {
+			}
+		}
 
 		return printViewer(productViewer, iwc);
 	}
@@ -84,16 +95,7 @@ public class ProductViewerLayoutTeaser extends AbstractProductViewerLayout {
 		table.add(header, 1, row++);
 		table.setHeight(row++, "6");
 
-		ProductItemThumbnail thumb = new ProductItemThumbnail(_product);
-		thumb.setAddBorder(productViewer._showBorder);
-		if (productViewer._imageWidth != null) {
-			try {
-				thumb.setWidth(Integer.parseInt(productViewer._imageWidth));
-			}
-			catch (NumberFormatException e) {
-			}
-		}
-		table.add(thumb, 3, row);
+		table.add(_thumb, 3, row);
 		table.add(teaser, 1, row++);
 		table.add(_price, 1, row++);
 		
