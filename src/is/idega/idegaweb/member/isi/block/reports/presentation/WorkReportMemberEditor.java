@@ -3,22 +3,216 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+//import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+//import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+//import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
+//import is.idega.idegaweb.member.util.IWMemberConstants;
+//
+//import java.rmi.RemoteException;
+//import java.sql.SQLException;
+//import java.util.Collection;
+//import java.util.Iterator;
+//
+//import javax.ejb.CreateException;
+//import javax.ejb.FinderException;
+//
+//import com.idega.data.IDOException;
+//import com.idega.presentation.ExceptionWrapper;
+//import com.idega.presentation.IWContext;
+//import com.idega.presentation.Table;
+//import com.idega.presentation.text.Text;
+//import com.idega.presentation.ui.CheckBox;
+//import com.idega.presentation.ui.Form;
+//import com.idega.presentation.ui.SubmitButton;
+//import com.idega.presentation.ui.TextInput;
+//
+//
+///**
+// * @author laddi
+// */
+//public class WorkReportMemberEditor extends WorkReportSelector {
+//
+//	private static final String PARAMETER_SAVE = "param_save";
+//	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportmembereditor.step_name";
+//	/**
+//	 * 
+//	 */
+//	public WorkReportMemberEditor() {
+//		super();
+//		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+//	}
+//
+//	/* (non-Javadoc)
+//	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
+//	 */
+//	public void main(IWContext iwc) throws Exception {
+//		super.main(iwc);
+//		
+//		if (this.getWorkReportId() != -1){
+//			//sets this step as bold, if another class calls it this will be overridden
+//			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+//			parseAction(iwc);
+//			printForm(iwc);
+//		}
+//	}
+//	
+//	
+//	private void printForm(IWContext iwc) {
+//		try {
+//			WorkReportBusiness wBiz = getWorkReportBusiness(iwc);
+//			Collection members = wBiz.getAllWorkReportMembersForWorkReportId(getWorkReportId());
+//			Collection leagues = wBiz.getAllWorkReportGroupsForYearAndType( wBiz.getWorkReportById(getWorkReportId()).getYearOfReport().intValue(),IWMemberConstants.GROUP_TYPE_LEAGUE);
+//			
+//			Form form = new Form();
+//			form.maintainParameters(getParametersToMaintain());
+//			
+//			Table table = new Table();
+//			form.add(table);
+//			
+//			int row = 1;
+//			int column = 1;
+//			
+//			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_name","Name"),true,false,false) , column++, row);
+//			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_personal_id","Personal ID"),true,false,false), column++, row);
+//			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_address","Address"),true,false,false), column++, row);
+//			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_postal_code","Postal code"),true,false,false), column++, row);
+//			
+//			Iterator leagueIter = leagues.iterator();
+//			while (leagueIter.hasNext()) {
+//				WorkReportGroup group = (WorkReportGroup) leagueIter.next();
+//				table.add(new Text(group.getName(),true,false,false), column++, row);
+//			}
+//			row++;
+//			
+//			Iterator iter = members.iterator();
+//			while (iter.hasNext()) {
+//				column = 1;
+//				
+//				WorkReportMember user = (WorkReportMember) iter.next();
+//				table.add(user.getName(), column++, row);
+//				table.add(user.getPersonalId(), column++, row);
+//
+//				if(user.getStreetName()!=null ){
+//					table.add(user.getStreetName(), column++, row);
+//				
+//					if(user.getPostalCodeID()!=-1){
+//						try {
+//							table.add(user.getPostalCode().getPostalCode(), column, row);
+//						}
+//						catch (SQLException e) {
+//						//do nothing
+//						}
+//					}
+//					column++;
+//				}
+//				else{
+//					column = column + 2;
+//				}
+//				
+//				Collection memberLeagues = null;
+//				try {
+//					memberLeagues = user.getLeaguesForMember();
+//				}
+//				catch (IDOException ie) {
+//					ie.printStackTrace();
+//				}
+//				
+//				Iterator iterator = leagues.iterator();
+//				while (iterator.hasNext()) {
+//					WorkReportGroup group = (WorkReportGroup) iterator.next();
+//					CheckBox box = new CheckBox(group.getPrimaryKey().toString());
+//					if (memberLeagues != null && memberLeagues.contains(group))
+//						box.setChecked(true);
+//						
+//					table.add(box, column++, row);
+//				}
+//				row++;
+//			}
+//			
+//			column = 1;
+//			TextInput ssn = new TextInput("ssn");
+//			ssn.setAsIcelandicSSNumber(iwrb.getLocalizedString("WorkReportMemberEditor.ssn_not_valid","The personal id you entered is invalid"));
+//			
+//			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.add_member","Enter personal id"),true,false,false), column++, row);
+//			table.add(ssn, column++, row);
+//			column += 2;
+//			
+//			Iterator iterator = leagues.iterator();
+//			while (iterator.hasNext()) {
+//				WorkReportGroup group = (WorkReportGroup) iterator.next();
+//				CheckBox box = new CheckBox(group.getGroupId().toString());
+//				table.add(box, column++, row);
+//			}
+//			row++;
+//			
+//			column = 1;
+//			table.add(new SubmitButton("Submit", PARAMETER_SAVE, "true"), column, row);
+//
+//			add(form);
+//			add(iwrb.getLocalizedString("WorkReportMemberEditor.number_of_members","Number of members : ")+(Math.max(row-3,0)));
+//			
+//		}
+//		catch (RemoteException re) {
+//		}
+//	}
+//	
+//	private void parseAction(IWContext iwc) {
+//		if (iwc.isParameterSet(PARAMETER_SAVE)) {
+//			if (iwc.isParameterSet("ssn")) {
+//				try {
+//					getWorkReportBusiness(iwc).createWorkReportMember(getWorkReportId(), iwc.getParameter("ssn"));
+//				}
+//				catch (RemoteException e) {
+//					e.printStackTrace();
+//				} catch (CreateException e) {
+//					add(new ExceptionWrapper(e));
+//					e.printStackTrace();
+//					
+//				}
+//			}
+//		}
+//	}
+//}
+
+
 import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
+import com.idega.block.entity.business.EntityToPresentationObjectConverter;
+import com.idega.block.entity.data.EntityPath;
+import com.idega.block.entity.data.EntityPathValueContainer;
+import com.idega.block.entity.data.EntityValueHolder;
+import com.idega.block.entity.presentation.EntityBrowser;
+import com.idega.block.entity.presentation.converters.CheckBoxConverter;
+import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
+import com.idega.block.entity.presentation.converters.DropDownPostalCodeConverter;
+import com.idega.block.entity.presentation.converters.OptionProvider;
+import com.idega.block.entity.presentation.converters.TextEditorConverter;
+import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
-import com.idega.presentation.ExceptionWrapper;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -26,150 +220,456 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
-
 /**
- * @author laddi
+ * <p>Title: idegaWeb</p>
+ * <p>Description: </p>
+ * <p>Copyright: Copyright (c) 2003</p>
+ * <p>Company: idega Software</p>
+ * @author <a href="thomas@idega.is">Thomas Hilbig</a>
+ * @version 1.0
+ * Created on Jul 24, 2003
  */
 public class WorkReportMemberEditor extends WorkReportSelector {
+  private static final String STEP_NAME_LOCALIZATION_KEY = "workreportmembereditor.step_name";
+  
+  private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
+  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
+  private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
+  private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
 
-	private static final String PARAMETER_SAVE = "param_save";
-	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportmembereditor.step_name";
-	/**
-	 * 
-	 */
-	public WorkReportMemberEditor() {
-		super();
-		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
-	}
+  private static final Integer NEW_ENTRY_ID_VALUE = new Integer(-1);
+  private static final String NO_LEAGUE_VALUE = "no_league_value";
+  
+  private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
+  
+  private static final String CHECK_BOX = "checkBox";
 
-	/* (non-Javadoc)
-	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
-	 */
-	public void main(IWContext iwc) throws Exception {
-		super.main(iwc);
-		
-		if (this.getWorkReportId() != -1){
-			//sets this step as bold, if another class calls it this will be overridden
-			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
-			parseAction(iwc);
-			printForm(iwc);
-		}
-	}
-	
-	
-	private void printForm(IWContext iwc) {
-		try {
-			WorkReportBusiness wBiz = getWorkReportBusiness(iwc);
-			Collection members = wBiz.getAllWorkReportMembersForWorkReportId(getWorkReportId());
-			Collection leagues = wBiz.getAllWorkReportGroupsForYearAndType( wBiz.getWorkReportById(getWorkReportId()).getYearOfReport().intValue(),IWMemberConstants.GROUP_TYPE_LEAGUE);
-			
-			Form form = new Form();
-			form.maintainParameters(getParametersToMaintain());
-			
-			Table table = new Table();
-			form.add(table);
-			
-			int row = 1;
-			int column = 1;
-			
-			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_name","Name"),true,false,false) , column++, row);
-			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_personal_id","Personal ID"),true,false,false), column++, row);
-			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_address","Address"),true,false,false), column++, row);
-			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.column_postal_code","Postal code"),true,false,false), column++, row);
-			
-			Iterator leagueIter = leagues.iterator();
-			while (leagueIter.hasNext()) {
-				WorkReportGroup group = (WorkReportGroup) leagueIter.next();
-				table.add(new Text(group.getName(),true,false,false), column++, row);
-			}
-			row++;
-			
-			Iterator iter = members.iterator();
-			while (iter.hasNext()) {
-				column = 1;
-				
-				WorkReportMember user = (WorkReportMember) iter.next();
-				table.add(user.getName(), column++, row);
-				table.add(user.getPersonalId(), column++, row);
+  private static final String LEAGUE = "league";
 
-				if(user.getStreetName()!=null ){
-					table.add(user.getStreetName(), column++, row);
-				
-					if(user.getPostalCodeID()!=-1){
-						try {
-							table.add(user.getPostalCode().getPostalCode(), column, row);
-						}
-						catch (SQLException e) {
-						//do nothing
-						}
-					}
-					column++;
-				}
-				else{
-					column = column + 2;
-				}
-				
-				Collection memberLeagues = null;
-				try {
-					memberLeagues = user.getLeaguesForMember();
-				}
-				catch (IDOException ie) {
-					ie.printStackTrace();
-				}
-				
-				Iterator iterator = leagues.iterator();
-				while (iterator.hasNext()) {
-					WorkReportGroup group = (WorkReportGroup) iterator.next();
-					CheckBox box = new CheckBox(group.getPrimaryKey().toString());
-					if (memberLeagues != null && memberLeagues.contains(group))
-						box.setChecked(true);
-						
-					table.add(box, column++, row);
-				}
-				row++;
-			}
-			
-			column = 1;
-			TextInput ssn = new TextInput("ssn");
-			ssn.setAsIcelandicSSNumber(iwrb.getLocalizedString("WorkReportMemberEditor.ssn_not_valid","The personal id you entered is invalid"));
-			
-			table.add(new Text(iwrb.getLocalizedString("WorkReportMemberEditor.add_member","Enter personal id"),true,false,false), column++, row);
-			table.add(ssn, column++, row);
-			column += 2;
-			
-			Iterator iterator = leagues.iterator();
-			while (iterator.hasNext()) {
-				WorkReportGroup group = (WorkReportGroup) iterator.next();
-				CheckBox box = new CheckBox(group.getGroupId().toString());
-				table.add(box, column++, row);
-			}
-			row++;
-			
-			column = 1;
-			table.add(new SubmitButton("Submit", PARAMETER_SAVE, "true"), column, row);
+  private static final String NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember.NAME";
+  private static final String PERSONAL_ID = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.PERSONAL_ID";
+  private static final String STREET_NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard.STREET_NAME";
+  private static final String POSTAL_CODE_ID = "com.idega.core.data.PostalCode.POSTAL_CODE_ID|POSTAL_CODE";
+  
+  private List fieldList;
+  
+  protected Map memberLeaguesMap = null;
+    
+  public WorkReportMemberEditor() {
+    super();
+    setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+  }  
+  
+  
+  public void main(IWContext iwc) throws Exception {
+    super.main(iwc);
+    initializeFieldList(iwc);
+    IWResourceBundle resourceBundle = getResourceBundle(iwc);
+    
+    if (this.getWorkReportId() != -1) {
+      //sets this step as bold, if another class calls it this will be overwritten 
+      setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+      String action = parseAction(iwc);
+      Form form = new Form();
+      PresentationObject pres = getContent(iwc, resourceBundle, form, action);
+      form.maintainParameters(this.getParametersToMaintain());
+      form.add(pres);
+      add(form);
+    }
+  }
+  
+  private void initializeFieldList(IWContext iwc) {
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    Collection leagues;
+    try {
+      leagues = workReportBusiness.getAllWorkReportGroupsForYearAndType( getYear() ,IWMemberConstants.GROUP_TYPE_LEAGUE);
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportMemberEditor]: Can't retrieve WorkReportGroups. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportGroups.");
+    }
+    fieldList = new ArrayList();
+    fieldList.add(LEAGUE);
+    fieldList.add(PERSONAL_ID);
+    fieldList.add(STREET_NAME);
+    fieldList.add(POSTAL_CODE_ID);
+    Iterator iterator = leagues.iterator();
+    while (iterator.hasNext())  {
+      WorkReportGroup group = (WorkReportGroup) iterator.next();
+      String groupName = group.getName();
+      fieldList.add(groupName);
+    }
+  }
+  
+  private String parseAction(IWContext iwc) {
+    String action = "";
+    // does the user want to cancel something?
+    if (iwc.isParameterSet(SUBMIT_CANCEL_KEY)) {
+      return action;
+      // !! do nothing else !!
+      // do not modify entry
+      // do not create an entry
+      // do not delete an entry
+    }
+    // does the user want to delete an existings entries?
+    if (iwc.isParameterSet(SUBMIT_DELETE_ENTRIES_KEY)) {
+      List entriesToDelete = CheckBoxConverter.getResultByParsingUsingDefaultKey(iwc);
+      if (! entriesToDelete.isEmpty())  {
+        deleteWorkReportDivisionBoard(entriesToDelete, iwc);
+        // !! do nothing else !!
+        // do not modify entry
+        // do not create an entry
+        return action;
+      }
+    }
+    // does the user want to edit a new entry?
 
-			add(form);
-			add(iwrb.getLocalizedString("WorkReportMemberEditor.number_of_members","Number of members : ")+(Math.max(row-3,0)));
-			
-		}
-		catch (RemoteException re) {
-		}
-	}
-	
-	private void parseAction(IWContext iwc) {
-		if (iwc.isParameterSet(PARAMETER_SAVE)) {
-			if (iwc.isParameterSet("ssn")) {
-				try {
-					getWorkReportBusiness(iwc).createWorkReportMember(getWorkReportId(), iwc.getParameter("ssn"));
-				}
-				catch (RemoteException e) {
-					e.printStackTrace();
-				} catch (CreateException e) {
-					add(new ExceptionWrapper(e));
-					e.printStackTrace();
-					
-				}
-			}
-		}
-	}
+    if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
+      action = ACTION_SHOW_NEW_ENTRY;
+    }  
+    // does the user want to save a new entry?
+    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
+      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+      WorkReportDivisionBoard board = createWorkReportDivisionBoard();
+      Iterator iterator = fieldList.iterator();
+      while (iterator.hasNext())  {
+        String field = (String) iterator.next();
+        EntityPathValueContainer entityPathValueContainerFromTextEditor = 
+          TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
+        EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
+          DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
+        if (entityPathValueContainerFromTextEditor.isValid()) {
+          setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromTextEditor, board, workReportBusiness);
+        }
+        if (entityPathValueContainerFromDropDownMenu.isValid()) {
+          setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromDropDownMenu, board, workReportBusiness);
+        }
+      }
+      board.store();
+    }  
+    // does the user want to modify an existing entity?
+    EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByParsing(iwc);
+    EntityPathValueContainer entityPathValueContainerFromDropDownMenu = DropDownMenuConverter.getResultByParsing(iwc);
+    if (entityPathValueContainerFromTextEditor.isValid()) {
+      updateWorkReportDivisionBoard(entityPathValueContainerFromTextEditor, iwc);
+    }
+    if (entityPathValueContainerFromDropDownMenu.isValid()) {
+      updateWorkReportDivisionBoard(entityPathValueContainerFromDropDownMenu, iwc);
+    }
+    return action;
+  }
+  
+  private PresentationObject getContent(IWContext iwc, IWResourceBundle resourceBundle, Form form, String action) {
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    try {
+      // create data from the database
+      workReportBusiness.createWorkReportBoardData(getWorkReportId());
+    } catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.");
+    } 
+    // get members
+    Collection members;
+    try {
+      members =
+        workReportBusiness.getAllWorkReportMembersForWorkReportId(getWorkReportId());
+    } catch (RemoteException e) {
+      System.err.println("[WorkReportMemberEditor] Can't get members. Message was: "+ e.getMessage());
+      e.printStackTrace(System.err);
+      members = new ArrayList();
+    }
+    // create map: member as key, leagues as value 
+    Iterator membersIterator = members.iterator();
+    while (membersIterator.hasNext())  {
+      WorkReportMember member = (WorkReportMember) membersIterator.next();
+      try {
+        Iterator leagues = member.getLeaguesForMember().iterator();
+        List leaguesList = new ArrayList();
+        while (leagues.hasNext()) {
+          WorkReportGroup league = (WorkReportGroup) leagues.next();
+          String leagueName = league.getName();
+          leaguesList.add(leagueName);
+        }
+        Integer memberId = (Integer) member.getPrimaryKey();
+        memberLeaguesMap.put(memberId, leagues);
+      }
+      catch (IDOException ex) {
+        System.err.println("[WorkReportMemberEditor] Can't get leagues. Message is: " + 
+          ex.getMessage());
+        ex.printStackTrace(System.err);
+      }
+    }
+    EntityBrowser browser = getEntityBrowser(members, resourceBundle, form);
+    // put browser into a table
+    Table mainTable = new Table(1,2);
+    mainTable.add(browser, 1,1);
+    PresentationObject inputField = getPersonalIdInputField(resourceBundle);
+    PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
+      getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
+    PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
+    PresentationObject cancelButton = getCancelButton(resourceBundle);
+    Table buttonTable = new Table(4,1);
+    buttonTable.add(inputField,1,1);
+    buttonTable.add(newEntryButton,2,1);
+    buttonTable.add(deleteEntriesButton,3,1);
+    buttonTable.add(cancelButton, 4,1);
+    mainTable.add(buttonTable,1,2);
+    return mainTable;    
+  }
+  
+  private PresentationObject getPersonalIdInputField(IWResourceBundle resourceBundle) {
+    Text text = new Text(resourceBundle.getLocalizedString("WorkReportMemberEditor.add_member","Enter personal id"));
+    text.setBold();
+    TextInput ssn = new TextInput("ssn");
+    String error = resourceBundle.getLocalizedString("WorkReportMemberEditor.ssn_not_valid","The personal id you entered is invalid");
+    ssn.setAsIcelandicSSNumber(error);
+    Table table = new Table(2,1);
+    table.add(text,1,1);
+    table.add(ssn,2,1);
+    return table;
+  }
+  
+  private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
+    String createNewEntityText = resourceBundle.getLocalizedString("wr_div_board_member_editor_create_new_entry", "New entry");
+    SubmitButton button = new SubmitButton(createNewEntityText, SUBMIT_CREATE_NEW_ENTRY_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }
+  
+  private PresentationObject getSaveNewEntityButton(IWResourceBundle resourceBundle)  {
+    String saveNewEntityText = resourceBundle.getLocalizedString("wr_div_board_member_editor_save_new_entry", "Save");
+    SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }    
+
+  private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
+    String deleteEntityText = resourceBundle.getLocalizedString("wr_board_member_editor_remove_entries", "Remove");
+    SubmitButton button = new SubmitButton(deleteEntityText, SUBMIT_DELETE_ENTRIES_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }  
+
+  private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
+    String cancelText = resourceBundle.getLocalizedString("wr_board_member_editor_cancel", "Cancel");
+    SubmitButton button = new SubmitButton(cancelText, SUBMIT_CANCEL_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }    
+ 
+  private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
+    // define converter
+    CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
+    TextEditorConverter textEditorConverter = new TextEditorConverter(form);
+    textEditorConverter.maintainParameters(this.getParametersToMaintain());
+    EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
+    
+    // define path short keys and map corresponding converters
+    Object[] columns = {
+      CHECK_BOX, checkBoxConverter,
+      NAME, textEditorConverter,
+      PERSONAL_ID, textEditorConverter,
+      STREET_NAME, textEditorConverter,
+      POSTAL_CODE_ID, dropDownPostalCodeConverter};
+    EntityBrowser browser = new EntityBrowser();
+    browser.setLeadingEntity(WorkReportDivisionBoard.class);
+    browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
+    if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
+    // switch off the internal form of the browser
+    browser.setUseExternalForm(true);
+    for (int i = 0; i < columns.length; i+=2) {
+      String column = (String) columns[i];
+      EntityToPresentationObjectConverter converter = (EntityToPresentationObjectConverter) columns[i+1];
+      browser.setMandatoryColumn(i, column);
+      browser.setEntityToPresentationConverter(column, converter);
+    }
+    // add more columns
+    Iterator iterator = fieldList.iterator();
+    int i = 6;
+    while (iterator.hasNext())  {
+      String leagueName = (String) iterator.next();
+      EntityToPresentationObjectConverter converter = new WorkReportCheckBoxConverter(leagueName);
+      browser.setMandatoryColumn(i++, leagueName);
+      browser.setEntityToPresentationConverter(leagueName, converter);
+    }
+    browser.setEntities("dummy_string", entities);
+    return browser;
+  }
+  
+  
+  
+  /**
+   * converter for postal code column
+   */
+  private EntityToPresentationObjectConverter getConverterForPostalCode(Form form) {
+    DropDownPostalCodeConverter dropDownPostalCodeConverter = new DropDownPostalCodeConverter(form);
+    dropDownPostalCodeConverter.setCountry("Iceland");
+    dropDownPostalCodeConverter.maintainParameters(getParametersToMaintain());
+    return dropDownPostalCodeConverter;
+  }     
+
+  /** business method: delete WorkReportBoardMembers.
+   * @param ids - List of primaryKeys (Integer)
+   */
+  private void deleteWorkReportDivisionBoard(List ids, IWContext iwc) {
+    Iterator iterator = ids.iterator();
+    while (iterator.hasNext())  {
+      Integer id = (Integer) iterator.next();
+      WorkReportDivisionBoard board = findWorkReportDivisionBoard(id, iwc);
+      if (board != null) {
+        try {
+          board.remove();
+        }
+        catch (RemoveException ex) {
+          System.err.println(
+            "[WorkReportDivisionBoardEditor]: Can't remove WorkReportDivisionBoard. Message is: "
+              + ex.getMessage());
+          ex.printStackTrace(System.err);
+          // do nothing
+        }
+      }
+    }
+    
+  }
+
+  /** business method: find
+   * @param primaryKey
+   * @return desired WorkReportDivisionBoard or null if not found
+   */
+  private WorkReportDivisionBoard findWorkReportDivisionBoard(Integer primaryKey, IWContext iwc) {
+    WorkReportDivisionBoard board = null;
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    try {
+      board = workReportBusiness.getWorkReportDivisionBoardHome().findByPrimaryKey(primaryKey);
+    }
+    catch (RemoteException ex) {
+      System.err.println(
+        "[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportDivisionBoard. Message is: "
+          + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException("[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportDivisionBoard.");
+    }
+    catch (FinderException ex)  {
+      System.err.println(
+      "[WorkReportDivisionBoardEditor]: Can't find WorkReportDivisionBoard. Message is: "
+        + ex.getMessage());
+      ex.printStackTrace(System.err);
+    }  
+    return board;
+  }
+  
+  // business method: create
+  private WorkReportDivisionBoard createWorkReportDivisionBoard()  {
+    WorkReportDivisionBoard workReportDivisionBoard = null;
+    try {
+      workReportDivisionBoard =
+        (WorkReportDivisionBoard) IDOLookup.create(WorkReportDivisionBoard.class);
+    } catch (IDOLookupException e) {
+      System.err.println("[WorkReportDivisonBoardEditor] Could not lookup home of WorkReportDivisionBoard. Message is: "+ e.getMessage());
+      e.printStackTrace(System.err);
+    } catch (CreateException e) {
+      System.err.println("[WorkReportDivisionBoardEditor] Could not create new WorkReportDivisionBoard. Message is: "+ e.getMessage());
+      e.printStackTrace(System.err);
+    }
+    workReportDivisionBoard.setReportId(getWorkReportId());
+    workReportDivisionBoard.store();
+    return workReportDivisionBoard;
+  }
+
+  // business method: update  
+  private void updateWorkReportDivisionBoard(EntityPathValueContainer valueContainer, IWContext iwc)  {
+    // precondition: value container is valid, that is its method isValid() returns true.
+    // get the corresponding entity
+    Integer id = valueContainer.getEntityId();
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+    WorkReportDivisionBoard board = findWorkReportDivisionBoard(id, iwc);
+    if (board == null)  {
+      return;
+    }
+    setValuesOfWorkReportDivisionBoard(valueContainer, board, workReportBusiness);
+    board.store();
+  }
+
+  private void setValuesOfWorkReportDivisionBoard(EntityPathValueContainer valueContainer, WorkReportDivisionBoard board, WorkReportBusiness workReportBusiness)  {
+    String pathShortKey = valueContainer.getEntityPathShortKey();
+    Object value = valueContainer.getValue();
+    
+    if (pathShortKey.equals(NAME)) {
+      board.setHomePage(value.toString());
+    }
+    else if (pathShortKey.equals(PERSONAL_ID))  {
+      board.setPersonalId(value.toString());
+    }
+    else if (pathShortKey.equals(STREET_NAME))  {
+      board.setStreetName(value.toString());
+    }
+    else if(pathShortKey.equals(POSTAL_CODE_ID))  {
+      try {
+        int postalCode = Integer.parseInt(value.toString());
+        board.setPostalCodeID(postalCode);
+      }
+      catch (NumberFormatException ex)  {
+      }
+    }
+    else if (pathShortKey.equals(LEAGUE)) {
+      // special case, sometimes there is not a previous value
+      Object previousValue = valueContainer.getPreviousValue();
+      String oldWorkGroupName = (previousValue == null) ? null : previousValue.toString();
+      String newWorkGroupName = value.toString();
+      int year = getYear();
+      try {
+        workReportBusiness.changeWorkReportGroupOfEntity(oldWorkGroupName, year, newWorkGroupName, year, board);
+      }
+      catch (RemoteException ex) {
+        System.err.println(
+          "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
+            + ex.getMessage());
+        ex.printStackTrace(System.err);
+        throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
+      }
+    }
+  }
+
+  /** 
+   * CheckBoxConverterHelper:
+   * Inner class.
+   */
+  
+  class WorkReportCheckBoxConverter extends CheckBoxConverter {
+    
+    public WorkReportCheckBoxConverter(String key) {
+      super(key);
+    }
+    
+    public PresentationObject getPresentationObject(
+      Object entity,
+      EntityPath path,
+      EntityBrowser browser,
+      IWContext iwc) {
+      
+      EntityRepresentation idoEntity = (EntityRepresentation) entity;
+      Integer id = (Integer) idoEntity.getPrimaryKey();
+      CheckBox checkBox = new CheckBox(getKeyForCheckBox(), id.toString());
+      Collection leagues = (Collection) memberLeaguesMap.get(id);
+      boolean shouldBeChecked = (leagues != null && leagues.contains(getKeyForCheckBox()));
+      checkBox.setChecked(shouldBeChecked);
+      return checkBox;
+    }
+    
+    public PresentationObject getHeaderPresentationObject(
+      EntityPath entityPath,
+      EntityBrowser browser,
+      IWContext iwc) {
+      Text text = new Text(getKeyForCheckBox());
+      text.setBold();
+      return text;
+    }
+  }
+    
 }
