@@ -259,7 +259,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 		row++;
 
-		if (check != null && check.getMotherToungueMotherChild() != null) {
+		/*if (check != null && check.getMotherToungueMotherChild() != null) {
 			checkInfoTable.add(getLocalizedSmallHeader("check.language_mother_child", "Language mother-child"), 1, row);
 			checkInfoTable.add(getSmallHeader(":"), 1, row);
 			checkInfoTable.add(getSmallText(check.getMotherToungueMotherChild()), 2, row++);
@@ -273,7 +273,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 			checkInfoTable.add(getLocalizedSmallHeader("check.language_parents", "Language parents"), 1, row);
 			checkInfoTable.add(getSmallHeader(":"), 1, row);
 			checkInfoTable.add(getSmallText(check.getMotherToungueParents()), 2, row);
-		}
+		}*/
 
 		return checkInfoTable;
 	}
