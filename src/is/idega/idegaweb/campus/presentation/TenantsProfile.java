@@ -75,6 +75,12 @@ private CampusApplication campusApplication;
 private TextStyler styler;
 private Image image;
 
+public static final String darkBlue = "#27334B";
+public static final String darkGray = "#D7DADF";
+public static final String lightGray = "#F4F4F4";
+public static final String white = "#FFFFFF";
+public static final String darkRed = "#932A2D";
+
   public TenantsProfile() {
   }
 
@@ -169,15 +175,15 @@ private Image image;
       addToTable(table,row++,iwrb.getLocalizedString("childrenProfile","Children"),children,new TextArea(CHILDREN,45,3),45);
     }
 
-    table.setHorizontalZebraColored("#FFFFFF","#ECEEF0");
-    table.setColumnColor(1,"9FA9B3");
-    table.setColor(1,1,"27334B");
+    table.setHorizontalZebraColored(white,lightGray);
+    table.setColumnColor(1,darkGray);
+    table.setColor(1,1,darkBlue);
     table.setColumnVerticalAlignment(1,"top");
     table.setColumnVerticalAlignment(2,"top");
     table.mergeCells(1,row,2,row);
 
     table.add(image,1,row);
-    table.setColor(1,row,"#932A2D");
+    table.setColor(1,row,darkRed);
 
     row++;
     table.mergeCells(1,row,2,row);
@@ -224,13 +230,13 @@ private Image image;
       row++;
     }
 
-    table.setHorizontalZebraColored("#FFFFFF","#ECEEF0");
-    table.setColumnColor(1,"9FA9B3");
-    table.setColor(1,1,"27334B");
+    table.setHorizontalZebraColored(white,lightGray);
+    table.setColumnColor(1,darkGray);
+    table.setColor(1,1,darkBlue);
     table.mergeCells(1,row,2,row);
 
     table.add(image,1,row);
-    table.setColor(1,row,"#932A2D");
+    table.setColor(1,row,darkRed);
     row++;
 
     Link resignLink = new Link(iwrb.getImage("resign.gif"));
@@ -273,13 +279,13 @@ private Image image;
       row++;
     }
 
-    table.setHorizontalZebraColored("#FFFFFF","#ECEEF0");
-    table.setColor(1,1,"27334B");
-    table.setRowColor(2,"9FA9B3");
+    table.setHorizontalZebraColored(white,lightGray);
+    table.setColor(1,1,darkBlue);
+    table.setRowColor(2,darkGray);
     table.mergeCells(1,row,3,row);
 
     table.add(image,1,row);
-    table.setColor(1,row,"#932A2D");
+    table.setColor(1,row,darkRed);
 
     return table;
   }
@@ -315,13 +321,13 @@ private Image image;
       }
     }
 
-    table.setHorizontalZebraColored("#FFFFFF","#ECEEF0");
-    table.setColor(1,1,"27334B");
-    table.setRowColor(2,"9FA9B3");
+    table.setHorizontalZebraColored(white,lightGray);
+    table.setColor(1,1,darkBlue);
+    table.setRowColor(2,darkGray);
     table.mergeCells(1,row,3,row);
 
     table.add(image,1,row);
-    table.setColor(1,row,"#932A2D");
+    table.setColor(1,row,darkRed);
     row++;
 
     Link requestLink = new Link(iwrb.getImage("request.gif"));

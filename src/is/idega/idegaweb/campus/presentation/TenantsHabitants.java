@@ -51,6 +51,12 @@ private int _orderID = -1;
 private TextStyler styler;
 private Image image;
 
+private String darkBlue = "#27334B";
+private String darkGray = "#D9DDE1";
+private String lightGray = "#ECEEF0";
+private String white = "#FFFFFF";
+private String darkRed = "#932A2D";
+
   public TenantsHabitants() {
   }
 
@@ -221,9 +227,9 @@ private Image image;
       row++;
     }
 
-    table.setHorizontalZebraColored("#FFFFFF","#ECEEF0");
-    table.setColor(1,1,"27334B");
-    table.setRowColor(2,"9FA9B3");
+    table.setHorizontalZebraColored(TenantsProfile.white,TenantsProfile.lightGray);
+    table.setColor(1,1,TenantsProfile.darkBlue);
+    table.setRowColor(2,TenantsProfile.darkGray);
     table.mergeCells(1,row,5,row);
     table.setColumnAlignment(2,"center");
     table.setColumnAlignment(3,"center");
@@ -237,7 +243,7 @@ private Image image;
     table.setWidth(5,"24%");
 
     table.add(image,1,row);
-    table.setColor(1,row,"#932A2D");
+    table.setColor(1,row,TenantsProfile.darkRed);
 
     return table;
   }
