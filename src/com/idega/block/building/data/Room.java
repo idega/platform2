@@ -46,23 +46,32 @@ public class Room extends GenericEntity {
   public void setInfo(String info){
     setColumn("info",info);
   }
-  public int getBuildingId(){
+  public int getFloorId(){
     return getIntColumnValue("floor_id");
   }
-  public void setBuildingId(int floor_id){
+  public void setFloorId(int floor_id){
     setColumn("floor_id",floor_id);
   }
-  public void setBuildingId(Integer floor_id){
+  public void setFloorId(Integer floor_id){
     setColumn("floor_id",floor_id);
   }
-  public int getImageId(){
+  public int getRoomTypeId(){
     return getIntColumnValue("room_type_id");
   }
+  public void setRoomTypeId(int roomtype_id){
+    setColumn("room_type_id",roomtype_id);
+  }
+  public void setRoomTypeId(Integer roomtype_id){
+    setColumn("room_type_id",roomtype_id);
+  }
+  public int getImageId(){
+    return getIntColumnValue("image_id");
+  }
   public void setImageId(int room_type_id){
-    setColumn("room_type_id",room_type_id);
+    setColumn("image_id",room_type_id);
   }
   public void setImageId(Integer room_type_id){
-    setColumn("room_type_id",room_type_id);
+    setColumn("image_id",room_type_id);
   }
   public boolean getRentable(){
     return getBooleanColumnValue("rentable");
