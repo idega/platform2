@@ -176,7 +176,11 @@ public class GroupLogoTab extends UserGroupTab {
 
 			Group group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 
-			systemImageId = Integer.parseInt(group.getMetaData("group_image"));
+			try {
+				systemImageId = Integer.parseInt(group.getMetaData("group_image"));
+			} catch (NumberFormatException n) {
+				systemImageId = -1;
+			}
 
 			if (systemImageId != -1) {
 				fieldValues.put(imageFieldName, Integer.toString(systemImageId));
