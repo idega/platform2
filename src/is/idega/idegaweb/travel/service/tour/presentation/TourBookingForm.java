@@ -1,6 +1,5 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
-import is.idega.idegaweb.travel.business.InquirerBean;
 import is.idega.idegaweb.travel.business.ServiceNotFoundException;
 import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
 import is.idega.idegaweb.travel.data.BookingEntry;
