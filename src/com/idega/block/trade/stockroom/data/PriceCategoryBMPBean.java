@@ -1,11 +1,15 @@
 package com.idega.block.trade.stockroom.data;
 
 import java.sql.SQLException;
-
+import java.util.Collection;
 import javax.ejb.FinderException;
-
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOQuery;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 
 /**
@@ -17,7 +21,7 @@ import com.idega.data.IDOQuery;
  * @version 1.0
  */
 
-public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.PriceCategory {
+public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implements PriceCategory{
 
   public static final String PRICETYPE_PRICE = "sr_pricetype_price";
   public static final String PRICETYPE_DISCOUNT = "sr_pricetype_discount";
@@ -183,6 +187,21 @@ public class PriceCategoryBMPBean extends com.idega.data.GenericEntity implement
 	public void setVisibility(int visibility) {
 		this.setColumn(getColumnNameVisibility(), visibility);	
 	}
+	
+	public Collection ejbFindBySupplierAndCountAsPerson(int supplierID, boolean countAsPerson) throws FinderException {
+		Table table = new Table(this);
+		Column supplier = new Column(table, getColumnNameSupplierId());
+		Column valid = new Column(table, getColumnNameIsValid());
+		Column count = new Column(table, getColumnNameCountAsPerson());
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(supplier, MatchCriteria.EQUALS, supplierID));
+		query.addCriteria(new MatchCriteria(count, MatchCriteria.EQUALS, countAsPerson));
+		query.addCriteria(new MatchCriteria(valid, MatchCriteria.EQUALS, true));
+		
+		return this.idoFindPKsBySQL(query.toString());
+	}
+	
 
   public static String getColumnNameName() {return "CATEGORY_NAME";}
   public static String getColumnNameDescription() {return "DESCRIPTION";}

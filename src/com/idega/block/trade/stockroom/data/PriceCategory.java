@@ -1,27 +1,110 @@
 package com.idega.block.trade.stockroom.data;
 
+import com.idega.data.IDOLegacyEntity;
 
-public interface PriceCategory extends com.idega.data.IDOLegacyEntity
-{
- public boolean getCountAsPerson();
- public java.lang.String getDescription();
- public java.lang.String getExtraInfo();
- public java.lang.String getKey();
- public java.lang.String getName();
- public int getParentId();
- public int getSupplierId();
- public java.lang.String getType();
- public int getVisibility();
- public void initializeAttributes();
- public boolean isNetbookingCategory();
- public void isNetbookingCategory(boolean p0);
- public void setCountAsPerson(boolean p0);
- public void setDescription(java.lang.String p0);
- public void setExtraInfo(java.lang.String p0);
- public void setKey(java.lang.String p0);
- public void setName(java.lang.String p0);
- public void setParentId(int p0);
- public void setSupplierId(int p0);
- public void setType(java.lang.String p0);
- public void setVisibility(int p0);
+
+/**
+ * @author gimmi
+ */
+public interface PriceCategory extends IDOLegacyEntity {
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setName
+	 */
+	public void setName(String name);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getDescription
+	 */
+	public String getDescription();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setDescription
+	 */
+	public void setDescription(String description);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getExtraInfo
+	 */
+	public String getExtraInfo();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setExtraInfo
+	 */
+	public void setExtraInfo(String extraInfo);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getType
+	 */
+	public String getType();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setType
+	 */
+	public void setType(String type);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#isNetbookingCategory
+	 */
+	public void isNetbookingCategory(boolean value);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#isNetbookingCategory
+	 */
+	public boolean isNetbookingCategory();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setSupplierId
+	 */
+	public void setSupplierId(int id);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getSupplierId
+	 */
+	public int getSupplierId();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setParentId
+	 */
+	public void setParentId(int id);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getParentId
+	 */
+	public int getParentId();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setKey
+	 */
+	public void setKey(String key);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getKey
+	 */
+	public String getKey();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setCountAsPerson
+	 */
+	public void setCountAsPerson(boolean countAsPerson);
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getCountAsPerson
+	 */
+	public boolean getCountAsPerson();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#getVisibility
+	 */
+	public int getVisibility();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.PriceCategoryBMPBean#setVisibility
+	 */
+	public void setVisibility(int visibility);
 }
