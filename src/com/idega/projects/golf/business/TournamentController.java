@@ -300,9 +300,9 @@ public class TournamentController{
     }
 
 
-    public static boolean setupStartingtime(com.idega.projects.golf.entity.Member member, Tournament tournament, int tournament_day_id, int startingGroup) throws SQLException{
+    public static boolean setupStartingtime(com.idega.projects.golf.entity.Member member, Tournament tournament, int tournament_round_id, int startingGroup) throws SQLException{
         int howManyEachGroup = tournament.getNumberInGroup();
-        TournamentDay tourDay = new TournamentDay(tournament_day_id);
+        TournamentRound tourRound = new TournamentRound(tournament_round_id);
 
         boolean returner = false;
 
@@ -310,7 +310,7 @@ public class TournamentController{
             Startingtime startingtime = new Startingtime();
                 startingtime.setFieldID(tournament.getFieldId());
                 startingtime.setMemberID(member.getID());
-                startingtime.setStartingtimeDate(tourDay.getDate());
+                startingtime.setStartingtimeDate(new idegaTimestamp(tourRound.getRoundDate()).getSQLDate());
                 startingtime.setPlayerName(member.getName());
                 startingtime.setHandicap(member.getHandicap());
                 startingtime.setClubName(member.getMainUnion().getAbbrevation());
@@ -339,10 +339,10 @@ public class TournamentController{
 
     }
 
-    public static boolean isMemberRegisteredInTournament(Tournament tournament,TournamentDay tourDay,int howManyEachGroup, com.idega.projects.golf.entity.Member member) throws SQLException {
+    public static boolean isMemberRegisteredInTournament(Tournament tournament,TournamentRound tourRound,int howManyEachGroup, com.idega.projects.golf.entity.Member member) throws SQLException {
         boolean returner = false;
-        com.idega.util.idegaTimestamp stamp = new  com.idega.util.idegaTimestamp(tourDay.getDate());
-        Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE = '"+stamp.toSQLString()+"' AND field_id="+tournament.getFieldId()+" AND member_id = "+member.getID());
+        com.idega.util.idegaTimestamp stamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
+        Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT * FROM STARTINGTIME WHERE STARTINGTIME_DATE = '"+stamp.toSQLDateString()+"' AND field_id="+tournament.getFieldId()+" AND member_id = "+member.getID());
         if (startingtimes.length > 0 ) {
             returner = true;
         }
@@ -350,8 +350,8 @@ public class TournamentController{
         return returner;
     }
 
-    public static List getMembersInStartingGroup(Tournament tournament, TournamentDay tournamentDay, int startingGroupNumber) {
-        String SQLDate = new idegaTimestamp(tournamentDay.getDate()).toSQLString();
+    public static List getMembersInStartingGroup(Tournament tournament, TournamentRound tournamentRound, int startingGroupNumber) {
+        String SQLDate = new idegaTimestamp(tournamentRound.getRoundDate()).toSQLDateString();
         int fieldId = tournament.getFieldId();
         List members = new Vector();
         try {
@@ -428,7 +428,7 @@ public class TournamentController{
 
 
 
-    public static Form getStartingtimeTable(Tournament tournament,String tournament_day_id, boolean viewOnly) throws SQLException{
+    public static Form getStartingtimeTable(Tournament tournament,String tournament_round_id, boolean viewOnly) throws SQLException{
         Form form = new Form();
             form.maintainParameter("action");
             form.add(new HiddenInput("viewOnly",""+viewOnly));
@@ -443,36 +443,45 @@ public class TournamentController{
         int row = 1;
 
 
-        TournamentDay[] tourDays = tournament.getTournamentDays();
+        TournamentRound[] tourRounds = tournament.getTournamentRounds();
 
-        int tournamentDayId= -1;
-        if (tournament_day_id == null) {
-            tournament_day_id = "-1";
-            tournamentDayId = tourDays[0].getID();
+        int tournamentRoundId= -1;
+        if (tournament_round_id == null) {
+            tournament_round_id = "-1";
+            tournamentRoundId = tourRounds[0].getID();
         }
         else {
-            tournamentDayId = Integer.parseInt(tournament_day_id);
+            tournamentRoundId = Integer.parseInt(tournament_round_id);
         }
 
-        TournamentDay tournamentDay = new TournamentDay(tournamentDayId);
+        TournamentRound tournamentRound = new TournamentRound(tournamentRoundId);
+//        TournamentDay tournamentDay = new TournamentDay(tournamentDayId);
 
 
         idegaTimestamp tourDay = null;
-        if (tournament_day_id.equals("-1")) {
+/*
+        if (tournament_round_id.equals("-1")) {
             tourDay = new idegaTimestamp(tournament.getStartTime());
         }
         else {
-            tourDay = new idegaTimestamp(new TournamentDay(Integer.parseInt(tournament_day_id)).getDate());
+            tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
+        }
+*/
+
+
+        DropdownMenu rounds = new DropdownMenu("tournament_round");
+        for (int i = 0; i < tourRounds.length; i++) {
+            tourDay = new idegaTimestamp(tourRounds[i].getRoundDate());
+            rounds.addMenuElement(tourRounds[i].getID(),"Hringur "+tourRounds[i].getRoundNumber()+" "+tourDay.getISLDate(".",true) );
         }
 
-
-
-        DropdownMenu days = new DropdownMenu(tourDays);
-            if (!tournament_day_id.equals("-1")) {
-                days.setSelectedElement(tournament_day_id);
+            if (!tournament_round_id.equals("-1")) {
+                rounds.setSelectedElement(tournament_round_id);
             }
-            days.setToSubmit();
-        table.add(days,1,row);
+            rounds.setToSubmit();
+
+        table.add(rounds,1,row);
+
         table.mergeCells(1,row,6,row);
         table.setAlignment(1,row,"right");
         ++row;
@@ -487,17 +496,17 @@ public class TournamentController{
         List members;
         com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
         Link remove;
-        StartingtimeFieldConfig[] fieldConf = (StartingtimeFieldConfig[])(new StartingtimeFieldConfig()).findAllByColumn("tournament_id",""+tournament.getID() );
+//        StartingtimeFieldConfig[] fieldConf = (StartingtimeFieldConfig[])(new StartingtimeFieldConfig()).findAllByColumn("tournament_id",""+tournament.getID() );
         Text tooMany = new Text("Ekki pláss");
             tooMany.setFontColor("RED");
 
 
 
-        if (fieldConf.length > 0) {
-            idegaTimestamp startHour = new idegaTimestamp(fieldConf[0].getOpenTime());
-            idegaTimestamp endHour = new idegaTimestamp(fieldConf[0].getCloseTime());
+        //if (fieldConf.length > 0) {
+            idegaTimestamp startHour = new idegaTimestamp(tournamentRound.getRoundDate());
+            idegaTimestamp endHour = new idegaTimestamp(tournamentRound.getRoundEndDate());
                 endHour.addMinutes(1);
-            int minutesBetween = fieldConf[0].getMinutesBetweenStart();
+            int minutesBetween = tournament.getInterval();
             int numberInGroup = tournament.getNumberInGroup();
 
 
@@ -514,7 +523,7 @@ public class TournamentController{
                 table.add("<b>&nbsp;"+startHour.getHour() +":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
                 table.mergeCells(1,row,1,row + (numberInGroup -1));
                 table.setVerticalAlignment(1,row,"top");
-                members = TournamentController.getMembersInStartingGroup(tournament,tournamentDay,groupCounter);
+                members = TournamentController.getMembersInStartingGroup(tournament,tournamentRound,groupCounter);
                 if (members != null) {
                     startInGroup =  members.size();
                     for (int i = 0; i < members.size() ; i++) {
@@ -523,13 +532,15 @@ public class TournamentController{
                         table.add(tempMember.getSocialSecurityNumber(),2,row);
                         table.add(tempMember.getName() ,3,row);
                         table.add(Float.toString(tempMember.getHandicap()),5,row);
-                        remove = new Link(rusl);
-                            remove.addParameter("sub_action","removeMemberFromTournament");
-                            remove.addParameter("action","selectmember");
-                            remove.addParameter("tournament_day",Integer.toString(tournamentDayId));
-                            remove.addParameter("member_id",Integer.toString(tempMember.getID()));
-                            remove.addParameter("startingGroupNumber", Integer.toString(groupCounter));
-                        table.add(remove,6,row);
+                        if (!viewOnly) {
+                            remove = new Link(rusl);
+                                remove.addParameter("sub_action","removeMemberFromTournament");
+                                remove.addParameter("action","selectmember");
+                                remove.addParameter("tournament_round",Integer.toString(tournamentRoundId));
+                                remove.addParameter("member_id",Integer.toString(tempMember.getID()));
+                                remove.addParameter("startingGroupNumber", Integer.toString(groupCounter));
+                            table.add(remove,6,row);
+                        }
                         row++;
                     }
 
@@ -560,7 +571,7 @@ public class TournamentController{
                 table.setAlignment(1,row,"right");
             }
 
-        }
+        //}
         return form;
     }
 
