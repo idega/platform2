@@ -37,16 +37,16 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	private static final String LOCALIZED_DIVISION_NAME = "AccountingStatsBusiness.division_name";
 	private static final String LOCALIZED_GROUP_NAME = "AccountingStatsBusiness.group_name";
 	private static final String LOCALIZED_NAME = "AccountingStatsBusiness.name";
-	private static final String LOCALIZED_SSN = "AccountingStatsBusiness.ssn";
+	private static final String LOCALIZED_PERSONAL_ID = "AccountingStatsBusiness.personal_id";
 	private static final String LOCALIZED_AMOUNT = "AccountingStatsBusiness.amount";
-	private static final String LOCALIZED_ENTRY_DATE = "AccountingStatsBusiness.entry_date";
+	private static final String LOCALIZED_DATE_OF_ENTRY = "AccountingStatsBusiness.date_of_entry";
 	
 	private static final String FIELD_NAME_DIVISION_NAME = "division_name";
 	private static final String FIELD_NAME_GROUP_NAME = "group_name";
 	private static final String FIELD_NAME_NAME = "name";
-	private static final String FIELD_NAME_SSN = "ssn";
+	private static final String FIELD_NAME_PERSONAL_ID = "personal_id";
 	private static final String FIELD_NAME_AMOUNT = "amount";
-	private static final String FIELD_NAME_ENTRY_DATE = "entry_date";
+	private static final String FIELD_NAME_DATE_OF_ENTRY = "date_of_entry";
 	
 	private AccountingBusiness accountingBiz = null;
 	private IWBundle _iwb = null;
@@ -93,28 +93,28 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
 		 //The name you give the field/parameter must not contain spaces or special characters		
 		 ReportableField divisionField = new ReportableField(FIELD_NAME_DIVISION_NAME, String.class);
-		 divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Deild"), currentLocale);
+		 divisionField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DIVISION_NAME, "Division"), currentLocale);
 		 reportCollection.addField(divisionField);
 		 
 		 //fake columns (data gotten by business methods)
 		 ReportableField groupField = new ReportableField(FIELD_NAME_GROUP_NAME, String.class);
-		 groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Flokkur"), currentLocale);
+		 groupField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_GROUP_NAME, "Group"), currentLocale);
 		 reportCollection.addField(groupField);
 		 
 		 ReportableField nameField = new ReportableField(FIELD_NAME_NAME, Integer.class);
-		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Nafn"), currentLocale);
+		 nameField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_NAME, "Name"), currentLocale);
 		 reportCollection.addField(nameField);
 		 
-		 ReportableField ssnField = new ReportableField(FIELD_NAME_SSN, Integer.class);
-		 ssnField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SSN, "Kennitala"),currentLocale);
+		 ReportableField ssnField = new ReportableField(FIELD_NAME_PERSONAL_ID, Integer.class);
+		 ssnField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSONAL_ID, "Personal id"),currentLocale);
 		 reportCollection.addField(ssnField);
 		 
 		 ReportableField amountField = new ReportableField(FIELD_NAME_AMOUNT, Integer.class);
-		 amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Upphæð"), currentLocale);
+		 amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		 reportCollection.addField(amountField);
 		 
-		 ReportableField entryDateField = new ReportableField(FIELD_NAME_ENTRY_DATE, Integer.class);
-		 entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ENTRY_DATE, "Dags. færslu"), currentLocale);
+		 ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, Integer.class);
+		 entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
 		 reportCollection.addField(entryDateField);
 		 /*
 		 ReportableField bothGendersUnderAge = new ReportableField(FIELD_NAME_NAME_ALL_UNDER_AGE, Integer.class);
