@@ -10,15 +10,15 @@ package com.idega.block.cal.business;
  */
 import java.sql.Timestamp;
 import java.util.Collection;
-
 import com.idega.block.cal.data.AttendanceEntity;
 import com.idega.block.cal.data.AttendanceMark;
 import com.idega.block.cal.data.CalendarEntry;
 import com.idega.block.cal.data.CalendarLedger;
 import com.idega.presentation.IWContext;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.User;
 
-public interface CalBusiness extends com.idega.business.IBOService {
+public interface CalBusiness extends com.idega.business.IBOService, UserGroupPlugInBusiness {
 	public java.util.List getAllLedgers();
 	public CalendarLedger getLedger(int ledgerID);
 	public AttendanceMark getMark(int markID);

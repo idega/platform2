@@ -2,9 +2,7 @@ package com.idega.block.importer.presentation;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFileRecord;
 import com.idega.block.importer.data.ImportFileRecordHome;
@@ -33,6 +31,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
+import com.idega.user.presentation.GroupPropertyWindow;
+import com.idega.user.presentation.StyledBasicUserOverViewToolbar;
 import com.idega.util.IWColor;
 import com.idega.util.IWTimestamp;
 /**
@@ -126,9 +126,9 @@ public class Importer extends StyledIWAdminWindow {
 			selectFiles = true;
 		}
 		//if importing into a specific group. Used for compatabilty to idegaWeb Member system
-		groupId = iwc.getParameter(this.PARAMETER_GROUP_ID);
+		groupId = iwc.getParameter(GroupPropertyWindow.PARAMETERSTRING_GROUP_ID);
 		if (groupId != null) {
-			iwc.setSessionAttribute(this.PARAMETER_GROUP_ID, groupId);
+			iwc.setSessionAttribute(PARAMETER_GROUP_ID, groupId);
 		}
 
 		importHandler = iwc.getParameter(PARAMETER_IMPORT_HANDLER);

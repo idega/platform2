@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,7 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import javax.ejb.CreateException;
+import javax.ejb.RemoveException;
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultField;
 import com.idega.block.dataquery.data.sql.DirectSQLStatement;
@@ -21,6 +23,7 @@ import com.idega.block.dataquery.data.sql.InputDescription;
 import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
 import com.idega.block.datareport.data.DesignBox;
+import com.idega.block.datareport.presentation.ReportOverviewWindowPlugin;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOServiceBean;
@@ -33,10 +36,11 @@ import com.idega.idegaweb.IWCacheManager;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
 import com.idega.util.StringHandler;
-
 import dori.jasper.engine.JRBand;
 import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
@@ -584,6 +588,109 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
 	private int calculateTextFieldWidthForString(String str){
 		int fontSize = 9;
 		return (int)( 5+(str.length()*fontSize*0.58));
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
+	 */
+	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
+	 */
+	public void afterUserCreate(User user) throws CreateException, RemoteException {
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
+	 */
+	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
+	 */
+	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
+	 */
+	public Class getPresentationObjectClass() throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
+	 */
+	public PresentationObject instanciateEditor(Group group) throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateViewer(com.idega.user.data.Group)
+	 */
+	public PresentationObject instanciateViewer(Group group) throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
+	 */
+	public List getUserPropertiesTabs(User user) throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
+	 */
+	public List getGroupPropertiesTabs(Group group) throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
+	 */
+	public List getMainToolbarElements() throws RemoteException {
+		List list = new ArrayList(1);
+		list.add(new ReportOverviewWindowPlugin());
+		return list;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupToolbarElements(com.idega.user.data.Group)
+	 */
+	public List getGroupToolbarElements(Group group) throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
+	 */
+	public Collection getListViewerFields() throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
+	 */
+	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
+	 */
+	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
+	 */
+	public String isUserSuitedForGroup(User user, Group targetGroup) {
+		return null;
 	}
     
     

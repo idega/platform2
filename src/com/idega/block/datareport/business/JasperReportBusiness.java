@@ -1,7 +1,9 @@
 package com.idega.block.datareport.business;
 
+import com.idega.user.business.UserGroupPlugInBusiness;
 
-public interface JasperReportBusiness extends com.idega.business.IBOService
+
+public interface JasperReportBusiness extends com.idega.business.IBOService, UserGroupPlugInBusiness
 {
  public dori.jasper.engine.design.JasperDesign generateLayout(dori.jasper.engine.JRDataSource p0)throws java.io.IOException,dori.jasper.engine.JRException, java.rmi.RemoteException;
  public com.idega.block.datareport.data.DesignBox getDesignBox(int p0) throws java.rmi.RemoteException;

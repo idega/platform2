@@ -5,10 +5,8 @@ import com.idega.development.presentation.DeveloperHomepageGenerator;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
-import com.idega.user.app.ToolbarElement;
 import com.idega.user.app.UserApplication;
 import com.idega.user.block.homepage.presentation.HomePageGenerator;
-import com.idega.user.presentation.MassMovingWindowPlugin;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -29,8 +27,6 @@ public class IWBundleStarter implements IWBundleStartable {
 		repository.addImplementor(DeveloperHomepageGenerator.class, HomePageGenerator.class);
 		// add implementors for the staff bundle
 		repository.addImplementor(StaffApplication.class, UserApplication.class);
-		// add plugins
-		repository.addImplementor(ToolbarElement.class,MassMovingWindowPlugin.class);
 	}
 	
 	public void stop(IWBundle starterBundle) {
