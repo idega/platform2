@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.1 2001/06/15 10:28:37 palli Exp $
+ * $Id: WaitingList.java,v 1.2 2001/06/15 10:59:39 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -65,7 +65,7 @@ public class WaitingList extends GenericEntity {
   }
 
   public Integer getApplicantId() {
-    return((Integer)getColumnValue(applicantTypeId_));
+    return((Integer)getColumnValue(applicantId_));
   }
 
   public void setWaitingListTypeId(int id) {
