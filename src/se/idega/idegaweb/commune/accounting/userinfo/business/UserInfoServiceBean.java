@@ -326,6 +326,13 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 								sortedSiblings.add(sortableSibling);
 							}
 						}
+						if (hasValidContract (sibling, period)) {
+							boolean b1 = childAddress.isEqualTo( siblingAddress);
+							boolean b2 = isEqual (childAddress, siblingAddress);
+							if (b1 != b2) {
+								System.err.println ("### " + b1 + " " + b2 + " " + childAddress + "; " + siblingAddress);
+							}
+						}
 					} catch (NullPointerException e) {
 						e.printStackTrace ();
 						String childName = child.getPersonalID() + " " + child.getName () + (child.getPrimaryKey ().equals (sibling.getPrimaryKey ()) ? "" : " or " + sibling.getPersonalID() + " " + sibling.getName ());
@@ -360,4 +367,41 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 		throw new SiblingOrderException("Could not find the sibling order.");
 	}
 
+	/**
+	 * Compares two addresses on street name, the number part of street number,
+	 * postal code and country. Address.isEqualTo compares the whole number part,
+	 * including nb, 1tr etc. which isn't sufficiant here.
+	 */
+	private static boolean isEqual (final Address address1,
+																	final Address address2) {
+		// In order to make this method as fast as possible...
+		// 1. retreive fields lazy - return as soon as differ is known
+		// 2. compare what's expected to be most differing field first
+		// 3. fields joined from other tables with foreign keys are considered late
+
+		try {
+			if (address1.getStreetName ()
+					.equalsIgnoreCase	(address2.getStreetName ())) {
+				// they have same street name
+				if (startingNumberPart (address1.getStreetNumber ())
+						.equals	(startingNumberPart (address2.getStreetNumber ()))) {
+					// they have same starting number
+					if (address1.getPostalCode ().equals (address2.getPostalCode ())) {
+						// they have sam postal code
+						if (address1.getCountryId () == address2.getCountryId ()) {
+							// they have same address id
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	private static String startingNumberPart (final String string) {
+		return (string != null ? string : "").trim ().split ("\\D", 2) [0];
+	}
 }
