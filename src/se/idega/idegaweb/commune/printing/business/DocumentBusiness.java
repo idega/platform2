@@ -2,11 +2,14 @@ package se.idega.idegaweb.commune.printing.business;
 
 import javax.ejb.*;
 
+import com.idega.util.IWTimestamp;
+
 public interface DocumentBusiness extends com.idega.business.IBOService
 {
  public int createContent(com.lowagie.text.Document p0,se.idega.idegaweb.commune.message.data.PrintedLetterMessage p1,com.idega.user.data.User p2,com.lowagie.text.pdf.PdfWriter p3)throws java.lang.Exception, java.rmi.RemoteException;
  public java.util.Collection getPrintedDocuments()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection getPrintedDocuments(java.lang.String p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+ public java.util.Collection getPrintedDocuments(String type,IWTimestamp from,IWTimestamp to)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome getPrintedLetterMessageHome() throws java.rmi.RemoteException;
  public java.lang.String[] getPrintedLetterTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getPrintedLettersCountByStatusAndType(java.lang.String p0,java.lang.String p1)throws java.rmi.RemoteException, java.rmi.RemoteException;

@@ -193,7 +193,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
   private void printAllUnPrintedMessages(IWContext iwc)throws Exception{
 	int userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
-	getDocumentBusiness(iwc).printAllUnPrintedLetters(userID,currentType);
+	//getDocumentBusiness(iwc).printAllUnPrintedLetters(userID,currentType);
+	Collection unPrintedLetters = getDocumentBusiness(iwc).getPrintedLetterMessageHome().findUnPrintedLettersByType(currentType);
+	getDocumentBusiness(iwc).writeBulkPDF(unPrintedLetters,iwc.getCurrentUser(),"BulkLetterPDF");
   }
   
   private void printMessage(IWContext iwc) throws Exception {
@@ -225,7 +227,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
   	 if(showTypesAsDropdown){
   	 	DropdownMenu drp = new DropdownMenu(PARAM_LETTER_TYPE);
   	 	for (int i = 0; i < types.length; i++) {
-			drp.addMenuElement(types[i],localize("letter_type_"+types[i],types[i]));
+			drp.addMenuElement(types[i],localize("printdoc.letter_type_"+types[i],types[i]));
 		}
 		drp.setToSubmit();
 		drp.setSelectedElement(currentType);
@@ -242,7 +244,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	  	 T.setCellpadding(2);
 	  	 int col = 1;
 	  	 for (int i = 0; i < types.length; i++) {
-			Link typeLink = new Link(getHeader(localize("letter_type_"+types[i],types[i])));	
+			Link typeLink = new Link(getHeader(localize("printdoc.letter_type_"+types[i],types[i])));	
 			typeLink.addParameter(PARAM_LETTER_TYPE,types[i]);
 			typeLink.addParameter(PRM_STAMP_P_FROM,pFrom.toString());
 			typeLink.addParameter(PRM_STAMP_U_FROM,uFrom.toString());
@@ -259,17 +261,22 @@ public class PrintDocumentsViewer extends CommuneBlock {
   	Form F = new Form();
   	Table T = new Table();
   	DateInput from = new DateInput(PRM_STAMP_P_FROM);
+  	from =(DateInput) getStyledInterface(from);
   	DateInput to = new DateInput(PRM_STAMP_P_TO);
+  	to = (DateInput)getStyledInterface(to);
+  	
   	from.setDate(pFrom.getSQLDate());
   	to.setDate(pTo.getSQLDate());
-  	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedImageButton("fetch","Fetch"));
-  	HiddenInput hfrom = new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString());
-  	HiddenInput hto = new HiddenInput(PRM_STAMP_U_TO,uTo.toString());
-  	T.add(from,1,1);
-  	T.add(to,2,1);
-  	T.add(search,3,1);
-  	T.add(hfrom);
-  	T.add(hto);
+  	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
+  	search = (SubmitButton)getButton(search);
+  	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_from","From:")),1,1);
+  	T.add(from,2,1);
+  	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to","To:")),3,1);
+  	T.add(to,4,1);
+  	T.add(search,5,1);
+  	T.add(new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString()));
+  	T.add(new HiddenInput(PRM_STAMP_U_TO,uTo.toString()));
+  	T.add(new HiddenInput(PARAM_LETTER_TYPE,this.currentType));
   	F.add(T);
   	add(F);
   
@@ -278,17 +285,21 @@ public class PrintDocumentsViewer extends CommuneBlock {
   	Form F = new Form();
   	Table T = new Table();
   	DateInput from = new DateInput(PRM_STAMP_U_FROM);
+  	from =(DateInput) getStyledInterface(from);
   	DateInput to = new DateInput(PRM_STAMP_U_TO);
+  	to = (DateInput)getStyledInterface(to);
   	from.setDate(uFrom.getSQLDate());
   	to.setDate(uTo.getSQLDate());
-  	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedImageButton("fetch","Fetch"));
-  	HiddenInput hfrom = new HiddenInput(PRM_STAMP_P_FROM,pFrom.toString());
-  	HiddenInput hto = new HiddenInput(PRM_STAMP_P_TO,pTo.toString());
-  	T.add(from,1,1);
-  	T.add(to,2,1);
-  	T.add(search,3,1);
-  	T.add(hfrom);
-  	T.add(hto);
+  	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
+  	search = (SubmitButton)getButton(search);
+  	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_from","From:")),1,1);
+  	T.add(from,2,1);
+  	T.add(getHeader(getResourceBundle().getLocalizedString("printdoc.date_to","To:")),3,1);
+  	T.add(to,4,1);
+  	T.add(search,5,1);
+  	T.add(new HiddenInput(PRM_STAMP_U_FROM,uFrom.toString()));
+  	T.add(new HiddenInput(PRM_STAMP_U_TO,uTo.toString()));
+  	T.add(new HiddenInput(PARAM_LETTER_TYPE,this.currentType));
   	F.add(T);
   	add(F);
   
@@ -312,16 +323,22 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		Link printLink = new Link(localize("printdoc.print","Print"));
 		printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
 		printLink.addParameter(PARAM_LETTER_TYPE,currentType);
+		printLink.addParameter(PRM_STAMP_P_FROM,pFrom.toString());
+			printLink.addParameter(PRM_STAMP_U_FROM,uFrom.toString());
+			printLink.addParameter(PRM_STAMP_P_TO,pTo.toString());
+			printLink.addParameter(PRM_STAMP_U_TO,uTo.toString());
 		unPrintedLetterDocs.add(printLink);
 		
 		add(unPrintedLetterDocs);
 		add(Text.getBreak());
 	
 		ColumnList printedLetterDocs = new ColumnList(3);
-		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType);
-		if(!printDocs.isEmpty()){
+		
+		Collection printDocs = getDocumentBusiness(iwc).getPrintedDocuments(currentType,pFrom,pTo);
+		
 			
 			add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
+			addPrintedDatesForm(iwc);
 			add(printedLetterDocs);
 			
 			printedLetterDocs.setHeader(localize("printdoc.date","Date"),1);
@@ -340,7 +357,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 				printedLetterDocs.add(viewLink);
 			}
 			
-		}
+		
   
   }
   

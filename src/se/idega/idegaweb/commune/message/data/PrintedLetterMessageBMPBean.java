@@ -391,13 +391,13 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		IDOQuery query = super.idoQueryGetAllCasesByStatus(caseStatus,from,to);
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
 		query.append(" order by g.").append(getSQLGeneralCaseCreatedColumnName());
+		query.append(" desc ");
 		return query;
 	}
 
 	protected IDOQuery idoQueryGetLettersCountByStatusAndType(String caseStatus, String letterType) {
 		IDOQuery query = super.idoQueryGetCountCasesWithStatus(caseStatus);
 		query.append(" and a." + COLUMN_LETTER_TYPE + "='" + letterType + "'");
-		System.err.println(query.toString());
 		return query;
 	}
 

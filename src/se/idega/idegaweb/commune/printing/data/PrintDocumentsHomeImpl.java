@@ -20,6 +20,13 @@ public java.util.Collection findAllDocumentByType(java.lang.String p0)throws jav
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllDocumentByType(java.lang.String p0,com.idega.util.IWTimestamp p1,com.idega.util.IWTimestamp p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((PrintDocumentsBMPBean)entity).ejbFindAllDocumentByType(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllPrintedLetterDocuments()throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((PrintDocumentsBMPBean)entity).ejbFindAllPrintedLetterDocuments();

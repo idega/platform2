@@ -113,10 +113,38 @@ public class PrintDocumentsBMPBean extends GenericEntity implements PrintDocumen
 		query.appendWhereEqualsQuoted(COLUMN_TYPE,type);
 		return query;
 	}
+	
+	protected IDOQuery idoQueryGetSelectWithType(String type,IWTimestamp from, IWTimestamp to){
+		IDOQuery sql = idoQueryGetSelectWithType(type);
+		to.setHour(23);
+		to.setMinute(59);
+		to.setSecond(59);
+		from.setHour(0);
+		from.setMinute(0);
+		from.setSecond(0);
+		sql.appendAnd();
+		sql.append(COLUMN_DATE_CREATED);
+		sql.append(" >= '");
+		sql.append(from.toSQLString());
+		sql.append("'");
+		sql.appendAnd();
+		sql.append(COLUMN_DATE_CREATED);
+		sql.append(" <= '");
+		sql.append(to.toSQLString());
+		sql.append("' ");
+		sql.appendOrderBy(COLUMN_DATE_CREATED);
+		sql.append(" desc ");
+		return sql;
+	}
 
 	public Collection ejbFindAllDocumentByType(String type) throws FinderException
 	{
 		return super.idoFindPKsByQuery(idoQueryGetSelectWithType(type));
+	}
+	
+	public Collection ejbFindAllDocumentByType(String type,IWTimestamp from ,IWTimestamp to) throws FinderException
+	{
+		return super.idoFindPKsByQuery(idoQueryGetSelectWithType(type,from,to));
 	}
 	/**
 	 * Returns the creator.
