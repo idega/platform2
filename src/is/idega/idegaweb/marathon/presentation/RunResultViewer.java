@@ -112,28 +112,31 @@ public class RunResultViewer extends Block {
 		form.add(getSortDropdown());
 		form.add(new Break(2));
 		
-		try {
-			List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
-			sortRunnerGroups(runGroups);
-			Iterator runGroupIter = runGroups.iterator();
-			int row = 1;
-			while (runGroupIter.hasNext()) {
-				Group runGroup = (Group) runGroupIter.next();
-				row = insertRunGroupIntoTable(table, row, runGroup);
-
-				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
-				List runs = getRunsForRunners(runners);
-				sortRuns(runs);
-				Iterator runIter = runs.iterator();
-				int num = 1;
-				while (runIter.hasNext()) {
-					Run run = (Run) runIter.next();
-					row = insertRunIntoTable(table, row, run, num);
-					num++;
+		if (distance != null) {
+			try {
+				List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
+				sortRunnerGroups(runGroups);
+				Iterator runGroupIter = runGroups.iterator();
+				int row = 1;
+				while (runGroupIter.hasNext()) {
+					Group runGroup = (Group) runGroupIter.next();
+					row = insertRunGroupIntoTable(table, row, runGroup);
+	
+					List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
+					List runs = getRunsForRunners(runners);
+					sortRuns(runs);
+					Iterator runIter = runs.iterator();
+					int num = 1;
+					while (runIter.hasNext()) {
+						Run run = (Run) runIter.next();
+						row = insertRunIntoTable(table, row, run, num);
+						num++;
+					}
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		form.add(table);
 		add(form);
@@ -141,6 +144,7 @@ public class RunResultViewer extends Block {
 	
 	private DropdownMenu getYearsDropdown() throws RemoteException {
 		DropdownMenu years = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(IWMarathonConstants.GROUP_TYPE_RUN_YEAR), getRunBiz().getYears(run), "getName", iwrb);
+		years.addMenuElementFirst("", "");
 		years.setToSubmit();
 		years.keepStatusOnAction();
 		return years;
