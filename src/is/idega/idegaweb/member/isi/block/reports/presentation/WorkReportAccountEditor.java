@@ -768,28 +768,28 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       return null;
     }
     // !!!! add league to work report +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//    WorkReport workReport;
-//    try {
-//      workReport = workReportBusiness.getWorkReportById(getWorkReportId());
-//    }
-//    catch (RemoteException ex) {
-//      String message =
-//        "[WorkReportAccountEditor]: Can't retrieve WorkReport.";
-//      System.err.println(message + " Message is: " + ex.getMessage());
-//      ex.printStackTrace(System.err);
-//      throw new RuntimeException(message);
-//    }
-//    try {
-//      workReport.addLeague(workReportGroup);
-//    }
-//    catch (IDORelationshipException ex) {
-//      String message =
-//        "[WorkReportBoardMemberEditor]: Can't add league to work report.";
-//      System.err.println(message + " Message is: " + ex.getMessage());
-//      ex.printStackTrace(System.err);
-//      // give up
-//      return null;
-//    }
+    WorkReport workReport;
+    try {
+      workReport = workReportBusiness.getWorkReportById(getWorkReportId());
+    }
+    catch (RemoteException ex) {
+      String message =
+        "[WorkReportAccountEditor]: Can't retrieve WorkReport.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      throw new RuntimeException(message);
+    }
+    try {
+      workReport.addLeague(workReportGroup);
+    }
+    catch (IDORelationshipException ex) {
+      String message =
+        "[WorkReportBoardMemberEditor]: Can't add league to work report.";
+      System.err.println(message + " Message is: " + ex.getMessage());
+      ex.printStackTrace(System.err);
+      // give up
+      return null;
+    }
     TransactionManager tm = IdegaTransactionManager.getInstance();
     try {
       tm.begin();
@@ -799,8 +799,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       Iterator iteratorRecords = records.iterator();
       while (iteratorRecords.hasNext())  {
         WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
-        workReportBusiness.addWorkReportGroupToEntity(getWorkReportId(), workReportGroup, record);
-        //record.setWorkReportGroupId(newGroupId.intValue());
+        record.setWorkReportGroupId(newGroupId.intValue());
         record.store();
         changedRecords.add(record);
       } 
