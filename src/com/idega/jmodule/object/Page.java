@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.26 2001/09/28 14:36:56 laddi Exp $
+ * $Id: Page.java,v 1.27 2001/10/02 19:40:20 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,7 +22,8 @@ import com.idega.idegaweb.IWMainApplication;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class Page extends ModuleObjectContainer {
+public class Page extends ModuleObjectContainer{
+  private int _ibPageID;
   private String _title;
   private Script _theAssociatedScript;
   private boolean _zeroWait = false;
@@ -476,6 +477,7 @@ public class Page extends ModuleObjectContainer {
       obj._textDecoration = _textDecoration;
       obj._styleSheetURL = _styleSheetURL;
       obj._addStyleSheet = _addStyleSheet;
+      obj._ibPageID = _ibPageID;
 
     }
     catch(Exception ex) {
@@ -682,7 +684,7 @@ public class Page extends ModuleObjectContainer {
 
     if(frameKey!=null){
       Page page = getPage(getFrameStorageInfo(modinfo),modinfo);
-      System.out.println("Page 1");
+      System.out.println("com.idega.jmodule.object.Page: Trying to get page stored in session");
       return page;
     }
     else if(classKey!=null){
@@ -761,6 +763,21 @@ public class Page extends ModuleObjectContainer {
    */
   public static boolean isRequestingTopPage(ModuleInfo modinfo){
     return !modinfo.isParameterSet(IW_FRAME_STORAGE_PARMETER);
+  }
+
+
+  /**
+   *Sets the ID (BuilderPage ID)
+   */
+  public void setPageID(int id){
+    this._ibPageID=id;
+  }
+
+  /**
+   *Returns set the (BuilderPage) ID set to this page
+   */
+  public int getPageID(){
+    return this._ibPageID;
   }
 
   /**

@@ -28,6 +28,7 @@ public class SQLQueryer extends JModuleObject{
     private boolean displayForm = true;
     private String resultName = "Result";
 
+
     public SQLQueryer(){
     }
 
@@ -136,6 +137,7 @@ public class SQLQueryer extends JModuleObject{
             //out.println ( "<P><PRE>" );
               while (ex != null) {
                   add("Message:   " + ex.getMessage ());
+
                                               this.addBreak();
                   add("SQLState:  " + ex.getSQLState ());
                                               this.addBreak();
@@ -183,4 +185,5 @@ public class SQLQueryer extends JModuleObject{
     }
     return obj;
   }
+
 }

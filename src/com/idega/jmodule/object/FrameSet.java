@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.*;
 
+import com.idega.idegaweb.IWURL;
+import com.idega.idegaweb.IWConstants;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -207,9 +209,22 @@ public class FrameSet extends Window{
       return uri;
     }*/
 
-    private String getFrameURI(Class pageClass,ModuleInfo modinfo){
-      String uri = modinfo.getRequestURI()+"?"+this.IW_FRAME_CLASS_PARAMETER+"="+pageClass.getName();
+    private static String getFrameURI(Class pageClass,ModuleInfo modinfo){
+      String uri = modinfo.getRequestURI()+"?"+IW_FRAME_CLASS_PARAMETER+"="+pageClass.getName();
       return uri;
+    }
+
+    public static IWURL getFrameURL(Class pageClass,ModuleInfo modinfo){
+      String uri = getFrameURI(pageClass,modinfo);
+      IWURL url = new IWURL(uri);
+      return url;
+    }
+
+    public static IWURL getFrameURL(Class pageClass){
+      String baseURL = IWConstants.SERVLET_WINDOWOPENER_URL;
+      IWURL url = new IWURL(baseURL);
+      url.addPageClassParameter(pageClass);
+      return url;
     }
 
     public void setFrameBorder(int width){
@@ -412,17 +427,14 @@ public class FrameSet extends Window{
     }
 
     public void setSpan(){
-
       boolean nothingset=true;
-
-      for (int i = 1; i <= numberOfFrames ; i++) {
+      for (int i = 1; i <= numberOfFrames ; i++){
 
         String span= getSpan(i);
         if(!span.equals(star)){
           nothingset=false;
         }
       }
-
       if(nothingset){
         if(numberOfFrames!=0){
           int thePercent = (int)(100/numberOfFrames);
@@ -430,9 +442,7 @@ public class FrameSet extends Window{
               setSpanPercent(i,thePercent);
           }
         }
-
       }
-
     }
 
 }//End class

@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.48 2001/10/02 12:50:57 laddi Exp $
+ * $Id: Link.java,v 1.49 2001/10/02 19:40:20 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -973,7 +973,7 @@ public class Link extends Text {
    */
   public void setToFormSubmit(Form form, boolean useEvent) {
     _formToSubmit = form;
-    setURL("#");
+    setURL(HASH);
     if ((getIWLinkListeners() != null && getIWLinkListeners().length != 0) || useEvent) {
        setOnClick("javascript:document."+form.getID()+"."+IWMainApplication.IWEventSessionAddressParameter+".value=this.id ;document."+form.getID()+".submit()");
     }
@@ -987,7 +987,7 @@ public class Link extends Text {
    */
   public void setAsBackLink(int backUpHowManyPages) {
     setOnClick("history.go(-"+backUpHowManyPages+")");
-    setURL("#");
+    setURL(HASH);
   }
 
   /**
@@ -995,6 +995,10 @@ public class Link extends Text {
    */
   public void setAsBackLink() {
     setAsBackLink(1);
+  }
+
+  public void setNoURL(){
+    setURL(HASH);
   }
 
   /**
