@@ -112,9 +112,7 @@ public class TextFinder {
   public static LocalizedText getLocalizedText(GenericEntity entity, int entityID, int iLocaleID){
 		LocalizedText localText = new LocalizedText();
     try {
-			EntityFinder.debug = true;
       List list = EntityFinder.findRelated(entity,localText);
-			EntityFinder.debug = false;
       if ( list != null ) {
         Iterator iter = list.iterator();
         while (iter.hasNext()) {
