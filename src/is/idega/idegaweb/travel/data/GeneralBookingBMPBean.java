@@ -1,21 +1,37 @@
 package is.idega.idegaweb.travel.data;
 
-import java.rmi.*;
-import java.sql.*;
-import java.util.*;
+import is.idega.idegaweb.travel.interfaces.Booking;
 
-import javax.ejb.*;
+import java.rmi.RemoteException;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
 
-import com.idega.block.trade.stockroom.business.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.business.*;
-import com.idega.core.data.*;
-import com.idega.data.*;
-import com.idega.presentation.*;
-import com.idega.util.*;
+import javax.ejb.FinderException;
+
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.block.trade.stockroom.data.ProductBMPBean;
+import com.idega.block.trade.stockroom.data.Reseller;
+import com.idega.block.trade.stockroom.data.ResellerHome;
+import com.idega.block.trade.stockroom.data.Timeframe;
+import com.idega.block.trade.stockroom.data.TravelAddress;
+import com.idega.block.trade.stockroom.data.TravelAddressBMPBean;
+import com.idega.business.IBOLookup;
+import com.idega.core.data.Address;
+import com.idega.data.EntityControl;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.IDOStoreException;
+import com.idega.data.SimpleQuerier;
+import com.idega.presentation.IWContext;
+import com.idega.util.CypherText;
+import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
-
-import is.idega.idegaweb.travel.interfaces.*;
 
 /**
  * Title:        IW Travel
@@ -206,12 +222,20 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   }
 
   public BookingEntry[] getBookingEntries() throws FinderException , RemoteException{
-    try {
-    	BookingEntry[] entries = (BookingEntry[]) (is.idega.idegaweb.travel.data.BookingEntryBMPBean.getStaticInstance(BookingEntry.class).findAllByColumn(is.idega.idegaweb.travel.data.BookingEntryBMPBean.getBookingIDColumnName(), this.getID())); 
-      return entries; 
-    }catch (SQLException sql) {
-      throw new FinderException(sql.getMessage());
-    }
+		BookingEntryHome beHome = (BookingEntryHome) IDOLookup.getHome(BookingEntry.class);
+		BookingEntry bEntry;
+		Collection coll = beHome.getEntries(this);
+		if ( coll != null && !coll.isEmpty()) {
+			Iterator iter = coll.iterator();
+			BookingEntry[] entries = new BookingEntry[coll.size()];
+			for (int i = 0; i < entries.length; i++) {
+				bEntry = beHome.findByPrimaryKey(iter.next());
+				entries[i] = bEntry;
+			}
+			return entries;
+		} else {
+			return new BookingEntry[]{};
+		}
   }
 
   public void setReferenceNumber(String number) {
@@ -654,8 +678,8 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     return returner;
   }
 
-  public List ejbHomeGetMultibleBookings(GeneralBooking booking) throws RemoteException, FinderException{
-    List list = new Vector();
+  public Collection ejbHomeGetMultibleBookings(GeneralBooking booking) throws RemoteException, FinderException{
+    //List list = new Vector();
 
     try {
       StringBuffer buff = new StringBuffer();
@@ -692,11 +716,25 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         buff.append(getTotalCountColumnName()+" = '"+booking.getTotalCount()+"'");
         buff.append(" ORDER BY "+getBookingDateColumnName());
       //coll = this.idoFindPKsBySQL(buff.toString());
-      list = EntityFinder.getInstance().findAll(GeneralBooking.class, buff.toString());
+      
+      return this.idoFindPKsBySQL(buff.toString());
+      /*if (coll != null && !coll.isEmpty()) {
+				System.out.println(coll.size()+" generalBookingPks found");
+      	Iterator iter = coll.iterator();
+      	GeneralBookingHome gbHome = (GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class);
+      	while (iter.hasNext() ) {
+					System.out.println(" - Adding GeneralBooking");
+      		list.add( gbHome.findByPrimaryKey(iter.next()) );
+      	}
+      } else {
+      	System.out.println("no generalBookingPks found");
+      }*/
+      //list = EntityFinder.getInstance().findAll(GeneralBooking.class, buff.toString());
     }catch (FinderException fe) {
       System.err.println("[GeneralBookingBMPBean] Error in sql : getting multiple bookings for bookingId : "+booking.getID());
       fe.printStackTrace(System.err);
-      list.add(booking);
+      //list.add(booking);
+      return null;
     }
 
     /*
@@ -707,7 +745,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
       list = cleanList(list, booking, myIndex, numberOfDays);
     }*/
 
-    return list;
+    //return null;
   }
 
   public void removeAllTravelAddresses() throws IDORemoveRelationshipException{
