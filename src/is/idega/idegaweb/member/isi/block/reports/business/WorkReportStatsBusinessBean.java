@@ -3,6 +3,8 @@ package is.idega.idegaweb.member.isi.block.reports.business;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.ClubTypeDropDownMenu;
+import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.WorkReportStatusDropDownMenu;
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
@@ -68,6 +70,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_CLUB_TYPE_IS_INACTIVE = "WorkReportStatsBusiness.club_type_inactive";
 	private static final String LOCALIZED_CLUB_TYPE_IM_UMFI = "WorkReportStatsBusiness.club_type_in_umfi";
 	private static final String LOCALIZED_YES = "WorkReportStatsBusiness.yes";
+	private static final String LOCALIZED_WORK_REPORT_STATUS = "WorkReportStatsBusiness.workreport_status";
+	private static final String LOCALIZED_WORK_REPORT_STATUS_INFO = "WorkReportStatsBusiness.workreport_info";
+	private static final String LOCALIZED_WORK_REPORT_STATUS_REMARKS = "WorkReportStatsBusiness.workreport_remarks";
 	
 	// names of reportable fields
 	private static final String FIELD_NAME_COMPARING_YEAR = "comparing_year";
@@ -91,6 +96,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_ALL_OVER_OR_EQUAL_AGE_LAST_YEAR = "bothGendersEqualOverAgeLastYear";
 	private static final String FIELD_NAME_ALL_AGES_LAST_YEAR = "bothGendersLastYear";
 	private static final String FIELD_NAME_IS_IN_UMFI = "isInUMFI";
+	private static final String FIELD_NAME_WORK_REPORT_STATUS = "workreport_status";
+	private static final String FIELD_NAME_WORK_REPORT_STATUS_INFO = "workreport_info";
+	private static final String FIELD_NAME_WORK_REPORT_STATUS_REMARKS = "workreport_remarks";
 
 	/**
 	 *  
@@ -1148,7 +1156,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			final Integer year,
 			Collection regionalUnionsFilter)
 			throws RemoteException {
-			
+
 		//initialize stuff
 		int age = 16;
 		initializeBundlesIfNeeded();
@@ -1230,13 +1238,17 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//get last years report for comparison
 
 			String cName = report.getGroupName();
+			if(cName==null) {
+				System.out.println("Skipping club cause name is null");
+				continue;
+			}
 			System.out.println("Procesing club \"" + cName + "\".");
 			String regUniIdentifier = getRegionalUnionIdentifier(report);
 
 			ReportableData regData = (ReportableData) clubMap.get(cName);
 			// create a new ReportData for each row
 			if(regData==null) {
-				regData = new ReportableData(); 
+				regData = new ReportableData();
 				regData.addData(clubName, cName);
 				regData.addData(regionalUnionAbbreviation, regUniIdentifier);
 				regData.addData(womenUnderAgeLimit, new Integer(0));
@@ -1268,8 +1280,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					regData = addToIntegerCount(bothGendersEqualOrOver, regData, menPlayersEqualOrOver + womenPlayersEqualOrOver);
 					regData = addToIntegerCount(bothGendersUnderAge, regData, menPlayersUnder + womenPlayersUnder);
 					regData = addToIntegerCount(bothGendersAllAge, regData, menPlayersUnder + womenPlayersUnder + menPlayersEqualOrOver + womenPlayersEqualOrOver);
-
-					clubMap.put(cName, regData);
 				}
 			}
 			catch (IDOException e) {
@@ -1486,8 +1496,6 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				String ruNumber = report.getRegionalUnionNumber();
 				regData.addData(regionalUnionNumber, ruNumber==null?"":ruNumber);*/
 			
-				// @TODO get the population somehow
-				//regData.addData(regionalUnionPopulation, "10000");
 				regData.addData(womenUnderAge, new Integer(0));
 				regData.addData(womenOverOrEqualAgeLimit, new Integer(0));
 				regData.addData(menUnderAge, new Integer(0));
@@ -2075,20 +2083,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//the club
 			WorkReport report = (WorkReport) iter.next();
 		
-			if(type!=null && type.length()>0) {
-				boolean show = false;
-				if(type.equals(ClubTypeDropDownMenu.TYPE_UMFI_CLUB) && report.isInUMFI()) {
-					show = true;
-				}
-				if(type.equals(ClubTypeDropDownMenu.TYPE_INACTIVE_CLUB) && report.isInActive()) {
-					show = true;
-				}
-				if(type.equals(report.getType())) {
-					show = true;
-				}
-				if(!show) {
-					continue;
-				}
+			boolean showClub = showClubType(report, type);
+			if(!showClub) {
+				continue;
 			}
 		
 			WorkReport lastYearReport=null;
@@ -2227,20 +2224,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//the club
 			WorkReport report = (WorkReport) iter.next();
 		
-			if(type!=null && type.length()>0) {
-				boolean show = false;
-				if(type.equals(ClubTypeDropDownMenu.TYPE_UMFI_CLUB) && report.isInUMFI()) {
-					show = true;
-				}
-				if(type.equals(ClubTypeDropDownMenu.TYPE_INACTIVE_CLUB) && report.isInActive()) {
-					show = true;
-				}
-				if(type.equals(report.getType())) {
-					show = true;
-				}
-				if(!show) {
-					continue;
-				}
+			boolean showClub = showClubType(report, type);
+			if(!showClub) {
+				continue;
 			}
 		
 			WorkReport lastYearReport=null;
@@ -2286,6 +2272,157 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		return reportCollection;
 	}
 	
+	/*
+	 * Report B12.5.1 of the ISI Specs
+	 */
+	public ReportableCollection getWorkReportStatusForClubsByYearRegionalUnionsClubTypeAndStatus (
+			final Integer year,
+			Collection regionalUnionsFilter,
+			String type,
+			String status)
+	throws RemoteException {
+		//initialize stuff
+		int age = 16;
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		//PARAMETES
+
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+
+		ReportableField clubName = new ReportableField(FIELD_NAME_CLUB_NAME, String.class);
+		clubName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NAME, "Club name"), currentLocale);
+		reportCollection.addField(clubName);
+
+		ReportableField clubNumber = new ReportableField(FIELD_NAME_CLUB_NUMBER, String.class);
+		clubNumber.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_CLUB_NUMBER, "Club number"), currentLocale);
+		reportCollection.addField(clubNumber);
+
+		ReportableField regionalUnionAbbreviation = new ReportableField(FIELD_NAME_REGIONAL_UNION_NAME, String.class);
+		regionalUnionAbbreviation.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_REGIONAL_UNION_NAME, "Reg.U."), currentLocale);
+		reportCollection.addField(regionalUnionAbbreviation);
+
+		ReportableField workReportStatus = new ReportableField(FIELD_NAME_WORK_REPORT_STATUS, String.class);
+		workReportStatus.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WORK_REPORT_STATUS, "Work Report Status"), currentLocale);
+		reportCollection.addField(workReportStatus);
+		
+		ReportableField workReportStatusInfo = new ReportableField(FIELD_NAME_WORK_REPORT_STATUS_INFO, String.class);
+		workReportStatusInfo.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WORK_REPORT_STATUS_INFO, "Work Report Status"), currentLocale);
+		reportCollection.addField(workReportStatusInfo);
+		
+		ReportableField workReportStatusRemarks = new ReportableField(FIELD_NAME_WORK_REPORT_STATUS_REMARKS, String.class);
+		workReportStatusRemarks.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WORK_REPORT_STATUS_REMARKS, "Work Report Status"), currentLocale);
+		reportCollection.addField(workReportStatusRemarks);
+
+		//Real data stuff
+		//Gathering data
+		//Get all the workreports (actually more than needed)
+		//then for each get its leagues and the count for
+		//each age and create a row and insert into an ordered map by league
+		//then iterate the map and insert into the final report collection.
+		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
+		//Iterating through workreports and creating report data 
+		Iterator iter = clubs.iterator();
+		while (iter.hasNext()) {
+			//the club
+			WorkReport report = (WorkReport) iter.next();
+			String cName = report.getGroupName();
+			System.out.print("Processing club " + cName);
+	
+			boolean showClub = showClubType(report, type) && showClubStatus(report, type);
+			if(!showClub) {
+				System.out.println(" (skipped)");
+				continue;
+			}
+			System.out.println();
+			
+			
+			WorkReport lastYearReport=null;
+			try {
+				lastYearReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(report.getGroupId().intValue(),year.intValue()-1);
+			} catch (FinderException e1) {
+				System.err.println("WorkReportStatsBusiness : No report for year before :"+year);
+			}
+			
+			String reportStatus = report.getStatus();
+			String statusString = "";
+			if(WorkReportConstants.WR_STATUS_DONE.equals(reportStatus)) {
+				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_DONE, "Done");
+			} else if(WorkReportConstants.WR_STATUS_NO_REPORT.equals(reportStatus)) {
+				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_NO_REPORT, "Done");
+			} else if(WorkReportConstants.WR_STATUS_NOT_DONE.equals(reportStatus)) {
+				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_NOT_DONE, "Done");
+			} else if(WorkReportConstants.WR_STATUS_SOME_DONE.equals(reportStatus)) {
+				statusString = _iwrb.getLocalizedString(WorkReportStatusDropDownMenu.LOCALIZED_STATUS_SOME_DONE, "Done");
+			}
+	
+			ReportableData regData = new ReportableData();
+			// fetch club info
+			regData.addData(clubName, cName);
+			regData.addData(clubNumber, report.getGroupNumber());
+			regData.addData(regionalUnionAbbreviation, getRegionalUnionIdentifier(report));
+			regData.addData(workReportStatus, statusString);
+			// @TODO (jonas) get the status info and remarks somehow (found it neither as column
+			// nor meta-data, have to ask eiki. 
+			regData.addData(workReportStatusInfo, "");
+			regData.addData(workReportStatusRemarks, "");
+	
+			//fetch member stats stats or initialize for this club	
+			reportCollection.add(regData);
+		}
+
+		ReportableField[] sortFields = new ReportableField[] {clubNumber};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+
+		//finished return the collection
+		return reportCollection;
+	}
+	
+	private boolean showClubStatus(WorkReport report, String status) {
+		String reportStatus = report.getStatus();
+		boolean show = true;
+		if(status!=null && status.length()>0) {
+			show = false;
+			if(WorkReportStatusDropDownMenu.STATUS_DONE.equals(status) && 
+			   WorkReportConstants.WR_STATUS_DONE.equals(reportStatus)) {
+				show = true;
+			} else if(WorkReportStatusDropDownMenu.STATUS_NO_REPORT.equals(status) && 
+					  WorkReportConstants.WR_STATUS_NO_REPORT.equals(reportStatus)) {
+				show = true;
+			} else if(WorkReportStatusDropDownMenu.STATUS_NOT_DONE.equals(status) && 
+					  WorkReportConstants.WR_STATUS_NOT_DONE.equals(reportStatus)) {
+				show = true;
+			} else if(WorkReportStatusDropDownMenu.STATUS_SOME_DONE.equals(status) && 
+					  WorkReportConstants.WR_STATUS_SOME_DONE.equals(reportStatus)) {
+				show = true;
+			} 
+		}
+		return show;
+	}
+	
+	private boolean showClubType(WorkReport report, String type) {
+		boolean show = true;
+		if(type!=null && type.length()>0) {
+			show = false;
+			if(type.equals(ClubTypeDropDownMenu.TYPE_UMFI_CLUB) && report.isInUMFI()) {
+				show = true;
+			}
+			if(type.equals(ClubTypeDropDownMenu.TYPE_INACTIVE_CLUB) && report.isInActive()) {
+				show = true;
+			}
+			if(type.equals(report.getType())) {
+				show = true;
+			}
+		}
+		return show;
+	}
+	
 private String getClubTypeString(WorkReport report) {
 	String returnType;
 	String cType = report.getType();
@@ -2304,7 +2441,7 @@ private String getClubTypeString(WorkReport report) {
 		returnType = "";
 	}
 	return returnType;
-}
+} 
 
 private List getGroupIdListFromWorkReportGroupCollection(Collection leaguesFilter) {
 	List leagueGroupIdList = null;
