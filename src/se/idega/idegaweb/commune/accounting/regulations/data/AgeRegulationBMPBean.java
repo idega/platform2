@@ -1,5 +1,5 @@
 /*
- * $Id: AgeRegulationBMPBean.java,v 1.4 2003/09/02 13:03:18 anders Exp $
+ * $Id: AgeRegulationBMPBean.java,v 1.5 2003/09/04 21:22:17 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for age regulation entries.
  * <p>
- * Last modified: $Date: 2003/09/02 13:03:18 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/04 21:22:17 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class AgeRegulationBMPBean extends GenericEntity implements AgeRegulation {
 
@@ -79,6 +79,10 @@ public class AgeRegulationBMPBean extends GenericEntity implements AgeRegulation
 
 	public int getAgeTo() {
 		return getIntColumnValue(COLUMN_AGE_TO);	
+	}
+
+	public String getAgeInterval() {
+		return "" + getAgeFrom() + " - " + getAgeTo();
 	}
 
 	public String getDescription() {

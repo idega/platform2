@@ -4,6 +4,7 @@ package se.idega.idegaweb.commune.accounting.regulations.data;
 public interface AgeRegulation extends com.idega.data.IDOEntity
 {
  public int getAgeFrom();
+ public java.lang.String getAgeInterval();
  public int getAgeTo();
  public java.sql.Date getCutDate();
  public java.lang.String getDescription();
