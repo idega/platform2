@@ -101,8 +101,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public void run(){
 
     while(runThread){
-      System.out.println("in main thread!");
-
       //message checking is done in another thread
      try {//keep the wait insync with the performance of the machine it is on
          repaint();
@@ -392,6 +390,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     else if(action.equalsIgnoreCase("iw-cycle")){
      cycle();
     }
+
+    System.out.println("MessengerApplet: action command was :"+action);
 
     repaint();
   }
