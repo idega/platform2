@@ -428,21 +428,21 @@ public class TenantsProfile extends Block {
         try {
           type = request.getRequestType();
         }
-        catch(java.rmi.RemoteException e) {
+        catch(Exception e) {
 
         }
         String status = null;
         try {
           status = request.getStatus();
         }
-        catch(java.rmi.RemoteException e) {
+        catch(Exception e) {
 
         }
         table.add(formatText(_iwrb.getLocalizedString("REQUEST_TYPE_" + type,"Almenn viðgerð")),1,row);
         try {
           table.add(formatText(new IWTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
         }
-        catch(java.rmi.RemoteException e) {
+        catch(Exception e) {
           table.add("",2,row);
         }
         table.add(formatText(_iwrb.getLocalizedString("REQUEST_STATUS_" + status,"Innsend")),3,row);
