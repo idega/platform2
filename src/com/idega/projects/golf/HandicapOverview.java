@@ -222,7 +222,7 @@ private String headerColor = "#336660";
 			Text grunn3 = new Text(grunn2);
 				grunn3.setFontSize("1");
 			Text ny_grunn2 = new Text(ny_grunn3);
-				if ( scoreCards[a].getUpdateHandicap().equalsIgnoreCase("N") ) {
+				if ( scoreCards[a].getUpdateHandicap().equalsIgnoreCase("N") || grunn2.equalsIgnoreCase(ny_grunn3)) {
                                   ny_grunn2.setText("-");
 				}
                                 ny_grunn2.setFontSize("1");

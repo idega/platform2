@@ -17,6 +17,9 @@ public class UpdateHandicap {
             Scorecard[] scorecard = (Scorecard[]) (new Scorecard()).findAllByColumnOrdered("member_id",member_id+"","scorecard_date");
             for (int m=0; m < scorecard.length; m++) {
 
+                TournamentRound round = scorecard[m].getTournamentRound();
+                TournamentRound[] rounds = (TournamentRound[]) (new TournamentRound()).findAllByColumn("tournament_id",round.getTournamentID());
+
                 if ( scorecard[m].getHandicapCorrection().equalsIgnoreCase("N") ) {
 
                     Stroke[] stroke = (Stroke[]) (new Stroke()).findAllByColumn("scorecard_id",scorecard[m].toString());
@@ -27,6 +30,10 @@ public class UpdateHandicap {
 
                     Field field = new Field(field_id);
                             float field_par = (float) field.getIntColumnValue("field_par");
+
+                    if ( scorecard[m].getTournamentRoundId() > 1 && round.getRoundNumber() == 1 ) {
+                      grunn = (double) scorecard[m].getHandicapBefore();
+                    }
 
                     Handicap leikForgjof = new Handicap(grunn);
                             int leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
@@ -80,12 +87,21 @@ public class UpdateHandicap {
                             heildarpunktar *= 2;
                     }
 
-                    scorecard[m].setHandicapBefore((float) grunn);
-                    scorecard[m].setTotalPoints(heildarpunktar);
+                    if ( scorecard[m].getTournamentRoundId() > 1 && scorecard[m].getTotalPoints() > 0 ) {
+                      heildarpunktar = scorecard[m].getTotalPoints();
+                    }
+
+                    if ( scorecard[m].getTournamentRoundId() == 1 ) {
+                      scorecard[m].setHandicapBefore((float) grunn);
+                      scorecard[m].setTotalPoints(heildarpunktar);
+                    }
 
                     if ( scorecard[m].getUpdateHandicap().equalsIgnoreCase("Y") ) {
                       grunn = reiknaHandicap2((double)grunn,heildarpunktar);
-                      scorecard[m].setHandicapAfter((float) grunn);
+
+                      if ( scorecard[m].getTournamentRoundId() == 1 || round.getRoundNumber() == rounds.length ) {
+                        scorecard[m].setHandicapAfter((float) grunn);
+                      }
                     }
                     else {
                       scorecard[m].setHandicapAfter((float) grunn);
