@@ -14,6 +14,7 @@ import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.HorizontalRule;
 import com.idega.presentation.text.Link;
@@ -21,7 +22,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.IWCalendar;
@@ -34,6 +34,7 @@ import com.idega.util.PersonalIDFormatter;
 public class ChildCareAdmin extends ChildCareBlock {
 
 	private static final String PARAMETER_CLEAN_QUEUE = "cc_clean_queue";
+	private static final String PARAMETER_DELETE_APPLICATION = "cc_remove_application";
 	
 	//private int _numberPerPage = 15;
 	//private int _start = 0;
@@ -103,6 +104,18 @@ public class ChildCareAdmin extends ChildCareBlock {
 				//Nothing found and everyone is happy about that :D
 			}
 		}
+		if (iwc.isParameterSet(PARAMETER_DELETE_APPLICATION)) {
+			try {
+				int applicationID = Integer.parseInt(iwc.getParameter(PARAMETER_DELETE_APPLICATION));
+				getBusiness().deleteApplication(applicationID, iwc.getCurrentUser());
+			}
+			catch (RemoteException re) {
+				log(re);
+			}
+			catch (NumberFormatException nfe) {
+				log(nfe);
+			}
+		}
 	}
 	
 	/*private CollectionNavigator getNavigator(IWContext iwc) throws RemoteException {
@@ -133,13 +146,16 @@ public class ChildCareAdmin extends ChildCareBlock {
 	
 	
 	
-	private Table getApplicationTable(IWContext iwc) throws RemoteException {
+	private Form getApplicationTable(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+
 		Table applicationTable = new Table();
 		applicationTable.setWidth(Table.HUNDRED_PERCENT);
 		applicationTable.setCellpadding(getCellpadding());
 		applicationTable.setCellspacing(getCellspacing());
-		applicationTable.setColumns(7);
+		applicationTable.setColumns(8);
 		applicationTable.setRowColor(1, getHeaderColor());
+		form.add(applicationTable);
 		int row = 1;
 		int column = 1;
 		int number =1;
@@ -167,9 +183,11 @@ public class ChildCareAdmin extends ChildCareBlock {
 			IWCalendar queueDate;
 			IWCalendar placementDate;
 			Link link;
+			SubmitButton delete = null;
 			HorizontalRule hr;
 			boolean hasOtherPlacing = false;
 			boolean hasMessage = false;
+			boolean hasSchoolPlacement = false;
 			String name = null;
 				
 			Iterator iter = applications.iterator();
@@ -185,6 +203,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 				else
 					netOrder = -1;
 				hasOtherPlacing = getBusiness().hasBeenPlacedWithOtherProvider(application.getChildId(), getSession().getChildCareID());
+				hasSchoolPlacement = getBusiness().hasSchoolPlacement(child);
 				hasMessage = application.getMessage() != null;		
 				
 				if (netOrder == 1 && row != 2) {
@@ -255,9 +274,17 @@ public class ChildCareAdmin extends ChildCareBlock {
 				else 
 					applicationTable.add(getSmallText("-"), column++, row);
 				if (queueOrder != -1)
-					applicationTable.add(getSmallText("("+String.valueOf(queueOrder)+")"), column, row++);
+					applicationTable.add(getSmallText("("+String.valueOf(queueOrder)+")"), column++, row);
 				else 
-					applicationTable.add(getSmallText("-"), column, row++);
+					applicationTable.add(getSmallText("-"), column++, row);
+				
+				if (hasSchoolPlacement) {
+					delete = new SubmitButton(getDeleteIcon(localize("child_care.remove_application","Remove application")), PARAMETER_DELETE_APPLICATION, application.getPrimaryKey().toString());
+					delete.setSubmitConfirm(localize("child_care.remove_application_request", "Do you really want to remove the application?"));
+					applicationTable.add(delete, column, row);
+				}
+				
+				row++;
 			}
 			applicationTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
@@ -268,7 +295,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		}
 		
 		applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
-		applicationTable.add("<br>", 1, row);
+		applicationTable.add(new Break(), 1, row);
 		applicationTable.add(getSmallHeader(localize("child_care.number_in_queue_no_offer","Number in queue without offer") + ": "), 1, row);
 		applicationTable.add(getSmallText(String.valueOf(numberInqueueNoOffer)), 1, row++);
 		
@@ -295,36 +322,32 @@ public class ChildCareAdmin extends ChildCareBlock {
 		
 		
 		if (_showQueueCleaning) {
-			Form form = new Form();
-			//form.maintainParameter(CollectionNavigator.PARAMETER_CURRENT_PAGE);
 			form.setEventListener(ChildCareEventListener.class);
-			form.add(new HiddenInput(PARAMETER_CLEAN_QUEUE, Boolean.TRUE.toString()));
+			row++;
+			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
+			applicationTable.setHeight(row, 12);
 			
-			SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.clean_queue", "Clean queue")));
+			SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.clean_queue", "Clean queue"), PARAMETER_CLEAN_QUEUE, Boolean.TRUE.toString()));
+			applicationTable.add(button, 1, row);
 			button.setSubmitConfirm(localize("child_care.clean_queue_request", "Do you really want to send the queue request?"));
 			if (iwc.getSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING) != null) {
 				form.setDisabled(true);
 			}
 			form.setToDisableOnSubmit(button, true);
-			form.add(button);
 			
 			if (_queueCleaned != null) {
 				button.setDisabled(true);
 				form.add(Text.getNonBrakingSpace());
 				if (_queueCleaned.booleanValue()) {
-					form.add(getSmallText(localize("child_care.clean_queue_successful", "Cleaning of queue ran successfully!")));
+					applicationTable.add(getSmallText(localize("child_care.clean_queue_successful", "Cleaning of queue ran successfully!")), 1, row);
 				}
 				else {
-					form.add(getSmallErrorText(localize("child_care.clean_queue_failed", "Cleaning of queue failed!")));
+					applicationTable.add(getSmallErrorText(localize("child_care.clean_queue_failed", "Cleaning of queue failed!")), 1, row);
 				}
 			}
-			row++;
-			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
-			applicationTable.setHeight(row, 12);
-			applicationTable.add(form, 1, row);
 		}
 		
-		return applicationTable;
+		return form;
 	}
 	
 	private Form getSortTable() throws RemoteException {

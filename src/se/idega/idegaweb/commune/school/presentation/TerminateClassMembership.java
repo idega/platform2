@@ -52,10 +52,10 @@ import com.idega.util.IWTimestamp;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/12/10 14:01:18 $ by $Author: malin $
+ * Last modified: $Date: 2005/01/07 14:24:59 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.34 $
+ * @version $Revision: 1.35 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -224,11 +224,12 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 			// terminate membership
 			final String notes = context.getParameter (NOTES_KEY);
 			member.setNotes (notes);
-			final Timestamp terminationDate = new  Timestamp (date.getTime ());
-			member.setRemovedDate (terminationDate);
+			IWTimestamp terminationDate = new IWTimestamp (date);
+			member.setRemovedDate (terminationDate.getTimestamp());
 			member.store ();
-			terminateResources (member, terminationDate);
-			terminateRegularPayments (child, school, terminationDate);
+			getBusiness().getSchoolBusiness().addToSchoolClassMemberLog(member.getStudent(), member.getSchoolClass(), terminationDate.getDate());
+			terminateResources (member, terminationDate.getTimestamp());
+			terminateRegularPayments (child, school, terminationDate.getTimestamp());
 			
 			// put confirmation output
 			final String subject = localize
