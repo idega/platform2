@@ -82,7 +82,6 @@ import com.idega.util.ListUtil;
 import com.idega.util.caching.Cache;
 import com.idega.util.text.TextSoap;
 
-
 /**
  * Description:	Use this business class to handle work report related business.
  * Copyright:    Copyright (c) 2003
@@ -104,7 +103,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private WorkReportBoardMemberHome workReportBoardMemberHome;
 	private WorkReportDivisionBoardHome workReportDivisionBoardHome;
 	private WorkReportExportFileHome workReportExportFileHome;
-	
+
 	//Temporary import tables
 	private WorkReportImportMemberHome workReportImportMemberHome;
 	private WorkReportImportBoardMemberHome workReportImportBoardMemberHome;
@@ -124,38 +123,35 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
-	public int getTotalCountOfMembersForWorkReportYear(int year){
+	public int getTotalCountOfMembersForWorkReportYear(int year) {
 		int count = 0;
 		try {
 			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
 			Iterator iter = reports.iterator();
 
 			while (iter.hasNext()) {
-				WorkReport report = (WorkReport) iter.next();
+				WorkReport report = (WorkReport)iter.next();
 				int add = report.getNumberOfMembers();
-				count+= (add>0)? add : 0 ;//add to sum if more than 0
+				count += (add > 0) ? add : 0; //add to sum if more than 0
 			}
-			
-			
-			
-			
+
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
 		return count;
 	}
-	
-	public int getTotalCountOfPlayersForWorkReportYear(int year){
+
+	public int getTotalCountOfPlayersForWorkReportYear(int year) {
 		int count = 0;
 		try {
 			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
 			Iterator iter = reports.iterator();
 
 			while (iter.hasNext()) {
-				WorkReport report = (WorkReport) iter.next();
+				WorkReport report = (WorkReport)iter.next();
 				int add = report.getNumberOfPlayers();
-				count+= (add>0)? add : 0 ;//add to sum if more than 0
+				count += (add > 0) ? add : 0; //add to sum if more than 0
 			}
 		}
 		catch (FinderException e) {
@@ -163,34 +159,31 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		return count;
 	}
-	
+
 	public int getTotalCountOfWorkReportsByStatusAndYear(String status, int year) {
-	
-		return getWorkReportHome().getCountOfWorkReportsByStatusAndYear(status, year);	
-		
+
+		return getWorkReportHome().getCountOfWorkReportsByStatusAndYear(status, year);
+
 	}
-	
-	public int getTotalCountOfCompetitorsForWorkReportYear(int year){
+
+	public int getTotalCountOfCompetitorsForWorkReportYear(int year) {
 		int count = 0;
 		try {
 			Collection reports = this.getWorkReportHome().findAllWorkReportsByYearOrderedByGroupType(year);
 			Iterator iter = reports.iterator();
 
 			while (iter.hasNext()) {
-				WorkReport report = (WorkReport) iter.next();
+				WorkReport report = (WorkReport)iter.next();
 				int add = report.getNumberOfCompetitors();
-				count+= (add>0)? add : 0 ;//add to sum if more than 0
+				count += (add > 0) ? add : 0; //add to sum if more than 0
 			}
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
-		
+
 		return count;
-	}	
-	
-	
+	}
 
 	/**
 	 * This method gets you the id of the workreport of the club and year specified. It will create a new report if it does not exist already.
@@ -215,7 +208,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					report = getWorkReportHome().create();
 					report.setGroupId(groupId);
 					report.setYearOfReport(year);
-					
+
 					//THIS IS CRAP IT SHOULD JUST USE .getName() !! palli bitch
 					report.setGroupName((club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) != null) ? club.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME) : club.getName());
 					report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
@@ -231,7 +224,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					String status = club.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
 					if (IWMemberConstants.META_DATA_CLUB_STATE_INACTIVE.equals(status)) {
 						report.setAsInactive();
-					}else{
+					}
+					else {
 						report.setAsActive();
 					}
 
@@ -241,7 +235,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						report.setRegionalUnionGroupId((Integer)regionalUnion.getPrimaryKey());
 						report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
 						report.setRegionalUnionAbbreviation(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_ABRV));
-						
+
 					}
 					catch (NoRegionalUnionFoundException e3) {
 						//no regional union, must be a league or a regional union itself
@@ -259,7 +253,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		}
 
-
 		if (report != null) {
 			createWorkReportData(((Integer)report.getPrimaryKey()).intValue());
 			return ((Integer)report.getPrimaryKey()).intValue();
@@ -267,7 +260,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		else {
 			return -1;
 		}
-		
 
 	}
 
@@ -306,7 +298,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		return workReportImportMemberHome;
 	}
-
 
 	public WorkReportBoardMemberHome getWorkReportBoardMemberHome() {
 		if (workReportBoardMemberHome == null) {
@@ -447,13 +438,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 	public WorkReportMember createWorkReportMember(int reportID, User user) throws CreateException {
 		Age age = null;
-   
-        WorkReportMember member = getWorkReportMemberHome().create();
-        
-     
+
+		WorkReportMember member = getWorkReportMemberHome().create();
+
 		if (user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
-
 
 		member.setReportId(reportID);
 		member.setName(user.getName());
@@ -532,74 +521,72 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			int pk = ((Integer)workReportGroup.getPrimaryKey()).intValue();
 			member.setWorkReportGroupID(pk);
 		}
-        int gender = user.getGenderID();
-        try {
-          int male = getGenderId("male").intValue();
-          if (gender == male) {
-            member.setAsMale();
-          }
-          else {
-            member.setAsFemale();
-          }
-        }
-        catch (Exception ex) {
-          String errorMessage = "[WorkreportBusiness] Gender can not be retrieved. Message is. " + ex.getMessage();
-          System.err.println(errorMessage);
-          ex.printStackTrace(System.err);
-          throw new CreateException(errorMessage);
-        }
-        // address
-        try {
-          Address address = getUsersMainAddress(user);
-          if (address != null) {
-            String streetAddress = address.getStreetAddress();
-          if (streetAddress != null) {
-            member.setStreetName(streetAddress);
-          }
-          int postalCodeId = address.getPostalCodeID();
-          if (postalCodeId > 0) {
-            member.setPostalCodeID(postalCodeId);
-          }
-        }
-      }
-      catch (RemoteException ex) {
-        String message = "[WorkReportBusiness]: Can't retrieve  user's main address.";
-        System.err.println(message + " Message is: " + ex.getMessage());
-        ex.printStackTrace(System.err);
-        throw new RuntimeException(message);
-      }
-      member.store();
-	  return member;
-    }
-    
+		int gender = user.getGenderID();
+		try {
+			int male = getGenderId("male").intValue();
+			if (gender == male) {
+				member.setAsMale();
+			}
+			else {
+				member.setAsFemale();
+			}
+		}
+		catch (Exception ex) {
+			String errorMessage = "[WorkreportBusiness] Gender can not be retrieved. Message is. " + ex.getMessage();
+			System.err.println(errorMessage);
+			ex.printStackTrace(System.err);
+			throw new CreateException(errorMessage);
+		}
+		// address
+		try {
+			Address address = getUsersMainAddress(user);
+			if (address != null) {
+				String streetAddress = address.getStreetAddress();
+				if (streetAddress != null) {
+					member.setStreetName(streetAddress);
+				}
+				int postalCodeId = address.getPostalCodeID();
+				if (postalCodeId > 0) {
+					member.setPostalCodeID(postalCodeId);
+				}
+			}
+		}
+		catch (RemoteException ex) {
+			String message = "[WorkReportBusiness]: Can't retrieve  user's main address.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			throw new RuntimeException(message);
+		}
+		member.store();
+		return member;
+	}
+
 	public WorkReportDivisionBoard createWorkReportDivisionBoard(int reportId, Group clubDivision, WorkReportGroup league) throws CreateException {
 		// does the division board already exist?
-        try {
-          WorkReportDivisionBoardHome workReportDivisionBoardHome = getWorkReportDivisionBoardHome();
-          int workReportGroupId = ((Integer) league.getPrimaryKey()).intValue();
-          WorkReportDivisionBoard divisionBoard = 
-            workReportDivisionBoardHome.findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId, workReportGroupId);
-          if (divisionBoard != null) {
-            // division board exist be sure that the league was added to the work report
-            WorkReport workReport = getWorkReportById(reportId);
-            try {
-              workReport.addLeague(league);
-              workReport.store();   
-            }
-            catch (IDORelationshipException ex) {
-              String message =
-                "[WorkReportBusiness]: Can't define realtion ship.";
-              System.err.println(message + " Message is: " + ex.getMessage());
-              ex.printStackTrace(System.err);
-              // do nothing
-            }
-          }
-        }
-        catch (FinderException ex) {
-          // work report division does not exist, go further, create it!
-        }
-        
-        // get group business
+		try {
+			WorkReportDivisionBoardHome workReportDivisionBoardHome = getWorkReportDivisionBoardHome();
+			int workReportGroupId = ((Integer)league.getPrimaryKey()).intValue();
+			WorkReportDivisionBoard divisionBoard = workReportDivisionBoardHome.findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId, workReportGroupId);
+			if (divisionBoard != null) {
+				// division board exist be sure that the league was added to the work report
+				WorkReport workReport = getWorkReportById(reportId);
+				try {
+					workReport.addLeague(league);
+					workReport.store();
+				}
+				catch (IDORelationshipException ex) {
+					String message = "[WorkReportBusiness]: Can't define realtion ship.";
+					System.err.println(message + " Message is: " + ex.getMessage());
+					ex.printStackTrace(System.err);
+					// do nothing
+				}
+			}
+		}
+		catch (FinderException ex) {
+			// work report division does not exist, go further, create it!
+		}
+
+		// get group business
 		GroupBusiness groupBusiness = null;
 		try {
 			groupBusiness = getGroupBusiness();
@@ -697,29 +684,28 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			workReportDivisionBoard.setEmail(eMail);
 		}
 
-        // league
-        if (league != null) {
-          int pk = ((Integer) league.getPrimaryKey()).intValue();
-          workReportDivisionBoard.setWorKReportGroupID(pk);
-        }
-        // +++++++++++++++++++++++++++++++
-        // add league to work report group
-        // +++++++++++++++++++++++++++++++
-        WorkReport workReport = getWorkReportById(reportId);
-        try {
-          workReport.addLeague(league);
-          workReport.store();   
-        }
-        catch (IDORelationshipException ex) {
-          String message =
-            "[WorkReportBusiness]: Can't define realtion ship.";
-          System.err.println(message + " Message is: " + ex.getMessage());
-          ex.printStackTrace(System.err);
-          // do nothing
-        }
-        workReportDivisionBoard.store();
-        return workReportDivisionBoard;
-      }
+		// league
+		if (league != null) {
+			int pk = ((Integer)league.getPrimaryKey()).intValue();
+			workReportDivisionBoard.setWorKReportGroupID(pk);
+		}
+		// +++++++++++++++++++++++++++++++
+		// add league to work report group
+		// +++++++++++++++++++++++++++++++
+		WorkReport workReport = getWorkReportById(reportId);
+		try {
+			workReport.addLeague(league);
+			workReport.store();
+		}
+		catch (IDORelationshipException ex) {
+			String message = "[WorkReportBusiness]: Can't define realtion ship.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			// do nothing
+		}
+		workReportDivisionBoard.store();
+		return workReportDivisionBoard;
+	}
 
 	public WorkReport getWorkReportById(int id) {
 		try {
@@ -877,7 +863,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 											try {
 												report.addLeague(league);
 											}
-											catch(Exception e) {
+											catch (Exception e) {
 												//e.printStackTrace();
 											}
 											mainBoard.addEntity(member);
@@ -926,10 +912,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		while (it.hasNext()) {
 			Integer id = (Integer)it.next();
 			Integer val = (Integer)divPlayerCount.get(id);
-			
+
 			WorkReportDivisionBoard board = null;
 			try {
-				board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId,id.intValue());
+				board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, id.intValue());
 			}
 			catch (FinderException e) {
 				try {
@@ -939,9 +925,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					e1.printStackTrace();
 					throw new WorkReportImportException("workreportimportexception.error_creating_division");
 				}
-			}	
-			
-			board.setNumberOfPlayers(val.intValue());		
+			}
+
+			board.setNumberOfPlayers(val.intValue());
 			board.store();
 		}
 
@@ -1000,7 +986,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 				WorkReportGroup group = null;
 				if (leagueCell != null) {
 					league = leagueCell.getStringCellValue();
-					if (league != null) {
+					if (league != null && !"".equals(league.trim())) {
 						league = league.toUpperCase();
 						try {
 							group = getWorkReportGroupHome().findWorkReportGroupByShortNameAndYear(league, year);
@@ -1026,7 +1012,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 				String ssn = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_SSN);
 				ssn = (ssn.length() < 10) ? "0" + ssn : ssn;
-				String streetName = row.getCell(COLUMN_BOARD_MEMBER_STREET_NAME).getStringCellValue();
+				String streetName = getStringValueFromExcelNumberOrStringCell(row,COLUMN_BOARD_MEMBER_STREET_NAME);
 				String postalCode = getStringValueFromExcelNumberOrStringCell(row, COLUMN_BOARD_MEMBER_POSTAL_CODE);
 
 				WorkReportImportBoardMember member;
@@ -1041,7 +1027,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-						member = membHome.create();//createWorkImportReportBoardMember(workReportId, ssn, group); //sets basic data
+						member = membHome.create(); //createWorkImportReportBoardMember(workReportId, ssn, group); //sets basic data
 						member.setPersonalId(ssn);
 						member.setReportId(workReportId);
 						//Set group??
@@ -1124,7 +1110,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 				WorkReportDivisionBoard board = null;
 				try {
-					board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId,((Integer)group.getPrimaryKey()).intValue());
+					board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, ((Integer)group.getPrimaryKey()).intValue());
 				}
 				catch (FinderException e) {
 					try {
@@ -1353,7 +1339,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					val = c.getNumericCellValue();
 
 				System.out.println("val = " + val);
-				totalAsset+=val;
+				totalAsset += val;
 				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
 				if (val != 0.0) {
 					try {
@@ -1408,7 +1394,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						val = c.getNumericCellValue();
 
 					System.out.println("val = " + val);
-					totalDept+=val;
+					totalDept += val;
 					WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
 					if (val != 0.0) {
 						try {
@@ -1435,9 +1421,32 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 
-		if (totalAsset!=totalDept)
+		if (totalAsset != totalDept)
 			throw new WorkReportImportException("workreportimportexception.asset_and_dept_not_the_same");
-			
+
+		//Store work-report division thingie........ HOW!!!???!!!		
+		Iterator it = leaguesMap.keySet().iterator();
+		while (it.hasNext()) {
+			Integer id = (Integer)it.next();
+
+			WorkReportDivisionBoard board = null;
+			try {
+				board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(workReportId, id.intValue());
+			}
+			catch (FinderException e) {
+				try {
+					board = (WorkReportDivisionBoard)getWorkReportDivisionBoardHome().create();
+				}
+				catch (CreateException e1) {
+					e1.printStackTrace();
+					throw new WorkReportImportException("workreportimportexception.error_creating_division");
+				}
+			}
+
+			board.store();
+		}
+
+
 		return true;
 	}
 
@@ -1662,24 +1671,25 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * @return
 	 */
 	private String getStringValueFromExcelNumberOrStringCell(HSSFRow row, short columnNumber) {
-
 		String cell = "";
 		HSSFCell myCell = row.getCell((short)columnNumber);
-		if (myCell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
-			//HSSFCell myCell2 = HSSFCellUtil.translateUnicodeValues(myCell);
-			cell = myCell.getStringCellValue();
-		}
-		else {
-			cell = Double.toString(myCell.getNumericCellValue());
-		}
+		if (myCell != null) {
+			if (myCell.getCellType() == HSSFCell.CELL_TYPE_STRING) {
+				//HSSFCell myCell2 = HSSFCellUtil.translateUnicodeValues(myCell);
+				cell = myCell.getStringCellValue();
+			}
+			else {
+				cell = Double.toString(myCell.getNumericCellValue());
+			}
 
-		cell = TextSoap.findAndCut(cell, "-");
-		cell = TextSoap.findAndCut(cell, ".");
+			cell = TextSoap.findAndCut(cell, "-");
+			cell = TextSoap.findAndCut(cell, ".");
 
-		int index = cell.indexOf("E");
+			int index = cell.indexOf("E");
 
-		if (index != -1) {
-			cell = cell.substring(0, index);
+			if (index != -1) {
+				cell = cell.substring(0, index);
+			}
 		}
 
 		return cell;
@@ -1701,7 +1711,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 
 	}
-	
 
 	/**
 	 * Returns a collection of WorkReports or an empty List
@@ -1878,1220 +1887,1176 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 	}
 
-  
-  /**
-   * Gets all WorkReportDivisionBoard for the specified WorkReport id
-   * @param workReportId
-   * @return a collection of WorkReportDivisionBoard
-   */ 
-  public Collection getAllWorkReportDivisionBoardForWorkReportId(int workReportId){
-    try {
-      return getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(workReportId);
-    }
-    catch (FinderException e) {
-      return ListUtil.getEmptyList();
-    }
-  }
- 
-  /**
-   * Gets work report group.
-   * @param workReportGroupName
-   * @param year
-   * @return the desired work report group else null
-   */
-  public WorkReportGroup findWorkReportGroupByNameAndYear(String workReportGroupName, int year)  {
-    WorkReportGroupHome home = getWorkReportGroupHome();
-    WorkReportGroup workReportGroup = null;
-    if (workReportGroupName != null) {
-      try {
-        workReportGroup = home.findWorkReportGroupByNameAndYear(workReportGroupName, year);
-      }
-      catch (FinderException ex)  {
-        System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: "+ workReportGroupName+" , year: "+ year +" ) Message is: "+ ex.getMessage());
-        ex.printStackTrace(System.err);
-        return null;
-      }
-    }
-    return workReportGroup;
-  }
-  
-  
-  /**
-   * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
-   * and added to the specified new group.
-   * If the name of the current group is null the entity will only be added to the specified new group.
-   * If the name of the new group is null the entity will only be removed from the specified current group.
-   * But if one of the groups could not be found nothing happens and false is returned.
-   * If both specified names are null, nothing happens and true is returned.
-   * If the complete operation was successful true is returned else false.
-   * @param workReportID
-   * @param nameOldGroup
-   * @param yearOldGroup
-   * @param nameNewGroup
-   * @param yearNewGroup
-   * @param entity
-   * @return true if successful else false.
-   */
-  
-  public boolean changeWorkReportGroupOfEntity(int workReportID, String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, IDOEntity entity)  {
-    WorkReportGroup oldGroup = null;
-    WorkReportGroup newGroup = null;
-    // try to find work groups
-    WorkReportGroupHome home = getWorkReportGroupHome();
-    if (nameOldGroup != null) {
-      try {
-        oldGroup = home.findWorkReportGroupByNameAndYear(nameOldGroup, yearOldGroup);
-      }
-      catch (FinderException ex)  {
-        System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: "+ nameOldGroup+" , year: "+ yearOldGroup+" ) Message is: "+ ex.getMessage());
-        ex.printStackTrace(System.err);
-        return false;
-      }
-    }
-    if (nameNewGroup != null) {
-      try {
-        newGroup = home.findWorkReportGroupByNameAndYear(nameNewGroup, yearNewGroup);
-      }
-      catch (FinderException ex)  {
-        System.err.println("[WorkReportBusiness] Could not find new WorkReportGroup (name: "+ nameNewGroup+" , year: "+ yearNewGroup+" ) Message is: "+ ex.getMessage());
-        ex.printStackTrace(System.err);
-        return false;
-      }
-    }
-    return changeWorkReportGroupOfEntity(workReportID, oldGroup, newGroup, entity);
-  }
-        
-  /**
-   * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
-   * and added to the specified new group.
-   * If the specified current group is null the entity will only be added to the specified new group.
-   * If the specified new group is null the entity will only be removed from the specified current group.
-   * If both specified groups are null nothing happens and true is returned.
-   * If the complete operation was successful true is returned else false.
-   * @param oldGroup
-   * @param newGroup
-   * @param entity
-   * @return true if successful else false.
-   */
-  public boolean changeWorkReportGroupOfEntity(int workReportID, WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity entity)  {
-    TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
-    try {
-      manager.begin();
-      // add work report group to work report 
-      if (newGroup != null) {
-        Collection coll = getLeaguesOfWorkReportById(workReportID);
-        Integer pk = (Integer) newGroup.getPrimaryKey();
-        Iterator iteratorLeagues = coll.iterator();
-        boolean doesNotExist = true;
-        while (iteratorLeagues.hasNext() && doesNotExist) {
-          WorkReportGroup group = (WorkReportGroup) iteratorLeagues.next();
-          Integer pkGroup = (Integer) group.getPrimaryKey();
-          doesNotExist = ! (pk.equals(pkGroup));
-        }
-        if (doesNotExist)  {
-          WorkReport workReport = getWorkReportById(workReportID);
-          workReport.addLeague(newGroup);
-        }
-      }
-      if (oldGroup != null) {
-        oldGroup.removeEntity(entity);
-        oldGroup.store();
-      }
-      if (newGroup != null) {
-        newGroup.addEntity(entity);
-        newGroup.store();
-      }
-      manager.commit();
-      return true;
-    }
-    catch (Exception ex)  {
-      ex.printStackTrace(System.err);
-      try {
-        manager.rollback();
-      }
-      catch (javax.transaction.SystemException sysEx) {
-        sysEx.printStackTrace(System.err);
-        return false;
-      }
-      return false;
-    }
-  }
-  
-   /**
-   * Adds the specified WorkReportGroup to the specified entity. 
-   * If the secified WorkReportGroup is null nothing happens and true is returned.
-   * If the complete operation was successful true is returned else false.
-   * @param workReportGroupID
-   * @param newGroup
-   * @param entity
-   * @return true if successful else false.
-   */
-  public boolean addWorkReportGroupToEntity(int workReportID, WorkReportGroup newGroup, IDOEntity entity) {
-    return changeWorkReportGroupOfEntity(workReportID, null, newGroup, entity);
-  }
+	/**
+	 * Gets all WorkReportDivisionBoard for the specified WorkReport id
+	 * @param workReportId
+	 * @return a collection of WorkReportDivisionBoard
+	 */
+	public Collection getAllWorkReportDivisionBoardForWorkReportId(int workReportId) {
+		try {
+			return getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(workReportId);
+		}
+		catch (FinderException e) {
+			return ListUtil.getEmptyList();
+		}
+	}
 
-   /**
-   * Removes the specified WorkReportGroup from the specified entity. 
-   * If the secified WorkReportGroup is null nothing happens and true is returned.
-   * If the complete operation was successful true is returned else false.
-   * @param workReportGroupID
-   * @param newGroup
-   * @param entity
-   * @return true if successful else false.
-   */
-  public boolean removeWorkReportGroupFromEntity(int workReportID, WorkReportGroup oldGroup, IDOEntity entity) {
-    return changeWorkReportGroupOfEntity(workReportID, oldGroup, null, entity);
-  }
+	/**
+	 * Gets work report group.
+	 * @param workReportGroupName
+	 * @param year
+	 * @return the desired work report group else null
+	 */
+	public WorkReportGroup findWorkReportGroupByNameAndYear(String workReportGroupName, int year) {
+		WorkReportGroupHome home = getWorkReportGroupHome();
+		WorkReportGroup workReportGroup = null;
+		if (workReportGroupName != null) {
+			try {
+				workReportGroup = home.findWorkReportGroupByNameAndYear(workReportGroupName, year);
+			}
+			catch (FinderException ex) {
+				System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: " + workReportGroupName + " , year: " + year + " ) Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+				return null;
+			}
+		}
+		return workReportGroup;
+	}
 
-   /**
-   * Adds the specified WorkReportGroup to the specified entity. 
-   * The entity is specified by the name and the year.
-   * If the secified WorkReportGroup is null nothing happens and true is returned.
-   * If the complete operation was successful true is returned else false.
-   * @param workReportGRoupID
-   * @param newGroup
-   * @param work
-   * @param year
-   * @param entity
-   * @return true if successful else false.
-   */
-  public boolean addWorkReportGroupToEntity(int workReportID, String nameNewGroup, int year, IDOEntity entity) {
-    return changeWorkReportGroupOfEntity(workReportID, null, year, nameNewGroup, year, entity);
-  }
+	/**
+	 * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
+	 * and added to the specified new group.
+	 * If the name of the current group is null the entity will only be added to the specified new group.
+	 * If the name of the new group is null the entity will only be removed from the specified current group.
+	 * But if one of the groups could not be found nothing happens and false is returned.
+	 * If both specified names are null, nothing happens and true is returned.
+	 * If the complete operation was successful true is returned else false.
+	 * @param workReportID
+	 * @param nameOldGroup
+	 * @param yearOldGroup
+	 * @param nameNewGroup
+	 * @param yearNewGroup
+	 * @param entity
+	 * @return true if successful else false.
+	 */
 
-   /**
-   * Removes the specified WorkReportGroup from the specified entity. 
-   * The entity is specified by the name and the year.
-   * If the secified WorkReportGroup is null nothing happens and true is returned.
-   * If the complete operation was successful true is returned else false.
-   * @param newGroup
-   * @param year
-   * @param entity
-   * @return true if successful else false.
-   */
-  public boolean removeWorkReportGroupFromEntity(int workReportID, String nameOldGroup, int year, IDOEntity entity) {
-    return changeWorkReportGroupOfEntity(workReportID, nameOldGroup, year, null, year, entity);
-  }
+	public boolean changeWorkReportGroupOfEntity(int workReportID, String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, IDOEntity entity) {
+		WorkReportGroup oldGroup = null;
+		WorkReportGroup newGroup = null;
+		// try to find work groups
+		WorkReportGroupHome home = getWorkReportGroupHome();
+		if (nameOldGroup != null) {
+			try {
+				oldGroup = home.findWorkReportGroupByNameAndYear(nameOldGroup, yearOldGroup);
+			}
+			catch (FinderException ex) {
+				System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: " + nameOldGroup + " , year: " + yearOldGroup + " ) Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+				return false;
+			}
+		}
+		if (nameNewGroup != null) {
+			try {
+				newGroup = home.findWorkReportGroupByNameAndYear(nameNewGroup, yearNewGroup);
+			}
+			catch (FinderException ex) {
+				System.err.println("[WorkReportBusiness] Could not find new WorkReportGroup (name: " + nameNewGroup + " , year: " + yearNewGroup + " ) Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+				return false;
+			}
+		}
+		return changeWorkReportGroupOfEntity(workReportID, oldGroup, newGroup, entity);
+	}
 
+	/**
+	 * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
+	 * and added to the specified new group.
+	 * If the specified current group is null the entity will only be added to the specified new group.
+	 * If the specified new group is null the entity will only be removed from the specified current group.
+	 * If both specified groups are null nothing happens and true is returned.
+	 * If the complete operation was successful true is returned else false.
+	 * @param oldGroup
+	 * @param newGroup
+	 * @param entity
+	 * @return true if successful else false.
+	 */
+	public boolean changeWorkReportGroupOfEntity(int workReportID, WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity entity) {
+		TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
+		try {
+			manager.begin();
+			// add work report group to work report 
+			if (newGroup != null) {
+				Collection coll = getLeaguesOfWorkReportById(workReportID);
+				Integer pk = (Integer)newGroup.getPrimaryKey();
+				Iterator iteratorLeagues = coll.iterator();
+				boolean doesNotExist = true;
+				while (iteratorLeagues.hasNext() && doesNotExist) {
+					WorkReportGroup group = (WorkReportGroup)iteratorLeagues.next();
+					Integer pkGroup = (Integer)group.getPrimaryKey();
+					doesNotExist = !(pk.equals(pkGroup));
+				}
+				if (doesNotExist) {
+					WorkReport workReport = getWorkReportById(workReportID);
+					workReport.addLeague(newGroup);
+				}
+			}
+			if (oldGroup != null) {
+				oldGroup.removeEntity(entity);
+				oldGroup.store();
+			}
+			if (newGroup != null) {
+				newGroup.addEntity(entity);
+				newGroup.store();
+			}
+			manager.commit();
+			return true;
+		}
+		catch (Exception ex) {
+			ex.printStackTrace(System.err);
+			try {
+				manager.rollback();
+			}
+			catch (javax.transaction.SystemException sysEx) {
+				sysEx.printStackTrace(System.err);
+				return false;
+			}
+			return false;
+		}
+	}
 
-  
-  public boolean createWorkReportData(int workReportId) {
-    // get year and group id from work report
-    WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
-    WorkReport workReport = getWorkReportById(workReportId);
-    // has the data already been created?
-    if (workReport.isCreationFromDatabaseDone())  {
-      return true;
-    }
-    // get the corresponding group 
-    int groupId = workReport.getGroupId().intValue();
-    // get group business
-    GroupBusiness groupBusiness;
-    try {
-      groupBusiness = getGroupBusiness();
-    }
-    catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportBusiness]: Can't retrieve GroupBusiness. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness.");
-    }
+	/**
+	* Adds the specified WorkReportGroup to the specified entity. 
+	* If the secified WorkReportGroup is null nothing happens and true is returned.
+	* If the complete operation was successful true is returned else false.
+	* @param workReportGroupID
+	* @param newGroup
+	* @param entity
+	* @return true if successful else false.
+	*/
+	public boolean addWorkReportGroupToEntity(int workReportID, WorkReportGroup newGroup, IDOEntity entity) {
+		return changeWorkReportGroupOfEntity(workReportID, null, newGroup, entity);
+	}
 
-    // do we have to create the data at all?
-    boolean isLeague;
-    boolean isRegionalUnion;
-    try {
-      Group group = groupBusiness.getGroupByGroupID(groupId);
-      String groupType = group.getGroupType();
-      isLeague = IWMemberConstants.GROUP_TYPE_LEAGUE.equals(groupType);
-      isRegionalUnion = IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(groupType);
-      // !! assumption: leagues and regional unions use the member system !!
-      if (! ( isLeague ||
-              isRegionalUnion ||
-              isClubUsingTheMemberSystem(group)))  {
-        // the group does not use the member system. The data has to be imported by a file.
-        // returns true because this is not an error.
-        return true;
-      }
-    }
-    catch (FinderException finderException) {
-      System.err.println("[WorkReportBusiness]: Can't find group. Message is: "
-        + finderException.getMessage());
-      return false;
-    }
-    catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportBusiness]: Can't retrieve WorkReportBusiness. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve WorkReportBusiness.");
-    }
-    // update leagues
-    int year = workReport.getYearOfReport().intValue();
-    createOrUpdateLeagueWorkReportGroupsForYear(year);
-    //
-    // start transaction
-    //
-    TransactionManager tm = IdegaTransactionManager.getInstance();
-    try {
-      tm.begin();
-      
-      // add ADA league to the work report
-      WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year);
-      try {
-        workReport.addLeague(adaGroup);
-        workReport.store();   
-      }
-      catch (IDORelationshipException ex) {
-        String message =
-          "[WorkReportBusiness]: Can't define realtion ship.";
-        System.err.println(message + " Message is: " + ex.getMessage());
-        ex.printStackTrace(System.err);
-        // do nothing
-      }
+	/**
+	* Removes the specified WorkReportGroup from the specified entity. 
+	* If the secified WorkReportGroup is null nothing happens and true is returned.
+	* If the complete operation was successful true is returned else false.
+	* @param workReportGroupID
+	* @param newGroup
+	* @param entity
+	* @return true if successful else false.
+	*/
+	public boolean removeWorkReportGroupFromEntity(int workReportID, WorkReportGroup oldGroup, IDOEntity entity) {
+		return changeWorkReportGroupOfEntity(workReportID, oldGroup, null, entity);
+	}
 
-      boolean boardDataCreated = 
-        createWorkReportBoardDataWithoutAnyChecks(workReportId, year, groupId, groupBusiness);
-      boolean memberDataCreated = (isLeague || isRegionalUnion) ? 
-        true : createWorkReportMemberDataWithoutAnyChecks(workReportId, groupId, groupBusiness);
-      if ( boardDataCreated && memberDataCreated ) {
-        // mark the sucessfull creation
-        workReport.setCreationFromDatabaseDone(true);
-        workReport.store();
-        //tm.commit();
-        tm.rollback();
-        return true;
-      }
-      else {
-        tm.rollback();
-        return false;
-      }
-    }
-    catch (Exception ex)  {
-      System.err.println("[WorkReportBusiness]: Couldn't create work report data. Message is: " + 
-        ex.getMessage());
-      ex.printStackTrace(System.err);
-      try {
-        tm.rollback();
-        return false;
-      }
-      catch (SystemException sysEx) {
-        System.err.println("[WorkReportBusiness]: Couldn't rollback. Message is: " + 
-          sysEx.getMessage());
-        sysEx.printStackTrace(System.err);
-        return false;
-      }
-    }
-  }
-   
-  private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int groupId, GroupBusiness groupBusiness)  {
-    Map idExistingMemberMap = new HashMap();
-    // find all existing work report members
-    Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId);
-    // create a map with user ids as keys and leagues as values
-    Iterator existingWorkReportBoardMembersIterator = existingWorkReportBoardMembers.iterator();
-    while (existingWorkReportBoardMembersIterator.hasNext()) {
-      WorkReportBoardMember member = (WorkReportBoardMember) existingWorkReportBoardMembersIterator.next();
-      Integer userId = new Integer(member.getUserId());
-      Collection memberLeagues = (Collection) idExistingMemberMap.get(userId);
-      if (memberLeagues == null)  {
-        memberLeagues = new ArrayList();
-        idExistingMemberMap.put(userId, memberLeagues);
-      }
-      WorkReportGroup league = null;
-      try {
-        league = member.getLeague();
-        memberLeagues.add(league);
-      }
-      catch (IDOException ex) {
-        System.err.println("[WorkreportBusiness]: Can't retrieve league. Message is: " +
-          ex.getMessage());
-        ex.printStackTrace(System.err);
-      }
-    }
-    
-    // get all children of the group group (not recursively)
-    Collection childGroups;
-    try {
-      childGroups = groupBusiness.getChildGroups(groupId);
-    }
-    catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportBoardBusiness]: Can't get child groups. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBoardBusiness]: Can't child groups.");
-    }
-    catch (FinderException ex) {
-      System.err.println(
-        "[WorkReportBoardBusiness]: Can't get child groups. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      childGroups = new ArrayList(0);
-    }
-    Iterator iterator = childGroups.iterator();
-    while (iterator.hasNext())  {
-      boolean isDivision = false;
-      boolean isCommittee = false;
-      Group group = (Group) iterator.next();
-      String groupType = group.getGroupType();
-      if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE.equals(groupType) || 
-          IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE.equals(groupType) ||
-          IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE.equals(groupType)) { 
-        // go further down, we are looking for the main committee
-        try {
-          Collection committeeChildren = group.getChildGroups();
-          Iterator committeeChildrenIterator = committeeChildren.iterator();
-          while (committeeChildrenIterator.hasNext()) {
-            Group child = (Group) committeeChildrenIterator.next();
-            String childGroupType = child.getGroupType();
-            if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(childGroupType)) {
-              // change the value of the external loop variable group
-              group = child;
-              isCommittee = true;
-            }
-          }
-        }
-        catch (EJBException ex) {
-          System.err.println("[WorkReportBusiness]: Can't retrieve children of group. Message is: " +
-            ex.getMessage());
-          ex.printStackTrace(System.err);
-        }
-      }
-      else if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
-        isDivision = true;
-      }
-      //
-      // create work report bord members 
-      //
-      if (isDivision || isCommittee)  {
-        Collection users = null;
-        WorkReportGroup league = null;
-        // division: 
-        // fetch league 
-        // and get users from that group (group type: division board)
-        // that is referenced by the current group
-        if (isDivision) {
-          // get league
-          league = getLeagueFromClubDivision(group, year);
-          // get users
-          users = getBoardUsersFromClubDivision(group, groupBusiness);
-        }
-        // committee:
-        // there is no league.
-        // get users directly.
-        else {
-          users = getBoardUsersFromCommittee(group, groupBusiness);
-        }
-        if (users != null) {
-          // note: the following method adds the new created members to the idExistingMemberMap
-          createWorkReportBoardMembers(users, workReportId, league, idExistingMemberMap);
-        }
-        //
-        // create division boards
-        //
-        if (isDivision) {
-          try {
-            createWorkReportDivisionBoard(workReportId, group, league);
-          }
-          catch (CreateException ex)  {
-            System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: " 
-              + ex.getMessage());
-            ex.printStackTrace(System.err);
-          }
-        }
-      }
-    }
-    try {
-      updateWorkReportData(workReportId);
-    }
-    catch (Exception ex) {
-      String message =
-        "[WorkReportBusiness]: Can't update work report data.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-    }
-    return true;
-  }
-  
-  private void updateWorkReportData(int workReportId) throws FinderException, IDOException{
-    Collection members;
-    members = getAllWorkReportMembersForWorkReportId(workReportId);
-    // create map: member as key, leagues as value 
-    Map leagueCountMap = new HashMap();
-    int playersCount = 0;
-    int membersTotalSum = members.size();
-    Iterator membersIterator = members.iterator();
-    while (membersIterator.hasNext())  {
-      WorkReportMember member = (WorkReportMember) membersIterator.next();
-      try {
-        Iterator leagues = member.getLeaguesForMember().iterator();
-        List leaguesList = new ArrayList();
-        // if there is at least one league the member is a player
-        if (leagues.hasNext())  {
-          playersCount++;
-        }
-        while (leagues.hasNext()) {
-          WorkReportGroup league = (WorkReportGroup) leagues.next();
-          String leagueName = league.getName();
-          leaguesList.add(leagueName);
-          Integer count = (Integer) leagueCountMap.get(leagueName);
-          count = (count == null) ? null : new Integer( (count.intValue()) + 1 );
-          leagueCountMap.put(leagueName, count);
-        }
-      }
-      catch (IDOException ex) {
-        System.err.println("[WorkReportMemberEditor] Can't get leagues. Message is: " + 
-          ex.getMessage());
-        ex.printStackTrace(System.err);
-      }
-    }
-    WorkReport workReport = getWorkReportById(workReportId);
-    
-    workReport.setNumberOfMembers(membersTotalSum);
-    workReport.setNumberOfPlayers(playersCount);
-    workReport.store();
-    
-    WorkReportDivisionBoardHome home = getWorkReportDivisionBoardHome();
-    Collection boards = home.findAllWorkReportDivisionBoardByWorkReportId(workReportId);
-    
-    Iterator iterator = boards.iterator();
-    while (iterator.hasNext())  {
-      WorkReportDivisionBoard board = (WorkReportDivisionBoard) iterator.next();
-      WorkReportGroup workReportGroup = board.getLeague();
-      String leagueName = workReportGroup.getName();
-      Integer number = (Integer) leagueCountMap.get(leagueName);
-      if (number == null) {
-        board.setNumberOfPlayers(0);  
-      }
-      else {
-        board.setNumberOfPlayers(number.intValue());
-      }
-      board.store();
-    }
-  }
-  
-  
-  private Collection getBoardUsersFromCommittee(Group committee, GroupBusiness groupBusiness)  {
-    try {
-      return groupBusiness.getUsers(committee);
-    }
-    catch (FinderException ex)  {
-      System.err.println("[WorkreportBusiness] Users could not be found. Message is: " 
-        + ex.getMessage());
-      ex.printStackTrace(System.err);
-      return null;
-    }
-    catch (RemoteException ex)  {
-      System.err.println("[WorkReportBusiness]: Can't retrieve users. Message is: "
-        + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve users.");
-    }
-  }
-  
-  private WorkReportGroup getLeagueFromClubDivision(Group clubDivision, int year) {
-    WorkReportGroup league = null;
-    String leagueIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
-    if (leagueIdAsString != null) {
-      try {
-        Integer leagueId = new Integer(leagueIdAsString);
-        league = getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(leagueId.intValue(), year);
-      }
-      catch (NumberFormatException formatEx)  {
-        System.err.println("[workReportBusiness] league id ( " + leagueIdAsString + " ) is not a number. Message is: " +
-          formatEx.getMessage());
-         formatEx.printStackTrace(System.err);
-      }
-      catch (FinderException ex)  {
-        System.err.println("[WorkreportBusiness] league with id " + leagueIdAsString + " could not be found. Message is: " 
-          + ex.getMessage());
-        ex.printStackTrace(System.err);
-      }
-        
-    } 
-    return league;
-  }   
-    
-    
-  private Collection getBoardUsersFromClubDivision(Group clubDivision, GroupBusiness groupBusiness)  {
-    Collection users = null;
-    String divisionBoardIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
-    if (divisionBoardIdAsString != null)  {
-      try {
-        Integer divisionBoardId = new Integer(divisionBoardIdAsString);
-        Group divisionBoard = getGroupHome().findByPrimaryKey(divisionBoardId);
-        users = groupBusiness.getUsers(divisionBoard);
-      }
-      catch (NumberFormatException formatException) {
-        System.err.println("[workReportBusiness] division board id ( " + divisionBoardIdAsString + " ) is not a number. Message is: " 
-          + formatException.getMessage());
-        formatException.printStackTrace(System.err);
-      }
-      catch (FinderException ex)  {
-        System.err.println("[WorkreportBusiness] Group with id " + divisionBoardIdAsString + " could not be found. Message is: " 
-          + ex.getMessage());
-        ex.printStackTrace(System.err);
-      }
-      catch (RemoteException ex) {
-        System.err.println(
-          "[WorkReportBusiness]: Can't retrieve users. Message is: "
-            + ex.getMessage());
-        ex.printStackTrace(System.err);
-        throw new RuntimeException("[WorkReportBusiness]: Can't retrieve users.");
-      }
-    }
-    return users;
-  }
-       
-    
-  private boolean createWorkReportBoardMembers(Collection users, int workReportId, WorkReportGroup league, Map idExistingMemberMap) {
-    if (users == null)  {
-      return false;
-    }
-    Iterator userIterator = users.iterator();
-    while (userIterator.hasNext())  {
-      User user = (User) userIterator.next();
-      Integer primaryKeyUser = (Integer) user.getPrimaryKey();
-      // create a member per league (that is one user can have one or many members)
-      Collection memberLeagues = (Collection) idExistingMemberMap.get(primaryKeyUser);
-      // note: league can be null
-      if (memberLeagues != null && (memberLeagues.contains(league)))  {
-          // nothing to do
-        return true;
-      }
-      try {
-        // create WorkReportBoardMember
-        WorkReportBoardMember  member = createWorkReportBoardMember(workReportId, user, league);
-        // add the new one to the existing ones
-        if (memberLeagues == null)  {
-          memberLeagues = new ArrayList();
-          memberLeagues.add(league);
-          idExistingMemberMap.put(primaryKeyUser, memberLeagues);
-        }
-        else {
-          memberLeagues.add(league);
-        }
-      }
-      catch (CreateException createEx)  {
-        System.err.println("[WorkReportBusiness] Couldn't create WorkreportBoardMember. Message is: "+ 
-          createEx.getMessage());
-        createEx.printStackTrace(System.err);
-      }
-    }
-    return true;
-  }
-      
-  private boolean createWorkReportMemberDataWithoutAnyChecks(int workReportId, int groupId, GroupBusiness groupBusiness) throws RemoteException {
-    Map idExistingMember = new HashMap();
-    // find all existing work report members
-    Collection existingWorkReportMembers = getAllWorkReportMembersForWorkReportId(workReportId);
-    // create a collection with user ids
-    Iterator existingWorkReportMembersIterator = existingWorkReportMembers.iterator();
-    while (existingWorkReportMembersIterator.hasNext())   {
-      WorkReportMember workReportMember = (WorkReportMember) existingWorkReportMembersIterator.next();
-      Integer userId = new Integer(workReportMember.getUserId());
-      idExistingMember.put(userId, workReportMember);
-    }
-    // get the year of the work report
-    int year = getWorkReportById(workReportId).getYearOfReport().intValue();
-    // get the ADA work report group 
-    WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year); 
+	/**
+	* Adds the specified WorkReportGroup to the specified entity. 
+	* The entity is specified by the name and the year.
+	* If the secified WorkReportGroup is null nothing happens and true is returned.
+	* If the complete operation was successful true is returned else false.
+	* @param workReportGRoupID
+	* @param newGroup
+	* @param work
+	* @param year
+	* @param entity
+	* @return true if successful else false.
+	*/
+	public boolean addWorkReportGroupToEntity(int workReportID, String nameNewGroup, int year, IDOEntity entity) {
+		return changeWorkReportGroupOfEntity(workReportID, null, year, nameNewGroup, year, entity);
+	}
 
-    // get the first level under the club
-    Collection childGroups;
-    try {
-      childGroups = groupBusiness.getChildGroups(groupId);
-    }
-    catch (FinderException ex) {
-      System.err.println(
-        "[WorkReportBoardBusiness]: Can't get child groups. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      childGroups = new ArrayList(0);
-    }
-    // iterate over the first level
-    Iterator childGroupsFirstLevelIterator = childGroups.iterator();
-    while (childGroupsFirstLevelIterator.hasNext()) {
-      Group childGroup = (Group) childGroupsFirstLevelIterator.next();
-      WorkReportGroup workReportGroup = null;
-      String groupType = childGroup.getGroupType();
-      if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
-        workReportGroup = getLeagueFromClubDivision(childGroup, year);
-      }
-      Collection users;
-      // iterate over all children
-      users = groupBusiness.getUsersFromGroupRecursive(childGroup);
-      Iterator userIterator = users.iterator();
-      while (userIterator.hasNext()) {
-        User user = (User) userIterator.next();
-        Integer userPrimaryKey = (Integer) user.getPrimaryKey();
-        WorkReportMember existingMember = (WorkReportMember) idExistingMember.get(userPrimaryKey);
-        if (existingMember == null)  {
-          try {
-            existingMember = createWorkReportMember(workReportId, userPrimaryKey);
-            // add ADA league to member
-            addWorkReportGroupToEntity(workReportId, adaGroup, existingMember);
-            idExistingMember.put(userPrimaryKey, existingMember);
-          }
-          catch (CreateException ex)  {
-            System.err.println("[WorkReportBusiness]: Can't create member. Message is: " +
-              ex.getMessage());
-            ex.printStackTrace(System.err);
-          }
-        }
-        // add league to member 
-        if (workReportGroup != null)  {
-          addWorkReportGroupToEntity(workReportId, workReportGroup, existingMember);
-        }
-      }
-    }
-    return true;
-  }
-  
-  
-  
-  public boolean isWorkReportReadOnly(int workReportId){
-  	WorkReport report = getWorkReportById(workReportId);
-  	return report.isSent();
-  }
-  
-//=======
-//
-//	/**
-//	 * Gets all WorkReportDivisionBoard for the specified WorkReport id
-//	 * @param workReportId
-//	 * @return a collection of WorkReportDivisionBoard
-//	 */
-//	public Collection getAllWorkReportDivisionBoardForWorkReportId(int workReportId) {
-//		try {
-//			return getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(workReportId);
-//		}
-//		catch (FinderException e) {
-//			return ListUtil.getEmptyList();
-//		}
-//	}
-//
-//	/**
-//	 * Gets work report group.
-//	 * @param workReportGroupName
-//	 * @param year
-//	 * @return the desired work report group else null
-//	 */
-//	public WorkReportGroup findWorkReportGroupByNameAndYear(String workReportGroupName, int year) {
-//		WorkReportGroupHome home = getWorkReportGroupHome();
-//		WorkReportGroup workReportGroup = null;
-//		if (workReportGroupName != null) {
-//			try {
-//				workReportGroup = home.findWorkReportGroupByNameAndYear(workReportGroupName, year);
-//			}
-//			catch (FinderException ex) {
-//				System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: " + workReportGroupName + " , year: " + year + " ) Message is: " + ex.getMessage());
-//				ex.printStackTrace(System.err);
-//				return null;
-//			}
-//		}
-//		return workReportGroup;
-//	}
-//
-//	/**
-//	 * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
-//	 * and added to the specified new group.
-//	 * If the name of the current group is null the entity will only be added to the specified new group.
-//	 * If the name of the new group is null the entity will only be removed from the specified current group.
-//	 * But if one of the groups could not be found nothing happens and false is returned.
-//	 * If both specified names are null, nothing happens and true is returned.
-//	 * If the complete operation was successful true is returned else false.
-//	 * @param workReportID
-//	 * @param nameOldGroup
-//	 * @param yearOldGroup
-//	 * @param nameNewGroup
-//	 * @param yearNewGroup
-//	 * @param entity
-//	 * @return true if successful else false.
-//	 */
-//
-//	public boolean changeWorkReportGroupOfEntity(int workReportID, String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, IDOEntity entity) {
-//		WorkReportGroup oldGroup = null;
-//		WorkReportGroup newGroup = null;
-//		// try to find work groups
-//		WorkReportGroupHome home = getWorkReportGroupHome();
-//		if (nameOldGroup != null) {
-//			try {
-//				oldGroup = home.findWorkReportGroupByNameAndYear(nameOldGroup, yearOldGroup);
-//			}
-//			catch (FinderException ex) {
-//				System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: " + nameOldGroup + " , year: " + yearOldGroup + " ) Message is: " + ex.getMessage());
-//				ex.printStackTrace(System.err);
-//				return false;
-//			}
-//		}
-//		if (nameNewGroup != null) {
-//			try {
-//				newGroup = home.findWorkReportGroupByNameAndYear(nameNewGroup, yearNewGroup);
-//			}
-//			catch (FinderException ex) {
-//				System.err.println("[WorkReportBusiness] Could not find new WorkReportGroup (name: " + nameNewGroup + " , year: " + yearNewGroup + " ) Message is: " + ex.getMessage());
-//				ex.printStackTrace(System.err);
-//				return false;
-//			}
-//		}
-//		return changeWorkReportGroupOfEntity(workReportID, oldGroup, newGroup, entity);
-//	}
-//
-//	/**
-//	 * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
-//	 * and added to the specified new group.
-//	 * If the specified current group is null the entity will only be added to the specified new group.
-//	 * If the specified new group is null the entity will only be removed from the specified current group.
-//	 * If both specified groups are null nothing happens and true is returned.
-//	 * If the complete operation was successful true is returned else false.
-//	 * @param oldGroup
-//	 * @param newGroup
-//	 * @param entity
-//	 * @return true if successful else false.
-//	 */
-//	public boolean changeWorkReportGroupOfEntity(int workReportID, WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity entity) {
-//		TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
-//		try {
-//			manager.begin();
-//			// add work report group to work report 
-//			if (newGroup != null) {
-//				Collection coll = getLeaguesOfWorkReportById(workReportID);
-//				Integer pk = (Integer)newGroup.getPrimaryKey();
-//				Iterator iteratorLeagues = coll.iterator();
-//				boolean doesNotExist = true;
-//				while (iteratorLeagues.hasNext() && doesNotExist) {
-//					WorkReportGroup group = (WorkReportGroup)iteratorLeagues.next();
-//					Integer pkGroup = (Integer)group.getPrimaryKey();
-//					doesNotExist = !(pk.equals(pkGroup));
-//				}
-//				if (doesNotExist) {
-//					WorkReport workReport = getWorkReportById(workReportID);
-//					workReport.addLeague(newGroup);
-//				}
-//			}
-//			if (oldGroup != null) {
-//				oldGroup.removeEntity(entity);
-//				oldGroup.store();
-//			}
-//			if (newGroup != null) {
-//				newGroup.addEntity(entity);
-//				newGroup.store();
-//			}
-//			manager.commit();
-//			return true;
-//		}
-//		catch (Exception ex) {
-//			ex.printStackTrace(System.err);
-//			try {
-//				manager.rollback();
-//			}
-//			catch (javax.transaction.SystemException sysEx) {
-//				sysEx.printStackTrace(System.err);
-//				return false;
-//			}
-//			return false;
-//		}
-//	}
-//
-//	/**
-//	* Adds the specified WorkReportGroup to the specified entity. 
-//	* If the secified WorkReportGroup is null nothing happens and true is returned.
-//	* If the complete operation was successful true is returned else false.
-//	* @param workReportGroupID
-//	* @param newGroup
-//	* @param entity
-//	* @return true if successful else false.
-//	*/
-//	public boolean addWorkReportGroupToEntity(int workReportID, WorkReportGroup newGroup, IDOEntity entity) {
-//		return changeWorkReportGroupOfEntity(workReportID, null, newGroup, entity);
-//	}
-//
-//	/**
-//	* Removes the specified WorkReportGroup from the specified entity. 
-//	* If the secified WorkReportGroup is null nothing happens and true is returned.
-//	* If the complete operation was successful true is returned else false.
-//	* @param workReportGroupID
-//	* @param newGroup
-//	* @param entity
-//	* @return true if successful else false.
-//	*/
-//	public boolean removeWorkReportGroupFromEntity(int workReportID, WorkReportGroup oldGroup, IDOEntity entity) {
-//		return changeWorkReportGroupOfEntity(workReportID, oldGroup, null, entity);
-//	}
-//
-//	/**
-//	* Adds the specified WorkReportGroup to the specified entity. 
-//	* The entity is specified by the name and the year.
-//	* If the secified WorkReportGroup is null nothing happens and true is returned.
-//	* If the complete operation was successful true is returned else false.
-//	* @param workReportGRoupID
-//	* @param newGroup
-//	* @param work
-//	* @param year
-//	* @param entity
-//	* @return true if successful else false.
-//	*/
-//	public boolean addWorkReportGroupToEntity(int workReportID, String nameNewGroup, int year, IDOEntity entity) {
-//		return changeWorkReportGroupOfEntity(workReportID, null, year, nameNewGroup, year, entity);
-//	}
-//
-//	/**
-//	* Removes the specified WorkReportGroup from the specified entity. 
-//	* The entity is specified by the name and the year.
-//	* If the secified WorkReportGroup is null nothing happens and true is returned.
-//	* If the complete operation was successful true is returned else false.
-//	* @param newGroup
-//	* @param year
-//	* @param entity
-//	* @return true if successful else false.
-//	*/
-//	public boolean removeWorkReportGroupFromEntity(int workReportID, String nameOldGroup, int year, IDOEntity entity) {
-//		return changeWorkReportGroupOfEntity(workReportID, nameOldGroup, year, null, year, entity);
-//	}
-//
-//	public boolean createWorkReportData(int workReportId) {
-//		// get year and group id from work report
-//		WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
-//		WorkReport workReport = getWorkReportById(workReportId);
-//		// has the data already been created?
-//		if (workReport.isCreationFromDatabaseDone()) {
-//			return true;
-//		}
-//		// get the corresponding group 
-//		int groupId = workReport.getGroupId().intValue();
-//		// get group business
-//		GroupBusiness groupBusiness;
-//		try {
-//			groupBusiness = getGroupBusiness();
-//		}
-//		catch (RemoteException ex) {
-//			System.err.println("[WorkReportBusiness]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness.");
-//		}
-//
-//		// do we have to create the data at all?
-//		boolean isLeague;
-//		boolean isRegionalUnion;
-//		try {
-//			Group group = groupBusiness.getGroupByGroupID(groupId);
-//			String groupType = group.getGroupType();
-//			isLeague = IWMemberConstants.GROUP_TYPE_LEAGUE.equals(groupType);
-//			isRegionalUnion = IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(groupType);
-//			// !! assumption: leagues and regional unions use the member system !!
-//			if (!(isLeague || isRegionalUnion || isClubUsingTheMemberSystem(group))) {
-//				// the group does not use the member system. The data has to be imported by a file.
-//				// returns true because this is not an error.
-//				return true;
-//			}
-//		}
-//		catch (FinderException finderException) {
-//			System.err.println("[WorkReportBusiness]: Can't find group. Message is: " + finderException.getMessage());
-//			return false;
-//		}
-//		catch (RemoteException ex) {
-//			System.err.println("[WorkReportBusiness]: Can't retrieve WorkReportBusiness. Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve WorkReportBusiness.");
-//		}
-//		// update leagues
-//		int year = workReport.getYearOfReport().intValue();
-//		createOrUpdateLeagueWorkReportGroupsForYear(year);
-//		//
-//		// start transaction
-//		//
-//		TransactionManager tm = IdegaTransactionManager.getInstance();
-//		try {
-//			tm.begin();
-//			boolean boardDataCreated = createWorkReportBoardDataWithoutAnyChecks(workReportId, year, groupId, groupBusiness);
-//			boolean memberDataCreated = (isLeague || isRegionalUnion) ? true : createWorkReportMemberDataWithoutAnyChecks(workReportId, groupId, groupBusiness);
-//			if (boardDataCreated && memberDataCreated) {
-//				// mark the sucessfull creation
-//				workReport.setCreationFromDatabaseDone(true);
-//				workReport.store();
-//				tm.commit();
-//				return true;
-//			}
-//			else {
-//				tm.rollback();
-//				return false;
-//			}
-//		}
-//		catch (Exception ex) {
-//			System.err.println("[WorkReportBusiness]: Couldn't create work report data. Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			try {
-//				tm.rollback();
-//				return false;
-//			}
-//			catch (SystemException sysEx) {
-//				System.err.println("[WorkReportBusiness]: Couldn't rollback. Message is: " + sysEx.getMessage());
-//				sysEx.printStackTrace(System.err);
-//				return false;
-//			}
-//		}
-//	}
-//
-//	private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int groupId, GroupBusiness groupBusiness) {
-//		Map idExistingMemberMap = new HashMap();
-//		// find all existing work report members
-//		Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId);
-//		// create a map with user ids as keys and leagues as values
-//		Iterator existingWorkReportBoardMembersIterator = existingWorkReportBoardMembers.iterator();
-//		while (existingWorkReportBoardMembersIterator.hasNext()) {
-//			WorkReportBoardMember member = (WorkReportBoardMember)existingWorkReportBoardMembersIterator.next();
-//			Integer userId = new Integer(member.getUserId());
-//			Collection memberLeagues = (Collection)idExistingMemberMap.get(userId);
-//			if (memberLeagues == null) {
-//				memberLeagues = new ArrayList();
-//				idExistingMemberMap.put(userId, memberLeagues);
-//			}
-//			WorkReportGroup league = null;
-//			try {
-//				league = member.getLeague();
-//				memberLeagues.add(league);
-//			}
-//			catch (IDOException ex) {
-//				System.err.println("[WorkreportBusiness]: Can't retrieve league. Message is: " + ex.getMessage());
-//				ex.printStackTrace(System.err);
-//			}
-//		}
-//
-//		// get all children of the group group (not recursively)
-//		Collection childGroups;
-//		try {
-//			childGroups = groupBusiness.getChildGroups(groupId);
-//		}
-//		catch (RemoteException ex) {
-//			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			throw new RuntimeException("[WorkReportBoardBusiness]: Can't child groups.");
-//		}
-//		catch (FinderException ex) {
-//			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			childGroups = new ArrayList(0);
-//		}
-//		Iterator iterator = childGroups.iterator();
-//		while (iterator.hasNext()) {
-//			boolean isDivision = false;
-//			boolean isCommittee = false;
-//			Group group = (Group)iterator.next();
-//			String groupType = group.getGroupType();
-//			if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE.equals(groupType) || IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE.equals(groupType) || IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE.equals(groupType)) {
-//				// go further down, we are looking for the main committee
-//				try {
-//					Collection committeeChildren = group.getChildGroups();
-//					Iterator committeeChildrenIterator = committeeChildren.iterator();
-//					while (committeeChildrenIterator.hasNext()) {
-//						Group child = (Group)committeeChildrenIterator.next();
-//						String childGroupType = child.getGroupType();
-//						if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(childGroupType)) {
-//							// change the value of the external loop variable group
-//							group = child;
-//							isCommittee = true;
-//						}
-//					}
-//				}
-//				catch (EJBException ex) {
-//					System.err.println("[WorkReportBusiness]: Can't retrieve children of group. Message is: " + ex.getMessage());
-//					ex.printStackTrace(System.err);
-//				}
-//			}
-//			else if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
-//				isDivision = true;
-//			}
-//			//
-//			// create work report bord members 
-//			//
-//			if (isDivision || isCommittee) {
-//				Collection users = null;
-//				WorkReportGroup league = null;
-//				// division: 
-//				// fetch league 
-//				// and get users from that group (group type: division board)
-//				// that is referenced by the current group
-//				if (isDivision) {
-//					// get league
-//					league = getLeagueFromClubDivision(group, year);
-//					// get users
-//					users = getBoardUsersFromClubDivision(group, groupBusiness);
-//				}
-//				// committee:
-//				// there is no league.
-//				// get users directly.
-//				else {
-//					users = getBoardUsersFromCommittee(group, groupBusiness);
-//				}
-//				if (users != null) {
-//					// note: the following method adds the new created members to the idExistingMemberMap
-//					createWorkReportBoardMembers(users, workReportId, league, idExistingMemberMap);
-//				}
-//				//
-//				// create division boards
-//				//
-//				if (isDivision) {
-//					try {
-//						createWorkReportDivisionBoard(workReportId, group, league);
-//					}
-//					catch (CreateException ex) {
-//						System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: " + ex.getMessage());
-//						ex.printStackTrace(System.err);
-//					}
-//				}
-//			}
-//		}
-//		return true;
-//	}
-//
-//	private Collection getBoardUsersFromCommittee(Group committee, GroupBusiness groupBusiness) {
-//		try {
-//			return groupBusiness.getUsers(committee);
-//		}
-//		catch (FinderException ex) {
-//			System.err.println("[WorkreportBusiness] Users could not be found. Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			return null;
-//		}
-//		catch (RemoteException ex) {
-//			System.err.println("[WorkReportBusiness]: Can't retrieve users. Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve users.");
-//		}
-//	}
-//
-//	private WorkReportGroup getLeagueFromClubDivision(Group clubDivision, int year) {
-//		WorkReportGroup league = null;
-//		String leagueIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
-//		if (leagueIdAsString != null) {
-//			try {
-//				Integer leagueId = new Integer(leagueIdAsString);
-//				league = getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(leagueId.intValue(), year);
-//			}
-//			catch (NumberFormatException formatEx) {
-//				System.err.println("[workReportBusiness] league id ( " + leagueIdAsString + " ) is not a number. Message is: " + formatEx.getMessage());
-//				formatEx.printStackTrace(System.err);
-//			}
-//			catch (FinderException ex) {
-//				System.err.println("[WorkreportBusiness] league with id " + leagueIdAsString + " could not be found. Message is: " + ex.getMessage());
-//				ex.printStackTrace(System.err);
-//			}
-//
-//		}
-//		return league;
-//	}
-//
-//	private Collection getBoardUsersFromClubDivision(Group clubDivision, GroupBusiness groupBusiness) {
-//		Collection users = null;
-//		String divisionBoardIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
-//		if (divisionBoardIdAsString != null) {
-//			try {
-//				Integer divisionBoardId = new Integer(divisionBoardIdAsString);
-//				Group divisionBoard = getGroupHome().findByPrimaryKey(divisionBoardId);
-//				users = groupBusiness.getUsers(divisionBoard);
-//			}
-//			catch (NumberFormatException formatException) {
-//				System.err.println("[workReportBusiness] division board id ( " + divisionBoardIdAsString + " ) is not a number. Message is: " + formatException.getMessage());
-//				formatException.printStackTrace(System.err);
-//			}
-//			catch (FinderException ex) {
-//				System.err.println("[WorkreportBusiness] Group with id " + divisionBoardIdAsString + " could not be found. Message is: " + ex.getMessage());
-//				ex.printStackTrace(System.err);
-//			}
-//			catch (RemoteException ex) {
-//				System.err.println("[WorkReportBusiness]: Can't retrieve users. Message is: " + ex.getMessage());
-//				ex.printStackTrace(System.err);
-//				throw new RuntimeException("[WorkReportBusiness]: Can't retrieve users.");
-//			}
-//		}
-//		return users;
-//	}
-//
-//	private boolean createWorkReportBoardMembers(Collection users, int workReportId, WorkReportGroup league, Map idExistingMemberMap) {
-//		if (users == null) {
-//			return false;
-//		}
-//		Iterator userIterator = users.iterator();
-//		while (userIterator.hasNext()) {
-//			User user = (User)userIterator.next();
-//			Integer primaryKeyUser = (Integer)user.getPrimaryKey();
-//			// create a member per league (that is one user can have one or many members)
-//			Collection memberLeagues = (Collection)idExistingMemberMap.get(primaryKeyUser);
-//			// note: league can be null
-//			if (memberLeagues != null && (memberLeagues.contains(league))) {
-//				// nothing to do
-//				return true;
-//			}
-//			try {
-//				// create WorkReportBoardMember
-//				WorkReportBoardMember member = createWorkReportBoardMember(workReportId, user, league);
-//				// add the new one to the existing ones
-//				if (memberLeagues == null) {
-//					memberLeagues = new ArrayList();
-//					memberLeagues.add(league);
-//					idExistingMemberMap.put(primaryKeyUser, memberLeagues);
-//				}
-//				else {
-//					memberLeagues.add(league);
-//				}
-//			}
-//			catch (CreateException createEx) {
-//				System.err.println("[WorkReportBusiness] Couldn't create WorkreportBoardMember. Message is: " + createEx.getMessage());
-//				createEx.printStackTrace(System.err);
-//			}
-//		}
-//		return true;
-//	}
-//
-//	private boolean createWorkReportMemberDataWithoutAnyChecks(int workReportId, int groupId, GroupBusiness groupBusiness) {
-//		Collection idExistingMember = new ArrayList();
-//		// find all existing work report members
-//		Collection existingWorkReportMembers = getAllWorkReportMembersForWorkReportId(workReportId);
-//		// create a collection with user ids
-//		Iterator existingWorkReportMembersIterator = existingWorkReportMembers.iterator();
-//		while (existingWorkReportMembersIterator.hasNext()) {
-//			WorkReportMember workReportMember = (WorkReportMember)existingWorkReportMembersIterator.next();
-//			Integer userId = new Integer(workReportMember.getUserId());
-//			idExistingMember.add(userId);
-//		}
-//		Collection childGroups;
-//		try {
-//			String userGroupRepresentive = groupBusiness.getUserGroupRepresentativeHome().getGroupType();
-//			ArrayList groupTypes = new ArrayList();
-//			groupTypes.add(userGroupRepresentive);
-//			childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId, groupTypes, false);
-//		}
-//		catch (RemoteException ex) {
-//			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
-//			ex.printStackTrace(System.err);
-//			throw new RuntimeException("[WorkReportBoardBusiness]: Can't child groups.");
-//		}
-//		Iterator childGroupsIterator = childGroups.iterator();
-//		while (childGroupsIterator.hasNext()) {
-//			Group child = (Group)childGroupsIterator.next();
-//			Integer primaryKey = (Integer)child.getPrimaryKey();
-//			if (!idExistingMember.contains(primaryKey)) {
-//				try {
-//					createWorkReportMember(workReportId, primaryKey);
-//					idExistingMember.add(primaryKey);
-//				}
-//				catch (CreateException ex) {
-//					System.err.println("[WorkReportBusiness]: Can't create member. Message is: " + ex.getMessage());
-//					ex.printStackTrace(System.err);
-//				}
-//			}
-//		}
-//		return true;
-//	}
-//
-//	public boolean isWorkReportReadOnly(int workReportId) {
-//		WorkReport report = getWorkReportById(workReportId);
-//		return report.isSent();
-//	}
-//>>>>>>> 1.70
+	/**
+	* Removes the specified WorkReportGroup from the specified entity. 
+	* The entity is specified by the name and the year.
+	* If the secified WorkReportGroup is null nothing happens and true is returned.
+	* If the complete operation was successful true is returned else false.
+	* @param newGroup
+	* @param year
+	* @param entity
+	* @return true if successful else false.
+	*/
+	public boolean removeWorkReportGroupFromEntity(int workReportID, String nameOldGroup, int year, IDOEntity entity) {
+		return changeWorkReportGroupOfEntity(workReportID, nameOldGroup, year, null, year, entity);
+	}
+
+	public boolean createWorkReportData(int workReportId) {
+		// get year and group id from work report
+		WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
+		WorkReport workReport = getWorkReportById(workReportId);
+		// has the data already been created?
+		if (workReport.isCreationFromDatabaseDone()) {
+			return true;
+		}
+		// get the corresponding group 
+		int groupId = workReport.getGroupId().intValue();
+		// get group business
+		GroupBusiness groupBusiness;
+		try {
+			groupBusiness = getGroupBusiness();
+		}
+		catch (RemoteException ex) {
+			System.err.println("[WorkReportBusiness]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness.");
+		}
+
+		// do we have to create the data at all?
+		boolean isLeague;
+		boolean isRegionalUnion;
+		try {
+			Group group = groupBusiness.getGroupByGroupID(groupId);
+			String groupType = group.getGroupType();
+			isLeague = IWMemberConstants.GROUP_TYPE_LEAGUE.equals(groupType);
+			isRegionalUnion = IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(groupType);
+			// !! assumption: leagues and regional unions use the member system !!
+			if (!(isLeague || isRegionalUnion || isClubUsingTheMemberSystem(group))) {
+				// the group does not use the member system. The data has to be imported by a file.
+				// returns true because this is not an error.
+				return true;
+			}
+		}
+		catch (FinderException finderException) {
+			System.err.println("[WorkReportBusiness]: Can't find group. Message is: " + finderException.getMessage());
+			return false;
+		}
+		catch (RemoteException ex) {
+			System.err.println("[WorkReportBusiness]: Can't retrieve WorkReportBusiness. Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve WorkReportBusiness.");
+		}
+		// update leagues
+		int year = workReport.getYearOfReport().intValue();
+		createOrUpdateLeagueWorkReportGroupsForYear(year);
+		//
+		// start transaction
+		//
+		TransactionManager tm = IdegaTransactionManager.getInstance();
+		try {
+			tm.begin();
+
+			// add ADA league to the work report
+			WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year);
+			try {
+				workReport.addLeague(adaGroup);
+				workReport.store();
+			}
+			catch (IDORelationshipException ex) {
+				String message = "[WorkReportBusiness]: Can't define realtion ship.";
+				System.err.println(message + " Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+				// do nothing
+			}
+
+			boolean boardDataCreated = createWorkReportBoardDataWithoutAnyChecks(workReportId, year, groupId, groupBusiness);
+			boolean memberDataCreated = (isLeague || isRegionalUnion) ? true : createWorkReportMemberDataWithoutAnyChecks(workReportId, groupId, groupBusiness);
+			if (boardDataCreated && memberDataCreated) {
+				// mark the sucessfull creation
+				workReport.setCreationFromDatabaseDone(true);
+				workReport.store();
+				//tm.commit();
+				tm.rollback();
+				return true;
+			}
+			else {
+				tm.rollback();
+				return false;
+			}
+		}
+		catch (Exception ex) {
+			System.err.println("[WorkReportBusiness]: Couldn't create work report data. Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			try {
+				tm.rollback();
+				return false;
+			}
+			catch (SystemException sysEx) {
+				System.err.println("[WorkReportBusiness]: Couldn't rollback. Message is: " + sysEx.getMessage());
+				sysEx.printStackTrace(System.err);
+				return false;
+			}
+		}
+	}
+
+	private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int groupId, GroupBusiness groupBusiness) {
+		Map idExistingMemberMap = new HashMap();
+		// find all existing work report members
+		Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId);
+		// create a map with user ids as keys and leagues as values
+		Iterator existingWorkReportBoardMembersIterator = existingWorkReportBoardMembers.iterator();
+		while (existingWorkReportBoardMembersIterator.hasNext()) {
+			WorkReportBoardMember member = (WorkReportBoardMember)existingWorkReportBoardMembersIterator.next();
+			Integer userId = new Integer(member.getUserId());
+			Collection memberLeagues = (Collection)idExistingMemberMap.get(userId);
+			if (memberLeagues == null) {
+				memberLeagues = new ArrayList();
+				idExistingMemberMap.put(userId, memberLeagues);
+			}
+			WorkReportGroup league = null;
+			try {
+				league = member.getLeague();
+				memberLeagues.add(league);
+			}
+			catch (IDOException ex) {
+				System.err.println("[WorkreportBusiness]: Can't retrieve league. Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+			}
+		}
+
+		// get all children of the group group (not recursively)
+		Collection childGroups;
+		try {
+			childGroups = groupBusiness.getChildGroups(groupId);
+		}
+		catch (RemoteException ex) {
+			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			throw new RuntimeException("[WorkReportBoardBusiness]: Can't child groups.");
+		}
+		catch (FinderException ex) {
+			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			childGroups = new ArrayList(0);
+		}
+		Iterator iterator = childGroups.iterator();
+		while (iterator.hasNext()) {
+			boolean isDivision = false;
+			boolean isCommittee = false;
+			Group group = (Group)iterator.next();
+			String groupType = group.getGroupType();
+			if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE.equals(groupType) || IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE.equals(groupType) || IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE.equals(groupType)) {
+				// go further down, we are looking for the main committee
+				try {
+					Collection committeeChildren = group.getChildGroups();
+					Iterator committeeChildrenIterator = committeeChildren.iterator();
+					while (committeeChildrenIterator.hasNext()) {
+						Group child = (Group)committeeChildrenIterator.next();
+						String childGroupType = child.getGroupType();
+						if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(childGroupType)) {
+							// change the value of the external loop variable group
+							group = child;
+							isCommittee = true;
+						}
+					}
+				}
+				catch (EJBException ex) {
+					System.err.println("[WorkReportBusiness]: Can't retrieve children of group. Message is: " + ex.getMessage());
+					ex.printStackTrace(System.err);
+				}
+			}
+			else if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
+				isDivision = true;
+			}
+			//
+			// create work report bord members 
+			//
+			if (isDivision || isCommittee) {
+				Collection users = null;
+				WorkReportGroup league = null;
+				// division: 
+				// fetch league 
+				// and get users from that group (group type: division board)
+				// that is referenced by the current group
+				if (isDivision) {
+					// get league
+					league = getLeagueFromClubDivision(group, year);
+					// get users
+					users = getBoardUsersFromClubDivision(group, groupBusiness);
+				}
+				// committee:
+				// there is no league.
+				// get users directly.
+				else {
+					users = getBoardUsersFromCommittee(group, groupBusiness);
+				}
+				if (users != null) {
+					// note: the following method adds the new created members to the idExistingMemberMap
+					createWorkReportBoardMembers(users, workReportId, league, idExistingMemberMap);
+				}
+				//
+				// create division boards
+				//
+				if (isDivision) {
+					try {
+						createWorkReportDivisionBoard(workReportId, group, league);
+					}
+					catch (CreateException ex) {
+						System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: " + ex.getMessage());
+						ex.printStackTrace(System.err);
+					}
+				}
+			}
+		}
+		try {
+			updateWorkReportData(workReportId);
+		}
+		catch (Exception ex) {
+			String message = "[WorkReportBusiness]: Can't update work report data.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+		}
+		return true;
+	}
+
+	private void updateWorkReportData(int workReportId) throws FinderException, IDOException {
+		Collection members;
+		members = getAllWorkReportMembersForWorkReportId(workReportId);
+		// create map: member as key, leagues as value 
+		Map leagueCountMap = new HashMap();
+		int playersCount = 0;
+		int membersTotalSum = members.size();
+		Iterator membersIterator = members.iterator();
+		while (membersIterator.hasNext()) {
+			WorkReportMember member = (WorkReportMember)membersIterator.next();
+			try {
+				Iterator leagues = member.getLeaguesForMember().iterator();
+				List leaguesList = new ArrayList();
+				// if there is at least one league the member is a player
+				if (leagues.hasNext()) {
+					playersCount++;
+				}
+				while (leagues.hasNext()) {
+					WorkReportGroup league = (WorkReportGroup)leagues.next();
+					String leagueName = league.getName();
+					leaguesList.add(leagueName);
+					Integer count = (Integer)leagueCountMap.get(leagueName);
+					count = (count == null) ? null : new Integer((count.intValue()) + 1);
+					leagueCountMap.put(leagueName, count);
+				}
+			}
+			catch (IDOException ex) {
+				System.err.println("[WorkReportMemberEditor] Can't get leagues. Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+			}
+		}
+		WorkReport workReport = getWorkReportById(workReportId);
+
+		workReport.setNumberOfMembers(membersTotalSum);
+		workReport.setNumberOfPlayers(playersCount);
+		workReport.store();
+
+		WorkReportDivisionBoardHome home = getWorkReportDivisionBoardHome();
+		Collection boards = home.findAllWorkReportDivisionBoardByWorkReportId(workReportId);
+
+		Iterator iterator = boards.iterator();
+		while (iterator.hasNext()) {
+			WorkReportDivisionBoard board = (WorkReportDivisionBoard)iterator.next();
+			WorkReportGroup workReportGroup = board.getLeague();
+			String leagueName = workReportGroup.getName();
+			Integer number = (Integer)leagueCountMap.get(leagueName);
+			if (number == null) {
+				board.setNumberOfPlayers(0);
+			}
+			else {
+				board.setNumberOfPlayers(number.intValue());
+			}
+			board.store();
+		}
+	}
+
+	private Collection getBoardUsersFromCommittee(Group committee, GroupBusiness groupBusiness) {
+		try {
+			return groupBusiness.getUsers(committee);
+		}
+		catch (FinderException ex) {
+			System.err.println("[WorkreportBusiness] Users could not be found. Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			return null;
+		}
+		catch (RemoteException ex) {
+			System.err.println("[WorkReportBusiness]: Can't retrieve users. Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve users.");
+		}
+	}
+
+	private WorkReportGroup getLeagueFromClubDivision(Group clubDivision, int year) {
+		WorkReportGroup league = null;
+		String leagueIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
+		if (leagueIdAsString != null) {
+			try {
+				Integer leagueId = new Integer(leagueIdAsString);
+				league = getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(leagueId.intValue(), year);
+			}
+			catch (NumberFormatException formatEx) {
+				System.err.println("[workReportBusiness] league id ( " + leagueIdAsString + " ) is not a number. Message is: " + formatEx.getMessage());
+				formatEx.printStackTrace(System.err);
+			}
+			catch (FinderException ex) {
+				System.err.println("[WorkreportBusiness] league with id " + leagueIdAsString + " could not be found. Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+			}
+
+		}
+		return league;
+	}
+
+	private Collection getBoardUsersFromClubDivision(Group clubDivision, GroupBusiness groupBusiness) {
+		Collection users = null;
+		String divisionBoardIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
+		if (divisionBoardIdAsString != null) {
+			try {
+				Integer divisionBoardId = new Integer(divisionBoardIdAsString);
+				Group divisionBoard = getGroupHome().findByPrimaryKey(divisionBoardId);
+				users = groupBusiness.getUsers(divisionBoard);
+			}
+			catch (NumberFormatException formatException) {
+				System.err.println("[workReportBusiness] division board id ( " + divisionBoardIdAsString + " ) is not a number. Message is: " + formatException.getMessage());
+				formatException.printStackTrace(System.err);
+			}
+			catch (FinderException ex) {
+				System.err.println("[WorkreportBusiness] Group with id " + divisionBoardIdAsString + " could not be found. Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+			}
+			catch (RemoteException ex) {
+				System.err.println("[WorkReportBusiness]: Can't retrieve users. Message is: " + ex.getMessage());
+				ex.printStackTrace(System.err);
+				throw new RuntimeException("[WorkReportBusiness]: Can't retrieve users.");
+			}
+		}
+		return users;
+	}
+
+	private boolean createWorkReportBoardMembers(Collection users, int workReportId, WorkReportGroup league, Map idExistingMemberMap) {
+		if (users == null) {
+			return false;
+		}
+		Iterator userIterator = users.iterator();
+		while (userIterator.hasNext()) {
+			User user = (User)userIterator.next();
+			Integer primaryKeyUser = (Integer)user.getPrimaryKey();
+			// create a member per league (that is one user can have one or many members)
+			Collection memberLeagues = (Collection)idExistingMemberMap.get(primaryKeyUser);
+			// note: league can be null
+			if (memberLeagues != null && (memberLeagues.contains(league))) {
+				// nothing to do
+				return true;
+			}
+			try {
+				// create WorkReportBoardMember
+				WorkReportBoardMember member = createWorkReportBoardMember(workReportId, user, league);
+				// add the new one to the existing ones
+				if (memberLeagues == null) {
+					memberLeagues = new ArrayList();
+					memberLeagues.add(league);
+					idExistingMemberMap.put(primaryKeyUser, memberLeagues);
+				}
+				else {
+					memberLeagues.add(league);
+				}
+			}
+			catch (CreateException createEx) {
+				System.err.println("[WorkReportBusiness] Couldn't create WorkreportBoardMember. Message is: " + createEx.getMessage());
+				createEx.printStackTrace(System.err);
+			}
+		}
+		return true;
+	}
+
+	private boolean createWorkReportMemberDataWithoutAnyChecks(int workReportId, int groupId, GroupBusiness groupBusiness) throws RemoteException {
+		Map idExistingMember = new HashMap();
+		// find all existing work report members
+		Collection existingWorkReportMembers = getAllWorkReportMembersForWorkReportId(workReportId);
+		// create a collection with user ids
+		Iterator existingWorkReportMembersIterator = existingWorkReportMembers.iterator();
+		while (existingWorkReportMembersIterator.hasNext()) {
+			WorkReportMember workReportMember = (WorkReportMember)existingWorkReportMembersIterator.next();
+			Integer userId = new Integer(workReportMember.getUserId());
+			idExistingMember.put(userId, workReportMember);
+		}
+		// get the year of the work report
+		int year = getWorkReportById(workReportId).getYearOfReport().intValue();
+		// get the ADA work report group 
+		WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(WorkReportConstants.MAIN_BOARD_GROUP_NAME, year);
+
+		// get the first level under the club
+		Collection childGroups;
+		try {
+			childGroups = groupBusiness.getChildGroups(groupId);
+		}
+		catch (FinderException ex) {
+			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+			childGroups = new ArrayList(0);
+		}
+		// iterate over the first level
+		Iterator childGroupsFirstLevelIterator = childGroups.iterator();
+		while (childGroupsFirstLevelIterator.hasNext()) {
+			Group childGroup = (Group)childGroupsFirstLevelIterator.next();
+			WorkReportGroup workReportGroup = null;
+			String groupType = childGroup.getGroupType();
+			if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
+				workReportGroup = getLeagueFromClubDivision(childGroup, year);
+			}
+			Collection users;
+			// iterate over all children
+			users = groupBusiness.getUsersFromGroupRecursive(childGroup);
+			Iterator userIterator = users.iterator();
+			while (userIterator.hasNext()) {
+				User user = (User)userIterator.next();
+				Integer userPrimaryKey = (Integer)user.getPrimaryKey();
+				WorkReportMember existingMember = (WorkReportMember)idExistingMember.get(userPrimaryKey);
+				if (existingMember == null) {
+					try {
+						existingMember = createWorkReportMember(workReportId, userPrimaryKey);
+						// add ADA league to member
+						addWorkReportGroupToEntity(workReportId, adaGroup, existingMember);
+						idExistingMember.put(userPrimaryKey, existingMember);
+					}
+					catch (CreateException ex) {
+						System.err.println("[WorkReportBusiness]: Can't create member. Message is: " + ex.getMessage());
+						ex.printStackTrace(System.err);
+					}
+				}
+				// add league to member 
+				if (workReportGroup != null) {
+					addWorkReportGroupToEntity(workReportId, workReportGroup, existingMember);
+				}
+			}
+		}
+		return true;
+	}
+
+	public boolean isWorkReportReadOnly(int workReportId) {
+		WorkReport report = getWorkReportById(workReportId);
+		return report.isSent();
+	}
+
+	//=======
+	//
+	//	/**
+	//	 * Gets all WorkReportDivisionBoard for the specified WorkReport id
+	//	 * @param workReportId
+	//	 * @return a collection of WorkReportDivisionBoard
+	//	 */
+	//	public Collection getAllWorkReportDivisionBoardForWorkReportId(int workReportId) {
+	//		try {
+	//			return getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(workReportId);
+	//		}
+	//		catch (FinderException e) {
+	//			return ListUtil.getEmptyList();
+	//		}
+	//	}
+	//
+	//	/**
+	//	 * Gets work report group.
+	//	 * @param workReportGroupName
+	//	 * @param year
+	//	 * @return the desired work report group else null
+	//	 */
+	//	public WorkReportGroup findWorkReportGroupByNameAndYear(String workReportGroupName, int year) {
+	//		WorkReportGroupHome home = getWorkReportGroupHome();
+	//		WorkReportGroup workReportGroup = null;
+	//		if (workReportGroupName != null) {
+	//			try {
+	//				workReportGroup = home.findWorkReportGroupByNameAndYear(workReportGroupName, year);
+	//			}
+	//			catch (FinderException ex) {
+	//				System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: " + workReportGroupName + " , year: " + year + " ) Message is: " + ex.getMessage());
+	//				ex.printStackTrace(System.err);
+	//				return null;
+	//			}
+	//		}
+	//		return workReportGroup;
+	//	}
+	//
+	//	/**
+	//	 * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
+	//	 * and added to the specified new group.
+	//	 * If the name of the current group is null the entity will only be added to the specified new group.
+	//	 * If the name of the new group is null the entity will only be removed from the specified current group.
+	//	 * But if one of the groups could not be found nothing happens and false is returned.
+	//	 * If both specified names are null, nothing happens and true is returned.
+	//	 * If the complete operation was successful true is returned else false.
+	//	 * @param workReportID
+	//	 * @param nameOldGroup
+	//	 * @param yearOldGroup
+	//	 * @param nameNewGroup
+	//	 * @param yearNewGroup
+	//	 * @param entity
+	//	 * @return true if successful else false.
+	//	 */
+	//
+	//	public boolean changeWorkReportGroupOfEntity(int workReportID, String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, IDOEntity entity) {
+	//		WorkReportGroup oldGroup = null;
+	//		WorkReportGroup newGroup = null;
+	//		// try to find work groups
+	//		WorkReportGroupHome home = getWorkReportGroupHome();
+	//		if (nameOldGroup != null) {
+	//			try {
+	//				oldGroup = home.findWorkReportGroupByNameAndYear(nameOldGroup, yearOldGroup);
+	//			}
+	//			catch (FinderException ex) {
+	//				System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: " + nameOldGroup + " , year: " + yearOldGroup + " ) Message is: " + ex.getMessage());
+	//				ex.printStackTrace(System.err);
+	//				return false;
+	//			}
+	//		}
+	//		if (nameNewGroup != null) {
+	//			try {
+	//				newGroup = home.findWorkReportGroupByNameAndYear(nameNewGroup, yearNewGroup);
+	//			}
+	//			catch (FinderException ex) {
+	//				System.err.println("[WorkReportBusiness] Could not find new WorkReportGroup (name: " + nameNewGroup + " , year: " + yearNewGroup + " ) Message is: " + ex.getMessage());
+	//				ex.printStackTrace(System.err);
+	//				return false;
+	//			}
+	//		}
+	//		return changeWorkReportGroupOfEntity(workReportID, oldGroup, newGroup, entity);
+	//	}
+	//
+	//	/**
+	//	 * Changes the WorkReportGroup of the specified entity, that is the entity is removed from the specified current group 
+	//	 * and added to the specified new group.
+	//	 * If the specified current group is null the entity will only be added to the specified new group.
+	//	 * If the specified new group is null the entity will only be removed from the specified current group.
+	//	 * If both specified groups are null nothing happens and true is returned.
+	//	 * If the complete operation was successful true is returned else false.
+	//	 * @param oldGroup
+	//	 * @param newGroup
+	//	 * @param entity
+	//	 * @return true if successful else false.
+	//	 */
+	//	public boolean changeWorkReportGroupOfEntity(int workReportID, WorkReportGroup oldGroup, WorkReportGroup newGroup, IDOEntity entity) {
+	//		TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
+	//		try {
+	//			manager.begin();
+	//			// add work report group to work report 
+	//			if (newGroup != null) {
+	//				Collection coll = getLeaguesOfWorkReportById(workReportID);
+	//				Integer pk = (Integer)newGroup.getPrimaryKey();
+	//				Iterator iteratorLeagues = coll.iterator();
+	//				boolean doesNotExist = true;
+	//				while (iteratorLeagues.hasNext() && doesNotExist) {
+	//					WorkReportGroup group = (WorkReportGroup)iteratorLeagues.next();
+	//					Integer pkGroup = (Integer)group.getPrimaryKey();
+	//					doesNotExist = !(pk.equals(pkGroup));
+	//				}
+	//				if (doesNotExist) {
+	//					WorkReport workReport = getWorkReportById(workReportID);
+	//					workReport.addLeague(newGroup);
+	//				}
+	//			}
+	//			if (oldGroup != null) {
+	//				oldGroup.removeEntity(entity);
+	//				oldGroup.store();
+	//			}
+	//			if (newGroup != null) {
+	//				newGroup.addEntity(entity);
+	//				newGroup.store();
+	//			}
+	//			manager.commit();
+	//			return true;
+	//		}
+	//		catch (Exception ex) {
+	//			ex.printStackTrace(System.err);
+	//			try {
+	//				manager.rollback();
+	//			}
+	//			catch (javax.transaction.SystemException sysEx) {
+	//				sysEx.printStackTrace(System.err);
+	//				return false;
+	//			}
+	//			return false;
+	//		}
+	//	}
+	//
+	//	/**
+	//	* Adds the specified WorkReportGroup to the specified entity. 
+	//	* If the secified WorkReportGroup is null nothing happens and true is returned.
+	//	* If the complete operation was successful true is returned else false.
+	//	* @param workReportGroupID
+	//	* @param newGroup
+	//	* @param entity
+	//	* @return true if successful else false.
+	//	*/
+	//	public boolean addWorkReportGroupToEntity(int workReportID, WorkReportGroup newGroup, IDOEntity entity) {
+	//		return changeWorkReportGroupOfEntity(workReportID, null, newGroup, entity);
+	//	}
+	//
+	//	/**
+	//	* Removes the specified WorkReportGroup from the specified entity. 
+	//	* If the secified WorkReportGroup is null nothing happens and true is returned.
+	//	* If the complete operation was successful true is returned else false.
+	//	* @param workReportGroupID
+	//	* @param newGroup
+	//	* @param entity
+	//	* @return true if successful else false.
+	//	*/
+	//	public boolean removeWorkReportGroupFromEntity(int workReportID, WorkReportGroup oldGroup, IDOEntity entity) {
+	//		return changeWorkReportGroupOfEntity(workReportID, oldGroup, null, entity);
+	//	}
+	//
+	//	/**
+	//	* Adds the specified WorkReportGroup to the specified entity. 
+	//	* The entity is specified by the name and the year.
+	//	* If the secified WorkReportGroup is null nothing happens and true is returned.
+	//	* If the complete operation was successful true is returned else false.
+	//	* @param workReportGRoupID
+	//	* @param newGroup
+	//	* @param work
+	//	* @param year
+	//	* @param entity
+	//	* @return true if successful else false.
+	//	*/
+	//	public boolean addWorkReportGroupToEntity(int workReportID, String nameNewGroup, int year, IDOEntity entity) {
+	//		return changeWorkReportGroupOfEntity(workReportID, null, year, nameNewGroup, year, entity);
+	//	}
+	//
+	//	/**
+	//	* Removes the specified WorkReportGroup from the specified entity. 
+	//	* The entity is specified by the name and the year.
+	//	* If the secified WorkReportGroup is null nothing happens and true is returned.
+	//	* If the complete operation was successful true is returned else false.
+	//	* @param newGroup
+	//	* @param year
+	//	* @param entity
+	//	* @return true if successful else false.
+	//	*/
+	//	public boolean removeWorkReportGroupFromEntity(int workReportID, String nameOldGroup, int year, IDOEntity entity) {
+	//		return changeWorkReportGroupOfEntity(workReportID, nameOldGroup, year, null, year, entity);
+	//	}
+	//
+	//	public boolean createWorkReportData(int workReportId) {
+	//		// get year and group id from work report
+	//		WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
+	//		WorkReport workReport = getWorkReportById(workReportId);
+	//		// has the data already been created?
+	//		if (workReport.isCreationFromDatabaseDone()) {
+	//			return true;
+	//		}
+	//		// get the corresponding group 
+	//		int groupId = workReport.getGroupId().intValue();
+	//		// get group business
+	//		GroupBusiness groupBusiness;
+	//		try {
+	//			groupBusiness = getGroupBusiness();
+	//		}
+	//		catch (RemoteException ex) {
+	//			System.err.println("[WorkReportBusiness]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
+	//			ex.printStackTrace(System.err);
+	//			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness.");
+	//		}
+	//
+	//		// do we have to create the data at all?
+	//		boolean isLeague;
+	//		boolean isRegionalUnion;
+	//		try {
+	//			Group group = groupBusiness.getGroupByGroupID(groupId);
+	//			String groupType = group.getGroupType();
+	//			isLeague = IWMemberConstants.GROUP_TYPE_LEAGUE.equals(groupType);
+	//			isRegionalUnion = IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(groupType);
+	//			// !! assumption: leagues and regional unions use the member system !!
+	//			if (!(isLeague || isRegionalUnion || isClubUsingTheMemberSystem(group))) {
+	//				// the group does not use the member system. The data has to be imported by a file.
+	//				// returns true because this is not an error.
+	//				return true;
+	//			}
+	//		}
+	//		catch (FinderException finderException) {
+	//			System.err.println("[WorkReportBusiness]: Can't find group. Message is: " + finderException.getMessage());
+	//			return false;
+	//		}
+	//		catch (RemoteException ex) {
+	//			System.err.println("[WorkReportBusiness]: Can't retrieve WorkReportBusiness. Message is: " + ex.getMessage());
+	//			ex.printStackTrace(System.err);
+	//			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve WorkReportBusiness.");
+	//		}
+	//		// update leagues
+	//		int year = workReport.getYearOfReport().intValue();
+	//		createOrUpdateLeagueWorkReportGroupsForYear(year);
+	//		//
+	//		// start transaction
+	//		//
+	//		TransactionManager tm = IdegaTransactionManager.getInstance();
+	//		try {
+	//			tm.begin();
+	//			boolean boardDataCreated = createWorkReportBoardDataWithoutAnyChecks(workReportId, year, groupId, groupBusiness);
+	//			boolean memberDataCreated = (isLeague || isRegionalUnion) ? true : createWorkReportMemberDataWithoutAnyChecks(workReportId, groupId, groupBusiness);
+	//			if (boardDataCreated && memberDataCreated) {
+	//				// mark the sucessfull creation
+	//				workReport.setCreationFromDatabaseDone(true);
+	//				workReport.store();
+	//				tm.commit();
+	//				return true;
+	//			}
+	//			else {
+	//				tm.rollback();
+	//				return false;
+	//			}
+	//		}
+	//		catch (Exception ex) {
+	//			System.err.println("[WorkReportBusiness]: Couldn't create work report data. Message is: " + ex.getMessage());
+	//			ex.printStackTrace(System.err);
+	//			try {
+	//				tm.rollback();
+	//				return false;
+	//			}
+	//			catch (SystemException sysEx) {
+	//				System.err.println("[WorkReportBusiness]: Couldn't rollback. Message is: " + sysEx.getMessage());
+	//				sysEx.printStackTrace(System.err);
+	//				return false;
+	//			}
+	//		}
+	//	}
+	//
+	//	private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int groupId, GroupBusiness groupBusiness) {
+	//		Map idExistingMemberMap = new HashMap();
+	//		// find all existing work report members
+	//		Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId);
+	//		// create a map with user ids as keys and leagues as values
+	//		Iterator existingWorkReportBoardMembersIterator = existingWorkReportBoardMembers.iterator();
+	//		while (existingWorkReportBoardMembersIterator.hasNext()) {
+	//			WorkReportBoardMember member = (WorkReportBoardMember)existingWorkReportBoardMembersIterator.next();
+	//			Integer userId = new Integer(member.getUserId());
+	//			Collection memberLeagues = (Collection)idExistingMemberMap.get(userId);
+	//			if (memberLeagues == null) {
+	//				memberLeagues = new ArrayList();
+	//				idExistingMemberMap.put(userId, memberLeagues);
+	//			}
+	//			WorkReportGroup league = null;
+	//			try {
+	//				league = member.getLeague();
+	//				memberLeagues.add(league);
+	//			}
+	//			catch (IDOException ex) {
+	//				System.err.println("[WorkreportBusiness]: Can't retrieve league. Message is: " + ex.getMessage());
+	//				ex.printStackTrace(System.err);
+	//			}
+	//		}
+	//
+	//		// get all children of the group group (not recursively)
+	//		Collection childGroups;
+	//		try {
+	//			childGroups = groupBusiness.getChildGroups(groupId);
+	//		}
+	//		catch (RemoteException ex) {
+	//			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
+	//			ex.printStackTrace(System.err);
+	//			throw new RuntimeException("[WorkReportBoardBusiness]: Can't child groups.");
+	//		}
+	//		catch (FinderException ex) {
+	//			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
+	//			ex.printStackTrace(System.err);
+	//			childGroups = new ArrayList(0);
+	//		}
+	//		Iterator iterator = childGroups.iterator();
+	//		while (iterator.hasNext()) {
+	//			boolean isDivision = false;
+	//			boolean isCommittee = false;
+	//			Group group = (Group)iterator.next();
+	//			String groupType = group.getGroupType();
+	//			if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE.equals(groupType) || IWMemberConstants.GROUP_TYPE_LEAGUE_COMMITTEE.equals(groupType) || IWMemberConstants.GROUP_TYPE_REGIONAL_UNION_COMMITTEE.equals(groupType)) {
+	//				// go further down, we are looking for the main committee
+	//				try {
+	//					Collection committeeChildren = group.getChildGroups();
+	//					Iterator committeeChildrenIterator = committeeChildren.iterator();
+	//					while (committeeChildrenIterator.hasNext()) {
+	//						Group child = (Group)committeeChildrenIterator.next();
+	//						String childGroupType = child.getGroupType();
+	//						if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(childGroupType)) {
+	//							// change the value of the external loop variable group
+	//							group = child;
+	//							isCommittee = true;
+	//						}
+	//					}
+	//				}
+	//				catch (EJBException ex) {
+	//					System.err.println("[WorkReportBusiness]: Can't retrieve children of group. Message is: " + ex.getMessage());
+	//					ex.printStackTrace(System.err);
+	//				}
+	//			}
+	//			else if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
+	//				isDivision = true;
+	//			}
+	//			//
+	//			// create work report bord members 
+	//			//
+	//			if (isDivision || isCommittee) {
+	//				Collection users = null;
+	//				WorkReportGroup league = null;
+	//				// division: 
+	//				// fetch league 
+	//				// and get users from that group (group type: division board)
+	//				// that is referenced by the current group
+	//				if (isDivision) {
+	//					// get league
+	//					league = getLeagueFromClubDivision(group, year);
+	//					// get users
+	//					users = getBoardUsersFromClubDivision(group, groupBusiness);
+	//				}
+	//				// committee:
+	//				// there is no league.
+	//				// get users directly.
+	//				else {
+	//					users = getBoardUsersFromCommittee(group, groupBusiness);
+	//				}
+	//				if (users != null) {
+	//					// note: the following method adds the new created members to the idExistingMemberMap
+	//					createWorkReportBoardMembers(users, workReportId, league, idExistingMemberMap);
+	//				}
+	//				//
+	//				// create division boards
+	//				//
+	//				if (isDivision) {
+	//					try {
+	//						createWorkReportDivisionBoard(workReportId, group, league);
+	//					}
+	//					catch (CreateException ex) {
+	//						System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: " + ex.getMessage());
+	//						ex.printStackTrace(System.err);
+	//					}
+	//				}
+	//			}
+	//		}
+	//		return true;
+	//	}
+	//
+	//	private Collection getBoardUsersFromCommittee(Group committee, GroupBusiness groupBusiness) {
+	//		try {
+	//			return groupBusiness.getUsers(committee);
+	//		}
+	//		catch (FinderException ex) {
+	//			System.err.println("[WorkreportBusiness] Users could not be found. Message is: " + ex.getMessage());
+	//			ex.printStackTrace(System.err);
+	//			return null;
+	//		}
+	//		catch (RemoteException ex) {
+	//			System.err.println("[WorkReportBusiness]: Can't retrieve users. Message is: " + ex.getMessage());
+	//			ex.printStackTrace(System.err);
+	//			throw new RuntimeException("[WorkReportBusiness]: Can't retrieve users.");
+	//		}
+	//	}
+	//
+	//	private WorkReportGroup getLeagueFromClubDivision(Group clubDivision, int year) {
+	//		WorkReportGroup league = null;
+	//		String leagueIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
+	//		if (leagueIdAsString != null) {
+	//			try {
+	//				Integer leagueId = new Integer(leagueIdAsString);
+	//				league = getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(leagueId.intValue(), year);
+	//			}
+	//			catch (NumberFormatException formatEx) {
+	//				System.err.println("[workReportBusiness] league id ( " + leagueIdAsString + " ) is not a number. Message is: " + formatEx.getMessage());
+	//				formatEx.printStackTrace(System.err);
+	//			}
+	//			catch (FinderException ex) {
+	//				System.err.println("[WorkreportBusiness] league with id " + leagueIdAsString + " could not be found. Message is: " + ex.getMessage());
+	//				ex.printStackTrace(System.err);
+	//			}
+	//
+	//		}
+	//		return league;
+	//	}
+	//
+	//	private Collection getBoardUsersFromClubDivision(Group clubDivision, GroupBusiness groupBusiness) {
+	//		Collection users = null;
+	//		String divisionBoardIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD);
+	//		if (divisionBoardIdAsString != null) {
+	//			try {
+	//				Integer divisionBoardId = new Integer(divisionBoardIdAsString);
+	//				Group divisionBoard = getGroupHome().findByPrimaryKey(divisionBoardId);
+	//				users = groupBusiness.getUsers(divisionBoard);
+	//			}
+	//			catch (NumberFormatException formatException) {
+	//				System.err.println("[workReportBusiness] division board id ( " + divisionBoardIdAsString + " ) is not a number. Message is: " + formatException.getMessage());
+	//				formatException.printStackTrace(System.err);
+	//			}
+	//			catch (FinderException ex) {
+	//				System.err.println("[WorkreportBusiness] Group with id " + divisionBoardIdAsString + " could not be found. Message is: " + ex.getMessage());
+	//				ex.printStackTrace(System.err);
+	//			}
+	//			catch (RemoteException ex) {
+	//				System.err.println("[WorkReportBusiness]: Can't retrieve users. Message is: " + ex.getMessage());
+	//				ex.printStackTrace(System.err);
+	//				throw new RuntimeException("[WorkReportBusiness]: Can't retrieve users.");
+	//			}
+	//		}
+	//		return users;
+	//	}
+	//
+	//	private boolean createWorkReportBoardMembers(Collection users, int workReportId, WorkReportGroup league, Map idExistingMemberMap) {
+	//		if (users == null) {
+	//			return false;
+	//		}
+	//		Iterator userIterator = users.iterator();
+	//		while (userIterator.hasNext()) {
+	//			User user = (User)userIterator.next();
+	//			Integer primaryKeyUser = (Integer)user.getPrimaryKey();
+	//			// create a member per league (that is one user can have one or many members)
+	//			Collection memberLeagues = (Collection)idExistingMemberMap.get(primaryKeyUser);
+	//			// note: league can be null
+	//			if (memberLeagues != null && (memberLeagues.contains(league))) {
+	//				// nothing to do
+	//				return true;
+	//			}
+	//			try {
+	//				// create WorkReportBoardMember
+	//				WorkReportBoardMember member = createWorkReportBoardMember(workReportId, user, league);
+	//				// add the new one to the existing ones
+	//				if (memberLeagues == null) {
+	//					memberLeagues = new ArrayList();
+	//					memberLeagues.add(league);
+	//					idExistingMemberMap.put(primaryKeyUser, memberLeagues);
+	//				}
+	//				else {
+	//					memberLeagues.add(league);
+	//				}
+	//			}
+	//			catch (CreateException createEx) {
+	//				System.err.println("[WorkReportBusiness] Couldn't create WorkreportBoardMember. Message is: " + createEx.getMessage());
+	//				createEx.printStackTrace(System.err);
+	//			}
+	//		}
+	//		return true;
+	//	}
+	//
+	//	private boolean createWorkReportMemberDataWithoutAnyChecks(int workReportId, int groupId, GroupBusiness groupBusiness) {
+	//		Collection idExistingMember = new ArrayList();
+	//		// find all existing work report members
+	//		Collection existingWorkReportMembers = getAllWorkReportMembersForWorkReportId(workReportId);
+	//		// create a collection with user ids
+	//		Iterator existingWorkReportMembersIterator = existingWorkReportMembers.iterator();
+	//		while (existingWorkReportMembersIterator.hasNext()) {
+	//			WorkReportMember workReportMember = (WorkReportMember)existingWorkReportMembersIterator.next();
+	//			Integer userId = new Integer(workReportMember.getUserId());
+	//			idExistingMember.add(userId);
+	//		}
+	//		Collection childGroups;
+	//		try {
+	//			String userGroupRepresentive = groupBusiness.getUserGroupRepresentativeHome().getGroupType();
+	//			ArrayList groupTypes = new ArrayList();
+	//			groupTypes.add(userGroupRepresentive);
+	//			childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(groupId, groupTypes, false);
+	//		}
+	//		catch (RemoteException ex) {
+	//			System.err.println("[WorkReportBoardBusiness]: Can't get child groups. Message is: " + ex.getMessage());
+	//			ex.printStackTrace(System.err);
+	//			throw new RuntimeException("[WorkReportBoardBusiness]: Can't child groups.");
+	//		}
+	//		Iterator childGroupsIterator = childGroups.iterator();
+	//		while (childGroupsIterator.hasNext()) {
+	//			Group child = (Group)childGroupsIterator.next();
+	//			Integer primaryKey = (Integer)child.getPrimaryKey();
+	//			if (!idExistingMember.contains(primaryKey)) {
+	//				try {
+	//					createWorkReportMember(workReportId, primaryKey);
+	//					idExistingMember.add(primaryKey);
+	//				}
+	//				catch (CreateException ex) {
+	//					System.err.println("[WorkReportBusiness]: Can't create member. Message is: " + ex.getMessage());
+	//					ex.printStackTrace(System.err);
+	//				}
+	//			}
+	//		}
+	//		return true;
+	//	}
+	//
+	//	public boolean isWorkReportReadOnly(int workReportId) {
+	//		WorkReport report = getWorkReportById(workReportId);
+	//		return report.isSent();
+	//	}
+	//>>>>>>> 1.70
 
 	public boolean sendWorkReport(int workReportId, String reportText, IWResourceBundle iwrb) throws RemoteException {
 

@@ -43,7 +43,7 @@ public class WorkReportAccountImporter extends WorkReportImporter {
 				e.printStackTrace();
 			}
 			catch (WorkReportImportException e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 				add(iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
 			}
 		}
