@@ -256,8 +256,11 @@ private String headerColor = "#336660";
 
                         GolfGroup golfGroup = new GolfGroup(member_id);
                         boolean canWrite = true;
-                        if ( !isAdmin && member_id != "1" ) {
+                        if ( !isAdmin ) {
                           canWrite = golfGroup.getCanWrite();
+                        }
+                        if ( member_id.equalsIgnoreCase("1") ) {
+                          canWrite = true;
                         }
 
 			Window scorecardWindow = new Window("Skoða skorkort",650,475,"/handicap/handicap_skor.jsp?");
