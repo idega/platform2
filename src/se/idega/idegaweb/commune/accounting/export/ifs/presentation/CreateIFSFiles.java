@@ -131,7 +131,7 @@ public class CreateIFSFiles extends AccountingBlock {
 			paymentDate = -1;		
 		}
 
-		DateInput date = new DateInput();
+		DateInput date = new DateInput(PARAM_PAYMENT_DATE);
 		date.setToCurrentDate();
 		if (paymentDate != -1)
 			date.setDay(paymentDate);
