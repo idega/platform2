@@ -10,9 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
 import com.idega.block.dataquery.data.QueryConstants;
@@ -29,11 +28,13 @@ import com.idega.block.entity.presentation.converter.CheckBoxConverter;
 import com.idega.block.entity.presentation.converter.editable.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converter.editable.OptionProvider;
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.AccessController;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -94,7 +95,11 @@ public class ReportQueryOverview extends Block {
   
   public static final String SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC = "show_single_query_check_if_dynamic";
   
-	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
+  public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
+	
+  public static final String NON_GROUPNAME_SUBSTITUTE = "-";
+
+  public static final String LAYOUT_FOLDER_NAME = "layout";
 	
 	//private static final String REPORT_HEADLINE_KEY = "ReportTitle";
 	
@@ -155,11 +160,17 @@ public class ReportQueryOverview extends Block {
 	private String parseAction(IWContext iwc)	throws FinderException, RemoteException{
 		String action = "";
 		// get the file id of the query folder
+		String designFolderKey;
 		if (iwc.isParameterSet(SET_ID_OF_DESIGN_FOLDER_KEY))	{
-			String designFolderKey = iwc.getParameter(SET_ID_OF_DESIGN_FOLDER_KEY);
-			parameterMap.put(SET_ID_OF_DESIGN_FOLDER_KEY, designFolderKey);
+			designFolderKey = iwc.getParameter(SET_ID_OF_DESIGN_FOLDER_KEY);
 			designFolder = getFileForId(designFolderKey);
 		}
+		else {
+			designFolder = lookUpLayoutFolder();
+			designFolderKey = ((Integer) designFolder.getPrimaryKey()).toString();
+		}
+		
+		parameterMap.put(SET_ID_OF_DESIGN_FOLDER_KEY, designFolderKey);
 		if (iwc.isParameterSet(DELETE_ITEMS_KEY))	{
 			List idsToDelete = CheckBoxConverter.getResultByParsing(iwc, DELETE_KEY);
 			deleteQueries(idsToDelete, iwc);
@@ -243,9 +254,38 @@ public class ReportQueryOverview extends Block {
 	}
 	
   private static Collection getQueries(IWContext iwc , int showOnlyOneQueryWithId) throws RemoteException, FinderException {
-		Group topGroup = ReportQueryOverview.getTopGroupForUser(iwc);
+		 //To keep them ordered alphabetically
+  	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+  	// start: special case: admin
+  	if (iwc.isSuperAdmin()) {
+  		User user = iwc.getCurrentUser();
+  		// use the admin user as group
+  		ReportQueryOverview.getOwnQueries(user, queryRepresentations, showOnlyOneQueryWithId);
+  		// bye bye
+  		return queryRepresentations.values();
+  	}
+  	// end: special case: admin
+  	Group topGroup = ReportQueryOverview.getTopGroupForUser(iwc);
 		GroupBusiness groupBusiness = ReportQueryOverview.getGroupBusiness(iwc);
   	Collection parentGroups = new ArrayList();
+  	// special case admin
+  	// add the administrator group to the parent groups
+  	try {
+  		AccessController accessController = iwc.getAccessController();
+  		UserBusiness userBusiness = getUserBusiness(iwc);
+  		com.idega.core.user.data.User superAdmin = accessController.getAdministratorUser();
+  		// change to other user class because the "core" user doesn't implement Group
+  		Group adminGroup = userBusiness.getUser((Integer)superAdmin.getPrimaryKey());
+  		parentGroups.add(adminGroup);
+  	}
+  	catch (Exception ex) {
+  		//TODO thi: implement logger
+			String message =
+				"[ReportOverview]: Can't retrieve AdministratorUser.";
+			System.err.println(message + " Message is: " + ex.getMessage());
+			ex.printStackTrace(System.err);
+  		// return empty collection
+  	}
   	try {
   		// bad implementation in GroupBusiness
   		// null is returned instead of an empty collection
@@ -259,8 +299,6 @@ public class ReportQueryOverview extends Block {
   	catch (Exception ex) {
   		parentGroups = new ArrayList();
   	}
-  	//To keep them ordered alphabetically
-  	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
 		// add own queries
 		ReportQueryOverview.getOwnQueries(topGroup, queryRepresentations, showOnlyOneQueryWithId);
 		// add public queries
@@ -322,6 +360,9 @@ public class ReportQueryOverview extends Block {
 			// if the children list is empty null is returned. 
 			//TODO: thi: change the implementation
   		String groupName = group.getName();
+  		if (groupName == null || groupName.length() == 0) {
+  			groupName = NON_GROUPNAME_SUBSTITUTE;
+  		}
   		UserQueryHome userQueryHome = getUserQueryHome();
   		String permission = (isPrivate) ? QueryConstants.PERMISSION_PRIVATE_QUERY : QueryConstants.PERMISSION_PUBLIC_QUERY;
   		Collection userQueries = userQueryHome.findByGroupAndPermission(group, permission);
@@ -498,12 +539,14 @@ public class ReportQueryOverview extends Block {
 					optionMap.put("-1", dynamicLayout);
 					if(designFolder!=null){
 		  				Iterator iterator = designFolder.getChildren();
-		  				while (iterator.hasNext())	{
-		  					ICTreeNode node = (ICTreeNode) iterator.next();
-		  					String name = node.getNodeName();
-		  					int id = node.getNodeID();
-		  					String idAsString = Integer.toString(id);
-		  					optionMap.put(idAsString, name);
+		  				if (iterator != null) {
+		  					while (iterator.hasNext())	{
+		  						ICTreeNode node = (ICTreeNode) iterator.next();
+		  						String name = node.getNodeName();
+		  						int id = node.getNodeID();
+		  						String idAsString = Integer.toString(id);
+		  						optionMap.put(idAsString, name);
+		  					}
 		  				}
 					}
 				
@@ -746,6 +789,34 @@ public class ReportQueryOverview extends Block {
 		return buffer.toString();
 	}
 
+	private ICFile lookUpLayoutFolder()  {
+		ICFileHome home;
+	    try {
+	    	home = (ICFileHome) IDOLookup.getHome(ICFile.class);
+	    	try {
+	    		ICFile file = home.findByFileName(LAYOUT_FOLDER_NAME);
+	    		return file;
+	    	}
+	    	catch (FinderException findEx) {
+	    		try {
+	    			ICFile layoutFolder = home.create();
+	    			layoutFolder.setName(LAYOUT_FOLDER_NAME);
+	    			layoutFolder.setMimeType(com.idega.core.file.data.ICMimeTypeBMPBean.IC_MIME_TYPE_FOLDER);
+	    			layoutFolder.store();
+	    			return layoutFolder;
+	    		}
+	    		catch (CreateException createEx) {
+	    			logError("[ReportQueryOverview] Could create file");
+	    			log(createEx);
+	    		}
+	    	}
+	    }
+	    catch (IDOLookupException lookupEx) {
+	    	logError("[ReportQueryOverview] Could not look up home of ICFile");
+	    	log(lookupEx);
+	    }
+    	return null;
+	}
 	
 	// a representation of the query
 	private static class QueryRepresentation implements EntityRepresentation {
