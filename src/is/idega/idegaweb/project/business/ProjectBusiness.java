@@ -113,9 +113,9 @@ public class ProjectBusiness {
       buffer.append(staticIPProject.getEntityName());
       buffer.append(" p ");
       buffer.append("where p.");
-      buffer.append(staticIPProject._COLUMN_DELETED);
+      buffer.append(IPProject._COLUMN_DELETED);
       buffer.append(" != 'Y' or p.");
-      buffer.append(staticIPProject._COLUMN_DELETED);
+      buffer.append(IPProject._COLUMN_DELETED);
       buffer.append(" is null");
       if(catTypes != null){
         for (int i = 0; i < catTypes.length; i++) {
@@ -169,7 +169,7 @@ public class ProjectBusiness {
     buffer.append(" = ");
     buffer.append(projectId);
     buffer.append(" and c.");
-    buffer.append(staticIPCategory._COLUMN_TYPE_ID);
+    buffer.append(IPCategory._COLUMN_TYPE_ID);
     buffer.append(" = ");
     buffer.append(catTypeId);
 
@@ -291,19 +291,22 @@ public class ProjectBusiness {
     if(projectNumber != null){
       pr.setProjectNumber(projectNumber);
     } else {
-      pr.setColumnAsNull(IPProject._COLUMN_PROJECT_NUMBER);
+      //pr.setColumnAsNull(IPProject._COLUMN_PROJECT_NUMBER);
+      pr.removeFromColumn(IPProject._COLUMN_PROJECT_NUMBER);
     }
 
     if(description != null){
       pr.setDescription(description);
     } else {
-      pr.setColumnAsNull(IPProject._COLUMN_DESCRIPTION);
+      //pr.setColumnAsNull(IPProject._COLUMN_DESCRIPTION);
+      pr.removeFromColumn(IPProject._COLUMN_DESCRIPTION);
     }
 
     if(parentId != null){
       pr.setParentId(parentId.intValue());
     } else {
-      pr.setColumnAsNull(IPProject._COLUMN_PARENT_ID);
+      //pr.setColumnAsNull(IPProject._COLUMN_PARENT_ID);
+      pr.removeFromColumn(IPProject._COLUMN_PARENT_ID);
     }
 
     pr.update();
