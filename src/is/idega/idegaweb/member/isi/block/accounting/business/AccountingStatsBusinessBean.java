@@ -222,7 +222,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		 		data.addData(nameField, userString );
 		 		data.addData(personalIDField, personalID );
 		 		data.addData(amountField, new Double(financeEntry.getAmount()) );
-		 		data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.SHORT),"GMT") );
+		 		data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy") );
 		 		data.addData(itemPriceField, financeEntry.getItemPrice());
 		 		data.addData(infoField, financeEntry.getInfo() );
 		 		data.addData(tariffTypeField, tariffTypeString );		
@@ -363,7 +363,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(nameField, userString );
 			data.addData(personalIDField, personalID );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
-			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.SHORT),"GMT") );
+			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy") );
 			data.addData(paymentTypeField, paymentTypeString );
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
@@ -518,7 +518,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(personalIDField, personalID );
 			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
-			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.SHORT),"GMT") );
+			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy")  );
 			data.addData(itemPriceField, financeEntry.getItemPrice());
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, tariffTypeString );		
@@ -671,7 +671,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(personalIDField, personalID );
 			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
-			data.addData(entryDateField, TextSoap.findAndCut((new IWTimestamp(financeEntry.getDateOfEntry())).getLocaleDate(currentLocale, IWTimestamp.SHORT),"GMT") );			
+			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy")  );			
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, tariffTypeString );		
 			
@@ -826,7 +826,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(personalIDField, personalID );
 			data.addData(phoneField, phoneNumber );
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
-			data.addData(paymentDateField, TextSoap.findAndCut((new IWTimestamp(assmRnd.getPaymentDate())).getLocaleDate(currentLocale),"GMT") );			
+			data.addData(paymentDateField, new IWTimestamp(assmRnd.getPaymentDate()).getDateString("dd.MM.yy") );  			
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, tariffTypeString );		
 			
