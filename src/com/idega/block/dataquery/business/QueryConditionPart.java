@@ -29,6 +29,7 @@ public class QueryConditionPart implements QueryPart {
 	private String field = null;
 	private IDOEntityDefinition entityDef = null;
 	private String entity = null;
+	private String path = null;
 	private String type = null;
 	private String pattern = null;
 	private boolean lock = false;
@@ -47,8 +48,9 @@ public class QueryConditionPart implements QueryPart {
 		return   TYPES;
 	}
 	
-	public QueryConditionPart(String entity,String field, String type, String pattern){
+	public QueryConditionPart(String entity,String path, String field, String type, String pattern){
 		this.entity = entity;
+		this.path = path;
 		this.field = field;
 		this.type = type;
 		this.pattern = pattern;
@@ -56,6 +58,7 @@ public class QueryConditionPart implements QueryPart {
 	
 	public QueryConditionPart(XMLElement xml){
 		entity = xml.getAttribute(QueryXMLConstants.ENTITY).getValue();
+		path = xml.getAttribute(QueryXMLConstants.PATH).getValue();
 		field = xml.getAttribute(QueryXMLConstants.FIELD).getValue();
 		type = xml.getAttribute(QueryXMLConstants.TYPE).getValue();
 		if(xml.hasChildren()){
@@ -71,6 +74,7 @@ public class QueryConditionPart implements QueryPart {
 	public XMLElement getQueryElement() {
 		XMLElement el = new XMLElement(QueryXMLConstants.CONDITION);
 		el.setAttribute(QueryXMLConstants.ENTITY,entity);
+		el.setAttribute(QueryXMLConstants.PATH, path);
 		el.setAttribute(QueryXMLConstants.FIELD,field);
 		el.setAttribute(QueryXMLConstants.TYPE,type);
 		XMLElement xmlPattern = new XMLElement(QueryXMLConstants.PATTERN);
@@ -89,6 +93,10 @@ public class QueryConditionPart implements QueryPart {
 	 */
 	private String getEntityClassName() {
 		return entity;
+	}
+	
+	public String getPath()	{
+		return path;
 	}
 	
 	private IDOEntityDefinition getIDOEntityDefinition() throws IDOLookupException, ClassNotFoundException{
@@ -165,13 +173,19 @@ public class QueryConditionPart implements QueryPart {
 	}
 	
 	public String encode(){
-		return this.entity+";"+this.field+";"+this.type+";"+this.pattern;
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(entity).append(';');
+		buffer.append(path).append(';');
+		buffer.append(field).append(';');
+		buffer.append(type).append(';');
+		buffer.append(pattern);
+		return buffer.toString();
 	}
 	
 	public static QueryConditionPart decode(String encoded){
 		StringTokenizer toker = new StringTokenizer(encoded,";");
-		if(toker.countTokens()==4){
-			return new QueryConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken());
+		if(toker.countTokens()==5){
+			return new QueryConditionPart(toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken());
 		}
 		return null;
 	}
