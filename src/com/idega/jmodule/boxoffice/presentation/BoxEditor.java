@@ -1,23 +1,21 @@
 package com.idega.jmodule.boxoffice.presentation;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.jsp.*;
 import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.boxoffice.data.*;
 import com.idega.jmodule.file.data.*;
-import com.idega.jmodule.news.data.*;
-import com.idega.jmodule.news.presentation.*;
 import com.idega.data.*;
-import com.idega.projects.lv.templates.*;
 import com.idega.util.text.*;
-import com.idega.projects.lv.entity.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 public class BoxEditor extends JModuleObject{
 
@@ -31,11 +29,9 @@ private String headlineColor = "#000000";
 private String headlineBgColor = "#FFFFFF";
 private boolean isGolf = false;
 private int unionID = 1;
-
-private String language = "IS";
-private String[] Lang = {"Þú hefur ekki réttindi til að skoða þessa síðu!","Vista", "Til baka", "Gerð skjals:", "Málaflokkur:", "Flokkur:", "Heiti skjals:", "Innihald/Vefslóð:", "Fylgiskjal", "Óþekkt", "Skjal fylgir: ", "Skjal fylgir: ", "Kassastjórinn", "Skjalið hefur verið vistað!", "Til baka", "Til baka", "Skjalið hefur engan titil!","Viltu örugglega eyða þessu skjali?", "Eyða skjali", "Skjalinu hefur verið eytt!","Til baka","Höfundur:"};
-private String[] IS = {"Þú hefur ekki réttindi til að skoða þessa síðu!","Vista", "Til baka", "Gerð skjals:", "Málaflokkur:", "Flokkur:", "Heiti skjals:", "Innihald/Vefslóð:", "Fylgiskjal", "Óþekkt", "Skjal fylgir: ", "Skjal fylgir: ", "Kassastjórinn", "Skjalið hefur verið vistað!", "Til baka", "Til baka", "Skjalið hefur engan titil!","Viltu örugglega eyða þessu skjali?", "Eyða skjali", "Skjalinu hefur verið eytt!","Til baka","Höfundur:"};
-private String[] EN = {"You must log on first!","Save", "Back", "Document type:", "Issue:", "Subject:", "Filename:", "Content/Link:", "Attachment", "Unknown", "Skjal fylgir: ", "Attachment: ", "Box Editor", "Document Saved!", "Back", "Back", "The document has no title","Are you sure you want to delete this document?", "Delete Document", "Document Deleted!","Back","Author:"};
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.boxoffice";
+protected IWResourceBundle iwrb;
+protected IWBundle iwb;
 
 public BoxEditor(){
 }
@@ -44,15 +40,8 @@ public BoxEditor(boolean isAdmin){
 	this.isAdmin=isAdmin;
 }
 
-private void setSpokenLanguage(ModuleInfo modinfo){
-	String language2 = modinfo.getRequest().getParameter("language");
-    if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
-    if ( language2 != null) language = language2;
-}
-
-
 	public void main(ModuleInfo modinfo) throws IOException,SQLException {
-                setSpokenLanguage(modinfo);
+    iwrb = getResourceBundle(modinfo);
 		if ( isAdmin ) {
 
 			String mode = modinfo.getRequest().getParameter("mode");
@@ -69,7 +58,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 				newSubject(modinfo);
 			}
 
-			else if ( mode.equals(Lang[1]) ) {
+			else if ( mode.equals(iwrb.getLocalizedString("save","Save")) ) {
 				save = true;
 
 				if ( action.equals("update") ) { update = true; }
@@ -102,11 +91,11 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 		outerTable = new Table(1,2);
 
-		Text noDice = new Text(Lang[0]);
+		Text noDice = new Text(iwrb.getLocalizedString("no_rights","You must log on first"));
 
 		Form backForm = new Form("/index.jsp");
 			backForm.add(new HiddenInput("issue_id","1"));
-			backForm.add(new SubmitButton(Lang[1]));
+			backForm.add(new SubmitButton(iwrb.getLocalizedString("save","Save")));
 
 		outerTable.add(noDice,1,1);
 		outerTable.add(backForm,1,2);
@@ -172,21 +161,21 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 					myForm.add(new HiddenInput("subject_id",String.valueOf(subject_id)));
 				}
 
-			SubmitButton vista = new SubmitButton("mode",Lang[1]);
+			SubmitButton vista = new SubmitButton("mode",iwrb.getLocalizedString("save","Save"));
 
 
 
-			Text content_text = new Text(Lang[3]);
+			Text content_text = new Text(iwrb.getLocalizedString("type","Document type"));
 				content_text.setFontColor(textColor);
-			Text issue_text = new Text(Lang[4]);
+			Text issue_text = new Text(iwrb.getLocalizedString("issue","Issue"));
 				issue_text.setFontColor(textColor);
-			Text category_text = new Text(Lang[5]);
+			Text category_text = new Text(iwrb.getLocalizedString("category","Category"));
 				category_text.setFontColor(textColor);
-			Text name_text = new Text(Lang[6]);
+			Text name_text = new Text(iwrb.getLocalizedString("file_name","Filename"));
 				name_text.setFontColor(textColor);
-			Text value_text = new Text(Lang[7]);
+			Text value_text = new Text(iwrb.getLocalizedString("content","Content/Link"));
 				value_text.setFontColor(textColor);
-			Text author_text = new Text(Lang[21]);
+			Text author_text = new Text(iwrb.getLocalizedString("author","Author"));
 				value_text.setFontColor(textColor);
 
 			myTable.add(name_text,1,1);
@@ -216,7 +205,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
                         myTable.add(subject_author,2,4);
 
 			//Image dót!!
-			Window insertNewsImageWindow = new Window(Lang[8], 480, 420, "/news/insertfile.jsp?submit=new");
+			Window insertNewsImageWindow = new Window(iwrb.getLocalizedString("attachment","Attachment"), 480, 420, "/news/insertfile.jsp?submit=new");
 			String image_session_id = (String) Session.getAttribute("file_id");
 			String image_id = null;
 			Table imageTable = new Table(1,2);
@@ -225,7 +214,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 
 			FileEntity file;
-			String file_name = Lang[9];
+			String file_name = iwrb.getLocalizedString("file_unknown","Unknown");
 
 			if(image_session_id != null ){
 				image_id = image_session_id;
@@ -234,8 +223,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 				file_name = file.getName();
 
 				myForm.add(new HiddenInput("include_image", "Y"));
-				imageTable.addText(Lang[10]+file_name,1,1);
-				imageTable.add(new Link(new Image("/pics/jmodules/boxoffice/"+language+"/attachment.gif"),insertNewsImageWindow),1,2);
+				imageTable.addText(iwrb.getLocalizedString("has_attachment","Attachment")+file_name,1,1);
+				imageTable.add(new Link(iwrb.getImage("attachment.gif"),insertNewsImageWindow),1,2);
 				myTable.add(imageTable, 2, 5);
 			}
 			else {
@@ -248,18 +237,18 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 						Session.setAttribute("file_id",image_id);
 						myForm.add(new HiddenInput("include_image", "Y"));
-						imageTable.addText(Lang[11]+file.getName(),1,1);
-						imageTable.add(new Link(new Image("/pics/jmodules/boxoffice/"+language+"/attachment.gif"),insertNewsImageWindow),1,2);
+						imageTable.addText(iwrb.getLocalizedString("has_attachment","Attachment: ")+file.getName(),1,1);
+						imageTable.add(new Link(iwrb.getImage("attachment.gif"),insertNewsImageWindow),1,2);
 					}
 					else {
-						imageTable.add(new Link(new Image("/pics/jmodules/boxoffice/"+language+"/attachment.gif"),insertNewsImageWindow),1,1);
+						imageTable.add(new Link(iwrb.getImage("attachment.gif"),insertNewsImageWindow),1,1);
 					}
 					myTable.add(imageTable, 2, 5);
 				}
 
 				if (image_id==null||image_id.equals("")){
 					image_id="-1";//ef engin mynd
-					imageTable.add(new Link(new Image("/pics/jmodules/boxoffice/"+language+"/attachment.gif"),insertNewsImageWindow),1,1);
+					imageTable.add(new Link(iwrb.getImage("attachment.gif"),insertNewsImageWindow),1,1);
 					myTable.add(imageTable, 2, 5);
 				}
 
@@ -273,7 +262,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 		outerTable.setRowColor(1,headlineBgColor);
 
-		Text headline_text = new Text(Lang[12]);
+		Text headline_text = new Text(iwrb.getLocalizedString("box_editor","Box Editor"));
 			headline_text.setBold();
 			headline_text.setFontSize(3);
 			headline_text.setFontColor(headlineColor);
@@ -332,11 +321,11 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			outerTable = new Table(1,2);
 
-			outerTable.addText(Lang[13],1,1);
+			outerTable.addText(iwrb.getLocalizedString("saved","Document saved"),1,1);
 
 			Form myForm = new Form("/index.jsp");
 				myForm.add(new HiddenInput("issue_id",issue_id));
-				myForm.add(new SubmitButton(Lang[14]));
+				myForm.add(new SubmitButton(iwrb.getLocalizedString("back","Back")));
 
 			outerTable.add(myForm,1,2);
 		}
@@ -345,9 +334,9 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			outerTable = new Table(1,2);
 
-			BackButton back = new BackButton(Lang[15]);
+			BackButton back = new BackButton(iwrb.getLocalizedString("back","Back"));
 
-			outerTable.addText(Lang[16],1,1);
+			outerTable.addText(iwrb.getLocalizedString("no_title","Document has no title"),1,1);
 			outerTable.add(back,1,2);
 
 		}
@@ -363,7 +352,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			outerTable.setCellpadding(3);
 			outerTable.setCellspacing(3);
 
-		outerTable.addText(Lang[17],1,1);
+		outerTable.addText(iwrb.getLocalizedString("delete_confirm","Are you sure you want to delete this document?"),1,1);
 
 		Text subject_text = new Text("- "+subject.getSubjectName());
 			subject_text.setFontSize(3);
@@ -375,7 +364,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			myForm.add(new HiddenInput("subject_id",subject_id));
 			myForm.add(new HiddenInput("action","delete"));
 			myForm.add(new HiddenInput("mode","delete"));
-			myForm.add(new SubmitButton(Lang[18]));
+			myForm.add(new SubmitButton(iwrb.getLocalizedString("delete_document","Delete document")));
 
 		outerTable.add(myForm,1,3);
 
@@ -393,11 +382,11 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			outerTable.setCellpadding(3);
 			outerTable.setCellspacing(3);
 
-		outerTable.addText(Lang[19],1,1);
+		outerTable.addText(iwrb.getLocalizedString("deleted","Document deleted"),1,1);
 
 		Form myForm = new Form("/index.jsp");
 			myForm.add(new HiddenInput("issue_id",String.valueOf(subject.getIssueId())));
-			myForm.add(new SubmitButton(Lang[20]));
+			myForm.add(new SubmitButton(iwrb.getLocalizedString("back","Back")));
 
 		outerTable.add(myForm,1,2);
 
@@ -518,6 +507,10 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 		this.unionID=unionID;
 		this.isGolf = true;
 	}
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
 }
 

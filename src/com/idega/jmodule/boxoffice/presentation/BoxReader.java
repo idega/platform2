@@ -14,10 +14,10 @@ import com.idega.jmodule.boxoffice.data.*;
 import com.idega.jmodule.news.data.*;
 import com.idega.jmodule.news.presentation.*;
 import com.idega.data.*;
-import com.idega.projects.lv.templates.*;
 import com.idega.util.text.*;
-import com.idega.projects.lv.entity.*;
-
+import com.idega.projects.lv.entity.Project;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 public class BoxReader extends JModuleObject{
 
@@ -80,17 +80,15 @@ private Subject[] subject;
 private	Table myTable;
 private int width = 3;
 private	Subject subject2;
-
-private String language = "IS";
-private String[] Lang = {"Issues in this database:", "No issues in database", "Breyta skjali","Eyða skjali","Engin fyrirsögn","Bæta við","...nánar","Tegund","Nafn skjals","Höfundur","Dagsetning"};;
-private String[] IS = {"Issues in this database:", "No issues in database", "Breyta skjali","Eyða skjali","Engin fyrirsögn","Bæta við","...nánar","Tegund","Nafn skjals","Höfundur","Dagsetning"};
-private String[] EN = {"Issues in this database:", "No issues in database", "Change Document","Delete Document","No Title","Add Document","...more","Type","Document name","Author","Date"};
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.boxoffice";
+protected IWResourceBundle iwrb;
+protected IWBundle iwb;
 
 public BoxReader(){
 }
 
 public BoxReader(String issue_id){
-        this();
+  this();
 	this.issue_id=issue_id;
 }
 
@@ -119,26 +117,18 @@ public BoxReader(String issue_id, int numberOfColumns){
 	this.numberOfColumns=numberOfColumns;
 }
 
-private void setSpokenLanguage(ModuleInfo modinfo){
-	String language2 = modinfo.getRequest().getParameter("language");
-    if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
-    if ( language2 != null) language = language2;
-}
-
-
 	public void main(ModuleInfo modinfo) throws Exception {
-          String temp_issue_id = modinfo.getParameter("issue_id");
-          if (temp_issue_id != null) {
-            this.issue_id = temp_issue_id;
-          }
-          this.isAdmin=isAdministrator(modinfo);
+    iwrb = getResourceBundle(modinfo);
 
-	  setSpokenLanguage(modinfo);
+    String temp_issue_id = modinfo.getParameter("issue_id");
+    if (temp_issue_id != null && !boxOnly) {
+      this.issue_id = temp_issue_id;
+    }
+    this.isAdmin=isAdministrator(modinfo);
 
-          Image boxeditor = new Image("/pics/jmodules/boxoffice/"+language+"/boxeditor.gif");
+    Image boxeditor = iwrb.getImage("boxeditor.gif");
 
-
-        HttpSession Session = modinfo.getSession();
+    HttpSession Session = modinfo.getSession();
 			if ( !boxOnly ) {
 				Session.removeAttribute("file_id");
 			}
@@ -165,8 +155,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			else {
 				myTable = new Table(1,1);
-
-				myTable.addText("No issues in database");
+				myTable.addText(iwrb.getLocalizedString("no_issue","No issues in database"));
 			}
 
 			// Setja töflu í síðu
@@ -175,70 +164,45 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 		}
 
 		else {
-
 			String issue_category_id = modinfo.getRequest().getParameter("issue_category_id");
 			String subject_id = modinfo.getRequest().getParameter("subject_id");
-
 			if ( isAdmin ) {
-
 				Form editForm = new Form(adminURL);
 					editForm.add(new SubmitButton(boxeditor));
 					editForm.add(new HiddenInput("issue_id",issue_id));
 
 				add(editForm);
-
 			}
 
 			if ( boxOnly ) {
-
 				categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.IssuesIssuesCategory")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
-
 				// Búa til töflu
 				createBoxTable(numberOfColumns);
-
 				// Setja töflu í síðu
 				add(myTable);
-
 			}
-
 			else {
-
 				if ( (issue_category_id != null) && (subject_id == null) ) {
-
 					issues_category = new IssuesCategory(Integer.parseInt(issue_category_id));
-
 					subject = (Subject[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.Subject")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id",issue_category_id,"subject_date desc");
-
 					createCategoryTable(issue_category_id);
-
 					add(myTable);
-
 				}
-
 				else if ( (subject_id != null) && (issue_category_id == null) ) {
-
 					subject2 = new Subject(Integer.parseInt(subject_id));
-
 					createSubjectTable();
-
 					add(myTable);
-
 				}
-
 				else if ( subject_id == null && issue_category_id == null ) {
 					// Ná í fjölda flokka undir þessum málaflokki;
 					categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.IssuesIssuesCategory")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
-
 					// Búa til töflu
 					createBoxTable(numberOfColumns);
-
 					// Setja töflu í síðu
 					add(myTable);
 				}
 			}
-
 		}
-
 	}
 
 	private void listIssues() throws IOException,SQLException {
@@ -248,7 +212,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			myTable.mergeCells(1,1,2,1);
 			myTable.setAlignment("left");
 
-		Text malaflokkar = new Text(Lang[0]);
+		Text malaflokkar = new Text(iwrb.getLocalizedString("issues","Issues"));
 			malaflokkar.setBold();
 			malaflokkar.setFontSize(3);
 
@@ -276,7 +240,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			myTable.mergeCells(1,2,2,2);
 
-			myTable.addText(Lang[1],1,2);
+			myTable.addText(iwrb.getLocalizedString("no_issue","No issues in this database"),1,2);
 
 		}
 
@@ -314,7 +278,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 	public Image getIssueImage() throws IOException,SQLException {
 
-		String iconURL = "/pics/jmodules/boxoffice/"+language+"/";
+		String iconURL = "/pics/jmodules/boxoffice/";
                 int issueID = getIssueID();
 		switch (issueID)  {
 			case 1 : iconURL += "iconUmhverfismal.jpg";
@@ -357,8 +321,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
            if( (issue_id!=null) && (!issue_id.equalsIgnoreCase("")) ){
             Issues issues = new Issues(Integer.parseInt(issue_id));
             return issues.getIssueName();
-           }else return "";
-
+           }
+           else return "";
 	}
 
 	private Table createBoxTable(int width1) throws IOException,SQLException {
@@ -462,20 +426,20 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			category_text.setFontColor(categoryHeadlineColor);
 			category_text.setBold();
 
-                Text subjectContentText = new Text(Lang[7]);
+                Text subjectContentText = new Text(iwrb.getLocalizedString("subject","Type"));
                   subjectContentText.setFontSize(1);
                   subjectContentText.setFontColor(categoryTextColor);
-                Text subjectNameText = new Text(Lang[8]);
+                Text subjectNameText = new Text(iwrb.getLocalizedString("name","Document name"));
                   subjectNameText.setFontSize(1);
                   subjectNameText.setFontColor(categoryTextColor);
-                Text subjectAuthorText = new Text(Lang[9]);
+                Text subjectAuthorText = new Text(iwrb.getLocalizedString("author","Author"));
                   subjectAuthorText.setFontSize(1);
                   subjectAuthorText.setFontColor(categoryTextColor);
-                Text subjectDateText = new Text(Lang[10]);
+                Text subjectDateText = new Text(iwrb.getLocalizedString("date","Date"));
                   subjectDateText.setFontSize(1);
                   subjectDateText.setFontColor(categoryTextColor);
 
-		Image back_image = new Image("/pics/jmodules/boxoffice/"+language+"/back.gif");
+		Image back_image = iwrb.getImage("back.gif");
 
 		for ( int a = 0; a < subject.length; a++ ) {
 
@@ -489,7 +453,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 				content_text.setFontSize(categoryTextSize);
 				content_text.setFontColor(categoryTextColor);
 
-                        Text author_text = new Text("Ókunnur");
+                        Text author_text = new Text(iwrb.getLocalizedString("unknown","Unknown"));
                         if ( subject[a].getSubjectAuthor() != null ) {
                             author_text = new Text(subject[a].getSubjectAuthor());
                         }
@@ -547,8 +511,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
                         categoryTable.add(date_text,4,a+2);
 
 			if ( isAdmin ) {
-				Image changeImage = new Image("/pics/jmodules/boxoffice/"+language+"/change.gif",Lang[2]);
-				Image deleteImage = new Image("/pics/jmodules/boxoffice/"+language+"/delete.gif",Lang[3]);
+				Image changeImage = iwrb.getImage("change.gif",iwrb.getLocalizedString("change","Change document"));
+				Image deleteImage = iwrb.getImage("delete.gif",iwrb.getLocalizedString("delete","Delete document"));
 
 				Link change = new Link(changeImage,adminURL);
 					change.addParameter("subject_id",String.valueOf(subject[a].getID()));
@@ -564,14 +528,14 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 		}
 
 		if ( isAdmin ) {
-			Image newImage = new Image("/pics/jmodules/boxoffice/"+language+"/new.gif",Lang[5]);
+			Image newImage = iwrb.getImage("add.gif",iwrb.getLocalizedString("add","Add document"),10,10);
 				newImage.setAttribute("align","left");
 
 			Link adminLink = new Link(newImage,adminURL);
 				adminLink.addParameter("issue_id",issue_id);
 				adminLink.addParameter("issue_category_id",issue_category_id);
 
-                        categoryTable.add(adminLink,1,categoryTable.getRows()+1);
+      categoryTable.add(adminLink,1,categoryTable.getRows()+1);
 			categoryTable.mergeCells(1,categoryTable.getRows(),categoryTable.getColumns(),categoryTable.getRows());
 		}
 
@@ -617,10 +581,10 @@ private void setSpokenLanguage(ModuleInfo modinfo){
                          myTable2.setAlignment(2,2,"right");
                          myTable2.mergeCells(1,1,2,1);
 
-			Image breytaImage = new Image("/pics/jmodules/boxoffice/"+language+"/change.gif",Lang[2]);
-			Image deleteImage = new Image("/pics/jmodules/boxoffice/"+language+"/delete.gif",Lang[3]);
+			Image breytaImage = iwrb.getImage("change.gif",iwrb.getLocalizedString("change","Change document"));
+			Image deleteImage = iwrb.getImage("delete.gif",iwrb.getLocalizedString("delete","Delete document"));
 
-                        Link breyta = new Link(breytaImage,adminURL);
+      Link breyta = new Link(breytaImage,adminURL);
 				breyta.addParameter("mode","update");
 				breyta.addParameter("subject_id",String.valueOf(subject2.getID()));
 
@@ -638,7 +602,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 		myTable.add(subject_headline,1,1);
 
               }//end if
-              Image back_image = new Image("/pics/jmodules/boxoffice/"+language+"/back.gif");
+              Image back_image = iwrb.getImage("back.gif");
                 myTable.add(myTable2,1,2);
 		myTable.add(new BackButton(back_image),1,3);
 
@@ -697,14 +661,16 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 					headlineTable.setHeight(String.valueOf(headerSize));
 					headlineTable.setHeight(String.valueOf(topBoxHeight));
 					headlineTable.setColor(outlineColor);
-                                String iscatname = categories[a].getIssueCategoryName();
-                                 Text categoryHeadlineText = null;
-				if( iscatname!=null ){
-                                categoryHeadlineText = new Text(iscatname);
-					categoryHeadlineText.setFontColor(boxCategoryHeadlineColor);
-					categoryHeadlineText.setFontSize(boxCategoryHeadlineSize);
-					categoryHeadlineText.setFontFace(boxCategoryHeadlineFont);
-					categoryHeadlineText.setBold();
+
+        String iscatname = categories[a].getIssueCategoryName();
+        Text categoryHeadlineText = null;
+
+        if( iscatname!=null ){
+          categoryHeadlineText = new Text(iscatname);
+          categoryHeadlineText.setFontColor(boxCategoryHeadlineColor);
+          categoryHeadlineText.setFontSize(boxCategoryHeadlineSize);
+          categoryHeadlineText.setFontFace(boxCategoryHeadlineFont);
+          categoryHeadlineText.setBold();
 				}
 				if ( leftHeader ) {
 					headlineTable.add(new Image("/pics/jmodules/boxoffice/leftcorner.gif","",17,17),1,1);
@@ -773,8 +739,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			innerTable.setAlignment(2,numberOfDisplayed+1,"right");
 			innerTable.setBackgroundImage(new Image(""));
 			innerTable.setWidth(3,2,"100%");
-			innerTable.add(new Image("/pics/jmodules/boxoffice/"+language+"/spot.gif","",leftBoxWidth,1),1,2);
-			innerTable.add(new Image("/pics/jmodules/boxoffice/"+language+"/spot.gif","",rightBoxWidth,1),5,2);
+			innerTable.add(iwrb.getImage("spot.gif","",leftBoxWidth,1),1,2);
+			innerTable.add(iwrb.getImage("spot.gif","",rightBoxWidth,1),5,2);
 		String issueName = "";
 
                 if( (issue_category_id!= null) && (!issue_category_id.equalsIgnoreCase("") )) {
@@ -793,7 +759,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			int subject_id = subject[a].getID();
 
-			String subject_text = Lang[4];
+			String subject_text = iwrb.getLocalizedString("no_headline","No title");
 
 			if ( subject[a].getSubjectName() != null ) {
 				subject_text = subject[a].getSubjectName();
@@ -864,8 +830,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 				content_image.setWidth(16);
 				content_image.setAttribute("alt",subject[a].getSubjectName());
 
-			Image changeImage = new Image("/pics/jmodules/boxoffice/"+language+"/updatesmall.gif",Lang[2],10,10);
-			Image deleteImage = new Image("/pics/jmodules/boxoffice/"+language+"/deletesmall.gif",Lang[3],10,10);
+			Image changeImage = iwrb.getImage("updatesmall.gif",iwrb.getLocalizedString("change","Change document"),10,10);
+			Image deleteImage = iwrb.getImage("deletesmall.gif",iwrb.getLocalizedString("delete","Delete document"),10,10);
 
 			Link change = new Link(changeImage,adminURL);
 				change.addParameter("subject_id",String.valueOf(subject_id));
@@ -878,7 +844,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			if ( b <= numberOfDisplayed ) {
 
 				if ( isAdmin ) {
-					innerTable.add(new Image("/pics/jmodules/boxoffice/"+language+"/arrow.gif",subject[a].getSubjectName(),8,9),2,b);
+					innerTable.add(iwrb.getImage("arrow.gif",subject[a].getSubjectName(),8,9),2,b);
 					innerTable.add(subject_link,3,b);
 					innerTable.addBreak(3,b);
 					innerTable.add(change,4,b);
@@ -894,7 +860,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 					}
 
 					else {
-						innerTable.add(new Image("/pics/jmodules/boxoffice/"+language+"/arrow.gif",subject[a].getSubjectName(),8,9),2,b);
+						innerTable.add(iwrb.getImage("arrow.gif",subject[a].getSubjectName(),8,9),2,b);
 						innerTable.add(subject_link,3,b);
 						innerTable.addBreak(3,b);
 						innerTable.add(content_image,4,b);
@@ -905,7 +871,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 		}
                 }//end if
 
-		Text more_text = new Text(Lang[6]);
+		Text more_text = new Text(iwrb.getLocalizedString("more","...more"));
 			more_text.setFontSize(1);
 
 		Link more = new Link(more_text,boxURL);
@@ -939,7 +905,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 
 				if ( a < numberOfDisplayed ) {
-					innerTable.add(new Image("/pics/jmodules/boxoffice/"+language+"/arrow.gif",news[a].getHeadline()),2,a+1);
+					innerTable.add(iwrb.getImage("arrow.gif",news[a].getHeadline()),2,a+1);
 					innerTable.add(news_link,3,a+1);
 				}
 
@@ -947,7 +913,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			if ( isAdmin == true ) {
 
-				Image newImage = new Image("/pics/jmodules/boxoffice/"+language+"/create.gif","Bæta við");
+				Image newImage = iwrb.getImage("create.gif",iwrb.getLocalizedString("add","Add document"));
 					newImage.setAttribute("align","left");
 
 				Link adminLink = new Link(newImage,"/news/editor.jsp");
@@ -987,7 +953,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 
 				if ( a < numberOfDisplayed ) {
-					innerTable.add(new Image("/pics/jmodules/boxoffice/"+language+"/arrow.gif",project[a].getName()),2,a+1);
+					innerTable.add(iwrb.getImage("arrow.gif",project[a].getName()),2,a+1);
 					innerTable.add(project_link,3,a+1);
 				}
 
@@ -995,7 +961,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			if ( isAdmin == true ) {
 
-				Image newImage = new Image("/pics/jmodules/boxoffice/"+language+"/create.gif","Bæta við");
+				Image newImage = iwrb.getImage("create.gif",iwrb.getLocalizedString("add","Add document"));
 					newImage.setAttribute("align","left");
 
 				Link adminLink = new Link(newImage,"/verkefnistemplate/index.jsp");
@@ -1011,7 +977,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 		if ( isAdmin == true ) {
 
-			Image newImage = new Image("/pics/jmodules/boxoffice/"+language+"/add.gif",Lang[5],10,10);
+			Image newImage = iwrb.getImage("add.gif",iwrb.getLocalizedString("add","Add document"),10,10);
 				newImage.setAttribute("align","left");
 
 			Link adminLink = new Link(newImage,adminURL);
@@ -1418,5 +1384,9 @@ private void setSpokenLanguage(ModuleInfo modinfo){
                 this.leftBoxWidth=0;
                 this.rightBoxWidth=0;
         }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
 }
