@@ -317,11 +317,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus()};
 
 			try {
+			    /*
 				IWTimestamp dateOfBirth = new IWTimestamp(child.getDateOfBirth());
 				now = new IWTimestamp();
-				int days = IWTimestamp.getDaysBetween(dateOfBirth, now);
+				int days = IWTimestamp.getDaysBetween(child.getDateOfBirth());
 				if (days < 90) {
 					dateOfBirth.addMonths(3);
+					now = new IWTimestamp(dateOfBirth);
+				}*/
+			    // Bug fixed, 90 days is not the magic number !! ( aron ) 
+			    IWTimestamp dateOfBirth = new IWTimestamp(3,11,2003);
+			    now = new IWTimestamp();
+			    dateOfBirth.addMonths(3);
+				int days = IWTimestamp.getDaysBetween(dateOfBirth, now);
+				if (days <= 0) {
 					now = new IWTimestamp(dateOfBirth);
 				}
 			}
