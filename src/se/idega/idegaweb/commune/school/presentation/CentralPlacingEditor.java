@@ -11,13 +11,14 @@ import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness;
+import se.idega.idegaweb.commune.accounting.resource.data.Resource;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
@@ -28,9 +29,11 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
 import com.idega.core.data.Phone;
@@ -38,8 +41,10 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -70,7 +75,7 @@ public class CentralPlacingEditor extends AccountingBlock {
   private static final String KEY_PROVIDER_LABEL = KP+"provider_label";
   private static final String KEY_ADMIN_LABEL = KP+"admin_label";
   private static final String KEY_SCHOOL_YEAR_LABEL = KP+"school_year_label";
-  private static final String KEY_SCHOOL_TYPE_LABEL = KP+"school_type_label";
+  private static final String KEY_SCHOOL_GROUP_LABEL = KP+"school_group_label";
   private static final String KEY_STUDY_PATH_LABEL = KP+"study_path_label";
   private static final String KEY_RESOURCE_LABEL = KP+"resource_label";
   private static final String KEY_COMMUNE_LABEL = KP+"commune_label";
@@ -91,6 +96,8 @@ public class CentralPlacingEditor extends AccountingBlock {
   private static final String PARAM_SCHOOL_GROUP = "param_school_group";
   private static final String PARAM_STUDY_PATH = "param_study_path";
   private static final String PARAM_PLACEMENT_DATE = "param_placement_date";
+  private static final String PARAM_RESOURCES = "param_resources";
+  private static final String PARAM_HIDDEN_SUBMIT_SRC = "param_hidden_submit_src";
   // CSS styles   
   private static final String STYLE_UNDERLINED_SMALL_HEADER = 
                   "font-style:normal;text-decoration:underline;color:#000000;" 
@@ -106,6 +113,13 @@ public class CentralPlacingEditor extends AccountingBlock {
   private Image transGIF = new Image(PATH_TRANS_GIF);
   private String errMsgMid = null;
   private String errMsgBottom = null;
+    // Form status variables
+  private String categoryStatus = "-1";
+  private String providerStatus = "-1";
+  private String activityStatus = "-1";
+  private String yearStatus = "-1";
+  private String groupStatus = "-1";
+  
 
   public void show(IWContext iwc) {
     appForm = new ApplicationForm(this);
@@ -141,11 +155,14 @@ public class CentralPlacingEditor extends AccountingBlock {
     table.setWidth(5, row, "100");    
     row++;
     col = 1;
+    
+    // Hidden parameters
+    table.add(new HiddenInput(PARAM_HIDDEN_SUBMIT_SRC, "-1"), 1, 1);
        
     // main activity (school category)
     table.add(transGIF, col++, row);
     table.add(getSmallHeader(localize(KEY_MAIN_ACTIVITY_LABEL,  "Main activity: ")), col++, row);
-    table.add(getMainActivities(iwc), col++, row);   
+    table.add(getSchoolCategories(iwc), col++, row);   
 
     row++; col = 1;             
     // search module - configure and add 
@@ -261,33 +278,74 @@ public class CentralPlacingEditor extends AccountingBlock {
     table.add(transGIF, col, row); // EMPTY SPACE ROW
     table.setRowHeight(row, "10");
     row++; col = 2;
+      // Activity input
     table.add(getSmallHeader(localize(KEY_ACTIVITY_LABEL, "Activity:")), col++, row);
     table.add(getActivities(iwc), col++, row);
     table.add(getSmallHeader(localize(KEY_PLACEMENT_PARAGRAPH_LABEL, "Placement paragraph: ")),
                   col++, row);
     row++; col = 2;
+      // School Year input
     table.add(getSmallHeader(localize(KEY_SCHOOL_YEAR_LABEL, "School year: ")), col++, row);
-    table.add(getSmallHeader(localize(KEY_SCHOOL_TYPE_LABEL, "School type: ")), ++col, row);
+    table.add(getSchoolYears(iwc), col++, row);
+      // School group input
+    table.add(getSmallHeader(localize(KEY_SCHOOL_GROUP_LABEL, "School group: ")), col++, row);
+    table.add(getSchoolGroups(iwc), col++, row);
     row++; col = 2;
+      // Study Path input
     table.add(getSmallHeader(localize(KEY_STUDY_PATH_LABEL, "Study path: ")), col ++, row);
     row++; col = 2;
     table.add(transGIF, col, row); // EMPTY SPACE ROW
     table.setRowHeight(row, "10");
-    row++; col = 2;
+    row++; col = 2;    
+      // Resource
     table.add(getSmallHeader(localize(KEY_RESOURCE_LABEL, "Resource: ")), col++, row);
+        //  Resource input checkboxes
+    if (iwc.isParameterSet(PARAM_ACTIVITY) && iwc.isParameterSet(PARAM_SCHOOL_YEAR)) {
+      try {
+        Collection rscColl = getResourceBusiness(iwc).getAssignableResourcesByYearAndType(
+                                iwc.getParameter(PARAM_SCHOOL_YEAR), iwc.getParameter(PARAM_ACTIVITY));
+        CheckBox typeRscBox = new CheckBox(PARAM_RESOURCES);
+        Integer primaryKey;
+        Iterator loop = rscColl.iterator();
+        while (loop.hasNext()) {
+          col = 3;
+          Resource rsc = (Resource) loop.next();
+          CheckBox cBox = (CheckBox) typeRscBox.clone();
+          primaryKey = (Integer) rsc.getPrimaryKey();
+          cBox.setValue(primaryKey.intValue());
+          // Set related school types to checked
+         /* if (theRsc != null) {
+            Map typeMap = busyBean.getRelatedSchoolTypes(theRsc);
+            Set typeKeys = typeMap.keySet();
+            if (typeKeys.contains(primaryKey)) {
+              cBox.setChecked(true);
+            }
+          } */
+          table.add(cBox, col++, row);
+          table.add(getSmallText(rsc.getResourceName()), col++, row);    
+          row++;
+        }        
+      } catch (RemoteException e) {
+        e.printStackTrace();
+      }
+    }      
+    
     row++; col = 2;
     Table rowTable = new Table();
     rowTable.setCellpadding(0);
     rowTable.setCellspacing(0);
     int tmpRow = 1;
     int tmpCol = 1;
+      // Payment by agreement
     rowTable.add(getSmallHeader(localize(KEY_PAYMENT_BY_AGREEMENT_LABEL, "Payment by agreement: ")),
                          tmpCol++, tmpRow);
+      // Invoice interval
     rowTable.add(getSmallHeader(localize(KEY_INVOICE_INTERVAL_LABEL, "Invoice interval: ")),
                         ++tmpCol, tmpRow);    
     table.add(rowTable, col, row);
     table.mergeCells(col, row, col+3, row);
     row++; col = 2;
+      // Placement date
     table.add(getSmallHeader(localize(KEY_PLACEMENT_DATE_LABEL, "Placement date: ")), col++, row);        
     table.add(getPlacementDateInput(), col, row);
     table.mergeCells(col, row, col+2, row);
@@ -342,7 +400,7 @@ public class CentralPlacingEditor extends AccountingBlock {
     return searcher;
   }
   
-  private DropdownMenu getMainActivities(IWContext iwc) {
+  private DropdownMenu getSchoolCategories(IWContext iwc) {
     // Get dropdown for school categories
     DropdownMenu schoolCats = new DropdownMenu(PARAM_SCHOOL_CATEGORY);
     schoolCats.setToSubmit(true);
@@ -379,7 +437,8 @@ public class CentralPlacingEditor extends AccountingBlock {
           // Fill upp dropdown with schools
           for (Iterator iter = schools.iterator(); iter.hasNext();) {
 						School tmpSchool = (School) iter.next();
-            providers.addMenuElement(tmpSchool.getID(), tmpSchool.getSchoolName());
+            int schoolID =((Integer) tmpSchool.getPrimaryKey()).intValue();
+            providers.addMenuElement(schoolID, tmpSchool.getSchoolName());
 					}
           if (iwc.isParameterSet(PARAM_PROVIDER))
             providers.setSelectedElement(iwc.getParameter(PARAM_PROVIDER));
@@ -391,11 +450,10 @@ public class CentralPlacingEditor extends AccountingBlock {
   }
   
   private DropdownMenu getActivities(IWContext iwc) {
-    DropdownMenu activities = new DropdownMenu(PARAM_PROVIDER);
+    DropdownMenu activities = new DropdownMenu(PARAM_ACTIVITY);
     activities.setToSubmit(true);
     activities.addMenuElement("-1", localize(KEY_DROPDOWN_CHOSE, "- Chose -"));
-    if (iwc.isParameterSet(PARAM_ACTIVITY)) {
-      String schoolID = iwc.getParameter(PARAM_PROVIDER);
+    if (iwc.isParameterSet(PARAM_PROVIDER)) {
       try {
         School school = getSchoolBusiness(iwc).
                                 getSchool(new Integer(iwc.getParameter(PARAM_PROVIDER)));
@@ -404,7 +462,9 @@ public class CentralPlacingEditor extends AccountingBlock {
 					SchoolType type = (SchoolType) iter.next();
           int typeID = ((Integer) type.getPrimaryKey()).intValue();
           activities.addMenuElement(typeID, type.getName());					
-				} 			
+				}
+        if (iwc.isParameterSet(PARAM_ACTIVITY))
+          activities.setSelectedElement(iwc.getParameter(PARAM_ACTIVITY));			
   		} catch (Exception e) {
   			e.printStackTrace();
   		}   
@@ -414,21 +474,57 @@ public class CentralPlacingEditor extends AccountingBlock {
   }
 
   private DropdownMenu getSchoolYears(IWContext iwc) {
-    DropdownMenu years = new DropdownMenu(PARAM_ACTIVITY);
+    DropdownMenu years = new DropdownMenu(PARAM_SCHOOL_YEAR);
     years.setToSubmit(true);
-    years.addMenuElement("-1", localize(KEY_DROPDOWN_CHOSE, "- Chose -"));   
-    
-    
+    years.addMenuElement("-1", localize(KEY_DROPDOWN_CHOSE, "- Chose -"));
+    if (iwc.isParameterSet(PARAM_ACTIVITY)) {
+      try {
+        Collection yearColl = getSchoolBusiness(iwc).
+                 getSchool(new Integer(iwc.getParameter(PARAM_PROVIDER))).findRelatedSchoolYears();
+				for (Iterator iter = yearColl.iterator(); iter.hasNext();) {
+					SchoolYear year = (SchoolYear) iter.next();
+          int paramTypeID = Integer.parseInt(iwc.getParameter(PARAM_ACTIVITY));
+          if (year.getSchoolTypeId() == paramTypeID) {
+            int yearID = ((Integer) year.getPrimaryKey()).intValue();
+            years.addMenuElement(yearID, year.getName());					
+          }
+				}
+        if (iwc.isParameterSet(PARAM_SCHOOL_YEAR))
+          years.setSelectedElement(iwc.getParameter(PARAM_SCHOOL_YEAR));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+      
+        
+    }
+        
     return years;
   }
 
-  private DropdownMenu getSchoolGroup(IWContext iwc) {
-    DropdownMenu group = new DropdownMenu(PARAM_ACTIVITY);
-    group.setToSubmit(true);
-    group.addMenuElement("-1", localize(KEY_DROPDOWN_CHOSE, "- Chose -"));   
-    
-    
-    return group;
+  private DropdownMenu getSchoolGroups(IWContext iwc) {
+    DropdownMenu groups = new DropdownMenu(PARAM_SCHOOL_GROUP);
+    groups.setToSubmit(true);
+    groups.addMenuElement("-1", localize(KEY_DROPDOWN_CHOSE, "- Chose -"));   
+    if (iwc.isParameterSet(PARAM_PROVIDER) && iwc.isParameterSet(PARAM_SCHOOL_YEAR)) {
+      int schoolID = Integer.parseInt(iwc.getParameter(PARAM_PROVIDER));
+      int yearID = Integer.parseInt(iwc.getParameter(PARAM_SCHOOL_YEAR));
+      try {
+        SchoolSeason currentSeason = getSchoolChoiceBusiness(iwc).getCurrentSeason();
+        int seasonID = ((Integer) currentSeason.getPrimaryKey()).intValue();
+        Collection groupColl = getSchoolBusiness(iwc).
+                                 findSchoolClassesBySchoolAndSeasonAndYear(schoolID, seasonID, yearID);
+        for (Iterator iter = groupColl.iterator(); iter.hasNext();) {
+					SchoolClass group = (SchoolClass) iter.next();
+					int groupID = ((Integer) group.getPrimaryKey()).intValue();
+          groups.addMenuElement(groupID, group.getName());
+				}
+        if (iwc.isParameterSet(PARAM_SCHOOL_GROUP))
+          groups.setSelectedElement(iwc.getParameter(PARAM_SCHOOL_GROUP));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }    
+    }
+    return groups;
   }
   
   private DateInput getPlacementDateInput() {
@@ -462,6 +558,7 @@ public class CentralPlacingEditor extends AccountingBlock {
   
   private String parse(IWContext iwc) {
     
+    
     return new String("");
   }
   
@@ -486,6 +583,10 @@ public class CentralPlacingEditor extends AccountingBlock {
   private ChildCareBusinessBean getChildCareBusiness(IWContext iwc) throws RemoteException {
     return (ChildCareBusinessBean) 
                 IBOLookup.getServiceInstance(iwc, ChildCareBusinessBean.class);
+  }
+  
+  private ResourceBusiness getResourceBusiness(IWContext iwc) throws RemoteException {
+    return (ResourceBusiness) IBOLookup.getServiceInstance(iwc, ResourceBusiness.class);
   }
   
 }
