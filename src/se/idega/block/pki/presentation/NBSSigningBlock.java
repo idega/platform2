@@ -101,6 +101,9 @@ public class NBSSigningBlock extends Block implements Builderaware{
 		}catch(NBSException ex){
 			String errorMsg = null;
 			switch(ex.getCode()){
+				case NBSException.ERROR_SRVCLNT_CONFIG:
+					errorMsg = "Server client configuration";
+					break;
 				case NBSException.ERROR_SRVCLNT_SERVER_UNAVAILABLE:
 					errorMsg = "Server unavailable";	
 					break;	
