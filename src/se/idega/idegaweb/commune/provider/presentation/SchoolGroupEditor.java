@@ -429,44 +429,46 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setHeight(row++, 15);
 		
 		//Study paths
-		List paths = null;
-		try {
-			paths = new ArrayList(_provider.findRelatedStudyPaths());
-		}
-		catch (IDORelationshipException e1) {
-			paths = new ArrayList();
-		}
-		
-		Collection studyPaths = new ArrayList();
-		if (_group != null) {
+		if (showStudyPaths) {
+			List paths = null;
 			try {
-				studyPaths = _group.findRelatedStudyPaths();
+				paths = new ArrayList(_provider.findRelatedStudyPaths());
 			}
-			catch (IDORelationshipException e2) {
-				studyPaths = new ArrayList();
+			catch (IDORelationshipException e1) {
+				paths = new ArrayList();
 			}
-		}
-				
-		table.setHeight(row++, 15);
-		table.add(getSmallHeader(localize("study_paths", "Study paths") + ":"), 1, row);
-		table.setNoWrap(1, row);
-		if (useStyleNames) {
-			table.setCellpaddingLeft(1, row, 12);
-		}
-		
-		iter = paths.iterator();
-		while (iter.hasNext()) {
-			SchoolStudyPath path = (SchoolStudyPath) iter.next();
-			CheckBox box = getCheckBox(PARAMETER_STUDY_PATHS, path.getPrimaryKey().toString());
-			if (studyPaths.contains(path))
-				box.setChecked(true);
 			
-			table.setCellpadding(3, row, 2);
-			table.add(box, 3, row);
-			table.add(Text.getNonBrakingSpace(), 3, row);
-			table.add(getSmallText(localize(path.getCode(), path.getDescription())), 3, row++);
+			Collection studyPaths = new ArrayList();
+			if (_group != null) {
+				try {
+					studyPaths = _group.findRelatedStudyPaths();
+				}
+				catch (IDORelationshipException e2) {
+					studyPaths = new ArrayList();
+				}
+			}
+					
+			table.setHeight(row++, 15);
+			table.add(getSmallHeader(localize("study_paths", "Study paths") + ":"), 1, row);
+			table.setNoWrap(1, row);
+			if (useStyleNames) {
+				table.setCellpaddingLeft(1, row, 12);
+			}
+			
+			iter = paths.iterator();
+			while (iter.hasNext()) {
+				SchoolStudyPath path = (SchoolStudyPath) iter.next();
+				CheckBox box = getCheckBox(PARAMETER_STUDY_PATHS, path.getPrimaryKey().toString());
+				if (studyPaths.contains(path))
+					box.setChecked(true);
+				
+				table.setCellpadding(3, row, 2);
+				table.add(box, 3, row);
+				table.add(Text.getNonBrakingSpace(), 3, row);
+				table.add(getSmallText(localize(path.getCode(), path.getDescription())), 3, row++);
+			}
+			table.setHeight(row++, 15);
 		}
-		table.setHeight(row++, 15);
 		//study paths...
 		
 		List groupTeachers = new ArrayList();
