@@ -45,6 +45,7 @@ public class WorkReportWindow extends IWAdminWindow {
 	protected static final String ACTION_EDIT_MEMBER_LIST ="iwme_wr_act_b2";
 	protected static final String ACTION_EDIT_ACCOUNT ="iwme_wr_act_b3";
 	protected static final String ACTION_EDIT_BOARD ="iwme_wr_act_b4";
+  protected static final String ACTION_EDIT_DIVISION_BOARD = "iwme_wr_act_b4_1";
 	protected static final String ACTION_UPLOAD_REPORT ="iwme_wr_act_b5"; //b6 is useless
 	protected static final String ACTION_IMPORT_MEMBERS ="iwme_wr_act_b7";
 	protected static final String ACTION_IMPORT_ACCOUNT ="iwme_wr_act_b8";
@@ -104,6 +105,9 @@ public class WorkReportWindow extends IWAdminWindow {
 			else if( action.equals(ACTION_EDIT_BOARD) ){
 				table.add(new WorkReportBoardMemberEditor(),2,1);	
 			}
+      else if (action.equals(ACTION_EDIT_DIVISION_BOARD)) {
+        table.add(new WorkReportDivisionBoardEditor(), 2,1);
+      }
 			else if( action.equals(ACTION_UPLOAD_REPORT) ){
 				table.add(new WorkReportSelector(),2,1);	
 			}
@@ -159,7 +163,11 @@ public class WorkReportWindow extends IWAdminWindow {
     editBoardList.add(formatText(iwrb.getLocalizedString("workreportwindow.edit_board","Edit board info")));
     editBoardList.addParameter(ACTION,ACTION_EDIT_BOARD);
 		editList.add(editBoardList);
-		
+		//B.4_1
+    LinkContainer editDivisionBoardList = new LinkContainer();
+    editDivisionBoardList.add(formatText(iwrb.getLocalizedString("workreportwindow.division_edit_board","Edit division board info")));
+    editDivisionBoardList.addParameter(ACTION,ACTION_EDIT_DIVISION_BOARD);
+    editList.add(editDivisionBoardList);
 		//B.5		
 		LinkContainer uploadReport = new LinkContainer();
 		uploadReport.add(formatText(iwrb.getLocalizedString("workreportwindow.upload_report","Upload report"),true));
