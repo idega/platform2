@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.57 2003/11/05 23:59:20 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.58 2003/11/06 09:19:51 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1244,7 +1244,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		//Insert code here to create postingDetail
 		try {
 			RegulationHome home = getRegulationHome();
-			int flowID = -1;
+			/*int flowID = -1;
 			int condTypeID = -1;
 			int regSpecTypeID = -1;
 
@@ -1267,7 +1267,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			}
 			catch(NumberFormatException e) {
 				regSpecTypeID = -1;
-			}
+			}*/
 			
 			Collection reg = home.findRegulationsByPeriod(period,period,conditionType,Integer.parseInt(flow),1);
 			if (reg != null && !reg.isEmpty()) {
@@ -1284,8 +1284,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					Regulation res = (Regulation)match.get(0);
 					
 					if (res.getSpecialCalculation() != null) {
-						String calcType = res.getSpecialCalculation().getSpecialCalculationType();
-												
+						//String calcType = res.getSpecialCalculation().getSpecialCalculationType();
 						//if statements for each type. get info from joakim
 					}
 					else {
