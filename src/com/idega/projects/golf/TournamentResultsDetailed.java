@@ -102,13 +102,13 @@ public class TournamentResultsDetailed extends JModuleObject {
           r.calculateCompareInfo();
         }
 
-        //if ( r.getDismissal() == 0 || r.getDismissal() == 15 ) {
+        if ( r.getDismissal() == 0 || r.getDismissal() == 15 ) {
           myTable.mergeCells(1,row+2,22,row+2);
           myTable.addText("",1,row+2);
           myTable.setHeight(1,row+2,"5");
           getMemberScore(r,row);
           row += 3;
-        //}
+        }
       }
 
       for ( int a = 2; a <= myTable.getColumns(); a++ ) {
