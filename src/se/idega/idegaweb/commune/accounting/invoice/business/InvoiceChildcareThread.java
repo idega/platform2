@@ -316,7 +316,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						//Fill in all the field available at this times
 						invoiceHeader.setSchoolCategoryID(category);
 						invoiceHeader.setPeriod(startPeriod.getDate());
-						invoiceHeader.setCustodianId(custodian);
+						invoiceHeader.setCustodian(custodian);
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
 						invoiceHeader.setOwnPosting(categoryPosting.getAccount());
@@ -585,7 +585,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting) throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
 		invoiceRecord.setProviderId(school);
         //		invoiceRecord.setContractId(contract.getContractID());
-		invoiceRecord.setSchoolClassMemberId(contract.getSchoolClassMmeber());
+		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMmeber());
 		invoiceRecord.setRuleText(postingDetail.getTerm());
 		invoiceRecord.setDays(days);
 		invoiceRecord.setPeriodStartCheck(startPeriod.getDate());

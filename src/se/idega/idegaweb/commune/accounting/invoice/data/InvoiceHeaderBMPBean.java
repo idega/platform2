@@ -43,7 +43,6 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
-//		addAttribute(COLUMN_CUSTODIAN_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class, 1);
 		addAttribute(COLUMN_DATE_CREATED, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_DATE_ADJUSTED, "", true, true, java.sql.Date.class);
@@ -64,6 +63,9 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	}
 	public int getCustodianId() {
 		return getIntColumnValue(COLUMN_CUSTODIAN_ID);
+	}
+	public User getCustodian() {
+		return (User) getColumnValue(COLUMN_CUSTODIAN_ID);
 	}
 	public char getStatus() {
 		return getCharColumnValue(COLUMN_STATUS);
@@ -103,7 +105,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public void setCustodianId(int i) {
 		setColumn(COLUMN_CUSTODIAN_ID, i);
 	}
-	public void setCustodianId(User u) {
+	public void setCustodian(User u) {
 		setColumn(COLUMN_CUSTODIAN_ID, u);
 	}
 	public void setStatus(char c) {

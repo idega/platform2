@@ -80,10 +80,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/27 20:31:33 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/28 07:24:05 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.63 $
+ * @version $Revision: 1.64 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -200,6 +200,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
+    private static final String IN_CUSTODY_OF_KEY = PREFIX + "in_custody_of";
     private static final String TOO_MANY_RESULTS_DEFAULT = "För många sökträffar - försök att begränsa dina sökkriterier";
     private static final String TOO_MANY_RESULTS_KEY = PREFIX + "too_many_results";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
@@ -351,8 +352,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         outerTable.getDefaultCell ().setBorder (0);
         addPhrase (outerTable, title);
         addPhrase (outerTable, "\n");
-        final User custodian = getUser (context,
-                                        new Integer (header.getCustodianId ()));
+        final User custodian = header.getCustodian ();
         addPhrase (outerTable, localize (CUSTODIAN_KEY, CUSTODIAN_DEFAULT)
                    + ": " + getUserInfo (custodian) + "\n");
         addPhrase (outerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": "
@@ -536,8 +536,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final java.util.Map inputs = new java.util.HashMap ();
         final String nowPeriod = periodFormatter.format (new Date ());
         final InvoiceHeader header = getInvoiceHeader (context);
-        inputs.put (INVOICE_RECEIVER_KEY, getSmallText
-                    (getUserInfo (context, header.getCustodianId ())));
+        final User custodian = header.getCustodian ();
+        inputs.put (INVOICE_RECEIVER_KEY, getSmallText (getUserInfo
+                                                        (custodian)));
+        inputs.put (IN_CUSTODY_OF_KEY, getInCustodyOfDropdown (context,
+                                                               custodian));
         inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY));
         inputs.put (CHECK_START_PERIOD_KEY, getStyledInput
                     (CHECK_START_PERIOD_KEY, nowPeriod));
@@ -577,8 +580,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final InvoiceRecord record = getInvoiceRecord (context);
         final java.util.Map inputs = new java.util.HashMap ();
         final InvoiceHeader header = getInvoiceHeader (context);
-        inputs.put (INVOICE_RECEIVER_KEY, getSmallText
-                    (getUserInfo (context, header.getCustodianId ())));
+        final User custodian = header.getCustodian ();
+        inputs.put (INVOICE_RECEIVER_KEY, getSmallText (getUserInfo
+                                                        (custodian)));
+        inputs.put (IN_CUSTODY_OF_KEY,
+                    getInCustodyOfDropdown (context, custodian, record));
         inputs.put (INVOICE_TEXT_KEY, getStyledInput
                     (INVOICE_TEXT_KEY, record.getInvoiceText ()));
         inputs.put (CHECK_START_PERIOD_KEY, getStyledInput
@@ -600,7 +606,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallDateText (inputs, DATE_ADJUSTED_KEY, record.getDateChanged ());
         inputs.put (ADJUSTED_SIGNATURE_KEY,
                     getSmallSignature (record.getChangedBy ()));
-
         inputs.put (AMOUNT_KEY, getStyledInput
                     (AMOUNT_KEY, ((long) record.getAmount ()) +""));
         inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY,
@@ -648,8 +653,13 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final InvoiceRecord record = getInvoiceRecord (context);
         final java.util.Map details = new java.util.HashMap ();
         final InvoiceHeader header = getInvoiceHeader (context);
-        details.put (INVOICE_RECEIVER_KEY, getSmallText
-                    (getUserInfo (context, header.getCustodianId ())));
+        details.put (INVOICE_RECEIVER_KEY,
+                     getSmallText (getUserInfo (header.getCustodian ())));
+        final SchoolClassMember placement = record.getSchoolClassMember ();
+        if (null != placement) {
+            addSmallText (details, IN_CUSTODY_OF_KEY,
+                          getUserInfo (placement.getStudent ()));
+        }
         addSmallText (details, AMOUNT_KEY, (long) record.getAmount ());
         addSmallText (details, VAT_AMOUNT_KEY, (long) record.getAmountVAT ());
         details.put (ADJUSTED_SIGNATURE_KEY,
@@ -768,8 +778,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
         final InvoiceHeader header = getInvoiceHeader (context);
 		final Date period = header.getPeriod ();
-		final User custodian
-                = getUser (context, new Integer (header.getCustodianId ()));
+		final User custodian = header.getCustodian ();
 
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
@@ -882,11 +891,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private String getUserInfo (final User user) {
         return user == null ? "" : getUserName (user) + " (" + formatSsn
                 (user.getPersonalID ()) + "), " + getAddressString (user);
-    }
-    
-    private String getUserInfo (final IWContext context, final int userId) {
-        return (0 >= userId) ? ""
-                : getUserInfo (getUser (context, new Integer (userId)));
     }
     
     private boolean isCustodian (final IWContext context, final User user)
@@ -1049,8 +1053,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         (final IWContext context, final java.util.Map presentationObjects)
         throws RemoteException, FinderException {
         final InvoiceHeader header = getInvoiceHeader (context);
-		final User custodian
-                = getUser  (context, new Integer (header.getCustodianId ()));
+		final User custodian = header.getCustodian ();
 
         // render form/details
         final Table table = createTable (4);
@@ -1065,11 +1068,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addPresentation (table, presentationObjects, INVOICE_RECEIVER_KEY,
                          col++, row);
         col = 1; row++;
-        addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
-        addSmallText (table, formatSsn (custodian.getPersonalID ()), col++,
-                      row);
         addSmallHeader (table, col++, row, NAME_KEY, NAME_DEFAULT, ":");
-        addSmallText (table, getUserName (custodian), col++, row);
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, IN_CUSTODY_OF_KEY, col++,
+                         row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns (), row);
@@ -1314,17 +1316,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 + (lastName != null ? lastName : "");
     }
 
-    private User getUser (final IWContext context, final Integer id) {
-        try {
-            final UserBusiness userBusiness = (UserBusiness)
-                    IBOLookup.getServiceInstance (context, UserBusiness.class);
-            final UserHome userHome = userBusiness.getUserHome ();
-            return userHome.findByPrimaryKey (id);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     private Table getSearcherResultTable (final Collection users,
                                           int actionId) {
         final Table table = createTable (1);
@@ -1417,8 +1408,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
 		                   : getZebraColor2 ());
 		final char status = header.getStatus ();
-		final User custodian
-                = getUser (context, new Integer (header.getCustodianId ()));
+		final User custodian = header.getCustodian ();
 		final Date period = header.getPeriod ();
         final String headerId = header.getPrimaryKey ().toString ();
         final String [][] editLinkParameters = getHeaderLinkParameters
@@ -1586,8 +1576,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             // get school class members
             final List placements = new ArrayList ();
             try {
-                final User custodian = getUser (context, new Integer
-                                                (header.getCustodianId ()));
+                final User custodian = header.getCustodian ();
                 final Collection children
                         = familyBusiness.getChildrenInCustodyOf (custodian);
                 final SchoolCategory category = categoryHome.findByPrimaryKey
@@ -2193,15 +2182,55 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return dropdown;
     }
 
+    private DropdownMenu getInCustodyOfDropdown
+        (final IWContext context, final User custodian) throws RemoteException {
+        return getInCustodyOfDropdown (context, custodian, null);
+    }
+
+    private DropdownMenu getInCustodyOfDropdown
+        (final IWContext context, final User custodian,
+         final InvoiceRecord record) throws RemoteException {
+        final DropdownMenu dropdown = (DropdownMenu)
+                getStyledInterface (new DropdownMenu (IN_CUSTODY_OF_KEY));
+
+        try {
+            Object currentChildId
+                    = null != record && 0 < record.getSchoolClassMemberId ()
+                    ? record.getSchoolClassMember ().getStudent ()
+                    .getPrimaryKey ()
+                    : null;
+            final MemberFamilyLogic familyBusiness = (MemberFamilyLogic)
+                    IBOLookup.getServiceInstance (context,
+                                                  MemberFamilyLogic.class);
+            final Collection children
+                    = familyBusiness.getChildrenInCustodyOf (custodian);
+            for (Iterator i = children.iterator (); i.hasNext ();) {
+                final User child = (User) i.next ();
+                final Object key = child.getPrimaryKey ();
+                dropdown.addMenuElement (key + "", getUserInfo (child));
+                if (null != currentChildId && currentChildId.equals (key)) {
+                    dropdown.setSelectedElement (key + "");
+                }
+            }
+        } catch (FinderException fe) {
+            // no problem - return empty dropdown
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
+        return dropdown;
+    }
+
     private DropdownMenu getLocalizedDropdown
         (final RegulationSpecType [] types) {
         final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
                 (new DropdownMenu (REGULATION_SPEC_TYPE_KEY));
         for (int i = 0; i < types.length; i++) {
             final RegulationSpecType type = types [i];
-            final String regSpecType = type.getRegSpecType ();
-            dropdown.addMenuElement (type.getPrimaryKey () + "",
-                                     localize (regSpecType, regSpecType));
+            final String name = type.getRegSpecType ();
+            if (null != name && !name.endsWith (".blank")) {
+                dropdown.addMenuElement (type.getPrimaryKey () + "",
+                                         localize (name, name));
+            }
         }
         return dropdown;
     }
