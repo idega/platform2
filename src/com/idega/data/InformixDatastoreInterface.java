@@ -91,7 +91,7 @@ public class InformixDatastoreInterface extends DatastoreInterface{
       theReturn = "FLOAT";
     }
     else if (javaClassName.equals("java.sql.Timestamp")){
-      theReturn = "DATE";
+      theReturn = "TIMESTAMP";
     }
     else if (javaClassName.equals("java.sql.Date")){
       theReturn = "DATE";
