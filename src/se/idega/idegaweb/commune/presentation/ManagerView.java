@@ -192,7 +192,7 @@ public class ManagerView extends CommuneBlock {
 		try
 		{
 			return manager.getPrimaryGroup();
-		} catch (RemoteException e)
+		} catch (Exception e)
 		{
 			throw new RuntimeException("No workgroup found for manager "+manager);
 		}

@@ -239,7 +239,8 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				nameTable1.add(getSmallText(child.getLastName()), 1, 2);
 				nameTable1.add(getSmallText(child.getFirstName()), 2, 2);
 			}
-			catch (RemoteException e) {
+			catch (Exception e) {
+				e.printStackTrace();
 			}
 
 			try {
