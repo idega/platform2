@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.136 2004/07/02 16:46:07 thomas Exp $
+ * $Id: NewsReader.java,v 1.137 2004/08/08 21:46:59 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -155,6 +155,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	private int visibleNewsRangeEnd = Integer.MAX_VALUE;
 	private boolean setHeadlineLinktToCategoryMainViewerPage = false;
 	private boolean showCategoryInSingleLineView = false;
+	private String moreAndBackStyleClass;
 
 	public NewsReader() {
 		setCacheable(getCacheKey(), 999999999);//cache indefinately
@@ -797,6 +798,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
 	private Link getMoreLink(PresentationObject obj, int newsId, IWContext iwc) {
 		Link moreLink = new Link(obj);
+		if (moreAndBackStyleClass != null) {
+			moreLink.setStyle(moreAndBackStyleClass);
+		}
 		checkFromPage(moreLink);
 		moreLink.addParameter(prmMore + getInstanceIDString(iwc), newsId);
 		if (viewPageId > 0) moreLink.setPage(viewPageId);
@@ -831,6 +835,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 
 	private Link getBackLink(PresentationObject obj) {
 		Link backLink = new Link(obj);
+		if (moreAndBackStyleClass != null) {
+			backLink.setStyle(moreAndBackStyleClass);
+		}
 		backLink.setAsBackLink(1);
 		return backLink;
 	}
@@ -1433,5 +1440,11 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 	 */
 	public void setDateWidth(int dateWidth) {
 		this.dateWidth = dateWidth;
+	}
+	/**
+	 * @param moreAndBackStyleClass The moreAndBackStyleClass to set.
+	 */
+	public void setMoreAndBackStyleClass(String moreAndBackStyleClass) {
+		this.moreAndBackStyleClass = moreAndBackStyleClass;
 	}
 }
