@@ -62,6 +62,9 @@ public class DynamicReportDesign {
 	private int _extraspaceBetweenParameterGroupsInHeader = 10;
 	private int _pageHeaderHeight = 20;
 	
+	private boolean showDate = false;
+	private boolean showUser = false;
+	
 	
 	private static String DYNAMIC_DESIGN_FOLDER = "dynamicDesigns";
 	private static String TEMP_DESIGN_NAME = "tmpDesigne";
@@ -70,6 +73,27 @@ public class DynamicReportDesign {
 	private static String XML_FILE_EXTENSION = "xml";
 	
 	public static final String PRM_REPORT_NAME = "ReportTitle";
+	public static final String PRM_DATE = "internal_parameter_print_date";
+	public static final String PRM_USER = "internal_parameter_user";
+	
+	
+	public static DynamicReportDesign getInstanceThatShowsDateAndUser(String name) {
+		DynamicReportDesign design = new DynamicReportDesign();
+		design.setShowDate(true);
+		design.setShowUser(true);
+		design.initializeDocument(name);
+		design.createTitle();
+		design.createPageHeader();
+		design.createColumnHeader();
+		design.createDetail();
+		design.createColumnFooter();
+		design.createPageFooter();
+		design.createSummary();
+		return design;
+	}
+	
+	public DynamicReportDesign() {
+		}
 	
 	/**
 	 * 
@@ -109,6 +133,12 @@ public class DynamicReportDesign {
 	
 	
 		_designDoc.addParameter(PRM_REPORT_NAME,String.class,true);
+		if (showDate) {
+			_designDoc.addParameter(PRM_DATE, String.class, true);
+		}
+		if (showUser) {
+			_designDoc.addParameter(PRM_USER, String.class, true);
+		}
 	
 	}
 
@@ -232,7 +262,57 @@ public class DynamicReportDesign {
 			tField.addContent(tfExpression);
 		pFooter.addContent(tField);
 
+		if (showDate) {
 		
+		TextField eField = new TextField();
+			eField.setIsStretchWithOverflow(false);
+			eField.setEvaluationTimeAsNow();
+			eField.setIsBlankWhenNull(false);
+			eField.setHyperlinkTypeAsNone();
+				ReportElement dElement2 = new ReportElement(140,0,100,15);
+				dElement2.setPositionTypeAsFloat();
+				dElement2.setIsPrintRepeatedValues(true);
+				dElement2.setIsRemoveLineWhenBlank(false);
+				dElement2.setIsPrintInFirstWholeBand(false);
+				dElement2.setIsPrintWhenDetailOverflows(false);
+			eField.addContent(dElement2);
+				TextElement eElement = new TextElement();
+				eElement.setTextAlignmentAsLeft();
+				eElement.setVerticalAlignmentAsTop();
+				eElement.setLineSpacingAsSingle();
+			eField.addContent(eElement);
+			TextFieldExpression tfdExpression = new TextFieldExpression();
+				tfdExpression.setClassType(String.class);
+				tfdExpression.addParameter(PRM_DATE);
+			eField.addContent(tfdExpression);
+		pFooter.addContent(eField);
+		}
+		
+		if (showUser) {
+		TextField eField = new TextField();
+			eField.setIsStretchWithOverflow(false);
+			eField.setEvaluationTimeAsNow();
+			eField.setIsBlankWhenNull(false);
+			eField.setHyperlinkTypeAsNone();
+				ReportElement dElement2 = new ReportElement(240,0,100,15);
+				dElement2.setPositionTypeAsFloat();
+				dElement2.setIsPrintRepeatedValues(true);
+				dElement2.setIsRemoveLineWhenBlank(false);
+				dElement2.setIsPrintInFirstWholeBand(false);
+				dElement2.setIsPrintWhenDetailOverflows(false);
+			eField.addContent(dElement2);
+				TextElement eElement = new TextElement();
+				eElement.setTextAlignmentAsLeft();
+				eElement.setVerticalAlignmentAsTop();
+				eElement.setLineSpacingAsSingle();
+			eField.addContent(eElement);
+			TextFieldExpression tfdExpression = new TextFieldExpression();
+				tfdExpression.setClassType(String.class);
+				tfdExpression.addParameter(PRM_USER);
+			eField.addContent(tfdExpression);
+		pFooter.addContent(eField);
+		}
+
 		
 		_designDoc.setPageFooter(pFooter);
 	}
@@ -524,5 +604,12 @@ public class DynamicReportDesign {
 		_designDoc.getTitle().setHeight(heigth);
 	}
 	
+	public void setShowDate(boolean showDate) {
+		this.showDate = showDate;
+	}
+	
+	public void setShowUser(boolean showUser) {
+		this.showUser = showUser;
+	}
 	
 }
