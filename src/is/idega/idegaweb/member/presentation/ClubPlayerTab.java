@@ -61,10 +61,6 @@ public class ClubPlayerTab extends UserGroupTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
-
-		//		setName(DEFAULT_TAB_NAME);
-		
-//		setName("Flokkar/hópar - grunngögn");
 	}
 
 	public ClubPlayerTab(Group group) {
@@ -159,17 +155,11 @@ public class ClubPlayerTab extends UserGroupTab {
 	 */
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
-//			String union = iwc.getParameter(_unionFieldName);
 			String flokkur = iwc.getParameter(_cplayFieldName);
 			String name = iwc.getParameter(_nameFieldName);
 			String comp = iwc.getParameter(_competitionFieldName);
 			String coach = iwc.getParameter(_coachesFieldName);
 			
-
-//			if (union != null)
-//				fieldValues.put(_unionFieldName, union);
-//			else
-//				fieldValues.put(_unionFieldName, "");
 			if (flokkur != null)
 				fieldValues.put(_cplayFieldName, flokkur);
 			else
@@ -184,7 +174,6 @@ public class ClubPlayerTab extends UserGroupTab {
 			else
 				fieldValues.put(_coachesFieldName, "");
 				
-
 			updateFieldsDisplayStatus();
 		}
 
@@ -198,16 +187,12 @@ public class ClubPlayerTab extends UserGroupTab {
 		Group group;
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
-			// get corressponding service bean
-			ClubInformationPluginBusiness ageGenderPluginBusiness = getClubInformationPluginBusiness(iwc);
 
-//			String union = (String) fieldValues.get(_unionFieldName);
 			String flokkur = (String) fieldValues.get(_cplayFieldName);
 			String name = (String) fieldValues.get(_nameFieldName);
 			Boolean comp = (Boolean) fieldValues.get(_competitionFieldName);
 			String coach = (String) fieldValues.get(_coachesFieldName);
 
-//			group.setMetaData("CLUBPLAYER_UNION", union);
 			group.setMetaData("CLUBPLAYER_FLOKKUR", flokkur);
 			group.setMetaData("CLUBPLAYER_NAME", name);
 			if (comp != null) {
@@ -239,14 +224,11 @@ public class ClubPlayerTab extends UserGroupTab {
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 
-//			String union = group.getMetaData("CLUBPLAYER_UNION");
 			String flokkur = group.getMetaData("CLUBPLAYER_FLOKKUR");
 			String name = group.getMetaData("CLUBPLAYER_NAME");
 			String comp = group.getMetaData("CLUBPLAYER_COMP");
 			String coach = group.getMetaData("CLUBPLAYER_COACH");
 
-//			if (union != null)
-//				fieldValues.put(_unionFieldName, union);
 			if (flokkur != null)
 				fieldValues.put(_cplayFieldName, flokkur);
 			if (name != null)
@@ -263,18 +245,5 @@ public class ClubPlayerTab extends UserGroupTab {
 		catch (FinderException e) {
 			e.printStackTrace(System.err);
 		}
-	}
-
-	public ClubInformationPluginBusiness getClubInformationPluginBusiness(IWApplicationContext iwc) {
-		ClubInformationPluginBusiness business = null;
-		if (business == null) {
-			try {
-				business = (ClubInformationPluginBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ClubInformationPluginBusiness.class);
-			}
-			catch (java.rmi.RemoteException rme) {
-				throw new RuntimeException(rme.getMessage());
-			}
-		}
-		return business;
 	}
 }

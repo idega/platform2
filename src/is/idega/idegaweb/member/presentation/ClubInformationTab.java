@@ -54,7 +54,7 @@ public class ClubInformationTab extends UserGroupTab {
 	private TextInput _connectionToSpecialField;
 	private Text _regionalUnionField;
 	private DropdownMenu _statusField;
-	private CheckBox _premierLeagueField;
+//	private CheckBox _premierLeagueField;
 	private CheckBox _inOperationField;
 	private CheckBox _usingMemberSystemField;
 
@@ -70,7 +70,7 @@ public class ClubInformationTab extends UserGroupTab {
 	private Text _connectionToSpecialText;
 	private Text _regionalUnionText;
 	private Text _statusText;
-	private Text _premierLeagueText;
+//	private Text _premierLeagueText;
 	private Text _inOperationText;
 	private Text _usingMemberSystemText;
 
@@ -86,7 +86,7 @@ public class ClubInformationTab extends UserGroupTab {
 	private String _connectionToSpecialFieldName;
 	private String _regionalUnionFieldName;
 	private String _statusFieldName;
-	private String _premierLeagueFieldName;
+//	private String _premierLeagueFieldName;
 	private String _inOperationFieldName;
 	private String _usingMemberSystemFieldName;
 
@@ -123,7 +123,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_connectionToSpecialFieldName = "cit_special";
 		_regionalUnionFieldName = "cit_regional";
 		_statusFieldName = "cit_status";
-		_premierLeagueFieldName = "cit_premier";
+//		_premierLeagueFieldName = "cit_premier";
 		_inOperationFieldName = "cit_operation";
 		_usingMemberSystemFieldName = "cit_usingSystem";
 	}
@@ -145,7 +145,7 @@ public class ClubInformationTab extends UserGroupTab {
 		fieldValues.put(_connectionToSpecialFieldName, "");
 		fieldValues.put(_regionalUnionFieldName, "");
 		fieldValues.put(_statusFieldName, "");
-		fieldValues.put(_premierLeagueFieldName, new Boolean(false));
+//		fieldValues.put(_premierLeagueFieldName, new Boolean(false));
 		fieldValues.put(_inOperationFieldName, new Boolean(false));
 		fieldValues.put(_usingMemberSystemFieldName, new Boolean(false));
 	}
@@ -175,7 +175,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_connectionToSpecialField.setContent((String) fieldValues.get(_connectionToSpecialFieldName));
 		_regionalUnionField.setText((String) fieldValues.get(_regionalUnionFieldName));
 		_statusField.setSelectedElement((String) fieldValues.get(_statusFieldName));
-		_premierLeagueField.setChecked(((Boolean) fieldValues.get(_premierLeagueFieldName)).booleanValue());
+//		_premierLeagueField.setChecked(((Boolean) fieldValues.get(_premierLeagueFieldName)).booleanValue());
 		_inOperationField.setChecked(((Boolean) fieldValues.get(_inOperationFieldName)).booleanValue());
 		_usingMemberSystemField.setChecked(((Boolean) fieldValues.get(_usingMemberSystemFieldName)).booleanValue());
 	}
@@ -197,7 +197,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_connectionToSpecialField = new TextInput(_connectionToSpecialFieldName);
 		_regionalUnionField = new Text();
 		_statusField = new DropdownMenu(_statusFieldName);
-		_premierLeagueField = new CheckBox(_premierLeagueFieldName);
+//		_premierLeagueField = new CheckBox(_premierLeagueFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
 		_usingMemberSystemField = new CheckBox(_usingMemberSystemFieldName);
 		
@@ -241,7 +241,7 @@ public class ClubInformationTab extends UserGroupTab {
 		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special") + ":");
 		_regionalUnionText = new Text(iwrb.getLocalizedString(_regionalUnionFieldName, "Regional union") + ":");
 		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status") + ":");
-		_premierLeagueText = new Text(iwrb.getLocalizedString(_premierLeagueFieldName, "Premier league") + ":");
+//		_premierLeagueText = new Text(iwrb.getLocalizedString(_premierLeagueFieldName, "Premier league") + ":");
 		_inOperationText = new Text(iwrb.getLocalizedString(_inOperationFieldName, "In operation") + ":");
 		_usingMemberSystemText = new Text(iwrb.getLocalizedString(_usingMemberSystemFieldName, "In member system") + ":");
 	}
@@ -252,7 +252,7 @@ public class ClubInformationTab extends UserGroupTab {
 	public void lineUpFields() {
 		empty();
 		
-		Table t = new Table(2, 16);
+		Table t = new Table(2, 15);
 		t.add(_numberText, 1, 1);
 		t.add(_numberField, 2, 1);
 		t.add(_ssnText, 1, 2);
@@ -277,12 +277,12 @@ public class ClubInformationTab extends UserGroupTab {
 		t.add(_regionalUnionField, 2, 12);
 		t.add(_statusText, 1, 13);
 		t.add(_statusField, 2, 13);
-		t.add(_premierLeagueText, 1, 14);
-		t.add(_premierLeagueField, 2, 14);
-		t.add(_inOperationText, 1, 15);
-		t.add(_inOperationField, 2, 15);
-		t.add(_usingMemberSystemText, 1, 16);
-		t.add(_usingMemberSystemField, 2, 16);
+//		t.add(_premierLeagueText, 1, 14);
+//		t.add(_premierLeagueField, 2, 14);
+		t.add(_inOperationText, 1, 14);
+		t.add(_inOperationField, 2, 14);
+		t.add(_usingMemberSystemText, 1, 15);
+		t.add(_usingMemberSystemField, 2, 15);
 
 		add(t);
 	}
@@ -304,7 +304,7 @@ public class ClubInformationTab extends UserGroupTab {
 			String connection = iwc.getParameter(_connectionToSpecialFieldName);
 //			String regional = iwc.getParameter(_regionalUnionFieldName);
 			String status = iwc.getParameter(_statusFieldName);
-			String premier = iwc.getParameter(_premierLeagueFieldName);
+//			String premier = iwc.getParameter(_premierLeagueFieldName);
 			String inOperation = iwc.getParameter(_inOperationFieldName);
 			String using = iwc.getParameter(_usingMemberSystemFieldName);
 
@@ -353,7 +353,7 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_statusFieldName, status);
 			else
 				fieldValues.put(_statusFieldName, "");
-			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
+//			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
 			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
 			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
 
@@ -386,7 +386,7 @@ public class ClubInformationTab extends UserGroupTab {
 			String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
 //			String regional = (String) fieldValues.get(_regionalUnionFieldName);
 			String status = (String) fieldValues.get(_statusFieldName);
-			Boolean premier = (Boolean) fieldValues.get(_premierLeagueFieldName);
+//			Boolean premier = (Boolean) fieldValues.get(_premierLeagueFieldName);
 			Boolean inOperation = (Boolean) fieldValues.get(_inOperationFieldName);
 			Boolean usingSystem = (Boolean) fieldValues.get(_usingMemberSystemFieldName);
 
@@ -406,10 +406,10 @@ public class ClubInformationTab extends UserGroupTab {
 				group.setMetaData("CLUBINFO_CONN", "");
 //			group.setMetaData("CLUBINFO_REGIONAL", regional);
 			group.setMetaData("CLUBINFO_STATUS", status);
-			if (premier != null)
-				group.setMetaData("CLUBINFO_PREMIER", premier.toString());
-			else
-				group.setMetaData("CLUBINFO_PREMIER", Boolean.FALSE.toString());
+//			if (premier != null)
+//				group.setMetaData("CLUBINFO_PREMIER", premier.toString());
+//			else
+//				group.setMetaData("CLUBINFO_PREMIER", Boolean.FALSE.toString());
 			if (inOperation != null)
 				group.setMetaData("CLUBINFO_OPERATION", inOperation.toString());
 			else
@@ -448,7 +448,7 @@ public class ClubInformationTab extends UserGroupTab {
 			if (it != null) {
 				while (it.hasNext()) {
 					Group parent = (Group)it.next();
-					if (parent.getGroupType().equals("iw_me_regional_union"))
+					if (parent.getGroupType().equals("iwme_regional_union"))
 						regional = parent.getName();
 				}
 			}
@@ -467,7 +467,7 @@ public class ClubInformationTab extends UserGroupTab {
 			String connection = group.getMetaData("CLUBINFO_CONN");
 //			String regional = group.getMetaData("CLUBINFO_REGIONAL");
 			String status = group.getMetaData("CLUBINFO_STATUS");
-			String premier = group.getMetaData("CLUBINFO_PREMIER");
+//			String premier = group.getMetaData("CLUBINFO_PREMIER");
 			String inOperation = group.getMetaData("CLUBINFO_OPERATION");
 			String using = group.getMetaData("CLUBINFO_SYSTEM");
 
@@ -494,7 +494,7 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_regionalUnionFieldName, regional);
 			if (status != null)
 				fieldValues.put(_statusFieldName, status);
-			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
+//			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
 			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
 			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
 
