@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
+
 import java.util.Vector;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
@@ -27,7 +27,6 @@ import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 
 import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 
-import se.idega.idegaweb.commune.accounting.userinfo.business.UserInfoService;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.presentation.ChildContractsWindow;
@@ -63,7 +62,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private User secondUser = null;
 	private HouseHoldFamily firstFamily = null, secondFamily = null;
 	private boolean hasUser = false;
-	private List children = null;
+	
 	private NumberFormat nf = null;
 	private Integer userEditorPageID = null;
 	private Integer userBruttoIncomePageID = null;
@@ -620,9 +619,7 @@ public class HouseHoldViewer extends AccountingBlock {
 	private CommuneUserBusiness getUserService(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
-	private UserInfoService getUserInfoService(IWContext iwc) throws RemoteException {
-		return (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
-	}
+
 	private AgeBusiness getAgeService(IWContext iwc) throws RemoteException {
 		return (AgeBusiness) IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
 	}

@@ -25,7 +25,7 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.accounting.invoice.business.SiblingOrderException;
+
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.BruttoIncomeHome;
 import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
