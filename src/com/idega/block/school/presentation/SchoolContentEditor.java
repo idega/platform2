@@ -34,8 +34,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
-import com.idega.idegaweb.IWBundle;
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.user.data.User;
 
 /**
@@ -376,9 +374,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 				*/
 				
 				User currentUser = iwc.getCurrentUser();
-				if(currentUser.getGroupID() == getContentEditorsGroupId()) {
-					_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
-				}
+				_school.setLocalizedText( information, iwc.getCurrentLocaleId() );
 
 				if (!school_name.equals("")) {
 					_school.setSchoolName(school_name);	
@@ -436,18 +432,6 @@ public class SchoolContentEditor extends IWAdminWindow{
 		return false;
 	}
 
-	private int getContentEditorsGroupId() {
-		// retrieves the group ID of Editors 
-		String groupId = getCommuneBundle().getProperty(CONTENT_EDITORS_GROUP_PARAMETER_NAME);
-		if (groupId != null) {
-				return Integer.parseInt(groupId);
-		}	
-		return -1;
-	}
-
-	protected IWBundle getCommuneBundle() {
-		return this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
-	}
 
 	private SchoolBusiness getSchoolBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(iwac, SchoolBusiness.class);
