@@ -39,6 +39,9 @@ private int[] tournamentRounds = null;
 private String gender = null;
 private int orderBy = -1;
 private int sortBy = -1;
+private boolean showAllGroups = false;
+private boolean showAllGenders = false;
+private boolean championship = false;
 
 private Tournament tournament;
 private Form myForm;
@@ -86,6 +89,7 @@ private Table resultTable;
           }
           else {
             tournamentGroupID = -1;
+            showAllGroups = true;
           }
         }
       }
@@ -119,6 +123,9 @@ private Table resultTable;
       if ( gender_ != null ) {
         if ( gender_.equalsIgnoreCase("f") || gender_.equalsIgnoreCase("m") ) {
           gender = gender_.toUpperCase();
+        }
+        if ( gender_.equalsIgnoreCase("b") && !showAllGroups ) {
+          showAllGenders = true;
         }
       }
 
@@ -184,9 +191,21 @@ private Table resultTable;
       genderMenu.addMenuElement("B",iwrb.getLocalizedString("tournament.both","Both"));
       genderMenu.keepStatusOnAction();
 
+    if ( tournament.getNumberOfRounds() > 4 ) {
+      championship = true;
+    }
+
+    String all = "";
+    String allGroups = "0";
+
+    if ( championship ) {
+      all = "0";
+      allGroups = "";
+    }
+
     DropdownMenu groupsMenu = new DropdownMenu("tournament_group_id");
       groupsMenu.setAttribute("style",getStyle());
-      groupsMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.groups","Groups")+" -");
+      groupsMenu.addMenuElement(all,"- "+iwrb.getLocalizedString("tournament.groups","Groups")+" -");
 
       TournamentGroup[] groups = null;
       try {
@@ -199,7 +218,7 @@ private Table resultTable;
         e.printStackTrace(System.err);
       }
 
-      groupsMenu.addMenuElement("0",iwrb.getLocalizedString("tournament.all","All"));
+      groupsMenu.addMenuElement(allGroups,iwrb.getLocalizedString("tournament.all","All"));
       groupsMenu.keepStatusOnAction();
 
     String roundShort = iwrb.getLocalizedString("tournament.round","Round");
@@ -263,18 +282,81 @@ private Table resultTable;
   }
 
   private void getResultsTable() {
-    resultTable = new Table(1,1);
-      resultTable.setBorder(0);
-      resultTable.setCellpadding(0);
-      resultTable.setCellspacing(0);
-      resultTable.setWidth("100%");
-      resultTable.setHeight("100%");
-      resultTable.setVerticalAlignment(1,1,"top");
+    try {
+      resultTable = new Table(1,1);
+        resultTable.setBorder(0);
+        resultTable.setCellpadding(0);
+        resultTable.setCellspacing(0);
+        resultTable.setWidth("100%");
+        resultTable.setHeight("100%");
+        resultTable.setVerticalAlignment(1,1,"top");
 
-    TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,tournamentGroupID,tournamentRounds,gender);
-        tournResults.sortBy(orderBy);
+      if ( showAllGroups || showAllGenders ) {
+        if ( showAllGroups ) {
+          String genderString = "";
+          if ( gender != null ) {
+            genderString = "and gender = '"+gender.toUpperCase()+"'";
+          }
 
-    resultTable.add(tournResults,1,1);
+          TournamentGroup[] groups = (TournamentGroup[]) TournamentGroup.getStaticInstance("com.idega.projects.golf.entity.TournamentGroup").findAll("select tournament_group.* from tournament_group tg, tournament_tournament_group ttg where tg.tournament_group_id = ttg.tournament_group_id "+genderString+" and tournament_id = "+Integer.toString(tournamentID)+" order by handicap_max");
+
+          Table groupResultsTable = new Table();
+            groupResultsTable.setWidth("100%");
+
+          int row = 1;
+
+          for ( int a = 0; a < groups.length; a++ ) {
+            Text groupName = new Text(groups[a].getName());
+              groupName.setFontSize(3);
+              groupName.setBold();
+
+            TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,groups[a].getID(),tournamentRounds,gender);
+                tournResults.sortBy(orderBy);
+
+            groupResultsTable.add(groupName,1,row);
+            groupResultsTable.add(tournResults,1,row+1);
+            row += 3;
+          }
+          resultTable.add(groupResultsTable,1,1);
+        }
+
+        if ( showAllGenders ) {
+          String[] genders = getGenderInTournament();
+
+          Table groupResultsTable = new Table();
+            groupResultsTable.setWidth("100%");
+
+          int row = 1;
+
+          for ( int a = 0; a < genders.length; a++ ) {
+            Text genderName = new Text();
+              genderName.setFontSize(3);
+              genderName.setBold();
+
+            if ( genders[a].equalsIgnoreCase("m") )
+              genderName.setText(iwrb.getLocalizedString("tournament.men","Men"));
+            else genderName.setText(iwrb.getLocalizedString("tournament.women","Women"));
+
+            TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,tournamentGroupID,tournamentRounds,genders[a]);
+                tournResults.sortBy(orderBy);
+
+            groupResultsTable.add(genderName,1,row);
+            groupResultsTable.add(tournResults,1,row+1);
+            row += 3;
+          }
+          resultTable.add(groupResultsTable,1,1);
+       }
+      }
+      else {
+        TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,tournamentGroupID,tournamentRounds,gender);
+            tournResults.sortBy(orderBy);
+
+        resultTable.add(tournResults,1,1);
+      }
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
   }
 
   private String[] getGenderInTournament() {

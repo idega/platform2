@@ -177,6 +177,7 @@ public class TournamentResults extends JModuleObject {
         int finalScore = collector.getTotalScore();
         int difference = collector.getDifference();
         String hole = collector.getHole();
+        int memberID = collector.getMemberId();
 
         Text memberText = new Text(collector.getName());
           memberText.setFontSize(Text.FONT_SIZE_7_HTML_1);
@@ -246,7 +247,10 @@ public class TournamentResults extends JModuleObject {
               int roundIncNumber = collector.getRound(b);
               int position = roundScoreColumn + roundIncNumber - 1;
 
-              if ( collector.getRoundNumber(b) != 0 ) {
+                System.out.println("getRound"+b+": "+roundIncNumber);
+
+              if ( roundIncNumber != -1 ) {
+                  System.out.println("getRoundNumber"+b+": "+collector.getRoundNumber(b));
                 roundScore2 = collector.getRoundScore(collector.getRoundNumber(b));
               }
 

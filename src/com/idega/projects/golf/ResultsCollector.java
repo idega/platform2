@@ -69,13 +69,10 @@ public class ResultsCollector {
   }
 
   public int getRoundNumber(int roundNumber) {
-    int position = 0;
+    int position = -1;
 
     if (roundNumber_ != null) {
-      position = roundNumber_.indexOf(new Integer(roundNumber));
-      if ( position == -1 ) {
-        position = 0;
-      }
+      position = roundNumber_.indexOf(new Integer(roundNumber)) + 1;
     }
 
     return position;
@@ -88,9 +85,6 @@ public class ResultsCollector {
       position = roundNumber_.indexOf(new Integer(roundNumber));
       if ( position != -1 ) {
         position = ((Integer) roundNumber_.elementAt(position)).intValue();
-        if ( this.memberId_ == 10558 ) {
-          System.out.println(position);
-        }
       }
     }
 
