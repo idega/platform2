@@ -64,11 +64,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/03 10:27:38 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/04 20:07:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.30 $
+ * @version $Revision: 1.31 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -671,6 +671,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                    columnCount, row++);
         final String schoolCategory = getSession().getOperationalField ();
         final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+        context.setSessionAttribute (PAYMENT_RECORDS_KEY, null);
+        context.setSessionAttribute (PROVIDER_KEY, null);
+        context.setSessionAttribute (MAIN_ACTIVITY_KEY, null);
         if (null != schoolCategory && null != providerId) {
             final Date startPeriod
                     = getPeriodParameter (context, START_PERIOD_KEY);
@@ -681,18 +684,17 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                     (schoolCategory, providerId,
                      new java.sql.Date (startPeriod.getTime ()),
                      new java.sql.Date (endPeriod.getTime ()));
-            table.setAlignment (columnCount, 2, Table.HORIZONTAL_ALIGN_RIGHT);
-            table.add (getSubmitButton
-                       (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
-                        CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
-                       columnCount, 2);
-            context.setSessionAttribute (PAYMENT_RECORDS_KEY, records);
-            context.setSessionAttribute (PROVIDER_KEY, providerId);
-            context.setSessionAttribute (MAIN_ACTIVITY_KEY, schoolCategory);
-            context.setSessionAttribute (START_PERIOD_KEY, startPeriod);
-            context.setSessionAttribute (END_PERIOD_KEY, endPeriod);
             table.mergeCells (1, row, columnCount, row);
             if (0 < records.length) {
+                table.setAlignment (columnCount, 2,
+                                    Table.HORIZONTAL_ALIGN_RIGHT);
+                table.add (getSubmitButton
+                           (ACTION_GENERATE_CHECK_AMOUNT_LIST_PDF + "",
+                            CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT),
+                           columnCount, 2);
+                context.setSessionAttribute (PAYMENT_RECORDS_KEY, records);
+                context.setSessionAttribute (PROVIDER_KEY, providerId);
+                context.setSessionAttribute (MAIN_ACTIVITY_KEY, schoolCategory);
                 table.add (getPaymentRecordListTable (records), 1, row++);
                 table.mergeCells (1, row, columnCount, row);
                 table.add (getPaymentSummaryTable (context, records, business),

@@ -208,12 +208,18 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		final IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCHOOL_ID, providerId + "").appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategory);
 		if (null != startPeriod) {
-			sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(startPeriod);
+            final IWTimestamp startStamp = new IWTimestamp(startPeriod);
+            startStamp.setAsDate ();
+            startStamp.setDay (1);
+			sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(startStamp.getDate ());
 		}
 		if (null != endPeriod) {
-			sql.appendAnd().append(endPeriod).appendGreaterThanOrEqualsSign().append(COLUMN_PERIOD);
+            final IWTimestamp endStamp = new IWTimestamp (endPeriod);
+            endStamp.setAsDate ();
+            endStamp.setDay (1);
+            endStamp.addMonths (1);
+			sql.appendAnd ().append (endStamp.getDate ()).appendGreaterThanSign().append(COLUMN_PERIOD);
 		}
-
 		return idoFindPKsBySQL(sql.toString());
 	}
 
