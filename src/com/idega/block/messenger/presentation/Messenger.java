@@ -71,4 +71,20 @@ public class Messenger extends Block {
     this.height = height;
   }
 
+  public synchronized Object clone() {
+    Messenger obj = null;
+    try {
+      obj = (Messenger)super.clone();
+
+      obj.width = this.width;
+      obj.height = this.height;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
   }
