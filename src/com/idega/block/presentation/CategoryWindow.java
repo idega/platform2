@@ -296,8 +296,8 @@ public class CategoryWindow extends IWAdminWindow {
       }
     }
     if(!formAdded){
-       T.add(name,1,row);
-       T.add(info,2,row);
+       T.add(name,2,row);
+       //T.add(info,2,row);
     }
     else{
       Link li = new Link(iwrb.getLocalizedImageButton("new","New"));

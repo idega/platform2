@@ -115,7 +115,7 @@ public CalendarTypeEditor(){
   private void initializeFields(int iLocaleID) {
     CalendarEntryType type = null;
     if ( _update )
-      type = CalendarFinder.getEntryType(_typeID);
+      type = CalendarFinder.getInstance().getEntryType(_typeID);
 
     String[] locStrings = null;
     if ( type != null )
