@@ -4,6 +4,8 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountSession;
 import se.idega.idegaweb.commune.message.business.MessageSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -11,6 +13,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
@@ -22,9 +25,11 @@ import com.idega.data.IDOLookup;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
@@ -191,24 +196,22 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	}
 	
 	private void viewPreferencesForm(IWContext iwc) throws java.rmi.RemoteException {
-		drawPermanentUserInfo(iwc);
 		drawForm(iwc);
 	}
 	
-	private void drawPermanentUserInfo(IWContext iwc) throws java.rmi.RemoteException {
+	private void drawForm(IWContext iwc) throws RemoteException {
+		Form form = new Form();
+		Table table = new Table();	
+//		table.setWidth(getWidth());
+		table.setCellpadding(1);
+		table.setCellspacing(getCellspacing());
+		form.add(table);
+		int row = 1;
+
 		UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 
-		Table table = new Table();
-//		table.setWidth(getWidth());
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-
-		int row = 1;
 		table.add(getSmallHeader(localize(KEY_NAME, DEFAULT_NAME)), 1, row);
-		String userName = user.getFirstName();
-		if (user.getLastName() != null) {
-			userName = user.getLastName() + ", " + userName;
-		}
+		String userName = user.getName();
 		table.add(getSmallText(userName), 2, row);
 
 		row++;
@@ -227,23 +230,6 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			addressText = mainAddress.getStreetAddress() + ", " + mainAddress.getPostalAddress();
 		}
 		table.add(getSmallText(addressText), 2, row);
-
-		row++;
-		table.addBreak(1, row);
-
-		add(table);
-	}
-
-	private void drawForm(IWContext iwc) throws RemoteException {
-		Form form = new Form();
-		Table table = new Table();	
-//		table.setWidth(getWidth());
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-		form.add(table);
-		int row = 1;
-
-		UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
 
 		String valueEmail = iwc.getParameter(PARAMETER_EMAIL);
 		if (valueEmail == null) {
@@ -383,46 +369,6 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			}
 		}
 		SubmitButton sbUpdate = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_UPDATE, DEFAULT_UPDATE), PARAMETER_FORM_SUBMIT, "true"));
-		//SubmitButton sbCancel = (SubmitButton) getStyledInterface(new SubmitButton(localize(KEY_CANCEL, DEFAULT_CANCEL), PARAMETER_FORM_SUBMIT, "true"));
-
-/*
-		Collection emails = user.getEmails();
-		try {
-			if (emails != null) {
-				Iterator iter = emails.iterator();
-				Email email;
-				EmailHome emailHome = (EmailHome) IDOLookup.getHome(Email.class);
-				String emId;
-				if (iter.hasNext()) {
-					email = emailHome.findByPrimaryKey(iter.next());
-					emId = email.getPrimaryKey().toString();
-					TextInput tiEmail = (TextInput) super.getStyledInterface(new TextInput(PARAMETER_EMAIL, email.getEmailAddress()));		
-					table.add(tEmail, 1, row);
-					table.add(new HiddenInput(PARAMETER_EMAIL_ID, emId), 2, row);
-					table.add(tiEmail, 2, row);
-				} else {
-					TextInput tiEmail = (TextInput) super.getStyledInterface(new TextInput(PARAMETER_EMAIL));		
-					table.add(tEmail, 1, row);
-					table.add(tiEmail, 2, row);
-				}
-			}			
-		} catch (FinderException e) {
-			super.add(new ExceptionWrapper(e, this));
-		}
-*/
-		
-		row++;
-		table.add(tEmail, 1, row);
-		table.add(tiEmail, 2, row);
-		
-//		row++;
-//		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
-//		if (loginTable != null) {
-//			tiLogin.setContent(loginTable.getUserLogin());	
-//			table.add(new HiddenInput(PARAMETER_OLD_LOGIN, loginTable.getUserLogin()), 2, row);
-//		}
-//		table.add(tLogin, 1, row);
-//		table.add(tiLogin, 2, row);
 		
 		row++;
 		table.add(tCurrentPassword, 1, row);
@@ -440,6 +386,10 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.addBreak(1, row);
 
 		row++;
+		table.add(tEmail, 1, row);
+		table.add(tiEmail, 2, row);
+		
+		row++;
 		table.add(tPhoneHome, 1, row);
 		table.add(tiPhoneHome, 2, row);
 
@@ -448,11 +398,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.add(tiPhoneWork, 2, row);
 		
 		row++;
-		table.addBreak(1, row);
-
-		row++;
-		table.add(cbCOAddressSelect, 2, row);
-		table.add(tCOAddressSelect, 2, row);
+		table.setHeight(row, 12);
 
 		row++;
 		table.add(tCOStreetAddress, 1, row);
@@ -467,33 +413,45 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		table.add(tiCOCity, 2, row);
 		
 		row++;
-		table.addBreak(1, row);
+		table.setHeight(row, 12);
 
 		row++;
-		table.add(cbMessagesViaEmail, 2, row);
-		table.add(tMessagesViaEmail, 2, row);
+		table.mergeCells(1, row, 2, row);
+		table.add(cbCOAddressSelect, 1, row);
+		table.add(tCOAddressSelect, 1, row);
+
+		row++;
+		table.mergeCells(1, row, 2, row);
+		table.add(cbMessagesViaEmail, 1, row);
+		table.add(tMessagesViaEmail, 1, row);
 		
 		row++;
-		table.addBreak(1, row);
+		table.setHeight(row, 12);
+		
+		ICPage homepage = null;
+		try {
+			ub.getHomePageForUser(user);
+		}
+		catch (FinderException fe) {
+			//No page found
+			homepage = null;
+		}
 		
 		row++;
-		table.add(sbUpdate, 2, row);
-		table.add(getSmallText(" "), 2, row);
-//		table.add(sbCancel, 2, row);
-		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add(sbUpdate, 1, row);
+		if (homepage != null) {
+			table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+			GenericButton home = getButton(new GenericButton("home", localize("my_page", "Back to My Page")));
+			home.setPageToOpen(homepage);
+			table.add(home, 1, row);
+		}
 		
-//		row++;
-//		table.addBreak(1, row);
-				
 		add(form);
 	}
 	
 	private void updatePreferences(IWContext iwc)  throws Exception {
-		drawPermanentUserInfo(iwc);
-
 		LoginTable loginTable = LoginDBHandler.getUserLogin(((Integer) user.getPrimaryKey()).intValue());
 		String login    = loginTable.getUserLogin();
-//		String loginOld = iwc.getParameter(PARAMETER_OLD_LOGIN);
 		String currentPassword = iwc.getParameter(PARAMETER_CURRENT_PASSWORD);
 		String newPassword1 = iwc.getParameter(PARAMETER_NEW_PASSWORD);
 		String newPassword2 = iwc.getParameter(PARAMETER_NEW_PASSWORD_REPEATED);		
@@ -581,9 +539,6 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			}
 			if (updateEmail) {
 				ub.updateUserMail(((Integer)user.getPrimaryKey()).intValue(), sEmail);
-//				Email email = getUserEmail(iwc);
-//				email.setEmailAddress(sEmail);
-//				email.store();
 			}
 			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 1, phoneHome);
 			ub.updateUserPhone(((Integer)user.getPrimaryKey()).intValue(), 2, phoneWork);
@@ -608,23 +563,10 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 		drawForm(iwc);
 		if (errorMessage == null) {
+			add(new Break());
 			add(getLocalizedText(KEY_PREFERENCES_SAVED, DEFAULT_PREFERENCES_SAVED));
 		}
 	}
-	
-/*	
-	private Email getUserEmail(IWContext iwc) {
-		Email email = null;
-		try {
-			String emailId = iwc.getParameter(PARAMETER_EMAIL_ID);
-			EmailHome emailHome = (EmailHome) IDOLookup.getHome(Email.class);
-			email = emailHome.findByPrimaryKey(new Integer(emailId));
-		} catch (Exception e) {
-			super.add(new ExceptionWrapper(e, this));
-		}
-		return email;
-	}
-*/
 	
 	private Address getCOAddress(IWContext iwc) {
 		Address coAddress = null;
