@@ -6,6 +6,7 @@ import com.idega.presentation.ui.AbstractChooser;
 import com.idega.idegaweb.IWBundle;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.block.text.data.*;
+import com.idega.presentation.Image;
 /**
  * Title: com.idega.block.text.presentation.TextChooser
  * Description: The chooser object for localized text
@@ -17,10 +18,13 @@ import com.idega.block.text.data.*;
 
 public class TextChooser extends AbstractChooser {
   private String style;
+  private Image _chooseButtonImage;
   public static String RELOAD_PARENT_PARAMETER = "tx_no_reload";
+
 
   public TextChooser(String chooserName) {
     addForm(false);
+    addTextInput(false);
     setChooserParameter(chooserName);
   }
 
@@ -35,8 +39,12 @@ public class TextChooser extends AbstractChooser {
 
   public void main(IWContext iwc){
     IWBundle iwb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
-    setChooseButtonImage(iwb.getImage("open.gif","Choose file"));
-      iwc.setSessionAttribute(RELOAD_PARENT_PARAMETER, "true");
+    if (_chooseButtonImage != null) {
+      setChooseButtonImage(_chooseButtonImage);
+    }else {
+      setChooseButtonImage(iwb.getImage("open.gif","Choose file"));
+    }
+    iwc.setSessionAttribute(RELOAD_PARENT_PARAMETER, "true");
     if( getChooserValue()!= null ){
 //      iwc.setSessionAttribute(MediaBusiness.getMediaParameterNameInSession(iwc),getChooserValue());
     }
@@ -48,6 +56,10 @@ public class TextChooser extends AbstractChooser {
 
   public void setValue(Object text){
     setSelectedText((TxText)text);
+  }
+
+  public void setChooseImage(Image image) {
+    _chooseButtonImage = image;
   }
 
 }
