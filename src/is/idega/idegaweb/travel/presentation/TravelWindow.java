@@ -37,6 +37,9 @@ public class TravelWindow extends Window {
   protected int userId = -1;
   protected boolean isSuperAdmin = false;
   
+  public static String LOCALIZATION_KEY = "locK";
+  public static String LOCALIZATION_KEY_FOR_HEADER = "locK_h";
+  
   protected Image headerImage;
 
   public String getBundleIdentifier(){
@@ -47,6 +50,9 @@ public class TravelWindow extends Window {
 
 
   public TravelWindow() {
+  	super.setTitle("idegaWEB travel");
+  	super.setScrollbar(true);
+  	super.setResizable(true);
   }
 
   public void add(PresentationObject mo) {
@@ -59,9 +65,28 @@ public class TravelWindow extends Window {
 
 
   public void main(IWContext iwc) throws Exception{
-    initialize(iwc);
+  	initialize(iwc);
     setTemplate(iwc);
     super.add(table);
+    
+    String locKeyH = iwc.getParameter(LOCALIZATION_KEY_FOR_HEADER);
+    String locKey = iwc.getParameter(LOCALIZATION_KEY);
+    if(locKeyH != null || locKey != null) {
+    	this.add(Text.BREAK);
+    	Table table = new Table();
+    	table.setWidth("75%");
+    	table.setAlignment(Table.HORIZONTAL_ALIGN_CENTER);
+    	if (locKeyH != null && iwrb.getLocalizedString(locKeyH) != null) {
+	    	Text text = getTextHeader(iwrb.getLocalizedString(locKeyH, locKeyH));
+	    	text.setFontColor("BLACK");
+	    	table.add(text, 1, 1);
+	    }
+	    if (locKey != null && iwrb.getLocalizedString(locKey) != null) {
+	    	Text text = getText(iwrb.getLocalizedString(locKey, locKey));
+	    	table.add(text, 1, 2);
+	    }
+	    this.add(table);
+    }
   }
 
   protected void close(boolean reloadParent) {
