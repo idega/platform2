@@ -107,7 +107,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 	}
 	
 	private Table getAllProviderTable(IWContext iwc) throws RemoteException {
-		Table table = getTable(6);
+		Table table = getTable(8);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
 		int column = 1;
@@ -115,6 +115,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.order","Order"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.queue_order","Queue order"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.placement_within_3_month","Within months (3)"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.placement_within_12_month","Within months (12)"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), column++, row++);
@@ -148,6 +150,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 				table.add(getSmallText(school.getSchoolName()), column++, row);
 				table.add(getSmallText(String.valueOf(getBusiness().getQueueByProvider(providerID))), column++, row);
 				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProvider(providerID))), column++, row);
+				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProviderWithinMonths(providerID, 3))), column++, row);
+				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProviderWithinMonths(providerID, 12))), column++, row);
 				if (prognosis != null) {
 					table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPrognosis())), column++, row);
 					table.add(getSmallText(String.valueOf(prognosis.getOneYearPrognosis())), column++, row);
