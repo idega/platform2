@@ -124,7 +124,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(" and '");
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
-		sql.append(DEBET);
+		sql.append(DEBET).append('\'');
 		
 		return super.idoFindPKsBySQL(sql.toString());
 	}
@@ -139,7 +139,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(" and '");
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
-		sql.append(CREDIT);
+		sql.append(CREDIT).append('\'');
 		
 		return super.idoFindPKsBySQL(sql.toString());
 	}
@@ -154,7 +154,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(" and '");
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
-		sql.append(DEBET);
+		sql.append(DEBET).append('\'');
 		
 		return super.idoFindPKsBySQL(sql.toString());
 	}
@@ -169,7 +169,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(" and '");
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
-		sql.append(CREDIT);
+		sql.append(CREDIT).append('\'');
 		
 		return super.idoFindPKsBySQL(sql.toString());
 	}	
