@@ -90,8 +90,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       }
 
       userPanel = new Panel();
+      userPanel.setLayout(new BorderLayout());
       userPanel.setSize(FRAME_WIDTH,FRAME_HEIGHT);
-      userPanel.add(new Label("testi testi testi"),1);
       add(userPanel);
 
       threadSleep = 1000*checkTimer;
@@ -333,7 +333,13 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       msg.setSender(sendToId);
       msg.setSenderName(name);
 
-      MessageDialog dialog = new MessageDialog(FRAME_NAME,msg,logoLabel);
+      MessageDialog dialog;
+
+      if( logoLabel!= null)
+        dialog = new MessageDialog(FRAME_NAME,msg,logoLabel);
+      else
+        dialog = new MessageDialog(FRAME_NAME,msg);
+
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
       dialog.addActionListener(this);
@@ -341,13 +347,21 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       SingleLineItem item = new SingleLineItem(this);
       item.setId(sendToId);
       item.setWindowToOpen(dialog);
+
       if( faceLabel!= null ) item.add(faceLabel);
+
       item.add(new Label(name));
       item.setSize(16,100);
 
-      userPanel.add(item,2);
-      item.repaint();
+      userPanel.add(new Label("testi testi testi"),BorderLayout.NORTH);
 
+      userPanel.add(item,BorderLayout.SOUTH);
+
+
+      userPanel.setVisible(false);
+      item.setVisible(true);
+      item.repaint();
+      userPanel.setVisible(true);
       userPanel.repaint();
 
       repaint();
@@ -376,6 +390,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public void actionPerformed(ActionEvent e){
     MessageDialog d = (MessageDialog) e.getSource();
     getMessagesFromDialog(d);
+    repaint();
   }
 
       /*
@@ -512,7 +527,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       }
   }
 
-
+/*
   public void update(Graphics g){
     super.repaint();
   }
@@ -520,6 +535,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public void paint(Graphics g){
   //use the update method
   }
+*/
+
 
   /**Start the applet*/
   public void start() {
