@@ -661,7 +661,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		}
 	}
 	
-	private void setShowEmploymentDropDown(boolean show){
+	public void setShowEmploymentDropDown(boolean show){
 		showEmplDrop = show;
 	}
 }
