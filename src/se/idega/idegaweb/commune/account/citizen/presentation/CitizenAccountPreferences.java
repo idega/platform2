@@ -142,6 +142,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private boolean noVerificationForBankLogins = true;
 	private boolean iShowPassword = true;
 	private boolean removeEmailWhenEmpty = true;
+	
+	private ICPage iPasswordPage;
 
 	public CitizenAccountPreferences() {
 	}
@@ -471,6 +473,12 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 		row++;
 		table.add(sbUpdate, 1, row);
+		if (iPasswordPage != null) {
+			table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+			GenericButton changePassword = getButton(new GenericButton("change_password", localize("change_password", "Change password")));
+			changePassword.setPageToOpen(iPasswordPage);
+			table.add(changePassword, 1, row);
+		}
 		if (homepage != null) {
 			table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 			GenericButton home = getButton(new GenericButton("home", localize("my_page", "Back to My Page")));
@@ -729,4 +737,10 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	public void setToRemoveEmailWhenEmpty(boolean flag) {
 		this.removeEmailWhenEmpty = flag;
 	}
+
+	
+	public void setPasswordPage(ICPage passwordPage) {
+		iPasswordPage = passwordPage;
+	}
+	
 }
