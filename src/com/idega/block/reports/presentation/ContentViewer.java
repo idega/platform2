@@ -53,6 +53,7 @@ public class ContentViewer extends PresentationObjectContainer{
   protected boolean fontBold = false;
   protected String styleAttribute = "font-size: 8pt";
   private int iBorder = 2;
+	private int iInstId = -1;
 
   public ContentViewer(){
     vContent = null;
@@ -117,15 +118,16 @@ public class ContentViewer extends PresentationObjectContainer{
     this.allowOrder = allow;
   }
   protected void control(IWContext iwc){
+		iInstId = Math.abs(getICObjectInstanceID());
     try{
 
-      if(iwc.getParameter(prmStart)!=null){
-        listStart = Integer.parseInt(iwc.getParameter(prmStart));
+      if(iwc.getParameter(prmStart+iInstId)!=null){
+        listStart = Integer.parseInt(iwc.getParameter(prmStart+iInstId));
       }
-      iwc.setSessionAttribute(prmListStart,new Integer(listStart));
+      iwc.setSessionAttribute(prmListStart+iInstId,new Integer(listStart));
 
-      if(iwc.getParameter(sAction) != null){
-        sActPrm = iwc.getParameter(sAction);
+      if(iwc.getParameter(sAction+iInstId) != null){
+        sActPrm = iwc.getParameter(sAction+iInstId);
         try{
           iAction = Integer.parseInt(sActPrm);
           switch(iAction){
@@ -152,11 +154,11 @@ public class ContentViewer extends PresentationObjectContainer{
   }
 
   private void doMain(IWContext iwc){
-    if(iwc.getSessionAttribute(prmContent) == null){
+    if(iwc.getSessionAttribute(prmContent+iInstId) == null){
       String[] headers = sTitles;
       Vector v = vContent;
-      iwc.setSessionAttribute(prmContent,v);
-      iwc.setSessionAttribute(prmHeaders,headers);
+      iwc.setSessionAttribute(prmContent+iInstId,v);
+      iwc.setSessionAttribute(prmHeaders+iInstId,headers);
       if(v != null){
         add(this.doFooter(listStart,v.size()));
         add(this.doView(headers,v,listStart));
@@ -171,31 +173,31 @@ public class ContentViewer extends PresentationObjectContainer{
   }
 
   private void doTable(IWContext iwc){
-    if(iwc.getSession().getAttribute( prmContent)!=null){
-      Vector v= (Vector) iwc.getSession().getAttribute(prmContent);
+    if(iwc.getSession().getAttribute( prmContent+iInstId)!=null){
+      Vector v= (Vector) iwc.getSession().getAttribute(prmContent+iInstId);
       eReport = ReportService.getSessionReport(iwc);
-      listStart = ((Integer)iwc.getSessionAttribute(prmListStart)).intValue();
+      listStart = ((Integer)iwc.getSessionAttribute(prmListStart+iInstId)).intValue();
       String[] headers = null;
-      if(iwc.getSessionAttribute(prmHeaders) != null){
-        headers = (String[]) iwc.getSessionAttribute(prmHeaders);
+      if(iwc.getSessionAttribute(prmHeaders+iInstId) != null){
+        headers = (String[]) iwc.getSessionAttribute(prmHeaders+iInstId);
       }
       if(allowOrder){
-        if(iwc.getSession().getAttribute(prmLastOrder)!=null)
-          this.sLastOrder = (String) iwc.getSessionAttribute(prmLastOrder);
+        if(iwc.getSession().getAttribute(prmLastOrder+iInstId)!=null)
+          this.sLastOrder = (String) iwc.getSessionAttribute(prmLastOrder+iInstId);
         else
           this.sLastOrder = "";
 
         String sOrder = "0";
         if(iwc.getParameter(prmOrder)!= null){
-          sOrder = iwc.getParameter(prmOrder);
+          sOrder = iwc.getParameter(prmOrder+iInstId);
         }
         boolean reverse = false;
         if(this.sLastOrder.equalsIgnoreCase(sOrder))
           reverse = true;
         int order = Integer.parseInt(sOrder);
-        if(!(iwc.getParameter(prmStart)!= null))
+        if(!(iwc.getParameter(prmStart+iInstId)!= null))
           OrderVector(v,order,reverse);
-        iwc.setSessionAttribute(prmLastOrder,sOrder);
+        iwc.setSessionAttribute(prmLastOrder+iInstId,sOrder);
       }
 
       if(v != null){
@@ -226,7 +228,7 @@ public class ContentViewer extends PresentationObjectContainer{
     if(start != -1){
       if(!(start == 1)){
         Link leftLink = new Link("<< ");
-        leftLink.addParameter(prmStart,start-displayNumber);
+        leftLink.addParameter(prmStart+iInstId,start-displayNumber);
         leftLink.setFontColor(this.LightColor);
         T.add(leftLink,1,1);
         T.add(getHeaderText((start-displayNumber)+"-"+(start-1)),1,1);
@@ -241,7 +243,7 @@ public class ContentViewer extends PresentationObjectContainer{
         }
         T.add(getHeaderText(interval),5,1);
         Link rightLink = new Link(" >>");
-        rightLink.addParameter(prmStart,start+displayNumber);
+        rightLink.addParameter(prmStart+iInstId,start+displayNumber);
         rightLink.setFontColor(this.LightColor);
         T.add(rightLink,5,1);
       }
@@ -255,14 +257,14 @@ public class ContentViewer extends PresentationObjectContainer{
       T.add(getHeaderText("Total:"+total),3,1);
 
       Link PartLink = new Link("Partial");
-      PartLink.addParameter(prmStart,1);
+      PartLink.addParameter(prmStart+iInstId,1);
       PartLink.setFontColor(this.LightColor);
       T.add(PartLink,2,1);
 
     }
 
     Link WholeLink = new Link("All");
-    WholeLink.addParameter(prmStart,-1);
+    WholeLink.addParameter(prmStart+iInstId,-1);
     WholeLink.setFontColor(this.LightColor);
     T.add(WholeLink,4,1);
     return T;
@@ -287,7 +289,7 @@ public class ContentViewer extends PresentationObjectContainer{
       HeaderLink.setText(headers[j]);
       if(allowOrder){
         HeaderLink.addParameter(this.sAction,this.ACT2);
-        HeaderLink.addParameter(prmOrder,String.valueOf(j));
+        HeaderLink.addParameter(prmOrder+iInstId,String.valueOf(j));
         //L.setFontColor(WhiteColor);
         T.add(HeaderLink,j+2,1);
       }
@@ -366,7 +368,7 @@ public class ContentViewer extends PresentationObjectContainer{
     for(int j = 0; j < header.length ;j++){
       Link L = new Link(header[j]);
       L.addParameter(this.sAction,this.ACT2);
-      L.addParameter( prmOrder,String.valueOf(j));
+      L.addParameter( prmOrder+iInstId,String.valueOf(j));
       T.add(L,j+1,1);
     }
     for(int i =0; i < content.length;i++){
