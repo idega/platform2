@@ -17,16 +17,17 @@ import com.idega.data.IDOQuery;
  */
 public class HoleBMPBean extends GenericEntity implements Hole {
 
-	private static final String ENTITY_NAME = "golf_hole";
+	public static final String ENTITY_NAME = "golf_hole";
 
-	private static final String COLUMN_NAME = "hole_name";
-	private static final String COLUMN_NUMBER = "hole_number";
-	private static final String COLUMN_PAR = "par";
-	private static final String COLUMN_HANDICAP = "handicap";
-	private static final String COLUMN_VALID_FROM = "valid_from";
-	private static final String COLUMN_VALID_TO = "valid_to";
-	private static final String COLUMN_COURSE_ID = "course_id";
-	private static final String COLUMN_TEE_COLOR_ID = "tee_color_id";
+	public static final String COLUMN_HOLE_ID = "hole_id";
+	public static final String COLUMN_NAME = "hole_name";
+	public static final String COLUMN_NUMBER = "hole_number";
+	public static final String COLUMN_PAR = "par";
+	public static final String COLUMN_HANDICAP = "handicap";
+	public static final String COLUMN_VALID_FROM = "valid_from";
+	public static final String COLUMN_VALID_TO = "valid_to";
+	public static final String COLUMN_COURSE_ID = CourseBMPBean.COLUMN_COURSE_ID;
+	public static final String COLUMN_TEE_COLOR_ID = TeeColorBMPBean.COLUMN_TEE_COLOR_ID;
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -39,7 +40,9 @@ public class HoleBMPBean extends GenericEntity implements Hole {
 	 * @see com.idega.data.GenericEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
-		addAttribute(getIDColumnName());
+		addAttribute(COLUMN_HOLE_ID);
+		setAsPrimaryKey(COLUMN_HOLE_ID, true);
+		
 		addAttribute(COLUMN_NAME, "Hole name", true, true, String.class, 255);
 		addAttribute(COLUMN_NUMBER, "Hole number", true, true, Integer.class);
 		addAttribute(COLUMN_PAR, "Hole par", true, true, Integer.class);

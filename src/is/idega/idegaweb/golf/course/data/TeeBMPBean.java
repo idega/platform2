@@ -17,17 +17,18 @@ import com.idega.user.data.Gender;
  */
 public class TeeBMPBean extends GenericEntity implements Tee {
 
-	private static final String ENTITY_NAME = "golf_tee";
+	public static final String ENTITY_NAME = "golf_tee";
 
-	private static final String COLUMN_NAME = "tee_name";
-	private static final String COLUMN_SLOPE = "slope";
-	private static final String COLUMN_COURSE_RATING = "course_rating";
-	private static final String COLUMN_PAR = "par";
-	private static final String COLUMN_VALID_FROM = "valid_from";
-	private static final String COLUMN_VALID_TO = "valid_to";
-	private static final String COLUMN_GENDER_ID = "gender_id";
-	private static final String COLUMN_COURSE_ID = "course_id";
-	private static final String COLUMN_TEE_COLOR_ID = "tee_color_id";
+	public static final String COLUMN_TEE_ID = "tee_id";
+	public static final String COLUMN_NAME = "tee_name";
+	public static final String COLUMN_SLOPE = "slope";
+	public static final String COLUMN_COURSE_RATING = "course_rating";
+	public static final String COLUMN_PAR = "par";
+	public static final String COLUMN_VALID_FROM = "valid_from";
+	public static final String COLUMN_VALID_TO = "valid_to";
+	public static final String COLUMN_GENDER_ID = "gender_id";
+	public static final String COLUMN_COURSE_ID = CourseBMPBean.COLUMN_COURSE_ID;
+	public static final String COLUMN_TEE_COLOR_ID = TeeBMPBean.COLUMN_TEE_COLOR_ID;
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -40,7 +41,9 @@ public class TeeBMPBean extends GenericEntity implements Tee {
 	 * @see com.idega.data.GenericEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
-		addAttribute(getIDColumnName());
+		addAttribute(COLUMN_TEE_ID);
+		setAsPrimaryKey(COLUMN_TEE_ID, true);
+		
 		addAttribute(COLUMN_NAME, "The tee name", true, true, String.class, 255);
 		addAttribute(COLUMN_SLOPE, "The slope", true, true, Integer.class);
 		addAttribute(COLUMN_COURSE_RATING, "The course rating", true, true, Float.class);

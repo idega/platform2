@@ -16,11 +16,12 @@ import com.idega.data.IDOQuery;
  */
 public class TeeColorBMPBean extends GenericEntity implements TeeColor {
 
-	private static final String ENTITY_NAME = "golf_tee_color";
+	public static final String ENTITY_NAME = "golf_tee_color";
 
-	private static final String COLUMN_NAME = "tee_color_name";
-	private static final String COLUMN_COLOR = "tee_color";
-	private static final String COLUMN_LOCALIZED_KEY = "localized_key";
+	public static final String COLUMN_TEE_COLOR_ID = "tee_color_id";
+	public static final String COLUMN_NAME = "tee_color_name";
+	public static final String COLUMN_COLOR = "tee_color";
+	public static final String COLUMN_LOCALIZED_KEY = "localized_key";
 	
 	public static final String TEE_COLOR_WHITE = "WHITE";
 	public static final String TEE_COLOR_YELLOW = "YELLOW";
@@ -38,7 +39,9 @@ public class TeeColorBMPBean extends GenericEntity implements TeeColor {
 	 * @see com.idega.data.GenericEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
-		addAttribute(getIDColumnName());
+		addAttribute(COLUMN_TEE_COLOR_ID);
+		setAsPrimaryKey(COLUMN_TEE_COLOR_ID, true);
+		
 		addAttribute(COLUMN_NAME, "The tee color name", true, true, String.class, 255);
 		addAttribute(COLUMN_COLOR, "The color", true, true, String.class, 255);
 		addAttribute(COLUMN_LOCALIZED_KEY, "The localized key", true, true, String.class, 255);

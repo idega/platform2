@@ -16,12 +16,13 @@ import com.idega.user.data.Group;
  */
 public class CourseBMPBean extends GenericEntity implements Course {
 
-	private static final String ENTITY_NAME = "golf_course";
+	public static final String ENTITY_NAME = "golf_course";
 
-	private static final String COLUMN_NAME = "course_name";
-	private static final String COLUMN_TYPE = "course_type";
-	private static final String COLUMN_NUMBER_OF_HOLES = "number_of_holes";
-	private static final String COLUMN_CLUB_ID = "club_id";
+	public static final String COLUMN_COURSE_ID = "course_id";
+	public static final String COLUMN_NAME = "course_name";
+	public static final String COLUMN_TYPE = "course_type";
+	public static final String COLUMN_NUMBER_OF_HOLES = "number_of_holes";
+	public static final String COLUMN_CLUB_ID = "club_id";
 	
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -34,7 +35,9 @@ public class CourseBMPBean extends GenericEntity implements Course {
 	 * @see com.idega.data.GenericEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
-		addAttribute(getIDColumnName());
+		addAttribute(COLUMN_COURSE_ID);
+		setAsPrimaryKey(COLUMN_COURSE_ID, true);
+		
 		addAttribute(COLUMN_NAME, "The course name", true, true, String.class, 255);
 		addAttribute(COLUMN_TYPE, "The course's type", true, true, String.class, 255);
 		addAttribute(COLUMN_NUMBER_OF_HOLES, "Number of holes", true, true, Integer.class);
