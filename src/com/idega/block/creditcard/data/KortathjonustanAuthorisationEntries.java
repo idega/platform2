@@ -6,6 +6,7 @@ public interface KortathjonustanAuthorisationEntries extends com.idega.data.IDOE
 	
 	public static final String AUTHORIZATION_TYPE_SALE = "0";
 	public static final String AUTHORIZATION_TYPE_REFUND = "1";
+	public static final String AUTHORIZATION_TYPE_DELAYED_TRANSACTION = "2";
 	
  public double getAmount();
  public java.lang.String getAuthorizationCode();
