@@ -11,6 +11,7 @@ import javax.ejb.RemoveException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.TabbedPropertyPanel;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
@@ -214,7 +215,7 @@ public class FamilyConnector extends StyledIWAdminWindow {
 			}
 		}
 
-		setParentToReload();
+		setParentPageFormToSubmitOnUnLoad(TabbedPropertyPanel.TAB_FORM_NAME);
 		close();
 	}
 
