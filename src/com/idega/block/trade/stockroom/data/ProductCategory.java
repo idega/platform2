@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.data;
 
+import com.idega.core.data.ICFile;
 import com.idega.core.data.ICCategory;
 import java.sql.SQLException;
 
@@ -17,15 +18,25 @@ public class ProductCategory extends ICCategory {
   public static final String CATEGORY_TYPE_TOUR = "sr_prod_cat_tour";
   public static final String CATEGORY_TYPE_HOTEL = "sr_prod_cat_hotel";
   public static final String CATEGORY_TYPE_FISHING = "sr_prod_cat_fishing";
+  public static final String CATEGORY_TYPE_PRODUCT = "sr_prod_cat_product";
 
   public ProductCategory(){
     super();
   }
+
   public ProductCategory(int id)throws SQLException{
     super(id);
   }
 
+  public void initializeAttributes() {
+    super.initializeAttributes();
+    //this.addManyToManyRelationShip(ICFile.class);
+  }
 
+  public void setDefaultValues() {
+    super.setDefaultValues();
+    this.setType(CATEGORY_TYPE_PRODUCT);
+  }
 /*
   public ProductCategory() {
   }

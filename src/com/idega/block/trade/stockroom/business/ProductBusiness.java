@@ -245,60 +245,107 @@ public class ProductBusiness {
   }
 
 
+  public static List getProducts() {
+    return getProducts(-1, null);
+  }
+
+  public static List getProducts(ProductCategory productCategory) {
+    return new Vector();
+  }
+
+  public static List getProducts(idegaTimestamp stamp) {
+    return getProducts(-1, stamp);
+  }
+
+  public static List getProducts(idegaTimestamp fromStamp, idegaTimestamp toStamp) {
+    return getProducts(-1, fromStamp, toStamp);
+  }
+
   public static List getProducts(int supplierId, idegaTimestamp stamp) {
-    return getProducts(supplierId, stamp, new idegaTimestamp(stamp));
+    if (stamp != null)
+      return getProducts(supplierId, stamp, new idegaTimestamp(stamp));
+    else
+      return getProducts(supplierId, null, null);
   }
 
   public static List getProducts(int supplierId, idegaTimestamp from, idegaTimestamp to) {
+    return getProducts(supplierId, -1, from, to);
+  }
+
+
+
+  public static List getProducts(int supplierId, int productCategoryId ,idegaTimestamp from, idegaTimestamp to) {
+    Object obj = IWContext.getInstance().getApplicationAttribute(productsApplication+supplierId+productCategoryId+from+to);
     List products = null;
+    if (obj != null) {
+      products = (List) obj;
+    }
+
+    if (products == null)
       try {
           /**
            * @todo Oracle support...
            */
-          List tempProducts = getProducts(supplierId);
+
+          Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
+          Product product = (Product) Product.getStaticInstance(Product.class);
+//          ProductCategory pCat = (ProductCategory) ProductCategory.getStaticInstance(ProductCategory.class);
+          Product prod = null;
+          //Service tService = (Service) Service.getStaticInstance(Service.class);
+
+          String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Product.class);
+          String Ttable = Timeframe.getTimeframeTableName();
+          String Ptable = Product.getProductEntityName();
+          String catMiddle = EntityControl.getManyToManyRelationShipTableName(ProductCategory.class,Product.class);
+
+
+          StringBuffer timeframeSQL = new StringBuffer();
+            timeframeSQL.append("SELECT "+Ptable+".* FROM "+Ptable+", "+Ttable+", "+middleTable);
+            if (productCategoryId != -1) {
+              timeframeSQL.append(", "+catMiddle);
+            }
+            timeframeSQL.append(" WHERE ");
+            timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
+            timeframeSQL.append(" AND ");
+            timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+middleTable+"."+product.getIDColumnName());
+            if (productCategoryId != -1) {
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+catMiddle+"."+product.getIDColumnName());
+            }
+
+          // Hondla ef supplierId != -1
+          List tempProducts = new Vector();
+          if (supplierId != -1) getProducts(supplierId);
           if (tempProducts.size() > 0) {
-
-              Timeframe timeframe = (Timeframe) Timeframe.getStaticInstance(Timeframe.class);
-              Product product = (Product) Product.getStaticInstance(Product.class);
-              Product prod = null;
-              //Service tService = (Service) Service.getStaticInstance(Service.class);
-
-              String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Product.class);
-              String Ttable = Timeframe.getTimeframeTableName();
-              String Ptable = Product.getProductEntityName();
-
-
-              StringBuffer timeframeSQL = new StringBuffer();
-                timeframeSQL.append("SELECT "+Ptable+".* FROM "+Ptable+", "+Ttable+", "+middleTable);
-                timeframeSQL.append(" WHERE ");
-                timeframeSQL.append(Ttable+"."+timeframe.getIDColumnName()+" = "+middleTable+"."+timeframe.getIDColumnName());
-                timeframeSQL.append(" AND ");
-                timeframeSQL.append(Ptable+"."+product.getIDColumnName()+" = "+middleTable+"."+product.getIDColumnName());
-                  timeframeSQL.append(" AND ");
-                  timeframeSQL.append(middleTable+"."+product.getIDColumnName()+" in (");
-                  for (int i = 0; i < tempProducts.size(); i++) {
-                    prod = (Product) tempProducts.get(i);
-                    if (i == 0) {
-                      timeframeSQL.append(prod.getID());
-                    }else {
-                      timeframeSQL.append(","+prod.getID());
-                    }
-                  }
-                  timeframeSQL.append(")");
-                timeframeSQL.append(" AND ");
-                timeframeSQL.append("(");
-                timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
-                timeframeSQL.append(" OR ");
-                timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"')");
-                timeframeSQL.append(" OR ");
-                timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
-                timeframeSQL.append(")");
-                timeframeSQL.append(" AND ");
-                timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
-                timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
-
-              products = EntityFinder.findAll(Product.getStaticInstance(Product.class),timeframeSQL.toString());
+            timeframeSQL.append(" AND ");
+            timeframeSQL.append(middleTable+"."+product.getIDColumnName()+" in (");
+            for (int i = 0; i < tempProducts.size(); i++) {
+              prod = (Product) tempProducts.get(i);
+              if (i == 0) {
+                timeframeSQL.append(prod.getID());
+              }else {
+                timeframeSQL.append(","+prod.getID());
+              }
+            }
+            timeframeSQL.append(")");
           }
+
+          if (from != null && to != null) {
+            timeframeSQL.append(" AND ");
+            timeframeSQL.append("(");
+            timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+from.toSQLDateString()+"')");
+            timeframeSQL.append(" OR ");
+            timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" <= '"+to.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" >= '"+to.toSQLDateString()+"')");
+            timeframeSQL.append(" OR ");
+            timeframeSQL.append(" ("+Timeframe.getTimeframeFromColumnName()+" >= '"+from.toSQLDateString()+"' AND "+Timeframe.getTimeframeToColumnName()+" <= '"+to.toSQLDateString()+"')");
+            timeframeSQL.append(")");
+          }
+
+          timeframeSQL.append(" AND ");
+          timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
+          timeframeSQL.append(" ORDER BY "+Timeframe.getTimeframeFromColumnName());
+
+          products = EntityFinder.findAll(Product.getStaticInstance(Product.class),timeframeSQL.toString());
 
 
       }catch(SQLException sql) {
@@ -379,4 +426,7 @@ public class ProductBusiness {
     return menu;
   }
 
+  public static List getProductCategories() throws IDOFinderException{
+    return EntityFinder.getInstance().findAllOrdered(ProductCategory.class, ProductCategory.getColumnName());
+  }
 }

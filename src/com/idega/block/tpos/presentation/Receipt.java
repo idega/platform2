@@ -13,7 +13,7 @@ import com.idega.block.tpos.business.TPosClient;
 import com.idega.block.trade.stockroom.data.Supplier;
 
 /**
- * Title:        idegaWeb TravelBooking
+ * Title:        idegaWeb
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:      idega
@@ -28,7 +28,7 @@ public class Receipt extends PresentationObjectContainer{
   private TPosClient _client;
   private Supplier _supplier;
 
-  public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
+  public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.tpos";
 
   public Receipt(TPosClient client, Supplier supplier) {
     _client = client;
