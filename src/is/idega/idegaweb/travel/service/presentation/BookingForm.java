@@ -1445,9 +1445,9 @@ public abstract class BookingForm extends TravelManager{
     String manyDays = iwc.getParameter(this.parameterManyDays);
     IWTimestamp fromStamp = null;
     IWTimestamp toStamp = null;
-    int betw = 1;
+    //int betw = 1;
     int totalSeats = 0;
-
+/*
     try {
       fromStamp = new IWTimestamp(fromDate);
       int iManyDays = Integer.parseInt(manyDays);
@@ -1456,6 +1456,31 @@ public abstract class BookingForm extends TravelManager{
     }catch (Exception e) {
       debug(e.getMessage());
     }
+*/
+		int bookingTotal = 0;
+		int iManyDays = 1;
+		try {
+			iManyDays = Integer.parseInt(manyDays);
+			if (iManyDays < 1) {
+				iManyDays = 1;	
+			}
+		}catch (NumberFormatException n) {}
+		    
+		try {
+			fromStamp = new IWTimestamp(fromDate);
+		//	heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(product.getID(), stamp, null);
+		//	heildarbokanir = getHotelBooker(iwc).getNumberOfReservedRooms(serviceId, fromStamp, null);
+		//	heildarbokanir = getHotelBooker(iwc).getBookingsTotalCount(serviceId, fromStamp);
+			if (_booking != null) {
+				bookingTotal = _booking.getTotalCount();
+		//		heildarbokanir -= bookingTotal;	
+			}
+		
+		//	if (iManyDays < 1) betw = 1;
+		//	else betw = iManyDays;
+		}catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 
     ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
     ServiceDay sDay = sDayHome.create();
@@ -1470,18 +1495,17 @@ public abstract class BookingForm extends TravelManager{
 
     int iAvailable;
     if (totalSeats > 0) {
-      if (betw == 1) {
-        iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, addressIds );
+      if (iManyDays == 1) {
+        iAvailable = totalSeats + bookingTotal - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), this._stamp, null, -1, new int[]{}, addressIds );
         if (iMany > iAvailable) {
           tooMany = true;
           errorDays.add(fromStamp);
         }
       }else {
-        for (int r = 0; r < betw ; r++) {
+        for (int r = 0; r < iManyDays ; r++) {
           if (r != 0)
           fromStamp.addDays(1);
-          System.out.println("[BookingForm] checking date : "+fromStamp);
-          iAvailable = totalSeats - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, addressIds );
+          iAvailable = totalSeats + bookingTotal - getBooker(iwc).getGeneralBookingHome().getBookingsTotalCount(( (Integer) _service.getPrimaryKey()).intValue(), fromStamp, null, -1, new int[]{}, addressIds );
           if (iMany > iAvailable) {
               tooMany = true;
               errorDays.add(fromStamp);
