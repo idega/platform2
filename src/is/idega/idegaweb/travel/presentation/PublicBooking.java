@@ -29,6 +29,7 @@ import com.idega.block.trade.data.Currency;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.business.ProductPriceException;
 import com.idega.block.tpos.presentation.*;
 import java.sql.SQLException;
@@ -356,22 +357,13 @@ public class PublicBooking extends Block  {
         }else {
           try {
             System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
-            TPosMerchant merchant = null;
-            try {
-              int productSupplierId = gBooking.getService().getProduct().getSupplierId();
-              Supplier suppTemp = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(productSupplierId);
-              merchant = suppTemp.getTPosMerchant();
-              System.out.println("TPosMerchant found");
-            }catch (Exception e) {
-              System.out.println("TPosMerchant NOT found for supplier, using system default");
-            }
-            if (merchant == null) {
-              t = new com.idega.block.tpos.business.TPosClient(iwc);
-            }else {
-              t = new com.idega.block.tpos.business.TPosClient(iwc, merchant);
-            }
-            heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
-            //System.out.println("heimild = " + heimild);
+						String currency = bf.getCurrencyForBooking(gBooking);
+						System.out.println("...TPOS  Price = "+price+" "+currency);
+						if (currency == null) {
+							currency = "ISK";	
+						}
+						t = bf.getTPosClient(iwc, gBooking);
+            heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
             System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
           
           }catch (NullPointerException npe) {
@@ -465,6 +457,7 @@ public class PublicBooking extends Block  {
       }catch (Exception e) {
         display.addToText(" ( "+e.getMessage()+" )");
         e.printStackTrace(System.err);
+        gBooking = null;
         try {
           tm.rollback();
         }catch (javax.transaction.SystemException se) {
@@ -472,7 +465,7 @@ public class PublicBooking extends Block  {
         }
       }
 
-      if (success && gBooking != null) {
+      if (gBooking != null) {
         boolean sendEmail = false;
         try {
           ProductHome pHome = (ProductHome)com.idega.data.IDOLookup.getHome(Product.class);
@@ -592,6 +585,9 @@ public class PublicBooking extends Block  {
 
     return table;
   }
+
+
+
 
   protected String getLocaleDate(IWTimestamp stamp) {
     return  (new IWCalendar(stamp)).getLocaleDate();
