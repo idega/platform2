@@ -74,6 +74,7 @@ public class CampusContracts extends Block{
   }
 
   protected void control(IWContext iwc){
+    is.idega.idegaweb.campus.presentation.SysPropsSetter.isSysPropsInMemoryElseLoad(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     for (int i = 0; i < prmArray.length; i++) {
