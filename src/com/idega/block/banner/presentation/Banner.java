@@ -2,7 +2,7 @@ package com.idega.block.banner.presentation;
 
 
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.banner.business.BannerBusiness;
 import com.idega.block.banner.business.BannerFinder;
 import com.idega.block.banner.business.BannerListener;
@@ -20,7 +20,7 @@ import com.idega.presentation.text.Link;
 
 
 
-public class Banner extends Block implements IWBlock {
+public class Banner extends Block implements Builderaware {
 
 
 

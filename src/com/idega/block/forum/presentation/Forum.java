@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.business.ForumTree;
 import com.idega.block.forum.data.ForumData;
@@ -44,7 +44,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.2
  */
 
-public class Forum extends CategoryBlock implements IWBlock, StatefullPresentation {
+public class Forum extends CategoryBlock implements Builderaware, StatefullPresentation {
 	protected int _objectID = -1;
 	private int _selectedObjectID = -1;
 	private int _topicID = -1;

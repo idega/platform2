@@ -3,7 +3,7 @@ package com.idega.block.poll.presentation;
 
 import java.sql.SQLException;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.poll.business.PollBusiness;
 import com.idega.block.poll.business.PollFinder;
 import com.idega.block.poll.business.PollListener;
@@ -30,7 +30,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
 
 
-public class Poll extends Block implements IWBlock{
+public class Poll extends Block implements Builderaware{
 
 private boolean _isAdmin;
 private int _pollID;

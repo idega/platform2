@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.text.business.ContentFinder;
 import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.business.TextBusiness;
@@ -36,7 +36,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 
-public class TextReader extends Block implements IWBlock {
+public class TextReader extends Block implements Builderaware {
 
 	private boolean isAdmin = false;
 

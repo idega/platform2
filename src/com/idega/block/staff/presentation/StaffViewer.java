@@ -12,7 +12,7 @@ package com.idega.block.staff.presentation;
 import java.util.Collections;
 import java.util.List;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.data.StaffInfo;
@@ -36,7 +36,7 @@ import com.idega.util.text.StyleConstants;
 import com.idega.util.text.TextStyler;
 
 
-public class StaffViewer extends Block implements IWBlock {
+public class StaffViewer extends Block implements Builderaware {
 
 private boolean _isAdmin=false;
 private int _userID = -1;

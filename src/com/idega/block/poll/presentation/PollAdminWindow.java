@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.poll.business.PollBusiness;
 import com.idega.block.poll.business.PollFinder;
@@ -65,7 +65,7 @@ public PollAdminWindow(){
      */
     isAdmin = iwc.hasEditPermission(this);
     superAdmin = iwc.isSuperAdmin();
-    iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
+    iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
     iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("poll_admin","Poll Admin"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;

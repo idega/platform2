@@ -1,6 +1,6 @@
 package com.idega.block.finance.presentation;
 
-import com.idega.block.*;
+import com.idega.idegaweb.block.presentation.*;
 import com.idega.block.presentation.*;
 import com.idega.idegaweb.*;
 import com.idega.presentation.*;
@@ -18,7 +18,7 @@ import java.util.*;
  * @version 1.0
  */
 
-public class Finance extends CategoryBlock implements IWBlock{
+public class Finance extends CategoryBlock implements Builderaware{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";

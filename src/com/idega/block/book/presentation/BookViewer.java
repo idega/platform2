@@ -14,7 +14,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.text.business.TextFormatter;
 import com.idega.presentation.*;
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.book.data.*;
 import com.idega.block.book.business.BookBusiness;
 import com.idega.block.presentation.CategoryBlock;
@@ -22,7 +22,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
 
-public class BookViewer extends CategoryBlock implements IWBlock {
+public class BookViewer extends CategoryBlock implements Builderaware {
 
   private boolean _isAdmin = false;
   private Table _myTable;

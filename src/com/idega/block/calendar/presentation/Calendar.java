@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.block.calendar.business.CalendarFinder;
 import com.idega.block.calendar.data.CalendarCategory;
@@ -34,7 +34,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.util.IWTimestamp;
 
-public class Calendar extends CategoryBlock implements IWBlock {
+public class Calendar extends CategoryBlock implements Builderaware {
 
 	private int _timeStyle = IWTimestamp.SHORT;
 	private int _dateStyle = IWTimestamp.SHORT;

@@ -1,6 +1,6 @@
 package com.idega.block.boxoffice.presentation;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxCategory;
@@ -21,7 +21,7 @@ import com.idega.util.text.StyleConstants;
 import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 
-public class Box extends Block implements IWBlock {
+public class Box extends Block implements Builderaware {
 
 	private int _boxID = -1;
 	private int _boxCategoryID = -1;

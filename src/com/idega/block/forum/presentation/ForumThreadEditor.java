@@ -4,7 +4,7 @@ package com.idega.block.forum.presentation;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.forum.business.ForumBusiness;
 import com.idega.block.forum.data.ForumData;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -46,7 +46,7 @@ public ForumThreadEditor(){
      * @todo permission
      */
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
-    _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     _localeID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
     _isLoggedOn = iwc.isLoggedOn();

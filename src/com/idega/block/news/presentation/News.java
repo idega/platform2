@@ -2,7 +2,7 @@ package com.idega.block.news.presentation;
 
 
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 
 
 
@@ -26,7 +26,7 @@ import com.idega.block.IWBlock;
 
 
 
-public class News extends NewsReader implements IWBlock{
+public class News extends NewsReader implements Builderaware{
 
 /*
 

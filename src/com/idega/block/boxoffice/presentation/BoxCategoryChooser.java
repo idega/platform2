@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.boxoffice.data.BoxCategory;
@@ -80,7 +80,7 @@ public BoxCategoryChooser(){
 
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
 
-    _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
 
     _iwrb = getResourceBundle(iwc);
 

@@ -1,6 +1,6 @@
 package com.idega.block.contract.presentation;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.contract.business.ContractBusiness;
 import com.idega.block.contract.business.ContractFinder;
 import com.idega.block.contract.data.Contract;
@@ -28,7 +28,7 @@ import java.util.List;
  * @author
  * @version 1.0
  */
-public class ContractViewer extends Block implements IWBlock {
+public class ContractViewer extends Block implements Builderaware {
 	protected final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4, ACT5 = 5;
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.contract";
 	protected boolean isAdmin = false;

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.idega.block.text.business.TextFormatter;
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.quote.business.QuoteHolder;
 import com.idega.block.quote.business.QuoteBusiness;
 
@@ -29,7 +29,7 @@ import com.idega.core.localisation.business.ICLocaleBusiness;
  * @version 1.2
  */
 
-public class Quote extends Block implements IWBlock {
+public class Quote extends Block implements Builderaware {
 
 	private int _quoteID = -1;
 	private int _objectID = -1;

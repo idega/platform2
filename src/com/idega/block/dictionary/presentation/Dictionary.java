@@ -8,7 +8,7 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.dictionary.business.DictionaryBusiness;
 import com.idega.block.dictionary.business.DictionaryComparator;
 import com.idega.block.dictionary.data.Word;
@@ -24,7 +24,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 
-public class Dictionary extends CategoryBlock implements IWBlock {
+public class Dictionary extends CategoryBlock implements Builderaware {
 
 	private boolean _isAdmin = false;
 	private Table _myTable;

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Locale;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.boxoffice.business.BoxBusiness;
 import com.idega.block.boxoffice.business.BoxFinder;
 import com.idega.block.login.business.LoginBusiness;
@@ -78,7 +78,7 @@ public BoxCategoryEditor(){
 
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
 
-    _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
 
     _iwrb = getResourceBundle(iwc);
 

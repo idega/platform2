@@ -3,7 +3,7 @@ package com.idega.block.reports.presentation;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.presentation.CategoryBlock;
 import com.idega.block.reports.business.ReportBusiness;
 import com.idega.block.reports.business.ReportEntityHandler;
@@ -39,7 +39,7 @@ import com.idega.util.text.Edit;
  */
 
 
-public class Reporter extends CategoryBlock implements IWBlock,Reports{
+public class Reporter extends CategoryBlock implements Builderaware,Reports{
 
   private final String sAction = "rep_reporter_action";
   private String sActPrm = "";

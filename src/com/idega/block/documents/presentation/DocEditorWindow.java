@@ -5,7 +5,7 @@ package com.idega.block.documents.presentation;
 import java.util.List;
 import java.util.Locale;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.documents.business.DocBusiness;
 import com.idega.block.documents.business.DocFinder;
 import com.idega.block.login.business.LoginBusiness;
@@ -240,7 +240,7 @@ public class DocEditorWindow extends IWAdminWindow {
 
         //AccessControl.hasEditPermission(this,iwc);
 
-        _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
+        _iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
 
         _iwrb = getResourceBundle(iwc);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.114 2003/04/03 19:29:11 laddi Exp $
+ * $Id: NewsReader.java,v 1.115 2003/05/03 00:38:38 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.news.business.NewsBusiness;
 import com.idega.block.news.business.NewsFinder;
 import com.idega.block.news.business.NewsFormatter;
@@ -54,7 +54,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class NewsReader extends CategoryBlock implements IWBlock {
+public class NewsReader extends CategoryBlock implements Builderaware {
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.news";
   public final static String CACHE_KEY = "nw_news";
   private boolean hasEdit = false,hasAdd = false,hasInfo = false;;

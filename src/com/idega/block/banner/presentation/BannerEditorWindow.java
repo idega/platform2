@@ -4,7 +4,7 @@ package com.idega.block.banner.presentation;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.idega.block.IWBlock;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.banner.business.BannerBusiness;
 import com.idega.block.banner.business.BannerFinder;
 import com.idega.block.banner.data.AdEntity;
@@ -62,7 +62,7 @@ public BannerEditorWindow(){
      */
     _isAdmin = true;
     _superAdmin = iwc.hasEditPermission(this);
-    _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
+    _iwb = iwc.getApplication().getBundle(Builderaware.IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("banner_admin","Banner Admin"));
 
