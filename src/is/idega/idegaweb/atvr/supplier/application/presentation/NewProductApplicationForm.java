@@ -100,7 +100,8 @@ public class NewProductApplicationForm extends Block {
 //			appl.setProductCategoryId();
 			appl.setSupplierId(iwc.getUserId());
 			appl.setApplicationSent(IWTimestamp.getTimestampRightNow());
-			appl.setCarbonMonoxide(Float.parseFloat(monoxide));
+			if (monoxide != null)
+				appl.setCarbonMonoxide(Float.parseFloat(monoxide));
 			
 			getApplicationBusiness(iwc).insertApplication(appl);
 			
