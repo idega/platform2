@@ -38,6 +38,7 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.presentation.PostingBlock;
@@ -715,7 +716,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		
 //		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 //		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
-		addDropDownLocalized(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, getIntValue(iwc, PAR_VAT_TYPE, -1),  "getVATRule", 1, row++);
+		addDropDownLocalized(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, getVatRuleRegulationId(iwc, PAR_VAT_TYPE, reg),  "getVATRule", 1, row++);
 		
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
@@ -753,6 +754,36 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		table.setColumnWidth(1, "" + MIN_LEFT_COLUMN_WIDTH);		
 		
 		return table;
+	}
+
+	public Regulation getVatRuleRegulation(IWContext iwc, String parameter, Regulation reg) {
+		if (reg != null){
+			return reg.getVATRuleRegulation();
+		} else {
+			Regulation vatRule = null;
+			try{
+				RegulationHome rhome = (RegulationHome) IDOLookup.getHome(Regulation.class);
+				vatRule = rhome.findByPrimaryKey(new Integer(getVatRuleRegulationId(iwc, parameter, reg)));
+			}catch(IDOLookupException ex){
+				ex.printStackTrace(); 
+			}catch(FinderException ex){
+				ex.printStackTrace(); 
+			}				
+			return vatRule;
+		}
+	}
+			
+	public int getVatRuleRegulationId(IWContext iwc, String parameter, Regulation reg) {
+		if (reg != null){
+			Regulation r = getVatRuleRegulation(iwc, parameter, reg);
+			if (r != null){
+				return ((Integer) r.getPrimaryKey()).intValue();
+			} else{
+				return -1;
+			}
+		} else {
+			return getIntValue(iwc, parameter, -1);
+		}
 	}
 
 	/**
