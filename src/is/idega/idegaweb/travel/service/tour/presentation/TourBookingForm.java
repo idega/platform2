@@ -1180,7 +1180,7 @@ public class TourBookingForm extends BookingForm{
                 subHeader.addToText(Text.NON_BREAKING_SPACE);
               Text starTextTwo = (Text) theText.clone();
                 starTextTwo.setFontColor(WHITE);
-                starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_only","Visa and Eurocard only.")+")");
+                starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_and_americanexpress_only","Visa, Eurocard and American Express only.")+")");
               table.add(subHeader,1,row);
               table.add(starTextTwo,1,row);
               table.setAlignment(1,row,"left");
