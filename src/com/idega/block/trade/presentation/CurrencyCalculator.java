@@ -2,6 +2,7 @@ package com.idega.block.trade.presentation;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.block.trade.business.CurrencyHolder;
@@ -38,6 +39,7 @@ public class CurrencyCalculator extends PresentationObjectContainer {
 
   private IWResourceBundle iwrb;
   private IWBundle bundle;
+  private List extraParameters;
 
   public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
 
@@ -74,7 +76,12 @@ public class CurrencyCalculator extends PresentationObjectContainer {
     Table table = new Table();
       form.add(table);
       table.setAlignment("center");
-
+			if (extraParameters != null) {
+				Iterator iter = extraParameters.iterator();
+				while (iter.hasNext()) {
+					form.maintainParameter(iter.next().toString());
+				}
+			}
 
     String sFrom = iwc.getParameter(this.parameterFrom);
     String sTo = iwc.getParameter(this.parameterTo);
@@ -173,6 +180,13 @@ public class CurrencyCalculator extends PresentationObjectContainer {
     Text text = new Text(content);
       text.setBold(true);
     return text;
+  }
+  
+  public void maintainParameter(String name) {
+  	if (extraParameters == null) {
+  		extraParameters = new Vector();
+  	}
+  	extraParameters.add(name);
   }
 
 }
