@@ -533,9 +533,9 @@ public class CalendarView extends Block{
 				dayLink.addParameter(PARAMETER_ISI_GROUP_ID,groupID);
 			}
 			dayCell.add(dayLink,1,1);
-			dayCell.setHeight(1,1,"12");
-			dayCell.add("<br>",1,1);
-			dayCell.setAlignment(1,1,"right");
+			dayCell.setHeight(1,1,12);
+			dayCell.add(Text.BREAK,1,1);
+			dayCell.setAlignment(1,1,Table.HORIZONTAL_ALIGN_RIGHT);
 			Timestamp fromStamp = Timestamp.valueOf(stamp.getDateString("yyyy-MM-dd hh:mm:ss.S"));
 			fromStamp.setDate(n);
 			fromStamp.setHours(0);
