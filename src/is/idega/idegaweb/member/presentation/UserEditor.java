@@ -177,6 +177,7 @@ public class UserEditor extends Block {
 	private boolean warnIfPostalExists = false;
 	private boolean warnIfPersonalIDIsIllegal =true;
 	private boolean showSeperators = true;
+    private boolean showDefaultCommuneOption = false;
 	private void initStyleNames() {
 		if (textFontStyleName == null)
 			textFontStyleName = getStyleName(STYLENAME_TEXT);
@@ -818,16 +819,18 @@ public class UserEditor extends Block {
 		Commune defaultCommune = null;
 		Commune primaryCommune = null;
 		Commune coCommune = null;
-		try {
-			defaultCommune = getCommuneBusiness(iwc).getCommuneHome().findDefaultCommune();
-		} catch (IDOLookupException e3) {
-			log(e3);
-		} catch (RemoteException e3) {
-			log(e3);
-		} catch (FinderException e3) {
-			logError("[UserEditor] Default Commune not found");
-			//e3.printStackTrace();
-		}			
+		if(showDefaultCommuneOption){
+			try {
+				defaultCommune = getCommuneBusiness(iwc).getCommuneHome().findDefaultCommune();
+			} catch (IDOLookupException e3) {
+				log(e3);
+			} catch (RemoteException e3) {
+				log(e3);
+			} catch (FinderException e3) {
+				logError("[UserEditor] Default Commune not found");
+				//e3.printStackTrace();
+			}			
+		}
 		try {
 			defaultCountry =
 				getCountryHome().findByIsoAbbreviation(iwc.getApplicationSettings().getDefaultLocale().getCountry());
@@ -2034,6 +2037,10 @@ public class UserEditor extends Block {
 	
 	public void setWarnIfPersonalIDIsIllegal(boolean flag){
 		this.warnIfPersonalIDIsIllegal = flag;
+	}
+	
+	public void setShowDefaultCommuneOption(boolean flag){
+		this.showDefaultCommuneOption = flag;
 	}
 	
 	
