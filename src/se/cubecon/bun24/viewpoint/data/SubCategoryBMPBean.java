@@ -7,10 +7,10 @@ import javax.ejb.FinderException;
 import com.idega.user.data.*;
 
 /**
- * Last modified: $Date: 2002/11/13 12:45:30 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/29 07:02:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
@@ -119,6 +119,10 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
     public Group getHandlerGroup () {
         return (Group) getColumnValue (COLUMN_HANDLERGROUP_ID);
+    }
+
+    public TopCategory getTopCategory () {
+        return (TopCategory) getColumnValue (COLUMN_TOPCATEGORY_ID);
     }
 
     public void setName (final String name) {

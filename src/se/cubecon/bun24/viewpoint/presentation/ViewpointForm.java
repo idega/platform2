@@ -23,10 +23,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/11/28 08:31:41 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/29 07:02:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -317,24 +317,34 @@ public class ViewpointForm extends CommuneBlock {
 		add(form);
 	}
 
-	private void registerViewPoint(final IWContext iwc) throws RemoteException, CreateException, FinderException {
-		final ViewpointBusiness viewpointBusiness = getViewpointBusiness(iwc);
-		final int categoryId = new Integer(iwc.getParameter(PARAM_CATEGORY)).intValue();
-		final SubCategory category = viewpointBusiness.findSubCategory(categoryId);
-		final Group handlerGroup = category.getHandlerGroup();
-		final int handlerGroupId = ((Integer) handlerGroup.getPrimaryKey()).intValue();
-		viewpointBusiness.createViewpoint(iwc.getCurrentUser(), iwc.getParameter(PARAM_SUBJECT), iwc.getParameter(PARAM_MESSAGE), category.getName(), handlerGroupId);
-		final Text text1 = new Text(getLocalizedString(CONFIRMENTERVIEWPOINT_KEY, CONFIRMENTERVIEWPOINT_DEFAULT));
-		text1.setWidth(Table.HUNDRED_PERCENT);
-		final Table table = new Table();
+	private void registerViewPoint(final IWContext iwc)
+        throws RemoteException, CreateException, FinderException {
+		final ViewpointBusiness viewpointBusiness = getViewpointBusiness (iwc);
+		final int subCategoryId
+                = new Integer (iwc.getParameter (PARAM_CATEGORY)).intValue();
+		final SubCategory subCategory
+                = viewpointBusiness.findSubCategory (subCategoryId);
+        final TopCategory topCategory = subCategory.getTopCategory ();
+		final Group handlerGroup = subCategory.getHandlerGroup ();
+		final int handlerGroupId
+                = ((Integer) handlerGroup.getPrimaryKey()).intValue();
+		viewpointBusiness.createViewpoint
+                (iwc.getCurrentUser (), iwc.getParameter (PARAM_SUBJECT),
+                 iwc.getParameter (PARAM_MESSAGE), topCategory.getName ()
+                 + "/" + subCategory.getName (), handlerGroupId);
+		final Text text1
+                = new Text (getLocalizedString (CONFIRMENTERVIEWPOINT_KEY,
+                                                CONFIRMENTERVIEWPOINT_DEFAULT));
+		text1.setWidth (Table.HUNDRED_PERCENT);
+		final Table table = new Table ();
 		int row = 1;
-		table.setWidth(getWidth());
-		table.setCellspacing(0);
-		table.setCellpadding(0);
-		table.add(text1, 1, row++);
-		table.setHeight(row++, 12);
-		table.add(getUserHomePageLink(iwc), 1, row++);
-		add(table);
+		table.setWidth (getWidth ());
+		table.setCellspacing (0);
+		table.setCellpadding (0);
+		table.add (text1, 1, row++);
+		table.setHeight (row++, 12);
+		table.add (getUserHomePageLink (iwc), 1, row++);
+		add (table);
 	}
 
 	private void showSubCategoriesForm(final IWContext iwc) throws RemoteException, FinderException {
@@ -358,7 +368,6 @@ public class ViewpointForm extends CommuneBlock {
 		textArea.setColumns(40);
 		textArea.setRows(10);
 		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString(SUBMITVIEWPOINT_KEY, SUBMITVIEWPOINT_DEFAULT)));
-//		submit.setAsImageButton(true);
 
 		final Table table = new Table();
 		table.setWidth(getWidth());
@@ -432,7 +441,9 @@ public class ViewpointForm extends CommuneBlock {
 		return getResourceBundle().getLocalizedString(key, value);
 	}
 
-	private ViewpointBusiness getViewpointBusiness(final IWContext iwc) throws RemoteException {
-		return (ViewpointBusiness) IBOLookup.getServiceInstance(iwc, ViewpointBusiness.class);
+	private ViewpointBusiness getViewpointBusiness (final IWContext iwc)
+        throws RemoteException {
+		return (ViewpointBusiness) IBOLookup.getServiceInstance
+                (iwc, ViewpointBusiness.class);
 	}
 }

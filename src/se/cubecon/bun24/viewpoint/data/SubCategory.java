@@ -7,14 +7,15 @@ import com.idega.data.IDOEntity;
 import com.idega.user.data.Group;
 
 /**
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/29 07:02:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface SubCategory extends IDOEntity {
     String getName ();
     Group getHandlerGroup ();
+    TopCategory getTopCategory ();
 
     void setName (String name);
     void setTopCategoryId (int id);
