@@ -401,6 +401,7 @@ public class TourDesigner extends TravelManager {
             hotelPickupNo.setSelected();
           }
 
+          System.err.println(tour.getID() + " ----- " + tour.getTotalSeats());
           numberOfSeats.setContent(Integer.toString(tour.getTotalSeats()));
 
 

@@ -250,23 +250,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           }
 
       }
-/*
-      Address departureAddress = new Address();
-        departureAddress.setAddressTypeID(departureAddressTypeId);
-        departureAddress.setStreetName(departureFrom);
-        departureAddress.insert();
 
-      Address arrivalAddress = new Address();
-        arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
-        arrivalAddress.setStreetName(arrivalAt);
-        arrivalAddress.insert();
-*/
-/*
-      Address hotelPickupAddress = new Address();
-        hotelPickupAddress.setAddressTypeID(hotelPickupAddressTypeId);
-        hotelPickupAddress.setStreetName(pickupPlace);
-        hotelPickupAddress.insert();
-*/
 
       int[] departureAddressIds = {departureAddress.getID()};
       int[] arrivalAddressIds = {arrivalAddress.getID()};
@@ -292,8 +276,13 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           //tm.begin();
           Service service = new Service(serviceId);
 
-          Tour tour = new Tour();
+          Tour tour;
+          if (tourId == -1) {
+            tour = new Tour();
             tour.setID(serviceId);
+          }else {
+            tour = new Tour(tourId);
+          }
             tour.setTotalSeats(numberOfSeats.intValue());
 
           if (arrivalAddressIds.length > 0)
@@ -315,7 +304,12 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           }else{
             tour.setHotelPickup(false);
           }
-          tour.insert();
+
+          if (tourId == -1) {
+            tour.insert();
+          }else {
+            tour.update();
+          }
 
           ServiceDay.deleteService(serviceId);
 
