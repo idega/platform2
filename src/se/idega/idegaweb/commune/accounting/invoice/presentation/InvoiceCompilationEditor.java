@@ -80,10 +80,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/27 13:08:14 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/27 14:05:12 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.61 $
+ * @version $Revision: 1.62 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -356,52 +356,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addPhrase (outerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": "
                    + header.getPeriod ());
         addPhrase (outerTable, "\n");
-        final PdfPTable table = new PdfPTable
-                (new float [] { 1.2f, 1.2f, 2.0f, 1.0f, 1.0f, 2.0f });
-        table.setWidthPercentage (100f);
-        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
-        table.getDefaultCell ().setBorder (0);
-        for (int i = 0; i < columnNames.length; i++) {
-            addPhrase (table, columnNames [i]);
-        }
-        table.setHeaderRows (1);  // this is the end of the table header
         final Color lightBlue = new Color (0xf4f4f4);
-        for (int i = 0; i < records.length; i++) {
-            final InvoiceRecord record = records [i];
-            table.getDefaultCell ().setBackgroundColor
-                    (i % 2 == 0 ? Color.white : lightBlue);
-            addInvoiceRecordOnAPdfRow (business, table, record);
-        }
-        outerTable.addCell (table);
+        final PdfPTable recordTable = getInvoiceRecordPdfTable
+                (columnNames, business, records, lightBlue);
+        outerTable.addCell (recordTable);
         addPhrase (outerTable, "\n");
         addPhrase (outerTable,
                    localize (OWN_POSTING_KEY, OWN_POSTING_DEFAULT) + ":");
-        final PostingField [] fields = getCurrentPostingFields (context);
-        final PdfPTable postingTable = new PdfPTable (fields.length + 1);
-        postingTable.setWidthPercentage (100f);
-        postingTable.getDefaultCell ().setBackgroundColor
-                (new Color (0xd0daea));
-        postingTable.getDefaultCell ().setBorder (0);
-        for (int i = 0; i < fields.length; i++) {
-            addPhrase (postingTable, fields [i].getFieldTitle ());
-        }
-        addPhrase (postingTable, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
-        for (int i = 0; i < records.length; i++) {
-            final InvoiceRecord record = records [i];
-            final String postingString = record.getOwnPosting ();
-            postingTable.getDefaultCell ().setBackgroundColor
-                    (i % 2 == 0 ? Color.white : lightBlue);
-            int offset = 0;
-            for (int j = 0; j < fields.length; j++) {
-                final PostingField field = fields [j];
-                final int endPosition = min (offset + field.getLen (),
-                                             postingString.length ());
-                addPhrase (postingTable, postingString.substring
-                           (offset, endPosition).trim ());
-                offset = endPosition;
-            }
-            addPhrase (postingTable, ((long)record.getAmount ()) + "");
-        }
+        final PdfPTable postingTable
+                = getOwnPostingPdfTable (context, records, lightBlue);
         outerTable.addCell (postingTable);
         document.add (outerTable);
         
@@ -409,30 +372,81 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         document.close ();
 
         final int docId = business.generatePdf (buffer);
-        final Link viewLink = new Link("Öppna fakturaunderlaget i Acrobat Reader");
+        final Link viewLink
+                = new Link("Öppna fakturaunderlaget i Acrobat Reader");
         viewLink.setFile (docId);
         viewLink.setTarget ("letter_window_" + docId);
         add (createMainTable (INVOICE_COMPILATION_KEY,
                               INVOICE_COMPILATION_DEFAULT, viewLink));
     }
 
+	private PdfPTable getOwnPostingPdfTable
+        (final IWContext context, final InvoiceRecord [] records,
+         final Color lightBlue) throws RemoteException {
+		final PostingField [] fields = getCurrentPostingFields (context);
+        final PdfPTable table = new PdfPTable (fields.length + 1);
+        table.setWidthPercentage (100f);
+        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+        table.getDefaultCell ().setBorder (0);
+        for (int i = 0; i < fields.length; i++) {
+            addPhrase (table, fields [i].getFieldTitle ());
+        }
+        addPhrase (table, localize (AMOUNT_KEY, AMOUNT_DEFAULT));
+        for (int i = 0; i < records.length; i++) {
+            final InvoiceRecord record = records [i];
+            final String postingString = record.getOwnPosting ();
+            table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
+                                                        : lightBlue);
+            int offset = 0;
+            for (int j = 0; j < fields.length; j++) {
+                final PostingField field = fields [j];
+                final int endPosition = min (offset + field.getLen (),
+                                             postingString.length ());
+                addPhrase (table, postingString.substring
+                           (offset, endPosition).trim ());
+                offset = endPosition;
+            }
+            addPhrase (table, ((long)record.getAmount ()) + "");
+        }
+		return table;
+	}
+
+	private PdfPTable getInvoiceRecordPdfTable
+        (final String [] columnNames, final InvoiceBusiness business,
+         final InvoiceRecord[] records, final Color lightBlue)
+        throws RemoteException {
+        final PdfPTable table = new PdfPTable
+                (new float [] { 1.2f, 1.2f, 2.0f, 1.0f, 1.0f, 2.0f });
+		table.setWidthPercentage (100f);
+        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+        table.getDefaultCell ().setBorder (0);
+        for (int i = 0; i < columnNames.length; i++) {
+            addPhrase (table, columnNames [i]);
+        }
+        table.setHeaderRows (1);  // this is the end of the table header
+        for (int i = 0; i < records.length; i++) {
+            final InvoiceRecord record = records [i];
+            table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
+                                                        : lightBlue);
+            addInvoiceRecordOnAPdfRow (business, table, record);
+        }
+		return table;
+	}
+
 	private void addInvoiceRecordOnAPdfRow
         (final InvoiceBusiness business, final PdfPTable table,
          final InvoiceRecord record) throws RemoteException {
 		final User child = business.getChildByInvoiceRecord (record);
-		final String ssn = null != child
-		        ? formatSsn (child.getPersonalID ()) : "";
-		final String firstName = null != child
-		        ? child.getFirstName () : "";
+		final String ssn = null != child ? formatSsn (child.getPersonalID ())
+                : "";
+		final String firstName = null != child ? child.getFirstName () : "";
 		addPhrase (table, ssn);
 		addPhrase (table, firstName);
 		addPhrase (table, record.getInvoiceText ());
-		table.getDefaultCell ().setHorizontalAlignment
-		        (Element.ALIGN_RIGHT);
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 		addPhrase (table, record.getDays () + "");
 		addPhrase (table, ((long) record.getAmount ()) + "");
-		table.getDefaultCell ().setHorizontalAlignment
-		        (Element.ALIGN_LEFT);
+		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (table, record.getNotes ());
 	}
 
@@ -1114,14 +1128,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addSmallHeader (table, col++, row, NAME_KEY, NAME_DEFAULT, ":");
         addSmallText (table, getUserName (custodian), col++, row);
         col = 1; row++;
+        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
+        table.mergeCells (col, row, table.getColumns (), row);
+        addPresentation (table, presentationObjects, PROVIDER_KEY, col++, row);
+        col = 1; row++;
         addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
                         ":");
         table.mergeCells (col, row, table.getColumns (), row);
         addPresentation (table, presentationObjects, RULE_TEXT_KEY, col++, row);
-        col = 1; row++;
-        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
-        table.mergeCells (col, row, table.getColumns (), row);
-        addPresentation (table, presentationObjects, PROVIDER_KEY, col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, INVOICE_TEXT_KEY,
                         INVOICE_TEXT_DEFAULT, ":");
