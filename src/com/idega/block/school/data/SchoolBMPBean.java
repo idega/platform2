@@ -75,6 +75,10 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public final static String TERMINATION_DATE = "termination_date";
 	public final static String COUNTRY = "country"; // Not connected to commune
 	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";
+	
+	//MANY TO MANY RELATIONSHIP TABLES
+	public final static String M2M_TX_TEXT_SCH_SCHOOL="TX_TEXT_SCH_SCHOOL";
+	public final static String M2M_TX_LOCALIZED_TEXT_SCH_SCHOOL="TX_LOCALIZED_TEXT_SCH_SCHOOL";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -105,10 +109,10 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addManyToManyRelationShip(SchoolType.class);
 		this.addManyToManyRelationShip(SchoolYear.class);
 		// Grimur 16.10.2002
-		this.addManyToManyRelationShip(LocalizedText.class); // in for backwards compatability
+		this.addManyToManyRelationShip(LocalizedText.class,M2M_TX_LOCALIZED_TEXT_SCH_SCHOOL); // in for backwards compatability
 		this.addManyToManyRelationShip(ICFile.class);
 		// Gimmi 27.12.2002
-		this.addManyToManyRelationShip(TxText.class);		
+		this.addManyToManyRelationShip(TxText.class,M2M_TX_TEXT_SCH_SCHOOL);		
 		addManyToOneRelationship(COMMUNE, Commune.class);		
 		// Anders 15 Sep 2003
 		this.addAttribute(ORGANIZATION_NUMBER, "organisationsnummer", true, true, String.class, 20);
