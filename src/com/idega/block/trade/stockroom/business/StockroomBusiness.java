@@ -80,7 +80,9 @@ public class StockroomBusiness implements SupplyManager {
     if(obj != null){
       return ((Integer)obj).intValue();
     }else{
-      return getUserSupplierId(LoginBusiness.getUser(modinfo));
+      int suppId = getUserSupplierId(LoginBusiness.getUser(modinfo));
+      LoginBusiness.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), modinfo);
+      return suppId;
     }
   }
 
