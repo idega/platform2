@@ -190,7 +190,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
         queryResult.addField(field);
       }
       int numberOfRow = 1;
-       while (resultSet.next() && numberOfRow <= 100)  {
+       while (resultSet.next())  {
         String id = Integer.toString(numberOfRow++);
         for (i=1 ; i <= numberOfColumns; i++)  {
           Object columnValue = resultSet.getObject(i);
