@@ -29,12 +29,12 @@ import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableData;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.block.school.data.SchoolSeason;
+import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
 import com.idega.core.data.Address;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.business.UserStatusBusiness;
@@ -89,13 +89,35 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
 	}
 	
-	public  ReportableCollection getChildAndItsParentsRegisteredInCommune(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstRegistrationDateInPeriode, Date lastRegistrationDateInPeriode) throws RemoteException, CreateException, FinderException{
+	public  ReportableCollection getChildAndItsParentsRegisteredInCommune(Date firstRegistrationDateInPeriode, Date lastRegistrationDateInPeriode, Date firstBirthDateInPeriode, Date lastBirthDateInPeriode) throws RemoteException, CreateException, FinderException{
 		
 		Timestamp timestampFRDIP = new Timestamp(firstRegistrationDateInPeriode.getTime());
 		final long millisecondsInOneDay = 8640000;
 		Timestamp timestampLRDIP = new Timestamp(lastRegistrationDateInPeriode.getTime()+millisecondsInOneDay-1);
 		
 		return 	getChildAndItsParentsRegisteredInCommune(firstBirthDateInPeriode, lastBirthDateInPeriode, timestampFRDIP, timestampLRDIP);
+	}
+	
+	public ReportableCollection getCitizensRelatedToChildCareOrSchoolAndHaveChangedStatusInSelectedPeriod(Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode, Date firstBirthDateInPeriode, Date lastBirthDateInPeriode) throws RemoteException, CreateException, FinderException{
+		ReportableCollection rColl = null;
+		
+		rColl = getCitizensRelatedToChildCareAndHaveChangedStatusInSelectedPeriod(firstBirthDateInPeriode,lastBirthDateInPeriode,firstDateOfContitionInPeriode,lastDateOfConditionInPeriode);
+		
+		try {
+			Collection seasons = ((SchoolSeasonHome)IDOLookup.getHome(SchoolSeason.class)).findSchoolSeasonsActiveInTimePeriod(firstDateOfContitionInPeriode,lastDateOfConditionInPeriode);
+			Iterator iter = seasons.iterator();
+			if(rColl == null && iter.hasNext()){
+				rColl = getCitizensRelatedToSchoolAndHaveChangedStatusInSelectedPeriod((SchoolSeason)iter.next(),firstBirthDateInPeriode,lastBirthDateInPeriode,firstDateOfContitionInPeriode,lastDateOfConditionInPeriode);
+			}
+			while (iter.hasNext()) {
+				SchoolSeason season = (SchoolSeason)iter.next();
+				rColl.addAll(getCitizensRelatedToSchoolAndHaveChangedStatusInSelectedPeriod(season,firstBirthDateInPeriode,lastBirthDateInPeriode,firstDateOfContitionInPeriode,lastDateOfConditionInPeriode));
+			}
+	
+		}catch (FinderException e) {
+			//
+		}
+		return rColl;
 	}
 	
 	

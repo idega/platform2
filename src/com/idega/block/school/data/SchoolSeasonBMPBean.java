@@ -2,6 +2,7 @@ package com.idega.block.school.data;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
@@ -89,5 +90,26 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason{
 		sql.appendSelectAllFrom(this).appendWhere().append(START).appendLessThanOrEqualsSign().append(date);
 		sql.appendAnd().append(END).appendGreaterThanOrEqualsSign().append(date);
 		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	
+	public Collection ejbFindSchoolSeasonsActiveInTimePeriod(Date firstDateInPeriod, Date lastDateInPeriod) throws FinderException{
+		
+		IDOQuery query = idoQuery();
+		
+		query.appendSelectAllFrom(this);
+		query.appendWhere();
+		//Where
+		query.append(START);
+		query.appendLessThanOrEqualsSign();
+		query.append(lastDateInPeriod);
+		//and
+		query.appendAnd();
+		query.append(END);
+		query.appendGreaterThanSign();
+		query.append(firstDateInPeriod);
+
+		return idoFindPKsByQuery(query);
+		
 	}
 }
