@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.87 2005/02/24 12:41:39 anders Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.88 2005/02/24 13:32:10 anders Exp $
  * @since 12.2.2003 
  */
 
@@ -211,15 +211,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @return
 	 */
 	private int parseAction(IWContext iwc) {
+		if (iwc.isParameterSet(PARAMETER_DELETE_OFFER)) {
+			return ACTION_DELETE_OFFER;
+		}
+
 		if (iwc.isParameterSet(CCConstants.ACTION)) {
 			return Integer.parseInt(iwc.getParameter(CCConstants.ACTION));
 		}
 		else if (iwc.isParameterSet(ChildCarePlaceOfferTable1.REQUEST_INFO[0])) {
 			return CCConstants.ACTION_REQUEST_INFO;
 		} 
-		else if (iwc.isParameterSet(PARAMETER_DELETE_OFFER)) {
-			return ACTION_DELETE_OFFER;
-		}
 
 		_caseCode = null;
 		if (_showOnlyChildcare) {
