@@ -268,6 +268,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		table.setWidth(2, "4");
 		table.setWidth(4, "4");
 		table.setWidth(6, "4");
+		table.setWidth(7, "100%");
 		form.add(table);
 		
 		String dateWarning = null;
