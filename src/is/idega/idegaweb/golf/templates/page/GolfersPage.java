@@ -8,6 +8,7 @@ import com.idega.jmodule.banner.presentation.*;
 import com.idega.jmodule.sidemenu.presentation.Sidemenu;
 import com.idega.presentation.Image;
 import com.idega.presentation.text.Link;
+import com.idega.jmodule.login.business.AccessControl;
 import com.idega.jmodule.news.presentation.NewsReader;
 import java.util.Vector;
 import java.sql.SQLException;
@@ -214,7 +215,7 @@ public class GolfersPage extends Page {
 
   public void main(IWContext iwc) throws Exception{
     try {
-      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
+      isAdmin =  AccessControl.isAdmin(iwc);
     }
     catch(SQLException E) {    }
     iwrb = getResourceBundle(iwc);

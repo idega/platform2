@@ -1,22 +1,25 @@
 package is.idega.idegaweb.golf.templates.page;
 
-import com.idega.presentation.Page;
-import com.idega.presentation.Table;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.jmodule.banner.presentation.*;
-import com.idega.jmodule.sidemenu.presentation.Sidemenu;
-import com.idega.presentation.Image;
-import com.idega.presentation.text.Link;
-import com.idega.jmodule.news.presentation.NewsReader;
-import java.util.Vector;
-import java.sql.SQLException;
 import is.idega.idegaweb.golf.HandicapOverview;
-import com.idega.presentation.text.*;
-import com.idega.jmodule.text.presentation.TextReader;
+import com.idega.data.genericentity.Member;
+import is.idega.idegaweb.golf.presentation.GolferFriendsSigningSheet;
+
+import java.sql.SQLException;
+import java.util.Vector;
+
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.golf.presentation.GolferFriendsSigningSheet;
+import com.idega.jmodule.login.business.AccessControl;
+import com.idega.jmodule.news.presentation.NewsReader;
+import com.idega.jmodule.sidemenu.presentation.Sidemenu;
+import com.idega.jmodule.text.presentation.TextReader;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 
 /**
@@ -426,7 +429,7 @@ public class GolferPage extends Page{
     //temp
     boolean isBjorgvin = false;
     try {
-      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+      isBjorgvin = (getMember(iwc).getID() == this.memberId);
     }
     catch (Exception ex) {
       isBjorgvin = false;
@@ -493,7 +496,7 @@ public class GolferPage extends Page{
     //Added by Laddi
     boolean isBjorgvin = false;
     try {
-      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+      isBjorgvin = (getMember(iwc).getID() == this.memberId);
     }
     catch (Exception ex) {
       isBjorgvin = false;
@@ -527,7 +530,7 @@ public class GolferPage extends Page{
     //Added by Laddi
     boolean isBjorgvin = false;
     try {
-      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+      isBjorgvin = (getMember(iwc).getID() == this.memberId);
     }
     catch (Exception ex) {
       isBjorgvin = false;
@@ -607,7 +610,7 @@ public class GolferPage extends Page{
     //Added by Laddi
     boolean isBjorgvin = false;
     try {
-      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+      isBjorgvin = (getMember(iwc).getID() == this.memberId);
     }
     catch (Exception ex) {
       isBjorgvin = false;
@@ -663,7 +666,7 @@ public class GolferPage extends Page{
     //Added by Laddi
     boolean isBjorgvin = false;
     try {
-      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
+      isBjorgvin = (getMember(iwc).getID() == this.memberId);
     }
     catch (Exception ex) {
       isBjorgvin = false;
@@ -864,5 +867,10 @@ public class GolferPage extends Page{
 
     setLinkMenu();
     chooseView(iwc);
+  }
+  
+  protected Member getMember(IWContext iwc){
+  	return AccessControl.getMember(iwc);
+  	
   }
 }
