@@ -1,5 +1,5 @@
 /*
- * $Id: ConditionTypeBMPBean.java,v 1.4 2003/11/06 23:18:09 palli Exp $
+ * $Id: ConditionTypeBMPBean.java,v 1.5 2003/11/07 14:36:05 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Holds Special types ("Härleds", "Manuell", "Moms") 
  * 
  * <p>
- * $Id: ConditionTypeBMPBean.java,v 1.4 2003/11/06 23:18:09 palli Exp $
+ * $Id: ConditionTypeBMPBean.java,v 1.5 2003/11/07 14:36:05 joakim Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ConditionTypeBMPBean extends GenericEntity implements ConditionType {
 	
@@ -42,7 +42,7 @@ public class ConditionTypeBMPBean extends GenericEntity implements ConditionType
 
 		ConditionTypeHome home
 				= (ConditionTypeHome) IDOLookup.getHome(ConditionType.class);
-		final String [] data = { "harleds", "manuell", "moms", "formel" };
+		final String [] data = { "derived", "manual", "vat", "formula" };
 		for (int i = 0; i < data.length; i++) {
 			ConditionType condType = home.create();
 			condType.setConditionType(ENTITY_NAME + "." + data[i]);
