@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.59 2003/12/16 14:51:23 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.60 2003/12/19 12:15:42 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,11 +72,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/12/16 14:51:23 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/19 12:15:42 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.59 $
+ * @version $Revision: 1.60 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
@@ -421,12 +421,21 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final String applicationReason = applicant.getApplicationReason();
 			final boolean notNackaResident = applicationReason != null && (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_SCHOOL_KEY) || applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY));
 			final User user = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(firstName, "", lastName, ssn, gender, timestamp) : userBusiness.createOrUpdateCitizenByPersonalID(firstName, "", lastName, ssn, gender, timestamp);
-
+			Integer communeId = null;
+			try {
+				final CitizenApplicantPutChildrenHome putChildrenHome
+						= (CitizenApplicantPutChildrenHome) IDOLookup.getHome
+						(CitizenApplicantPutChildren.class);
+				final CitizenApplicantPutChildren putChildren
+						= putChildrenHome.findByApplicationId (applicationID);
+				communeId = new Integer (putChildren.getCurrentCommuneId ());
+			} catch (Exception e) {
+				// no problem, there's no home commune set
+			}
 			final String streetName = applicant.getStreet();
 			final String postalCode = applicant.getZipCode();
 			final String postalName = applicant.getCity();
 			Address address = null;
-
 			if (streetName != null && postalCode != null && postalName != null) {
 				final Country sweden = ((CountryHome) getIDOHome(Country.class)).findByIsoAbbreviation("SE");
 				final AddressBusiness addressBusiness = (AddressBusiness) getServiceInstance(AddressBusiness.class);
@@ -440,6 +449,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				address.setProvince(postalName);
 				address.setCity(postalName);
 				address.setStreetName(streetName);
+				if (null != communeId) address.setCommuneID (communeId.intValue ());
 				address.store();
 				user.addAddress(address);
 			}
