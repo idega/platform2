@@ -9,6 +9,9 @@
 /opt/interbase/bin/isql 
 connect /idega/databases/nacka1.gdb;
 
+
+ICUser
+------------------------------------------------
 update rdb$fields
 set rdb$field_length = 30,
     rdb$character_length = 30
@@ -61,3 +64,104 @@ update IC_USER set LAST_NAME = LAST_NAME;
 commit;
 select * from IC_USER;
 commit;
+
+
+-----------------------------------------
+Address
+-----------------------------------------
+   
+    
+update rdb$fields
+set rdb$field_length = 50,
+    rdb$character_length = 50
+where rdb$field_name =
+   (select rdb$field_source
+   from rdb$relation_fields
+   where rdb$relation_name = 'IC_ADDRESS'
+    and  rdb$field_name = 'CITY'
+   );
+
+commit;
+   
+update IC_ADDRESS set CITY = CITY;
+commit;
+select * from IC_ADDRESS;
+commit;
+
+
+update rdb$fields
+set rdb$field_length = 50,
+    rdb$character_length = 50
+where rdb$field_name =
+   (select rdb$field_source
+   from rdb$relation_fields
+   where rdb$relation_name = 'IC_ADDRESS'
+    and  rdb$field_name = 'STREET_NAME'
+   );
+
+commit;
+   
+update IC_ADDRESS set STREET_NAME = STREET_NAME;
+commit;
+select * from IC_ADDRESS;
+commit;
+
+
+update rdb$fields
+set rdb$field_length = 30,
+    rdb$character_length = 30
+where rdb$field_name =
+   (select rdb$field_source
+   from rdb$relation_fields
+   where rdb$relation_name = 'IC_ADDRESS'
+    and  rdb$field_name = 'STREET_NUMBER'
+   );
+
+commit;
+   
+update IC_ADDRESS set STREET_NUMBER = STREET_NUMBER;
+commit;
+select * from IC_ADDRESS;
+commit;
+
+
+update rdb$fields
+set rdb$field_length = 50,
+    rdb$character_length = 50
+where rdb$field_name =
+   (select rdb$field_source
+   from rdb$relation_fields
+   where rdb$relation_name = 'IC_ADDRESS'
+    and  rdb$field_name = 'PROVINCE'
+   );
+
+commit;
+   
+update IC_ADDRESS set PROVINCE = PROVINCE;
+commit;
+select * from IC_ADDRESS;
+commit;
+
+
+update rdb$fields
+set rdb$field_length = 50,
+    rdb$character_length = 50
+where rdb$field_name =
+   (select rdb$field_source
+   from rdb$relation_fields
+   where rdb$relation_name = 'IC_ADDRESS'
+    and  rdb$field_name = 'p_o_box'
+   );
+
+commit;
+   
+update IC_ADDRESS set p_o_box = p_o_box;
+commit;
+select * from IC_ADDRESS;
+commit;
+
+
+-----------------------------------------
+
+-----------------------------------------
+
