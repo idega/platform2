@@ -35,10 +35,10 @@ public class RegularInvoiceEntryHomeImpl  extends com.idega.data.IDOFactory impl
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findRegularInvoicesForPeriode(Date from, Date to){
-		
-		return null;		
-	}
+//	public Collection findRegularInvoicesForPeriode(Date from, Date to){
+//		
+//		return null;		
+//	}
 	
 	public RegularInvoiceEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
 	 return (RegularInvoiceEntry) super.findByPrimaryKeyIDO(pk);
