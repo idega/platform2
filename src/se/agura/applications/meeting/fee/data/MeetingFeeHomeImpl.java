@@ -1,6 +1,6 @@
 /*
- * $Id: MeetingFeeHomeImpl.java,v 1.1 2004/12/05 20:59:37 anna Exp $
- * Created on 5.12.2004
+ * $Id: MeetingFeeHomeImpl.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
+ * Created on 6.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -9,14 +9,16 @@
  */
 package se.agura.applications.meeting.fee.data;
 
+
+
 import com.idega.data.IDOFactory;
 
 
 /**
- * Last modified: 5.12.2004 16:16:46 by: anna
+ * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public class MeetingFeeHomeImpl extends IDOFactory implements MeetingFeeHome {
 
@@ -31,4 +33,5 @@ public class MeetingFeeHomeImpl extends IDOFactory implements MeetingFeeHome {
 	public MeetingFee findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
 		return (MeetingFee) super.findByPrimaryKeyIDO(pk);
 	}
+
 }

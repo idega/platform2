@@ -26,6 +26,7 @@ import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -185,9 +186,30 @@ public class VacationBusinessBean extends CaseBusinessBean  implements VacationB
 		}
 	}
 	
+	public void approveApplication(VacationRequest vacation, User performer, String comment) {
+		changeCaseStatus(vacation, getCaseStatusGranted().getStatus(), comment, performer, null);
+	}
+	
+	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
+		changeCaseStatus(vacation, getCaseStatusDenied().getStatus(), comment, performer, null);
+	}
+	
+	public void forwardApplication(VacationRequest vacation, User performer, Group handler, String comment) {
+		changeCaseStatus(vacation, getCaseStatusMoved().getStatus(), comment, performer, handler);
+	}
+	
 	public Collection getVacationTypes() {
 		try {
 			return getVacationTypeHome().findAll();
+		}
+		catch (FinderException fe) {
+			return new ArrayList();
+		}
+	}
+	
+	public Collection getLogs(VacationRequest vacation) {
+		try {
+			return getCaseLogsByCase(vacation);
 		}
 		catch (FinderException fe) {
 			return new ArrayList();

@@ -10,10 +10,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import se.agura.applications.vacation.business.ExtraInformation;
 import se.agura.applications.vacation.data.VacationType;
+
 import com.idega.block.media.presentation.FileChooser;
 import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
@@ -29,20 +32,13 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
-import com.idega.user.data.Group;
-import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
-import com.idega.util.PersonalIDFormatter;
 
 /**
  * @author Anna
  */
 public class VacationApplication extends VacationBlock {
 
-	private String iWidth = Table.HUNDRED_PERCENT;
-
-	private int iCellpadding = 3;
-	private int iHeaderColumnWidth = 260;
 	
 	private ICPage iPage;
 	
@@ -109,7 +105,7 @@ public class VacationApplication extends VacationBlock {
 	// view of the first page in the process
 	private Form showPageOne(IWContext iwc) throws RemoteException {
 		Form form = new Form();
-		form.add(getPersonInfo(iwc));
+		form.add(getPersonInfo(iwc, iwc.getCurrentUser()));
 		form.add(new Break());
 		form.add(getTimeTable(iwc));
 		form.add(new Break());
@@ -138,7 +134,7 @@ public class VacationApplication extends VacationBlock {
 	// shows the overview over the application request made by the user.
 	private Form showPageThree(IWContext iwc) {
 		Form form = new Form();
-		form.add(getPersonInfo(iwc));
+		form.add(getPersonInfo(iwc, iwc.getCurrentUser()));
 		form.add(new Break());
 		form.add(showVacationRequest(iwc));
 		form.add(new Break());
@@ -178,36 +174,7 @@ public class VacationApplication extends VacationBlock {
 		return table;
 	}
 
-	private Table getPersonInfo(IWContext iwc) {
-		Table personInfo = new Table(2, 3);
-		personInfo.setBorder(0);
-		personInfo.setCellspacing(0);
-		personInfo.setCellpadding(iCellpadding);
-		personInfo.setWidth(1, iHeaderColumnWidth);
-		personInfo.setCellpaddingLeft(1, 1, 0);
-		personInfo.setCellpaddingLeft(1, 2, 0);
-		personInfo.setCellpaddingLeft(1, 3, 0);
-		
-		int row = 1;
-		
-		User user = iwc.getCurrentUser();
-		String name = user.getName();
-		String personalID = PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale());
-		String parish = "";
-		Group group = user.getPrimaryGroup();
-		if (group != null) {
-			parish = group.getName();
-		}
-		personInfo.add(getHeader(getResourceBundle().getLocalizedString("vacation.user_name", "Name")), 1, row);
-		personInfo.add(getText(name), 2, row++);
-		personInfo.add(getHeader(getResourceBundle().getLocalizedString("vacation.user_personal_id", "PersonalID")), 1, row);
-		personInfo.add(getText(personalID), 2, row++);
-		personInfo.add(getHeader(getResourceBundle().getLocalizedString("vacation.Parish", "Parish")), 1, row);
-		personInfo.add(getText(parish), 2, row++);
-		return personInfo;
-	}
-
-	public Table getTimeTable(IWContext iwc) throws RemoteException {
+	private Table getTimeTable(IWContext iwc) throws RemoteException {
 		DateInput fromDateInput = (DateInput) getInput(new DateInput(PARAMETER_VACATION_FROM_DATE));
 		fromDateInput.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.from_date_not_empty", "This field may not be empty"));
 		
@@ -515,28 +482,5 @@ public class VacationApplication extends VacationBlock {
 		table.setWidth(1, iHeaderColumnWidth);
 		
 		return table;
-	}
-
-	/**
-	 * 
-	 * @param page
-	 *          The page to set.
-	 */
-	public void setPage(ICPage page) {
-		iPage = page;
-	}
-	
-	/**
-	 * @param cellpadding The cellpadding to set.
-	 */
-	public void setCellpadding(int cellpadding) {
-		iCellpadding = cellpadding;
-	}
-	
-	/**
-	 * @param headerColumnWidth The headerColumnWidth to set.
-	 */
-	public void setHeaderColumnWidth(int headerColumnWidth) {
-		iHeaderColumnWidth = headerColumnWidth;
 	}
 }

@@ -1,6 +1,6 @@
 /*
- * $Id: MeetingFee.java,v 1.1 2004/12/05 20:59:37 anna Exp $
- * Created on 5.12.2004
+ * $Id: MeetingFee.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
+ * Created on 6.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -10,16 +10,17 @@
 package se.agura.applications.meeting.fee.data;
 
 import java.sql.Date;
+
 import com.idega.block.process.data.Case;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: 5.12.2004 16:16:44 by: anna
+ * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface MeetingFee extends Case {
 
@@ -32,6 +33,16 @@ public interface MeetingFee extends Case {
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getCaseCodeKey
 	 */
 	public String getCaseCodeKey();
+
+	/**
+	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getCaseStatusDescriptions
+	 */
+	public String[] getCaseStatusDescriptions();
+
+	/**
+	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getCaseStatusKeys
+	 */
+	public String[] getCaseStatusKeys();
 
 	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getInCommune
@@ -52,6 +63,11 @@ public interface MeetingFee extends Case {
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getCongregationGroup
 	 */
 	public Group getCongregationGroup();
+
+	/**
+	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getCongregationGroupID
+	 */
+	public int getCongregationGroupID();
 
 	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#getMeetingDate
@@ -79,9 +95,19 @@ public interface MeetingFee extends Case {
 	public void setParticipantGroup(Group participantGroup);
 
 	/**
+	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#setParticipantGroupID
+	 */
+	public void setParticipantGroupID(int participantGroupID);
+
+	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#setCongregation
 	 */
 	public void setCongregation(Group congregationGroup);
+
+	/**
+	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#setCongregationID
+	 */
+	public void setCongregationID(int congregationGroupID);
 
 	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#setMeetingDate
@@ -97,4 +123,5 @@ public interface MeetingFee extends Case {
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeBMPBean#setSignedBy
 	 */
 	public void setSignedBy(User signedBy);
+
 }

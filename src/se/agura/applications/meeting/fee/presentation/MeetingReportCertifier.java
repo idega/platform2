@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportCertifier.java,v 1.1 2004/12/05 20:59:37 anna Exp $
+ * $Id: MeetingReportCertifier.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,9 +12,15 @@ package se.agura.applications.meeting.fee.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.ejb.FinderException;
+
 import se.agura.applications.meeting.fee.data.MeetingFee;
+import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.ui.Form;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -26,58 +32,59 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 25.11.2004 09:13:11 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MeetingReportCertifier extends MeetingFeeBlock {
 	
 	
 	public void present(IWContext iwc) {
-		String action = iwc.getParameter(PARAMETER_ACTION);
+		try {
+			String action = iwc.getParameter(PARAMETER_ACTION);
 		
-		if(action == null) {
-			getCertifyingForm(iwc);
-		}	
-		if(action.equals(ACTION_REJECT)) {
-			//SENDA TIL BAKA TIL ASSISTANT
+			if(action == null) {
+				add(getCertifyingForm(iwc));
+			}	
+			else if(action.equals(ACTION_REJECT)) {
+				getBusiness(iwc).rejectApplication(getMeetingFee(iwc), iwc.getCurrentUser());
+				showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_rejected", "Application has been rejected."));
+			}
+			else if(action.equals(ACTION_SEND)) {
+				getBusiness(iwc).acceptApplication(getMeetingFee(iwc), iwc.getCurrentUser());
+				showMessage(getResourceBundle().getLocalizedString("meeting.fee.application_accepted", "Application has been accepted."));
+			}
 		}
-		if(action.equals(ACTION_EDIT)) {
-			//ﬂá yfir í MeetingReportEditor - hvernig?
-		}
-		
-		if(action.equals(ACTION_SEND)) {
-			//save() and set as errand at the economics department
+		catch (RemoteException re) {
+			log(re);
 		}
 	}
 	
-	//JavaScript sem vantar
-	//ef ‡tt er á Ok ﬂá kemur upp gluggi me› Cancel og OK (Are you sure you want to sign this report?!)
 	private Form getCertifyingForm(IWContext iwc) {
+		MeetingFee fee = getMeetingFee(iwc);
+		
 		Form form = new Form();
 		try {
-			form.add(getCertifyingTable(iwc));
+			form.add(getCertifyingTable(iwc, fee));
 		}
 		catch(RemoteException re) {
 			log(re);
 		}
-		form.addParameter(PARAMETER_ACTION, ACTION_SEND);
-		form.addParameter(PARAMETER_ACTION, ACTION_EDIT);
-		form.addParameter(PARAMETER_ACTION, ACTION_REJECT);
-		form.maintainParameter(PARAMETER_MEETING_FEE_CONGREGATION);
-		form.maintainParameter(PARAMETER_MEETING_FEE_MEETING_LOCATION);
-		form.maintainParameter(PARAMETER_MEETING_FEE_DATE);
-		form.maintainParameter(PARAMETER_MEETING_FEE_PARTICIPANTS);
+		form.add(new Break());
+		form.add(getRejectButton());
+		form.add(getEditButton(PARAMETER_MEETING_FEE_ID, fee.getPrimaryKey().toString()));
+		form.add(getNextButton());
+		
 		return form;
 	}
 	
 	
 	
-	private Table getCertifyingTable(IWContext iwc) throws RemoteException{
+	private Table getCertifyingTable(IWContext iwc, MeetingFee meetingFee) throws RemoteException{
 		Table table = new Table();
+		table.setWidth(iWidth);
+		table.setCellpadding(iCellpadding);
+		table.setCellspacing(0);
+		int row = 1;
 		
-		Collection users = getUserBusiness(iwc).getUsersInGroup(Integer.parseInt(iwc.getParameter(PARAMETER_MEETING_FEE_PARTICIPANTS)));
-		Iterator iter = users.iterator();
-		
-		MeetingFee meetingFee = getMeetingFee(iwc);
 		Group conGroup = meetingFee.getCongregationGroup();
 		String conGroupName = conGroup.getName();
 		User owner = meetingFee.getOwner();
@@ -85,40 +92,69 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		String location = meetingFee.getInCommune() ? getResourceBundle().getLocalizedString("meeting.fee.in_commune", "In commune") : getResourceBundle().getLocalizedString("meeting.fee.outside_of_commune", "Outside of commune");
 		IWTimestamp meetingDate = new IWTimestamp(meetingFee.getMeetingDate());
 		
-		int row = 1;
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.assignment_from","Assignment from"),1,row);
-		table.add(conGroupName,2 , row++);
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.speaker","Speaker"),1,row);
-		table.add(ownerName, 2, row++); 
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.meeting_location","Meeting location"), 1, row);
-		table.add(location,2, row++);
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.meeting_date","Meeting date"), 1, row);
-		table.add(meetingDate.getLocaleDate(iwc.getCurrentLocale()), 2, row++); 
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.assignment_from","Assignment from")),1,row);
+		table.add(getText(conGroupName), 2, row++);
+		table.setHeight(row++, 12);
+
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.speaker","Speaker")),1,row);
+		table.add(getText(ownerName), 2, row++); 
+		table.setHeight(row++, 12);
 		
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.participants","Participants"),1,row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.meeting_location","Meeting location")), 1, row);
+		table.add(getText(location), 2, row++);
+		table.setHeight(row++, 12);
 		
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.participants.last_name","Last name"),1, row);
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.participants.first_name","First name"),2,row);
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.participants.personal_number","Personal number"),3, row);
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.participants.hours","Hours"), 4,row);
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.participants.minutes","Minutes"), 5, row);
-		table.add(getResourceBundle().getLocalizedString("meeting.fee.participants.sum","Sum"), 6, row++);
-		while (iter.hasNext()) {
-			User user = (User) iter.next();
-			String lastName = user.getLastName();
-			String firstName = user.getFirstName();
-			String pId = PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale());
-			
-			table.add(lastName, 1, row);
-			table.add(firstName, 2, row);
-			table.add(pId, 3, row);
-			//table.add(getHours(),4, row);
-			//table.add(getMinutes(), 5, row);
-			//amount vantar inn hér
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.meeting_date","Meeting date")), 1, row);
+		table.add(getText(meetingDate.getLocaleDate(iwc.getCurrentLocale())), 2, row++); 
+		table.setHeight(row++, 12);
+		
+		table.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants","Participants")),1,row++);
+		table.setHeight(row++, 3);
+		
+		Table participantTable = new Table();
+		participantTable.setWidth(iWidth);
+		participantTable.setCellpadding(iCellpadding);
+		participantTable.setCellspacing(0);
+		table.mergeCells(1, row, table.getColumns(), row);
+		table.add(participantTable, 1, row);
+		int participantRow = 1;
+		
+		participantTable.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.last_name","Last name")),1, participantRow);
+		participantTable.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.first_name","First name")),2,participantRow);
+		participantTable.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.personal_number","Personal number")),3, participantRow);
+		participantTable.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.hours","Hours")), 4,participantRow);
+		participantTable.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.minutes","Minutes")), 5, participantRow);
+		participantTable.add(getHeader(getResourceBundle().getLocalizedString("meeting.fee.participants.sum","Sum")), 6, participantRow++);
+		
+		try {
+			Collection participants = getBusiness(iwc).getMeetingFeeInfo(meetingFee);
+			Iterator iter = participants.iterator();
+			while (iter.hasNext()) {
+				MeetingFeeInfo info = (MeetingFeeInfo) iter.next();
+				User user = info.getUser();
+				String lastName = user.getLastName();
+				String firstName = user.getFirstName();
+				String pId = PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale());
+				
+				int hours = info.getMeetingDuration() / 60;
+				int minutes = info.getMeetingDuration() % 60;
+				
+				participantTable.add(getText(lastName), 1, participantRow);
+				participantTable.add(getText(firstName), 2, participantRow);
+				participantTable.add(getText(pId), 3, participantRow);
+				participantTable.add(getText(String.valueOf(hours)),4, participantRow);
+				participantTable.add(getText(String.valueOf(minutes)), 5, participantRow);
+				participantTable.add(getText(String.valueOf(info.getAmount())), 6, participantRow++);
+			}
 		}
-		table.add(getRejectButton(),4, row);
-		table.add(getEditButton(), 5, row);
-		table.add(getNextButton(), 6, row++);
+		catch (FinderException fe) {
+			log(fe);
+		}
+
+		table.setWidth(1, iHeaderColumnWidth);
+		table.setCellpaddingLeft(1, 0);
+		participantTable.setCellpaddingLeft(1, 0);
+		
 		return table;
 	}
 	

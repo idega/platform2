@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBlock.java,v 1.1 2004/12/05 20:59:37 anna Exp $
+ * $Id: MeetingFeeBlock.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,66 +11,62 @@ package se.agura.applications.meeting.fee.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import se.agura.applications.meeting.fee.business.MeetingFeeBusiness;
 import se.agura.applications.meeting.fee.data.MeetingFee;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 
 
 /**
  * Last modified: 25.11.2004 09:11:42 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class MeetingFeeBlock extends Block {
 	
 	protected static final String IW_BUNDLE_IDENTIFIER = "se.agura.applications.meeting.fee";
 	
+	protected static final String PARAMETER_PARTICIPANT_USER_ID = "me_meeting_fee_participant_user_id";
 	protected static final String PARAMETER_MEETING_FEE_DATE = "me_meeting_fee_meeting_date";
-	
 	protected static final String PARAMETER_MEETING_FEE_CONGREGATION = "me_meeting_fee_congregation";
-	
 	protected static final String PARAMETER_MEETING_FEE_MEETING_LOCATION = "me_meeting_fee_meeting_location";
-	
 	protected static final String PARAMETER_MEETING_FEE_PARTICIPANTS = "me_meeting_fee_participants";
-	
 	protected static final String PARAMETER_ACTION = "me_action";
-	
 	protected static final String PARAMETER_MEETING_FEE_ID = "me_meeting_fee_id";
-	
 	protected static final String PARAMETER_MEETING_FEE_INFO_ID = "me.meeting_fee_info_id";
 	
 	protected static final String ACTION_EDIT = "edit";
-	
 	protected static final String ACTION_NEW = "new";
-	
 	protected static final String ACTION_NEXT = "next";
-	
 	protected static final String ACTION_SAVE = "save";
-	
 	protected static final String ACTION_SEND = "send";
-	
 	protected static final String ACTION_REJECT = "reject";
-	
 	protected static final String ACTION_BACK = "back";
-	
 	protected static final String ACTION_SAVE_FINALLY = "save_finally";
-	
 	protected static final String ACTION_CANCEL = "cancel";
 	
 	private String iTextStyleClass;
@@ -80,14 +76,41 @@ public abstract class MeetingFeeBlock extends Block {
 	private String iButtonStyleClass;
 	private String iRadioStyleClass;
 	
-	private IWBundle iwb;
+	protected int iCellpadding = 3;
+	protected int iHeaderColumnWidth = 260;
+	protected String iWidth = Table.HUNDRED_PERCENT;
 
+	private ICPage iPage;
+
+	private IWBundle iwb;
 	private IWResourceBundle iwrb;
 	
 	public void main(IWContext iwc) throws Exception {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		present(iwc);
+	}
+	
+	protected DropdownMenu getCongregationMenu(IWContext iwc) {
+		try {
+			SelectorUtility util = new SelectorUtility();
+			DropdownMenu menu = (DropdownMenu) getInput(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_MEETING_FEE_CONGREGATION), getBusiness(iwc).getParishes(), "getName"));
+			return menu;
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+	}
+	
+	protected DropdownMenu getParticipantsMenu(IWContext iwc, User user) {
+		try {
+			SelectorUtility util = new SelectorUtility();
+			DropdownMenu menu = (DropdownMenu) getInput(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_MEETING_FEE_PARTICIPANTS), getBusiness(iwc).getMeetingGroups(user), "getName"));
+			return menu;
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
 	}
 	
 	public MeetingFee getMeetingFee(IWContext iwc) {
@@ -250,22 +273,32 @@ public abstract class MeetingFeeBlock extends Block {
 	}
 	
 	public SubmitButton getNextButton() {
-		SubmitButton nextButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.next", "OK")));
+		SubmitButton nextButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.next", "OK"), PARAMETER_ACTION, ACTION_NEXT));
 		return nextButton;
 	}
 	
 	public SubmitButton getSaveButton() {
-		SubmitButton saveButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.save", "Save")));
+		SubmitButton saveButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.save", "Save"), PARAMETER_ACTION, ACTION_SAVE));
 		return saveButton;
 	}
+
+	public GenericButton getEditButton() {
+		return getEditButton(null, null);
+	}
 	
-	public SubmitButton getEditButton() {
-		SubmitButton editButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.edit", "Edit")));
+	public GenericButton getEditButton(String parameter, String value) {
+		GenericButton editButton = getButton(new GenericButton("edit", getResourceBundle().getLocalizedString("meeting.fee.edit", "Edit")));
+		if (getPage() != null) {
+			editButton.setPageToOpen(getPage());
+		}
+		if (parameter != null) {
+			editButton.addParameterToPage(parameter, value);
+		}
 		return editButton;
 	}
-	//á ﬂetta kannski bara a› vera GenericButton???
+
 	public SubmitButton getCalculateButton() {
-		SubmitButton calculateButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.calculate", "Calculate")));
+		SubmitButton calculateButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.calculate", "Calculate"), PARAMETER_ACTION, ACTION_NEXT));
 		return calculateButton;
 	}
 	
@@ -275,13 +308,52 @@ public abstract class MeetingFeeBlock extends Block {
 	} 
 	
 	public SubmitButton getRejectButton() {
-		SubmitButton rejectButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.reject", "Reject")));
+		SubmitButton rejectButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.reject", "Reject"), PARAMETER_ACTION, ACTION_REJECT));
 		return rejectButton;
 	}
 	
 	public SubmitButton getSendButton() {
-		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.send", "OK")));
+		SubmitButton sendButton = (SubmitButton) getButton(new SubmitButton(getResourceBundle().getLocalizedString("meeting.fee.send", "OK"), PARAMETER_ACTION, ACTION_SEND));
 		return sendButton;
 	}
 	
+	protected void showMessage(String message) {
+		add(getHeader(message));
+		add(new Break(2));
+
+		Link link = getLink(getResourceBundle().getLocalizedString("meeting.home_page", "Back to My Page"));
+		if (getPage() != null) {
+			link.setPage(getPage());
+		}
+		add(link);
+	}
+
+	/**
+	 * @return Returns the iPage.
+	 */
+	protected ICPage getPage() {
+		return iPage;
+	}
+	/**
+	 * 
+	 * @param page
+	 *          The page to set.
+	 */
+	public void setPage(ICPage page) {
+		iPage = page;
+	}
+	
+	/**
+	 * @param cellpadding The cellpadding to set.
+	 */
+	public void setCellpadding(int cellpadding) {
+		iCellpadding = cellpadding;
+	}
+	
+	/**
+	 * @param headerColumnWidth The headerColumnWidth to set.
+	 */
+	public void setHeaderColumnWidth(int headerColumnWidth) {
+		iHeaderColumnWidth = headerColumnWidth;
+	}
 }

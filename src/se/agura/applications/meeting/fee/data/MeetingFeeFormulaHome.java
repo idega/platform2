@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeFormulaHome.java,v 1.1 2004/12/05 20:59:37 anna Exp $
+ * $Id: MeetingFeeFormulaHome.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
  * Created on 5.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,15 +9,17 @@
  */
 package se.agura.applications.meeting.fee.data;
 
+
 import javax.ejb.FinderException;
+
 import com.idega.data.IDOHome;
 
 
 /**
- * Last modified: 5.12.2004 15:25:51 by: anna
+ * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface MeetingFeeFormulaHome extends IDOHome {
 
@@ -29,4 +31,5 @@ public interface MeetingFeeFormulaHome extends IDOHome {
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeFormulaBMPBean#ejbFindLatestFormula
 	 */
 	public MeetingFeeFormula findLatestFormula() throws FinderException;
+
 }

@@ -6,72 +6,69 @@
  */
 package se.agura.applications.vacation.presentation;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
 import se.agura.applications.vacation.business.VacationBusiness;
+import se.agura.applications.vacation.data.VacationRequest;
+import se.agura.applications.vacation.data.VacationTime;
+import se.agura.applications.vacation.data.VacationType;
+
+import com.idega.block.process.data.CaseLog;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.builder.data.ICPage;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
+import com.idega.util.PersonalIDFormatter;
 
 /**
  * @author Anna
  */
 public abstract class VacationBlock extends Block {
 
-	// ßessi klasi inniheldur allt sem er sameiginlegt í Vacation Request hluta
-	// kerfisins.
 	protected static final String IW_BUNDLE_IDENTIFIER = "se.agura.applications.vacation";
 
 	protected static final String PARAMETER_ACTION = "vac_action";
-
+	protected static final String PARAMETER_PRIMARY_KEY_VAC = "vac_pk";
 	protected static final String PARAMETER_PRIMARY_KEY_VAC_TIME = "vac_time_pk";
-
 	protected static final String PARAMETER_PRIMARY_KEY_VAC_TYPE = "vac_type_pk";
-
-	// protected static final String PARAMETER_VACATION_TIME =
-	// "vac_vacation_time";
 	protected static final String PARAMETER_VACATION_TYPE = "vac_vacation_type";
-
 	protected static final String PARAMETER_VACATION_FROM_DATE = "vac_vacation_from_date";
-
 	protected static final String PARAMETER_VACATION_TO_DATE = "vac_vacation_to_date";
-
 	protected static final String PARAMETER_VACATION_HOURS = "vac_vacation_hours";
-
 	protected static final String PARAMETER_VACATION_WORKING_HOURS = "vac_vacation_working_hours";
-
 	protected static final String PARAMETER_VACATION_EXTRA_TEXT = "vac_vacation_extra_text";
-	//spurning til Ladda: Eiga ßeir parametrar sem tilheyra bara šÝrum undir-klasanum aÝ fara ßangaÝ!?
+	protected static final String PARAMETER_COMMENT = "vac_comment";
+	
 	protected static final String ACTION_NEXT = "next";
-
 	protected static final String ACTION_CANCEL = "cancel";
-
 	protected static final String ACTION_SEND = "send";
-
 	protected static final String ACTION_DENIED = "denied";
-
 	protected static final String ACTION_APPROVED = "approved";
-
 	protected static final String ACTION_BACK = "back";
-
 	protected static final String ACTION_PAGE_THREE = "page_three";
-
 	protected static final String ACTION_PAGE_FOUR = "page_four";
-
 	protected static final String ACTION_SAVE = "save";
-
 	protected static final String ACTION_FORWARD = "forward";
 
 	private IWBundle iwb;
-
 	private IWResourceBundle iwrb;
+
+	private ICPage iPage;
 	
 	private String iTextStyleClass;
 	private String iHeaderStyleClass;
@@ -80,10 +77,166 @@ public abstract class VacationBlock extends Block {
 	private String iButtonStyleClass;
 	private String iRadioStyleClass;
 
+	protected int iCellpadding = 3;
+	protected int iHeaderColumnWidth = 260;
+	protected String iWidth = Table.HUNDRED_PERCENT;
+
 	public void main(IWContext iwc) throws Exception {
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
 		present(iwc);
+	}
+
+	protected Table getPersonInfo(IWContext iwc, User user) {
+		Table personInfo = new Table(2, 3);
+		personInfo.setBorder(0);
+		personInfo.setCellspacing(0);
+		personInfo.setCellpadding(iCellpadding);
+		personInfo.setWidth(1, iHeaderColumnWidth);
+		personInfo.setCellpaddingLeft(1, 1, 0);
+		personInfo.setCellpaddingLeft(1, 2, 0);
+		personInfo.setCellpaddingLeft(1, 3, 0);
+		
+		int row = 1;
+		
+		String name = user.getName();
+		String personalID = PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale());
+		String parish = "";
+		Group group = user.getPrimaryGroup();
+		if (group != null) {
+			parish = group.getName();
+		}
+		personInfo.add(getHeader(getResourceBundle().getLocalizedString("vacation.user_name", "Name")), 1, row);
+		personInfo.add(getText(name), 2, row++);
+		personInfo.add(getHeader(getResourceBundle().getLocalizedString("vacation.user_personal_id", "PersonalID")), 1, row);
+		personInfo.add(getText(personalID), 2, row++);
+		personInfo.add(getHeader(getResourceBundle().getLocalizedString("vacation.Parish", "Parish")), 1, row);
+		personInfo.add(getText(parish), 2, row++);
+		return personInfo;
+	}
+
+	protected Table showVacationRequest(IWContext iwc, VacationRequest vacation) {
+		Table table = new Table();
+		//table.setWidth(iWidth);
+		table.setCellpadding(iCellpadding);
+		table.setCellspacing(0);
+		table.setColumns(9);
+		int row = 1;
+		
+		VacationType vacationType = vacation.getVacationType();
+
+		IWTimestamp fromDate = new IWTimestamp(vacation.getFromDate());
+		IWTimestamp toDate = new IWTimestamp(vacation.getToDate());
+		IWTimestamp date = new IWTimestamp(vacation.getCreatedDate());
+		int selectedHours = vacation.getOrdinaryWorkingHours();
+		Collection times = null;
+		try {
+			times = getBusiness(iwc).getVacationTimes(vacation);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+
+		table.mergeCells(2, row, table.getColumns(), row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.required_vacation", "Required vacation")), 1, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.from_date", "From date") + ":" + Text.NON_BREAKING_SPACE), 2, row);
+		table.add(getText(fromDate.getLocaleDate(iwc.getCurrentLocale())), 2, row++);
+
+		table.mergeCells(2, row, table.getColumns(), row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.to_date", "To date") + ":" + Text.NON_BREAKING_SPACE), 2, row);
+		table.add(getText(toDate.getLocaleDate(iwc.getCurrentLocale())), 2, row++);
+		table.setHeight(row++, 12);
+
+		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.ordinary_hours", "Ordinary workinghours per day")), 1, row);
+		table.add(getText(String.valueOf(selectedHours) + Text.NON_BREAKING_SPACE + getResourceBundle().getLocalizedString("vacation.hours", "hours")), 2, row++);
+		table.setHeight(row++, 12);
+
+		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.time.period", "Working days and hours under the period")), 1, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.week", "Week")), 2, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.monday", "Mo")), 3, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.tuesday", "Tu")), 4, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.wednesday", "We")), 5, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "th")), 6, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.friday", "Fr")), 7, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.saturday", "Sa")), 8, row);
+		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.sunday", "Su")), 9, row++);
+		Iterator iter = times.iterator();
+		while (iter.hasNext()) {
+			VacationTime time = (VacationTime) iter.next();
+			table.add(getText(String.valueOf(time.getWeekNumber())), 2, row);
+			if (time.getMonday() > 0) {
+				table.add(getText(String.valueOf(time.getMonday())), 3, row);
+			}
+			if (time.getTuesday() > 0) {
+				table.add(getText(String.valueOf(time.getTuesday())), 4, row);
+			}
+			if (time.getWednesday() > 0) {
+				table.add(getText(String.valueOf(time.getWednesday())), 5, row);
+			}
+			if (time.getThursday() > 0) {
+				table.add(getText(String.valueOf(time.getThursday())), 6, row);
+			}
+			if (time.getFriday() > 0) {
+				table.add(getText(String.valueOf(time.getFriday())), 7, row);
+			}
+			if (time.getSaturday() > 0) {
+				table.add(getText(String.valueOf(time.getSaturday())), 8, row);
+			}
+			if (time.getSunday() > 0) {
+				table.add(getText(String.valueOf(time.getSunday())), 9, row);
+			}
+			row++;
+		}
+		table.setHeight(row++, 12);
+		
+		table.mergeCells(2, row, table.getColumns(), row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.type", "Type")), 1, row);
+		table.add(getText(vacationType.getTypeName()), 2, row++);
+		table.setHeight(row++, 12);
+
+		table.mergeCells(2, row, table.getColumns(), row);
+		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.request_date", "Request date")), 1, row);
+		table.add(getText(date.getLocaleDate(iwc.getCurrentLocale())), 2, row++);
+		table.setHeight(row++, 12);
+
+		table.setWidth(1, iHeaderColumnWidth);
+		table.setCellpaddingLeft(1, 0);
+
+		return table;
+	}
+	
+	protected Table getVacationActionOverview(IWContext iwc, VacationRequest vacation) throws RemoteException {
+		Collection logs = getBusiness(iwc).getLogs(vacation);
+		if (logs != null) {
+			Table table = new Table();
+			table.setWidth(iWidth);
+			table.setCellpadding(iCellpadding);
+			table.setCellspacing(0);
+			int row = 1;
+			
+			Iterator iter = logs.iterator();
+			while (iter.hasNext()) {
+				CaseLog log = (CaseLog) iter.next();
+				User performer = log.getPerformer();
+				String comment = log.getComment();
+				IWTimestamp timestamp = new IWTimestamp(log.getTimeStamp());
+				
+				table.add(getHeader(getResourceBundle().getLocalizedString("vacation.supported_by", "Supported by")), 1, row);
+				table.add(getText(performer.getName()), 2, row++);
+
+				table.add(getHeader(getResourceBundle().getLocalizedString("vacation.message", "Message")), 1, row);
+				table.add(getText(comment), 2, row++);
+
+				table.add(getHeader(getResourceBundle().getLocalizedString("vacation.date", "Date")), 1, row);
+				table.add(getText(timestamp.getLocaleDate(iwc.getCurrentLocale())), 2, row++);
+			}
+			
+			table.setWidth(1, iHeaderColumnWidth);
+			table.setCellpaddingLeft(1, 0);
+
+			return table;
+		}
+		return null;
 	}
 
 	protected VacationBusiness getBusiness(IWApplicationContext iwac) {
@@ -195,5 +348,33 @@ public abstract class VacationBlock extends Block {
 	 */
 	public void setTextStyleClass(String textStyleClass) {
 		iTextStyleClass = textStyleClass;
+	}
+	/**
+	 * @return Returns the iPage.
+	 */
+	protected ICPage getPage() {
+		return iPage;
+	}
+	/**
+	 * 
+	 * @param page
+	 *          The page to set.
+	 */
+	public void setPage(ICPage page) {
+		iPage = page;
+	}
+	
+	/**
+	 * @param cellpadding The cellpadding to set.
+	 */
+	public void setCellpadding(int cellpadding) {
+		iCellpadding = cellpadding;
+	}
+	
+	/**
+	 * @param headerColumnWidth The headerColumnWidth to set.
+	 */
+	public void setHeaderColumnWidth(int headerColumnWidth) {
+		iHeaderColumnWidth = headerColumnWidth;
 	}
 }

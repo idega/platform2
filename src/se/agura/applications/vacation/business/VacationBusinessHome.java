@@ -1,6 +1,6 @@
 /*
- * $Id: VacationBusinessHome.java,v 1.1 2004/11/25 14:22:35 anna Exp $
- * Created on 24.11.2004
+ * $Id: VacationBusinessHome.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
+ * Created on 5.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -9,16 +9,20 @@
  */
 package se.agura.applications.vacation.business;
 
+
+
+
 import com.idega.business.IBOHome;
 
 
 /**
- * Last modified: 24.11.2004 09:27:10 by: anna
+ * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface VacationBusinessHome extends IBOHome {
 
 	public VacationBusiness create() throws javax.ejb.CreateException, java.rmi.RemoteException;
+
 }

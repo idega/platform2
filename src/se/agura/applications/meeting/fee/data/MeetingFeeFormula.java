@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeFormula.java,v 1.1 2004/12/05 20:59:37 anna Exp $
+ * $Id: MeetingFeeFormula.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
  * Created on 5.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,22 +10,19 @@
 package se.agura.applications.meeting.fee.data;
 
 import java.util.Date;
+
+
 import com.idega.data.IDOEntity;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: 5.12.2004 15:25:51 by: anna
+ * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface MeetingFeeFormula extends IDOEntity {
-
-	/**
-	 * @see se.agura.applications.meeting.fee.data.MeetingFeeFormulaBMPBean#getMeetingFeeFormulaId
-	 */
-	public int getMeetingFeeFormulaId();
 
 	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeFormulaBMPBean#getCreationDate
@@ -53,11 +50,6 @@ public interface MeetingFeeFormula extends IDOEntity {
 	public int getProceedingTimeInterval();
 
 	/**
-	 * @see se.agura.applications.meeting.fee.data.MeetingFeeFormulaBMPBean#setMeetingFeeFormulaId
-	 */
-	public void setMeetingFeeFormulaId(int meetingFeeFormulaId);
-
-	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeFormulaBMPBean#setCreationDate
 	 */
 	public void setCreationDate(Date creationDate);
@@ -81,4 +73,5 @@ public interface MeetingFeeFormula extends IDOEntity {
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeFormulaBMPBean#setProceedingTimeInterval
 	 */
 	public void setProceedingTimeInterval(int proceedingTimeInterval);
+
 }

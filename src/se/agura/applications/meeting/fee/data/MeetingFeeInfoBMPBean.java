@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeInfoBMPBean.java,v 1.1 2004/12/05 20:59:37 anna Exp $ Created on
+ * $Id: MeetingFeeInfoBMPBean.java,v 1.2 2004/12/06 21:30:34 laddi Exp $ Created on
  * 23.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,7 +22,7 @@ import com.idega.user.data.User;
  * Last modified: 23.11.2004 10:59:07 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MeetingFeeInfoBMPBean extends GenericEntity  implements MeetingFeeInfo{
 
@@ -78,16 +78,20 @@ public class MeetingFeeInfoBMPBean extends GenericEntity  implements MeetingFeeI
 	}
 
 	// setters
-	public void setMeetingFee(MeetingFee meetingFeeId) {
-		setColumn(COLUMN_MEETING_FEE_ID, meetingFeeId);
+	public void setMeetingFee(MeetingFee meetingFee) {
+		setColumn(COLUMN_MEETING_FEE_ID, meetingFee);
 	}
 	
-	public void setMeetingFeeFormula(MeetingFeeFormula meetingFeeFormulaId) {
-		setColumn(COLUMN_MEETING_FEE_FORMULA_ID, meetingFeeFormulaId);
+	public void setMeetingFeeFormula(MeetingFeeFormula meetingFeeFormula) {
+		setColumn(COLUMN_MEETING_FEE_FORMULA_ID, meetingFeeFormula);
 	}
 	
-	public void setUser(User icUserId) {
-		setColumn(COLUMN_IC_USER_ID, icUserId);
+	public void setUser(User user) {
+		setColumn(COLUMN_IC_USER_ID, user);
+	}
+
+	public void setUserID(int userID) {
+		setColumn(COLUMN_IC_USER_ID, userID);
 	}
 
 	public void setMeetingDuration(int meetingDuration) {

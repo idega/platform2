@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBusinessBean.java,v 1.1 2004/12/05 20:59:37 anna Exp $
+ * $Id: MeetingFeeBusinessBean.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
  * Created on 1.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,18 +9,30 @@
  */
 package se.agura.applications.meeting.fee.business;
 
+import java.sql.Date;
 import java.util.Collection;
+import java.util.Iterator;
+
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
+
+import se.agura.AguraConstants;
 import se.agura.applications.meeting.fee.data.MeetingFee;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
 import se.agura.applications.meeting.fee.data.MeetingFeeFormulaHome;
 import se.agura.applications.meeting.fee.data.MeetingFeeHome;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfoHome;
+
 import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
 
@@ -28,11 +40,20 @@ import com.idega.user.data.User;
  * Last modified: 1.12.2004 12:57:51 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MeetingFeeBusinessBean extends CaseBusinessBean  implements MeetingFeeBusiness{
 	
-	private MeetingFeeHome getMeetingFeeHome() {
+	private UserBusiness getUserBusiness() {
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		}
+		catch (IBOLookupException ible) {
+			throw new IBORuntimeException(ible);
+		}
+	}
+
+  private MeetingFeeHome getMeetingFeeHome() {
 		try {
 			return (MeetingFeeHome) IDOLookup.getHome(MeetingFee.class);
 		}
@@ -75,13 +96,111 @@ public class MeetingFeeBusinessBean extends CaseBusinessBean  implements Meeting
 		return getMeetingFeeFormulaHome().findLatestFormula();
 	}
 	
-	
-	
-	/*public void storeApplication(User user, congregation, speaker, meetingPlace, meetingDate, participants, meetingHours, meetingMinutes, amount) throws CreateException {
-		storeApplication(null, user, congregation, speaker, meetingPlace, meetingDate, participants, meetingHours, meetingMinutes, amount);
+	public float calculateMeetingFee(int hours, int minutes) {
+		try {
+			return calculateMeetingFee(hours, minutes, getMeetingFeeFormula());
+		}
+		catch (FinderException fe) {
+			log("No meeting fee formula found");
+			return -1;
+		}
 	}
 
-	public void storeApplication(Object pk, User user, congregation, speaker, meetingPlace, meetingDate, participants, meetingHours, meetingMinutes, amount) throws CreateException {
-	   hŽr koma kall ‡ setFšllin
-	}*/
+	public float calculateMeetingFee(int hours, int minutes, MeetingFeeFormula formula) {
+		int firstHourAmount = formula.getFirstHourAmount();
+		int proceedingHourAmount = formula.getProceedingTimeAmount();
+		
+		int totalMinutes = (hours * 60) + minutes;
+		
+		if (totalMinutes > 0) {
+			float proceedingHours = (totalMinutes - 60) / 60f;
+			float proceedingAmount = proceedingHours * proceedingHourAmount;
+			return (firstHourAmount + proceedingAmount);
+		}
+		return 0;
+ 	}
+	
+	public Collection getParishes() {
+		try {
+			String[] types = { AguraConstants.GROUP_TYPE_PARISH, AguraConstants.GROUP_TYPE_PARISH_OFFICE };
+			return getUserBusiness().getGroupBusiness().getGroups(types, true);
+		}
+		catch (Exception e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	public Collection getMeetingGroups(User user) {
+		try {
+			String[] types = { AguraConstants.GROUP_TYPE_MEETING };
+			return getUserBusiness().getGroupBusiness().getGroups(types, true);
+		}
+		catch (Exception e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	public void storeApplication(User user, int parishID, int participantGroupID, Date meetingDate, boolean inCommune, String[] participants, String[] hours, String[] minutes, MeetingFeeFormula formula) throws CreateException {
+		storeApplication(null, user, parishID, participantGroupID, meetingDate, inCommune, participants, hours, minutes, formula);
+	}
+	
+	public void storeApplication(Object primaryKey, User user, int parishID, int participantGroupID, Date meetingDate, boolean inCommune, String[] participants, String[] hours, String[] minutes, MeetingFeeFormula formula) throws CreateException {
+		MeetingFee application = null;
+		if (primaryKey != null) {
+			try {
+				application = getMeetingFeeHome().findByPrimaryKey(primaryKey);
+				
+				Collection times = getMeetingFeeInfoHome().findByMeetingFee(application);
+				Iterator iter = times.iterator();
+				while (iter.hasNext()) {
+					MeetingFeeInfo info = (MeetingFeeInfo) iter.next();
+					info.remove();
+				}
+			}
+			catch (FinderException fe) {
+				log(fe);
+			}
+			catch (EJBException e) {
+				log(e);
+			}
+			catch (RemoveException e) {
+				log(e);
+			}
+		}
+		if (application == null) {
+			application = getMeetingFeeHome().create();
+		}
+		
+		application.setOwner(user);
+		application.setMeetingDate(meetingDate);
+		application.setInCommune(inCommune);
+		application.setParticipantGroupID(participantGroupID);
+		application.setCongregationID(parishID);
+		application.store();
+		
+		MeetingFeeInfo info;
+		for (int a = 0; a < participants.length; a++) {
+			info = getMeetingFeeInfoHome().create();
+			
+			int hour = Integer.parseInt(hours[a]);
+			int minute = Integer.parseInt(minutes[a]);
+			int amount = (int) calculateMeetingFee(hour, minute, formula);
+			int totalMinutes = (hour * 60) + minute;
+			
+			info.setUserID(Integer.parseInt(participants[a]));
+			info.setMeetingDuration(totalMinutes);
+			info.setMeetingFee(application);
+			info.setMeetingFeeFormula(formula);
+			info.setAmount(amount);
+			info.store();
+		}
+	}
+	
+	public void acceptApplication(MeetingFee meetingFee, User performer) {
+		changeCaseStatus(meetingFee, getCaseStatusGranted().getStatus(), performer);
+	}
+
+	public void rejectApplication(MeetingFee meetingFee, User performer) {
+		changeCaseStatus(meetingFee, getCaseStatusDenied().getStatus(), performer);
+	}
 }

@@ -1,6 +1,6 @@
 /*
- * $Id: MeetingFeeInfo.java,v 1.1 2004/12/05 20:59:37 anna Exp $
- * Created on 5.12.2004
+ * $Id: MeetingFeeInfo.java,v 1.2 2004/12/06 21:30:34 laddi Exp $
+ * Created on 6.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  *
@@ -9,15 +9,17 @@
  */
 package se.agura.applications.meeting.fee.data;
 
+
+
 import com.idega.data.IDOEntity;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: 5.12.2004 16:18:01 by: anna
+ * Last modified: $Date: 2004/12/06 21:30:34 $ by $Author: laddi $
  * 
- * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.1 $
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.2 $
  */
 public interface MeetingFeeInfo extends IDOEntity {
 
@@ -49,17 +51,22 @@ public interface MeetingFeeInfo extends IDOEntity {
 	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeInfoBMPBean#setMeetingFee
 	 */
-	public void setMeetingFee(MeetingFee meetingFeeId);
+	public void setMeetingFee(MeetingFee meetingFee);
 
 	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeInfoBMPBean#setMeetingFeeFormula
 	 */
-	public void setMeetingFeeFormula(MeetingFeeFormula meetingFeeFormulaId);
+	public void setMeetingFeeFormula(MeetingFeeFormula meetingFeeFormula);
 
 	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeInfoBMPBean#setUser
 	 */
-	public void setUser(User icUserId);
+	public void setUser(User user);
+
+	/**
+	 * @see se.agura.applications.meeting.fee.data.MeetingFeeInfoBMPBean#setUserID
+	 */
+	public void setUserID(int userID);
 
 	/**
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeInfoBMPBean#setMeetingDuration
@@ -70,4 +77,5 @@ public interface MeetingFeeInfo extends IDOEntity {
 	 * @see se.agura.applications.meeting.fee.data.MeetingFeeInfoBMPBean#setAmount
 	 */
 	public void setAmount(int amount);
+
 }

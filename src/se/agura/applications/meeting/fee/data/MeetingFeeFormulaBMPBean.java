@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeFormulaBMPBean.java,v 1.1 2004/12/05 20:59:37 anna Exp $ Created on
+ * $Id: MeetingFeeFormulaBMPBean.java,v 1.2 2004/12/06 21:30:34 laddi Exp $ Created on
  * 23.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,18 +10,22 @@
 package se.agura.applications.meeting.fee.data;
 
 import java.util.Date;
+
 import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.Table;
 import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * Last modified: 23.11.2004 11:45:32 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class MeetingFeeFormulaBMPBean extends GenericEntity  implements MeetingFeeFormula{
 
@@ -43,9 +47,24 @@ public class MeetingFeeFormulaBMPBean extends GenericEntity  implements MeetingF
 		return ENTITY_NAME;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#insertStartData()
+	 */
+	public void insertStartData() throws Exception {
+		MeetingFeeFormulaHome home = (MeetingFeeFormulaHome) IDOLookup.getHome(MeetingFeeFormula.class);
+		
+		MeetingFeeFormula formula = home.create();
+		formula.setCreationDate(new IWTimestamp().getDate());
+		formula.setFirstHourAmount(160);
+		formula.setProceedingTimeAmount(140);
+		formula.setProceedingTimeInterval(30);
+		formula.store();
+	}
+	
 	public void initializeAttributes() {
 		addAttribute(COLUMN_MEETING_FEE_FORMULA_ID);
 		setAsPrimaryKey(COLUMN_MEETING_FEE_FORMULA_ID, true);
+		
 		addAttribute(COLUMN_CREATION_DATE, "Creation date", Date.class);
 		addAttribute(COLUMN_FIRST_HOUR_AMOUNT, "First hour amount", Integer.class);
 		addAttribute(COLUMN_PROCEEDING_TIME_AMOUNT, "Proceeding time amount", Integer.class);
@@ -53,10 +72,6 @@ public class MeetingFeeFormulaBMPBean extends GenericEntity  implements MeetingF
 		addAttribute(COLUMN_PROCEEDING_TIME_INTERVAL, "Proceeding time interval", Integer.class);
 	}
 
-	public int getMeetingFeeFormulaId() {
-		return getIntColumnValue(COLUMN_MEETING_FEE_FORMULA_ID);
-	}
-	
 	public Date getCreationDate() {
 		return getDateColumnValue(COLUMN_CREATION_DATE);
 	}
@@ -77,10 +92,6 @@ public class MeetingFeeFormulaBMPBean extends GenericEntity  implements MeetingF
 		return getIntColumnValue(COLUMN_PROCEEDING_TIME_INTERVAL);
 	}
 	
-	public void setMeetingFeeFormulaId(int meetingFeeFormulaId) {
-		setColumn(COLUMN_MEETING_FEE_FORMULA_ID, meetingFeeFormulaId);
-	}
-
 	public void setCreationDate(Date creationDate) {
 		setColumn(COLUMN_CREATION_DATE, creationDate);
 	}
