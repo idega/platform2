@@ -159,17 +159,19 @@ public class UserStatusTab extends UserTab {
 	public void lineUpFields() {
 		empty();
 		
-		Table t = new Table(2, 5);
+		Table t = new Table(2, 6);
 		t.add(_inactiveText, 1, 1);
 		t.add(_inactiveField, 2, 1);
-		t.add(_statusText, 1, 2);
-		t.add(_statusField, 2, 2);
-		t.add(_parent1StatusText, 1, 3);
-		t.add(_parent1StatusField, 2, 3);
-		t.add(_parent2StatusText, 1, 4);
-		t.add(_parent2StatusField, 2, 4);
-		t.add(_parent3StatusText, 1, 5);
-		t.add(_parent3StatusField, 2, 5);
+		t.add(_groupText, 1, 2);
+		t.add(_groupField, 2, 2);
+		t.add(_statusText, 1, 3);
+		t.add(_statusField, 2, 3);
+		t.add(_parent1StatusText, 1, 4);
+		t.add(_parent1StatusField, 2, 4);
+		t.add(_parent2StatusText, 1, 5);
+		t.add(_parent2StatusField, 2, 5);
+		t.add(_parent3StatusText, 1, 6);
+		t.add(_parent3StatusField, 2, 6);
 
 		add(t);		
 	}
