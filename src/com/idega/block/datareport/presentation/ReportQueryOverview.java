@@ -28,7 +28,6 @@ import com.idega.block.entity.presentation.converter.CheckBoxConverter;
 import com.idega.block.entity.presentation.converter.editable.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converter.editable.OptionProvider;
 import com.idega.business.IBOLookup;
-import com.idega.business.InputHandler;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
@@ -64,7 +63,7 @@ public class ReportQueryOverview extends Block {
 	
   // special init parameters
   // replaced by parameters in class QueryBuilder
-  protected static final String ADD_QUERY_SQL_FOR_DEBUG = "ADD_QUERY_SQL_FOR_DEBUG";
+
 public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM_QUERY_FOLDER_ID;
 	public static final String SET_ID_OF_DESIGN_FOLDER_KEY = ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID;
   
@@ -305,7 +304,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	} 
   	Table table = new Table(1,2);
   	table.add(browser, 1,1);
-  	table.add(getButtonBar(resourceBundle, iwc), 1,2);
+  	table.add(getButtonBar(resourceBundle), 1,2);
   	form.add(table);
   	add(form);
   }
@@ -356,7 +355,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	return publicFolderName;
 }
 
-	private PresentationObject getButtonBar(IWResourceBundle resourceBundle, IWContext iwc)	{
+	private PresentationObject getButtonBar(IWResourceBundle resourceBundle)	{
 		Table table = new Table(5,1);
 		// new button for query builder (simple mode)
 		String simpleModeText = resourceBundle.getLocalizedString("ro_create_simple_mode", "New (simple mode)");
@@ -373,16 +372,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	// change target
   	String click = getRemoveTargetScript(ReportOverviewWindow.class);
   	delete.setOnClick(click);
-//  	//Window window = Window.getStaticInstance(QueryResultViewerWindow.class);
-//  	String windowId = IWMainApplication.getEncryptedClassName(QueryResultViewerWindow.class);
-//  	//openwindow('','id12031745','0','0','0','0','0','0','1','1','1024','768')
-//  	//openwindow('','"+ id +"','0','0','0','0','0','0','1','1','1024','768')
-//  	delete.setOnClick("findObj('"
-//  			+ Page.IW_FRAME_CLASS_PARAMETER
-//				+ "').value='"
-//				+  windowId 
-//				+ "'; this.form.target='resultViewer'; openwindow('','resultViewer','0','0','0','0','0','0','1','1','1024','768');");
-//  	//this.form.submit()");
   	
   	delete.setAsImageButton(true);
   	// close button
@@ -426,7 +415,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		browser.setArtificialCompoundId("report_overview", null);
 		browser.setLeadingEntityIsUndefined();
 		// browser.setShowAllEntities("", queryRepresentations);
-		browser.setEntities("", queryRepresentations, 2);
+		browser.setEntities("", queryRepresentations, 10);
 		// some design features
 		browser.setCellpadding(2);
 		// define some converters
@@ -893,28 +882,28 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		}
   }
  	
-  private InputHandler getInputHandler(String className) {
-  	if (className == null) {
-  		return null;
-  	}
-  	InputHandler inputHandler = null;
-		try {
-			inputHandler = (InputHandler) Class.forName(className).newInstance();
-		}
-		catch (ClassNotFoundException ex) {
-			log(ex);
-			logError("[ReportOverview] Could not retrieve handler class");
-		}
-		catch (InstantiationException ex) {
-			log(ex);
-			logError("[ReportOverview] Could not instanciate handler class");
-		}
-		catch (IllegalAccessException ex) {
-			log(ex);
-			logError("[ReportOverview] Could not instanciate handler class");
-		}
-		return inputHandler;
-  }
+//  private InputHandler getInputHandler(String className) {
+//  	if (className == null) {
+//  		return null;
+//  	}
+//  	InputHandler inputHandler = null;
+//		try {
+//			inputHandler = (InputHandler) Class.forName(className).newInstance();
+//		}
+//		catch (ClassNotFoundException ex) {
+//			log(ex);
+//			logError("[ReportOverview] Could not retrieve handler class");
+//		}
+//		catch (InstantiationException ex) {
+//			log(ex);
+//			logError("[ReportOverview] Could not instanciate handler class");
+//		}
+//		catch (IllegalAccessException ex) {
+//			log(ex);
+//			logError("[ReportOverview] Could not instanciate handler class");
+//		}
+//		return inputHandler;
+//  }
 
   class DeleteCheckBox extends CheckBoxConverter {
   	
