@@ -3,17 +3,17 @@
 <<<<<<< AccountPhoneBMPBean.java
 <<<<<<< AccountPhoneBMPBean.java
  * 
- * $Id: AccountPhoneBMPBean.java,v 1.7 2004/07/15 14:52:23 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.8 2004/07/15 15:04:09 aron Exp $
  * Copyright (C) 2001 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  *  
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.7 2004/07/15 14:52:23 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.8 2004/07/15 15:04:09 aron Exp $
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.7 2004/07/15 14:52:23 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.8 2004/07/15 15:04:09 aron Exp $
 >>>>>>> 1.3
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.7 2004/07/15 14:52:23 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.8 2004/07/15 15:04:09 aron Exp $
 >>>>>>> 1.4
  * 
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -117,6 +117,7 @@ public class AccountPhoneBMPBean
 		addAttribute(getColumnNameValidTo(), "Valid to", true, true, java.sql.Date.class);
 		addAttribute(getColumnDeliverDate(), "Deliver time", true, true, java.sql.Timestamp.class);
 		addAttribute(getColumnReturnDate(), "Return time", true, true, java.sql.Timestamp.class);
+		setAsPrimaryKey(getColumnNameAccountId(),true);
 	}
 	public String getEntityName() {
 		return (getEntityTableName());
