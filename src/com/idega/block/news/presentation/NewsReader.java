@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.90 2002/04/23 12:20:40 laddi Exp $
+ * $Id: NewsReader.java,v 1.91 2002/04/23 12:57:49 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,7 +57,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   private int attributeId = -1;
   private User eUser = null;
 
-  private boolean showNewsCollectionButton = false;
+  private boolean showNewsCollectionButton = true;
   private int categoryId = 0;
 
   private Table outerTable = new Table(1,1);
