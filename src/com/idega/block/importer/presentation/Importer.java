@@ -17,6 +17,7 @@ import com.idega.block.media.business.MediaConstants;
 import com.idega.block.media.presentation.MediaChooserWindow;
 import com.idega.business.IBOLookup;
 import com.idega.core.file.data.ICFile;
+import com.idega.core.file.data.ICFileBMPBean;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWConstants;
@@ -64,10 +65,12 @@ public class Importer extends StyledIWAdminWindow {
 	private static final String IMPORT_FILE_IDS = "im_f_ids"; //list of files in database
 	private static final String SELECT_NEW_FOLDER = "im_snf"; //new folder overrides builder parameter action
 	private static final String NEW_FOLDER_PATH = "im_nfp"; //new folder path
+
 	
 	public static final String PARAMETER_GROUP_ID = "ic_group_id";
 	public static final String PARAMETER_IMPORT_HANDLER = "im_imh";
 	public static final String PARAMETER_IMPORT_FILE = "im_imf";
+	private static final String PARAMETER_SORT_BY = "im_sb";
 	
 	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.importer";
 	
@@ -296,7 +299,13 @@ public class Importer extends StyledIWAdminWindow {
 			ImportFileRecord folder = changeICFileToImportFileRecord(importFolder);
 			int fileCount = folder.getChildCount();
 			if (fileCount > 0) {
-				Iterator files = folder.getChildren();
+				Iterator files;
+				String sortBy = iwc.getParameter(PARAMETER_SORT_BY);
+				if (sortBy == null || sortBy.equals("")) {
+					files = folder.getChildren();
+				} else {
+					files = folder.getChildren(sortBy);
+				}
 				Form form = new Form();
 				//name,size,creationdate(uploaddate),modificationdata(importdate),
 				//imported(status),reportlink,checkbox
@@ -319,10 +328,21 @@ public class Importer extends StyledIWAdminWindow {
 				status.setBold();
 				Text report = new Text(iwrb.getLocalizedString("importer.report", "Report"));
 				report.setBold();
-				fileTable.add(name, 1, 2);
+				Link sortName = new Link(name);
+				if (!ICFileBMPBean.getColumnNameName().equals(sortBy))
+					sortName.addParameter(PARAMETER_SORT_BY, ICFileBMPBean.getColumnNameName());
+				Link sortUploaded = new Link(uploaded);
+				if (!ICFileBMPBean.getColumnNameCreationDate().equals(sortBy))
+					sortUploaded.addParameter(PARAMETER_SORT_BY, ICFileBMPBean.getColumnNameCreationDate());
+				Link sortImported = new Link(imported);
+				if (!ICFileBMPBean.getColumnNameModificationDate().equals(sortBy))
+					sortImported.addParameter(PARAMETER_SORT_BY, ICFileBMPBean.getColumnNameModificationDate());
+				
+				
+				fileTable.add(sortName, 1, 2);
 				fileTable.add(size, 2, 2);
-				fileTable.add(uploaded, 3, 2);
-				fileTable.add(imported, 4, 2);
+				fileTable.add(sortUploaded, 3, 2);
+				fileTable.add(sortImported, 4, 2);
 				fileTable.add(status, 5, 2);
 				fileTable.add(report, 6, 2);
 				//footer
