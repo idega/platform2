@@ -28,7 +28,7 @@ import com.idega.user.presentation.UserChooserBrowser;
 /**
  * @author palli
  */
-public class SelectUser extends CashierSubWindowTemplate {
+public class SelectPayments extends CashierSubWindowTemplate {
 	protected static final String ACTION_SUBMIT = "su_submit";
 	protected static final String PARAMETER_OLD_USER_ID = "cashier_old_user_id";
 	
@@ -37,7 +37,7 @@ public class SelectUser extends CashierSubWindowTemplate {
 	/**
 	 * 
 	 */
-	public SelectUser() {
+	public SelectPayments() {
 		super();
 	}
 

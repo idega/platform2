@@ -59,9 +59,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 
     protected static final String COLOR_LIGHTEST = "#EFEFEF";
 
-    private static final String ACTION_CONTRACT = "isi_acc_cw_act_contract";
+//    private static final String ACTION_CONTRACT = "isi_acc_cw_act_contract";
 
-    private static final String ACTION_PAYMENT = "isi_acc_cw_act_payment";
+//    private static final String ACTION_PAYMENT = "isi_acc_cw_act_payment";
 
     private static final String ACTION_TARIFF = "isi_acc_cw_act_tariff";
 
@@ -75,11 +75,17 @@ public class CashierWindow extends StyledIWAdminWindow {
 
     private static final String ACTION_CANCEL = "isi_acc_cw_act_cc";
 
-    private static final String ACTION_SELECT_USER = "isi_acc_cw_act_sel_usr";
+//    private static final String ACTION_SELECT_USER = "isi_acc_cw_act_sel_usr";
 
     private static final String ACTION_PAYMENT_HISTORY = "cw_act_pay_hist";
 
-    private static final String ACTION_MEMBER_CREDITCARD = "isi_acc_cw_act_memb_cc";
+//    private static final String ACTION_MEMBER_CREDITCARD = "isi_acc_cw_act_memb_cc";
+
+    private static final String ACTION_SELECT_PAYMENTS = "isi_acc_cw_act_sel_pay";
+
+    private static final String ACTION_CHECKOUT = "isi_acc_cw_act_pay";
+
+    private static final String ACTION_REMOVE_PAYMENTS = "isi_acc_cw_act_rem_pay";
 
     private static final String REPORT_PAYMENT_STATUS = "isi_acc_cw_rep_payment_status";
 
@@ -266,32 +272,12 @@ public class CashierWindow extends StyledIWAdminWindow {
                 "Edit creditcard company contract (A.24)")));
         addParametersToMenuItems(ccContract, ACTION_CREDITCARD_COMPANY_CONTRACT);
 
-        LinkContainer selectUser = new LinkContainer();
-        selectUser.setStyleClass(styledLink);
-        selectUser.add(formatText(iwrb
-                .getLocalizedString("isi_acc_cashierwindow.select_user",
-                        "Select user to work with")));
-        addParametersToMenuItems(selectUser, ACTION_SELECT_USER);
-
         LinkContainer manAss = new LinkContainer();
         manAss.setStyleClass(styledLink);
         manAss.add(formatText(iwrb.getLocalizedString(
                 "isi_acc_cashierwindow.manual_assessment",
                 "Manual assessment (A.14)")));
         addParametersToMenuItems(manAss, ACTION_MANUAL_ASSESSMENT);
-
-        LinkContainer insertContract = new LinkContainer();
-        insertContract.setStyleClass(styledLink);
-        insertContract.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.insert_contract",
-                "Insert/edit member contract (new/A.10)")));
-        addParametersToMenuItems(insertContract, ACTION_CONTRACT);
-
-        LinkContainer registerPayment = new LinkContainer();
-        registerPayment.setStyleClass(styledLink);
-        registerPayment.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.payment", "Register payment (A.11)")));
-        addParametersToMenuItems(registerPayment, ACTION_PAYMENT);
 
         LinkContainer paymentHistory = new LinkContainer();
         paymentHistory.setStyleClass(styledLink);
@@ -300,12 +286,25 @@ public class CashierWindow extends StyledIWAdminWindow {
                 "Payment history (3.11)")));
         addParametersToMenuItems(paymentHistory, ACTION_PAYMENT_HISTORY);
 
-        LinkContainer memberCreditCard = new LinkContainer();
-        memberCreditCard.setStyleClass(styledLink);
-        memberCreditCard.add(formatText(iwrb.getLocalizedString(
-                "isi_acc_cashierwindow.memberCreditCard",
-                "Member credit card info (A.10)")));
-        addParametersToMenuItems(memberCreditCard, ACTION_MEMBER_CREDITCARD);
+        LinkContainer selectPayments = new LinkContainer();
+        selectPayments.setStyleClass(styledLink);
+        selectPayments.add(formatText(iwrb
+                .getLocalizedString("isi_acc_cashierwindow.select_payments",
+                        "Select payments for user")));
+        addParametersToMenuItems(selectPayments, ACTION_SELECT_PAYMENTS);
+
+        LinkContainer checkOut = new LinkContainer();
+        checkOut.setStyleClass(styledLink);
+        checkOut.add(formatText(iwrb.getLocalizedString(
+                "isi_acc_cashierwindow.checkout", "Checkout")));
+        addParametersToMenuItems(checkOut, ACTION_CHECKOUT);
+
+        LinkContainer removePayments = new LinkContainer();
+        removePayments.setStyleClass(styledLink);
+        removePayments.add(formatText(iwrb.getLocalizedString(
+                "isi_acc_cashierwindow.remove_payments",
+                "Remove payments")));
+        addParametersToMenuItems(removePayments, ACTION_REMOVE_PAYMENTS);
 
         //reports
         Text statistics = formatHeadline(iwrb.getLocalizedString(
@@ -391,12 +390,11 @@ public class CashierWindow extends StyledIWAdminWindow {
         menu.add(getHelpWithGrayImage("cashierwindow.memberOperations_help",
                 true), 2, 7);
         menu.setRowColor(7, COLOR_MIDDLE);
-        menu.add(selectUser, 1, 8);
-        menu.add(manAss, 1, 9);
-        menu.add(registerPayment, 1, 10);
-        menu.add(paymentHistory, 1, 11);
-        menu.add(memberCreditCard, 1, 12);
-        menu.add(insertContract, 1, 13);
+        menu.add(manAss, 1, 8);
+        menu.add(paymentHistory, 1, 9);
+        menu.add(selectPayments, 1, 10);
+        menu.add(checkOut, 1, 11);
+        menu.add(removePayments, 1, 12);
 
         menu.add(reports, 1, 15);
         menu.add(getHelpWithGrayImage("cashierwindow.reports_help", true), 2,
@@ -627,34 +625,31 @@ public class CashierWindow extends StyledIWAdminWindow {
                         "Club/division credit cardcontract"));
                 subWindow = new ClubCreditCardContract();
                 helpTextKey = ACTION_CREDITCARD_COMPANY_CONTRACT + "_help";
-            } else if (action.equals(ACTION_SELECT_USER)) {
-                actionTitle.append(iwrb.getLocalizedString(ACTION_SELECT_USER,
-                        "Select user"));
-                subWindow = new SelectUser();
-                helpTextKey = ACTION_SELECT_USER + "_help";
-            } else if (action.equals(ACTION_CONTRACT)) {
-                actionTitle.append(iwrb.getLocalizedString(ACTION_CONTRACT,
-                        "Create user contract"));
-                subWindow = new UserContract();
-                helpTextKey = ACTION_CONTRACT + "_help";
-            } else if (action.equals(ACTION_PAYMENT)) {
-                actionTitle.append(iwrb.getLocalizedString(ACTION_PAYMENT,
-                        "Enter user payment"));
-                subWindow = new UserPayment();
-                helpTextKey = ACTION_PAYMENT + "_help";
             } else if (action.equals(ACTION_PAYMENT_HISTORY)) {
                 actionTitle.append(iwrb.getLocalizedString(
                         ACTION_PAYMENT_HISTORY, "View user payment history"));
                 subWindow = new UserPaymentHistory();
                 helpTextKey = ACTION_PAYMENT_HISTORY + "_help";
-            } else if (action.equals(ACTION_MEMBER_CREDITCARD)) {
+            } else if (action.equals(ACTION_SELECT_PAYMENTS)) {
+                /**
+                 * @todo FIX THIS!!!!!!
+                 */
+                actionTitle.append(iwrb.getLocalizedString(ACTION_SELECT_PAYMENTS,
+                        "Select payments"));
+                subWindow = new SelectPayments();
+                helpTextKey = ACTION_SELECT_PAYMENTS + "_help";
+            } else if (action.equals(ACTION_CHECKOUT)) {
+                actionTitle.append(iwrb.getLocalizedString(ACTION_CHECKOUT,
+                        "Checkout"));
+                subWindow = new Checkout();
+                helpTextKey = ACTION_CHECKOUT + "_help";
+            } else if (action.equals(ACTION_REMOVE_PAYMENTS)) {
                 actionTitle
                         .append(iwrb.getLocalizedString(
-                                ACTION_MEMBER_CREDITCARD,
-                                "Edit users creditcard info"));
-                subWindow = new EditTariffList();
-                helpTextKey = ACTION_MEMBER_CREDITCARD + "_help";
-                subWindow = new UserCreditcard();
+                                ACTION_REMOVE_PAYMENTS,
+                                "Remove selected payments"));
+                subWindow = new RemovePayments();
+                helpTextKey = ACTION_REMOVE_PAYMENTS + "_help";
             } else if (action.equals(REPORT_PAYMENT_STATUS)) {
                 ReportGenerator repGen = new ReportGenerator();
                 repGen.setParameterToMaintain(ACTION);

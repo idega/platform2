@@ -17,7 +17,7 @@ import com.idega.presentation.ui.Form;
 /**
  * @author palli
  */
-public class UserPayment extends CashierSubWindowTemplate {
+public class Checkout extends CashierSubWindowTemplate {
 	private final static String USER_CHOOSER_NAME = "up_user_chooser_name";
 	
 	private final static String LABEL_SELECTED_USER = "isi_acc_up_select_user";
@@ -27,7 +27,7 @@ public class UserPayment extends CashierSubWindowTemplate {
 	/**
 	 * 
 	 */
-	public UserPayment() {
+	public Checkout() {
 		super();
 	}
 

@@ -17,17 +17,17 @@ import com.idega.presentation.ui.Form;
 /**
  * @author palli
  */
-public class UserContract extends CashierSubWindowTemplate {
-	private final static String USER_CHOOSER_NAME = "uc_user_chooser_name";
+public class RemovePayments extends CashierSubWindowTemplate {
+	private final static String USER_CHOOSER_NAME = "up_user_chooser_name";
 	
-	private final static String LABEL_SELECTED_USER = "isi_acc_uc_select_user";
+	private final static String LABEL_SELECTED_USER = "isi_acc_up_select_user";
 	
 	private final static String ERROR_NO_SELECTED_USER = "isi_acc_no_user_selected";
 	
 	/**
 	 * 
 	 */
-	public UserContract() {
+	public RemovePayments() {
 		super();
 	}
 
@@ -38,14 +38,15 @@ public class UserContract extends CashierSubWindowTemplate {
 		notDone.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
 
 		add(notDone);
-/*		Form f = new Form();
+		
+		/*Form f = new Form();
 		Table t = new Table();
 		Table inputTable = new Table();
 		Table dataTable = new Table();
 		t.setCellpadding(5);
 		inputTable.setCellpadding(5);
 		dataTable.setCellpadding(5);
-
+		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		
 		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_SELECTED_USER, "Selected user:"));
