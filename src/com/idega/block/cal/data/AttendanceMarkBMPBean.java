@@ -23,7 +23,7 @@ public class AttendanceMarkBMPBean extends GenericEntity implements com.idega.bl
 		AttendanceMarkHome markHome = (AttendanceMarkHome) getIDOHome(AttendanceMark.class);
 		
 		final String [] data = { "x", "s", "v", "f", " " };
-		final String [] description = { "Maett(ur)", "Sein(n)", "Veik(ur)", "Fjarverandi", " "};
+		final String [] description = { "Mætt(ur)", "Sein(n)", "Veik(ur)", "Fjarverandi", " "};
 		for (int i = 0; i < data.length; i++) {
 			AttendanceMark mark = markHome.create();
 			mark.setMark(data[i]);
