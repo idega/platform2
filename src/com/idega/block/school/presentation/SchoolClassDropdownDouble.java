@@ -61,7 +61,7 @@ public class SchoolClassDropdownDouble extends SelectDropdownDouble {
 		}
 	}
 	
-	public void setDataListEntry(String entry){
+	public void setNoDataListEntry(String entry){
 		this.noClassListEntry = entry;
 	}
 }
