@@ -90,6 +90,10 @@ public class TextFormatter {
   }
 
 
+  public static String formatText(String text) {
+  		return formatText(text, -1, null);
+  }
+  
   /**
    *  Description of the Method
    *
