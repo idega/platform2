@@ -273,7 +273,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 					prices = ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
 
 					if (prices != null && prices.length > 0) { 
-					/** Not inserting product without proper price categories */
+						/** Not inserting product without proper price categories */
 						tmp = new IWTimestamp(from);
 						productIsValid = true;
 						while ( tmp.isEarlierThan(to) && productIsValid) {
@@ -281,10 +281,10 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 							productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
 							
 							if (productIsValid) {
-								bf.isFullyBooked(iwc, product, tmp);
+								productIsValid = bf.isFullyBooked(iwc, product, tmp);
 							}
 							if (productIsValid) {
-								bf.isUnderBooked(iwc, product, tmp);
+								productIsValid = bf.isUnderBooked(iwc, product, tmp);
 							}
 							//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
 							//productIsValid = bus.getIfDay(iwc, product, tmp);
