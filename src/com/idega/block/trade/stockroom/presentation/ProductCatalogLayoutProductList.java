@@ -202,7 +202,13 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     List parameters = new Vector();
       parameters.add(orderPar);
 
-    form.add(_productCatalog.getPagesTable(totalPages, parameters));
+    if (totalPages > 1) {
+      ++row;
+      table.mergeCells(1, row, 4 ,row);
+      table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
+      table.add(_productCatalog.getPagesTable(totalPages, parameters), 1,row);
+
+    }
     form.add(table);
 
     return form;
