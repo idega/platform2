@@ -76,6 +76,7 @@ public abstract class ForumPresentation extends JModuleObject {
 
   // permission booleans
   protected boolean _permissionTo_deleteThread = false;
+  protected boolean _permissionTo_createForum = false;
   // permission booleans end
 
 
@@ -148,7 +149,9 @@ public abstract class ForumPresentation extends JModuleObject {
   }
 
   public void initPermissions(ModuleInfo modinfo)throws Exception{
-    _permissionTo_deleteThread = this.hasPermission(AccessControl.getEditPermissionString(),this,getModuleInfo());
+    boolean edit = this.hasPermission(AccessControl.getEditPermissionString(),this,getModuleInfo());
+    _permissionTo_deleteThread = edit;
+    _permissionTo_createForum = edit;
   }
 
   public void setAllowedToDeleteThread(boolean value){

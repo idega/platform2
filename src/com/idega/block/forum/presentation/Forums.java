@@ -222,12 +222,20 @@ public class Forums extends ForumPresentation{
       Mainframe.add(forumUnit,1,2);
     }
 
-    Link createForum = new Link("Create Forum");
-    createForum.setWindowToOpen(ForumEditor.class);
-    createForum.addParameter(ForumEditor._PARMETERSTRING_ICOBJECT_INSTANCE_ID,this.getParentObject().getICObjectInstanceID());
+
+    /**
+     * beta
+     */
+    Link createForum = new ForumList().getForumCreateLink();
+    if(createForum != null){
+      if(this._permissionTo_createForum){
+        createForum.setWindowToOpen(ForumEditor.class);
+        createForum.addParameter(ForumEditor._PARMETERSTRING_ICOBJECT_INSTANCE_ID,this.getParentObject().getICObjectInstanceID());
+        Mainframe.add(createForum,1,3);
+      }
+    }
 
 
-    Mainframe.add(createForum,1,3);
 
 /*
     if (isAdministrator(getModuleInfo()))
