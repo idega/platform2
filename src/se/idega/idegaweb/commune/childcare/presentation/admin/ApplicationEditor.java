@@ -159,9 +159,14 @@ public class ApplicationEditor extends ChildCareBlock {
 				break;
 			case ChildCareBusiness.STATUS_REJECTED :
 				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_ACCEPTED), this.getStatusString(ChildCareBusiness.STATUS_ACCEPTED));
+				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_SENT_IN), this.getStatusString(ChildCareBusiness.STATUS_SENT_IN));
 				//menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_DELETED), this.getStatusString(ChildCareBusiness.STATUS_DELETED));
 				break;
 			case ChildCareBusiness.STATUS_SENT_IN :
+				break;
+			case ChildCareBusiness.STATUS_DELETED :
+				menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_SENT_IN), this.getStatusString(ChildCareBusiness.STATUS_SENT_IN));
+				//menu.addMenuElement(String.valueOf(ChildCareBusiness.STATUS_DELETED), this.getStatusString(ChildCareBusiness.STATUS_DELETED));
 				break;
 		}
 		
