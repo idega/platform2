@@ -1,5 +1,5 @@
 /*
- * $Id: CampusLogin.java,v 1.2 2001/11/29 14:04:06 palli Exp $
+ * $Id: CampusLogin.java,v 1.3 2001/12/28 13:01:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -87,7 +87,7 @@ public class CampusLogin extends PresentationObjectContainer {
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
-    T.setWidth("100%");
+    //T.setWidth("100%");
     T.add(login,1,1);
     T.add(getDivider(),1,2);
     T.add(ref,1,3);
