@@ -292,7 +292,7 @@ public class MemberInsert extends EntityInsert {
 
       }
 
-      else if(! ErrorChecker.isValidSosialSecurityNumber(inputSocialValue)) {
+      else if(! SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(inputSocialValue)) {
 
           vec.addElement("Kennitala er ekki rétt");
 
@@ -358,7 +358,7 @@ public class MemberInsert extends EntityInsert {
 
       }
 
-      else if(! ErrorChecker.isValidSosialSecurityNumber(inputSocialValue)) {
+      else if(! SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(inputSocialValue)) {
 
           vec.addElement("Kennitala er ekki rétt");
 
@@ -492,11 +492,11 @@ public class MemberInsert extends EntityInsert {
 
       if (! isInvalid(inputSocialValue)) {
 
-          if(ErrorChecker.isValidSosialSecurityNumber(inputSocialValue)) {
+          if(SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(inputSocialValue)) {
 
               eMember.setSocialSecurityNumber(inputSocialValue);
 
-              eMember.setDateOfBirth(DateManipulator.getDateSQLFromSocialSecurityNumber(inputSocialValue));
+              eMember.setDateOfBirth(SocialSecurityNumber.getDateFromSocialSecurityNumber(inputSocialValue));
 
           }
 
