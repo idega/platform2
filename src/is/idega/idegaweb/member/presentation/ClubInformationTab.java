@@ -407,7 +407,7 @@ public class ClubInformationTab extends UserGroupTab {
 //					Group club = getMemberUserBusiness(iwc).getClubForGroup(group,iwc);
 //					if (club != null)
 //						clubName = club.getName();
-					getClubInformationPluginBusiness(iwc).createSpecialConnection(connection, getGroupId(), group.getName());
+					getClubInformationPluginBusiness(iwc).createSpecialConnection(connection, getGroupId(), group.getName(),iwc);
 				}
 
 				group.setMetaData("CLUBINFO_CONN", connection);

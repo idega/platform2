@@ -17,13 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.core.accesscontrol.business.AccessController;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
@@ -126,7 +125,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		return null;
 	}
 
-	public boolean createSpecialConnection(String connection, int parentGroupId, String clubName) {
+  public boolean createSpecialConnection(String connection, int parentGroupId, String clubName, IWContext iwc) {
 		if (connection == null || connection.equals(""))
 			return false;
 
@@ -151,10 +150,13 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 				newGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);
 				newGroup.setName(child.getName());
 				newGroup.store();
+				setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newGroup);
+				
+				
 
 				group.addGroup(newGroup);
 
-				insertCopyOfChild(newGroup, child, specialGroup, clubName);
+				insertCopyOfChild(newGroup, child, specialGroup, clubName,iwc);
 			}
 		}
 		catch (Exception e) {
@@ -163,7 +165,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		return false;
 	}
 
-	public boolean createSpecialConnectionDivision(String connection, int parentGroupId, String clubName) {
+	public boolean createSpecialConnectionDivision(String connection, int parentGroupId, String clubName, IWContext iwc) {
 		if (connection == null || connection.equals(""))
 			return false;
 
@@ -184,7 +186,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			}
 
 			if (foundIt && child != null) {
-				insertCopyOfChild(group, child, specialGroup, clubName);
+				insertCopyOfChild(group, child, specialGroup, clubName,iwc);
 			}
 		}
 		catch (Exception e) {
@@ -194,7 +196,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 	}
 
 
-	private void insertCopyOfChild(Group parent, Group templateParent, Group special, String clubName) {
+	private void insertCopyOfChild(Group parent, Group templateParent, Group special, String clubName , IWContext iwc) {
 		try {
 			List child = templateParent.getChildGroups();
 			Iterator it = child.iterator();
@@ -211,15 +213,17 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 						newGroup.setMetaDataAttributes(t);
 
 					newGroup.store();
+					setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newGroup);
 
 					parent.addGroup(newGroup);
 
-					if (!updateSpecial(special, playerGroup, newGroup, clubName)) {
+					if (!updateSpecial(special, playerGroup, newGroup, clubName,iwc)) {
 						Group newSpecialPlayerGroup = (Group) ((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).create();
 						newSpecialPlayerGroup.setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 						newSpecialPlayerGroup.setName(playerGroup.getName());
 						newSpecialPlayerGroup.setAlias(playerGroup);
 						newSpecialPlayerGroup.store();
+						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerGroup);
 
 						special.addGroup(newSpecialPlayerGroup);
 
@@ -231,12 +235,14 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 							name += " (" + clubName + ")";
 						newSpecialPlayerAliasGroup.setName(name);
 						newSpecialPlayerAliasGroup.store();
+						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);
+						
 
 						newSpecialPlayerGroup.addGroup(newSpecialPlayerAliasGroup);
 					}
 
 					if (playerGroup.getChildCount() > 0)
-						insertCopyOfChild(newGroup, playerGroup, special, clubName);
+						insertCopyOfChild(newGroup, playerGroup, special, clubName,iwc);
 				}
 			}
 		}
@@ -245,7 +251,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		}
 	}
 
-	private boolean updateSpecial(Group special, Group playerGroup, Group newGroup, String clubName) {
+	private boolean updateSpecial(Group special, Group playerGroup, Group newGroup, String clubName, IWContext iwc) {
 		try {
 			List childs = special.getChildGroups();
 			Iterator it = childs.iterator();
@@ -258,17 +264,17 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 						newSpecialPlayerAliasGroup.setAlias(newGroup);
 						String name = newGroup.getName();
 						if (clubName != null)
-							name += " (" + clubName + ")";
+							name = clubName;
 						newSpecialPlayerAliasGroup.setName(name);
 						newSpecialPlayerAliasGroup.store();
-
+						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,newSpecialPlayerAliasGroup);
 						child.addGroup(newSpecialPlayerAliasGroup);
 
 						return true;
 					}
 
 					if (child.getChildCount() > 0) {
-						if (updateSpecial(child, playerGroup, newGroup, clubName))
+						if (updateSpecial(child, playerGroup, newGroup, clubName,iwc))
 							return true;
 					}
 				}
@@ -305,7 +311,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		}
 	}
 
-	public boolean updateConnectedToSpecial(Group special) {
+	public boolean updateConnectedToSpecial(Group special, IWContext iwc) {
 		if (special.getGroupType().equals(IWMemberConstants.GROUP_TYPE_LEAGUE)) {
 			Group child = null;
 			boolean foundIt = false;
@@ -329,7 +335,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			while (it.hasNext()) {
 				Group child = (Group) it.next();
 				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE))
-					updatePlayerGroupsConnectedTo(child);
+					updatePlayerGroupsConnectedTo(child,iwc);
 			}
 
 			return true;
@@ -338,7 +344,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 		return false;
 	}
 
-	private void updatePlayerGroupsConnectedTo(Group parent) {
+	private void updatePlayerGroupsConnectedTo(Group parent, IWContext iwc) {
 		Collection connected = null;
 		try {
 			connected =((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findGroupsByType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
@@ -351,6 +357,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 					if (conn.getAliasID() == parent_id) {
 						conn.setMetaDataAttributes(metadata);
 						conn.store();
+						setCurrentUsersPrimaryGroupPermissionsForGroup(iwc,conn);
 					}
 				}
 			}
@@ -365,7 +372,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 			while (it.hasNext()) {
 				Group child = (Group) it.next();
 				if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER_TEMPLATE))
-					updatePlayerGroupsConnectedTo(child);
+					updatePlayerGroupsConnectedTo(child,iwc);
 			}
 		}
 	}

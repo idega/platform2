@@ -6,6 +6,7 @@
  */
 package is.idega.idegaweb.member.presentation;
 
+import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 
 import java.rmi.RemoteException;
@@ -252,11 +253,11 @@ public class ClubDivisionTab extends UserGroupTab {
 //			group.setMetaData("CLUBDIV_CONN", connection);
 				String oldConnection = group.getMetaData("CLUBDIV_CONN");
 				if (oldConnection == null && connection != null) {
-//					String clubName = null; 
-//					Group club = getMemberUserBusiness(iwc).getClubForGroup(group,iwc);
-//					if (club != null)
-//						clubName = club.getName();
-					getClubInformationPluginBusiness(iwc).createSpecialConnectionDivision(connection, getGroupId(), group.getName());
+					String clubName = null; 
+					Group club = getMemberUserBusiness(iwc).getClubForGroup(group,iwc);
+					if (club != null)
+						clubName = club.getName();
+					getClubInformationPluginBusiness(iwc).createSpecialConnectionDivision(connection, getGroupId(), clubName, iwc);
 					group.setMetaData("CLUBDIV_CONN", connection);
 				}
 
@@ -324,4 +325,16 @@ public class ClubDivisionTab extends UserGroupTab {
 		}
 		return business;
 	}
+	
+	public MemberUserBusiness getMemberUserBusiness(IWApplicationContext iwc) {
+		MemberUserBusiness business = null;
+		try {
+			business = (MemberUserBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, MemberUserBusiness.class);
+		}
+		catch (java.rmi.RemoteException rme) {
+			throw new RuntimeException(rme.getMessage());
+		}
+		return business;
+	}
+	
 }

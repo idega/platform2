@@ -96,7 +96,7 @@ public class UpdateClubDivisionTemplate extends IWAdminWindow {
 
 	private boolean updateChildren(IWContext iwc) {
 		try {
-			return getClubInformationPluginBusiness(iwc).updateConnectedToSpecial(group);
+			return getClubInformationPluginBusiness(iwc).updateConnectedToSpecial(group,iwc);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
