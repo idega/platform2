@@ -6,137 +6,186 @@ import com.idega.core.data.ICFile;
 import com.idega.core.data.ICInformationCategory;
 import com.idega.core.data.ICInformationFolder;
 import com.idega.core.data.ICObjectInstance;
-import com.idega.core.presentation.InformationCategory;
-import com.idega.core.presentation.InformationFolder;
 import com.idega.data.EntityFinder;
 import java.sql.SQLException;
 import java.util.List;
+import com.idega.core.business.InformationCategory;
+import com.idega.core.business.InformationFolder;
 
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @version 1.0
+ *  Title: Description: Copyright: Copyright (c) 2001 Company:
+ *
+ *@author     gummi
+ *@created    15. mars 2002
+ *@version    1.0
  */
 
 public class DocFinder {
 
-  public static IBPage getPage(int pageID) {
-    try {
-      return new IBPage(pageID);
+    /**
+     *  Gets the page attribute of the DocFinder class
+     *
+     *@param  pageID  Description of the Parameter
+     *@return         The page value
+     */
+    public static IBPage getPage(int pageID) {
+        try {
+            return new IBPage(pageID);
+        } catch (SQLException e) {
+            return new IBPage();
+        }
     }
-    catch (SQLException e) {
-      return new IBPage();
-    }
-  }
 
-  public static ICFile getFile(int fileID) {
-    try {
-      return new ICFile(fileID);
-    }
-    catch (SQLException e) {
-      return new ICFile();
-    }
-  }
 
-  /**
-   * @todo: reimplement
-   */
-  public static ICInformationFolder getFolder(String attribute){
-/*    try {
-      List L = null; // EntityFinder.findAllByColumn(ICInformationFolder.getStaticInstance(ICInformationFolder.class),ICInformationFolder.getColumnNameAttribute(),attribute);
-      if(L!= null) {
-        return (ICInformationFolder) L.get(0);
-      }
-      return null;
+    /**
+     *  Gets the file attribute of the DocFinder class
+     *
+     *@param  fileID  Description of the Parameter
+     *@return         The file value
+     */
+    public static ICFile getFile(int fileID) {
+        try {
+            return new ICFile(fileID);
+        } catch (SQLException e) {
+            return new ICFile();
+        }
     }
-    catch (SQLException ex) {
-      ex.printStackTrace();*/
-      return null;
-   // }
-  }
 
-  public static ICInformationFolder getFolder(int folderID){
-    try {
-      return new ICInformationFolder(folderID);
-    }
-    catch (SQLException ex) {
-      return null;
-    }
-  }
 
-  public static ICInformationCategory getCategory(int infoCatID) {
-    try {
-      return new ICInformationCategory(infoCatID);
-    }
-    catch (SQLException e) {
-      return null;
-    }
-  }
-
-  public static DocLink getLink(int boxLinkID) {
-    try {
-      DocLink link = new DocLink(boxLinkID);
-      return link;
-    }
-    catch (SQLException e) {
-      return null;
-    }
-  }
-/*
-  public static int getObjectInstanceID(ICObjectInstance eObjectInstance){
-    try {
-      List L = EntityFinder.findRelated(eObjectInstance,new ICInformationFolder());
-      if(L!= null){
-        return ((ICInformationFolder) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -2;
-
-    }
-  }
-*/
-  public static int getObjectInstanceIdFromID(int folderID){
-    try {
-      ICInformationFolder box = new ICInformationFolder(folderID);
-      List L = EntityFinder.findRelated(box,new ICObjectInstance());
-      if(L!= null){
-        return ((ICObjectInstance) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -1;
-
-    }
-  }
-
-  public static ICInformationFolder getObjectInstanceFromID(int ICObjectInstanceID){
-    try {
-      ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
-      List L = EntityFinder.findRelated(ICObjInst,ICInformationFolder.getStaticInstance(ICInformationFolder.class));
-      if(L!= null){
-        return (ICInformationFolder) L.get(0);
-      }
-      else
+    /**
+     *@param  attribute  Description of the Parameter
+     *@return            The folder value
+     *@todo:             reimplement
+     */
+    public static ICInformationFolder getFolder(String attribute) {
+        /*
+         *  try {
+         *  List L = null; // EntityFinder.findAllByColumn(ICInformationFolder.getStaticInstance(ICInformationFolder.class),ICInformationFolder.getColumnNameAttribute(),attribute);
+         *  if(L!= null) {
+         *  return (ICInformationFolder) L.get(0);
+         *  }
+         *  return null;
+         *  }
+         *  catch (SQLException ex) {
+         *  ex.printStackTrace();
+         */
         return null;
+        // }
     }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return null;
-    }
-  }
 
-  /**
-   * @todo: reimplement
-   */
+
+    /**
+     *  Gets the folder attribute of the DocFinder class
+     *
+     *@param  folderID  Description of the Parameter
+     *@return           The folder value
+     */
+    public static ICInformationFolder getFolder(int folderID) {
+        try {
+            return new ICInformationFolder(folderID);
+        } catch (SQLException ex) {
+            return null;
+        }
+    }
+
+
+    /**
+     *  Gets the category attribute of the DocFinder class
+     *
+     *@param  infoCatID  Description of the Parameter
+     *@return            The category value
+     */
+    public static ICInformationCategory getCategory(int infoCatID) {
+        try {
+            return new ICInformationCategory(infoCatID);
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+
+    /**
+     *  Gets the link attribute of the DocFinder class
+     *
+     *@param  boxLinkID  Description of the Parameter
+     *@return            The link value
+     */
+    public static DocLink getLink(int boxLinkID) {
+        try {
+            DocLink link = new DocLink(boxLinkID);
+            return link;
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+
+    /*
+     *  public static int getObjectInstanceID(ICObjectInstance eObjectInstance){
+     *  try {
+     *  List L = EntityFinder.findRelated(eObjectInstance,new ICInformationFolder());
+     *  if(L!= null){
+     *  return ((ICInformationFolder) L.get(0)).getID();
+     *  }
+     *  else
+     *  return -1;
+     *  }
+     *  catch (SQLException ex) {
+     *  ex.printStackTrace();
+     *  return -2;
+     *  }
+     *  }
+     */
+    /**
+     *  Gets the objectInstanceIdFromID attribute of the DocFinder class
+     *
+     *@param  folderID  Description of the Parameter
+     *@return           The objectInstanceIdFromID value
+     */
+    public static int getObjectInstanceIdFromID(int folderID) {
+        try {
+            ICInformationFolder box = new ICInformationFolder(folderID);
+            List L = EntityFinder.findRelated(box, new ICObjectInstance());
+            if (L != null) {
+                return ((ICObjectInstance) L.get(0)).getID();
+            } else {
+                return -1;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return -1;
+        }
+    }
+
+
+    /**
+     *  Gets the objectInstanceFromID attribute of the DocFinder class
+     *
+     *@param  ICObjectInstanceID  Description of the Parameter
+     *@return                     The objectInstanceFromID value
+     */
+    public static ICInformationFolder getObjectInstanceFromID(int ICObjectInstanceID) {
+        try {
+            ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
+            List L = EntityFinder.findRelated(ICObjInst, ICInformationFolder.getStaticInstance(ICInformationFolder.class));
+            if (L != null) {
+                return (ICInformationFolder) L.get(0);
+            } else {
+                return null;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     *@param  folder   Description of the Parameter
+     *@param  infoCat  Description of the Parameter
+     *@return          The linksInFolderCategory value
+     *@todo:           reimplement
+     */
 //  public static List getCategoriesInDoc(ICInformationFolder box,int userID) {
 //    try {
 //      List list = null;
@@ -203,36 +252,41 @@ public class DocFinder {
 //    }
 //  }
 
-  /**
-   * @todo: reimplement
-   */
-  public static DocLink[] getLinksInFolderCategory(InformationFolder folder,InformationCategory infoCat) {
-    try {
-      DocLink staticLink = (DocLink)DocLink.getStaticInstance(DocLink.class);
-      DocLink[] links = (DocLink[]) staticLink.findAllByColumnOrdered(DocLink.getColumnNameFolderID(),Integer.toString(folder.getID()),DocLink.getColumnNameCatID(),Integer.toString(infoCat.getID()),DocLink.getColumnNameCreationDate()+" desc","=","=");
-      if ( links != null ) {
-        return links;
-      }
-      return null;
+    /**
+     *@param  folder   Description of the Parameter
+     *@param  infoCat  Description of the Parameter
+     *@return          The linksInFolderCategory value
+     *@todo:           reimplement
+     */
+    public static DocLink[] getLinksInFolderCategory(InformationFolder folder, InformationCategory infoCat) {
+        try {
+            DocLink staticLink = (DocLink) DocLink.getStaticInstance(DocLink.class);
+            DocLink[] links = (DocLink[]) staticLink.findAllByColumnOrdered(DocLink.getColumnNameFolderID(), Integer.toString(folder.getID()), DocLink.getColumnNameCatID(), Integer.toString(infoCat.getID()), DocLink.getColumnNameCreationDate() + " desc", "=", "=");
+            if (links != null) {
+                return links;
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
-    catch (Exception e) {
-      return null;
-    }
-  }
 
-  /**
-   * @deprecated
-   */
-  public static DocLink[] getLinksInCategory(InformationCategory infoCat) {
-    try {
-      DocLink[] links = null; // (DocLink[]) DocLink.getStaticInstance(DocLink.class).findAllByColumnOrdered(infoCat.getColumnNameDocCategoryID(),Integer.toString(infoCat.getID()),DocLink.getColumnNameCreationDate()+" desc","=");
-      if ( links != null ) {
-        return links;
-      }
-      return null;
+
+    /**
+     *@param  infoCat  Description of the Parameter
+     *@return          The linksInCategory value
+     *@deprecated
+     */
+    public static DocLink[] getLinksInCategory(InformationCategory infoCat) {
+        try {
+            DocLink[] links = null;
+            // (DocLink[]) DocLink.getStaticInstance(DocLink.class).findAllByColumnOrdered(infoCat.getColumnNameDocCategoryID(),Integer.toString(infoCat.getID()),DocLink.getColumnNameCreationDate()+" desc","=");
+            if (links != null) {
+                return links;
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
     }
-    catch (Exception e) {
-      return null;
-    }
-  }
 }
