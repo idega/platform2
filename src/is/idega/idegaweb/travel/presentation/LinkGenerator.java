@@ -1,6 +1,9 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.builder.business.BuilderConstants;
+import java.rmi.RemoteException;
+
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
@@ -97,12 +100,24 @@ public class LinkGenerator extends TravelWindow {
 	   if (!http.equals("https")) {
 	     text.append(":"+iwc.getServerPort());
 	   }
-	   
-	   text.append(iwc.getIWMainApplication().getBuilderServletURI());
-	   if (pageID != null) {
-	   	text.append("?"+BuilderConstants.IB_PAGE_PARAMETER+"="+pageID);
+	   BuilderService bs;
+		try {
+			bs = BuilderServiceFactory.getBuilderService(iwc);
+			text.append(bs.getPageURI(pageID));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		if (pageID != null) {
 	   }
-		return text;
+	   else{
+	   	text.append("/");
+	   }
+	   
+	   //text.append(iwc.getIWMainApplication().getBuilderServletURI());
+	   //if (pageID != null) {
+	   //	text.append("?"+BuilderConstants.IB_PAGE_PARAMETER+"="+pageID);
+	   //}
+	   return text;
 	}
 
 public static Link getLinkToRefunderForm(IWContext iwc) {
@@ -124,14 +139,14 @@ public static Link getLinkToRefunderForm(IWContext iwc) {
     }
 
     String parName = parameterProductId;
-    String className = iwc.getIWMainApplication().getEncryptedClassName(classToInstanciate);
+    //String className = iwc.getIWMainApplication().getEncryptedClassName(classToInstanciate);
     if (classToInstanciate.getName().equals(Booking.class.getName())) {
       parName = Booking.parameterProductId;
     }
 
     String url = iwc.getIWMainApplication().getObjectInstanciatorURI(classToInstanciate)+"&"+parName+"="+serviceId;
     text.append(url);
-//    text.append("/servlet/ObjectInstanciator?idegaweb_instance_class="+className+"&"+parName+"="+serviceId);
+    //text.append("/servlet/ObjectInstanciator?idegaweb_instance_class="+className+"&"+parName+"="+serviceId);
     return text.toString();
   }
   

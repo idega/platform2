@@ -2,10 +2,14 @@ package is.idega.idegaweb.project.presentation;
 
 import is.idega.idegaweb.project.business.ProjectBusiness;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.data.IDOLegacyEntity;
+
 import com.idega.presentation.Block;
 import com.idega.presentation.IFrameContainer;
 import com.idega.presentation.IFrameContent;
@@ -323,7 +327,14 @@ public class ProjectFilter extends Block implements IFrameContainer{
       if(isInIFrame()){
         link.setTarget(Link.TARGET_PARENT_WINDOW);
         //link.setURL(IWMainApplication.BUILDER_SERVLET_URL);
-        link.setURL(iwc.getIWMainApplication().getBuilderServletURI(),true,true);
+        BuilderService bs;
+		try {
+			bs = BuilderServiceFactory.getBuilderService(iwc);
+			link.setURL(bs.getCurrentPageURI(iwc),true,true);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
       }
 
     }

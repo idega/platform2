@@ -71,7 +71,7 @@ public class CampusLinkFactory {
 
 
 
-  public static Class DEFAULT_TEMPLATE_CLASS = CampusPage.class;
+  //public static Class DEFAULT_TEMPLATE_CLASS = CampusPage.class;
 
 
 
@@ -79,24 +79,28 @@ public class CampusLinkFactory {
 
   }
 
+  
 
 
   public static Link getLink(int LinkId,PresentationObject PO){
 
-   return getLink( PO,LinkId ,DEFAULT_TEMPLATE_CLASS );
+   //return getLink( PO,LinkId ,DEFAULT_TEMPLATE_CLASS );
+    Class C = null;
 
+    if((C = getInstanciateClass( LinkId)) !=null){
+        return new Link(PO,C );
+    }
+    return new Link();
   }
 
 
 
   public static Link getLink(PresentationObject PO,int LinkId){
-
-   return getLink( PO,LinkId ,DEFAULT_TEMPLATE_CLASS );
-
+  	return getLink(LinkId,PO);
   }
 
 
-
+/*
   public static Link getLink(PresentationObject PO,int LinkId,Class TemplateClass){
 
 
@@ -122,7 +126,7 @@ public class CampusLinkFactory {
     return new Link();
 
   }
-
+*/
 
 
   private static Class getInstanciateClass(int ID){

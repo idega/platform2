@@ -18,6 +18,7 @@ import java.util.Vector;
 import javax.transaction.TransactionManager;
 
 import com.idega.builder.business.BuilderLogic;
+import com.idega.builder.business.BuilderConstants;
 import com.idega.core.builder.data.ICDomain;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.IDOLegacyEntity;
@@ -279,9 +280,9 @@ public class TrackerBusiness {
 
   public static int getCurrentPageId(IWContext iwc){
     int returner = -1;
-    String pageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
+    String pageId = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
       if(pageId==null) pageId = String.valueOf(BuilderLogic.getStartPageId(iwc));
-        if(pageId==null) pageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
+        if(pageId==null) pageId = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
 
     try {
      if(pageId!=null){

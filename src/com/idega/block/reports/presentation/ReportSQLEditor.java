@@ -6,6 +6,8 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 
+import javax.faces.component.UIComponent;
+
 import com.idega.block.reports.business.ReportCondition;
 import com.idega.block.reports.business.ReportEntityHandler;
 import com.idega.block.reports.business.ReportMaker;
@@ -638,9 +640,9 @@ public class ReportSQLEditor extends Block implements Reports{
   }
   
   private ReportViewer getInstanceOfReportViewer(){
-  	PresentationObject obj = this;
-	PresentationObject parent ;
-  	while( (parent = obj.getParentObject()) != null){
+  	UIComponent obj = this;
+	UIComponent parent ;
+  	while( (parent = obj.getParent()) != null){
   		if(parent instanceof ReportViewer)
   			return (ReportViewer)parent;
   		obj = parent;

@@ -3,12 +3,15 @@ package is.idega.idegaweb.project.presentation;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.business.ProjectNavigatorState;
 
+import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.List;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.core.accesscontrol.business.AccessController;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.data.IDOLegacyEntity;
 import com.idega.event.GenericState;
 import com.idega.presentation.Block;
@@ -329,7 +332,7 @@ public class ProjectNavigator extends Block implements IFrameContainer{
       super.addParameters(iwc,item,link);
       if(item != null){
         link.addParameter(ProjectNavigator._PRM_PROJECT_ID,((PageLink)item).getReferencedDataId());
-        link.addParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER,((PageLink)item).getPageId());
+        link.addParameter(com.idega.builder.business.BuilderConstants.IB_PAGE_PARAMETER,((PageLink)item).getPageId());
       }
       link.addIWPOListener(this.getOwnerInstance());
 
@@ -340,7 +343,14 @@ public class ProjectNavigator extends Block implements IFrameContainer{
       if(isInIFrame()){
         link.setTarget(Link.TARGET_PARENT_WINDOW);
         //link.setURL(IWMainApplication.BUILDER_SERVLET_URL);
-        link.setURL(iwc.getIWMainApplication().getBuilderServletURI());
+        BuilderService bs;
+		try {
+			bs = BuilderServiceFactory.getBuilderService(iwc);
+			link.setURL(bs.getCurrentPageURI(iwc));
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
       }
     }
 
