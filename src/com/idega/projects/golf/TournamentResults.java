@@ -166,10 +166,18 @@ public class TournamentResults extends JModuleObject {
         int difference = collector.getDifference();
         String hole = collector.getHole();
 
-        Text positionText = new Text(Integer.toString(a+1));
-          positionText.setFontSize(1);
         Text memberText = new Text(collector.getName());
           memberText.setFontSize(1);
+        Window scoreWindow = new Window("Skoryfirlit",650,650,"/tournament/handicap_skor.jsp");
+        Image linkImage = new Image("/pics/handicap/pad.gif","Skoða skorkort",11,13);
+          linkImage.setHorizontalSpacing(4);
+        Link seeScores = new Link(linkImage,scoreWindow);
+                seeScores.addParameter("member_id",collector.getMemberId());
+                seeScores.addParameter("tournament_id",tournamentId_);
+                seeScores.addParameter("tournament_group_id",collector.getTournamentGroupId());
+
+        Text positionText = new Text(Integer.toString(a+1));
+          positionText.setFontSize(1);
         Text clubText = new Text(collector.getAbbrevation());
           clubText.setFontSize(1);
         Text handicapText = new Text(Integer.toString(handicap));
@@ -297,6 +305,7 @@ public class TournamentResults extends JModuleObject {
         }
 
         myTable.add(positionText,1,a+3);
+        myTable.add(seeScores,2,a+3);
         myTable.add(memberText,2,a+3);
         myTable.add(clubText,3,a+3);
         if ( handicap > 0 ) {
