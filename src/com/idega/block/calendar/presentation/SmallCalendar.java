@@ -10,6 +10,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.block.calendar.business.CalendarBusiness;
+import com.idega.builder.data.IBPage;
 import com.idega.util.text.*;
 import com.idega.util.*;
 import com.idega.util.idegaTimestamp;
@@ -19,6 +20,7 @@ public class SmallCalendar extends Block{
 private idegaTimestamp today;
 private idegaTimestamp stamp;
 private idegaCalendar cal = new idegaCalendar();
+private IBPage _page;
 
 private boolean useNextAndPreviousLinks = true;
 private boolean daysAreLinks = false;
@@ -205,7 +207,11 @@ public SmallCalendar(int year,int month) {
       }
 
       if (daysAreLinks) {
-        theLink = new Link(t);
+        theLink = getLink();
+          theLink.setPresentationObject(t);
+          if ( _page != null ) {
+            theLink.setPage(_page);
+          }
           theLink.addParameter(CalendarBusiness.PARAMETER_DAY,n);
           theLink.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
           theLink.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
@@ -515,11 +521,15 @@ public SmallCalendar(int year,int month) {
       }
     }
 
-    return _link;
+    return (Link) _link.clone();
   }
 
   public void setLink(Link link){
     _link = link;
+  }
+
+  public void setPage(IBPage page) {
+    _page = page;
   }
 
   public void setTimestamp(idegaTimestamp stamp) {

@@ -24,6 +24,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.Table;
 import com.idega.presentation.Image;
+import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -45,6 +46,7 @@ private String _dateColor = "#000000";
 
 private String _noActionDay = "#999966";
 private String _actionDay = "#660000";
+private IBPage _page;
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.calendar";
 protected IWResourceBundle _iwrb;
@@ -227,7 +229,19 @@ public Calendar(idegaTimestamp timestamp){
       }
     }
 
-    add(cal);
+    Table monthTable = new Table();
+      monthTable.setCellpadding(0);
+      monthTable.setCellspacing(0);
+    int ypos = 1;
+
+    if ( _isAdmin ) {
+      monthTable.add(getAddIcon(),1,ypos);
+      monthTable.add(getPropertiesIcon(),1,ypos);
+      ypos++;
+    }
+
+    monthTable.add(cal,1,ypos);
+    add(monthTable);
   }
 
   private SmallCalendar getCalendar(idegaTimestamp stamp) {
@@ -236,6 +250,9 @@ public Calendar(idegaTimestamp timestamp){
     SmallCalendar calendar = new SmallCalendar(stamp);
       calendar.setDaysAsLink(true);
       calendar.setDayTextColor(_noActionDay);
+      if ( _page != null ) {
+        calendar.setPage(_page);
+      }
 
     if ( list != null ) {
       Iterator iter = list.iterator();
@@ -253,6 +270,12 @@ public Calendar(idegaTimestamp timestamp){
     SmallCalendar calendar = null;
     int ypos = 1;
     int xpos = 1;
+
+    if ( _isAdmin ) {
+      yearTable.add(getAddIcon(),1,ypos);
+      yearTable.add(getPropertiesIcon(),1,ypos);
+      ypos++;
+    }
 
     for ( int a = 1; a <= 12; a++ ) {
       yearStamp = new idegaTimestamp(_stamp.getDay(),a,_stamp.getYear());
@@ -362,6 +385,10 @@ public Calendar(idegaTimestamp timestamp){
       _stamp.setMonth(month);
       _stamp.setYear(year);
     }
+  }
+
+  public void setPage(IBPage page) {
+    _page = page;
   }
 
   public String getBundleIdentifier(){
