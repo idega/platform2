@@ -25,7 +25,7 @@ public class PrognosisViewer extends ChildCareBlock {
 		if (getSession().hasPrognosis()) {
 			add(getPrognosisTable(iwc));
 			add(new Break());
-			add(getProviderCapacity(iwc));
+			add(getProviderCapacity());
 			add(getAdminButton());
 		}
 		else {
@@ -38,7 +38,7 @@ public class PrognosisViewer extends ChildCareBlock {
 		}
 	}
 	
-	public Table getProviderCapacity(IWContext iwc) throws RemoteException {
+	public Table getProviderCapacity() throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
