@@ -407,9 +407,17 @@ public class CheckRequestAdmin extends CommuneBlock {
 			return;
 		}
 		
-		String subject = getResourceBundle(iwc).getLocalizedString("check.granted_message_headline", "Check granted");
+		StringBuffer subject = new StringBuffer(getResourceBundle(iwc).getLocalizedString("check.granted_message_headline", "Check granted"));
+		User child = getChild(iwc,check.getChildId());
+		System.out.println("User = " + child);
+		if (child != null) {
+			subject.append(" ");
+			subject.append(getResourceBundle(iwc).getLocalizedString("check.for","for"));
+			subject.append(" ");
+			subject.append(child.getName());
+		}
 		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body", "Your check has been granted");
-		getCheckBusiness(iwc).approveCheck(check, subject, body, iwc.getCurrentUser());
+		getCheckBusiness(iwc).approveCheck(check, subject.toString(), body, iwc.getCurrentUser());
 
 		add(getText(getResourceBundle(iwc).getLocalizedString("check.check_granted", "Check granted") + ": " + ((Integer) check.getPrimaryKey()).toString()));
 		add(new Break(2));
@@ -418,9 +426,16 @@ public class CheckRequestAdmin extends CommuneBlock {
 
 	private void retrialCheck(IWContext iwc) throws Exception {
 		Check check = verifyCheckRules(iwc);
-		String subject = getResourceBundle(iwc).getLocalizedString("check.retrial_message_headline", "Check denied");
+		StringBuffer subject = new StringBuffer(getResourceBundle(iwc).getLocalizedString("check.retrial_message_headline", "Check denied"));
+		User child = getChild(iwc,check.getChildId());
+		if (child != null) {
+			subject.append(" ");
+			subject.append(getResourceBundle(iwc).getLocalizedString("check.for","for"));
+			subject.append(" ");
+			subject.append(child.getName());
+		}
 		String body = getResourceBundle(iwc).getLocalizedString("check.retrial_message_body", "Your check has been denied");
-		getCheckBusiness(iwc).retrialCheck(check, subject, body, iwc.getCurrentUser());
+		getCheckBusiness(iwc).retrialCheck(check, subject.toString(), body, iwc.getCurrentUser());
 
 		viewCheckList(iwc);
 	}
@@ -433,6 +448,16 @@ public class CheckRequestAdmin extends CommuneBlock {
 	private void saveCheck(IWContext iwc) throws Exception {
 		Check check = verifyCheckRules(iwc);
 		viewCheckList(iwc);
+	}
+
+	protected User getChild(IWContext iwc, int child_id) {
+		try {
+			return getCheckBusiness(iwc).getUserById(child_id);
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+			return null;
+		}
 	}
 
 	protected User getChild(IWContext iwc) {
