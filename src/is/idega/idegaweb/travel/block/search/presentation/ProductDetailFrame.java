@@ -53,6 +53,7 @@ public class ProductDetailFrame extends TravelBlock {
 	String leftWidth = "200";
 	IWTimestamp fromDate = null;
 	List depAddresses = null;
+	Timeframe timeframe = null;
 	int columns = 3;
 	int localeID = -1;
 	protected DecimalFormat currencyFormat;
@@ -100,8 +101,16 @@ public class ProductDetailFrame extends TravelBlock {
 				}
 
 				try {
-					depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, fromDate, true);
-				} catch (Exception e) {}
+					timeframe = getProductBusiness(iwc).getTimeframe(product, fromDate);
+				} catch (Exception e) {e.printStackTrace();}
+				
+				try {
+					Timeframe[] frames = new Timeframe[]{};
+					if (timeframe != null) {
+						frames = new Timeframe[]{timeframe};
+					}
+					depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, fromDate, true, null, frames);
+				} catch (Exception e) {e.printStackTrace();}
 				
 			} catch (Exception e ) {
 				e.printStackTrace();
