@@ -4,6 +4,8 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
@@ -21,13 +23,16 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -58,10 +63,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/18 10:41:56 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/18 14:56:09 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -271,7 +276,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 
     private void newRecord (final IWContext context)
-        throws RemoteException, javax.ejb.CreateException {
+        throws RemoteException, javax.ejb.CreateException,
+               javax.ejb.FinderException {
         final User currentUser = context.getCurrentUser ();
         final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
         final Date checkEndPeriod = getPeriodParameter (context,
@@ -291,7 +297,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
         final Date placementStartPeriod
                 = getPeriodParameter (context, PLACEMENT_START_PERIOD_KEY);
-        final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+        Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+        final Integer placementId = getIntegerParameter (context,
+                                                         PLACEMENT_KEY);
+        if (null == providerId && null != placementId) {
+            final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
+                    .getServiceInstance (context, SchoolBusiness.class);
+            final SchoolClassMemberHome placementHome
+                    = schoolBusiness.getSchoolClassMemberHome ();
+            final SchoolClassMember placement
+                    = placementHome.findByPrimaryKey (placementId);
+            providerId = (Integer)
+                    placement.getSchoolClass ().getSchool ().getPrimaryKey ();
+        }
         final String regulationSpecType
                 = context.getParameter (REGULATION_SPEC_TYPE_KEY);
         final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
@@ -307,7 +325,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                  ownPosting,
                  new java.sql.Date (placementStartPeriod.getTime ()),
                  new java.sql.Date (placementEndPeriod.getTime ()),
-                 providerId, regulationSpecType, vatAmount, vatRule, ruleText);
+                 providerId, regulationSpecType, vatAmount, vatRule, ruleText,
+                 placementId);
         final Table table = getConfirmTable
                 (INVOICE_RECORD_CREATED_KEY,
                  INVOICE_RECORD_CREATED_DEFAULT);
@@ -336,7 +355,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
         final Date placementStartPeriod
                 = getPeriodParameter (context, PLACEMENT_START_PERIOD_KEY);
-        final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+        Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
+        final Integer placementId = getIntegerParameter (context,
+                                                         PLACEMENT_KEY);
+        if (null == providerId && null != placementId) {
+            final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
+                    .getServiceInstance (context, SchoolBusiness.class);
+            final SchoolClassMemberHome placementHome
+                    = schoolBusiness.getSchoolClassMemberHome ();
+            final SchoolClassMember placement
+                    = placementHome.findByPrimaryKey (placementId);
+            providerId = (Integer)
+                    placement.getSchoolClass ().getSchool ().getPrimaryKey ();
+        }
         final String regulationSpecType
                 = context.getParameter (REGULATION_SPEC_TYPE_KEY);
         final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
@@ -364,6 +395,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         record.setPeriodEndPlacement (new java.sql.Date
                                       (placementEndPeriod.getTime ()));
         record.setProviderId (providerId.intValue ());
+        record.setSchoolClassMemberId (placementId.intValue ());
         record.setRuleSpecType (regulationSpecType);
         record.setVATType (vatRule.intValue ());
         record.setRuleText (ruleText);
@@ -572,15 +604,23 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         renderRecordDetailsOrForm (context, details);
     }
 
+    private User getUser (final IWContext context, final Integer id) {
+        try {
+            final UserBusiness userBusiness = (UserBusiness)
+                    IBOLookup.getServiceInstance (context, UserBusiness.class);
+            final UserHome userHome = userBusiness.getUserHome ();
+            return userHome.findByPrimaryKey (id);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private void renderRecordDetailsOrForm
         (final IWContext context, final java.util.Map presentationObjects)
         throws RemoteException, javax.ejb.FinderException {
-        final UserBusiness userBusiness = (UserBusiness)
-                IBOLookup.getServiceInstance (context, UserBusiness.class);
-        final UserHome userHome = userBusiness.getUserHome ();
         final InvoiceHeader header = getInvoiceHeader (context);
-		final User custodian = userHome.findByPrimaryKey
-		        (new Integer (header.getCustodianId ()));
+		final User custodian
+                = getUser  (context, new Integer (header.getCustodianId ()));
 
         // render form/details
         final Table table = createTable (4);
@@ -783,11 +823,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
         final InvoiceHeader header = getInvoiceHeader (context);
 		final Date period = header.getPeriod ();
-        final UserBusiness userBusiness = (UserBusiness)
-                IBOLookup.getServiceInstance (context, UserBusiness.class);
-        final UserHome userHome = userBusiness.getUserHome ();
-		final User custodian = userHome.findByPrimaryKey
-		        (new Integer (header.getCustodianId ()));
+		final User custodian
+                = getUser (context, new Integer (header.getCustodianId ()));
 
         final Table table = createTable (4);
         setColumnWidthsEqual (table);
@@ -1056,7 +1093,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
         // show each invoice header in a row
         for (int i = 0; i < headers.length; i++) {
-			showInvoiceHeaderOnARow (table, row++, invoiceBusiness, userHome,
+			showInvoiceHeaderOnARow (context, table, row++, invoiceBusiness,
                                      headers [i]);
         }
         
@@ -1064,15 +1101,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
 	private void showInvoiceHeaderOnARow
-        (final Table table, final int row, final InvoiceBusiness business,
-         final UserHome userHome, final InvoiceHeader header)
+        (final IWContext context, final Table table, final int row,
+         final InvoiceBusiness business, final InvoiceHeader header)
         throws FinderException {
 		int col = 1;
 		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
 		                   : getZebraColor2 ());
 		final char status = header.getStatus ();
-		final User custodian = userHome.findByPrimaryKey
-		        (new Integer (header.getCustodianId ())) ;
+		final User custodian
+                = getUser (context, new Integer (header.getCustodianId ()));
 		final Date period = header.getPeriod ();
         final String headerId = header.getPrimaryKey ().toString ();
         final String [][] editLinkParameters = getHeaderLinkParameters
@@ -1219,26 +1256,94 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return dropdown;
     }
 
-    private DropdownMenu getProviderDropdown
+    private PresentationObject getProviderDropdown
         (final IWContext context, final InvoiceHeader header) {
-        final DropdownMenu providerDropdown = (DropdownMenu)
-                getStyledInterface (new DropdownMenu (PROVIDER_KEY));
+        PresentationObject result = getSmallText ("");
         try {
-            final String schoolCategory = header.getSchoolCategoryID ();
-            final SchoolBusiness business = (SchoolBusiness) IBOLookup
+            // get business objects
+            final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
                     .getServiceInstance (context, SchoolBusiness.class);
-            final Collection schools
-                    = business.findAllSchoolsByCategory (schoolCategory);
-            for (Iterator i = schools.iterator (); i.hasNext ();) {
-                final School school = (School) i.next ();
-                final String primaryKey = school.getPrimaryKey ().toString ();
-                final String name = school.getName ();
-                providerDropdown.addMenuElement (primaryKey, name);
+            final MemberFamilyLogic familyBusiness
+                    = (MemberFamilyLogic) IBOLookup.getServiceInstance
+                    (context, MemberFamilyLogic.class);
+
+            // get home objects
+            final SchoolCategoryHome categoryHome
+                    = schoolBusiness.getSchoolCategoryHome ();
+            final SchoolClassMemberHome placementHome
+                    = schoolBusiness.getSchoolClassMemberHome ();
+
+            // get school class members
+            final List placements = new ArrayList ();
+            try {
+                final User custodian = getUser (context, new Integer
+                                                (header.getCustodianId ()));
+                final Collection children
+                        = familyBusiness.getChildrenInCustodyOf (custodian);
+                final SchoolCategory category = categoryHome.findByPrimaryKey
+                        (header.getSchoolCategoryID ());
+                for (Iterator i = children.iterator (); i.hasNext ();) {
+                    final User child = (User) i.next ();
+                    try {
+                        final SchoolClassMember placement
+                                = placementHome.findLatestByUserAndSchCategory
+                                (child, category);
+                        placements.add (placement);
+                    } catch (FinderException e) {
+                        // this kid is not placed, it's ok to ignore him/her
+                    }
+                }
+            } catch (FinderException e) {
+                // this person doesn't have any kids
+            }
+
+            if (placements.isEmpty ()) {
+                final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                        (new DropdownMenu (PROVIDER_KEY));
+                final String schoolCategoryId = header.getSchoolCategoryID ();
+                final SchoolBusiness business = (SchoolBusiness) IBOLookup
+                        .getServiceInstance (context, SchoolBusiness.class);
+                final Collection schools
+                        = business.findAllSchoolsByCategory (schoolCategoryId);
+                for (Iterator i = schools.iterator (); i.hasNext ();) {
+                    final School school = (School) i.next ();
+                    final String primaryKey
+                            = school.getPrimaryKey ().toString ();
+                    final String name = school.getName ();
+                    dropdown.addMenuElement (primaryKey, name);
+                }
+                result = dropdown;
+            } else if (1 == placements.size ()) {
+                final Table table = createTable (1);
+                final SchoolClassMember placement
+                        = (SchoolClassMember) placements.get (0);
+                table.add (new HiddenInput
+                           (PLACEMENT_KEY, placement.getPrimaryKey () + ""), 1,
+                           1);
+                addSmallText (table, getProviderName (placement), 1, 1);
+                result = table;
+            } else {
+                final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                        (new DropdownMenu (PLACEMENT_KEY));
+                for (Iterator i = placements.iterator (); i.hasNext ();) {
+                    final SchoolClassMember placement
+                            = (SchoolClassMember) i.next ();
+                    dropdown.addMenuElement (placement.getPrimaryKey () + "",
+                                             getProviderName (placement));
+                }
+                result = dropdown;
             }
         } catch (Exception e) {
             // do nothing, ok to return the dropdown as empty as might be
         }
-        return providerDropdown;
+        return result;
+    }
+
+    private String getProviderName (final SchoolClassMember placement) {
+        final String studentName = placement.getStudent ().getName ();
+        final String providerName
+                = placement.getSchoolClass ().getSchool ().getName ();
+        return providerName + " (" + studentName + ")";
     }
 
     private String getProviderName
@@ -1255,7 +1360,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return result.toString ();
     }
 
-    final String getSchoolCategoryName (final IWContext context,
+    private String getSchoolCategoryName (final IWContext context,
                                         final InvoiceHeader header) {
         try {
             final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
@@ -1752,26 +1857,4 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
         return dropdown;
     }
-
-    /*private void displayRedText (final String string) {
-        final Text text = new Text ('\n' + string + '\n');
-        text.setFontColor ("#ff0000");
-        add (text);
-    }*/
-
-    /*private void displayRedText (final String key, final String defaultString) {
-        final String localizedString = key != null
-                ? localize (key, defaultString) : defaultString;
-        displayRedText (localizedString);
-    }*/
-
-    /*private Table getButtonTable (final String [][] buttonInfo) {
-        final Table table = new Table ();
-        for (int i = 0; i < buttonInfo.length; i++) {
-            table.add (getSubmitButton (buttonInfo [i][0], buttonInfo [i][1],
-                                        buttonInfo [i][2]), i + 1, 1);
-            table.add (Text.getNonBrakingSpace (), i + 1, 1);
-        }
-        return table;
-    }*/
 }

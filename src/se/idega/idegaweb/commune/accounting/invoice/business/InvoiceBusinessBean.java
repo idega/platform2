@@ -43,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/18 10:41:56 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/18 14:56:09 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.44 $
+ * @version $Revision: 1.45 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -357,7 +357,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
          final Integer numberOfDays, final String ownPosting,
          final Date placementStartPeriod, final Date placementEndPeriod,
          final Integer providerId, final String regulationSpecType,
-         final Integer vatAmount, final Integer vatRule, final String ruleText)
+         final Integer vatAmount, final Integer vatRule, final String ruleText,
+         final Integer placementId)
         throws CreateException {
         try {
             final InvoiceRecord record = getInvoiceRecordHome ().create ();
@@ -393,6 +394,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             if (null != vatRule)  record.setVATType (vatRule.intValue ());
             if (null != providerId) record.setProviderId
                                             (providerId.intValue ());
+            if (null != placementId) record.setSchoolClassMemberId
+                                            (placementId.intValue ());
             record.store ();
             return record;
         } catch (RemoteException e) {
