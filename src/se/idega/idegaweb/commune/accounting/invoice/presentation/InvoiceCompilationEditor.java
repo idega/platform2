@@ -65,10 +65,13 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
@@ -86,10 +89,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/15 09:45:11 $ by $Author: laddi $
+ * Last modified: $Date: 2004/01/15 12:28:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.117 $
+ * @version $Revision: 1.118 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1122,10 +1125,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		throws RemoteException {
 		String [] invoicePostings = paymentPostings;
 		try {
-			if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
+			if (isCheck (regSpecTypeName)) {
 				final RegulationSpecType invoiceRegSpecType
 						= regulationsBusiness.findRegulationSpecType
-						("cacc_reg_spec_type.checktaxa");
+						(RegSpecConstant.CHECKTAXA);
 				final int invoiceRegSpecTypeId
 						= ((Integer) invoiceRegSpecType.getPrimaryKey ()).intValue ();
 				invoicePostings = postingBusiness.getPostingStrings
@@ -1150,14 +1153,34 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		}
 	}
 	
+	private boolean isCheck (final RegulationSpecType regSpecType) {
+		try {
+				final MainRule mainRule = regSpecType.getMainRule ();
+				final String mainRuleName = mainRule.getMainRule ();
+				return mainRuleName.equals (RegSpecConstant.MAIN_RULE_CHECK);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	private boolean isCheck (final String regSpecTypeName) {
+		try {
+			final RegulationSpecTypeHome regSpecTypeHome =
+					(RegulationSpecTypeHome) IDOLookup.getHome (RegulationSpecType.class);
+			final	RegulationSpecType regSpecType
+					= regSpecTypeHome.findByRegulationSpecType (regSpecTypeName);
+			return isCheck (regSpecType);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	private void fillInvoiceTextBuffers
 		(final StringBuffer invoiceText1, final StringBuffer invoiceText2,
 		 final InvoiceHeader header, final Provider provider,
 		 final SchoolClassMember placement, final String regulationName,
 		 final RegulationSpecType regSpecType) {
-		final String regSpecTypeName = null != regSpecType
-				? regSpecType.getRegSpecType () : "";
-		if (regSpecTypeName.equals ("cacc_reg_spec_type.check")) {
+		if (isCheck (regSpecType)) {
 			try {
 				final User student = null != placement ? placement.getStudent () : null;
 				final String studentName = null != student ? student.getFirstName ()

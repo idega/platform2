@@ -13,12 +13,16 @@ import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 
 /**
- * Last modified: $Date: 2004/01/15 09:56:35 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/15 12:28:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class PaymentSummary {
 	private int placementCount = 0;
@@ -31,23 +35,34 @@ public class PaymentSummary {
 		// get home objects
 		final SchoolClassMemberHome placementHome
 				= (SchoolClassMemberHome) IDOLookup.getHome (SchoolClassMember.class);
-		final InvoiceRecordHome home
+		final InvoiceRecordHome invoiceRecordHome
 				= (InvoiceRecordHome) IDOLookup.getHome (InvoiceRecord.class);
+		final RegulationSpecTypeHome regSpecTypeHome
+				= (RegulationSpecTypeHome) IDOLookup.getHome (RegulationSpecType.class);
 
 		// count values
 		for (int i = 0; i < records.length; i++) {
 			final PaymentRecord paymentRecord = records [i];
 			placementCount += paymentRecord.getPlacements ();
-			final String ruleSpecType = paymentRecord.getRuleSpecType ();
+			final String regSpecTypeName = paymentRecord.getRuleSpecType ();
+			String mainRuleName = "";
+			try {
+				final	RegulationSpecType regSpecType
+						= regSpecTypeHome.findByRegulationSpecType (regSpecTypeName);
+				final MainRule mainRule = regSpecType.getMainRule ();
+				mainRuleName = mainRule.getMainRule ();
+			} catch (Exception e) {
+				System.err.println ("Record id = " + paymentRecord.getPrimaryKey ());
+				e.printStackTrace ();
+			}
 			final long amountExcl = se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (paymentRecord.getTotalAmount ());
-			if (null != ruleSpecType
-					&& ruleSpecType.equals("cacc_reg_spec_type.moms")) {
+			if (mainRuleName.equals (RegSpecConstant.MAIN_RULE_VAT)) {
 				totalAmountVat += amountExcl;
 			} else {
 				totalAmountVatExcluded += amountExcl;
 			}
 			final Collection invoiceRecords
-					= home.findByPaymentRecord (paymentRecord);
+					= invoiceRecordHome.findByPaymentRecord (paymentRecord);
 			for (Iterator j = invoiceRecords.iterator (); j.hasNext ();) {
 				final InvoiceRecord invoiceRecord = (InvoiceRecord) j.next ();
 				try {

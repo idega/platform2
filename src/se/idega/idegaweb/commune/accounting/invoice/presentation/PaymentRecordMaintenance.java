@@ -11,6 +11,7 @@ import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.IDOLookup;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
@@ -67,19 +68,22 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/15 09:56:35 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/15 12:28:57 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.73 $
+ * @version $Revision: 1.74 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1078,6 +1082,28 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return getSmallText (result.toString ());
 	}
 	
+	private boolean isCheck (final RegulationSpecType regSpecType) {
+		try {
+				final MainRule mainRule = regSpecType.getMainRule ();
+				final String mainRuleName = mainRule.getMainRule ();
+				return mainRuleName.equals (RegSpecConstant.MAIN_RULE_CHECK);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	private boolean isCheck (final String regSpecTypeName) {
+		try {
+			final RegulationSpecTypeHome regSpecTypeHome =
+					(RegulationSpecTypeHome) IDOLookup.getHome (RegulationSpecType.class);
+			final	RegulationSpecType regSpecType
+					= regSpecTypeHome.findByRegulationSpecType (regSpecTypeName);
+			return isCheck (regSpecType);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	private void showPaymentRecordOnARow
 		(final IWContext context, final Table table, final int row,
 		 final PaymentRecord record) throws RemoteException, FinderException {
@@ -1087,13 +1113,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 					 { PAYMENT_RECORD_KEY, recordId }};
 		final String regSpecType = record.getRuleSpecType ();
 		final boolean userIsSchoolManager = null != getSchool (context);
-		final boolean isCheck = null != regSpecType
-				&& regSpecType.equals ("cacc_reg_spec_type.check");
 		final boolean isFlowInAndOut
 				= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
 		final boolean isRecordEditAllowed = !userIsSchoolManager;
 		//final boolean isRecordEditAllowed = isManualRecord (record)
-		//&& !(isFlowInAndOut && isCheck) && !userIsSchoolManager;
+		//&& !(isFlowInAndOut && isCheck (regSpecType)) && !userIsSchoolManager;
 		final String [][] showRecordLinkParameters = isRecordEditAllowed
 				? new String [][] {{ ACTION_KEY,
 														 ACTION_SHOW_EDIT_RECORD_FORM + "" },
