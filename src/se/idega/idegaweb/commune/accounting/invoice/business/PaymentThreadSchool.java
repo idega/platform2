@@ -49,6 +49,8 @@ import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.block.school.data.SchoolYear;
+import com.idega.block.school.data.SchoolYearHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.Commune;
@@ -64,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/05 15:02:07 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/05 16:06:37 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.83 $
+ * @version $Revision: 1.84 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -82,6 +84,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	// localization keys!!!
 	private static final String OPPEN_VERKSAMHET = "sch_type.school_type_oppen_verksamhet";
 	private static final String FRITIDSKLUBB = "sch_type.school_type_fritidsklubb";
+	private static final String FRITIDSKLUBB_YEAR_PREFIX = "Fr";
 
 	public PaymentThreadSchool(Date month, IWContext iwc) {
 		super(month, iwc);
@@ -442,7 +445,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 
-	private void createPaymentsForFritidsklubb(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, PlacementTimes placementTimes, SchoolType schoolType) throws FinderException, PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+	private void createPaymentsForFritidsklubb(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, PlacementTimes placementTimes, SchoolType schoolType) throws PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException, FinderException {
 		School school = schoolClassMember.getSchoolClass().getSchool();
 		ArrayList oppenConditions = new ArrayList();
 		oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, FRITIDSKLUBB));
@@ -468,11 +471,23 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					createNewErrorMessage(errorRelated, "invoice.WarningConflictingRegSpecTypesGivenForFritidsKlubb");
 				}
 //				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
-				String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer) schoolClassMember.getSchoolYear().getPrimaryKey()).intValue());
+				int schoolYearInt = Integer.parseInt(schoolClassMember.getSchoolYear().getName());
 				
-				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-				errorRelated.append("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName(),1);
-				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
+				SchoolYear SchoolYear;
+				try {
+					SchoolYear = (SchoolYear) ((SchoolYearHome) IDOLookup.getHome(SchoolYear.class)).
+							findByYearName(FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
+					errorRelated.append("Fritidsklubb schoolyear" + FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
+					
+					String[] postings =  getPostingBusiness().getPostingStrings(category, schoolType, ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, ((Integer)SchoolYear.getPrimaryKey()).intValue());
+				
+					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
+					errorRelated.append("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName(),1);
+					createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
+				} catch (FinderException e1) {
+					e1.printStackTrace();
+					createNewErrorMessage(errorRelated, "invoice.CouldNotFindSchoolYearForFritidsklubb");
+				}
 			}
 			catch (BruttoIncomeException e) {
 				//Who cares!!!
