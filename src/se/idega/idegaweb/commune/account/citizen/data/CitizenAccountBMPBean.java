@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.6 2002/11/01 10:51:00 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.7 2002/11/04 09:33:34 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,9 +11,10 @@ package se.idega.idegaweb.commune.account.citizen.data;
 
 import com.idega.block.process.data.*;
 import java.rmi.RemoteException;
-import java.util.Collection;
+import java.util.*;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
+import java.sql.Timestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -31,6 +32,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 	protected final static String PHONE_HOME = "phone_home";
 	protected final static String PHONE_WORK = "phone_work";
 	protected final static String PID = "pid";
+    protected final static String BIRTH_DATE = "birth_date";
     protected final static String CUSTODIAN1_PID = "custodian1_pid";
     protected final static String CUSTODIAN1_CIVIL_STATUS
         = "custodian1_civil_status";
@@ -48,6 +50,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		addAttribute (PHONE_HOME, "Home phone", true, true, String.class, 20);
 		addAttribute (PHONE_WORK, "Work phone", true, true, String.class, 20);
 		addAttribute (PID, "PID", true, true, String.class, 40);
+        addAttribute (BIRTH_DATE, "Date of birth", Timestamp.class);
         addAttribute (CUSTODIAN1_PID, "custodian1_pid", true, true,
                       String.class, 40);
         addAttribute (CUSTODIAN1_CIVIL_STATUS, "custodian1_civilStatus", true,
@@ -96,6 +99,10 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		return getStringColumnValue (PID);
 	}
 
+	public Date getBirthDate () {
+        return (Timestamp) getColumnValue (BIRTH_DATE);
+	}
+
     public String getCustodian1Pid () {
         return getStringColumnValue (CUSTODIAN1_PID);
     }
@@ -127,24 +134,28 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 
     // set methods for bean properties
 
-	public void setApplicantName (String name) {
+	public void setApplicantName (final String name) {
 		setColumn (NAME, name);
 	}
 
-	public void setEmail(String email) {
+	public void setEmail (final String email) {
 		setColumn (EMAIL, email);
 	}
 
-	public void setPhoneHome(String phone) {
+	public void setPhoneHome (final String phone) {
 		setColumn (PHONE_HOME, phone);
 	}
 
-	public void setPhoneWork(String phone) {
+	public void setPhoneWork (final String phone) {
 		setColumn (PHONE_WORK, phone);
 	}
 
-	public void setPID(String pid) {
+	public void setPID (final String pid) {
 		setColumn (PID, pid);
+	}
+
+	public void setBirthDate (final Date birthDate) {
+        setColumn (BIRTH_DATE, new Timestamp (birthDate.getTime ()));
 	}
 
     public void setCustodian1Pid (final String pid) throws RemoteException {
@@ -165,7 +176,7 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
         setColumn (CUSTODIAN2_CIVIL_STATUS, civilStatus);
     }
     
-    public void setStreet (String street) throws RemoteException {
+    public void setStreet (final String street) throws RemoteException {
         setColumn (STREET, street);
     }
     

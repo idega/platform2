@@ -95,8 +95,8 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 			lastName = (lastName == null) ? "" : lastName;
 			fullName.append(firstName).append(" ").append(middleName).append(" ").append(lastName);
 			user.setFullName(fullName.toString());
-			user.setGender((Integer) gender.getPrimaryKey());
-			user.setDateOfBirth(dateOfBirth.getDate());
+            // user.setGender((Integer) gender.getPrimaryKey());
+			// user.setDateOfBirth(dateOfBirth.getDate());
 			//Sets the user in the correct primary group (Commune Root Users)
 			user.setPrimaryGroup(getRootCitizenGroup());
 			user.store();

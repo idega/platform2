@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.15 2002/11/01 13:32:32 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.16 2002/11/04 09:33:34 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -59,8 +59,8 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	}
 
     public boolean insertApplication
-        (final String name, final String pid, final String email,
-         final String phoneHome, final String phoneWork,
+        (final String name, final String pid, final Date date,
+         final String email, final String phoneHome, final String phoneWork,
          final String custodian1Pid, final String custodian1CivilStatus,
          final String custodian2Pid, final String custodian2CivilStatus,
          final String street, final String zipCode, final String city)
@@ -71,6 +71,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			final CitizenAccount application = citizenAccountHome.create ();
 			application.setApplicantName (name != null ? name : "");
 			application.setPID (pid != null ? pid : "");
+            application.setBirthDate (date);
 			application.setPhoneHome (phoneHome != null ? phoneHome : "");
             application.setEmail (email != null ? email : "");
             application.setPhoneWork (phoneWork != null ? phoneWork : "");

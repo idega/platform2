@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.8 2002/11/01 13:55:30 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.9 2002/11/04 09:33:34 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,16 +11,11 @@ package se.idega.idegaweb.commune.account.citizen.presentation;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.business.IBOLookup;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
+import com.idega.presentation.*;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.*;
 import com.idega.user.data.User;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
@@ -38,6 +33,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 	private final static String PARAM_NAME = "caa_name";
 	private final static String PARAM_PID = "caa_pid";
+	private final static String PARAM_BIRTH_YEAR = "caa_birth_year";
+	private final static String PARAM_BIRTH_MONTH = "caa_birth_month";
+	private final static String PARAM_BIRTH_DAY = "caa_birth_day";
+	private final static String PARAM_GENDER = "caa_pid";
 	private final static String PARAM_EMAIL = "caa_email";
 	private final static String PARAM_PHONE_HOME = "caa_phone_home";
 	private final static String PARAM_PHONE_WORK = "caa_phone_work";
@@ -100,7 +99,27 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
     private void addSimpleInputs (final IWContext iwc, final Table inputTable) {
-        addSingleInput (iwc, PARAM_PID, "Personnummer", inputTable, 40,
+		final DropdownMenu yearInput = new DropdownMenu (PARAM_BIRTH_YEAR);
+        final Calendar rightNow = Calendar.getInstance();
+        final int currentYear = rightNow.get (Calendar.YEAR);
+        for (int year = currentYear - 110; year <= currentYear; year++) {
+            final String yearAsString = new Integer (year).toString ();
+            yearInput.addMenuElementFirst (yearAsString, yearAsString);
+        }
+        inputTable.add (yearInput, 1, 2);
+        final DropdownMenu monthInput = new DropdownMenu (PARAM_BIRTH_MONTH);
+        for (int month = 12; month >= 1; month--) {
+            final String monthAsString = new Integer (month).toString ();
+            monthInput.addMenuElementFirst (monthAsString, monthAsString);
+        }
+        inputTable.add (monthInput, 1, 2);
+        final DropdownMenu dayInput = new DropdownMenu (PARAM_BIRTH_DAY);
+        for (int day = 31; day >= 1; day--) {
+            final String dayAsString = new Integer (day).toString ();
+            dayInput.addMenuElementFirst (dayAsString, dayAsString);
+        }
+        inputTable.add (dayInput, 1, 2);
+        addSingleInput (iwc, PARAM_PID, "Personnummer", inputTable, 4,
                         _isPIDError, 1, 1);
         addSingleInput (iwc, PARAM_EMAIL, "E-post", inputTable, 40,
                         _isEmailError, 2, 1);
@@ -276,8 +295,9 @@ public class CitizenAccountApplication extends CommuneBlock {
                 viewUnknownCitizenApplicationForm (iwc);
                 return;
             }
+            final String ssn = getSsn (iwc);
 			isInserted = business.insertApplication
-                    (user, pidString, emailString, phoneHomeString,
+                    (user, ssn, emailString, phoneHomeString,
                      phoneWorkString);
 		}
 		catch (Exception e) {
@@ -351,9 +371,19 @@ public class CitizenAccountApplication extends CommuneBlock {
                 viewSimpleApplicationForm (iwc);
                 return;
             }
+            final String ssn = getSsn (iwc);
+            final int year = new Integer (iwc.getParameter
+                                          (PARAM_BIRTH_YEAR)).intValue ();
+            final int month = new Integer (iwc.getParameter
+                                          (PARAM_BIRTH_MONTH)).intValue ();
+            final int day = new Integer (iwc.getParameter
+                                          (PARAM_BIRTH_DAY)).intValue ();
+            final Calendar birthDate = Calendar.getInstance ();
+            birthDate.set (year, month - 1, day);
 			isInserted = business.insertApplication
-                    (name, pid, email, phoneHome, phoneWork, custodian1Pid,
-                     custodian1CivilStatus, custodian2Pid,
+                    (name, ssn, birthDate.getTime (), email,
+                     phoneHome, phoneWork,
+                     custodian1Pid, custodian1CivilStatus, custodian2Pid,
                      custodian2CivilStatus, street, zipCode, city);
 		}
 		catch (Exception e) {
@@ -375,6 +405,16 @@ public class CitizenAccountApplication extends CommuneBlock {
 			add(new Text(localize(TEXT_APPLICATION_SUBMITTED,
                                   "Application submitted")));
     }
+
+    private static String getSsn (final IWContext iwc) {
+        final String year = iwc.getParameter (PARAM_BIRTH_YEAR);
+        final String month = iwc.getParameter (PARAM_BIRTH_MONTH);
+        final String day = iwc.getParameter (PARAM_BIRTH_DAY);
+        final String pid = iwc.getParameter (PARAM_PID);
+        final String ssn = year + (month.length () > 1 ? month : "0" + month)
+                + (day.length () > 1 ? day : "0" + day) + pid;
+        return ssn;
+    }
     
 	private void addErrorString(String errorString) {
 		if (_errorMsg == null)
@@ -383,7 +423,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		_errorMsg.add(errorString);
 	}
 
-	private int parseAction(IWContext iwc) {
+	private int parseAction (IWContext iwc) {
 		int action = ACTION_VIEW_FORM;
 
 		if (iwc.isParameterSet(PARAM_SIMPLE_FORM_SUBMIT)) {
