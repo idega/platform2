@@ -6,6 +6,7 @@ package is.idega.idegaweb.member.util;
  *
  */
 public final class IWMemberConstants {
+
 	public static final String APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL = "IW_MEMBER_ADMINISTRATOR_MAIN_EMAIL";
 	public static final String APPLICATION_PARAMETER_MAIL_SERVER = "IW_MEMBER_MAIL_SERVER_ADDRESS";
 	
@@ -13,6 +14,9 @@ public final class IWMemberConstants {
 	
 	public static final String META_DATA_CLUB_LEAGUE_CONNECTION = "CLUBINFO_CONN";
 	public static final String META_DATA_DIVISION_LEAGUE_CONNECTION ="CLUBDIV_CONN";
+	
+	public static final String META_DATA_USER_CLUB_MEMBER_NUMBER_PREFIX = "CLUB_MEMB_NR_";//suffix with club id (group)
+	
 	
 	public static final String GROUP_TYPE_FEDERATION = "iwme_federation";
 	public static final String GROUP_TYPE_FEDERATION_STAFF = "iwme_federation_staff";

@@ -24,15 +24,17 @@ public interface MemberUserBusiness extends IBOService,UserBusiness
 	 * @param init
 	 * @return success
 	 */
-	public boolean moveUserBetweenDivisions(User user, Group fromDiv, Group toDiv, IWTimestamp term, IWTimestamp init, IWUserContext iwuc);
-	public Collection getAllClubDivisionsForLeague(Group league);
+	public boolean moveUserBetweenDivisions(User user, Group fromDiv, Group toDiv, IWTimestamp term, IWTimestamp init, IWUserContext iwuc) throws RemoteException;
+	public Collection getAllClubDivisionsForLeague(Group league) throws RemoteException;
 	/**
 	 * @param user
 	 * @return a Group of the type iwme_league
 	 */
 	public List getLeaguesListForUser(User user, IWUserContext iwuc) throws RemoteException;
-	public boolean sendEmailFromIWMemberSystemAdministrator(String toEmailAddress, String CC, String BCC,String subject, String theMessageBody, IWUserContext iwuc) throws MessagingException;
-	public Group getClubforGroup(Group group, IWUserContext iwuc) throws NoClubFoundException, RemoteException;
-	
+	public boolean sendEmailFromIWMemberSystemAdministrator(String toEmailAddress, String CC, String BCC,String subject, String theMessageBody, IWUserContext iwuc) throws MessagingException, RemoteException;
+	public Group getClubForGroup(Group group, IWUserContext iwuc) throws NoClubFoundException, RemoteException;
 	public List getClubListForUser(User user) throws NoClubFoundException,RemoteException;
+	public boolean setClubMemberNumberForUser(String number, User user, Group club) throws RemoteException;
+	
+	
 }

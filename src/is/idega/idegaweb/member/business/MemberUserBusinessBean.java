@@ -36,7 +36,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	 * @see is.idega.idegaweb.member.business.MemberUserBusiness#moveUserBetweenDivisions(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group, com.idega.util.IWTimestamp, com.idega.util.IWTimestamp)
 	 */
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
-	public boolean moveUserBetweenDivisions(User user, Group fromDivisionGroup, Group toDivisionGroup, IWTimestamp term, IWTimestamp init, IWUserContext iwuc) {
+	public boolean moveUserBetweenDivisions(User user, Group fromDivisionGroup, Group toDivisionGroup, IWTimestamp term, IWTimestamp init, IWUserContext iwuc)  throws RemoteException{
 		//this method get the parents of the user and finds out which is of the correct type and then uses that.
 		//the division that the user is sent to must have a child group of type iwme_temporary
 		
@@ -143,7 +143,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	 * Sends out a report via email to all parties concerned
 	 * @return boolean true if no errors occurred
 	 */
-	private boolean sendEmailsForMembersTransfer(User user, Group fromDivisionGroup, Group toDivisionGroup, Group fromLeagueGroup, Group toLeagueGroup, Group fromRegionalUnionGroup, Group toRegionalUnionGroup, IWTimestamp term, IWTimestamp init, IWUserContext iwuc) {
+	private boolean sendEmailsForMembersTransfer(User user, Group fromDivisionGroup, Group toDivisionGroup, Group fromLeagueGroup, Group toLeagueGroup, Group fromRegionalUnionGroup, Group toRegionalUnionGroup, IWTimestamp term, IWTimestamp init, IWUserContext iwuc)  throws RemoteException{
 		
 		if(!fromLeagueGroup.equals(toLeagueGroup)){
 			System.err.println("MemberUserBusiness : Error transfering user because the leagues are not the same! from: "+fromLeagueGroup.getName()+" to: "+toLeagueGroup.getName());
@@ -240,7 +240,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	/**
 	 * @return A collection of groups (of the type iwme_club_division)
 	 */
-	public Collection getAllClubDivisionsForLeague(Group league){
+	public Collection getAllClubDivisionsForLeague(Group league) throws RemoteException{
 		Collection groups = null;
 		
 		try {
@@ -301,7 +301,7 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 	/*
 		* Returns the club that is a parent for this group.
 	 */
-	public Group getClubforGroup(Group group, IWUserContext iwuc) throws NoClubFoundException, RemoteException{
+	public Group getClubForGroup(Group group, IWUserContext iwuc) throws NoClubFoundException, RemoteException{
 		Collection parents = getGroupBusiness().getParentGroupsRecursive(group);
 
 		if(parents!=null && !parents.isEmpty()){
@@ -318,6 +318,53 @@ public class MemberUserBusinessBean extends UserBusinessBean implements MemberUs
 		throw new NoClubFoundException(group.getName());
 		
 	}
+	
+	public String getClubMemberNumberForUser(User user, Group club) throws RemoteException{
+		String id = user.getMetaData(IWMemberConstants.META_DATA_USER_CLUB_MEMBER_NUMBER_PREFIX+club.getPrimaryKey().toString());
+		if(id!=null){
+			return id;
+		}else{
+			return null;
+		}	
+	}
+	
+	/**
+	 * @return false if number is already taken, else true
+	 */
+	public synchronized boolean setClubMemberNumberForUser(String number, User user, Group club) throws RemoteException{
+		
+		boolean setNumber = false;
+		String clubId = club.getPrimaryKey().toString();
+		
+		try {
+			Collection users = getUserHome().findUsersByMetaData(IWMemberConstants.META_DATA_USER_CLUB_MEMBER_NUMBER_PREFIX+clubId,number);
+			Iterator iter = users.iterator();
+			
+			while (iter.hasNext()) {
+				User thingy = (User) iter.next();
+				if(thingy.equals(user)){
+					setNumber = true;//updating
+				}
+				break;//only one user should have this number
+			}
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+			return false;
+		}
+		catch (FinderException e) {
+			setNumber = true;
+		}
+		
+		if(setNumber){
+			user.setMetaData(IWMemberConstants.META_DATA_USER_CLUB_MEMBER_NUMBER_PREFIX+clubId,number);
+			user.store();
+		}
+		
+		return true;
+	}
+	
+	
 	
 	
 	
