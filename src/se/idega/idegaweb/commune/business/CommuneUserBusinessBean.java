@@ -12,9 +12,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.ejb.CreateException;
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -1120,7 +1118,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 					catch(Exception e){
 					}
 					//Try to remove login:					
-					try {
+					/*try {
 						login.remove();
 					}
 					catch (EJBException e6) {
@@ -1128,7 +1126,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 					}
 					catch (RemoveException e6) {					
 						log("Failed removing login:"+login.getUserLogin()+" from deceased user : "+deceasedUser.getName());
-					}
+					}*/
 				}
 			}
 			catch (FinderException e5) {
