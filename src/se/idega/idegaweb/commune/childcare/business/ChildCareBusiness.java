@@ -1019,6 +1019,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	public int getNumberOfFutureContracts(int applicationID) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getNumberOfFutureContracts
+	 */
+	public int getNumberOfFutureContracts(int applicationID, Date from) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasUnansweredOffers
 	 */
 	public boolean hasUnansweredOffers(int childID, String caseCode) throws java.rmi.RemoteException;

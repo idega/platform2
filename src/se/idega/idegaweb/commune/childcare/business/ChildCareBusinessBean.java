@@ -4193,9 +4193,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public int getNumberOfFutureContracts(int applicationID) {
+		return getNumberOfFutureContracts(applicationID, new IWTimestamp().getDate());
+	}
+
+	public int getNumberOfFutureContracts(int applicationID, Date from) {
 		try {
-			IWTimestamp stampNow = new IWTimestamp();
-			return getChildCareContractArchiveHome().getFutureContractsCountByApplication(applicationID, stampNow.getDate());
+			return getChildCareContractArchiveHome().getFutureContractsCountByApplication(applicationID, from);
 		}
 		catch (IDOException e) {
 			return 0;
