@@ -27,6 +27,7 @@ public interface BankFileManager {
 	
 	//<kt_krofuhafa>
 	String getClaimantSSN(int groupId);
+	String getClaimantName(int groupId);
 	//<faerslugerd>
 	String getBookkeepingType(int invoiceNumber);
 	//<banki>
@@ -154,4 +155,7 @@ public interface BankFileManager {
 	String getDisplayFormURL(int invoiceNumber);
 	//<birting>
 	String getDisplay(int invoiceNumber);
+	
+	String getInvoiceStatus(int invoiceNumber);
+	void setInvoiceStatus(String stada, int invoiceNumber);
 }

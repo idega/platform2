@@ -16,6 +16,8 @@ import com.idega.block.finance.data.BankInfo;
 import com.idega.block.finance.data.BankInfoHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
@@ -83,6 +85,15 @@ public class BankInvoiceFileManager implements BankFileManager{
 		if(bi != null) {
 			return bi.getClaimantsSSN();
 		}else {
+			return "";
+		}
+	}
+	public String getClaimantName(int groupId) {
+		Group g = getGroupByGroupId(groupId);
+		if(g != null) {
+			return g.getName();
+		}
+		else {
 			return "";
 		}
 	}
@@ -452,6 +463,30 @@ public class BankInvoiceFileManager implements BankFileManager{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	/**
+	 * returns the status of the invoice. 
+	 * The status can be:
+	 * NOT PAYED - ÓGREIDD
+	 * PAYED - GREIDD
+	 * CREATED - STOFNUD
+	 * SENT - SEND
+	 * ERROR - VILLA
+	 */
+	public String getInvoiceStatus(int invoiceNumber) {
+		AccountEntry ae = getAccountEntry(invoiceNumber);
+		if(ae != null) {
+			return ae.getInvoiceStatus();
+		}
+		return "STOFNUD";
+		
+	}
+	public void setInvoiceStatus(String status, int invoiceNumber) {
+		AccountEntry ae = getAccountEntry(invoiceNumber);
+		if(ae != null) {
+			ae.setInvoiceStatus(status);
+		}
+		
+	}
 	private AccountEntry getAccountEntry(int invoiceNumber) {
 		AccountEntry ae = null;
 		AccountEntryHome aeh = null;
@@ -510,5 +545,24 @@ public class BankInvoiceFileManager implements BankFileManager{
 			}
 		}
 		return u;
+	}
+	private Group getGroupByGroupId(int groupId) {
+		Group g = null;
+		GroupHome gh = null;
+		try {
+			gh = (GroupHome) IDOLookup.getHome(Group.class);
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		if(gh != null) {
+			try {
+				g = gh.findByPrimaryKey(new Integer(groupId));
+			}
+			catch (FinderException e1) {
+				e1.printStackTrace();
+			}
+		}
+		return g;
 	}
 }
