@@ -417,7 +417,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       WorkReportGroup group = (WorkReportGroup) leagueIterator.next();
       // handle the special case that the group id is null
       String groupName = (group == null) ? WorkReportConstants.MAIN_BOARD : group.getName();
-      Integer groupId = (group == null) ? WorkReportConstants.MAIN_BOARD_ID : group.getGroupId();
+      Integer groupId = (group == null) ? WorkReportConstants.MAIN_BOARD_ID : (Integer) group.getPrimaryKey();
       WorkReportAccountGroupHelper helper = new WorkReportAccountGroupHelper(groupId, groupName);
       workReportAccountGroupHelpers.add(helper);
     }
@@ -744,7 +744,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     try {
       workReportGroup = 
         workReportBusiness.getWorkReportGroupHome().findWorkReportGroupByNameAndYear(newLeagueName, getYear());
-      newGroupId = (Integer) workReportGroup.getGroupId();
+      newGroupId = (Integer) workReportGroup.getPrimaryKey();
     }
     catch (RemoteException rmEx) {
       String message =
