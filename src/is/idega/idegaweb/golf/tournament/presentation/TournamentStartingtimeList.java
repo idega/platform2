@@ -25,6 +25,7 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
+import com.idega.data.SimpleQuerier;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -80,8 +81,8 @@ public class TournamentStartingtimeList extends GolfBlock {
 		if (tournament == null) {
 			tournament = getTournamentSession(modinfo).getTournament();
 		}
-		
-		String cacheString = "tournament_startingtime_" + tournament.getID() + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
+		int tournamentId = tournament.getID();
+		String cacheString = "tournament_startingtime_" + tournamentId + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
 
 		Form cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
 		if (cachedForm != null && !onlineRegistration) {
@@ -388,7 +389,15 @@ public class TournamentStartingtimeList extends GolfBlock {
 							if (!viewOnly) {
 								if (!onlineRegistration) {
 									paid = getCheckBox("paid", Integer.toString(sView[i].getMemberId()));
-									paid.setChecked(sView[i].getPaid());
+									try {
+										String[] repps = SimpleQuerier.executeStringQuery("select paid from tournament_member where member_id = "+sView[i].getMemberId()+" and tournament_id = "+tournamentId);
+										if (repps != null && repps.length > 0 && "Y".equals(repps[0])) {
+											paid.setChecked(true);
+										}
+									} catch (Exception e) {
+										System.out.println("TournamentController : cannot find paid status (message = "+e.getMessage()+")");
+									}
+//									paid.setChecked(sView[i].getPaid());
 									table.add(paid, 6, row);
 									table.setStyleClass(6, row, styleClass);
 									delete = getCheckBox("deleteMember", Integer.toString(sView[i].getMemberId()));
