@@ -35,6 +35,7 @@ insert into ic_group_type(group_type,description,is_visible) values('iwme_tempor
 insert into ic_group_type(group_type,description,is_visible) values('iwme_regional_union_collection','A collection of regional unions','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_league_collection','An collection of leagues and league committies','Y')
 insert into ic_group_type(group_type,description,is_visible) values('iwme_club_division_template','A collection of groups for use as a template','Y')
+insert into ic_group_type(group_type,description,is_visible) values('iwme_club_player_template','A template for a club player group','Y')
 
 // type tree
 insert into ic_group_type_tree values ('iwme_federation_staff','iwme_federation')
@@ -83,3 +84,4 @@ insert into ic_group_type_tree values ('iwme_club_division_committee','iwme_club
 insert into ic_group_type_tree values ('general','iwme_club_division')
 insert into ic_group_type_tree values ('iwme_temporary','iwme_club_division')
 
+insert into ic_group_type_tree values ('iwme_club_player_template','iwme_club_division_template')
