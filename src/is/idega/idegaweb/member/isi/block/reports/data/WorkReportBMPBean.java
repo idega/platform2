@@ -3,6 +3,7 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.data;
 
+import is.idega.idegaweb.member.util.IWMemberConstants;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -338,7 +339,8 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		throws FinderException {
 		IDOQuery sql = idoQuery();
 		String[] ordering = { COLUMN_NAME_REGIONAL_UNION_NAME, COLUMN_NAME_GROUP_NAME };
-		sql.appendSelectAllFrom(this.getEntityName()).appendWhere().appendEquals(COLUMN_NAME_WORK_REPORT_YEAR, year);
+		sql.appendSelectAllFrom(this.getEntityName()).appendWhere().appendEquals(COLUMN_NAME_WORK_REPORT_YEAR, year)
+		.appendAnd().appendEqualsQuoted(COLUMN_NAME_GROUP_TYPE, IWMemberConstants.GROUP_TYPE_CLUB);
 		if (regionalUnionGroups != null && !regionalUnionGroups.isEmpty()) {
 			sql.appendAnd().append(COLUMN_NAME_REGIONAL_UNION_GROUP_ID).appendInCollection(regionalUnionGroups);
 		}
