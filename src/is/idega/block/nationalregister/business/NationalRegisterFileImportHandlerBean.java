@@ -95,6 +95,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			_familyRelations = new MultivaluedHashMap();
 			_spouseRelations = new MultivaluedHashMap();
 			int count = 0;
+			System.out.println("NationalRegisterHandler processing RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
 			while (!(item = (String) _file.getNextRecord()).equals("")) {
 				count++;
 
@@ -106,17 +107,22 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				}
 
 				item = null;
-			}
-			
+			}			
+			System.out.println("NationalRegisterHandler processed RECORD [" + count + "] time: " + IWTimestamp.getTimestampRightNow().toString());
 			clock.stop();
-			System.out.println("Time to handleRecords: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s");
+			long msTime = clock.getTime();
+			long secTime = msTime / 1000;
+			
+			System.out.println("Time to handleRecords: " + msTime + " ms  OR " + secTime + " s, averaging "+(msTime / count)+"ms per record");
 			clock.start();
 			handleFamilyRelation();
 
 			printFailedRecords();
 
 			clock.stop();
-			System.out.println("Time to handleFamilyRelation: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s");
+			msTime = clock.getTime();
+			secTime = msTime / 1000;
+			System.out.println("Time to handleFamilyRelation: " + clock.getTime() + " ms  OR " + ((int) (clock.getTime() / 1000)) + " s, averaging "+(msTime / count)+"ms per record");
 
 //			transaction.commit();
 
@@ -160,6 +166,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				int counter = 0;
 				Collection ssnColl;
 				Collection familyColl;
+				System.out.println("NationalRegisterHandler processing family relations RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
 				while (keysIter.hasNext()) {
 					++counter;
 					key = (String) keysIter.next();
@@ -182,6 +189,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 						System.out.println("NationalRegisterHandler processing family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
 					}
 				}
+				System.out.println("NationalRegisterHandler processed family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
 			}
 		}
 		
