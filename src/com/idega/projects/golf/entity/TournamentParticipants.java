@@ -29,6 +29,7 @@ public class TournamentParticipants extends GolfEntity{
 		addAttribute("tournament_round_id","Mótahringur",true,true,"java.lang.Integer");
 		addAttribute("round_number","Númer hrings",true,true,"java.lang.Integer");
 		addAttribute("holes_played","Fjöldi hola",true,true,"java.lang.Integer");
+		addAttribute("round_handicap","Leikforgjöf",true,true,"java.lang.Float");
 		addAttribute("strokes_without_handicap","Högg án forgjafar",true, true , "java.lang.Integer");
 		addAttribute("strokes_with_handicap","Högg með forgjöf",true, true , "java.lang.Integer");
 		addAttribute("total_points","Heildarpunktar",true,true,"java.lang.Integer");
@@ -105,6 +106,10 @@ public class TournamentParticipants extends GolfEntity{
 
 	public int getHolesPlayed(){
 		return getIntColumnValue("holes_played");
+	}
+
+	public float getRoundHandicap(){
+		return getFloatColumnValue("round_handicap");
 	}
 
 	public int getStrokesWithoutHandicap(){
