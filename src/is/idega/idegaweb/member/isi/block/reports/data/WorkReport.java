@@ -9,6 +9,7 @@ public interface WorkReport extends com.idega.data.IDOEntity
  public java.lang.String getGroupName();
  public java.lang.String getGroupNumber();
  public java.lang.String getGroupShortName();
+ public java.util.Collection getLeagues()throws com.idega.data.IDOException;
  public java.lang.Integer getMemberFileId();
  public java.lang.Integer getRegionalUnionGroupId();
  public java.lang.String getStatus();

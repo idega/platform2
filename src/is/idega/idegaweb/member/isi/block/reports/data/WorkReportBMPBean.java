@@ -3,10 +3,13 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.data;
 
+import java.util.Collection;
+
 import javax.ejb.FinderException;
 
 import com.idega.core.data.ICFile;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
 
@@ -213,7 +216,9 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return (Integer) this.idoFindOnePKByQuery(sql);
 	}
 	
-	
+	public Collection getLeagues() throws IDOException {
+		return idoGetRelatedEntities(WorkReportGroup.class);
+	}
 	
 	
 	
