@@ -5,18 +5,24 @@ package is.idega.idegaweb.golf.handicap.presentation;
 
 import is.idega.idegaweb.golf.access.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.service.GolfGroup;
+import is.idega.idegaweb.golf.util.GolfConstants;
 
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 /**
  * @author laddi
@@ -40,8 +46,39 @@ public class HandicapNavigation extends GolfBlock {
 	}
 
 	public Table drawTable(IWResourceBundle iwrb, IWContext modinfo, String action, String uri) throws SQLException, FinderException {
-		String memberId = modinfo.getParameter("member_id");
+		String memberId = null;
+		
+		if (modinfo.isParameterSet(GolfConstants.MEMBER_UUID)) {
+			MemberHome home = (MemberHome) IDOLookup.getHomeLegacy(Member.class);
+			try {
+				Member member = home.findByUniqueID(modinfo.getParameter(GolfConstants.MEMBER_UUID));
+				memberId = member.getPrimaryKey().toString();
+			}
+			catch (FinderException fe) {
+				try {
+					UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
+					try {
+						User user = userHome.findUserByUniqueId(modinfo.getParameter(GolfConstants.MEMBER_UUID));
+						Member member = home.findMemberByIWMemberSystemUser(user);
+						memberId = member.getPrimaryKey().toString();
+					}
+					catch (FinderException e) {
+						//Nothing found...
+					}
+				}
+				catch (IDOLookupException ile) {
+					log(ile);
+				}
+			}
+			
+			if (memberId != null) {
+				modinfo.setSessionAttribute("member_id", memberId);
+			}
+		}
 
+		if (memberId == null) {
+			memberId = modinfo.getParameter("member_id");
+		}
 		if (memberId == null) {
 			memberId = (String) modinfo.getSessionAttribute("member_id");
 		}

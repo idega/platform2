@@ -20,6 +20,10 @@ import is.idega.idegaweb.golf.entity.MemberInfo;
 import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.util.GolfConstants;
+
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
 
@@ -52,7 +56,34 @@ public class HandicapCard extends GolfBlock {
 		iwb = getBundle();
 		iwrb = getResourceBundle();
 		
-		String iMemberID = iwc.getRequest().getParameter("member_id");
+		String iMemberID = null;
+		
+		if (iwc.isParameterSet(GolfConstants.MEMBER_UUID)) {
+			MemberHome home = (MemberHome) IDOLookup.getHomeLegacy(Member.class);
+			try {
+				Member member = home.findByUniqueID(iwc.getParameter(GolfConstants.MEMBER_UUID));
+				iMemberID = member.getPrimaryKey().toString();
+			}
+			catch (FinderException fe) {
+				UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
+				try {
+					User user = userHome.findUserByUniqueId(iwc.getParameter(GolfConstants.MEMBER_UUID));
+					Member member = home.findMemberByIWMemberSystemUser(user);
+					iMemberID = member.getPrimaryKey().toString();
+				}
+				catch (FinderException e) {
+					//Nothing found...
+				}
+			}
+			
+			if (iMemberID != null) {
+				iwc.setSessionAttribute("member_id", iMemberID);
+			}
+		}
+
+		if (iMemberID == null) {
+			iMemberID = iwc.getRequest().getParameter("member_id");
+		}
 		if (iMemberID == null) {
 			iMemberID = (String) iwc.getSession().getAttribute("member_id");
 		}

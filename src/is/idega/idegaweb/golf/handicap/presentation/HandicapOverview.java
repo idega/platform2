@@ -25,6 +25,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.service.GolfGroup;
 import is.idega.idegaweb.golf.tournament.business.TournamentSession;
 import is.idega.idegaweb.golf.tournament.even.TournamentEventListener;
+import is.idega.idegaweb.golf.util.GolfConstants;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -48,6 +49,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
@@ -108,6 +111,29 @@ public class HandicapOverview extends GolfBlock {
 		iwb = getBundle();
 
 		this.isAdmin = isAdministrator(modinfo);
+		
+		if (modinfo.isParameterSet(GolfConstants.MEMBER_UUID)) {
+			MemberHome home = (MemberHome) IDOLookup.getHomeLegacy(Member.class);
+			try {
+				Member member = home.findByUniqueID(modinfo.getParameter(GolfConstants.MEMBER_UUID));
+				iMemberID = member.getPrimaryKey().toString();
+			}
+			catch (FinderException fe) {
+				UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
+				try {
+					User user = userHome.findUserByUniqueId(modinfo.getParameter(GolfConstants.MEMBER_UUID));
+					Member member = home.findMemberByIWMemberSystemUser(user);
+					iMemberID = member.getPrimaryKey().toString();
+				}
+				catch (FinderException e) {
+					//Nothing found...
+				}
+			}
+			
+			if (iMemberID != null) {
+				modinfo.setSessionAttribute("member_id", iMemberID);
+			}
+		}
 
 		if (iMemberID == null) {
 			iMemberID = modinfo.getParameter("member_id");

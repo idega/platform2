@@ -5,16 +5,23 @@ package is.idega.idegaweb.golf.handicap.presentation;
 
 import java.rmi.RemoteException;
 
+import javax.ejb.FinderException;
+
 import is.idega.idegaweb.golf.business.StatisticsBusiness;
 import is.idega.idegaweb.golf.entity.Member;
+import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.util.GolfConstants;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
 
 
 /**
@@ -37,7 +44,32 @@ public class HandicapMemberStatistics extends GolfBlock {
 	public void main(IWContext iwc) throws Exception {
 		statBusiness = getStatisticsBusiness(iwc);
 		
-		iMemberID = iwc.getRequest().getParameter("member_id");
+		if (iwc.isParameterSet(GolfConstants.MEMBER_UUID)) {
+			MemberHome home = (MemberHome) IDOLookup.getHomeLegacy(Member.class);
+			try {
+				Member member = home.findByUniqueID(iwc.getParameter(GolfConstants.MEMBER_UUID));
+				iMemberID = member.getPrimaryKey().toString();
+			}
+			catch (FinderException fe) {
+				UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
+				try {
+					User user = userHome.findUserByUniqueId(iwc.getParameter(GolfConstants.MEMBER_UUID));
+					Member member = home.findMemberByIWMemberSystemUser(user);
+					iMemberID = member.getPrimaryKey().toString();
+				}
+				catch (FinderException e) {
+					//Nothing found...
+				}
+			}
+			
+			if (iMemberID != null) {
+				iwc.setSessionAttribute("member_id", iMemberID);
+			}
+		}
+
+		if (iMemberID == null) {
+			iMemberID = iwc.getRequest().getParameter("member_id");
+		}
 		if (iMemberID == null) {
 			iMemberID = (String) iwc.getSession().getAttribute("member_id");
 		}
