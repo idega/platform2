@@ -779,7 +779,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		SchoolClassDropdownDouble schoolClassess = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPES,PARAMETER_SCHOOL_CLASS);
 		schoolClassess = (SchoolClassDropdownDouble) getStyledInterface(schoolClassess);	
-		int classID = archive.getSchoolClassMember().getSchoolClassId();
+		//int classID = archive.getSchoolClassMember().getSchoolClassId();
 		
 		if (getChildcareID() != -1) {
 			
@@ -1485,8 +1485,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		IWTimestamp validFrom = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		int employmentType = Integer.parseInt(iwc.getParameter(PARAMETER_EMPLOYMENT_TYPE));
-		int schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
-		int schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
+		//int schoolTypeId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
+		//int schoolClassId = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_CLASS));
 		getBusiness().assignContractToApplication(_applicationID, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false);
 
 		close();
