@@ -84,11 +84,19 @@ public class SchoolTypeEditor extends Block {
       String info = iwc.getParameter("sch_type_info");
       String cat = iwc.getParameter("sch_type_cat");
       String locKey = iwc.getParameter("sch_type_lockey");
+	  String maxAge = iwc.getParameter("sch_type_maxage");
+	  Integer iMaxAge = null;
+	  	try {
+			iMaxAge = Integer.valueOf(maxAge);
+		}
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
       int aid = -1;
       if(id!=null)
         aid = Integer.parseInt(id);
 
-      sbBean.storeSchoolType(aid,name,info,cat,locKey);
+      sbBean.storeSchoolType(aid,name,info,cat,locKey,iMaxAge);
     }
   }
 
@@ -136,6 +144,7 @@ public class SchoolTypeEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("category","Category")),1,2);
     T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,3);
     T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,4);
+	T.add(tFormat.format(iwrb.getLocalizedString("maxage","Max school age")),1,4);
     T.add(tFormat.format(iwrb.getLocalizedString("localization_key","Key")),1,5);
 
 		SelectorUtility util = new SelectorUtility();
@@ -143,6 +152,8 @@ public class SchoolTypeEditor extends Block {
 
     TextInput inputName = new TextInput("sch_type_name");
     TextInput inputKey = new TextInput("sch_type_lockey");
+	TextInput inputAge = new TextInput("sch_type_maxage");
+	inputAge.setLength(4);
     TextArea inputInfo = new TextArea("sch_type_info");
 
     int typeId = -1;
@@ -151,9 +162,12 @@ public class SchoolTypeEditor extends Block {
         String name = type.getSchoolTypeName();
         if(name!=null)
         inputName.setContent(name);
+        
         String info = type.getSchoolTypeInfo();
         if(info !=null)
         inputInfo.setContent(info);
+        String maxAge = Integer.toString(type.getMaxSchoolAge());
+        inputAge.setContent(maxAge);
         typeId = ((Integer)type.getPrimaryKey()).intValue();
         T.add(new HiddenInput("sch_school_type_id",String.valueOf(typeId)));
         String category = type.getSchoolCategory();
@@ -170,14 +184,15 @@ public class SchoolTypeEditor extends Block {
     T.add(drpCategory,3,2);
     T.add(inputName,3,3);
     T.add(inputInfo,3,4);
-     T.add(inputKey,3,5);
-    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_type","true"),3,6);
+	T.add(inputAge,3,5);
+     T.add(inputKey,3,6);
+    T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_type","true"),3,7);
     Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
-    T.add(cancel,3,6);
+    T.add(cancel,3,8);
     if(typeId > 0){
       Link delete = new Link(iwrb.getLocalizedImageButton("delete","Delete"));
       delete.addParameter("sch_delete_type",typeId);
-      T.add(delete,3,6);
+      T.add(delete,3,9);
     }
 
 
