@@ -22,7 +22,8 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
   
   public ReportOverviewWindow() {
     setResizable(true);
-    setWidth(1024);
+    setWidth(1200);
+    //setWidth(1024);
     setHeight(768);
     setScrollbar(true);
   }
@@ -31,6 +32,12 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     // get resource bundle 
     IWResourceBundle iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("ro_report", "ReportGenerator"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+    if (	iwc.isParameterSet(ReportQueryOverview.EDIT_QUERY_EXPERT_MODE_KEY) ||
+					iwc.isParameterSet(ReportQueryOverview.EDIT_QUERY_SIMPLE_MODE_KEY) ||
+					iwc.isParameterSet(ReportQueryOverview.EDIT_NEW_QUERY)) {
+						ReportQueryBuilder.cleanSession(iwc);
+		}
+					
     // decide to show the query builder or the overview
     if (iwc.isParameterSet(ReportQueryBuilder.PARAM_CANCEL)) {
     	// do not show wizard even if the parameter show wizard is set
@@ -41,13 +48,35 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     else if (iwc.isParameterSet(ReportQueryBuilder.PARAM_SAVE)) {
     	ReportQueryBuilder queryBuilder = new ReportQueryBuilder();
     	queryBuilder.main(iwc);
-    	// get the jid of the just created new file
+    	// get the id of the just created new file
     	int queryId = queryBuilder.getQueryId();
     	ReportQueryBuilder.cleanSession(iwc);
     	ReportQueryOverview overview = new ReportQueryOverview();
     	overview.setShowOnlyOneQueryWithId(queryId);
     	add(overview,iwc);
     }
+    else if (iwc.isParameterSet(ReportQueryOverview.UPLOAD_LAYOUT)){
+    	LayoutUploader layoutUploader = new LayoutUploader();
+    	add(layoutUploader);
+    }
+    else if (iwc.isParameterSet(LayoutUploader.KEY_LAYOUT_UPLOAD_IS_SUBMITTED)) {
+    	LayoutUploader layoutUploader = new LayoutUploader();
+    	layoutUploader.main(iwc);
+ 	   	ReportQueryOverview overview = new ReportQueryOverview();
+    	add(overview,iwc);
+    }
+    else if (iwc.isParameterSet(ReportQueryOverview.UPLOAD_QUERY)) {
+    	QueryUploader queryUploader = new QueryUploader();
+    	add(queryUploader, iwc);
+    }
+    else if (iwc.isParameterSet(QueryUploader.KEY_QUERY_UPLOAD_IS_SUBMITTED)) {
+    	QueryUploader queryUploader = new QueryUploader();
+    	queryUploader.main(iwc);
+    	int queryId = queryUploader.getUserQueryId();
+ 	   	ReportQueryOverview overview = new ReportQueryOverview();
+    	overview.setShowOnlyOneQueryWithId(queryId);
+    	add(overview,iwc);
+    }	
     else if (iwc.isParameterSet(ReportQueryBuilder.SHOW_WIZARD))	{
     	ReportQueryBuilder queryBuilder = new ReportQueryBuilder();
     	add(queryBuilder,iwc);
