@@ -167,10 +167,10 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * @param User the User to create login for
 	 * @throws LoginCreateException If an error occurs creating login for the user.
 	 */
-	public LoginTable generateUserLogin(User user) throws LoginCreateException, RemoteException
-	{
-			return generateUserLogin(user);
-	}
+	//public LoginTable generateUserLogin(User user) throws LoginCreateException, RemoteException
+	//{
+	//		return generateUserLogin(user);
+	//}
 
 	/**
 	 * Creates (if not available) and returns the default usergroup all
