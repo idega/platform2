@@ -32,6 +32,8 @@ import is.idega.idegaweb.travel.data.Service;
  */
 
 public class ProductBusiness {
+  public static final String PRODUCT_ID = "pr_bus_prod_id";
+
   public static String uniqueDepartureAddressType = "TB_TRIP_DEPARTURE_ADDRESS";
   public static String uniqueArrivalAddressType = "TB_TRIP_ARRIVAL_ADDRESS";
   public static String uniqueHotelPickupAddressType = "TB_HOTEL_PICKUP_ADDRESS";

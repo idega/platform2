@@ -127,7 +127,7 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
 
         if (_productCatalog._productIsLink) {
           productLink = new Link(_productCatalog.getText(ProductBusiness.getProductName(product, _productCatalog._currentLocaleId)));
-          productLink.addParameter(ProductViewer.PRODUCT_ID, product.getID());
+          productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
           if (_productCatalog._productLinkPage != null) {
             productLink.setPage(_productCatalog._productLinkPage);
           }else {

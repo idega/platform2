@@ -37,7 +37,7 @@ public class ProductItem extends Block {
   }
 
   private void initialize(IWContext iwc) {
-    String sProductId = iwc.getParameter(ProductViewer.PRODUCT_ID);
+    String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
     if (sProductId != null) {
       try {
         _productId = Integer.parseInt(sProductId);
@@ -72,5 +72,6 @@ public class ProductItem extends Block {
   public void setFontStyle(String style) {
     this._fontStyle = style;
   }
+
 
 }

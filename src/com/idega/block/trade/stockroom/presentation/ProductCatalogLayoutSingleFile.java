@@ -76,7 +76,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 
             if (productCatalog._productIsLink) {
               productLink = new Link(productCatalog.getText(ProductBusiness.getProductName(product, productCatalog._currentLocaleId)));
-              productLink.addParameter(ProductViewer.PRODUCT_ID, product.getID());
+              productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
               if (productCatalog._productLinkPage != null) {
                 productLink.setPage(productCatalog._productLinkPage);
               }else {

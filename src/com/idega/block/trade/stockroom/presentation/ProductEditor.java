@@ -16,7 +16,7 @@ import com.idega.presentation.text.*;
  */
 
 public class ProductEditor extends Block {
-  public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
+  private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
   public static final String PRODUCT_ID = "prod_edit_prod_id";
 
   private IWResourceBundle iwrb;

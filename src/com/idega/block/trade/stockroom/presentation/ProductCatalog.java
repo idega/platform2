@@ -27,7 +27,7 @@ import com.idega.block.trade.stockroom.data.*;
  */
 
 public class ProductCatalog extends CategoryBlock{
-  public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
+  private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
   private static final String _VIEW_PAGE = "prod_cat_view_page";
   private static final String _ORDER_BY ="prod_cat_order_by";
 
@@ -46,7 +46,7 @@ public class ProductCatalog extends CategoryBlock{
 
   private String _fontStyle = null;
   private String _catFontStyle = null;
-  String  _width = null;
+  String _width = null;
   IBPage _productLinkPage = null;
   boolean _productIsLink = false;
   boolean _showCategoryName = true;
