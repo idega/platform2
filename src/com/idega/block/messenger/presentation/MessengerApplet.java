@@ -570,7 +570,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       runThread = false;
     }
 
-    if(cycler==null){
+    if(cycler!=null){
      cycler.stop();
     }
 
