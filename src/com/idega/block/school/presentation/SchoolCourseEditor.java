@@ -7,8 +7,8 @@ import java.util.Map;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolCourse;
-import com.idega.block.school.data.SchoolCourseHome;
+import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
@@ -140,11 +140,11 @@ public class SchoolCourseEditor extends Block {
 		if (map != null && !map.isEmpty()) {
 			Collection courses = map.values();
 			Iterator iter = courses.iterator();
-			SchoolCourse course;
+			SchoolStudyPath course;
 			Link edit;
 			Link delete;
 			while (iter.hasNext()) {
-				course = (SchoolCourse) iter.next();
+				course = (SchoolStudyPath) iter.next();
 				++row;
 				table.add(course.getName(), 1, row);
 				table.add(course.getDescription(), 2, row);
@@ -184,8 +184,8 @@ public class SchoolCourseEditor extends Block {
 		String schoolCourseId = iwc.getParameter(PARAMETER_SCHOOL_COURSE_ID);
 		if (schoolCourseId != null) {
 			try {
-				SchoolCourseHome scHome = (SchoolCourseHome) IDOLookup.getHome(SchoolCourse.class);
-				SchoolCourse course = scHome.findByPrimaryKey(new Integer(schoolCourseId));
+				SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
+				SchoolStudyPath course = scHome.findByPrimaryKey(new Integer(schoolCourseId));
 				form.maintainParameter(PARAMETER_SCHOOL_COURSE_ID);
 				name.setContent(course.getName());
 				description.setContent(course.getDescription());
@@ -221,8 +221,8 @@ public class SchoolCourseEditor extends Block {
 		String schoolCourseId = iwc.getParameter(PARAMETER_SCHOOL_COURSE_ID);
 		if (name != null && !name.equals("") ) {
 			try {
-				SchoolCourseHome scHome = (SchoolCourseHome) IDOLookup.getHome(SchoolCourse.class);
-				SchoolCourse course;
+				SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
+				SchoolStudyPath course;
 				if (schoolCourseId == null) {
 					course = scHome.create();
 				} else {
@@ -246,8 +246,8 @@ public class SchoolCourseEditor extends Block {
 		
 		if (schoolCourseId != null) {
 			try {
-				SchoolCourseHome scHome = (SchoolCourseHome) IDOLookup.getHome(SchoolCourse.class);
-				SchoolCourse course = scHome.findByPrimaryKey(new Integer(schoolCourseId));
+				SchoolStudyPathHome scHome = (SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class);
+				SchoolStudyPath course = scHome.findByPrimaryKey(new Integer(schoolCourseId));
 				course.removeAllSchoolClassMembers();
 				course.remove();
 				return true;
