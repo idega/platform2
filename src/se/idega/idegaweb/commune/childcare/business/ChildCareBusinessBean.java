@@ -2246,7 +2246,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return getChildCareApplicationHome().findApplicationByChildAndNotInStatus(childId, caseStatus, caseCode);
 		}
 		catch (FinderException fe) {
-			return null;
+			return new ArrayList(0);
 		}
 	}
 
@@ -2310,11 +2310,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
-			return null;
+			return new ArrayList(0);
 		}
 		catch (FinderException e) {
 			e.printStackTrace();
-			return null;
+			return new ArrayList(0);
 		}
 	}
 
@@ -2340,7 +2340,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 		}
 
-		return null;
+		return new ArrayList(0);
 	}
 
 	public ChildCareApplication getApplicationByPrimaryKey(String key) {
