@@ -301,7 +301,7 @@ public class Medication extends EHealthBlock {
 		s.append("}").append("\n\t");
 		s.append("document.all.tags('div')[i].style.backgroundColor = '#ffffff';");
 		s.append("}").append("\n\t");
-		s.append("for (i = 1; i <= 11; i++){").append(" \n\t");
+		s.append("for (i = 1; i <= 9; i++){").append(" \n\t");
 		s.append("elementName = eval(elementBase + i);").append(" \n\t");		
 		s.append("document.getElementById(elementName.id).style.backgroundColor = '#CCCCCC';").append(" \n\t");
 		s.append("}").append("\n\t");
