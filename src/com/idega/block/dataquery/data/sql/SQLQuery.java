@@ -2,6 +2,7 @@ package com.idega.block.dataquery.data.sql;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -108,9 +109,13 @@ public class SQLQuery implements DynamicExpression {
   	Map entityQueryEntityMap = new HashMap();
   	for (int i  = queries.size()-1 ; i >= 0; i--) {
   		QueryHelper currentQueryHelper = (QueryHelper) queries.get(i);
-  		currentQuery = new SQLQuery(currentQueryHelper, uniqueIdentifier, tempCounter, queryTableNames, entityQueryEntityMap, currentQuery);
-  		// primitves aren't objects, therefore set counter to the right number
-  		tempCounter = currentQuery.counter;
+  		//  does the query already exist?
+  		String path = currentQueryHelper.getPath();
+  		if (! queryTableNames.containsKey(path)) {
+  			currentQuery = new SQLQuery(currentQueryHelper, uniqueIdentifier, tempCounter, queryTableNames, entityQueryEntityMap, currentQuery);
+  			// java for beginners: primitves aren't objects, therefore set counter to the right number
+  			tempCounter = currentQuery.counter;
+  		}
   	}
 //  	// go forward to the very first query
 //  	while(currentQuery.hasNextQuery())	{
@@ -418,9 +423,12 @@ public class SQLQuery implements DynamicExpression {
       CriterionExpression criterion = new CriterionExpression(condition, identifier, this);
       if (criterion.isValid()) {
       	// mark used entities
-      	//String fieldName = condition.getField();
       	String path = condition.getPath();
       	entitiesUsedByCriterion.add(path);
+      	String patternPath = condition.getPatternPath();
+      	if (patternPath != null) {
+      		entitiesUsedByCriterion.add(patternPath);
+      	}
       	if (! booleanExpressionIsUsed) {
       		statement.addWhereClause(criterion);
       	}
