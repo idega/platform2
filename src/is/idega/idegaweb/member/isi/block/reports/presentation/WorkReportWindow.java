@@ -20,7 +20,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.presentation.StyledIWAdmin;
+import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.util.IWTimestamp;
 /**
  * This window is used to work with a clubs work reports.
@@ -28,7 +28,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
 
-public class WorkReportWindow extends StyledIWAdmin {
+public class WorkReportWindow extends StyledIWAdminWindow {
 	private MemberUserBusiness memBiz;
 	private GroupBusiness groupBiz;
 	private UserBusiness userBiz;
