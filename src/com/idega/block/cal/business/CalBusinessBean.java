@@ -670,6 +670,10 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness,UserG
 				startCal.add(Calendar.DAY_OF_MONTH,7);
 				start += week;
 			}
+			else if(repeat.equals(CalendarEntryCreator.noRepeatFieldParameterName)) {
+				start = end;
+				//do nothing - the entry is just saved for the current day
+			}
 			//if the last day of the month
 			else if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
 				//if the the last day of month and last month of year
