@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.59 2003/11/06 15:34:47 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.60 2003/11/06 16:00:20 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -60,11 +60,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/11/06 15:34:47 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/06 16:00:20 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.59 $
+ * @version $Revision: 1.60 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -713,9 +713,12 @@ private static String getSsn(final IWContext iwc, final String key) {
 	}
 	final StringBuffer digitOnlyInput = new StringBuffer();
 	for (int i = 0; i < rawInput.length(); i++) {
-		if (Character.isDigit(rawInput.charAt(i))) {
+		if (Character.isDigit(rawInput.charAt(i)))
 			digitOnlyInput.append(rawInput.charAt(i));
-		}
+		if (i == 8 && Character.isLetter('T'))
+			digitOnlyInput.append(rawInput.charAt(i));
+		if (i == 9 && Character.isLetter('F'))
+			digitOnlyInput.append(rawInput.charAt(i));
 	}
 	final Calendar rightNow = Calendar.getInstance();
 	final int currentYear = rightNow.get(Calendar.YEAR);
