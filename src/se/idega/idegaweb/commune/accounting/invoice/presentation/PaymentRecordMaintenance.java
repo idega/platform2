@@ -16,6 +16,7 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
@@ -43,16 +44,17 @@ import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
+import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/11/26 12:40:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 07:48:50 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -180,6 +182,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	 * @param context session data like user info etc.
 	 */
 	public void init (final IWContext context) {
+
 		try {
             int actionId = ACTION_SHOW_PAYMENT;
 
@@ -1214,14 +1217,19 @@ public class PaymentRecordMaintenance extends AccountingBlock {
     private void addProviderDropdown
         (final IWContext context, final Table table, final int row)
         throws RemoteException {
+        final SchoolBusiness business = (SchoolBusiness) IBOLookup
+                .getServiceInstance (context, SchoolBusiness.class);
         int col = 1;
         addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
-        final String schoolCategory = getSession().getOperationalField ();
-        final DropdownMenu providerDropdown = (DropdownMenu)
-                getStyledInterface (new DropdownMenu (PROVIDER_KEY));
-        if (null != schoolCategory) {
-            final SchoolBusiness business = (SchoolBusiness) IBOLookup
-                    .getServiceInstance (context, SchoolBusiness.class);
+        final String schoolCategory = getSession ().getOperationalField ();
+        final Integer schoolId = getSchoolId (context);
+        if (null != schoolId) {
+            final School provider = business.getSchool (schoolId);
+            addSmallText (table, provider.getName (), col, row);
+            table.add (new HiddenInput (PROVIDER_KEY, schoolId + ""), col, row);
+        } else if (null != schoolCategory) {
+            final DropdownMenu providerDropdown = (DropdownMenu)
+                    getStyledInterface (new DropdownMenu (PROVIDER_KEY));
             final Collection schools
                     = business.findAllSchoolsByCategory (schoolCategory);
             final String oldProviderId = context.getParameter (PROVIDER_KEY)
@@ -1235,11 +1243,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                     providerDropdown.setSelectedElement (primaryKey);
                 }
             }
-        } else {
-            providerDropdown.addMenuElement ("", localize (PROVIDER_KEY,
-                                                           PROVIDER_DEFAULT));
+            table.add (providerDropdown, col++, row);
         }
-        table.add (providerDropdown, col++, row);
     }
 
     private void addSmallText (final Table table, final String string,
@@ -1420,4 +1425,16 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                                          (localize (key, defaultName),
                                           ACTION_KEY, action));
     }
+
+    private Integer getSchoolId (final IWContext context)
+        throws RemoteException {
+        final int schoolId = getSchoolCommuneSession (context).getSchoolID ();
+        return 0 < schoolId ? new Integer (schoolId) : null;
+    }
+
+	private SchoolCommuneSession getSchoolCommuneSession
+        (final IWContext context) throws RemoteException {
+		return (SchoolCommuneSession) IBOLookup.getSessionInstance
+                (context, SchoolCommuneSession.class);	
+	}
 }
