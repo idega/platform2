@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.30 2001/08/09 14:54:39 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.31 2001/08/09 18:03:17 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -40,7 +40,6 @@ public class GolfMainJSPModulePage extends MainPage {
   protected Login login;
   protected Table centerTable;
   protected String align;
-  //asdfasdfasdfasdfasdfasdf
 
   protected final int SIDEWIDTH = 720;
   protected final int LEFTWIDTH = 163;
@@ -121,11 +120,26 @@ public class GolfMainJSPModulePage extends MainPage {
 
     leftTable.addBreak(1,1);
     leftTable.add(Languages(),1,2);
-    leftTable.add(Sponsors(), 1,3);
-    leftTable.add(clubNews(),1,5);
-    leftTable.add(new TournamentBox(),1,7);
-    leftTable.add(getChat(),1,9);
-    leftTable.add(getLinks(modinfo),1,11);
+
+    HeaderTable sponsorBox = Sponsors();
+    sponsorBox.setCacheable("SponsorBox",86400000);//24 hour
+    leftTable.add(sponsorBox, 1,3);
+
+    /*HeaderTable newsBox = clubNews();
+    newsBox.setCacheable("NewsBox",3600000);//60*60*1000 1 hour
+    leftTable.add(newsBox,1,5);*/
+
+    TournamentBox tBox = new TournamentBox();
+    tBox.setCacheable("TournamentBox",1800000);
+    leftTable.add(tBox,1,7);
+
+    HeaderTable chatBox = getChat();
+    chatBox.setCacheable("ChatBox",3600000);
+    leftTable.add(chatBox,1,9);
+
+    BoxReader bLinks = getLinks(modinfo);
+    bLinks.setCacheable("Miscbox",86400000);//1000*60*60*24 = 24 hours
+    leftTable.add(bLinks,1,11);
     leftTable.add(idega(),1,13);
 
     return leftTable;
@@ -263,7 +277,6 @@ public class GolfMainJSPModulePage extends MainPage {
   }
 
   protected HeaderTable clubNews() throws SQLException {
-    News[] news = (News[]) (new News()).findAll("select distinct news_category_id from news where news_category_id>3 and news_category_id != 226 order by news_date desc");
 
     HeaderTable headerTable = new HeaderTable();
     headerTable.setWidth(148);
@@ -278,23 +291,21 @@ public class GolfMainJSPModulePage extends MainPage {
     myTable.setCellpadding(2);
     myTable.setCellspacing(2);
     myTable.setBorder(0);
+/*
+    NewsCategoryAttribute[] clubNewsAttr = (NewsCategoryAttribute[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttribute.class)).findAll("select * from news_category_attributes where attribute_name ='union_id' and news_category_attributes.news_category_id>3");
+    int union_id = 0;
+    Text unionText;
+    if (clubNewsAttr.length > 0) {
 
-    for (int a = 0; a < 5; a++) {
-      if (news.length > a) {
-        News[] clubNews = (News[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAllByColumnOrdered("news_category_id",Integer.toString(news[a].getNewsCategoryId()),"news_date desc");
-        Text unionText = new Text();
+      for (int a = 0; a < 5; a++) {
+        unionText = new Text();
         unionText.setFontSize(1);
         unionText.setFontColor("#666666");
 
-        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttributes.class)).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
+        union_id = Integer.parseInt((String)clubNews[a].getColumnValue("news_category_attributes_id"));
+        Union union = com.idega.projects.golf.business.GolfCacher.getCachedUnion(union_id);
+        unionText.addToText(union.getAbbrevation()+" - ");
 
-        int union_id = 0;
-
-        if (newsAttribute.length > 0) {
-          union_id = newsAttribute[0].getAttributeId();
-          Union union = new Union(union_id);
-          unionText.addToText(union.getAbbrevation()+" - ");
-        }
 
         idegaTimestamp stampur = new idegaTimestamp(clubNews[0].getDate());
 
@@ -315,10 +326,10 @@ public class GolfMainJSPModulePage extends MainPage {
             myTable.add(newsDate,1,a+1);
             myTable.addBreak(1,a+1);
             myTable.add(newsLink,1,a+1);
-          }
-        }
-
-        headerTable.add(myTable);
+       }
+    }
+*/
+    headerTable.add(myTable);
 
         return headerTable;
       }
@@ -490,12 +501,12 @@ public class GolfMainJSPModulePage extends MainPage {
 
           rightTable.setColumnAlignment(1, "center");
           //rightTable.add(getProGolfers(),1,1);
-          rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
-          rightTable.add(getPollVoter(),1,5);
+          //rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
+          rightTable.add(getPollVoter(),1,3);//1,5
 
-          rightTable.add(getGSIAssociates(),1,7);
-          rightTable.add(getGolfLinks(),1,9);
-          rightTable.add(getYellowLine(),1,11);
+          rightTable.add(getGSIAssociates(),1,5);//1,7
+          rightTable.add(getGolfLinks(),1,7);//1,9
+          rightTable.add(getYellowLine(),1,9);//1,11
 
 
           return rightTable;
@@ -514,9 +525,9 @@ public class GolfMainJSPModulePage extends MainPage {
           myTable.setCellpadding(0);
           myTable.setCellspacing(0);
 
-        Image rammiUppi = new Image("http://www.gulalinan.is/gulleit/img/lg120/rammi_uppi120.gif","",120,6);
+        Image rammiUppi = new Image("/pics/gulalinan/rammi_uppi120.gif","",120,6);
           myTable.add(rammiUppi,1,1);
-        Image rammiNidri = new Image("http://www.gulalinan.is/gulleit/img/lg120/rammi_nidri120.gif","",120,8);
+        Image rammiNidri = new Image("/pics/gulalinan/rammi_nidri120.gif","",120,8);
           myTable.add(rammiNidri,1,3);
 
         Table innerTable = new Table(1,3);
@@ -527,9 +538,9 @@ public class GolfMainJSPModulePage extends MainPage {
           innerTable.setAlignment(1,1,"center");
           innerTable.setAlignment(1,2,"center");
           innerTable.setAlignment(1,3,"right");
-          innerTable.setBackgroundImage(new Image("http://www.gulalinan.is/gulleit/img/lg120/bakgrunnurx120.gif"));
+          innerTable.setBackgroundImage(new Image("/pics/gulalinan/bakgrunnurx120.gif"));
 
-        Image searchImage = new Image("http://www.gulalinan.is/gulleit/img/lg120/gulalinanlogo.gif","",67,12);
+        Image searchImage = new Image("/pics/gulalinan/gulalinanlogo.gif","",67,12);
         Link yellowLink = new Link(searchImage,"http://www.gulalinan.is");
           yellowLink.setTarget("_blank");
 
@@ -538,7 +549,7 @@ public class GolfMainJSPModulePage extends MainPage {
 
         HiddenInput hidden = new HiddenInput("ac","ks");
 
-        Image submitImage = new Image("http://www.gulalinan.is/gulleit/img/lg120/leita.gif","Leita",39,13);
+        Image submitImage = new Image("/pics/gulalinan/leita.gif","Leita",39,13);
         SubmitButton submit = new SubmitButton(submitImage,"image1");
           submit.setAttribute("hspace","5");
 
@@ -771,10 +782,11 @@ public class GolfMainJSPModulePage extends MainPage {
       return com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
     }
     catch(SQLException E) {
+      E.printStackTrace(System.err);
     }
     catch (Exception E) {
-		  E.printStackTrace();
-	  }
+      E.printStackTrace(System.err);
+    }
     finally {
 	  }
 
@@ -796,7 +808,7 @@ public class GolfMainJSPModulePage extends MainPage {
       ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(modinfo);
     }
     catch(java.sql.SQLException e) {
-      e.printStackTrace();
+      e.printStackTrace(System.err);
       ret = false;
     }
 
@@ -825,8 +837,10 @@ public class GolfMainJSPModulePage extends MainPage {
      User(modinfo);
     }
     catch(SQLException E) {
+      E.printStackTrace(System.err);
     }
-  	catch (IOException E) {
+    catch (IOException E) {
+      E.printStackTrace(System.err);
     }
   }
 
