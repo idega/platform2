@@ -39,6 +39,14 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private static String SERVER_ROOT_URL = "server_root_url";
   private static String RESOURCE_URL = "resource_url";
 
+  private String sessionId;
+  private String userId;
+  private String userName;
+  private String userListVersion = "0";
+  private String servletURL;
+  private URL hostURL;
+  private String resourceURL;
+
   private Hashtable dialogs = new Hashtable();
   private ImageLabel faceLabel;
   private ImageLabel logoLabel;
@@ -53,13 +61,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   private int checkTimer = 15;
   private long tm;
   private long threadSleep;
-
-  private String sessionId;
-  private String userId;
-  private String userName;
-  private String servletURL;
-  private URL hostURL;
-  private String resourceURL;
 
   private Packet packetToServlet;
   private Packet packetFromServlet;
@@ -232,7 +233,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
         packetToServlet.addProperty(new Property(SESSION_ID,sessionId));
         packetToServlet.addProperty(new Property(USER_ID,userId));
         /**@todo: send the latest version*/
-        packetToServlet.addProperty(new Property(USER_LIST_VERSION,"0"));
+        packetToServlet.addProperty(new Property(USER_LIST_VERSION,userListVersion));
 
         packetToServlet.setSender(sessionId);
      //   isfirstRun = false;
@@ -311,6 +312,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
                  addToUserList( user.getKey() , (String)user.getValue() );
                }
              }
+          }
+          else if (((Property)props.elementAt(i)).getKey().equals(USER_LIST_VERSION) ){
+           userListVersion = (String)((Property)props.elementAt(i)).getValue();
           }
         }
       }else System.out.println("MessengerApplet: PROPERTIES IS NULL");
