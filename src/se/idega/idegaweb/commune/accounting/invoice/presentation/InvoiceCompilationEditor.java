@@ -30,10 +30,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/07 11:03:47 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/07 13:14:50 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -47,12 +47,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
     private static final String AMOUNT_DEFAULT = "Belopp";
     private static final String AMOUNT_KEY = PREFIX + "amount";
+    private static final String CHECK_END_PERIOD_KEY = PREFIX + "check_end_period";
     private static final String CHECK_FAMILY_CHILDCARE_40H_DEFAULT = "Check familjedaghem, 40 tim/v";
     private static final String CHECK_FAMILY_CHILDCARE_40H_KEY = PREFIX + "check_family_childcare_40h";
-    private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
-    private static final String CHECK_END_PERIOD_KEY = PREFIX + "check_end_period";
+    private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
@@ -73,6 +73,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
     private static final String EDIT_INVOICE_COMPILATION_DEFAULT = "Ändra fakturaunderlag";
     private static final String EDIT_INVOICE_COMPILATION_KEY = PREFIX + "edit_invoice_compilation";
+    private static final String END_PERIOD_DEFAULT = "T o m ";
+    private static final String END_PERIOD_KEY = PREFIX + "end_period";
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
     private static final String GO_BACK_DEFAULT = "Tillbaka";
@@ -106,8 +108,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String NAME_DEFAULT = "Namn";
     private static final String NAME_KEY = PREFIX + "name";
     private static final String NEW_DEFAULT = "Ny";
-    private static final String START_PERIOD_DEFAULT = "Fr o m ";
-    private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String NEW_KEY = PREFIX + "new";
     private static final String NOTE_DEFAULT = "Anmärkning";
     private static final String NOTE_KEY = PREFIX + "note";
@@ -117,18 +117,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
-    private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
+    private static final String PLACEMENT_END_PERIOD_KEY = PREFIX + "placement_end_period";
     private static final String PLACEMENT_PERIOD_DEFAULT = "Placeringsperiod";
     private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
-    private static final String PLACEMENT_END_PERIOD_KEY = PREFIX + "placement_end_period";
+    private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
     private static final String PLACMENT_DEFAULT = "Placering";
     private static final String PLACMENT_KEY = PREFIX + "placment";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
-    private static final String REMARK_DEFAULT = "Anmärkning";
-    private static final String REMARK_KEY = PREFIX + "remark";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
+    private static final String REMARK_DEFAULT = "Anmärkning";
+    private static final String REMARK_KEY = PREFIX + "remark";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
@@ -137,16 +137,18 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String SIGNATURE_KEY = PREFIX + "signature";
     private static final String SSN_DEFAULT = "Personnummer";
     private static final String SSN_KEY = PREFIX + "personal_id";
+    private static final String START_PERIOD_DEFAULT = "Fr o m ";
+    private static final String START_PERIOD_KEY = PREFIX + "start_period";
     private static final String STATUS_DEFAULT = "Status";
     private static final String STATUS_KEY = PREFIX + "status";
+    private static final String TOO_MANY_RESULTS_DEFAULT = "För många sökträffar - försök att begränsa dina sökkriterier";
+    private static final String TOO_MANY_RESULTS_KEY = PREFIX + "too_many_results";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
     private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
     private static final String TOTAL_AMOUNT_VAT_DEFAULT = "Totalbelopp moms";
     private static final String TOTAL_AMOUNT_VAT_EXCLUSIVE_DEFAULT = "Totalbelopp, exklusive moms";
     private static final String TOTAL_AMOUNT_VAT_EXCLUSIVE_KEY = PREFIX + "total_amount_vat_exclusive";
     private static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
-    private static final String END_PERIOD_DEFAULT = "T o m ";
-    private static final String END_PERIOD_KEY = PREFIX + "end_period";
     private static final String USERSEARCHER_ACTION_KEY = "mbe_act_search" + PREFIX;
     private static final String USERSEARCHER_FIRSTNAME_KEY = "usrch_search_fname" + PREFIX;
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
@@ -224,7 +226,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             displayRedText
                     ("<p>Denna funktion är inte färdig! Bl.a. så återstår:<ol>" 
 
-                     + "<li>skapa justeringsrad till en faktura"
                      + "<li>klicka på faktureringsrad och se detaljer"
                      + "<li>se faktureringsunderlag i pdf"
                      + "<li>tillåt inte negativt taxbelopp mm"
@@ -241,6 +242,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      + "<li>byt inte funktion vid byte av huvudverksamhet"
                      + "<li>kontroll av felaktig eller utelämnad indata"
                      + "<li>'Check familjedaghem...' ska inte hårdkodas"
+                     + "<li>skriv ut anordnare på 'skapa fakturarrad'"
                      + "<li>skriv ut inloggad signatur på skapa record"
 
                      + "</ol>\n\n(" + actionId + ')');
@@ -254,18 +256,25 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String operationalField = getSession ().getOperationalField ();
         final User currentUser = context.getCurrentUser ();
         final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
-        final Date checkEndPeriod = getPeriodParameter (context, CHECK_END_PERIOD_KEY);
-        final Date checkStartPeriod = getPeriodParameter (context, CHECK_START_PERIOD_KEY);
+        final Date checkEndPeriod = getPeriodParameter (context,
+                                                        CHECK_END_PERIOD_KEY);
+        final Date checkStartPeriod
+                = getPeriodParameter (context, CHECK_START_PERIOD_KEY);
         final String doublePosting = context.getParameter (DOUBLE_POSTING_KEY);
-        final Integer invoiceCompilation = getIntegerParameter (context, INVOICE_COMPILATION_KEY);
+        final Integer invoiceCompilation
+                = getIntegerParameter (context, INVOICE_COMPILATION_KEY);
         final String invoiceText = context.getParameter (INVOICE_TEXT_KEY);
         final String note = context.getParameter (NOTE_KEY);
-        final Integer numberOfDays = getIntegerParameter (context, NUMBER_OF_DAYS_KEY);
+        final Integer numberOfDays = getIntegerParameter (context,
+                                                          NUMBER_OF_DAYS_KEY);
         final String ownPosting = context.getParameter (OWN_POSTING_KEY);
-        final Date placementEndPeriod = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
-        final Date placementStartPeriod = getPeriodParameter (context, PLACEMENT_START_PERIOD_KEY);
+        final Date placementEndPeriod
+                = getPeriodParameter (context, PLACEMENT_END_PERIOD_KEY);
+        final Date placementStartPeriod
+                = getPeriodParameter (context, PLACEMENT_START_PERIOD_KEY);
         final Integer providerId = getIntegerParameter (context, PROVIDER_KEY);
-        final String regulationSpecType = context.getParameter (REGULATION_SPEC_TYPE_KEY);
+        final String regulationSpecType
+                = context.getParameter (REGULATION_SPEC_TYPE_KEY);
         final Integer vatAmount = getIntegerParameter (context, VAT_AMOUNT_KEY);
         final Integer vatRule = getIntegerParameter (context, VAT_RULE_KEY);
         final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
@@ -329,17 +338,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         col = 1; row++;
         addSmallHeader (table, col++, row, CHECK_PERIOD_KEY,
                         CHECK_PERIOD_DEFAULT, ":");
-        addSmallHeader (table, col, row, START_PERIOD_KEY, START_PERIOD_DEFAULT);
+        addSmallHeader (table, col, row, START_PERIOD_KEY,
+                        START_PERIOD_DEFAULT);
         table.add (getStyledInput (CHECK_START_PERIOD_KEY, nowPeriod), col++,
                    row);
         addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
-        table.add (getStyledInput (CHECK_END_PERIOD_KEY, nowPeriod), col++, row);
+        table.add (getStyledInput (CHECK_END_PERIOD_KEY, nowPeriod), col++,
+                   row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PLACEMENT_PERIOD_KEY,
                         PLACEMENT_PERIOD_DEFAULT, ":");
-        addSmallHeader (table, col, row, START_PERIOD_KEY, START_PERIOD_DEFAULT);
-        table.add (getStyledInput (PLACEMENT_START_PERIOD_KEY, nowPeriod), col++,
-                   row);
+        addSmallHeader (table, col, row, START_PERIOD_KEY,
+                        START_PERIOD_DEFAULT);
+        table.add (getStyledInput (PLACEMENT_START_PERIOD_KEY, nowPeriod),
+                   col++, row);
         addSmallHeader (table, col, row, END_PERIOD_KEY, END_PERIOD_DEFAULT);
         table.add (getStyledInput (PLACEMENT_END_PERIOD_KEY, nowPeriod), col++,
                    row);
@@ -419,7 +431,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
             final User userFound = searcher.getUser ();
-            final Date fromPeriod = getPeriodParameter (context, START_PERIOD_KEY);
+            final Date fromPeriod = getPeriodParameter (context,
+                                                        START_PERIOD_KEY);
             final Date toPeriod = getPeriodParameter (context, END_PERIOD_KEY);
             final InvoiceBusiness business = (InvoiceBusiness)
                     IBOLookup.getServiceInstance (context,
@@ -680,8 +693,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             table.add (link, 1, row++);
         }
         if (10 < users.size ()) {
-            table.add ("För många sökresultat - försök att begränsa din sökning", 1,
-                       row++);
+            table.setHeight (row++, 12);
+            addSmallHeader (table, 1, row++, TOO_MANY_RESULTS_KEY,
+                            TOO_MANY_RESULTS_DEFAULT);
         }
 
         return table;
