@@ -21,7 +21,7 @@ public class ApartmentCategory extends GenericEntity {
     super(id);
   }
   public String getEntityName() {
-    return "apartment_category";
+    return "bu_aprt_cat";
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());

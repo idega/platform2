@@ -33,7 +33,7 @@ public class Building extends GenericEntity {
   }
 
   public String getEntityName() {
-    return "building";
+    return "bu_building";
   }
 
   public String getNameColumnName(){return "name";}

@@ -30,7 +30,7 @@ public class Complex extends GenericEntity {
   }
 
   public String getEntityName() {
-    return "complex";
+    return "bu_complex";
   }
 
   public String getNameColumnName(){return "name";}

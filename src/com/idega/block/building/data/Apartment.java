@@ -33,7 +33,7 @@ public class Apartment extends GenericEntity {
     super.setMaxLength("info",5000);
   }
   public String getEntityName() {
-    return "apartment";
+    return "bu_apartment";
   }
   public String getNameColumnName(){return "name"; }
   public String getImageIdColumnName(){return "ic_image_id"; }

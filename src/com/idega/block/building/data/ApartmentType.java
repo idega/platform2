@@ -21,7 +21,7 @@ public class ApartmentType extends GenericEntity {
     super(id);
   }
   public String getEntityName() {
-    return "apartment_type";
+    return "bu_aprt_type";
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
@@ -47,7 +47,7 @@ public class ApartmentType extends GenericEntity {
   public String getNameColumnName(){return "name";}
   public String getInfoColumnName(){return "info";}
   public String getImageIdColumnName(){return "ic_image_id"; }
-  public String getFloorPlanIdColumnName(){return "floorplan_id"; }
+  public String getFloorPlanIdColumnName(){return "plan_id"; }
   public String getRoomCountColumnName(){return "room_count";}
   public String getAreaColumnName(){return "area";}
   public String getKitchenColumnName(){return "area";}

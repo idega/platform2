@@ -31,7 +31,7 @@ public class Floor extends GenericEntity {
   }
 
   public String getEntityName() {
-    return "floor";
+    return "bu_floor";
   }
   public String getNameColumnName(){return "name";}
   public String getInfoColumnName(){return "info";}
