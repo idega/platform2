@@ -25,7 +25,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SelectDropdownDouble;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
@@ -200,7 +199,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				application = null;
 			}
 			
-			SelectDropdownDouble dropdown = (SelectDropdownDouble) getStyledInterface(getDropdown(iwc.getCurrentLocale(), PARAM_AREA + "_" + i, PARAM_PROVIDER + "_" + i));
+			ProviderDropdownDouble dropdown = (ProviderDropdownDouble) getStyledInterface(getDropdown(iwc.getCurrentLocale(), PARAM_AREA + "_" + i, PARAM_PROVIDER + "_" + i));
 			if (application != null) {
 				dropdown.setSelectedValues(String.valueOf(areaID), String.valueOf(application.getProviderId()));
 			}
@@ -315,15 +314,15 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		return buffer.toString();
 	}
 	
-	private SelectDropdownDouble getDropdown(Locale locale, String primaryName, String secondaryName) {
-		SelectDropdownDouble dropdown = new SelectDropdownDouble(primaryName, secondaryName);
+	private ProviderDropdownDouble getDropdown(Locale locale, String primaryName, String secondaryName) {
+		ProviderDropdownDouble dropdown = new ProviderDropdownDouble(primaryName, secondaryName);
 		dropdown.addEmptyElement(localize("child_care.select_area","Select area..."), localize("child_care.select_provider","Select provider..."));
 		
 		try {
 			if (areas == null)
 				areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
 			if (providerMap == null)
-				providerMap = getBusiness().getProviderAreaMap(areas, locale, localize("child_care.select_provider","Select provider..."));
+				providerMap = getBusiness().getProviderAreaMap(areas, locale);
 				
 			if (areas != null && providerMap != null) {
 				Iterator iter = areas.iterator();
