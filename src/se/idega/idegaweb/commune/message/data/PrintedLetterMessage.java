@@ -32,4 +32,5 @@ public interface PrintedLetterMessage extends com.idega.data.IDOEntity,se.idega.
  public void setSender(com.idega.user.data.User p0);
  public void setSenderID(int p0);
  public void setSubject(java.lang.String p0);
+ public void setContentCode(String contentCode);
 }

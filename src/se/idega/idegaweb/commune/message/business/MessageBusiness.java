@@ -7,6 +7,7 @@ import javax.ejb.*;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -70,6 +71,8 @@ public interface MessageBusiness extends CaseBusiness
  public Message createUserMessage(Case parentCase, User receiver, User sender, String subject, String body, boolean sendLetter);
  public Message createUserMessage(User user, String subject, String body, boolean sendLetter);
  public Message createUserMessage(User receiver, String subject, String body, User sender, boolean sendLetter);
+ public Message createUserMessage(User user, String subject, Group handler, String body, boolean sendLetter,String contentCode) throws RemoteException;
+ public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter,String contentCode) throws RemoteException;
  public void sendMessageToCommuneAdministrators(Case theCase, String subject, String body) throws RemoteException;
  public int getNumberOfMessages(User user) throws Exception;
  public int getNumberOfMessages(User user,Collection groups) throws Exception;

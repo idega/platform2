@@ -1,13 +1,23 @@
 package se.idega.idegaweb.commune.printing.business;
 
+import java.util.Locale;
+
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.message.data.PrintMessage;
+
+import com.idega.idegaweb.IWBundle;
+import com.idega.user.data.User;
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfWriter;
 
 public interface DocumentBusiness extends com.idega.business.IBOService
 {
- public void createArchiveMessageContent(com.lowagie.text.Document p0,se.idega.idegaweb.commune.message.data.SystemArchivationMessage p1,com.idega.user.data.User p2,com.lowagie.text.pdf.PdfWriter p3,java.util.Locale p4)throws java.lang.Exception, java.rmi.RemoteException;
+public String getXMLLetterUrl(IWBundle iwb,Locale locale,String name,boolean createIfNotExists);
+public  String getAddressString(User user) ;
+public String getXMLLetterUrl(IWBundle iwb,Locale locale,String name);
+public java.util.HashMap getMessageTagMap(PrintMessage msg,Locale locale)throws java.rmi.RemoteException;
+public void createCommuneFooter(PdfWriter writer)throws Exception;
  public java.lang.String[] getPrintMessageTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int createDefaultLetterHeader( Document document, String addressString, PdfWriter writer) throws Exception;
  public java.util.Collection getPrintedDocuments()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
@@ -31,5 +41,6 @@ public interface DocumentBusiness extends com.idega.business.IBOService
  public void writeBulkPDF(java.util.Collection p0,com.idega.user.data.User p1,java.lang.String p2,java.util.Locale p3,String type,boolean addrMsgs,boolean flag,boolean register) throws java.rmi.RemoteException;
  public void writeBulkPDF(String[] primaryKeys,com.idega.user.data.User p1,java.lang.String p2,java.util.Locale p3,String type,boolean addrMsgs,boolean flag ,boolean register) throws java.rmi.RemoteException,FinderException;
  public int writePDF(se.idega.idegaweb.commune.message.data.PrintMessage p0,com.idega.user.data.User p1,java.lang.String p2,java.util.Locale p3,boolean flagPrinted)throws java.lang.Exception, java.rmi.RemoteException;
+ 
  
 }

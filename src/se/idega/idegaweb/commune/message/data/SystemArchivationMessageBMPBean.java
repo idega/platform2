@@ -28,6 +28,7 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	private static final String COLUMN_MESSAGE_DATA = "MESSAGE_DATA";
 	private static final String COLUMN_ATTATCHED_FILE_ID = "ATTATCHED_FILE_ID";
 	private static final String COLUMN_BULK_DATA = "BULK_DATA";
+	private static final String COLUMN_CONTENT_CODE = "CONTENT_CODE";
 	private static final String CASE_CODE_KEY = "SYMEARK";
 	private static final String CASE_CODE_DESCRIPTION = "System Archivation Message";
 	public static final String PRINT_TYPE = "ARCH";
@@ -42,6 +43,7 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 		this.addAttribute(COLUMN_SUBJECT, "Message subject", String.class);
 		this.addAttribute(COLUMN_BODY, "Message body", String.class, 1000);
 		this.addAttribute(COLUMN_MESSAGE_TYPE, "Message type", String.class, 20);
+		this.addAttribute(COLUMN_CONTENT_CODE, "Message content code", String.class, 20);
 		this.addManyToOneRelationship(COLUMN_MESSAGE_DATA, "Message data", ICFile.class);
 		this.addManyToOneRelationship(COLUMN_ATTATCHED_FILE_ID, "Attatched file", ICFile.class);
 		//this.addAttribute(COLUMN_DATE,"Test data column",String.class);//temp
@@ -79,6 +81,15 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 	public void setMessageType(String type) 
 	{
 		this.setColumn(COLUMN_MESSAGE_TYPE, type);
+	}
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.message.data.PrintMessage#getContentCode()
+	 */
+	public String getContentCode() {
+		return this.getStringColumnValue(COLUMN_CONTENT_CODE);
+	}
+	public void setContentCode(String contentCode){
+		this.setColumn(COLUMN_CONTENT_CODE,contentCode);
 	}
 	public ICFile getMessageData()
 	{
@@ -201,4 +212,6 @@ public class SystemArchivationMessageBMPBean extends AbstractCaseBMPBean impleme
 		types[0] = PRINT_TYPE;
 		return types;
 	}
+	
+
 }

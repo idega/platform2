@@ -23,4 +23,5 @@ public interface SystemArchivationMessage extends com.idega.data.IDOEntity,se.id
  public void setMessageData(int p0);
  public void setMessageType(java.lang.String p0);
  public void setSubject(java.lang.String p0);
+ public void setContentCode(String contentCode);
 }

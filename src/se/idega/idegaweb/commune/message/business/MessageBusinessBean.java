@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.49 2003/11/26 05:51:43 gimmi Exp $
+ * $Id: MessageBusinessBean.java,v 1.50 2004/01/11 02:33:26 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -216,6 +216,10 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return createUserMessage(null, user, null, handler, subject, body, sendLetter);
 	}	
 	
+	public Message createUserMessage(User user, String subject, Group handler, String body, boolean sendLetter,String contentCode) {
+		return createUserMessage(null, user, null, handler, subject, body, sendLetter,contentCode);
+	}	
+	
 	public Message createUserMessage(User receiver, String subject, String body, User sender, boolean sendLetter) {
 		return createUserMessage(null, receiver, sender, subject, body, sendLetter);
 	}
@@ -229,6 +233,9 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}
 	
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter) {
+		return createUserMessage(parentCase, receiver,sender,handler,subject,body,sendLetter,null);
+	}
+	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter,String contentCode) {
 		try {
 			Message message = null;
 			boolean sendMail = getIfUserPreferesMessageByEmail(receiver);
@@ -257,12 +264,12 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 				}
 				else {
 					if (sendLetter)
-						createPrintedLetterMessage(parentCase, receiver, subject, body);
+						createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 				}
 			}
 			else {
 				if (sendLetter)
-					createPrintedLetterMessage(parentCase, receiver, subject, body);
+					createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 			}
 
 			if (this.getIWApplicationContext().getApplication().isDebugActive()) {
@@ -598,8 +605,10 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	public PrintedLetterMessage createPrintedLetterMessage(User user, String subject, String body,String printedLetterType) throws CreateException, RemoteException {
 		return createPrintedLetterMessage(null, user, subject, body, printedLetterType);
 	}
-	
 	private PrintedLetterMessage createPrintedLetterMessage(Case parentCase, User user, String subject, String body,String printedLetterType) throws CreateException, RemoteException {
+		return createPrintedLetterMessage(parentCase,user,subject,body,printedLetterType,null);
+	}
+	private PrintedLetterMessage createPrintedLetterMessage(Case parentCase, User user, String subject, String body,String printedLetterType,String contentCode) throws CreateException, RemoteException {
 		PrintedLetterMessageHome home = (PrintedLetterMessageHome)this.getMessageHome(getTypeMailMessage());
 		PrintedLetterMessage message = (PrintedLetterMessage)home.create();
 		message.setOwner(user);
@@ -609,6 +618,9 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			message.setParentCase(parentCase);
 		if(printedLetterType!=null){
 			message.setLetterType(printedLetterType);
+		}
+		if(contentCode!=null){
+			message.setContentCode(contentCode);
 		}
 		try {
 			message.store();

@@ -31,6 +31,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	private static final String COLUMN_MESSAGE_DATA = "MESSAGE_DATA";
 	private static final String COLUMN_LETTER_TYPE = "LETTER_TYPE";
 	private static final String COLUMN_BULK_DATA = "BULK_DATA";
+	private static final String COLUMN_CONTENT_CODE = "CONTENT_CODE";
 
 	private static final String CASE_CODE_KEY = "SYMEBRV";
 	private static final String CASE_CODE_DESCRIPTION = "Letter Message";
@@ -52,6 +53,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		this.addManyToOneRelationship(COLUMN_MESSAGE_DATA, "Message data", ICFile.class);
 		this.addAttribute(COLUMN_LETTER_TYPE, "Message SubType", String.class, 4);
 		this.addManyToOneRelationship(COLUMN_BULK_DATA, "Message bulk data", ICFile.class);
+		this.addAttribute(COLUMN_CONTENT_CODE, "Message contentcode", String.class, 20);
 		//this.addAttribute(COLUMN_DATE,"Test data column",String.class);//temp
 		//this.addAttribute(COLUMN_SENDER,"Test data column",String.class);//temp
 		//this.addManyToManyRelationShip(SampleEntity.class);
@@ -149,6 +151,17 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 
 	public void setMessageData(int fileID) { //Temp (test) method
 		this.setColumn(COLUMN_MESSAGE_DATA, fileID);
+	}
+	
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.message.data.PrintMessage#getContentType()
+	 */
+	public String getContentCode() {
+		return this.getStringColumnValue(COLUMN_CONTENT_CODE);
+	}
+	
+	public void setContentCode(String contentCode){
+		this.setColumn(COLUMN_CONTENT_CODE,contentCode);
 	}
 	
 	public ICFile getMessageBulkData() {
@@ -605,4 +618,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		
 	}	
 	
+	
+
 }
