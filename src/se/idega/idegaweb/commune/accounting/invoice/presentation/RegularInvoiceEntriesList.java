@@ -309,10 +309,14 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 	private void handleDeleteAction(IWContext iwc){
 		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
-		try{
-			entry.delete();
-		} catch(SQLException ex){
-			ex.printStackTrace();
+		try {
+			entry.remove();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+		catch (RemoveException e) {
+			e.printStackTrace();
 		}
 	}
 	
