@@ -1,9 +1,6 @@
 // idega 2000 - gimmi
 package com.idega.block.poll.presentation;
 
-import java.sql.SQLException;
-
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.poll.business.PollBusiness;
 import com.idega.block.poll.business.PollFinder;
 import com.idega.block.poll.business.PollListener;
@@ -16,6 +13,7 @@ import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
