@@ -43,6 +43,7 @@ public class UserSearcher extends Block {
 	private static final String SEARCH_MIDDLE_NAME = "usrch_search_mname";
 	private static final String SEARCH_FIRST_NAME = "usrch_search_fname";
 	private static final String SEARCH_COMMITTED = "mbe_act_search";
+	private static final String SEARCH_CLEARED = "mbe_act_clear";
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_HEADER = "Header";
 	public final static String STYLENAME_BUTTON = "Button";
@@ -55,7 +56,7 @@ public class UserSearcher extends Block {
 	private String interfaceStyleName = null;
 	private String textFontStyle = "font-weight:plain;";
 	private String headerFontStyle = "font-weight:bold;";
-	private String warningFontStyle = "font-weight:bold;fon-color:#FF0000";
+	private String warningFontStyle = "font-weight:bold;font-color:#FF0000";
 	private String buttonStyle =
 		"color:#000000;font-size:10px;font-family:Verdana,Arial,Helvetica,sans-serif;font-weight:normal;border-width:1px;border-style:solid;border-color:#000000;";
 	private String interfaceStyle =
@@ -239,6 +240,11 @@ public class UserSearcher extends Block {
 			}
 		}
 	}
+
+	
+	public boolean isClearedButtonPushed(IWContext iwc){
+		return iwc.getParameter(SEARCH_CLEARED) != null;
+	}
 	
 	private void processSearch(IWContext iwc) throws IDOLookupException, FinderException, RemoteException {
 		UserHome home = (UserHome) IDOLookup.getHome(User.class);
@@ -246,6 +252,7 @@ public class UserSearcher extends Block {
 		String middle = iwc.getParameter(SEARCH_MIDDLE_NAME + uniqueIdentifier);
 		String last = iwc.getParameter(SEARCH_LAST_NAME + uniqueIdentifier);
 		String pid = iwc.getParameter(SEARCH_PERSONAL_ID + uniqueIdentifier);
+		
 		if (firstLetterCaseInsensitive) {
 			if (first != null)
 				first = TextSoap.capitalize(first);
@@ -287,6 +294,7 @@ public class UserSearcher extends Block {
 		int row = 1;
 		int col = 1;
 		Vector clearFields = new Vector();
+				
 		if (showPersonalIDInSearch) {
 			Text tPersonalID = new Text(iwrb.getLocalizedString(SEARCH_PERSONAL_ID, "Personal ID"));
 			tPersonalID.setStyleClass(headerFontStyleName);
@@ -379,7 +387,7 @@ public class UserSearcher extends Block {
 					clearAction += getClearActionPart(field, uniqueIdentifier,"''");
 				}
 				clearAction += getClearActionPart(PRM_USER_ID,uniqueIdentifier,"-1");
-				SubmitButton reset = new SubmitButton(iwrb.getLocalizedString("clear", "Clear"));
+				SubmitButton reset = new SubmitButton(SEARCH_CLEARED, iwrb.getLocalizedString("clear", "Clear"));
 				reset.setStyleClass(buttonStyleName);
 				reset.setOnClick(clearAction + "return false;");
 				searchTable.add(reset, col++, row + 1);
@@ -396,7 +404,7 @@ public class UserSearcher extends Block {
 					otherClearActions +=getClearActionPart(PRM_USER_ID,identifier,"-1");
 				}
 			
-			SubmitButton resetmultiple = new SubmitButton(iwrb.getLocalizedString("clear_all", "Clear All"));
+			SubmitButton resetmultiple = new SubmitButton(SEARCH_CLEARED, iwrb.getLocalizedString("clear_all", "Clear All"));
 			resetmultiple.setStyleClass(buttonStyleName);
 			resetmultiple.setOnClick(otherClearActions + "return false;");
 			searchTable.add(resetmultiple, col++, row + 1);
@@ -422,9 +430,12 @@ private Table presentateFoundUsers(IWContext iwc) {
 		int colAdd = 1;
 
 
-		boolean primaryKeyAdded = false;
-		String pkId = "";
-		
+		HiddenInput userPk = new HiddenInput(getUniqueUserParameterName(uniqueIdentifier));
+		if (setToFormSubmit) {
+			getParentForm().add(userPk);
+			addParameters(getParentForm());				
+		}
+						
 		while (iter.hasNext()) {
 			User u = (User) iter.next();
 			T.add(u.getPersonalID(), colAdd, row);
@@ -432,16 +443,9 @@ private Table presentateFoundUsers(IWContext iwc) {
 			
 			//Added by Roar 29.10.03
 			if (setToFormSubmit){
-				userLink.setToFormSubmit(getParentForm());
-				Parameter primaryKey = getUniqueUserParameter((Integer) u.getPrimaryKey());
-				if (! primaryKeyAdded){
-					HiddenInput h = new HiddenInput(primaryKey.getName(), "");
-					pkId = h.getID();
-					getParentForm().add(h);
-					primaryKeyAdded = true;
-				}				
-				userLink.setOnClick("getElementById('"+ pkId +"').value='"+ primaryKey.getValue() +"'");
-				addParameters(getParentForm());				
+				userLink.setOnClick(
+					"getElementById('"+ userPk.getID() +"').value='"+ u.getPrimaryKey() +"';"+
+					"getElementById('"+getParentForm().getID()+"')submit(); ");
 			}
 			
 			userLink.addParameter(getUniqueUserParameter((Integer) u.getPrimaryKey()));
