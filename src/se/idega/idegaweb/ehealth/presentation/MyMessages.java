@@ -197,7 +197,7 @@ public class MyMessages extends EHealthBlock {
 		
 		Image transpImg = Table.getTransparentCell(_iwc);
 		transpImg.setWidth(15);
-		transpImg.setHeight(13);
+		transpImg.setHeight(16);
 		
 		Image greenArrow = getBundle(_iwc).getImage("greenArrow.gif");
 		Image redArrow = getBundle(_iwc).getImage("redArrow.gif");
@@ -205,7 +205,7 @@ public class MyMessages extends EHealthBlock {
 		Layer layer = new Layer(Layer.DIV);
 		layer.setOnMouseOver("setRowColor(this);");
 		layer.setPositionType("relative");
-		layer.setHeight(18);
+		layer.setHeight(16);
 		
 		
 		int theRow = 1;
