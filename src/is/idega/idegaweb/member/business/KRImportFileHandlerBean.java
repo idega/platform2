@@ -41,7 +41,7 @@ import com.idega.util.text.TextSoap;
 
 
 
-public class KRImportFileHandlerBean extends IBOServiceBean implements ImportFileHandler{
+public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportFileHandler{
 
 
   private UserBusiness biz;

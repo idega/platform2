@@ -120,11 +120,7 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
   	}
   	
   	public ImportFileHandler getImportFileHandler(String handlerClass) throws Exception{
-  		//tempory this should get the interface for the bean but is the beans them selves are in the database now!!!
-  		//FIX!!
-  		//
-    	ImportFileHandler handler = (ImportFileHandler)Class.forName(handlerClass).newInstance();
-	    ((IBOServiceBean)handler).setIWApplicationContext(this.getIWApplicationContext());
+    	ImportFileHandler handler = (ImportFileHandler)  this.getServiceInstance(Class.forName(handlerClass));
 	    return handler;
   	}
  

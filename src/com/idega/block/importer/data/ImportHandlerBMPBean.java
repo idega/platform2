@@ -80,7 +80,7 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
 		ImportHandler nacka = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
 		nacka.setName("Nacka citizen importer");
 		nacka.setDescription("Imports the KIR data for Nacka.");
-		nacka.setClassName("se.idega.idegaweb.commune.block.importer.business.NackaImportFileHandlerBean");
+		nacka.setClassName("se.idega.idegaweb.commune.block.importer.business.NackaImportFileHandler");
       	nacka.store();
     }
     catch (Exception ex) {
@@ -91,7 +91,7 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
 		ImportHandler nacka2 = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
 		nacka2.setName("Nacka student importer");
 		nacka2.setDescription("Imports the students in Nacka");
-		nacka2.setClassName("se.idega.idegaweb.commune.block.importer.business.NackaStudentImportFileHandlerBean");
+		nacka2.setClassName("se.idega.idegaweb.commune.block.importer.business.NackaStudentImportFileHandler");
       	nacka2.store();
     }
     catch (Exception ex) {
@@ -102,7 +102,7 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
 		ImportHandler KR = ((ImportHandlerHome)IDOLookup.getHome(ImportHandler.class)).create();
 		KR.setName("KR data importer");
 		KR.setDescription("Les inn gogn kn.d. KR.");
-		KR.setClassName("is.idega.idegaweb.member.business.KRImportFileHandlerBean");
+		KR.setClassName("is.idega.idegaweb.member.business.KRImportFileHandler");
       	KR.store();
     }
     catch (Exception ex) {
