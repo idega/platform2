@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.1 2002/01/15 17:09:58 tryggvil Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.2 2002/01/16 11:41:08 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -126,17 +126,21 @@ public class GolfMainJSPModulePage extends MainPage {
     //sponsorBox.setCacheable("SponsorBox",86400000);//24 hour
     leftTable.add(Block.getCacheableObject(sponsorBox,"SponsorBox",86400000), 1,3);
 
-    HeaderTable newsBox = clubNews();
+    Block newsBox = new ClubNewsBox();
+    //HeaderTable newsBox = clubNews();
     //newsBox.setCacheable("NewsBox",3600000);//60*60*1000 1 hour
-    leftTable.add(Block.getCacheableObject(newsBox,"NewsBox",3600000),1,5);
+    //leftTable.add(Block.getCacheableObject(newsBox,"NewsBox",3600000),1,5);
+    leftTable.add(newsBox,1,5);
 
     TournamentBox tBox = new TournamentBox();
     tBox.setCacheable("TournamentBox",1800000);
     leftTable.add(tBox,1,7);
 
-    HeaderTable chatBox = getChat();
+    Block chatBox = new ForumsBox();
+    //HeaderTable chatBox = getChat();
     //chatBox.setCacheable("ChatBox",3600000);
-    leftTable.add(Block.getCacheableObject(chatBox,"ChatBox",3600000),1,9);
+    //leftTable.add(Block.getCacheableObject(chatBox,"ChatBox",3600000),1,9);
+    leftTable.add(chatBox,1,9);
 
     leftTable.add(idega(),1,11);
 
@@ -194,60 +198,6 @@ public class GolfMainJSPModulePage extends MainPage {
   }
 
 
-  protected HeaderTable getChat() throws SQLException {
-    HeaderTable table = new HeaderTable();
-    table.setBorderColor("#8ab490");
-    table.setHeadlineSize(1);
-    table.setHeadlineColor("#FFFFFF");
-    table.setRightHeader(false);
-    table.setHeadlineAlign("left");
-    table.setWidth(148);
-    table.setHeaderText(iwrb.getLocalizedString("Chat","Chat"));
-
-    ForumThread[] forum = (ForumThread[]) (new ForumThread()).findAllByColumnOrdered("parent_thread_id","-1","thread_date desc");
-
-    int links = 4;
-    Table myTable = new Table();
-    myTable.setWidth("100%");
-    myTable.setCellpadding(2);
-    myTable.setCellspacing(2);
-
-    if ( forum.length < links ) {
-      links = forum.length;
-    }
-
-    for (int a = 0; a < links; a++) {
-      idegaTimestamp stampur = new idegaTimestamp(forum[a].getThreadDate());
-      String minutes = stampur.getMinute()+"";
-      if ( stampur.getMinute() < 10 ) {
-        minutes = "0" + stampur.getMinute();
-      }
-
-      Text userText = new Text(forum[a].getUserName()+" - ");
-      userText.setFontSize(1);
-      userText.setFontColor("#666666");
-
-      Text chatDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
-      chatDate.setFontSize(1);
-      chatDate.setFontColor("#666666");
-
-      Text text = new Text(forum[a].getThreadSubject());
-      text.setFontSize(1);
-      Link chatLink = new Link(text,"/forum/index.jsp");
-      chatLink.addParameter("forum_thread_id",forum[a].getID()+"");
-      chatLink.addParameter("forum_id",forum[a].getForumID()+"");
-      chatLink.addParameter("state","3");
-      chatLink.addParameter("FTopen",forum[a].getID()+"");
-
-      myTable.add(userText,1,a+1);
-      myTable.add(chatDate,1,a+1);
-      myTable.addBreak(1,a+1);
-      myTable.add(chatLink,1,a+1);
-    }
-    table.add(myTable);
-
-    return table;
-  }
 
   protected HeaderTable getGolfLinks() {
     HeaderTable table = new HeaderTable();
@@ -288,138 +238,6 @@ public class GolfMainJSPModulePage extends MainPage {
     return table;
   }
 
-  protected HeaderTable clubNews() throws SQLException{
-/*
-    HeaderTable headerTable = new HeaderTable();
-    headerTable.setWidth(148);
-    headerTable.setBorderColor("#8ab490");
-    headerTable.setHeaderText(iwrb.getLocalizedString("clubNews","Club news"));
-    headerTable.setHeadlineSize(1);
-    headerTable.setRightHeader(false);
-    headerTable.setHeadlineAlign("left");
-
-    Table myTable = new Table(1,5);
-    myTable.setWidth("100%");
-    myTable.setCellpadding(2);
-    myTable.setCellspacing(2);
-    myTable.setBorder(0);
-
-    NewsCategoryAttribute[] clubNewsAttr = (NewsCategoryAttribute[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttribute.class)).findAll("select * from news_category_attributes where attribute_name ='union_id' and news_category_attributes.news_category_id>3");
-    int union_id = 0;
-    Text unionText;
-    if (clubNewsAttr.length > 0) {
-
-      for (int a = 0; a < 5; a++) {
-        unionText = new Text();
-        unionText.setFontSize(1);
-        unionText.setFontColor("#666666");
-
-        union_id = Integer.parseInt((String)clubNews[a].getColumnValue("news_category_attributes_id"));
-        Union union = is.idega.idegaweb.golf.business.GolfCacher.getCachedUnion(union_id);
-        unionText.addToText(union.getAbbrevation()+" - ");
-
-
-        idegaTimestamp stampur = new idegaTimestamp(clubNews[0].getDate());
-
-        String minutes = stampur.getMinute()+"";
-        if (stampur.getMinute() < 10) {
-          minutes = "0" + stampur.getMinute();
-        }
-
-        Text newsDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
-        newsDate.setFontSize(1);
-        newsDate.setFontColor("#666666");
-
-            Link newsLink = new Link(clubNews[0].getHeadline(),"/clubs/index2.jsp");
-              newsLink.addParameter("union_id",""+union_id);
-              newsLink.setFontSize(1);
-
-            myTable.add(unionText,1,a+1);
-            myTable.add(newsDate,1,a+1);
-            myTable.addBreak(1,a+1);
-            myTable.add(newsLink,1,a+1);
-       }
-    }
-
-    headerTable.add(myTable);
-
-    return headerTable;*/
-    HeaderTable headerTable = new HeaderTable();
-    headerTable.setWidth(148);
-    headerTable.setBorderColor("#8ab490");
-    headerTable.setHeaderText(iwrb.getLocalizedString("clubNews","Club news"));
-    headerTable.setHeadlineSize(1);
-    headerTable.setRightHeader(false);
-    headerTable.setHeadlineAlign("left");
-
-    Table myTable = new Table(1,5);
-    myTable.setWidth("100%");
-    myTable.setCellpadding(2);
-    myTable.setCellspacing(2);
-
-
-
-    News[] news = (News[]) (new News()).findAll("select distinct news_category_id from news where news_category_id > 3 and news_category_id < 233 and news_category_id != 226 and news_category_id != 228 order by news_date desc");
-
-
-    myTable.setBorder(0);
-
-    for (int a = 0; a < 5; a++) {
-    try {
-      if (news.length > a) {
-        News[] clubNews = (News[]) (com.idega.data.GenericEntity.getStaticInstance("com.idega.jmodule.news.data.News")).findAllByColumnOrdered("news_category_id",Integer.toString(news[a].getNewsCategoryId()),"news_date desc");
-        Text unionText = new Text();
-        unionText.setFontSize(1);
-        unionText.setFontColor("#666666");
-
-        NewsCategoryAttributes[] newsAttribute = (NewsCategoryAttributes[]) (com.idega.data.GenericEntity.getStaticInstance(NewsCategoryAttributes.class)).findAllByColumn("news_category_id",clubNews[0].getNewsCategoryId());
-
-        int union_id = 0;
-
-        if (newsAttribute.length > 0) {
-          union_id = newsAttribute[0].getAttributeId();
-          Union union = new Union(union_id);
-          unionText.addToText(union.getAbbrevation()+" - ");
-        }
-
-        idegaTimestamp stampur = new idegaTimestamp(clubNews[0].getDate());
-
-        String minutes = stampur.getMinute()+"";
-        if (stampur.getMinute() < 10) {
-          minutes = "0" + stampur.getMinute();
-        }
-
-        Text newsDate = new Text(stampur.getDate()+"/"+stampur.getMonth()+"/"+stampur.getYear()+" "+stampur.getHour()+":"+minutes);
-        newsDate.setFontSize(1);
-        newsDate.setFontColor("#666666");
-
-
-            Text text = new Text(clubNews[0].getHeadline());
-            text.setFontSize(1);
-            Link newsLink = new Link(text,"/clubs/index2.jsp");
-            newsLink.addParameter("union_id",""+union_id);
-
-            myTable.add(unionText,1,a+1);
-            myTable.add(newsDate,1,a+1);
-            myTable.addBreak(1,a+1);
-            myTable.add(newsLink,1,a+1);
-          }
-
-
-        }
-        catch (Exception ex) {
-          ex.printStackTrace(System.err);
-        }
-
-        }
-
-        headerTable.add(myTable);
-
-
-
-        return headerTable;
-
-      }
 
       protected Table idega(){
           Table idegaTable = new Table (1,1);
