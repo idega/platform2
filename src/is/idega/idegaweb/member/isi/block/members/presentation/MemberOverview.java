@@ -105,11 +105,11 @@ public class MemberOverview extends Block {
 		int row = 1;
 
 		String statusHeader = _iwrb.getLocalizedString("member_overview_registration", "Membership status");
-		row = insertSectionHeaderIntoTable(table, row, new String[] { statusHeader });
+		String statusText = _iwrb.getLocalizedString("member_overview_status", "Status");
+		row = insertSectionHeaderIntoTable(table, row, new String[] { statusHeader, statusText });
 		row = insertRegistrationInfoIntoTable(table, row, false);
 
 		String historyHeader = _iwrb.getLocalizedString("member_overview_history", "Membership history");
-		String statusText = _iwrb.getLocalizedString("member_overview_status", "Status");
 		String beginText = _iwrb.getLocalizedString("member_overview_begin_date", "Started");
 		String endText = _iwrb.getLocalizedString("member_overview_end_date", "Quit");
 		String[] historyHeaders = new String[] { historyHeader, statusText, beginText, endText };
@@ -256,12 +256,6 @@ public class MemberOverview extends Block {
 					break;
 				}
 				Object o = iter.next();
-				if (first) {
-					first = false;
-				}
-				else {
-					buf.append(", ");
-				}
 				if (o instanceof Address) {
 					Address addr = (Address) o;
 					String street = addr.getStreetAddress();
@@ -289,7 +283,6 @@ public class MemberOverview extends Block {
 							buf.append("fax ");
 						}
 						buf.append(phone.getNumber());
-						buf.append(Text.BREAK);
 					}
 				}
 				else {
@@ -297,6 +290,9 @@ public class MemberOverview extends Block {
 				}
 				first = false;
 				count++;
+				if (iter.hasNext()) {
+					buf.append(Text.BREAK);
+				}
 			}
 		}
 		return buf.length() == 0 ? null : buf.toString();
@@ -328,6 +324,9 @@ public class MemberOverview extends Block {
 				histText.setBold();
 				table.setRowStyleClass(row, getStyleName(STYLENAME_HEADING_ROW));
 				table.add(histText, i + 1, row);
+				if (i > 0) {
+					table.setCellpaddingLeft(i+1, row, 2);
+				}
 			}
 		}
 
@@ -402,9 +401,11 @@ public class MemberOverview extends Block {
 			}
 			table.add(getStyleText(name, STYLENAME_TEXT), 1, row);
 			table.add(getStyleText(status, STYLENAME_TEXT), 2, row);
-			table.add(getStyleText(begin, STYLENAME_TEXT), 3, row);
-			table.add(getStyleText(end, STYLENAME_TEXT), 4, row);
-
+			if (showHistory) {
+				table.add(getStyleText(begin, STYLENAME_TEXT), 3, row);
+				table.add(getStyleText(end, STYLENAME_TEXT), 4, row);
+			}
+			
 			if (regRow % 2 == 0) {
 				table.setRowStyleClass(row, getStyleName(STYLENAME_DARK_ROW));
 			}

@@ -41,8 +41,9 @@ public class MemberChangePassword extends Block {
 		int row = 1;
 		
 		String message = handleInput(iwc);
-		table.setRowStyleClass(row, getStyleName(MemberOverview.STYLENAME_COLUMN_ROW));
 		row = addHeader(table, row);
+		table.setColor(1, row++, "#D7D7D7");
+		table.setColor(1, row++, "#FFFFFF");
 		row = addForm(table, row, message);
 		
 		add(table);
@@ -67,6 +68,9 @@ public class MemberChangePassword extends Block {
 		} else {
 			table.add(getBigText("Not logged on"), 1, 2);
 		}
+		outerTable.setCellpaddingTop(1, row, 12);
+		outerTable.setCellpaddingBottom(1, row, 12);
+		outerTable.setCellpaddingLeft(1, row, 15);
 		outerTable.add(table, 1, row++);
 		return row;
 	}
@@ -74,7 +78,6 @@ public class MemberChangePassword extends Block {
 	private int addForm(Table outerTable, int outerRow, String message) {
 		Form form = new Form();
 		Table table = getTable();
-		table.setStyleClass(getStyleName(MemberOverview.STYLENAME_HEADING_ROW));
 		
 		if ( currentUser != null) {
 			int row = 1;
@@ -98,6 +101,9 @@ public class MemberChangePassword extends Block {
 		}
 		
 		form.add(table);
+		outerTable.setCellpaddingTop(1, outerRow, 12);
+		outerTable.setCellpaddingBottom(1, outerRow, 12);
+		outerTable.setCellpaddingLeft(1, outerRow, 15);
 		outerTable.add(form, 1, outerRow++);
 		return outerRow;
 	}
