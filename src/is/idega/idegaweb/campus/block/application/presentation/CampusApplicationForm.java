@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.6 2002/03/18 19:59:28 aron Exp $
+ * $Id: CampusApplicationForm.java,v 1.7 2002/04/03 18:09:02 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,44 +9,21 @@
  */
 package is.idega.idegaweb.campus.block.application.presentation;
 
-import com.idega.block.application.presentation.ApplicationForm;
+import java.sql.*;
+import java.util.*;
+
 import com.idega.block.application.business.ApplicationFinder;
-import com.idega.block.application.business.ReferenceNumberHandler;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.block.building.business.ApartmentTypeComplexHelper;
-import com.idega.block.building.data.ApartmentType;
-import com.idega.block.building.presentation.ApartmentTypeViewer;
-import com.idega.presentation.Image;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Script;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.BackButton;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.Page;
-import com.idega.presentation.Table;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.util.idegaTimestamp;
-import com.idega.util.SendMail;
-import com.idega.util.CypherText;
-import com.idega.idegaweb.IWBundle;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFormHelper;
-import is.idega.idegaweb.campus.presentation.Edit;
-import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
-import java.sql.SQLException;
+import com.idega.block.application.presentation.*;
+import com.idega.block.building.business.*;
+import com.idega.block.building.data.*;
+import com.idega.block.building.presentation.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.util.*;
+import is.idega.idegaweb.campus.block.application.business.*;
+import is.idega.idegaweb.campus.presentation.*;
 
 /**
  *
@@ -85,6 +62,7 @@ public class CampusApplicationForm extends ApplicationForm {
   protected void control(IWContext iwc) {
     debugParameters(iwc);
 		_iwb = getBundle(iwc);
+    List wrongParameters = new Vector();
     String statusString = iwc.getParameter(APP_STATUS);
     int status = 0;
 
@@ -107,39 +85,63 @@ public class CampusApplicationForm extends ApplicationForm {
       }
 
       addStage(1);
-      doGeneralInformation(iwc);
+      doGeneralInformation(iwc,wrongParameters);
     }
     else if (status == _statusGeneralInfo) {
-      addStage(2);
-      CampusApplicationFormHelper.saveApplicantInformation(iwc);
-      doCampusInformation(iwc);
+      wrongParameters = checkGeneral(iwc);
+      if(wrongParameters.size() > 0){
+        addStage(1);
+        doGeneralInformation(iwc,wrongParameters);
+      }
+      else{
+        addStage(2);
+        CampusApplicationFormHelper.saveApplicantInformation(iwc);
+        doCampusInformation(iwc,wrongParameters);
+      }
     }
     else if (status == _statusCampusInfo) {
-      addStage(3);
-      CampusApplicationFormHelper.saveSubject(iwc);
-      CampusApplicationFormHelper.saveCampusInformation(iwc);
-      doSelectAppliedFor(iwc);
-    }
-    else if (status == _statusAppliedFor) {
-      CampusApplicationFormHelper.saveAppliedFor(iwc);
-      String cypher = CampusApplicationFormHelper.saveDataToDB(iwc);
-      if ( cypher != null)
-        doDone(cypher);
-      else
-        doError();
+      wrongParameters = checkCampusInfo(iwc);
+      if(wrongParameters.size()>0){
+        addStage(2);
+        CampusApplicationFormHelper.saveApplicantInformation(iwc);
+        doCampusInformation(iwc,wrongParameters);
+      }
+      else{
+        addStage(3);
+        CampusApplicationFormHelper.saveSubject(iwc);
+        CampusApplicationFormHelper.saveCampusInformation(iwc);
+        doSelectAppliedFor(iwc,wrongParameters);
+      }
     }
     else if (status == _statusSelectingApartmentTypes) {
       addStage(3);
       checkAparmentTypesSelected(iwc);
-      doSelectAppliedFor(iwc);
+      doSelectAppliedFor(iwc,wrongParameters);
     }
+    else if (status == _statusAppliedFor) {
+      wrongParameters = checkApplied(iwc);
+      if(wrongParameters.size()>0){
+        addStage(3);
+        checkAparmentTypesSelected(iwc);
+        doSelectAppliedFor(iwc,wrongParameters);
+      }
+      else{
+        CampusApplicationFormHelper.saveAppliedFor(iwc);
+        String cypher = CampusApplicationFormHelper.saveDataToDB(iwc);
+        if ( cypher != null)
+          doDone(cypher);
+        else
+          doError();
+      }
+    }
+
   }
 
   /*
   /*
    *
    */
-  protected void doSelectAppliedFor(IWContext iwc) {
+  protected void doSelectAppliedFor(IWContext iwc,List wrongParameters) {
     int id;
     String aprtCat = (String)iwc.getSessionAttribute("aprtCat");
     try {
@@ -151,10 +153,16 @@ public class CampusApplicationForm extends ApplicationForm {
 
     java.util.Vector vAprtType = BuildingFinder.getApartmentTypesComplexForCategory(id);
     DropdownMenu aprtType = new DropdownMenu("aprtType");
+    if(iwc.isParameterSet("aprtType"))
+      aprtType.setSelectedElement(iwc.getParameter("aprtType"));
     Edit.setStyle(aprtType);
     DropdownMenu aprtType2 = new DropdownMenu("aprtType2");
+     if(iwc.isParameterSet("aprtType2"))
+      aprtType2.setSelectedElement(iwc.getParameter("aprtType2"));
     Edit.setStyle(aprtType2);
     DropdownMenu aprtType3 = new DropdownMenu("aprtType3");
+     if(iwc.isParameterSet("aprtType3"))
+      aprtType3.setSelectedElement(iwc.getParameter("aprtType3"));
     Edit.setStyle(aprtType3);
     aprtType.addDisabledMenuElement("-1","");
     aprtType2.addMenuElement("-1","");
@@ -182,7 +190,10 @@ public class CampusApplicationForm extends ApplicationForm {
     form.add(t);
 
     t.addTitle(_iwrb.getLocalizedString("applied","Húsnæði sem sótt er um"));
-    t.add(Edit.formatText(text1,true),1,1);
+    Text label = Edit.formatText(text1);
+    if(wrongParameters.contains("aprtType"))
+      label.setFontColor("#ff0000");
+    t.add(label,1,1);
     t.add(Edit.formatText(_required,true),1,1);
     t.add(aprtType,2,1);
 
@@ -253,9 +264,9 @@ public class CampusApplicationForm extends ApplicationForm {
     form.add(Text.getBreak());
     form.add(Text.getBreak());
     form.add(_info);
-    aprtType.setOnChange("this.form.status.value='" + _statusSelectingApartmentTypes + "'");
-    aprtType2.setOnChange("this.form.status.value='" + _statusSelectingApartmentTypes + "'");
-    aprtType3.setOnChange("this.form.status.value='" + _statusSelectingApartmentTypes + "'");
+    aprtType.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
+    aprtType2.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
+    aprtType3.setOnChange("this.form.app_status.value='" + _statusSelectingApartmentTypes + "'");
     aprtType.setToSubmit();
     aprtType2.setToSubmit();
     aprtType3.setToSubmit();
@@ -276,7 +287,7 @@ public class CampusApplicationForm extends ApplicationForm {
   /*
    *
    */
-  protected void doCampusInformation(IWContext iwc) {
+  protected void doCampusInformation(IWContext iwc,List wrongParameters) {
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
     List categories = BuildingFinder.listOfApartmentCategory();
     Text textTemplate = new Text();
@@ -370,20 +381,34 @@ public class CampusApplicationForm extends ApplicationForm {
     Edit.setStyle(textInputTemplate);
     TextInput input1 = (TextInput)textInputTemplate.clone();
     input1.setName("faculty");
+    if(iwc.isParameterSet("faculty"))
+      input1.setContent(iwc.getParameter("faculty"));
     TextInput input2 = (TextInput)textInputTemplate.clone();
     input2.setName("studyTrack");
+    if(iwc.isParameterSet("studyTrack"))
+      input2.setContent(iwc.getParameter("studyTrack"));
     TextInput input3 = (TextInput)textInputTemplate.clone();
     input3.setName("resInfo");
     input3.setLength(10);
+    if(iwc.isParameterSet("resInfo"))
+      input3.setContent(iwc.getParameter("resInfo"));
     TextInput input4 = (TextInput)textInputTemplate.clone();
     input4.setName("spouseName");
+    if(iwc.isParameterSet("spouseName"))
+      input4.setContent(iwc.getParameter("spouseName"));
     TextInput input5 = (TextInput)textInputTemplate.clone();
     input5.setName("spouseSSN");
     input5.setLength(12);
+    if(iwc.isParameterSet("spouseSSN"))
+      input5.setContent(iwc.getParameter("spouseSSN"));
     TextInput input6 = (TextInput)textInputTemplate.clone();
     input6.setName("spouseSchool");
+    if(iwc.isParameterSet("spouseSchool"))
+      input6.setContent(iwc.getParameter("spouseSchool"));
     TextInput input7 = (TextInput)textInputTemplate.clone();
     input7.setName("spouseStudyTrack");
+    if(iwc.isParameterSet("spouseStudyTrack"))
+      input7.setContent(iwc.getParameter("spouseStudyTrack"));
     /*
     TextInput input8 = (TextInput)textInputTemplate.clone();
     input8.setName("income");
@@ -395,8 +420,12 @@ public class CampusApplicationForm extends ApplicationForm {
     TextInput input10 = (TextInput)textInputTemplate.clone();
     input10.setName("contact");
     input10.setLength(10);
+    if(iwc.isParameterSet("contact"))
+      input10.setContent(iwc.getParameter("contact"));
     TextInput input11 = (TextInput)textInputTemplate.clone();
     input11.setName("email");
+    if(iwc.isParameterSet("email"))
+      input11.setContent(iwc.getParameter("email"));
 
 
     int children = 2;
@@ -404,6 +433,10 @@ public class CampusApplicationForm extends ApplicationForm {
     for (int i = 0; i < children; i++) {
       TextInput childName = new TextInput("childname"+i);
       TextInput childBirth = new TextInput("childbirth"+i);
+      if(iwc.isParameterSet("childname"+i))
+        childName.setContent(iwc.getParameter("childname"+i));
+      if(iwc.isParameterSet("childbirth"+i))
+        childBirth.setContent(iwc.getParameter("childbirth"+i));
       Edit.setStyle(childName);
       Edit.setStyle(childBirth);
       childName.setLength(10);
@@ -427,6 +460,8 @@ public class CampusApplicationForm extends ApplicationForm {
     input15.setName("furniture");
 */
     DateInput input16 = new DateInput("wantHousingFrom");
+    if(iwc.isParameterSet("wantHousingFrom"))
+      input16.setDate(new idegaTimestamp(iwc.getParameter("wantHousingFrom")).getSQLDate());
     input16.setToCurrentDate();
 
     DataTable t2 = new DataTable();
@@ -435,19 +470,31 @@ public class CampusApplicationForm extends ApplicationForm {
     form.add(t2);
     t2.addTitle(_iwrb.getLocalizedString("otherInfo","Aðrar upplýsingar um umsækjanda"));
     int row = 1;
-    t2.add(Edit.formatText(text1_1,true),1,row);
+    Text label = Edit.formatText(text1_1,true);
+    if(wrongParameters.contains("studyBegin"))
+      label.setFontColor("#ff0000");
+    t2.add(label,1,row);
     t2.add(Edit.formatText(_required,true),1,row);
     t2.add(studyBegin,2,row);
     row++;
-    t2.add(Edit.formatText(text2_1,true),1,row);
+    label = Edit.formatText(text2_1,true);
+    if(wrongParameters.contains("studyEnd"))
+      label.setFontColor("#ff0000");
+    t2.add(label,1,row);
     t2.add(_required,1,row);
     t2.add(studyEnd,2,row);
     row++;
-    t2.add(Edit.formatText(text3,true),1,row);
+    label = Edit.formatText(text3,true);
+    if(wrongParameters.contains("faculty"))
+      label.setFontColor("#ff0000");
+    t2.add(label,1,row);
     t2.add(_required,1,row);
     t2.add(input1,2,row);
     row++;
-    t2.add(Edit.formatText(text4,true),1,row);
+    label = Edit.formatText(text4,true);
+    if(wrongParameters.contains("studyTrack"))
+      label.setFontColor("#ff0000");
+    t2.add(label,1,row);
     t2.add(_required,1,row);
     t2.add(input2,2,row);
     row++;
@@ -489,7 +536,10 @@ public class CampusApplicationForm extends ApplicationForm {
     t2.add(input9,2,row);
     row++;
     */
-    t2.add(Edit.formatText(text16,true),1,row);
+    label = Edit.formatText(text16,true);
+    if(wrongParameters.contains("wantHousingFrom"))
+      label.setFontColor("#ff0000");
+    t2.add(label,1,row);
     t2.add(_required,1,row);
     t2.add(input16,2,row);
     row++;
@@ -504,7 +554,10 @@ public class CampusApplicationForm extends ApplicationForm {
     t2.add(Edit.formatText(text19),1,row);
     t2.add(input10,2,row);
     row++;
-    t2.add(Edit.formatText(text20,true),1,row);
+    label = Edit.formatText(text20,true);
+    if(wrongParameters.contains("email"))
+      label.setFontColor("#ff0000");
+    t2.add(label,1,row);
     t2.add(_required,1,row);
     t2.add(input11,2,row);
     row++;
@@ -569,7 +622,7 @@ public class CampusApplicationForm extends ApplicationForm {
   /**
    *
    */
-  protected void doGeneralInformation(IWContext iwc) {
+  protected void doGeneralInformation(IWContext iwc,List wrongParameters) {
     TextInput textInputTemplate = new TextInput();
     Form form = new Form();
     DataTable t = new DataTable();
@@ -585,69 +638,111 @@ public class CampusApplicationForm extends ApplicationForm {
     String residenceLabel = _iwrb.getLocalizedString(APP_RESIDENCE,"Residence");
     String phoneLabel = _iwrb.getLocalizedString(APP_PHONE,"Residence phone");
     String poLabel = _iwrb.getLocalizedString(APP_PO,"PO");
+
     TextInput firstName = (TextInput)textInputTemplate.clone();
     firstName.setName(APP_FIRST_NAME);
+    if(iwc.isParameterSet(APP_FIRST_NAME))
+      firstName.setContent(iwc.getParameter(APP_FIRST_NAME));
     firstName.setLength(40);
     Edit.setStyle(firstName);
     TextInput middleName = (TextInput)textInputTemplate.clone();
     middleName.setName(APP_MIDDLE_NAME);
+    if(iwc.isParameterSet(APP_MIDDLE_NAME))
+      middleName.setContent(iwc.getParameter(APP_MIDDLE_NAME));
     middleName.setLength(40);
     Edit.setStyle(middleName);
     TextInput lastName = (TextInput)textInputTemplate.clone();
     lastName.setName(APP_LAST_NAME);
+    if(iwc.isParameterSet(APP_LAST_NAME))
+      lastName.setContent(iwc.getParameter(APP_LAST_NAME));
     lastName.setLength(40);
     Edit.setStyle(lastName);
+
     TextInput ssn = (TextInput)textInputTemplate.clone();
+    ssn.setAsIcelandicSSNumber();
     ssn.setName(APP_SSN);
-    ssn.setLength(11);
+    if(iwc.isParameterSet(APP_SSN))
+      ssn.setContent(iwc.getParameter(APP_SSN));
+    ssn.setLength(10);
+    ssn.setMaxlength(10);
     Edit.setStyle(ssn);
     TextInput legalResidence = (TextInput)textInputTemplate.clone();
     legalResidence.setName(APP_LEGAL_RESIDENCE);
+    if(iwc.isParameterSet(APP_LEGAL_RESIDENCE))
+      legalResidence.setContent(iwc.getParameter(APP_LEGAL_RESIDENCE));
     legalResidence.setLength(40);
     Edit.setStyle(legalResidence);
     TextInput residence = (TextInput)textInputTemplate.clone();
     residence.setName(APP_RESIDENCE);
+    if(iwc.isParameterSet(APP_RESIDENCE))
+      residence.setContent(iwc.getParameter(APP_RESIDENCE));
     residence.setLength(40);
     Edit.setStyle(residence);
     TextInput phone = (TextInput)textInputTemplate.clone();
     phone.setName(APP_PHONE);
+    if(iwc.isParameterSet(APP_PHONE))
+      phone.setContent(iwc.getParameter(APP_PHONE));
     phone.setLength(8);
     Edit.setStyle(phone);
     TextInput po = (TextInput)textInputTemplate.clone();
     po.setName(APP_PO);
+    if(iwc.isParameterSet(APP_PO))
+      po.setContent(iwc.getParameter(APP_PO));
     po.setLength(3);
     Edit.setStyle(po);
 
     int row = 1;
     t.addTitle(heading);
-    t.add(Edit.formatText(firstNameLabel,true),1,row);
+    Text label = Edit.formatText(firstNameLabel,true);
+    if(wrongParameters.contains(APP_FIRST_NAME))
+      label.setFontColor("#ff0000");
+    t.add(label,1,row);
     t.add(_required,1,row);
     t.add(firstName,2,row);
     row++;
-    t.add(Edit.formatText(middleNameLabel),1,row);
+    label = Edit.formatText(middleNameLabel);
+    t.add(label,1,row);
     t.add(middleName,2,row);
     row++;
-    t.add(Edit.formatText(lastNameLabel,true),1,row);
+    label = Edit.formatText(lastNameLabel,true);
+    if(wrongParameters.contains(APP_LAST_NAME))
+      label.setFontColor("#ff0000");
+    t.add(label,1,row);
     t.add(_required,1,row);
     t.add(lastName,2,row);
     row++;
-    t.add(Edit.formatText(ssnLabel,true),1,row);
+    label = Edit.formatText(ssnLabel,true);
+    if(wrongParameters.contains(APP_SSN))
+      label.setFontColor("#ff0000");
+    t.add(label,1,row);
     t.add(_required,1,row);
     t.add(ssn,2,row);
     row++;
-    t.add(Edit.formatText(legalResidenceLabel,true),1,row);
+    label = Edit.formatText(legalResidenceLabel,true);
+    if(wrongParameters.contains(APP_LEGAL_RESIDENCE))
+       label.setFontColor("#ff0000");
+    t.add(label,1,row);
     t.add(_required,1,row);
     t.add(legalResidence,2,row);
     row++;
-    t.add(Edit.formatText(residenceLabel,true),1,row);
+    label = Edit.formatText(residenceLabel,true);
+    if(wrongParameters.contains(APP_RESIDENCE))
+       label.setFontColor("#ff0000");
+    t.add(label,1,row);
     t.add(_required,1,row);
     t.add(residence,2,row);
     row++;
-    t.add(Edit.formatText(phoneLabel,true),1,row);
+    label = Edit.formatText(phoneLabel,true);
+    if(wrongParameters.contains(APP_PHONE))
+       label.setFontColor("#ff0000");
+    t.add(label,1,row);
     t.add(_required,1,row);
     t.add(phone,2,row);
     row++;
-    t.add(Edit.formatText(poLabel,true),1,row);
+    label = Edit.formatText(poLabel,true);
+    if(wrongParameters.contains(APP_PO))
+       label.setFontColor("#ff0000");
+    t.add(label,1,row);
     t.add(_required,1,row);
     t.add(po,2,row);
     row++;
@@ -660,6 +755,77 @@ public class CampusApplicationForm extends ApplicationForm {
     form.add(_info);
     form.add(new HiddenInput(APP_STATUS,Integer.toString(_statusGeneralInfo)));
     add(form);
+  }
+
+  public List checkGeneral(IWContext iwc){
+    List wrongParameters = new Vector();
+    String first = iwc.getParameter(APP_FIRST_NAME);
+    String last = iwc.getParameter(APP_LAST_NAME);
+    String ssn = iwc.getParameter(APP_SSN);
+    String legal = iwc.getParameter(APP_LEGAL_RESIDENCE);
+    String res = iwc.getParameter(APP_RESIDENCE);
+    String phone = iwc.getParameter(APP_PHONE);
+    String zip = iwc.getParameter(APP_PO);
+    if(first == null || first.length()==0)
+      wrongParameters.add(APP_FIRST_NAME);
+    if(last == null || last.length()==0)
+      wrongParameters.add(APP_LAST_NAME);
+    if(ssn == null || !com.idega.util.text.SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(ssn))
+      wrongParameters.add(APP_SSN);
+    if(legal == null || legal.length()==0)
+      wrongParameters.add(APP_LEGAL_RESIDENCE);
+    if(res == null || res.length()==0)
+      wrongParameters.add(APP_RESIDENCE);
+    if(phone == null || phone.length()==0)
+      wrongParameters.add(APP_PHONE);
+    if(zip == null || zip.length()==0)
+      wrongParameters.add(APP_PO);
+
+    return wrongParameters;
+  }
+
+  public List checkCampusInfo(IWContext iwc){
+    Vector wrongParameters = new Vector();
+    String studybegin = iwc.getParameter("studyBegin");
+    String studyend = iwc.getParameter("studyEnd");
+    String faculty = iwc.getParameter("faculty");
+    String studytrack = iwc.getParameter("studyTrack");
+    String wantingfrom = iwc.getParameter("wantHousingFrom");
+    String email = iwc.getParameter("email");
+
+    if(studybegin == null || studybegin.length()==0)
+      wrongParameters.add("studyBegin");
+    if(studyend == null || studyend.length()==0)
+      wrongParameters.add("studyEnd");
+    if(faculty == null || faculty.length()==0)
+      wrongParameters.add("faculty");
+    if(studytrack == null || studytrack.length()==0)
+      wrongParameters.add("studyTrack");
+    if(wantingfrom == null || wantingfrom.length()==0)
+      wrongParameters.add("wantHousingFrom");
+    if(email != null && email.length()>0 && email.indexOf("@")!= -1){
+      try {
+        new javax.mail.internet.InternetAddress(email);
+      }
+      catch (Exception ex) {
+        wrongParameters.add("email");
+      }
+    }
+    else{
+      wrongParameters.add("email");
+    }
+
+
+    return wrongParameters;
+  }
+
+  public List checkApplied(IWContext iwc){
+
+    Vector wrongParameters = new Vector();
+    String aprt = iwc.getParameter("aprtType");
+    if(aprt == null || aprt.length()==0 || Integer.parseInt(aprt) == -1)
+      wrongParameters.add("aprtType");
+    return wrongParameters;
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.4 2002/03/19 22:34:54 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.5 2002/04/03 18:09:08 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -146,7 +146,15 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
       String e_mail = campusApplication.getEmail();
       if ( e_mail != null ) {
         if ( e_mail.length() > 0 ) {
-          receiver = e_mail;
+
+          try {
+            new javax.mail.internet.InternetAddress(e_mail);
+            receiver = e_mail;
+          }
+          catch (Exception ex) {
+
+          }
+
         }
       }
 
