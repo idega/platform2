@@ -1,8 +1,12 @@
-//idega 2000 - Tryggvi Larusson
 /*
-*Copyright 2000 idega.is All Rights Reserved.
-*/
-
+ * $Id: Table.java,v 1.4 2001/05/16 18:58:06 palli Exp $
+ *
+ * Copyright (C) 2001 Idega hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ *
+ */
 package com.idega.jmodule.object;
 
 import java.util.*;
@@ -11,989 +15,981 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.util.IWColor;
 
 /**
+ * A table class. Note xpos is in [1:cols]
+ *                     ypos is in [1:rows]
+ *
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class Table extends ModuleObjectContainer{
+public class Table extends ModuleObjectContainer {
+  private ModuleObjectContainer theObjects[][];
+  private int cols = 0;
+  private int rows = 0;
 
-private ModuleObjectContainer theObjects[][];
-private int cols=0;
-private int rows=0;
+  //Variables to hold coordinates of merge point of cells
+  //Initialized only if needed
+  private Vector beginMergedxpos;
+  private Vector beginMergedypos;
+  private Vector endMergedxpos;
+  private Vector endMergedypos;
+  private boolean isResizable;
 
-//Achtung!!
-//
-//xpos is in [1:cols]
-//ypos is in [1:rows]
-//
+  private boolean cellsAreMerged;
 
-//Variables to hols coordinates of merge point of cells
-//Initialized only if needed
-private Vector beginMergedxpos;
-private Vector beginMergedypos;
-private Vector endMergedxpos;
-private Vector endMergedypos;
-private boolean isResizable;
+  /**
+   * Constructor that defaults with 1 column and 1 row
+   */
+  public Table() {
+    this(1,1);
+    isResizable = true;
+  }
 
-private boolean cellsAreMerged;
+  /**
+   * Constructor that takes in the initial rows and columns of the table
+   */
+  public Table(int cols, int rows) {
+    super();
+    isResizable = false;
+    theObjects = new ModuleObjectContainer[cols][rows];
+    this.cols = cols;
+    this.rows = rows;
+    setBorder("0");
+    cellsAreMerged = false;
+  }
 
-/**
-*Constructor that defaults with 1 column and 1 row
-*
-**/
+  /**
+  *Add an object inside this Table in cell with coordinates 1,1 - same as the add() function
+  *@deprecated replaced by the add function
+  */
+  public void addObject(ModuleObject modObject){
+    addObject( modObject,1,1);
+  }
 
-public Table(){
-
-	this(1,1);
-// /**
-// * @todo erase
-// */
-//        this.setBorder(1);
-	isResizable=true;
-}
-
-
-/**
-*Constructor that takes in the initial rows and columns of the table
-*
-*/
-
-public Table(int cols, int rows){
-	super();
-	isResizable=false;
-	theObjects = new ModuleObjectContainer[cols][rows];
-        //super.add(theObjects);
-	this.cols=cols;
-	this.rows=rows;
-	setBorder("0");
-	cellsAreMerged = false;
-}
-
-/**
-*Add an object inside this Table in cell with coordinates 1,1 - same as the add() function
-*@deprecated replaced by the add function
-*/
-public void addObject(ModuleObject modObject){
-	addObject( modObject,1,1);
-}
-
-/**
-*Add an object inside this Table in cell with coordinates 1,1
-*/
-public void add(ModuleObject modObject){
-	add( modObject,1,1);
-}
+  /**
+  *Add an object inside this Table in cell with coordinates 1,1
+  */
+  public void add(ModuleObject modObject){
+    add( modObject,1,1);
+  }
 
 
 
-public void addText(String theText,String format,int xpos,int ypos){
-	if(isResizable){
-		if(xpos > this.getColumns()){
-			setColumns(xpos);
-		}
-		if(ypos > this.getRows()){
-			setRows(ypos);
-		}
-	}
-	if (theObjects[xpos-1][ypos-1] == null)
-        {
-                theObjects[xpos-1][ypos-1] = new ModuleObjectContainer();
-                //super.add(theObjects);
-        }
-
-	theObjects[xpos-1][ypos-1].addText(theText,format);
-}
-
-/**
-*Add an object inside this Table in cell with coordinates x,y from top right
-*/
-public void add(ModuleObject modObject,int xpos,int ypos){
-
-	if (modObject != null){
-	  try{
-        	if(isResizable){
-			if(xpos > this.getColumns()){
-				setColumns(xpos);
-			}
-			if(ypos > this.getRows()){
-				setRows(ypos);
-			}
-		}
-		if (theObjects[xpos-1][ypos-1] == null)
-                      {
-                        theObjects[xpos-1][ypos-1] = new ModuleObjectContainer();
-                        //super.add(theObjects);
-                      }
-
-		theObjects[xpos-1][ypos-1].add(modObject);
-		modObject.setParentObject(this);
-
-          }
-          catch(Exception ex){
-            add(new ExceptionWrapper(ex,this));
-          }
-        }
-
-}
-
-/**
-*Add an object inside this Table in cell with coordinates x,y from top right - same as the add() function
-*@deprecated replaced by the add function
-*/
-public void addObject(ModuleObject modObject,int xpos,int ypos){
-	add(modObject,xpos,ypos);
-}
-
-public void add(String text,int xpos,int ypos){
-	addText(text,xpos,ypos);
-}
-
-public void addText(String theText,int xpos,int ypos){
-	add(new Text(theText),xpos,ypos);
-}
-
-
-
-public void addText(int integerToInsert,int xpos,int ypos){
-	addText(Integer.toString(integerToInsert),xpos,ypos);
-}
-
-public void setBackgroundImage(int xpos, int ypos, Image backgroundImage){
-	this.setAttribute(xpos,ypos,"background",backgroundImage.getURL());
-}
-
-public void setBackgroundImage(Image backgroundImage){
-	this.setAttribute("background",backgroundImage.getURL());
-}
-
-public void setVerticalAlignment(int xpos, int ypos, String alignment){
-	setAttribute(xpos,ypos,"valign",alignment);
-}
-
-public void setAlignment(int xpos, int ypos, String alignment){
-	setAttribute(xpos,ypos,"align",alignment);
-}
-
-public void setRowAlignment(int ypos, String alignment){
-	setRowAttribute(ypos,"align",alignment);
-}
-
-public void setColumnAlignment(int xpos, String alignment){
-	setColumnAttribute(xpos,"align",alignment);
-}
-
-public void setRowVerticalAlignment(int ypos, String alignment){
-	setRowAttribute(ypos,"valign",alignment);
-}
-
-public void setColumnVerticalAlignment(int xpos, String alignment){
-	setColumnAttribute(xpos,"valign",alignment);
-}
-
-public void resize(int columns,int rows){
-
-
-	ModuleObjectContainer theNewObjects[][];
-	theNewObjects = new ModuleObjectContainer[columns][rows];
-
-	for (int x=0;x<columns;x++){
-		for(int y=0;y<rows;y++){
-			if(x<this.cols && y<this.rows){
-				theNewObjects[x][y]=theObjects[x][y];
-			}
-
-		}
-	}
-	theObjects=theNewObjects;
-	this.cols=columns;
-	this.rows=rows;
-
-}
-
-/**
-*Empties the Table of all objects stored inside
-*/
-public void empty(){
-	for (int x=0;x<cols;x++){
-		for(int y=0;y<rows;y++){
-			if( theObjects[x][y] != null ){
-				theObjects[x][y].empty();
-			}
-
-		}
-	}
-}
-
-
-public void emptyCell(int xpos,int ypos){
-      if( theObjects[xpos-1][ypos-1] != null ){
-              theObjects[xpos-1][ypos-1].empty();
+  public void addText(String theText,String format,int xpos,int ypos){
+    if(isResizable){
+      if(xpos > this.getColumns()){
+        setColumns(xpos);
       }
-}
+      if(ypos > this.getRows()){
+        setRows(ypos);
+      }
+    }
+    if (theObjects[xpos-1][ypos-1] == null)
+          {
+                  theObjects[xpos-1][ypos-1] = new ModuleObjectContainer();
+                  //super.add(theObjects);
+          }
 
-public int getColumns(){
-	return this.cols;
-}
+    theObjects[xpos-1][ypos-1].addText(theText,format);
+  }
 
-public void setColumns(int columns){
-	resize(columns,this.rows);
-}
-
-public void setRows(int rows){
-	resize(this.cols,rows);
-}
-
-public int getRows(){
-	return this.rows;
-}
-
-public void mergeCells(int beginxpos,int beginypos, int endxpos, int endypos){
-	if (beginMergedxpos == null && beginMergedypos == null && endMergedxpos == null && endMergedypos == null){
-		beginMergedxpos = new Vector(1);
-		beginMergedypos = new Vector(1);
-		endMergedxpos = new Vector(1);
-		endMergedypos = new Vector(1);
-	}
-	cellsAreMerged = true;
-
-	//Do nothing if the either of the cells are already merged with something else
-	if (! ( isInMergedCell(beginxpos,beginypos) && isInMergedCell(endxpos,endypos) ) ){
-		beginMergedxpos.addElement( (Object) new Integer(beginxpos));
-		beginMergedypos.addElement( (Object) new Integer(beginypos));
-		endMergedxpos.addElement( (Object) new Integer(endxpos));
-		endMergedypos.addElement( (Object) new Integer(endypos));
-	}
-}
-
-public void setWidth(String s){
-	setAttribute("width",s);
-}
-
-public void setWidth(int width){
-	setWidth(Integer.toString(width));
-}
-
-public void setHeight(int height){
-	setHeight(Integer.toString(height));
-}
-
-public String getWidth(){
-	return getAttribute("width");
-}
-
-
-public String getHeight(){
-	return getAttribute("height");
-}
-
-public void setHeight(String s){
-	setAttribute("height",s);
-}
-
-public void setHeight(int xpos,int ypos, String height){
-	setAttribute(xpos,ypos,"height",height);
-}
-
-public void setWidth(int xpos, int ypos, String width){
-	setAttribute(xpos,ypos,"width",width);
-}
-
-public void setColor(String s){
-	setAttribute("bgcolor",s);
-}
-
-public void setColor(IWColor s){
-	setAttribute("bgcolor",s.getHexColorString());
-}
-
-public void setBorder(String border){
-	setAttribute("border",border);
-}
-
-public void setBorder(int i){
-	setBorder(Integer.toString(i));
-}
-
-public void setCellspacing(int i){
-	setCellspacing(Integer.toString(i));
-}
-
-public void setCellpadding(int i){
-	setCellpadding(Integer.toString(i));
-}
-
-public void setCellspacing(String s){
-	setAttribute("cellspacing",s);
-}
-
-public void setCellpadding(String s){
-	setAttribute("cellpadding",s);
-}
-
-
-public void setColor(int xpos,int ypos, String s){
-	setAttribute(xpos,ypos,"bgcolor",s);
-}
-
-public void setColor(int xpos,int ypos, IWColor s){
-	setAttribute(xpos,ypos,"bgcolor",s.getHexColorString());
-}
-
-public void setRowColor(int ypos, String s){
-	setRowAttribute(ypos,"bgcolor",s);
-}
-
-public void setColumnColor(int xpos,String s){
-	setColumnAttribute(xpos,"bgcolor",s);
-}
-
-public void setWidth(int xpos,String s){
-	setColumnAttribute(xpos,"width",s);
-}
-
-public void setHeight(int ypos, String s){
-	setRowAttribute(ypos,"height",s);
-}
-
-public void setAlignment(String align){
-	setAttribute("align",align);
-}
-
-public void setVerticalAlignment(String verticalAlignment){
-	setAttribute("valign",verticalAlignment);
-}
-
-public void setColumnAttribute(int xpos, String attributeName,String attributeValue){
-	for(int temp=1;temp<=rows;){
-		setAttribute(xpos,temp,attributeName,attributeValue);
-		temp++;
-	}
-}
-
-public void setRowAttribute(int ypos, String attributeName,String attributeValue){
-	for(int temp=1;temp<=cols;){
-		setAttribute(temp,ypos,attributeName,attributeValue);
-		temp++;
-	}
-}
-
-public void setAttribute(int xpos, int ypos, String attributeName,String attributeValue){
-
-	if(isResizable){
-		if(xpos > this.getColumns()){
-			setColumns(xpos);
-		}
-		if(ypos > this.getRows()){
-			setRows(ypos);
-		}
-	}
-
-	if(this.theObjects[xpos-1][ypos-1] == null){
-		this.theObjects[xpos-1][ypos-1] = new ModuleObjectContainer();
-               // super.add(theObjects);
-	}
-
-	this.theObjects[xpos-1][ypos-1].setAttribute(attributeName,attributeValue);
-
-}
-
-/*
-public void _main(ModuleInfo modinfo)throws Exception{
-	for (int x=0;x<theObjects.length;x++){
-		for (int y=0;y<theObjects[x].length;y++){
-			ModuleObjectContainer tempobj = theObjects[x][y];
-                        if (tempobj != null){
-                          try{
-                            tempobj._main(modinfo);
-                          }
-                          catch(Throwable ex){
-
-                            add("Exception: "+ex.getMessage());
-                            setErrorMessage(ex.getClass().getName()+" - "+ex.getMessage());
-                            System.err.println(ex.getMessage());
-                            ex.printStackTrace(System.err);
-                          }
+  /**
+  *Add an object inside this Table in cell with coordinates x,y from top right
+  */
+  public void add(ModuleObject modObject,int xpos,int ypos){
+    if (modObject != null) {
+      try {
+      if (isResizable) {
+        if (xpos > this.getColumns()) {
+          setColumns(xpos);
+        }
+        if(ypos > this.getRows()) {
+          setRows(ypos);
+        }
+      }
+      if (theObjects[xpos-1][ypos-1] == null)
+                        {
+                          theObjects[xpos-1][ypos-1] = new ModuleObjectContainer();
+                          //super.add(theObjects);
                         }
-		}
-	}
-}
-*/
-
-/*Tells if a cell in a table is merged with another*/
-private boolean isInMergedCell(int xpos, int ypos){
-	boolean theReturn = false;
-	boolean xcheck=false;
-	boolean ycheck=false;
-
-	if( ! cellsAreMerged){
-		theReturn=false;
-	}
-	else
-	{
-		int i = 0;
-		for (Enumeration e = beginMergedxpos.elements();e.hasMoreElements();){
-
-			ycheck = false;
-			xcheck = false;
-
-			Integer temp1 = (Integer) e.nextElement();
-			Integer temp2 = (Integer) endMergedxpos.elementAt(i);
-			int xlength;
-
-			Integer temp3 = (Integer) beginMergedypos.elementAt(i);
-			Integer temp4 = (Integer) endMergedypos.elementAt(i);
-			int ylength;
-
-			int lowerx=0;
-			int lowery=0;
-
-			if (temp1.intValue()<=temp2.intValue()){
-				lowerx = temp1.intValue();
-				xlength = temp2.intValue() - temp1.intValue();
-			}
-			else{
-				lowerx = temp2.intValue();
-				xlength = temp1.intValue() - temp2.intValue();
-			}
-
-			if (temp3.intValue()<=temp4.intValue()){
-				lowery = temp3.intValue();
-				ylength = temp4.intValue() - temp3.intValue();
-			}
-			else{
-				lowery = temp4.intValue();
-				ylength = temp3.intValue() - temp4.intValue();
-			}
-
-
-
-			//Check the x coordinate
-			if( xpos >= (lowerx) ){
-				if(xpos <= (lowerx+xlength) ){
-					xcheck=true;
-				}
-				else{
-					xcheck=false;
-				}
-			}
-			//Check the y coordinate
-			if( ypos >= (lowery) ){
-				if(ypos <= (lowery+ylength) ){
-					ycheck=true;
-				}
-				else{
-					ycheck=false;
-				}
-			}
-
-			if ( xcheck && ycheck)
-			{
-				theReturn = true;
-			}
-
-			i++;
-		}
-	}
-	return theReturn;
-}
-
-public void addBreak(int xpos,int ypos){
-	Text myText = new Text();
-	myText.addBreak();
-	this.add(myText,xpos,ypos);
-}
-
-private int getWidthOfMergedCell(int startxpos, int startypos){
-	int returnint = 1;
-	int i = 0;
-	for (Enumeration e = beginMergedxpos.elements();e.hasMoreElements();){
-		Integer temp1 = (Integer) e.nextElement();
-		Integer temp2 = (Integer) endMergedxpos.elementAt(i);
-		int xlength;
-
-		Integer temp3 = (Integer) beginMergedypos.elementAt(i);
-		Integer temp4 = (Integer) endMergedypos.elementAt(i);
-		int ylength;
-
-		int lowerx=0;
-		int lowery=0;
-
-
-		if (temp1.intValue()<=temp2.intValue()){
-			lowerx = temp1.intValue();
-			xlength = temp2.intValue() - temp1.intValue();
-		}
-		else{
-			lowerx = temp2.intValue();
-			xlength = temp1.intValue() - temp2.intValue();
-		}
-
-		if (temp3.intValue()<=temp4.intValue()){
-			lowery = temp3.intValue();
-			ylength = temp4.intValue() - temp3.intValue();
-		}
-		else{
-			lowery = temp4.intValue();
-			ylength = temp3.intValue() - temp4.intValue();
-		}
-
-		if (lowerx==startxpos && lowery==startypos){
-			returnint = xlength+1;
-		}
-		i++;
-
-	}
-	return returnint;
-}
-
-private int getHeightOfMergedCell(int startxpos, int startypos){
-	int returnint = 1;
-
-	int i = 0;
-	for (Enumeration e = beginMergedxpos.elements();e.hasMoreElements();){
-		Integer temp1 = (Integer) e.nextElement();
-		Integer temp2 = (Integer) endMergedxpos.elementAt(i);
-		int xlength;
-
-		Integer temp3 = (Integer) beginMergedypos.elementAt(i);
-		Integer temp4 = (Integer) endMergedypos.elementAt(i);
-		int ylength;
-
-		int lowerx=0;
-		int lowery=0;
-
-
-		if (temp1.intValue()<=temp2.intValue()){
-			lowerx = temp1.intValue();
-			xlength = temp2.intValue() - temp1.intValue();
-		}
-		else{
-			lowerx = temp2.intValue();
-			xlength = temp1.intValue() - temp2.intValue();
-
-		}
-
-		if (temp3.intValue()<=temp4.intValue()){
-			lowery = temp3.intValue();
-			 ylength = temp4.intValue() - temp3.intValue();
-		}
-		else{
-			lowery = temp4.intValue();
-			 ylength = temp3.intValue() - temp4.intValue();
-		}
-
-		if (lowerx==startxpos && lowery==startypos){
-			returnint = ylength+1;
-		}
-		i++;
-	}
-	return returnint;
-}
-
-
-
-private boolean isTopLeftOfMergedCell(int xpos, int ypos){
-	boolean theReturn = false;
-
-	if( ! cellsAreMerged){
-		theReturn=false;
-	}
-	else
-	{
-		int i = 0;
-		for (Enumeration e = beginMergedxpos.elements();e.hasMoreElements();){
-			Integer temp1 = (Integer) e.nextElement();
-			Integer temp2 = (Integer) endMergedxpos.elementAt(i);
-			int xlength;
-
-			Integer temp3 = (Integer) beginMergedypos.elementAt(i);
-			Integer temp4 = (Integer) endMergedypos.elementAt(i);
-			int ylength;
-
-			int lowerx=0;
-			int lowery=0;
-
-			if (temp1.intValue()<=temp2.intValue()){
-				lowerx = temp1.intValue();
-				xlength = temp2.intValue() - temp1.intValue();
-
-			}
-			else{
-				lowerx = temp2.intValue();
-				xlength = temp1.intValue() - temp2.intValue();
-			}
-
-			if (temp3.intValue()<=temp4.intValue()){
-				lowery = temp3.intValue();
-				ylength = temp4.intValue() - temp3.intValue();
-			}
-			else{
-				lowery = temp4.intValue();
-				ylength = temp3.intValue() - temp4.intValue();
-			}
-
-
-
-			if ((lowerx==xpos) && (lowery == ypos)){
-				theReturn=true;
-			}
-
-			i++;
-		}
-	}
-	return theReturn;
-}
-
-/**
-*
-*Sets the table to be horizontally striped
-*/
-public void setHorizontalZebraColored(String Color1, String Color2){
-	int y = 1;
-	boolean theEnd = false;
-	while ( ! theEnd){
-		setRowColor(y,Color1);
-		y++;
-		if (y>this.rows){
-			theEnd=true;
-		}
-		else{
-			setRowColor(y,Color2);
-			y++;
-			if (y>this.rows){
-				theEnd=true;
-			}
-		}
-
-	}
-}
-
-/**
-*
-*Sets the table to be vertically striped
-*/
-public void setVerticalZebraColored(String Color1, String Color2){
-	int x = 1;
-	boolean theEnd = false;
-	while ( ! theEnd){
-		setColumnColor(x,Color1);
-		x++;
-		if (x>this.cols){
-			theEnd=true;
-		}
-		else{
-			setColumnColor(x,Color2);
-			x++;
-			if (x>this.cols){
-				theEnd=true;
-			}
-		}
-
-	}
-
-}
-
-
-public Vector getAllContainingObjects(){
-	Vector theReturn = new Vector();
-
-	for (int x = 0;x<theObjects.length;x++){
-		for(int y = 0; y < theObjects[x].length;y++){
-			if (theObjects[x][y] != null){
-				theReturn.addElement(theObjects[x][y]);
-			}
-		}
-	}
-
-	return theReturn;
-}
-
-//Prints out the no-breaking-space for cells
-private void printNbsp(ModuleInfo Modinfo, int xpos,int ypos){
-	if (theObjects[xpos-1][ypos-1] != null){
-		if (theObjects[xpos-1][ypos-1].isEmpty()){
-			if( false){
-				//not implemented
-			}
-			else{
-				print("&nbsp;");
-				//print("<font size=\"1\">&nbsp;</font>");
-			}
-		}
-
-	}
-	else{
-		//print("<font size=\"1\">&nbsp;</font>");
-		print("&nbsp;");
-	}
-}
-
-public void print(ModuleInfo modinfo) throws IOException{
-	initVariables(modinfo);
-	//if( doPrint(modinfo)){
-		if (getLanguage().equals("HTML")){
-                  String theErrorMessage = getErrorMessage();
-                  if (theErrorMessage==null){
-
-			//if (getInterfaceStyle().equals("something")){
-			//}
-			//else{
-                                StringBuffer printString = new StringBuffer();
-                                printString.append("<table ");
-                                printString.append(getAttributeString());
-                                printString.append(" >");
-				println(printString.toString());
-				if( ! cellsAreMerged){
-					for(int y=1;y<=rows;){
-						println("\n<tr>");
-						for(int x=1;x<=cols;){
-
-							if(theObjects[x-1][y-1] != null){
-                                                          if (printString==null){
-                                                            printString = new StringBuffer();
-                                                          }
-                                                          else{
-                                                            printString.delete(0,printString.length());
-                                                          }                                                         printString.append("\n<td ");
-                                                          printString.append(theObjects[x-1][y-1].getAttributeString());
-                                                          printString.append(" >");
-                                                          println(printString.toString());
-                                                          theObjects[x-1][y-1].print(modinfo);
-                                                          printNbsp(modinfo,x,y);
-
-							}
-							else{
-								println("\n<td>");
-								printNbsp(modinfo,x,y);
-							}
-							println("</td>");
-						x++;
-						}
-
-						println("\n</tr>");
-						y++;
-					}
-				}
-				else
-				{
-					for(int y=1;y<=rows;){
-						println("\n<tr>");
-						for(int x=1;x<=cols;){
-
-							if(isInMergedCell(x,y)){
-								if(isTopLeftOfMergedCell(x,y)){
-									if (theObjects[x-1][y-1] == null){
-										theObjects[x-1][y-1] = new ModuleObjectContainer();
-									}
-									//StringBuffer printString = new StringBuffer();
-                                                                        if (printString==null){
-                                                                          printString = new StringBuffer();
-                                                                        }
-                                                                        else{
-                                                                          printString.delete(0,printString.length());
-                                                                        }                                                                        printString.append("\n<td ");
-                                                                        printString.append(theObjects[x-1][y-1].getAttributeString());
-                                                                        printString.append(" colspan=\"");
-                                                                        printString.append(getWidthOfMergedCell(x,y));
-                                                                        printString.append("\" rowspan=\"");
-                                                                        printString.append(getHeightOfMergedCell(x,y));
-                                                                        printString.append("\" >");
-                                                                        println(printString.toString());
-
-                                                                        theObjects[x-1][y-1].print(modinfo);
-									printNbsp(modinfo,x,y);
-									println("</td>");
-
-								}
-							}
-							else{
-
-								if(theObjects[x-1][y-1] != null){
-                                                                  if (printString==null){
-                                                                    printString = new StringBuffer();
-                                                                  }
-                                                                  else{
-                                                                    printString.delete(0,printString.length());
-                                                                  }
-                                                                  printString.append("\n<td ");
-                                                                  printString.append(theObjects[x-1][y-1].getAttributeString());
-                                                                  printString.append(" >");
-                                                                  println(printString.toString());
-
-                                                                  theObjects[x-1][y-1].print(modinfo);
-                                                                  printNbsp(modinfo,x,y);
-
-								}
-								else{
-									println("\n<td>");
-									printNbsp(modinfo,x,y);
-								}
-								println("</td>");
-							}
-						x++;
-						}
-
-						println("\n</tr>");
-						y++;
-					}
-				}
-				println("\n</table>");
-			//}
-		}
-                else{
-                  println("<pre>");
-                  println("Exception:");
-                  println(theErrorMessage);
-                  println("</pre>");
-                }
-                }
-		else if (getLanguage().equals("WML")){
-			for(int y=1;y<=rows;){
-				for(int x=1;x<=cols;){
-					if(theObjects[x-1][y-1] != null){
-						theObjects[x-1][y-1].print(modinfo);
-					}
-					x++;
-				}
-				y++;
-			}
-		}//end if (getLanguage(...
-                else{
-                        for(int y=1;y<=rows;){
-                                for(int x=1;x<=cols;){
-                                        if(theObjects[x-1][y-1] != null){
-                                                theObjects[x-1][y-1].print(modinfo);
-                                        }
-                                        x++;
-                                }
-                                y++;
-                        }
-                }
-          //}//end doPrint(modinfo)
-}
-
-
-
-/*
-protected void updateTreeIDs(){
-        //int id = 0;
-        String thisTreeID=this.getTreeID();
-
-	for (int x=0;x<theObjects.length;x++){
-		for (int y=0;y<theObjects[x].length;y++){
-			ModuleObjectContainer tempobj = theObjects[x][y];
-                        if (tempobj != null){
-
-                          if(thisTreeID==null){
-                            tempobj.setTreeID(x+"-"+y);
+
+      theObjects[xpos-1][ypos-1].add(modObject);
+      modObject.setParentObject(this);
+
+            }
+            catch(Exception ex){
+              add(new ExceptionWrapper(ex,this));
+            }
+          }
+
+  }
+
+  /**
+  *Add an object inside this Table in cell with coordinates x,y from top right - same as the add() function
+  *@deprecated replaced by the add function
+  */
+  public void addObject(ModuleObject modObject,int xpos,int ypos){
+    add(modObject,xpos,ypos);
+  }
+
+  public void add(String text,int xpos,int ypos){
+    addText(text,xpos,ypos);
+  }
+
+  public void addText(String theText,int xpos,int ypos){
+    add(new Text(theText),xpos,ypos);
+  }
+
+
+
+  public void addText(int integerToInsert,int xpos,int ypos){
+    addText(Integer.toString(integerToInsert),xpos,ypos);
+  }
+
+  public void setBackgroundImage(int xpos, int ypos, Image backgroundImage){
+    this.setAttribute(xpos,ypos,"background",backgroundImage.getURL());
+  }
+
+  public void setBackgroundImage(Image backgroundImage){
+    this.setAttribute("background",backgroundImage.getURL());
+  }
+
+  public void setVerticalAlignment(int xpos, int ypos, String alignment){
+    setAttribute(xpos,ypos,"valign",alignment);
+  }
+
+  public void setAlignment(int xpos, int ypos, String alignment){
+    setAttribute(xpos,ypos,"align",alignment);
+  }
+
+  public void setRowAlignment(int ypos, String alignment){
+    setRowAttribute(ypos,"align",alignment);
+  }
+
+  public void setColumnAlignment(int xpos, String alignment){
+    setColumnAttribute(xpos,"align",alignment);
+  }
+
+  public void setRowVerticalAlignment(int ypos, String alignment){
+    setRowAttribute(ypos,"valign",alignment);
+  }
+
+  public void setColumnVerticalAlignment(int xpos, String alignment){
+    setColumnAttribute(xpos,"valign",alignment);
+  }
+
+  public void resize(int columns,int rows){
+
+
+    ModuleObjectContainer theNewObjects[][];
+    theNewObjects = new ModuleObjectContainer[columns][rows];
+
+    for (int x=0;x<columns;x++){
+      for(int y=0;y<rows;y++){
+        if(x<this.cols && y<this.rows){
+          theNewObjects[x][y]=theObjects[x][y];
+        }
+
+      }
+    }
+    theObjects=theNewObjects;
+    this.cols=columns;
+    this.rows=rows;
+
+  }
+
+  /**
+  *Empties the Table of all objects stored inside
+  */
+  public void empty(){
+    for (int x=0;x<cols;x++){
+      for(int y=0;y<rows;y++){
+        if( theObjects[x][y] != null ){
+          theObjects[x][y].empty();
+        }
+
+      }
+    }
+  }
+
+
+  public void emptyCell(int xpos,int ypos){
+        if( theObjects[xpos-1][ypos-1] != null ){
+                theObjects[xpos-1][ypos-1].empty();
+        }
+  }
+
+  public int getColumns(){
+    return this.cols;
+  }
+
+  public void setColumns(int columns){
+    resize(columns,this.rows);
+  }
+
+  public void setRows(int rows){
+    resize(this.cols,rows);
+  }
+
+  public int getRows(){
+    return this.rows;
+  }
+
+  public void mergeCells(int beginxpos,int beginypos, int endxpos, int endypos){
+    if (beginMergedxpos == null && beginMergedypos == null && endMergedxpos == null && endMergedypos == null){
+      beginMergedxpos = new Vector(1);
+      beginMergedypos = new Vector(1);
+      endMergedxpos = new Vector(1);
+      endMergedypos = new Vector(1);
+    }
+    cellsAreMerged = true;
+
+    //Do nothing if the either of the cells are already merged with something else
+    if (! ( isInMergedCell(beginxpos,beginypos) && isInMergedCell(endxpos,endypos) ) ){
+      beginMergedxpos.addElement( (Object) new Integer(beginxpos));
+      beginMergedypos.addElement( (Object) new Integer(beginypos));
+      endMergedxpos.addElement( (Object) new Integer(endxpos));
+      endMergedypos.addElement( (Object) new Integer(endypos));
+    }
+  }
+
+  public void setWidth(String s){
+    setAttribute("width",s);
+  }
+
+  public void setWidth(int width){
+    setWidth(Integer.toString(width));
+  }
+
+  public void setHeight(int height){
+    setHeight(Integer.toString(height));
+  }
+
+  public String getWidth(){
+    return getAttribute("width");
+  }
+
+
+  public String getHeight(){
+    return getAttribute("height");
+  }
+
+  public void setHeight(String s){
+    setAttribute("height",s);
+  }
+
+  public void setHeight(int xpos,int ypos, String height){
+    setAttribute(xpos,ypos,"height",height);
+  }
+
+  public void setWidth(int xpos, int ypos, String width){
+    setAttribute(xpos,ypos,"width",width);
+  }
+
+  public void setColor(String s){
+    setAttribute("bgcolor",s);
+  }
+
+  public void setColor(IWColor s){
+    setAttribute("bgcolor",s.getHexColorString());
+  }
+
+  public void setBorder(String border){
+    setAttribute("border",border);
+  }
+
+  public void setBorder(int i){
+    setBorder(Integer.toString(i));
+  }
+
+  public void setCellspacing(int i){
+    setCellspacing(Integer.toString(i));
+  }
+
+  public void setCellpadding(int i){
+    setCellpadding(Integer.toString(i));
+  }
+
+  public void setCellspacing(String s){
+    setAttribute("cellspacing",s);
+  }
+
+  public void setCellpadding(String s){
+    setAttribute("cellpadding",s);
+  }
+
+
+  public void setColor(int xpos,int ypos, String s){
+    setAttribute(xpos,ypos,"bgcolor",s);
+  }
+
+  public void setColor(int xpos,int ypos, IWColor s){
+    setAttribute(xpos,ypos,"bgcolor",s.getHexColorString());
+  }
+
+  public void setRowColor(int ypos, String s){
+    setRowAttribute(ypos,"bgcolor",s);
+  }
+
+  public void setColumnColor(int xpos,String s){
+    setColumnAttribute(xpos,"bgcolor",s);
+  }
+
+  public void setWidth(int xpos,String s){
+    setColumnAttribute(xpos,"width",s);
+  }
+
+  public void setHeight(int ypos, String s){
+    setRowAttribute(ypos,"height",s);
+  }
+
+  public void setAlignment(String align){
+    setAttribute("align",align);
+  }
+
+  public void setVerticalAlignment(String verticalAlignment){
+    setAttribute("valign",verticalAlignment);
+  }
+
+  public void setColumnAttribute(int xpos, String attributeName,String attributeValue){
+    for(int temp=1;temp<=rows;){
+      setAttribute(xpos,temp,attributeName,attributeValue);
+      temp++;
+    }
+  }
+
+  public void setRowAttribute(int ypos, String attributeName,String attributeValue){
+    for(int temp=1;temp<=cols;){
+      setAttribute(temp,ypos,attributeName,attributeValue);
+      temp++;
+    }
+  }
+
+  public void setAttribute(int xpos, int ypos, String attributeName,String attributeValue){
+
+    if(isResizable){
+      if(xpos > this.getColumns()){
+        setColumns(xpos);
+      }
+      if(ypos > this.getRows()){
+        setRows(ypos);
+      }
+    }
+
+    if(this.theObjects[xpos-1][ypos-1] == null){
+      this.theObjects[xpos-1][ypos-1] = new ModuleObjectContainer();
+                 // super.add(theObjects);
+    }
+
+    this.theObjects[xpos-1][ypos-1].setAttribute(attributeName,attributeValue);
+
+  }
+
+  /*
+  public void _main(ModuleInfo modinfo)throws Exception{
+    for (int x=0;x<theObjects.length;x++){
+      for (int y=0;y<theObjects[x].length;y++){
+        ModuleObjectContainer tempobj = theObjects[x][y];
+                          if (tempobj != null){
+                            try{
+                              tempobj._main(modinfo);
+                            }
+                            catch(Throwable ex){
+
+                              add("Exception: "+ex.getMessage());
+                              setErrorMessage(ex.getClass().getName()+" - "+ex.getMessage());
+                              System.err.println(ex.getMessage());
+                              ex.printStackTrace(System.err);
+                            }
                           }
-                          else{
-			    tempobj.setTreeID(thisTreeID+"."+x+"-"+y);
-                          }
+      }
+    }
+  }
+  */
 
-                        }
-                      ///id++;
-                  }
+  /*Tells if a cell in a table is merged with another*/
+  private boolean isInMergedCell(int xpos, int ypos){
+    boolean theReturn = false;
+    boolean xcheck=false;
+    boolean ycheck=false;
+
+    if( ! cellsAreMerged){
+      theReturn=false;
+    }
+    else
+    {
+      int i = 0;
+      for (Enumeration e = beginMergedxpos.elements();e.hasMoreElements();){
+
+        ycheck = false;
+        xcheck = false;
+
+        Integer temp1 = (Integer) e.nextElement();
+        Integer temp2 = (Integer) endMergedxpos.elementAt(i);
+        int xlength;
+
+        Integer temp3 = (Integer) beginMergedypos.elementAt(i);
+        Integer temp4 = (Integer) endMergedypos.elementAt(i);
+        int ylength;
+
+        int lowerx=0;
+        int lowery=0;
+
+        if (temp1.intValue()<=temp2.intValue()){
+          lowerx = temp1.intValue();
+          xlength = temp2.intValue() - temp1.intValue();
+        }
+        else{
+          lowerx = temp2.intValue();
+          xlength = temp1.intValue() - temp2.intValue();
+        }
+
+        if (temp3.intValue()<=temp4.intValue()){
+          lowery = temp3.intValue();
+          ylength = temp4.intValue() - temp3.intValue();
+        }
+        else{
+          lowery = temp4.intValue();
+          ylength = temp3.intValue() - temp4.intValue();
+        }
+
+
+
+        //Check the x coordinate
+        if( xpos >= (lowerx) ){
+          if(xpos <= (lowerx+xlength) ){
+            xcheck=true;
+          }
+          else{
+            xcheck=false;
+          }
+        }
+        //Check the y coordinate
+        if( ypos >= (lowery) ){
+          if(ypos <= (lowery+ylength) ){
+            ycheck=true;
+          }
+          else{
+            ycheck=false;
+          }
+        }
+
+        if ( xcheck && ycheck)
+        {
+          theReturn = true;
+        }
+
+        i++;
+      }
+    }
+    return theReturn;
+  }
+
+  public void addBreak(int xpos,int ypos){
+    Text myText = new Text();
+    myText.addBreak();
+    this.add(myText,xpos,ypos);
+  }
+
+  private int getWidthOfMergedCell(int startxpos, int startypos){
+    int returnint = 1;
+    int i = 0;
+    for (Enumeration e = beginMergedxpos.elements();e.hasMoreElements();){
+      Integer temp1 = (Integer) e.nextElement();
+      Integer temp2 = (Integer) endMergedxpos.elementAt(i);
+      int xlength;
+
+      Integer temp3 = (Integer) beginMergedypos.elementAt(i);
+      Integer temp4 = (Integer) endMergedypos.elementAt(i);
+      int ylength;
+
+      int lowerx=0;
+      int lowery=0;
+
+
+      if (temp1.intValue()<=temp2.intValue()){
+        lowerx = temp1.intValue();
+        xlength = temp2.intValue() - temp1.intValue();
+      }
+      else{
+        lowerx = temp2.intValue();
+        xlength = temp1.intValue() - temp2.intValue();
+      }
+
+      if (temp3.intValue()<=temp4.intValue()){
+        lowery = temp3.intValue();
+        ylength = temp4.intValue() - temp3.intValue();
+      }
+      else{
+        lowery = temp4.intValue();
+        ylength = temp3.intValue() - temp4.intValue();
+      }
+
+      if (lowerx==startxpos && lowery==startypos){
+        returnint = xlength+1;
+      }
+      i++;
+
+    }
+    return returnint;
+  }
+
+  private int getHeightOfMergedCell(int startxpos, int startypos){
+    int returnint = 1;
+
+    int i = 0;
+    for (Enumeration e = beginMergedxpos.elements();e.hasMoreElements();){
+      Integer temp1 = (Integer) e.nextElement();
+      Integer temp2 = (Integer) endMergedxpos.elementAt(i);
+      int xlength;
+
+      Integer temp3 = (Integer) beginMergedypos.elementAt(i);
+      Integer temp4 = (Integer) endMergedypos.elementAt(i);
+      int ylength;
+
+      int lowerx=0;
+      int lowery=0;
+
+
+      if (temp1.intValue()<=temp2.intValue()){
+        lowerx = temp1.intValue();
+        xlength = temp2.intValue() - temp1.intValue();
+      }
+      else{
+        lowerx = temp2.intValue();
+        xlength = temp1.intValue() - temp2.intValue();
+
+      }
+
+      if (temp3.intValue()<=temp4.intValue()){
+        lowery = temp3.intValue();
+         ylength = temp4.intValue() - temp3.intValue();
+      }
+      else{
+        lowery = temp4.intValue();
+         ylength = temp3.intValue() - temp4.intValue();
+      }
+
+      if (lowerx==startxpos && lowery==startypos){
+        returnint = ylength+1;
+      }
+      i++;
+    }
+    return returnint;
+  }
+
+
+
+  private boolean isTopLeftOfMergedCell(int xpos, int ypos){
+    boolean theReturn = false;
+
+    if( ! cellsAreMerged){
+      theReturn=false;
+    }
+    else
+    {
+      int i = 0;
+      for (Enumeration e = beginMergedxpos.elements();e.hasMoreElements();){
+        Integer temp1 = (Integer) e.nextElement();
+        Integer temp2 = (Integer) endMergedxpos.elementAt(i);
+        int xlength;
+
+        Integer temp3 = (Integer) beginMergedypos.elementAt(i);
+        Integer temp4 = (Integer) endMergedypos.elementAt(i);
+        int ylength;
+
+        int lowerx=0;
+        int lowery=0;
+
+        if (temp1.intValue()<=temp2.intValue()){
+          lowerx = temp1.intValue();
+          xlength = temp2.intValue() - temp1.intValue();
 
         }
-}
+        else{
+          lowerx = temp2.intValue();
+          xlength = temp1.intValue() - temp2.intValue();
+        }
 
-public ModuleObject getContainedObject(String objectTreeID){
-  int x,y;
-  String thisTreeID=this.getTreeID();
-  if (thisTreeID==null){
-    if(objectTreeID.indexOf(".") == -1){
-      x=Integer.parseInt(objectTreeID.substring(0,objectTreeID.indexOf("-")));
-      y=Integer.parseInt(objectTreeID.substring(objectTreeID.indexOf("-")+1,objectTreeID.length()));
-      return (ModuleObjectContainer)this.theObjects[x][y];
+        if (temp3.intValue()<=temp4.intValue()){
+          lowery = temp3.intValue();
+          ylength = temp4.intValue() - temp3.intValue();
+        }
+        else{
+          lowery = temp4.intValue();
+          ylength = temp3.intValue() - temp4.intValue();
+        }
+
+
+
+        if ((lowerx==xpos) && (lowery == ypos)){
+          theReturn=true;
+        }
+
+        i++;
+      }
+    }
+    return theReturn;
+  }
+
+  /**
+  *
+  *Sets the table to be horizontally striped
+  */
+  public void setHorizontalZebraColored(String Color1, String Color2){
+    int y = 1;
+    boolean theEnd = false;
+    while ( ! theEnd){
+      setRowColor(y,Color1);
+      y++;
+      if (y>this.rows){
+        theEnd=true;
+      }
+      else{
+        setRowColor(y,Color2);
+        y++;
+        if (y>this.rows){
+          theEnd=true;
+        }
+      }
+
+    }
+  }
+
+  /**
+  *
+  *Sets the table to be vertically striped
+  */
+  public void setVerticalZebraColored(String Color1, String Color2){
+    int x = 1;
+    boolean theEnd = false;
+    while ( ! theEnd){
+      setColumnColor(x,Color1);
+      x++;
+      if (x>this.cols){
+        theEnd=true;
+      }
+      else{
+        setColumnColor(x,Color2);
+        x++;
+        if (x>this.cols){
+          theEnd=true;
+        }
+      }
+
+    }
+
+  }
+
+
+  public Vector getAllContainingObjects(){
+    Vector theReturn = new Vector();
+
+    for (int x = 0;x<theObjects.length;x++){
+      for(int y = 0; y < theObjects[x].length;y++){
+        if (theObjects[x][y] != null){
+          theReturn.addElement(theObjects[x][y]);
+        }
+      }
+    }
+
+    return theReturn;
+  }
+
+  //Prints out the no-breaking-space for cells
+  private void printNbsp(ModuleInfo Modinfo, int xpos,int ypos){
+    if (theObjects[xpos-1][ypos-1] != null){
+      if (theObjects[xpos-1][ypos-1].isEmpty()){
+        if( false){
+          //not implemented
+        }
+        else{
+          print("&nbsp;");
+          //print("<font size=\"1\">&nbsp;</font>");
+        }
+      }
+
+    }
+    else{
+      //print("<font size=\"1\">&nbsp;</font>");
+      print("&nbsp;");
+    }
+  }
+
+  public void print(ModuleInfo modinfo) throws IOException{
+    initVariables(modinfo);
+    //if( doPrint(modinfo)){
+      if (getLanguage().equals("HTML")){
+                    String theErrorMessage = getErrorMessage();
+                    if (theErrorMessage==null){
+
+        //if (getInterfaceStyle().equals("something")){
+        //}
+        //else{
+                                  StringBuffer printString = new StringBuffer();
+                                  printString.append("<table ");
+                                  printString.append(getAttributeString());
+                                  printString.append(" >");
+          println(printString.toString());
+          if( ! cellsAreMerged){
+            for(int y=1;y<=rows;){
+              println("\n<tr>");
+              for(int x=1;x<=cols;){
+
+                if(theObjects[x-1][y-1] != null){
+                                                            if (printString==null){
+                                                              printString = new StringBuffer();
+                                                            }
+                                                            else{
+                                                              printString.delete(0,printString.length());
+                                                            }                                                         printString.append("\n<td ");
+                                                            printString.append(theObjects[x-1][y-1].getAttributeString());
+                                                            printString.append(" >");
+                                                            println(printString.toString());
+                                                            theObjects[x-1][y-1].print(modinfo);
+                                                            printNbsp(modinfo,x,y);
+
+                }
+                else{
+                  println("\n<td>");
+                  printNbsp(modinfo,x,y);
+                }
+                println("</td>");
+              x++;
+              }
+
+              println("\n</tr>");
+              y++;
+            }
+          }
+          else
+          {
+            for(int y=1;y<=rows;){
+              println("\n<tr>");
+              for(int x=1;x<=cols;){
+
+                if(isInMergedCell(x,y)){
+                  if(isTopLeftOfMergedCell(x,y)){
+                    if (theObjects[x-1][y-1] == null){
+                      theObjects[x-1][y-1] = new ModuleObjectContainer();
+                    }
+                    //StringBuffer printString = new StringBuffer();
+                                                                          if (printString==null){
+                                                                            printString = new StringBuffer();
+                                                                          }
+                                                                          else{
+                                                                            printString.delete(0,printString.length());
+                                                                          }                                                                        printString.append("\n<td ");
+                                                                          printString.append(theObjects[x-1][y-1].getAttributeString());
+                                                                          printString.append(" colspan=\"");
+                                                                          printString.append(getWidthOfMergedCell(x,y));
+                                                                          printString.append("\" rowspan=\"");
+                                                                          printString.append(getHeightOfMergedCell(x,y));
+                                                                          printString.append("\" >");
+                                                                          println(printString.toString());
+
+                                                                          theObjects[x-1][y-1].print(modinfo);
+                    printNbsp(modinfo,x,y);
+                    println("</td>");
+
+                  }
+                }
+                else{
+
+                  if(theObjects[x-1][y-1] != null){
+                                                                    if (printString==null){
+                                                                      printString = new StringBuffer();
+                                                                    }
+                                                                    else{
+                                                                      printString.delete(0,printString.length());
+                                                                    }
+                                                                    printString.append("\n<td ");
+                                                                    printString.append(theObjects[x-1][y-1].getAttributeString());
+                                                                    printString.append(" >");
+                                                                    println(printString.toString());
+
+                                                                    theObjects[x-1][y-1].print(modinfo);
+                                                                    printNbsp(modinfo,x,y);
+
+                  }
+                  else{
+                    println("\n<td>");
+                    printNbsp(modinfo,x,y);
+                  }
+                  println("</td>");
+                }
+              x++;
+              }
+
+              println("\n</tr>");
+              y++;
+            }
+          }
+          println("\n</table>");
+        //}
+      }
+                  else{
+                    println("<pre>");
+                    println("Exception:");
+                    println(theErrorMessage);
+                    println("</pre>");
+                  }
+                  }
+      else if (getLanguage().equals("WML")){
+        for(int y=1;y<=rows;){
+          for(int x=1;x<=cols;){
+            if(theObjects[x-1][y-1] != null){
+              theObjects[x-1][y-1].print(modinfo);
+            }
+            x++;
+          }
+          y++;
+        }
+      }//end if (getLanguage(...
+                  else{
+                          for(int y=1;y<=rows;){
+                                  for(int x=1;x<=cols;){
+                                          if(theObjects[x-1][y-1] != null){
+                                                  theObjects[x-1][y-1].print(modinfo);
+                                          }
+                                          x++;
+                                  }
+                                  y++;
+                          }
+                  }
+            //}//end doPrint(modinfo)
+  }
+
+
+
+  /*
+  protected void updateTreeIDs(){
+          //int id = 0;
+          String thisTreeID=this.getTreeID();
+
+    for (int x=0;x<theObjects.length;x++){
+      for (int y=0;y<theObjects[x].length;y++){
+        ModuleObjectContainer tempobj = theObjects[x][y];
+                          if (tempobj != null){
+
+                            if(thisTreeID==null){
+                              tempobj.setTreeID(x+"-"+y);
+                            }
+                            else{
+            tempobj.setTreeID(thisTreeID+"."+x+"-"+y);
+                            }
+
+                          }
+                        ///id++;
+                    }
+
+          }
+  }
+
+  public ModuleObject getContainedObject(String objectTreeID){
+    int x,y;
+    String thisTreeID=this.getTreeID();
+    if (thisTreeID==null){
+      if(objectTreeID.indexOf(".") == -1){
+        x=Integer.parseInt(objectTreeID.substring(0,objectTreeID.indexOf("-")));
+        y=Integer.parseInt(objectTreeID.substring(objectTreeID.indexOf("-")+1,objectTreeID.length()));
+        return (ModuleObjectContainer)this.theObjects[x][y];
+      }
+      else{
+
+        String newString=objectTreeID.substring(objectTreeID.indexOf(".")+1,objectTreeID.length());
+        String index = objectTreeID.substring(0,objectTreeID.indexOf("."));
+        x=Integer.parseInt(index.substring(0,index.indexOf("-")));
+        y=Integer.parseInt(index.substring(index.indexOf("-")+1,index.length()));
+        return ((ModuleObjectContainer)this.theObjects[x][y]).getContainedObject(newString);
+      }
     }
     else{
 
-      String newString=objectTreeID.substring(objectTreeID.indexOf(".")+1,objectTreeID.length());
-      String index = objectTreeID.substring(0,objectTreeID.indexOf("."));
-      x=Integer.parseInt(index.substring(0,index.indexOf("-")));
-      y=Integer.parseInt(index.substring(index.indexOf("-")+1,index.length()));
-      return ((ModuleObjectContainer)this.theObjects[x][y]).getContainedObject(newString);
+      if(objectTreeID.indexOf(".") == -1){
+        return this;
+      }
+      else{
+        String newString=objectTreeID.substring(objectTreeID.indexOf(".")+1,objectTreeID.length());
+        String newString2=newString.substring(newString.indexOf(".")+1,newString.length());
+        String index = newString.substring(0,newString.indexOf("."));
+        x=Integer.parseInt(index.substring(0,index.indexOf("-")));
+        y=Integer.parseInt(index.substring(index.indexOf("-")+1,index.length()));
+        return ((ModuleObjectContainer)this.theObjects[x][y]).getContainedObject(newString2);
+      }
     }
-  }
-  else{
 
-    if(objectTreeID.indexOf(".") == -1){
-      return this;
+  }
+  */
+
+
+
+  public int numberOfObjects(){
+    if(theObjects!=null){
+      return cols*rows;
     }
     else{
-      String newString=objectTreeID.substring(objectTreeID.indexOf(".")+1,objectTreeID.length());
-      String newString2=newString.substring(newString.indexOf(".")+1,newString.length());
-      String index = newString.substring(0,newString.indexOf("."));
-      x=Integer.parseInt(index.substring(0,index.indexOf("-")));
-      y=Integer.parseInt(index.substring(index.indexOf("-")+1,index.length()));
-      return ((ModuleObjectContainer)this.theObjects[x][y]).getContainedObject(newString2);
+      return 0;
     }
   }
 
-}
-*/
-
-
-
-public int numberOfObjects(){
-  if(theObjects!=null){
-    return cols*rows;
-  }
-  else{
-    return 0;
-  }
-}
-
-public ModuleObject objectAt(int index){
-  if(theObjects!=null){
-    if (rows!=0){
-      int x=Math.round(index/rows);
-      int y=index-x*rows;
-      return theObjects[x][y];
+  public ModuleObject objectAt(int index){
+    if(theObjects!=null){
+      if (rows!=0){
+        int x=Math.round(index/rows);
+        int y=index-x*rows;
+        return theObjects[x][y];
+      }
+      else{
+        return null;
+      }
     }
     else{
       return null;
     }
   }
-  else{
-    return null;
+
+  public boolean isEmpty(){
+    if (theObjects != null){
+      return false;
+    }
+    else{
+      return true;
+    }
   }
-}
 
-public boolean isEmpty(){
-	if (theObjects != null){
-		return false;
-	}
-	else{
-		return true;
-	}
-}
+  public int[] getTableIndex(ModuleObject o) {
+    if (theObjects == null)
+      return(null);
 
-public void setProperty(String key, String values[]) {
-  if (key.equalsIgnoreCase("border"))
-    setBorder(Integer.parseInt(values[0]));
-  else if (key.equalsIgnoreCase("width")) {
-    setWidth(Integer.parseInt(values[0]));
+    for (int i = 0; i < rows; i++)
+      for (int j = 0; j < cols; j++) {
+        ModuleObjectContainer cont = (ModuleObjectContainer)theObjects[j][i];
+        if (cont != null) {
+          int index = cont.getIndex(o);
+          if (index > -1) {
+            int ret[] = {i+1,j+1};
+            return ret;
+          }
+        }
+      }
+
+    return(null);
   }
-  else if (key.equalsIgnoreCase("height")) {
-    setHeight(Integer.parseInt(values[0]));
+
+  public void setProperty(String key, String values[]) {
+    if (key.equalsIgnoreCase("border"))
+      setBorder(Integer.parseInt(values[0]));
+    else if (key.equalsIgnoreCase("width")) {
+      setWidth(values[0]);
+    }
+    else if (key.equalsIgnoreCase("height")) {
+      setHeight(Integer.parseInt(values[0]));
+    }
+    else if (key.equalsIgnoreCase("columns")) {
+      setColumns(Integer.parseInt(values[0]));
+    }
+    else if (key.equalsIgnoreCase("rows")) {
+      setRows(Integer.parseInt(values[0]));
+    }
   }
-  else if (key.equalsIgnoreCase("columns")) {
-    setColumns(Integer.parseInt(values[0]));
-  }
-  else if (key.equalsIgnoreCase("rows")) {
-    setRows(Integer.parseInt(values[0]));
-  }
-}
-
-
-///**
-// * @todo erase
-// */
-//public void main(ModuleInfo modinfo) throws Exception {
-//  this.setBorder(1);
-//}
-
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.5 2001/05/14 14:27:27 palli Exp $
+ * $Id: ModuleObject.java,v 1.6 2001/05/16 18:58:06 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -543,10 +543,6 @@ public class ModuleObject extends Object implements Cloneable {
       return listenerAdded;
     }
 
-  //end
-
-  //temp
-
   public void setModuleInfo(ModuleInfo modinfo){
   //  System.err.println(this.getClass().getName() + ": modinfo set");
     eventModuleInfo = modinfo;
@@ -556,16 +552,10 @@ public class ModuleObject extends Object implements Cloneable {
     return eventModuleInfo;
   }
 
-
   public void _setModuleInfo(ModuleInfo modinfo){
     setModuleInfo(modinfo);
   }
 
   public void setProperty(String key, String values[]){
   }
-
-  //temp ends
-
-//  public static void setProperties(java.util.Properties props
-
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: DisplayXML.java,v 1.1 2001/05/14 14:26:51 palli Exp $
+ * $Id: DisplayXML.java,v 1.2 2001/05/16 19:00:33 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,25 +41,47 @@ import org.jdom.*;
 public class DisplayXML extends IWPresentationServlet {
 
   private static ResourceBundle startup = null;
+  private Hashtable regions = null;
 
   public DisplayXML() {
   }
 
   public void __theService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String xmlFile = request.getParameter("xmlFile");
     if (startup == null)
       startup = ResourceBundle.getBundle("com.idega.builder.BuilderResource",Locale.getDefault());
 
-    String xmlFile = startup.getString("startPage");
+    if (xmlFile == null)
+      xmlFile = startup.getString("startPage");
     boolean verify = Boolean.getBoolean(startup.getString("verifyPage"));
-    XMLPageDescriptor xmlDesc = new XMLPageDescriptor(verify);
 
+    regions = new Hashtable();
+    this.getPage().empty();
+
+    parseXML(xmlFile,verify,getPage());
+  }
+
+  public void parseXML(String xmlFile, boolean verifyPage, ModuleObjectContainer parent) {
     try {
+      XMLPageDescriptor xmlDesc = new XMLPageDescriptor(verifyPage);
       xmlDesc.setXMLPageDescriptionFile(xmlFile);
       Element root = xmlDesc.getRootElement();
       List rootAttr = root.getAttributes();
-      /**
-       * @todo Hérna vantar eitthvað út af template dóti í attribute'um.
-       */
+      Iterator attr = rootAttr.iterator();
+      boolean hasTemplate = false;
+
+      while (attr.hasNext()) {
+        Attribute at = (Attribute)attr.next();
+        if (at.getName().equalsIgnoreCase("template")) {
+          hasTemplate = true;
+          parseXML(at.getValue(),verifyPage,parent);
+        }
+        else if (at.getName().equalsIgnoreCase("id")) {
+          System.out.println("Parsing document : " + at.getValue());
+        }
+        else
+          System.err.println("Undefined attribute : " + at.getName());
+      }
 
       if (root.hasChildren()) {
         List children = root.getChildren();
@@ -68,13 +90,20 @@ public class DisplayXML extends IWPresentationServlet {
         while (it.hasNext()) {
           Element child = (Element)it.next();
           if (child.getName().equalsIgnoreCase("property")) {
-            setProperties(child,getPage());
+            setProperties(child,parent);
           }
           else if (child.getName().equalsIgnoreCase("element") || child.getName().equalsIgnoreCase("module")) {
-            parseElement(child,getPage());
+            if (hasTemplate)
+              System.err.println("Using element or module on top level in a page having a template");
+            else
+              parseElement(child,parent,null);
           }
-          else
-            System.err.println("Unknow tag in xml description file : " + child.getName());
+          else if (child.getName().equalsIgnoreCase("region")) {
+            parseRegion(child,parent);
+          }
+          else {
+            System.err.println("Unknown tag in xml description file : " + child.getName());
+          }
         }
       }
     }
@@ -119,7 +148,74 @@ public class DisplayXML extends IWPresentationServlet {
     }
   }
 
-  public void parseElement(Element el, ModuleObjectContainer parent) {
+  public void parseRegion(Element reg, ModuleObjectContainer regionParent) {
+    List regionAttrList = reg.getAttributes();
+    if ((regionAttrList == null) || (regionAttrList.isEmpty())) {
+      System.err.println("Table region has no attributes");
+      return;
+    }
+
+    Iterator regionAttrIt = regionAttrList.iterator();
+    String regionId = null;
+    int x = 0;
+    int y = 0;
+
+    while (regionAttrIt.hasNext()) {
+      Attribute regionAttr = (Attribute)regionAttrIt.next();
+      if (regionAttr.getName().equalsIgnoreCase("id")) {
+        regionId = regionAttr.getValue();
+      }
+      else if (regionAttr.getName().equalsIgnoreCase("x")) {
+        try {
+          x = regionAttr.getIntValue();
+        }
+        catch(org.jdom.DataConversionException e) {
+          System.err.println("Unable to convert x region attribute to integer");
+          x = 0;
+        }
+      }
+      else if (regionAttr.getName().equalsIgnoreCase("y")) {
+        try {
+          y = regionAttr.getIntValue();
+        }
+        catch(org.jdom.DataConversionException e) {
+          System.err.println("Unable to convert y region attribute to integer");
+          y = 0;
+        }
+      }
+      else
+        System.err.println("Unspecified table region attribute: " + regionAttr.getName());
+    }
+
+    if ((regionId == null) || (regionId.equals(""))) {
+      System.err.println("Missing id attribute for region tag");
+      return;
+    }
+
+    if (regions.containsKey(regionId)) {
+      regionParent = (ModuleObjectContainer)regions.get(regionId);
+    }
+    else {
+      Region region = new Region(regionId,x,y,true);
+      regions.put(regionId,regionParent);
+      if (regionParent instanceof com.idega.jmodule.object.Table) {
+        com.idega.jmodule.object.Table tab = (com.idega.jmodule.object.Table)regionParent;
+        tab.add(region,x,y);
+      }
+      else
+        regionParent.add(region);
+    }
+
+    if (reg.hasChildren()) {
+      List children = reg.getChildren();
+      Iterator childrenIt = children.iterator();
+
+      while (childrenIt.hasNext())
+        parseElement((Element)childrenIt.next(),regionParent,regionId);
+    }
+  }
+
+  public void parseElement(Element el, ModuleObjectContainer parent, String region) {
     ModuleObject inst = null;
     List at = el.getAttributes();
 
@@ -148,18 +244,32 @@ public class DisplayXML extends IWPresentationServlet {
                   setProperties(child,table);
                 }
                 else if (child.getName().equalsIgnoreCase("element") || child.getName().equalsIgnoreCase("module")) {
-                  parseElement(child,table);
+                  parseElement(child,table,null);
                 }
-                if (child.getName().equalsIgnoreCase("region")) {
-                  /**
-                   * @todo Eitthvað dót út af region
-                   */
+                else if (child.getName().equalsIgnoreCase("region")) {
+                  parseRegion(child,table);
                 }
                 else
-                  System.err.println("Unknow tag in xml description file : " + child.getName());
+                  System.err.println("Unknown tag in xml description file : " + child.getName());
               }
             }
-            parent.add(table);
+            if (region != null) {
+              Region reg = new Region(region);
+
+              if (parent instanceof com.idega.jmodule.object.Table) {
+                com.idega.jmodule.object.Table tableParent = (com.idega.jmodule.object.Table)parent;
+                int ind[] = tableParent.getTableIndex(reg);
+                if (ind != null) {
+                  tableParent.add(table,ind[0],ind[1]);
+                }
+              }
+              else {
+                int index = parent.getIndex(reg);
+                parent.insertAt(table,index);
+              }
+            }
+            else
+              parent.add(table);
           }
           else {
             if (el.hasChildren()) {
@@ -172,13 +282,33 @@ public class DisplayXML extends IWPresentationServlet {
                   setProperties(child,inst);
                 }
                 else if (child.getName().equalsIgnoreCase("element") || child.getName().equalsIgnoreCase("module")) {
-                  parseElement(child,(ModuleObjectContainer)inst);
+                  parseElement(child,(ModuleObjectContainer)inst,region);
                 }
-                else
-                  System.err.println("Unknow tag in xml description file : " + child.getName());
+                else if (child.getName().equalsIgnoreCase("region")) {
+                  parseRegion(child,(ModuleObjectContainer)inst);
+                }
+                else {
+                  System.err.println("Unknown tag in xml description file : " + child.getName());
+                }
               }
             }
-            parent.add(inst);
+            if (region != null) {
+              Region reg = new Region(region);
+
+              if (parent instanceof com.idega.jmodule.object.Table) {
+                com.idega.jmodule.object.Table tableParent = (com.idega.jmodule.object.Table)parent;
+                int ind[] = tableParent.getTableIndex(reg);
+                if (ind != null) {
+                  tableParent.add(inst,ind[0],ind[1]);
+                }
+              }
+              else {
+                int index = parent.getIndex(reg);
+                parent.insertAt(inst,index);
+              }
+            }
+            else
+              parent.add(inst);
           }
         }
         catch(ClassNotFoundException e) {
@@ -197,56 +327,6 @@ public class DisplayXML extends IWPresentationServlet {
       else if (attr.getName().equalsIgnoreCase("id")) {
         //Eitthvað db dót
       }
-      else if (attr.getName().equalsIgnoreCase("name")) {
-        //Hver veit?
-      }
     }
-  }
-
-  public void junk() {
-
-    try {
-      ModuleObject t = (ModuleObject)Class.forName("com.idega.jmodule.object.Table").newInstance();
-
-      if (t instanceof com.idega.jmodule.object.Table) {
-        com.idega.jmodule.object.Table tab = (com.idega.jmodule.object.Table)t;
-
-        tab.setColumns(3);
-        tab.setRows(3);
-        tab.setBorder(1);
-        tab.add("test2",2,2);
-
-        ModuleObjectContainer page = this.getPage();
-        page.add(tab);
-      }
-      else {
-
-        add(t);
-      }
-    }
-    catch(ClassNotFoundException e) {
-      System.err.println("e1");
-    }
-    catch(java.lang.IllegalAccessException e4) {
-      System.err.println("e4");
-    }
-    catch(java.lang.InstantiationException e5) {
-      System.err.println("e5");
-    }
-  }
-
-
-
-  public void test() {
-    if (startup == null)
-      startup = ResourceBundle.getBundle("com.idega.builder.BuilderResource");
-
-    String xmlFile = startup.getString("startPage");
-    System.out.println("StartPage = " + xmlFile);
-  }
-
-  public static void main(String args[]) {
-    DisplayXML xml = new DisplayXML();
-    xml.test();
   }
 }
