@@ -66,23 +66,21 @@ public Image(String name,String url, String overImageUrl){
 }
 
 
-private String getImageURL(int image_id){
-  /*
-	 String URIString = IWMainApplication.IMAGE_SERVLET_URL;
-            URIString += "?image"+image_id;
-            URIString += "&image_id="+image_id;
-            return URIString;*/
-            String URIString = "/servlet/imageModule";
-            URIString += "?image_id="+image_id;
-            return URIString;
+private String getImageURL(ImageEntity image, ModuleInfo modinfo){
+  String URIString = com.idega.util.caching.BlobCacher.getCachedUrl(image, modinfo ,"image_value");
+  if( URIString == null ){
+    URIString = IWMainApplication.IMAGE_SERVLET_URL;
+    URIString += "?image_id="+image.getID();
+  }
+  return URIString;
 }
 
-
+/*
 public Image(String name,int image_id, int over_image_id){
 	super();
 
 	//String URIString = "/servlet/imageModule";
-	String URIString = getImageURL(image_id);
+	String URIString = getImageURL(new ImageEntity(image_id));
             //URIString += "?image"+image_id;
             //URIString += "&image_id="+image_id;
 
@@ -111,7 +109,7 @@ public Image(String name,int image_id, int over_image_id){
 	setAssociatedScript(rollOverScript);
 
 	}
-
+*/
 public Image(String url,String name,int width,int height){
 	super();
 	setName(name);
@@ -127,8 +125,6 @@ public Image(String url,String name,int width,int height){
 public Image(int image_id) throws SQLException{
   super();
   this.imageId = image_id;
-  String URIString = this.getImageURL(image_id);
-  setURL(URIString);
   setBorder(0);
 /*
 public Image(int imageId) throws SQLException{
@@ -262,6 +258,9 @@ private String getHTMLString(){
 private void getHTMLImage(ModuleInfo modinfo){//optimize by writing in pure html
   try{
     ImageEntity image = new ImageEntity(imageId);
+    String URIString = getImageURL(image,modinfo);
+    setURL(URIString);
+
     if( (image!=null) && (image.getID()!=-1) ){//begin debug
       String texti = image.getText();
       String link = image.getLink();
