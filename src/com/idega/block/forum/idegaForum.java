@@ -100,6 +100,10 @@ public class idegaForum extends Block{
   }  // Class Variables
 */
 
+  public String getBundleIdentifier(){
+    return "com.idega.block.forum";
+  }
+
 
   public void main(IWContext iwc) throws Exception {
     this.empty();
