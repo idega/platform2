@@ -40,6 +40,7 @@ import java.awt.Color;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
@@ -73,11 +74,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/06 16:49:23 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/08 14:30:13 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.56 $
+ * @version $Revision: 1.57 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -132,6 +133,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String NEW_KEY = PREFIX + "new";
 	private static final String NO_PAYMENT_RECORDS_FOUND_DEFAULT = "Inga utbetalningsrader hittades";
 	private static final String NO_PAYMENT_RECORDS_FOUND_KEY = PREFIX + "no_payment_records_found";
+	private static final String NUMBER_OF_DEFAULT = "Antal";
+	private static final String NUMBER_OF_KEY = PREFIX + "number_of";
 	private static final String NUMBER_OF_PLACEMENTS_DEFAULT = "Placeringar";
 	private static final String NUMBER_OF_PLACEMENTS_KEY = PREFIX + "number_of_placements";
 	private static final String OWN_POSTING_DEFAULT = "Egen kontering";
@@ -144,6 +147,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String PAYMENT_RECORD_UPDATED_KEY = PREFIX + "payment_record_updated";
 	private static final String PAYMENT_TEXT_KEY = PREFIX + "payment_text";
 	private static final String PIECE_AMOUNT_DEFAULT = "Styckepris";
+	private static final String PIECE_AMOUNT_SHORT_KEY = PREFIX + "piece_amount_short";
+	private static final String PIECE_AMOUNT_SHORT_DEFAULT = "á";
 	private static final String PIECE_AMOUNT_KEY = PREFIX + "piece_amount";
 	private static final String PLACEMENT_PERIOD_DEFAULT = "Plac.period";
 	private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
@@ -219,6 +224,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		= new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 	private final static Font SANSSERIF_FONT
 		= FontFactory.getFont (FontFactory.HELVETICA, 9);
+	private static final NumberFormat integerFormatter
+		= NumberFormat.getIntegerInstance ();
 
 	private ICPage providerAuthorizationPage = null;
 	private ICPage createPaymentPage = null;
@@ -329,11 +336,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final String [][] columnNames =
 				{{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
 				 { PLACEMENT_KEY, PLACEMENT_DEFAULT },
-				 { NO_OF_PLACEMENTS_KEY, NO_OF_PLACEMENTS_DEFAULT },
-				 { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT },
+				 { NUMBER_OF_KEY, NUMBER_OF_DEFAULT },
+				 { PIECE_AMOUNT_SHORT_KEY, PIECE_AMOUNT_SHORT_DEFAULT },
+				 { AMOUNT_KEY, AMOUNT_DEFAULT },
 				 { NOTE_KEY, NOTE_DEFAULT }};
 		final PdfPTable table = new PdfPTable
-				(new float [] { 1.0f, 1.0f, 5.0f, 1.5f, 1.5f, 3.0f });
+				(new float [] { 1.0f, 1.0f, 5.0f, 1.2f, 1.2f, 1.2f, 3.0f });
 		table.setWidthPercentage (100f);
 		table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
 		for (int i = 0; i < columnNames.length; i++) {
@@ -432,7 +440,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			}
 			table.getDefaultCell ().setHorizontalAlignment
 					(Element.ALIGN_RIGHT);
-			addPhrase (table, roundAmount (record.getTotalAmount ()) + "");
+			addPhrase (table, integerFormatter.format
+								 (roundAmount (record.getTotalAmount ())));
 		}
 		return table;
 	}
@@ -529,21 +538,21 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 							 localize (TOTAL_AMOUNT_PLACEMENTS_KEY,
 												 TOTAL_AMOUNT_PLACEMENTS_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, placementCount + "");
+		addPhrase (summaryTable, integerFormatter.format (placementCount));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_INDIVIDUALS_KEY,
 												 TOTAL_AMOUNT_INDIVIDUALS_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, individuals.size () + "");
+		addPhrase (summaryTable, integerFormatter.format (individuals.size ()));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
 							 localize (TOTAL_AMOUNT_VAT_EXCLUDED_KEY,
 												 TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT) + ": ");
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
-		addPhrase (summaryTable, totalAmountVatExcluded + "");
+		addPhrase (summaryTable, integerFormatter.format (totalAmountVatExcluded));
 		summaryTable.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (summaryTable, "");
 		addPhrase (summaryTable,
@@ -554,7 +563,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return summaryTable;
 	}
 	
-	private void addRecordOnAPdfRow (final PdfPTable table, final PaymentRecord record) {
+	private void addRecordOnAPdfRow (final PdfPTable table,
+																	 final PaymentRecord record) {
 		final Date period = record.getPeriod ();
 		final String periodText = null != period
 				? getFormattedPeriod (period) : "";
@@ -564,7 +574,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		table.getDefaultCell ().setHorizontalAlignment
 				(Element.ALIGN_RIGHT);
 		addPhrase (table, record.getPlacements () + "");
-		addPhrase (table, roundAmount (record.getTotalAmount ()) + "");
+		addPhrase (table, integerFormatter.format (roundAmount
+																							 (record.getPieceAmount ())));
+		addPhrase (table, integerFormatter.format (roundAmount
+																							 (record.getTotalAmount ())));
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (table, record.getNotes ());
 	}

@@ -41,6 +41,7 @@ import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.awt.Color;
 import java.io.OutputStream;
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -84,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/08 12:38:36 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/08 14:30:13 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.107 $
+ * @version $Revision: 1.108 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -173,6 +174,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private static final String NO_RELATED_PLACEMENT_FOUND_FOR_KEY = PREFIX + "no_related_placement_found_for";
 	private static final String NO_RULE_FOUND_STARTING_WITH_DEFAULT = "Ingen regel börjar med";
 	private static final String NO_RULE_FOUND_STARTING_WITH_KEY = PREFIX + "no_rule_found_starting_with";
+	private static final String NUMBER_OF_DEFAULT = "Antal";
+	private static final String NUMBER_OF_KEY = PREFIX + "number_of";
 	private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
 	private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
 	private static final String ORDER_ID_KEY = PREFIX + "order_id";
@@ -254,7 +257,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		= new SimpleDateFormat ("yyyy-MM-dd");
 	private static final SimpleDateFormat dateAndTimeFormatter
 		= new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
-	
+	private static final NumberFormat integerFormatter
+		= NumberFormat.getIntegerInstance ();
+
 	/**
 	 * Init is the event handler of InvoiceCompilationEditor
 	 *
@@ -342,7 +347,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				{localize (SSN_KEY, SSN_DEFAULT),
 				 localize (FIRST_NAME_KEY, FIRST_NAME_DEFAULT),
 				 localize (INVOICE_TEXT_KEY, INVOICE_TEXT_DEFAULT),
-				 localize (NUMBER_OF_DAYS_KEY, NUMBER_OF_DAYS_DEFAULT),
+				 localize (NUMBER_OF_KEY, NUMBER_OF_DEFAULT),
 				 localize (AMOUNT_KEY, AMOUNT_DEFAULT),
 				 localize (REMARK_KEY, REMARK_DEFAULT)};
 		
@@ -1479,7 +1484,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				}
 				addPhrase (table, value.toString ());
 			}
-			addPhrase (table, roundAmount (record.getAmount ()) + "");
+			addPhrase (table,
+								 integerFormatter.format (roundAmount (record.getAmount ())));
 		}
 		return table;
 	}
@@ -1514,10 +1520,20 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final String firstName = null != child ? child.getFirstName () : "";
 		addPhrase (table, ssn);
 		addPhrase (table, firstName);
-		addPhrase (table, record.getInvoiceText ());
+		final String invoiceText1 = record.getInvoiceText ();
+		final String invoiceText2 = record.getInvoiceText2 ();
+		final StringBuffer invoiceText = new StringBuffer ();
+		if (null != invoiceText1 && 0 < invoiceText1.trim ().length ()) {
+			invoiceText.append (invoiceText1.trim ());
+		}
+		if (null != invoiceText2 && 0 < invoiceText2.trim ().length ()) {
+			invoiceText.append ('\n' + invoiceText2.trim ());
+		}
+		addPhrase (table, invoiceText.toString ());
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_RIGHT);
 		addPhrase (table, record.getDays () + "");
-		addPhrase (table, roundAmount (record.getAmount ()) + "");
+		addPhrase (table,
+							 integerFormatter.format (roundAmount (record.getAmount ())));
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (table, record.getNotes ());
 	}
