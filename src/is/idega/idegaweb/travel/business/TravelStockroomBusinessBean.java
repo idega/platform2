@@ -9,6 +9,7 @@ import is.idega.idegaweb.travel.data.ServiceDay;
 import is.idega.idegaweb.travel.data.ServiceDayBMPBean;
 import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.data.ServiceDayPK;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
@@ -1332,7 +1333,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
 							if (returner == null) {
 								int max = pDay.getMax();
-								max -= iBookingExtra;
+								if (max > -1) {
+									max -= iBookingExtra;
+								} else if (max == -1){
+									max = BookingForm.UNLIMITED_AVAILABILITY;
+								}
 								returner = new Integer(max);
 							}
 						} catch (FinderException fe) {
@@ -1347,7 +1352,11 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 					  ServiceDay sDay;
 					  sDay = sDayHome.findByServiceAndDay(product.getID() , stamp.getDayOfWeek());
 					  if (sDay != null) {
-					    returner = new Integer(sDay.getMax());
+						  if (sDay.getMax() != -1) {
+							  returner = new Integer(sDay.getMax());
+						  } else {
+							  returner = new Integer(BookingForm.UNLIMITED_AVAILABILITY);
+						  }
 					  }
 				  }
 					subMap.put(stmpString, returner);
