@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.7 2001/07/16 19:54:26 aron Exp $
+ * $Id: Menu.java,v 1.8 2001/08/08 10:39:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -57,8 +57,8 @@ public class Menu extends JModuleObject{
       eMember = AccessControl.getMember(modinfo);
 
       if(modinfo.getParameter(strAction) == null){
-        if ( modinfo.getServletContext().getAttribute(strAction) != null ) {
-          sAct = (String) modinfo.getServletContext().getAttribute(strAction);
+        if ( modinfo.getSessionAttribute(strAction) != null ) {
+          sAct = (String) modinfo.getSessionAttribute(strAction);
           iAct = Integer.parseInt(sAct);
         }
         else {
@@ -68,8 +68,8 @@ public class Menu extends JModuleObject{
       if(modinfo.getParameter(strAction) != null){
         sAct = modinfo.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
-        if ( ((String) modinfo.getServletContext().getAttribute(strAction)) != (sAct) ) {
-          modinfo.getServletContext().setAttribute(strAction,sAct);
+        if ( ((String) modinfo.getSessionAttribute(strAction)) != (sAct) ) {
+          modinfo.setSessionAttribute(strAction,sAct);
         }
       }
       doAct(modinfo);
