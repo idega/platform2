@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.42 2002/08/12 13:00:37 palli Exp $
+ * $Id: CampusApprover.java,v 1.43 2002/10/22 15:19:55 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1287,12 +1287,12 @@ public class CampusApprover extends Block {
     row = 1;
     TextArea commentArea = new TextArea("ap_comment",comment);
     if (editable) {
-      commentArea.setAsEditable();
+      commentArea.setReadOnly(false);
       commentArea.setHeight(5);
       commentArea.setWidth(35);
     }
     else {
-      commentArea.setAsNotEditable();
+      commentArea.setReadOnly(true);
       commentArea.setHeight(5);
     }
 
