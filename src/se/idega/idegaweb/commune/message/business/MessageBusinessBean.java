@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.55 2004/01/12 12:17:50 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.56 2004/01/12 13:41:40 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -20,6 +20,8 @@ import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
+import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
 import se.idega.idegaweb.commune.message.data.MessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
@@ -31,6 +33,7 @@ import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.component.data.ICObject;
 import com.idega.core.contact.data.Email;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCreateException;
@@ -718,8 +721,17 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
 	}
 	
-	protected String getBundleIdentifier(){
+	public String getBundleIdentifier(){
 		return IW_BUNDLE_IDENTIFIER;
+	}
+	
+	public MessageHandlerInfo createMessageHandlerInfo(MessagePdfHandler handler,ICObject ico) throws CreateException, RemoteException{
+		MessageHandlerInfoHome mhhome= (MessageHandlerInfoHome)getIDOHome(MessageHandlerInfo.class);
+		MessageHandlerInfo info = mhhome.create();
+		info.setHandlerCode(handler.getHandlerCode());
+		info.setICObject(ico);
+		info.store();
+		return info;
 	}
 
 }

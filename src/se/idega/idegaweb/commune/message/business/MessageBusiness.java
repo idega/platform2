@@ -7,11 +7,13 @@ import javax.ejb.*;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
+import com.idega.core.component.data.ICObject;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 
 public interface MessageBusiness extends CaseBusiness
@@ -76,4 +78,5 @@ public interface MessageBusiness extends CaseBusiness
  public void sendMessageToCommuneAdministrators(Case theCase, String subject, String body) throws RemoteException;
  public int getNumberOfMessages(User user) throws Exception;
  public int getNumberOfMessages(User user,Collection groups) throws Exception;
+ public MessageHandlerInfo createMessageHandlerInfo(MessagePdfHandler handler,ICObject ico) throws CreateException, RemoteException;
 }
