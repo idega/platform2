@@ -432,7 +432,7 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		setColumn(COLUMN_EDIT_NAME, name);
 	}
 
-	public Collection ejbFindRegularInvoicesForPeriodeAbdCategory(Date date, String category, int lagCat) throws FinderException{
+	public Collection ejbFindRegularInvoicesForPeriodeAndCategoryExceptType(Date date, String category, int lagCat) throws FinderException{
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, category);
 		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
@@ -443,14 +443,15 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Collection ejbFindRegularInvoicesForPeriodeAndCategoryAndRegSpecType(Date date, String category, int type) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, category);
+		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
+		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
+		sql.appendAndEquals(COLUMN_REG_SPEC_TYPE_ID,type);
 
-
-
-
-	
-
-		
-
-
-
+		return idoFindPKsByQuery(sql);
+	}
 }

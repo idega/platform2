@@ -13,9 +13,16 @@ public class RegularInvoiceEntryHomeImpl extends com.idega.data.IDOFactory imple
  }
 
 
-public java.util.Collection findRegularInvoicesForPeriodeAbdCategory(java.sql.Date p0,java.lang.String p1,int p2)throws javax.ejb.FinderException{
+public java.util.Collection findRegularInvoicesForPeriodeAndCategoryAndRegSpecType(java.sql.Date p0,java.lang.String p1,int p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((RegularInvoiceEntryBMPBean)entity).ejbFindRegularInvoicesForPeriodeAbdCategory(p0,p1,p2);
+	java.util.Collection ids = ((RegularInvoiceEntryBMPBean)entity).ejbFindRegularInvoicesForPeriodeAndCategoryAndRegSpecType(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findRegularInvoicesForPeriodeAndCategoryExceptType(java.sql.Date p0,java.lang.String p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((RegularInvoiceEntryBMPBean)entity).ejbFindRegularInvoicesForPeriodeAndCategoryExceptType(p0,p1,p2);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }

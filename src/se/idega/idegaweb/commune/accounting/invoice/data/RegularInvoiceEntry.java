@@ -43,6 +43,4 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity
  public void setVAT(float p0);
  public void setVatRule(se.idega.idegaweb.commune.accounting.regulations.data.VATRule p0);
  public void setVatRuleId(int p0);
- void delete()throws java.sql.SQLException;
-
 }
