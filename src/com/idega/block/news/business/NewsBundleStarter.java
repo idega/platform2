@@ -38,7 +38,8 @@ public class NewsBundleStarter implements IWBundleStartable{
       hasField = addICCategoryField(new NwNews());
     }
 
-    if(!testCategories()){
+    //
+    if(testCategories()){
       System.err.println("News bundle starter: Making categories");
       Map map = makeICCategories();
       if(map !=null){
@@ -171,7 +172,7 @@ public class NewsBundleStarter implements IWBundleStartable{
     String sql = "select count (ic_category_id) from nw_news where ic_category_id is null";
     try {
       String[] s = SimpleQuerier.executeStringQuery(sql);
-
+      // true if nw_news dont have category
       return (s!=null && s.length == 1 && Integer.parseInt(s[0]) > 0 );
     }
     catch (Exception ex) {
