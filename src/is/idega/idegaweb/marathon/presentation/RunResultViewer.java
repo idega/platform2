@@ -268,7 +268,7 @@ public class RunResultViewer extends Block {
 		table.add(getRunnerRowText(Integer.toString(user.getDateOfBirth().getYear())), 5, row);
 		table.add(getRunnerRowText(run.getUserNationality()), 6, row);
 		table.add(getRunnerRowText(run.getRunGroupName()), 7, row);
-		return row++;
+		return ++row;
 	}
 
 	private String getTimeStringFromMillis(int millis) {
@@ -300,7 +300,7 @@ public class RunResultViewer extends Block {
 		name.setFontSize(HEADLINE_SIZE);
 		name.setFontColor(HEADLINE_COLOR);
 		table.add(name, 1, row);
-		return row++;
+		return ++row;
 	}
 
 	private RunBusiness getRunBiz() {
