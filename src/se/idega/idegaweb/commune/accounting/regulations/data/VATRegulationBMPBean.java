@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.8 2003/08/31 15:57:18 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.9 2003/09/02 10:36:59 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOQuery;
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/08/31 15:57:18 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 10:36:59 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -134,7 +134,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendOrderBy();
-		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
+		String[] s = {COLUMN_PERIOD_FROM + " desc", COLUMN_PERIOD_TO + " desc", COLUMN_DESCRIPTION};
 		sql.appendCommaDelimited(s);
 		return idoFindPKsBySQL(sql.toString());
 	}
@@ -165,7 +165,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 			sql.append("'" + to + "'");
 		}
 		sql.appendOrderBy();
-		String[] s = {COLUMN_PERIOD_FROM, COLUMN_PERIOD_TO, COLUMN_DESCRIPTION};
+		String[] s = {COLUMN_PERIOD_FROM + " desc", COLUMN_PERIOD_TO + " desc", COLUMN_DESCRIPTION};
 		sql.appendCommaDelimited(s);
 		return idoFindPKsByQuery(sql);
 	}		  
