@@ -334,23 +334,23 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   	
   		String refNum = getReferenceNumber();
   		if (refNum == null) {
-	    CypherText cyph = new CypherText();
-	    refNum = cyph.getKey(8);
-	
-	    try {
-	      Collection bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), refNum);
-	
-	      while (bookingIds.size() > 0) {
-	      	refNum = cyph.getKey(8);
-	        bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), refNum);
-	      }
-	      System.out.println("RefNumber generated = "+refNum);
-	    }catch (FinderException fe) {
-	    throw new IDOStoreException(fe.getMessage());
-	    }
+		    CypherText cyph = new CypherText();
+		    refNum = cyph.getKey(8);
+		
+		    try {
+		      Collection bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), refNum);
+		
+		      while (bookingIds.size() > 0) {
+		      	refNum = cyph.getKey(8);
+		        bookingIds = this.idoFindAllIDsByColumnBySQL(getReferenceNumberColumnName(), refNum);
+		      }
+		      //System.out.println("RefNumber generated = "+refNum);
+		    }catch (FinderException fe) {
+		    	throw new IDOStoreException(fe.getMessage());
+		    }
   		}
   		else {
-    		System.out.println("RefNumber set to = "+refNum);
+    		//System.out.println("RefNumber set to = "+refNum);
   		}
 
 	  setReferenceNumber(refNum);
