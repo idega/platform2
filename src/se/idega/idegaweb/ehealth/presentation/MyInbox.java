@@ -50,23 +50,23 @@ public class MyInbox extends EHealthBlock {
 	private String prmDelete = prefix + "delete";
 	private String prmSend = prefix + "send";
 	
-	private String keyMessage1U1 = prefix + "mess1U1";
-	private String keyMessage2U1 = prefix + "mess2U1";
-	private String keyMessage3U1 = prefix + "mess3U1";
-	private String keyMessage4U1 = prefix + "mess4U1";
-	private String keyMessage5U1 = prefix + "mess5U1";
+	private String keyReply1U1 = prefix + "repl1U1";
+	private String keyReply2U1 = prefix + "repl2U1";
+	private String keyReply3U1 = prefix + "repl3U1";
+	private String keyReply4U1 = prefix + "repl4U1";
+	private String keyReply5U1 = prefix + "repl5U1";
 	
-	private String keyMessage1U2 = prefix + "mess1U2";
-	private String keyMessage2U2 = prefix + "mess2U2";
-	private String keyMessage3U2 = prefix + "mess3U2";
-	private String keyMessage4U2 = prefix + "mess4U2";
-	private String keyMessage5U2 = prefix + "mess5U2";
+	private String keyReply1U2 = prefix + "repl1U2";
+	private String keyReply2U2 = prefix + "repl2U2";
+	private String keyReply3U2 = prefix + "repl3U2";
+	private String keyReply4U2 = prefix + "repl4U2";
+	private String keyReply5U2 = prefix + "repl5U2";
 	
-	private String keyMessage1A1 = prefix + "mess1A1";
-	private String keyMessage2A1 = prefix + "mess2A1";
-	private String keyMessage3A1 = prefix + "mess3A1";
-	private String keyMessage4A1 = prefix + "mess4A1";
-	private String keyMessage5A1 = prefix + "mess5A1";
+	private String keyReply1A1 = prefix + "repl1A1";
+	private String keyReply2A1 = prefix + "repl2A1";
+	private String keyReply3A1 = prefix + "repl3A1";
+	private String keyReply4A1 = prefix + "repl4A1";
+	private String keyReply5A1 = prefix + "repl5A1";
 	
 	private int userID = -1;
 	private User user;
@@ -129,27 +129,27 @@ public class MyInbox extends EHealthBlock {
 		
 		ArrayList info = new ArrayList();
 		if (user !=null && user.getGroupID() == 142 ) {
-			info.add(localize(keyMessage1A1, "Message"));
-			info.add(localize(keyMessage2A1, "Message"));
-			info.add(localize(keyMessage3A1, "Message"));
-			info.add(localize(keyMessage4A1, "Message"));
-			info.add(localize(keyMessage5A1, "Message"));
+			info.add(localize(keyReply1A1, "Reply"));
+			info.add(localize(keyReply2A1, "Reply"));
+			info.add(localize(keyReply3A1, "Reply"));
+			info.add(localize(keyReply4A1, "Reply"));
+			info.add(localize(keyReply5A1, "Reply"));
 			
 		}
 		else if (age != null && age.getYears() >= 70){
-			info.add(localize(keyMessage1U1, "Message"));
-			info.add(localize(keyMessage2U1, "Message"));
-			info.add(localize(keyMessage3U1, "Message"));
-			info.add(localize(keyMessage4U1, "Message"));
-			info.add(localize(keyMessage5U1, "Message"));
+			info.add(localize(keyReply1U1, "Reply"));
+			info.add(localize(keyReply2U1, "Reply"));
+			info.add(localize(keyReply3U1, "Reply"));
+			info.add(localize(keyReply4U1, "Reply"));
+			info.add(localize(keyReply5U1, "Reply"));
 			
 		}
 		else {
-			info.add(localize(keyMessage1U2, "Message"));
-			info.add(localize(keyMessage2U2, "Message"));
-			info.add(localize(keyMessage3U2, "Message"));
-			info.add(localize(keyMessage4U2, "Message"));
-			info.add(localize(keyMessage5U2, "Message"));
+			info.add(localize(keyReply1U2, "Reply"));
+			info.add(localize(keyReply2U2, "Reply"));
+			info.add(localize(keyReply3U2, "Reply"));
+			info.add(localize(keyReply4U2, "Reply"));
+			info.add(localize(keyReply5U2, "Reply"));
 			
 		}
 		

@@ -81,19 +81,23 @@ public class MyDoctor extends EHealthBlock {
 		myForm.add(table);
 			
 		Age age = null;
+		String doctorInfo = null;
+		
 		if (user != null && user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
 		else if (user != null && user.getPersonalID() != null)
 			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
-			
+		
+			int userIDDr = 45;
 					
 			if (age != null && age.getYears() >= 70){		
-			
+				userIDDr = 46; //45   41047
 			}
+			
 			
 			PresentationObject picture=null;
 			User doctor = null;
-			int userIDDr = 45; //45   41047
+			
 			int userImageID = -1;
 			try {
 				doctor = ((UserBusiness) IBOLookup.getServiceInstance(_iwc, UserBusiness.class)).getUser(userIDDr);	
@@ -129,7 +133,14 @@ public class MyDoctor extends EHealthBlock {
 			}
 			table.add(picture,1,1);
 			
-			String doctorInfo = "<b>Dr. Magne Syhl</b><br>Allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.gimovc.se' target='_new'>www.gimovc.se</a>";
+			
+			if (age != null && age.getYears() >= 70){	
+				doctorInfo = "<b>Dr. Inga Pren</b><br>Allmänläkare<br>Telefon:<br>018-987624<br>Telefontid: Mån-ons, kl 08:30-10.00<br>Webbsida: <a href='http://www.flogsta.se' target='_new'>www.flogsta.se</a>";	
+			}
+			else{
+				doctorInfo = "<b>Dr. Magne Syhl</b><br>Allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.gimovc.se' target='_new'>www.gimovc.se</a>";	
+			}
+			
 			
 			table.add(doctorInfo,3,1);
 			GenericButton message = getButton(new GenericButton("send_message", localize(prmSendMessage, "Send message")));

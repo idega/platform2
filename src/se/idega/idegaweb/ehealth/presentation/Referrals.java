@@ -8,6 +8,12 @@ package se.idega.idegaweb.ehealth.presentation;
 
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import se.idega.util.PIDChecker;
+
+import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
@@ -21,6 +27,9 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
+import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 
 
@@ -44,12 +53,36 @@ public class Referrals extends EHealthBlock {
 	private String prmTo = prefix + "to";
 	private String prmSearch = prefix + "search";
 	
+	private String keyRemiss1U1 = prefix + "remiss1U1";
+	private String keyRemiss2U1 = prefix + "remiss2U1";
+	private String keyRemiss3U1 = prefix + "remiss3U1";
+	private String keyRemiss4U1 = prefix + "remiss4U1";
+	private String keyRemiss5U1 = prefix + "remiss5U1";
+	
+	private String keyRemiss1U2 = prefix + "remiss1U2";
+	private String keyRemiss2U2 = prefix + "remiss2U2";
+	private String keyRemiss3U2 = prefix + "remiss3U2";
+	private String keyRemiss4U2 = prefix + "remiss4U2";
+	private String keyRemiss5U2 = prefix + "remiss5U2";
 	
 	
+	private int userID = -1;
+	private User user;
 	IWContext _iwc = null;
-
+	Age age = null;
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
+		userID = iwc.getUserId();
+		
+		if (userID > 0) {
+			user = ((UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class)).getUser(userID);
+		}
+				
+		if (user != null && user.getDateOfBirth() != null)
+			age = new Age(user.getDateOfBirth());
+		else if (user != null && user.getPersonalID() != null)
+			age = new Age(PIDChecker.getInstance().getDateFromPersonalID(user.getPersonalID()));
+		
 		add(getAppointmentHistoryForm());
 		
 	}
@@ -88,11 +121,22 @@ public class Referrals extends EHealthBlock {
 			}
 		}
 		
-		String infoDiv[] = {"Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
-				"Lorem ipsum consectetuer dolor sit amet,  iscing elit, sed diam nonmy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
-				"Lorema met ipsum dolor sconsec it am nonummy nibh eu, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
-				"Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.",
-				"Lorem ipsum adipiscing dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat."};
+		ArrayList info = new ArrayList();
+		if (age != null && age.getYears() >= 70){	
+			info.add(localize(keyRemiss1U1, "Remiss"));
+			info.add(localize(keyRemiss2U1, "Remiss"));
+			info.add(localize(keyRemiss3U1, "Remiss"));
+			info.add(localize(keyRemiss4U1, "Remiss"));
+			info.add(localize(keyRemiss5U1, "Remiss"));
+		}
+		else {
+			info.add(localize(keyRemiss1U2, "Remiss"));
+			info.add(localize(keyRemiss2U2, "Remiss"));
+			info.add(localize(keyRemiss3U2, "Remiss"));
+			info.add(localize(keyRemiss4U2, "Remiss"));
+			info.add(localize(keyRemiss5U2, "Remiss"));
+		}
+		
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
@@ -104,13 +148,17 @@ public class Referrals extends EHealthBlock {
 		
 		
 		
-		int theRow;
-		for (theRow = 1; theRow <= 5; theRow++) {
+		int theRow = 1;
+		Iterator iter = info.iterator();
+		
+		while (iter.hasNext()){
 			Layer layers = (Layer) layer.clone();
 			layers.setID("lay" + theRow + "_");	
-			layers.add(infoDiv[theRow-1]);
+			String theInfo = (String) iter.next();
+			layers.add(theInfo);
 						
 			T.add(layers, 1, 3);
+			theRow++;
 		}
 		
 		
@@ -155,10 +203,10 @@ public class Referrals extends EHealthBlock {
 		int theRow = 1;
 		int theColumn = 1;
 		
-		String dates[] = {"2004-10-11", "2004-10-06", "2004-06-15", "2004-02-07", "2003-12-16"};
-		String caregivers[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Alve Don"};
-		String vcs[] = {"Gimo VC", "Gimo VC", "Gimo VC", "Gimo VC", "Gimo VC"};
-		String visitypes[] = {"Konsultation", "Röntgen", "Röntgen", "Klinisk kemi..", "Konsultation", "Cyt"};
+		String dates[] = {"2004-05-30", "2004-10-06", "2004-06-15", "2004-02-07", "2003-12-16"};
+		String caregivers[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Magne Syhl"};
+		String vcs[] = {"Enköpings las", "Enköpings las", "Enköpings las", "Enköpings las", "Enköpings las"};
+		String visitypes[] = {"Konsultation", "Konsultation", "Klinisk kemi..", "Klinisk kemi..", "Konsultation", "Konsultation"};
 		
 		
 				
@@ -244,6 +292,7 @@ public class Referrals extends EHealthBlock {
 		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(3, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		
 		table.setHeight(1, 1, "25");
 		table.setHeight(1, 2, "25");

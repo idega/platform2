@@ -78,7 +78,10 @@ public class MyHealthCentre extends EHealthBlock {
 		table.setWidth(1, 1, 73);
 		
 		myForm.add(table);
-			
+
+		
+		
+		String doctorInfo = null;
 		Age age = null;
 		if (user != null && user.getDateOfBirth() != null)
 			age = new Age(user.getDateOfBirth());
@@ -112,7 +115,13 @@ public class MyHealthCentre extends EHealthBlock {
 			
 			table.add(picture,1,1);
 			
-			String doctorInfo = "<b>Gimo VC</b><br>Husläkarmottagning med 5 st allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.gimovc.se' target='_new'>www.gimovc.se</a>";
+			if (age != null && age.getYears() >= 70){
+				doctorInfo = "<b>Flogsta VC</b><br>Husläkarmottagning med 7 st allmänläkare<br>Telefon:<br>018-987624<br>Telefontid: Mån-ons, kl 08:30-10.00<br>Webbsida: <a href='http://www.flogsta.se' target='_new'>www.flogsta.se</a>";	
+			}
+			else{
+				doctorInfo = "<b>Gimo VC</b><br>Husläkarmottagning med 5 st allmänläkare<br>Telefon:<br>018-987654<br>Telefontid: Mån-ons, kl 08-10.00<br>Webbsida: <a href='http://www.gimovc.se' target='_new'>www.gimovc.se</a>";	
+			}
+			
 			
 			table.add(doctorInfo,3,1);
 			GenericButton message = getButton(new GenericButton("message", localize(prmMessage, "Send message")));
