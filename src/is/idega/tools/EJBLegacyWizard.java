@@ -17,6 +17,7 @@ public class EJBLegacyWizard extends EJBWizard{
   public EJBLegacyWizard(String className){
     super(className);
     setLegacyIDO(true);
+    setRemoteInterfaceSuperInterface("com.idega.data.IDOLegacyEntity");
   }
 
   public EJBLegacyWizard(Class entityClass){
