@@ -236,4 +236,16 @@ public class NewProductApplicationBMPBean extends GenericEntity implements NewPr
 	public Collection ejbFindAll() throws FinderException, RemoteException {
 		return super.idoFindAllIDsBySQL();
 	}
+	
+	public Collection ejbFindAllByStatus(String status) throws FinderException, RemoteException {
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(STATUS);
+		sql.append(" = '");
+		sql.append(status);
+		sql.append("'");
+		
+		return super.idoFindPKsBySQL(sql.toString());
+	}
 }

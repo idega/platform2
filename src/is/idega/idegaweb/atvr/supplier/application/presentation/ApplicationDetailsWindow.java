@@ -1,15 +1,13 @@
 /*
- * $Id:$
+ * Created on Mar 20, 2003
  *
- * Copyright (C) 2002 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
+ * To change this generated comment go to 
+ * Window>Preferences>Java>Code Generation>Code and Comments
  */
 package is.idega.idegaweb.atvr.supplier.application.presentation;
 
-import com.idega.presentation.Block;
+import is.idega.idegaweb.atvr.supplier.application.business.NewProductApplicationBusiness;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -17,22 +15,15 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.util.IWTimestamp;
-
-import is.idega.idegaweb.atvr.supplier.application.business.NewProductApplicationBusiness;
-import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplication;
-
-import java.rmi.RemoteException;
+import com.idega.presentation.ui.Window;
 
 /**
- * This class does something very clever.....
- * 
- * @author <a href="palli@idega.is">Pall Helgason</a>
- * @version 1.0
+ * @author palli
+ *
+ * To change this generated comment go to 
+ * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class NewProductApplicationForm extends Block {
-	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.atvr";
-
+public class ApplicationDetailsWindow extends Window {
 	private final static int ACTION_VIEW_FORM = 0;
 	private final static int ACTION_SUBMIT_FORM = 1;
 
@@ -58,75 +49,20 @@ public class NewProductApplicationForm extends Block {
 	private final static String PARAM_AMOUNT = "npa_amount";
 	private final static String PARAM_WEIGHT = "npa_weigth";
 	private final static String PARAM_MONOXIDE = "npa_monoxide";
-
-	private String _type = "0";
-
-	public String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
-	}
-
-	private void control(IWContext iwc) {
-		if (iwc.getParameter(PARAM_FORM_SUBMIT) == null && iwc.getParameter(PARAM_FORM_SUBMIT_X) == null && iwc.getParameter(PARAM_FORM_SUBMIT_Y) == null) 
-			showForm(iwc);
-		else
-			submitForm(iwc);
-	}
-
-	private void submitForm(IWContext iwc) {
-		try {
-			NewProductApplication appl = getApplicationBusiness(iwc).getNewApplication();
-
-			String desc = iwc.getParameter(PARAM_DESC);
-			String desc2 = iwc.getParameter(PARAM_DESC2);
-			String qty = iwc.getParameter(PARAM_QUANTITY);
-			String str = iwc.getParameter(PARAM_STRENGTH);
-			String prod = iwc.getParameter(PARAM_PRODUCER);
-			String ctry = iwc.getParameter(PARAM_COUNTRY);
-			String bar = iwc.getParameter(PARAM_BAR_CODE);
-			String amount = iwc.getParameter(PARAM_AMOUNT);
-			String cat = iwc.getParameter(PARAM_FORM_CATEGORY);
-			String sub = iwc.getParameter(PARAM_SUB_CATEGORY);
-			String weight = iwc.getParameter(PARAM_WEIGHT);
-			String monoxide = iwc.getParameter(PARAM_MONOXIDE);
-			
-			appl.setApplicationType(_type);
-			appl.setDescription(desc);
-			appl.setDescription2(desc2);
-			appl.setQuantity(qty);
-			appl.setStrength(str);
-			appl.setProducer(prod);
-			appl.setCountryOfOrigin(ctry);
-			appl.setBarCode(bar);
-			appl.setAmount(amount);
-			appl.setWeigth(weight);
-	//		appl.setProductCategoryId();
-			appl.setSupplierId(iwc.getUserId());
-			appl.setApplicationSent(IWTimestamp.getTimestampRightNow());
-			if (monoxide != null)
-				appl.setCarbonMonoxide(Float.parseFloat(monoxide));
-			
-			getApplicationBusiness(iwc).insertApplication(appl);
-			
-			add("Umsókn send");
-			
-			return;
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
 		
-		add("Villa við sendingu umsóknar");
-	}
+	private String _type = null;
+	private String _id = null;
+	
+	private int parseType(String type) {
+		if (type == null)
+			return TYPE_TRIAL;
 
-	/*
-	 * 
-	 */
+		return Integer.parseInt(type);
+	}
+		
 	private void showForm(IWContext iwc) {
 		int typeId = parseType(_type);
-
+		
 		Form form = new Form();
 
 		if (typeId == TYPE_TRIAL || typeId == TYPE_SPECIAL || typeId == TYPE_MONTH) {
@@ -163,11 +99,10 @@ public class NewProductApplicationForm extends Block {
 			String selected = iwc.getParameter(PARAM_FORM_CATEGORY);
 
 			DropdownMenu category = (DropdownMenu) getCategoryDropdown(iwc, selected);
-//			category.setToSubmit();
 			t.add(category, 2, 8);
 			t.add(getSubCategoryDropdown(iwc, selected), 2, 9);
 
-			SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Senda");
+			SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Geyma");
 			submit.setAsImageButton(true);
 			t.setAlignment(2, 12, "Right");
 			t.add(submit, 2, 12);
@@ -203,11 +138,10 @@ public class NewProductApplicationForm extends Block {
 			String selected = iwc.getParameter(PARAM_FORM_CATEGORY);
 
 			DropdownMenu category = (DropdownMenu) getCategoryDropdown(iwc, selected);
-//			category.setToSubmit();
 			t.add(category, 2, 2);
 			t.add(getSubCategoryDropdown(iwc, selected), 2, 3);
 
-			SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Senda");
+			SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Geyma");
 			submit.setAsImageButton(true);
 			t.setAlignment(2, 10, "Right");
 			t.add(submit, 2, 10);
@@ -217,18 +151,7 @@ public class NewProductApplicationForm extends Block {
 
 		add(form);
 	}
-
-	private int parseType(String type) {
-		if (type == null)
-			return TYPE_TRIAL;
-
-		return Integer.parseInt(type);
-	}
-
-	public void main(IWContext iwc) {
-		control(iwc);
-	}
-
+	
 	private PresentationObject getCategoryDropdown(IWContext iwc, String selected) {
 		DropdownMenu menu = new DropdownMenu(PARAM_FORM_CATEGORY);
 		menu.addMenuElement("01.","Rauðvín");
@@ -408,7 +331,11 @@ public class NewProductApplicationForm extends Block {
 		return (NewProductApplicationBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, NewProductApplicationBusiness.class);
 	}	
 	
-	public void setApplicationType(String type) {
-		_type = type;	
-	}			
+	public void main(IWContext iwc) {
+		_type = iwc.getParameter("app_type");
+		_id = iwc.getParameter("app_id");
+				
+		add("Details gluggi");
+		showForm(iwc);
+	}
 }

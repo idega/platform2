@@ -1,5 +1,5 @@
  /*
- * $Id:$
+ * $Id$
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,20 +9,21 @@
  */
 package is.idega.idegaweb.atvr.supplier.application.presentation;
 
-import com.idega.core.user.data.User;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.SubmitButton;
-
 import is.idega.idegaweb.atvr.supplier.application.business.NewProductApplicationBusiness;
 import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplication;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
+
+import com.idega.core.user.data.User;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
 
 /**
  * This class does something very clever.....
@@ -50,17 +51,25 @@ public class NewProductApplicationAdmin extends Block {
 		String values[] = iwc.getParameterValues(PARAM_CHECKBOX);
 		
 		if (values != null && values.length > 0) {
-			for (int i = 0; i < values.length; i++) {
-				System.out.println("values["+i+"] = " + values[i]);	
-			}	
+			try {
+				getApplicationBusiness(iwc).confirmApplications(values);
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	private void showApplications(IWContext iwc) {
 		try {
-			Collection col = getApplicationBusiness(iwc).getAllApplications();
+			Collection col = getApplicationBusiness(iwc).getAllUnconfirmedApplications();
 			if (col != null) {
 				int size = col.size();
+
+				Form f = new Form();
 
 				Table t = new Table(5, size + 3);
 				t.add("Tegund", 2, 1);
@@ -70,20 +79,28 @@ public class NewProductApplicationAdmin extends Block {
 
 				int i = 2;
 				Iterator it = col.iterator();
+				int j = 0;
 				while (it.hasNext()) {
+					j++;
 					NewProductApplication appl = (NewProductApplication) it.next();
-					CheckBox check = new CheckBox(PARAM_CHECKBOX);
-					check.setValue(((Integer)appl.getPrimaryKey()).intValue());
+					CheckBox check = new CheckBox(PARAM_CHECKBOX,((Integer)appl.getPrimaryKey()).toString());
 					t.add(check, 1, i);
 					String type = appl.getApplicationType();
+					Link typeLink = new Link();
 					if (type.equals("0"))
-						t.add(new Link("Reynsla"), 2, i);
+						typeLink.setText("Reynsla");
 					else if (type.equals("1"))
-						t.add(new Link("Sérlisti"), 2, i);
+					typeLink.setText("Sérlisti");
 					else if (type.equals("2"))
-						t.add(new Link("Mánaðarfl."), 2, i);
+						typeLink.setText("Mánaðarfl.");
 					else if (type.equals("3"))
-						t.add(new Link("Tóbak"), 2, i);
+						typeLink.setText("Tóbak");
+						
+					typeLink.addParameter("app_type",type);
+					typeLink.addParameter("app_id",((Integer)appl.getPrimaryKey()).intValue());
+					typeLink.setWindowToOpen(ApplicationDetailsWindow.class);
+						
+					t.add(typeLink,2,i);
 
 					t.add(appl.getDescription(), 3, i);
 					User supplier = appl.getSupplier();
@@ -97,7 +114,9 @@ public class NewProductApplicationAdmin extends Block {
 				t.setAlignment(5, size + 3, "Right");
 				t.add(submit, 5, size + 3);
 
-				add(t);
+				f.add(t);
+
+				add(f);
 			}
 			else {
 				this.add("Engar nýjar umsóknir");

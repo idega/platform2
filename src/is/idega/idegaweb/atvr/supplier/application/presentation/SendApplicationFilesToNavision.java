@@ -49,7 +49,7 @@ public class SendApplicationFilesToNavision extends Block {
 	
 	private void sendApplications(IWContext iwc) {
 		try {
-			Collection col = getApplicationBusiness(iwc).getAllApplications();
+			Collection col = getApplicationBusiness(iwc).getAllConfirmedApplications();
 			
 			if (col != null) {
 				IWBundle bundle = getBundle(iwc);
@@ -109,7 +109,11 @@ public class SendApplicationFilesToNavision extends Block {
 				writer.close();
 			}
 			
+			getApplicationBusiness(iwc).markApplicationsAsSent(col);
+			
 			add("Skrá send");
+			
+			
 			
 			return;
 		}
@@ -123,7 +127,7 @@ public class SendApplicationFilesToNavision extends Block {
 
 	private void showApplications(IWContext iwc) {
 		try {
-			Collection col = getApplicationBusiness(iwc).getAllApplications();
+			Collection col = getApplicationBusiness(iwc).getAllConfirmedApplications();
 			if (col != null) {
 				int size = col.size();
 
@@ -137,8 +141,6 @@ public class SendApplicationFilesToNavision extends Block {
 				Iterator it = col.iterator();
 				while (it.hasNext()) {
 					NewProductApplication appl = (NewProductApplication) it.next();
-//					CheckBox check = new CheckBox();
-//					t.add(check, 1, i);
 					String type = appl.getApplicationType();
 					if (type.equals("0"))
 						t.add("Reynsla", 1, i);
@@ -156,7 +158,7 @@ public class SendApplicationFilesToNavision extends Block {
 					i++;
 				}
 
-				SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Senda í skrá");
+				SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Senda");
 				submit.setAsImageButton(true);
 				t.setAlignment(4, size + 3, "Right");
 				t.add(submit, 4, size + 3);

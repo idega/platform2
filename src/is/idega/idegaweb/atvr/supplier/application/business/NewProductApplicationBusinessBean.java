@@ -17,6 +17,7 @@ import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplicationHom
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -44,6 +45,49 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 	
 		return null;
 	}
+
+	public void confirmApplications(String ids[]) {
+		try {
+			NewProductApplicationHome home = (NewProductApplicationHome) IDOLookup.getHome(NewProductApplication.class);
+			for (int i = 0; i < ids.length; i++) {
+				NewProductApplication app = home.findByPrimaryKey(new Integer(ids[i]));
+				app.setStatus("C");
+				app.store();		
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void markApplicationsAsSent(String ids[]) {
+		try {
+			NewProductApplicationHome home = (NewProductApplicationHome) IDOLookup.getHome(NewProductApplication.class);
+			for (int i = 0; i < ids.length; i++) {
+				NewProductApplication app = home.findByPrimaryKey(new Integer(ids[i]));
+				app.setStatus("F");
+				app.store();		
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void markApplicationsAsSent(Collection col) {
+		try {
+			Iterator it = col.iterator();
+			while (it.hasNext()) {
+				NewProductApplication app = (NewProductApplication)it.next();
+				app.setStatus("F");
+				app.store();		
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	
 	public Collection getAllApplications() {
 		try {
@@ -57,5 +101,39 @@ public class NewProductApplicationBusinessBean extends IBOServiceBean implements
 		return null;		
 	}	
 	
+	public Collection getAllUnconfirmedApplications() {
+		try {
+			return ((NewProductApplicationHome) IDOLookup.getHome(NewProductApplication.class)).findAllByStatus("S");
+		}
+		catch (RemoteException e) {
+		}
+		catch (FinderException e) {
+		}
 	
+		return null;		
+	}
+
+	public Collection getAllConfirmedApplications() {
+		try {
+			return ((NewProductApplicationHome) IDOLookup.getHome(NewProductApplication.class)).findAllByStatus("C");
+		}
+		catch (RemoteException e) {
+		}
+		catch (FinderException e) {
+		}
+	
+		return null;		
+	}
+	
+	public Collection getAllSentToFileApplications() {
+		try {
+			return ((NewProductApplicationHome) IDOLookup.getHome(NewProductApplication.class)).findAllByStatus("F");
+		}
+		catch (RemoteException e) {
+		}
+		catch (FinderException e) {
+		}
+	
+		return null;		
+	}
 }
