@@ -255,9 +255,9 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	}
 	public boolean getCentralizedAdministration() {
 		boolean isCA = false;
-		Boolean b = (Boolean) this.getColumnValue(CENTRALIZED_ADMINISTRATION));
+		Boolean b = (Boolean) this.getColumnValue(CENTRALIZED_ADMINISTRATION);
 		if (b != null) {
-			is CA = b..booleanValue();
+			isCA = b.booleanValue();
 		}
 		return isCA;
 	}
