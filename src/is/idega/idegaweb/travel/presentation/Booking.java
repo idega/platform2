@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import com.idega.block.creditcard.business.CreditCardAuthorizationException;
 import com.idega.block.creditcard.business.CreditCardClient;
 import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.creditcard.presentation.Receipt;
@@ -1157,14 +1158,26 @@ public class Booking extends TravelManager {
 		}
 		else if(yesNo.equals(this.parameterRespondCCYes)) {
 			if(inquery != null) {
-				int errorMessage = getInquirer(iwc).getCreditcardInqueryRespons(iwc,iwrb,inqueryId,true,true,this.supplier,this.reseller);
-				GeneralBooking booking = inquery.getBooking();
-	      CreditCardClient t = getCreditCardClient(iwc, booking);
-				switch(errorMessage) {
-					case 1:
-						displayForm(iwc);
-						t.finishTransaction(inquery.getAuthorizationString());
+				try {
+					GeneralBooking booking = inquery.getBooking();
+		      CreditCardClient t = getCreditCardClient(iwc, booking);
+					t.finishTransaction(inquery.getAuthorizationString());
+
+					int errorMessage = getInquirer(iwc).getCreditcardInqueryRespons(iwc,iwrb,inqueryId,true,true,this.supplier,this.reseller);
+					switch(errorMessage) {
+						case 1:
+							displayForm(iwc);
+					}
+					
+				} catch (CreditCardAuthorizationException e) {
+//					e.printStackTrace();
+					System.out.println("Display Error = "+e.getDisplayError());
+					System.out.println("Error message = "+e.getErrorMessage());
+					System.out.println("Error number  = "+e.getErrorNumber());
+				}catch (Exception e) {
+					e.printStackTrace();
 				}
+				displayForm(iwc);
 			}
 		}
 		else if(yesNo.equals(this.parameterRespondCCNo)) {
