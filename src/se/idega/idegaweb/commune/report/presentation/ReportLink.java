@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2003/04/23 10:46:09 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/29 09:02:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {
@@ -27,25 +27,36 @@ public class ReportLink extends CommuneBlock {
 
     // Actions
     final private static String TRY_SQL_ACTION = PREFIX + "try_sql_action";
-    final private static String SAVE_GENERATOR_ACTION = PREFIX + "save_generator_action";
-    final private static String EDIT_GENERATOR_ACTION = PREFIX + "report_admin_action";
+    final private static String SAVE_GENERATOR_ACTION = PREFIX
+        + "save_generator_action";
+    final private static String EDIT_GENERATOR_ACTION = PREFIX
+        + "report_admin_action";
 
-    // Localized key and deafult value pairs
+    // Localized key and default value pairs
     final private static String COLUMN_NAME_DEFAULT = "Kolumnernas namn";
     final private static String COLUMN_NAME_KEY = PREFIX + "column_name";
-    //final private static String FETCH_RESULT_DEFAULT = "Exempeldata direkt från databasen";
-    //final private static String FETCH_RESULT_KEY = PREFIX + "fetch_result";
+    final private static String CURRENT_REPORT_KEY = PREFIX + "current_report";
     final private static String REPORT_NAME_DEFAULT = "Rapportens namn";
     final private static String REPORT_NAME_KEY = PREFIX + "report_name";
-    final private static String SAVE_GENERATOR_DEFAULT = "Spara rapportgenerator";
+    final private static String SAMPLE_DEFAULT = "Exempeldata";
+    final private static String SAMPLE_KEY = PREFIX + "sample";
+    final private static String SAVE_GENERATOR_DEFAULT
+        = "Spara rapportgenerator";
     final private static String SAVE_GENERATOR_KEY = PREFIX + "save_generator";
-    final private static String SQL_ERROR_DEFAULT = "Ett fel inträffade med anledning av databasanropet";
+    final private static String SQL_ERROR_DEFAULT
+        = "Ett fel inträffade med anledning av databasanropet";
     final private static String SQL_ERROR_KEY = PREFIX + "sql_error";
     final private static String SQL_QUERY_DEFAULT = "SQL-fråga";
     final private static String SQL_QUERY_KEY = PREFIX + "sql_query";
+    final private static String STEP_1_TRY_SQL_DEFAULT
+        = "1. Prova ut ett SQL-kommando till rapporten";
+    final private static String STEP_1_TRY_SQL_KEY = PREFIX + "step_1_try_sql";
+    final private static String STEP_2_NAME_REPORT_DEFAULT
+        = "2. Namnge rapporten";
+    final private static String STEP_2_NAME_REPORT_KEY = PREFIX
+        + "step_2_name_report";
     final private static String TRY_SQL_DEFAULT = "Prova SQL";
     final private static String TRY_SQL_KEY = PREFIX + "try_sql";
-    final private static String CURRENT_REPORT_KEY = PREFIX + "current_report";
 
     /**
      * Dispatches according to action parameter. If none is set, then check if
@@ -103,8 +114,11 @@ public class ReportLink extends CommuneBlock {
      * Shows the sql form and also a column name form if an sql was just entered
      */
     private void trySql (final IWContext context) {
+        final String sql = context.getParameter (SQL_QUERY_KEY);
         showSqlForm (context);
-        showColumnNameForm (context);
+        showReportNameForm (context);
+        final HttpSession session = context.getSession ();
+        session.setAttribute (SQL_QUERY_KEY, sql);
     }
 
     /**
@@ -118,7 +132,8 @@ public class ReportLink extends CommuneBlock {
 		form.add (table);
 		add (form);
         int row = 1;
-        table.add (getHeader ("1. Prova ut ett SQL-kommando till rapporten"), 1, row++);
+        table.add (getHeader (localize (STEP_1_TRY_SQL_KEY,
+                                        STEP_1_TRY_SQL_DEFAULT)), 1, row++);
 		final TextArea textArea = new TextArea (SQL_QUERY_KEY);
         if (context.isParameterSet (SQL_QUERY_KEY)) {
             textArea.setContent (context.getParameter (SQL_QUERY_KEY));
@@ -126,8 +141,8 @@ public class ReportLink extends CommuneBlock {
 		textArea.setColumns (60);
 		textArea.setRows (10);
         final SubmitButton submit = (SubmitButton) getButton
-                (new SubmitButton (TRY_SQL_ACTION, getLocalizedString (TRY_SQL_KEY,
-                                                                    TRY_SQL_DEFAULT)));
+                (new SubmitButton (TRY_SQL_ACTION, getLocalizedString
+                                   (TRY_SQL_KEY, TRY_SQL_DEFAULT)));
 		final Text header = getSmallHeader (localize (SQL_QUERY_KEY,
                                                       SQL_QUERY_DEFAULT) + ":");
 		table.add(header, 1, row++);
@@ -136,11 +151,11 @@ public class ReportLink extends CommuneBlock {
     }
 
     /**
-     * Shows data that is fetched with last user query, a form where the user
-     * can name the columns as they will appear in the report and submit button
-     * for storing the new report generator.
+     * Shows sample data that is fetched with last user query, a form where the
+     * user can name the report and submit button for storing the new report
+     * generator.
      */
-    private void showColumnNameForm (final IWContext context) {
+    private void showReportNameForm (final IWContext context) {
         if (context.isParameterSet (SQL_QUERY_KEY)) {
             final Form form = new Form ();
             final Table table = new Table ();
@@ -148,17 +163,23 @@ public class ReportLink extends CommuneBlock {
             add (form);
             int row = 1;
             try {
-                form.maintainParameter (SQL_QUERY_KEY);
                 final Table fetchTable = getFetchTable (context.getParameter
                                                         (SQL_QUERY_KEY));
-                table.add (getHeader ("2. Namnge rapporten och kolumnerna"), 1,
+                table.add (getHeader (localize (STEP_2_NAME_REPORT_KEY,
+                                                STEP_2_NAME_REPORT_DEFAULT)), 1,
                            row++);
                 table.add (getSmallHeader
                            (localize (REPORT_NAME_KEY, REPORT_NAME_DEFAULT)
                             + ":"), 1, row++);
-                table.add (getStyledInterface (new TextInput(REPORT_NAME_KEY)), 1, row++);
+                table.add (getStyledInterface (new TextInput(REPORT_NAME_KEY)),
+                           1, row++);
                 table.add (getSmallHeader
-                           (localize (COLUMN_NAME_KEY, COLUMN_NAME_DEFAULT)
+                           (localize (SQL_QUERY_KEY, SQL_QUERY_DEFAULT)
+                            + ":"), 1, row++);
+                table.add (getSmallText (context.getParameter (SQL_QUERY_KEY)),
+                           1, row++);
+                table.add (getSmallHeader
+                           (localize (SAMPLE_KEY, SAMPLE_DEFAULT)
                             + ":"), 1, row++);
                 table.add (fetchTable, 1, row++);
                 table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -185,8 +206,7 @@ public class ReportLink extends CommuneBlock {
      */
     private void saveGenerator (final IWContext context) {
         // 1. get web form posted parameters
-        final String sql = replaceWhiteSpaceWithSpace (context.getParameter
-                                                       (SQL_QUERY_KEY));
+        final String sql = getSqlParameter (context.getSession ());
         final String reportName = context.getParameter (REPORT_NAME_KEY);
         final List columnHeaderList = new ArrayList ();
         for (int col = 0; context.isParameterSet (COLUMN_NAME_KEY + col);
@@ -255,29 +275,23 @@ public class ReportLink extends CommuneBlock {
     }
 
     /**
-     * @return ICCategory if availabel for this objectInstanceId or else null
+     * @return ICCategory if available for this objectInstanceId or else null
      */
     private static ICCategory findCategory (final int objectInstanceId) {
         ICCategory result = null;
-        final List categoryList = ReportFinder.listOfEntityForObjectInstanceId
-                (objectInstanceId);
+        List categoryList = null;
+        try {
+            categoryList = ReportFinder.listOfEntityForObjectInstanceId
+                    (objectInstanceId);
+        } catch (final Exception e) {
+            System.err.println
+                    ("ReportFinder.listOfEntityForObjectInstanceId ("
+                     + objectInstanceId + ") -> " + e.getMessage ());
+        }
         if (categoryList != null && categoryList.size () > 0) {
             result = (ICCategory) categoryList.iterator ().next ();
         }
         return result;
-    }
-
-    private static String replaceWhiteSpaceWithSpace (final String original) {
-        if (original == null) return "";
-
-        final StringBuffer result = new StringBuffer (original);
-
-        for (int i = 0; i < result.length (); i++) {
-            if (Character.isWhitespace (result.charAt(i))) {
-                result.setCharAt (i, ' ');
-            }
-        }
-        return result.toString ();
     }
 
     /**
@@ -315,6 +329,19 @@ public class ReportLink extends CommuneBlock {
             }
         }
         return table;
+    }
+
+    private static String getSqlParameter (final HttpSession session) {
+        final String original = (String) session.getAttribute (SQL_QUERY_KEY);
+        if (original == null) return "";
+        final StringBuffer result = new StringBuffer (original);
+        for (int i = 0; i < result.length (); i++) {
+            if (Character.isWhitespace (result.charAt(i))) {
+                result.setCharAt (i, ' ');
+            }
+        }
+
+        return result.toString ();
     }
     
     /**
