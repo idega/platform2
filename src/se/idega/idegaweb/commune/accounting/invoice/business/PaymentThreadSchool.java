@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/06 16:09:16 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/06 18:25:38 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.86 $
+ * @version $Revision: 1.87 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -360,9 +360,9 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					errorRelated.append("Student = " + studentInfo);
 					errorRelated.append("Conditions = " + conditions);
 					errorRelated.append("Resource = " + resource);
-					java.io.StringWriter sw = new java.io.StringWriter();
-					e.printStackTrace(new java.io.PrintWriter(sw, true));
-					errorRelated.append(sw.toString());
+//					java.io.StringWriter sw = new java.io.StringWriter();
+//					e.printStackTrace(new java.io.PrintWriter(sw, true));
+					errorRelated.append(e);
 //					if (errorRelated.toString().length() > 900)
 //						errorRelated = new StringBuffer(errorRelated.substring(1, 900));
 					createNewErrorMessage(errorRelated, "invoice.createPaymentsForResourceError");
