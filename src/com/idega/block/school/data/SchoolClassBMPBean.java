@@ -31,6 +31,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public final static String NAME = "class_name";
   public final static String COLUMN_VALID = "valid";
   public final static String COLUMN_READY = "ready";
+  public final static String COLUMN_LOCKED = "locked";
   public final static String SCHOOL = "school_id";
 
 	public final static String VALID = "Y";
@@ -45,6 +46,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
     addAttribute(NAME,"Name",true,true,String.class);
     addAttribute(COLUMN_VALID,"Valid",true,true,String.class,1);
     addAttribute(COLUMN_READY,"Ready",true,true,String.class,1);
+    addAttribute(COLUMN_LOCKED,"Ready",true,true,String.class,1);
   }
   public String getEntityName() {
     return SCHOOLCLASS;
@@ -117,6 +119,23 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 			setColumn(COLUMN_READY, VALID);
 		else
 			setColumn(COLUMN_READY, INVALID);
+	}
+
+	public boolean getLocked() {
+		String valid = getStringColumnValue(COLUMN_LOCKED);
+		if ((valid == null) || (valid.equals(INVALID)))
+			return (false);
+		else if (valid.equals(VALID))
+			return (true);
+		else
+			return (false);
+	}
+
+	public void setLocked(boolean valid) {
+		if (valid)
+			setColumn(COLUMN_LOCKED, VALID);
+		else
+			setColumn(COLUMN_LOCKED, INVALID);
 	}
 
   public Collection ejbFindBySchool(School school)throws FinderException ,RemoteException{
