@@ -433,14 +433,17 @@ public class MessengerApplet extends Applet implements ActionListener{
   }
 
 
-  public void update(Graphics g){
+ /* public void update(Graphics g){
     super.paint(g);
     g.drawString("test",150,150);
     System.out.println("IN UPDATE");
-  }
+  }*/
 
   public void paint(Graphics g){
   //use the update method
+      super.paint(g);
+    g.drawString("test",150,150);
+    System.out.println("IN UPDATE");
   }
 
 
