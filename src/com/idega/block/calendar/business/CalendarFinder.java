@@ -19,7 +19,8 @@ import com.idega.block.text.data.LocalizedText;
 
 public class CalendarFinder {
 
-  public static CalendarEntry[] getEntries(idegaTimestamp stamp) {
+
+   public static CalendarEntry[] getEntries(idegaTimestamp stamp) {
     try {
       CalendarEntry[] cal = (CalendarEntry[]) CalendarEntry.getStaticInstance().findAllByColumnOrdered(CalendarEntry.getColumnNameEntryDate(),stamp.toString(),CalendarEntry.getColumnNameEntryTypeID(),"=");
       if ( cal.length > 0 )
@@ -32,13 +33,24 @@ public class CalendarFinder {
     }
   }
 
-  public static CalendarEntry getEntry(int entryID) {
+  public static List listOfEntries(idegaTimestamp stamp,int iCategoryId) {
     try {
-      return new CalendarEntry(entryID);
+      java.io.StringWriter writer;
+      StringBuffer sql = new StringBuffer("select * from ").append(CalendarEntry.getEntityTableName());
+      sql.append(" where ").append(CalendarEntry.getColumnNameEntryDate()).append("= '").append(stamp.toString()).append("'");
+      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append("= ").append(iCategoryId);
+      sql.append("order by ").append(CalendarEntry.getColumnNameEntryTypeID());
+      return EntityFinder.findAll(CalendarEntry.getStaticInstance(),sql.toString());
     }
     catch (SQLException e) {
-      return null;
+      e.printStackTrace(System.err);
+
     }
+    return null;
+  }
+
+  public static CalendarEntry getEntry(int entryID) {
+    return (CalendarEntry) CalendarEntry.getEntityInstance(CalendarEntry.class,entryID);
   }
 
   public static CalendarEntry[] getWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack) {
@@ -64,6 +76,64 @@ public class CalendarFinder {
       e.printStackTrace(System.err);
       return null;
     }
+  }
+
+  public static List listOfWeekEntries(idegaTimestamp _stamp, int daysAhead, int daysBack,int iCategoryId) {
+    try {
+      idegaTimestamp stampPlus = new idegaTimestamp(_stamp.getTimestamp());
+        stampPlus.addDays(daysAhead);
+        stampPlus.setMinute(59);
+        stampPlus.setHour(23);
+        stampPlus.setSecond(59);
+
+      idegaTimestamp stamp = new idegaTimestamp(_stamp.getTimestamp());
+        stamp.addDays(-daysBack);
+        stampPlus.setMinute(0);
+        stampPlus.setHour(0);
+        stampPlus.setSecond(0);
+
+      StringBuffer sql = new StringBuffer("select * from ").append(CalendarEntry.getEntityTableName());
+      sql.append(" where ").append(CalendarEntry.getColumnNameEntryDate()).append(" < '").append(stampPlus.toString()).append("'");
+      sql.append(" and ").append(CalendarEntry.getColumnNameEntryDate()).append(" >= '").append(stamp.toString()).append("'");
+      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append("= ").append(iCategoryId);
+      sql.append("order by ").append(CalendarEntry.getColumnNameEntryDate());
+      return EntityFinder.findAll(CalendarEntry.getStaticInstance(),sql.toString());
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+
+    }
+    return null;
+  }
+
+  public static List getMonthEntries(idegaTimestamp stamp,int iCategoryId) {
+    try {
+      idegaTimestamp stampPlus = new idegaTimestamp(stamp.getTimestamp());
+        stampPlus.addMonths(1);
+        stampPlus.setDate(1);
+        stampPlus.setMinute(59);
+        stampPlus.setHour(23);
+        stampPlus.setSecond(59);
+
+      idegaTimestamp stampMinus = new idegaTimestamp(stamp.getTimestamp());
+        stampMinus.setDate(1);
+        stampMinus.setMinute(0);
+        stampMinus.setHour(0);
+        stampMinus.setSecond(0);
+
+      StringBuffer sql = new StringBuffer("select distinct * from ").append(CalendarEntry.getEntityTableName());
+      sql.append(" where ").append(CalendarEntry.getColumnNameEntryDate()).append(" < '").append(stampPlus.toString()).append("'");
+      sql.append(" and ").append(CalendarEntry.getColumnNameEntryDate()).append(" >= '").append(stampMinus.toString()).append("'");
+      sql.append(" and ").append(CalendarEntry.getColumnCategoryId()).append("= ").append(iCategoryId);
+      sql.append("order by ").append(CalendarEntry.getColumnNameEntryDate());
+      return EntityFinder.findAll(CalendarEntry.getStaticInstance(),sql.toString());
+
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+
+    }
+    return null;
   }
 
   public static List getMonthEntries(idegaTimestamp stamp) {

@@ -27,8 +27,10 @@ import com.idega.presentation.Image;
 import com.idega.builder.data.IBPage;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.block.presentation.CategoryBlock;
 
-public class Calendar extends Block implements IWBlock {
+
+public class Calendar extends CategoryBlock implements IWBlock {
 
 private boolean _isAdmin = false;
 private int _iLocaleID;
@@ -58,6 +60,10 @@ public Calendar(){
 
 public Calendar(idegaTimestamp timestamp){
   _stamp = timestamp;
+}
+
+public String getCategoryType(){
+  return new CalendarCategory().getCategoryType();
 }
 
   public void main(IWContext iwc) throws Exception{
@@ -107,32 +113,35 @@ public Calendar(idegaTimestamp timestamp){
     if ( _isAdmin ) {
       entriesTable.add(getAddIcon(),1,ypos);
       entriesTable.add(getPropertiesIcon(),1,ypos);
+      entriesTable.add(getCategoryIcon(),1,ypos);
       ypos++;
     }
 
     int numberOfShown = 0;
 
-    CalendarEntry[] entries = null;
+    List entries = null;
     if ( _isSelectedDay ) {
-      entries = CalendarFinder.getEntries(_stamp);
+      entries = CalendarFinder.listOfEntries(_stamp,getCategoryId());
       if ( entries != null )
-        numberOfShown = entries.length;
+        numberOfShown = entries.size();
     }
     else {
-      entries = CalendarFinder.getWeekEntries(_stamp,_daysAhead,_daysBack);
+      entries = CalendarFinder.listOfWeekEntries(_stamp,_daysAhead,_daysBack,getCategoryId());
       if ( entries != null) {
-         if ( entries.length > _numberOfShown )
+         if ( entries.size() > _numberOfShown )
           numberOfShown = _numberOfShown;
         else
-          numberOfShown = entries.length;
+          numberOfShown = entries.size();
       }
     }
 
     if ( entries != null ) {
+      CalendarEntry entry;
       for ( int a = 0; a < numberOfShown; a++ ) {
         Image typeImage = null;
-        localeStrings = CalendarFinder.getEntryStrings(entries[a],_iLocaleID);
-        imageID = CalendarFinder.getImageID(entries[a].getEntryTypeID());
+        entry = (CalendarEntry) entries.get(a);
+        localeStrings = CalendarFinder.getEntryStrings(entry,_iLocaleID);
+        imageID = CalendarFinder.getImageID(entry.getEntryTypeID());
 
         if ( imageID != -1 ) {
           try {
@@ -163,7 +172,7 @@ public Calendar(idegaTimestamp timestamp){
 
         if ( headlineText != null ) {
           if ( typeImage != null ) {
-            typeImage.setName(CalendarFinder.getEntryTypeName(entries[a].getEntryTypeID(),_iLocaleID));
+            typeImage.setName(CalendarFinder.getEntryTypeName(entry.getEntryTypeID(),_iLocaleID));
             entriesTable.add(typeImage,xpos,ypos);
             hasImage = true;
             xpos++;
@@ -173,7 +182,7 @@ public Calendar(idegaTimestamp timestamp){
           entriesTable.setWidth(xpos,ypos,"100%");
           entriesTable.add(headlineText,xpos,ypos);
 
-          stamp = new idegaTimestamp(entries[a].getDate());
+          stamp = new idegaTimestamp(entry.getDate());
           String date = TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear());
           Text dateText = new Text(date);
             dateText.setFontStyle("font-face: Verdana,Arial,Helvetica,sans-serif; font-size: 8pt; font-weight: bold; color: "+_dateColor+";");
@@ -184,7 +193,7 @@ public Calendar(idegaTimestamp timestamp){
 
           if ( _isAdmin ) {
             xpos++;
-            entriesTable.add(getEditButtons(entries[a].getID()),xpos,ypos);
+            entriesTable.add(getEditButtons(entry.getID()),xpos,ypos);
           }
 
           if ( bodyText != null ) {
@@ -237,6 +246,7 @@ public Calendar(idegaTimestamp timestamp){
     if ( _isAdmin ) {
       monthTable.add(getAddIcon(),1,ypos);
       monthTable.add(getPropertiesIcon(),1,ypos);
+      monthTable.add(getCategoryIcon(),1,ypos);
       ypos++;
     }
 
@@ -274,6 +284,7 @@ public Calendar(idegaTimestamp timestamp){
     if ( _isAdmin ) {
       yearTable.add(getAddIcon(),1,ypos);
       yearTable.add(getPropertiesIcon(),1,ypos);
+      yearTable.add(getCategoryIcon(),1,ypos);
       ypos++;
     }
 
@@ -298,14 +309,23 @@ public Calendar(idegaTimestamp timestamp){
     Image image = _iwb.getImage("shared/create.gif");
     Link link = new Link(image);
       link.setWindowToOpen(CalendarEditor.class);
+      link.addParameter(CalendarBusiness.PARAMETER_IC_CAT,getCategoryId());
       if ( this._isSelectedDay )
         link.addParameter(CalendarBusiness.PARAMETER_ENTRY_DATE,_stamp.toSQLString());
     return link;
   }
 
   private Link getPropertiesIcon() {
-    Image image = _iwb.getImage("shared/edit.gif");
+    Image image = _iwb.getImage("shared/edit.gif","Types");
     Link link = new Link(image);
+      link.setWindowToOpen(CalendarTypeEditor.class);
+    return link;
+  }
+
+   private Link getCategoryIcon() {
+    Image image = _iwb.getImage("shared/edit.gif","Categories");
+    Link link = getCategoryLink(new CalendarCategory().getCategoryType());
+    link.setImage(image);
       link.setWindowToOpen(CalendarTypeEditor.class);
     return link;
   }
@@ -322,6 +342,7 @@ public Calendar(idegaTimestamp timestamp){
       editLink.setWindowToOpen(CalendarEditor.class);
       editLink.addParameter(CalendarBusiness.PARAMETER_ENTRY_ID,entryID);
       editLink.addParameter(CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_EDIT);
+      editLink.addParameter(CalendarBusiness.PARAMETER_IC_CAT,getCategoryId());
     table.add(editLink,1,1);
     Link deleteLink = new Link(deleteImage);
       deleteLink.setWindowToOpen(CalendarEditor.class);
@@ -396,6 +417,6 @@ public Calendar(idegaTimestamp timestamp){
   }
 
   public boolean deleteBlock(int ICObjectInstanceID) {
-    return false;
+    return CalendarBusiness.deleteBlock(getICObjectInstanceID());
   }
 }

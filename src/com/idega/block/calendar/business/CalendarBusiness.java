@@ -18,6 +18,9 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.block.calendar.data.*;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.data.EntityBulkUpdater;
+import com.idega.block.category.business.CategoryBusiness;
+import java.util.Locale;
 
 public class CalendarBusiness {
 
@@ -42,6 +45,7 @@ public static final String PARAMETER_LOCALE_DROP = "locale_drop";
 public static final String PARAMETER_ENTRY_HEADLINE = "entry_headline";
 public static final String PARAMETER_ENTRY_BODY = "entry_body";
 public static final String PARAMETER_ENTRY_DATE = "entry_date";
+public static final String PARAMETER_IC_CAT = "ic_cat_id";
 
 public static final String PARAMETER_MODE = PARAMETER_CALENDAR+"_mode";
 public static final String PARAMETER_MODE_DELETE = PARAMETER_CALENDAR+"_delete";
@@ -124,7 +128,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
     return drp;
   }
 
-  public static int saveEntry(int entryID, int userID, int groupID, int localeID, String entryHeadline, String entryBody, String entryDate, String entryType) {
+  public static int saveEntry(int entryID, int userID, int groupID, int localeID,int categoryId, String entryHeadline, String entryBody, String entryDate, String entryType) {
     int returnInt = -1;
     boolean update = false;
     if ( entryID != -1 ) {
@@ -143,6 +147,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
       entry = new CalendarEntry();
     }
 
+    entry.setCategoryId(categoryId);
     entry.setEntryTypeID(Integer.parseInt(entryType));
     entry.setUserID(userID);
     entry.setGroupID(groupID);
@@ -309,5 +314,32 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
         e.printStackTrace(System.err);
       }
     }
+  }
+
+  public static void initializeCalendarEntry() throws SQLException{
+   EntityBulkUpdater bulk = new EntityBulkUpdater();
+    CalendarEntry entry = new CalendarEntry();
+      entry.setDate(new com.idega.util.idegaTimestamp(1,1,2000).getTimestamp());
+      entry.setEntryTypeID(3);
+
+    LocalizedText text = new LocalizedText();
+      text.setLocaleId(TextFinder.getLocaleId(new Locale("is","IS")));
+      text.setHeadline("idega hf. stofnað");
+
+    LocalizedText text2 = new LocalizedText();
+      text2.setLocaleId(TextFinder.getLocaleId(Locale.ENGLISH));
+      text2.setHeadline("idega co. founded");
+
+    bulk.add(entry,EntityBulkUpdater.insert);
+    bulk.add(text,EntityBulkUpdater.insert);
+    bulk.add(text2,EntityBulkUpdater.insert);
+    bulk.execute();
+
+    text.addTo(entry);
+    text2.addTo(entry);
+  }
+
+  public static boolean deleteBlock(int iObjectInstanceId){
+    return CategoryBusiness.deleteBlock(iObjectInstanceId);
   }
 }

@@ -2,15 +2,18 @@
 
 package com.idega.block.calendar.data;
 
-import java.sql.*;
+import com.idega.block.calendar.business.CalendarBusiness;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Locale;
-import com.idega.data.*;
+import com.idega.data.CategoryEntity;
+import com.idega.data.EntityBulkUpdater;
 import com.idega.core.user.data.User;
 import com.idega.core.data.GenericGroup;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.business.TextFinder;
 
-public class CalendarEntry extends GenericEntity{
+public class CalendarEntry extends CategoryEntity{
 
 	public CalendarEntry(){
 		super();
@@ -21,26 +24,7 @@ public class CalendarEntry extends GenericEntity{
 	}
 
   public void insertStartData()throws Exception{
-    EntityBulkUpdater bulk = new EntityBulkUpdater();
-    CalendarEntry entry = new CalendarEntry();
-      entry.setDate(new com.idega.util.idegaTimestamp(1,1,2000).getTimestamp());
-      entry.setEntryTypeID(3);
-
-    LocalizedText text = new LocalizedText();
-      text.setLocaleId(TextFinder.getLocaleId(new Locale("is","IS")));
-      text.setHeadline("idega hf. stofnað");
-
-    LocalizedText text2 = new LocalizedText();
-      text2.setLocaleId(TextFinder.getLocaleId(Locale.ENGLISH));
-      text2.setHeadline("idega co. founded");
-
-    bulk.add(entry,EntityBulkUpdater.insert);
-    bulk.add(text,EntityBulkUpdater.insert);
-    bulk.add(text2,EntityBulkUpdater.insert);
-    bulk.execute();
-
-    text.addTo(entry);
-    text2.addTo(entry);
+    CalendarBusiness.initializeCalendarEntry();
   }
 
 	public void initializeAttributes(){
@@ -49,8 +33,7 @@ public class CalendarEntry extends GenericEntity{
 		addAttribute(getColumnNameEntryDate(),"Date",true,true,Timestamp.class);
     addAttribute(getColumnNameUserID(), "User", true, true, Integer.class);
     addAttribute(getColumnNameGroupID(), "Group", true, true, Integer.class);
-    addManyToManyRelationShip(LocalizedText.class,"CA_CALENDAR_LOCALIZED_TEXT");
-
+    addManyToManyRelationShip(LocalizedText.class);
     setNullable(getColumnNameEntryTypeID(),false);
     setNullable(getColumnNameEntryDate(),false);
 	}

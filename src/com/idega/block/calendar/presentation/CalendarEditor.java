@@ -71,6 +71,7 @@ public CalendarEditor(){
     }
 
     String sLocaleId = iwc.getParameter(CalendarBusiness.PARAMETER_LOCALE_DROP);
+    int iCategoryId = iwc.isParameterSet(CalendarBusiness.PARAMETER_IC_CAT)?Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_IC_CAT)):-1;
 
     int iLocaleId = -1;
     if(sLocaleId!= null){
@@ -83,14 +84,14 @@ public CalendarEditor(){
     }
 
     if ( _isAdmin ) {
-      processForm(iwc,iLocaleId);
+      processForm(iwc,iLocaleId,iCategoryId);
     }
     else {
       noAccess();
     }
   }
 
-  private void processForm(IWContext iwc, int iLocaleId) {
+  private void processForm(IWContext iwc, int iLocaleId,int iCategoryId) {
     if ( iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_ID) != null ) {
       try {
         _entryID = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_ID));
@@ -126,7 +127,7 @@ public CalendarEditor(){
         closeEditor(iwc);
       }
       else if ( iwc.getParameter(CalendarBusiness.PARAMETER_MODE).equalsIgnoreCase(CalendarBusiness.PARAMETER_MODE_SAVE) ) {
-        saveEntry(iwc,iLocaleId);
+        saveEntry(iwc,iLocaleId,iCategoryId);
       }
     }
 
@@ -155,10 +156,10 @@ public CalendarEditor(){
     addLeft(_iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
     addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_ENTRY_ID,Integer.toString(_entryID)));
 
-    initializeFields(iLocaleId);
+    initializeFields(iLocaleId,iCategoryId);
   }
 
-  private void initializeFields(int iLocaleId) {
+  private void initializeFields(int iLocaleId,int iCategoryId) {
     CalendarEntry entry = null;
     if ( _update )
       entry = CalendarFinder.getEntry(_entryID);
@@ -194,18 +195,18 @@ public CalendarEditor(){
       entryDate.setYear(_stamp.getYear());
       entryDate.setStyleAttribute("style",STYLE);
     addLeft(_iwrb.getLocalizedString("date","Date")+":",entryDate,true);
-
+    addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_IC_CAT,String.valueOf(iCategoryId)));
     addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_CLOSE));
     addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),CalendarBusiness.PARAMETER_MODE,CalendarBusiness.PARAMETER_MODE_SAVE));
   }
 
-  private void saveEntry(IWContext iwc, int localeID) {
+  private void saveEntry(IWContext iwc, int localeID,int categoryId) {
     String entryHeadline = iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_HEADLINE);
     String entryBody = iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_BODY);
     String entryDate = iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_DATE);
     String entryType = iwc.getParameter(CalendarBusiness.PARAMETER_TYPE_ID);
 
-    int entryID = CalendarBusiness.saveEntry(_entryID,_userID,_groupID,localeID,entryHeadline,entryBody,entryDate,entryType);
+    int entryID = CalendarBusiness.saveEntry(_entryID,_userID,_groupID,localeID,categoryId,entryHeadline,entryBody,entryDate,entryType);
     iwc.setSessionAttribute(CalendarBusiness.PARAMETER_ENTRY_ID,Integer.toString(entryID));
   }
 
