@@ -57,6 +57,7 @@ public class CampusAccountFinder  {
    *  Returns a list of view entity ContractAccountApartment
    *  that have legal contracts in period specified
    *  returns null if nothing found
+   *  only contracts with statuses signed resigned ended terminated
    */
   public static List listOfContractAccountApartment(String type,IWTimestamp startDate,IWTimestamp endDate){
     StringBuffer sql = new StringBuffer("select * from ").append(is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getEntityTableName());
