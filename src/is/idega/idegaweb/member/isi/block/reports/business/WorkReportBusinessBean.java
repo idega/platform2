@@ -226,7 +226,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return new File(file.getRealPathToFile());
 	}
 	
-	private HSSFWorkbook getExcelWorkBookFromFileId(int fileId){
+	private HSSFWorkbook getExcelWorkBookFromFileId(int fileId) throws WorkReportImportException{
 		HSSFWorkbook excel = null;
 		File file = getFileObjectForFileId(fileId);
 		
@@ -235,9 +235,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		}
 		catch (FileNotFoundException e) {
 			e.printStackTrace();
+			throw new WorkReportImportException("workreportimportexception.file_not_found");
 		}
 		catch (IOException e) {
 			e.printStackTrace();
+			throw new WorkReportImportException("workreportimportexception.could_not_read_file");
 		}
 		
 		return excel;
@@ -258,8 +260,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 			report.setMemberFileId(workReportFileId);
 			report.store();
-			
-
 		
 			HSSFWorkbook excel = getExcelWorkBookFromFileId(workReportFileId);
 			
@@ -335,6 +335,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 										}
 										catch (IDOAddRelationshipException e5) {
 											e5.printStackTrace();
+											throw new WorkReportImportException("workreportimportexception.database_error");
 										}
 									}
 								}
@@ -344,14 +345,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					}
 					catch (EJBException e1) {
 						e1.printStackTrace();
+						throw new WorkReportImportException("workreportimportexception.database_error");
 					}
 					catch (CreateException e2) {
 						//failed to create move on.
 						e2.printStackTrace();
 						System.err.println("Failed to create user for ssn : "+ssn);
+						throw new WorkReportImportException("workreportimportexception.database_error_failed_to_create_user");
 					} 
 					catch (FinderException e) {
-						System.err.println("User not found for ssn : "+ssn);
+						System.err.println("User not found for ssn : "+ssn+" skipping...");
 					}
 				}
 			}
