@@ -246,9 +246,10 @@ public class VacationBusinessBean extends ApplicationsBusinessBean implements Va
 			Locale locale = getIWApplicationContext().getApplicationSettings().getDefaultLocale();
 			IWTimestamp from = new IWTimestamp(vacation.getFromDate());
 			IWTimestamp to = new IWTimestamp(vacation.getToDate());
+			Group parish = getUserParish(user);
 			
-			Object[] arguments = { user.getName(), PersonalIDFormatter.format(user.getPersonalID(), locale), getLocalizedString(type.getLocalizedKey(), type.getTypeName()), from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT) };
-			sendMessage(email, cc, getLocalizedString("vacation_application.accepted_subject", "Vacation application accepted"), MessageFormat.format(getLocalizedString("vacation_application.accepted_body", "A vacation application has been accepted for {0}, {1}.\n\nThe vacation type is {2} from {3} to {4}."), arguments), null);
+			Object[] arguments = { user.getName(), PersonalIDFormatter.format(user.getPersonalID(), locale), getLocalizedString(type.getLocalizedKey(), type.getTypeName()), from.getLocaleDate(locale, IWTimestamp.SHORT), to.getLocaleDate(locale, IWTimestamp.SHORT), parish != null ? parish.getName() : "xxx" };
+			sendMessage(email, cc, getLocalizedString("vacation_application.accepted_subject", "Vacation application accepted"), MessageFormat.format(getLocalizedString("vacation_application.accepted_body", "A vacation application has been accepted for {0}, {1}, that works in {5}.\n\nThe vacation type is {2} from {3} to {4}."), arguments), null);
 		}
 	}
 
