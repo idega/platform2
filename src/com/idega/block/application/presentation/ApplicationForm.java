@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.10 2001/08/29 22:51:45 laddi Exp $
+ * $Id: ApplicationForm.java,v 1.11 2001/08/29 23:15:55 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -246,7 +246,13 @@ public class ApplicationForm extends ModuleObjectContainer {
   }
 
   protected void doDone(String cypher) {
-    add(iwrb_.getLocalizedString("applicationRegistered","Umsókn skráð")+". "+iwrb_.getLocalizedString("applicationReferenceNumber","Tilvísunarnúmer þitt er")+": "+cypher);
+    Text cypherText = new Text(cypher);
+      cypherText.setBold();
+    add(iwrb_.getLocalizedString("applicationRegistered","Umsókn skráð")+". "+iwrb_.getLocalizedString("applicationReferenceNumber","Tilvísunarnúmer þitt er")+": ");
+    add(cypherText);
+    add(Text.getBreak());
+    add(Text.getBreak());
+    add(iwrb_.getLocalizedString("applicationFollowUp","Þú getur notað tilvísunarnúmerið til að fylgjast með stöðu umsóknar þinnar")+".");
   }
 
   protected void doError() {
