@@ -59,13 +59,13 @@ public class WorkReportOverViewCloseView extends Block {
 	private static final String REGIONAL_UNION_ABBR = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+"REG_UNI_ABBR";
 	private static final String GROUP_NUMBER = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+"GROUP_NUMBER";
 	private static final String GROUP_NAME = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+"GROUP_NAME";
-	private static final String HAS_NATIONAL_LEAGUE = WorkReportDivisionBoard.class.getName()+"|"+"HAS_NATIONAL_LEAGUE";
+	private static final String HAS_NATIONAL_LEAGUE = WorkReportDivisionBoard.class.getName()+".HAS_NATIONAL_LEAGUE";
 	private static final String GROUP_TYPE = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+"GROUP_TYPE";
 
 
 	private static final String MEMBER_COUNT = WorkReport.class.getName()+".ISI_WORK_REPORT_ID"+"|"+"TOTAL_MEMBERS";
-	private static final String PLAYER_COUNT = WorkReportDivisionBoard.class.getName()+"|"+"TOTAL_PLAYERS";
-	private static final String COMPETITOR_COUNT = WorkReportDivisionBoard.class.getName()+"|"+"TOTAL_COMPETITIORS";
+	private static final String PLAYER_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_PLAYERS";
+	private static final String COMPETITOR_COUNT = WorkReportDivisionBoard.class.getName()+".TOTAL_COMPETITIORS";
 	
 	
 	private static final String LEAGUE_NR = WorkReportGroup.class.getName()+".ISI_WR_GROUP_ID"+"|"+"GROUP_NUMBER";
