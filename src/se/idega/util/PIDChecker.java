@@ -9,7 +9,7 @@
  */
 package se.idega.util;
 
-import java.util.Date;
+import java.sql.Date;
 
 import com.idega.util.IWTimestamp;
 
