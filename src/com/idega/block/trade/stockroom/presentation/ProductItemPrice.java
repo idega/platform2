@@ -38,7 +38,7 @@ public class ProductItemPrice extends ProductItem {
     Text text = getText(defaultText);
     if ( _product != null ) {
       ProductPrice pPrice = StockroomBusiness.getPrice(_product);
-      if (pPrice != null) {
+      if (pPrice != null && pPrice.getPrice() > 0 ) {
         text.setText(Integer.toString((int) pPrice.getPrice()));
         if (this.showCurrency) {
           try {
@@ -47,7 +47,7 @@ public class ProductItemPrice extends ProductItem {
           }catch (SQLException sql) {}
         }
       }else {
-        text.setText("0");
+        text.setText("");
       }
     }
     add(text);
