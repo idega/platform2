@@ -334,4 +334,13 @@ public class ProviderAccountBusinessBean
 		PostalCodeHome bus = (PostalCodeHome)this.getIDOHome(PostalCode.class);
 		return bus;
 	}
+		public String getAcceptMessageSubject()
+	{
+		return this.getLocalizedString("acc.app.provider.appr.subj", "Your provider account application has been approved");
+	}
+
+	public String getRejectMessageSubject()
+	{
+		return this.getLocalizedString("acc.app.provider.prov.rej.subj", "Your provider account application has been rejected");
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.9 2002/09/16 23:06:33 palli Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.10 2002/09/30 12:09:36 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -214,5 +214,15 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		user = getUserBusiness().createCitizen(firstName, null, lastName, null);
 		theCase.setOwner(user);
 		return user;
+	}
+	
+	public String getAcceptMessageSubject()
+	{
+		return this.getLocalizedString("acc.app.citizen.appr.subj", "Your citizen account application has been approved");
+	}
+
+	public String getRejectMessageSubject()
+	{
+		return this.getLocalizedString("acc.app.citizen.prov.rej.subj", "Your citizen account application has been rejected");
 	}
 }
