@@ -8,6 +8,7 @@ package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import com.idega.util.IWTimestamp;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class ClubInformationTab extends UserGroupTab {
+
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
 	private static final String TAB_NAME = "cit_tab_name";
@@ -390,18 +392,18 @@ public class ClubInformationTab extends UserGroupTab {
 			Boolean inOperation = (Boolean) fieldValues.get(_inOperationFieldName);
 			Boolean usingSystem = (Boolean) fieldValues.get(_usingMemberSystemFieldName);
 
-			group.setMetaData("CLUBINFO_NUMBER", number);
-			group.setMetaData("CLUBINFO_SSN", ssn);
-			group.setMetaData("CLUBINFO_ABRV", abrv);
-			group.setMetaData("CLUBINFO_SHORT", shortName);
-			group.setMetaData("CLUBINFO_NAME", name);
-			group.setMetaData("CLUBINFO_FOUNDED", founded);
-			group.setMetaData("CLUBINFO_TYPE", type);
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER, number);
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_SSN, ssn);
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_ABRV, abrv);
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME, shortName);
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_NAME, name);
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED, founded);
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_TYPE, type);
 			if (memberUMFI != null)
-				group.setMetaData("CLUBINFO_MEMBER", memberUMFI.toString());
-			group.setMetaData("CLUBINFO_MAKE", make);
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_MEMBER, memberUMFI.toString());
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_MAKE, make);
 			if (make.equals("2")) {
-				String oldConnection = group.getMetaData("CLUBINFO_CONN");
+				String oldConnection = group.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
 				if (oldConnection == null && connection != null) {
 //					String clubName = null; 
 //					Group club = getMemberUserBusiness(iwc).getClubForGroup(group,iwc);
@@ -410,19 +412,19 @@ public class ClubInformationTab extends UserGroupTab {
 					getClubInformationPluginBusiness(iwc).createSpecialConnection(connection, getGroupId(), group.getName(),iwc);
 				}
 
-				group.setMetaData("CLUBINFO_CONN", connection);
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, connection);
 			}
 			else
-				group.setMetaData("CLUBINFO_CONN", "");
-			group.setMetaData("CLUBINFO_STATUS", status);
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, "");
+			group.setMetaData(IWMemberConstants.META_DATA_CLUB_STATUS, status);
 			if (inOperation != null)
-				group.setMetaData("CLUBINFO_OPERATION", inOperation.toString());
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION, inOperation.toString());
 			else
-				group.setMetaData("CLUBINFO_OPERATION", Boolean.FALSE.toString());
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION, Boolean.FALSE.toString());
 			if (usingSystem != null)
-				group.setMetaData("CLUBINFO_SYSTEM", usingSystem.toString());
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM, usingSystem.toString());
 			else
-				group.setMetaData("CLUBINFO_SYSTEM", Boolean.FALSE.toString());
+				group.setMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM, Boolean.FALSE.toString());
 
 			group.store();
 		}
@@ -458,19 +460,19 @@ public class ClubInformationTab extends UserGroupTab {
 				}
 			}
 
-			String number = group.getMetaData("CLUBINFO_NUMBER");
-			String ssn = group.getMetaData("CLUBINFO_SSN");
-			String abrv = group.getMetaData("CLUBINFO_ABRV");
-			String shortName = group.getMetaData("CLUBINFO_SHORT");
-			String name = group.getMetaData("CLUBINFO_NAME");
-			String founded = group.getMetaData("CLUBINFO_FOUNDED");
-			String type = group.getMetaData("CLUBINFO_TYPE");
-			String member = group.getMetaData("CLUBINFO_MEMBER");
-			String make = group.getMetaData("CLUBINFO_MAKE");
-			String connection = group.getMetaData("CLUBINFO_CONN");
-			String status = group.getMetaData("CLUBINFO_STATUS");
-			String inOperation = group.getMetaData("CLUBINFO_OPERATION");
-			String using = group.getMetaData("CLUBINFO_SYSTEM");
+			String number = group.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+			String ssn = group.getMetaData(IWMemberConstants.META_DATA_CLUB_SSN);
+			String abrv = group.getMetaData(IWMemberConstants.META_DATA_CLUB_ABRV);
+			String shortName = group.getMetaData(IWMemberConstants.META_DATA_CLUB_SHORT_NAME);
+			String name = group.getMetaData(IWMemberConstants.META_DATA_CLUB_NAME);
+			String founded = group.getMetaData(IWMemberConstants.META_DATA_CLUB_FOUNDED);
+			String type = group.getMetaData(IWMemberConstants.META_DATA_CLUB_TYPE);
+			String member = group.getMetaData(IWMemberConstants.META_DATA_CLUB_MEMBER);
+			String make = group.getMetaData(IWMemberConstants.META_DATA_CLUB_MAKE);
+			String connection = group.getMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION);
+			String status = group.getMetaData(IWMemberConstants.META_DATA_CLUB_STATUS);
+			String inOperation = group.getMetaData(IWMemberConstants.META_DATA_CLUB_OPERATION);
+			String using = group.getMetaData(IWMemberConstants.META_DATA_CLUB_USING_SYSTEM);
 
 			if (number != null)
 				fieldValues.put(_numberFieldName, number);
