@@ -1,5 +1,5 @@
 /*
- * $Id: HandicapReportBean.java,v 1.4 2005/02/07 14:56:11 laddi Exp $
+ * $Id: HandicapReportBean.java,v 1.5 2005/02/07 15:05:11 laddi Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,10 +37,10 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/02/07 14:56:11 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/07 15:05:11 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class HandicapReportBean extends IBOSessionBean  implements HandicapReport{
 
@@ -136,7 +136,7 @@ public class HandicapReportBean extends IBOSessionBean  implements HandicapRepor
 				data.addData(club, memberUnion.getName());
 				data.addData(name, member.getName());
 				data.addData(personalID, member.getSocialSecurityNumber());
-				data.addData(handicap, TextSoap.decimalFormat(memberInfo.getHandicap(), 1));
+				data.addData(handicap, memberInfo.getHandicap() < 100 ? TextSoap.decimalFormat(memberInfo.getHandicap(), 1) : "-");
 
 				reportCollection.add(data);
 			}
