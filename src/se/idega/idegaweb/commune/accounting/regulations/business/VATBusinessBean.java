@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.5 2003/08/25 15:32:45 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.6 2003/08/25 15:41:53 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/08/25 15:32:45 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/25 15:41:53 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -140,7 +140,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	 * @param periodTo the end of the period
 	 * @param periodFromString the unparsed from date
 	 * @param periodToString the unparsed to date
-	 * @param descriptionString the description of the VAT regulation
+	 * @param description the description of the VAT regulation
 	 * @param vatPercentString the VAT percent value
 	 * @param paymentFlowTypeIdString the payment flow type id
 	 * @param providerTypeIdString the provider type id
