@@ -213,7 +213,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 			RadioButton rb1 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.YES);
 			RadioButton rb2 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO_NEW_DATE);
 			RadioButton rb3 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO);
-			rb3.setMustBeSelected(this._page.localize("child_care.must_select_offer_option", "You must select an offer option."));
+			rb3.setMustBeSelected(_page.localize("child_care.must_select_offer_option", "You must select an offer option."));
 
 			if (disableAccept)
 				rb1.setDisabled(true);

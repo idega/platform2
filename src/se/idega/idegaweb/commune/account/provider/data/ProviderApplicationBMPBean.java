@@ -58,7 +58,7 @@ public class ProviderApplicationBMPBean
 	}
 	public String getEntityName()
 	{
-		return this.TABLE_NAME;
+		return ProviderApplicationBMPBean.TABLE_NAME;
 	}
 	public String getCaseCodeKey()
 	{

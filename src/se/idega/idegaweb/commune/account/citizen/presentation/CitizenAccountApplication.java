@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.61 2003/11/06 17:37:21 laddi Exp $
+ * $Id: CitizenAccountApplication.java,v 1.62 2004/01/12 09:33:01 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -60,11 +60,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/11/06 17:37:21 $ by $Author: laddi $
+ * Last modified: $Date: 2004/01/12 09:33:01 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.61 $
+ * @version $Revision: 1.62 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -684,7 +684,7 @@ private TextInput getSingleInput(IWContext iwc, final String paramId, final int 
 
 private DropdownMenu getDropdownInput(String paramName) {
 	DropdownMenu dropdown = new DropdownMenu(paramName);
-	dropdown.setStyleAttribute(this.STYLENAME_INTERFACE);
+	dropdown.setStyleAttribute(CommuneBlock.STYLENAME_INTERFACE);
 	return dropdown;
 }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.53 2004/01/12 09:18:53 gimmi Exp $
+ * $Id: MessageBusinessBean.java,v 1.54 2004/01/12 09:43:07 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -36,6 +36,7 @@ import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserProperties;
@@ -277,7 +278,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 					createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 			}
 
-			if (this.getIWApplicationContext().getApplication().isDebugActive()) {
+			if (IWMainApplication.isDebugActive()) {
 				System.out.println("[MessageBusiness] Creating user message with subject:" + subject);
 				System.out.println("[MessageBusiness] Body: " + body);
 				if (parentCase != null)

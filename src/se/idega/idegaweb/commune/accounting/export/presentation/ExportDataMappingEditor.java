@@ -245,8 +245,8 @@ public class ExportDataMappingEditor extends AccountingBlock {
 	private String getValidateFormScript() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("function validateForm() {").append("\n\t\t");
-		buffer.append("var inChecked = findObj('"+this.PARAMETER_CASH_FLOW_IN+"').checked;").append("\n\t\t");
-		buffer.append("var outChecked = findObj('"+this.PARAMETER_CASH_FLOW_OUT+"').checked;").append("\n\t\t");
+		buffer.append("var inChecked = findObj('"+ExportDataMappingEditor.PARAMETER_CASH_FLOW_IN+"').checked;").append("\n\t\t");
+		buffer.append("var outChecked = findObj('"+ExportDataMappingEditor.PARAMETER_CASH_FLOW_OUT+"').checked;").append("\n\t\t");
 		buffer.append("if (!inChecked && !outChecked) {").append("\n\t\t\t");
 		buffer.append("alert('"+localize("export.must_check_one", "You must check at least IN or OUT.")+"');").append("\n\t\t\t");
 		buffer.append("return false;").append("\n\t\t");

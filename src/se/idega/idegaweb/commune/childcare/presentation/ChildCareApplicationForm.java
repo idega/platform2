@@ -136,7 +136,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	}
 
 	private int parseAction(IWContext iwc) {
-		if (iwc.isParameterSet(this.PARAM_FORM_SUBMIT)) {
+		if (iwc.isParameterSet(PARAM_FORM_SUBMIT)) {
 			if (checkParameters(iwc)) {
 				return ACTION_SUBMIT_FORM;
 			}

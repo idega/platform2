@@ -400,7 +400,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private PresentationObject getPrintedDatesForm() {
 
 		Table T = new Table();
-		T.setWidth(T.HUNDRED_PERCENT);
+		T.setWidth(Table.HUNDRED_PERCENT);
 		DateInput from = new DateInput(PRM_STAMP_P_FROM, true);
 		from = (DateInput) getStyledInterface(from);
 		from.setYearRange(today.getYear() - 5, today.getYear() + 2);
@@ -460,7 +460,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private PresentationObject getUnPrintedDatesForm(boolean showStatus) {
 
 		Table T = new Table();
-		T.setWidth(T.HUNDRED_PERCENT);
+		T.setWidth(Table.HUNDRED_PERCENT);
 		int col = 1;
 		DateInput from = new DateInput(PRM_STAMP_U_FROM, true);
 		from = (DateInput) getStyledInterface(from);
@@ -502,7 +502,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 	private PresentationObject getPrintButton() {
 		Table T = new Table();
-		T.setAlignment(T.HORIZONTAL_ALIGN_RIGHT);
+		T.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 		T.setCellpadding(2);
 		SubmitButton print =
 			new SubmitButton(
@@ -556,7 +556,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		String cursorPrm,
 		int step) {
 		Table T = new Table();
-		T.setAlignment(T.HORIZONTAL_ALIGN_RIGHT);
+		T.setAlignment(Table.HORIZONTAL_ALIGN_RIGHT);
 		T.setCellpadding(2);
 		if (cursor > 0) {
 			Link prev = new Link(localize("printdoc.last", "last") + "  " + step);
@@ -887,7 +887,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private PresentationObject getPrintedMessagesPart(IWContext iwc)
 		throws RemoteException, FinderException {
 		Table pT = new Table();
-		pT.setWidth(pT.HUNDRED_PERCENT);
+		pT.setWidth(Table.HUNDRED_PERCENT);
 		ColumnList printedLetterDocs = new ColumnList(5);
 		printedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 		printedLetterDocs.setBackroundColor("#e0e0e0");
@@ -903,8 +903,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		int prow = 1;
 		//int bulkId;
 		Table hT = new Table(2, 1);
-		hT.setWidth(hT.HUNDRED_PERCENT);
-		hT.setAlignment(2, 1, hT.HORIZONTAL_ALIGN_RIGHT);
+		hT.setWidth(Table.HUNDRED_PERCENT);
+		hT.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		hT.add(getLocalizedHeader("printdoc.printed_single_letters", "Printed single letters"), 1, 1);
 		hT.add(getViewLink(), 2, 1);
@@ -962,7 +962,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private PresentationObject getPrintedDocumentsPart(IWContext iwc)
 		throws RemoteException, FinderException {
 		Table T = new Table();
-		T.setWidth(T.HUNDRED_PERCENT);
+		T.setWidth(Table.HUNDRED_PERCENT);
 		//int urow = 1;
 
 		if (isBulkManual)
@@ -975,8 +975,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
 		int prow = 1;
 		Table hT = new Table(2, 1);
-		hT.setWidth(hT.HUNDRED_PERCENT);
-		hT.setAlignment(2, 1, hT.HORIZONTAL_ALIGN_RIGHT);
+		hT.setWidth(Table.HUNDRED_PERCENT);
+		hT.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 		hT.add(getLocalizedHeader("printdoc.printed_composite_letters", "Printed composite letters"), 1, 1);
 		hT.add(getViewLink(), 2, 1);
@@ -1045,7 +1045,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private PresentationObject getUnprintedMessagesPart(IWContext iwc)
 		throws RemoteException, FinderException {
 		Table T = new Table();
-		T.setWidth(T.HUNDRED_PERCENT);
+		T.setWidth(Table.HUNDRED_PERCENT);
 		ColumnList letterList = new ColumnList(7);
 		
 		int row = 1;

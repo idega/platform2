@@ -557,7 +557,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(dateInput, 1, row++);
 
 		if (isAlteration) {
-			TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
+			TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
 			textInput.setLength(2);
 			if (application != null)
 				textInput.setContent(String.valueOf(application.getCareTime()));
@@ -611,7 +611,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(new HiddenInput(PARAMETER_CHILDCARE_TIME, "" + application.getCareTime()));
 			
 		} else {
-			TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
+			TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
 			textInput.setLength(2);
 			textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
 			textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
@@ -666,7 +666,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		ChildCareContract archive = getBusiness().getContractFile(application.getContractFileId());
 
-		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_CHILDCARE_TIME));
+		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
 		textInput.setLength(2);
 		textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
 		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
@@ -802,7 +802,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 
-		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_GROUP_NAME));
+		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_GROUP_NAME));
 		textInput.setLength(24);
 		textInput.setAsNotEmpty(localize("child_care.group_name_required","You must fill in a name for the group."));
 		

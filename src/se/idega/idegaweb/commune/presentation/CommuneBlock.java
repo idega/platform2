@@ -256,7 +256,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}	
 
 	public Text getText(String s) {
-		return getStyleText(s, this.STYLENAME_TEXT);
+		return getStyleText(s, STYLENAME_TEXT);
 	}
 
 	public Text getLocalizedText(String s, String d) {
@@ -264,7 +264,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	public Text getSmallText(String s) {
-		return getStyleText(s, this.STYLENAME_SMALL_TEXT);
+		return getStyleText(s, STYLENAME_SMALL_TEXT);
 	}
 
 	public Text getLocalizedSmallText(String s, String d) {
@@ -272,7 +272,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	public Text getHeader(String s) {
-		return getStyleText(s, this.STYLENAME_HEADER);
+		return getStyleText(s, STYLENAME_HEADER);
 	}
 
 	public Text getLocalizedHeader(String s, String d) {
@@ -280,11 +280,11 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	public Text getSmallHeader(String s) {
-		return getStyleText(s, this.STYLENAME_SMALL_HEADER);
+		return getStyleText(s, STYLENAME_SMALL_HEADER);
 	}
 
 	public Link getSmallHeaderLink(String s) {
-		return getStyleLink(new Link(s), this.STYLENAME_SMALL_HEADER_LINK);
+		return getStyleLink(new Link(s), STYLENAME_SMALL_HEADER_LINK);
 	}
 
 	public Text getLocalizedSmallHeader(String s, String d) {
@@ -296,11 +296,11 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	public Link getLink(String s) {
-		return getStyleLink(new Link(s), this.STYLENAME_LINK);
+		return getStyleLink(new Link(s), STYLENAME_LINK);
 	}
 	
 	public Link getSmallLink(String link) {
-		return getStyleLink(new Link(link), this.STYLENAME_SMALL_LINK);
+		return getStyleLink(new Link(link), STYLENAME_SMALL_LINK);
 	}
 
 	public Link getLocalizedLink(String s, String d) {
@@ -308,19 +308,19 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	public Text getErrorText(String s) {
-		return getStyleText(s, this.STYLENAME_ERROR_TEXT);
+		return getStyleText(s, STYLENAME_ERROR_TEXT);
 	}
 
 	public Text getSmallErrorText(String s) {
-		return getStyleText(s, this.STYLENAME_SMALL_ERROR_TEXT);
+		return getStyleText(s, STYLENAME_SMALL_ERROR_TEXT);
 	}
 
 	public InterfaceObject getStyledInterface(InterfaceObject obj) {
-		return (InterfaceObject) setStyle(obj, this.STYLENAME_INTERFACE);
+		return (InterfaceObject) setStyle(obj, STYLENAME_INTERFACE);
 	}
 	
 	public InterfaceObjectContainer getStyledInterface(InterfaceObjectContainer obj) {
-		return (InterfaceObjectContainer) setStyle(obj, this.STYLENAME_INTERFACE);
+		return (InterfaceObjectContainer) setStyle(obj, STYLENAME_INTERFACE);
 	}
 	
 	public ICPage getBackPage() {

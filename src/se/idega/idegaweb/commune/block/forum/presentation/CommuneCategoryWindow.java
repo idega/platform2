@@ -152,14 +152,14 @@ public class CommuneCategoryWindow extends CategoryWindow {
 		}
 		this.maintainClearCacheKeyInForm(iwc);
 
-		T.setColumnAlignment(4, T.HORIZONTAL_ALIGN_CENTER);
-		T.setAlignment(4, 1, T.HORIZONTAL_ALIGN_LEFT);
+		T.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
+		T.setAlignment(4, 1, Table.HORIZONTAL_ALIGN_LEFT);
 		//T.setColumnAlignment(5, T.HORIZONTAL_ALIGN_CENTER);
 		//T.setAlignment(5, 1, T.HORIZONTAL_ALIGN_LEFT);
-		T.setColumnAlignment(6, T.HORIZONTAL_ALIGN_CENTER);
-		T.setAlignment(6, 1, T.HORIZONTAL_ALIGN_LEFT);
-		T.setColumnAlignment(7, T.HORIZONTAL_ALIGN_CENTER);
-		T.setAlignment(7, 1, T.HORIZONTAL_ALIGN_LEFT);
+		T.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+		T.setAlignment(6, 1, Table.HORIZONTAL_ALIGN_LEFT);
+		T.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
+		T.setAlignment(7, 1, Table.HORIZONTAL_ALIGN_LEFT);
 
 	}
 
