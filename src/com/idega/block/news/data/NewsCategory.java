@@ -7,6 +7,10 @@ import java.sql.*;
 //import com.idega.data.*;
 import com.idega.data.*;
 // Changed by Aron
+
+import com.idega.util.idegaTimestamp;
+
+
 public class NewsCategory extends GenericEntity{
 
   public NewsCategory(){

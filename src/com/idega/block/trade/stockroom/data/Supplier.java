@@ -30,7 +30,7 @@ public class Supplier extends GenericEntity{
     //addAttribute(getAddressIDColumnName(), "Heimilisfang", true, true, Integer.class ,"many_to_one",Address.class);
     addAttribute(getGroupIDColumnName(),"Hópur", true, true, Integer.class, "many_to_one", EmployeeGroup.class);
     this.addManyToManyRelationShip(Address.class,"SR_SUPPLIER_IC_ADDRESS");
-//    this.addManyToManyRelationShip(Phone.class,"SR_SUPPLIER_IC_PHONE");
+    this.addManyToManyRelationShip(Phone.class,"SR_SUPPLIER_IC_PHONE");
     this.addManyToManyRelationShip(PriceCategory.class, "SR_SUPPLIER_PRICE_CATEGORY");
     this.addManyToManyRelationShip(ProductCategory.class, "SR_SUPPLIER_PRODUCT_CATEGORY" );
   }
@@ -42,9 +42,6 @@ public class Supplier extends GenericEntity{
   public static String getNameColumnName() {return "NAME";}
   public static String getAddressIDColumnName() {return "IC_ADDRESS_ID";}
   public static String getGroupIDColumnName() {return "IC_GROUP_ID";}
- // public static String getSupplierAddressEntityName(){return "sr_supplier_ic_address"}
-
-
 
   public String getEntityName(){
     return getSupplierTableName();
