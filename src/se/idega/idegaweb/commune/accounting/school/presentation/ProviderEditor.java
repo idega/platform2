@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.7 2003/09/25 16:00:33 anders Exp $
+ * $Id: ProviderEditor.java,v 1.8 2003/09/26 10:19:29 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -57,10 +57,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/25 16:00:33 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/26 10:19:29 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -116,9 +116,11 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_ZIP_AREA = KP + "zip_area";
 	private final static String KEY_PHONE = KP + "phone";
 	private final static String KEY_INFO = KP + "info";
-	private final static String KEY_KEY_CODE = KP + "key_code";
-	private final static String KEY_LONGITUDE = KP + "longitude";
-	private final static String KEY_LATITUDE = KP + "latitude";
+//	private final static String KEY_KEY_CODE = KP + "key_code";
+//	private final static String KEY_LONGITUDE = KP + "longitude";
+//	private final static String KEY_LATITUDE = KP + "latitude";
+	private final static String KEY_OPERATIONS = KP + "operations";
+	
 	private final static String KEY_SCHOOL_AREA = KP + "school_area";
 	private final static String KEY_ORGANIZATION_NUMBER = KP + "organization_number";
 	private final static String KEY_EXTRA_PROVIDER_ID = KP + "extra_provider_id";
@@ -540,34 +542,52 @@ public class ProviderEditor extends AccountingBlock {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
+//		table.setBorder(1);
+//		table.setBorderColor("#0000cc");
 		int row = 1;
-		
 		table.add(getSmallHeader(localize(KEY_NAME, "Name")), 1, row);
+		table.mergeCells(2, row, 4, row);
 		table.add(getTextInput(PARAMETER_NAME, name, 140), 2, row++);
 		table.add(getSmallHeader(localize(KEY_ADDRESS, "Address")), 1, row);
+		table.mergeCells(2, row, 4, row);
 		table.add(getTextInput(PARAMETER_ADDRESS, address, 200), 2, row++);
 		table.add(getSmallHeader(localize(KEY_ZIP_CODE, "Zip code")), 1, row);
-		table.add(getTextInput(PARAMETER_ZIP_CODE, zipCode, 50), 2, row++);
-		table.add(getSmallHeader(localize(KEY_ZIP_AREA, "Zip area")), 1, row);
-		table.add(getTextInput(PARAMETER_ZIP_AREA, zipArea, 100), 2, row++);
+		table.add(getTextInput(PARAMETER_ZIP_CODE, zipCode, 50), 2, row);
+		table.add(getSmallHeader(localize(KEY_ZIP_AREA, "Zip area")), 3, row);
+		table.add(getText("&nbsp;&nbsp;&nbsp;&nbsp;"), 3, row);
+		table.add(getTextInput(PARAMETER_ZIP_AREA, zipArea, 120), 3, row);
+		table.setColumnWidth(4, "200");
+		row++;
+		table.add(getSmallHeader(localize(KEY_COMMUNE, "Commune")), 1, row);
+		table.mergeCells(2, row, 4, row);
+		table.add(getCommuneDropdownMenu(PARAMETER_COMMUNE_ID, communeId), 2, row++);
+		table.add(getSmallHeader(localize(KEY_COUNTRY, "Country")), 1, row);
+		table.mergeCells(2, row, 4, row);
+		table.add(getCountryDropdownMenu(PARAMETER_COUNTRY_ID, countryId), 2, row++);
 		table.add(getSmallHeader(localize(KEY_PHONE, "Phone")), 1, row);
+		table.mergeCells(2, row, 4, row);
 		table.add(getTextInput(PARAMETER_PHONE, phone, 100), 2, row++);
 		
 		table.add(getSmallHeader(localize(KEY_INFO, "Information")), 1, row);
 		table.setVerticalAlignment(1, row, Table. VERTICAL_ALIGN_TOP);
+		table.mergeCells(2, row, 4, row);
 		TextArea infoTextArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_INFO));
-		infoTextArea.setColumns(25);
+		infoTextArea.setColumns(32);
 		infoTextArea.setRows(3);
 		infoTextArea.setValue(info);
 		table.add(infoTextArea, 2, row++);
 		
-		table.add(getSmallHeader(localize(KEY_KEY_CODE, "Key code")), 1, row);
-		table.add(getTextInput(PARAMETER_KEY_CODE, keyCode, 100), 2, row++);
-		table.add(getSmallHeader(localize(KEY_LONGITUDE, "Longitude")), 1, row);
-		table.add(getTextInput(PARAMETER_LONGITUDE, longitude, 100), 2, row++);
-		table.add(getSmallHeader(localize(KEY_LATITUDE, "Latitude")), 1, row);
-		table.add(getTextInput(PARAMETER_LATITUDE, latitude, 100), 2, row++);
+//		table.add(getSmallHeader(localize(KEY_KEY_CODE, "Key code")), 1, row);
+//		table.mergeCells(2, row, 4, row);
+//		table.add(getTextInput(PARAMETER_KEY_CODE, keyCode, 100), 2, row++);
+//		table.add(getSmallHeader(localize(KEY_LONGITUDE, "Longitude")), 1, row);
+//		table.mergeCells(2, row, 4, row);
+//		table.add(getTextInput(PARAMETER_LONGITUDE, longitude, 100), 2, row++);
+//		table.add(getSmallHeader(localize(KEY_LATITUDE, "Latitude")), 1, row);
+//		table.mergeCells(2, row, 4, row);
+//		table.add(getTextInput(PARAMETER_LATITUDE, latitude, 100), 2, row++);
 		table.add(getSmallHeader(localize(KEY_SCHOOL_AREA, "School area")), 1, row);
+		table.mergeCells(2, row, 4, row);
 		table.add(getSchoolAreaDropdownMenu(iwc, PARAMETER_SCHOOL_AREA_ID, schoolAreaId), 2, row++);
 
 		row++;
@@ -594,18 +614,27 @@ public class ProviderEditor extends AccountingBlock {
 			}
 //			stCheckBox.setToDisableOnClick(PARAMETER_SCHOOL_YEAR_ID + stId, true);
 		}
+		table.add(getSmallHeader(localize(KEY_OPERATIONS, "Operations")), 1, row);
+		table.mergeCells(2, row, 4, row);
+		table.setVerticalAlignment(1, row, Table. VERTICAL_ALIGN_TOP);
 		table.add(schoolTypeTable, 2, row++);
-		row ++;
 
-		table.add(getSmallHeader(localize(KEY_ORGANIZATION_NUMBER, "Organization number")), 1, row);
-		table.add(getTextInput(PARAMETER_ORGANIZATION_NUMBER, organizationNumber, 100), 2, row++);
 		table.add(getSmallHeader(localize(KEY_EXTRA_PROVIDER_ID, "Provider id")), 1, row);
-		table.add(getTextInput(PARAMETER_EXTRA_PROVIDER_ID, extraProviderId, 100), 2, row++);
+		table.add(getTextInput(PARAMETER_EXTRA_PROVIDER_ID, extraProviderId, 100), 2, row);
+		table.add(getSmallHeader(localize(KEY_ORGANIZATION_NUMBER, "Organization number")), 3, row);
+		table.add(getText("&nbsp;&nbsp;&nbsp;&nbsp;"), 3, row);
+		table.add(getTextInput(PARAMETER_ORGANIZATION_NUMBER, organizationNumber, 100), 3, row++);
 		table.add(getSmallHeader(localize(KEY_PROVIDER_TYPE, "Provider type")), 1, row);
+		table.mergeCells(2, row, 4, row);
 		table.add(getProviderTypeDropdownMenu(iwc, PARAMETER_PROVIDER_TYPE_ID, providerTypeId), 2, row++);
 		table.add(getSmallHeader(localize(KEY_SCHOOL_MANAGEMENT_TYPE, "School management type")), 1, row);
+		table.mergeCells(2, row, 4, row);
 		table.add(getSchoolManagementTypeDropdownMenu(iwc, PARAMETER_SCHOOL_MANAGEMENT_TYPE_ID, schoolManagementTypeId), 2, row++);
+		table.add(getSmallHeader(localize(KEY_STATISTICS_TYPE, "Statistics type")), 1, row);
+		table.mergeCells(2, row, 4, row);
+		table.add(getStatisticsTypeDropdownMenu(PARAMETER_STATISTICS_TYPE, statisticsType), 2, row++);
 		table.add(getSmallHeader(localize(KEY_TERMINATION_DATE, "Termination date")), 1, row);
+		table.mergeCells(2, row, 4, row);
 		DateInput di = new DateInput(PARAMETER_TERMINATION_DATE);
 		di.setToDisplayDayLast(true);
 		Date d = parseDate(terminationDate);
@@ -613,22 +642,26 @@ public class ProviderEditor extends AccountingBlock {
 			di.setDate(parseDate(terminationDate));
 		}
 		table.add(di, 2, row++);
-		// Statistiktyp
-		table.add(getSmallHeader(localize(KEY_COMMUNE, "Commune")), 1, row);
-		table.add(getCommuneDropdownMenu(PARAMETER_COMMUNE_ID, communeId), 2, row++);
-		table.add(getSmallHeader(localize(KEY_COUNTRY, "Country")), 1, row);
-		table.add(getCountryDropdownMenu(PARAMETER_COUNTRY_ID, countryId), 2, row++);
-		table.add(getSmallHeader(localize(KEY_STATISTICS_TYPE, "Statistics type")), 1, row);
-		table.add(getStatisticsTypeDropdownMenu(PARAMETER_STATISTICS_TYPE, statisticsType), 2, row++);
-		table.add(getSmallHeader(localize(KEY_POSTGIRO, "Postgiro")), 1, row);
-		table.add(getTextInput(PARAMETER_POSTGIRO, postgiro, 100), 2, row++);
-		table.add(getSmallHeader(localize(KEY_BANKGIRO, "Bankgiro")), 1, row);
-		table.add(getTextInput(PARAMETER_BANKGIRO, bankgiro, 100), 2, row++);
+
 		row++;
+		table.mergeCells(2, row, 4, row);
 		table.add(getCheckBoxTable(PARAMETER_PAYMENT_BY_INVOICE, paymentByInvoice, KEY_PAYMENT_BY_INVOICE, "Payment by invoice"), 2, row++);
+		table.mergeCells(2, row, 4, row);
 		table.add(getCheckBoxTable(PARAMETER_CENTRALIZED_ADMINISTRATION, centralizedAdministration, KEY_CENTRALIZED_ADMINISTRATION, "Centralized administration"), 2, row++);
 
 		row++;
+		table.mergeCells(2, row, 4, row);
+		table.add(getText("&nbsp;"), 2, row);
+		table.add(getSmallHeader(localize(KEY_POSTGIRO, "Postgiro")), 2, row);
+		table.add(getText("&nbsp;&nbsp;&nbsp;&nbsp;"), 2, row);
+		table.add(getTextInput(PARAMETER_POSTGIRO, postgiro, 100), 2, row);
+		table.add(getText("&nbsp;&nbsp;&nbsp;&nbsp;"), 2, row);
+		table.add(getSmallHeader(localize(KEY_BANKGIRO, "Bankgiro")), 2, row);
+		table.add(getText("&nbsp;&nbsp;&nbsp;&nbsp;"), 2, row);
+		table.add(getTextInput(PARAMETER_BANKGIRO, bankgiro, 100), 2, row++);
+
+		row++;
+		table.mergeCells(2, row, 4, row);
 		table.add(new PostingBlock(ownPosting, doublePosting), 2, row);
 		
 		Table mainPanel = new Table();
