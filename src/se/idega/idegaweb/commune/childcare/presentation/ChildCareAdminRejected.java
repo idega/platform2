@@ -131,6 +131,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				column = 1;
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
+				emailLink = null;
 				
 				if (application.getQueueDate() != null)
 					queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
