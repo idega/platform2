@@ -4583,7 +4583,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								userSet.add(element.getPrimaryKey());
 								
 								if (birthYear != null && birthYear.intValue() > 0) {
-									if (birthYear.intValue() != element.getAge()) {
+									if (birthYear.intValue() != element.getDateOfBirth().getYear()) {
 										continue;
 									}
 								}
@@ -4739,7 +4739,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 								}
 								userSet.add(element.getPrimaryKey());
 								if (birthYear != null && birthYear.intValue() > 0) {
-									if (birthYear.intValue() != element.getAge()) {
+									
+									if (birthYear.intValue() != element.getDateOfBirth().getYear()) {
 										continue;
 									}
 								}
