@@ -187,9 +187,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 			if (useStyleNames) {
 				table.setCellpaddingLeft(1, row, 12);
 				if (row % 2 == 0)
-					table.setRowStyleClass(row, getLightRowClass());
-				else
 					table.setRowStyleClass(row, getDarkRowClass());
+				else
+					table.setRowStyleClass(row, getLightRowClass());
 			}
 			else {
 				if (row % 2 == 0)
@@ -285,12 +285,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 		form.addParameter(PARAMETER_GROUP_ID, _groupID);
 		form.addParameter(PARAMETER_ACTION, -1);
 		form.maintainParameter(SchoolCommuneSessionBean.PARAMETER_SCHOOL_ID);
-		if (useStyleNames) {
-			form.setPaddingLeft(12);
-		}
 		
 		Table table = new Table();
-		table.setCellpadding(0);
+		table.setCellpadding(2);
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
 		table.setColumns(3);
@@ -306,9 +303,14 @@ public class SchoolGroupEditor extends ProviderBlock {
 		TextInput name = (TextInput) getStyledInterface(new TextInput(PARAMETER_GROUP_NAME));
 		if (_group != null && _group.getSchoolClassName() != null)
 			name.setContent(_group.getSchoolClassName());
+		if (useStyleNames) {
+			table.setCellpaddingLeft(1, row, 12);
+		}
 		table.add(name, 3, row);
 		
-		table.setHeight(row++, 3);
+		if (useStyleNames) {
+			table.setCellpaddingLeft(1, row, 12);
+		}
 		table.add(getSmallHeader(localize("group_type", "Type") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		Collection providerTypes = null;
@@ -323,7 +325,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 		setSelectedSchoolType(types);
 		table.add(types, 3, row);
 		
-		table.setHeight(row++, 3);
+		if (useStyleNames) {
+			table.setCellpaddingLeft(1, row, 12);
+		}
 		table.add(getSmallHeader(localize("school_season", "Season") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		Collection providerSeasons = null;
@@ -339,7 +343,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 
 		table.add(seasons, 3, row++);
 		
-		table.setHeight(row++, 3);
+		if (useStyleNames) {
+			table.setCellpaddingLeft(1, row, 12);
+		}
 		table.add(getSmallHeader(localize("group_type", "Group type") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		DropdownMenu subGroup = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_IS_SUBGROUP));
@@ -372,6 +378,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setHeight(row++, 15);
 		table.add(getSmallHeader(localize("school_years", "Years") + ":"), 1, row);
 		table.setNoWrap(1, row);
+		if (useStyleNames) {
+			table.setCellpaddingLeft(1, row, 12);
+		}
 		
 		Iterator iter = schoolYears.iterator();
 		while (iter.hasNext()) {
@@ -380,6 +389,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 			if (groupYears.contains(year))
 				box.setChecked(true);
 			
+			if (useStyleNames) {
+				table.setCellpaddingLeft(1, row, 12);
+			}
 			table.setCellpadding(3, row, 2);
 			table.add(box, 3, row);
 			table.add(Text.getNonBrakingSpace(), 3, row);
@@ -409,6 +421,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setHeight(row++, 15);
 		table.add(getSmallHeader(localize("study_paths", "Study paths") + ":"), 1, row);
 		table.setNoWrap(1, row);
+		if (useStyleNames) {
+			table.setCellpaddingLeft(1, row, 12);
+		}
 		
 		iter = paths.iterator();
 		while (iter.hasNext()) {
@@ -417,6 +432,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 			if (studyPaths.contains(path))
 				box.setChecked(true);
 			
+			if (useStyleNames) {
+				table.setCellpaddingLeft(1, row, 12);
+			}
 			table.setCellpadding(3, row, 2);
 			table.add(box, 3, row);
 			table.add(Text.getNonBrakingSpace(), 3, row);
@@ -442,12 +460,18 @@ public class SchoolGroupEditor extends ProviderBlock {
 			if (a == 0) {
 				table.add(getSmallHeader(localize("teacher", "Teacher") + ":"), 1, row);
 				table.setNoWrap(1, row);
+				if (useStyleNames) {
+					table.setCellpaddingLeft(1, row, 12);
+				}
 			}
 			
 			chooser = new UserChooser(PARAMETER_TEACHERS+"_"+(a+1));
 			if (a < size) {
 				User teacher = (User) groupTeachers.get(a);
 				chooser.setSelected(teacher);
+			}
+			if (useStyleNames) {
+				table.setCellpaddingLeft(1, row, 12);
 			}
 			table.add(chooser, 3, row++);
 			
@@ -456,6 +480,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 				
 		table.setHeight(row++, 12);
+		if (useStyleNames) {
+			table.setCellpaddingLeft(1, row, 12);
+		}
 		table.mergeCells(1, row, 3, row);
 		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save_group", "Save group")));
 		save.setValueOnClick(PARAMETER_ACTION, String.valueOf(ACTION_SAVE));
