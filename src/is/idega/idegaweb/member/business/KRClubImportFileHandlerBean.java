@@ -264,8 +264,8 @@ public class KRClubImportFileHandlerBean extends IBOServiceBean implements KRClu
         //phone
 		//@todo look for the phone first to avoid duplicated
 		String phone = getUserProperty(COLUMN_HOME_PHONE_NUMBER);
-		String work = getUserProperty(COLUMN_HOME_PHONE_NUMBER);
-		String mobile = getUserProperty(COLUMN_HOME_PHONE_NUMBER);
+		String work = getUserProperty(COLUMN_WORK_PHONE_NUMBER);
+		String mobile = getUserProperty(COLUMN_MOBILE_PHONE_NUMBER);
 		
 		
 		if( phone!=null || work!=null || mobile!=null){
