@@ -1,5 +1,5 @@
 /*
- * $Id: TariffIndex.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: TariffIndex.java,v 1.2 2001/06/22 11:33:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,51 +19,48 @@ import com.idega.data.GenericEntity;
  */
 public class TariffIndex extends GenericEntity{
 
-	public TariffIndex(){
-		super();
-	}
+  public TariffIndex(){
+          super();
+  }
 
-	public TariffIndex(int id)throws SQLException{
-		super(id);
-	}
+  public TariffIndex(int id)throws SQLException{
+          super(id);
+  }
 
-	public void initializeAttributes(){
-          addAttribute(getIDColumnName());
-          addAttribute("tindex", "Vísitala", true, true, "java.lang.Float");
-          addAttribute("insert_date", "Dags", true, true, "java.sql.TimeStamp");
-          addAttribute("info", "Upplýsingar", true, true, "java.lang.String");
-          addAttribute("useindex","Gild",true,true,"java.lang.Boolean");
-	}
+  public void initializeAttributes(){
+    addAttribute(getIDColumnName());
+    addAttribute(getIndexColumnName(), "Vísitala", true, true, "java.lang.Float");
+    addAttribute(getDateColumnName(), "Dags", true, true, "java.sql.Timestamp");
+    addAttribute(getInfoColumnName(), "Upplýsingar", true, true, "java.lang.String");
+  }
 
-	public String getEntityName(){
-          return "tariff_index";
-	}
-        public float getIndex(){
-          return getFloatColumnValue("tindex");
-        }
-        public void setIndex(float index){
-          setColumn("tindex",index);
-        }
-        public void setIndex(Float index){
-          setColumn("tindex",index);
-        }
-        public String getInfo(){
-          return getStringColumnValue("info");
-        }
-        public void setInfo(String info){
-          setColumn("info", info);
-        }
-	public Timestamp getDate(){
-          return (Timestamp) getColumnValue("from_date");
-        }
-        public void setDate(Timestamp use_date){
-          setColumn("from_date",use_date);
-        }
-        public void setUseIndex(boolean useindex){
-          setColumn("useindex",useindex);
-        }
-        public boolean getUseIndex(){
-          return getBooleanColumnValue("useindex");
-        }
+  public static String getTariffIndexEntityName(){ return "CAM_TARIFF_INDEX"; }
+  public static String getIndexColumnName(){ return "RENT_INDEX";}
+  public static String getInfoColumnName(){return "INFO";}
+  public static String getDateColumnName(){return "FROM_DATE";}
 
+  public String getEntityName(){
+    return getTariffIndexEntityName();
+  }
+  public float getIndex(){
+    return getFloatColumnValue(getIndexColumnName());
+  }
+  public void setIndex(float index){
+    setColumn(getIndexColumnName(),index);
+  }
+  public void setIndex(Float index){
+    setColumn(getIndexColumnName(),index);
+  }
+  public String getInfo(){
+    return getStringColumnValue(getInfoColumnName());
+  }
+  public void setInfo(String info){
+    setColumn(getInfoColumnName(), info);
+  }
+  public Timestamp getDate(){
+    return (Timestamp) getColumnValue(getDateColumnName());
+  }
+  public void setDate(java.sql.Timestamp use_date){
+    setColumn(getDateColumnName(),use_date);
+  }
 }

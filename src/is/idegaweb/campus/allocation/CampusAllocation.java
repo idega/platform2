@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.2 2001/06/22 11:33:55 aron Exp $
+ * $Id: CampusAllocation.java,v 1.1 2001/06/22 11:34:14 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -7,7 +7,7 @@
  * Use is subject to license terms.
  *
  */
-package is.idegaweb.campus.tariffs;
+package is.idegaweb.campus.allocation;
 
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.Table;
@@ -20,13 +20,13 @@ import com.idega.block.finance.presentation.*;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusFinance extends KeyEditor{
+public class CampusAllocation extends KeyEditor{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final String strAction = "fin_action";
 
 
-  public CampusFinance(String sHeader) {
+  public CampusAllocation(String sHeader) {
     super(sHeader);
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: CampusTariffer.java,v 1.2 2001/06/22 11:33:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -169,7 +169,6 @@ public class CampusTariffer extends KeyEditor {
           T.add(formatText(tariffs[i].getPrice()),4,i+2);
           T.add(formatText(tariffs[i].getInfo()),5,i+2);
           try{
-          T.add(formatText(new TariffKey(tariffs[i].getTariffKeyId()).getName()),6,i+2);
           T.add(formatText(new AccountKey(tariffs[i].getAccountKeyId()).getName()),7,i+2);
           }
           catch(SQLException e){}
@@ -240,7 +239,6 @@ public class CampusTariffer extends KeyEditor {
         infoInput = new TextInput("te_infoinput"+i,tariffs[pos].getInfo());
         drpAtt = this.drpAttributes(this.getAttribs(),"te_attdrp"+i,tariffs[pos].getTariffAttribute());
         drpAK = this.drpAccountKeys(("te_akdrp"+i),String.valueOf(tariffs[pos].getAccountKeyId()));
-        drpTK = this.drpTariffKeys(("te_tkdrp"+i),String.valueOf(tariffs[pos].getTariffKeyId()));
         delCheck = new CheckBox("te_delcheck"+i,"true");
         idInput = new HiddenInput("te_idinput"+i,String.valueOf(tariffs[pos].getID()));
         setStyle(delCheck);
@@ -264,14 +262,13 @@ public class CampusTariffer extends KeyEditor {
       setStyle(infoInput);
       setStyle(drpAtt);
       setStyle(drpAK);
-      setStyle(drpTK);
 
       T.add(formatText(rownum),1,i+1);
       T.add(drpAtt,2,i+1);
       T.add(nameInput,3,i+1);
       T.add(priceInput,4,i+1);
       T.add(infoInput,5,i+1);
-      T.add(drpTK,6,i+1);
+
       T.add(drpAK,7,i+1);
       T.add(idInput);
     }
@@ -334,7 +331,6 @@ public class CampusTariffer extends KeyEditor {
             tariff.setInfo(sInfo);
             tariff.setPrice(Integer.parseInt(sPrice));
             tariff.setAccountKeyId(Integer.parseInt(sAK));
-            tariff.setTariffKeyId(Integer.parseInt(sTK));
             tariff.setUseFromDate(dFrom.getTimestamp());
             tariff.setUseToDate(dTo.getTimestamp());
             tariff.setTariffAttribute(sAtt);
@@ -352,7 +348,6 @@ public class CampusTariffer extends KeyEditor {
             tariff.setInfo(sInfo);
             tariff.setPrice(Integer.parseInt(sPrice));
             tariff.setAccountKeyId(Integer.parseInt(sAK));
-            tariff.setTariffKeyId(Integer.parseInt(sTK));
             tariff.setUseFromDate(dFrom.getTimestamp());
             tariff.setUseToDate(dTo.getTimestamp());
             tariff.setTariffAttribute(sAtt);
@@ -429,38 +424,7 @@ public class CampusTariffer extends KeyEditor {
   private Vector[] getAttribs(){
     Vector id = new Vector();
     Vector name = new Vector();
-    id.addElement("a");
-    name.addElement("Allir");
-    List L = BuildingFinder.RoomTypesList();
-    if(L != null){
-      int len = L.size();
-      RoomType rt;
-      for (int i = 0; i < len; i++) {
-        rt = (RoomType)L.get(i);
-        id.addElement("r"+(rt.getID()));
-        name.addElement(rt.getName());
-      }
-    }
-    L = BuildingFinder.FloorsList();
-    if(L != null){
-      int len = L.size();
-      Floor f;
-      for (int i = 0; i < len; i++) {
-        f= (Floor)L.get(i);
-        id.addElement("f"+(f.getID()));
-        name.addElement(f.getName());
-      }
-    }
-    L = BuildingFinder.BuildingsList();
-    if(L != null){
-      int len = L.size();
-      Building b;
-      for (int i = 0; i < len; i++) {
-        b = (Building)L.get(i);
-        id.addElement("b"+(b.getID()));
-        name.addElement(b.getName());
-      }
-    }
+
     Vector[] v = new Vector[2];
     v[0] = id;
     v[1] = name;
