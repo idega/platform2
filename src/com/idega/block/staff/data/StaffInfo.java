@@ -32,13 +32,13 @@ public class StaffInfo extends GenericEntity {
     }
 
     public void initializeAttributes(){
-      addAttribute(getColumnNameUserID(),"Starfsmaður",true,true,"java.lang.Integer","one-to-one","com.idega.core.user.data.User");
+      addOneToOneRelationship(getColumnNameUserID(),"Employee",com.idega.core.user.data.User.class);
       addAttribute(getColumnNameTitle(),"Titill",true,true,"java.lang.String");
       addAttribute(getColumnNameEducation(),"Menntun",true,true,"java.lang.String");
       addAttribute(getColumnNameSchool(),"Skólaganga",true,true,"java.lang.String");
       addAttribute(getColumnNameArea(),"Starfssvið",true,true,"java.lang.String");
       addAttribute(getColumnNameBeganWork(),"Hóf störf",true,true,"java.sql.Date");
-      addAttribute(getColumnNameImageID(),"Mynd",true,true,"java.lang.Integer");
+      addManyToOneRelationship(getColumnNameImageID(),"Image",ICFile.class);
       setNullable(getColumnNameUserID(),false);
       setNullable(getColumnNameImageID(),false);
       setAsPrimaryKey(getColumnNameUserID(),true);

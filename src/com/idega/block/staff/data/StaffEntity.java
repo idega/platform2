@@ -31,9 +31,9 @@ public class StaffEntity extends GenericEntity {
     }
 
     public void initializeAttributes(){
-      addAttribute(getColumnNameUserID(),"Employee",true,true,"java.lang.Integer","one-to-one","com.idega.core.user.data.User");
+      addOneToOneRelationship(getColumnNameUserID(),"Employee",com.idega.core.user.data.User.class);
       addAttribute(getColumnNameBeganWork(),"Began work",true,true,"java.sql.Date");
-      addAttribute(getColumnNameImageID(),"Image",true,true,"java.lang.Integer");
+      addManyToOneRelationship(getColumnNameImageID(),"Image",ICFile.class);
       setNullable(getColumnNameUserID(),false);
       setNullable(getColumnNameImageID(),false);
       setAsPrimaryKey(getColumnNameUserID(),true);
