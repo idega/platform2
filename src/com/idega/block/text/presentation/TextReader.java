@@ -26,6 +26,7 @@ private TextModule text;
 private TxText txText;
 private LocalizedText locText;
 private String sLocaleId;
+private String sAttribute = null;
 private Table myTable = new Table(2,2);
 private String adminURL = "/text/textadmin.jsp";
 
@@ -46,6 +47,7 @@ private boolean reverse = false;
 private boolean crazy = false;
 private boolean viewall = false;
 private boolean newobjinst = false;
+private boolean newWithAttribute = false;
 private int iTextId = -1;
 public static String prmTextId = "txtr.textid";
 
@@ -57,8 +59,9 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     this.iTextId = -1;
   }
 
-  public TextReader(String sTextId){
-    this.iTextId = Integer.parseInt(sTextId);
+  public TextReader(String sAttribute){
+    this.iTextId = -1;
+    this.sAttribute = sAttribute;
   }
 
   public TextReader(int iTextId){
@@ -81,16 +84,20 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
         }
       }
     }
+    int iLocaleId = ICLocaleBusiness.getLocaleId(locale);
 
-    if ( iTextId < 0){
-      noTextID();
+    if ( sAttribute != null ){
+      txText = TextFinder.getText(sAttribute);
+      newWithAttribute = true;
     }
-    else {
+    else if(iTextId > 0) {
       txText = new TxText((iTextId));
-      locText = TextFinder.getLocalizedText(txText.getID(),ICLocaleBusiness.getLocaleId(locale));
-      if(locText != null){
+    }
+    if(txText != null){
+      locText = TextFinder.getLocalizedText(txText.getID(),iLocaleId);
+    }
+    if(locText != null){
         textTable();
-      }
     }
     if(isAdmin){
       addAdminPart();
@@ -185,8 +192,15 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
       }
       if(newobjinst){
         Link newObjectInstanceLink = new Link(iwrb.getImage("new.gif"));
+        newObjectInstanceLink.setWindowToOpen(TextEditorWindow.class);
         newObjectInstanceLink.addParameter(TextEditorWindow.prmObjInstId,getICObjectInstanceID());
         myTable.add(newObjectInstanceLink,1,3);
+      }
+      else if(newWithAttribute){
+        Link newAttributeLink = new Link(iwrb.getImage("new.gif"));
+        newAttributeLink.setWindowToOpen(TextEditorWindow.class);
+        newAttributeLink.addParameter(TextEditorWindow.prmAttribute,sAttribute);
+        myTable.add(newAttributeLink,1,3);
       }
 
   }

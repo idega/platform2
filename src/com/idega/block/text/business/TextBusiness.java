@@ -176,14 +176,31 @@ public class TextBusiness{
             int iImageId,boolean useImage,int iLocaleId ,int iUserId){
 
      saveText( iTxTextId, iLocalizedTextId,
-             sHeadline, sTitle,sBody,iImageId, useImage, iLocaleId , iUserId,-1);
+             sHeadline, sTitle,sBody,iImageId, useImage, iLocaleId , iUserId,-1,"");
+
+   }
+
+   public static void saveText(int iTxTextId,int iLocalizedTextId,
+            String sHeadline,String sTitle,String sBody,
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId,String sAttribute){
+
+     saveText( iTxTextId, iLocalizedTextId,
+             sHeadline, sTitle,sBody,iImageId, useImage, iLocaleId , iUserId,-1,sAttribute);
+
+   }
+
+    public static void saveText(int iTxTextId,int iLocalizedTextId,
+            String sHeadline,String sTitle,String sBody,
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int iInstanceId){
+
+     saveText( iTxTextId, iLocalizedTextId,sHeadline, sTitle,sBody,iImageId, useImage, iLocaleId , iUserId,iInstanceId,"");
 
    }
 
 
   public static void saveText(int iTxTextId,int iLocalizedTextId,
             String sHeadline,String sTitle,String sBody,
-            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int InstanceId){
+            int iImageId,boolean useImage,int iLocaleId ,int iUserId,int InstanceId,String sAttribute){
 
 
     javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
@@ -221,6 +238,10 @@ public class TextBusiness{
       txText.setImageId(iImageId);
       txText.setIncludeImage(useImage);
       txText.setUpdated(idegaTimestamp.getTimestampRightNow());
+
+      if(sAttribute != null){
+        txText.setAttribute(sAttribute);
+      }
 
 
       if(txUpdate ){

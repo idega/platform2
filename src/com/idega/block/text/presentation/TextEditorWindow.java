@@ -29,7 +29,7 @@ public class TextEditorWindow extends IWAdminWindow{
   private boolean save = false;
   private int iUserId = -1;
   private int iObjInsId = -1;
-  private static String prmAttribute = "txe.attribute";
+  public static String prmAttribute = "txe.attribute";
   public static String prmTextId = "txep.txtextid";
   public static String prmDelete = "txep.txdeleteid";
   public static String prmLocale = "txep.localedrp";
@@ -92,7 +92,7 @@ public class TextEditorWindow extends IWAdminWindow{
 
 
     if(modinfo.getParameter(actSave)!=null || modinfo.getParameter(actSave+".x")!=null ){
-      saveText(modinfo,sTextId,sLocTextId);
+      saveText(modinfo,sTextId,sLocTextId,sAttribute);
     }
     else if(modinfo.getParameter( actDelete )!=null || modinfo.getParameter(actDelete+".x")!=null){
       deleteText(sTextId);
@@ -199,7 +199,7 @@ public class TextEditorWindow extends IWAdminWindow{
     }
   }
 
-  private void saveText(ModuleInfo modinfo,String sTxTextId,String sLocalizedTextId){
+  private void saveText(ModuleInfo modinfo,String sTxTextId,String sLocalizedTextId,String sAttribute){
     String sHeadline = modinfo.getParameter( prmHeadline );
     String sBody = modinfo.getParameter(prmBody );
     String sImageId = modinfo.getParameter(prmImageId);
@@ -211,7 +211,10 @@ public class TextEditorWindow extends IWAdminWindow{
       int iLocaleId = sLocaleId != null ? Integer.parseInt(sLocaleId):-1;
       int iImageId = sImageId != null ? Integer.parseInt(sImageId):-1;
       boolean bUseImage = sUseImage!= null?true:false;
-      TextBusiness.saveText(iTxTextId,iLocalizedTextId,sHeadline,"",sBody,iImageId,bUseImage,iLocaleId,iUserId,iObjInsId);
+      if(sAttribute != null)
+        TextBusiness.saveText(iTxTextId,iLocalizedTextId,sHeadline,"",sBody,iImageId,bUseImage,iLocaleId,iUserId,sAttribute);
+      else
+        TextBusiness.saveText(iTxTextId,iLocalizedTextId,sHeadline,"",sBody,iImageId,bUseImage,iLocaleId,iUserId,iObjInsId);
     }
     setParentToReload();
     close();
