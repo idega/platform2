@@ -769,9 +769,22 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		
 		//Group not found, so finding it
 		PostalCode postalCode = natBiz.getPostalCode(po);
-		Commune commune = cBiz.getCommuneByPostalCode(postalCode);
-		group = commune.getGroup();
-		postalToGroupMap.put(po, group);
+		if (postalCode != null) {
+			Commune commune = cBiz.getCommuneByPostalCode(postalCode);
+			group = commune.getGroup();
+			postalToGroupMap.put(po, group);
+		} else {
+			System.out.println("NationalRegisterImport : postalCode not found : '"+po+"'");
+			try {
+				group = cBiz.getOtherCommuneCreateIfNotExist().getGroup();
+				System.out.println("NationalRegisterImport : connecting po:'"+po+"' to group:'"+group.getName()+"'");
+				postalToGroupMap.put(po, group);
+			}
+			catch (FinderException e) {
+				System.out.println("NationalRegisterImport : 'Other' group not found, throwing RuntimeException. \n\nMake sure the PostalCodeBundleStarter is run at least once.");
+				throw new RuntimeException(e);
+			}
+		}
 		return group;
 	}
 
