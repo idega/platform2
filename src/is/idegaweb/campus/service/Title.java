@@ -1,5 +1,5 @@
 /*
- * $Id: Title.java,v 1.3 2001/08/24 17:45:10 aron Exp $
+ * $Id: Title.java,v 1.4 2001/08/28 19:13:56 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -84,11 +84,13 @@ public class Title extends JModuleObject{
       case ACT4:  image = iwrb.getImage("/title/apartment.gif");        break;
       case ACT5:  image = iwrb.getImage("/title/links.gif");            break;
       case ACT6:  image = iwrb.getImage("/title/english.gif");          break;
-      case ACT7:  image = iwrb.getImage("/title/maintitle.gif");         break;
+      //case ACT7:  image = iwrb.getImage("/title/maintitle.gif");         break;
       //case ACT8:  TitleUrl = iwrb.getImage("/title/maintitle.gif";       break;
       //default: image = iwrb.getImage("/title/maintitle.gif");            break;
     }
-    add(image);
+    if ( image != null ) {
+      add(image);
+    }
   }
 
   public String getObjectName(){
