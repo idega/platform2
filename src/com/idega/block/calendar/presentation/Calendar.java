@@ -42,6 +42,7 @@ private boolean _isSelectedDay = false;
 private int _daysAhead = 7;
 private int _daysBack = 7;
 private int _numberOfShown = 4;
+
 private String _bodyColor = "#000000";
 private String _headlineColor = "#000000";
 private String _dateColor = "#000000";
@@ -57,6 +58,7 @@ protected IWBundle _iwbCalendar;
 
 private String AddPermission = "add";
 private String PrePermission = "pref";
+private int iUserId = -1;
 
 public Calendar(){
 }
@@ -82,6 +84,8 @@ public Calendar(idegaTimestamp timestamp){
     _iwrb = getResourceBundle(iwc);
     _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     _iwbCalendar = getBundle(iwc);
+
+    iUserId = iwc.getUserId();
 
     hasEdit = iwc.hasEditPermission(this);
     hasAdd = iwc.hasPermission(AddPermission,this);
@@ -221,7 +225,8 @@ public Calendar(idegaTimestamp timestamp){
         entriesTable.setAlignment(xpos,ypos,"right");
         entriesTable.add(dateText,xpos,ypos);
 
-        if ( hasEdit || hasPref ) {
+        // Checking permissions
+        if ( hasEdit || hasPref || this.iUserId == entry.getUserID()) {
           xpos++;
           entriesTable.add(getEditButtons(entry.getID()),xpos,ypos);
         }
