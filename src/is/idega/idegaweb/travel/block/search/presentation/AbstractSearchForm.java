@@ -35,7 +35,9 @@ import com.idega.block.text.presentation.TextReader;
 import com.idega.block.tpos.business.TPosException;
 import com.idega.block.tpos.presentation.ReceiptWindow;
 import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
+import com.idega.block.trade.stockroom.data.PriceCategoryHome;
 import com.idega.block.trade.stockroom.data.Product;
 import com.idega.block.trade.stockroom.data.ProductHome;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -49,6 +51,7 @@ import com.idega.business.IBOLookup;
 import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -153,11 +156,10 @@ public abstract class AbstractSearchForm extends Block{
 	protected abstract void getResults() throws RemoteException;
 	protected abstract Image getHeaderImage(IWResourceBundle iwrb);
 	protected abstract String getPriceCategoryKey();
+	protected abstract String getUnitName();
 	
 	
-	protected String getParameterTypeCountName() {
-		return PARAMETER_TYPE_COUNT;
-	}
+	protected abstract String getParameterTypeCountName();
 
 	private void init(IWContext iwc) throws RemoteException {
 		this.iwc = iwc;
@@ -256,18 +258,7 @@ public abstract class AbstractSearchForm extends Block{
 				SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search","Search"), ACTION, ACTION_SEARCH);
 				table.add(search);
 			} else {
-				//int addressId = -1;
-				//int timeframeId = -1;
-				//Timeframe timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, addressId);
-				//if (timeframe != null) {
-				//	timeframeId = timeframe.getID();
-				//}
-				//int productPriceId = -1;
-				//ProductPrice[] prices = getProductPrices(product,addressId, timeframeId);
-				
 				table.add(new HiddenInput(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString()));
-				//table.add(new HiddenInput(PARAMETER_ADDRESS_ID, Integer.toString(addressId)));
-				//table.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID), Integer.toString(productPriceId));
 				SubmitButton book = new SubmitButton(iwrb.getLocalizedImageButton("book","Book"), ACTION, ACTION_BOOKING_FORM);
 				table.add(book);
 			}
@@ -296,6 +287,9 @@ public abstract class AbstractSearchForm extends Block{
 				link = new Link(getLinkText(bsf.getServiceName(iwrb)));
 				link.addParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, bsf.getClassName());
 				table.add(link, ++column, 1);
+				table.setAlignment(column, 1, Table.HORIZONTAL_ALIGN_LEFT);
+				table.setWidth(column, 2);
+				table.setWidth(++column, 2);
 			}
 		}	else {
 			System.out.println(" no extra searchForms found" );
@@ -411,15 +405,26 @@ public abstract class AbstractSearchForm extends Block{
 	protected void setupBookingForm() throws RemoteException {
 		
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
-		int	betw = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
-		IWTimestamp to = new IWTimestamp(from);
-		to.addDays(betw);
+		int	betw = 0;
+		try {
+			betw = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
+		} catch (NumberFormatException n) {
+			logDebug("SearchForm : days set to 0");
+		}
 
 		Product product = getProduct();
 
 		formTable.mergeCells(1, row, 3, row);
 		formTable.add(getHeaderText(product.getProductName(iwc.getCurrentLocaleId())), 1, row);
-		formTable.add(getHeaderText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE+from.getLocaleDate(iwc)+" - "+to.getLocaleDate(iwc)), 1, row);		
+		++row;
+		formTable.mergeCells(1, row, 3, row);
+		if (betw > 0) {
+			IWTimestamp to = new IWTimestamp(from);
+			to.addDays(betw);
+			formTable.add(getHeaderText(from.getLocaleDate(iwc)+" - "+to.getLocaleDate(iwc)), 1, row);
+		} else {
+			formTable.add(getHeaderText(from.getLocaleDate(iwc)), 1, row);
+		}
 		++row;
 		++row;
 		
@@ -648,7 +653,11 @@ public abstract class AbstractSearchForm extends Block{
 						  table.add(textReader,1,row);
 						  table.mergeCells(1, row, 2, row);
 						} else {
+							try {
 							sendErrorEmail(product);
+							} catch (TPosException t) {
+								System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail NOT sent : error = "+t.getMessage()+")");
+							}
 							System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail sent)");
 						}
 						
@@ -674,7 +683,7 @@ public abstract class AbstractSearchForm extends Block{
 							Iterator addressesIter = addresses.iterator();
 							while (addressesIter.hasNext()) {
 								address = (TravelAddress) addressesIter.next();
-								timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, address.getAddressId());
+								timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, address.getID());
 								int timeframeId = -1;
 								if (timeframe != null) {
 									timeframeId = timeframe.getID();
@@ -682,13 +691,15 @@ public abstract class AbstractSearchForm extends Block{
 								
 								++row;
 								table.add(getText(address.getName()), 1, row);
+								++row;
+								row =getPrices(iwc, stamp, bus, product, table, row, address.getID(), timeframeId);
 								link = getBookingLink(product.getID());
 								link.addParameter(PARAMETER_ADDRESS_ID, address.getAddressId());
-								//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
 								if (available) {
-									table.add(link, 2, row);
+									table.add(link, 1, row);
+								} else {
+									table.add(getText(iwrb.getLocalizedString("travel.search.not_available","Not available")), 1, row);
 								}
-								row =getPrices(iwc, stamp, bus, product, table, row, address.getAddressId(), timeframeId);
 							}
 							
 						}
@@ -739,9 +750,7 @@ public abstract class AbstractSearchForm extends Block{
 	}
 	
 	private String getPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice) throws SQLException, RemoteException {
-		String sCount = iwc.getParameter(getParameterTypeCountName());
-		int count = Integer.parseInt(sCount);
-		int days = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
+		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
 
 		Currency currency;
 		try {
@@ -749,15 +758,25 @@ public abstract class AbstractSearchForm extends Block{
 		}catch (Exception e) {
 			currency = null;
 		}
-		float price = -1;
 		float total = -1;
 		String returner = "";
-		price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
+
+		String sCount = iwc.getParameter(getParameterTypeCountName());
+		int count = Integer.parseInt(sCount);
+		int days = 1;
+		try {
+			days = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
+		} catch (NumberFormatException n) {
+			logDebug("SearchForm : days set to 1");
+		}
+		
 		total = price * days * count;
 		returner += iwrb.getLocalizedString("travel.price","Price")+":"+Text.NON_BREAKING_SPACE+(price*count)+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
-		returner += Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_nigth","per night");
+		if (days > 1) {
+			returner += Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_nigth","per night");
+		}
 		if (count > 1) {
-			returner += " ("+price+" per room)";
+			returner += " ("+price+" per "+getUnitName()+")";
 		}
 		returner += Text.BREAK+iwrb.getLocalizedString("travel.search.total","Total")+":"+Text.NON_BREAKING_SPACE+total+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
 		return returner;
@@ -913,6 +932,15 @@ public abstract class AbstractSearchForm extends Block{
 			e.printStackTrace();
 		}		
 	}
+	
+	protected DropdownMenu getDropdownWithNumbers(String name, int startNumber, int endNumber) {
+		DropdownMenu menu = new DropdownMenu(name);
+		for (int i = startNumber; i <= endNumber; i++) {
+			menu.addMenuElement(i, Integer.toString(i));
+		}		
+		return menu;
+	}
+
 
 	public void setServiceSearchEngine(ServiceSearchEngine engine) {
 		this.engine = engine;
@@ -965,5 +993,58 @@ public abstract class AbstractSearchForm extends Block{
 			}
 		}
 	}
+
+	protected void handleResults(Collection coll) throws IDOLookupException, FinderException, RemoteException {
+		String sFromDate = iwc.getParameter(PARAMETER_FROM_DATE);
+		PriceCategoryHome pcHome = (PriceCategoryHome) IDOLookup.getHome(PriceCategory.class);
+		PriceCategory priceCat = pcHome.findByKey(getPriceCategoryKey());
+		coll = getSearchBusiness(iwc).sortProducts(coll, priceCat, new IWTimestamp(sFromDate));
+
+		HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
+		int mapSize = map.size();
+		String foundString = "";
+		if (map != null) {
+			foundString = "Found "+mapSize+" match";
+			if (mapSize != 1) foundString += "es !<br>";
+		} else {
+			foundString = getText(iwrb.getLocalizedString("travel.search.no_matches","No matches"))+"<BR>";
+		}
+		
+		if (mapSize > 0) {
+			add(foundString);
+		}
+		listResults(iwc, coll, map);
+		add(foundString);
+
+		if (coll != null) {
+			if (coll.isEmpty()) {
+				STATE = 0;
+				setupSearchForm();
+			}
+		} else {
+			STATE = 0;
+			setupSearchForm();
+		}
+	}
 	
+	protected Object[] getSupplierIDs() {
+		Object[] suppIds = new Object[]{};
+		String sPostalCode[] = iwc.getParameterValues(PARAMETER_POSTAL_CODE_NAME);
+		try {
+			Collection supps = engine.getSuppliers();
+			if (supps != null && !supps.isEmpty()) {
+				Iterator iter =supps.iterator();
+				int i = 0;
+				suppIds = new Object[supps.size()];
+				while (iter.hasNext()) {
+					suppIds[i] = ((Supplier) iter.next()).getPrimaryKey();
+					i++;
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		return suppIds;
+	}
+
 }
