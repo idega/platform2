@@ -30,6 +30,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	protected GroupBusiness groupBiz = null;
 	private boolean useShortName = false;
 	private String displayNameSeperator = ",";
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	/**
 	 * Creates a new <code>GroupSelectionBox</code> with all groups.
 	 * 
@@ -233,6 +234,15 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 	 */
 	protected void setDisplayNameSeperator(String displayNameSeperator) {
 		this.displayNameSeperator = displayNameSeperator;
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
 	}
 
 }
