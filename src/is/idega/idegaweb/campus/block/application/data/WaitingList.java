@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.2 2001/11/28 23:49:21 palli Exp $
+ * $Id: WaitingList.java,v 1.3 2001/11/30 18:22:45 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,7 @@ package is.idega.idegaweb.campus.block.application.data;
 
 
 import com.idega.data.GenericEntity;
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.sql.SQLException;
 
 /**
@@ -26,6 +26,7 @@ public class WaitingList extends GenericEntity {
   private static final String applicantId_ = "app_applicant_id";
   private static final String order_ = "ordered";
   private static final String type_ = "list_type";
+  private static final String choiceNumber_ = "choice_number";
   private static final String lastConfirmation_ = "last_confirmation";
   private static final String numberOfRejections_ = "number_of_rejections";
 
@@ -44,7 +45,8 @@ public class WaitingList extends GenericEntity {
     addAttribute(applicantId_,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
     addAttribute(order_,"Order",true,true,"java.lang.Integer");
     addAttribute(type_,"Waiting list type",true,true,"java.lang.String");
-    addAttribute(lastConfirmation_,"Last confirmation date",true,true,"java.sql.Date");
+    addAttribute(choiceNumber_,"Choice number",true,true,"java.lang.Integer");
+    addAttribute(lastConfirmation_,"Last confirmation date",true,true,"java.sql.Timestamp");
     addAttribute(numberOfRejections_,"Number of rejections",true,true,"java.lang.Integer");
     setMaxLength(type_,1);
   }
@@ -75,6 +77,10 @@ public class WaitingList extends GenericEntity {
 
   public static String getOrderColumnName() {
     return(order_);
+  }
+
+  public static String getChoiceNumberColumnName() {
+    return(choiceNumber_);
   }
 
   public static String getLastConfirmationColumnName() {
@@ -138,12 +144,12 @@ public class WaitingList extends GenericEntity {
     return(getIntegerColumnValue(order_));
   }
 
-  public void setLastConfirmationDate(Date date) {
+  public void setLastConfirmationDate(Timestamp date) {
     setColumn(lastConfirmation_,date);
   }
 
-  public Date getLastConfirmationDate() {
-    return((Date)getColumnValue(lastConfirmation_));
+  public Timestamp getLastConfirmationDate() {
+    return((Timestamp)getColumnValue(lastConfirmation_));
   }
 
   public void setNumberOfRejections(int count) {
@@ -156,5 +162,17 @@ public class WaitingList extends GenericEntity {
 
   public int getNumberOfRejections() {
     return(getIntColumnValue(numberOfRejections_));
+  }
+
+  public void setChoiceNumber(int choice) {
+    setColumn(choiceNumber_,choice);
+  }
+
+  public void setChoiceNumber(Integer choice) {
+    setColumn(choiceNumber_,choice);
+  }
+
+  public Integer getChoiceNumber() {
+    return(getIntegerColumnValue(choiceNumber_));
   }
 }

@@ -25,7 +25,7 @@ public class RoughOrderer {
 
   public RoughOrderer() {
     query = new StringBuffer();
-    query.append("select app_applicant_id ");
+    query.append("select app_applicant_id, ordered ");
     query.append("from cam_applied a, cam_application cam_app, app_application app, app_subject s, app_applicant aa ");
     query.append("where s.app_subject_id = app.app_subject_id ");
     query.append("and app.app_applicant_id = aa.app_applicant_id ");
@@ -72,6 +72,7 @@ public class RoughOrderer {
 
     Connection Conn = null;
     Vector v = new Vector();
+    Vector v2 = new Vector();
 
     try {
       Conn = com.idega.util.database.ConnectionBroker.getConnection();
@@ -80,7 +81,9 @@ public class RoughOrderer {
 
       while (RS.next()) {
         int applicant_id = RS.getInt("app_applicant_id");
+        int ordered = RS.getInt("ordered");
         v.addElement(new Integer(applicant_id));
+        v2.addElement(new Integer(ordered));
       }
 
       RS.close();
@@ -97,12 +100,14 @@ public class RoughOrderer {
     try {
       for (int i = 0; i < v.size(); i++) {
         Integer applicant_id = (Integer)v.elementAt(i);
+        Integer choice = (Integer)v2.elementAt(i);
         WaitingList wl = new WaitingList();
         wl.setApartmentTypeId(aprt_type);
         wl.setComplexId(complex);
         wl.setType(new String("A"));
         wl.setApplicantId(applicant_id);
         wl.setOrder(i+1);
+        wl.setChoiceNumber(choice);
         wl.insert();
       }
     }
