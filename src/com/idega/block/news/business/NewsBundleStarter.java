@@ -14,7 +14,6 @@ package com.idega.block.news.business;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -37,11 +36,9 @@ public class NewsBundleStarter implements IWBundleStartable{
   public void start(){
     System.err.println("News bundle starter: starting");
 
-
-    boolean hasField = false;
     if(!testNews()){
       System.err.println("News bundle starter: Adding category reference to news ");
-      hasField = addICCategoryField(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy());
+      addICCategoryField(((com.idega.block.news.data.NwNewsHome)com.idega.data.IDOLookup.getHomeLegacy(NwNews.class)).createLegacy());
     }
 
     //
@@ -76,8 +73,6 @@ public class NewsBundleStarter implements IWBundleStartable{
       int id = RS.getInt("NW_NEWS_CAT_ID"); // first_name
       String name = RS.getString("NAME");
       String info = RS.getString("DESCRIPTION");
-      Timestamp stamp = RS.getTimestamp("NEWS_DATE");
-      String valid = RS.getString("VALID");
       oinst = SimpleQuerier.executeStringQuery(sql2+id,Conn);
       if(oinst !=null && oinst.length > 0)
         objectinstance_id = Integer.parseInt(oinst[0]);
@@ -165,7 +160,6 @@ public class NewsBundleStarter implements IWBundleStartable{
 
   public boolean testNews(){
     String sql = "select ic_category_id from nw_news where ic_category_id < -3";
-    String sql2 = "select ic_category_id from nw_news where ic_category_id is null";
     try {
       return SimpleQuerier.execute(sql);
       /*  String[] s = SimpleQuerier.executeStringQuery(sql2);

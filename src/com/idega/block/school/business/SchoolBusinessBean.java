@@ -372,8 +372,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			}
 
 			if (user != null) {
-				Object prKey = user.getPrimaryKey();
-				Object obj;
 				Iterator iter = users.iterator();
 				while (iter.hasNext()) {
 					if (iter.next().equals(user)) {
@@ -629,7 +627,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public void removeSchoolYearPlace(int id) {
 		try {
-			SchoolYearPlacesHome shome = (SchoolYearPlacesHome) IDOLookup.getHome(SchoolYearPlaces.class);
 			SchoolYearPlaces schoolYearPlaces = getSchoolYearPlaces(new Integer(id));
 			schoolYearPlaces.remove();
 		}
@@ -708,7 +705,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public void removeSchoolYear(int id) throws java.rmi.RemoteException {
 		try {
-			SchoolYearHome shome = getSchoolYearHome();
 			SchoolYear area = getSchoolYear(new Integer(id));
 			area.remove();
 		}
@@ -783,7 +779,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public void removeSchoolType(int id) {
 		try {
-			SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 			SchoolType type = getSchoolType(new Integer(id));
 			type.remove();
 		}
@@ -875,7 +870,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public void removeSchoolSeason(int id) {
 		try {
-			SchoolSeasonHome shome = (SchoolSeasonHome) IDOLookup.getHome(SchoolSeason.class);
 			SchoolSeason season = getSchoolSeason(new Integer(id));
 			season.remove();
 		}
@@ -1255,7 +1249,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 	public void removeSchoolArea(int id) {
 		try {
-			SchoolAreaHome shome = (SchoolAreaHome) IDOLookup.getHome(SchoolArea.class);
 			SchoolArea area = getSchoolArea(new Integer(id));
 			area.remove();
 		}

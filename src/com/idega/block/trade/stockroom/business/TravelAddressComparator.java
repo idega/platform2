@@ -38,8 +38,6 @@ public class TravelAddressComparator implements Comparator {
   }
 
   public int compare(Object o1, Object o2) {
-      TravelAddress p1 = (TravelAddress) o1;
-      TravelAddress p2 = (TravelAddress) o2;
       int result = 0;
 
       switch (this.sortBy) {

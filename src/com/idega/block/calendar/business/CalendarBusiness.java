@@ -161,7 +161,6 @@ public class CalendarBusiness {
 		entry.setUserID(userID);
 		entry.setGroupID(groupID);
 		entry.setDate(new IWTimestamp(entryDate).getTimestamp());
-		IWTimestamp endDate = null;
 		if (entryEndDate != null && entryEndDate.length() > 0)
 			entry.setEndDate(new IWTimestamp(entryEndDate).getTimestamp());
 

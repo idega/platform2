@@ -81,7 +81,7 @@ public class SchoolTypeEditor extends Block {
       String info = iwc.getParameter("sch_type_info");
       String cat = iwc.getParameter("sch_type_cat");
       String locKey = iwc.getParameter("sch_type_lockey");
-      int aid = -1,catId = -1;
+      int aid = -1;
       if(id!=null)
         aid = Integer.parseInt(id);
 

@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosClient.java,v 1.25 2002/09/04 10:50:36 laddi Exp $
+ *  $Id: TPosClient.java,v 1.26 2003/04/03 19:29:12 laddi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -152,7 +152,6 @@ public class TPosClient {
     }
 
     String newBatchNumber = _client.getProperty(TPOS3Client.PN_OPENEDBATCHNR);
-    String oldBatchNumber = _client.getProperty(TPOS3Client.PN_CLOSINGBATCHNR);
 
     return (newBatchNumber);
   }

@@ -179,7 +179,6 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		}
 		if(categories!=null && !categories.isEmpty()){
 			Iterator iter = categories.iterator();
-			int row = 2;
 			fillQuestionTree(iwc,iter,QTable,QandATable);
 		}
 		else{
@@ -220,7 +219,6 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			
 			if(!headerAdded){
 				AnchorLink anc = new AnchorLink(getStyleText(cat.getName(currentLocale),STYLENAME_C_TITLE),"Cat"+primKey);
-				Anchor backAncor = new Anchor();
 				T.add(anc,1,headerRow);
 				T.add(new Anchor("bc"+primKey),1,headerRow);
 			}
@@ -371,10 +369,7 @@ public class QuestionsAndAnswers extends CategoryBlock {
 		try{
 			questions = questionsService.getQuestionHome().findAllByCategory(((Integer)cat.getPrimaryKey()).intValue());
 		}catch(FinderException ex){}
-		Iterator iter = questions.iterator();
 		Question quest,previous = null,latter= null;
-		AnchorLink anc;
-		ContentHelper helper;
 		int QuestCount = 1;
 		if(showAll && showAllCategories){
 			createCategoryTitle(cat,QandATable);

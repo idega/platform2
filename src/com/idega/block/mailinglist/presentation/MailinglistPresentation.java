@@ -12,7 +12,6 @@ package com.idega.block.mailinglist.presentation;
 import java.sql.SQLException;
 
 import com.idega.block.mailinglist.business.MailingListBusiness;
-import com.idega.block.mailinglist.data.MailAccount;
 import com.idega.block.mailinglist.data.Mailinglist;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -92,7 +91,6 @@ public class MailinglistPresentation extends Block {
     String stringReply = "Tjón dauðans";
     Table table = new Table(2,4);
     Mailinglist mailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
-    MailAccount emaillist = ((com.idega.block.mailinglist.data.MailAccountHome)com.idega.data.IDOLookup.getHomeLegacy(MailAccount.class)).createLegacy();
 
     SubmitButton submitButton = new SubmitButton("Skrá Mig",submitAndRemoveParameter,addParameterValue);
     SubmitButton removeButton = new SubmitButton("Afskrá Mig",submitAndRemoveParameter,removeParameterValue);

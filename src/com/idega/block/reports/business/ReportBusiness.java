@@ -70,7 +70,6 @@ public class ReportBusiness {
 	}
 
 	public static ReportCategory saveReportCategory(int iCategoryId,int iObjectInstanceId,String Name,String info){
-	  int id = -1;
 		ReportCategory cat  = null;
 		try {
                   cat = ((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy();
@@ -93,7 +92,6 @@ public class ReportBusiness {
                           objIns.removeFrom(((com.idega.block.reports.data.ReportCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ReportCategory.class)).createLegacy());
                           cat.addTo(objIns);
       }
-			id = cat.getID();
 		}
 		catch (SQLException ex) {
 			ex.printStackTrace();

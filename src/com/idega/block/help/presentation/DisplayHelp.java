@@ -148,7 +148,6 @@ public class DisplayHelp extends PresentationObjectContainer {
 
 		XMLElement title = help.getChild(XML_TITLE);
 		if (title != null) {
-			String tmp = title.getText();
 			_localizedTitle = title.getTextTrim();
 		}
 			

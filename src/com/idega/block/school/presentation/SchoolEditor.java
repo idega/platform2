@@ -122,7 +122,7 @@ public class SchoolEditor extends Block {
         }
 
       }
-      int areaId = -1,typeId = -1,sid = -1;
+      int areaId = -1,sid = -1;
       if(id!=null)
         sid = Integer.parseInt(id);
       if(area!=null)
@@ -214,7 +214,6 @@ public class SchoolEditor extends Block {
     TextInput inputKeyCode = new TextInput("sch_keycode");
     TextInput inputLON = new TextInput("sch_lon");
     TextInput inputLAT = new TextInput("sch_lat");
-    DropdownMenu drpType = new DropdownMenu(getSchoolTypes(iwc),"sch_type_id");
     DropdownMenu drpArea = new DropdownMenu(getSchoolAreas(iwc),"sch_area_id");
     Map schooltypes = null,schoolyears = null;
     int Id = -1;
@@ -375,8 +374,6 @@ public class SchoolEditor extends Block {
 		if (typeCategory != null && !typeCategory.equals("") ) {
 			try {
 				SchoolTypeHome sth = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
-				SchoolType st;
-				Object stPk;
 				schoolTypeIds = sth.findAllByCategory(typeCategory);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);

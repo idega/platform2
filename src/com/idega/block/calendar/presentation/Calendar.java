@@ -354,8 +354,6 @@ public class Calendar extends CategoryBlock implements IWBlock {
 		Text headlineText = null;
 		Text bodyText = null;
 		IWTimestamp stamp = null;
-		boolean hasImage = true;
-		int imageID;
 		int ypos = 1;
 
 		///// Permisson Area ////////////

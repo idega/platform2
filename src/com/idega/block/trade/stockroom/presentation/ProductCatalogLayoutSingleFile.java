@@ -42,8 +42,6 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 
     List catProducts;
     Link configCategory;
-    Link productLink;
-    Text nameText;
 
     for (int i = 0; i < productCategories.size(); i++) {
       if (i != 0){

@@ -198,8 +198,6 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 		table.add(threadsText, 2, 1);
 		table.add(updatedText, 3, 1);
 
-		Table topicTable = null;
-
 		Vector list = new Vector();
 		list.addAll(this.getCategories());
 

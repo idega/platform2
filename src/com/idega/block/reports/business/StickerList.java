@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfPCell;
@@ -191,7 +190,6 @@ public class StickerList extends ArrayList {
    */
   public boolean add(Object o){
     try {
-      Paragraph paragraph = (Paragraph) o;
       return super.add(o);
     }
     catch(ClassCastException cce) {
@@ -209,7 +207,6 @@ public class StickerList extends ArrayList {
    */
   public void add(int index,Object o){
     try {
-      Paragraph paragraph = (Paragraph) o;
       super.add(index,o);
     }
     catch(ClassCastException cce) {

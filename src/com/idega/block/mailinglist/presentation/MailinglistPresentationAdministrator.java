@@ -68,8 +68,6 @@ public class MailinglistPresentationAdministrator extends Block {
 
     TextInput textInput = new TextInput(newMailinglistTextInputName);
 
-    Table listOfMailinglistsTable = new Table();
-    Table postingTable = new Table();
     Table checkBoxTable = new Table( 2, 3);
 
     //SubmitButton addMailinglistButton = new SubmitButton( "Stofna Póstlista", addMailinglistParameterValue, "");
@@ -122,7 +120,6 @@ public class MailinglistPresentationAdministrator extends Block {
 
     String[] checkedBoxes;
     checkedBoxes = (String[]) modinfo.getParameterValues(checkBoxName);
-    boolean hasSubmittedText = modinfo.isParameterSet(newMailinglistTextInputName);
 
     //if ((checkedBoxes != null) || hasSubmittedText) {
     if (modinfo.isParameterSet(addAndRemoveParameter)){

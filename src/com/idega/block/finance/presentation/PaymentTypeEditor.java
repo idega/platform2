@@ -10,7 +10,6 @@ import java.util.List;
 import com.idega.block.finance.business.FinanceBusiness;
 import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.data.PaymentType;
-import com.idega.block.finance.data.TariffKey;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -337,8 +336,6 @@ public class PaymentTypeEditor extends Block {
 
         String rownum = String.valueOf(i);
 
-        String s = "";
-
         int pos;
 
 
@@ -450,10 +447,6 @@ public class PaymentTypeEditor extends Block {
 
 
     int ID;
-
-    TariffKey[] keys = new TariffKey[count];
-
-    TariffKey key = null;
 
 
 

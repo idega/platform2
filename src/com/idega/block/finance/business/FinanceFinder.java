@@ -349,13 +349,13 @@ public class FinanceFinder  {
   }
 
   public int countAccounts(int iCategory,String type){
-    try {
+    /*try {
       AccountHome aHome = (AccountHome) IDOLookup.getHome(Account.class);
       //return aHome.
     }
     catch (Exception ex) {
       ex.printStackTrace();
-    }
+    }*/
     return 0;
   }
 

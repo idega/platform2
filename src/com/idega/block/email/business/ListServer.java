@@ -420,13 +420,7 @@ public class ListServer {
 
     String subject;
 
-    String xMailer;
-
-    String messageText;
-
     Date sentDate;
-
-    int size;
 
     Address[] a = null;
 
@@ -447,18 +441,6 @@ public class ListServer {
     subject = message.getSubject();
 
     sentDate = message.getSentDate();
-
-    size = message.getSize();
-
-    String[] hdrs = message.getHeader("X-Mailer");
-
-    if (hdrs != null) {
-
-      xMailer = hdrs[0];
-
-    }
-
-
 
     // Send message
 
@@ -747,8 +729,6 @@ public class ListServer {
       _toList = new InternetAddress[emails.size()];
 
       Iterator iter = emails.iterator();
-
-      EmailDataView em;
 
       Vector vList = new Vector(10);
 

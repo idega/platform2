@@ -21,8 +21,6 @@ public final class LinkParser {
         //String rel =  "a/b/c/d/y.x";
         String chd = "./w.z";
         //String sep = "/";
-        java.io.File file = new java.io.File("z:/temp/x.y");
-        
         String sep = java.io.File.separator;
         
         System.out.println("sep:" + sep);

@@ -52,7 +52,7 @@ public class ApartmentChooser extends BuildingEditor{
 
     Complex[] C = (Complex[])(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy()).findAll();
     int clen = C.length;
-    int c = 1, b = 1, f = 1, a = 1;
+    int b = 1, f = 1;
 
     Table T = new Table();
     T.setRowVerticalAlignment(1,"top");

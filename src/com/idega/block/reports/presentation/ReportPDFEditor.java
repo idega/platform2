@@ -192,9 +192,6 @@ public class ReportPDFEditor extends Block implements Reports{
 
     String[] names = R.getHeaders();
 
-    ReportColumnInfo rinfo;
-
-
 
     DropdownMenu family = getFamilyDrop("family");
 
@@ -343,10 +340,6 @@ public class ReportPDFEditor extends Block implements Reports{
   private void saveColumnInfo(IWContext iwc,Report report ,int id){
 
     //System.err.println("saving");
-
-    String name = iwc.getParameter("iname");
-
-
 
     int family = 0,size = 0,style = 0,colnr = -1,span = 1;;
 

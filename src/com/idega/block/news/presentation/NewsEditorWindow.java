@@ -150,7 +150,6 @@ private IWResourceBundle iwrb;
     String sLocaleId = iwc.getParameter(prmLocale);
     String sCategoryId = iwc.getParameter(prmCategory);
     iCategoryId = sCategoryId !=null?Integer.parseInt(sCategoryId):-1;
-    String sAtt = null;
     int saveInfo = getSaveInfo(iwc);
 
     // LocaleHandling
@@ -165,7 +164,6 @@ private IWResourceBundle iwrb;
     }
 
     if ( isAdmin ) {
-      String sAction;
       // end of LocaleHandling
 
       // Text initialization
@@ -324,7 +322,6 @@ private IWResourceBundle iwrb;
     String sBody = iwc.getParameter(prmBody );
     String sImageId = iwc.getParameter(prmImageId);
     String sLocaleId = iwc.getParameter(prmLocale);
-    String sUseImage = iwc.getParameter(prmUseImage);
     String sAuthor = iwc.getParameter(prmAuthor);
     String sSource = iwc.getParameter(prmSource);
     String sPubFrom = iwc.getParameter(prmPubFrom);
@@ -338,7 +335,6 @@ private IWResourceBundle iwrb;
       int iLocaleId = sLocaleId != null ? Integer.parseInt(sLocaleId):-1;
       int iImageId = sImageId != null ? Integer.parseInt(sImageId):-1;
       int iCategoryId = sCategoryId !=null ? Integer.parseInt(sCategoryId):-1;
-      boolean bUseImage = sUseImage!= null?true:false;
       IWTimestamp today = IWTimestamp.RightNow();
       IWTimestamp pubFrom = sPubFrom!=null ? new IWTimestamp(sPubFrom):today;
       Timestamp newsDate = sNewsDate != null ? new IWTimestamp(sNewsDate).getTimestamp() : null;
@@ -523,7 +519,6 @@ private IWResourceBundle iwrb;
     	newsDate.setTimestamp(now.getTimestamp());
     	newsDate.setYearRange(now.getYear()-4,now.getYear()+2);
 
-    List L = NewsFinder.listOfLocales();
     DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
     LocaleDrop.setToSubmit();
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
@@ -632,8 +627,6 @@ private IWResourceBundle iwrb;
       imageTable.add(addButton,1,row++);
 
 
-      Link propslink = null;
-
     if ( hasContent ) {
       List files = contentHelper.getFiles();
       if(files != null){
@@ -731,7 +724,6 @@ private IWResourceBundle iwrb;
 
   public DropdownMenu counterDropdown(String dropdownName, int countFrom, int countTo)
   {
-    String from = Integer.toString(countFrom);
     DropdownMenu myDropdown = new DropdownMenu(dropdownName);
 
     for(; countFrom <= countTo; countFrom++){

@@ -56,14 +56,6 @@ public class ContentComparator implements Comparator {
 
   public int compare(Object o1, Object o2) {
 
-    Content p1 = (Content) o1;
-
-    Content p2 = (Content) o2;
-
-    Object obOne = p1.getContent(sortBy);
-
-    Object obTwo = p2.getContent(sortBy);
-
     int result = 0;
 
     //if(obOne instanceof Comparable && obOne instanceof Comparable)

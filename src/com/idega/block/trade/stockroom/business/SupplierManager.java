@@ -99,7 +99,7 @@ public class SupplierManager {
       int[] userIDs = {user.getID()};
 
       AccessControl ac = new AccessControl();
-      int permissionGroupID = ac.createPermissionGroup(sName+permissionGroupNameExtention, SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, "", userIDs ,null);
+      ac.createPermissionGroup(sName+permissionGroupNameExtention, SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, "", userIDs ,null);
 
       //sGroup.addTo(PermissionGroup.class, permissionGroupID);
 
@@ -239,19 +239,13 @@ public class SupplierManager {
   }
 
   public static List getUsersNotInPermissionGroup(Supplier supplier) {
-    try {
-      List allUsers = getUsers(supplier);
-      PermissionGroup pGroup = getPermissionGroup(supplier);
-      List permUsers = getUsersInPermissionGroup(supplier);
+    List allUsers = getUsers(supplier);
+    List permUsers = getUsersInPermissionGroup(supplier);
 
-      if (permUsers != null)
-      allUsers.removeAll(permUsers);
+    if (permUsers != null)
+    allUsers.removeAll(permUsers);
 
-      return allUsers;
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-      return null;
-    }
+    return allUsers;
   }
 
   public static List getUsers(Supplier supplier) {

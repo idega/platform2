@@ -216,14 +216,12 @@ public class CategoryWindow extends IWAdminWindow {
 			//Collections.sort(L, new CategoryComparator());
 		}
 		Collection coll = CategoryFinder.getInstance().collectCategoryIntegerIds(iObjectInstanceId);
-		boolean edit = iwc.isParameterSet("edit");
 		int chosenId = iCategoryId;
 		
 		Table T = new Table();
 		T.setCellpadding(0);
 		T.setCellspacing(0);
 		row = 1;
-		int col = 1;
 		DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
 	    LocaleDrop.setToSubmit();
 	    LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
@@ -311,7 +309,6 @@ public class CategoryWindow extends IWAdminWindow {
 			int id;
 			int iOrder = 0;
 			while (iter.hasNext()) {
-				int col = 1;
 				cat = (ICCategory) iter.next();
 				id = ((Integer)cat.getPrimaryKey()).intValue();	
 				try{

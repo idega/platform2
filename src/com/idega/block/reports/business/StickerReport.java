@@ -2,7 +2,6 @@ package com.idega.block.reports.business;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.List;
 
@@ -33,7 +32,6 @@ public class StickerReport {
   }
 
   public static MemoryFileBuffer writeStickerList(Report report,ReportInfo info){
-    boolean returner = false;
     Connection Conn = null;
 
     MemoryFileBuffer buffer = new MemoryFileBuffer();
@@ -70,9 +68,6 @@ public class StickerReport {
         Conn = com.idega.util.database.ConnectionBroker.getConnection();
         Statement stmt = Conn.createStatement();
         ResultSet RS  = stmt.executeQuery(sql);
-        ResultSetMetaData MD = RS.getMetaData();
-        String temp = null;
-        StringBuffer sb = null;
         StickerList list = new StickerList();
         list.setStickerHeight(info.getHeight());
         list.setStickerWidth(info.getWidth());
@@ -81,12 +76,10 @@ public class StickerReport {
         list.setPageSize(ReportFinder.getPageSize(info.getPagesize()));
 
         Paragraph parag;
-        String s;
         while(RS.next()){
           parag = new Paragraph();
 
           for(int i = 1; i <= Hlen; i++){
-            s = RS.getString(i);
             if(!RS.wasNull())
               parag.add(new Chunk(RS.getString(i),fonts[i-1]));
             parag.add(endstrings[i-1]);

@@ -138,7 +138,6 @@ public class DictionaryBusiness {
 
   public DropdownMenu getCategoryMenu() throws IDOException,FinderException,RemoteException {
     List collection = CategoryFinder.getInstance().listOfCategories("dictionary");
-    Collection categories = null;
     DropdownMenu menu = new DropdownMenu(PARAMETER_CATEGORY_ID);
 
     if ( collection != null ) {

@@ -159,7 +159,6 @@ public class TariffIndexEditor extends Finance {
 
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
-      String s = "";
       TextInput nameInput, infoInput,indexInput;
       HiddenInput idInput;
       CheckBox delCheck;

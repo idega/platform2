@@ -1,6 +1,5 @@
 package com.idega.block.messenger.servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -85,7 +84,6 @@ public class ClientServer extends IWCoreServlet{
     private Packet receivePacket(HttpServletRequest request){
       ObjectInputStream inputFromApplet = null;
       Packet packet = null;
-      BufferedReader inTest = null;
 
       try{
         // get an input stream from the applet

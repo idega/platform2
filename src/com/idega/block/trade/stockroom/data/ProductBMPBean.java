@@ -623,10 +623,8 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     Collection coll;
 
     Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
-    Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
     ProductCategory pCat = (ProductCategory) com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.getStaticInstance(ProductCategory.class);
     LocalizedText locText = (LocalizedText) LocalizedTextBMPBean.getStaticInstance(LocalizedText.class);
-    Product prod = null;
     //Service tService = (Service) is.idega.idegaweb.travel.data.ServiceBMPBean.getStaticInstance(Service.class);
 
     String middleTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class,Product.class);

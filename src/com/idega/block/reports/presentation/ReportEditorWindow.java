@@ -128,7 +128,7 @@ public class ReportEditorWindow extends IWAdminWindow {
 			// saving :
 			if(iwc.isParameterSet(actSave) || iwc.isParameterSet(actSave+".x") ){
 				if(sName!=null){
-					int id = ReportBusiness.saveCategory(iCatId,iObjInsId,sName,sDesc);
+					ReportBusiness.saveCategory(iCatId,iObjInsId,sName,sDesc);
 				}
 			}
 			if(iwc.isParameterSet(actClose) || iwc.isParameterSet(actClose+".x") ){

@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 import com.idega.block.reports.business.ReportCondition;
 import com.idega.block.reports.data.ReportCategory;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.Block;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.InterfaceObject;
@@ -248,7 +247,6 @@ public class ReportObjectHandler extends Block{
 
   private static DropdownMenu drpEntity(String Name,String Entity,String field ,String selected,boolean withID) {
 
-    IDOLegacyEntity[] entities = new IDOLegacyEntity[1];
     java.util.List L  = null;
     try{
 

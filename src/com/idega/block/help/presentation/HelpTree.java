@@ -56,8 +56,6 @@ public class HelpTree extends Block {
 		t.setVerticalAlignment(1, 1, "top");
 		t.setVerticalAlignment(2, 1, "top");
 		
-		DisplayHelp helpDisp = new DisplayHelp();
-				
 		IFrame f = new IFrame(HELP_FRAME,DisplayHelp.class);
 		f.setStyleAttribute("width:100%;height:100%");
 		f.setScrolling(IFrame.SCROLLING_YES);

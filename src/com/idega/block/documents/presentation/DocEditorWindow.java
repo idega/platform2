@@ -310,18 +310,6 @@ public class DocEditorWindow extends IWAdminWindow {
 
         if (_hasEditpermission) {
 
-            String instId = iwc.getParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID);
-
-            int instanceId = -1;
-
-            if (instId != null) {
-
-                instanceId = Integer.parseInt(instId);
-
-            }
-
-
-
             switch (_action) {
 
                 case _ACTION_OPENWINDOW:

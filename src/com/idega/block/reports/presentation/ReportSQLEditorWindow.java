@@ -370,7 +370,6 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
 
     String sql = rm.makeSQL(vRC);
     if(iCategoryId > 0){
-      int count = 0;
       Report saved = ReportEntityHandler.saveReport(name,info,headers,sql,iCategoryId);
 
 			if(saved.getID() > 0){
@@ -467,8 +466,6 @@ public class ReportSQLEditorWindow extends IWAdminWindow implements Reports{
     //add(sql);
 
     if(iCategoryId > 0){
-      int count = 0;
-
       Report saved = ReportEntityHandler.saveReport(name,info,heads,sql,iCategoryId);
       if(saved.getID() >0){
         setParentToReload();

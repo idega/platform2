@@ -43,8 +43,6 @@ public class TimeframeComparator implements Comparator {
   }
 
   public int compare(Object o1, Object o2) {
-      Timeframe p1 = (Timeframe) o1;
-      Timeframe p2 = (Timeframe) o2;
       int result = 0;
 
       switch (this.sortBy) {

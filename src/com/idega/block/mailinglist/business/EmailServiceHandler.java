@@ -83,9 +83,6 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
 
   public Message[] getServicesAndCloseConnection() throws MessagingException{
 
-    String host = this.server;
-    String username = userName;
-
     // Create empty properties
     Properties properties = new Properties();
     // Get session
@@ -344,7 +341,6 @@ public class EmailServiceHandler /*implements ServiceInterface*/{
       String host = "mail.idega.is";
       String user = "eiki";
       String password = "p1par";
-      int post = 110;
       URLName url = new URLName("pop3", host, 110, "", user, password);
       inboxManager = new InboxManager(url);
       iwc.setSessionAttribute("inboxmanager",inboxManager);

@@ -130,7 +130,6 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
         EG = ((com.idega.block.finance.data.EntryGroupHome)com.idega.data.IDOLookup.getHomeLegacy(EntryGroup.class)).createLegacy();
         EG.setGroupDate(IWTimestamp.RightNow().getSQLDate());
         EG.insert();
-        int gid = EG.getID();
         //System.err.println(" gid "+gid);
       }
       catch (Exception ex) {

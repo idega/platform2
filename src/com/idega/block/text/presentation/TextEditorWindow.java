@@ -120,7 +120,6 @@ public class TextEditorWindow extends AbstractChooserWindow{
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
     String sLocaleId = iwc.getParameter(prmLocale);
-    String sAtt = null;
 
     if(iwc.isParameterSet(actClose)|| iwc.isParameterSet(actClose+".x")){
       if (parentReload) {
@@ -141,7 +140,6 @@ public class TextEditorWindow extends AbstractChooserWindow{
     }
 
     if ( isAdmin ) {
-      String sAction;
     // end of LocaleHandling
 
     // Text initialization
@@ -245,11 +243,9 @@ public class TextEditorWindow extends AbstractChooserWindow{
       locText = contentHelper.getLocalizedText(TextFinder.getLocale(iLocaleId));
     boolean hasLocalizedText = ( locText !=null ) ? true:false;
 
-    Link propslink = null;
     TextInput tiHeadline = new TextInput(prmHeadline);
     tiHeadline.setLength(40);
     tiHeadline.setMaxlength(255);
-    List L = TextFinder.listOfLocales();
     DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
     LocaleDrop.setToSubmit();
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
@@ -381,13 +377,11 @@ public class TextEditorWindow extends AbstractChooserWindow{
     String sBody = iwc.getParameter(prmBody );
     String sImageId = iwc.getParameter(prmImageId);
     String sLocaleId = iwc.getParameter(prmLocale);
-    String sUseImage = iwc.getParameter(prmUseImage);
     if(sHeadline != null || sBody != null){
       int iTxTextId = sTxTextId!=null?Integer.parseInt(sTxTextId): -1;
       int iLocalizedTextId = sLocalizedTextId != null ? Integer.parseInt(sLocalizedTextId): -1;
       int iLocaleId = sLocaleId != null ? Integer.parseInt(sLocaleId):-1;
       int iImageId = sImageId != null ? Integer.parseInt(sImageId):-1;
-      boolean bUseImage = sUseImage!= null?true:false;
       Vector files = null;
 
       try {

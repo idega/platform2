@@ -75,15 +75,10 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
 
     StaffInfo staffToAdd = null;
 
-    boolean update = false;
-
-
 
     try {
 
       staffToAdd = ((com.idega.block.staff.data.StaffInfoHome)com.idega.data.IDOLookup.getHomeLegacy(StaffInfo.class)).findByPrimaryKeyLegacy(user_id);
-
-      update = true;
 
     }
 
@@ -92,8 +87,6 @@ public static final String PARAMETER_META_ATTRIBUTE = "attribute";
       staffToAdd = ((com.idega.block.staff.data.StaffInfoHome)com.idega.data.IDOLookup.getHomeLegacy(StaffInfo.class)).createLegacy();
 
       staffToAdd.setID(user_id);
-
-      update = false;
 
     }
 

@@ -15,7 +15,6 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 
@@ -103,7 +102,6 @@ public class EmailProgramSideTable extends Block {
   public Mailinglist getChosenMailinglist(IWContext modinfo) throws SQLException{
     chosen = modinfo.getParameter(mailinglistDropDownMenuName);
     System.err.println("Jamm þetta sem ven fær gildi!!! chosen = "+chosen);
-    Mailinglist chosenMailinglist = ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).createLegacy();
     if((chosen != null) && !("".equalsIgnoreCase(chosen))){
       return( ((com.idega.block.mailinglist.data.MailinglistHome)com.idega.data.IDOLookup.getHomeLegacy(Mailinglist.class)).findByPrimaryKeyLegacy(Integer.parseInt(chosen)));
     }
@@ -120,7 +118,6 @@ public class EmailProgramSideTable extends Block {
     mailinglistMenu.addMenuElements(EntityFinder.findAllOrdered(mailinglist,com.idega.block.mailinglist.data.MailinglistBMPBean.MAILINGLIST_NAME));
     mailinglistMenu.setToSubmit();
     System.err.println("modinfo.getParameter(mailinglistDropDownMenuName = "+modinfo.getParameter(mailinglistDropDownMenuName));
-    Parameter sumitParameter = new Parameter(submitParameterName, submitParameterValue);
     sideTable.add(inboxButton,1,1);
     sideTable.add(sentButton,1,2);
     sideTable.add(draftsButton,1,3);

@@ -49,7 +49,6 @@ public class ContractWriter
 	public final static String today = "Today";
 	public static int writePDF(int[] ids, int iCategoryId, String fileName, Font titleFont, Font paragraphFont, Font tagFont, Font textFont)
 	{
-		boolean returner = false;
 		boolean bEntity = false;
 		int id = -1;
 		if (ids != null && ids.length > 0)
@@ -85,7 +84,6 @@ public class ContractWriter
 				Chapter chapter = new Chapter(cTitle, 1);
 				chapter.setNumberDepth(0);
 				Paragraph P, P2;
-				Chapter subChapter;
 				Section subSection;
 				Phrase phrase;
 				//System.err.println("inside chapter : "+ids[j]);
@@ -157,12 +155,10 @@ public class ContractWriter
 			{
 				ex.printStackTrace();
 			}
-			returner = true;
 		}
 		catch (Exception ex)
 		{
 			ex.printStackTrace();
-			returner = false;
 		}
 		return id;
 	}

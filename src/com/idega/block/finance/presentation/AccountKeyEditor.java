@@ -160,7 +160,6 @@ public class AccountKeyEditor extends Finance {
     AccountKey key;
     for (int i = 1; i <= inputcount ;i++){
       String rownum = String.valueOf(i);
-      String s = "";
       TextInput nameInput, infoInput;
       HiddenInput idInput;
       CheckBox delCheck;
@@ -212,7 +211,6 @@ public class AccountKeyEditor extends Finance {
     int count = Integer.parseInt(iwc.getParameter("ake_count"));
     String sName,sInfo,sDel,sTKid;
     int ID,TKid;
-    AccountKey key = null;
 
     for (int i = 1; i < count+1 ;i++){
       sName = iwc.getParameter("ake_nameinput"+i ).trim();

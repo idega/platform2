@@ -48,10 +48,8 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
 
   Table productTable;
 
-  Product selectedProduct = productCatalog.getSelectedProduct(iwc);
   Product product;
 
-  boolean addedRow = false;
   Link editLink;
   Text nameText;
   Link nameLink;

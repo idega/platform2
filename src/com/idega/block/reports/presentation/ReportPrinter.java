@@ -187,8 +187,6 @@ public class ReportPrinter extends Block implements Reports{
 
     }
 
-    boolean formAdded = false;
-
     ReportInfo info;
 
     String type;

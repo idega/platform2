@@ -72,7 +72,6 @@ public static final int PAGE = 3;
     System.out.println("saveLink(int userID,int catId,int folderId,int linkID,String boxLinkName,int fileID,int pageID,String boxLinkURL,String target,int iLocaleID)");
     System.out.println(userID+", "+catId+", "+folderId+", "+linkID+", "+boxLinkName+", "+fileID+", "+pageID+", "+boxLinkURL+", "+target+", "+iLocaleID);
     boolean update = false;
-    boolean newLocText = false;
     int _linkID = -1;
 
     DocLink link = null;

@@ -7,7 +7,6 @@ import java.util.Iterator;
 import javax.ejb.FinderException;
 
 import com.idega.block.boxoffice.presentation.Box;
-import com.idega.block.boxoffice.presentation.BoxCategoryChooser;
 import com.idega.block.documents.presentation.Doc;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.school.business.SchoolBusiness;
@@ -160,7 +159,6 @@ public class SchoolContentEditor extends IWAdminWindow{
 
 		Box box = new Box("Repps");
 		box.setBorderColor("RED");
-		BoxCategoryChooser boxCh = new BoxCategoryChooser();
 		
 		Doc doc = new Doc();
 		doc.setAutoCreate( true );

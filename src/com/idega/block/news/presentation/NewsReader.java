@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.113 2003/04/03 08:01:12 laddi Exp $
+ * $Id: NewsReader.java,v 1.114 2003/04/03 19:29:11 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1225,7 +1225,6 @@ public class NewsReader extends CategoryBlock implements IWBlock {
 					Link L = new Link(newsImage);
 					L.addParameter(ImageWindow.prmImageId,imid);
 					L.addParameter(ImageWindow.prmInfo,headline);
-					ImageWindow w = new ImageWindow();
 					L.setWindowToOpen(ImageWindow.class);
 					return L;
 				}

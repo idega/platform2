@@ -140,7 +140,6 @@ public class EntryGroups extends Finance {
 		List L = Finder.listOfEntryGroups();
 		if (L != null) {
 			int len = L.size();
-			String sRollBack = iwrb.getLocalizedString("rollback", "Rollback");
 			T.add(Edit.formatText(iwrb.getLocalizedString("group_id", "Group id")), 1, 1);
 			T.add(Edit.formatText(iwrb.getLocalizedString("group_date", "Group date")), 2, 1);
 			T.add(Edit.formatText(iwrb.getLocalizedString("entry_from", "Entries from")), 3, 1);
@@ -151,7 +150,6 @@ public class EntryGroups extends Finance {
 			int col = 1;
 			row = 2;
 			EntryGroup EG;
-			java.text.NumberFormat nf = java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
 			for (int i = 0; i < len; i++) {
 				col = 1;
 				EG = (EntryGroup) L.get(i);

@@ -6,9 +6,7 @@ import java.util.Iterator;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -65,11 +63,9 @@ public class SchoolTypeSelector extends Block {
 
 		if (coll != null) {
 			SchoolType sType;
-			SchoolTypeHome stHome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
 			Table table = new Table();
 			int sTypeId;
 			table.setCellpaddingAndCellspacing(0);
-			Link link;
 			int row = 1;
 			int col = 1;
 

@@ -172,8 +172,6 @@ public class ProductCategoryEditor extends CategoryWindow {
       super.addRight("", refresh, false);
 
 
-      Table table = new Table();
-
       this.addHiddenInput(new HiddenInput(this.SELECTED_CATEGORY, Integer.toString(this._selectedCategory)));
       super.maintainClearCacheKeyInForm(iwc);
 
@@ -200,7 +198,6 @@ public class ProductCategoryEditor extends CategoryWindow {
   private void saveAssignment(IWContext iwc) throws RemoteException {
     String[] in = iwc.getParameterValues(this._parameterProductIn);
 
-    Product product;
     TransactionManager tm = IdegaTransactionManager.getInstance();
     try {
       tm.begin();

@@ -124,7 +124,6 @@ public final class WebSearchHit {
 	        	int start = 0;
 	        	int end = length;
 	        	int half = maxLength/2;
-	        	int right = half;
 	        	int left = half;
 	        	
 	        	if( middle!=-1 ){

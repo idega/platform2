@@ -29,7 +29,6 @@ import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 /**
  * Title:
@@ -239,8 +238,7 @@ public class AccountViewer extends Finance {
           b = b*tax;
         }
 
-        boolean debet = b > 0 ? true:false;
-        T.add(tf.format(NF.format( (double) b)),col++,row);
+         T.add(tf.format(NF.format( (double) b)),col++,row);
         row++;
       }
       T.getContentTable().setColumnAlignment(4,"right");
@@ -265,7 +263,6 @@ public class AccountViewer extends Finance {
       T.setCellspacing(0);
       T.setCellpadding(2);
 
-      String fontColor = sHeaderColor;
       int fontSize = 1;
       int row = 1;
 
@@ -280,7 +277,6 @@ public class AccountViewer extends Finance {
       row++;
       T.add(formatText(iwrb.getLocalizedString("balance","Balance"),fontSize,null),1,row);
       float b = eAccount.getBalance();
-      boolean debet = b > 0?true:false;
       T.add(formatText(NF.format( (double) b),fontSize,null),2,row);
       row++;
 
@@ -352,7 +348,6 @@ public class AccountViewer extends Finance {
     T.setRowColor(1,FinanceColors.DARKBLUE);
     T.setRowColor(2,FinanceColors.DARKGREY);
 
-    String fontColor = sWhiteColor;
     int fontSize = 1;
 
 		String title = iwrb.getLocalizedString("entries","Entries")+"  "
@@ -444,11 +439,6 @@ public class AccountViewer extends Finance {
   }
 
   private PresentationObject getPhoneEntryReportTable(FinanceAccount eAccount,List listEntries,IWTimestamp from ,IWTimestamp to){
-    int tableDepth = 3;
-    Vector other = new Vector();
-    Vector mobile = new Vector();
-    Vector foreign = new Vector();
-
     String sMob1 = "8";
     String sMob2 = "6";
     String sFor = "00";
@@ -560,7 +550,6 @@ public class AccountViewer extends Finance {
     T.setTitlesHorizontal(true);
 
 
-    String fontColor = sWhiteColor;
     int fontSize = 1;
 
     String title = iwrb.getLocalizedString("entries","Entries")+" "+
@@ -665,7 +654,6 @@ public class AccountViewer extends Finance {
     T.add(formatText(iwrb.getLocalizedString("amount","Amount")),4,2);
     T.setTopLine(true);
 
-    Text[] TableTexts = new Text[4];
     boolean debet = false;
     if(listEntries != null){
       int len = listEntries.size();

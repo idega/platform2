@@ -434,7 +434,6 @@ public class BuildingFinder {
       Conn = com.idega.util.database.ConnectionBroker.getConnection();
       Statement stmt = Conn.createStatement();
       ResultSet RS  = stmt.executeQuery(sqlString);
-      int a = 0;
 
       while (RS.next()) {
         ApartmentTypeComplexHelper appHelp = new ApartmentTypeComplexHelper();
@@ -558,8 +557,7 @@ public class BuildingFinder {
       sql.append(" order by ");
       sql.append(order);
     }
-    String sSQL = sql.toString();
-    //System.err.println(sSQL);
+
     try{
       return  EntityFinder.findAll(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).createLegacy(),sql.toString());
     }

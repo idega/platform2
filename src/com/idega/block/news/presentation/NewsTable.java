@@ -187,8 +187,6 @@ public class NewsTable extends PresentationObjectContainer {
 
         table.setColumnVerticalAlignment(i,"top");
 
-        int mod = i%2;
-
       }
 
     }

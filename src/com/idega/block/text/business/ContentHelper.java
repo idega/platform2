@@ -80,7 +80,7 @@ public class ContentHelper{
 
   public LocalizedText getLocalizedText(){
 
-    LocalizedText LT= null,lt = null;
+    LocalizedText LT= null;
 
     if(lLocalizedText!=null){
 

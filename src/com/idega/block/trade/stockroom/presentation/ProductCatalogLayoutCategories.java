@@ -34,7 +34,6 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 
     ICCategory pCat;
 
-    List catProducts;
     Link configCategory;
 
     Image spaceBetween = (Image) spacer.clone();

@@ -147,7 +147,6 @@ public class TextFinder {
   }
 
   public static LocalizedText getLocalizedText(int iTxTextId,int iLocaleId){
-    TxText T = getText(iTxTextId);
     LocalizedText LTX = null;
     List L =   listOfLocalizedText(iTxTextId,iLocaleId);
     if(L!= null){

@@ -54,12 +54,12 @@ public class AccountBusinessBean extends IBOServiceBean implements AccountBusine
   }
 
   public Collection listOfAccounts(){
-    try{
-       AccountHome aHome = (AccountHome)IDOLookup.getHome(Account.class);
+    /*try{
+       //AccountHome aHome = (AccountHome)IDOLookup.getHome(Account.class);
 
        //A = EntityFinder.findAll(((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).createLegacy());
     }
-    catch(Exception e){}
+    catch(Exception e){}*/
     return null;
   }
 

@@ -215,7 +215,6 @@ public class CalendarEditor extends IWAdminWindow {
 		entryDate.setTimestamp(_stamp.getTimestamp());
 		entryDate.setStyleAttribute(STYLE);
 
-		IWTimestamp endStamp = new IWTimestamp();
 		TimestampInput entryEndDate = new TimestampInput(CalendarBusiness.PARAMETER_ENTRY_END_DATE);
 		entryEndDate.setYearRange(stamp.getYear() - 5, stamp.getYear() + 10);
 		if (_endStamp != null)

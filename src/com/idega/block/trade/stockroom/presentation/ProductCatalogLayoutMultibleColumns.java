@@ -37,8 +37,6 @@ public class ProductCatalogLayoutMultibleColumns extends AbstractProductCatalogL
 
     List catProducts;
     Link configCategory;
-    Link productLink;
-    Text nameText;
 
     for (int i = 0; i < productCategories.size(); i++) {
       try {

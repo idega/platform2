@@ -103,8 +103,6 @@ public class SchoolAreaSelector extends Block {
 			
 			Table table = new Table();
 			table.setCellpaddingAndCellspacing(0);
-			Link link;
-
 
 			int row = 0;
 			int col = 1;

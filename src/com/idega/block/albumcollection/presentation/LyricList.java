@@ -6,7 +6,6 @@ import java.util.List;
 import com.idega.block.albumcollection.business.AlbumCollectionBusiness;
 import com.idega.block.albumcollection.data.Lyric;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -76,7 +75,6 @@ public class LyricList extends Block {
   public Table getLyricList(IWContext iwc)throws Exception {
 
     IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-    IWResourceBundle iwrb = this.getResourceBundle(iwc);
 
     Table lyricTable = null;
     int index=1;

@@ -26,7 +26,6 @@ public class EmailServices {
   }
 
   public EmailLetterData[] getServices(){
-    EmailLetterData[] letters;
     return null;
   }
 

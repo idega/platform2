@@ -378,7 +378,6 @@ public class ReportSQLEditor extends Block implements Reports{
 
     String sql = rm.makeSQL(vRC);
     if(iCategoryId > 0){
-      int count = 0;
       Report saved = ReportEntityHandler.saveReport(name,info,headers,sql,iCategoryId);
 
 			if(saved!=null){
@@ -474,8 +473,6 @@ public class ReportSQLEditor extends Block implements Reports{
     //add(sql);
 
     if(iCategoryId > 0){
-      int count = 0;
-
       Report saved = ReportEntityHandler.saveReport(name,info,heads,sql,iCategoryId);
       if(saved!=null){
         int id = saved.getID();

@@ -93,7 +93,6 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   }
 
   public  ProductPrice getPrice(Product product) throws RemoteException {
-    ProductPrice pPrice = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
     StringBuffer buffer = new StringBuffer();
       buffer.append("SELECT * FROM "+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPriceTableName());
       buffer.append(" WHERE ");

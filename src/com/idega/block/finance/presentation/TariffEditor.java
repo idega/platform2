@@ -189,7 +189,6 @@ public class TariffEditor extends Finance{
   }
 
   protected PresentationObject getMain(IWContext iwc,int iCategoryId,TariffGroup group)throws java.rmi.RemoteException{
-    IWTimestamp today = new IWTimestamp();
     int iGroupId = -1;
     FinanceHandler handler = null;
     Map attributeMap = null;
@@ -225,7 +224,6 @@ public class TariffEditor extends Finance{
     T.setCellspacing(1) ;
     int col = 1;
     T.add(Edit.formatText("Nr"),col++,1);
-    boolean conn = false;
     if(ifAttributes){
       T.add(Edit.formatText(iwrb.getLocalizedString("connection","Connection")),col++,1);
     }
@@ -281,7 +279,6 @@ public class TariffEditor extends Finance{
     Form myForm = new Form();
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     boolean updateIndex = factor;
-    IWTimestamp today = new IWTimestamp();
     Collection tariffs = FinanceFinder.getInstance().listOfTariffs(group.getID());
     List AK = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
     List indices = Finder.listOfTypeGroupedIndices();
@@ -487,7 +484,6 @@ public class TariffEditor extends Finance{
     myForm.add(Finance.getCategoryParameter(iCategoryId));
     myForm.maintainAllParameters();
     boolean updateIndex = factor;
-    IWTimestamp today = new IWTimestamp();
     Collection ts = FinanceFinder.getInstance().listOfTariffs(group.getID());
     List tariffs = new Vector(ts);
     List AK = FinanceFinder.getInstance().listOfAccountKeys(iCategoryId);
@@ -552,7 +548,6 @@ public class TariffEditor extends Finance{
     for (int i = 1; i <= inputcount ;i++){
       col = 1;
       String rownum = String.valueOf(i);
-      String s = "";
       String hid = "-1";
       TextInput nameInput,priceInput,infoInput;
       DropdownMenu drpAtt = null,drpAK,drpIx = null;
@@ -697,12 +692,10 @@ public class TariffEditor extends Finance{
   protected PresentationObject doUpdate(IWContext iwc,int iCategoryId,TariffGroup group)throws java.rmi.RemoteException {
     Map M = Finder.mapOfIndicesByTypes(Finder.listOfTypeGroupedIndices());
     int count = Integer.parseInt(iwc.getParameter("te_count"));
-    String sName,sInfo,sDel,sPrice,sAtt,sAK,sTK,sID,sDateFrom,sDateTo,sIndex,sIndexStamp;
-    int ID,Attid,AKid,TKid;
-    float Price;
+    String sName,sInfo,sDel,sPrice,sAtt,sAK,sIndex,sIndexStamp;
+    int ID;
     boolean bIndex;
     int TGid = Integer.parseInt(iwc.getParameter(prmGroup));
-    Tariff tariff = null;
 
     for (int i = 1; i < count+1 ;i++){
       sName = iwc.getParameter("te_nameinput"+i);
@@ -712,7 +705,6 @@ public class TariffEditor extends Finance{
       sAK = (iwc.getParameter("te_akdrp"+i));
       sIndex = (iwc.getParameter("te_ixdrp"+i));
       sDel = iwc.getParameter("te_delcheck"+i);
-      sID = iwc.getParameter("te_idinput"+i);
       sIndexStamp = iwc.getParameter("te_ixdate"+i);
       IWTimestamp stamp = sIndexStamp!= null ?new IWTimestamp(sIndexStamp):null;
 
@@ -806,14 +798,12 @@ public class TariffEditor extends Finance{
   private float findIndexDifferenceFactor(TariffIndex[] ti){
     float now = 1;
     float then = 1;
-    float diff = 1;
     try {
 
       if(ti.length > 0 ){
         now = ti[0].getIndex();
         if(ti.length > 0 ){
           then = ti[1].getIndex();
-          diff = now - then;
         }
       }
 

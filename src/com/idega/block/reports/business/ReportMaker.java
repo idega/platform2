@@ -108,8 +108,6 @@ public class ReportMaker {
 
 		Vector vHaving = new Vector();
 
-    List LOrder = null;
-
     TreeMap orderMap = new TreeMap();
 
 

@@ -159,7 +159,6 @@ public class TextReader extends Block implements IWBlock {
 		T.setBorder(0);
 		int headerRow = 1;
 		int bodyRow = 2;
-		int row = 1;
 
 		T.setWidth("100%");
 		String sHeadline = locText.getHeadline() != null ? locText.getHeadline() : "";
@@ -205,8 +204,6 @@ public class TextReader extends Block implements IWBlock {
 		//body.setAttribute("class","bodytext");
 		if (textStyle != null)
 			body.setFontStyle(textStyle);
-
-		Image bodyImage;
 
 		///////////////// Image /////////////////////
 		List files = contentHelper.getFiles();

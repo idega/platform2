@@ -23,7 +23,6 @@ public class CategoryComparator implements Comparator {
   public int compare(Object o1, Object o2) {
       ICCategory p1 = (ICCategory) o1;
       ICCategory p2 = (ICCategory) o2;
-      int result = 0;
 
     String one = p1.getName();
     String two = p2.getName();

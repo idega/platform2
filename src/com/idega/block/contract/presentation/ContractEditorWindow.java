@@ -23,7 +23,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
@@ -110,11 +109,9 @@ private IWResourceBundle iwrb;
     String sCategoryId = iwc.getParameter(prmCategory);
 		//add("category"+sCategoryId+" ");
     int iCategoryId = sCategoryId !=null?Integer.parseInt(sCategoryId):-1;
-    String sAtt = null;
 		int saveInfo = getSaveInfo(iwc);
 
     if ( isAdmin ) {
-      String sAction;
 
       // Text initialization
       String sContractId = null;
@@ -276,7 +273,6 @@ private IWResourceBundle iwrb;
 		for (int i = 1; i <= inputcount ;i++){
 
 			String rownum = String.valueOf(i);
-			String s = "";
 
 			int pos;
 			nameInput  = new TextInput("contag_nameinput"+i);
@@ -485,7 +481,6 @@ private IWResourceBundle iwrb;
 		if(L!=null){
 			Iterator I = L.iterator();
 			ContractTag tag;
-			Text header;
 			int row = 1;
 			while(I.hasNext()){
 			  tag = (ContractTag) I.next();

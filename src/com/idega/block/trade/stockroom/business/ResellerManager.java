@@ -162,7 +162,7 @@ public class ResellerManager {
 
 
       AccessControl ac = new AccessControl();
-      int permissionGroupID = ac.createPermissionGroup(name+"_"+reseller.getID()+permissionGroupNameExtention, permissionGroupDescription, "", userIDs ,null);
+      ac.createPermissionGroup(name+"_"+reseller.getID()+permissionGroupNameExtention, permissionGroupDescription, "", userIDs ,null);
 
       if(addressIds != null){
         for (int i = 0; i < addressIds.length; i++) {
@@ -452,9 +452,7 @@ public class ResellerManager {
   }
 
   public static List getUsersNotInPermissionGroup(Reseller reseller) {
-    try {
       List allUsers = getUsers(reseller);
-      PermissionGroup pGroup = getPermissionGroup(reseller);
       List permUsers = getUsersInPermissionGroup(reseller);
 
       if (permUsers != null) {
@@ -462,10 +460,6 @@ public class ResellerManager {
       }
 
       return allUsers;
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-      return null;
-    }
   }
 
   public static List getUsers(Reseller reseller) {
@@ -537,7 +531,6 @@ public class ResellerManager {
     if (isReseller) {
       Reseller[] resellers = com.idega.block.trade.stockroom.data.ResellerBMPBean.getValidResellers();
       GenericGroup rGroup = (GenericGroup) groups.get(number);
-      String name;
       for (int i = 0; i < resellers.length; i++) {
         if ((resellers[i].getName()+"_"+resellers[i].getID()).indexOf(rGroup.getName()) != -1) {
           return resellers[i];

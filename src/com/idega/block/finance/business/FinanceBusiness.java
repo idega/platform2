@@ -522,13 +522,9 @@ public  class FinanceBusiness {
 
       Tariff tariff = ((TariffHome)com.idega.data.IDOLookup.getHome(Tariff.class)).create();
 
-      boolean update = false;
-
       if(id > 0){
 
         tariff = ((TariffHome)com.idega.data.IDOLookup.getHome(Tariff.class)).findByPrimaryKey(new Integer(id));
-
-        update = true;
 
       }
 

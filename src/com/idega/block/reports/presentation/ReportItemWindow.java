@@ -237,11 +237,9 @@ public class ReportItemWindow extends IWAdminWindow{
     T.add(formatText("Display order"),1,a++);
     T.add(formatText("Is Function"),1,a++);
 
-    String s = "";
     TextInput name,field,table,joins,jointables,
               conddata,condop,entity,info,displayorder;
-    HiddenInput idInput;
-    CheckBox delCheck,isSelect,isFunction;
+    CheckBox isFunction;
 		DropdownMenu condtype;
 
     name        = new TextInput(prefix+"name");
@@ -389,7 +387,6 @@ public class ReportItemWindow extends IWAdminWindow{
     SelectionBox box2 = box.getRightBox();
     box1.keepStatusOnAction();
     box2.addUpAndDownMovers();
-    int a = 1;
     for (int i = 0; i < ent.getVisibleColumnNames().length; i++) {
       box1.addMenuElement(i,ent.getLongName(ent.getVisibleColumnNames()[i]));
     }
@@ -420,7 +417,7 @@ public class ReportItemWindow extends IWAdminWindow{
 					System.err.println("id from selection box "+s[i]);
 
 					int nr = Integer.parseInt(s[i]);
-					boolean b = ReportEntityHandler.saveReportItem(iCategoryId
+					ReportEntityHandler.saveReportItem(iCategoryId
 							,ent.getLongName(columns[i])
 							,columns[nr]
 							,ent.getEntityName()
@@ -488,12 +485,11 @@ public class ReportItemWindow extends IWAdminWindow{
     info        = iwc.getParameter(prefix+"info");
 		function    = iwc.getParameter(prefix+"function")!=null;
     if(id != 0){
-      boolean b = false;
       if(itemId > 0){
-        b = ReportEntityHandler.updateReportItem(itemId,id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info,function);
+        ReportEntityHandler.updateReportItem(itemId,id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info,function);
       }
       else{
-        b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info,function);
+        ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info,function);
       }
     }
   }

@@ -171,7 +171,6 @@ public PollResult() {
 
     int total = 0;
     int row = 1;
-    int current_hits = 0;
 
     if ( question != null ) {
       Text questionText = new Text(questionLocText.getHeadline());

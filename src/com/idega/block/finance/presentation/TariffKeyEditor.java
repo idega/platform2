@@ -70,7 +70,6 @@ public class TariffKeyEditor extends Finance {
 
   protected PresentationObject makeTabTable(int iCategoryId, int iTariffGroupId){
     Table T = new Table();
-    List groups = FinanceFinder.getInstance().listOfTariffGroups(iCategoryId);
     return T;
   }
 
@@ -152,7 +151,6 @@ public class TariffKeyEditor extends Finance {
       for (int i = 1; i <= inputcount ;i++){
 
         String rownum = String.valueOf(i);
-        String s = "";
         TextInput nameInput, infoInput;
         HiddenInput idInput;
         CheckBox delCheck;
@@ -198,8 +196,6 @@ public class TariffKeyEditor extends Finance {
     int count = Integer.parseInt(iwc.getParameter("tke_count"));
     String sName,sInfo,sDel;
     int ID;
-    TariffKey[] keys = new TariffKey[count];
-    TariffKey key = null;
 
     for (int i = 1; i < count+1 ;i++){
       sName = iwc.getParameter("tke_nameinput"+i );

@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.23 2003/04/03 07:05:44 laddi Exp $
+ * $Id: ApplicationForm.java,v 1.24 2003/04/03 19:29:12 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -148,7 +148,6 @@ public class ApplicationForm extends PresentationObjectContainer {
     TextInput textInputTemplate = new TextInput();
     Form form = new Form();
     DataTable t = new DataTable();
-    BackButton back = new BackButton(_iwrb.getImage("back.gif"));
     SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif",_iwrb.getLocalizedString("ok","áfram")));
 
     Text heading = (Text)textTemplate.clone();

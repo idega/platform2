@@ -97,8 +97,6 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
     int fileId;
     Image image;
     float price;
-    Link productLink;
-    Text nameText;
 
     ++row;
     Link number = new Link(_productCatalog.getCategoryText(_iwrb.getLocalizedString("item_number","Item number")));

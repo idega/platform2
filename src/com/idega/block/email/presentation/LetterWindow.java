@@ -143,7 +143,6 @@ public class LetterWindow extends IWAdminWindow{
 
     if(iwc.isParameterSet("send.x")){
       int topic = Integer.parseInt(iwc.getParameter("topic_id"));
-			boolean save = iwc.isParameterSet("save") && "true".equals(iwc.getParameter("save"));
       EmailLetter letter = MailBusiness.getInstance().saveTopicLetter(-1,fromname,fromaddress,subject,body,EmailLetter.TYPE_SENT,topic);
       if(topic >0){
         MailBusiness.getInstance().sendLetter(letter,MailFinder.getInstance().getTopic(topic));

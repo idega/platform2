@@ -235,10 +235,7 @@ public class ContentViewer extends Block{
     T.setColumnAlignment(1,"left");
     T.setColumnAlignment(3,"center");
     T.setColumnAlignment(5,"right");
-    int lastgroup = total/displayNumber;
     int left = total%displayNumber;
-    int last = lastgroup + left;
-    int laststart = lastgroup*displayNumber;
     int nextstart = start+displayNumber;
     int nextend = nextstart + displayNumber-1;
     if(start != -1){

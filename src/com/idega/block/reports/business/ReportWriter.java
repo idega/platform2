@@ -195,8 +195,6 @@ public class ReportWriter implements MediaWritable {
 
       try{
 
-        int[] c  = null;
-
         OutputStreamWriter fout = new OutputStreamWriter(out);
 
         StringBuffer data;
@@ -295,8 +293,6 @@ public class ReportWriter implements MediaWritable {
 
   private static MemoryFileBuffer writeTabDelimited(Report report,String type){
 
-      boolean returner = false;
-
       Connection Conn = null;
 
 
@@ -316,10 +312,6 @@ public class ReportWriter implements MediaWritable {
         //String file = realpath;
 
         //FileWriter out = new FileWriter(file);
-
-        char[] c  = null;
-
-
 
         Conn = com.idega.util.database.ConnectionBroker.getConnection();
 
@@ -381,7 +373,6 @@ public class ReportWriter implements MediaWritable {
 
 
 
-        returner = true;
 
       }
 
@@ -412,8 +403,6 @@ public class ReportWriter implements MediaWritable {
 
 
   public static MemoryFileBuffer  writePDF(Report report){
-
-    boolean returner = false;
 
     Connection Conn = null;
 
@@ -509,13 +498,9 @@ public class ReportWriter implements MediaWritable {
 
         String temp = null;
 
-        StringBuffer sb = null;
-
         Table datatable = getTable(Headers,sizes);
 
         while(RS.next()){
-
-          sb = new StringBuffer();
 
           for(int i = 1; i <= Hlen; i++){
 
@@ -559,15 +544,11 @@ public class ReportWriter implements MediaWritable {
 
         document.close();
 
-        returner = true;
-
     }
 
     catch (Exception ex) {
 
       ex.printStackTrace();
-
-      returner = false;
 
     }
 

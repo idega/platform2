@@ -10,7 +10,6 @@ import com.idega.block.trade.business.CurrencyHolder;
 import java.util.*;
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.presentation.ui.DropdownMenu;
-import com.idega.core.business.Category;
 import com.idega.block.category.business.CategoryFinder;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.util.IWTimestamp;
@@ -143,7 +142,6 @@ public class ProductEditorBusiness extends IBOServiceBean{
       }
     }
 
-    Category icCat;
     if (cats != null) {
       catSel.addMenuElements(cats);
 //      if ( product != null ) { Gimmi 17.08.02
@@ -165,7 +163,6 @@ public class ProductEditorBusiness extends IBOServiceBean{
 		}
 	  }
 
-	  Category icCat;
 	  if (cats != null ) {
 	  	catSel.addMenuElements(cats);
 	  	if ( product != null )

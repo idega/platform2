@@ -482,11 +482,8 @@ public class SchoolUserEditor extends Block {
 		String name = PARAMETER_SCHOOL_USER_NAME;
 		String email = PARAMETER_SCHOOL_USER_EMAIL;
 		String phone = PARAMETER_SCHOOL_USER_TELEPHONE;
-		String id = PARAMETER_SCHOOL_USER_ID;
 		
 		Table table = new Table();
-		int row = 1;
-		
 		
 		Text tName = getTextNormal(_iwrb.getLocalizedString("school.name","Name"));
 		Text tEmail = getTextNormal(_iwrb.getLocalizedString("school.email","E-mail"));
@@ -834,8 +831,6 @@ public class SchoolUserEditor extends Block {
 		if (typeCategory != null && !typeCategory.equals("") ) {
 			try {
 				SchoolTypeHome sth = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
-				SchoolType st;
-				Object stPk;
 				schoolTypeIds = sth.findAllByCategory(typeCategory);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);

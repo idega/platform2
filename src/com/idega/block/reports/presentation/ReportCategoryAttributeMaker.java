@@ -140,12 +140,6 @@ public class ReportCategoryAttributeMaker extends Block{
 
       }
 
-      else{
-
-        String sId = iwc.getParameter(prefix+"drp2");
-
-      }
-
     }
 
   }

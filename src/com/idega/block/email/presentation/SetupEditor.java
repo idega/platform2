@@ -227,7 +227,6 @@ public class SetupEditor extends Block {
     T.setTitlesHorizontal(true);
 
     int row = 1;
-    int col = 1;
     Text tName = tf.format(iwrb.getLocalizedString("name", "Name"));
     Text tHost = tf.format(iwrb.getLocalizedString("host", "Host"));
     Text tUser = tf.format(iwrb.getLocalizedString("user", "User"));
@@ -248,7 +247,6 @@ public class SetupEditor extends Block {
       Link editLink;
       int id;
       while (iter.hasNext()) {
-        col = 1;
         acc = (EmailAccount) iter.next();
         id = Integer.parseInt(acc.toString());
         if (id == account && EditObject.equals("account")) {
@@ -679,7 +677,7 @@ public class SetupEditor extends Block {
 	String fromaddress = iwc.getParameter("from_address");
 	String subject = iwc.getParameter("subject");
 	String body = iwc.getParameter("body");
-    EmailLetter letter = MailBusiness.getInstance().saveTopicLetter(letterID,fromname,fromaddress,subject,body,EmailLetter.TYPE_SUBSCRIPTION,topic);
+    MailBusiness.getInstance().saveTopicLetter(letterID,fromname,fromaddress,subject,body,EmailLetter.TYPE_SUBSCRIPTION,topic);
   }
   
   public PresentationObject getTopicForm(IWContext iwc){
@@ -717,7 +715,6 @@ public class SetupEditor extends Block {
     TextInput host = new TextInput("host");
     TextInput user = new TextInput("user");
     TextInput pass = new TextInput("pass");
-    DropdownMenu proto = getProtocolDropdown("proto", "");
     T.add(tf.format(iwrb.getLocalizedString("name","Name"),tf.HEADER),1,row++);
     T.add(tf.format(iwrb.getLocalizedString("host","Host"),tf.HEADER),1,row++);
     T.add(tf.format(iwrb.getLocalizedString("user","User"),tf.HEADER),1,row++);

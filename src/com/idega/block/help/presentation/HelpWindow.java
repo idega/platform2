@@ -271,7 +271,6 @@ public class HelpWindow extends Window {
 			else
 				iwb = iwc.getApplication().getBundle(bundle);
 
-			XMLParser parser = new XMLParser(false);
 			StringBuffer fileName = new StringBuffer(iwb.getResourcesRealPath(loc));
 			if (!fileName.toString().endsWith(FileUtil.getFileSeparator()))
 				fileName.append(FileUtil.getFileSeparator());
@@ -327,7 +326,6 @@ public class HelpWindow extends Window {
 
 		XMLElement title = help.getChild(XML_TITLE);
 		if (title != null) {
-			String tmp = title.getText();
 			_localizedTitle = title.getTextTrim();
 		}
 			

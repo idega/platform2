@@ -378,7 +378,6 @@ private int _layout = RADIO_BUTTON_VIEW;
       }
     }
     else {
-      int numberOfAnswers = PollBusiness.getNumberOfAnswers(pollQuestion);
       int total = 0;
       int row = 0;
 

@@ -521,7 +521,6 @@ public class Doc extends FolderBlock implements IWBlock {
      */
     private void getCollectionView(InformationFolder folder, InformationCategory[] categories, Table boxTable, IWContext iwc) {
 	int row = 1;
-	int column = 1;
 
 	Image image = Table.getTransparentCell(iwc);
 	image.setHeight(_boxSpacing);

@@ -54,8 +54,6 @@ public class TariffAssessments extends Finance {
   private StatusBar status ;
 
   public TariffAssessments(){
-    StatusBar status = new StatusBar("ass_status");
-
   }
 
   public String getLocalizedNameKey(){

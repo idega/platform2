@@ -134,7 +134,6 @@ public class NewsLetterArchive extends CategoryBlock {
       Iterator iter = topics.iterator();
       EmailTopic tpc;
       Link link;
-      Text info;
       int row =1;
       while(iter.hasNext()){
         tpc = (EmailTopic) iter.next();

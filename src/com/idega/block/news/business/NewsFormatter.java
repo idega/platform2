@@ -25,8 +25,7 @@ public class NewsFormatter {
   public static List listOfTextBetweenImages(String newsString){
     Vector V = new Vector();
     String image = "[image]";
-    String imageid = "[xxx]";
-    int index = 0, start = 0,end = 0,idstart = 0,idend= 0;
+    int start = 0,end = 0,idstart = 0,idend= 0;
 
     while((end = newsString.indexOf(image,start)) != -1){
       idstart = newsString.indexOf("[",end+image.length());
