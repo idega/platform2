@@ -1,6 +1,6 @@
 package is.idega.block.nationalregister.business;
 
-import is.idega.block.nationalregister.data.NationalRegisterImportFile;
+import is.idega.block.nationalregister.data.NationalRegisterImportFileE36;
 import java.util.HashMap;
 import java.util.Map;
 import com.idega.block.importer.presentation.Importer;
@@ -53,7 +53,7 @@ public class NationalRegisterFileImportHandlerPlugin implements ToolbarElement {
 	 */
 	public Map getParameterMap(IWContext iwc) {
 		Map map = new HashMap();
-		map.put(Importer.PARAMETER_IMPORT_FILE,  NationalRegisterImportFile.class.getName());
+		map.put(Importer.PARAMETER_IMPORT_FILE,  NationalRegisterImportFileE36.class.getName());
 		map.put(Importer.PARAMETER_IMPORT_HANDLER, NationalRegisterFileImportHandler.class.getName());
 		return map;
 	}

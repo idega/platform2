@@ -241,6 +241,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 						handleFamilyCollection(natReg, familyLogic, userHome, familyColl);
 					} catch (Exception e) {
 						System.out.println("NationalRegisterHandler ERROR, familyRelation failed for family : "+key);
+						e.printStackTrace();
 					}
 					if ((counter % 100) == 0) {
 						System.out.println("NationalRegisterHandler processing family relations RECORD [" + counter + "] time: " + IWTimestamp.getTimestampRightNow().toString());
