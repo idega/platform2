@@ -178,6 +178,23 @@ public class Scorecard extends GolfEntity{
             }
             catch (SQLException sql) {}
 
+            try {
+                List statistics = EntityFinder.findAllByColumn(new Statistic(),"scorecard_id",this.getID());
+                Statistic stat;
+                if (statistics != null) {
+                    if (statistics.size() > 0) {
+                        for (int i = 0; i < statistics.size(); i++) {
+                            stat = (Statistic) statistics.get(0);
+                            stat.delete();
+                        }
+
+                    }
+                }
+
+            }
+            catch (SQLException sql) {}
+
+
             super.delete();
         }
 
