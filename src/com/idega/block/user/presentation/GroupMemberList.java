@@ -66,9 +66,11 @@ public class GroupMemberList extends Block {
 	 */
 	private Table getTableForGroup(IWContext iwc, Group group, boolean showColumnNames) {
 		Table table = new Table();
-		Text header = new Text(group.getName());
-		header.setStyle(_headlineStyle);
-		table.add(header, 1, 1);
+		if(_showGroupName) {
+			Text header = new Text(group.getName());
+			header.setStyle(_headlineStyle);
+			table.add(header, 1, 1);
+		}
 		if(showColumnNames) {
 			int column = 1;
 			if(_showTitle) {
@@ -120,7 +122,7 @@ public class GroupMemberList extends Block {
 		try {
 			List users = _biz.getUsersByGroup(iwc, group, _collator);
 			Iterator userIter = users.iterator();
-			int row = 2;
+			int row = (_showGroupName || showColumnNames)?2:1;
 			while(userIter.hasNext()) {
 				User user = (User) userIter.next();
 				insertUserIntoRow(user, table, row++);
@@ -319,6 +321,10 @@ public class GroupMemberList extends Block {
 	}
 	
 	// BEGIN setters/properties for block properties to select what info is shown, names of methods&properties should be self explanatory
+	public void setShowGroupName(boolean value) {
+		_showGroupName = value;
+	}
+	
 	public void setShowWorkPhone(boolean value) {
 		_showWorkPhone = value;
 	}
@@ -371,6 +377,7 @@ public class GroupMemberList extends Block {
 		_headlineStyle = style;
 	}
 	
+	private boolean _showGroupName = true;
 	private boolean _showTitle = true;
 	private boolean _showAge = true;
 	private boolean _showWorkPhone = true;
