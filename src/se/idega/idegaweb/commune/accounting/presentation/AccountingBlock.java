@@ -11,6 +11,7 @@ import java.text.ParsePosition;
 import java.util.Locale;
 import java.sql.Date;
 
+import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.text.Text;
@@ -223,5 +224,21 @@ public class AccountingBlock extends CommuneBlock {
 		}
 		
 		return dateString;
+	}
+	
+	/**
+	 * Returns the form parameter with the specified parameter name
+	 * from the specified IWContext object. Returns an empty string
+	 * if the parameter is not set instead of null. 
+	 * @param iwc the idegaWeb context object
+	 * @param parameterName the name of the form parameter
+	 * @author anders
+	 */
+	protected String getParameter(IWContext iwc, String parameterName) {
+		String p = iwc.getParameter(parameterName);
+		if (p == null) {
+			p = "";
+		}
+		return p;
 	}
 }
