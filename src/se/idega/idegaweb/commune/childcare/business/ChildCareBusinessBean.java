@@ -1083,6 +1083,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (FinderException fe) {
 			application.setContractId(null);
 			application.setContractFileId(null);
+			application.setApplicationStatus(getStatusDeleted());
 			if (member != null) {
 				member.setRemovedDate(member.getRegisterDate());
 				member.store();
