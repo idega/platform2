@@ -2,6 +2,7 @@ package is.idega.idegaweb.travel.interfaces;
 
 import java.sql.Timestamp;
 import java.sql.SQLException;
+import com.idega.data.GenericEntity;
 import is.idega.idegaweb.travel.data.*;
 /**
  * Title:        idegaWeb Travel
@@ -84,6 +85,9 @@ public interface Booking {
   public void insert() throws SQLException;
   public void update() throws SQLException;
   public void delete() throws SQLException;
+  public void addTo(Class relatingEntityClass, int id) throws SQLException;
+  public GenericEntity[] findRelated(GenericEntity relatingEntity) throws SQLException;
+
   public int getID();
 
   public BookingEntry[] getBookingEntries() throws SQLException;

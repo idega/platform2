@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.Hashtable;
 
+import com.idega.core.data.Address;
 import is.idega.idegaweb.travel.business.Booker;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.*;
@@ -323,6 +324,7 @@ public class DailyReport extends TravelManager {
       Text amountText = (Text) smallText.clone();
       Text additionText = (Text) smallText.clone();
       Text totalText = (Text) smallText.clone();
+      Text addressText = (Text) smallText.clone();
 
       table.add(nameHText,1,1);
       table.add(payTypeHText,2,1);
@@ -343,19 +345,35 @@ public class DailyReport extends TravelManager {
       float amount;
 
       int[] bookingTypeIds = {Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
-      ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
+      Timeframe tframe = ProductBusiness.getTimeframe(this.product, this.stamp);
+      ProductPrice[] prices = {};
+      Address[] addresses = {};
+      try {
+        addresses = ProductBusiness.getDepartureAddresses(product);
+      }catch (SQLException sql) {
+        sql.printStackTrace(System.err);
+      }
+
+
+
+      if (tframe != null) {
+        prices = ProductPrice.getProductPrices(service.getID(), tframe.getID(), false);
+      }
+
       ProductPrice price;
       Integer entryCount;
       int iEntryCount;
 
       Map map = new Hashtable();
       for (int i = 0; i < prices.length; i++) {
-        map.put(prices[i].getPriceCategoryIDInteger(),new Integer(0));
+        for (int j = 0; j < addresses.length; j++) {
+          map.put(prices[i].getPriceCategoryIDInteger()+"_"+addresses[j].getID(),new Integer(0));
+        }
       }
 
 
       Booking[] bookings = TourBooker.getBookings(product.getID(),stamp,bookingTypeIds);
-
+      Address[] bookingAddresses;
       String theColor = super.GRAY;
       DropdownMenu payType;
       BookingEntry[] entries;
@@ -414,6 +432,15 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
+            bookingAddresses = (Address[]) bookings[i].findRelated((Address)Address.getStaticInstance(Address.class));
+            if (bookingAddresses.length > 0) {
+              addressText = (Text) smallText.clone();
+              addressText.setText(bookingAddresses[0].getStreetName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              addressText.setFontColor(super.BLACK);
+              table.add(addressText, 1, row+1);
+              table.setAlignment(1,row+1, "right");
+            }
+
             for (int j = 0; j < entries.length; j++) {
               ++row;
               table.setRowColor(row, theColor);
@@ -432,9 +459,9 @@ public class DailyReport extends TravelManager {
               amountText.setFontColor(super.BLACK);
 
 
-              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
+              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
               entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
-              map.put(price.getPriceCategoryIDInteger(),entryCount);
+              map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
 
               table.add(nameText,2,row);
               table.add(bookedText,3,row);
@@ -449,7 +476,7 @@ public class DailyReport extends TravelManager {
 
       }
 
-      table.setColumnAlignment(1,"left");
+//      table.setColumnAlignment(1,"left");
       table.setColumnAlignment(3,"center");
       table.setColumnAlignment(4,"center");
       table.setColumnAlignment(5,"center");
@@ -524,6 +551,14 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
+            bookingAddresses = (Address[]) bookings[i].findRelated((Address)Address.getStaticInstance(Address.class));
+            if (bookingAddresses.length > 0) {
+              addressText = (Text) smallText.clone();
+              addressText.setText(bookingAddresses[0].getStreetName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              addressText.setFontColor(super.BLACK);
+              addTable.add(addressText, 1, addRow+1);
+              addTable.setAlignment(1,addRow+1, "right");
+            }
             for (int j = 0; j < entries.length; j++) {
               ++addRow;
               addTable.setRowColor(addRow, theColor);
@@ -541,9 +576,9 @@ public class DailyReport extends TravelManager {
               bookedText.setFontColor(super.BLACK);
               amountText.setFontColor(super.BLACK);
 
-              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
+              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
               entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
-              map.put(price.getPriceCategoryIDInteger(),entryCount);
+              map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
 
               addTable.add(nameText,2,addRow);
               addTable.add(bookedText,3,addRow);
@@ -557,7 +592,6 @@ public class DailyReport extends TravelManager {
           }
 
       }
-      addTable.setColumnAlignment(1,"left");
       addTable.setColumnAlignment(3,"center");
       addTable.setColumnAlignment(4,"center");
       addTable.setColumnAlignment(5,"center");
@@ -627,6 +661,14 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
+            bookingAddresses = (Address[]) bookings[i].findRelated((Address)Address.getStaticInstance(Address.class));
+            if (bookingAddresses.length > 0) {
+              addressText = (Text) smallText.clone();
+              addressText.setText(bookingAddresses[0].getStreetName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              addressText.setFontColor(super.BLACK);
+              correctionTable.add(addressText, 1, corrRow+1);
+              correctionTable.setAlignment(1,corrRow+1, "right");
+            }
             for (int j = 0; j < entries.length; j++) {
               ++corrRow;
               correctionTable.setRowColor(corrRow, theColor);
@@ -644,9 +686,9 @@ public class DailyReport extends TravelManager {
               bookedText.setFontColor(super.BLACK);
               amountText.setFontColor(super.BLACK);
 
-              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger());
+              entryCount = (Integer) map.get(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID());
               entryCount = new Integer(entryCount.intValue() + entries[j].getCount());
-              map.put(price.getPriceCategoryIDInteger(),entryCount);
+              map.put(price.getPriceCategoryIDInteger()+"_"+bookingAddresses[0].getID(),entryCount);
 
               correctionTable.add(nameText,2,corrRow);
               correctionTable.add(bookedText,3,corrRow);
@@ -660,7 +702,6 @@ public class DailyReport extends TravelManager {
           }
 
       }
-      correctionTable.setColumnAlignment(1,"left");
       correctionTable.setColumnAlignment(3,"center");
       correctionTable.setColumnAlignment(4,"center");
       correctionTable.setColumnAlignment(5,"center");
@@ -688,6 +729,7 @@ public class DailyReport extends TravelManager {
           attTextBox = (TextInput) textBoxToClone.clone();
             attTextBox.setSize(3);
             attTextBox.setContent(Integer.toString(totalAttendance));
+            attTextBox.setDisabled(true);
           amountText = (Text) theSmallBoldText.clone();
             amountText.setText(Integer.toString((int) totalAmount));
 
@@ -706,34 +748,45 @@ public class DailyReport extends TravelManager {
           int tRow = 1;
           int many;
 
+
           totalTable.setRowColor(tRow, theColor);
 
           if (closerLook)
-          for (int i = 0; i < prices.length; i++) {
-            try {
-              ++tRow;
-              totalTable.setRowColor(tRow, theColor);
-              many = ((Integer) map.get(prices[i].getPriceCategoryIDInteger())).intValue();
-              nameText = (Text) smallText.clone();
-                nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE+prices[i].getPriceCategory().getName());
-              bookedText = (Text) smallText.clone();
-                bookedText.setText(Integer.toString(many));
-              amountText = (Text) smallText.clone();
-                amountText.setText(Integer.toString(many * ((int) tsb.getPrice(prices[i].getID(), service.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow()))));
+          for (int k = 0; k < addresses.length; k++) {
+              prices = ProductPrice.getProductPrices(product.getID(), tframe.getID(), addresses[k].getID(), false);
+              addressText = (Text) smallText.clone();
+                addressText.setText(addresses[k].getStreetName()+Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
+                addressText.setFontColor(super.BLACK);
+              totalTable.add(addressText, 1, tRow+1);
+              totalTable.setAlignment(1,tRow+1,"right");
 
-              nameText.setFontColor(super.BLACK);
-              bookedText.setFontColor(super.BLACK);
-              amountText.setFontColor(super.BLACK);
+            for (int i = 0; i < prices.length; i++) {
+              try {
+                ++tRow;
+                totalTable.setRowColor(tRow, theColor);
+                many = ((Integer) map.get(prices[i].getPriceCategoryIDInteger()+"_"+addresses[k].getID())).intValue();
+                nameText = (Text) smallText.clone();
+                  nameText.setText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE+prices[i].getPriceCategory().getName());
+                bookedText = (Text) smallText.clone();
+                  bookedText.setText(Integer.toString(many));
+                amountText = (Text) smallText.clone();
+                  amountText.setText(Integer.toString(many * ((int) tsb.getPrice(prices[i].getID(), service.getID(), prices[i].getPriceCategoryID(), prices[i].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), tframe.getID(), addresses[k].getID()))));
 
-              totalTable.setAlignment(2,tRow,"left");
-              totalTable.add(nameText,2,tRow);
-              totalTable.add(bookedText,3,tRow);
-              totalTable.add(amountText,4,tRow);
-            }catch (SQLException sql) {
-              sql.printStackTrace(System.err);
+                nameText.setFontColor(super.BLACK);
+                bookedText.setFontColor(super.BLACK);
+                amountText.setFontColor(super.BLACK);
+
+                totalTable.setAlignment(2,tRow,"left");
+                totalTable.add(nameText,2,tRow);
+                totalTable.add(bookedText,3,tRow);
+                totalTable.add(amountText,4,tRow);
+              }catch (SQLException sql) {
+                sql.printStackTrace(System.err);
+              }
             }
           }
-          totalTable.setColumnAlignment(1,"left");
+
+//          totalTable.setColumnAlignment(1,"left");
           totalTable.setColumnAlignment(3,"center");
           totalTable.setColumnAlignment(4,"center");
           totalTable.setColumnAlignment(5,"center");

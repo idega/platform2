@@ -1,9 +1,11 @@
 package is.idega.idegaweb.travel.presentation;
 
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.IWContext;
-import is.idega.idegaweb.travel.presentation.Voucher;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.*;
+import com.idega.idegaweb.*;
 
+import is.idega.idegaweb.travel.presentation.Voucher;
 import is.idega.idegaweb.travel.data.GeneralBooking;
 
 
@@ -19,7 +21,20 @@ import is.idega.idegaweb.travel.data.GeneralBooking;
 public class VoucherWindow extends Window {
 
   public static String parameterBookingId = "voucherWindowBookingId";
-  public static String parameterReferenceNumber = "voucherWindowReferenceNumber";
+
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
+
+  private static String searchAction = "voucherWindowSearchAction";
+  private static String searchMethodReferenceNumber = "voucherWindowSearchMethodReferenceNumber";
+  private static String searchMethodNumber = "voucherWindowSearchMethodNumber";
+  private static String parameterReferenceNumber = "voucherWindowReferenceNumber";
+  private static String parameterNumber = "voucherWindowNumber";
+
+  public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 
   public VoucherWindow() {
     super.setWidth(Voucher.width+40);
@@ -29,20 +44,84 @@ public class VoucherWindow extends Window {
   }
 
   public void main(IWContext iwc) throws Exception {
+    iwb = getBundle(iwc);
+    iwrb = iwb.getResourceBundle(iwc);
+
     String sBookingId = iwc.getParameter(this.parameterBookingId);
-    String sReferenceNumber = iwc.getParameter(this.parameterReferenceNumber);
+    String searchAction = iwc.getParameter(this.searchAction);
+    boolean error = false;
+
     if (sBookingId != null) {
       Voucher voucher = new Voucher(iwc, Integer.parseInt(sBookingId));
       add(voucher.getVoucher());
-    }else if (sReferenceNumber != null){
-      GeneralBooking[] gBooking = (GeneralBooking[]) (GeneralBooking.getStaticInstance(GeneralBooking.class)).findAllByColumn(GeneralBooking.getReferenceNumberColumnName(), sReferenceNumber);
-      if (gBooking.length > 0) {
-        Voucher voucher = new Voucher(iwc, gBooking[0].getID());
-        add(voucher.getVoucher());
+    }else if (searchAction != null){
+      if (searchAction.equals(searchMethodReferenceNumber)) {
+        String refMethod = iwc.getParameter(this.parameterReferenceNumber);
+        if (refMethod != null && !refMethod.equals("")) {
+          GeneralBooking[] gBooking = (GeneralBooking[]) (GeneralBooking.getStaticInstance(GeneralBooking.class)).findAllByColumn(GeneralBooking.getReferenceNumberColumnName(), refMethod);
+          if (gBooking.length > 0) {
+            Voucher voucher = new Voucher(iwc, gBooking[0].getID());
+            add(voucher.getVoucher());
+          }else {
+            error = true;
+          }
+        }else {
+          error = true;
+        }
+      }else if (searchAction.equals(this.searchMethodNumber)) {
+        String numMethod = iwc.getParameter(this.parameterNumber);
+        if (numMethod != null && !numMethod.equals("")) {
+          GeneralBooking[] gBooking = (GeneralBooking[]) (GeneralBooking.getStaticInstance(GeneralBooking.class)).findAllByColumn(GeneralBooking.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
+          if (gBooking.length > 0) {
+            Voucher voucher = new Voucher(iwc, gBooking[0].getID());
+            add(voucher.getVoucher());
+          }else {
+            error = true;
+          }
+        }else {
+          error = true;
+        }
       }else {
-        // handleError;
+        error = true;
       }
     }
+
+    if (error) {
+      add(iwrb.getLocalizedString("travel.voucher_not_found","Voucher not found"));
+    }
+  }
+
+  public static Form getReferenceNumberForm(IWResourceBundle iwrb) {
+    Form form = new Form();
+      form.setWindowToOpen(VoucherWindow.class);
+
+    Table table = new Table();
+      form.add(table);
+
+    Text refText = new Text(iwrb.getLocalizedString("travel.reference_number","Reference number"));
+      refText.setStyle(TravelManager.theTextStyle);
+      refText.setFontColor(TravelManager.WHITE);
+    TextInput refInp = new TextInput(parameterReferenceNumber);
+      refInp.setSize(25);
+    SubmitButton searchRef = new SubmitButton(iwrb.getLocalizedImageButton("travel.search","Search"), searchAction, searchMethodReferenceNumber);
+
+    Text numText = new Text(iwrb.getLocalizedString("travel.voucher_number","Voucher number"));
+      numText.setStyle(TravelManager.theTextStyle);
+      numText.setFontColor(TravelManager.WHITE);
+    TextInput numInp = new TextInput(parameterNumber);
+      numInp.setSize(25);
+    SubmitButton searchNum = new SubmitButton(iwrb.getLocalizedImageButton("travel.search","Search"), searchAction, searchMethodNumber);
+
+
+    table.add(refText,1,1);
+    table.add(refInp,2,1);
+    table.add(searchRef,3,1);
+
+    table.add(numText,1,2);
+    table.add(numInp,2,2);
+    table.add(searchNum,3,2);
+
+    return form;
   }
 
 }

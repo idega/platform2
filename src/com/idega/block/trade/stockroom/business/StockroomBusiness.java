@@ -7,7 +7,7 @@ import com.idega.core.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
 import com.idega.core.user.data.User;
-import com.idega.data.GenericEntity;
+import com.idega.data.*;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.presentation.IWContext;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
@@ -76,63 +76,111 @@ public class StockroomBusiness /* implements SupplyManager */ {
   }
 
   public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
+    return getPrice(productPriceId, productId, priceCategoryId, currencyId,time, -1, -1);
+  }
+
+  public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, int timeframeId, int addressId) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
 
-
     try {
         PriceCategory cat = new PriceCategory(priceCategoryId);
+        ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
+        Address addr = ((Address) Address.getStaticInstance(Address.class));
+        Timeframe tfr = ((Timeframe) Timeframe.getStaticInstance(Timeframe.class));
+        String addrTable = EntityControl.getManyToManyRelationShipTableName(Address.class, ProductPrice.class);
+        String tfrTable = EntityControl.getManyToManyRelationShipTableName(Timeframe.class, ProductPrice.class);
 
         if(cat.getType().equals(PriceCategory.PRICETYPE_PRICE)){
-          ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
           StringBuffer buffer = new StringBuffer();
-            buffer.append("select * from "+ppr.getEntityName());
+            buffer.append("select p.* from "+ppr.getEntityName()+" p");
+            if (timeframeId != -1) {
+              buffer.append(",  "+tfrTable+" tm");
+            }
+            if (addressId != -1) {
+              buffer.append(", "+addrTable+" am");
+            }
             buffer.append(" where ");
-            buffer.append(ProductPrice.getColumnNameProductId()+" = "+productId);
+            buffer.append("p."+ProductPrice.getColumnNameProductId()+" = "+productId);
+
+            if (timeframeId != -1) {
+              buffer.append(" and ");
+              buffer.append("tm."+tfr.getIDColumnName()+" = "+timeframeId);
+              buffer.append(" and ");
+              buffer.append("p."+ppr.getIDColumnName()+" = tm."+ppr.getIDColumnName());
+            }
+            if (addressId != -1) {
+              buffer.append(" and ");
+              buffer.append("am."+addr.getIDColumnName()+" = "+addressId);
+              buffer.append(" and ");
+              buffer.append("p."+ppr.getIDColumnName()+" = am."+ppr.getIDColumnName());
+            }
+
             if (productPriceId != -1) {
               buffer.append(" and ");
               buffer.append(ppr.getIDColumnName()+" = "+productPriceId);
             }
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
+            buffer.append("p."+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNameCurrencyId()+" = "+currencyId);
+            buffer.append("p."+ProductPrice.getColumnNameCurrencyId()+" = "+currencyId);
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
+            buffer.append("p."+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_PRICE);
+            buffer.append("p."+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_PRICE);
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNameIsValid()+" = 'Y'");
-            buffer.append(" order by "+ProductPrice.getColumnNamePriceDate());
+            buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
+            buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate());
           List result = EntityFinder.findAll(ppr,buffer.toString());
 
           if(result != null && result.size() > 0){
             return ((ProductPrice)result.get(0)).getPrice();
           }else{
+            System.err.println(buffer.toString());
             throw new ProductPriceException();
           }
         }else if(cat.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
-          ProductPrice ppr = ((ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class));
           StringBuffer buffer = new StringBuffer();
-            buffer.append("select * from "+ppr.getEntityName());
+            buffer.append("select p.* from "+ppr.getEntityName()+" p");
+            if (timeframeId != -1) {
+              buffer.append(",  "+tfrTable+" tm");
+            }
+            if (addressId != -1) {
+              buffer.append(", "+addrTable+" am");
+            }
             buffer.append(" where ");
-            buffer.append(ProductPrice.getColumnNameProductId()+" = "+productId);
+            buffer.append("p."+ProductPrice.getColumnNameProductId()+" = "+productId);
+
+            if (timeframeId != -1) {
+              buffer.append(" and ");
+              buffer.append("tm."+tfr.getIDColumnName()+" = "+timeframeId);
+              buffer.append(" and ");
+              buffer.append("p."+ppr.getIDColumnName()+" = tm."+ppr.getIDColumnName());
+            }
+            if (addressId != -1) {
+              buffer.append(" and ");
+              buffer.append("am."+addr.getIDColumnName()+" = "+addressId);
+              buffer.append(" and ");
+              buffer.append("p."+ppr.getIDColumnName()+" = am."+ppr.getIDColumnName());
+            }
+
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
+            buffer.append("p."+ProductPrice.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
+            buffer.append("p."+ProductPrice.getColumnNamePriceDate()+" < '"+time.toString()+"'");
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT);
+            buffer.append("p."+ProductPrice.getColumnNamePriceType()+" = "+ProductPrice.PRICETYPE_DISCOUNT);
             buffer.append(" and ");
-            buffer.append(ProductPrice.getColumnNameIsValid()+" = 'Y'");
-            buffer.append(" order by "+ProductPrice.getColumnNamePriceDate());
+            buffer.append("p."+ProductPrice.getColumnNameIsValid()+" = 'Y'");
+            buffer.append(" order by p."+ProductPrice.getColumnNamePriceDate());
           List result = EntityFinder.findAll(ppr,buffer.toString());
           float disc = 0;
           if(result != null && result.size() > 0){
             disc = ((ProductPrice)result.get(0)).getPrice();
           }
 
-          float pr = StockroomBusiness.getPrice(-1, productId,cat.getParentId(),currencyId,time);
+          float pr = StockroomBusiness.getPrice(-1, productId,cat.getParentId(),currencyId,time, timeframeId, addressId);
+          //System.err.println("Parent price : "+pr);
           return pr*((100-disc) /100);
         }else{
           throw new ProductPriceException();

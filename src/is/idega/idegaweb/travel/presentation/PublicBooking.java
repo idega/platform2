@@ -344,7 +344,7 @@ public class PublicBooking extends Block  {
             nameOfCategory = getText(prices[j].getPriceCategory().getName());
               nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
             try {
-              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow()) ) );
+              priceText = getBoldText(df.format(TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddresses[l].getID()) ) );
               currencyText = getBoldText(currency.getCurrencyAbbreviation());
               pTable.add(currencyText,5,pRow);
             }catch (ProductPriceException p) {
@@ -580,7 +580,7 @@ public class PublicBooking extends Block  {
         try {
           if (i == 0)
           currency = new Currency(pPrices[i].getCurrencyId());
-          price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow());
+          price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
         }catch (SQLException sql) {}
 
         table.add(getTextWhite(pPrices[i].getPriceCategory().getName()),1,row);
@@ -626,6 +626,7 @@ public class PublicBooking extends Block  {
       String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
       String ccMonth  = iwc.getParameter(TourBookingForm.parameterCCMonth);
       String ccYear   = iwc.getParameter(TourBookingForm.parameterCCYear);
+      String depAddr  = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
 
       Text display = getBoldTextWhite("");
       boolean success = false;
@@ -640,7 +641,7 @@ public class PublicBooking extends Block  {
         ProductPrice[] pPrices = {};
         Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
         if (tFrame != null) {
-          pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), true);
+          pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
         }
 
         for (int i = 0; i < pPrices.length; i++) {
@@ -652,13 +653,13 @@ public class PublicBooking extends Block  {
 
           total += current;
           if (i == 0)
-          price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow());
+          price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
 
         }
 
         System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
         com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
-//        System.err.println("price : "+price);
+        System.err.println("price : "+price);
         heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
         //System.out.println("heimild = " + heimild);
         System.out.println("Ending TPOS test : "+idegaTimestamp.RightNow().toString());

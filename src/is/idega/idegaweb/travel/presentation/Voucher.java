@@ -62,8 +62,9 @@ public class Voucher extends TravelManager {
       _supplier = new Supplier(_product.getSupplierId());
       _timeframe = ProductBusiness.getTimeframe(_product, new idegaTimestamp(_booking.getBookingDate()));
       GeneralBooking gBooking = new GeneralBooking(_booking.getID());
+      /*
       Address[] addresses = (Address[]) gBooking.findRelated(Address.getStaticInstance(Address.class));
-      _address = addresses[addresses.length - 1];
+      _address = addresses[addresses.length - 1];*/
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }

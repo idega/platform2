@@ -53,7 +53,7 @@ public class InitialData extends TravelManager {
   private static String parameterViewPriceCategories = "parameteViewPriceCategories";
   private static String parameterCreditCardRefund = "parameterCreditcardRefund";
   private static String parameterUsers = "parameterUsers";
-
+  private static String  parameterVoucher = "paraneterVoucher";
   private String parameterResellerId = "contractResellerId";
   private String parameterUpdateReseller = "contractUpdateReseller";
   private String parameterSaveNewReseller = "contractSaveNewReseller";
@@ -113,9 +113,11 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterViewPriceCategories, iwrb.getLocalizedString("travel.price_categories","Price categories"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.refunds","Refunds"));
         menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
+        menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
     }else if (reseller != null) {
         menu.addMenuElement(this.parameterViewResellerInfo, iwrb.getLocalizedString("travel.reseller_information","Reseller information"));
         menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
+        menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
     }else {
         menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
     }
@@ -178,6 +180,8 @@ public class InitialData extends TravelManager {
                 e.printStackTrace(System.err);
                 form = new Form();
               }
+            }else if (selected.equals(this.parameterVoucher)) {
+              form = VoucherWindow.getReferenceNumberForm(iwrb);
             }else {form = new Form();
             }
 
