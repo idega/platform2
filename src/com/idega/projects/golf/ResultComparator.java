@@ -151,10 +151,10 @@ public class ResultComparator implements Comparator {
         if ( r1.getTournamentPosition() == r2.getTournamentPosition() ) {
           if ( r1.getDate() != null && r2.getDate() != null ) {
             if ( r1.getDate().isLaterThan(r2.getDate()) ) {
-              result = 1;
+              result = -1;
             }
             else if ( r2.getDate().isLaterThan(r1.getDate()) ) {
-              result = -1;
+              result = 1;
             }
           }
           if ( result == 0 ) {
@@ -252,10 +252,10 @@ public class ResultComparator implements Comparator {
       if ( r1.getTournamentPosition() == r2.getTournamentPosition() ) {
         if ( r1.getDate() != null && r2.getDate() != null ) {
           if ( r1.getDate().isLaterThan(r2.getDate()) ) {
-            result = 1;
+            result = -1;
           }
           else if ( r2.getDate().isLaterThan(r1.getDate()) ) {
-            result = -1;
+            result = 1;
           }
           else {
             result = 0;
@@ -297,6 +297,13 @@ public class ResultComparator implements Comparator {
       result = -1;
     if ( r1.getTotalScore() == 0 && r2.getTotalScore() == 0 )
       result = 0;
+
+    if ( r1.getDismissal() == 15 && r2.getDismissal() != 15 ) {
+      result = -1;
+    }
+    if ( r1.getDismissal() != 15 && r2.getDismissal() == 15 ) {
+      result = 1;
+    }
 
     return result;
   }
