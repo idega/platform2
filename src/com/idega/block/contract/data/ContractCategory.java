@@ -40,6 +40,7 @@ public class ContractCategory extends GenericEntity{
     ContractCategory cat = new ContractCategory();
     cat.setName("Default");
     cat.setDescription("Default Category for idegaWeb");
+		cat.setValid(true);
     cat.insert();
 
   }

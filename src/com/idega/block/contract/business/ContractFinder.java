@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.1 2001/11/17 14:50:05 aron Exp $
+ * $Id: ContractFinder.java,v 1.2 2001/11/20 16:51:03 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,10 +23,14 @@ import com.idega.core.data.ICFile;
 
 
 /**
- *
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * Title:        idegaclasses
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:      idega
+ * @author <a href="aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
+
 public abstract class ContractFinder {
 
 	public static List listOfContractFiles(int iContractId){
@@ -295,7 +299,10 @@ public abstract class ContractFinder {
 
 	public static List listOfContractTexts(int iCategoryId){
 	  try {
-			return EntityFinder.findAllByColumnOrdered(new ContractText(),ContractText.getColumnNameCategoryId(),String.valueOf(iCategoryId),ContractText.getOrdinalColumnName());
+			EntityFinder.debug = true;
+			List L = EntityFinder.findAllByColumnOrdered(new ContractText(),ContractText.getColumnNameCategoryId(),iCategoryId,ContractText.getOrdinalColumnName());
+			EntityFinder.debug = false;
+			return L;
 		}
 		catch (SQLException ex) {
 		  ex.printStackTrace();
@@ -305,7 +312,7 @@ public abstract class ContractFinder {
 
 	public static List listOfContractTextsOrdered(int iCategoryId){
 	  try {
-			return EntityFinder.findAllByColumnOrdered(new ContractText(),ContractText.getColumnNameCategoryId(),String.valueOf(iCategoryId),ContractText.getOrdinalColumnName());
+			return EntityFinder.findAllByColumnOrdered(new ContractText(),ContractText.getColumnNameCategoryId(),iCategoryId,ContractText.getOrdinalColumnName());
 		}
 		catch (SQLException ex) {
 		  ex.printStackTrace();
