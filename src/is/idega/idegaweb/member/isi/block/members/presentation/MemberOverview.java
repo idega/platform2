@@ -54,14 +54,14 @@ public class MemberOverview extends Block {
 	public static final String PARAM_NAME_SHOW_FINANCE_OVERVIEW = "showFinanceOverview";
 	public static final String PARAM_NAME_FINANCE_ENTRY_ID = "financeEntryID";
 	
-	protected static final String STYLENAME_HEADING = "heading";
-	protected static final String STYLENAME_HEADER = "header";
-	protected static final String STYLENAME_COLUMN_HEADING = "columnHeading";
-	protected static final String STYLENAME_TEXT = "text";
-	protected static final String STYLENAME_DARK_ROW = "darkRow";
-	protected static final String STYLENAME_LIGHT_ROW = "lightRow";
-	protected static final String STYLENAME_COLUMN_ROW = "columnRow";
-	protected static final String STYLENAME_HEADING_ROW = "headingRow";
+	public static final String STYLENAME_HEADING = "heading";
+	public static final String STYLENAME_HEADER = "header";
+	public static final String STYLENAME_COLUMN_HEADING = "columnHeading";
+	public static final String STYLENAME_TEXT = "text";
+	public static final String STYLENAME_DARK_ROW = "darkRow";
+	public static final String STYLENAME_LIGHT_ROW = "lightRow";
+	public static final String STYLENAME_COLUMN_ROW = "columnRow";
+	public static final String STYLENAME_HEADING_ROW = "headingRow";
 
 	private IWResourceBundle _iwrb = null;
 	private IWBundle _iwb = null;
@@ -539,7 +539,7 @@ public class MemberOverview extends Block {
 		map.put(STYLENAME_HEADING, "font-family: Arial,Helvetica,sans-serif;font-size: 11px;font-weight: bold;color: #3D3D3D;");
 		map.put(STYLENAME_HEADER, "font-family: Arial,Helvetica,sans-serif;font-size: 11px;font-weight: bold;color: #1B2E45;");
 		map.put(STYLENAME_COLUMN_HEADING, "font-family: Arial,Helvetica,sans-serif;font-size: 10px;font-weight: bold;color: #3D3D3D;");
-		map.put(STYLENAME_TEXT, "font-family: Arial,Helvetica,sans-serif;font-size: 10px;font-weight: bold;color: #828282;");
+		map.put(STYLENAME_TEXT, "font-family: Arial,Helvetica,sans-serif;font-size: 10px;color: #828282;");
 		map.put(STYLENAME_DARK_ROW, "background-color: #EFEFEF;padding: 2px;");
 		map.put(STYLENAME_LIGHT_ROW, "background-color: #FFFFFF;padding: 2px;");
 		map.put(STYLENAME_COLUMN_ROW, "background-color: #EFEFEF;padding: 2px;border-top: 1px #C4C2C2 solid;border-bottom: 1px #C4C2C2 solid;");
