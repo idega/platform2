@@ -46,6 +46,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	private String userType = null;
 	private WorkReportBusiness workBiz = null;
 	private String styledLink = "styledLinkGeneral";
+	private String borderRightTable = "borderRight";
+	private String borderTable = "borderAll";
 	private boolean selectorIsSet = false;
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
@@ -123,8 +125,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setCellpaddingAndCellspacing(0);
 		table.mergeCells(1,1,1,2);
-		table.setStyleClass(1,1,"borderRight");
-		table.setStyleClass("borderAll");
+		table.setStyleClass(1,1,borderRightTable);
+		table.setStyleClass(borderTable);
 
 		//add left menu of links
 		Table menuTable = getMenuTable(iwc);
@@ -309,8 +311,12 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				table.add(selector, 2, 1);
 			}
 			if(!action.equals(ACTION_STATISTICS)) {
-				table.add(Text.NON_BREAKING_SPACE,2,1);
-				table.add(getHelpWithGrayImage(helpTextKey,false),2,1);
+				Table helpTable =new Table(1,1);
+				helpTable.setWidth(Table.HUNDRED_PERCENT);
+				helpTable.setHeight(15);
+				helpTable.setAlignment(1,1,"right");
+				helpTable.add(getHelpWithGrayImage(helpTextKey,false),1,1);
+				table.add(helpTable,2,1);
 			}
 			
 				
