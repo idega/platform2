@@ -2647,7 +2647,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		Phone phone = getUserBusiness().getHomePhone(parent1);
 
 		School provider = application.getProvider();
-		String addressProvider = provider.getSchoolAddress();
 		User parent2 = null;
 		Collection parents = getUserBusiness().getParentsForChild(child);
 		if (parents != null) {
