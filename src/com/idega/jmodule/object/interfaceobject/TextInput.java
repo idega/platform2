@@ -15,6 +15,8 @@ import com.idega.jmodule.object.*;
 */
 public class TextInput extends InterfaceObject{
 
+
+private String inputType = "text";
 private Script script;
 
 private boolean isSetAsIntegers;
@@ -53,6 +55,10 @@ public TextInput(String name,String content){
 	isSetAsEmail=false;
 	isSetAsNotEmpty=false;
         isSetAsIcelandicSSNumber=false;
+}
+
+void setAsPasswordInput() {
+  inputType = "password";
 }
 
 public void setLength(int length){
@@ -170,7 +176,7 @@ public void _main(ModuleInfo modinfo)throws Exception{
 			getParentForm().setOnSubmit("return checkSubmit(this)");
 			setCheckSubmit();
 			getScript().addToFunction("checkSubmit","if (warnIfEmpty (inputs."+getName()+",'"+notEmptyErrorMessage+"') == false ){\nreturn false;\n}\n");
-			getScript().addFunction("warnIfEmpty","function warnIfEmpty (inputbox,warnMsg) {\n\n	if ( inputbox.value == '' ) { \n		alert ( warnMsg );\n		return false;\n	}\n	else{\n		return true;\n}\n\n}");
+			getScript().addFunction("warnIfEmpty","function warnIfEmpty (inputbox,warnMsg) {\n\n		if ( inputbox.value == '' ) { \n		alert ( warnMsg );\n		return false;\n	}\n	else{\n		return true;\n}\n\n}");
 		}
 
 		if (isSetAsIntegers){
@@ -218,13 +224,13 @@ public void print(ModuleInfo modinfo)throws IOException{
 			}
 		}
 			//if (getInterfaceStyle().equals("default"))
-				println("<input type=\"text\" name=\""+getName()+"\" "+getAttributeString()+" >");
+				println("<input type=\""+inputType+"\" name=\""+getName()+"\" "+getAttributeString()+" >");
 				//println("</input>");
 			// }
 		}
 
 		else if (getLanguage().equals("WML")){
-			println("<input type=\"text\" name=\""+getName()+"\" "+getAttributeString()+" />");
+			println("<input type=\""+inputType+"\" name=\""+getName()+"\" "+getAttributeString()+" />");
 		}
 	//}
 }
