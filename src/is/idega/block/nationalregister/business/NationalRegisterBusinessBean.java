@@ -131,8 +131,14 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
 			
 			PostalCode poCode = null;
-			if (po != null && !po.equals(""))
-			  poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,((Integer)country.getPrimaryKey()).intValue());
+			if (po != null && !po.trim().equals("")) {
+				try {				
+			  	poCode = ((PostalCodeHome)getIDOHome(PostalCode.class)).findByPostalCodeAndCountryId(po,((Integer)country.getPrimaryKey()).intValue());
+				}
+				catch(FinderException e) {
+					poCode = null;
+				}
+			}
 
 			Integer id = null;
 			if (poCode != null)
@@ -152,6 +158,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 			e.printStackTrace();
 			return false;
 		}
+
 		return true;
 	}
 
