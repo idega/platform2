@@ -124,8 +124,9 @@ public class CommuneForum extends Forum {
 			}
 		}
 
-		table.setColumnAlignment(2, "center");
-		table.setColumnAlignment(3, "center");
+		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 	}
 	
 	protected Table getAdminPart(IWContext iwc) {
@@ -175,25 +176,26 @@ public class CommuneForum extends Forum {
 			Collection pkColl = cat.getFiles();
 			Collection coll = getCommuneForumBusiness(iwc).convertFilePKsToFileCollection(pkColl);
 			
-			Table t = new Table();
-			t.setCellpaddingAndCellspacing(0);
-			t.setWidth("100%");
-			int r = 1;
+			Table fileTable = new Table(3, 1);
+			fileTable.setCellpaddingAndCellspacing(0);
+			fileTable.setWidth(2, 6);
 			
 			ICFile file;
 			if (coll != null && !coll.isEmpty()) {
-				t.add(formatText(_iwrb.getLocalizedString("attached_documents","Attached documents")+" :", _headingStyle), 1, r);
+				fileTable.add(formatText(_iwrb.getLocalizedString("attached_documents","Attached documents")+":", _headingStyle), 1, 1);
 				Iterator iter = coll.iterator();
 				while (iter.hasNext()) {
 					file = (ICFile) iter.next();
 					Link preview = new Link(formatText(file.getName(), _textStyle));
 					preview.setURL(MediaBusiness.getMediaURL(file,iwc.getApplication()));
 					preview.setTarget(Link.TARGET_NEW_WINDOW);
-					t.add(preview, 2, r++);
+					fileTable.add(preview, 3, 1);
+					if (iter.hasNext())
+						fileTable.add(formatText(","+Text.NON_BREAKING_SPACE, _textStyle), 3, 1);
 				}
-				t.add(formatText(Text.BREAK, _headingStyle), 1, row);
+				fileTable.add(formatText(Text.BREAK, _headingStyle), 1, row);
 			}
-			table.add(t, 1, row++);
+			table.add(fileTable, 1, row++);
 			return ++row;
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
