@@ -120,9 +120,13 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 				
 				SubmitButton edit = (SubmitButton) getStyledInterface(new SubmitButton(localize("school.edit","Edit"),PARAMETER_ACTION,String.valueOf(ACTION_EDIT)));
 				edit.setValueOnClick(getSession().getParameterSchoolClassID(), element.getPrimaryKey().toString());
+				edit.setDescription(localize("school.edit_class","Edit this class"));
 
 				SubmitButton delete = (SubmitButton) getStyledInterface(new SubmitButton(localize("school.delete","Delete"),PARAMETER_ACTION,String.valueOf(ACTION_DELETE)));
 				delete.setValueOnClick(getSession().getParameterSchoolClassID(), element.getPrimaryKey().toString());
+				delete.setDescription(localize("school.delete_class","Delete this class"));
+				if (getBusiness().getSchoolClassBusiness().getNumberOfStudentsInClass(((Integer)element.getPrimaryKey()).intValue()) > 0)
+					delete.setSubmitConfirm(localize("school.confirm_class_delete","This class has students, delete anyway?"));
 				
 				if (action == ACTION_EDIT && getSchoolClassID() == ((Integer)element.getPrimaryKey()).intValue()) {
 					TextInput nameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CLASS_NAME));
@@ -158,7 +162,11 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		}
 		
 		SubmitButton newButton = (SubmitButton) getStyledInterface(new SubmitButton(localize("school.new","New"),PARAMETER_ACTION,String.valueOf(ACTION_NEW)));
+		newButton.setDescription(localize("school.create_new_class","Create new clas"));
+		newButton.setValueOnClick(getSession().getParameterSchoolClassID(), "-1");
+		
 		SubmitButton submit = (SubmitButton) getStyledInterface(new SubmitButton(localize("save","Save"),PARAMETER_ACTION,String.valueOf(ACTION_SAVE)));
+		submit.setDescription(localize("school.save_class","Save class"));
 		
 		if (!(action == ACTION_EDIT || action == ACTION_NEW))
 			table.add(newButton,1,row);
