@@ -8,7 +8,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
  * This class is used to sort ChildCareQueue object according to their
  * choice number and granted status.
  * @author <a href="mailto:joakim@idega.is">joakim</a>
- * @version $Id: ComparableQueue.java,v 1.1 2003/04/22 18:48:51 joakim Exp $
+ * @version $Id: ComparableQueue.java,v 1.2 2003/06/12 11:25:17 laddi Exp $
  * @since 12.2.2003 
  */
 class ComparableQueue implements Comparable {
@@ -38,7 +38,7 @@ class ComparableQueue implements Comparable {
 			int diff = _queue.getChoiceNumber() - que.getChoiceNumber();
 			
 			if (_grantedFirst){
-				if (_queue.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){ /**@TODO: is this correct status? */
+				if (_queue.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
 					return  -1;
 				} else if (que.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
 					return  1;
@@ -46,7 +46,7 @@ class ComparableQueue implements Comparable {
 					return diff;
 				}
 			} else {
-				if (diff == 0 && _queue.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){ /**@TODO: is this correct status? */
+				if (diff == 0 && _queue.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
 					return  -1;
 				} else if (diff == 0 && que.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
 					return  1;
