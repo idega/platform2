@@ -59,7 +59,7 @@ public class CampusAccountFinder  {
   public static int countAccounts(String accType){
     String sql = "select count(*) from "+ContractAccountApartment.getEntityTableName() +" where "+ContractAccountApartment.getAccountTypeColumnName()+" = '"+accType+"'";
     int count = 0;
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     try{
       count = new ContractAccountApartment().getNumberOfRecords(sql.toString());
 

@@ -478,6 +478,20 @@ public class BuildingFinder {
     return count;
   }
 
+  public static int countRentableApartments(){
+    String sql = "select count(*) from "+Apartment.getNameTableName() +" where "+Apartment.getRentableColumnName()+" = 'Y'";
+    int count = 0;
+    //System.err.println(sql.toString());
+    try{
+      count = new Apartment().getNumberOfRecords(sql.toString());
+
+    }
+    catch(SQLException ex){ex.printStackTrace();}
+    if(count < 0)
+      count = 0;
+    return count;
+  }
+
    public static List listOfApartments(String sComplexId,String sBuildingId,String sFloorId,String sType,String sCategory,int iOrder){
 
     StringBuffer sql = new StringBuffer("select a.* ");

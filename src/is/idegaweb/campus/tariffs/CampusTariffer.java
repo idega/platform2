@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.11 2001/09/24 23:56:27 aron Exp $
+ * $Id: CampusTariffer.java,v 1.12 2001/09/25 13:27:11 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -301,9 +301,13 @@ public class CampusTariffer extends ModuleObjectContainer {
     Form F = new Form();
     Table T = new Table();
 
+    int iNumberOfRentableApartments = BuildingFinder.countRentableApartments();
     int iSignedContractCount = ContractFinder.countContracts(Contract.statusSigned);
     int iAccountCount = CampusAccountFinder.countAccounts(Account.typeFinancial);
     int row = 2;
+    T.add(Edit.formatText(iwrb.getLocalizedString("rentable_apartments","Rentable Apartments")),1,row);
+    T.add(String.valueOf(iNumberOfRentableApartments),2,row);
+    row++;
     T.add(Edit.formatText(iwrb.getLocalizedString("rented_apartments","Rented Apartments")),1,row);
     T.add(String.valueOf(iSignedContractCount),2,row);
     row++;
