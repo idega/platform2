@@ -10,14 +10,14 @@ package is.idega.idegaweb.member.presentation;
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
 import java.rmi.RemoteException;
-import java.util.Collection;
+import java.text.Collator;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
-
+import java.util.List;
 import javax.ejb.FinderException;
-
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -167,6 +167,8 @@ public class ClubDivisionTab extends UserGroupTab{
      * @see com.idega.user.presentation.UserGroupTab#initializeFields()
      */
     public void initializeFields() {
+		    	IWContext iwc = IWContext.getInstance();
+		  		IWResourceBundle iwrb = getResourceBundle(iwc);
         numberField = new TextInput(numberFieldName);
         ssnField = new TextInput(ssnFieldName);
         //		_ssnField.setAsIcelandicSSNumber("Vart�lupr�fun stemmir ekki");
@@ -174,15 +176,23 @@ public class ClubDivisionTab extends UserGroupTab{
         connectionToSpecialField = new DropdownMenu(
                 connectionToSpecialFieldName);
 
-        Collection special = null;
+        List special = null;
         try {
-            special = ((GroupHome) com.idega.data.IDOLookup
+            special = (List) ((GroupHome) com.idega.data.IDOLookup
                     .getHome(Group.class)).findGroupsByType("iwme_league");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
         if (special != null) {
+        	final Collator collator = Collator.getInstance(iwc.getLocale());
+    			Collections.sort(special,new Comparator() {
+    				public int compare(Object arg0, Object arg1) {
+    					return collator.compare(((Group) arg0).getName(), ((Group) arg1).getName());
+    				}				
+    			});
+    			connectionToSpecialField.addMenuElement("-1",iwrb.getLocalizedString("clubinformationtab.choose_reg_un","Choose a regional union..."));
+    		
             Iterator it = special.iterator();
             while (it.hasNext()) {
                 Group spec = (Group) it.next();
