@@ -998,6 +998,62 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
 		return idoGetNumberOfRecords(sql);		
 	}
+	
+	public int ejbHomeGetBruttoQueueSizeNotInStatus(int providerID, String caseStatus[], Date from, Date to) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		if (from == null) {
+			from = new Date(0L);
+		}
+		if (to == null) {
+			to = Date.valueOf("2999-01-01");
+		}
+		Date today = new Date(System.currentTimeMillis());
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
+		.appendAnd().append("c." + CHILD_ID + " in ")
+		.appendLeftParenthesis()
+		.appendSelect().append("m.ic_user_id").appendFrom()
+		.append("comm_childcare_archive a,")
+		.append("comm_childcare c")
+		.appendWhereEquals("a.application_id", "c.comm_childcare_id")
+		.appendAndEqualsQuoted("c.application_status", "F")
+		.appendAnd().appendLeftParenthesis().append("a.terminated_date is null").appendOr()
+		.append("a.terminated_date").appendGreaterThanOrEqualsSign().appendWithinSingleQuotes(today).appendRightParenthesis()
+		.appendAnd().append("a.valid_from_date").appendLessThanSign().appendWithinSingleQuotes(today)
+		.appendRightParenthesis();
+		return idoGetNumberOfRecords(sql);		
+	}
+
+	public int ejbHomeGetNettoQueueSizeNotInStatus(int providerID, String caseStatus[], Date from, Date to) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		if (from == null) {
+			from = new Date(0L);
+		}
+		if (to == null) {
+			to = Date.valueOf("2999-01-01");
+		}
+		Date today = new Date(System.currentTimeMillis());
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
+		.appendAnd().append("c." + CHILD_ID + " not in ")
+		.appendLeftParenthesis()
+		.appendSelect().append("m.ic_user_id").appendFrom()
+		.append("comm_childcare_archive a,")
+		.append("comm_childcare c")
+		.appendWhereEquals("a.application_id", "c.comm_childcare_id")
+		.appendAndEqualsQuoted("c.application_status", "F")
+		.appendAnd().appendLeftParenthesis().append("a.terminated_date is null").appendOr()
+		.append("a.terminated_date").appendGreaterThanOrEqualsSign().appendWithinSingleQuotes(today).appendRightParenthesis()
+		.appendAnd().append("a.valid_from_date").appendLessThanSign().appendWithinSingleQuotes(today)
+		.appendRightParenthesis();
+		return idoGetNumberOfRecords(sql);		
+	}
 
 	public int ejbHomeGetQueueSizeInStatus(int providerID, String caseStatus) throws IDOException {
 		IDOQuery sql = idoQuery();
@@ -1022,6 +1078,62 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			to = Date.valueOf("2999-01-01");
 		}
 		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to);
+		return idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetBruttoQueueSizeInStatus(int providerID, String caseStatus, Date from, Date to) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
+		if (from == null) {
+			from = new Date(0L);
+		}
+		if (to == null) {
+			to = Date.valueOf("2999-01-01");
+		}
+		Date today = new Date(System.currentTimeMillis());
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
+		.appendAnd().append("c." + CHILD_ID + " in ")
+		.appendLeftParenthesis()
+		.appendSelect().append("m.ic_user_id").appendFrom()
+		.append("comm_childcare_archive a,")
+		.append("comm_childcare c")
+		.appendWhereEquals("a.application_id", "c.comm_childcare_id")
+		.appendAndEqualsQuoted("c.application_status", "F")
+		.appendAnd().appendLeftParenthesis().append("a.terminated_date is null").appendOr()
+		.append("a.terminated_date").appendGreaterThanOrEqualsSign().appendWithinSingleQuotes(today).appendRightParenthesis()
+		.appendAnd().append("a.valid_from_date").appendLessThanSign().appendWithinSingleQuotes(today)
+		.appendRightParenthesis();
+		return idoGetNumberOfRecords(sql);
+	}
+	
+	public int ejbHomeGetNettoQueueSizeInStatus(int providerID, String caseStatus, Date from, Date to) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.append("select count(c."+CHILD_ID+") from ").append(ENTITY_NAME).append(" c , proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		sql.appendAndEqualsQuoted("p.case_status",caseStatus);
+		if (from == null) {
+			from = new Date(0L);
+		}
+		if (to == null) {
+			to = Date.valueOf("2999-01-01");
+		}
+		Date today = new Date(System.currentTimeMillis());
+		sql.appendAnd().appendBetweenDates(FROM_DATE, from, to)
+		.appendAnd().append("c." + CHILD_ID + " in ")
+		.appendLeftParenthesis()
+		.appendSelect().append("m.ic_user_id").appendFrom()
+		.append("comm_childcare_archive a,")
+		.append("comm_childcare c")
+		.appendWhereEquals("a.application_id", "c.comm_childcare_id")
+		.appendAndEqualsQuoted("c.application_status", "F")
+		.appendAnd().appendLeftParenthesis().append("a.terminated_date is null").appendOr()
+		.append("a.terminated_date").appendGreaterThanOrEqualsSign().appendWithinSingleQuotes(today).appendRightParenthesis()
+		.appendAnd().append("a.valid_from_date").appendLessThanSign().appendWithinSingleQuotes(today)
+		.appendRightParenthesis();
 		return idoGetNumberOfRecords(sql);
 	}
 
