@@ -664,6 +664,7 @@ public class FinanceFinder  {
         sql.append(iUserId);
         sql.append(" and ");
         sql.append(com.idega.block.finance.data.AccountInfoBMPBean.getColumnType());
+        sql.append(" = ");
         sql.append("'");
         sql.append(type);
         sql.append("'");
