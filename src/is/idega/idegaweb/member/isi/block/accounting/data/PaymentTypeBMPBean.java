@@ -29,6 +29,8 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
 
     protected final static String COLUMN_DELETED = "deleted";
 
+    protected final static String COLUMN_PLUGIN = "plugin";
+
     protected final static String LOC_KEY_CASH = "isi_payment_type_cash";
 
     protected final static String LOC_KEY_CHECK = "isi_payment_type_check";
@@ -38,7 +40,7 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
     protected final static String LOC_KEY_CREDITCARD = "isi_payment_type_creditcard";
     
     protected final static String LOC_KEY_BANK = "isi_payment_type_bank";
-
+    
     /*
      * (non-Javadoc)
      * 
@@ -60,6 +62,7 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
         addAttribute(COLUMN_LOCALIZATION_KEY, "localization key", true, true,
                 String.class);
         addAttribute(COLUMN_DELETED, "Deleted", true, true, Boolean.class);
+        addAttribute(COLUMN_PLUGIN, "Plugin", true, true, String.class);
     }
 
     public void insertStartData() throws Exception {
@@ -102,6 +105,14 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
 
     public boolean getDeleted() {
         return getBooleanColumnValue(COLUMN_DELETED, false);
+    }
+    
+    public void setPlugin(String plugin) {
+    		setColumn(COLUMN_PLUGIN, plugin);
+    }
+    
+    public String getPlugin() {
+    		return getStringColumnValue(COLUMN_PLUGIN);
     }
 
     public Collection ejbFindAllPaymentTypes() throws FinderException {

@@ -1608,8 +1608,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				cell = myCell.getStringCellValue();
 			} else {
 				double d = myCell.getNumericCellValue();
-				if (((int) d) != 0)
-					cell = Integer.toString((int) d);
+				if (((long) d) != 0)
+					cell = Long.toString((long) d);
 				cell = TextSoap.findAndCut(cell, "-");
 				cell = TextSoap.findAndCut(cell, ".");
 
