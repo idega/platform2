@@ -296,4 +296,8 @@ public class GroupOfficeAddressTab extends UserGroupTab {
 			System.err.println("AddressInfoTab error initFieldContents, groupId : " + getGroupId());
 		}
 	}
+	
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}	
 } // Class AddressInfoTab
