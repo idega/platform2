@@ -513,4 +513,18 @@ public class QueryBuilder extends Block {
 		investigationLevel = i;
 	}
 
+	/**
+	 * @return
+	 */
+	public int getQueryFolderID() {
+		return queryFolderID;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setQueryFolderID(int i) {
+		queryFolderID = i;
+	}
+
 }
