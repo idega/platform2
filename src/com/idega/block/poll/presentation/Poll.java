@@ -598,16 +598,16 @@ private int _layout = RADIO_BUTTON_VIEW;
     return obj;
   }
 
-/**@todo finish this for all states**/
+
   protected String getCacheState(IWContext iwc, String cacheStatePrefix, String locale, boolean edit){
     String returnString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
 
     if( returnString == null ) returnString = "";
     else {
-      returnString+= iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION);
-      setCacheable(false);
-      invalidateCache(iwc);
-
+      returnString = "";//minimise the number of states cached
+      setCacheable(false);//do this when you want to be sure to go through main(iwc) and no cache.
+      invalidateCache(iwc,cacheStatePrefix+Boolean.TRUE);
+      invalidateCache(iwc,cacheStatePrefix+Boolean.FALSE);
     }
 
     try {
@@ -617,8 +617,9 @@ private int _layout = RADIO_BUTTON_VIEW;
       ex.printStackTrace();
     }
 
+    String canVote = String.valueOf(PollBusiness.canVote(iwc,_pollID));
+    if( canVote.equals("false") ) returnString = "";
 
-
-    return  cacheStatePrefix+String.valueOf(PollBusiness.canVote(iwc,_pollID))+returnString;
+    return  cacheStatePrefix+canVote+returnString;
   }
 }
