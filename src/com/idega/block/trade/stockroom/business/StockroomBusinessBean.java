@@ -120,14 +120,11 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     return getPrice(productPriceId, productId, priceCategoryId, -1, time, timeframeId, addressId);
   }
 
-  /**
-   * @deprecated
-   */
   public float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, int timeframeId, int addressId) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
 
-    try {
+  	try {
         PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
         ProductPrice ppr = ((ProductPrice)com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class));
         TravelAddress taddr = ((TravelAddress) com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
@@ -178,7 +175,12 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
           List result = EntityFinder.findAll(ppr,buffer.toString());
 
           if(result != null && result.size() > 0){
-            return ((ProductPrice)result.get(0)).getPrice();
+          	CurrencyHolder iceCurr = CurrencyBusiness.getCurrencyHolder(CurrencyHolder.ICELANDIC_KRONA);
+          	if ( iceCurr != null && (((ProductPrice) result.get(0)).getCurrencyId() == iceCurr.getCurrencyID())) {
+          		return new Float(Math.round( ((ProductPrice)result.get(0)).getPrice()) ).floatValue();
+          	} else {
+          		return ((ProductPrice)result.get(0)).getPrice();
+          	}
           }else{
             //System.err.println(buffer.toString());
             throw new ProductPriceException("No Price Was Found");
@@ -222,7 +224,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
           if(result != null && result.size() > 0){
             disc = ((ProductPrice)result.get(0)).getPrice();
           }
-
+          
           float pr = getPrice(-1, productId,cat.getParentId(),currencyId,time, timeframeId, addressId);
           return pr*((100-disc) /100);
         }else{
