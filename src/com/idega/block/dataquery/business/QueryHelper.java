@@ -82,7 +82,10 @@ public class QueryHelper {
 					}	
 						// FIELD PART (STEP 3)
 						XMLElement fields = root.getChild(QueryXMLConstants.FIELDS);
-						XMLAttribute fieldLock  = related.getAttribute(QueryXMLConstants.LOCK);
+						
+						XMLAttribute fieldLock  = null;
+						if(related!=null)
+							related.getAttribute(QueryXMLConstants.LOCK);
 						fieldsLock = (fieldLock!=null && Boolean.getBoolean(fieldLock.getValue()));
 						if(fields!=null && fields.hasChildren()){
 							listOfFields = new ArrayList();
