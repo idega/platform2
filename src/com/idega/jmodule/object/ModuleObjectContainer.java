@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.10 2001/08/27 20:37:37 gummi Exp $
+ * $Id: ModuleObjectContainer.java,v 1.11 2001/09/09 21:51:57 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -405,6 +405,36 @@ public class ModuleObjectContainer extends ModuleObject {
     }
   }
 
+
+ public synchronized Object clone(ModuleInfo modinfo, boolean askForPermission) {
+    ModuleObjectContainer obj = null;
+    try {
+      obj = (ModuleObjectContainer)super.clone(modinfo, askForPermission);
+      //if(!(this instanceof Table)){
+        if (this.theObjects != null) {
+            //obj.setObjects((Vector)this.theObjects.clone());
+            obj.theObjects=(Vector)this.theObjects.clone();
+            ListIterator iter = obj.theObjects.listIterator();
+            while (iter.hasNext()) {
+              int index = iter.nextIndex();
+              Object item = iter.next();
+              //Object item = obj.theObjects.elementAt(index);
+              if(item instanceof ModuleObject){
+                obj.theObjects.set(index,((ModuleObject)item)._clone(modinfo,askForPermission));
+              }
+            }
+        //}
+      }
+    }
+    catch(Exception ex) {
+      obj.theObjects = new Vector();
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
+
+
+  /*
   public synchronized Object clone() {
     ModuleObjectContainer obj = null;
     try {
@@ -430,6 +460,9 @@ public class ModuleObjectContainer extends ModuleObject {
     }
     return obj;
   }
+  */
+
+
 
   public boolean remove(ModuleObject obj){
     if(theObjects!=null){
@@ -439,6 +472,9 @@ public class ModuleObjectContainer extends ModuleObject {
     }
     return false;
   }
+
+
+
 
   /**
    * index lies from 0,length-1

@@ -351,7 +351,20 @@ public class JModuleObject extends ModuleObjectContainer{
         obj.add(objectToCache);
         obj.setCacheable(cacheKey, millisecondsInterval);
       return obj;
-    }
+  }
 
+
+
+  public synchronized Object _clone(ModuleInfo modinfo, boolean askForPermission){
+    if(askForPermission){
+      if(com.idega.core.accesscontrol.business.AccessControl.hasViewPermission(this,modinfo)){
+        return this.clone(modinfo,false);
+      } else {
+        return NULL_CLONE_OBJECT;
+      }
+    } else {
+      return this.clone();
+    }
+  }
 
 }

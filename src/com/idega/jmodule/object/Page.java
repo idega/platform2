@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.19 2001/09/04 12:02:46 palli Exp $
+ * $Id: Page.java,v 1.20 2001/09/09 21:51:57 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,6 +41,15 @@ public class Page extends ModuleObjectContainer {
   private boolean isTemplate_ = false;
   private boolean isPage_ = true;
   private boolean isDraft_ = false;
+
+  private static Page NULL_CLONE_PAGE = new Page();
+
+  static{
+    Text pageNotFound = new Text("Page not found",true,false,false);
+    pageNotFound.setFontSize(4);
+    NULL_CLONE_PAGE.add(pageNotFound);
+  }
+
 
   protected static final String ROWS_PROPERTY = "ROWS";
 
@@ -377,9 +386,50 @@ public class Page extends ModuleObjectContainer {
    newPage.hoverColor = this.hoverColor;
   }
 
+
+  public synchronized Object _clone(ModuleInfo modinfo, boolean askForPermission){
+    return this.clone(modinfo,true);
+  /*    if(com.idega.core.accesscontrol.business.AccessControl.hasViewPermission(this,modinfo)){
+      return this.clone(modinfo);
+    } else {
+      return NULL_CLONE_PAGE;
+    }
+    */
+  }
+
+
   /**
    *
    */
+  public synchronized Object clone(ModuleInfo modinfo, boolean askForPermission) {
+    Page obj = null;
+    try {
+      obj = (Page)super.clone(modinfo, askForPermission);
+      if (this.theAssociatedScript != null) {
+        obj.theAssociatedScript = (Script)this.theAssociatedScript.clone();
+      }
+      obj.title = this.title;
+      obj.zeroWait = this.zeroWait;
+      obj.redirectInfo = this.redirectInfo;
+      obj.doReload = this.doReload;
+      obj.linkColor = this.linkColor;
+      obj.visitedColor = this.visitedColor;
+      obj.hoverColor = this.hoverColor;
+      obj.textDecoration = this.textDecoration;
+      obj.styleSheetURL = this.styleSheetURL;
+      obj.addStyleSheet = this.addStyleSheet;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+
+
+
+  /*
   public synchronized Object clone() {
     Page obj = null;
     try {
@@ -405,6 +455,10 @@ public class Page extends ModuleObjectContainer {
 
     return obj;
   }
+
+  */
+
+
 
   /**
    *

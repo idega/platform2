@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.20 2001/09/03 10:59:45 haffi Exp $
+ * $Id: ModuleObject.java,v 1.21 2001/09/09 21:51:57 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -64,6 +64,7 @@ public class ModuleObject extends Object implements Cloneable {
   private boolean listenerAdded = false;
   public String eventLocationString = "";
   private ModuleInfo eventModuleInfo = null;
+  public static final ModuleObject NULL_CLONE_OBJECT = new ModuleObject();
 
   /**
    * Default constructor
@@ -385,7 +386,51 @@ public class ModuleObject extends Object implements Cloneable {
   protected void prepareClone(ModuleObject newObjToCreate) {
   }
 
+  public synchronized Object _clone(ModuleInfo modinfo, boolean askForPermission){
+    if(askForPermission){
+      if(com.idega.core.accesscontrol.business.AccessControl.hasViewPermission(this,modinfo)){
+        return this.clone(modinfo,askForPermission);
+      } else {
+        return NULL_CLONE_OBJECT;
+      }
+    } else {
+      return this.clone();
+    }
+  }
+
+  public synchronized Object clone(ModuleInfo modinfo) {
+    return this._clone(modinfo,true);
+  }
+
   public synchronized Object clone() {
+    return this.clone(null, false);
+  }
+
+  /*
+  public synchronized Object clone() {
+    ModuleObject obj = null;
+    try {
+      //This is forbidden in clone i.e. "new":
+      //obj = (ModuleObject)Class.forName(this.getClassName()).newInstance();
+      obj = (ModuleObject)super.clone();
+      if (this.attributes != null) {
+        obj.setAttribute((Hashtable)this.attributes.clone());
+      }
+      obj.setName(this.name);
+      //obj.setParentObject(this.parentObject);
+      this.prepareClone(obj);
+      Vector vector;
+
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+
+    return obj;
+  }
+  */
+
+  public synchronized Object clone(ModuleInfo modinfo, boolean askForPermission) {
     ModuleObject obj = null;
     try {
       //This is forbidden in clone i.e. "new":
