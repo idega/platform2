@@ -2,11 +2,6 @@ package is.idega.block.nationalregister.business;
 
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.FamilyLogicBean;
-import is.idega.block.family.business.NoChildrenFound;
-import is.idega.block.family.business.NoCustodianFound;
-import is.idega.block.family.business.NoParentFound;
-import is.idega.block.family.business.NoSiblingFound;
-import is.idega.block.family.business.NoSpouseFound;
 import is.idega.block.family.data.FamilyMember;
 import is.idega.block.family.data.FamilyMemberHome;
 import is.idega.block.nationalregister.data.NationalRegister;
@@ -32,12 +27,12 @@ import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
-import com.idega.user.util.Converter;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 import com.idega.util.Timer;
@@ -100,6 +95,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private final static String FATE_CHANGE_OLD_ID = "BRNN";
 	private boolean postalCodeFix = false;
 	private Group citizenGroup = null;
+	private User performer = null;
+	private FamilyLogic famLog = null;
 	/**
 	 * @see com.idega.block.importer.business.ImportFileHandler#handleRecords()
 	 */
@@ -112,7 +109,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		try {
 			//if the transaction failes all the users and their relations are removed
 //			transaction.begin();
-
+			performer = IWContext.getInstance().getCurrentUser();
 			//iterate through the records and process them
 			String item;
 			IWBundle bundle = getIWMainApplication().getBundle(Importer.IW_BUNDLE_IDENTIFIER);
@@ -270,11 +267,11 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			//The relations variables hold the relations that yet not have been found in the import file
 			//If there are any relations left in these variables after the new relations have been set, 
 			//They have to be removed
-			Relations oldRelations1 = new Relations();
-			Relations newRelations1 = new Relations();
+			Relations oldRelations1 = new Relations(getMemberFamilyLogic());
+			Relations newRelations1 = new Relations(getMemberFamilyLogic());
 			
-			Relations oldRelations2 = new Relations();
-			Relations newRelations2 = new Relations();
+			Relations oldRelations2 = new Relations(getMemberFamilyLogic());
+			Relations newRelations2 = new Relations(getMemberFamilyLogic());
 			
 			HashMap oldrelations = new HashMap();
 			HashMap newrelations = new HashMap();
@@ -301,19 +298,19 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 					try {
 						User spouse = uHome.findByPersonalID(spouseSSN);
 
-						newRelations1 = new Relations();
+						newRelations1 = new Relations(getMemberFamilyLogic());
 						newRelations1.setUser(user);
 						newRelations1.setSpouse(spouse);
-						oldRelations1 = new Relations();
+						oldRelations1 = new Relations(getMemberFamilyLogic());
 						oldRelations1.setForUser(user);
 
 						newrelations.put(user, newRelations1);
 						oldrelations.put(user, oldRelations1);
 
-						newRelations2 = new Relations();
+						newRelations2 = new Relations(getMemberFamilyLogic());
 						newRelations2.setUser(spouse);
 						newRelations2.setSpouse(user);
-						oldRelations2 = new Relations();
+						oldRelations2 = new Relations(getMemberFamilyLogic());
 						oldRelations2.setForUser(spouse);
 												
 						newrelations.put(spouse, newRelations2);
@@ -337,12 +334,12 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				member = (FamilyMember) iter.next();
 				user = member.getUser();
 				if (oldrelations.get(user) == null) {
-					oldRelations1 = new Relations();
+					oldRelations1 = new Relations(getMemberFamilyLogic());
 					oldRelations1.setForUser(user);
 					oldrelations.put(user, oldRelations1);
 				}
 				if (newrelations.get(user) == null) {
-					newRelations1 = new Relations();
+					newRelations1 = new Relations(getMemberFamilyLogic());
 					newRelations1.setUser(user);
 					newrelations.put(user, newRelations1);
 				} else {
@@ -355,12 +352,12 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 					member2 = (FamilyMember) iter2.next();
 					user2 = member2.getUser();
 					if ( oldrelations.get(user2) == null) {
-						oldRelations2 = new Relations();
+						oldRelations2 = new Relations(getMemberFamilyLogic());
 						oldRelations2.setForUser(user2);
 						oldrelations.put(user2, oldRelations2);
 					} 
 					if ( newrelations.get(user2) == null) {
-						newRelations2 = new Relations();
+						newRelations2 = new Relations(getMemberFamilyLogic());
 						newRelations2.setUser(user2);
 						newrelations.put(user2, newRelations2);
 					} else {
@@ -405,14 +402,14 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				oldR.dumpInfo();
 				*/
 				try {
-					Relations newToAdd = newR.inANotB(newR, oldR);
+					Relations newToAdd = Relations.inANotB(newR, oldR, getMemberFamilyLogic());
 					addNewRelations(memFamLog, tmpuser, newToAdd);
 				}
 				catch (CreateException e) {
 					e.printStackTrace();
 				}
 
-				Relations oldToRemove = newR.inANotB(oldR, newR);
+				Relations oldToRemove = Relations.inANotB(oldR, newR, getMemberFamilyLogic());
 				removeTerminatedRelations(memFamLog, tmpuser, oldToRemove);
 
 			}
@@ -436,35 +433,35 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		//remove spouse
 //		System.out.println("REMOVING");
 //		rel.dumpInfo();
-		if(null!=rel.spouse){
-			memFamLog.removeAsSpouseFor(user, rel.spouse);
+		if(null!=rel.getSpouse()){
+			memFamLog.removeAsSpouseFor(user, rel.getSpouse());
 		}
 		//Remove from collections
-		Iterator iter = rel.child.iterator();
+		Iterator iter = rel.getChildren().iterator();
 		while(iter.hasNext()){
 			User child = (User)iter.next();
 			memFamLog.removeAsChildFor(child, user);
 		}
 		
-		iter = rel.isCustodianFor.iterator();
+		iter = rel.getIsCustodianFor().iterator();
 		while(iter.hasNext()){
 			User child = (User)iter.next();
 			memFamLog.removeAsCustodianFor(user, child);
 		}
 		
-		iter = rel.hasCustodian.iterator();
+		iter = rel.getHasCustodians().iterator();
 		while(iter.hasNext()){
 			User custodian = (User)iter.next();
 			memFamLog.removeAsCustodianFor(custodian,user);
 		}
 		
-		iter = rel.parent.iterator();
+		iter = rel.getParents().iterator();
 		while(iter.hasNext()){
 			User parent = (User)iter.next();
 			memFamLog.removeAsParentFor(parent,user);
 		}
 		
-		iter = rel.sibling.iterator();
+		iter = rel.getSiblings().iterator();
 		while(iter.hasNext()){
 			User sibling = (User)iter.next();
 			memFamLog.removeAsSiblingFor(user , sibling);
@@ -476,204 +473,41 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		//remove spouse
 //		System.out.println("ADDING");
 //		rel.dumpInfo();
-		if(null!=rel.spouse){
-			memFamLog.setAsSpouseFor(user, rel.spouse);
+		if(null!=rel.getSpouse()){
+			memFamLog.setAsSpouseFor(user, rel.getSpouse());
 		}
 		//Remove from collections
-		Iterator iter = rel.child.iterator();
+		Iterator iter = rel.getChildren().iterator();
 		while(iter.hasNext()){
 			User child = (User)iter.next();
 			memFamLog.setAsChildFor(child, user);
 		}
 		
-		iter = rel.isCustodianFor.iterator();
+		iter = rel.getIsCustodianFor().iterator();
 		while(iter.hasNext()){
 			User child = (User)iter.next();
 			memFamLog.setAsCustodianFor(user, child);
 		}
 		
-		iter = rel.hasCustodian.iterator();
+		iter = rel.getHasCustodians().iterator();
 		while(iter.hasNext()){
 			User custodian = (User)iter.next();
 			memFamLog.setAsCustodianFor(custodian,user);
 		}
 		
-		iter = rel.parent.iterator();
+		iter = rel.getParents().iterator();
 		while(iter.hasNext()){
 			User parent = (User)iter.next();
 			memFamLog.setAsParentFor(parent,user);
 		}
 		
-		iter = rel.sibling.iterator();
+		iter = rel.getSiblings().iterator();
 		while(iter.hasNext()){
 			User sibling = (User)iter.next();
 			memFamLog.setAsSiblingFor(user , sibling);
 		}
 	}	
 	
-	private class Relations{
-		private User user = null;
-		private User spouse = null;
-		private Collection child = new ArrayList();
-		private Collection parent = new ArrayList();
-		private Collection isCustodianFor = new ArrayList();
-		private Collection hasCustodian = new ArrayList();
-		private Collection sibling = new ArrayList();
-		
-		public void setUser(User user) {
-			this.user = user;
-		}
-		
-		public void setSpouse(User spouse) {
-			this.spouse = spouse;
-		}
-		
-		public void addChild(User child) {
-			if (!this.child.contains(child)) {
-				this.child.add(child);
-			}
-		}
-		
-		public void addParent(User parent) {
-			if (!this.parent.contains(parent)) {
-				this.parent.add(parent);
-			}
-		}
-		
-		public void addIsCustodianFor(User user) {
-			if (!this.isCustodianFor.contains(user)) {
-				this.isCustodianFor.add(user);
-			}
-		}
-		
-		public void addHasCustodian(User user) {
-			if (!this.hasCustodian.contains(user)) {
-				this.hasCustodian.add(user);
-			}
-		}	
-		
-		public void addSibling(User user) {
-			if (!this.sibling.contains(user)) {
-				this.sibling.add(user);
-			}
-		}		
-
-		public void dumpInfo(){
-			System.out.println("Relations for user "+user.getName()+" - "+user.getPersonalID());
-			if(null!=spouse){
-				System.out.println("spouse: "+spouse+" - "+spouse.getPersonalID());
-			}
-			Iterator iter = child.iterator();
-			while(iter.hasNext()){
-				User user = (User)iter.next();
-				System.out.println("child: "+user.getName()+" - "+user.getPersonalID());
-			}
-			iter = parent.iterator();
-			while(iter.hasNext()){
-				User user = (User)iter.next();
-				System.out.println("parent: "+user.getName()+" - "+user.getPersonalID());
-			}
-			iter = isCustodianFor.iterator();
-			while(iter.hasNext()){
-				User user = (User)iter.next();
-				System.out.println("is custodian for: "+user.getName()+" - "+user.getPersonalID());
-			}
-			iter = hasCustodian.iterator();
-			while(iter.hasNext()){
-				User user = (User)iter.next();
-				System.out.println("has custodian: "+user.getName()+" - "+user.getPersonalID());
-			}
-			iter = sibling.iterator();
-			while(iter.hasNext()){
-				User user = (User)iter.next();
-				System.out.println("sibling: "+user.getName()+" - "+user.getPersonalID());
-			}
-		}
-		
-		public void setForUser(User user) throws IBOLookupException, RemoteException{
-			FamilyLogicBean memFamLog = (FamilyLogicBean) getServiceInstance(FamilyLogicBean.class);
-			this.user = user;
-			try {
-				spouse = memFamLog.getSpouseFor(user);
-			}
-			catch (NoSpouseFound e) {
-				spouse = null;
-			}
-
-			try {
-				child = memFamLog.getChildrenFor(user);
-			}
-			catch (NoChildrenFound e1) {
-			}
-
-			try {
-				parent = memFamLog.getParentsFor(user);
-			}
-			catch (NoParentFound e) {
-			}
-			
-			try {
-				isCustodianFor = memFamLog.getChildrenInCustodyOf(user);
-			}
-			catch (NoChildrenFound e) {
-			}
-			
-			try {
-				hasCustodian = memFamLog.getCustodiansFor(user);
-			}
-			catch (NoCustodianFound e) {
-			}
-
-			try {
-				sibling = memFamLog.getSiblingsFor(user);
-			}
-			catch (NoSiblingFound e) {
-			}
-		}
-		
-		public Relations inANotB(Relations a, Relations b) throws IllegalArgumentException {
-			Relations c = new Relations();
-			if (a.user != b.user) {
-				throw new IllegalArgumentException("Relations must contain same users");
-			} else {
-				c.user = a.user;
-			}
-			c.spouse = a.spouse;
-			c.child = new ArrayList(a.child);
-			c.hasCustodian = new ArrayList(a.hasCustodian);
-			c.isCustodianFor = new ArrayList(a.isCustodianFor);
-			c.parent = new ArrayList(a.parent);
-			c.sibling = new ArrayList(a.sibling);
-			
-
-			if (a.spouse != null && a.spouse.equals(b.spouse)) {
-				c.spouse = null;
-			}
-			
-			Iterator iter = b.child.iterator();
-			while (iter.hasNext()) {
-				c.child.remove((User) iter.next());
-			}
-			iter = b.hasCustodian.iterator();
-			while (iter.hasNext()) {
-				c.hasCustodian.remove((User) iter.next());
-			}
-			iter = b.isCustodianFor.iterator();
-			while (iter.hasNext()) {
-				c.isCustodianFor.remove((User) iter.next());
-			}
-			iter = b.parent.iterator();
-			while (iter.hasNext()) {
-				c.parent.remove((User) iter.next());
-			}
-			iter = b.sibling.iterator();
-			while (iter.hasNext()) {
-				c.sibling.remove((User) iter.next());
-			}
-			
-			return c;
-		}
-	}
 	
 	private boolean processRecord(String record) throws RemoteException {
 		_value = _file.getValuesFromRecordString(record);
@@ -756,7 +590,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			else {
 				dom = IWTimestamp.RightNow();
 			}
-			familyService.registerAsDeceased(user, dom.getDate());
+			familyService.registerAsDeceased(user, dom.getDate(), performer);
 		}
 		
 		if(FATE_CHANGE_PERSONAL_ID.equalsIgnoreCase(fate)){
@@ -767,8 +601,6 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		if (FATE_REMOVED.equalsIgnoreCase(fate)) {
 			try {
 				User user = uBiz.getUser(ssn);
-				User performer = Converter.convertToNewUser(
-						getIWApplicationContext().getIWMainApplication().getAccessController().getAdministratorUser());
 				uBiz.deleteUser(user,performer);
 			}
 			catch (Exception e) {
@@ -858,7 +690,10 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	}
 
 	public FamilyLogic getMemberFamilyLogic() throws RemoteException {
-		return (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
+		if (famLog == null) {
+			famLog = (FamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), FamilyLogic.class);
+		}
+		return famLog;
 	}
 
   protected FamilyMemberHome getFamilyMemberHome(){
