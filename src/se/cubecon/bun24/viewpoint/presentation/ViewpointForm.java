@@ -49,14 +49,14 @@ public class ViewpointForm extends CommuneBlock {
     public final static String CONFIRMENTERVIEWPOINT_KEY
         = "viewpoint.confirmEnterViewpoint";
     public final static String CONFIRMENTERVIEWPOINT_DEFAULT
-        = "Tack för din synpunkt. Den är nu registrerade som ett ärende på "
+        = "Tack för din synpunkt. Den är nu registrerad som ett ärende på "
         + "BUN24. En handläggare kommer att hantera och besvara ärendet.";
     public final static String CONFIRMSETHANDLER_KEY
         = "viewpoint.confirmSetHandler";
     public final static String CONFIRMSETHANDLER_DEFAULT
         = "Du är nu registrerad som handläggare för det här ärendet.";
     public final static String CONTINUE_KEY = "viewpoint.continue";
-    public final static String CONTINUE_DEFAULT = "Fortsätt...";
+    public final static String CONTINUE_DEFAULT = "Fortsätt";
     public final static String DESCRIPTION1_KEY = "viewpoint.description1";
     public final static String DESCRIPTION1_DEFAULT
         = "När du använder 'Synpunkter' i BUN24 så ska du ange vilken typ av "
