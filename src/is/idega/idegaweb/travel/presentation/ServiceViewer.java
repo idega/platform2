@@ -217,10 +217,10 @@ public class ServiceViewer extends Window {
           price.setText(getServicePrice(serv));
           content.add(price,++x,y);
         //Info and buy buttons
-          Link more = new Link();
+          Link more = new Link("more");
           more.setWindowToOpen(ServiceViewer.class);
           more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
-          more.setText("more");/**@todo localize **/
+          //more.setText("more");/**@todo localize **/
           more.setAsImageButton(true);
           content.add(more,++x,y);
 
