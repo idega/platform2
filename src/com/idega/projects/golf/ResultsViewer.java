@@ -341,10 +341,17 @@ private Table resultTable;
        }
       }
       else {
-        TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,tournamentGroupID,tournamentRounds,gender);
-            tournResults.sortBy(orderBy);
+        if ( this.tournamentGroupID != -1 ) {
+          TournamentResults tournResults = new TournamentResults(tournamentID,sortBy,tournamentGroupID,tournamentRounds,gender);
+              tournResults.sortBy(orderBy);
 
-        resultTable.add(tournResults,1,1);
+          resultTable.add(tournResults,1,1);
+        }
+        else {
+          resultTable.setAlignment(1,1,"center");
+          resultTable.add(Text.getBreak());
+          resultTable.add("Veldu hvern einstakan flokk úr listanum hér að ofan til að sjá stöðuna innan hans",1,1);
+        }
       }
     }
     catch (Exception e) {
