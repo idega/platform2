@@ -62,7 +62,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   // dummy keys for primary entries
   private static final String INCOME_SUM_KEY = "FIN_income_sum";
   private static final String EXPONSES_SUM_KEY = "FIN_exponses_sum";
-  private static final String INCOME_EXPONSES_SUM_KEY = "FIN_exponses_sum";
+  private static final String INCOME_EXPONSES_SUM_KEY = "FIN_income_exponses_sum";
   private static final String ASSET_SUM_KEY = "FIN_asset_sum";
   private static final String DEBT_SUM_KEY = "FIN_debt_sum";
   
@@ -633,6 +633,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     
     public int getGroupId() {
+      if (groupId == null)  {
+        return -1;
+      }
       return groupId.intValue();
     }
      
