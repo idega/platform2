@@ -1,7 +1,7 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
 import is.idega.idegaweb.golf.GolfField;
-import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
@@ -10,13 +10,10 @@ import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -212,9 +209,9 @@ public class RegisterTime extends GolfBlock {
               String unionAbbrevation = null;
 
               if(memberAvailable){
-                admin = is.idega.idegaweb.golf.block.login.business.AccessControl.isAdmin(modinfo);
-                clubadmin = is.idega.idegaweb.golf.block.login.business.AccessControl.isClubAdmin(modinfo);
-                clubworker = is.idega.idegaweb.golf.block.login.business.AccessControl.isClubWorker(modinfo);
+                admin = is.idega.idegaweb.golf.business.AccessControl.isAdmin(modinfo);
+                clubadmin = is.idega.idegaweb.golf.business.AccessControl.isClubAdmin(modinfo);
+                clubworker = is.idega.idegaweb.golf.business.AccessControl.isClubWorker(modinfo);
                 unionAbbrevation = member.getMainUnion().getAbbrevation();
               }
 
@@ -274,10 +271,10 @@ public class RegisterTime extends GolfBlock {
 
             try
             {
-              Member member = GolfLoginBusiness.getMember(modinfo);
+              Member member = AccessControl.getMember(modinfo);
               String FieldID = currentField;
               String Date = modinfo.getSession().getAttribute("date").toString();
-              String MemberId = String.valueOf(GolfLoginBusiness.getMember(modinfo).getID());
+              String MemberId = String.valueOf(AccessControl.getMember(modinfo).getID());
               GolfField myGolfField = getFieldInfo( Integer.parseInt(FieldID), Date);
               int Line = Integer.parseInt( modinfo.getParameter("line"));
               int max =business.countEntriesInGroup(Line,this.currentField,this.currentDay);
@@ -847,7 +844,7 @@ public class RegisterTime extends GolfBlock {
 		    }
 		
 		
-		    currentMember = Integer.toString(GolfLoginBusiness.getMember(modinfo).getID());
+		    currentMember = Integer.toString(AccessControl.getMember(modinfo).getID());
 		    currentDay = new IWTimestamp(date);
 		  }catch(Exception e){
 		  	e.printStackTrace();

@@ -1,6 +1,6 @@
 package is.idega.idegaweb.golf.moduleobject;
 
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;

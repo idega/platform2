@@ -4,7 +4,7 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
 import is.idega.idegaweb.golf.GolfField;
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;

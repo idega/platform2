@@ -3,7 +3,7 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.clubs.presentation.MemberCorrectWindow;
 import is.idega.idegaweb.golf.clubs.presentation.UnionCorrectWindow;
 import is.idega.idegaweb.golf.entity.Member;

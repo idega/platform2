@@ -1,6 +1,6 @@
 package is.idega.idegaweb.golf.service;
 
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.business.AccessControl;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Account;
 import is.idega.idegaweb.golf.entity.AccountEntry;

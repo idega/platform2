@@ -94,22 +94,22 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
         }
 
         public boolean isAdmin(IWContext modinfo)throws Exception{
-          return is.idega.idegaweb.golf.block.login.business.AccessControl.isAdmin(modinfo);
+          return is.idega.idegaweb.golf.business.AccessControl.isAdmin(modinfo);
         }
 
   public boolean isDeveloper() {
-    return is.idega.idegaweb.golf.block.login.business.AccessControl.isDeveloper(getModuleInfo());
+    return is.idega.idegaweb.golf.business.AccessControl.isDeveloper(getModuleInfo());
   }
 
   public boolean isClubAdmin() {
-    return is.idega.idegaweb.golf.block.login.business.AccessControl.isClubAdmin(getModuleInfo());
+    return is.idega.idegaweb.golf.business.AccessControl.isClubAdmin(getModuleInfo());
   }
 
   public boolean isClubWorker() {
     boolean ret;
 
     try {
-      ret = is.idega.idegaweb.golf.block.login.business.AccessControl.isClubWorker(getModuleInfo());
+      ret = is.idega.idegaweb.golf.business.AccessControl.isClubWorker(getModuleInfo());
     }
     catch(java.sql.SQLException e) {
       e.printStackTrace();
@@ -120,7 +120,7 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
   }
 
   public boolean isUser() {
-    return is.idega.idegaweb.golf.block.login.business.AccessControl.isUser(getModuleInfo());
+    return is.idega.idegaweb.golf.business.AccessControl.isUser(getModuleInfo());
   }
 
 

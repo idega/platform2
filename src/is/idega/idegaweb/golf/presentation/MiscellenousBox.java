@@ -4,7 +4,7 @@ package is.idega.idegaweb.golf.presentation;
 
 
 
-import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.business.AccessControl;
 
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
