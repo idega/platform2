@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/09/08 08:10:06 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/26 06:59:34 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -186,6 +186,18 @@ public class TerminateClassMembership extends UserEditor {
         }
 	}
 	
+    protected void presentateUserGroup (IWContext dummy) {
+        // nothing
+    }
+
+    protected void presentateUserRelations(IWContext dummy) {
+        // nothing
+    }
+
+    protected void presentateButtonClose(IWContext dummy) {
+        // nothing
+    }
+
 	protected void presentateButtonRegister (IWContext dummy) {
         // nothing
     }
