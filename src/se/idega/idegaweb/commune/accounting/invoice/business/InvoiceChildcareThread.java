@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/19 13:01:30 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/25 11:42:10 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.131 $
+ * @version $Revision: 1.132 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -123,24 +123,25 @@ public class InvoiceChildcareThread extends BillingThread{
 				//VAT
 				//calcVAT();
 			}else{
-				createNewErrorMessage("invoice.severeError","invoice.Posts_with_status_L_or_H_already_exist");
+				createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),
+						getLocalizedString("invoice.Posts_with_status_L_or_H_already_exist","Posts with status L or H already exist"));
 			}
 		} catch (NotEmptyException e) {
-			createNewErrorMessage("invoice.severeError", "invoice.Severe_MustFirstEmptyOldData");
-			e.printStackTrace();
+			createNewErrorMessage(getLocalizedString("invoice.PaymentSchool","Payment school"), 
+					getLocalizedString("invoice.Severe_MustFirstEmptyOldData","Severe. Must first empty old data"));
 		} catch (Exception e) {
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
 			if (null != errorRelated) {
 				errorRelated.append(e);
-				createNewErrorMessage(errorRelated,"invoice.DBSetupProblem");
+				createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.DBSetupProblem","Database setup problem"));
 			}else{
 				StringBuffer message = new StringBuffer();
 				StackTraceElement[] stackTraceElement = e.getStackTrace();
 				for(int i=0; i<stackTraceElement.length;i++){
 					message.append(stackTraceElement[i].toString());
 				}
-				createNewErrorMessage(message.toString(),"invoice.DBSetupProblem");
+				createNewErrorMessage(message.toString(),getLocalizedString("invoice.DBSetupProblem","Database setup problem"));
 			}
 		}
 		batchRunLoggerDone();
@@ -167,7 +168,7 @@ public class InvoiceChildcareThread extends BillingThread{
 				femaleKey = ((Integer)female.getPrimaryKey()).intValue();
 			} catch (Exception e2) {
 				e2.printStackTrace();
-				createNewErrorMessage(errorRelated,"invoice.CouldNotFindPrimaryKeyForFemaleGender");
+				createNewErrorMessage(errorRelated,getLocalizedString("invoice.CouldNotFindPrimaryKeyForFemaleGender","Could not find primary key for female gender"));
 			}
 			
 			try {
@@ -188,10 +189,10 @@ public class InvoiceChildcareThread extends BillingThread{
 						}
 					}else{
 						if(childAddress==null){
-							createNewErrorMessage(errorRelated,"invoice.ChildAddressNotSet");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.ChildAddressNotSet","Child address not set"));
 						}
 						if(custodianAddress==null){
-							createNewErrorMessage(errorRelated,"invoice.CustodianAddressNotSet");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.CustodianAddressNotSet","Custodian address not set"));
 						}
 					}
 				}
@@ -203,7 +204,8 @@ public class InvoiceChildcareThread extends BillingThread{
 				//Poor child
 			} catch (RemoteException e) {
 				e.printStackTrace();
-				createNewErrorMessage(errorRelated,"invoice.RemoteExceptionFindingCustodianForChild");
+				errorRelated.append(e);
+				createNewErrorMessage(errorRelated,getLocalizedString("invoice.RemoteExceptionFindingCustodianForChild","Remote Exception finding custodian for child"));
 			}
 		}
 		//If no invoice receiver is set in contract and no fitting custodian found,  
@@ -211,9 +213,10 @@ public class InvoiceChildcareThread extends BillingThread{
 		if(invoiceReceiver == null){
 			contract.setInvoiceReceiver(contract.getApplication().getOwner());
 			contract.store();
-			createNewErrorMessage(errorRelated,"invoice.InvoiceReceiverNotSetAndNoCustodianAtSameAddressFound_UsingContractOwner");
+			createNewErrorMessage(errorRelated,getLocalizedString("invoice.InvoiceReceiverNotSetAndNoCustodianAtSameAddressFound_UsingContractOwner",
+					"Invoice receiver not set and no custodian at same address found. Using contract owner"));
 		}
-		errorRelated.append("Invoice receiver: "+invoiceReceiver);
+		errorRelated.append(getLocalizedString("invoice.InvoiceReceiver","Invoice receiver")+":"+invoiceReceiver);
 		return invoiceReceiver;
 	}
 	
@@ -234,7 +237,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		
 		try {
 			if (hasPlacements()) {
-				throw new NotEmptyException("invoice.must_first_empty_old_data");
+				throw new NotEmptyException(getLocalizedString("invoice.must_first_empty_old_data","Must first empty old data"));
 			}
 			Collection contractArray = null;
 			if(getSchool()!=null){
@@ -256,9 +259,9 @@ public class InvoiceChildcareThread extends BillingThread{
 					contract = (ChildCareContract)contractIter.next();
 					errorRelated = new ErrorLogger();
 					try {
-						errorRelated.append("ChildcareContract: "+contract.getPrimaryKey());
-						errorRelated.append("Contract Start: "+contract.getValidFromDate()+"; Contract End: "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
-						errorRelated.append("Child: "+contract.getChild().getName()+"; P#: "+contract.getChild().getPersonalID());
+						errorRelated.append(getLocalizedString("invoice.ChildcareContract","Childcare Contract")+":"+contract.getPrimaryKey());
+						errorRelated.append(getLocalizedString("invoice.ContractStart","Contract Start")+":"+contract.getValidFromDate()+"; Contract End: "+(null == contract.getTerminatedDate() ? "-" : ""+contract.getTerminatedDate()));
+						errorRelated.append(getLocalizedString("invoice.Child","Child")+":"+contract.getChild().getName()+"; P#: "+contract.getChild().getPersonalID());
 					} catch (NullPointerException e) {
 						e.printStackTrace ();
 					}
@@ -270,14 +273,14 @@ public class InvoiceChildcareThread extends BillingThread{
 					try{
 						child = schoolClassMember.getStudent();
 					}catch (NullPointerException e){
-						errorRelated.append("Placement id in contract: "+ contract.getSchoolClassMemberId ());
+						errorRelated.append(getLocalizedString("invoice.PlacementIdInContract","Placement id in contract")+":"+ contract.getSchoolClassMemberId ());
 						throw new NoSchoolClassMemberException("");
 					}
 					//Fetch invoice receiver
 					custodian = getInvoiceReceiver(contract);
 					//Get school
 					final School school = contract.getApplication ().getProvider ();
-					errorRelated.append("School: "+school.getName(),1);
+					errorRelated.append(getLocalizedString("invoice.School","School")+":"+school.getName(),1);
 					//Get school type
 					SchoolType schoolType = schoolClassMember.getSchoolType();
 					String childcareType = null;
@@ -339,8 +342,8 @@ public class InvoiceChildcareThread extends BillingThread{
 					int ageInYears = ageBusiness.getChildAge(contract.getChild().getPersonalID(), startPeriod.getDate());
 					
 					ArrayList conditions = new ArrayList();
-					errorRelated.append("Hours: "+hours);
-					errorRelated.append("Age: "+ageInYears+" years");
+					errorRelated.append(getLocalizedString("invoice.Hours","Hours")+": "+hours);
+					errorRelated.append(getLocalizedString("invoice.Age","Age")+":"+ageInYears+" "+getLocalizedString("invoice.years","years"));
 					
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
@@ -348,10 +351,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					EmploymentType employmentType = contract.getEmploymentType();
 					if(employmentType!= null){
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,employmentType.getPrimaryKey()));
-						errorRelated.append("EmploymentType: "+employmentType.getLocalizationKey());
+						errorRelated.append(getLocalizedString("invoice.EmploymentType","EmploymentType")+":"+employmentType.getLocalizationKey());
 					}
-					errorRelated.append("RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED);
-					errorRelated.append("RegSpecConstant.CHECK:"+RegSpecConstant.CHECK);
+//					errorRelated.append("RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED);
+//					errorRelated.append("RegSpecConstant.CHECK:"+RegSpecConstant.CHECK);
 					
 					postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
 							category.getCategory(),		//The ID that selects barnomsorg in the regulation
@@ -368,7 +371,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 					
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECK);
-					errorRelated.append("Regel Spec Typ: "+regSpecType);
+					errorRelated.append(getLocalizedString("invoice.RegelSpecTyp","Regel Spec Typ")+": "+regSpecType);
 					
 					String[] postings = getPostingBusiness().getPostingStrings(
 							category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,calculationDate);
@@ -389,12 +392,13 @@ public class InvoiceChildcareThread extends BillingThread{
 					} catch (SiblingOrderException e) {
 						e.printStackTrace();
 						errorRelated.append(e.getMessage ());
-						createNewErrorMessage(errorRelated,"invoice.CouldNotGetSiblingOrder");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.CouldNotGetSiblingOrder","Could not get sibling Order"));
 						siblingOrder = 1;
 					}
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
 									new Integer(siblingOrder)));
-					errorRelated.append("Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
+					errorRelated.append(getLocalizedString("invoice.SiblingOrderSetTo","Sibling order set to")+":"+siblingOrder+
+							" "+getLocalizedString("invoice.for","for")+" "+schoolClassMember.getStudent().getName());
 						
 					//Get all the rules for this contract
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
@@ -413,7 +417,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						errorRelated = new ErrorLogger(tmpErrorRelated);
 						try {
 							Regulation regulation = (Regulation)regulationIter.next();
-							errorRelated.append("Regel "+regulation.getName());
+							errorRelated.append(getLocalizedString("invoice.Regulation","Regulation")+":"+regulation.getName());
 							postingDetail = regBus.getPostingDetailForContract(
 									totalSum,
 									contract,
@@ -426,13 +430,11 @@ public class InvoiceChildcareThread extends BillingThread{
 								throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
 							}
 								
-							errorRelated.append("Posting detail: "+postingDetail);
+							errorRelated.append(getLocalizedString("invoice.PostingDetail","Posting detail")+":"+postingDetail);
 							// **Create the invoice record
 							//maybe get these strings from the postingDetail instead.
-							errorRelated.append("Regspectyp from posting detail: "+postingDetail.getRuleSpecType());
-							errorRelated.append("Regspectyp from regulation: "+regulation.getRegSpecType().getLocalizationKey());
 							postingDetail.setRuleSpecType(regulation.getRegSpecType().getLocalizationKey());		//This is a patch, Pallis func should probably return the right one in the first place.
-							errorRelated.append("InvoiceHeader: "+invoiceHeader.getPrimaryKey());
+							errorRelated.append(getLocalizedString("invoice.InvoiceHeader","InvoiceHeader")+":"+invoiceHeader.getPrimaryKey());
 							//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,calculationDate);
 							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "", placementTimes, school, contract);
@@ -444,7 +446,7 @@ public class InvoiceChildcareThread extends BillingThread{
 								subventionToReduce = invoiceRecord;
 							}
 							totalSum += AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths());
-							errorRelated.append("Total sum so far: "+totalSum);
+//							errorRelated.append("Total sum so far: "+totalSum);
 						}
 						catch (BruttoIncomeException e) {
 							//Who cares!!!
@@ -455,141 +457,142 @@ public class InvoiceChildcareThread extends BillingThread{
 						catch (CreateException e1) {
 							e1.printStackTrace();
 							errorRelated.append(e1);
-							createNewErrorMessage(errorRelated,"invoice.CreateException");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.CreateException","Create exception"));
 						}
 						catch (RegulationException e1) {
 							e1.printStackTrace();
-							createNewErrorMessage(errorRelated,"invoice.ErrorFindingRegulationWhenItWasExpected");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingRegulationWhenItWasExpected","Error finding regulation when it was expected"));
 						}
 						catch (PostingException e1) {
 							e1.printStackTrace();
-							createNewErrorMessage(errorRelated,"invoice.PostingException");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.PostingException","PostingException"));
 						}
 						catch (RemoteException e1) {
 							e1.printStackTrace();
 							errorRelated.append(e1);
-							createNewErrorMessage(errorRelated,"invoice.RemoteException");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.RemoteException","RemoteException"));
 						}
 						catch(MissingConditionTypeException e) {
 							e.printStackTrace();
-							createNewErrorMessage(errorRelated,"invoice.ErrorFindingConditionType");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingConditionType","ErrorFindingConditionType"));
 						}
 						catch (MissingFlowTypeException e) {
 							e.printStackTrace();
-							createNewErrorMessage(errorRelated,"invoice.ErrorFindingFlowType");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingFlowType","ErrorFindingFlowType"));
 						}
 						catch (MissingRegSpecTypeException e) {
 							e.printStackTrace();
-							createNewErrorMessage(errorRelated,"invoice.ErrorFindingRegSpecType");
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingRegSpecType","ErrorFindingRegSpecType"));
 						}
 						catch (TooManyRegulationsException e) {
 							e.printStackTrace();
-							errorRelated.append("Regulations found:"+e.getRegulationNamesString());
-							createNewErrorMessage(errorRelated,"invoice.TooManyRegulationsFoundForQuery");
+							errorRelated.append(getLocalizedString("invoice.RegulationsFound","Regulations found")+":"+e.getRegulationNamesString());
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.TooManyRegulationsFoundForQuery","Too many regulations found for query"));
 						}
 					}
 					//Make sure that the sum is not less than 0
 					ErrorLogger errorRelated = new ErrorLogger(tmpErrorRelated);
-					errorRelated.append("Total sum is:"+totalSum);
+					errorRelated.append(getLocalizedString("invoice.TotalSumIs","Total sum is")+":"+totalSum);
 					if(totalSum<0){
 						if(subventionToReduce!=null){
-							errorRelated.append("Sum too low, changing subvention from: "+subventionToReduce.getAmount()+" to "+(subventionToReduce.getAmount()-totalSum));
-							createNewErrorMessage(errorRelated,"invoice.Info_SubventionChangedToMakeSumZero");
+							errorRelated.append(getLocalizedString("invoice.SumTooLow_ChangingSubventionFrom","Sum too low, changing subvention from")+
+									" "+subventionToReduce.getAmount()+" "+getLocalizedString("invoice.To","to")+" "+(subventionToReduce.getAmount()-totalSum));
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.Info_SubventionChangedToMakeSumZero","Info: Subvention changed to make sum zero"));
 							subventionToReduce.setAmount(subventionToReduce.getAmount()-totalSum);
 							subventionToReduce.store();
 						} else {
-							errorRelated.append("Sum too low, but no subvention found.");
-							createNewErrorMessage(errorRelated,"invoice.noSubventionFoundAndSumLessThanZero");
+							errorRelated.append(getLocalizedString("invoice.SumTooLow_ButNoSubventionFound","Sum too low, but no subvention found."));
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.noSubventionFoundAndSumLessThanZero","No subvention found and sum less than zero"));
 						}
 					}
 					createRegularInvoiceForChild(child,schoolClassMember,custodian,invoiceHeader,placementTimes,totalSum);
 					
 				}catch (CommuneChildcareOutsideHomeCommuneException e1) {
 //					errorRelated.append(e1);
-					createNewErrorMessage(errorRelated,"invoice.CommuneChildcareOutsideHomeCommune");
+					createNewErrorMessage(errorRelated,getLocalizedString("invoice.CommuneChildcareOutsideHomeCommune","Commune childcare outside home commune"));
 				}catch (NoSchoolClassMemberException e1) {
 					errorRelated.append(e1);
-					createNewErrorMessage(errorRelated,"invoice.SchoolClassMemberNotSetForContract");
+					createNewErrorMessage(errorRelated,getLocalizedString("invoice.SchoolClassMemberNotSetForContract","School class member not set for contract"));
 				}catch (NoSchoolTypeException e1) {
 					errorRelated.append(e1);
-					createNewErrorMessage(errorRelated,"invoice.SchoolTypeNotSetForSchoolClassMember");
+					createNewErrorMessage(errorRelated,getLocalizedString("invoice.NoSchooltypeFound","No schooltype found"));
 				}catch (NullPointerException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){
 						errorRelated.append(e1);
-						createNewErrorMessage(errorRelated,"invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB","Reference error possibly null in primary key in DB"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.ReferenceErrorPossiblyNullInPrimaryKeyInDB","Reference error possibly null in primary key in DB"));
 					}
 				}catch (RegulationException e1) {
 					e1.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated,"invoice.ErrorFindingCheckRegulation");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingCheckRegulation","Error finding check regulation"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingCheckRegulation");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.ErrorFindingCheckRegulation","Error finding check regulation"));
 					}
 				} catch (PostingException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated,"invoice.PostingParameterIncorrectlyFormatted");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.PostingParameterIncorrectlyFormatted","Posting parameter incorrectly formatted"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.PostingParameterIncorrectlyFormatted");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.PostingParameterIncorrectlyFormatted","Posting parameter incorrectly formatted"));
 					}
 				} catch (CreateException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
 						errorRelated.append(e);
-						createNewErrorMessage(errorRelated,"invoice.DBProblem");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.DBProblem","DB Problem"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.DBProblem");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.DBProblem","DB Problem"));
 					}
 				} catch (EJBException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
 						errorRelated.append(e);
-						createNewErrorMessage(errorRelated,"invoice.EJBError");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.EJBException","EJB Exception"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.EJBError");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.EJBException","EJB Exception"));
 					}
 				}
 				catch (MissingFlowTypeException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated,"invoice.ErrorFindingFlowType");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingFlowType","Error finding flow type"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingFlowType");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.ErrorFindingFlowType","Error finding flow type"));
 					}
 				}
 				catch (MissingConditionTypeException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated,"invoice.ErrorFindingConditionType");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingConditionType","Error finding condition type"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingConditionType");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.ErrorFindingConditionType","Error finding condition type"));
 					}
 				}
 				catch (MissingRegSpecTypeException e) {
 					e.printStackTrace();
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated,"invoice.ErrorFindingRegSpecType");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingRegSpecType","Error finding reg spec type"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingRegSpecType");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.ErrorFindingRegSpecType","Error finding reg spec type"));
 					}
 				}
 				catch (TooManyRegulationsException e) {
 					e.printStackTrace();
-					errorRelated.append("Regulations found:"+e.getRegulationNamesString());
+					errorRelated.append(getLocalizedString("invoice.RegulationsFound","Regulations found")+":"+e.getRegulationNamesString());
 					if(errorRelated != null){
-						createNewErrorMessage(errorRelated,"invoice.ErrorFindingTooManyRegulations");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.ErrorFindingTooManyRegulations","Error finding too many regulations"));
 					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingTooManyRegulations");
+						createNewErrorMessage(contract.getChild().getName(),getLocalizedString("invoice.ErrorFindingTooManyRegulations","Error finding too many regulations"));
 					}
 				} catch (RemoteException e) {
 					e.printStackTrace();
-					createNewErrorMessage("invoice.severeError","invoice.SeriousErrorBatchrunTerminated");
+					createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.RemoteException","Remote exception"));
 				} catch (FinderException e) {
 					e.printStackTrace();
-					createNewErrorMessage("invoice.severeError","invoice.NoContractsFound");
+					createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.NoContractsFound","No contracts found"));
 				}
 				if(!running){
 					return;
@@ -597,16 +600,16 @@ public class InvoiceChildcareThread extends BillingThread{
 			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.severeError","invoice.SeriousErrorBatchrunTerminated");
+			createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.RemoteException","Remote exception"));
 		} catch (FinderException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.severeError","invoice.NoContractsFound");
+			createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.NoContractsFound","No contracts found"));
 		} catch (EJBException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.severeError","invoice.EJBException");
+			createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.EJBException","EJB Exception"));
 		} catch (IDOException e) {
 			e.printStackTrace();
-			createNewErrorMessage("invoice.severeError","invoice.IDOException");
+			createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"),getLocalizedString("invoice.IDOException","IDO Exception"));
 		}
 	}
 	
@@ -632,15 +635,15 @@ public class InvoiceChildcareThread extends BillingThread{
 						
 						regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
 						
-						ErrorLogger errorRelated = new ErrorLogger("RegularInvoiceEntry ID: "+regularInvoiceEntry.getPrimaryKey());
+						ErrorLogger errorRelated = new ErrorLogger(getLocalizedString("invoice.RegularInvoiceEntryID","Regular invoice entry ID")+":"+regularInvoiceEntry.getPrimaryKey());
 						
 						//Get the child and then look up the custodian
 						//childID = regularInvoiceEntry.getChildId();
 						
-						errorRelated.append("Child: "+childId);
+						errorRelated.append(getLocalizedString("invoice.Child","Child")+":"+childId);
 						//MemberFamilyLogic familyLogic = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc, MemberFamilyLogic.class);
 						//User child = (User) IDOLookup.findByPrimaryKey(User.class, new Integer(childID));
-						errorRelated.append("Child name: "+child.getName());
+						errorRelated.append(getLocalizedString("invoice.ChildName","Child name")+":"+child.getName());
 						/*Iterator custodianIter = familyLogic.getCustodiansFor(child).iterator();
 							while (custodianIter.hasNext() ){//&& invoiceHeader == null) {
 							custodian = (User) custodianIter.next();
@@ -668,7 +671,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							invoiceHeader.store();
 							createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotFindCustodianForRegularInvoice");
 						}
-						errorRelated.append("Note: "+regularInvoiceEntry.getNote());
+						errorRelated.append(getLocalizedString("invoice.Note","Note")+":"+regularInvoiceEntry.getNote());
 						
 						PlacementTimes placementTimes = calculateTime(contract.getValidFromDate(), contract.getTerminatedDate());
 						
@@ -697,8 +700,10 @@ public class InvoiceChildcareThread extends BillingThread{
 						long amount = AccountingUtil.roundAmount(regularInvoiceEntry.getAmount()*months);
 						totalSum += amount;
 						if(totalSum<0){
-							errorRelated.append("Previous sum:"+amount+" changed to "+(amount-totalSum));
-							createNewErrorMessage(errorRelated,"invoice.SumLessThanZeroForRegularInvoiceRecord");
+							errorRelated.append(getLocalizedString("invoice.PreviousSum","Previous sum")+":"+amount+" "+
+									getLocalizedString("invoice.changedTo","changed to")+" "+(amount-totalSum));
+							createNewErrorMessage(errorRelated,getLocalizedString("invoice.SumLessThanZeroForRegularInvoiceRecord",
+									"Sum less than zero for regular invoice record"));
 							amount = amount-totalSum;
 						}
 						invoiceRecord.setAmount(amount);
@@ -713,10 +718,10 @@ public class InvoiceChildcareThread extends BillingThread{
 						
 					} catch (RemoteException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated,"invoice.DBSetupProblemRemoteException");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.RemoteException","Remote Exception"));
 					} catch (CreateException e) {
 						e.printStackTrace();
-						createNewErrorMessage(errorRelated,"invoice.DBSetupProblemCreateException");
+						createNewErrorMessage(errorRelated,getLocalizedString("invoice.CreateException","CreateException"));
 					}
 					if(!running){
 						return;
@@ -724,10 +729,12 @@ public class InvoiceChildcareThread extends BillingThread{
 				}
 			} catch (RemoteException e) {
 				e.printStackTrace();
-				createNewErrorMessage("invoice.RegularInvoices","invoice.CouldNotFindAnyRegularInvoicesTerminating");
+				createNewErrorMessage(getLocalizedString("invoice.RegularInvoices","RegularInvoices"),
+						getLocalizedString("invoice.RemoteException","Remote Exception"));
 			} catch (FinderException e) {
 				e.printStackTrace();
-				createNewErrorMessage("invoice.RegularInvoices","invoice.CouldNotFindAnyRegularInvoicesTerminating");
+				createNewErrorMessage(getLocalizedString("invoice.RegularInvoices","RegularInvoices"),
+						getLocalizedString("invoice.FinderException","Finder Exception"));
 			}
 		}
 	}	
@@ -778,9 +785,9 @@ public class InvoiceChildcareThread extends BillingThread{
 			//Go through all the regular payments
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
-				ErrorLogger errorRelated = new ErrorLogger("RegularPaymentEntry ID: "+regularPaymentEntry.getPrimaryKey());
-				errorRelated.append("Placing: "+regularPaymentEntry.getPlacing());
-				errorRelated.append("Amount: "+regularPaymentEntry.getAmount());
+				ErrorLogger errorRelated = new ErrorLogger(getLocalizedString("invoice.RegularPaymentEntryID","Regular payment entry ID")+":"+regularPaymentEntry.getPrimaryKey());
+				errorRelated.append(getLocalizedString("invoice.Placing","Placing")+":"+regularPaymentEntry.getPlacing());
+				errorRelated.append(getLocalizedString("invoice.Amount","Amount")+":"+regularPaymentEntry.getAmount());
 //				errorRelated.append("School: "+regularPaymentEntry.getSchool());
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				school = regularPaymentEntry.getSchool();
@@ -789,10 +796,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting(), placementTimes.getMonths(), school, regularPaymentEntry.getNote());
 					createVATPaymentRecord(paymentRecord,postingDetail,placementTimes.getMonths(),school,regularPaymentEntry.getSchoolType(),null);
 				} catch (IDOLookupException e) {
-					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.IDOLookup");
+					createNewErrorMessage(regularPaymentEntry.toString(), getLocalizedString("invoice.IDOLookupException","IDOLookup Exception"));
 					e.printStackTrace();
 				} catch (CreateException e) {
-					createNewErrorMessage(regularPaymentEntry.toString(), "regularPayment.Create");
+					createNewErrorMessage(regularPaymentEntry.toString(), getLocalizedString("invoice.CreateException","Create Exception"));
 					e.printStackTrace();
 				}
 				if(!running){
@@ -802,16 +809,16 @@ public class InvoiceChildcareThread extends BillingThread{
 		}catch (FinderException e) {
 			e.printStackTrace();
 			if (postingDetail != null) {
-				createNewErrorMessage(postingDetail.getTerm(), "payment.DBSetupProblem");
+				createNewErrorMessage(postingDetail.getTerm(), getLocalizedString("invoice.FinderException","Finder Exception"));
 			}
 			else {
-				createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+				createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"), getLocalizedString("invoice.FinderException","Finder Exception"));
 			}
 		} catch (IDOLookupException e) {
-			createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+			createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"), getLocalizedString("invoice.IDOLookupException","IDOLookup Exception"));
 			e.printStackTrace();
 		} catch (RemoteException e) {
-			createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+			createNewErrorMessage(getLocalizedString("invoice.severeError","Severe error"), getLocalizedString("invoice.RemoteException","Remote Exception"));
 			e.printStackTrace();
 		}
 	}
@@ -849,8 +856,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
 		invoiceRecord.setInvoiceText2(text2);
-		errorRelated.append("Created invoice for check "
-												+" Invoiceheader: "+invoiceHeader.getPrimaryKey());
+//		errorRelated.append("Created invoice for check Invoiceheader: "+invoiceHeader.getPrimaryKey());
 		//set the reference to payment record (utbetalningsposten)
 		invoiceRecord.setPaymentRecord(paymentRecord);
 		return createInvoiceRecordSub(invoiceRecord, ownPosting, doublePosting, placementTimes, school, contract);
