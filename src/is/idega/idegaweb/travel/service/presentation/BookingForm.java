@@ -3682,11 +3682,11 @@ public abstract class BookingForm extends TravelManager{
 
 				}
 
-//			}catch(CreditCardAuthorizationException e) {
-//				//e.printStackTrace(System.err);
-//				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", merchant, e, price, currency);
-//				
-//				throw new CreditCardAuthorizationException(e.getLocalizedMessage(iwrb));
+			}catch(CreditCardAuthorizationException e) {
+				//e.printStackTrace(System.err);
+				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", merchant, e, price, currency);
+				
+				throw new CreditCardAuthorizationException(e.getLocalizedMessage(iwrb));
 			}catch (Exception e) {
 				e.printStackTrace(System.err);
 				//				throw new TPosException(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
