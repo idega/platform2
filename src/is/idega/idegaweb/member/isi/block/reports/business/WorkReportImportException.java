@@ -14,6 +14,7 @@ public class WorkReportImportException extends Exception {
 	private String _col = null;
 	private String _row = null;
 	private String _detail = null;
+	private static String EXCEL_COLUMN_NAMES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
 	public WorkReportImportException() {
 		super();
@@ -34,7 +35,7 @@ public class WorkReportImportException extends Exception {
 	}
 
 	public WorkReportImportException(String message, int row, int col, String detail) {
-		this(message,Integer.toString(row),Integer.toString(col),detail);	
+	    this(message,Integer.toString(row),col<26?EXCEL_COLUMN_NAMES.substring(col-1,col):Integer.toString(col),detail);	
 	}
 	
 	public String getColumnForError() {
