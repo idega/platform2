@@ -2,7 +2,6 @@ package se.idega.idegaweb.commune.business;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
-
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -10,17 +9,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.user.data.Citizen;
 import se.idega.idegaweb.commune.user.data.CitizenHome;
-
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
@@ -49,7 +45,6 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.business.UserBusinessBean;
-import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
@@ -1033,12 +1028,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 */
 	public boolean setUserAsDeceased(Integer userID,Date deceasedDate){
 		try {
-			UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
-			userStatusService.setUserAsDeceased(userID,deceasedDate);
+//			UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
+//			userStatusService.setUserAsDeceased(userID,deceasedDate);
 			// remove custodian relations
 			MemberFamilyLogic familyService = getMemberFamilyLogic();
 			User deceasedUser = getUser(userID);
-			familyService.removeAllFamilyRelationsForUser(deceasedUser);
+			familyService.registerAsDeceased(deceasedUser, deceasedDate);
+//			familyService.removeAllFamilyRelationsForUser(deceasedUser);
+
 			/* Replaced with "familyService.removeAllFamilyRelationsForUser(deceasedUser);"
 			try {
 				Collection custodyChildren = familyService.getChildrenInCustodyOf(deceasedUser);

@@ -1,45 +1,230 @@
 package is.idega.idegaweb.member.business;
 
+import java.rmi.RemoteException;
+import java.util.*;
+import javax.ejb.*;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.*;
 
-public interface MemberFamilyLogic extends com.idega.business.IBOService
-{
- public java.lang.String getChildRelationType() throws java.rmi.RemoteException;
- public java.util.Collection getChildrenFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoChildrenFound,java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getChildrenInCustodyOf(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoChildrenFound,java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.user.data.User getCohabitantFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoCohabitantFound, java.rmi.RemoteException;
- public java.lang.String getCohabitantRelationType() throws java.rmi.RemoteException;
- public java.lang.String getCustodianRelationType() throws java.rmi.RemoteException;
- public java.util.Collection getCustodiansFor(com.idega.user.data.User p0,boolean p1)throws is.idega.idegaweb.member.business.NoCustodianFound,java.rmi.RemoteException, java.rmi.RemoteException;
- public java.util.Collection getCustodiansFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoCustodianFound,java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getParentRelationType() throws java.rmi.RemoteException;
- public java.util.Collection getParentsFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoParentFound,java.rmi.RemoteException, java.rmi.RemoteException;
- public java.lang.String getSiblingRelationType() throws java.rmi.RemoteException;
- public java.util.Collection getSiblingsFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoSiblingFound,java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.user.data.User getSpouseFor(com.idega.user.data.User p0)throws is.idega.idegaweb.member.business.NoSpouseFound, java.rmi.RemoteException;
- public java.lang.String getSpouseRelationType() throws java.rmi.RemoteException;
- public com.idega.user.business.UserBusiness getUserBusiness()throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean hasPersonGotChildren(com.idega.user.data.User p0) throws java.rmi.RemoteException;
- public boolean hasPersonGotCohabitant(com.idega.user.data.User p0) throws java.rmi.RemoteException;
- public boolean hasPersonGotSiblings(com.idega.user.data.User p0) throws java.rmi.RemoteException;
- public boolean hasPersonGotSpouse(com.idega.user.data.User p0) throws java.rmi.RemoteException;
- public boolean isChildInCustodyOf(com.idega.user.data.User p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean isChildOf(com.idega.user.data.User p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean isCohabitantOf(com.idega.user.data.User p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean isCustodianOf(com.idega.user.data.User p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean isParentOf(com.idega.user.data.User p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean isSiblingOf(com.idega.user.data.User p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public boolean isSpouseOf(com.idega.user.data.User p0,com.idega.user.data.User p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeAllFamilyRelationsForUser(com.idega.user.data.User p0)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeAsChildFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeAsCohabitantFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeAsCustodianFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeAsParentFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeAsSiblingFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void removeAsSpouseFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void setAsChildFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void setAsCohabitantFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void setAsCustodianFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void setAsParentFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void setAsSiblingFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public void setAsSpouseFor(com.idega.user.data.User p0,com.idega.user.data.User p1)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
+
+/**
+ * @author Joakim
+ *
+ */
+public interface MemberFamilyLogic {
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getChildrenFor
+	 */
+	public Collection getChildrenFor(User user) throws NoChildrenFound, RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getChildrenInCustodyOf
+	 */
+	public Collection getChildrenInCustodyOf(User user) throws NoChildrenFound, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getSiblingsFor
+	 */
+	public Collection getSiblingsFor(User user) throws NoSiblingFound, RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getSpouseFor
+	 */
+	public User getSpouseFor(User user) throws NoSpouseFound, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getCohabitantFor
+	 */
+	public User getCohabitantFor(User user) throws NoCohabitantFound, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getCustodiansFor
+	 */
+	public Collection getCustodiansFor(User user, boolean returnParentsIfNotFound) throws NoCustodianFound,
+			RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getCustodiansFor
+	 */
+	public Collection getCustodiansFor(User user) throws NoCustodianFound, RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getParentsFor
+	 */
+	public Collection getParentsFor(User user) throws NoParentFound, RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#hasPersonGotChildren
+	 */
+	public boolean hasPersonGotChildren(User person) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#hasPersonGotSpouse
+	 */
+	public boolean hasPersonGotSpouse(User person) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#hasPersonGotCohabitant
+	 */
+	public boolean hasPersonGotCohabitant(User person) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#hasPersonGotSiblings
+	 */
+	public boolean hasPersonGotSiblings(User person) throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#isChildOf
+	 */
+	public boolean isChildOf(User childToCheck, User parent) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#isChildInCustodyOf
+	 */
+	public boolean isChildInCustodyOf(User childToCheck, User parent) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#isParentOf
+	 */
+	public boolean isParentOf(User parentToCheck, User child) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#isCustodianOf
+	 */
+	public boolean isCustodianOf(User custodianToCheck, User child) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#isSpouseOf
+	 */
+	public boolean isSpouseOf(User personToCheck, User relatedPerson) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#isCohabitantOf
+	 */
+	public boolean isCohabitantOf(User personToCheck, User relatedPerson) throws RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#isSiblingOf
+	 */
+	public boolean isSiblingOf(User personToCheck, User relatedPerson) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#setAsChildFor
+	 */
+	public void setAsChildFor(User personToSet, User parent) throws CreateException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#setAsParentFor
+	 */
+	public void setAsParentFor(User parent, User child) throws CreateException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#setAsCustodianFor
+	 */
+	public void setAsCustodianFor(User custodian, User child) throws CreateException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#setAsSpouseFor
+	 */
+	public void setAsSpouseFor(User personToSet, User relatedPerson) throws CreateException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#setAsCohabitantFor
+	 */
+	public void setAsCohabitantFor(User personToSet, User relatedPerson) throws CreateException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#setAsSiblingFor
+	 */
+	public void setAsSiblingFor(User personToSet, User relatedPerson) throws CreateException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#removeAsChildFor
+	 */
+	public void removeAsChildFor(User personToSet, User parent) throws RemoveException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#removeAsParentFor
+	 */
+	public void removeAsParentFor(User parent, User child) throws RemoveException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#removeAsCustodianFor
+	 */
+	public void removeAsCustodianFor(User custodian, User child) throws RemoveException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#removeAsSpouseFor
+	 */
+	public void removeAsSpouseFor(User personToSet, User relatedPerson) throws RemoveException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#removeAsCohabitantFor
+	 */
+	public void removeAsCohabitantFor(User personToSet, User relatedPerson) throws RemoveException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#removeAsSiblingFor
+	 */
+	public void removeAsSiblingFor(User personToSet, User relatedPerson) throws RemoveException, RemoteException,
+			java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getChildRelationType
+	 */
+	public String getChildRelationType() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getParentRelationType
+	 */
+	public String getParentRelationType() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getSiblingRelationType
+	 */
+	public String getSiblingRelationType() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getSpouseRelationType
+	 */
+	public String getSpouseRelationType() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getCohabitantRelationType
+	 */
+	public String getCohabitantRelationType() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getCustodianRelationType
+	 */
+	public String getCustodianRelationType() throws java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#getUserBusiness
+	 */
+	public UserBusiness getUserBusiness() throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#registerAsDeceased
+	 */
+	public void registerAsDeceased(User user, Date deceasedDate) throws RemoteException, java.rmi.RemoteException;
+
+	/**
+	 * @see is.idega.idegaweb.member.business.MemberFamilyLogicBean#removeAllFamilyRelationsForUser
+	 */
+	public void removeAllFamilyRelationsForUser(User user) throws RemoteException, java.rmi.RemoteException;
 }

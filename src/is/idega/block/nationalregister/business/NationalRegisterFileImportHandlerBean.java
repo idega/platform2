@@ -1,6 +1,7 @@
 package is.idega.block.nationalregister.business;
 
 import is.idega.block.nationalregister.data.NationalRegister;
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.business.MemberFamilyLogicBean;
 import is.idega.idegaweb.member.business.NoChildrenFound;
 import is.idega.idegaweb.member.business.NoCustodianFound;
@@ -20,6 +21,7 @@ import javax.ejb.RemoveException;
 import com.idega.block.importer.business.ImportFileHandler;
 import com.idega.block.importer.data.ImportFile;
 import com.idega.block.importer.presentation.Importer;
+import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
@@ -366,6 +368,8 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	 */
 	private void removeTerminatedRelations(MemberFamilyLogicBean memFamLog, User user, Relations rel) throws RemoteException, RemoveException {
 		//remove spouse
+		System.out.println("Relations to be removed:");
+		rel.dumpInfo();
 		if(null!=rel.spouse){
 			memFamLog.removeAsSpouseFor(user, rel.spouse);
 		}
@@ -413,6 +417,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 				return;
 			}
 		}
+		System.out.println("new spouse relation: "+user1.getName()+" ; "+user2.getName());
 		familyLogic.setAsSpouseFor(user1, user2); //Both are parents
 		
 	}
@@ -424,6 +429,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			rel2.parent.remove(user1);
 			return;
 		}
+		System.out.println("new parent relation parent: "+user1.getName()+" ; Child :"+user2.getName());
 		familyLogic.setAsParentFor(user1, user2); //User1 is parent; user2 is child
 	}
 	
@@ -433,6 +439,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			rel2.hasCustodian.remove(user1);
 			return;
 		}
+		System.out.println("new custodian relation custodian: "+user1.getName()+" ; Child :"+user2.getName());
 		familyLogic.setAsCustodianFor(user1, user2);
 	}
 	
@@ -442,6 +449,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			rel2.sibling.remove(user1);
 			return;
 		}
+		System.out.println("new sibling relation: "+user1.getName()+" ; "+user2.getName());
 		familyLogic.setAsSiblingFor(user1, user2);	//Both are children
 	}
 	
@@ -451,6 +459,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			rel2.child.remove(user1);
 			return;
 		}
+		System.out.println("new child relation child: "+user1.getName()+" ; Parent :"+user2.getName());
 		familyLogic.setAsChildFor(user1, user2);
 	}
 	
@@ -603,7 +612,23 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
 
 		if(FATE_DECEASED.equalsIgnoreCase(fate)){
-			//TODO (JJ) Handle the dead
+			User user;
+			try {
+				user = uBiz.getUser(ssn);
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+				return false;
+			}
+			MemberFamilyLogic familyService = getMemberFamilyLogic();
+			IWTimestamp dom = new IWTimestamp();
+			if (dateOfModification != null) {
+				dom = new IWTimestamp(dateOfModification);
+			}
+			else {
+				dom = IWTimestamp.RightNow();
+			}
+			familyService.registerAsDeceased(user, dom.getDate());
 		}
 		
 		if(FATE_CHANGE_PERSONAL_ID.equalsIgnoreCase(fate)){
@@ -698,4 +723,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	public List getFailedRecords() throws RemoteException {
 		return _failedRecords;
 	}
+
+	public MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
+	}
+
 }

@@ -1,17 +1,19 @@
 package is.idega.idegaweb.member.business;
 
-
-public class MemberFamilyLogicHomeImpl extends com.idega.business.IBOHomeImpl implements MemberFamilyLogicHome
-{
- protected Class getBeanInterfaceClass(){
-  return MemberFamilyLogic.class;
- }
+import com.idega.business.IBOHomeImpl;
 
 
- public MemberFamilyLogic create() throws javax.ejb.CreateException{
-  return (MemberFamilyLogic) super.createIBO();
- }
+/**
+ * @author Joakim
+ *
+ */
+public class MemberFamilyLogicHomeImpl extends IBOHomeImpl implements MemberFamilyLogicHome {
 
+	protected Class getBeanInterfaceClass() {
+		return MemberFamilyLogicHomeImpl.class;
+	}
 
-
+	public MemberFamilyLogic create() throws javax.ejb.CreateException {
+		return (MemberFamilyLogic) super.createIBO();
+	}
 }

@@ -1,8 +1,13 @@
 package is.idega.idegaweb.member.business;
 
+import com.idega.business.IBOHome;
 
-public interface MemberFamilyLogicHome extends com.idega.business.IBOHome
-{
- public MemberFamilyLogic create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 
+/**
+ * @author Joakim
+ *
+ */
+public interface MemberFamilyLogicHome extends IBOHome {
+
+	public MemberFamilyLogic create() throws javax.ejb.CreateException, java.rmi.RemoteException;
 }

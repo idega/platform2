@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserStatusBusiness;
 import com.idega.user.data.*;
 
 /**
@@ -520,6 +521,12 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 
 	public UserBusiness getUserBusiness()throws RemoteException{
 		return (UserBusiness)this.getServiceInstance(UserBusiness.class);	
+	}
+	
+	public void registerAsDeceased(User user, Date deceasedDate) throws RemoteException {
+		removeAllFamilyRelationsForUser(user);
+		UserStatusBusiness userStatusService = (UserStatusBusiness)getServiceInstance(UserStatusBusiness.class);
+		userStatusService.setUserAsDeceased(user.getIDInteger(),deceasedDate);
 	}
 	
 	public void removeAllFamilyRelationsForUser(User user) throws RemoteException{
