@@ -1,5 +1,9 @@
 package se.idega.idegaweb.commune.message.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.util.IWTimestamp;
 
 
@@ -16,8 +20,12 @@ public interface PrintedLetterMessageHome extends PrintMessageHome
  public java.util.Collection findUnPrintedDefaultLetters()throws javax.ejb.FinderException;
  public java.util.Collection findPrintedLettersByType(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findUnPrintedLettersByType(java.lang.String p0)throws javax.ejb.FinderException;
-  public java.util.Collection findPrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException;
+ public java.util.Collection findPrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException;
+ public java.util.Collection findSinglePrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException;
  public java.util.Collection findUnPrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException;
+ public java.util.Collection findSingleUnPrintedLettersByType(java.lang.String p0,IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException;
+ public Collection findByBulkFile(int file,String letterType, String status) throws FinderException ;
+ public Collection findSingleByTypeAndStatus(String letterType,String status,IWTimestamp from, IWTimestamp to) throws FinderException ;
  public int getNumberOfPrintedDefaultLetters();
  public int getNumberOfUnPrintedDefaultLetters();
  public int getNumberOfPrintedPasswordLetters();

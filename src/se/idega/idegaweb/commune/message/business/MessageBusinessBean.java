@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.34 2003/02/26 15:01:26 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.35 2003/03/06 01:25:44 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -277,6 +277,15 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			throw new IBORuntimeException(e);
 		}
 	}
+	
+	public Collection getSinglePrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
+			try{	
+				return getPrintedLetterMessageHome().findSinglePrintedLettersByType(type,from,to);	
+			}
+			catch(RemoteException e){
+				throw new IBORuntimeException(e);
+			}
+		}
 	/**
 	 * @return Collection of PrintedLetterMessage that have not been printed
 	 */	
@@ -313,6 +322,33 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 	}
 	
+	public Collection getSingleUnPrintedLetterMessagesByType(String type,IWTimestamp from,IWTimestamp to)throws FinderException{
+			try{	
+				return getPrintedLetterMessageHome().findSingleUnPrintedLettersByType(type,from,to);	
+			}
+			catch(RemoteException e){
+				throw new IBORuntimeException(e);
+			}
+		}
+		
+	public Collection getSingleLettersByTypeAndStatus(String type,String status,IWTimestamp from,IWTimestamp to)throws FinderException{
+		try{	
+			return getPrintedLetterMessageHome().findSingleByTypeAndStatus(type,status,from,to);	
+		}
+		catch(RemoteException e){
+			throw new IBORuntimeException(e);
+		}
+	}
+	
+	public Collection getLettersByBulkFile(int file, String type , String status)throws FinderException{
+		try{	
+			return getPrintedLetterMessageHome().findByBulkFile(file,type,status);	
+		}
+		catch(RemoteException e){
+			throw new IBORuntimeException(e);
+		}
+	}
+	
 	/**
 	 * Mark the status of the message so that it is printed.
 	 * @param performer The User that makes the change
@@ -327,6 +363,27 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		String newCaseStatus=getCaseStatusReady().getStatus();
 		super.changeCaseStatus(message,newCaseStatus,performer);
 	}
+	
+	public void flagMessageAsInactive(User performer,Message message)throws RemoteException{
+		String newCaseStatus=getCaseStatusInactive().getStatus();
+		super.changeCaseStatus(message,newCaseStatus,performer);
+	}
+	
+	public void flagMessagesAsInactive(User performer, String[] msgKeys)throws RemoteException,FinderException{
+		String newCaseStatus=getCaseStatusInactive().getStatus();
+		flagMessagesWithStatus(performer,msgKeys,newCaseStatus);
+	}
+	
+	public void  flagMessageWithStatus(User performer,Message message,String status) throws RemoteException{
+		super.changeCaseStatus(message,status,performer);
+	}
+	
+	public void flagMessagesWithStatus(User performer, String[] msgKeys,String status)throws RemoteException,FinderException{
+			for (int i = 0; i < msgKeys.length; i++) {
+				super.changeCaseStatus( Integer.parseInt(msgKeys[i]),status,performer);
+			}
+		}
+	
 
 	public Message createPrintArchivationMessage(User user, String subject, String body) throws CreateException, RemoteException {
 		Message message = createMessage(getTypeArchivationMessage(), user, subject, body);
