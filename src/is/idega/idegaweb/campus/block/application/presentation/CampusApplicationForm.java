@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.12 2002/05/17 15:17:34 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.13 2002/06/12 16:24:51 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -62,7 +62,7 @@ public class CampusApplicationForm extends ApplicationForm {
    */
   protected void control(IWContext iwc) {
     debugParameters(iwc);
-		_iwb = getBundle(iwc);
+    _iwb = getBundle(iwc);
     List wrongParameters = new Vector();
     String statusString = iwc.getParameter(APP_STATUS);
     int status = 0;
@@ -104,7 +104,6 @@ public class CampusApplicationForm extends ApplicationForm {
       wrongParameters = checkCampusInfo(iwc);
       if(wrongParameters.size()>0){
         addStage(2);
-        CampusApplicationFormHelper.saveApplicantInformation(iwc);
         doCampusInformation(iwc,wrongParameters);
       }
       else{
@@ -602,7 +601,8 @@ public class CampusApplicationForm extends ApplicationForm {
     Form form = new Form();
     DataTable t = new DataTable();
     BackButton back = new BackButton(_iwrb.getImage("back.gif"));
-    SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif",_iwrb.getLocalizedString("ok","áfram")));
+    SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif",_iwrb.getLocalizedString("okk","áfram")));
+    ok.setName("ok");
 
     String heading = _iwrb.getLocalizedString(APP_GENINFO,"General information about applicant");
     String firstNameLabel = _iwrb.getLocalizedString(APP_FIRST_NAME,"First name");
@@ -733,17 +733,25 @@ public class CampusApplicationForm extends ApplicationForm {
     //t.add(_required,1,row);
     t.add(mobile,2,row);
     row++;
+    CheckBox acceptance = new CheckBox("acceptor");
+
+    Text disclaimer = Edit.formatText(_iwrb.getLocalizedString("disclaimer","Umsækjandi heimilar Stúdentagörðum að sækja upplýsingar um skráningu eða námsframvindu til Háskóla Íslands, eignarstöðu fasteigna til Fasteignarmats ríkisins og fjölskyldustærð eða barnafjölda til Hagstofu Íslands."));
+    t.add(acceptance,1,row);
+    Text accReq = (Text) _required.clone();
+    if(wrongParameters.contains("acceptor")){
+      accReq.setFontColor("#ff0000");
+      accReq.setText("  *  ");
+    }
+    t.add(accReq,1,row);
+    t.add(disclaimer,2,row);
+
     t.addButton(ok);
 
-    form.add(t);
-    form.add(Text.getBreak());
-    form.add(Text.getBreak());
-    form.add(Text.getBreak());
-    form.add(_info);
-    form.add(Text.getBreak());
-    form.add(Text.getBreak());
-    Text disclaimer = Edit.formatText(_iwrb.getLocalizedString("disclaimer","Umsækjandi heimilar Stúdentagörðum að sækja upplýsingar um skráningu eða námsframvindu til Háskóla Íslands, eignarstöðu fasteigna til Fasteignarmats ríkisins og fjölskyldustærð eða barnafjölda til Hagstofu Íslands."));
-    form.add(disclaimer);
+    Table frame = new Table(1,4);
+
+    frame.add(t,1,1);
+    frame.add(_info,1,4);
+    form.add(frame);
     form.add(new HiddenInput(APP_STATUS,Integer.toString(_statusGeneralInfo)));
     add(form);
   }
@@ -757,6 +765,7 @@ public class CampusApplicationForm extends ApplicationForm {
     String res = iwc.getParameter(APP_RESIDENCE);
     String phone = iwc.getParameter(APP_PHONE);
     String zip = iwc.getParameter(APP_PO);
+    String accept = iwc.getParameter("acceptor");
     if(first == null || first.length()==0)
       wrongParameters.add(APP_FIRST_NAME);
     if(last == null || last.length()==0)
@@ -771,6 +780,9 @@ public class CampusApplicationForm extends ApplicationForm {
       wrongParameters.add(APP_PHONE);
     if(zip == null || zip.length()==0)
       wrongParameters.add(APP_PO);
+    if(accept==null)
+      wrongParameters.add("acceptor");
+
 
     return wrongParameters;
   }
