@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.32 2004/02/18 17:13:19 aron Exp $
+ * $Id: PostingParameterList.java,v 1.33 2004/02/24 18:25:22 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -48,10 +48,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.32 2004/02/18 17:13:19 aron Exp $
+ * $Id: PostingParameterList.java,v 1.33 2004/02/24 18:25:22 aron Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.32 $
+ * @version $Revision: 1.33 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -306,7 +306,7 @@ public class PostingParameterList extends AccountingBlock {
 		
 		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "Huvudverksamhet"), 1, 1);
 		table.add(new OperationalFieldsMenu(), 2, 1);
-		table.add(getLocalizedLabel(KEY_HEADER_SORT_BY, "Sortera pa"), 3, 1);
+		//table.add(getLocalizedLabel(KEY_HEADER_SORT_BY, "Sortera pa"), 3, 1);
 		
 		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 2);
 		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 2);
