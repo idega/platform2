@@ -38,19 +38,17 @@ public class ReportsDaemonBundleStarter implements IWBundleStartable, ActionList
 	public ReportsDaemonBundleStarter() {
 	}
 
-	public void start(IWBundle bundle) {
-		return;
-		
-//		System.out.println("Entering start method in ATVR Reports Deamon");
-//		_bundle = bundle;
-////		_timer = new EventTimer(EventTimer.THREAD_SLEEP_1_HOUR, TIMER_THREAD_NAME);
-////		_timer = new EventTimer(EventTimer.THREAD_SLEEP_10_SECONDS, TIMER_THREAD_NAME);
+	public void start(IWBundle bundle) {		
+		System.out.println("Entering start method in ATVR Reports Deamon");
+		_bundle = bundle;
+		_timer = new EventTimer(EventTimer.THREAD_SLEEP_1_HOUR, TIMER_THREAD_NAME);
+//		_timer = new EventTimer(EventTimer.THREAD_SLEEP_10_SECONDS, TIMER_THREAD_NAME);
 //	_timer = new EventTimer(EventTimer.THREAD_SLEEP_5_MINUTES, TIMER_THREAD_NAME);
-//		_timer.addActionListener(this);
-//		//Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
-//		// -- Fix for working properly on Interebase with entity-auto-create-on.
-//		_timer.start(3 * 60 * 1000);
-//		System.out.println("ATVR Reports Daemon Bundle Starter: starting");
+		_timer.addActionListener(this);
+		//Starts the thread while waiting for 3 mins. before the idegaWebApp starts up.
+		// -- Fix for working properly on Interebase with entity-auto-create-on.
+		_timer.start(3 * 60 * 1000);
+		System.out.println("ATVR Reports Daemon Bundle Starter: starting");
 	}
 
 	public void actionPerformed(ActionEvent event) {
