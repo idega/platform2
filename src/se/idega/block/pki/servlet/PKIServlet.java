@@ -349,8 +349,8 @@ public class PKIServlet extends HttpServlet
 			+ result.getSignatureHost()
 			+ " IP: "
 			+ result.getSignatureIP()
-			+ " Nonce: "
-			+ result.getSignatureNonce();
+			+ " Nonce: ";
+//			+ result.getSignatureNonce();
 	}
 
 	/**

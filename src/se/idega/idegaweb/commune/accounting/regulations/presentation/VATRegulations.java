@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.2 2003/08/18 13:09:26 anders Exp $
+ * $Id: VATRegulations.java,v 1.3 2003/08/18 14:45:16 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,24 +20,24 @@ import se.idega.idegaweb.commune.presentation.ListTable;
  * VATRegulations is an idegaWeb block that handles VAT values and
  * regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/18 13:09:26 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/18 14:45:16 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class VATRegulations extends CommuneBlock {
 
 	private final static int ACTION_DEFAULT = 0;
 	
-	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.accounting";
 
-	private final static String KEY_PREFIX = "xxx."; 
+	private final static String KEY_PREFIX = "vat_regulations."; 
 	
-	private final static String KEY_PERIOD = "period";
-	private final static String KEY_DESCRIPTION = "description";
-	private final static String KEY_VAT_PERCENT = "vat_percent";
-	private final static String KEY_DIRECTION = "direction";
-	private final static String KEY_PROVIDER_TYPE = "provider_type";
+	private final static String KEY_PERIOD = KEY_PREFIX + "period";
+	private final static String KEY_DESCRIPTION = KEY_PREFIX + "description";
+	private final static String KEY_VAT_PERCENT = KEY_PREFIX + "vat_percent";
+	private final static String KEY_DIRECTION = KEY_PREFIX + "direction";
+	private final static String KEY_PROVIDER_TYPE = KEY_PREFIX + "provider_type";
 
 	/**
 	 * Handles all of the blocks presentation.
@@ -86,7 +86,7 @@ public class VATRegulations extends CommuneBlock {
 	/*
 	 * Returns the VATList
 	 */
-	private Table getVATList() {
+	private ListTable getVATList() {
 		ListTable list = new ListTable(this, 5);
 		list.setHeader(localize(KEY_PERIOD, "Period"), 1);
 		list.setHeader(localize(KEY_DESCRIPTION, "Benämning"), 2);
@@ -110,7 +110,6 @@ public class VATRegulations extends CommuneBlock {
 		list.add("Ut");
 		list.add("Privat");
 		
-		list.build();
 		return list;
 	}
 }
