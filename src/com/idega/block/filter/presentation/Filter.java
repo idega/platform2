@@ -8,17 +8,17 @@ import com.idega.presentation.PresentationObjectContainer;
  * wheter a user is loged on or not. If none of the properties defined can be used to decide to hide a block, it is shown by default.
  */
 public class Filter extends PresentationObjectContainer {
-	/** If true, show contained block only if a user is loged on. If false, show contained block only if no user is loged. 
+	/** If true, hide contained block only if a user is not loged on. If false, hide contained block only if user is loged. 
 	 *  If null show/hide is determined by other means.
 	 */
 	private Boolean _showOnUserLoged = null;
 	
-	/** If given request parameter has value <code>true</code> then show contained block, if value is <code>false</code> hide it. 
+	/** If given request parameter has value <code>true</code> then show contained block, otherwise hide it. 
 	 *  If null show/hide is determined by other means. 
 	 */
 	private String _showParameter = null;
 	
-	/** Wheter the contets of this Filter is shown or not. */
+	/** Wheter the contents of this Filter is shown or not. */
 	private boolean _show = true;
 	
 	public void _main(IWContext iwc) throws Exception {
