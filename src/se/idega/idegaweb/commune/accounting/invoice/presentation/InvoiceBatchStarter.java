@@ -68,7 +68,7 @@ public class InvoiceBatchStarter extends AccountingBlock{
 				if(date!=null){
 					readDateInput.setDate(new IWTimestamp(date).getDate());
 				}else{
-					monthInput.setToCurrentDate();
+					readDateInput.setToCurrentDate();
 				}
 				readDateInput.setToDisplayDayLast(true);
 
