@@ -23,12 +23,17 @@ import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.service.GolfGroup;
+import is.idega.idegaweb.golf.tournament.business.TournamentSession;
+import is.idega.idegaweb.golf.tournament.even.TournamentEventListener;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
@@ -139,12 +144,12 @@ public class HandicapOverview extends GolfBlock {
 		Scorecard[] scoreCardsBefore = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id = " + iMemberID + " and scorecard_date < '" + dates[0] + "' order by scorecard_date desc");
 
 		table = new Table();
-		table.setWidth("100%");
+		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setBorder(0);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
-		table.setRowAlignment(1, "center");
-		table.setRowVerticalAlignment(1, "bottom");
+		table.setRowAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setRowVerticalAlignment(1, Table.VERTICAL_ALIGN_BOTTOM);
 		int row = 2;
 
 		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.date", "Date")), 1, row);
@@ -160,13 +165,19 @@ public class HandicapOverview extends GolfBlock {
 
 		if (!isWindow) {
 			table.add(getSmallHeader(iwrb.getLocalizedString("handicap.scorecard", "Scorecard")), 11, row);
+			if (isAdmin) {
+				table.setWidth(11, row, 72);
+			}
+			else {
+				table.setWidth(11, row, 54);
+			}
 		}
 		table.setRowColor(row, getHeaderColor());
 		table.setRowPadding(row, getCellpadding());
-		table.setRowAlignment(row, "center");
+		table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_LEFT);
-		table.setRowVerticalAlignment(row++, "bottom");
+		table.setRowVerticalAlignment(row++, Table.VERTICAL_ALIGN_BOTTOM);
 
 		int basePoints = 36;
 		int zebraRow = 1;
@@ -291,7 +302,8 @@ public class HandicapOverview extends GolfBlock {
 						if (iTournamentPage != null) {
 							Link tournamentLink = getSmallLink(tournamentName);
 							tournamentLink.setPage(iTournamentPage);
-							tournamentLink.addParameter("tournament_id", tournament.getID());
+							tournamentLink.setEventListener(TournamentEventListener.class);
+							tournamentLink.addParameter(getTournamentSession(modinfo).getParameterNameTournamentID(), tournament.getID());
 							table.add(tournamentLink, 3, row);
 						}
 						else {
@@ -322,7 +334,7 @@ public class HandicapOverview extends GolfBlock {
 						table.add(getSmallText(TextSoap.singleDecimalFormat(String.valueOf(newBaseHandicap))), 10, row);
 					}
 
-					table.setRowAlignment(row, "center");
+					table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
 
 					GolfGroup golfGroup = new GolfGroup(iMemberID);
 					boolean canWrite = true;
@@ -381,23 +393,23 @@ public class HandicapOverview extends GolfBlock {
 
 						if (increase && !decrease) {
 							image = iwb.getImage("shared/handicap/up.gif");
-							image.setName(iwrb.getLocalizedString("handicap.increase", "Til hækkunar"));
-							image.setToolTip(iwrb.getLocalizedString("handicap.increase", "Til hækkunar"));
+							image.setName(iwrb.getLocalizedString("handicap.increase", "Handicap increase"));
+							image.setToolTip(iwrb.getLocalizedString("handicap.increase", "Handicap increase"));
 						}
 						else if (!increase && decrease) {
 							image = iwb.getImage("shared/handicap/down.gif");
-							image.setName(iwrb.getLocalizedString("handicap.decrease", "Til lækkunar"));
-							image.setToolTip(iwrb.getLocalizedString("handicap.decrease", "Til lækkunar"));
+							image.setName(iwrb.getLocalizedString("handicap.decrease", "Handicap decrease"));
+							image.setToolTip(iwrb.getLocalizedString("handicap.decrease", "Handicap decrease"));
 						}
 						else if (increase && decrease) {
 							image = iwb.getImage("shared/handicap/updown.gif");
-							image.setName(iwrb.getLocalizedString("handicap.increase_decrease", "Til hækkunar/lækkunar"));
-							image.setToolTip(iwrb.getLocalizedString("handicap.increase_decrease", "Til hækkunar/lækkunar"));
+							image.setName(iwrb.getLocalizedString("handicap.increase_decrease", "Handicap increase/decrease"));
+							image.setToolTip(iwrb.getLocalizedString("handicap.increase_decrease", "Handicap increase/decrease"));
 						}
 						else {
 							image = iwb.getImage("shared/handicap/nochange.gif");
-							image.setName(iwrb.getLocalizedString("handicap.no_change", "Engin áhrif á forgjöf"));
-							image.setToolTip(iwrb.getLocalizedString("handicap.no_change", "Engin áhrif á forgjöf"));
+							image.setName(iwrb.getLocalizedString("handicap.no_change", "No change to handicap"));
+							image.setToolTip(iwrb.getLocalizedString("handicap.no_change", "No change to handicap"));
 						}
 						image.setHorizontalSpacing(1);
 
@@ -411,7 +423,7 @@ public class HandicapOverview extends GolfBlock {
 				else {
 					mergedCells = true;
 					table.mergeCells(2, row, 8, row);
-					table.setRowAlignment(row, "center");
+					table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
 
 					Text updateText = getSmallText("- " + iwrb.getLocalizedString("handicap.handicap_correction", "Handicap correction") + " -");
 					Text handicapBefore = getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore()));
@@ -431,8 +443,8 @@ public class HandicapOverview extends GolfBlock {
 			}
 
 			table.setRowPadding(row, getCellpadding());
-			table.setRowVerticalAlignment(row, "middle");
-			table.setRowAlignment(row, "center");
+			table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_MIDDLE);
+			table.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setHeight(row, 20);
 			if (!mergedCells) {
 				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
@@ -440,6 +452,13 @@ public class HandicapOverview extends GolfBlock {
 			}
 			if (!isWindow) {
 				table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_LEFT);
+				table.setNoWrap(11, row);
+				if (isAdmin) {
+					table.setWidth(11, row, 72);
+				}
+				else {
+					table.setWidth(11, row, 54);
+				}
 			}
 			if (zebraRow % 2 != 0) {
 				table.setRowColor(row++, getZebraColor1());
@@ -448,19 +467,20 @@ public class HandicapOverview extends GolfBlock {
 				table.setRowColor(row++, getZebraColor2());
 			}
 			zebraRow++;
+			table.mergeCells(1, row, table.getColumns(), row);
 			table.setRowColor(row, "#B2B2B2");
 			table.setHeight(row++, 1);
 		}
 
 		if (!isWindow) {
 			table.mergeCells(1, 1, 11, 1);
-			table.setAlignment(1, 1, "right");
+			table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 			table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_MIDDLE);
-			table.setHeight(1, "40");
-			table.setHeight(2, "20");
+			table.setHeight(1, 40);
+			table.setHeight(2, 20);
 			getForm();
 
-			GenericButton print = getButton(new GenericButton("print", iwrb.getLocalizedString("handical.print", "print")));
+			GenericButton print = getButton(new GenericButton("print", iwrb.getLocalizedString("handicap.print", "Print")));
 			print.setWindowToOpen(HandicapOverviewWindow.class);
 			print.addParameterToWindow(HandicapOverviewWindow.PARAMETER_MEMBER_ID, iMemberID);
 			print.addParameterToWindow("start_date", modinfo.getParameter("start_date"));
@@ -472,8 +492,8 @@ public class HandicapOverview extends GolfBlock {
 			recalculate.addParameterToWindow(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_RECALCULATE_HANDICAP);
 
 			table.mergeCells(1, row, 11, row);
-			table.setAlignment(1, row, "right");
-			table.setHeight(row, "40");
+			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			table.setHeight(row, 40);
 			if (Integer.parseInt(this.iMemberID) > 1 && !noIcons) {
 				table.add(print, 1, row);
 				table.add(Text.getNonBrakingSpace(), 1, row);
@@ -481,7 +501,7 @@ public class HandicapOverview extends GolfBlock {
 				table.setCellpaddingRight(1, row, 5);
 			}
 			if (noIcons) {
-				table.setAlignment(1, 1, "left");
+				table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_LEFT);
 			}
 		}
 
@@ -554,94 +574,20 @@ public class HandicapOverview extends GolfBlock {
 		return dates;
 	}
 
-	private String formatDate(String date) {
-		String ReturnString = date.substring(8, 10);
-
-		ReturnString += "/" + date.substring(5, 7);
-		ReturnString += "/" + date.substring(2, 4);
-
-		return ReturnString;
-	}
-
-	private String getTeeColor(int teeColorID) throws IOException {
-		String litur = "";
-		switch (teeColorID) {
-			case 1 :
-				litur = "FFFFFF";
-				break;
-			case 2 :
-				litur = "FFFF00";
-				break;
-			case 3 :
-				litur = "5757FF";
-				break;
-			case 4 :
-				litur = "FF5757";
-				break;
-			case 5 :
-				litur = "5757FF";
-				break;
-			case 6 :
-				litur = "FF5757";
-				break;
-		}
-		return litur;
-	}
-
-	public void setHeaderColor(String headerColor) {
-		this.headerColor = headerColor;
-	}
-
-	public void setHeaderTextColor(String headerTextColor) {
-	}
-
-	//Bjarni added these methood 14.08.01
-	public void setTeeTextColor(String teeTextColor) {
-		isDefaultColors = false;
-		this.teeTextColor = teeTextColor;
-	}
-
-	/*
-	 * public setDefaultTeeTextColor(){ isDefaultColors = true;
-	 */
-
-	public void setHeaderTextProperties(Text textToClonePropertiesFrom) {
-	}
-
-	public void setTableTextProperties(Text textToClonePropertiesFrom) {
-	}
-
-	public void setTilFraTextProperties(Text textToClonePropertiesFrom) {
-	}
-
-	public void setTextLinkProperties(Link linkToClonePropertiesFrom) {
-	}
-
-	public void setViewScoreIconUrlInBundle(String viewScoreIconUrlInBundle) {
-	}
-
-	public void setGetOverviewButton(String getOverviewButtonImageUrlInBundle, String getOverviewButtonParameterName, String getOverviewButtonParameterValue) {
-		setDifferentOverviewButton = true;
-		this.getOverviewButtonImageUrlInBundle = getOverviewButtonImageUrlInBundle;
-		this.getOverviewButtonParameterName = getOverviewButtonParameterName;
-		this.getOverviewButtonParameterValue = getOverviewButtonParameterValue;
-	}
-
-	public void setFraPicture(String fraPictureUrlInBundle) {
-		isFraPicture = true;
-		this.fraPictureUrlInBundle = fraPictureUrlInBundle;
-	}
-
-	public void setTilPicture(String tilPictureUrlInBundle) {
-		isTilPicture = true;
-		this.tilPictureUrlInBundle = tilPictureUrlInBundle;
-	}
-
 	public void noIcons() {
 		this.noIcons = true;
 	}
 
 	public void setIsWindow(boolean isWindow) {
 		this.isWindow = isWindow;
+	}
+
+	private TournamentSession getTournamentSession(IWContext iwc) {
+		try {
+			return (TournamentSession) IBOLookup.getSessionInstance(iwc, TournamentSession.class);	
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 }

@@ -217,7 +217,7 @@ public class HandicapRegister extends GolfBlock {
 		myForm.add(new HiddenInput("number_of_holes", number_of_holes));
 		myForm.add(new HiddenInput("start_hole", start_hole));
 		myForm.add(new HiddenInput("statistics", stat));
-		SubmitButton submit = new SubmitButton("mode", iwrb.getLocalizedString("handicap.calculate", "Calculate"));
+		SubmitButton submit = (SubmitButton) getButton(new SubmitButton("mode", iwrb.getLocalizedString("handicap.calculate", "Calculate")));
 
 		int a = 2;
 
@@ -241,25 +241,17 @@ public class HandicapRegister extends GolfBlock {
 		myTable.setBorder(0);
 		myTable.setWidth("100%");
 		myTable.setColumnColor(12, "006600");
-		myTable.setCellpadding(1);
-		myTable.setCellspacing(1);
+		myTable.setCellpadding(getCellpadding());
+		myTable.setCellspacing(0);
 		myTable.setColor("#FFFFFF");
 
 		contentTable.add(myTable, 1, 2);
 		contentTable.add(submit, 1, 5);
 
-		Text grunn_forgjof = new Text(iwrb.getLocalizedString("handicap.handicap", "Handicap") + ": " + grunn2);
-		grunn_forgjof.setBold();
-		grunn_forgjof.setFontSize("3");
-		Text leik_forgjof = new Text(iwrb.getLocalizedString("handicap.course_handicap", "Course") + " " + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap") + ": " + String.valueOf(leik));
-		leik_forgjof.setBold();
-		leik_forgjof.setFontSize("3");
-		Text vallar_text = new Text(field_name + "&nbsp;&nbsp;&nbsp;&nbsp;");
-		vallar_text.setBold();
-		vallar_text.setFontSize("3");
-		Text uppl = new Text(scaleDecimals(String.valueOf(slope), 0) + " / " + scaleDecimals(String.valueOf(course_rating), 1));
-		uppl.setBold();
-		uppl.setFontSize("3");
+		Text grunn_forgjof = getHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap") + ": " + grunn2);
+		Text leik_forgjof = getHeader(iwrb.getLocalizedString("handicap.course_handicap", "Course") + " " + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap") + ": " + String.valueOf(leik));
+		Text vallar_text = getHeader(field_name + "&nbsp;&nbsp;&nbsp;&nbsp;");
+		Text uppl = getHeader(scaleDecimals(String.valueOf(slope), 0) + " / " + scaleDecimals(String.valueOf(course_rating), 1));
 
 		Table handicapTable = new Table();
 		handicapTable.setWidth("100%");
@@ -277,51 +269,19 @@ public class HandicapRegister extends GolfBlock {
 
 		myForm.add(contentTable);
 
-		Text hola = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.hole", "Hole"));
-		hola.setBold();
-		hola.setFontColor("FFFFFF");
-		hola.setFontSize(1);
-		Text lengd = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.length", "Length"));
-		lengd.setBold();
-		lengd.setFontSize(1);
-		Text par = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.par", "Par"));
-		par.setBold();
-		par.setFontSize(1);
-		Text forgjof = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.handicap", "Handicap"));
-		forgjof.setBold();
-		forgjof.setFontSize(1);
-		Text hogg = new Text();
-		hogg.setBold();
-		hogg.setText("&nbsp;" + iwrb.getLocalizedString("handicap.strokes", "Strokes"));
-		hogg.setFontSize(1);
-		Text punktar_text = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.points", "Points"));
-		punktar_text.setBold();
-		punktar_text.setFontSize(1);
-		Text ut = new Text(iwrb.getLocalizedString("handicap.out", "Out"));
-		ut.setBold();
-		ut.setFontColor("FFFFFF");
-		ut.setFontSize(1);
-		Text inn = new Text(iwrb.getLocalizedString("handicap.in", "In"));
-		inn.setBold();
-		inn.setFontColor("FFFFFF");
-		inn.setFontSize(1);
-		Text total = new Text(iwrb.getLocalizedString("handicap.total", "Total"));
-		total.setBold();
-		total.setFontColor("FFFFFF");
-		total.setFontSize(1);
-		Text average = new Text(iwrb.getLocalizedString("handicap.average", "Average"));
-		average.setBold();
-		average.setFontColor("FFFFFF");
-		average.setFontSize(1);
-		Text fairway_text = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.fairway", "Fairway"));
-		fairway_text.setBold();
-		fairway_text.setFontSize(1);
-		Text greens_text = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.gir", "GIR"));
-		greens_text.setBold();
-		greens_text.setFontSize(1);
-		Text putts_text = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.putts", "Putts"));
-		putts_text.setBold();
-		putts_text.setFontSize(1);
+		Text hola = getSmallHeader(iwrb.getLocalizedString("handicap.hole", "Hole"));
+		Text lengd = getSmallBoldText(iwrb.getLocalizedString("handicap.length", "Length"));
+		Text par = getSmallBoldText(iwrb.getLocalizedString("handicap.par", "Par"));
+		Text forgjof = getSmallBoldText(iwrb.getLocalizedString("handicap.handicap", "Handicap"));
+		Text hogg = getSmallBoldText(iwrb.getLocalizedString("handicap.strokes", "Strokes"));
+		Text punktar_text = getSmallBoldText(iwrb.getLocalizedString("handicap.points", "Points"));
+		Text ut = getSmallHeader(iwrb.getLocalizedString("handicap.out", "Out"));
+		Text inn = getSmallHeader(iwrb.getLocalizedString("handicap.in", "In"));
+		Text total = getSmallHeader(iwrb.getLocalizedString("handicap.total", "Total"));
+		Text average = getSmallHeader(iwrb.getLocalizedString("handicap.average", "Average"));
+		Text fairway_text = getSmallBoldText(iwrb.getLocalizedString("handicap.fairway", "Fairway"));
+		Text greens_text = getSmallBoldText(iwrb.getLocalizedString("handicap.gir", "GIR"));
+		Text putts_text = getSmallBoldText(iwrb.getLocalizedString("handicap.putts", "Putts"));
 
 		myTable.add(hola, 1, 1);
 		myTable.add(lengd, 1, 2);
@@ -360,15 +320,10 @@ public class HandicapRegister extends GolfBlock {
 			int hole_par = tee_id[b].getPar();
 			int hole_handicap = (int) tee_id[b].getHandicap();
 
-			Text hole_number_text = new Text(String.valueOf(hole_number));
-			hole_number_text.setFontColor("FFFFFF");
-			hole_number_text.setFontSize(1);
-			Text hole_length_text = new Text(String.valueOf(hole_length));
-			hole_length_text.setFontSize(1);
-			Text hole_par_text = new Text(String.valueOf(hole_par));
-			hole_par_text.setFontSize(1);
-			Text hole_handicap_text = new Text(String.valueOf(hole_handicap));
-			hole_handicap_text.setFontSize(1);
+			Text hole_number_text = getSmallHeader(String.valueOf(hole_number));
+			Text hole_length_text = getSmallText(String.valueOf(hole_length));
+			Text hole_par_text = getSmallText(String.valueOf(hole_par));
+			Text hole_handicap_text = getSmallText(String.valueOf(hole_handicap));
 
 			total_length += hole_length;
 			total_par += hole_par;
@@ -397,7 +352,7 @@ public class HandicapRegister extends GolfBlock {
 				}
 			}
 
-			TextInput myScore = new TextInput("hole_" + String.valueOf(hole_number));
+			TextInput myScore = (TextInput) getStyledInterface(new TextInput("hole_" + String.valueOf(hole_number)));
 			myScore.setLength(2);
 			myScore.setMaxlength(2);
 			myScore.keepStatusOnAction();
@@ -409,7 +364,6 @@ public class HandicapRegister extends GolfBlock {
 					myScore.setValue("X");
 				}
 			}
-			myScore.setStyleAttribute("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
 			myTable.add(myScore, a, skorid);
 
@@ -427,19 +381,11 @@ public class HandicapRegister extends GolfBlock {
 
 		myTable.setColumnAlignment(11, "center");
 
-		Text ut_length_text = new Text(String.valueOf(ut_length));
-		ut_length_text.setBold();
-		ut_length_text.setFontSize(1);
-		Text ut_par_text = new Text(String.valueOf(ut_par));
-		ut_par_text.setBold();
-		ut_par_text.setFontSize(1);
+		Text ut_length_text = getSmallBoldText(String.valueOf(ut_length));
+		Text ut_par_text = getSmallBoldText(String.valueOf(ut_par));
 
-		Text inn_length_text = new Text(String.valueOf(inn_length));
-		inn_length_text.setBold();
-		inn_length_text.setFontSize(1);
-		Text inn_par_text = new Text(String.valueOf(inn_par));
-		inn_par_text.setBold();
-		inn_par_text.setFontSize(1);
+		Text inn_length_text = getSmallBoldText(String.valueOf(inn_length));
+		Text inn_par_text = getSmallBoldText(String.valueOf(inn_par));
 
 		myTable.addText("", 12, 1);
 
@@ -460,16 +406,14 @@ public class HandicapRegister extends GolfBlock {
 			myTable.add(inn_par_text, 11, 3);
 		}
 
-		Text total_length_text = new Text(String.valueOf(total_length));
-		total_length_text.setFontSize(1);
-		Text total_par_text = new Text(String.valueOf(total_par));
-		total_par_text.setFontSize(1);
+		Text total_length_text = getSmallText(String.valueOf(total_length));
+		Text total_par_text = getSmallText(String.valueOf(total_par));
 
 		String litur = getTeeColor(Integer.parseInt(tee_number));
 
 		myTable.setColumnAlignment(12, "center");
-		myTable.setHorizontalZebraColored("99cc99", "8ab490");
-		myTable.setRowColor(1, "336666");
+		myTable.setHorizontalZebraColored(getZebraColor2(), getZebraColor1());
+		myTable.setRowColor(1, getHeaderColor());
 		myTable.setRowColor(2, litur);
 		myTable.addText("", 12, 1);
 		myTable.addText("", 12, 2);
@@ -478,7 +422,7 @@ public class HandicapRegister extends GolfBlock {
 		myTable.addText("", 12, 4);
 
 		if (haed == 12) {
-			myTable.setRowColor(7, "336666");
+			myTable.setRowColor(7, getHeaderColor());
 			myTable.setRowColor(8, litur);
 			myTable.addText("", 12, 8);
 			myTable.addText("", 12, 9);
@@ -550,8 +494,7 @@ public class HandicapRegister extends GolfBlock {
 
 					myForm.add(new HiddenInput("point_hole_" + String.valueOf(c), String.valueOf(punktar2)));
 
-					Text punktarText = new Text(punktar2 + "");
-					punktarText.setFontSize(1);
+					Text punktarText = getSmallText(punktar2 + "");
 
 					if (c <= 9) {
 						myTable.add(punktarText, c + 1, 6);
@@ -582,24 +525,12 @@ public class HandicapRegister extends GolfBlock {
 				heildarpunktar += 18;
 			}
 
-			Text heildar_skor = new Text(String.valueOf(total_skor));
-			heildar_skor.setBold();
-			heildar_skor.setFontSize(1);
-
-			Text innSkor = new Text(inn_skor + "");
-			innSkor.setFontSize(1);
-
-			Text innPunktar = new Text(inn_punktar + "");
-			innPunktar.setFontSize(1);
-
-			Text utSkor = new Text(ut_skor + "");
-			utSkor.setFontSize(1);
-
-			Text utPunktar = new Text(ut_punktar + "");
-			utPunktar.setFontSize(1);
-
-			Text heildarPunktar = new Text(heildarpunktar + "");
-			heildarPunktar.setFontSize(1);
+			Text heildar_skor = getSmallBoldText(String.valueOf(total_skor));
+			Text innSkor = getSmallText(inn_skor + "");
+			Text innPunktar = getSmallText(inn_punktar + "");
+			Text utSkor = getSmallText(ut_skor + "");
+			Text utPunktar = getSmallText(ut_punktar + "");
+			Text heildarPunktar = getSmallText(heildarpunktar + "");
 
 			if ((start_hole.equals("1") && number_of_holes.equals("9")) || number_of_holes.equals("18")) {
 				if (checker2 == true) {
@@ -631,10 +562,7 @@ public class HandicapRegister extends GolfBlock {
 			String nyForgjof2 = UpdateHandicap.reiknaHandicap(memberID, grunn, heildarpunktar);
 			nyForgjof2 = scaleDecimals(nyForgjof2, 1);
 
-			Text ny_forgjof = new Text(iwrb.getLocalizedString("handicap.new", "New") + " " + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap") + ": " + nyForgjof2);
-			ny_forgjof.setBold();
-			ny_forgjof.setItalic();
-			ny_forgjof.setFontSize("3");
+			Text ny_forgjof = getHeader(iwrb.getLocalizedString("handicap.new", "New") + " " + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap") + ": " + nyForgjof2);
 
 			// Ný fjorgjöf sett í form til vistunar
 			myForm.add(new HiddenInput("handicap", nyForgjof2));
@@ -648,20 +576,17 @@ public class HandicapRegister extends GolfBlock {
 		if (tournament) {
 			contentTable.setAlignment(1, 3, "right");
 
-			Text timeText = new Text("Tími: ");
-			timeText.setFontSize(1);
+			Text timeText = getSmallText("Tími: ");
 
-			TextInput hourInput = new TextInput("hour");
+			TextInput hourInput = (TextInput) getStyledInterface(new TextInput("hour"));
 			hourInput.setLength(2);
 			hourInput.setMaxlength(2);
 			hourInput.keepStatusOnAction();
-			hourInput.setStyleAttribute("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
-			TextInput minuteInput = new TextInput("minute");
+			TextInput minuteInput = (TextInput) getStyledInterface(new TextInput("minute"));
 			minuteInput.setLength(2);
 			minuteInput.setMaxlength(2);
 			minuteInput.keepStatusOnAction();
-			minuteInput.setStyleAttribute("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
 			if (isDate) {
 				hourInput.setValue(scoreDate.getHour());
@@ -670,7 +595,7 @@ public class HandicapRegister extends GolfBlock {
 
 			contentTable.add(timeText, 1, 3);
 			contentTable.add(hourInput, 1, 3);
-			contentTable.addText(": ", 1, 3);
+			contentTable.add(getSmallText(": "), 1, 3);
 			contentTable.add(minuteInput, 1, 3);
 			contentTable.addBreak(1, 3);
 		}
@@ -687,8 +612,8 @@ public class HandicapRegister extends GolfBlock {
 			statsTable.setWidth("100%");
 			statsTable.setBorder(0);
 			statsTable.setColor("#FFFFFF");
-			statsTable.setCellpadding(1);
-			statsTable.setCellspacing(1);
+			statsTable.setCellpadding(getCellpadding());
+			statsTable.setCellspacing(0);
 			statsTable.setColumnAlignment(11, "center");
 			statsTable.setColumnAlignment(12, "center");
 			statsTable.setColumnAlignment(13, "center");
@@ -726,8 +651,7 @@ public class HandicapRegister extends GolfBlock {
 				int par_three = tee_id[b - 1].getPar();
 				String tee_stats = String.valueOf(tee_id[b - 1].getID());
 
-				Text hole_stats = new Text(String.valueOf(b));
-				hole_stats.setFontColor("FFFFFF");
+				Text hole_stats = getSmallHeader(String.valueOf(b));
 
 				String fairway_score = "";
 				String greens_score = "";
@@ -736,27 +660,24 @@ public class HandicapRegister extends GolfBlock {
 				if (putt_score == null) {
 					putt_score = "";
 				}
-				CheckBox fairway = new CheckBox("fairway_" + b, "1");
+				CheckBox fairway = getCheckBox("fairway_" + b, "1");
 				fairway.keepStatusOnAction();
-				fairway.setStyleAttribute("font-family: Verdana; font-size: 8pt");
 
 				if (fairway_score.equals("1")) {
 					fairway.setChecked(true);
 				}
 
-				CheckBox greens = new CheckBox("greens_" + b, "1");
+				CheckBox greens = getCheckBox("greens_" + b, "1");
 				greens.keepStatusOnAction();
-				greens.setStyleAttribute("font-family: Verdana; font-size: 8pt");
 
 				if (greens_score.equals("1")) {
 					greens.setChecked(true);
 				}
 
-				TextInput putts = new TextInput("putts_" + b, putt_score);
+				TextInput putts = (TextInput) getStyledInterface(new TextInput("putts_" + b, putt_score));
 				putts.setLength(1);
 				putts.setMaxlength(1);
 				putts.keepStatusOnAction();
-				putts.setStyleAttribute("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 
 				if (b <= 9) {
 					statsTable.add(hole_stats, b + 1, 1);
@@ -785,11 +706,11 @@ public class HandicapRegister extends GolfBlock {
 				}
 			}
 
-			statsTable.setHorizontalZebraColored("99cc99", "8ab490");
-			statsTable.setRowColor(1, "#336666");
+			statsTable.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+			statsTable.setRowColor(1, getHeaderColor());
 
 			if (haed >= 8) {
-				statsTable.setRowColor(5, "#336666");
+				statsTable.setRowColor(5, getHeaderColor());
 			}
 
 			if (mode.equalsIgnoreCase(iwrb.getLocalizedString("handicap.calculate", "Calculate"))) { //Reikna
@@ -869,18 +790,12 @@ public class HandicapRegister extends GolfBlock {
 					// Á flöt búið
 				}
 
-				Text utFairwayText = new Text(ut_fairway + "/7");
-				utFairwayText.setFontSize(1);
-				Text innFairwayText = new Text(inn_fairway + "/7");
-				innFairwayText.setFontSize(1);
-				Text utGreensText = new Text(ut_greens + "/9");
-				utGreensText.setFontSize(1);
-				Text innGreensText = new Text(inn_greens + "/9");
-				innGreensText.setFontSize(1);
-				Text utPuttsText = new Text("" + ut_putt);
-				utPuttsText.setFontSize(1);
-				Text innPuttsText = new Text("" + inn_putt);
-				innPuttsText.setFontSize(1);
+				Text utFairwayText = getSmallText(ut_fairway + "/7");
+				Text innFairwayText = getSmallText(inn_fairway + "/7");
+				Text utGreensText = getSmallText(ut_greens + "/9");
+				Text innGreensText = getSmallText(inn_greens + "/9");
+				Text utPuttsText = getSmallText("" + ut_putt);
+				Text innPuttsText = getSmallText("" + inn_putt);
 
 				if (number_of_holes.equals("18") || (number_of_holes.equals("9") && start_hole.equals("1"))) {
 					statsTable.add(utFairwayText, 11, 2);
@@ -901,12 +816,9 @@ public class HandicapRegister extends GolfBlock {
 
 				String fairway_holes = String.valueOf(Integer.parseInt(number_of_holes) - parThrees);
 
-				Text totalFairwayText = new Text(heildar_fairway + "/" + fairway_holes);
-				totalFairwayText.setFontSize(1);
-				Text totalGreensText = new Text(heildar_greens + "/" + number_of_holes);
-				totalGreensText.setFontSize(1);
-				Text totalPuttsText = new Text("" + heildar_putt);
-				totalPuttsText.setFontSize(1);
+				Text totalFairwayText = getSmallText(heildar_fairway + "/" + fairway_holes);
+				Text totalGreensText = getSmallText(heildar_greens + "/" + number_of_holes);
+				Text totalPuttsText = getSmallText("" + heildar_putt);
 
 				statsTable.add(totalFairwayText, 12, haed - 2);
 				statsTable.add(totalGreensText, 12, haed - 1);
@@ -921,12 +833,9 @@ public class HandicapRegister extends GolfBlock {
 				String medalputts = String.valueOf((double) heildar_putt / Integer.parseInt(number_of_holes));
 				medalputts = scaleDecimals(medalputts, 2);
 
-				Text averageFairwayText = new Text(medalfairway + "%");
-				averageFairwayText.setFontSize(1);
-				Text averageGreensText = new Text(medalgreens + "%");
-				averageGreensText.setFontSize(1);
-				Text averagePuttsText = new Text("" + medalputts);
-				averagePuttsText.setFontSize(1);
+				Text averageFairwayText = getSmallText(medalfairway + "%");
+				Text averageGreensText = getSmallText(medalgreens + "%");
+				Text averagePuttsText = getSmallText("" + medalputts);
 
 				statsTable.add(averageFairwayText, 13, haed - 2);
 				statsTable.add(averageGreensText, 13, haed - 1);
@@ -940,13 +849,13 @@ public class HandicapRegister extends GolfBlock {
 
 		if (tournament == false) {
 			if (mode.equalsIgnoreCase(iwrb.getLocalizedString("handicap.calculate", "Calculate")) && checker == true) {
-				SubmitButton saveSubmit = new SubmitButton("mode", iwrb.getLocalizedString("handicap.save", "Save"));
+				SubmitButton saveSubmit = (SubmitButton) getButton(new SubmitButton("mode", iwrb.getLocalizedString("handicap.save", "Save")));
 				saveSubmit.setOnSubmit("this.disabled=true;return true;");
 				contentTable.add(saveSubmit, 1, 5);
 			}
 		}
 		else {
-			SubmitButton saveSubmit = new SubmitButton("mode", iwrb.getLocalizedString("handicap.save", "Save"));
+			SubmitButton saveSubmit = (SubmitButton) getButton(new SubmitButton("mode", iwrb.getLocalizedString("handicap.save", "Save")));
 			saveSubmit.setOnSubmit("this.disabled=true;return true;");
 			contentTable.add(saveSubmit, 1, 5);
 		}
@@ -1134,9 +1043,9 @@ public class HandicapRegister extends GolfBlock {
 
 			UpdateHandicap.update(Integer.parseInt(member_id), stampur);
 
-			if (update) {
+			//if (update) {
 				getParentPage().setParentToReload();
-			}
+			//}
 
 			getParentPage().close();
 		}

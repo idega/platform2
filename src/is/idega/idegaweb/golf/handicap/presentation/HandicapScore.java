@@ -19,6 +19,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.Window;
@@ -32,6 +33,7 @@ import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 import is.idega.idegaweb.golf.templates.JmoduleWindowModule;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
@@ -46,6 +48,8 @@ public class HandicapScore extends GolfBlock {
 
 	private Table outerTable;
 	private Form myForm;
+	
+	private Member iMember;
 
 	public HandicapScore() {
 	}
@@ -82,16 +86,16 @@ public class HandicapScore extends GolfBlock {
 			}
 		}
 
-		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id));
+		iMember = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id));
 
-		if ((int) member.getHandicap() == 100) {
+		if ((int) iMember.getHandicap() == 100) {
 
 			Table noTable = new Table();
 			noTable.setAlignment("center");
 			noTable.setCellpadding(12);
 			noTable.setCellspacing(12);
 
-			Text texti = new Text(iwrb.getLocalizedString("handicap.member_no_handicap", "Member does not have a registered handicap."));
+			Text texti = getHeader(iwrb.getLocalizedString("handicap.member_no_handicap", "Member does not have a registered handicap."));
 			texti.addBreak();
 			texti.addBreak();
 			texti.addToText(iwrb.getLocalizedString("handicap.handicap_help", "Contact your club to get your handicap."));
@@ -156,9 +160,9 @@ public class HandicapScore extends GolfBlock {
 			}
 		}
 
-		DropdownMenu select_tee = new DropdownMenu("tee_number");
+		DropdownMenu select_tee = (DropdownMenu) getStyledInterface(new DropdownMenu("tee_number"));
 
-		DropdownMenu select_holes = new DropdownMenu("number_of_holes");
+		DropdownMenu select_holes = (DropdownMenu) getStyledInterface(new DropdownMenu("number_of_holes"));
 		select_holes.addMenuElement("18", iwrb.getLocalizedString("handicap.18_holes", "18 holes"));
 		if (forgjof > 26.4 || isAdmin) {
 			select_holes.addMenuElement("1", iwrb.getLocalizedString("handicap.first_9_holes", "First 9 holes"));
@@ -166,19 +170,19 @@ public class HandicapScore extends GolfBlock {
 		}
 		select_holes.keepStatusOnAction();
 
-		DropdownMenu select_stats = new DropdownMenu("statistics");
+		DropdownMenu select_stats = (DropdownMenu) getStyledInterface(new DropdownMenu("statistics"));
 		select_stats.addMenuElement("0", iwrb.getLocalizedString("handicap.no_statistics", "No statistics"));
 		select_stats.addMenuElement("1", iwrb.getLocalizedString("handicap.register_statistics", "Register statistics"));
 		select_stats.keepStatusOnAction();
 
-		DropdownMenu select_month = new DropdownMenu("month");
+		DropdownMenu select_month = (DropdownMenu) getStyledInterface(new DropdownMenu("month"));
 		for (int m = 1; m <= 12; m++) {
 			select_month.addMenuElement(String.valueOf(m), dagatal.getMonthName(m).toLowerCase());
 		}
 		select_month.setSelectedElement(month);
 		select_month.keepStatusOnAction();
 
-		DropdownMenu select_year = new DropdownMenu("year");
+		DropdownMenu select_year = (DropdownMenu) getStyledInterface(new DropdownMenu("year"));
 		for (int y = 2001; y <= dagatal.getYear(); y++) {
 			select_year.addMenuElement(String.valueOf(y), String.valueOf(y));
 		}
@@ -186,7 +190,7 @@ public class HandicapScore extends GolfBlock {
 		select_year.setSelectedElement(year);
 		select_year.keepStatusOnAction();
 
-		DropdownMenu select_day = new DropdownMenu("day");
+		DropdownMenu select_day = (DropdownMenu) getStyledInterface(new DropdownMenu("day"));
 		for (int d = 1; d <= 31; d++) {
 			select_day.addMenuElement(String.valueOf(d), String.valueOf(d) + ".");
 		}
@@ -203,39 +207,23 @@ public class HandicapScore extends GolfBlock {
 		select_tee.keepStatusOnAction();
 		select_tee.setSelectedElement(tee_number);
 
-		GolfWindow memberWindow = new GolfWindow("", 400, 220);
-		memberWindow.add(new HandicapFindMember());
-		Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif", "handicap.select", "Select member");
-		selectMemberImage.setHorizontalSpacing(10);
-		Link selectMember = new Link(selectMemberImage, memberWindow);
-		selectMember.clearParameters();
+		GenericButton selectMember = getButton(new GenericButton("select_member", iwrb.getLocalizedString("handicap.select", "Select member")));
+		selectMember.setWindowToOpen(HandicapFindMember.class);
 
-		GolfWindow fieldWindow = new GolfWindow("", 400, 220);
-		fieldWindow.add(new HandicapUtility());
-		Image selectFieldImage = iwrb.getImage("buttons/choose.gif", "handicap.select_course", "Select course");
-		selectFieldImage.setHorizontalSpacing(10);
-		Link selectField = new Link(selectFieldImage, fieldWindow);
-		selectField.clearParameters();
-		selectField.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_FIND_FIELD);
+		GenericButton selectField = getButton(new GenericButton("select_field", iwrb.getLocalizedString("handicap.select_course", "Select course")));
+		selectField.setWindowToOpen(HandicapUtility.class);
+		selectField.addParameterToWindow(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_FIND_FIELD);
 
-		SubmitButton writeScore = new SubmitButton(iwrb.getImage("buttons/register.gif"));
+		SubmitButton writeScore = (SubmitButton) getButton(new SubmitButton(iwrb.getLocalizedString("handicap.register_score", "Register score")));
 
-		Text member = new Text(iwrb.getLocalizedString("handicap.member", "Member") + ":");
-		member.setFontSize(1);
-		Text memberText = new Text(memberInfo.getName());
-		memberText.setFontSize(2);
-		Text field = new Text(iwrb.getLocalizedString("handicap.course", "Course") + ":");
-		field.setFontSize(1);
-		Text fieldText = new Text(fieldName.getName());
-		fieldText.setFontSize(2);
-		Text tees = new Text(iwrb.getLocalizedString("handicap.tees", "Tees") + ":");
-		tees.setFontSize(1);
-		Text date = new Text(iwrb.getLocalizedString("handicap.day", "Day") + ":");
-		date.setFontSize(1);
-		Text numberOfHoles = new Text(iwrb.getLocalizedString("handicap.number_of_holes", "Number of holes") + ":");
-		numberOfHoles.setFontSize(1);
-		Text statistics = new Text(iwrb.getLocalizedString("handicap.statistics", "Statistics") + ":");
-		statistics.setFontSize(1);
+		Text member = getHeader(iwrb.getLocalizedString("handicap.member", "Member") + ":");
+		Text memberText = getText(memberInfo.getName());
+		Text field = getHeader(iwrb.getLocalizedString("handicap.course", "Course") + ":");
+		Text fieldText = getText(fieldName.getName());
+		Text tees = getHeader(iwrb.getLocalizedString("handicap.tees", "Tees") + ":");
+		Text date = getHeader(iwrb.getLocalizedString("handicap.day", "Day") + ":");
+		Text numberOfHoles = getHeader(iwrb.getLocalizedString("handicap.number_of_holes", "Number of holes") + ":");
+		Text statistics = getHeader(iwrb.getLocalizedString("handicap.statistics", "Statistics") + ":");
 
 		outerTable = new Table(2, 1);
 		outerTable.setCellspacing(6);
@@ -259,9 +247,13 @@ public class HandicapScore extends GolfBlock {
 
 		myTable.add(memberText, 2, 1);
 		if (isAdmin) {
+			myTable.add(Text.getNonBrakingSpace(), 2, 1);
+			myTable.add(Text.getNonBrakingSpace(), 2, 1);
 			myTable.add(selectMember, 2, 1);
 		}
 		myTable.add(fieldText, 2, 2);
+		myTable.add(Text.getNonBrakingSpace(), 2, 2);
+		myTable.add(Text.getNonBrakingSpace(), 2, 2);
 		myTable.add(selectField, 2, 2);
 		myTable.add(select_day, 2, 4);
 		myTable.add(select_month, 2, 4);
@@ -273,26 +265,25 @@ public class HandicapScore extends GolfBlock {
 		myTable.setAlignment(1, 7, "right");
 		myTable.setVerticalAlignment(1, 7, "top");
 
-		GolfWindow foreignWindow = new GolfWindow("", 400, 220);
-		foreignWindow.add(new HandicapRegisterForeign());
-		Image foreignImage = iwrb.getImage("buttons/foreign_round.gif", "handicap.foreign_round", "Foreign round");
-		foreignImage.setHorizontalSpacing(4);
-		Link foreignRound = new Link(foreignImage, foreignWindow);
-		foreignRound.addParameter("member_id", member_id);
+		GenericButton foreignRound = getButton(new GenericButton("foreign_round", iwrb.getLocalizedString("handicap.foreign_round", "Foreign round")));
+		foreignRound.setWindowToOpen(HandicapRegisterForeign.class);
+		foreignRound.addParameterToWindow("member_id", member_id);
 		myTable.add(foreignRound, 1, 7);
 
 		if (teeID.length > 0) {
 			myTable.add(select_tee, 2, 3);
+			myTable.add(Text.getNonBrakingSpace(), 1, 7);
+			myTable.add(Text.getNonBrakingSpace(), 1, 7);
 			myTable.add(writeScore, 1, 7);
 		}
 		else {
-			myTable.addText(iwrb.getLocalizedString("handicap.no_tees", "No tees registered") + ":", 2, 3);
+			myTable.add(getErrorText(iwrb.getLocalizedString("handicap.no_tees", "No tees registered") + ":"), 2, 3);
 		}
 
-		Image swingImage = iwb.getImage("shared/swing.gif", "", 161, 300);
+		//Image swingImage = iwb.getImage("shared/swing.gif", "", 161, 300);
 
-		outerTable.add(myTable, 1, 1);
-		outerTable.add(swingImage, 2, 1);
+		outerTable.add(myTable, 2, 1);
+		outerTable.add(new HandicapMemberInfo(), 1, 1);
 
 	}
 

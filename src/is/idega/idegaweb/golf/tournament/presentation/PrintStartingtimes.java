@@ -24,7 +24,6 @@ public class PrintStartingtimes extends GolfBlock {
     TournamentRound tournamentRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(Integer.parseInt(tournament_round_id));
     Tournament tournament = tournamentRound.getTournament();
 
-    Form myForm = TournamentController.getStartingtimeTable(modinfo, tournament,tournament_round_id,true,true,getResourceBundle());
-    add(myForm);
-
-  }}
+    add(TournamentController.getStartingtimeTable(tournament,tournament_round_id,true,true));
+  }
+}

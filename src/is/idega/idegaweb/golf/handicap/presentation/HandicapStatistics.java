@@ -65,9 +65,7 @@ public class HandicapStatistics extends GolfWindow {
 
 			Tournament tournament = scorecard.getTournamentRound().getTournament();
 
-			Text tournamentName = new Text(tournament.getName() + " - " + scorecard.getTournamentRound().getRoundNumber() + ". hringur");
-			tournamentName.setFontSize(4);
-			tournamentName.setBold();
+			Text tournamentName = getHeader(tournament.getName() + " - " + scorecard.getTournamentRound().getRoundNumber() + ". hringur");
 
 			Form myForm = new Form();
 
@@ -81,42 +79,21 @@ public class HandicapStatistics extends GolfWindow {
 			myForm.add(new HiddenInput("scorecard_id", scorecard_id));
 			SubmitButton submit = new SubmitButton("mode", iwrb.getLocalizedString("handicap.calculate", "Calculate"));
 
-			Text hola = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.hole", "Hole"));
-			hola.setBold();
-			hola.setFontColor("FFFFFF");
-			hola.setFontSize(1);
-			Text ut = new Text(iwrb.getLocalizedString("handicap.out", "Out"));
-			ut.setBold();
-			ut.setFontColor("FFFFFF");
-			ut.setFontSize(1);
-			Text inn = new Text(iwrb.getLocalizedString("handicap.in", "In"));
-			inn.setBold();
-			inn.setFontColor("FFFFFF");
-			inn.setFontSize(1);
-			Text total = new Text(iwrb.getLocalizedString("handicap.total", "Total"));
-			total.setBold();
-			total.setFontColor("FFFFFF");
-			total.setFontSize(1);
-			Text average = new Text(iwrb.getLocalizedString("handicap.average", "Average"));
-			average.setBold();
-			average.setFontColor("FFFFFF");
-			average.setFontSize(1);
-			Text fairway_text = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.fairway", "Fairway"));
-			fairway_text.setBold();
-			fairway_text.setFontSize(1);
-			Text greens_text = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.gir", "GIR"));
-			greens_text.setBold();
-			greens_text.setFontSize(1);
-			Text putts_text = new Text("&nbsp;" + iwrb.getLocalizedString("handicap.putts", "Putts"));
-			putts_text.setBold();
-			putts_text.setFontSize(1);
+			Text hola = getSmallHeader("&nbsp;" + iwrb.getLocalizedString("handicap.hole", "Hole"));
+			Text ut = getSmallHeader(iwrb.getLocalizedString("handicap.out", "Out"));
+			Text inn = getSmallHeader(iwrb.getLocalizedString("handicap.in", "In"));
+			Text total = getSmallHeader(iwrb.getLocalizedString("handicap.total", "Total"));
+			Text average = getSmallHeader(iwrb.getLocalizedString("handicap.average", "Average"));
+			Text fairway_text = getSmallBoldText("&nbsp;" + iwrb.getLocalizedString("handicap.fairway", "Fairway"));
+			Text greens_text = getSmallBoldText("&nbsp;" + iwrb.getLocalizedString("handicap.gir", "GIR"));
+			Text putts_text = getSmallBoldText("&nbsp;" + iwrb.getLocalizedString("handicap.putts", "Putts"));
 
 			Table statsTable = new Table();
 			statsTable.setWidth("100%");
 			statsTable.setBorder(0);
 			statsTable.setColor("#FFFFFF");
-			statsTable.setCellpadding(1);
-			statsTable.setCellspacing(1);
+			statsTable.setCellpadding(getCellpadding());
+			statsTable.setCellspacing(0);
 
 			contentTable.add(statsTable, 1, 2);
 
@@ -141,9 +118,7 @@ public class HandicapStatistics extends GolfWindow {
 				int par_three = tee_id[b - 1].getPar();
 				String tee_stats = String.valueOf(tee_id[b - 1].getID());
 
-				Text hole_stats = new Text(String.valueOf(b));
-				hole_stats.setFontColor("FFFFFF");
-				hole_stats.setFontSize(1);
+				Text hole_stats = getSmallHeader(String.valueOf(b));
 
 				int fairway_score = 0;
 				int greens_score = 0;
@@ -152,27 +127,24 @@ public class HandicapStatistics extends GolfWindow {
 				if (stats.length >= b) {
 				}
 
-				CheckBox fairway = new CheckBox("fairway_" + b, "1");
+				CheckBox fairway = getCheckBox("fairway_" + b, "1");
 				fairway.keepStatusOnAction();
-				fairway.setStyleAttribute("font-family: Verdana; font-size: 8pt");
 
 				if (fairway_score == 1) {
 					fairway.setChecked(true);
 				}
 
-				CheckBox greens = new CheckBox("greens_" + b, "1");
+				CheckBox greens = getCheckBox("greens_" + b, "1");
 				greens.keepStatusOnAction();
-				greens.setStyleAttribute("font-family: Verdana; font-size: 8pt");
 
 				if (greens_score == 1) {
 					greens.setChecked(true);
 				}
 
-				TextInput putts = new TextInput("putts_" + b);
+				TextInput putts = (TextInput) getStyledInterface(new TextInput("putts_" + b));
 				putts.setLength(1);
 				putts.setMaxlength(1);
 				putts.keepStatusOnAction();
-				putts.setStyleAttribute("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
 				if (putt_score > 0) {
 					putts.setValue(putt_score + "");
 				}
@@ -198,9 +170,9 @@ public class HandicapStatistics extends GolfWindow {
 
 			}
 
-			statsTable.setHorizontalZebraColored("99cc99", "8ab490");
-			statsTable.setRowColor(1, "#336666");
-			statsTable.setRowColor(5, "#336666");
+			statsTable.setHorizontalZebraColored(getZebraColor1(), getZebraColor2());
+			statsTable.setRowColor(1, getHeaderColor());
+			statsTable.setRowColor(5, getHeaderColor());
 
 			if (action.equalsIgnoreCase(iwrb.getLocalizedString("handicap.calculate", "Calculate"))) { //Reikna
 																																																 // tölfræði
@@ -285,17 +257,17 @@ public class HandicapStatistics extends GolfWindow {
 
 				}
 
-				Text utFairwayText = new Text(ut_fairway + "/7");
+				Text utFairwayText = getSmallText(ut_fairway + "/7");
 				utFairwayText.setFontSize(1);
-				Text innFairwayText = new Text(inn_fairway + "/7");
+				Text innFairwayText = getSmallText(inn_fairway + "/7");
 				innFairwayText.setFontSize(1);
-				Text utGreensText = new Text(ut_greens + "/9");
+				Text utGreensText = getSmallText(ut_greens + "/9");
 				utGreensText.setFontSize(1);
-				Text innGreensText = new Text(inn_greens + "/9");
+				Text innGreensText = getSmallText(inn_greens + "/9");
 				innGreensText.setFontSize(1);
-				Text utPuttsText = new Text("" + ut_putt);
+				Text utPuttsText = getSmallText("" + ut_putt);
 				utPuttsText.setFontSize(1);
-				Text innPuttsText = new Text("" + inn_putt);
+				Text innPuttsText = getSmallText("" + inn_putt);
 				innPuttsText.setFontSize(1);
 
 				statsTable.add(utFairwayText, 11, 2);
@@ -308,11 +280,11 @@ public class HandicapStatistics extends GolfWindow {
 
 				String fairway_holes = String.valueOf((18 - parThrees));
 
-				Text totalFairwayText = new Text(heildar_fairway + "/" + fairway_holes);
+				Text totalFairwayText = getSmallText(heildar_fairway + "/" + fairway_holes);
 				totalFairwayText.setFontSize(1);
-				Text totalGreensText = new Text(heildar_greens + "/" + 18);
+				Text totalGreensText = getSmallText(heildar_greens + "/" + 18);
 				totalGreensText.setFontSize(1);
-				Text totalPuttsText = new Text("" + heildar_putt);
+				Text totalPuttsText = getSmallText("" + heildar_putt);
 				totalPuttsText.setFontSize(1);
 
 				statsTable.add(totalFairwayText, 12, 6);
@@ -328,11 +300,11 @@ public class HandicapStatistics extends GolfWindow {
 				String medalputts = String.valueOf((double) heildar_putt / 18);
 				medalputts = scaleDecimals(medalputts, 2);
 
-				Text averageFairwayText = new Text(medalfairway + "%");
+				Text averageFairwayText = getSmallText(medalfairway + "%");
 				averageFairwayText.setFontSize(1);
-				Text averageGreensText = new Text(medalgreens + "%");
+				Text averageGreensText = getSmallText(medalgreens + "%");
 				averageGreensText.setFontSize(1);
-				Text averagePuttsText = new Text("" + medalputts);
+				Text averagePuttsText = getSmallText("" + medalputts);
 				averagePuttsText.setFontSize(1);
 
 				statsTable.add(averageFairwayText, 13, 6);
@@ -344,8 +316,8 @@ public class HandicapStatistics extends GolfWindow {
 			statsTable.setColumnAlignment(12, "center");
 			statsTable.setColumnAlignment(13, "center");
 
-			contentTable.add(new SubmitButton("action", iwrb.getLocalizedString("handicap.calculate", "Calculate")), 1, 3);
-			contentTable.add(new SubmitButton("mode", iwrb.getLocalizedString("handicap.save", "Save")), 1, 3);
+			contentTable.add(getButton(new SubmitButton("action", iwrb.getLocalizedString("handicap.calculate", "Calculate"))), 1, 3);
+			contentTable.add(getButton(new SubmitButton("mode", iwrb.getLocalizedString("handicap.save", "Save"))), 1, 3);
 			myForm.add(contentTable);
 
 			add(myForm);

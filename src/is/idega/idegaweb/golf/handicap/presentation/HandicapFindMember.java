@@ -61,18 +61,18 @@ public class HandicapFindMember extends GolfWindow {
 				myTable.setAlignment(1, 5, "right");
 				myTable.setAlignment("center");
 
-				TextInput kennitala = new TextInput("ssn");
+				TextInput kennitala = (TextInput) getStyledInterface(new TextInput("ssn"));
 				kennitala.setLength(10);
 				kennitala.setMaxlength(10);
 
-				TextInput nafn = new TextInput("name");
+				TextInput nafn = (TextInput) getStyledInterface(new TextInput("name"));
 				nafn.setLength(20);
 
-				myTable.addText(iwrb.getLocalizedString("handicap.enter_social_security_number", "Enter social-security number") + ":", 1, 1);
+				myTable.add(getHeader(iwrb.getLocalizedString("handicap.enter_social_security_number", "Enter social-security number") + ":"), 1, 1);
 				myTable.add(kennitala, 1, 2);
-				myTable.addText(iwrb.getLocalizedString("handicap.or_enter_name", "or enter name") + ":", 1, 3);
+				myTable.add(getHeader(iwrb.getLocalizedString("handicap.or_enter_name", "or enter name") + ":"), 1, 3);
 				myTable.add(nafn, 1, 4);
-				myTable.add(new SubmitButton(iwrb.getImage("buttons/search.gif", "", 76, 19)), 1, 5);
+				myTable.add(getButton(new SubmitButton(iwrb.getLocalizedString("handicap.search", "Search"))), 1, 5);
 
 				myForm.add(myTable);
 
@@ -111,19 +111,19 @@ public class HandicapFindMember extends GolfWindow {
 
 					RadioButton button = null;
 
-					myTable.addText(iwrb.getLocalizedString("handicap.use", "Use"), 1, row);
-					myTable.addText(iwrb.getLocalizedString("handicap.name", "Name") + ":", 2, row);
-					myTable.addText(iwrb.getLocalizedString("handicap.handicap", "Handicap") + ":", 3, row);
+					myTable.add(getHeader(iwrb.getLocalizedString("handicap.use", "Use")), 1, row);
+					myTable.add(getHeader(iwrb.getLocalizedString("handicap.name", "Name") + ":"), 2, row);
+					myTable.add(getHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap") + ":"), 3, row);
 					for (int i = 0; i < memberLength; i++) {
 						++row;
-						button = new RadioButton("member_id", String.valueOf(member[i].getID()));
+						button = this.getRadioButton("member_id", String.valueOf(member[i].getID()));
 						myTable.add(button, 1, row);
-						myTable.addText(member[i].getName(), 2, row);
+						myTable.add(getText(member[i].getName()), 2, row);
 						if ((int) member[i].getHandicap() == 100) {
-							myTable.addText(iwrb.getLocalizedString("handicap.not_registered", "Not registered"), 3, row);
+							myTable.add(getText(iwrb.getLocalizedString("handicap.not_registered", "Not registered")), 3, row);
 						}
 						else {
-							myTable.addText(TextSoap.singleDecimalFormat((double) member[i].getHandicap()), 3, row);
+							myTable.add(getText(TextSoap.singleDecimalFormat((double) member[i].getHandicap())), 3, row);
 						}
 					}
 					if (memberLength == 1) {
@@ -132,13 +132,13 @@ public class HandicapFindMember extends GolfWindow {
 					++row;
 					myTable.setAlignment(1, row, "right");
 					myTable.mergeCells(1, row, 3, row);
-					myTable.add(new BackButton(iwrb.getImage("buttons/back.gif", "", 76, 19)), 1, row);
-					myTable.add(new SubmitButton(iwrb.getImage("buttons/confirm.gif", "", 76, 19)), 1, row);
+					myTable.add(getButton(new BackButton(iwrb.getLocalizedString("handicap.back", "Back"))), 1, row);
+					myTable.add(getButton(new SubmitButton(iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 1, row);
 				}
 
 				else {
-					myTable.addText(iwrb.getLocalizedString("handicap.no_member", "No member found in database"), 1, 2);
-					myTable.add(new BackButton("Til baka"), 1, 3);
+					myTable.add(getHeader(iwrb.getLocalizedString("handicap.no_member", "No member found in database")), 1, 2);
+					myTable.add(getButton(new BackButton(iwrb.getLocalizedString("handicap.back", "Back"))), 1, 3);
 				}
 
 				myForm.add(myTable);
@@ -222,11 +222,6 @@ public class HandicapFindMember extends GolfWindow {
 			members = (Member[]) ((Member) IDOLookup.instanciateEntity(Member.class)).findAll(SQLString);
 
 			return members;
-		}
-
-		private String scale_decimals(String nyForgjof, int scale) {
-			BigDecimal decimal = new BigDecimal(nyForgjof);
-			return decimal.setScale(scale, 5).toString();
 		}
 	}
 }

@@ -93,17 +93,16 @@ public class HandicapInfo extends GolfBlock {
 	}
 
 	private void drawTable(IWContext iwc) throws IOException, SQLException, FinderException {
-		myTable = new Table(3, 3);
+		myTable = new Table(3, 1);
 		myTable.setCellpadding(6);
 		myTable.setCellspacing(6);
-		myTable.setAlignment("center");
+		myTable.setWidth(Table.HUNDRED_PERCENT);
 		myTable.setAlignment(1, 1, "center");
+		myTable.setAlignment(2, 1, "center");
+		myTable.setAlignment(3, 1, "right");
 		myTable.setVerticalAlignment(1, 1, "top");
-		myTable.setVerticalAlignment(1, 2, "top");
-		myTable.setVerticalAlignment(1, 3, "top");
-		myTable.setAlignment(3, 1, "center");
-		myTable.mergeCells(2, 1, 2, 3);
-		myTable.mergeCells(3, 1, 3, 3);
+		myTable.setVerticalAlignment(2, 1, "top");
+		myTable.setVerticalAlignment(3, 1, "top");
 
 		IWTimestamp date = new IWTimestamp();
 		date.setDay(1);
@@ -112,31 +111,20 @@ public class HandicapInfo extends GolfBlock {
 		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
 		MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
 		Union mainUnion = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(member.getMainUnionID());
-		int order = memberInfo.getNumberOfRecords("handicap", "<", "" + member.getHandicap()) + 1;
 		int clubOrder = memberInfo.getNumberOfRecords("select count(*) from union_,union_member,member_info where union_.union_id='" + mainUnion.getID() + "' and union_.union_id=union_member.union_id and union_member.member_id=member_info.member_id and handicap<'" + member.getHandicap() + "'") + 1;
 		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and handicap_correction='N' and scorecard_date is not null order by scorecard_date desc");
 		Scorecard[] scoreCards2 = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and scorecard_date>='" + date.toSQLDateString() + "' and scorecard_date is not null and handicap_correction='N' order by total_points desc");
 
 		Text name = getHeader(iwrb.getLocalizedString("handicap.member_name", "Member name"));
 		Text mainUnionText = getHeader(iwrb.getLocalizedString("handicap.union_name", "Club name"));
-		Text handicap = getBigHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap"));
 		Text cardTotal = getHeader(iwrb.getLocalizedString("handicap.rounds_played", "Number of rounds played this year"));
 		Text scoreText = getHeader(iwrb.getLocalizedString("handicap.last_round", "Last round played"));
 		Text points = getHeader(iwrb.getLocalizedString("handicap.best_round", "Best round played this year"));
 		Text averagepoints = getHeader(iwrb.getLocalizedString("handicap.average", "Average sum of points"));
-		Text totalOrder = getBigHeader(iwrb.getLocalizedString("handicap.national_ranking", "National ranking"));
 		Text clubOrderText = getHeader(iwrb.getLocalizedString("handicap.club_ranking", "Club ranking"));
 
 		Text memberText = getText(member.getName());
 		Text unionText = getText(mainUnion.getAbbrevation() + " - " + mainUnion.getName());
-
-		Text handicapText = null;
-		if ((int) memberInfo.getHandicap() == 100) {
-			handicapText = getText(iwrb.getLocalizedString("handicap.no_handicap", "No handicap"));
-		}
-		else {
-			handicapText = getBigText(TextSoap.singleDecimalFormat(String.valueOf(memberInfo.getHandicap())));
-		}
 
 		String cardText = String.valueOf(scoreCards.length);
 		String noRounds = iwrb.getLocalizedString("handicap.no_round", "No rounds registered");
@@ -186,11 +174,6 @@ public class HandicapInfo extends GolfBlock {
 			averageText = getText(noRounds);
 		}
 
-		Text orderText = getBigText(Integer.toString(order));
-		if ((int) memberInfo.getHandicap() == 100) {
-			orderText = getText(noRounds);
-		}
-
 		Text clubText = getText("" + clubOrder);
 		if ((int) memberInfo.getHandicap() == 100) {
 			clubText = getText(iwrb.getLocalizedString("handicap.no_handicap", "No handicap"));
@@ -202,10 +185,6 @@ public class HandicapInfo extends GolfBlock {
 		GenericButton selectMember = getButton(new GenericButton("select_member", iwrb.getLocalizedString("handicap.select", "Select member")));
 		selectMember.setWindowToOpen(HandicapFindMember.class);
 		
-		GenericButton handicapUpdate = getButton(new GenericButton("update_handicap", iwrb.getLocalizedString("handicap.update_handicap", "Update handicap")));
-		handicapUpdate.setWindowToOpen(HandicapUpdate.class);
-		handicapUpdate.addParameterToWindow("member_id", iMemberID);
-
 		Table textTable = new Table();
 		textTable.setCellpadding(4);
 		textTable.setCellspacing(4);
@@ -214,6 +193,8 @@ public class HandicapInfo extends GolfBlock {
 		textTable.addBreak(1, 1);
 		textTable.add(memberText, 1, 1);
 		if (isAdmin) {
+			textTable.add(Text.getNonBrakingSpace(), 1, 1);
+			textTable.add(Text.getNonBrakingSpace(), 1, 1);
 			textTable.add(selectMember, 1, 1);
 		}
 		textTable.add(mainUnionText, 1, 2);
@@ -235,37 +216,7 @@ public class HandicapInfo extends GolfBlock {
 		textTable.addBreak(1, 7);
 		textTable.add(clubText, 1, 7);
 
-		Image memberImage = null;
-		if (member.getImageId() == 1) {
-			memberImage = iwrb.getImage("/member/x2.gif");
-		}
-		else {
-			memberImage = new GolfImage(member.getImageId());
-		}
-
-		memberImage.setMaxImageWidth(102);
-		memberImage.setAlt(member.getName());
-		memberImage.setAlignment("absmiddle");
-		memberImage.setBorder(1);
-		memberImage.setBorderColor("000000");
-		memberImage.setBorderStyle("solid");
-
-		Image swingImage = iwb.getImage("shared/handicap/swing.gif", "", 161, 300);
-
-		myTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
-		myTable.add(handicap, 1, 2);
-		myTable.add(new Break(), 1, 2);
-		myTable.add(handicapText, 1, 2);
-		if (isAdmin) {
-			myTable.add(new Break(), 1, 2);
-			myTable.add(handicapUpdate, 1, 2);
-		}
-
-		myTable.add(totalOrder, 1, 3);
-		myTable.add(new Break(), 1, 3);
-		myTable.add(orderText, 1, 3);
-
-		myTable.add(memberImage, 1, 1);
+		myTable.add(new HandicapMemberInfo(), 1, 1);
 		myTable.add(textTable, 2, 1);
 
 		HandicapCard hcCard = new HandicapCard(Integer.parseInt(iMemberID));

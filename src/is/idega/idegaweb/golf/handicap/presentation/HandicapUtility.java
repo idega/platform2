@@ -164,16 +164,16 @@ public class HandicapUtility extends GolfWindow {
 
 			TeeColor[] tee = (TeeColor[]) ((TeeColor) IDOLookup.instanciateEntity(TeeColor.class)).findAll("select distinct tc.* from tee_color tc, tee t, scorecard s, member m where tc.tee_color_id = t.tee_color_id and t.field_id = s.field_id and s.member_id = m.member_id and tc.gender = m.gender and s.scorecard_id = " + _scorecardID + " order by tc.tee_color_id");
 
-			DropdownMenu menu = new DropdownMenu(PARAMETER_TEE_COLOR_ID);
+			DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_TEE_COLOR_ID));
 			for (int a = 0; a < tee.length; a++) {
 				menu.addMenuElement(tee[a].getID(), tee[a].getName());
 			}
 			menu.setSelectedElement(scoreCard.getTeeColorID() + "");
 
-			myTable.addText(_iwrb.getLocalizedString("handicap.choose_tees", "Choose tees") + ":", 1, 1);
+			myTable.add(getHeader(_iwrb.getLocalizedString("handicap.choose_tees", "Choose tees") + ":"), 1, 1);
 			myTable.add(menu, 1, 2);
-			myTable.add(new SubmitButton(_iwrb.getImage("buttons/confirm.gif", "", 76, 19)), 2, 3);
-			myTable.add(new CloseButton(_iwrb.getImage("buttons/back.gif", "", 76, 19)), 1, 3);
+			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 3);
+			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.back", "Back"))), 1, 3);
 
 			myForm.add(myTable);
 
@@ -192,9 +192,9 @@ public class HandicapUtility extends GolfWindow {
 			myForm.add(new HiddenInput(PARAMETER_SCORECARD_ID, String.valueOf(_scorecardID)));
 			myForm.add(new HiddenInput(PARAMETER_ACTION, String.valueOf(ACTION_DELETE_SCORECARD)));
 
-			myTable.addText(_iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard") + "?", 1, 1);
-			myTable.add(new CloseButton(_iwrb.getImage("buttons/back.gif", "", 76, 19)), 1, 2);
-			myTable.add(new SubmitButton(_iwrb.getImage("buttons/confirm.gif", "", 76, 19)), 2, 2);
+			myTable.add(getHeader(_iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard") + "?"), 1, 1);
+			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 2);
+			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.back", "Back"))), 1, 2);
 
 			myForm.add(myTable);
 			Text breakText = new Text("<br>");
@@ -223,19 +223,19 @@ public class HandicapUtility extends GolfWindow {
 			String year = String.valueOf(dagatal.getYear());
 			String day = String.valueOf(dagatal.getDay());
 
-			DropdownMenu select_month = new DropdownMenu(PARAMETER_MONTH);
+			DropdownMenu select_month = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_MONTH));
 			for (int m = 1; m <= 12; m++) {
 				select_month.addMenuElement(String.valueOf(m), dagatal.getMonthName(m).toLowerCase());
 			}
 			select_month.setSelectedElement(month);
 
-			DropdownMenu select_year = new DropdownMenu(PARAMETER_YEAR);
+			DropdownMenu select_year = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_YEAR));
 			for (int y = 2000; y <= dagatal.getYear(); y++) {
 				select_year.addMenuElement(String.valueOf(y), String.valueOf(y));
 			}
 			select_year.setSelectedElement(year);
 
-			DropdownMenu select_day = new DropdownMenu(PARAMETER_DAY);
+			DropdownMenu select_day = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_DAY));
 			for (int d = 1; d <= 31; d++) {
 				select_day.addMenuElement(String.valueOf(d), String.valueOf(d) + ".");
 			}
@@ -245,13 +245,11 @@ public class HandicapUtility extends GolfWindow {
 			myTable.add(select_month, 1, 2);
 			myTable.add(select_year, 1, 2);
 
-			Text confirmText = new Text(_iwrb.getLocalizedString("handicap.how_far_back", "How far back do you want to calculate"));
-			SubmitButton submit = new SubmitButton(_iwrb.getImage("buttons/continue.gif", "", 76, 19));
-			CloseButton close = new CloseButton(_iwrb.getImage("buttons/back.gif", "", 76, 19));
+			Text confirmText = getHeader(_iwrb.getLocalizedString("handicap.how_far_back", "How far back do you want to calculate"));
 
 			myTable.add(confirmText, 1, 1);
-			myTable.add(close, 1, 3);
-			myTable.add(submit, 2, 3);
+			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 3);
+			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.back", "Back"))), 1, 3);
 
 			myForm.add(myTable);
 			add("<br>");
@@ -273,14 +271,14 @@ public class HandicapUtility extends GolfWindow {
 			myForm.add(new HiddenInput(PARAMETER_TOURNAMENT_ID, String.valueOf(_tournamentID)));
 			myForm.add(new HiddenInput(PARAMETER_ACTION, String.valueOf(ACTION_UPDATE_HANDICAP)));
 
-			RadioButton update = new RadioButton("action", "update");
+			RadioButton update = getRadioButton("action", "update");
 			update.setSelected();
-			RadioButton correction = new RadioButton("action", "correct");
+			RadioButton correction = getRadioButton("action", "correct");
 
-			myTable.addText(_iwrb.getLocalizedString("handicap.enter_handicap", "Enter handicap") + ":", 1, 1);
+			myTable.add(getHeader(_iwrb.getLocalizedString("handicap.enter_handicap", "Enter handicap") + ":"), 1, 1);
 			myTable.add(new TextInput(PARAMETER_HANDICAP), 1, 2);
-			myTable.add(new CloseButton(_iwrb.getImage("buttons/back.gif", "", 76, 19)), 1, 3);
-			myTable.add(new SubmitButton(_iwrb.getImage("buttons/confirm.gif", "", 76, 19)), 2, 3);
+			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 3);
+			myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("handicap.back", "Back"))), 1, 3);
 
 			myForm.add(myTable);
 			add(Text.getBreak());
@@ -302,15 +300,15 @@ public class HandicapUtility extends GolfWindow {
 
 			Field[] field = (Field[]) ((Field) IDOLookup.instanciateEntity(Field.class)).findAllOrdered("name");
 
-			DropdownMenu select_field = new DropdownMenu(PARAMETER_FIELD_ID);
+			DropdownMenu select_field = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_FIELD_ID));
 			for (int a = 0; a < field.length; a++) {
 				Union union = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(field[a].getUnionID());
 				select_field.addMenuElement(field[a].getID(), field[a].getName() + " - " + union.getAbbrevation());
 			}
 
-			myTable.addText(_iwrb.getLocalizedString("handicap.select_field", "Select field") + ":", 1, 1);
+			myTable.add(getHeader(_iwrb.getLocalizedString("handicap.select_field", "Select field") + ":"), 1, 1);
 			myTable.add(select_field, 1, 2);
-			myTable.add(new SubmitButton(_iwrb.getImage("buttons/confirm.gif", "", 76, 19)), 1, 3);
+			myTable.add(getButton(new SubmitButton(_iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 1, 3);
 
 			myForm.add(myTable);
 

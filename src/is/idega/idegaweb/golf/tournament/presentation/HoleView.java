@@ -10,6 +10,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 /**
  * @author gimmi
@@ -17,8 +18,14 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class HoleView extends GolfBlock {
+public class HoleView extends GolfWindow {
 
+	public HoleView() {
+		setWidth(796);
+		setHeight(600);
+		setResizable(true);
+		setScrollbar(true);
+	}
 	
 	public void main(IWContext modinfo) throws Exception {
 	  int refresh = 180;

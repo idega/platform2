@@ -20,6 +20,7 @@ import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
@@ -261,7 +262,7 @@ public class RegistrationForMembers extends GolfBlock {
             table.add("2",1,3);
             table.add("†ttu á \"VISTA\" takkann sem er sta›settur ne›st á sí›unni",2,3);
 
-          Form form = TournamentController.getStartingtimeTable(modinfo, tournament,tournament_round_id,false,true, iwrb);
+          PresentationObject form = TournamentController.getStartingtimeTable(tournament,tournament_round_id,false,true);
 
           add(table);
           add("<hr>");

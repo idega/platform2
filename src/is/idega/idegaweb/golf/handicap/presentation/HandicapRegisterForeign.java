@@ -19,13 +19,24 @@ import is.idega.idegaweb.golf.entity.MemberInfo;
 import is.idega.idegaweb.golf.entity.MemberInfoHome;
 import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
+
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
 /**
  * @author laddi
  */
-public class HandicapRegisterForeign extends GolfBlock {
+public class HandicapRegisterForeign extends GolfWindow {
+	
+	public HandicapRegisterForeign() {
+		setWidth(400);
+		setHeight(220);
+		setTitle("Foreign round");
+		add(new RegisterForeign());
+	}
+	
+	public class RegisterForeign extends GolfBlock {
 
 	public void main(IWContext modinfo) throws Exception {
 		try {
@@ -57,34 +68,37 @@ public class HandicapRegisterForeign extends GolfBlock {
 					String year = String.valueOf(dagatal.getYear());
 					String day = String.valueOf(dagatal.getDay());
 
-					DropdownMenu select_month = new DropdownMenu("month");
+					DropdownMenu select_month = (DropdownMenu) getStyledInterface(new DropdownMenu("month"));
 					for (int m = 1; m <= 12; m++) {
 						select_month.addMenuElement(String.valueOf(m), dagatal.getMonthName(m).toLowerCase());
 					}
 					select_month.setSelectedElement(month);
 
-					DropdownMenu select_year = new DropdownMenu("year");
+					DropdownMenu select_year = (DropdownMenu) getStyledInterface(new DropdownMenu("year"));
 					for (int y = 2000; y <= dagatal.getYear(); y++) {
 						select_year.addMenuElement(String.valueOf(y), String.valueOf(y));
 					}
 					select_year.setSelectedElement(year);
 
-					DropdownMenu select_day = new DropdownMenu("day");
+					DropdownMenu select_day = (DropdownMenu) getStyledInterface(new DropdownMenu("day"));
 					for (int d = 1; d <= 31; d++) {
 						select_day.addMenuElement(String.valueOf(d), String.valueOf(d) + ".");
 					}
 					select_day.setSelectedElement(day);
 
-					myTable.addText(iwrb.getLocalizedString("handicap.foreign_field_name", "Field name") + ":", 1, 1);
-					myTable.add(new TextInput("name"), 2, 1);
-					myTable.addText(iwrb.getLocalizedString("handicap.date", "Date") + ":", 1, 2);
+					myTable.add(getHeader(iwrb.getLocalizedString("handicap.foreign_field_name", "Field name") + ":"), 1, 1);
+					myTable.add(getStyledInterface(new TextInput("name")), 2, 1);
+					myTable.add(getHeader(iwrb.getLocalizedString("handicap.date", "Date") + ":"), 1, 2);
 					myTable.add(select_day, 2, 2);
 					myTable.add(select_month, 2, 2);
 					myTable.add(select_year, 2, 2);
-					myTable.addText(iwrb.getLocalizedString("handicap.total_points", "Total points") + ":", 1, 3);
+					myTable.add(getHeader(iwrb.getLocalizedString("handicap.total_points", "Total points") + ":"), 1, 3);
 					myTable.add(new TextInput("total_points"), 2, 3);
-					myTable.add(new CloseButton(iwrb.getImage("buttons/back.gif", "", 76, 19)), 1, 4);
-					myTable.add(new SubmitButton(iwrb.getImage("buttons/confirm.gif", "", 76, 19)), 2, 4);
+					myTable.mergeCells(1, 4, 2, 4);
+					myTable.add(getButton(new CloseButton(iwrb.getLocalizedString("handicap.back", "Back"))), 1, 4);
+					myTable.add(Text.getNonBrakingSpace(), 1, 4);
+					myTable.add(Text.getNonBrakingSpace(), 1, 4);
+					myTable.add(getButton(new SubmitButton(iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 1, 4);
 
 					myForm.add(myTable);
 					add(Text.getBreak());
@@ -144,5 +158,6 @@ public class HandicapRegisterForeign extends GolfBlock {
 		catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
+	}
 	}
 }

@@ -43,8 +43,7 @@ public class TournamentStartingtimeWindow extends Window{
 		
 		if (valid) {
 			try {
-				Form form = TournamentController.getStartingtimeTable(modinfo, tournament, Integer.toString(tournamentRound.getID()), true, iwrb, true);
-				add(form);
+				add(TournamentController.getStartingtimeTable(tournament, Integer.toString(tournamentRound.getID()), true, true));
 			} catch (SQLException e) {
 				add("error");
 				e.printStackTrace();

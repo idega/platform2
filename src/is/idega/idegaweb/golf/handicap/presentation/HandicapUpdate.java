@@ -85,18 +85,18 @@ public class HandicapUpdate extends GolfWindow {
 				myForm.add(new HiddenInput("member_id", member_id));
 				myForm.add(new HiddenInput("mode", "submit"));
 
-				RadioButton update = new RadioButton("action", "update");
+				RadioButton update = getRadioButton("action", "update");
 				update.setSelected();
-				RadioButton correction = new RadioButton("action", "correct");
+				RadioButton correction = getRadioButton("action", "correct");
 
-				myTable.addText(iwrb.getLocalizedString("handicap.enter_handicap", "Enter handicap") + ":", 1, 1);
-				myTable.add(new TextInput("handicap"), 1, 2);
+				myTable.add(getHeader(iwrb.getLocalizedString("handicap.enter_handicap", "Enter handicap") + ":"), 1, 1);
+				myTable.add(getStyledInterface(new TextInput("handicap")), 1, 2);
 				myTable.add(update, 1, 3);
-				myTable.addText(iwrb.getLocalizedString("handicap.change_first_handicap", "Change first handicap"), 1, 3);
+				myTable.add(getHeader(iwrb.getLocalizedString("handicap.change_first_handicap", "Change first handicap")), 1, 3);
 				myTable.add(correction, 1, 4);
-				myTable.addText(iwrb.getLocalizedString("handicap.correct_handicap", "Correct handicap"), 1, 4);
-				myTable.add(new CloseButton(iwrb.getImage("buttons/back.gif", "", 76, 19)), 1, 5);
-				myTable.add(new SubmitButton(iwrb.getImage("buttons/confirm.gif", "", 76, 19)), 2, 5);
+				myTable.add(getHeader(iwrb.getLocalizedString("handicap.correct_handicap", "Correct handicap")), 1, 4);
+				myTable.add(getButton(new CloseButton(iwrb.getLocalizedString("handicap.back", "Back"))), 1, 5);
+				myTable.add(getButton(new SubmitButton(iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 5);
 
 				myForm.add(myTable);
 				add(Text.getBreak());
@@ -149,28 +149,28 @@ public class HandicapUpdate extends GolfWindow {
 						myForm.add(new HiddenInput("action2", "save"));
 						myForm.add(new HiddenInput("handicap", handicapString));
 
-						myTable.addText(iwrb.getLocalizedString("handicap.select_date_of_correction", "Select date of correction") + ":", 1, 1);
-						myTable.add(new CloseButton(iwrb.getImage("buttons/back.gif", "", 76, 19)), 1, 3);
-						myTable.add(new SubmitButton(iwrb.getImage("buttons/confirm.gif", "", 76, 19)), 2, 3);
+						myTable.add(getHeader(iwrb.getLocalizedString("handicap.select_date_of_correction", "Select date of correction") + ":"), 1, 1);
+						myTable.add(getButton(new CloseButton(iwrb.getLocalizedString("handicap.back", "Back"))), 1, 3);
+						myTable.add(getButton(new SubmitButton(iwrb.getLocalizedString("handicap.confirm", "Confirm"))), 2, 3);
 
 						IWCalendar dagatal = new IWCalendar();
 						String month = String.valueOf(dagatal.getMonth());
 						String year = String.valueOf(dagatal.getYear());
 						String day = String.valueOf(dagatal.getDay());
 
-						DropdownMenu select_month = new DropdownMenu("month");
+						DropdownMenu select_month = (DropdownMenu) getStyledInterface(new DropdownMenu("month"));
 						for (int m = 1; m <= 12; m++) {
 							select_month.addMenuElement(String.valueOf(m), dagatal.getMonthName(m).toLowerCase());
 						}
 						select_month.setSelectedElement(month);
 
-						DropdownMenu select_year = new DropdownMenu("year");
+						DropdownMenu select_year = (DropdownMenu) getStyledInterface(new DropdownMenu("year"));
 						for (int y = 2000; y <= dagatal.getYear(); y++) {
 							select_year.addMenuElement(String.valueOf(y), String.valueOf(y));
 						}
 						select_year.setSelectedElement(year);
 
-						DropdownMenu select_day = new DropdownMenu("day");
+						DropdownMenu select_day = (DropdownMenu) getStyledInterface(new DropdownMenu("day"));
 						for (int d = 1; d <= 31; d++) {
 							select_day.addMenuElement(String.valueOf(d), String.valueOf(d) + ".");
 						}

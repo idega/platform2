@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -29,6 +30,7 @@ public class HandicapCard extends GolfBlock {
 
 	private int memberId = -1;
 	private IWResourceBundle iwrb;
+	private IWBundle iwb;
 
 	private String headerTextColor = "#000000";
 	private String textColor = "#000000";
@@ -43,6 +45,7 @@ public class HandicapCard extends GolfBlock {
 	}
 
 	public void main(IWContext modinfo) throws Exception {
+		iwb = getBundle();
 		iwrb = getResourceBundle();
 		drawCard(modinfo);
 	}
@@ -133,7 +136,8 @@ public class HandicapCard extends GolfBlock {
 			table.mergeCells(1, row, 3, row);
 			table.setAlignment(1, row, "right");
 
-			Link print = new Link(getText(iwrb.getLocalizedString("handicap.print", "print")));
+			Link print = new Link(iwb.getImage("/shared/print.gif"));
+			print.setToolTip(iwrb.getLocalizedString("handicap.printable_version", "Show printable version"));
 			print.setWindowToOpen(HandicapCardWindow.class);
 			print.addParameter(HandicapCardWindow.PARAMETER_MEMBER_ID, memberId);
 			table.add(print, 1, row);
@@ -160,11 +164,7 @@ public class HandicapCard extends GolfBlock {
 	}
 
 	private Text getHeaderText(String content) {
-		Text text = new Text(content);
-		text.setFontSize(1);
-		text.setBold(true);
-		text.setFontColor(headerTextColor);
-		return text;
+		return getHeader(content);
 	}
 
 //	private Text getText(String content) {
