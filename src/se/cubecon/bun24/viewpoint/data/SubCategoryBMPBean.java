@@ -7,10 +7,10 @@ import javax.ejb.FinderException;
 import com.idega.user.data.*;
 
 /**
- * Last modified: $Date: 2002/12/28 11:52:16 $ by $Author: laddi $
+ * Last modified: $Date: 2002/12/30 11:33:48 $ by $Author: tryggvil $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
@@ -145,7 +145,7 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
     }
     
     public Integer ejbFindSubCategoryByName(String name) throws FinderException {
-    	IDOQuery query = new IDOQuery();
+    	IDOQuery query = idoQuery();
     	query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, name);
     	return (Integer) super.idoFindOnePKByQuery(query);
     }
