@@ -732,7 +732,7 @@ public abstract class AbstractSearchForm extends Block{
 		link.addParameter(ACTION, ACTION_BOOKING_FORM);
 		link.addParameter(PARAMETER_PRODUCT_ID, productId);
 		link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
-		link.setHttps(LinkGenerator.getIsHttps());
+		//link.setHttps(LinkGenerator.getIsHttps());
 		return link;
 	}
 
