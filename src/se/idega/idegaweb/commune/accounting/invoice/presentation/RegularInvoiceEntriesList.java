@@ -25,6 +25,7 @@ import javax.ejb.RemoveException;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOLookup;
 
 import com.idega.data.IDOEntityDefinition;
@@ -152,7 +153,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		PAR_OPFIELD_DETAILSCREEN = PAR + ACTION_OPFIELD_DETAILSCREEN,
 		PAR_OPFIELD_MAINSCREEN = PAR + ACTION_OPFIELD_MAINSCREEN;
 
-private UserSearcher _userSearcher = null;
+	private UserSearcher _userSearcher = null;
 	
 	public void init(final IWContext iwc) {
 		_userSearcher = getUserSearcherForm(iwc, getUser(iwc));
@@ -246,7 +247,7 @@ private UserSearcher _userSearcher = null;
 			if (user != null){
 				try{
 					SchoolCategory category = getCurrentSchoolCategory(iwc);					
-					invoices = invoiceBusiness.findRegularInvoicesForPeriodeAndUser(from, to, user.getNodeID(), category.getPrimaryKey().toString());
+					invoices = invoiceBusiness.findRegularInvoicesForPeriodeUserAndCategory(from, to, user.getNodeID(), category.getPrimaryKey().toString());
 
 				}catch(FinderException ex){
 					ex.printStackTrace(); 
@@ -675,7 +676,7 @@ private UserSearcher _userSearcher = null;
 			searchPanel.setError((String) errorMessages.get(ERROR_PLACING_EMPTY));			
 		}		
 		searchPanel.setPlacingIfNull(entry.getPlacing());
-		searchPanel.setSchoolIdIfNull(entry.getSchoolId());
+		searchPanel.setSchoolIfNull(entry.getSchool());
 		
 		searchPanel.setParameter(PAR_EDIT, " ");
 		searchPanel.maintainAllParameters();
@@ -790,7 +791,16 @@ private UserSearcher _userSearcher = null;
 			}
 		
 			public School getSchool() {
-				return null;
+				School school = null;
+				try{
+					SchoolHome sh = (SchoolHome) IDOLookup.getHome(School.class);
+					school = sh.findByPrimaryKey("" + getSchoolId());
+				}catch(IDOLookupException ex){
+					ex.printStackTrace(); 
+				}catch(FinderException ex){
+					ex.printStackTrace(); 
+				}
+				return school;	
 			}
 		
 			public int getSchoolId() {
