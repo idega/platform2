@@ -38,7 +38,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 	public void init(IWContext iwc){
 		Form form = new Form();
 		Table table = new Table(2,6);
-		OperationalFieldsMenu opFields = new OperationalFieldsMenu();  
+		OperationalFieldsMenu opFields = new OperationalFieldsMenu();
 		
 		try {
 			handleAction(iwc);
@@ -57,10 +57,19 @@ public class InvoiceBatchResult extends AccountingBlock{
 
 			InvoiceBusiness invoiceBusiness = getInvoiceBusiness(iwc);
 			String schoolCategory = getSession().getOperationalField();
+
 			BatchRun batchRun = invoiceBusiness.getBatchRunByCategory(schoolCategory);
+
 			IWTimestamp period = new IWTimestamp(batchRun.getPeriod());
 			IWTimestamp start = new IWTimestamp(batchRun.getStart());
-			IWTimestamp end = new IWTimestamp(batchRun.getEnd());
+			
+			IWTimestamp end = null;
+			if(batchRun.getEnd()!=null){
+				end = new IWTimestamp(batchRun.getEnd());
+			}else{
+				end = new IWTimestamp();
+			}
+
 			table.add(period.getDateString("MMM yyyy"),2,1);
 			table.add(start.getDateString("yyyy-MM-dd kk:mm:ss"),2,2);
 			table.add(end.getDateString("yyyy-MM-dd kk:mm:ss"),2,3);
@@ -70,21 +79,18 @@ public class InvoiceBatchResult extends AccountingBlock{
 		
 			form.add(table);
 			
-//			GenericButton cancelButton = this.getCancelButton();
-//			form.add(cancelButton);
-			
 			int row = 1;
 			BatchRunErrorHome batchRunErrorHome = (BatchRunErrorHome)IDOLookup.getHome(BatchRunError.class);
 			Collection errorColl = batchRunErrorHome.findByBatchRun(batchRun);
 
-			//Bottom section (Moved up according to Lottas directives
+			//Bottom section
 			add(getLocalizedLabel("invbr.Total_number_of_suspected_errors","Total number of suspected errors"));
 			add(new Text(new Integer(errorColl.size()).toString()));
 
 			//Middle section with the error list
 			Table errorTable = new Table();
 
-//			System.out.println("Size of table BatchRunError: "+errorColl.size());
+			System.out.println("Size of table BatchRunError: "+errorColl.size());
 			Iterator errorIter = errorColl.iterator();
 			if(errorIter.hasNext()){
 				System.out.println("Found error description");

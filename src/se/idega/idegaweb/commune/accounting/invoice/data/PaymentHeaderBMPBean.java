@@ -132,7 +132,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		end.addMonths(1);
 		
 		IDOQuery sql = idoQuery();
-		sql.appendSelectCount().append("("+COLUMN_SCHOOL_ID+") distinct");
+		sql.appendSelect().append("count (distinct "+COLUMN_SCHOOL_ID+") from "+getEntityName());
 		sql.appendWhereEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, schoolCategoryID);
 		sql.appendAnd().append(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start.getDate());
 		sql.appendAnd().append(COLUMN_PERIOD).appendLessThanSign().append(end.getDate());
