@@ -1,7 +1,9 @@
 package se.idega.idegaweb.commune.childcare.business;
 
+import com.idega.block.process.business.CaseBusiness;
 
-public interface ChildCareBusiness extends com.idega.business.IBOService
+
+public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness
 {
  public boolean acceptApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public boolean acceptApplication(int p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
