@@ -152,10 +152,20 @@ public class PIDChecker {
 	 */
 	public Date getDateFromPersonalID(String personalID) {
   	if ( isValid(personalID) ) {
-  		personalID = trimSSN(personalID);
-      int year = Integer.parseInt(personalID.substring(0, 2));
-      int month = Integer.parseInt(personalID.substring(2, 4));
-      int day = Integer.parseInt(personalID.substring(4, 6));
+  		int year = 0;
+  		int month = 0;
+  		int day = 0;
+  		
+  		if (personalID.length() == 10) {
+				year = Integer.parseInt(personalID.substring(0, 2)) + 1900;
+				month = Integer.parseInt(personalID.substring(2, 4));
+				day = Integer.parseInt(personalID.substring(4, 6));
+  		}
+			else if (personalID.length() == 12) {
+				year = Integer.parseInt(personalID.substring(0, 4));
+				month = Integer.parseInt(personalID.substring(4, 6));
+				day = Integer.parseInt(personalID.substring(6, 8));
+			}
 				
 			IWTimestamp stamp = new IWTimestamp(day,month,year);
 			return stamp.getDate();
