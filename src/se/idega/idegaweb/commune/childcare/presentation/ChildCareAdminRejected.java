@@ -125,6 +125,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			int numberOfChildren = applications.size();
 			String name = null;
 			Link emailLink = null;
+			String emails = null;
 			
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -132,6 +133,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
 				emailLink = null;
+				emails = null;
 				
 				if (application.getQueueDate() != null)
 					queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
@@ -162,7 +164,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 //// email to parent
 				try {
 					Collection parents = getMemberFamilyLogic(iwc).getCustodiansFor(child);
-					String emails = null;
+					
 					if (parents != null && !parents.isEmpty()) {
 						Iterator iterPar = parents.iterator();
 						while (iterPar.hasNext()) {
