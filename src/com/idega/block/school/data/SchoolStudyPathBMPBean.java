@@ -155,8 +155,6 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 			.append(" AND (s.").append(COLUMN_IS_VALID).append(" is null")
 			.append(" OR s.").append(COLUMN_IS_VALID).append(" = 'Y')");
 			
-			System.out.println("*** FindStudypaths: " + query.toString());
-			
 			return this.idoFindPKsByQuery(query);
 		} else {
 			/** No schoolTypes. Returning empty collection instead of all schoolCourses */
