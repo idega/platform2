@@ -1,5 +1,6 @@
 package is.idegaweb.campus.entity;
 
+
 import com.idega.data.GenericEntity;
 import java.sql.SQLException;
 

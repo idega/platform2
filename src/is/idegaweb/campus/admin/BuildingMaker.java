@@ -1,5 +1,5 @@
 /*
- * $Id: BuildingMaker.java,v 1.3 2001/10/05 08:05:27 tryggvil Exp $
+ * $Id: BuildingMaker.java,v 1.4 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -1,5 +1,5 @@
 /*
- * $Id: Applied.java,v 1.6 2001/07/30 11:48:31 palli Exp $
+ * $Id: Applied.java,v 1.7 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

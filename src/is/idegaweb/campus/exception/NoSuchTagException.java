@@ -1,5 +1,5 @@
 /*
- * $Id: NoSuchTagException.java,v 1.1 2001/08/15 11:56:43 palli Exp $
+ * $Id: NoSuchTagException.java,v 1.2 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.exception;
+
 
 /**
  *

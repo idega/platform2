@@ -1,6 +1,7 @@
 
 package is.idegaweb.campus.tariffs;
 
+
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import java.sql.SQLException;

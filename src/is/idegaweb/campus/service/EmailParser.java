@@ -1,5 +1,5 @@
 /*
- * $Id: EmailParser.java,v 1.4 2001/08/15 11:56:43 palli Exp $
+ * $Id: EmailParser.java,v 1.5 2001/11/08 15:40:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.service;
+
 
 import is.idegaweb.campus.exception.NoSuchTagException;
 import java.util.Hashtable;

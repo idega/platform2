@@ -1,5 +1,6 @@
 package is.idegaweb.campus.allocation;
 
+
 import is.idegaweb.campus.presentation.Edit;
 import is.idegaweb.campus.entity.SystemProperties;
 import is.idegaweb.campus.entity.ContractText;

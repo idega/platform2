@@ -1,5 +1,6 @@
 package is.idegaweb.campus.building;
 
+
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;

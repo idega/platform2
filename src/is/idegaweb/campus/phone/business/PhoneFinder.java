@@ -1,5 +1,6 @@
 package is.idegaweb.campus.phone.business;
 
+
 import com.idega.data.EntityFinder;
 import is.idegaweb.campus.entity.CampusPhone;
 import is.idegaweb.campus.entity.Contract;

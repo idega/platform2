@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.20 2001/10/05 08:05:30 tryggvil Exp $
+ * $Id: CampusApplicationForm.java,v 1.21 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.application;
+
 
 import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.block.application.business.ApplicationFinder;

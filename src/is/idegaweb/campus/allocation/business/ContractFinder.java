@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.3 2001/11/05 11:54:27 aron Exp $
+ * $Id: ContractFinder.java,v 1.4 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.allocation.business;
+
 
 import is.idegaweb.campus.entity.*;
 import java.sql.SQLException;

@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.7 2001/09/26 23:42:20 aron Exp $
+ * $Id: WaitingList.java,v 1.8 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.entity;
+
 
 import com.idega.data.GenericEntity;
 import java.sql.SQLException;

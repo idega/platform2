@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.9 2001/10/09 22:49:50 aron Exp $
+ * $Id: Contract.java,v 1.10 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.entity;
+
 
 import com.idega.data.GenericEntity;
 import java.sql.Date;

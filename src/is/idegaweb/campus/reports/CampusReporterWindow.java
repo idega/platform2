@@ -1,5 +1,6 @@
 package is.idegaweb.campus.reports;
 
+
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.block.reports.presentation.Reporter;

@@ -1,5 +1,5 @@
 /*
- * $Id: SpouseOccupation.java,v 1.4 2001/06/26 00:30:41 palli Exp $
+ * $Id: SpouseOccupation.java,v 1.5 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.entity;
+
 
 import com.idega.data.GenericEntity;
 import java.sql.SQLException;

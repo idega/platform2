@@ -1,5 +1,5 @@
 /*
- * $Id: ImageProperties.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: ImageProperties.java,v 1.2 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.admin;
+
 
 import java.sql.*;
 import com.idega.data.GenericEntity;

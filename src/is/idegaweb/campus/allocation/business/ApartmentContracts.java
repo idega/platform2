@@ -1,5 +1,7 @@
 package is.idegaweb.campus.allocation.business;
 
+
+
 import is.idegaweb.campus.entity.Contract;
 import com.idega.block.building.data.Apartment;
 import com.idega.block.building.business.BuildingCacher;

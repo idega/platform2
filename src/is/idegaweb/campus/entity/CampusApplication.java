@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplication.java,v 1.1 2001/07/30 11:48:32 palli Exp $
+ * $Id: CampusApplication.java,v 1.2 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.2 2001/10/05 08:05:32 tryggvil Exp $
+ * $Id: CampusFinance.java,v 1.3 2001/11/08 15:40:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.finance.presentation;
+
 
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.IFrame;

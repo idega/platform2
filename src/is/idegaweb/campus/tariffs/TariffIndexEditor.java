@@ -1,5 +1,6 @@
 package is.idegaweb.campus.tariffs;
 
+
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.Finder;
 import com.idega.block.finance.presentation.KeyEditor;

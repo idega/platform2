@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl3.java,v 1.6 2001/10/24 21:32:12 aron Exp $
+ * $Id: TextControl3.java,v 1.7 2001/11/08 15:40:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.service;
+
 
 import java.sql.SQLException;
 import com.idega.presentation.*;

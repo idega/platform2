@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccounts.java,v 1.1 2001/10/09 23:07:24 aron Exp $
+ * $Id: ContractAccounts.java,v 1.2 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -1,5 +1,6 @@
 package is.idegaweb.campus.allocation;
 
+
 import com.idega.presentation.PresentationObjectContainer;
 import java.util.List;
 import java.sql.SQLException;

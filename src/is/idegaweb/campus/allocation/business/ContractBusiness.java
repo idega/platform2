@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.6 2001/10/09 22:49:50 aron Exp $
+ * $Id: ContractBusiness.java,v 1.7 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,8 @@
  *
  */
 package is.idegaweb.campus.allocation.business;
+
+
 
 import is.idegaweb.campus.allocation.SysPropsSetter;
 import is.idegaweb.campus.entity.*;

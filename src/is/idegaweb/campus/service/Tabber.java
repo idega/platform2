@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.27 2001/10/17 12:54:26 gummi Exp $
+ * $Id: Tabber.java,v 1.28 2001/11/08 15:40:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.service;
+
 
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.user.data.User;

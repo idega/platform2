@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffer.java,v 1.17 2001/10/17 12:54:26 gummi Exp $
+ * $Id: CampusTariffer.java,v 1.18 2001/11/08 15:40:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.tariffs;
+
 
 import is.idegaweb.campus.presentation.Edit;
 import com.idega.block.finance.data.*;

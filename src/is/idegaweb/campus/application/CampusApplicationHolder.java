@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationHolder.java,v 1.4 2001/08/30 10:01:52 palli Exp $
+ * $Id: CampusApplicationHolder.java,v 1.5 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.application;
+
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;

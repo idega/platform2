@@ -1,5 +1,6 @@
 package is.idegaweb.campus.tariffs.business;
 
+
 import java.util.Map;
 import java.util.List;
 import java.util.Hashtable;

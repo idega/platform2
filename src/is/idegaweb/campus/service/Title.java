@@ -1,5 +1,5 @@
 /*
- * $Id: Title.java,v 1.7 2001/10/05 08:05:43 tryggvil Exp $
+ * $Id: Title.java,v 1.8 2001/11/08 15:40:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.service;
+
 
 import com.idega.data.genericentity.Group;
 import com.idega.data.genericentity.Member;

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.13 2001/08/20 02:57:16 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.14 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.allocation;
+
 
 import com.idega.block.application.data.*;
 import java.util.List;

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinanceIndex.java,v 1.2 2001/10/05 08:05:44 tryggvil Exp $
+ * $Id: CampusFinanceIndex.java,v 1.3 2001/11/08 15:40:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.tariffs;
+
 
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.IFrame;

@@ -1,5 +1,6 @@
 package is.idegaweb.campus.allocation;
 
+
 import com.idega.presentation.Block;
 import com.idega.presentation.Page;
 import com.idega.idegaweb.IWResourceBundle;

@@ -1,5 +1,6 @@
 package is.idegaweb.campus.presentation;
 
+
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.InterfaceObject;
 /**

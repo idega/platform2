@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.22 2001/11/06 17:05:53 aron Exp $
+ * $Id: Menu.java,v 1.23 2001/11/08 15:40:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.service;
+
 
 import com.idega.data.genericentity.Group;
 import com.idega.data.genericentity.Member;

@@ -1,5 +1,5 @@
 /*
- * $Id: RoughOrderForm.java,v 1.6 2001/10/17 12:54:25 gummi Exp $
+ * $Id: RoughOrderForm.java,v 1.7 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.allocation;
+
 
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.presentation.IWContext;

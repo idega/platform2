@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.14 2001/09/12 12:41:52 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.15 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.application;
+
 
 import is.idegaweb.campus.entity.SpouseOccupation;
 import is.idegaweb.campus.entity.CurrentResidency;

@@ -1,5 +1,6 @@
 package is.idegaweb.campus.allocation;
 
+
 import is.idegaweb.campus.presentation.Edit;
 import is.idegaweb.campus.allocation.business.ContractBusiness;
 import com.idega.presentation.IWContext;

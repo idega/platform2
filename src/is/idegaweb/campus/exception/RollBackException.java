@@ -1,6 +1,7 @@
 package is.idegaweb.campus.exception;
 
 
+
 /**
  * Title:
  * Description:

@@ -1,5 +1,5 @@
 /*
- * $Id: RoughOrderer.java,v 1.1 2001/07/13 09:33:29 palli Exp $
+ * $Id: RoughOrderer.java,v 1.2 2001/11/08 15:40:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -8,6 +8,7 @@
  *
  */
 package is.idegaweb.campus.allocation;
+
 
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.application.data.Applicant;
