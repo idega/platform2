@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.13 2002/01/29 14:21:12 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.14 2002/02/01 12:30:54 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,6 +25,8 @@ import com.idega.util.idegaTimestamp;
  */
 
 public class ApplicationFinder {
+
+
 
   public static List listOfNewApplicationInSubject(int subjectId){
     try {

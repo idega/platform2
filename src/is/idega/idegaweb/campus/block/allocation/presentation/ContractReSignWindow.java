@@ -114,12 +114,19 @@ public class ContractReSignWindow extends Window{
     try{
       if(iContractId > 0){
         Contract eContract = new Contract(iContractId);
+        Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
         User user = new User(eContract.getUserId().intValue());
         boolean isContractUser = user.getID() == eUser.getID();
         if(user !=null){
           T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())),1,row);
           T.add(Edit.formatText(iwrb.getLocalizedString("name","Name")),1,row);
           T.add(Edit.formatText(user.getName()),2,row);
+          row++;
+          T.add(Edit.formatText(iwrb.getLocalizedString("ssn","SocialNumber")),1,row);
+          T.add(Edit.formatText(eApplicant.getSSN()),2,row);
+          row++;
+          T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
+          T.add(Edit.formatText(getApartmentString(BuildingCacher.getApartment(eContract.getApartmentId().intValue()))),2,row);
           row++;
           T.add(Edit.formatText(iwrb.getLocalizedString("valid_from","Valid to")),1,row);
           T.add(Edit.formatText(new idegaTimestamp(eContract.getValidFrom()).getLocaleDate(iwc)),2,row);
