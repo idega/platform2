@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Vector;
 import javax.ejb.CreateException;
@@ -614,10 +615,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 
 	private Collection getUserQueriesByGroup(Group group) throws FinderException {
   	 UserQueryHome queryHome = getUserQueryHome();
-  	 Collection privateUserQueries = queryHome.findByGroupAndPermission(group, QueryConstants.PERMISSION_PRIVATE_QUERY);
-  	 Collection publicUserQueries = queryHome.findByGroupAndPermission(group, QueryConstants.PERMISSION_PUBLIC_QUERY);
-  	 privateUserQueries.addAll(publicUserQueries);
-  	 return privateUserQueries;
+  	 return queryHome.findByGroup(group);
   }
 		
 
@@ -722,20 +720,18 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	
 	public Collection getOwnQueries(IWContext iwc) throws RemoteException, FinderException {
 		Group topGroup = getTopGroupForUser(iwc);
-		TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
-		getOwnQueries(topGroup,queryRepresentations, -1);
+		SortedMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+		getOwnQueries(topGroup,queryRepresentations);
 		return queryRepresentations.values();
 	}
 	
 	public Collection getQueries(IWContext iwc , int showOnlyOneQueryWithId) throws RemoteException, FinderException {
 			 //To keep them ordered alphabetically
-		TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+		SortedMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
 		// start: special case: admin
 		if (iwc.isSuperAdmin()) {
-			User user = iwc.getCurrentUser();
-			// use the admin user as group
-			getOwnQueries(user, queryRepresentations, showOnlyOneQueryWithId);
-			// bye bye
+			User superAdministrator = iwc.getCurrentUser();
+			getAllQueriesForSuperAdministrator(queryRepresentations, showOnlyOneQueryWithId, superAdministrator);
 			return queryRepresentations.values();
 		}
 		// end: special case: admin
@@ -774,12 +770,24 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			parentGroups = new ArrayList();
 		}
 			// add own queries
-			getOwnQueries(topGroup, queryRepresentations, showOnlyOneQueryWithId);
-			// add public queries
+		UserQuery userQuery = null;
+		if (showOnlyOneQueryWithId == -1) {
+			getOwnQueries(topGroup, queryRepresentations);
+		}
+		else {
+			userQuery = getQuery(showOnlyOneQueryWithId);
+			checkAndAddOwnQuery(queryRepresentations,topGroup, userQuery);
+		}
+		// add public queries
 		Iterator parentGroupsIterator = parentGroups.iterator();
 		while (parentGroupsIterator.hasNext()) {
 			Group group = (Group) parentGroupsIterator.next();
-			getQueriesFromGroup(queryRepresentations, group, false, false, showOnlyOneQueryWithId);
+			if (showOnlyOneQueryWithId == -1) {
+				getPublicQueriesFromGroup(queryRepresentations, group);
+			}
+			else {
+				checkAndAddPublicQuery(queryRepresentations, group, userQuery);
+			}
 		}
 		return queryRepresentations.values();
 	}
@@ -800,54 +808,125 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 			return topGroup;
 	}
 	
-	private void getOwnQueries(Group topGroup, TreeMap queryRepresentations, int showOnlyOneQueryWithId) throws  FinderException {
-		// add own queries
-			getQueriesFromGroup(queryRepresentations, topGroup, true, true, showOnlyOneQueryWithId);
-			getQueriesFromGroup(queryRepresentations, topGroup, false, true, showOnlyOneQueryWithId);
+	private void getAllQueriesForSuperAdministrator(SortedMap queryRepresentations, int showOnlyOneQueryWithId, Group superAdministrator) throws FinderException {
+		UserQueryHome userQueryHomeTemp = getUserQueryHome();
+		Collection userQueries = null;
+		if (showOnlyOneQueryWithId == -1) {
+			userQueries = userQueryHomeTemp.findAll();
 		}
+		else {
+			UserQuery userQuery = userQueryHomeTemp.findByPrimaryKey(new Integer(showOnlyOneQueryWithId));
+			userQueries = new ArrayList(1);
+			userQueries.add(userQuery);
+		}
+		convertQueriesForSuperAdministrator(queryRepresentations, userQueries, superAdministrator);
+	}
 	
-	private void getQueriesFromGroup(TreeMap queryRepresentations, Group group, boolean isPrivate, boolean belongsToUser, int showOnlyOneQueryWithId) throws FinderException { 
+	private void getOwnQueries(Group group, SortedMap queryRepresentations) throws  FinderException {
+		Collection userQueries = getUserQueriesByGroup(group);
+		String groupName = getNameForGroup(group);
+		convertQueries(queryRepresentations, userQueries, groupName, true);
+	}
+	
+	private void getPublicQueriesFromGroup(SortedMap queryRepresentations, Group group) throws FinderException { 
 		// bad implementation:
 		// if the children list is empty null is returned. 
 		//TODO: thi: change the implementation
+		String groupName = getNameForGroup(group);
+		UserQueryHome userQueryHomeTemp = getUserQueryHome();
+		String permission = QueryConstants.PERMISSION_PUBLIC_QUERY;
+		Collection userQueries = userQueryHomeTemp.findByGroupAndPermission(group, permission);
+		convertQueries(queryRepresentations, userQueries, groupName, false);
+	}
+
+	private UserQuery getQuery( int showQueryWithId) throws FinderException { 
+		return getUserQueryHome().findByPrimaryKey(new Integer(showQueryWithId));
+	}
+	
+	private void checkAndAddPublicQuery(SortedMap queryRepresentations, Group group, UserQuery userQuery) {
+		// add only one user query to the list that is not deleted (usually this method is never called with an id of a deleted user query)
+		String permissionPublic = QueryConstants.PERMISSION_PUBLIC_QUERY;
+		boolean isDeleted = userQuery.getDeleted();
+		if (! isDeleted) {
+			Group queryOwner = userQuery.getOwnership();
+			String queryPermission = userQuery.getPermisson();
+			if (group.equals(queryOwner) && permissionPublic.equals(queryPermission)) {
+				String groupName = getNameForGroup(group);
+				Collection userQueries = new ArrayList(1);
+				userQueries.add(userQuery);
+				convertQueries(queryRepresentations, userQueries, groupName, false);
+			}
+		}
+	}
+	
+	private void checkAndAddOwnQuery(SortedMap queryRepresentations, Group group, UserQuery userQuery) { 
+		boolean isDeleted = userQuery.getDeleted();
+		if (! isDeleted) {
+			Group queryOwner = userQuery.getOwnership();
+			if (group.equals(queryOwner)) {
+				String groupName = getNameForGroup(group);
+				Collection userQueries = new ArrayList(1);
+				userQueries.add(userQuery);
+				convertQueries(queryRepresentations, userQueries, groupName, true);
+			}
+		}
+	}
+	
+	private String getNameForGroup(Group group) {
 		String groupName = group.getName();
 		if (groupName == null || groupName.length() == 0) {
 			groupName = NON_GROUPNAME_SUBSTITUTE;
 		}
-		UserQueryHome userQueryHomeTemp = getUserQueryHome();
-		String permission = (isPrivate) ? QueryConstants.PERMISSION_PRIVATE_QUERY : QueryConstants.PERMISSION_PUBLIC_QUERY;
-		Collection userQueries = userQueryHomeTemp.findByGroupAndPermission(group, permission);
+		return groupName;
+	}
+	
+	private void convertQueriesForSuperAdministrator(SortedMap queryRepresentations, Collection userQueries, Group superAdministrator) {
+		Object superAdministratorID = superAdministrator.getPrimaryKey();
+		String superAdministratorName = superAdministrator.getName();
 		Iterator iterator = userQueries.iterator();
 		while (iterator.hasNext())	{
 			UserQuery userQuery = (UserQuery) iterator.next();
-			int id = ((Integer) userQuery.getPrimaryKey()).intValue();
-			String name = userQuery.getName();
-			int countOfSameName = 2;
-			
-			boolean alreadyAddedKey = queryRepresentations.containsKey(name);
-			if(alreadyAddedKey){
-				String newName = name;
-				while(alreadyAddedKey){
-					//probably crappy code its 4am and i dead tired - Eiki
-					//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
-					newName = new String(name+countOfSameName);
-					alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
-					countOfSameName++;
-				}
-				name = newName;
+			Group queryOwner = userQuery.getOwnership();
+			String ownerName = null;
+			if (superAdministratorID.equals(queryOwner.getPrimaryKey())) {
+				ownerName = superAdministratorName;
 			}
-			// show only the query with a specified id if desired 
-			if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
-				QueryRepresentation representation = new QueryRepresentation(id, name, groupName, isPrivate, belongsToUser);
-				if (queryRepresentations.containsKey(name)) {
-					// usually all names are different (you can't store the same name twice), that is
-					// this shouldn't happen at all therefore we do a very simple solution
-					name += " (1)";
-				}
-				queryRepresentations.put(name,representation);
+			else {
+				ownerName = getNameForGroup(queryOwner);
 			}
+			convertQuery(queryRepresentations, userQuery,ownerName, true);
+		}
+	}
+		
+	private void convertQueries(SortedMap queryRepresentations, Collection userQueries, String groupName,  boolean belongsToUser) { 
+		Iterator iterator = userQueries.iterator();
+		while (iterator.hasNext())	{
+			UserQuery userQuery = (UserQuery) iterator.next();
+			convertQuery(queryRepresentations, userQuery, groupName, belongsToUser);
 		}  
 	}
-	
+
+	private void convertQuery(SortedMap queryRepresentations, UserQuery userQuery, String ownerName, boolean belongsToUser) {
+		String permission = userQuery.getPermisson();
+		boolean isPrivate = QueryConstants.PERMISSION_PRIVATE_QUERY.equals(permission);
+		int id = ((Integer) userQuery.getPrimaryKey()).intValue();
+		String name = userQuery.getName();
+		int countOfSameName = 2;
+		
+		boolean alreadyAddedKey = queryRepresentations.containsKey(name);
+		if(alreadyAddedKey){
+			String newName = name;
+			while(alreadyAddedKey){
+				//probably crappy code its 4am and i dead tired - Eiki
+				//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
+				newName = new String(name+countOfSameName);
+				alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
+				countOfSameName++;
+			}
+			name = newName;
+		}
+		QueryRepresentation representation = new QueryRepresentation(id, name, ownerName, isPrivate, belongsToUser);
+		queryRepresentations.put(name,representation);
+	}
 }
 
