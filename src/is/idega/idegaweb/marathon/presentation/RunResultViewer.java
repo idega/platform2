@@ -180,16 +180,7 @@ public class RunResultViewer extends Block {
 	
 	private void getTotalResults(Table table, int row) {
 		try {
-			List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
-			List runs = new ArrayList();
-			Iterator runGroupIter = runGroups.iterator();
-			
-			while (runGroupIter.hasNext()) {
-				Group runGroup = (Group) runGroupIter.next();
-				Collection runners = getRunBiz().getRunnersByDistance(distance, runGroup);
-				runs.addAll(runners);
-			}
-
+			Collection runs = getRunBiz().getRunnersByDistance(distance, null);
 			row = insertRunGroupIntoTable(table, row, "results.all_participants");
 
 			Iterator runIter = runs.iterator();
@@ -214,7 +205,7 @@ public class RunResultViewer extends Block {
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
 	
-				Collection runners = getRunBiz().getRunnersByDistance(runGroup, distance);
+				Collection runners = getRunBiz().getRunnersByDistance(distance, runGroup);
 				if (runners.size() > 0) {
 					row = insertRunGroupIntoTable(table, row, "group_" + runGroup.getName());
 					Iterator runIter = runners.iterator();
@@ -243,7 +234,7 @@ public class RunResultViewer extends Block {
 			Iterator runGroupIter = groups.iterator();
 			while (runGroupIter.hasNext()) {
 				Group runGroup = (Group) runGroupIter.next();
-				Collection runners = getRunBiz().getRunnersByDistance(runGroup, distance);
+				Collection runners = getRunBiz().getRunnersByDistance(distance, runGroup);
 				runs.addAll(runners);
 			}
 			
