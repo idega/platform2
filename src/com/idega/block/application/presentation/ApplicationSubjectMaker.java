@@ -8,6 +8,7 @@ import com.idega.presentation.Block;
 import com.idega.block.IWBlock;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.SubmitButton;
@@ -21,12 +22,13 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.text.Edit;
 import java.util.List;
+
 /**
  * Title:
  * Description:
  * Copyright:    Copyright (c) 2001
- * Company:
- * @author
+ * Company:      idega.is
+ * @author 2000 - idega team - <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
  * @version 1.0
  */
 
@@ -45,20 +47,46 @@ public class ApplicationSubjectMaker extends Block{
 
   }
 
+  public String getLocalizedNameKey(){
+    return "subjects";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Subjects";
+  }
+
   protected void control(IWContext iwc){
 
 
       if(isAdmin){
-        if(iwc.isParameterSet("save")){
-          doUpdate(iwc);
+        ApplicationSubject subject = null;
+        if(iwc.isParameterSet("app_subject_id")){
+          try {
+            subject = new ApplicationSubject(Integer.parseInt(iwc.getParameter("app_subject_id")));
+          }
+          catch (Exception ex) {
+
+          }
+
+        }
+
+        if(iwc.isParameterSet("save")||iwc.isParameterSet("save.x")){
+          doUpdate(iwc,subject);
         }
         else if(iwc.isParameterSet("delete")){
           doDelete(iwc);
         }
-        this.add(makeInputTable());
+
+        Table T = new Table();
+        T.setVerticalAlignment(1,1,"top");
+        T.setVerticalAlignment(2,1,"top");
+        T.add(getSubjectFormTable(subject),1,1);
+        T.add(getSubjectTable(subject),2,1);
+        add(T);
+
       }
       else
-        this.add(new Text(iwrb.getLocalizedString("access_denied","Access Denied")));
+        this.add(new Text(iwrb.getLocalizedString("access_denied","Access denied")));
 
   }
 
@@ -68,46 +96,54 @@ public class ApplicationSubjectMaker extends Block{
     return LinkTable;
   }
 
-  public PresentationObject makeInputTable(){
+  private PresentationObject getSubjectTable(ApplicationSubject subject){
 
-    Table Frame = new Table(3,2);
-      Frame.setCellpadding(0);
-      Frame.setCellspacing(0);
-    Table Left = new Table();
-      Left.setCellpadding(0);
-      Left.setCellspacing(0);
-    Table Right = new Table();
-      Right.setCellpadding(0);
-      Right.setCellspacing(0);
-    Frame.add(Left,1,1);
-    Frame.add(Right,3,1);
     List L = ApplicationFinder.listOfSubject();
-    Table T = new Table();
-    TextInput Description = new TextInput("app_subj_desc");
-    DateInput ExpireDate = new DateInput("app_subj_xdate",true);
-    ExpireDate.setDate(idegaTimestamp.RightNow().getSQLDate());
-    SubmitButton SaveButton = new SubmitButton("save","Save");
-    T.add(iwrb.getLocalizedString("description", "Description") +" :",1,1);
-    T.add(iwrb.getLocalizedString("expiredate", "Expiredate") +" :",2,1);
-    T.add(Description,1,2);
-    T.add(ExpireDate,2,2);
-    T.add(SaveButton,3,2);
+    DataTable dTable = new DataTable();
+    dTable.setTitlesHorizontal(true);
+    dTable.addTitle(iwrb.getLocalizedString("subjects","Subjects"));
+    dTable.add(Edit.formatText(iwrb.getLocalizedString("description", "Description")),1,1);
+    dTable.add(Edit.formatText(iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
+
     if(L != null){
       int len = L.size();
-      int a = 3;
+      int a = 2;
       for (int i = 0; i < len; i++) {
         ApplicationSubject AS = (ApplicationSubject) L.get(i);
-        T.add(Edit.formatText(AS.getDescription()),1,a);
-        T.add(Edit.formatText(new idegaTimestamp(AS.getExpires()).getISLDate()),2,a);
-        T.add((getDeleteLink(AS)),3,a);
+        dTable.add(getSubjectLink(AS),1,a);
+        dTable.add(Edit.formatText(new idegaTimestamp(AS.getExpires()).getISLDate()),2,a);
+        dTable.add((getDeleteLink(AS)),3,a);
         a++;
       }
     }
-    Form F = new Form();
-    F.add(T);
-    Right.add(F);
+    return dTable;
+  }
 
-    return Frame;
+  private PresentationObject getSubjectFormTable(ApplicationSubject subject){
+    DataTable dTable = new DataTable();
+    dTable.setTitlesHorizontal(true);
+    dTable.addTitle(iwrb.getLocalizedString("new_subject","New subject"));
+
+    TextInput Description = new TextInput("app_subj_desc");
+    Edit.setStyle(Description);
+    DateInput ExpireDate = new DateInput("app_subj_xdate",true);
+    ExpireDate.setStyleAttribute("style",Edit.styleAttribute);
+    ExpireDate.setDate(idegaTimestamp.RightNow().getSQLDate());
+
+    if(subject !=null){
+      Description.setContent(subject.getDescription());
+      ExpireDate.setDate(subject.getExpires());
+      dTable.add(new HiddenInput("app_subject_id",String.valueOf(subject.getID())));
+    }
+    dTable.add(Edit.formatText(iwrb.getLocalizedString("description", "Description")),1,1);
+    dTable.add(Edit.formatText(iwrb.getLocalizedString("expiredate", "Expiredate")),2,1);
+    dTable.add(Description,1,2);
+    dTable.add(ExpireDate,2,2);
+    dTable.addButton(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"save"));
+
+    Form F = new Form();
+    F.add(dTable);
+    return F;
   }
 
   public Link getDeleteLink(ApplicationSubject AS){
@@ -116,16 +152,23 @@ public class ApplicationSubjectMaker extends Block{
     return L;
   }
 
+   public Link getSubjectLink(ApplicationSubject AS){
+    Link L = new Link(AS.getDescription());
+    L.addParameter("app_subject_id",AS.getID());
+    return L;
+  }
+
   public void doDelete(IWContext iwc){
     int id = Integer.parseInt(iwc.getParameter("delete"));
     ApplicationBusiness.deleteApplicationSubject(id);
   }
 
-  public void doUpdate(IWContext iwc){
+  public void doUpdate(IWContext iwc,ApplicationSubject subject){
     String sDesc= iwc.getParameter("app_subj_desc").trim();
     String sDate = iwc.getParameter("app_subj_xdate");
+    int id = subject !=null?subject.getID():-1;
     if(sDesc.length() > 0){
-      ApplicationBusiness.saveApplicationSubject(-1,sDesc,new idegaTimestamp(sDate).getSQLDate());
+      ApplicationBusiness.saveApplicationSubject(id,sDesc,new idegaTimestamp(sDate).getSQLDate());
     }
   }
 
