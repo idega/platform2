@@ -214,6 +214,12 @@ public class ServiceViewer extends Window {
     content.setCellspacing(0);
     content.setCellpadding(2);
 
+    boolean useColors = false;
+    String currentColor = color1;
+    if( (color1!=null) && (color2!=null) ){
+      useColors = true;
+    }
+
     if( (dateFrom!=null) && (dateTo!=null) ){
       prodlist = ProductBusiness.getProducts(supplier.getID(),dateFrom,dateTo);
     }
@@ -250,6 +256,11 @@ public class ServiceViewer extends Window {
         Product prod = (Product) iter.next();
         try{
           serv = tsb.getService(prod);
+          if (y % 2 == 0) {
+            currentColor = color2;
+          }else {
+            currentColor = color1;
+          }
 
           /**
            * @todo Laga fyrir multi timeframes...
@@ -260,6 +271,7 @@ public class ServiceViewer extends Window {
           number.setText(prod.getNumber());
           number.setBold(true);
           content.add(number,x,y);
+
         //name
           Text desc = (Text) text.clone();
           desc.setText(ProductBusiness.getProductName(prod, iLocaleID));
@@ -294,6 +306,14 @@ public class ServiceViewer extends Window {
             content.add(more,++x,y);
           }*/
 
+          if (useColors) {
+            content.setColor(1, y, currentColor);
+            content.setColor(2, y, currentColor);
+            content.setColor(3, y, currentColor);
+            content.setColor(4, y, currentColor);
+            content.setColor(5, y, currentColor);
+          }
+
           if( showBuyButton){
             iwc.setSessionAttribute(IW_TRAVEL_ADD_BUY_BUTTON+prod.getID(),String.valueOf(showBuyButton));
             Link buy = LinkGenerator.getLink(iwc,prod.getID());
@@ -311,11 +331,11 @@ public class ServiceViewer extends Window {
         x = 1;
       }
     }
-
+/*
     if( (color1!=null) && (color2!=null) ){
       content.setHorizontalZebraColored(color1,color2);
     }
-
+*/
     return content;
   }
 
