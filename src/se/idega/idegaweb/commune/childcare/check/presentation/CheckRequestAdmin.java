@@ -336,7 +336,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 		String body = getResourceBundle(iwc).getLocalizedString("check.granted_message_body","Your check has been granted");
 		getCheckBusiness(iwc).approveCheck(iwc,check,subject,body);
 
-		add(getText("Check granted: ")+((Integer)check.getPrimaryKey()).toString());
+		add(getText(getResourceBundle(iwc).getLocalizedString("check.check_granted","Check granted")+": "+((Integer)check.getPrimaryKey()).toString()));
 		add(new Break(2));
 		viewCheckList(iwc);
 	}
