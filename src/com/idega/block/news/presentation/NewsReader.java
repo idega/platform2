@@ -496,7 +496,6 @@ public class NewsReader extends Block implements IWBlock{
 			if ( headlineAsLink ) {
 				Link headlineLink = new Link(headLine);
 				headlineLink.addParameter(prmMore,news.getID());
-				headlineLink.setBold(true);
 				if(viewPageId > 0)
 					headlineLink.setPage(viewPageId);
 				T.add(headlineLink, 1, 2);
@@ -519,7 +518,6 @@ public class NewsReader extends Block implements IWBlock{
 		  if ( headlineAsLink ) {
 				Link headlineLink = new Link(headLine);
 				headlineLink.addParameter(prmMore,news.getID());
-				//headlineLink.setBold(true);
 				if(viewPageId > 0)
 					headlineLink.setPage(viewPageId);
 				T.add(headlineLink, 3, 1);
@@ -659,7 +657,7 @@ public class NewsReader extends Block implements IWBlock{
 		getHeadlineProxy().setFontColor(color);
 	}
 
-	public void setTextFontFontColor(String color){
+	public void setTextFontColor(String color){
 	  getTextProxy().setFontColor(color);
 	}
 
