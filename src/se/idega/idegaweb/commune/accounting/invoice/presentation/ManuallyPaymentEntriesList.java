@@ -759,7 +759,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	 * 
 	 */
 	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException{
-		return (SchoolBusiness) IDOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+		return (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 	}
 
 	/**

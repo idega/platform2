@@ -1319,7 +1319,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		return (VATBusiness) IBOLookup.getServiceInstance(iwc, VATBusiness.class);
 	}
 	private SchoolBusiness getSchoolBusiness(IWContext iwc) throws RemoteException{
-		return (SchoolBusiness) IDOLookup.getServiceInstance(iwc, SchoolBusiness.class);
+		return (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 	}	
 	
 	private void checkNotNull(IWContext iwc, String par, Map errorMessages, String errorPar, String errorMsg){
