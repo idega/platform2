@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.36 2003/11/17 14:53:26 joakim Exp $
+ * $Id: PostingBusinessBean.java,v 1.37 2003/11/18 10:04:09 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -756,22 +756,22 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			validateString(doublePosting,date);
 		}catch(NullPointerException ex){
 			ex.printStackTrace();
-			throw new PostingException("TODO...", ex.getMessage()); 
+			throw new PostingException("postingException.missing_parameter_value", ex.getMessage()); 
 		}catch(RemoteException ex){
 			ex.printStackTrace();
-			throw new PostingException("", ex.getMessage()); 				
+			throw new PostingException("postingException.service_unavailable", ex.getMessage()); 				
 		}catch(FinderException ex){			
 			ex.printStackTrace();
-			throw new PostingException("", ex.getMessage()); 				
+			throw new PostingException("postingException.export_data_mapping", ex.getMessage()); 				
 		}catch(PostingException ex){
 			ex.printStackTrace();
-			throw new PostingException("", ex.getMessage()); 				
+			throw new PostingException("postingException.posting", ex.getMessage()); 				
 		}catch(MissingMandatoryFieldException ex){
 			ex.printStackTrace();
-			throw new PostingException("", ex.getMessage()); 				
+			throw new PostingException("postingException.missing_mandatory_field", ex.getMessage()); 				
 		}catch(PostingParametersException ex){
 			ex.printStackTrace();
-			throw new PostingException("", ex.getMessage()); 				
+			throw new PostingException("postingException.posting_parameter", ex.getMessage()); 				
 		}
 		return new String[] {ownPosting, doublePosting};
 	}	
