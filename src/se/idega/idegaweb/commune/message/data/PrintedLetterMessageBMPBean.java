@@ -41,10 +41,6 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	private static final String CASE_CODE_KEY = "SYMEBRV";
 	private static final String CASE_CODE_DESCRIPTION = "Letter Message";
 	
-	public static final String LETTER_TYPE_DEFAULT="DEFA";
-	public static final String LETTER_TYPE_PASSWORD="PASS";
-
-
 	public String getEntityName() {
 		return "MSG_LETTER_MESSAGE";
 	}
@@ -73,7 +69,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public void setDefaultValues(){
-		setLetterType(LETTER_TYPE_DEFAULT);	
+		setLetterType(MessageConstants.LETTER_TYPE_DEFAULT);	
 	}
 
 	public void insertStartData() {
@@ -205,7 +201,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public void setAsPasswordLetter(){
-		setLetterType(LETTER_TYPE_PASSWORD);
+		setLetterType(MessageConstants.LETTER_TYPE_PASSWORD);
 	}
 
 
@@ -226,7 +222,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	protected SelectQuery idoSelectQueryGetCountDefaultLettersWithStatus(String caseStatus){
-		return idoSelectQueryGetLettersCountByStatusAndType(caseStatus,LETTER_TYPE_DEFAULT);
+		return idoSelectQueryGetLettersCountByStatusAndType(caseStatus,MessageConstants.LETTER_TYPE_DEFAULT);
 	}
 		
 	protected SelectQuery idoSelectQueryGetCountPasswordLettersWithStatus(String caseStatus){
@@ -358,7 +354,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	
 	public String[] ejbHomeGetLetterTypes()
 	{
-		String[] types = {LETTER_TYPE_DEFAULT,LETTER_TYPE_PASSWORD};
+		String[] types = {MessageConstants.LETTER_TYPE_DEFAULT,MessageConstants.LETTER_TYPE_PASSWORD};
 		return types;
 	}
 	
@@ -537,22 +533,22 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	
 
 	public Collection ejbFindUnPrintedPasswordLetters(int resultSize,int startingIndex) throws FinderException {
-		String letterType = LETTER_TYPE_PASSWORD;
+		String letterType = MessageConstants.LETTER_TYPE_PASSWORD;
 		return ejbFindUnPrintedLettersByType(letterType,resultSize,startingIndex);
 	}
 
 	public Collection ejbFindPrintedPasswordLetters(int resultSize,int startingIndex) throws FinderException {
-		String letterType = LETTER_TYPE_PASSWORD;
+		String letterType = MessageConstants.LETTER_TYPE_PASSWORD;
 		return ejbFindPrintedLettersByType(letterType,resultSize,startingIndex);
 	}
 
 	public Collection ejbFindUnPrintedDefaultLetters(int resultSize,int startingIndex) throws FinderException {
-		String letterType = LETTER_TYPE_DEFAULT;
+		String letterType = MessageConstants.LETTER_TYPE_DEFAULT;
 		return ejbFindUnPrintedLettersByType(letterType,resultSize,startingIndex);
 	}
 
 	public Collection ejbFindPrintedDefaultLetters(int resultSize,int startingIndex) throws FinderException {
-		String letterType = LETTER_TYPE_DEFAULT;
+		String letterType = MessageConstants.LETTER_TYPE_DEFAULT;
 		return ejbFindPrintedLettersByType(letterType,resultSize,startingIndex);
 	}
 	

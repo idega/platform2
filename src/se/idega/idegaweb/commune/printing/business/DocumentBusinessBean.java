@@ -22,18 +22,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.StringTokenizer;
+
 import javax.ejb.FinderException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.business.NoUserAddressException;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessagePdfHandler;
+import se.idega.idegaweb.commune.message.data.MessageConstants;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfo;
 import se.idega.idegaweb.commune.message.data.MessageHandlerInfoHome;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
-import se.idega.idegaweb.commune.message.data.PrintedLetterMessageBMPBean;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 import se.idega.idegaweb.commune.message.data.SystemArchivationMessageBMPBean;
@@ -41,6 +43,7 @@ import se.idega.idegaweb.commune.message.data.SystemArchivationMessageHome;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 import se.idega.idegaweb.commune.printing.data.PrintDocumentsHome;
+
 import com.idega.block.process.data.Case;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.file.data.ICFile;
@@ -340,7 +343,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 	}
 
 	public boolean isBulkLetterType(String type) {
-		if (type.equals(PrintedLetterMessageBMPBean.LETTER_TYPE_PASSWORD)) return true;
+		if (type.equals(MessageConstants.LETTER_TYPE_PASSWORD)) return true;
 		if (type.equals(SystemArchivationMessageBMPBean.PRINT_TYPE)) return true;
 
 		return false;
@@ -653,9 +656,9 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 		PrintMessage msg = dpc.getMessage();
 		if (msg instanceof PrintedLetterMessage) {
 			PrintedLetterMessage pmsg = (PrintedLetterMessage) msg;
-			if (pmsg.getLetterType().equals(PrintedLetterMessageBMPBean.LETTER_TYPE_PASSWORD))
+			if (pmsg.getLetterType().equals(MessageConstants.LETTER_TYPE_PASSWORD))
 				return createPasswordLetterContent(dpc);
-			else if (pmsg.getLetterType().equals(PrintedLetterMessageBMPBean.LETTER_TYPE_DEFAULT)) return createDefaultLetterContent(dpc);
+			else if (pmsg.getLetterType().equals(MessageConstants.LETTER_TYPE_DEFAULT)) return createDefaultLetterContent(dpc);
 		}
 		else if (msg instanceof SystemArchivationMessage) {
 			createArchiveMessageContent(dpc);
@@ -667,7 +670,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 	private void addTemplateToPage(PdfTemplate template, PdfWriter writer, String type) throws Exception {
 		if (template != null) {
 
-			if (type.equals(PrintedLetterMessageBMPBean.LETTER_TYPE_PASSWORD)) {
+			if (type.equals(MessageConstants.LETTER_TYPE_PASSWORD)) {
 				PdfContentByte cb = writer.getDirectContent();
 				cb.addTemplate(template, getPointsFromMM(15f), getPointsFromMM(297 - 22));
 			}
@@ -676,7 +679,7 @@ public class DocumentBusinessBean extends com.idega.business.IBOServiceBean impl
 	}
 
 	private PdfTemplate getLetterTemplate(String type, PdfWriter writer) throws Exception {
-		if (type.equals(PrintedLetterMessageBMPBean.LETTER_TYPE_PASSWORD)) { return createPasswordLetterTemplate(writer); }
+		if (type.equals(MessageConstants.LETTER_TYPE_PASSWORD)) { return createPasswordLetterTemplate(writer); }
 		return null;
 	}
 
