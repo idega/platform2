@@ -52,8 +52,13 @@ public class ParticipantNumberSetter extends IBOServiceBean{
 			while(iter.hasNext()) {
 				Run r = (Run) iter.next();
 				r.setParticipantNumber(-1);
-				getRunBiz(iwc).setParticipantNumber(r);
 				r.store();
+			}
+			Iterator iter2 = run.iterator(); 
+			while(iter2.hasNext()) {
+				Run r = (Run) iter.next();
+				if(r.getParticipantNumber() == -1)
+					getRunBiz(iwc).setParticipantNumber(r);
 			}
 		}
 		
