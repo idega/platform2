@@ -400,7 +400,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
         sql.append(" b."+getServiceIDColumnName()+"="+serviceId);
         sql.append(" and ");
 //				sql.append(" b."+getBookingDateColumnName()+" like '%"+TextSoap.findAndCut(stamp.toSQLDateString(),"-")+"%'");
-        sql.append(" b."+getBookingDateColumnName()+" = '%"+stamp.toSQLDateString()+"%'");
+        sql.append(" b."+getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
         if (code != null) {
         	sql.append(" and ");
         	sql.append(" b."+getBookingCodeColumnName()+"= '"+code+"'");
@@ -477,7 +477,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
             sql.append(" b."+getServiceIDColumnName()+"="+serviceId);
             sql.append(" and ");
 //						sql.append(" b."+getBookingDateColumnName()+" like '%"+TextSoap.findAndCut(stamp.toSQLDateString(),"-")+"%'");
-            sql.append(" b."+getBookingDateColumnName()+" = '%"+stamp.toSQLDateString()+"%'");
+            sql.append(" b."+getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
 						if (code != null) {
 							sql.append(" and ");
 							sql.append(" b."+getBookingCodeColumnName()+"= '"+code+"'");
@@ -587,7 +587,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
             sql.append(" and (");
             if ( (fromStamp != null) && (toStamp == null) ) {
 //              sql.append(dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
-              sql.append(dateColumn+" = '"+fromStamp.toSQLDateString()+"%'");
+              sql.append(dateColumn+" like '%"+fromStamp.toSQLDateString()+"%'");
             }else if ( (fromStamp != null) && (toStamp != null)) {
               sql.append(" (");
 //              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
@@ -675,7 +675,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     if (fromStamp != null && toStamp == null) {
       sql.append(" and ");
 //      sql.append("b."+dateColumn+" like '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"%'");
-      sql.append("b."+dateColumn+" = '"+fromStamp.toSQLDateString()+"%'");
+      sql.append("b."+dateColumn+" like '%"+fromStamp.toSQLDateString()+"%'");
     }else if (fromStamp != null && toStamp != null) {
       sql.append(" and ");
 //      sql.append("b."+dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
