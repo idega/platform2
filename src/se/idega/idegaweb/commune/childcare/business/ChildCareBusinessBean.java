@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
@@ -1195,7 +1196,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		application.setContractFileId(fileID);
 		application.setFromDate(newDate);
 		changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
-		addContractToArchive(oldFileID, application, -1, fromDate.getDate(), employmentTypeID,-1,user,false,-1,-1);
+		addContractToArchive(oldFileID, application, -1, fromDate.getDate(), employmentTypeID,-1,user,false,-1,-1,null);
 
 		try {
 			SchoolClassMember member = getLatestPlacement(application.getChildId(), application.getProviderId());
@@ -1919,45 +1920,28 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public SchoolClassMember createNewPlacement(int applicationID, int schooltypeID, int schoolclassID,IWTimestamp validFrom ,User user){
-		return createNewPlacement(getApplication(applicationID),schooltypeID,schoolclassID,validFrom,user);
+	public SchoolClassMember createNewPlacement(int applicationID, int schooltypeID, int schoolclassID,SchoolClassMember oldStudent,IWTimestamp validFrom ,User user) throws RemoteException, EJBException{
+		return createNewPlacement(getApplication(applicationID),schooltypeID,schoolclassID,oldStudent,validFrom,user);
 	}
 	
 	
-	public SchoolClassMember createNewPlacement(ChildCareApplication application, int schooltypeID, int schoolclassID,IWTimestamp validFrom ,User user){
-		UserTransaction transaction = getSessionContext().getUserTransaction();
-		try {
-			transaction.begin();
-			if (schoolclassID != -1) {
-
-				ChildCareContract archive = getContractFile(application.getContractFileId());
-				IWTimestamp endDate = new IWTimestamp(validFrom);
-				endDate.addDays(-1);
-				SchoolClassMember member = archive.getSchoolClassMember();
-				member.setRemovedDate(endDate.getTimestamp());
-				member.store();
-				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-				member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), schoolclassID, schooltypeID, fromDate.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue());
-				//archive.setSchoolClassMember(member);
-				//archive.store();
-				return member;
-			}
-			transaction.commit();
+	public SchoolClassMember createNewPlacement(ChildCareApplication application, int schooltypeID, int schoolclassID,SchoolClassMember oldStudent,IWTimestamp validFrom ,User user) throws RemoteException, EJBException{
+		
+		SchoolClassMember member = null;
+		if (schoolclassID != -1) {
+			IWTimestamp endDate = new IWTimestamp(validFrom);
+			endDate.addDays(-1);
 			
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			try {
-				transaction.rollback();
+			if(oldStudent!=null){
+				oldStudent.setRemovedDate(endDate.getTimestamp());
+				oldStudent.store();
 			}
-			catch (SystemException ex) {
-				ex.printStackTrace();
-			}
-			return null;
+			IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
+			member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), schoolclassID, schooltypeID, validFrom.getTimestamp(), ((Integer) user.getPrimaryKey()).intValue());
+			//archive.setSchoolClassMember(member);
+			//archive.store();
 		}
-
-		return null;
-	
+		return member;
 	
 	}
 
@@ -2038,12 +2022,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					sendMessageToParents(application, subject, body);
 				}
 				int invoiceReceiverId = -1;
+				SchoolClassMember oldStudent = null;
 				if(application!=null && application.getContractFileId()>0){
 					ChildCareContract con = getContractFile(application.getContractFileId());
-					if(con!=null)
+					if(con!=null){
 						invoiceReceiverId = con.getInvoiceReceiverID();
+						oldStudent = con.getSchoolClassMember();
+					}
 				}
-				addContractToArchive(-1, application, contractID, validFrom.getDate(), employmentTypeID,invoiceReceiverId,user,createNewStudent,schoolTypeId,schoolClassId);
+				addContractToArchive(-1, application, contractID, validFrom.getDate(), employmentTypeID,invoiceReceiverId,user,createNewStudent,schoolTypeId,schoolClassId, oldStudent);
 			}
 			transaction.commit();
 		}
@@ -2570,7 +2557,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	private ChildCareContract addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID,int invoiceReceiverId,User user,boolean createNewStudent,int schoolTypeId,int schoolClassId) throws NoPlacementFoundException {
+	private ChildCareContract addContractToArchive(int contractFileID, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID,int invoiceReceiverId,User user,boolean createNewStudent,int schoolTypeId,int schoolClassId,SchoolClassMember oldStudent) throws NoPlacementFoundException {
 		try {
 			ChildCareContract archive = null;
 			if (contractFileID != -1)
@@ -2591,17 +2578,26 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				archive.setInvoiceReceiverID(invoiceReceiverId);
 			if (application.getApplicationStatus() != getStatusContract()) {
 				try {
-					SchoolClassMember student= archive.getSchoolClassMember();
-					if(student!=null && createNewStudent && (schoolTypeId != student.getSchoolTypeId() || schoolClassId!= student.getSchoolClassId())){
+					SchoolClassMember student= null;
+					if(oldStudent==null)
+					oldStudent = getLatestPlacement(application.getChildId(), application.getProviderId());
+					//if(student!=null && createNewStudent && (schoolTypeId != student.getSchoolTypeId() || schoolClassId!= student.getSchoolClassId())){
+					if(createNewStudent && oldStudent!=null && oldStudent.getSchoolTypeId()!=schoolTypeId  && oldStudent.getSchoolClassId() != schoolClassId){
 						// end old placement with the chosen date -1 and create new placement
-						student = createNewPlacement(application,schoolTypeId,schoolClassId,new IWTimestamp(validFrom),user);
+						student = createNewPlacement(application,schoolTypeId,schoolClassId,oldStudent,new IWTimestamp(validFrom),user);
 					}
 					if(student==null)
-						student = getLatestPlacement(application.getChildId(), application.getProviderId());
+						student = oldStudent;//
+					if(student==null)
+						student = getLatestPlacement(application.getChildId(), application.getProviderId());;
 					archive.setSchoolClassMember(student);
 				}
 				catch (FinderException fe) {
 					throw new NoPlacementFoundException(fe);
+				} catch (RemoteException e) {
+					throw new NoPlacementFoundException(e);
+				} catch (EJBException e) {
+					throw new NoPlacementFoundException(e);
 				}
 			}
 			archive.store();
@@ -3654,7 +3650,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						}
 					}
 
-					ChildCareContract archive = addContractToArchive(-1, application, contractID, fromDate.getDate(), employmentTypeID,((Integer)parent.getPrimaryKey()).intValue(),admin,false,-1,-1);
+					ChildCareContract archive = addContractToArchive(-1, application, contractID, fromDate.getDate(), employmentTypeID,((Integer)parent.getPrimaryKey()).intValue(),admin,false,-1,-1,null);
 					/* included in the addContractToArchive
 					if (archive != null) {
 						archive.setInvoiceReceiver(parent);

@@ -231,7 +231,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public Collection getFamilyAfterSchoolTypes() throws java.rmi.RemoteException;
  public boolean wasRejectedByParent(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application) throws java.rmi.RemoteException;
  public Collection getRejectedApplicationsByProvider(Integer providerID, String fromDateOfBirth, String toDateOfBirth, String fromDate, String toDate) throws java.rmi.RemoteException, javax.ejb.FinderException;
- public SchoolClassMember createNewPlacement(int applicationID, int schooltypeID, int schoolclassID,com.idega.util.IWTimestamp validFrom,User user)throws java.rmi.RemoteException;
- public SchoolClassMember createNewPlacement(ChildCareApplication application, int schooltypeID, int schoolclassID,IWTimestamp validFrom ,User user)throws java.rmi.RemoteException;
+ public SchoolClassMember createNewPlacement(int applicationID, int schooltypeID, int schoolclassID,SchoolClassMember oldClassMember,com.idega.util.IWTimestamp validFrom,User user)throws java.rmi.RemoteException;
+ public SchoolClassMember createNewPlacement(ChildCareApplication application, int schooltypeID, int schoolclassID,SchoolClassMember oldClassMember,IWTimestamp validFrom ,User user)throws java.rmi.RemoteException;
  public School getCurrentProviderByPlacement(int childID) throws java.rmi.RemoteException;
 }
