@@ -16,7 +16,7 @@ import java.sql.Date;
  */
 public abstract class NBSSignedEntity {
 	public final static int ACTION_INIT = 1, ACTION_PROCESS = 2, ACTION_END = 3;
-	private int _action = ACTION_INIT;
+
 	
 	public abstract void setXmlSignedData(String data);
 	public abstract void setSignedBy(int userId);
@@ -24,6 +24,13 @@ public abstract class NBSSignedEntity {
 	public abstract void setSignedFlag(boolean flag);
 	public abstract void store();
 	public abstract String getText();
+	
+	private int _action;	
+
+	public NBSSignedEntity(){
+		System.out.println("NBSSignedEntity()");
+		_action = ACTION_INIT;
+	}
 	
 	public int getAction(){
 		return _action;	
