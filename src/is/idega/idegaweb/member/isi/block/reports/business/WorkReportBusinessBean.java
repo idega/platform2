@@ -1393,6 +1393,28 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       return ListUtil.getEmptyList();
     }
   }
+ 
+  /**
+   * Gets work report group.
+   * @param workReportGroupName
+   * @param year
+   * @return the desired work report group else null
+   */
+  public WorkReportGroup findWorkReportGroupByNameAndYear(String workReportGroupName, int year)  {
+    WorkReportGroupHome home = getWorkReportGroupHome();
+    WorkReportGroup workReportGroup = null;
+    if (workReportGroupName != null) {
+      try {
+        workReportGroup = home.findWorkReportGroupByNameAndYear(workReportGroupName, year);
+      }
+      catch (FinderException ex)  {
+        System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: "+ workReportGroupName+" , year: "+ year +" ) Message is: "+ ex.getMessage());
+        ex.printStackTrace(System.err);
+        return null;
+      }
+    }
+    return workReportGroup;
+  }
   
   
   /**
