@@ -22,6 +22,7 @@ import java.util.List;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import com.ibm.icu.util.StringTokenizer;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.contact.data.Email;
@@ -30,11 +31,13 @@ import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.PresentationObject;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
+import com.idega.user.data.MetadataConstants;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 
@@ -274,6 +277,29 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 		}
 		return union;
 	}
+	
+	private Union getUnionFromAbbreviation(String abbr) {
+		Union union = null;
+		GroupBusiness groupBiz;
+		try {
+			groupBiz = (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
+			Collection groups = groupBiz.getGroupsByAbbreviation(abbr);
+			if(groups!=null && !groups.isEmpty() && groups.size()==1){
+				union = getUnionFromGroup((Group)groups.iterator().next());
+			}
+			
+		}
+		catch (IBOLookupException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return union;
+	}
 
 	private void synchronizePhones(User user, Member member) throws CreateException {
 		try {
@@ -428,9 +454,41 @@ public class UserSynchronizationBusinessBean extends IBOServiceBean implements U
 				synchronizePhones(user, member);
 				synchronizeUnion(user, member);
 				
-				//unionCorrect.setMainUnion(member, union.getID());
-
-				System.out.println("done.");
+				String mainUnion = user.getMetaData(MetadataConstants.MAIN_CLUB_GOLF_META_DATA_KEY);
+				mainUnion = ("".equals(mainUnion))?null:mainUnion;
+				String subUnions = user.getMetaData(MetadataConstants.SUB_CLUBS_GOLF_META_DATA_KEY);
+				subUnions = ("".equals(subUnions))?null:subUnions;
+				
+				//todo optimize this. it now always has to change every unionmemberinfo for each abbreviation!
+				if(subUnions!=null && mainUnion!=null){
+					StringTokenizer tokens = new StringTokenizer(subUnions,",");
+					while (tokens.hasMoreTokens()) {
+						String subAbbr = tokens.nextToken();
+						Union sub = getUnionFromAbbreviation(subAbbr);
+						if(sub!=null){
+							try {
+								unionCorrect.setMainUnion(member,sub.getID());
+							}
+							catch (SQLException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+					
+				}
+		
+				//must be done last!
+				Union main = getUnionFromAbbreviation(mainUnion);
+				if(main!=null){
+					try {
+						unionCorrect.setMainUnion(member, main.getID());
+					}
+					catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 //			}
 //			catch (SQLException e1) {
 //				System.out.println("failed ("+e1.getMessage()+")");
