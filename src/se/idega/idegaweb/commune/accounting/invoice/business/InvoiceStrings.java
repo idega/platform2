@@ -3,12 +3,6 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 public interface InvoiceStrings {
 	String PREFIX = "cacc_invoice_";
 
-	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_KEY = PREFIX + "check_amount_list_sent_to_all_parties";
-	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_DEFAULT = "Check amount list has been sent to all concerning parties";
-	String CHECK_AMOUNT_LIST_SENT_KEY = PREFIX + "check_amount_list_sent";
-	String CHECK_AMOUNT_LIST_SENT_DEFAULT = "Check amount list has been sent";
-	//String REMOVE_DEFAULT = "Ta bort";
-	//String REMOVE_KEY = PREFIX + "remove";
 	String ADJUSTED_SIGNATURE_KEY = PREFIX + "adjusted_signature";
 	String ADJUSTMENT_DATE_DEFAULT = "Just.datum";
 	String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
@@ -24,6 +18,10 @@ public interface InvoiceStrings {
 	String CHECK_AMOUNT_KEY = PREFIX + "check_amount";
 	String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
 	String CHECK_AMOUNT_LIST_KEY = PREFIX + "check_amount_list";
+	String CHECK_AMOUNT_LIST_SENT_DEFAULT = "Check amount list has been sent";
+	String CHECK_AMOUNT_LIST_SENT_KEY = PREFIX + "check_amount_list_sent";
+	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_DEFAULT = "Check amount list has been sent to all concerning parties";
+	String CHECK_AMOUNT_LIST_SENT_TO_ALL_PARTIES_KEY = PREFIX + "check_amount_list_sent_to_all_parties";
 	String CHECK_PERIOD_DEFAULT = "Checkperiod";
 	String CHECK_PERIOD_KEY = PREFIX + "check_period";
 	String CREATED_SIGNATURE_KEY = PREFIX + "created_signature";
@@ -122,4 +120,6 @@ public interface InvoiceStrings {
 	String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
 	String VAT_RULE_DEFAULT = "Momstyp";
 	String VAT_RULE_KEY = PREFIX + "vat_rule";
+	String YOU_DONT_HAVE_ACCESS_TO_THIS_FUNCTION_DEFAULT = "Du är inte behörig att använda denna funktion.";
+	String YOU_DONT_HAVE_ACCESS_TO_THIS_FUNCTION_KEY = PREFIX + "you_dont_have_access_to_this_function";
 }

@@ -9,8 +9,12 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolUser;
+import com.idega.block.school.data.SchoolUserBMPBean;
+import com.idega.block.school.data.SchoolUserHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -63,11 +67,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/20 10:33:07 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/20 12:29:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.81 $
+ * @version $Revision: 1.82 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -99,6 +103,14 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 	 */
 	public void init (final IWContext context) {
 		try {
+			if (null != getSchoolByLoggedInUser (context)
+					&& !isSchoolUserAllowed (context)) {
+				add (getSmallText (localize
+													 (YOU_DONT_HAVE_ACCESS_TO_THIS_FUNCTION_KEY,
+														YOU_DONT_HAVE_ACCESS_TO_THIS_FUNCTION_DEFAULT)));
+				return;
+			}
+
 			int actionId = ACTION_SHOW_PAYMENT;
 			
 			try {
@@ -1254,6 +1266,26 @@ public class PaymentRecordMaintenance extends AccountingBlock implements Invoice
 														 ? string : ""), col, row);
 	}
 	
+	private boolean isSchoolUserAllowed (final IWContext context) {
+		try {
+			final School provider = getSchoolByLoggedInUser (context);
+			final User user = context.getCurrentUser ();
+			final SchoolUserHome home
+					=	(SchoolUserHome) IDOLookup.getHome (SchoolUser.class);
+			final Collection schoolUsers = home.findBySchoolAndUser (provider, user);
+			for (Iterator i = schoolUsers.iterator (); i.hasNext ();) {
+				final SchoolUser schoolUser = (SchoolUser) i.next ();
+				if (SchoolUserBMPBean.USER_TYPE_HEADMASTER
+						== schoolUser.getUserType ()) {
+					return true;
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 	private Collection getSchoolCategoryIdsManagedByLoggedOnUser (final IWContext context) {
 		final Collection categoryIds = new HashSet ();
 		try {
