@@ -33,7 +33,7 @@ public class OperationalFieldsMenu extends AccountingBlock implements IWPageEven
 			add(form);
 		}
 		else {
-			operationalField.getForm().setEventListener(this.getClass());
+			getParentForm().setEventListener(this.getClass());
 			add(operationalField);
 		}
 	}
