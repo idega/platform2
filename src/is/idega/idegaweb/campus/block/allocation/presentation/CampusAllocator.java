@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.45 2003/04/07 11:20:46 palli Exp $
+ * $Id: CampusAllocator.java,v 1.46 2003/05/22 10:13:33 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -702,6 +702,7 @@ public class CampusAllocator extends Block implements Campus {
 
 		boolean hasContract = C != null ? true : false;
 		int iContractId = hasContract ? C.getID() : -1;
+		int currentApartmentID = hasContract? C.getApartmentId().intValue():-1;
 		boolean bcontracts = false;
 		if (M != null)
 			bcontracts = true;
@@ -733,7 +734,7 @@ public class CampusAllocator extends Block implements Campus {
 				boolean isThis = false;
 
 				// Mark current apartment
-				if (hasContract && C.getApartmentId().intValue() == apId.intValue()) {
+				if (hasContract && currentApartmentID == apId.intValue()) {
 					//if(C.getStatus().equals(C.statusCreated ) ||C.getStatus().equals(C.statusPrinted  ) )
 					RB1.setSelected();
 
@@ -757,15 +758,15 @@ public class CampusAllocator extends Block implements Campus {
 				if (Available || isThis) {
 					if (A.getUnavailableUntil() != null) {
 						IWTimestamp it = new IWTimestamp(A.getUnavailableUntil());
-            nextAvailable = it;
+            			nextAvailable = it;
 						/*
-            if (!it.isLaterThan(IWTimestamp.RightNow())) {
+            			if (!it.isLaterThan(IWTimestamp.RightNow())) {
 							T.add(RB1, 1, row);
 						}
-            */
+            			*/
 					}
 					else {
-            nextAvailable = IWTimestamp.RightNow();
+            			nextAvailable = IWTimestamp.RightNow();
 						//T.add(RB1, 1, row);
 					}
 				}
@@ -776,8 +777,8 @@ public class CampusAllocator extends Block implements Campus {
 				T.add(formatText((BuildingCacher.getBuilding(F.getBuildingId())).getName()), 4, row);
 				if (nextAvailable != null) {
 					Text text = formatText(nextAvailable.getLocaleDate(LocaleUtil.getIcelandicLocale()));
-          if(nextAvailable.equals(IWTimestamp.RightNow()))
-            text = formatText(iwrb.getLocalizedString("today","Í dag"));
+          		if(nextAvailable.equals(IWTimestamp.RightNow()))
+            		text = formatText(iwrb.getLocalizedString("today","ï¿½ dag"));
 					T.add(getApartmentContractsLink(text, applicant_id, iContractId, A.getID(), nextAvailable), 5, row);
 				}
 
