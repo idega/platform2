@@ -141,7 +141,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 		System.out.println("Last row is at: " + lastRow);
 
 		if (lastRow != 42) {
-			System.err.println("Wrong number of lines in account sheet");
+			System.err.println("Wrong number of lines in account sheet " + lastRow);
 			throw new WorkReportImportException("workreportimportexception.wrong_number_lines");
 		}
 
@@ -191,7 +191,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 
 				if (val != 0.0) {
 					try {
-						WorkReportClubAccountRecord rec = workReportClubAccountRecordHome.create();
+						WorkReportClubAccountRecord rec = clubRecordHome.create();
 						rec.setAccountKey(eAccKey);
 						rec.setWorkReportGroup(league);
 						rec.setReportId(workReportId);
@@ -833,7 +833,12 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 											catch (Exception e) {
 												//e.printStackTrace();
 											}
-											mainBoard.addEntity(member);
+											try {
+												mainBoard.addEntity(member);
+											}
+											catch(Exception e) {
+												e.printStackTrace();
+											}
 											playerCount++;
 											Integer count = (Integer)divPlayerCount.get(new Integer(j));
 											if (count == null)
