@@ -429,13 +429,15 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		Text uploadReport = formatText(iwrb.getLocalizedString("workreportwindow.excel_imports", "Excel imports"), true);
 
 		//B.7
-		if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
+		//if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {	
+		//if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
+		
 			LinkContainer importMemberList = new LinkContainer();
 			importMemberList.setStyleClass(styledLink);
 			importMemberList.add(formatText(iwrb.getLocalizedString("workreportwindow.import_members", "Import member list")));
 			importMemberList.addParameter(ACTION, ACTION_IMPORT_MEMBERS);
 			uploadList.add(importMemberList);
-		}
+		//}
 		
 		//B.8
 		LinkContainer importAccount = new LinkContainer();
@@ -735,27 +737,28 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			menu.setRowColor(1, COLOR_MIDDLE);
 			menu.add(selectReport, 1, 2);
 			
-			//if(WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
+			if(WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)  || iwc.isSuperAdmin()) {
 				menu.add(uploadReport, 1, 4);
 				menu.setRowColor(4, COLOR_MIDDLE);
 				menu.add(uploadList, 1, 5);
-			//}
+			}
 			
 			menu.add(workOnReport, 1, 6);
 			menu.setRowColor(6, COLOR_MIDDLE);
 			menu.add(editList, 1, 7);
 
-			//insert ugly hax
+			
 			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 				menu.add(reportsOverview, 1, 8);
 			}
 
 			menu.add(sendReport, 1, 9);
 
-			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
+			if (WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 				menu.add(closeReport, 1, 10);
 			}
-			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
+			
+			if (WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)  || iwc.isSuperAdmin()) {
 				menu.add(createReports, 1, 11);
 			}
 
