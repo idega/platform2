@@ -42,8 +42,8 @@ public class UserSearcher extends Block {
 	private static final String SEARCH_LAST_NAME = "usrch_search_lname";
 	private static final String SEARCH_MIDDLE_NAME = "usrch_search_mname";
 	private static final String SEARCH_FIRST_NAME = "usrch_search_fname";
-	private static final String SEARCH_COMMITTED = "mbe_act_search";
-	private static final String SEARCH_CLEARED = "mbe_act_clear";
+	public static final String SEARCH_COMMITTED = "mbe_act_search";
+	public static final String SEARCH_CLEARED = "mbe_act_clear";
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_HEADER = "Header";
 	public final static String STYLENAME_BUTTON = "Button";
@@ -443,9 +443,8 @@ private Table presentateFoundUsers(IWContext iwc) {
 			
 			//Added by Roar 29.10.03
 			if (setToFormSubmit){
-				userLink.setOnClick(
-					"getElementById('"+ userPk.getID() +"').value='"+ u.getPrimaryKey() +"';"+
-					"getElementById('"+getParentForm().getID()+"')submit(); ");
+				userLink.setToFormSubmit(getParentForm());	
+				userLink.setOnClick("findObj('"+ userPk.getID() +"').value='"+ u.getPrimaryKey() +"';");
 			}
 			
 			userLink.addParameter(getUniqueUserParameter((Integer) u.getPrimaryKey()));
@@ -948,5 +947,6 @@ public void setToFormSubmit(boolean b){
 public boolean getToFormSubmit(){
 	return setToFormSubmit;
 }
+
 
 }
