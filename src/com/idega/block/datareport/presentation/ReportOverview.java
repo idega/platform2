@@ -2,6 +2,7 @@ package com.idega.block.datareport.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -43,6 +44,10 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 
 import dori.jasper.engine.JasperPrint;
 import dori.jasper.engine.design.JasperDesign;
@@ -89,6 +94,8 @@ public class ReportOverview extends Block {
 	
 	private static final String REPORT_HEADLINE_KEY = "ReportTitle";
 	
+	private static String USER_ACCESS_VARIABLE = "user_access_variable";
+
 	private ICFile queryFolder;
 	private ICFile designFolder;
 	
@@ -373,6 +380,7 @@ public class ReportOverview extends Block {
 	    	else {
 	    		// get the values of the input fields
 	    		Map modifiedValues = getModifiedIdentiferValueMap(identifierValueMap, iwc);
+	    		setAccessCondition(modifiedValues, iwc);
 	    		query.setIdentifierValueMap(modifiedValues);
 	    		// show result of query
 	    		List executedSQLStatements = new ArrayList();
@@ -495,7 +503,39 @@ public class ReportOverview extends Block {
 		return result;
 	}
 			
-					    	
+
+	private void setAccessCondition(Map identifierValueMap, IWContext iwc) throws RemoteException {
+		List groupIds = new ArrayList();
+		int userId = iwc.getCurrentUserId();
+		UserBusiness userBusiness = getUserBusiness();
+		GroupBusiness groupBusiness = getGroupBusiness();
+		User user = userBusiness.getUser(userId);
+		Collection topGroupNodes = userBusiness.getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwc);
+		Iterator iterator = topGroupNodes.iterator();
+		while ( iterator.hasNext())	{
+			Group topGroup = (Group) iterator.next();
+			Collection childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(topGroup, new ArrayList(), true);
+			Iterator childGroupsIterator = childGroups.iterator();
+			while (childGroupsIterator.hasNext())	{
+				Group group = (Group) childGroupsIterator.next();
+				groupIds.add(group.getPrimaryKey());
+			}
+		}
+		// create the where condition
+		StringBuffer buffer = new StringBuffer("ic_user_id in (select related_ic_group_id from ic_group_relation where ic_group_id in ( ");
+		Iterator groupIdsIterator = groupIds.iterator();
+		String separator = "";
+		while (groupIdsIterator.hasNext()) {
+			buffer.append(separator);
+			Object groupId = groupIdsIterator.next();
+			buffer.append(groupId.toString());
+			separator = " , ";
+		}
+		buffer.append(" ) and group_relation_status = 'ST_ACTIVE')");
+		identifierValueMap.put(USER_ACCESS_VARIABLE, buffer.toString());
+	}
+		
+				    	
     	
     	
   private PresentationObject getInputFields(String queryName, Map identifierValueMap, Map identifierDescriptionMap, IWResourceBundle resourceBundle)	{
@@ -514,11 +554,13 @@ public class ReportOverview extends Block {
   	while (iterator.hasNext())	{
   		Map.Entry entry = (Map.Entry) iterator.next();
   		String key = (String) entry.getKey();
-  		String description = (String) identifierDescriptionMap.get(key);
-  		String value = (String) identifierValueMap.get(key);
-  		TextInput textInput = new TextInput(key, value);
-  		table.add(description, 1, i);
-  		table.add(textInput, 2, i++);
+  		if (! USER_ACCESS_VARIABLE.equals(key)) {
+	  		String description = (String) identifierDescriptionMap.get(key);
+	  		String value = (String) identifierValueMap.get(key);
+	  		TextInput textInput = new TextInput(key, value);
+	  		table.add(description, 1, i);
+	  		table.add(textInput, 2, i++);
+  		}
   	}
   	String okayText = resourceBundle.getLocalizedString("ro_okay", "Okay");
   	SubmitButton okayButton = new SubmitButton(okayText, VALUES_COMMITTED_KEY, "default_value");
@@ -635,8 +677,8 @@ public class ReportOverview extends Block {
       return (QueryService) IBOLookup.getServiceInstance( getIWApplicationContext() ,QueryService.class);
     }
     catch (RemoteException ex)  {
-      System.err.println("[ReportlayoutChooser]: Can't retrieve QueryService. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportLayoutChooser]: Can't retrieve QueryService");
+      System.err.println("[ReportOverview]: Can't retrieve QueryService. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve QueryService");
     }
   }
 
@@ -647,8 +689,8 @@ public class ReportOverview extends Block {
       return (QueryToSQLBridge) IBOLookup.getServiceInstance( getIWApplicationContext() ,QueryToSQLBridge.class);
     }
     catch (RemoteException ex)  {
-      System.err.println("[ReportlayoutChooser]: Can't retrieve QueryToSqlBridge. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportLayoutChooser]: Can't retrieve QueryToSQLBridge");
+      System.err.println("[ReportOverview]: Can't retrieve QueryToSqlBridge. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve QueryToSQLBridge");
     }
   }
 
@@ -657,11 +699,31 @@ public class ReportOverview extends Block {
       return (JasperReportBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), JasperReportBusiness.class);
     }
     catch (RemoteException ex) {
-      System.err.println("[ReportLayoutChooser]: Can't retrieve JasperReportBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportLayoutChooser]: Can't retrieve ReportBusiness");
+      System.err.println("[ReportOverview]: Can't retrieve JasperReportBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve ReportBusiness");
     }
   }
  
+	public UserBusiness getUserBusiness()	{
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
+		}
+	}
+
+	public GroupBusiness getGroupBusiness()	{
+		try {
+			return (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      System.err.println("[ReportOverview]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve GroupBusiness");
+		}
+	}
+
   
   // a representation of the query
   class QueryRepresentation implements EntityRepresentation {
