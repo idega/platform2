@@ -550,7 +550,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
 		try {
 			User child = application.getChild();
-			Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName() };
+			Object[] arguments = { child.getNameLastFirst(true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()) };
 
 			User appParent = application.getOwner();
 			if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
@@ -863,8 +863,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							application.setApplicationStatus(getStatusSentIn());
 							caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
 	
-							subject = this.getLocalizedString("after_school.application_received_subject", "");
-							message = this.getLocalizedString("after_school.application_received_body", "");
+							subject = this.getLocalizedString("after_school.application_received_subject", "After school care application received.");
+							message = this.getLocalizedString("after_school.application_received_body", "We have received you application for {0}, {2}, to {1}.");
 							sendMessageToParents(application, subject, message);
 						}
 					}
