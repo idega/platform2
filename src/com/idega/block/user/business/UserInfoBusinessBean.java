@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.block.user.data.UserExtraInfo;
@@ -28,7 +27,6 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
