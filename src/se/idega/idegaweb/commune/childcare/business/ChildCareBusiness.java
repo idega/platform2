@@ -238,4 +238,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public SchoolClassMember createNewPlacement(ChildCareApplication application, int schooltypeID, int schoolclassID,SchoolClassMember oldClassMember,IWTimestamp validFrom ,User user)throws java.rmi.RemoteException;
  public SchoolClassMember createNewPlacement(Integer childID, Integer schooltypeID, Integer schoolclassID,SchoolClassMember oldStudent,IWTimestamp validFrom ,User user) throws RemoteException, EJBException;
  public School getCurrentProviderByPlacement(int childID) throws java.rmi.RemoteException;
+ public boolean isSchoolClassBelongingToSchooltype(int schoolClassId,int schoolTypeId )throws RemoteException;
+ public boolean isTryingToChangeSchoolTypeButNotSchoolClass(int currentArchiveID,int schoolTypeId, int schoolClassId)throws RemoteException;
 }

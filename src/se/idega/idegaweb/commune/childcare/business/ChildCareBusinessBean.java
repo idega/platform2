@@ -3901,4 +3901,35 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public boolean wasRejectedByParent(ChildCareApplication application) {
 		return hasStatusChange(application, getCaseStatusGranted().getStatus(), getCaseStatusInactive().getStatus());
 	}
+	/**
+	 * Checks if the schoolclass belongs to schooltype
+	 */
+	public boolean isSchoolClassBelongingToSchooltype(int schoolClassId,int schoolTypeId ) {
+		try {
+			SchoolClass schoolClass = getSchoolBusiness().getSchoolClassHome().findByPrimaryKey(new Integer(schoolClassId));
+			return schoolClass.getSchoolTypeId() == schoolTypeId;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if a change only in schooltype but not group  of the archive's classmember 
+	 */
+	public boolean isTryingToChangeSchoolTypeButNotSchoolClass(int currentArchiveID,int schoolTypeId, int schoolClassId){
+		try {
+			ChildCareContract currentArchive = getChildCareContractArchiveHome().findByPrimaryKey(new Integer(currentArchiveID));
+			if(currentArchive!=null){
+				SchoolClassMember currentClassMember = currentArchive.getSchoolClassMember();
+				return currentClassMember!=null && currentClassMember.getSchoolTypeId()!=schoolTypeId  && currentClassMember.getSchoolClassId() == schoolClassId;
+			}
+		} catch (FinderException e) {
+		}
+		return false;
+	}
+	
+	
 }
