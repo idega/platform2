@@ -2,7 +2,9 @@ package se.idega.idegaweb.commune.account.citizen.business;
 
 import javax.ejb.*;
 
-public interface CitizenAccountBusiness extends com.idega.business.IBOService
+import se.idega.idegaweb.commune.account.business.AccountBusiness;
+
+public interface CitizenAccountBusiness extends com.idega.business.IBOService,AccountBusiness
 {
  public void acceptApplication(int p0,com.idega.user.data.User p1)throws java.rmi.RemoteException,javax.ejb.CreateException,javax.ejb.FinderException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.account.citizen.data.CitizenAccount getAccount(int p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.4 2002/07/22 15:45:54 palli Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.5 2002/07/24 18:49:09 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.user.data.UserHome;
 import com.idega.user.data.User;
 
 import se.idega.idegaweb.commune.account.business.AccountApplicationBusinessBean;
+import se.idega.idegaweb.commune.account.business.AccountBusiness;
 import se.idega.idegaweb.commune.account.citizen.data.AdminListOfApplications;
 import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
 import se.idega.idegaweb.commune.account.citizen.data.CitizenAccountHome;
@@ -36,7 +37,7 @@ import javax.ejb.FinderException;
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness {
+public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness,AccountBusiness {
 	public boolean insertApplication(User user, String pid, String email, String phoneHome, String phoneWork) {
 		try {
 			CitizenAccount application = ((CitizenAccountHome) IDOLookup.getHome(CitizenAccount.class)).create();
@@ -139,4 +140,37 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException { 
 		super.rejectApplication(applicationID,performer,reasonDescription);		
 	}
+	/**
+	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllAcceptedApplications()
+	 */
+	public Collection getAllAcceptedApplications() throws FinderException, RemoteException
+	{
+		/**
+		 * @todo Implement
+		 */
+		return null;
+	}
+
+	/**
+	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllPendingApplications()
+	 */
+	public Collection getAllPendingApplications() throws FinderException, RemoteException
+	{
+		/**
+		 * @todo Implement
+		 */
+		return null;
+	}
+
+	/**
+	 * @see se.idega.idegaweb.commune.account.business.AccountBusiness#getAllRejectedApplications()
+	 */
+	public Collection getAllRejectedApplications() throws FinderException, RemoteException
+	{
+		/**
+		 * @todo Implement
+		 */
+		return null;
+	}
+
 }

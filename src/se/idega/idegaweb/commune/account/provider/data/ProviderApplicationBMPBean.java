@@ -1,5 +1,12 @@
 package se.idega.idegaweb.commune.account.provider.data;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.account.data.AccountApplication;
+
 import com.idega.data.*;
 import com.idega.block.process.data.*;
 
@@ -12,7 +19,7 @@ import com.idega.block.process.data.*;
  * @version 1.0
  */
 
-public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements ProviderApplication,Case{
+public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements ProviderApplication,Case,AccountApplication{
 
   private static final String CASE_CODE_KEY="ANANSKO";
   private static final String TABLE_NAME="COMM_ACC_PROV";
@@ -94,4 +101,71 @@ public class ProviderApplicationBMPBean extends AbstractCaseBMPBean implements P
   public void setAdditionalInfo(String info){
     this.setColumn(COLUMN_ADDITIONAL_INFO,info);
   }
+	/**
+	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#getApplicantName()
+	 */
+	public String getApplicantName() throws RemoteException
+	{
+		return getManagerName();
+	}
+
+	/**
+	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#getEmail()
+	 */
+	public String getEmail() throws RemoteException
+	{
+		return this.getEmailAddress();
+	}
+
+	/**
+	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#setApplicantName(String)
+	 */
+	public void setApplicantName(String p0) throws RemoteException
+	{
+		setManagerName(p0);
+	}
+
+	/**
+	 * @see se.idega.idegaweb.commune.account.data.AccountApplication#setEmail(String)
+	 */
+	public void setEmail(String p0) throws RemoteException
+	{
+		setEmailAddress(p0);
+	}
+	
+	public Collection ejbFindAllPendingApplications()throws FinderException{
+		try
+		{
+			return super.ejbFindAllCasesByStatus(this.getCaseStatusOpen().toString());
+		}
+		catch (RemoteException e)
+		{
+			throw new IDOFinderException(e);
+		}
+		//return null;
+	}
+
+	public Collection ejbFindAllRejectedApplications()throws FinderException{
+		try
+		{
+			return super.ejbFindAllCasesByStatus(this.getCaseStatusDenied().toString());
+		}
+		catch (RemoteException e)
+		{
+					throw new IDOFinderException(e);
+		}
+		//return null;
+	}
+
+	public Collection ejbFindAllApprovedApplications()throws FinderException{
+		try
+		{
+			return super.ejbFindAllCasesByStatus(this.getCaseStatusGranted().toString());
+		}
+		catch (RemoteException e)
+		{
+					throw new IDOFinderException(e);
+		}
+		//return null;
+	}
 }
