@@ -319,13 +319,13 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		
 		mainTable = new Table();
 		mainTable.setCellspacing(0);
-		mainTable.setCellpadding(5);
-		mainTable.setStyleClass(borderAllWhiteStyle);
+		mainTable.setCellpadding(0);
 		
 		Table headerTable = new Table();
-		headerTable.setCellspacing(0);
+		headerTable.setCellspacing(12);
 		headerTable.setCellpadding(0);
-		headerTable.setWidth(500);
+		headerTable.setStyleClass(borderAllWhiteStyle);
+		headerTable.setWidth(Table.HUNDRED_PERCENT);
 		
 		headerTable.add(creatorText,1,1);
 		headerTable.add(creatorNameField,2,1);
@@ -333,51 +333,64 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		headerTable.add(clubNameField,2,2);
 		headerTable.add(divisionNameText,1,3);
 		headerTable.add(divisionNameField,2,3);
-		headerTable.setVerticalAlignment(1,4,"top");
+		headerTable.setVerticalAlignment(1,4,Table.VERTICAL_ALIGN_TOP);
 		headerTable.add(otherCoachesText,1,4);
-		headerTable.setVerticalAlignment(2,4,"top");
+		headerTable.setVerticalAlignment(2,4,Table.VERTICAL_ALIGN_TOP);
 		headerTable.add(otherCoachesNameField,2,4);
 		headerTable.add(groupText,1,5);
 		headerTable.add(groupNameField,2,5);
 		headerTable.add(dateText,1,6);
 		headerTable.add(fromDateField,2,6);
 		
-		headerTable.add(left,1,7);
+		Table navTable = new Table();
+		navTable.setCellpadding(0);
+		navTable.setCellspacing(0);
+		navTable.add(left,1,1);
 		String dateString = timeStamp.getDateString("MMMMMMMM, yyyy",iwc.getCurrentLocale());
-		headerTable.add(dateString,1,7);
-		headerTable.add(right,2,7);
+		navTable.add(dateString,2,1);
+		navTable.add(right,3,1);
+		
+		headerTable.mergeCells(1,7,2,7);
+		headerTable.add(navTable,1,7);
 		
 		headerTable.mergeCells(4,1,4,4);
-		headerTable.setVerticalAlignment(3,1,"top");
-		headerTable.setVerticalAlignment(4,1,"top");
+		headerTable.setVerticalAlignment(3,1,Table.VERTICAL_ALIGN_TOP);
+		headerTable.setVerticalAlignment(4,1,Table.VERTICAL_ALIGN_TOP);
 		headerTable.add(allowedMarksText ,3,1);
 		headerTable.add(allowedMarksField,4,1);
 
-//		headerTable.setVerticalAlignment(5,4,"bottom");
-//		headerTable.setAlignment(5,4,"right");
-//		headerTable.add(deleteLink,5,4);
 		
 		mainTable.add(headerTable,1,1);
+		mainTable.setHeight(2,5);
 		
-//		mainTable.mergeCells(1,8,5,8);
-		mainTable.add(getUserList(iwc),1,2);
+		Table entityTable = new Table();
+		entityTable.setCellpadding(0);
+		entityTable.setCellspacing(0);
+		entityTable.setStyleClass(borderAllWhiteStyle);
+		entityTable.add(getUserList(iwc),1,1);
+		entityTable.add(printableLedger,1,2);
+		entityTable.add(Text.NON_BREAKING_SPACE,1,2);
+		entityTable.add(printableEmptyLedger,1,2);
+
+
+		mainTable.add(entityTable,1,3);
 		
 		Table bottomTable = new Table();
 		bottomTable.setWidth(Table.HUNDRED_PERCENT);
-		bottomTable.add(printableLedger,1,1);
-		bottomTable.add(Text.NON_BREAKING_SPACE,1,1);
-		bottomTable.add(printableEmptyLedger,1,1);
-		bottomTable.setAlignment(2,1,"right");
+		bottomTable.setCellpadding(0);
+		bottomTable.setCellspacing(12);
+		bottomTable.setStyleClass(borderAllWhiteStyle);
+		bottomTable.add(getHelp(this.HELP_TEXT_KEY),1,1);
+		bottomTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
 		bottomTable.add(saveButton,2,1);
 		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
 		bottomTable.add(closeButton,2,1);
 		bottomTable.add(Text.NON_BREAKING_SPACE,2,1);
 		bottomTable.add(deleteLink,2,1);
 		
-		mainTable.add(bottomTable,1,3);
-		
-		mainTable.add(getHelp(this.HELP_TEXT_KEY), 1, 4);
-		
+		mainTable.setHeight(4,5);
+		mainTable.add(bottomTable,1,5);
+				
 		form.add(mainTable);		
 	}
 	public EntityBrowser getUserList(IWContext iwc) {
@@ -757,7 +770,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		entityBrowser.addPresentationObjectToBottom(addUserLink);
 		entityBrowser.addPresentationObjectToBottom(statisticsLink);
 		entityBrowser.addPresentationObjectToBottom(addNewMarkLink);
-		
+
 		return entityBrowser;
 	}
 	
