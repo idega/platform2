@@ -238,7 +238,7 @@ public class ChildCareContracts extends ChildCareBlock {
 							showComment = true;
 							hasComment = true;
 							showNotActiveComment = true;
-							table.add(getSmallErrorText("*"), column, row);
+							//table.add(getSmallErrorText("*"), column, row);
 						}
 						if (application.getRejectionDate() != null) {
 							showComment = true;
