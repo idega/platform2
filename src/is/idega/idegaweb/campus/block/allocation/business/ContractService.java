@@ -1,54 +1,331 @@
+/*
+ * Created on 1.9.2004
+ *
+ * Copyright (C) 2004 Idega hf. All Rights Reserved.
+ *
+ *  This software is the proprietary information of Idega hf.
+ *  Use is subject to license terms.
+ */
 package is.idega.idegaweb.campus.block.allocation.business;
 
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
+import is.idega.idegaweb.campus.block.allocation.data.ContractTextHome;
+import is.idega.idegaweb.campus.block.application.business.ApplicationService;
+import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
+import is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods;
+import is.idega.idegaweb.campus.block.mailinglist.business.MailingListService;
+import is.idega.idegaweb.campus.business.CampusGroupException;
 import is.idega.idegaweb.campus.business.CampusUserService;
 import is.idega.idegaweb.campus.data.ContractAccountApartmentHome;
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import com.idega.block.application.data.Applicant;
+import com.idega.block.building.business.BuildingService;
+import com.idega.block.building.data.Apartment;
+import com.idega.business.IBOService;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
+/**
+ * @author aron
+ *
+ * ContractService TODO Describe this type
+ */
+public interface ContractService extends IBOService {
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#signContract
+     */
+    public String signContract(Integer contractID, Integer groupID,
+            Integer cashierID, Integer financeCategoryID, String sEmail,
+            boolean sendMail, boolean newAccount, boolean newPhoneAccount,
+            boolean newLogin, boolean generatePasswd, IWResourceBundle iwrb,
+            String login, String passwd) throws java.rmi.RemoteException;
 
-public interface ContractService extends com.idega.business.IBOService
-{
-	public is.idega.idegaweb.campus.block.allocation.data.Contract allocate(java.lang.Integer p0,java.lang.Integer p1,java.lang.Integer p2,java.util.Date p3,java.util.Date p4)throws is.idega.idegaweb.campus.block.allocation.business.AllocationException, java.rmi.RemoteException;
-	 public void changeApplicationStatus(is.idega.idegaweb.campus.block.allocation.data.Contract p0)throws java.lang.Exception, java.rmi.RemoteException;
-	 public is.idega.idegaweb.campus.block.allocation.data.Contract createNewContract(java.lang.Integer p0,java.lang.Integer p1,java.lang.Integer p2,java.util.Date p3,java.util.Date p4)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
-	 public com.idega.user.data.User createNewUser(com.idega.block.application.data.Applicant p0,java.lang.String[] p1)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
-	 public void createUserLogin(com.idega.user.data.User p0,java.lang.Integer p1,java.lang.String p2,java.lang.String p3,boolean p4)throws java.lang.Exception, java.rmi.RemoteException;
-	 public boolean deleteAllocation(java.lang.Integer p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
-	 public void deleteFromWaitingList(is.idega.idegaweb.campus.block.allocation.data.Contract p0) throws java.rmi.RemoteException;
-	 public void deliverKey(java.lang.Integer p0,java.sql.Timestamp p1) throws java.rmi.RemoteException;
-	 public void deliverKey(java.lang.Integer p0) throws java.rmi.RemoteException;
-	 public boolean doGarbageContract(java.lang.Integer p0) throws java.rmi.RemoteException;
-	 public void endContract(java.lang.Integer p0,com.idega.util.IWTimestamp p1,java.lang.String p2,boolean p3) throws java.rmi.RemoteException;
-	 public is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods getApartmentTypePeriod(java.lang.Integer p0) throws java.rmi.RemoteException;
-	// public java.util.Map getApplicantContractsByStatus(java.lang.String p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
-	 public is.idega.idegaweb.campus.block.application.business.ApplicationService getApplicationService()throws java.rmi.RemoteException, java.rmi.RemoteException;
-	 //public java.util.Map getAvailableApartmentDates(java.lang.Integer p0,java.lang.Integer p1)throws javax.ejb.FinderException, java.rmi.RemoteException;
-	 public com.idega.block.building.business.BuildingService getBuildingService()throws java.rmi.RemoteException, java.rmi.RemoteException;
-	 public is.idega.idegaweb.campus.block.allocation.data.ContractHome getContractHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
-	 public com.idega.util.IWTimestamp[] getContractStampsForApartment(java.lang.Integer p0)throws javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
-	 public com.idega.util.IWTimestamp[] getContractStampsForApartment(com.idega.block.building.data.Apartment p0) throws java.rmi.RemoteException;
-	 public com.idega.util.IWTimestamp[] getContractStampsFromPeriod(is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriods p0,java.lang.Integer p1) throws java.rmi.RemoteException;
-	 public is.idega.idegaweb.campus.block.allocation.data.ContractTextHome getContractTextHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
-	 public java.lang.String getLocalizedStatus(com.idega.idegaweb.IWResourceBundle p0,java.lang.String p1) throws java.rmi.RemoteException;
-	 public is.idega.idegaweb.campus.block.mailinglist.business.MailingListService getMailingListService()throws java.rmi.RemoteException, java.rmi.RemoteException;
-	 public java.util.Map getNewApplicantContracts()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
-	 public java.util.Date getNextAvailableDate(com.idega.block.building.data.Apartment p0) throws java.rmi.RemoteException;
-	 public CampusUserService getUserService()throws java.rmi.RemoteException, java.rmi.RemoteException;
-	 public is.idega.idegaweb.campus.block.allocation.business.Period getValidPeriod(is.idega.idegaweb.campus.block.allocation.data.Contract p0,com.idega.block.building.data.Apartment p1,java.lang.Integer p2,java.lang.Integer p3) throws java.rmi.RemoteException;
-	 public is.idega.idegaweb.campus.block.application.data.WaitingListHome getWaitingListHome()throws java.rmi.RemoteException, java.rmi.RemoteException;
-	 public void reactivateWaitingList(java.lang.Integer p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
-	 public void removeWaitingList(java.lang.Integer p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
-	 public void resetWaitingListRejection(java.lang.Integer p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
-	 public void resignContract(java.lang.Integer p0,com.idega.util.IWTimestamp p1,java.lang.String p2,boolean p3) throws java.rmi.RemoteException;
-	 public void returnKey(Integer contractID,User currentUser) throws java.rmi.RemoteException;
-	 public java.lang.String signContract(java.lang.Integer p0,java.lang.Integer p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.String p4,boolean p5,boolean p6,boolean p7,boolean p8,boolean p9,com.idega.idegaweb.IWResourceBundle p10,java.lang.String p11,java.lang.String p12) throws java.rmi.RemoteException;
-	 public void deleteFromWaitingList(Applicant applicant);
-	 public void endExpiredContracts()throws java.rmi.RemoteException;
-	 public void finalizeGarbageContracts(java.sql.Date lastChangeDate)throws java.rmi.RemoteException;
-	 public ContractAccountApartmentHome getContractAccountApartmentHome() throws RemoteException;
-	 public String[] getRentableStatuses();
-	 public String[] getAllocateableStatuses();
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#createUserLogin
+     */
+    public void createUserLogin(User user, Integer groupID, String login,
+            String pass, boolean generatePasswd) throws Exception,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#addUserToTenantGroup
+     */
+    public void addUserToTenantGroup(Integer groupID, User user)
+            throws FinderException, RemoteException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#changeApplicationStatus
+     */
+    public void changeApplicationStatus(Contract eContract) throws Exception,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deleteFromWaitingList
+     */
+    public void deleteFromWaitingList(Contract eContract)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deleteFromWaitingList
+     */
+    public void deleteFromWaitingList(Applicant applicant)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#endContract
+     */
+    public void endContract(Integer contractID, IWTimestamp movingDate,
+            String info, boolean datesync) throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#endContract
+     */
+    public void endContract(Contract C, IWTimestamp movingDate, String info,
+            boolean datesync) throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#endExpiredContracts
+     */
+    public void endExpiredContracts() throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#garbageEndedContracts
+     */
+    public void garbageEndedContracts(java.sql.Date lastChangeDate)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#garbageResignedContracts
+     */
+    public void garbageResignedContracts(java.sql.Date lastChangeDate)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#finalizeGarbageContracts
+     */
+    public void finalizeGarbageContracts(java.sql.Date lastChangeDate)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#returnKey
+     */
+    public void returnKey(Integer contractID, User currentUser)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deliverKey
+     */
+    public void deliverKey(Integer contractID, Timestamp when)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deliverKey
+     */
+    public void deliverKey(Integer contractID) throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#resignContract
+     */
+    public void resignContract(Integer contractID, IWTimestamp movingDate,
+            String info, boolean datesync) throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#createNewContract
+     */
+    public Contract createNewContract(Integer userID, Integer applicantID,
+            Integer apartmentID, Date from, Date to) throws RemoteException,
+            CreateException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#createUserFamily
+     */
+    public User createUserFamily(Applicant applicant, String[] emails)
+            throws RemoteException, CreateException, CampusGroupException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#createNewUser
+     */
+    public User createNewUser(Applicant A, String[] emails)
+            throws RemoteException, CreateException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#deleteAllocation
+     */
+    public boolean deleteAllocation(Integer contractID, User currentUser)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractStampsFromPeriod
+     */
+    public IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,
+            int monthOverlap) throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractStampsForApartment
+     */
+    public IWTimestamp[] getContractStampsForApartment(Integer apartmentID)
+            throws FinderException, RemoteException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractStampsForApartment
+     */
+    public IWTimestamp[] getContractStampsForApartment(Apartment apartment)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractStampsFromPeriod
+     */
+    public IWTimestamp[] getContractStampsFromPeriod(ApartmentTypePeriods ATP,
+            Integer monthOverlap) throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getLocalizedStatus
+     */
+    public String getLocalizedStatus(com.idega.idegaweb.IWResourceBundle iwrb,
+            String status) throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#doGarbageContract
+     */
+    public boolean doGarbageContract(Integer contractID)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getApartmentTypePeriod
+     */
+    public ApartmentTypePeriods getApartmentTypePeriod(Integer typeID)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#allocate
+     */
+    public Contract allocate(Integer contractID, Integer apartmentID,
+            Integer applicantID, Date validFrom, Date validTo)
+            throws AllocationException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getValidPeriod
+     */
+    public Period getValidPeriod(Contract contract, Apartment apartment,
+            Integer dayBuffer, Integer monthOverlap)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getNextAvailableDate
+     */
+    public Date getNextAvailableDate(Apartment apartment)
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#resetWaitingListRejection
+     */
+    public void resetWaitingListRejection(Integer waitingListID)
+            throws RemoteException, FinderException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#reactivateWaitingList
+     */
+    public void reactivateWaitingList(Integer waitingListID)
+            throws RemoteException, FinderException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#removeWaitingList
+     */
+    public void removeWaitingList(Integer waitingListID)
+            throws RemoteException, FinderException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getAvailableApartmentDates
+     */
+    public Map getAvailableApartmentDates(Integer aprtTypeID, Integer cplxID)
+            throws FinderException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getApplicantContractsByStatus
+     */
+    public Map getApplicantContractsByStatus(String status)
+            throws RemoteException, FinderException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getRentableStatuses
+     */
+    public String[] getRentableStatuses() throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getAllocateableStatuses
+     */
+    public String[] getAllocateableStatuses() throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getAllowedTemporaryPersonalID
+     */
+    public Collection getAllowedTemporaryPersonalID()
+            throws java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getNewApplicantContracts
+     */
+    public Map getNewApplicantContracts() throws RemoteException,
+            FinderException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getUserService
+     */
+    public CampusUserService getUserService() throws RemoteException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractHome
+     */
+    public ContractHome getContractHome() throws RemoteException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractTextHome
+     */
+    public ContractTextHome getContractTextHome() throws RemoteException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getWaitingListHome
+     */
+    public WaitingListHome getWaitingListHome() throws RemoteException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getContractAccountApartmentHome
+     */
+    public ContractAccountApartmentHome getContractAccountApartmentHome()
+            throws RemoteException, java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getMailingListService
+     */
+    public MailingListService getMailingListService() throws RemoteException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getApplicationService
+     */
+    public ApplicationService getApplicationService() throws RemoteException,
+            java.rmi.RemoteException;
+
+    /**
+     * @see is.idega.idegaweb.campus.block.allocation.business.ContractServiceBean#getBuildingService
+     */
+    public BuildingService getBuildingService() throws RemoteException,
+            java.rmi.RemoteException;
+
 }

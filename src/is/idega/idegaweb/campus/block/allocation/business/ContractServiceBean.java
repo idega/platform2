@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.22 2004/07/30 13:55:28 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.23 2004/09/01 14:37:35 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -257,7 +257,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		Collection contracts;
 		try {
 			contracts = getContractHome().findByStatusAndValidBeforeDate(ContractBMPBean.statusSigned,IWTimestamp.RightNow().getDate());
-		
+			if(contracts!=null )
+			    System.out.println(contracts.size()+" contracts found to be ended");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				endContract(contract,null,null,false);
@@ -271,11 +272,50 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	
 	}
 	
+	public void garbageEndedContracts(java.sql.Date lastChangeDate){
+	    Collection contracts;
+		try {
+			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.statusEnded,lastChangeDate);
+			if(contracts!=null )
+			    System.out.println(contracts.size()+" ended contracts found to be garbaged");
+			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
+				Contract contract = (Contract) iter.next();
+				contract.setStatusGarbage();
+				contract.store();
+				
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void garbageResignedContracts(java.sql.Date lastChangeDate){
+	    Collection contracts;
+		try {
+			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.statusResigned,lastChangeDate);
+			if(contracts!=null )
+			    System.out.println(contracts.size()+" resigned contracts found to be garbaged");
+			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
+				Contract contract = (Contract) iter.next();
+				contract.setStatusGarbage();
+				contract.store();
+				
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void finalizeGarbageContracts(java.sql.Date lastChangeDate){
 		Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.statusFinalized,lastChangeDate);
-		
+			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.statusGarbage,lastChangeDate);
+			if(contracts!=null )
+			    System.out.println(contracts.size()+" contracts found to be finalized");
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
 				contract.setStatusFinalized();
@@ -802,7 +842,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			contractDateFrom = new IWTimestamp();
 		}
 		int years = contractDateTo.getYear()-contractDateFrom.getYear();
-		int months = contractDateTo.getMonth()-contractDateFrom.getMonth();
+		//int months = contractDateTo.getMonth()-contractDateFrom.getMonth();
 		Date nextAvailable = getNextAvailableDate(apartment);
 		if (nextAvailable != null ){
 			IWTimestamp nextD = new IWTimestamp(nextAvailable.getTime());
