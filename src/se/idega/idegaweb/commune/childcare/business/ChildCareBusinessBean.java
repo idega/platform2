@@ -3094,7 +3094,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		if (!canCreateMultiple) {
 			try {
 				String[] status = { String.valueOf(getStatusCancelled()), String.valueOf(getStatusReady()) };
-				ChildCareApplication application = getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, status);
+				ChildCareApplication application = getChildCareApplicationHome().findActiveApplicationByChildAndStatus(childID, status);
 				if (application != null) {
 					throw new AlreadyCreatedException();
 				}
