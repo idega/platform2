@@ -15,9 +15,17 @@ package com.idega.block.finance.business;
 public interface InvoiceDataInsert {
 	
 	/**
-	 * 
+	 * Formats the file/data to be sent to the bank when creating claims
 	 * @param batchNumber - the number of the batch / one batch includes a bunch of invoices
 	 * @param groupId - the id for the group that is the claimant for the invoices
 	 */
-	public void insertData(int batchNumber, int groupId);
+	public void createClaimsInBank(int batchNumber, int groupId);
+	
+	/**
+	 * Formats the file/data to be sent to the bank when receiving claim status
+	 * and updates the status of the claims
+	 * @param batchNumber
+	 * @param groupId
+	 */
+	public void getClaimStatusFromBank(int batchNumber, int groupId);
 }
