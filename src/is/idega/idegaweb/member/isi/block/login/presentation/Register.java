@@ -20,7 +20,7 @@ import com.idega.core.contact.data.EmailHome;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.Block;
+import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -40,7 +40,7 @@ import com.idega.util.SendMail;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class Register extends Block {
+public class Register extends StyledIWAdminWindow {
 	
 	private IWContext _iwc = null;
 	private IWResourceBundle _iwrb;
