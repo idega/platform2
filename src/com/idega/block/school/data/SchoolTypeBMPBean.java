@@ -25,7 +25,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   public static final String SCHOOLTYPE = "sch_school_type";
   public static final String MAXSCHOOLAGE = "max_school_age";
 	public static final String IS_FREETIME_TYPE = "is_freetime_type";
-	public static final String ORDER = "order";
+	public static final String ORDER = "type_order";
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
