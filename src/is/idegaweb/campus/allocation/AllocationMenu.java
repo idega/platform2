@@ -8,6 +8,7 @@ import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationFinder;
+import is.idegaweb.campus.entity.SystemProperties;
 import java.util.List;
 /**
  * Title:
@@ -30,12 +31,15 @@ public class AllocationMenu extends KeyEditor{
   }
 
   protected void control(ModuleInfo modinfo){
+    if(modinfo.getApplicationAttribute(SystemProperties.getEntityTableName())==null){
+     SystemProperties SysProps =  SysPropsSetter.seekProperties();
+     modinfo.setApplicationAttribute(SystemProperties.getEntityTableName(),SysProps);
+    }
 
-
-      if(isAdmin)
-        this.add((makeSubjectTable()));
-      else
-        this.add(new Text("Ekki Réttindi"));
+    if(isAdmin)
+      this.add((makeSubjectTable()));
+    else
+      this.add(new Text("Ekki Réttindi"));
 
   }
 

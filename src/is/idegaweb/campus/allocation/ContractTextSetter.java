@@ -29,7 +29,7 @@ public class ContractTextSetter extends KeyEditor{
   private final static String EN ="EN";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String propParameter = SystemProperties.getSystemPropertiesEnitityName();
+  private String propParameter = SystemProperties.getEntityTableName();
   private String localesParameter="iw_locales";
 
   public ContractTextSetter(String sHeader) {

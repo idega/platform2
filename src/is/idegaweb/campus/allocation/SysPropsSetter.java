@@ -35,7 +35,7 @@ public class SysPropsSetter extends ModuleObjectContainer{
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String propParameter = SystemProperties.getSystemPropertiesEnitityName();
+  private String propParameter = SystemProperties.getEntityTableName();
   private boolean isAdmin = false;
   protected String styleAttribute = "font-size: 8pt";
   protected int fontSize = 2;
@@ -68,7 +68,7 @@ public class SysPropsSetter extends ModuleObjectContainer{
 
   }
 
-  private SystemProperties seekProperties(){
+  public static SystemProperties seekProperties(){
     SystemProperties SysProps = null;
     try {
       List L = EntityFinder.findAll(new SystemProperties());
@@ -91,21 +91,34 @@ public class SysPropsSetter extends ModuleObjectContainer{
     Form myForm = new Form();
     DateInput DI = new DateInput("contract_date",true);
     DropdownMenu TI = intDrp("contract_years",10);
-
-    T.add(formatText("Contract date"),2,1);
+    TextInput adminEmail = new TextInput("admin_email");
+    TextInput emailHost = new TextInput("email_host");
+    int row = 1;
+    T.add(formatText("Contract date"),1,row);
+    T.add(DI,3,row);
     if(SysProps.getContractDate()!=null){
       //DI.setDate(SysProps.getContractDate());
-      T.add(formatText(new idegaTimestamp(SysProps.getContractDate()).toString()),2,2);
+      T.add(formatText(new idegaTimestamp(SysProps.getContractDate()).toString()),4,row);
     }
-    T.add(DI,2,3);
+    row++;
+    if(SysProps.getAdminEmail()!= null)
+      adminEmail.setContent(SysProps.getAdminEmail());
+    if(SysProps.getEmailHost()!= null)
+      emailHost.setContent(SysProps.getEmailHost());
 
-    T.add(formatText("Contract years"),4,1);
+    T.add(formatText("Contract years"),1,row);
     if(SysProps.getContractYears() > 0){
-      T.add(formatText(SysProps.getContractYears()),4,2);
+      T.add(formatText(SysProps.getContractYears()),4,row);
     }
-    T.add(TI,4,3);
+    T.add(TI,3,row);
+    row++;
+    T.add(formatText("Admin Email"),1,row);
+    T.add(adminEmail,3,row);
+    row++;
+    T.add(formatText("Email Host "),1,row);
+    T.add(emailHost,3,row);
     SubmitButton save = new SubmitButton("save","Save");
-    T.add(save,5,3);
+    T.add(save,4,7);
     myForm.add(T);
     return myForm;
   }
@@ -113,6 +126,8 @@ public class SysPropsSetter extends ModuleObjectContainer{
   public SystemProperties saveProperties(ModuleInfo modinfo){
     String contractDate = modinfo.getParameter("contract_date");
     String contractYears = modinfo.getParameter("contract_years");
+    String adminEmail = modinfo.getParameter("admin_email");
+    String emailHost = modinfo.getParameter("email_host");
     SystemProperties SysProps = seekProperties();
     if(SysProps !=null){
       if(contractDate.length() == 10){
@@ -127,6 +142,12 @@ public class SysPropsSetter extends ModuleObjectContainer{
 
         SysProps.setContractYears(years);
 
+      }
+      if(!"".equals(adminEmail)){
+        SysProps.setAdminEmail(adminEmail);
+      }
+      if(!"".equals(emailHost)){
+        SysProps.setEmailHost(emailHost);
       }
       try {
         SysProps.update();

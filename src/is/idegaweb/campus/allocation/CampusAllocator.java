@@ -86,8 +86,8 @@ public class CampusAllocator extends KeyEditor{
       this.iComplexId = ((Integer)modinfo.getSessionAttribute("sess_cplx_id")).intValue();
     }
 
-    if(modinfo.getApplicationAttribute(SysProps.getSystemPropertiesEnitityName())!=null){
-      SysProps = (SystemProperties)modinfo.getApplicationAttribute(SysProps.getSystemPropertiesEnitityName());
+    if(modinfo.getApplicationAttribute(SysProps.getEntityTableName())!=null){
+      SysProps = (SystemProperties)modinfo.getApplicationAttribute(SysProps.getEntityTableName());
     }
 
     Table Frame = new Table();
@@ -300,8 +300,9 @@ public class CampusAllocator extends KeyEditor{
 
         }
         catch(SQLException sql){}
+         row++;
       }
-      row++;
+
     }
     else
       Frame.add(formatText(iwrb.getLocalizedString("not_to_allocate","Nothing to Allocate!")));

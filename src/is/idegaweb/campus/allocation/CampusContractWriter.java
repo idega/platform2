@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.3 2001/08/01 10:31:06 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.4 2001/08/10 16:32:22 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -146,7 +146,7 @@ public class CampusContractWriter{
         returnString = head+ mid+tail;
 
       }
-      System.err.println("returnString: "+returnString);
+      //System.err.println("returnString: "+returnString);
     }
 
     return returnString;

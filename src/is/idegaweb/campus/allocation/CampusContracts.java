@@ -147,6 +147,7 @@ public class CampusContracts extends KeyEditor{
   }
 
   private ModuleObject getContractTable(ModuleInfo modinfo){
+
     List L = ContractFinder.listOfStatusContracts(this.sGlobalStatus);
     Contract C = null;
     User U = null;
@@ -165,7 +166,7 @@ public class CampusContracts extends KeyEditor{
 
         try {
           C = (Contract) L.get(i);
-          U = new User(C.getID());
+          U = new User(C.getUserId().intValue());
           Ap = new Applicant(C.getApplicantId().intValue());
           A = new Apartment(C.getApartmentId().intValue());
           if(C.getStatus().equalsIgnoreCase(Contract.statusCreated))
@@ -179,7 +180,7 @@ public class CampusContracts extends KeyEditor{
           T.add(formatText(C.getValidTo().toString()),6,row);
           row++;
         }
-        catch (SQLException ex) {   }
+        catch (SQLException ex) {  ex.printStackTrace(); }
         }
         T.add(headerText(" "),1,1);
         T.add(headerText(iwrb.getLocalizedString("name","Name")),2,1);
@@ -282,17 +283,28 @@ public class CampusContracts extends KeyEditor{
   }
 
   public Link getSignedLink(ModuleObject MO,int contractId){
-    Link L = new Link(MO);
+    Window W = new Window("Signature","/allocation/contractsign.jsp");
+    W.setResizable(true);
+    W.setMenubar(true);
+    Link L = new Link(MO,W);
     L.addParameter("signed_id",contractId);
     return L;
   }
 
-   public Link getPDFLink(ModuleObject MO,int contractId){
+  public Link getPDFLink(ModuleObject MO,int contractId){
     Window W = new Window("PDF","/allocation/contractfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
     Link L = new Link(MO,W);
     L.addParameter("contract_id",contractId);
+    return L;
+  }
+   public Link getPDFLink(ModuleObject MO,String status){
+    Window W = new Window("PDF","/allocation/applicationfile.jsp");
+    W.setResizable(true);
+    W.setMenubar(true);
+    Link L = new Link(MO,W);
+    L.addParameter("app_status",status);
     return L;
   }
 }

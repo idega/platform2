@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.5 2001/07/12 10:48:26 aron Exp $
+ * $Id: CampusAllocation.java,v 1.6 2001/08/10 16:32:22 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationFinder;
+import is.idegaweb.campus.entity.SystemProperties;
 import java.util.List;
 
 /**
@@ -36,11 +37,15 @@ public class CampusAllocation extends KeyEditor{
 
   protected void control(ModuleInfo modinfo){
 
-      this.makeView();
-      if(isAdmin)
-        this.addMain((makeSubjectTable()));
-      else
-        this.addMain(new Text("Ekki Réttindi"));
+    if(modinfo.getApplicationAttribute(SystemProperties.getEntityTableName())==null){
+     SystemProperties SysProps =  SysPropsSetter.seekProperties();
+     modinfo.setApplicationAttribute(SystemProperties.getEntityTableName(),SysProps);
+    }
+
+    if(isAdmin)
+      add((makeSubjectTable()));
+    else
+      addMain(new Text("Ekki Réttindi"));
 
   }
 

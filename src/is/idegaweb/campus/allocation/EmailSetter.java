@@ -26,7 +26,7 @@ public class EmailSetter extends KeyEditor{
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.emails";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String propParameter = SystemProperties.getSystemPropertiesEnitityName();
+  private String propParameter = SystemProperties.getEntityTableName();
   private String localesParameter="iw_locales";
 
   public EmailSetter(String sHeader) {
