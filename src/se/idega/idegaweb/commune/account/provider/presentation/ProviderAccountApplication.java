@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplication.java,v 1.7 2002/11/01 03:51:32 tryggvil Exp $
+ * $Id: ProviderAccountApplication.java,v 1.8 2002/11/01 04:31:54 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -819,7 +819,7 @@ public class ProviderAccountApplication extends CommuneBlock {
 					int schTypeID = ((Integer) schType.getPrimaryKey()).intValue();
 					String nameSchType = schType.getName();
 					CheckBox box = new CheckBox(PARAM_PROV_TYPE,Integer.toString(schTypeID));
-					System.out.println("ProvierAccountApplication: getSchoolTypesCheckboxes() : Testing school_type_id=\""+schTypeID+"\"");
+					//System.out.println("ProvierAccountApplication: getSchoolTypesCheckboxes() : Testing school_type_id=\""+schTypeID+"\"");
 					if(isValueInArray(schTypeID,schoolTypeIDs)){
 						box.setChecked(true);
 					}
@@ -836,11 +836,11 @@ public class ProviderAccountApplication extends CommuneBlock {
 	
 	private boolean isValueInArray(int value,int[] array){
 		if(array!=null){
-			System.out.println("ProvierAccountApplication: isValueInArray() : array != null");
-			System.out.println("ProvierAccountApplication: isValueInArray() : array.length="+array.length);	
+			//System.out.println("ProvierAccountApplication: isValueInArray() : array != null");
+			//System.out.println("ProvierAccountApplication: isValueInArray() : array.length="+array.length);	
 			for (int i = 0; i < array.length; i++) {
 				int integ = array[i];
-				System.out.println("ProvierAccountApplication: isValueInArray() : Testing school_type_id=\""+integ+"\" for value=\""+value+"\"");
+				//System.out.println("ProvierAccountApplication: isValueInArray() : Testing school_type_id=\""+integ+"\" for value=\""+value+"\"");
 				if(integ==value){
 					return true;
 				}
