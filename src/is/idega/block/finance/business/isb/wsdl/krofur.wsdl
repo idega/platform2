@@ -1,0 +1,1880 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Þorvaldur Jónasson (Íslandsbanki hf) -->
+
+<definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s0="http://ws.isb.is" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://ws.isb.is">
+
+	<types>
+
+		<s:schema elementFormDefault="qualified" targetNamespace="http://ws.isb.is">
+
+			<s:element name="StofnaKrofu">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="krafa" type="s0:Krafa"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:complexType name="Krafa">
+
+				<s:annotation>Gagnatýpa fyrir innheimtukröfu. Modelerað eftir IK 1.40 skráarforminu. Ef nýta á forskráð gildi á kröfuhafa við innsendingu á kröfum er sett gildið -1 í þau svæði sem á að nota forskráðu gildin í.</s:annotation>
+
+				<s:sequence>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Faerslugerd" type="s:string">
+
+						<s:annotation>Færslugerð kröfu sem segir til um hvort eigi að Stofna, Fella eða Breyta kröfu. Færslugerð þarf einungis að vera útfyllt í aðgerðinni StofnaKrofubunka</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="KennitalaKrofuhafa" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Gjalddagi" type="s:dateTime"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Nidurfellingardagur" type="s:dateTime"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Audkenni" type="s:string">
+
+						<s:annotation>Með kröfu er skráð auðkenni sem vísar á númer þess reiknings á Kröfuhafaskrá sem greiðsla til kröfuhafa á að ráðstafast inná. Má vera bæði tölustafir og bókstafir.  Auðkenni er úthlutað af ÍSB við skráningu kröfuhafa.  Hægt er að bæta við fleiri auðkennum eftir þörf.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="KennitalaGreidanda" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Bankanumer" type="s:int">
+
+						<s:annotation>Viðskiptabanki kröfuhafa (útibú).</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Hofudbok" type="s:int">
+
+						<s:annotation>Höfuðbók kröfu er alltaf 66.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Krofunumer" type="s:int">
+
+						<s:annotation>Númer kröfunnar.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Upphaed" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Tilvisun" type="s:string">
+
+						<s:annotation>Strengur að hámarki 16 stafir. Má innihalda hvað sem er. T.d. getur þetta verið notað til þess að setja auðkenni færslu úr bókhaldskerfi kröfuhafa.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Sedilnumer" type="s:string">
+
+						<s:annotation>Strengur að hámarki 7 stafir.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Vidskiptanumer" type="s:string">
+
+						<s:annotation>Strengur, hámark 16 stafir. Einkvæmt númer greiðanda hjá kröfuhafa. Ef fyrirtæki notar ekki viðskiptanúmer á beingreiðslukröfur þá er kennitala greiðanda notuð sem viðskiptanúmer. Kröfuhafi getur ákveðið sjálfur hvert viðskiptanúmerið er..</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Eindagi" type="s:dateTime"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="TilkynningarOgGreidslugjald1" type="s:decimal">
+
+						<s:annotation>Gjald fyrir útreikning og útskrift greiðsluseðils ásamt sendingu hans til greiðanda. Alltaf greitt af greiðanda bréfs og rennur til kröfuhafa. </s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="TilkynningarOgGreidslugjald2" type="s:decimal">
+
+						<s:annotation>Gjald fyrir útreikning og útskrift greiðsluseðils ásamt sendingu hans til greiðanda. Alltaf greitt af greiðanda bréfs og rennur til kröfuhafa. </s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Vanskilagjald1" type="s:decimal">
+
+						<s:annotation>Viðbótargjald vegna vanskila sem tekið er af kröfum þegar vanskil hafa náð tilteknum aldri eða þegar dagafjöldi fyrra eða seinna vanskilagjalds og vanskilagjaldskódi segir til um. 
+
+Hægt er að taka aðeins fyrra vanskilagjald en þá er dagafjöldi seinna vanskilagjalds og seinna vanskilagjald 0, dagafjöldi fyrra vanskilagjalds útfylltur og vanskilagjaldskódi útfylltur. 
+
+Hægt er að taka aðeins seinna vanskilagjald en þá er dagafjöldi fyrra vanskilagjalds og fyrra vanskilagjald 0, dagafjöldi seinna vanskilagjalds útfylltur og vanskilagjaldskódi útfylltur. 
+
+Ef taka á bæði fyrra og seinna vanskilagjald skal fylla út dagafjölda fyrir bæði fyrra og seinna vanskilagjald, vanskilagjaldskóda og fylla út bæði vanskilagjaldssvæðin. 
+
+Dráttarvextir reiknast af vanskilagjaldi ef dráttarvaxtastofnkódi er 1.
+
+</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Vanskilagjald2" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagafjoldiVanskilagjalds1" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagafjoldiVanskilagjalds2" type="s:int"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="VanskilagjaldsKodi" type="s:string">
+
+						<s:annotation>Ef tómt þá er enginn vanskilakostnaður tekinn. Ef 1 þá er gjalddagi viðmiðunardagur og gjaldið er upphæðarsvæði. Ef 2 þá er gjalddagi viðmiðunardagur og gjaldið er prósenta sem reiknast af upphæð kröfu. Ef 3 þá er eindagi viðmiðunardagur og gjaldið er upphæðarsvæði. Ef 4 þá er eindagi viðmiðunardagur og gjaldið er prósenta sem reiknast af upphæð kröfu.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="AnnarKostnadur" type="s:decimal">
+
+						<s:annotation>Fyrir sérákvörðuð gjöld sem greidd eru af greiðanda kröfu. Annar kostnaður er geymdur á stofni kröfu. Dráttarvextir reiknast ekki af þessum kostnaði.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="AnnarVanskilakostnadur" type="s:decimal">
+
+						<s:annotation>Fyrir sérákvörðuð gjöld, t.d. milliinnheimtugjald, sem greidd eru af greiðanda kröfu. Annar vanskilakostnaður er geymdur á stofni kröfu. Dráttarvextir reiknast ekki af þessum kostnaði.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Drattavaxtaprosenta" type="s:decimal">
+
+						<s:annotation>Sett inn með stofnfærslu og geymist á stofni kröfu. Þegar eindagi kröfu er liðinn þá eru dráttarvextir kröfu reiknaðir eftir þessari einu dráttarvaxtaprósentu en ekki miðað við dráttarvaxtatímabil eins og þegar dráttarvextir Seðlabankans eru notaðir.
+
+Ef dráttarvaxtaprósenta er ekki sett á stofn kröfu, reiknast prósenta dráttarvaxta út frá ársvaxtaprósentu dráttarvaxta sem Seðlabankinn gefur út og vaxtavaxtast á 12 mánaða fresti, þ.e. dráttarvextir leggjast við höfuðstól. Ársvaxtaprósentur dráttarvaxta ásamt gildistökudagsetningum eru geymdar í bankatöflum RB. Tekið er tillit til breytinga á dráttarvöxtum sem verða á dráttarvaxtatímabili ef dráttarvextir Seðlabankans eru notaðir.
+
+Dráttarvaxtaprósenta má innihalda fjóra aukastafi
+
+</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Drattavaxtaregla" type="s:string">
+
+						<s:annotation>Segir til um hvort dráttarvextir eru reiknaðir.
+
+Ef svæðið er tóm eru dráttarvextir teknir eftir eindaga, en eru reiknaðir frá gjalddaga.  Ef eindagi og gjalddagi er sami dagur og á lokuðum bankadegi þá er hægt að greiða kröfuna án dráttarvaxta næsta bankadag.
+
+Ef svæðið er 1 eru engir dráttarvextir reiknaðir.
+
+Ef svæðið er 2 þá reiknast dráttarvextir frá og með eindaga með reglunni 360/360
+
+</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Drattavaxtastofnkodi" type="s:string">
+
+						<s:annotation>Ef tómt þá reiknast dráttavextir af upphæð kröfu. Ef 1 þá reiknast dráttarvextir af upphæð kröfu + fyrra/seinna vanskilagjaldi
+
+
+
+</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Gengistegund" type="s:string">
+
+						<s:annotation>A 	Almenn tafla viðkomandi stofnunar/banka.
+
+F 	Miðgengi Seðlabanka Íslands.
+
+L	Lögboðið gengi Seðlabanka Íslands. Þetta er fundargengi Seðlabankans. 
+
+S 	Seðlagengi viðkomandi stofnunar/banka.
+
+</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Mynt" type="s:string">
+
+						<s:annotation>Þriggjastafa kóði myntar</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Gengisbanki" type="s:int">
+
+						<s:annotation>Fyrstu tveir stafirnir í gengisbanka eða 00, 01, 03, 05 eða 11</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Gengiskodi" type="s:string">
+
+						<s:annotation>Segir til um við hvaða dagsgengi á að miða þegar krafa er greidd og hvaða dráttarvaxtatöflur skal nota við útreikning dráttarvaxta. 
+
+J   	Gjalddagagengi sem segir að miða skuli við gildandi gengi kröfumyntar á gjalddaga. Gengisviðmiðun er gildandi gengi innan dags ef greitt er á gjalddaga. Ef greitt er eftir gjalddaga er viðmiðun síðasta skráða kröfugengi gjalddagans. Ef greitt er fyrir gjalddaga er miðað við gildandi gengi kröfumyntar. Dráttarvextir reiknast skv. hæstu lögleyfðu dráttarvaxtaprósentu hverju sinni á upphæð kröfunnar í íslenskum krónum miðað við gengi kröfumyntar á gjalddaga kröfunnar.
+
+N 	Greiðsludagsgengi segir að miðað skuli við gildandi kröfugengi þegar krafa er greidd. Dráttarvextir reiknast skv. dráttarvaxtarprósentu kröfumyntar á íslenska upphæð kröfunnar eftir umreikning kröfuupphæðar skv. gildandi gengi kröfumyntar.   
+
+</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Greidslukodi" type="s:string">
+
+						<s:annotation>Ef tómt þá má ekki greiða kröfuna ef krafa með eldri gjalddaga er til. Ef 1 þá má greiða kröfuna þó að eldri gjalddagar séu ógreiddir</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Afslattur1" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Afslattur2" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagafjoldiAfslattar1" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagafjoldiAfslattar2" type="s:int"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Afslattarkodi" type="s:string">
+
+						<s:annotation>Ef tómt þá er enginn afsláttur veittur. Ef 1 þá er gjalddagi viðmiðunardagur og afsláttur er upphæð. Ef 2 þá er gjalddagi viðmiðunardagur og afsláttur er prósenta. Ef 3 þá er eindagi viðmiðunardagur og afsláttur er upphæð. Ef 4 þá er eindagi viðmiðunardagur og afsláttur er prósenta.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Innborgunarkodi" type="s:string">
+
+						<s:annotation>Ef tómt þá má greiða inn á kröfu. Ef 1 þá má ekki greiða inn á kröfu.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Birtingakodi" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Vefslod" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="NafnGreidanda1" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="NafnGreidanda2" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="HeimiliGreidanda" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="SveitarfelagGreidanda" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Athugasemdalina1" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Athugasemdalina2" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Hreyfingar" type="s0:ArrayOfKrofulidur"/>
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:complexType name="ArrayOfKrofulidur">
+
+				<s:sequence>
+
+					<s:element minOccurs="0" maxOccurs="unbounded" name="Krofulidur" nillable="true" type="s0:Krofulidur"/>
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:complexType name="Krofulidur">
+
+				<s:sequence>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Texti" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Upphaed" type="s:decimal"/>
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:element name="StofnaKrofuResponse">
+
+				<s:complexType/>
+
+			</s:element>
+
+			<s:element name="EndurvekjaKrofu">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="krafa" type="s0:Krafa"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="EndurvekjaKrofuResponse">
+
+				<s:complexType/>
+
+			</s:element>
+
+			<s:element name="FellaKrofu">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="krafa" type="s0:Krafa"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="FellaKrofuResponse">
+
+				<s:complexType/>
+
+			</s:element>
+
+			<s:element name="BreytaKrofu">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="krafa" type="s0:Krafa"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="BreytaKrofuResponse">
+
+				<s:complexType/>
+
+			</s:element>
+
+			<s:element name="StofnaKrofubunka">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="krofur" type="s0:ArrayOfKrafa"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:complexType name="ArrayOfKrafa">
+
+				<s:sequence>
+
+					<s:element minOccurs="0" maxOccurs="unbounded" name="Krafa" nillable="true" type="s0:Krafa"/>
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:element name="StofnaKrofubunkaResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="1" maxOccurs="1" name="StofnaKrofubunkaResult" type="s:decimal"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaKrofubunkasvar">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="1" maxOccurs="1" name="bunkanumer" type="s:decimal"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaKrofubunkasvarResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaKrofubunkasvarResult" type="s0:ArrayOfUppreiknudKrafa"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:complexType name="ArrayOfUppreiknudKrafa">
+
+				<s:sequence>
+
+					<s:element minOccurs="0" maxOccurs="unbounded" name="UppreiknudKrafa" nillable="true" type="s0:UppreiknudKrafa"/>
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:complexType name="UppreiknudKrafa">
+
+				<s:complexContent mixed="false">
+
+					<s:extension base="s0:Krafa">
+
+						<s:sequence>
+
+							<s:element minOccurs="1" maxOccurs="1" name="Eftirstodvar" type="s:decimal"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="Skuldfaerist" type="s:boolean"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="OgreittTilkynningargjald" type="s:decimal"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="OgreiddirDrattarvextir" type="s:decimal"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="UppaedTilGreidsluIDag" type="s:decimal"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="TilkynningargjaldTilGreidsluIDag" type="s:decimal"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="VanskilagjaldTilGreidsluIDag" type="s:decimal"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="DrattarvextirTilGreidsluIDag" type="s:decimal"/>
+
+							<s:element minOccurs="0" maxOccurs="1" name="Villubod" type="s:string"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="Stada" type="s0:StadaKrofu"/>
+
+							<s:element minOccurs="1" maxOccurs="1" name="Prentun" type="s0:PrentunKrofu"/>
+
+						</s:sequence>
+
+					</s:extension>
+
+				</s:complexContent>
+
+			</s:complexType>
+
+			<s:simpleType name="StadaKrofu">
+
+				<s:restriction base="s:string">
+
+					<s:enumeration value="ÓGREIDD"/>
+
+					<s:enumeration value="GREIDD"/>
+
+					<s:enumeration value="MILLINNHEIMTA"/>
+
+					<s:enumeration value="LÖGFRÆÐIINNHEIMTA"/>
+
+					<s:enumeration value="NIÐURFELLD"/>
+
+					<s:enumeration value="VILLA"/>
+
+				</s:restriction>
+
+			</s:simpleType>
+
+			<s:simpleType name="PrentunKrofu">
+
+				<s:restriction base="s:string">
+
+					<s:enumeration value="BANKI_PRENTAR"/>
+
+					<s:enumeration value="KROFUHAFI_PRENTAR"/>
+
+				</s:restriction>
+
+			</s:simpleType>
+
+			<s:element name="SaekjaGreidslurKrafnaTimabil">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="0" maxOccurs="1" name="audkenni" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="dagsetningFra" type="s:dateTime"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="dagsetningTil" type="s:dateTime"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaFra" type="s:int" />
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaTil" type="s:int" />
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaGreidslurKrafnaTimabilResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaGreidslurKrafnaTimabilResult" type="s0:ArrayOfGreidsla"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:complexType name="ArrayOfGreidsla">
+
+				<s:sequence>
+
+					<s:element minOccurs="0" maxOccurs="unbounded" name="Greidsla" nillable="true" type="s0:Greidsla"/>
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:complexType name="Greidsla">
+
+				<s:sequence>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Bankanumer" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Hofudbok" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Krofunumer" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Gjalddagi" type="s:dateTime"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="KennitalaKrofuhafa" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="KennitalaGreidanda" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Vidskiptanumer" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Upphaed" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Eindagi" type="s:dateTime"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Audkenni" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Tilvisun" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Nidurfellingardagur" type="s:dateTime"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Textalykill" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Innlausnarbanki" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Hreyfingardagur" type="s:dateTime"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Sedilnumer" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Vanskilagjaldskodi" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Vanskilagjald1" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Vanskilagjald2" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagafjoldiVanskilagjalds1" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagafjoldiVanskilagjalds2" type="s:int"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Afslattarkodi" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Afslattur1" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Afslattur2" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagafjoldiAfslattar1" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagafjoldiAfslattar2" type="s:int"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="TilkynningarOgGreidslugjald1" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="TilkynningarOgGreidslugjald2" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="AnnarVanskilakostnadur" type="s:decimal"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Innborgunarkodi" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Greidslukodi" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Drattavaxtastofnkodi" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Drattavaxtaregla" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Drattavaxtaprosenta" type="s:decimal"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Gengistegund" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Mynt" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Gengisbanki" type="s:int"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Gengiskodi" type="s:string"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Birtingarkodi" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Vaxtadagsetning" type="s:dateTime"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Innborgunardagur" type="s:dateTime"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Innborgunarupphaed" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Drattarvextir" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="GreiddUpphaed" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="SkattaUpphaed" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="VeitturAfslattur" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="GreittTilkynningargjald" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="GreittVanskilagjald" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="GreiddurAnnarVanskilakostnadur" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="GreiddurAnnarKostnadur" type="s:decimal"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="OgreittTilkynningargjald" type="s:decimal"/>
+
+					<s:element minOccurs="0" maxOccurs="1" name="Bunkanumer" type="s:string"/>
+
+					<s:element minOccurs="1" maxOccurs="1" name="AnnarKostnadur" type="s:decimal" />
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:element name="SaekjaGreidslurKrafna">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="0" maxOccurs="1" name="audkenni" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaFra" type="s:int" />
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaTil" type="s:int" />
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaGreidslurKrafnaResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaGreidslurKrafnaResult" type="s0:ArrayOfGreidsla"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaGreidsluKrofu">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="banki" type="s:int"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="hofudbok" type="s:int"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="krofunumer" type="s:int"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="gjalddagi" type="s:dateTime"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaGreidsluKrofuResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaGreidsluKrofuResult" type="s0:ArrayOfGreidsla"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaKrofur">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="0" maxOccurs="1" name="audkenni" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="gjalddagiFra" type="s:dateTime"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="gjalddagiTil" type="s:dateTime"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="astand" type="s0:AstandKrofu"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaFra" type="s:int" />
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaTil" type="s:int" />
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:simpleType name="AstandKrofu">
+
+				<s:restriction base="s:string">
+
+					<s:enumeration value="ÓGREIDD"/>
+
+					<s:enumeration value="GREIDD"/>
+
+					<s:enumeration value="NIÐURFELLD"/>
+
+					<s:enumeration value="MILLINNHEIMTA"/>
+
+					<s:enumeration value="LÖGFRÆÐIINNHEIMTA"/>
+
+					<s:enumeration value="ALLAR_KROFUR"/>
+
+				</s:restriction>
+
+			</s:simpleType>
+
+			<s:element name="SaekjaKrofurResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaKrofurResult" type="s0:ArrayOfUppreiknudKrafa"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaKrofu">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="banki" type="s:int"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="hofudbok" type="s:int"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="krofunumer" type="s:int"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="gjalddagi" type="s:dateTime"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaKrofuResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaKrofuResult" type="s0:UppreiknudKrafa"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="StofnaKrofuskra">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="1" maxOccurs="1" name="tegund" type="s0:TegundKrofuskra"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:simpleType name="TegundKrofuskra">
+
+				<s:restriction base="s:string">
+
+					<s:enumeration value="IK_140_TEXTASKRA"/>
+
+					<s:enumeration value="IK_140_XMLSKRA"/>
+
+				</s:restriction>
+
+			</s:simpleType>
+
+			<s:element name="StofnaKrofuskraResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="1" maxOccurs="1" name="StofnaKrofuskraResult" type="s:decimal"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaKrofuskrasvar">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="1" maxOccurs="1" name="tegund" type="s0:TegundKrofuskra"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="bunkanumer" type="s:decimal"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaKrofuskrasvarResponse">
+
+				<s:complexType/>
+
+			</s:element>
+
+			<s:element name="SaekjaKrofuupplysingaskra">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="1" maxOccurs="1" name="tegundFyrirspurnar" type="s0:TegundKrofufyrirspurnar"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:simpleType name="TegundKrofufyrirspurnar">
+
+				<s:restriction base="s:string">
+
+					<s:enumeration value="IK_140_XMLSKRA"/>
+
+				</s:restriction>
+
+			</s:simpleType>
+
+			<s:element name="SaekjaKrofuupplysingaskraResponse">
+
+				<s:complexType/>
+
+			</s:element>
+
+			<s:element name="SaekjaAllarBeingreidslubeidnir">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaFra" type="s:int" />
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaTil" type="s:int" />
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaAllarBeingreidslubeidnirResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaAllarBeingreidslubeidnirResult" type="s0:ArrayOfBeingreidslubeidni"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:complexType name="ArrayOfBeingreidslubeidni">
+
+				<s:sequence>
+
+					<s:element minOccurs="0" maxOccurs="unbounded" name="Beingreidslubeidni" nillable="true" type="s0:Beingreidslubeidni"/>
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:complexType name="Beingreidslubeidni">
+
+				<s:sequence>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Textalykill" type="s:string">
+
+						<s:annotation>Textalykill sem beingreiðslubeiðnin gildir fyrir. Tveggjastafa strengur.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Vidskiptanumer" type="s:string">
+
+						<s:annotation>Viðskiptanúmer sem beingreiðslubeiðnin gildir fyrir. Hámark 16 stafir.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="KennitalaKrofuhafa" type="s:string">
+
+						<s:annotation>Kennitala kröfuhafa sem beiðnin gildir fyrir.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="KennitalaGreidanda" type="s:string">
+
+						<s:annotation>Kennitala greiðanda sem beiðnin gildir fyrir.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="BankiKrofuhafa" type="s:int">
+
+						<s:annotation>Banki kröfuhafa sem beiðnin gildir fyrir.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="GildirFra" type="s:dateTime">
+
+						<s:annotation>Dagsetning er beingreiðslubeiðnin tekur gildi (getur verið fram í tímann).</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="GildirTil" type="s:dateTime">
+
+						<s:annotation>Dagsetning er beingreiðslubeiðnin rennur út.</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="Stada" type="s0:BeingreidslubeidniStada">
+
+						<s:annotation>Staða beingreiðslubeiðnarinnar (VIRK, OVIRK)</s:annotation>
+
+					</s:element>
+
+					<s:element minOccurs="1" maxOccurs="1" name="DagsetningStodu" type="s:dateTime">
+
+						<s:annotation>Dagsetning þegar staða beingreiðslubeiðnarinnar breyttist.</s:annotation>
+
+					</s:element>
+
+				</s:sequence>
+
+			</s:complexType>
+
+			<s:simpleType name="BeingreidslubeidniStada">
+
+				<s:restriction base="s:string">
+
+					<s:enumeration value="VIRK"/>
+
+					<s:enumeration value="OVIRK"/>
+
+				</s:restriction>
+
+			</s:simpleType>
+
+			<s:element name="SaekjaBeingreidslubeidnir">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="0" maxOccurs="1" name="textalykill" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaFra" type="s:int" />
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaTil" type="s:int" />
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaBeingreidslubeidnirResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaBeingreidslubeidnirResult" type="s0:ArrayOfBeingreidslubeidni"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaBeingreidslubeidnaHreyfingar">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="0" maxOccurs="1" name="textalykill" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaFra" type="s:int" />
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaTil" type="s:int" />
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaBeingreidslubeidnaHreyfingarResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaBeingreidslubeidnaHreyfingarResult" type="s0:ArrayOfBeingreidslubeidni"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaAllarBeingreidslubeidnaHreyfingar">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="kennitalaKrofuhafa" type="s:string"/>
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaFra" type="s:int" />
+
+						<s:element minOccurs="1" maxOccurs="1" name="faerslaTil" type="s:int" />
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+			<s:element name="SaekjaAllarBeingreidslubeidnaHreyfingarResponse">
+
+				<s:complexType>
+
+					<s:sequence>
+
+						<s:element minOccurs="0" maxOccurs="1" name="SaekjaAllarBeingreidslubeidnaHreyfingarResult" type="s0:ArrayOfBeingreidslubeidni"/>
+
+					</s:sequence>
+
+				</s:complexType>
+
+			</s:element>
+
+		</s:schema>
+
+	</types>
+
+	<message name="StofnaKrofuSoapIn">
+
+		<part name="parameters" element="s0:StofnaKrofu"/>
+
+	</message>
+
+	<message name="StofnaKrofuSoapOut">
+
+		<part name="parameters" element="s0:StofnaKrofuResponse"/>
+
+	</message>
+
+	<message name="EndurvekjaKrofuSoapIn">
+
+		<part name="parameters" element="s0:EndurvekjaKrofu"/>
+
+	</message>
+
+	<message name="EndurvekjaKrofuSoapOut">
+
+		<part name="parameters" element="s0:EndurvekjaKrofuResponse"/>
+
+	</message>
+
+	<message name="FellaKrofuSoapIn">
+
+		<part name="parameters" element="s0:FellaKrofu"/>
+
+	</message>
+
+	<message name="FellaKrofuSoapOut">
+
+		<part name="parameters" element="s0:FellaKrofuResponse"/>
+
+	</message>
+
+	<message name="BreytaKrofuSoapIn">
+
+		<part name="parameters" element="s0:BreytaKrofu"/>
+
+	</message>
+
+	<message name="BreytaKrofuSoapOut">
+
+		<part name="parameters" element="s0:BreytaKrofuResponse"/>
+
+	</message>
+
+	<message name="StofnaKrofubunkaSoapIn">
+
+		<part name="parameters" element="s0:StofnaKrofubunka"/>
+
+	</message>
+
+	<message name="StofnaKrofubunkaSoapOut">
+
+		<part name="parameters" element="s0:StofnaKrofubunkaResponse"/>
+
+	</message>
+
+	<message name="SaekjaKrofubunkasvarSoapIn">
+
+		<part name="parameters" element="s0:SaekjaKrofubunkasvar"/>
+
+	</message>
+
+	<message name="SaekjaKrofubunkasvarSoapOut">
+
+		<part name="parameters" element="s0:SaekjaKrofubunkasvarResponse"/>
+
+	</message>
+
+	<message name="SaekjaGreidslurKrafnaTimabilSoapIn">
+
+		<part name="parameters" element="s0:SaekjaGreidslurKrafnaTimabil"/>
+
+	</message>
+
+	<message name="SaekjaGreidslurKrafnaTimabilSoapOut">
+
+		<part name="parameters" element="s0:SaekjaGreidslurKrafnaTimabilResponse"/>
+
+	</message>
+
+	<message name="SaekjaGreidslurKrafnaSoapIn">
+
+		<part name="parameters" element="s0:SaekjaGreidslurKrafna"/>
+
+	</message>
+
+	<message name="SaekjaGreidslurKrafnaSoapOut">
+
+		<part name="parameters" element="s0:SaekjaGreidslurKrafnaResponse"/>
+
+	</message>
+
+	<message name="SaekjaGreidsluKrofuSoapIn">
+
+		<part name="parameters" element="s0:SaekjaGreidsluKrofu"/>
+
+	</message>
+
+	<message name="SaekjaGreidsluKrofuSoapOut">
+
+		<part name="parameters" element="s0:SaekjaGreidsluKrofuResponse"/>
+
+	</message>
+
+	<message name="SaekjaKrofurSoapIn">
+
+		<part name="parameters" element="s0:SaekjaKrofur"/>
+
+	</message>
+
+	<message name="SaekjaKrofurSoapOut">
+
+		<part name="parameters" element="s0:SaekjaKrofurResponse"/>
+
+	</message>
+
+	<message name="SaekjaKrofuSoapIn">
+
+		<part name="parameters" element="s0:SaekjaKrofu"/>
+
+	</message>
+
+	<message name="SaekjaKrofuSoapOut">
+
+		<part name="parameters" element="s0:SaekjaKrofuResponse"/>
+
+	</message>
+
+	<message name="StofnaKrofuskraSoapIn">
+
+		<part name="parameters" element="s0:StofnaKrofuskra"/>
+
+	</message>
+
+	<message name="StofnaKrofuskraSoapOut">
+
+		<part name="parameters" element="s0:StofnaKrofuskraResponse"/>
+
+	</message>
+
+	<message name="SaekjaKrofuskrasvarSoapIn">
+
+		<part name="parameters" element="s0:SaekjaKrofuskrasvar"/>
+
+	</message>
+
+	<message name="SaekjaKrofuskrasvarSoapOut">
+
+		<part name="parameters" element="s0:SaekjaKrofuskrasvarResponse"/>
+
+	</message>
+
+	<message name="SaekjaKrofuupplysingaskraSoapIn">
+
+		<part name="parameters" element="s0:SaekjaKrofuupplysingaskra"/>
+
+	</message>
+
+	<message name="SaekjaKrofuupplysingaskraSoapOut">
+
+		<part name="parameters" element="s0:SaekjaKrofuupplysingaskraResponse"/>
+
+	</message>
+
+	<message name="SaekjaAllarBeingreidslubeidnirSoapIn">
+
+		<part name="parameters" element="s0:SaekjaAllarBeingreidslubeidnir"/>
+
+	</message>
+
+	<message name="SaekjaAllarBeingreidslubeidnirSoapOut">
+
+		<part name="parameters" element="s0:SaekjaAllarBeingreidslubeidnirResponse"/>
+
+	</message>
+
+	<message name="SaekjaBeingreidslubeidnirSoapIn">
+
+		<part name="parameters" element="s0:SaekjaBeingreidslubeidnir"/>
+
+	</message>
+
+	<message name="SaekjaBeingreidslubeidnirSoapOut">
+
+		<part name="parameters" element="s0:SaekjaBeingreidslubeidnirResponse"/>
+
+	</message>
+
+	<message name="SaekjaBeingreidslubeidnaHreyfingarSoapIn">
+
+		<part name="parameters" element="s0:SaekjaBeingreidslubeidnaHreyfingar"/>
+
+	</message>
+
+	<message name="SaekjaBeingreidslubeidnaHreyfingarSoapOut">
+
+		<part name="parameters" element="s0:SaekjaBeingreidslubeidnaHreyfingarResponse"/>
+
+	</message>
+
+	<message name="SaekjaAllarBeingreidslubeidnaHreyfingarSoapIn">
+
+		<part name="parameters" element="s0:SaekjaAllarBeingreidslubeidnaHreyfingar"/>
+
+	</message>
+
+	<message name="SaekjaAllarBeingreidslubeidnaHreyfingarSoapOut">
+
+		<part name="parameters" element="s0:SaekjaAllarBeingreidslubeidnaHreyfingarResponse"/>
+
+	</message>
+
+	<portType name="KrofurWSSoap">
+
+		<operation name="StofnaKrofu">
+
+			<documentation>Stofnar kröfu í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:StofnaKrofuSoapIn"/>
+
+			<output message="s0:StofnaKrofuSoapOut"/>
+
+		</operation>
+
+		<operation name="EndurvekjaKrofu">
+
+			<documentation>Endurvekur kröfu sem hefur verið felld niður og breytir í samræmi við kröfuna sem er send inn.</documentation>
+
+			<input message="s0:EndurvekjaKrofuSoapIn"/>
+
+			<output message="s0:EndurvekjaKrofuSoapOut"/>
+
+		</operation>
+
+		<operation name="FellaKrofu">
+
+			<documentation>Fellir kröfu í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:FellaKrofuSoapIn"/>
+
+			<output message="s0:FellaKrofuSoapOut"/>
+
+		</operation>
+
+		<operation name="BreytaKrofu">
+
+			<documentation>Breytir kröfu í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:BreytaKrofuSoapIn"/>
+
+			<output message="s0:BreytaKrofuSoapOut"/>
+
+		</operation>
+
+		<operation name="StofnaKrofubunka">
+
+			<documentation>Stofnar kröfur sem kröfubunka í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:StofnaKrofubunkaSoapIn"/>
+
+			<output message="s0:StofnaKrofubunkaSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaKrofubunkasvar">
+
+			<documentation>Sækir svör við kröfubunka sem stofnaður hefur verið í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:SaekjaKrofubunkasvarSoapIn"/>
+
+			<output message="s0:SaekjaKrofubunkasvarSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaGreidslurKrafnaTimabil">
+
+			<documentation>Sækir greiðsluupplýsingar í innheimtukerfi Íslandsbanka. Sótt er frá og með upphafsdagsetningu og til og með lokadagsetningu.</documentation>
+
+			<input message="s0:SaekjaGreidslurKrafnaTimabilSoapIn"/>
+
+			<output message="s0:SaekjaGreidslurKrafnaTimabilSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaGreidslurKrafna">
+
+			<documentation>Sækir greiðsluupplýsingar í innheimtukerfi Íslandsbanka. Einungis koma þær greiðslur sem hafa borist frá því greiðslur voru sóttar síðast með þessari aðgerð.</documentation>
+
+			<input message="s0:SaekjaGreidslurKrafnaSoapIn"/>
+
+			<output message="s0:SaekjaGreidslurKrafnaSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaGreidsluKrofu">
+
+			<documentation>Sækir greiðsluupplýsingar í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:SaekjaGreidsluKrofuSoapIn"/>
+
+			<output message="s0:SaekjaGreidsluKrofuSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaKrofur">
+
+			<documentation>Sækir kröfuupplýsingar í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:SaekjaKrofurSoapIn"/>
+
+			<output message="s0:SaekjaKrofurSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaKrofu">
+
+			<documentation>Sækir kröfuupplýsingar í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:SaekjaKrofuSoapIn"/>
+
+			<output message="s0:SaekjaKrofuSoapOut"/>
+
+		</operation>
+
+		<operation name="StofnaKrofuskra">
+
+			<documentation>Stofna kröfuskrá í innheimtukerfi Íslandsbanka. Skráin er send inn sem DIME attachment. Skilar bunkanúmeri skráarinnar sem er notað til að sækja svarskeyti við stofnuninni.</documentation>
+
+			<input message="s0:StofnaKrofuskraSoapIn"/>
+
+			<output message="s0:StofnaKrofuskraSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaKrofuskrasvar">
+
+			<documentation>Sækir svarskrá við innsendri kröfuskrá með gefnu bunkanúmeri. Skráin er send til baka sem DIME attachment.</documentation>
+
+			<input message="s0:SaekjaKrofuskrasvarSoapIn"/>
+
+			<output message="s0:SaekjaKrofuskrasvarSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaKrofuupplysingaskra">
+
+			<documentation>Sækir greiðsluupplýsingar á kröfum. Fyrirspurnin er send inn sem DIME attachment. Greiðsluupplýsingarnar eru sendar til baka sem DIME attachment.</documentation>
+
+			<input message="s0:SaekjaKrofuupplysingaskraSoapIn"/>
+
+			<output message="s0:SaekjaKrofuupplysingaskraSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaAllarBeingreidslubeidnir">
+
+			<documentation>Sækir allar beingreiðslubeiðnir kröfuhafa, óháð textalykli,  í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:SaekjaAllarBeingreidslubeidnirSoapIn"/>
+
+			<output message="s0:SaekjaAllarBeingreidslubeidnirSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaBeingreidslubeidnir">
+
+			<documentation>Sækir beingreiðslubeiðnir kröfuhafa fyrir ákveðinn textalykil í innheimtukerfi Íslandsbanka.</documentation>
+
+			<input message="s0:SaekjaBeingreidslubeidnirSoapIn"/>
+
+			<output message="s0:SaekjaBeingreidslubeidnirSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaBeingreidslubeidnaHreyfingar">
+
+			<documentation>Sækir hreyfingar á beingreiðslubeiðnum kröfuhafa fyrir ákveðinn textalykil í innheimtukerfi Íslandsbanka (nýjar og niðurfelldar beingreiðslubeiðnir frá því kröfuhafi sótti beiðnirnar síðast)</documentation>
+
+			<input message="s0:SaekjaBeingreidslubeidnaHreyfingarSoapIn"/>
+
+			<output message="s0:SaekjaBeingreidslubeidnaHreyfingarSoapOut"/>
+
+		</operation>
+
+		<operation name="SaekjaAllarBeingreidslubeidnaHreyfingar">
+
+			<documentation>Sækir hreyfingar á beingreiðslubeiðnum kröfuhafa fyrir alla textalykla í innheimtukerfi Íslandsbanka (nýjar og niðurfelldar beingreiðslubeiðnir frá því kröfuhafi sótti beiðnirnar síðast)</documentation>
+
+			<input message="s0:SaekjaAllarBeingreidslubeidnaHreyfingarSoapIn"/>
+
+			<output message="s0:SaekjaAllarBeingreidslubeidnaHreyfingarSoapOut"/>
+
+		</operation>
+
+	</portType>
+
+	<binding name="KrofurWSSoap" type="s0:KrofurWSSoap">
+
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+		<operation name="StofnaKrofu">
+
+			<soap:operation soapAction="http://ws.isb.is/StofnaKrofu" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="EndurvekjaKrofu">
+
+			<soap:operation soapAction="http://ws.isb.is/EndurvekjaKrofu" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="FellaKrofu">
+
+			<soap:operation soapAction="http://ws.isb.is/FellaKrofu" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="BreytaKrofu">
+
+			<soap:operation soapAction="http://ws.isb.is/BreytaKrofu" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="StofnaKrofubunka">
+
+			<soap:operation soapAction="http://ws.isb.is/StofnaKrofubunka" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaKrofubunkasvar">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaKrofubunkasvar" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaGreidslurKrafnaTimabil">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaGreidslurKrafnaTimabil" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaGreidslurKrafna">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaGreidslurKrafna" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaGreidsluKrofu">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaGreidsluKrofu" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaKrofur">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaKrofur" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaKrofu">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaKrofu" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="StofnaKrofuskra">
+
+			<soap:operation soapAction="http://ws.isb.is/StofnaKrofuskra" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaKrofuskrasvar">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaKrofuskrasvar" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaKrofuupplysingaskra">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaKrofuupplysingaskra" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaAllarBeingreidslubeidnir">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaAllarBeingreidslubeidnir" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaBeingreidslubeidnir">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaBeingreidslubeidnir" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaBeingreidslubeidnaHreyfingar">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaBeingreidslubeidnaHreyfingar" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+		<operation name="SaekjaAllarBeingreidslubeidnaHreyfingar">
+
+			<soap:operation soapAction="http://ws.isb.is/SaekjaAllarBeingreidslubeidnaHreyfingar" style="document"/>
+
+			<input>
+
+				<soap:body use="literal"/>
+
+			</input>
+
+			<output>
+
+				<soap:body use="literal"/>
+
+			</output>
+
+		</operation>
+
+	</binding>
+
+	<service name="KrofurWS">
+
+		<port name="KrofurWSSoap" binding="s0:KrofurWSSoap">
+
+			<soap:address location="https://ws.isb.is/adgerdirv1/krofur.asmx"/>
+
+		</port>
+
+	</service>
+
+</definitions>
+
