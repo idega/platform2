@@ -378,17 +378,11 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 	public void savePayment(int userID, int distanceID, String payMethod, String amount) {
 		try {
 			RunHome runHome = (RunHome) getIDOHome(Run.class);
-			Collection runObjs = runHome.findByUserIDandDistanceID(userID,distanceID);
-			if(runObjs != null) {
-				Iterator runIt = runObjs.iterator();
-				while(runIt.hasNext()) {
-					Run run = (Run) runIt.next();
-					if(run != null) {
-						run.setPayMethod(payMethod);
-						run.setPayedAmount(amount);
-						run.store();
-					}
-				}
+			Run run = runHome.findByUserIDandDistanceID(userID,distanceID);
+			if(run != null) {
+				run.setPayMethod(payMethod);
+				run.setPayedAmount(amount);
+				run.store();
 			}
 		}
 		catch (RemoteException e) {
