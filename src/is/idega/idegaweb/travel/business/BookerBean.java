@@ -228,6 +228,16 @@ public class BookerBean extends IBOServiceBean implements Booker{
   }
 */
 
+  public int getNumberOfBookings(List products, IWTimestamp fromStamp, IWTimestamp toStamp, int bookingType) throws RemoteException {
+    int counter = 0;
+    Iterator iter = products.iterator();
+    while (iter.hasNext()) {
+      counter += getNumberOfBookings( ( (Product) iter.next() ).getID(), fromStamp, toStamp, bookingType);
+    }
+
+    return counter;
+  }
+
 
   public  int getNumberOfBookings(int serviceId, IWTimestamp stamp)throws RemoteException{
       return getNumberOfBookings(serviceId, stamp, null);

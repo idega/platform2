@@ -42,7 +42,7 @@ public class ServiceSelector extends TravelManager implements InitialDataObject 
     init(iwc);
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException{
     _supplier = super.getSupplier();
     _iwrb = super.getResourceBundle();
   }

@@ -50,16 +50,10 @@ public class HotelPickupReporter extends TravelManager implements Report {
     return iwrb.getLocalizedString("travel.report_description.pikcup","Displays booking with pickup.");
   }
 
-  private void initialize(IWContext iwc) {
-    try {
-      if (iwrb == null) {
-        if (super.getResourceBundle() == null) {
-          super.main(iwc);
-          bundle = super.getBundle(iwc);
-          iwrb = super.getResourceBundle();
-        }
-      }
-    }catch (Exception e) {e.printStackTrace(System.err);}
+  private void initialize(IWContext iwc) throws Exception {
+    super.main(iwc);
+    bundle = super.getBundle();
+    iwrb = super.getResourceBundle();
   }
 /*
   public Table getHotelPickupReport(IWContext iwc, Supplier supplier, IWTimestamp stamp) {
@@ -82,7 +76,6 @@ public class HotelPickupReporter extends TravelManager implements Report {
   }
 
   public PresentationObject getReport(IWContext iwc, List products, IWTimestamp stamp) throws RemoteException, FinderException{
-    initialize(iwc);
     Table table = new Table();
       table.setColor(super.WHITE);
       table.setCellspacing(1);

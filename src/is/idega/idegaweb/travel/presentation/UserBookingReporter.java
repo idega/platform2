@@ -59,16 +59,10 @@ public class UserBookingReporter extends TravelManager implements Report{
     return true;
   }
 
-  private void initialize(IWContext iwc) {
-    try {
-      if (iwrb == null) {
-        if (super.getResourceBundle() == null) {
-          super.main(iwc);
-          bundle = super.getBundle(iwc);
-          iwrb = super.getResourceBundle();
-        }
-      }
-    }catch (Exception e) {e.printStackTrace(System.err);}
+  private void initialize(IWContext iwc) throws Exception{
+    super.main(iwc);
+    bundle = super.getBundle();
+    iwrb = super.getResourceBundle();
 
     String sOrderBy = iwc.getParameter(PARAMETER_ORDER_BY);
     if (sOrderBy != null) {
@@ -89,7 +83,7 @@ public class UserBookingReporter extends TravelManager implements Report{
   }
 
   public PresentationObject getReport(IWContext iwc, List products, IWTimestamp fromStamp, IWTimestamp toStamp) throws RemoteException, FinderException{
-    initialize(iwc);
+    //initialize(iwc);
 
     if (userId != -1) {
       return getUserReport(iwc, products, fromStamp, toStamp);
@@ -164,8 +158,8 @@ public class UserBookingReporter extends TravelManager implements Report{
         ownerLink = Reports.getReportLink(getText(owner.getName()));
           ownerLink.addParameter(PARAMETER_OWNER_ID, owner.getID());
 
-        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
-        table.add(getText(ProductBusiness.getProductName(prod, _localeId)), 2, row);
+        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(getLocale())), 1, row);
+        table.add(getText(ProductBusiness.getProductName(prod, getLocaleId())), 2, row);
         table.add(getText(Integer.toString(count)), 3, row);
         table.add(ownerLink, 4, row);
         table.add(getText(TextSoap.decimalFormat(price, 0)), 5, row);
@@ -251,8 +245,8 @@ public class UserBookingReporter extends TravelManager implements Report{
         userLink = Reports.getReportLink(getText(user.getName()));
           userLink.addParameter(PARAMETER_USER_ID, user.getID());
 
-        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
-        table.add(getText(ProductBusiness.getProductName(prod, _localeId)), 2, row);
+        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(getLocale())), 1, row);
+        table.add(getText(ProductBusiness.getProductName(prod, getLocaleId())), 2, row);
         table.add(getText(Integer.toString(count)), 3, row);
         table.add(userLink, 4, row);
         table.add(getText(TextSoap.decimalFormat(price, 0)), 5, row);
@@ -347,8 +341,8 @@ public class UserBookingReporter extends TravelManager implements Report{
         prod = ProductBusiness.getProduct(bookings[i].getServiceID());
 
 
-        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(_locale)), 1, row);
-        table.add(getText(ProductBusiness.getProductName(prod, _localeId)), 2, row);
+        table.add(getText(new IWTimestamp(bookings[i].getBookingDate()).getLocaleDate(getLocale())), 1, row);
+        table.add(getText(ProductBusiness.getProductName(prod, getLocaleId())), 2, row);
         table.add(getText(Integer.toString(bookings[i].getTotalCount())), 3, row);
         table.add(getText(TextSoap.decimalFormat(getBooker(iwc).getBookingPrice(iwc, bookings[i]), 0)), 6, row);
 

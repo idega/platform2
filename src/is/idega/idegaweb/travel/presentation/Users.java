@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.rmi.RemoteException;
 import is.idega.idegaweb.travel.service.presentation.InitialDataObject;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.*;
@@ -57,7 +58,7 @@ public class Users extends TravelManager implements InitialDataObject {
     init();
   }
 
-  private void init(){
+  private void init() throws RemoteException{
     _reseller = super.getReseller();
     _supplier = super.getSupplier();
 
@@ -66,7 +67,7 @@ public class Users extends TravelManager implements InitialDataObject {
   }
 
 
-  public Form handleInsert(IWContext iwc) throws SQLException{
+  public Form handleInsert(IWContext iwc) throws SQLException, RemoteException{
     String action = iwc.getParameter(this.sAction);
     if (action == null) {
       return getUserList(iwc);
@@ -207,10 +208,10 @@ public class Users extends TravelManager implements InitialDataObject {
     return form;
   }
 
-  private Form getUserCreation(IWContext iwc) throws SQLException{
+  private Form getUserCreation(IWContext iwc) throws SQLException, RemoteException{
     return getUserCreation(iwc, -1);
   }
-  private Form getUserCreation(IWContext iwc, int userId) throws SQLException{
+  private Form getUserCreation(IWContext iwc, int userId) throws SQLException, RemoteException{
     Form form = new Form();
 
     User user = null;
@@ -410,7 +411,7 @@ public class Users extends TravelManager implements InitialDataObject {
     return getUserList(iwc);
   }
 
-  private Form updateUser(IWContext iwc) throws SQLException{
+  private Form updateUser(IWContext iwc) throws SQLException, RemoteException{
     try {
       String userId = iwc.getParameter(this.paramaterUserID);
       return getUserCreation(iwc, Integer.parseInt(userId));

@@ -75,7 +75,7 @@ public class DailyReport extends TravelManager implements Report{
     return iwrb.getLocalizedString("travel.daily_description","Daily report");
   }
 
-  public void initialize(IWContext iwc) {
+  public void initialize(IWContext iwc) throws RemoteException {
     bundle = super.getBundle();
     iwrb = super.getResourceBundle();
   }
@@ -888,7 +888,7 @@ public class DailyReport extends TravelManager implements Report{
 	pPriceTxt.setFontColor(super.BLACK);
 
 	pNumberTxt.setText(prod.getNumber());
-	pNameTxt.setText(ProductBusiness.getProductName(prod, super._localeId));
+	pNameTxt.setText(ProductBusiness.getProductName(prod, getLocaleId()));
 	pTimeTxt.setText(TextSoap.addZero(depTime.getHour())+":"+TextSoap.addZero(depTime.getMinute()));
 	pCountTxt.setText(Integer.toString(count));
 	pPriceTxt.setText(TextSoap.decimalFormat(price, 2));

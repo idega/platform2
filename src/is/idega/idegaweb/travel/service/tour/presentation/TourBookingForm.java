@@ -504,14 +504,14 @@ public class TourBookingForm extends BookingForm{
           ++row;
           table.add(Text.NON_BREAKING_SPACE,1, row);
 
-          if (super.user != null) {
+          if (getUser() != null) {
             ++row;
             List users = null;
             if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
             if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
             if (users == null) users = com.idega.util.ListUtil.getEmptyList();
             usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
-            usersDrop.setSelectedElement(Integer.toString(super.userId));
+            usersDrop.setSelectedElement(Integer.toString(getUserId()));
             usersDrop.keepStatusOnAction();
 
             Text tUser = (Text) theText.clone();
@@ -1249,7 +1249,7 @@ public class TourBookingForm extends BookingForm{
               table.setAlignment(4,row,"right");
             }
 
-            if (super.user != null) {
+            if (getUser() != null) {
               ++row;
               table.mergeCells(1,row,6,row);
               table.add(hr,1,row);
@@ -1264,7 +1264,7 @@ public class TourBookingForm extends BookingForm{
               if (users == null) users = new Vector();
 //              DropdownMenu usersDrop = new DropdownMenu(users, "ic_user");
               DropdownMenu usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
-              usersDrop.setSelectedElement(Integer.toString(super.userId));
+              usersDrop.setSelectedElement(Integer.toString(getUserId()));
 
               Text tUser = (Text) theBoldText.clone();
                 tUser.setFontColor(WHITE);
@@ -1769,17 +1769,17 @@ public class TourBookingForm extends BookingForm{
                 _fromDate.addDays(1);
               }
             }
-            lbookingId = getTourBooker(iwc).Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+            lbookingId = getTourBooker(iwc).Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
           }else {
             //handle multiple...
             List tempBookings = getTourBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
             if (tempBookings == null || tempBookings.size() < 2) {
-              lbookingId = getTourBooker(iwc).updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+              lbookingId = getTourBooker(iwc).updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
             }else {
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
                 gBooking = (GeneralBooking) tempBookings.get(j);
-                getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new IWTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+                getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new IWTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
               }
               lbookingId = iBookingId;
 

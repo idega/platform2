@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDOLookup;
 import java.util.*;
 import com.idega.core.user.business.UserBusiness;
 import is.idega.idegaweb.travel.business.*;
@@ -23,15 +24,8 @@ import is.idega.idegaweb.travel.service.business.*;
 
 public class TravelManager extends Block {
 
-    public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
-    private IWBundle bundle;
-    private IWResourceBundle iwrb;
     Table table = new Table(2,2);
-
-    private Supplier supplier;
-    private Reseller reseller;
-    public User user;
-    public int userId = -1;
+    TravelSessionManager tsm;
 
     private boolean oldLogin = false;
 
@@ -42,9 +36,7 @@ public class TravelManager extends Block {
     protected Text theSmallBoldText = new Text();
 
     public static String backgroundColor = "#235BA8" ;
-   // public static String backgroundColor = "#1A4B8E";
     public static String textColor = "#FFFFFF";
-//    public static String textColor = "#666699";
 
     public static String YELLOW = "#FFFFCC";
     public static String GREEN = "#99FF99";
@@ -80,9 +72,6 @@ public class TravelManager extends Block {
     private int tableWidth = 849;
     private boolean showLogo = true;
 
-    protected int _localeId = -1;
-    protected Locale _locale;
-
     public TravelManager(){
         super();
     }
@@ -92,25 +81,39 @@ public class TravelManager extends Block {
       return IW_BUNDLE_IDENTIFIER;
     }
 
-    public IWBundle getBundle() {
-      return bundle;
+    public IWBundle getBundle() throws RemoteException{
+      return tsm.getIWBundle();
     }
 
-    public IWResourceBundle getResourceBundle() {
-      return iwrb;
+    public IWResourceBundle getResourceBundle()  throws RemoteException{
+      return tsm.getIWResourceBundle();
     }
 
-
-    public Reseller getReseller() {
-      return reseller;
+    public Locale getLocale() throws RemoteException {
+      return tsm.getLocale();
     }
 
-    public Supplier getSupplier() {
-        return supplier;
+    public int getLocaleId() throws RemoteException {
+      return tsm.getLocaleId();
+    }
+
+    public Reseller getReseller() throws RemoteException{
+      return tsm.getReseller();
+    }
+
+    public Supplier getSupplier() throws RemoteException {
+        return tsm.getSupplier();
+    }
+
+    public User getUser() throws RemoteException {
+      return tsm.getUser();
+    }
+
+    public int getUserId() throws RemoteException {
+      return tsm.getUserId();
     }
 
     public void main(IWContext iwc) throws Exception{
-//      debug("main(iwc)");
       initializer(iwc);
       showLogo = isLoggedOn(iwc);
       draw(iwc);
@@ -125,25 +128,25 @@ public class TravelManager extends Block {
         return false;
     }
 
-    protected boolean hasLoginExpired(IWContext iwc) {
-      return (!iwc.hasEditPermission(this) && supplier == null && reseller == null);
+    protected boolean hasLoginExpired(IWContext iwc) throws RemoteException {
+      return (!iwc.hasEditPermission(this) && tsm.getSupplier() == null && tsm.getReseller() == null);
     }
 
-    protected boolean isLoggedOn(IWContext iwc) {
+    protected boolean isLoggedOn(IWContext iwc) throws RemoteException {
       return !hasLoginExpired(iwc);
     }
 
-    protected Table getLogin(IWContext iwc) {
+    protected Table getLogin(IWContext iwc)  throws RemoteException{
       LoginPage lp = new LoginPage();
-      return lp.getLoginTable(iwc, bundle, iwrb);
+      return lp.getLoginTable(iwc, tsm.getIWBundle(), tsm.getIWResourceBundle());
     }
 
-    protected Table getLoggedOffTable(IWContext iwc) {
+    protected Table getLoggedOffTable(IWContext iwc)  throws RemoteException{
       LoginPage lp = new LoginPage();
-      return lp.getLoginTable(iwc, bundle, iwrb);
+      return lp.getLoginTable(iwc, tsm.getIWBundle(), tsm.getIWResourceBundle());
     }
 
-    public void draw(IWContext iwc) {
+    public void draw(IWContext iwc)  throws RemoteException{
 
         table.setBorder(0);
         table.setHeight("100%");
@@ -170,40 +173,40 @@ public class TravelManager extends Block {
           iwc.setSessionAttribute(sAction, action);
         }
 
-        Image iDesign = iwrb.getImage("buttons/design_products.gif");
-        Image iMyTrip = iwrb.getImage("buttons/my_products.gif");
-        Image iOverview = iwrb.getImage("buttons/booking_overview.gif");
-        Image iBooking = iwrb.getImage("buttons/booking.gif");
-        Image iStatistics = iwrb.getImage("buttons/statistics.gif");
-        Image iDailyReport = iwrb.getImage("buttons/daily_report.gif");
-        Image iContracts = iwrb.getImage("buttons/contracts.gif");
-        Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
-        Image iUpdatePassword = iwrb.getImage("buttons/update_password.gif");
-        Image iHome = iwrb.getImage("buttons/home.gif");
+        Image iDesign = tsm.getIWResourceBundle().getImage("buttons/design_products.gif");
+        Image iMyTrip = tsm.getIWResourceBundle().getImage("buttons/my_products.gif");
+        Image iOverview = tsm.getIWResourceBundle().getImage("buttons/booking_overview.gif");
+        Image iBooking = tsm.getIWResourceBundle().getImage("buttons/booking.gif");
+        Image iStatistics = tsm.getIWResourceBundle().getImage("buttons/statistics.gif");
+        Image iDailyReport = tsm.getIWResourceBundle().getImage("buttons/daily_report.gif");
+        Image iContracts = tsm.getIWResourceBundle().getImage("buttons/contracts.gif");
+        Image iInitialData = tsm.getIWResourceBundle().getImage("buttons/initial_data.gif");
+        Image iUpdatePassword = tsm.getIWResourceBundle().getImage("buttons/update_password.gif");
+        Image iHome = tsm.getIWResourceBundle().getImage("buttons/home.gif");
 
         if (action.equals(this.parameterServiceDesigner)) {
-          iDesign = iwrb.getImage("buttons/design_products_on.gif");
+          iDesign = tsm.getIWResourceBundle().getImage("buttons/design_products_on.gif");
         }else if (action.equals(this.parameterServiceOverview)) {
-          iMyTrip = iwrb.getImage("buttons/my_products_on.gif");
+          iMyTrip = tsm.getIWResourceBundle().getImage("buttons/my_products_on.gif");
         }else if (action.equals(this.parameterBookingOverview)) {
-          iOverview = iwrb.getImage("buttons/booking_overview_on.gif");
+          iOverview = tsm.getIWResourceBundle().getImage("buttons/booking_overview_on.gif");
         }else if (action.equals(this.parameterBooking)) {
-          iBooking = iwrb.getImage("buttons/booking_on.gif");
+          iBooking = tsm.getIWResourceBundle().getImage("buttons/booking_on.gif");
         }else if (action.equals(this.parameterStatistics)) {
-          iStatistics = iwrb.getImage("buttons/statistics_on.gif");
+          iStatistics = tsm.getIWResourceBundle().getImage("buttons/statistics_on.gif");
         }else if (action.equals(this.parameterDailyReport)) {
-          iDailyReport = iwrb.getImage("buttons/daily_report_on.gif");
+          iDailyReport = tsm.getIWResourceBundle().getImage("buttons/daily_report_on.gif");
         }else if (action.equals(this.parameterContracts)) {
-          iContracts = iwrb.getImage("buttons/contracts_on.gif");
+          iContracts = tsm.getIWResourceBundle().getImage("buttons/contracts_on.gif");
         }else if (action.equals(this.parameterInitialData)) {
-          iInitialData = iwrb.getImage("buttons/initial_data_on.gif");
+          iInitialData = tsm.getIWResourceBundle().getImage("buttons/initial_data_on.gif");
         }else if (action.equals(this.parameterUpdatePassword)) {
-          iUpdatePassword = iwrb.getImage("buttons/update_password_on.gif");
+          iUpdatePassword = tsm.getIWResourceBundle().getImage("buttons/update_password_on.gif");
         }else if (action.equals(this.parameterHome)) {
-          iHome = iwrb.getImage("buttons/home_on.gif");
+          iHome = tsm.getIWResourceBundle().getImage("buttons/home_on.gif");
           showLogo = false;
         }else {
-          iHome = iwrb.getImage("buttons/home_on.gif");
+          iHome = tsm.getIWResourceBundle().getImage("buttons/home_on.gif");
         }
 
         if (isTravelAdministrator(iwc)){
@@ -215,11 +218,15 @@ public class TravelManager extends Block {
               lResellers.addParameter(this.sAction, this.parameterContracts);
             table.add(lResellers, 1, 1);
 
+            Link lReports = new Link(iDailyReport, AdministratorReports.class);
+              lReports.addParameter(this.sAction, this.parameterDailyReport);
+            table.add(lReports, 1, 1);
+
             Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
 
-        }else if (supplier != null) {
+        }else if (tsm.getSupplier() != null) {
             Link lDesign = new Link(iDesign,ServiceDesigner.class);
               lDesign.addParameter(this.sAction,this.parameterServiceDesigner);
             Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
@@ -250,9 +257,10 @@ public class TravelManager extends Block {
             Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
-        }else if (reseller!= null) {
+        }else if (tsm.getReseller()!= null) {
             Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
               lMyTrip.addParameter(this.sAction,this.parameterServiceOverview);
+            table.add(lMyTrip,1,1);
             Link lBooking = new Link(iBooking,Booking.class);
               lBooking.addParameter(this.sAction,this.parameterBooking);
             table.add(lBooking,1,1);
@@ -276,7 +284,7 @@ public class TravelManager extends Block {
         table.add(lHome,2,1);
 
         if (oldLogin) {
-          this.add(iwrb.getLocalizedString("travel.no_permission","No permission"));
+          this.add(tsm.getIWResourceBundle().getLocalizedString("travel.no_permission","No permission"));
         }
 
         Table logoTable = new Table(1,1);
@@ -284,7 +292,7 @@ public class TravelManager extends Block {
           logoTable.setCellspacing(0);
           logoTable.setAlignment("center");
           logoTable.setWidth(tableWidth);
-          logoTable.add(iwrb.getImage("images/admin_logo.gif"));
+          logoTable.add(tsm.getIWResourceBundle().getImage("images/admin_logo.gif"));
           logoTable.setAlignment(1,1,"left");
 
         if (showLogo)
@@ -293,43 +301,40 @@ public class TravelManager extends Block {
     }
 
 
-    public void initializer(IWContext iwc) {
-        bundle = getBundle(iwc);
-        iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
-        user = LoginBusiness.getUser(iwc);
-        _localeId = iwc.getCurrentLocaleId();
-        _locale = iwc.getCurrentLocale();
+    public void initializer(IWContext iwc) throws RemoteException {
+      tsm = getTravelSessionManager(iwc);
 
-        if (user != null) {
-          userId = user.getID();
-          isSuperAdmin = iwc.isSuperAdmin();
-        }
-
-
-
+      if (!isTravelAdministrator(iwc)) {
         try {
             int supplierId = getTravelStockroomBusiness(iwc).getUserSupplierId(iwc);
-            supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
+            SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+            Supplier supplier = suppHome.findByPrimaryKey(supplierId);
             if (!supplier.getIsValid()) {
-              supplier = null;
+              //supplier = null;
               oldLogin = true;
+            }else {
+              tsm.setSupplier(supplier);
             }
         }
         catch (Exception e) {
+          //e.printStackTrace(System.err);
           debug(e.getMessage());
         }
 
         try {
             int resellerId = getTravelStockroomBusiness(iwc).getUserResellerId(iwc);
-            reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
+            Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
             if (!reseller.getIsValid()) {
-              reseller = null;
+              //reseller = null;
               oldLogin = true;
+            } else {
+              tsm.setReseller(reseller);
             }
         }
         catch (Exception e) {
           debug(e.getMessage());
         }
+      }
 
         theText.setFontColor(this.textColor);
         theBigBoldText.setFontColor(this.textColor);
@@ -373,35 +378,38 @@ public class TravelManager extends Block {
       }
     }
 
-    protected Link getBackLink(int backUpHowManyPages) {
-        Link backLink = new Link(iwrb.getImage("buttons/back.gif"),"#");
+    protected Link getBackLink(int backUpHowManyPages) throws RemoteException {
+        Link backLink = new Link(tsm.getIWResourceBundle().getImage("buttons/back.gif"),"#");
             backLink.setAttribute("onClick","history.go(-"+backUpHowManyPages+")");
 
         return backLink;
     }
 
-    protected Link getBackLink() {
+    protected Link getBackLink() throws RemoteException {
         return getBackLink(1);
     }
 
+    /**
+     * @deprecated
+     */
     public static Image getDefaultImage(IWResourceBundle _iwrb) {
       return _iwrb.getImage("images/picture.gif");
     }
 
 
-    protected boolean isInPermissionGroup(IWContext iwc) {
-      return isInPermissionGroup(iwc, user);
+    protected boolean isInPermissionGroup(IWContext iwc) throws RemoteException {
+      return isInPermissionGroup(iwc, tsm.getUser());
     }
 
-    protected boolean isInPermissionGroup(IWContext iwc, User user) {
+    protected boolean isInPermissionGroup(IWContext iwc, User user) throws RemoteException {
       if (user != null) {
         PermissionGroup pGroup = null;
         try {
-          if (reseller != null) {
-            pGroup = ResellerManager.getPermissionGroup(reseller);
+          if (tsm.getReseller() != null) {
+            pGroup = ResellerManager.getPermissionGroup(tsm.getReseller());
           }
-          else if (supplier != null) {
-            pGroup = SupplierManager.getPermissionGroup(supplier);
+          else if (tsm.getSupplier() != null) {
+            pGroup = SupplierManager.getPermissionGroup(tsm.getSupplier());
           }
 
           if (pGroup != null) {
@@ -471,20 +479,9 @@ public class TravelManager extends Block {
 
     protected boolean isTravelAdministrator(IWContext iwc) {
       return iwc.hasEditPermission(this);
-      /*
-      PermissionGroup perGroup =
-      List pGroups = LoginBusiness.getPermissionGroups(iwc);
-      if (pGroups != null) {
-        Iterator iter = pGroups.iterator();
-        PermissionGroup pGroup;
-        while (iter.hasNext()) {
-          pGroup = (PermissionGroup) iter.next();
-          if (pGroup.getName().equals("")) {
+    }
 
-          }
-        }
-      }
-
-      return false;*/
+    protected TravelSessionManager getTravelSessionManager(IWContext iwc) throws RemoteException{
+      return (TravelSessionManager) IBOLookup.getSessionInstance(iwc, TravelSessionManager.class);
     }
 }

@@ -455,14 +455,14 @@ public abstract class BookingForm extends TravelManager{
         ++row;
         table.add(Text.NON_BREAKING_SPACE,1, row);
 
-        if (super.user != null) {
+        if (super.getUser() != null) {
           ++row;
           List users = null;
           if ( this.supplier != null) users = SupplierManager.getUsersIncludingResellers(supplier);
           if ( _reseller != null) users = ResellerManager.getUsersIncludingSubResellers(_reseller);
           if (users == null) users = com.idega.util.ListUtil.getEmptyList();
           usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
-          usersDrop.setSelectedElement(Integer.toString(super.userId));
+          usersDrop.setSelectedElement(Integer.toString(super.getUserId()));
           usersDrop.keepStatusOnAction();
 
           Text tUser = (Text) theText.clone();
@@ -1119,7 +1119,7 @@ public abstract class BookingForm extends TravelManager{
               table.setAlignment(4,row,"right");
             }
 
-            if (super.user != null) {
+            if (super.getUser() != null) {
               ++row;
               table.mergeCells(1,row,6,row);
               table.add(hr,1,row);
@@ -1134,7 +1134,7 @@ public abstract class BookingForm extends TravelManager{
               if (users == null) users = new Vector();
 //              DropdownMenu usersDrop = new DropdownMenu(users, "ic_user");
               DropdownMenu usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
-              usersDrop.setSelectedElement(Integer.toString(super.userId));
+              usersDrop.setSelectedElement(Integer.toString(super.getUserId()));
 
               Text tUser = (Text) theBoldText.clone();
                 tUser.setFontColor(WHITE);
@@ -1548,17 +1548,17 @@ public abstract class BookingForm extends TravelManager{
             if (i != 0) {
               _fromDate.addDays(1);
             }
-            lbookingId = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+            lbookingId = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
           }else {
             //handle multiple...
             List tempBookings = getBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
             if (tempBookings == null || tempBookings.size() < 2) {
-              lbookingId = getBooker(iwc).updateBooking(iBookingId, _service.getID(), country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+              lbookingId = getBooker(iwc).updateBooking(iBookingId, _service.getID(), country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
             }else {
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
                 gBooking = (GeneralBooking) tempBookings.get(j);
-                getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, new IWTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+                getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, new IWTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment);
               }
               lbookingId = iBookingId;
 
@@ -1787,12 +1787,12 @@ public abstract class BookingForm extends TravelManager{
     }
   }
 
-  protected DropdownMenu getDropdownMenuWithUsers(List users, String name) {
+  protected DropdownMenu getDropdownMenuWithUsers(List users, String name) throws RemoteException{
     DropdownMenu usersDrop = new DropdownMenu("ic_user");
     User usr = null;
 
-    if (!users.contains(super.user)) {
-      users.add(0, super.user);
+    if (!users.contains(super.getUser())) {
+      users.add(0, super.getUser());
     }
 
     for (int i = 0; i < users.size(); i++) {

@@ -1,4 +1,5 @@
 package is.idega.idegaweb.travel.presentation;
+import java.rmi.RemoteException;
 import java.util.*;
 import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.trade.stockroom.data.*;
@@ -50,7 +51,7 @@ public class ResellerCreator extends TravelManager {
     init(iwc);
 
     String action = iwc.getParameter(this.sAction);
-    if (super.isSuperAdmin) {
+    if (super.isTravelAdministrator(iwc)) {
       if (action == null) {
         selectReseller(iwc);
 //        mainMenu(iwc);
@@ -90,7 +91,7 @@ public class ResellerCreator extends TravelManager {
     }
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException {
     iwrb = super.getResourceBundle();
   }
 /*

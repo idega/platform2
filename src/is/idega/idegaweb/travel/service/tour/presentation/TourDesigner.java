@@ -481,7 +481,7 @@ public class TourDesigner extends TravelManager implements DesignerForm{
           active_yearly.setSelected( timeframe.getIfYearly() );
         }
 
-        name.setContent( ProductBusiness.getProductName( product, super._localeId ) );
+        name.setContent( ProductBusiness.getProductName( product, super.getLocaleId() ) );
         number.setContent( product.getNumber() );
         description.setContent( ProductBusiness.getProductDescription( product, iwc ) );
 

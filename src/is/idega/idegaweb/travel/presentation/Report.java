@@ -22,5 +22,4 @@ public interface Report {
   public PresentationObject getReport(IWContext iwc, List products, IWTimestamp fromStamp, IWTimestamp toStamp)throws RemoteException, FinderException;
   public String getReportName();
   public String getReportDescription();
-
 }

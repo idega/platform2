@@ -25,7 +25,6 @@ import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.*;
 import java.text.DecimalFormat;
 import java.util.List;
-//import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
 
 import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
@@ -90,7 +89,7 @@ public class ServiceOverview extends TravelManager {
       //super.add(tm);
   }
 
-  private void init(IWContext iwc) {
+  private void init(IWContext iwc) throws RemoteException {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
       dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,iwc).substring(0,3);
@@ -198,6 +197,7 @@ public class ServiceOverview extends TravelManager {
 
 
       Supplier supplier = super.getSupplier();
+
       if (supplier != null) {
         List products = ProductBusiness.getProducts(supplier.getID());
         if (products == null) { products = com.idega.util.ListUtil.getEmptyList(); }
@@ -567,7 +567,7 @@ public class ServiceOverview extends TravelManager {
           depFrom.setFontColor(super.BLACK);
           depFrom.setText(depAddress.getName());
 /*
-          depTimeStamp = new IWTimestamp(depAddresses[l].getTime());
+          depTimeStamp = new idegaTimestamp(depAddresses[l].getTime());
           depTime = (Text) theBoldText.clone();
           depTime.setFontColor(super.BLACK);
           depTime.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));

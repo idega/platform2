@@ -507,7 +507,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
           active_yearly.setSelected( _timeframe.getIfYearly() );
         }
 
-        name.setContent( ProductBusiness.getProductName( _product, super._localeId ) );
+        name.setContent( ProductBusiness.getProductName( _product, super.getLocaleId() ) );
         number.setContent( _product.getNumber() );
         description.setContent( ProductBusiness.getProductDescription( _product, iwc ) );
 

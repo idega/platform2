@@ -28,33 +28,32 @@ import com.idega.presentation.IWContext;
 
 public class Reports extends TravelManager {
 
-  private Report _report;
-  private IWResourceBundle _iwrb;
+  protected Report _report;
+  protected IWResourceBundle _iwrb;
   private Supplier _supplier;
   private Reseller _reseller;
   private Product _product;
   private List _products;
-  private IWTimestamp _stamp;
-  private IWTimestamp _toStamp;
-  private static Link _link;
-  private static Form _form;
+  protected IWTimestamp _stamp;
+  protected IWTimestamp _toStamp;
+  protected static Link _link;
+  protected static Form _form;
 
   private String _action;
-  private String PARAMETER_DAILY_REPORT = "reps_day_rep";
-  private String PARAMETER_PICKUP_REPORT = "reps_pic_rep";
-  private String PARAMETER_USER_REPORT = "reps_usr_rep";
-  private String PARAMETER_ONLINE_REPORT = "reps_onl_rep";
+  private String PARAMETER_DAILY_REPORT = DailyReport.class.toString();//"reps_day_rep";
+  private String PARAMETER_PICKUP_REPORT = HotelPickupReporter.class.toString();//"reps_pic_rep";
+  private String PARAMETER_USER_REPORT = UserBookingReporter.class.toString();//"reps_usr_rep";
+  private String PARAMETER_ONLINE_REPORT = OnlineBookingReport.class.toString();//"reps_onl_rep";
   public static String PARAMETER_PRODUCT_ID = "reps_prd_id";
 
-  private static final String ACTION = "reps_act";
-  private static final String PARAMATER_DATE_FROM = "active_from";
-  private static final String PARAMATER_DATE_TO = "active_to";
+  protected static final String ACTION = "reps_act";
+  protected static final String PARAMATER_DATE_FROM = "active_from";
+  protected static final String PARAMATER_DATE_TO = "active_to";
 
   public Reports() {
   }
 
   public void main(IWContext iwc) throws Exception {
-    super.main(iwc);
     init(iwc);
 
     add(Text.BREAK);
@@ -75,10 +74,12 @@ public class Reports extends TravelManager {
     }
   }
 
-  private void init(IWContext iwc) throws Exception {
+  protected void init(IWContext iwc) throws Exception {
+    super.main(iwc);
     _iwrb = super.getResourceBundle();
     _supplier = super.getSupplier();
     _reseller = super.getReseller();
+
     try {
       String productId = iwc.getParameter(PARAMETER_PRODUCT_ID);
       ProductHome phome = (ProductHome) IDOLookup.getHomeLegacy(Product.class);
@@ -110,7 +111,7 @@ public class Reports extends TravelManager {
 
     _action = iwc.getParameter(this.ACTION);
 
-    /** hmmm er haegt ad fordast thetta check her ??? */
+    /** @todo hmmm er haegt ad fordast thetta check her ??? */
     if (_action != null) {
       if (_action.equals(PARAMETER_USER_REPORT)) {
         _report = new UserBookingReporter(iwc);
@@ -121,6 +122,8 @@ public class Reports extends TravelManager {
       }else if (_action.equals(PARAMETER_ONLINE_REPORT)) {
         _report = new OnlineBookingReport(iwc);
       }
+      //_report = (Report) Class.forName(_action).newInstance();
+
     }
 
 
@@ -141,7 +144,7 @@ public class Reports extends TravelManager {
     }
   }
 
-  private void reportList(IWContext iwc) throws Exception {
+  protected void reportList(IWContext iwc) throws Exception {
     Table table = super.getTable();
 
     UserBookingReporter ubr = new UserBookingReporter(iwc);
@@ -154,26 +157,28 @@ public class Reports extends TravelManager {
     table.add(getHeaderText(_iwrb.getLocalizedString("travel.description","Description")), 2, row);
     table.setRowColor(row, super.backgroundColor);
 
-    ++row;
-    Link ubrLink = new Link(getText(ubr.getReportName()));
-      ubrLink.addParameter(ACTION, PARAMETER_USER_REPORT);
-    table.add(ubrLink, 1, row);
-    table.add(getText(ubr.getReportDescription()), 2, row);
-    table.setRowColor(row, super.GRAY);
+//    if (this._supplier != null) {
+      ++row;
+      Link ubrLink = new Link(getText(ubr.getReportName()));
+        ubrLink.addParameter(ACTION, PARAMETER_USER_REPORT);
+      table.add(ubrLink, 1, row);
+      table.add(getText(ubr.getReportDescription()), 2, row);
+      table.setRowColor(row, super.GRAY);
 
-    ++row;
-    Link hprLink = new Link(getText(hpr.getReportName()));
-      hprLink.addParameter(ACTION, PARAMETER_PICKUP_REPORT);
-    table.add(hprLink, 1, row);
-    table.add(getText(hpr.getReportDescription()), 2, row);
-    table.setRowColor(row, super.GRAY);
+      ++row;
+      Link hprLink = new Link(getText(hpr.getReportName()));
+        hprLink.addParameter(ACTION, PARAMETER_PICKUP_REPORT);
+      table.add(hprLink, 1, row);
+      table.add(getText(hpr.getReportDescription()), 2, row);
+      table.setRowColor(row, super.GRAY);
 
-    ++row;
-    Link drLink = new Link(dr.getReportName());
-      drLink.addParameter(ACTION, PARAMETER_DAILY_REPORT);
-    table.add(drLink, 1, row);
-    table.add(getText(dr.getReportDescription()), 2, row);
-    table.setRowColor(row, super.GRAY);
+      ++row;
+      Link drLink = new Link(dr.getReportName());
+        drLink.addParameter(ACTION, PARAMETER_DAILY_REPORT);
+      table.add(drLink, 1, row);
+      table.add(getText(dr.getReportDescription()), 2, row);
+      table.setRowColor(row, super.GRAY);
+//    }
 
     ++row;
     Link obrLink = new Link(obr.getReportName());
@@ -186,7 +191,7 @@ public class Reports extends TravelManager {
   }
 
 
-  private Table topTable(IWContext iwc) {
+  protected Table topTable(IWContext iwc) {
       Table topTable = new Table(5,3);
         topTable.setBorder(0);
         topTable.setWidth("90%");
@@ -259,7 +264,7 @@ public class Reports extends TravelManager {
       return topTable;
   }
 
-  private Table report(IWContext iwc) throws Exception{
+  protected Table report(IWContext iwc) throws Exception{
     Table table = new Table();
       table.setWidth("90%");
       table.setAlignment("center");

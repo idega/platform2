@@ -146,7 +146,7 @@ public class InitialData extends TravelManager {
     return form;
   }
 
-  public void displayForm(IWContext iwc) throws SQLException {
+  public void displayForm(IWContext iwc) throws SQLException , RemoteException{
       add(Text.getBreak());
 
       String action = iwc.getParameter(this.sAction);
@@ -421,7 +421,7 @@ public class InitialData extends TravelManager {
   }
 
 
-  public Form getSupplierCreation(int supplier_id) throws SQLException{
+  public Form getSupplierCreation(int supplier_id) throws SQLException, RemoteException{
       Form form = new Form();
 
       Table table = new Table();

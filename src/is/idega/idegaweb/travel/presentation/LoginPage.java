@@ -24,6 +24,7 @@ public class LoginPage extends TravelManager {
   private IWResourceBundle iwrb = null;
 
   private static String GRAY = "#CCCCCC";
+  private static String localeSwitcherName = com.idega.core.localisation.business.LocaleSwitcher.class.getName();
 
   public LoginPage() {
   }
@@ -32,6 +33,8 @@ public class LoginPage extends TravelManager {
     super.main(iwc);
     bundle = super.getBundle();
     iwrb = super.getResourceBundle();
+
+    super.getTravelSessionManager(iwc).clearLocale();
 
     insertLogin(iwc);
   }
@@ -258,7 +261,7 @@ public class LoginPage extends TravelManager {
         table.setCellpadding(0);
         table.setBorder(0);
 
-        myForm.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
+        myForm.setEventListener(localeSwitcherName);
       DropdownMenu dropdown = Localizer.getAvailableLocalesDropdown(iwc);
         dropdown.setAttribute("style","font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
         dropdown.setSelectedElement(iwc.getCurrentLocale().toString());
