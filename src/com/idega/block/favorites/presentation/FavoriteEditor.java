@@ -110,7 +110,10 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 			editTable.add(Text.getNonBrakingSpace(), 3, row);
 			editTable.add(getResourceBundle().getLocalizedString("favorite.quick_link", "Quick link"), 3, row);
 			editTable.setNoWrap(3, row);
-			editTable.add(save, 4, row);
+			
+			if (canEdit || action.equals(ACTION_EDIT)) {
+				editTable.add(save, 4, row);
+			}
 	
 			form.add(editTable);
 			add(form);
