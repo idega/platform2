@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -28,12 +29,14 @@ import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
+import com.idega.block.school.data.SchoolType;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -81,6 +84,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_CONTRACT_ID = "cc_contract_id";	
 	public static final String PARAMETER_TEXT_FIELD = "cc_xml_signing_text_field";
 	public static final String PARAMETER_PRE_SCHOOL = "cc_pre_school";	
+	public static final String PARAMETER_SCHOOL_TYPES = "cc_school_types";	
 	
 	
 	
@@ -770,15 +774,36 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(this.PARAMETER_GROUP_NAME));
 		textInput.setLength(24);
 		textInput.setAsNotEmpty(localize("child_care.group_name_required","You must fill in a name for the group."));
+		
+		SchoolType currentType = null;
 		if (getSession().getGroupID() != -1) {
 			SchoolClass group = getBusiness().getSchoolBusiness().findSchoolClass(new Integer(getSession().getGroupID()));
+			currentType = group.getSchoolType();
 			if (group.getSchoolClassName() != null)
 				textInput.setContent(group.getSchoolClassName());
 		}
-
+		
 		table.add(getSmallHeader(localize("child_care.enter_group_name", "Enter group name:")), 1, row++);
 		table.add(getSmallText(localize("child_care.group_name", "Name")), 1, row);
 		table.add(textInput, 1, row++);
+
+		//school types
+	
+		School school = getSession().getProvider();
+		Collection availableTypes = new ArrayList();
+		try{
+			availableTypes = school.getSchoolTypes();			
+		}catch(IDORelationshipException ex){
+			ex.printStackTrace();	
+		}
+		
+		DropdownMenu types = getDropdownMenuLocalized(PARAMETER_SCHOOL_TYPES, availableTypes, "getLocalizationKey", "");
+		if (currentType != null){
+			types.setSelectedElement(localize(currentType.getLocalizationKey(), ""));
+		}
+		table.add(getSmallHeader(localize("child_care.choose_school_type", "Choose school type:")), 1, row++);
+		table.add(getSmallText(localize("child_care.school_type", "School type")), 1, row);
+		table.add(types, 1, row++);
 
 		String localized = "";
 		if (getSession().getGroupID() != -1)
@@ -1396,7 +1421,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	private void createGroup(IWContext iwc) throws RemoteException {
 		String groupName = iwc.getParameter(PARAMETER_GROUP_NAME);
-		getBusiness().getSchoolBusiness().storeSchoolClass(getSession().getGroupID(), groupName, getSession().getChildCareID(), -1, -1, -1);
+		int schoolTypeId = new Integer(iwc.getParameter(PARAMETER_SCHOOL_TYPES)).intValue();	
+			
+		getBusiness().getSchoolBusiness().storeSchoolClass(getSession().getGroupID(), groupName, getSession().getChildCareID(), schoolTypeId, -1, null, null);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
