@@ -99,6 +99,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	public final static String PROPERTY_NAME_REJECT_STUDENT_MESSAGE = "reject_student_message";
 	public final static String PROPERTY_NAME_GROUP_OFFER_MESSAGE = "group_offer_body";
 	public final static String PROPERTY_NAME_GROUP_CONFIRM_MESSAGE = "group_confirm_body";
+	public final static String PROPERTY_NAME_USE_PLACEMENT_LOGGING = "log_placements";
 	
 	public SchoolDepartmentHome getSchoolDepartmentHome() throws RemoteException {
 		return (SchoolDepartmentHome) IDOLookup.getHome(SchoolDepartment.class);
@@ -2536,6 +2537,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	}
 	
 	public void addToSchoolClassMemberLog(User user, SchoolClass schoolClass, Date startDate, Date endDate) throws IllegalArgumentException {
+		boolean logPlacements = false;
+		try {
+			logPlacements = new Boolean(getIWApplicationContext().getIWMainApplication().getBundle("com.idega.block.school").getProperty(PROPERTY_NAME_USE_PLACEMENT_LOGGING, Boolean.FALSE.toString())).booleanValue();
+		}
+		catch (Exception e) {
+			logPlacements = false;
+		}
+		
+		if (!logPlacements) {
+			return;
+		}
+		
 		if (startDate == null && endDate == null) {
 			throw new IllegalArgumentException("[SchoolClassMemberLog] Both start date and end date are null...");
 		}
