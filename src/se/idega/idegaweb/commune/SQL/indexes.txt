@@ -1,3 +1,12 @@
+/**
+*
+* Only put indexes in this file.
+*
+*
+**/
+
+ICUser
+
 create index IDX_IC_USER_1 on IC_USER(LAST_NAME,FIRST_NAME,MIDDLE_NAME);
 commit;
 create index IDX_IC_USER_2 on IC_USER(FIRST_NAME,LAST_NAME,MIDDLE_NAME);
@@ -5,5 +14,8 @@ commit;
 create index IDX_IC_USER_3 on IC_USER(FIRST_NAME);
 commit;
 
+
+PostalCode
 create index IDX_IC_POSTALCODE on IC_POSTAL_CODE(postal_code);
 commit;
+
