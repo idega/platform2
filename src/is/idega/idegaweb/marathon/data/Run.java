@@ -63,6 +63,7 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipNumber
 	 */
 	public String getChipNumber();
+	public String getChipBunchNumber();
 	
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipOwnershipStatus
@@ -148,6 +149,7 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setChipNumber
 	 */
 	public void setChipNumber(String chipNumber);
+	public void setChipBunchNumber(String chipBunchNumber);
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setChipOwnershipStatus

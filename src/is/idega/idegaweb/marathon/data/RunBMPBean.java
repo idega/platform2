@@ -45,6 +45,7 @@ public class RunBMPBean extends GenericEntity implements Run {
 		addAttribute(getColumnNameChipTime(), "Chip Time", true, true, Integer.class);
 		addAttribute(getColumnNameUserID(), "User ID", true, true, Integer.class);
 		addAttribute(getColumnNameChipNumber(), "Chip Number", true, true, String.class);
+		addAttribute(getColumnNameChipBunchNumber(), "Chip bunch Number", true, true, String.class);
 		addAttribute(getColumnNameChipOwnershipStatus(), "Chip ownership status", true, true, String.class);
 		addAttribute(getColumnNameUserNationality(), "User Nationality", true, true, String.class);
 		addAttribute(getColumnNameTShirtSize(), "TShirt Size", true, true, String.class);
@@ -90,6 +91,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 
 	public static String getColumnNameChipNumber() {
 		return "run_chip_number";
+	}
+	
+	public static String getColumnNameChipBunchNumber() {
+		return "run_chip_bunch_number";
 	}
 	
 	public static String getColumnNameChipOwnershipStatus() {
@@ -184,6 +189,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 	public String getChipNumber() {
 		return getStringColumnValue(getColumnNameChipNumber());
 	}
+	
+	public String getChipBunchNumber() {
+		return getStringColumnValue(getColumnNameChipBunchNumber());
+	}
 
 	public String getUserNationality() {
 		return getStringColumnValue(getColumnNameUserNationality());
@@ -252,6 +261,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 
 	public void setChipNumber(String chipNumber) {
 		setColumn(getColumnNameChipNumber(), chipNumber);
+	}
+	
+	public void setChipBunchNumber(String chipBunchNumber) {
+		setColumn(getColumnNameChipBunchNumber(), chipBunchNumber);
 	}
 
 	public void setUserNationality(String nationality) {
