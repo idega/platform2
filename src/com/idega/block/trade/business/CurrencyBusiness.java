@@ -59,7 +59,7 @@ public class CurrencyBusiness {
 	public static HashMap currencyMap;
 	public static String defaultCurrency = CurrencyHolder.ICELANDIC_KRONA;
 
-	public static void getCurrencyMap(IWBundle bundle) throws RemoteException{
+	public static void getCurrencyMap(IWBundle bundle) throws RemoteException {
 		IWTimestamp stamp = new IWTimestamp();
 		file = null;
 
@@ -68,7 +68,7 @@ public class CurrencyBusiness {
 			fileString = FileUtil.getStringFromFile(path);
 		}
 		catch (IOException e) {
-                  e.printStackTrace(System.err);
+			e.printStackTrace(System.err);
 			fileString = null;
 		}
 
@@ -78,15 +78,15 @@ public class CurrencyBusiness {
 		String sell_value = null;
 		String middle_value = null;
 
-		if ( fileString != null ) {
+		if (fileString != null) {
 			try {
-                          /** @todo setja Abbreviation inn */
+				/** @todo setja Abbreviation inn */
 				url = (String) TextSoap.FindAllBetween(fileString, siteURL, siteEndURL).firstElement();
-				currency_name = (String) TextSoap.FindAllBetween(fileString,currency,currencyEnd).firstElement();
-				buy_value = (String) TextSoap.FindAllBetween(fileString,buyValue,buyEndValue).firstElement();
-				sell_value = (String) TextSoap.FindAllBetween(fileString,sellValue,sellEndValue).firstElement();
-				middle_value = (String) TextSoap.FindAllBetween(fileString,middleValue,middleEndValue).firstElement();
-				defaultCurrency = (String) TextSoap.FindAllBetween(fileString,currencyDefault,currencyDefaultEnd).firstElement();
+				currency_name = (String) TextSoap.FindAllBetween(fileString, currency, currencyEnd).firstElement();
+				buy_value = (String) TextSoap.FindAllBetween(fileString, buyValue, buyEndValue).firstElement();
+				sell_value = (String) TextSoap.FindAllBetween(fileString, sellValue, sellEndValue).firstElement();
+				middle_value = (String) TextSoap.FindAllBetween(fileString, middleValue, middleEndValue).firstElement();
+				defaultCurrency = (String) TextSoap.FindAllBetween(fileString, currencyDefault, currencyDefaultEnd).firstElement();
 			}
 			catch (Exception e) {
 			}
@@ -119,8 +119,10 @@ public class CurrencyBusiness {
 				while (iter2.hasNext()) {
 					XMLElement currencyValues = (XMLElement) iter2.next();
 
-					if (currencyValues.getName().equalsIgnoreCase(currency_name))
+					if (currencyValues.getName().equalsIgnoreCase(currency_name)) {
 						holder.setCurrencyName(currencyValues.getText());
+						holder.setCurrencyAbbreviation(currencyValues.getText());
+					}
 					else if (currencyValues.getName().equalsIgnoreCase(buy_value))
 						holder.setBuyValue(Float.parseFloat(currencyValues.getText()));
 					else if (currencyValues.getName().equalsIgnoreCase(sell_value))
@@ -134,7 +136,7 @@ public class CurrencyBusiness {
 			}
 			addDefaultCurrency();
 
-                        saveCurrencyValuesToDatabase();
+			saveCurrencyValuesToDatabase();
 		}
 		else {
 			getValuesFromDatabase();
@@ -143,7 +145,7 @@ public class CurrencyBusiness {
 		if (getCurrencyHolder(defaultCurrency) == null && currencyMap != null) {
 			CurrencyHolder defaultHolder = new CurrencyHolder();
 			defaultHolder.setCurrencyName(defaultCurrency);
-                        defaultHolder.setCurrencyAbbreviation(defaultCurrency);
+			defaultHolder.setCurrencyAbbreviation(defaultCurrency);
 			defaultHolder.setBuyValue(1);
 			defaultHolder.setSellValue(1);
 			defaultHolder.setMiddleValue(1);
@@ -238,40 +240,43 @@ public class CurrencyBusiness {
 		Currency currency = null;
 		boolean execute = false;
 
-                String currAbbr;
-                CurrencyHome home = (CurrencyHome) IDOLookup.getHome(Currency.class);
-                boolean update;
+		String currAbbr;
+		CurrencyHome home = (CurrencyHome) IDOLookup.getHome(Currency.class);
+		boolean update;
 
 		Iterator iter = currencyMap.keySet().iterator();
 		HashMap map = getValuesFromDB();
 		while (iter.hasNext()) {
-                  currAbbr = (String) iter.next();
+			currAbbr = (String) iter.next();
 			CurrencyHolder holder = (CurrencyHolder) currencyMap.get(currAbbr);
 			if (holder != null && !map.containsKey(holder.getCurrencyName())) {
-                          try {
-                            currency = home.getCurrencyByAbbreviation(holder.getCurrencyAbbreviation());
-                            update = true;
-                            if (currency == null) {
-                              currency = home.create();
-                              update = false;
-                            }
+				try {
+					currency = home.getCurrencyByAbbreviation(holder.getCurrencyAbbreviation());
+					update = true;
+					if (currency == null) {
+						currency = home.create();
+						update = false;
+					}
 
-                            currency.setCurrencyAbbreviation(holder.getCurrencyName());
-                            currency.setCurrencyName(holder.getCurrencyName());
-                            if (update) {
-                              System.out.println("[CurrencyBusiness] Updating existing currency : "+currency.getCurrencyName()+" (id: "+currency.getID()+")");
-                              bulk.add(currency, bulk.update);
-                            }else {
-                              System.out.println("[CurrencyBusiness] Creating new currency : "+currency.getCurrencyName());
-                              bulk.add(currency, bulk.insert);
-                            }
+					currency.setCurrencyAbbreviation(holder.getCurrencyName());
+					currency.setCurrencyName(holder.getCurrencyName());
+					if (update) {
+						System.out.println("[CurrencyBusiness] Updating existing currency : " + currency.getCurrencyName() + " (id: " + currency.getID() + ")");
+						bulk.add(currency, bulk.update);
+					}
+					else {
+						System.out.println("[CurrencyBusiness] Creating new currency : " + currency.getCurrencyName());
+						bulk.add(currency, bulk.insert);
+					}
 
-                            execute = true;
-                          }catch (FinderException fe) {
-                            fe.printStackTrace(System.err);
-                          }catch (CreateException ce) {
-                            ce.printStackTrace(System.err);
-                          }
+					execute = true;
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace(System.err);
+				}
+				catch (CreateException ce) {
+					ce.printStackTrace(System.err);
+				}
 			}
 		}
 
@@ -310,8 +315,8 @@ public class CurrencyBusiness {
 					holder = new CurrencyHolder();
 					holder.setBuyValue(value.getBuyValue());
 					holder.setCurrencyName(currency.getCurrencyAbbreviation());
-                                        holder.setCurrencyAbbreviation(currency.getCurrencyAbbreviation());
-                                        holder.setCurrencyID(currency.getID());
+					holder.setCurrencyAbbreviation(currency.getCurrencyAbbreviation());
+					holder.setCurrencyID(currency.getID());
 					holder.setMiddleValue(value.getMiddleValue());
 					holder.setSellValue(value.getSellValue());
 					map.put(holder.getCurrencyName(), holder);
