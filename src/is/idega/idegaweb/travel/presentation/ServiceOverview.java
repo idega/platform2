@@ -52,17 +52,22 @@ public class ServiceOverview extends TravelManager {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
 
-      String action = iwc.getParameter(actionParameter);
-      if (action == null) {action = "";}
+      if (super.isLoggedOn(iwc) ) {
 
-      if (action.equals("")) {
-          displayForm(iwc);
-      }else if (action.equals("delete")) {
-          deleteServices(iwc);
-          displayForm(iwc);
+          String action = iwc.getParameter(actionParameter);
+          if (action == null) {action = "";}
+
+          if (action.equals("")) {
+              displayForm(iwc);
+          }else if (action.equals("delete")) {
+              deleteServices(iwc);
+              displayForm(iwc);
+          }
+
+          super.addBreak();
+      }else {
+        add(super.getLoggedOffTable(iwc));
       }
-
-      super.addBreak();
       //super.add(tm);
   }
 
@@ -347,7 +352,7 @@ public class ServiceOverview extends TravelManager {
             ++row;
             table.mergeCells(1,row,5,row);
             table.setColor(1,row,super.backgroundColor);
-            HorizontalRule hr = new HorizontalRule("90%",1);
+            HorizontalRule hr = new HorizontalRule("100%",1);
               hr.setAlignment(hr.ALIGN_CENTER);
               hr.setNoShade(true);
               hr.setColor(super.textColor);

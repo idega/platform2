@@ -66,7 +66,7 @@ public class ServiceDesigner extends TravelManager {
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
 
-      if (supplier != null) {
+      if (super.isLoggedOn(iwc)) {
         if (iwc.getParameter(super.sAction) != null) {
           if (iwc.getParameter(super.sAction).equals(super.parameterServiceDesigner)) {
             removeSessionServiceId(iwc);
@@ -90,7 +90,7 @@ public class ServiceDesigner extends TravelManager {
 
 
       }else {
-        add("TEMP - Enginn supplier");
+        add(super.getLoggedOffTable(iwc));
       }
 
       super.addBreak();

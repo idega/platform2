@@ -76,29 +76,33 @@ public class Booking extends TravelManager {
       super.main(iwc);
       initialize(iwc);
 
-      if (reseller != null && contract == null) {
-        product = null;
-      }
+      if (super.isLoggedOn(iwc)) {
+        if (reseller != null && contract == null) {
+          product = null;
+        }
 
-      String action = iwc.getParameter(this.BookingAction);
-      if (action == null) {action = "";}
+        String action = iwc.getParameter(this.BookingAction);
+        if (action == null) {action = "";}
 
-      if (action.equals("")) {
+        if (action.equals("")) {
           displayForm(iwc);
-      }else if (action.equals(this.BookingParameter)) {
+        }else if (action.equals(this.BookingParameter)) {
           checkBooking(iwc);
-      }else if (action.equals(this.parameterBookAnyway)) {
+        }else if (action.equals(this.parameterBookAnyway)) {
           saveBooking(iwc, true);
-      }else if (action.equals(this.parameterSendInquery)) {
+        }else if (action.equals(this.parameterSendInquery)) {
           sendInquery(iwc);
-      }else if (action.equals(this.parameterRespondInquery)) {
+        }else if (action.equals(this.parameterRespondInquery)) {
           inqueryResponse(iwc);
           displayForm(iwc);
-      }else if (action.equals(this.parameterUpdateBooking)) {
+        }else if (action.equals(this.parameterUpdateBooking)) {
           updateBooking(iwc);
-      }
+        }
 
-      super.addBreak();
+        super.addBreak();
+      }else {
+        add(super.getLoggedOffTable(iwc));
+      }
   }
 
   public void initialize(IWContext iwc) {

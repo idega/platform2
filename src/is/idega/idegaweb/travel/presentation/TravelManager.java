@@ -10,6 +10,7 @@ import is.idega.travel.business.TravelStockroomBusiness;
 import is.idega.travel.presentation.*;
 import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
+import com.idega.block.login.presentation.Login;
 import com.idega.core.accesscontrol.business.AccessControl;
 
 public class TravelManager extends Block {
@@ -29,8 +30,8 @@ public class TravelManager extends Block {
     protected Text smallText = new Text();
     protected Text theSmallBoldText = new Text();
 
-    public static String backgroundColor = "#1A4B8E";
-   // public static String backgroundColor = "#003399";
+    public static String backgroundColor = "#235BA8" ;
+   // public static String backgroundColor = "#1A4B8E";
     public static String textColor = "#FFFFFF";
 //    public static String textColor = "#666699";
 
@@ -44,7 +45,8 @@ public class TravelManager extends Block {
     public static String LIGHTORANGE = "#FFCC99";
     public static String DARKBLUE = "#85839D";
     public static String WHITE = "#FFFFFF";
-    public static String GRAY = "#CDCDCD";
+    public static String GRAY = "#CCCCCC";
+    public static String BLACK = "#000000";
 
     protected static String sAction = "travelManagerAction";
     protected static String parameterServiceDesigner = "lServiceDesigner";
@@ -89,6 +91,42 @@ public class TravelManager extends Block {
     public void main(IWContext iwc) throws Exception{
         initializer(iwc);
 
+        if (!iwc.hasEditPermission(this) && supplier == null && reseller == null) {
+            /**
+             * @todo Login expires....
+             */
+            draw(iwc);
+        }else {
+          draw(iwc);
+        }
+
+    }
+
+    protected boolean hasLoginExpired(IWContext iwc) {
+      return (!iwc.hasEditPermission(this) && supplier == null && reseller == null);
+    }
+
+    protected boolean isLoggedOn(IWContext iwc) {
+      return !hasLoginExpired(iwc);
+    }
+
+    protected Login getLogin(IWContext iwc) {
+      return LoginPage.getLoginObject(iwc);
+    }
+
+    protected Table getLoggedOffTable(IWContext iwc) {
+      Text sessionHasExpired = (Text) this.theText.clone();
+        sessionHasExpired.setText(iwrb.getLocalizedString("travel.session_has_expired","Session has expired"));
+      Table table = new Table(1,5);
+        table.setAlignment("center");
+        table.setAlignment(1,3,"center");
+        table.add(sessionHasExpired,1,3);
+        table.setAlignment(1,5,"center");
+        table.add(getLogin(iwc),1,5);
+      return table;
+    }
+
+    public void draw(IWContext iwc) {
         String action = iwc.getParameter(this.sAction);
         if (action == null) {
           action = (String) iwc.getSessionAttribute(this.sAction);
@@ -151,7 +189,6 @@ public class TravelManager extends Block {
         }
 
         if (iwc.hasEditPermission(this)){
-
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,this.parameterInitialData);
             table.add(lInitialData,1,1);
@@ -161,7 +198,6 @@ public class TravelManager extends Block {
             table.add(lUpdatePassword,1,1);
 
         }else if (supplier != null) {
-
             Link lDesign = new Link(iDesign,ServiceDesigner.class);
               lDesign.addParameter(this.sAction,this.parameterServiceDesigner);
             Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
@@ -191,9 +227,7 @@ public class TravelManager extends Block {
             Link lUpdatePassword = new Link(iUpdatePassword);
               lUpdatePassword.setWindowToOpen(LoginChanger.class);
             table.add(lUpdatePassword,1,1);
-        }
-        else if (reseller!= null) {
-
+        }else if (reseller!= null) {
             Link lBooking = new Link(iBooking,Booking.class);
               lBooking.addParameter(this.sAction,this.parameterBooking);
             table.add(lBooking,1,1);
@@ -206,7 +240,7 @@ public class TravelManager extends Block {
             table.add(lUpdatePassword,1,1);
         }
 
-        Link lHome = new Link(iHome,"/index.jsp");
+        Link lHome = new Link(iHome,LoginPage.class);
           lHome.addParameter(this.sAction, this.parameterHome);
         table.add(lHome,2,1);
 

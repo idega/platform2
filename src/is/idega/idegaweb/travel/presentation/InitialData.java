@@ -64,18 +64,22 @@ public class InitialData extends TravelManager {
       super.main(iwc);
       initialize(iwc);
 
-      String action = iwc.getParameter("supplier_action");
-      if (action == null) {action = "";}
+      if (super.isLoggedOn(iwc)) {
+          String action = iwc.getParameter("supplier_action");
+          if (action == null) {action = "";}
 
-      if (action.equals("")) {
-          displayForm(iwc);
-      }else if (action.equals("create")) {
-          createSupplier(iwc);
-      }else if (action.equals("update")) {
-          updateSupplier(iwc);
+          if (action.equals("")) {
+              displayForm(iwc);
+          }else if (action.equals("create")) {
+              createSupplier(iwc);
+          }else if (action.equals("update")) {
+              updateSupplier(iwc);
+          }
+
+          super.addBreak();
+      }else {
+        add(super.getLoggedOffTable(iwc));
       }
-
-      super.addBreak();
   }
 
   public void initialize(IWContext iwc) {
@@ -104,6 +108,14 @@ public class InitialData extends TravelManager {
         }
         else {
             if (action.equals("")) {
+              Table extra = new Table();
+                extra.setWidth("90%");
+                extra.setAlignment(1,1,"left");
+                extra.setAlignment("center");
+              Link newSupplier = new Link("new");
+                newSupplier.addParameter("admin_action","new");
+              extra.add(newSupplier,1,1);
+              form.add(extra);
               form.add(selectSupplier(iwc));
             }
             else if (action.equals(this.parameterNew)) {
@@ -136,7 +148,8 @@ public class InitialData extends TravelManager {
   public Table selectSupplier(IWContext iwc) throws SQLException {
       Table table = new Table();
         table.setBorder(0);
-        table.setCellspacing(0);
+        table.setCellspacing(1);
+        table.setColor(super.WHITE);
         table.setWidth("90%");
 
       int row=1;
@@ -171,6 +184,10 @@ public class InitialData extends TravelManager {
 
       table.add(suppText,1,row);
       table.add(suppLogin,2,row);
+//      table.add(Text.NON_BREAKING_SPACE, 3, row);
+              table.mergeCells(2,row,3,row);
+      table.add(Text.NON_BREAKING_SPACE, 4, row);
+      table.setRowColor(row, super.backgroundColor);
 
       Supplier[] supps = Supplier.getValidSuppliers();
 
@@ -178,7 +195,7 @@ public class InitialData extends TravelManager {
 
       for (int i = 0; i < supps.length; i++) {
         ++row;
-        theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
+//        theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
 
         link = (Link) editLink.clone();
           link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
@@ -191,13 +208,11 @@ public class InitialData extends TravelManager {
         table.add(link,4,row);
         table.setAlignment(4,row,"right");
 
-        table.setColor(1,row, theColor);
-        table.setColor(2,row, theColor);
-        table.setColor(3,row, theColor);
+        table.setRowColor(row, theColor);
 
         suppNameText = (Text) theText.clone();
           suppNameText.setText(supps[i].getName());
-          suppNameText.setFontColor(super.backgroundColor);
+          suppNameText.setFontColor(super.BLACK);
 
         table.add(suppNameText,1,row);
 
@@ -216,10 +231,10 @@ public class InitialData extends TravelManager {
               logTable = LoginDBHandler.findUserLogin(user.getID());
               suppLoginText = (Text) theText.clone();
               suppLoginText.setText(logTable.getUserLogin());
-              suppLoginText.setFontColor(super.backgroundColor);
+              suppLoginText.setFontColor(super.BLACK);
               suppPassText = (Text) theText.clone();
               suppPassText.setText(logTable.getUserPassword());
-              suppPassText.setFontColor(super.backgroundColor);
+              suppPassText.setFontColor(super.BLACK);
 
               table.add(suppLoginText,2,row);
               table.mergeCells(2,row,3,row);
@@ -233,9 +248,6 @@ public class InitialData extends TravelManager {
 
       }
 
-      ++row;
-      SubmitButton newSupplier = new SubmitButton("new","admin_action","new");
-      table.add(newSupplier,1,row);
 
       return table;
   }

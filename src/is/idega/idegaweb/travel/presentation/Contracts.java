@@ -50,28 +50,31 @@ public class Contracts extends TravelManager {
     super.main(iwc);
     initialize(iwc);
 
-    String action = iwc.getParameter(this.sAction);
-        if (action == null) action = "";
+    if (super.isLoggedOn(iwc)) {
+        String action = iwc.getParameter(this.sAction);
+            if (action == null) action = "";
 
-    if (action.equals("")) {
-      mainMenu(iwc);
-    }else if (action.equals(this.parameterNewReseller)) {
-      resellerCreation(-1);
-    }else if (action.equals(this.parameterEditReseller)) {
-      String sResellerId = iwc.getParameter(this.parameterResellerId);
-      resellerCreation(Integer.parseInt(sResellerId));
-    }else if (action.equals(this.parameterSaveNewReseller)) {
-      saveReseller(iwc,-1);
-    }else if (action.equals(this.parameterUpdateReseller)) {
-      String sResellerId = iwc.getParameter(this.parameterResellerId);
-      saveReseller(iwc,Integer.parseInt(sResellerId));
-    }else if (action.equals(this.parameterAssignReseller)) {
-      assignReseller(iwc);
-    }else if (action.equals(this.parameterSaveProductInfo)) {
-      saveProductInfo(iwc);
-      assignReseller(iwc);
+        if (action.equals("")) {
+          mainMenu(iwc);
+        }else if (action.equals(this.parameterNewReseller)) {
+          resellerCreation(-1);
+        }else if (action.equals(this.parameterEditReseller)) {
+          String sResellerId = iwc.getParameter(this.parameterResellerId);
+          resellerCreation(Integer.parseInt(sResellerId));
+        }else if (action.equals(this.parameterSaveNewReseller)) {
+          saveReseller(iwc,-1);
+        }else if (action.equals(this.parameterUpdateReseller)) {
+          String sResellerId = iwc.getParameter(this.parameterResellerId);
+          saveReseller(iwc,Integer.parseInt(sResellerId));
+        }else if (action.equals(this.parameterAssignReseller)) {
+          assignReseller(iwc);
+        }else if (action.equals(this.parameterSaveProductInfo)) {
+          saveProductInfo(iwc);
+          assignReseller(iwc);
+        }
+    }else {
+      add(super.getLoggedOffTable(iwc));
     }
-
 
 
   }
@@ -93,11 +96,23 @@ public class Contracts extends TravelManager {
         sb.setWidth("90%");
       */
 
+      form.add(Text.BREAK);
+      Table linkTable = new Table(1,1);
+        linkTable.setAlignment("center");
+        linkTable.setAlignment(1,1,"left");
+        linkTable.setWidth("90%");
+      Link newReseller = new Link(iwrb.getImage("buttons/newreseller.gif"));
+        newReseller.addParameter(this.sAction,this.parameterNewReseller);
+        linkTable.add(newReseller,1,1);
+      form.add(linkTable);
+      form.add(Text.BREAK);
+
       Table table = new Table();
         form.add(table);
         table.setAlignment("center");
         table.setWidth("90%");
-        table.setCellspacing(0);
+        table.setCellspacing(1);
+        table.setColor(super.WHITE);
 
       int row = 1;
 
@@ -106,11 +121,6 @@ public class Contracts extends TravelManager {
       Link assign;
       Link edit;
 
-      ++row;
-        table.add(new SubmitButton(iwrb.getImage("buttons/newreseller.gif"), this.sAction,this.parameterNewReseller),1,row);
-        table.mergeCells(1,row,3,row);
-
-      ++row;
       resName = (Text) theText.clone();
         resName.setBold();
         resName.setText(iwrb.getLocalizedString("travel.name","Name"));
@@ -119,6 +129,9 @@ public class Contracts extends TravelManager {
         refNum.setText(iwrb.getLocalizedString("travel.reference_number","Reference number"));
       table.add(resName,1,row);
       table.add(refNum,2,row);
+      table.add(Text.NON_BREAKING_SPACE,3,row);
+      table.setRowColor(row, super.backgroundColor);
+
 
       if (resellers == null) {
         resellers = ResellerManager.getResellers(supplier.getID(),Reseller.getColumnNameName());
@@ -127,13 +140,12 @@ public class Contracts extends TravelManager {
       String theColor = super.GRAY;
       for (int i = 0; i < resellers.length; i++) {
           ++row;
-          theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
           resName = (Text) theText.clone();
-            resName.setFontColor(super.backgroundColor);
+            resName.setFontColor(super.BLACK);
             resName.setText(resellers[i].getName());
           refNum = (Text) theText.clone();
             refNum.setText(resellers[i].getReferenceNumber());
-            refNum.setFontColor(super.backgroundColor);
+            refNum.setFontColor(super.BLACK);
           assign = new Link(iwrb.getImage("buttons/closer.gif"));
             assign.addParameter(this.sAction,this.parameterAssignReseller);
             assign.addParameter(this.parameterResellerId,resellers[i].getID());
@@ -145,8 +157,7 @@ public class Contracts extends TravelManager {
           table.add(refNum,2,row);
           table.add(edit,3,row);
           table.add(assign,3,row);
-          table.setColor(1,row,theColor);
-          table.setColor(2,row,theColor);
+          table.setRowColor(row,theColor);
           table.setAlignment(3,row,"right");
 
       }
@@ -508,7 +519,9 @@ public class Contracts extends TravelManager {
       table.setAlignment("center");
       table.setWidth("90%");
       table.setBorder(0);
-      table.setCellspacing(0);
+      table.setCellspacing(1);
+      table.setCellpadding(0);
+      table.setColor(super.WHITE);
       form.add(table);
 
     Product[] products = tsb.getProducts(supplier.getID());
@@ -520,7 +533,8 @@ public class Contracts extends TravelManager {
       header.setText(reseller.getName());
       header.setFontSize(Text.FONT_SIZE_14_HTML_4 );
     table.add(header,1,row);
-    table.mergeCells(1,row,4,row);
+    table.setRowColor(row, super.backgroundColor);
+    table.mergeCells(1,row,4,row+1);
 
     Text tNumberOfSeatsPerTour = (Text) theText.clone();
       tNumberOfSeatsPerTour.setText(iwrb.getLocalizedString("travel.number_of_seats_per_tour","Number of seats per tour"));
@@ -566,23 +580,22 @@ public class Contracts extends TravelManager {
 
     for (int i = 0; i < products.length; i++) {
         ++row;
-        theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
         table.setRowColor(row, theColor);
         pName = (Text) theBoldText.clone();
           pName.setText(products[i].getName());
-          pName.setFontColor(super.backgroundColor);
+          pName.setFontColor(super.BLACK);
 
         table.add(pName,1,row);
         table.mergeCells(1,row,3,row);
 
         if (products[i].getID() == productId) {
-
             form.add(new HiddenInput(this.parameterResellerId , Integer.toString(reseller.getID())));
             form.add(new HiddenInput(this.parameterProductId , Integer.toString(products[i].getID())));
 
             table.setAlignment(4,row,"right");
             temp = (Link) closeLook.clone();
             table.add(temp,4,row);
+            table.add(Text.NON_BREAKING_SPACE,4,row);
 
             pAlot = new TextInput("alotment");
               pAlot.setSize(3);
@@ -700,52 +713,60 @@ public class Contracts extends TravelManager {
             }
 
 
-            pName.setFontColor(super.backgroundColor);
-//            table.setRowColor(row, super.textColor);
-
+            pName.setFontColor(super.BLACK);
             ++row;
-            table.add(tDiscount,1,row);
-            table.add(pDiscount,3,row);
-            table.setRowColor(row, super.backgroundColor);
+            table.mergeCells(1,row,4,row);
 
-            ++row;
-            table.add(tNumberOfSeatsPerTour,1,row);
-            table.add(pAlot,3,row);
-            table.setRowColor(row, super.backgroundColor);
+            Table infoTable = new Table();
+              table.add(infoTable,1,row);
+              infoTable.setBorder(0);
+              infoTable.setCellspacing(0);
+              infoTable.setWidth("100%");
+              infoTable.setColor(super.backgroundColor);
 
-            ++row;
-            table.setRowColor(row, super.backgroundColor);
-            table.add(tWeekdays,1,row);
-            table.add(weekdayFixTable,3,row);
-            table.mergeCells(3,row,4,row);
+            int infoRow = 1;
 
-            ++row;
-            table.setRowColor(row, super.backgroundColor);
-            table.add(tTimeframe,1,row);
-            table.mergeCells(3,row,4,row);
-            table.add(tfFromText,2,row);
-            table.add(pFrom,3,row);
-            table.add(tfToText,3,row);
-            table.add(pTo,3,row);
+            infoTable.add(tDiscount,1,infoRow);
+            infoTable.add(pDiscount,3,infoRow);
 
-            ++row;
-            table.setRowColor(row, super.backgroundColor);
-            table.add(tValidUntil,1,row);
-            table.mergeCells(3,row,4,row);
-            table.add(pDays,3,row);
-            table.add(tDaysBefore,3,row);
+            ++infoRow;
+            infoTable.add(tNumberOfSeatsPerTour,1,infoRow);
+            infoTable.add(pAlot,3,infoRow);
 
-            ++row;
-            table.setRowColor(row, theColor);
+            ++infoRow;
+            infoTable.add(tWeekdays,1,infoRow);
+            infoTable.add(weekdayFixTable,3,infoRow);
+            infoTable.mergeCells(3,infoRow,4,infoRow);
+
+            ++infoRow;
+            infoTable.add(tTimeframe,1,infoRow);
+            infoTable.mergeCells(3,infoRow,4,infoRow);
+            infoTable.add(tfFromText,2,infoRow);
+            infoTable.add(pFrom,3,infoRow);
+            infoTable.add(tfToText,3,infoRow);
+            infoTable.add(pTo,3,infoRow);
+
+            ++infoRow;
+            infoTable.add(tValidUntil,1,infoRow);
+            infoTable.mergeCells(3,infoRow,4,infoRow);
+            infoTable.add(pDays,3,infoRow);
+            infoTable.add(tDaysBefore,3,infoRow);
+
+            ++infoRow;
+            //table.setRowColor(row, theColor);
             SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
-            table.add(submit,4,row);
-            table.setAlignment(4,row,"right");
+            infoTable.add(submit,4,infoRow);
+            infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+            infoTable.setAlignment(4,infoRow,"right");
+            //table.mergeCells(1,row,3,row);
+            //table.setRowColor(row, theColor);
 
         }else {
           temp = (Link) closerLook.clone();
             temp.addParameter(this.parameterProductId, products[i].getID());
           table.setAlignment(4,row,"right");
           table.add(temp,4,row);
+          table.add(Text.NON_BREAKING_SPACE,4,row);
         }
         //table.setRowColor(row, super.DARKBLUE);
     }

@@ -6,6 +6,7 @@ import com.idega.presentation.*;
 import is.idega.travel.presentation.TravelManager;
 
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -23,6 +24,7 @@ public class TravelWindow extends Window {
 
   protected Text text = new Text();
   protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -56,6 +58,9 @@ public class TravelWindow extends Window {
   }
 
   private void setTemplate(IWContext iwc) {
+    iwrb = super.getResourceBundle(iwc);
+    iwb = super.getBundle(iwc);
+
     table.setWidth("100%");
     table.setBorder(0);
     table.setCellpadding(0);
@@ -68,6 +73,9 @@ public class TravelWindow extends Window {
     table.setColor(2,1,TravelManager.backgroundColor);
     table.setColor(3,1,TravelManager.backgroundColor);
 
+    Image logo = iwb.getImage("buttons/iWTravel.gif");
+
+/*
     Text header1 = new Text("idega");
       header1.setFontColor(TravelManager.LIGHTORANGE);
       header1.setBold();
@@ -79,11 +87,13 @@ public class TravelWindow extends Window {
 
     table.add(header1,2,1);
     table.add(header2,2,1);
+*/
+    table.mergeCells(1,1,2,1);
+    table.add(logo,1,1);
 
     text.setFontColor(TravelManager.backgroundColor);
     text.setFontSize(Text.FONT_SIZE_10_HTML_2);
 
-    iwrb = super.getResourceBundle(iwc);
 
   }
 

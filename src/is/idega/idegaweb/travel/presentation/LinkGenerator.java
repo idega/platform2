@@ -17,7 +17,7 @@ public class LinkGenerator extends TravelWindow {
 
   public LinkGenerator() {
     super.setWidth(600);
-    super.setHeight(100);
+    super.setHeight(200);
     super.setTitle("idegaWeb Travel");
   }
 
@@ -34,11 +34,10 @@ public class LinkGenerator extends TravelWindow {
     add(tLink);
     add(Text.getBreak());
 
-    add("&lt;a href=\"http://"+link+"\"&gt;Book&lt;/a&gt;");
+    add("&lt;a target=\"_blank\" href=\"http://"+link+"\"&gt;Book&lt;/a&gt;");
     add(Text.getBreak());
     add(Text.getBreak());
     add("<a target=\"_blank\" href=\"http://"+link+"\">Try link</a>");
-
   }
 
 }

@@ -54,14 +54,17 @@ public class Statistics extends TravelManager {
       super.main(iwc);
       initialize(iwc);
 
+      if (super.isLoggedOn(iwc) ) {
           String action = iwc.getParameter("action");
           if (action == null) {action = "";}
 
           if (action.equals("")) {
               displayForm(iwc);
           }
-
-      super.addBreak();
+        super.addBreak();
+      }else {
+        add(super.getLoggedOffTable(iwc));
+      }
   }
 
   public void initialize(IWContext iwc) {

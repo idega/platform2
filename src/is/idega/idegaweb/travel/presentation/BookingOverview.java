@@ -70,15 +70,14 @@ public class BookingOverview extends TravelManager {
       initialize(iwc);
       supplier = super.getSupplier();
 
-      if ( (supplier != null) || (reseller != null) ) {
+      if (super.isLoggedOn(iwc)) {
         if (reseller != null && contract == null) {
           product = null;
         }
         displayForm(iwc);
         super.addBreak();
       }else {
-        add("TEMP");
-        add(new com.idega.block.login.presentation.Login());
+        add(super.getLoggedOffTable(iwc));
       }
   }
 
@@ -328,8 +327,9 @@ public class BookingOverview extends TravelManager {
 
   public Table getContentTable(IWContext iwc) {
       Table table = new Table();
-        table.setCellspacing(0);
-        table.setCellpadding(2);
+        table.setCellspacing(1);
+        table.setCellpadding(4);
+        table.setColor(super.WHITE);
         table.setWidth("90%");
 
       int row = 1;
@@ -373,6 +373,8 @@ public class BookingOverview extends TravelManager {
           table.add(availableText,7,row);
           table.add("&nbsp;",8,row);
 
+          table.setRowColor(row, super.backgroundColor);
+
 
           Product[] products;
           int supplierId = 0;
@@ -397,11 +399,6 @@ public class BookingOverview extends TravelManager {
 
           toStamp.addDays(1);
           while (toStamp.isLaterThan(tempStamp)) {
-              if (theColor.equals(super.GRAY)) {
-                theColor = super.WHITE;
-              }else {
-                theColor = super.GRAY;
-              }
               dayOfWeek = cal.getDayOfWeek(tempStamp.getYear(), tempStamp.getMonth(), tempStamp.getDay());
               try {
                   if (viewAll) {
@@ -419,18 +416,19 @@ public class BookingOverview extends TravelManager {
               ++row;
               dateTextBold = (Text) theSmallBoldText.clone();
                   dateTextBold.setText(tempStamp.getLocaleDate(iwc));
-                  dateTextBold.setFontColor(super.backgroundColor);
+                  dateTextBold.setFontColor(super.BLACK);
               table.add(dateTextBold,1,row);
 
-              table.setColor(1,row,theColor);
+              table.setRowColor(row,theColor);
+/*
               table.setColor(2,row,theColor);
               table.setColor(3,row,theColor);
               table.setColor(4,row,theColor);
               table.setColor(5,row,theColor);
               table.setColor(6,row,theColor);
               table.setColor(7,row,theColor);
-//              table.setColor(8,row,super.textColor);
-
+              table.setColor(8,row,theColor);
+*/
               boolean bContinue= false;
 
               for (int i = 0; i < products.length; i++) {
@@ -480,12 +478,12 @@ public class BookingOverview extends TravelManager {
                               bookedTextBold.setText(Integer.toString(iBooked));
                           availableTextBold = (Text) theSmallBoldText.clone();
                               availableTextBold.setText(Integer.toString(iAvailable));
-                            nameTextBold.setFontColor(super.backgroundColor);
-                            countTextBold.setFontColor(super.backgroundColor);
-                            assignedTextBold.setFontColor(super.backgroundColor);
-                            inqTextBold.setFontColor(super.backgroundColor);
-                            bookedTextBold.setFontColor(super.backgroundColor);
-                            availableTextBold.setFontColor(super.backgroundColor);
+                            nameTextBold.setFontColor(super.BLACK);
+                            countTextBold.setFontColor(super.BLACK);
+                            assignedTextBold.setFontColor(super.BLACK);
+                            inqTextBold.setFontColor(super.BLACK);
+                            bookedTextBold.setFontColor(super.BLACK);
+                            availableTextBold.setFontColor(super.BLACK);
 
                           Link btnNanar = new Link(iwrb.getImage("/buttons/closer.gif"));
                               btnNanar.addParameter(closerLookDateParameter,tempStamp.toSQLDateString());

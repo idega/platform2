@@ -218,10 +218,12 @@ public class Booker {
         ProductPrice pPrice;
 
         pPrice = entry.getProductPrice();
-        total = entry.getCount() * TravelStockroomBusiness.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
+        total = entry.getCount() * TravelStockroomBusiness.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), idegaTimestamp.getTimestampRightNow());
 
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
+      }catch (com.idega.block.trade.stockroom.business.ProductPriceException ppe) {
+        ppe.printStackTrace(System.err);
       }
 
 
