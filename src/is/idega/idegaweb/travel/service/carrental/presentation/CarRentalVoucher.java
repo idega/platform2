@@ -1,10 +1,19 @@
 package is.idega.idegaweb.travel.service.carrental.presentation;
 
 import is.idega.idegaweb.travel.presentation.Voucher;
+import is.idega.idegaweb.travel.service.carrental.data.CarRentalBooking;
+import is.idega.idegaweb.travel.service.carrental.data.CarRentalBookingHome;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import java.rmi.RemoteException;
+
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 /**
  * <p>Title: idega</p>
@@ -26,5 +35,16 @@ public class CarRentalVoucher extends Voucher{
     super.addToClientInfo(iwrb.getLocalizedString("travel.address_lg","Address")+" : "+_booking.getAddress()+", "+_booking.getPostalCode()+" "+_booking.getCity()+", "+_booking.getCountry());
     super.addToClientInfo(iwrb.getLocalizedString("travel.telephone_lg","Telephone number")+" : "+_booking.getTelephoneNumber());
     super.addToClientInfo(iwrb.getLocalizedString("travel.email_lg","E-mail")+" : "+_booking.getEmail());
+    
+    try {
+			CarRentalBooking crBooking = ((CarRentalBookingHome) IDOLookup.getHome(CarRentalBooking.class)).findByPrimaryKey(_booking.getPrimaryKey());
+			IWTimestamp pickupTime = new IWTimestamp(crBooking.getPickupTime());			
+			IWTimestamp dropoffTime = new IWTimestamp(crBooking.getDropoffTime());			
+			super.addToSectionFour(iwrb.getLocalizedString("travel.pickup","Pickup")+" : "+crBooking.getPickupPlace().getAddress().getStreetAddress()+" "+TextSoap.addZero(pickupTime.getHour())+":"+TextSoap.addZero(pickupTime.getMinute()));
+			super.addToSectionFour(iwrb.getLocalizedString("travel.dropoff","Dropoff")+" : "+crBooking.getDropoffPlace().getAddress().getStreetAddress()+" "+TextSoap.addZero(dropoffTime.getHour())+":"+TextSoap.addZero(dropoffTime.getMinute()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+    
   }
 }
