@@ -97,14 +97,14 @@ public class TextEditorWindow extends AbstractChooserWindow{
     //if chooserParameterName is null it is not being used by TextChooser
     String chooserParameterName = super.getSelectionParameter(iwc);
     if(chooserParameterName!=null){
-      System.out.println("chooserParameterName!=null");
-      System.out.println("chooserParameterName="+chooserParameterName);
-      System.out.println("iwc.getParameter(chooserParameterName)="+iwc.getParameter(chooserParameterName));
+      debug("chooserParameterName!=null");
+      debug("chooserParameterName="+chooserParameterName);
+      debug("iwc.getParameter(chooserParameterName)="+iwc.getParameter(chooserParameterName));
       if(iwc.isParameterSet(chooserParameterName))
       prmUsedTextId=chooserParameterName;
     }
     else{
-      System.out.println("chooserParameterName==null");
+      debug("chooserParameterName==null");
     }
 
     boolean doView = true;
@@ -409,12 +409,12 @@ public class TextEditorWindow extends AbstractChooserWindow{
     core = iwc.getApplication().getBundle(TextReader.IW_CORE_BUNDLE_IDENTIFIER);
     reloadCheck(iwc);
     addTitle(iwrb.getLocalizedString("text_editor","Text Editor"));
-		try{
-    control(iwc);
-		}
-		catch(Exception e){
-		  e.printStackTrace();
-		}
+    try{
+      control(iwc);
+    }
+    catch(Exception e){
+      e.printStackTrace();
+    }
   }
 
   public String getBundleIdentifier(){

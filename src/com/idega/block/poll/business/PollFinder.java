@@ -44,17 +44,17 @@ public class PollFinder {
 
   public static PollEntity getObjectInstanceFromID(int ICObjectInstanceID){
     try {
-      ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
-      List L = EntityFinder.findRelated(ICObjInst,PollEntity.getStaticInstance(PollEntity.class));
-      if(L!= null){
-        return (PollEntity) L.get(0);
-      }
-      else
-        return null;
+      ICObjectBusiness icob = ICObjectBusiness.getInstance();
+      ICObjectInstance ICObjInst = icob.getICObjectInstance(ICObjectInstanceID);
+      return (PollEntity)icob.getRelatedEntity(ICObjInst,PollEntity.class);
     }
-    catch (SQLException ex) {
+    catch (com.idega.data.IDOFinderException ex) {
       ex.printStackTrace();
       return null;
     }
   }
+
+
+
+
 }
