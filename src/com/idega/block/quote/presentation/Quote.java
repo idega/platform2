@@ -7,6 +7,7 @@ import com.idega.util.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
+import com.idega.block.IWBlock;
 import com.idega.block.quote.data.*;
 import com.idega.block.quote.business.QuoteBusiness;
 import com.idega.data.*;
@@ -16,7 +17,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
 
-public class Quote extends Block{
+public class Quote extends Block implements IWBlock {
 
 private int _quoteID;
 private boolean _isAdmin = false;
@@ -63,10 +64,10 @@ public Quote(int quoteID){
     _isAdmin = iwc.hasEditPermission(this);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-		drawTable();
+		drawTable(iwc);
 	}
 
-	private void drawTable() throws SQLException {
+	private void drawTable(IWContext iwc) throws SQLException {
 
 		_myTable = new Table();
 			_myTable.setBorder(0);
@@ -153,15 +154,17 @@ public Quote(int quoteID){
 			int tableWidth = _myTable.getColumns();
 
 			Table formTable = new Table(3,1);
+        formTable.setCellpadding(0);
+        formTable.setCellspacing(0);
 
-			Link createLink = new Link(_iwb.getImage("shared/create.gif",_iwrb.getLocalizedString("new_quote","New Quote"),15,15));
+			Link createLink = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif",_iwrb.getLocalizedString("new_quote","New Quote")));
         createLink.setWindowToOpen(QuoteEditor.class);
 				createLink.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_NEW);
-			Link editLink = new Link(_iwb.getImage("shared/edit.gif",_iwrb.getLocalizedString("edit_quote","Edit Quote"),15,15));
+			Link editLink = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/edit.gif",_iwrb.getLocalizedString("edit_quote","Edit Quote")));
         editLink.setWindowToOpen(QuoteEditor.class);
 				editLink.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_EDIT);
 				editLink.addParameter(QuoteBusiness.PARAMETER_QUOTE_ID,_quoteID);
-			Link deleteLink = new Link(_iwb.getImage("shared/delete.gif",_iwrb.getLocalizedString("delete_quote","Delete Quote"),15,15));
+			Link deleteLink = new Link(iwc.getApplication().getBundle(this.IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/delete.gif",_iwrb.getLocalizedString("delete_quote","Delete Quote")));
         deleteLink.setWindowToOpen(QuoteEditor.class);
 				deleteLink.addParameter(QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_DELETE);
 				deleteLink.addParameter(QuoteBusiness.PARAMETER_QUOTE_ID,_quoteID);
@@ -270,4 +273,7 @@ public Quote(int quoteID){
     authorStyle = style;
   }
 
+  public boolean deleteBlock(int ICObjectInstanceID) {
+    return false;
+  }
 }

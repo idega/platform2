@@ -10,6 +10,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
+import com.idega.block.IWBlock;
 import com.idega.block.banner.data.*;
 import com.idega.block.banner.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -36,6 +37,7 @@ private String _newWithAttribute;
 private Image _editImage;
 private Image _createImage;
 private Image _deleteImage;
+private Image _detachImage;
 
 private IWBundle _iwb;
 private IWResourceBundle _iwrb;
@@ -53,7 +55,7 @@ public BannerEditorWindow(){
      */
     _isAdmin = true;
     _superAdmin = iwc.hasEditPermission(this);
-    _iwb = getBundle(iwc);
+    _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("banner_admin","Banner Admin"));
 
@@ -64,15 +66,17 @@ public BannerEditorWindow(){
       _userID = -1;
     }
 
-    _editImage = _iwrb.getImage("edit.gif");
-      _editImage.setHorizontalSpacing(4);
-      _editImage.setVerticalSpacing(3);
-    _createImage = _iwrb.getImage("create.gif");
-      _createImage.setHorizontalSpacing(4);
-      _createImage.setVerticalSpacing(3);
-    _deleteImage = _iwrb.getImage("delete.gif");
-      _deleteImage.setHorizontalSpacing(4);
-      _deleteImage.setVerticalSpacing(3);
+
+    _editImage = _iwb.getImage("shared/edit.gif",_iwrb.getLocalizedString("edit","Edit"));
+      //_editImage.setHorizontalSpacing(4);
+      //_editImage.setVerticalSpacing(3);
+    _createImage = _iwb.getImage("shared/create.gif",_iwrb.getLocalizedString("create","Create"));
+      //_createImage.setHorizontalSpacing(4);
+      //_createImage.setVerticalSpacing(3);
+    _deleteImage = _iwb.getImage("shared/delete.gif",_iwrb.getLocalizedString("delete","Delete"));
+      //_deleteImage.setHorizontalSpacing(4);
+      //_deleteImage.setVerticalSpacing(3);
+    _detachImage = _iwb.getImage("shared/detach.gif",_iwrb.getLocalizedString("detach","Detach"));
 
     if ( _isAdmin ) {
       processForm(iwc);
@@ -158,40 +162,28 @@ public BannerEditorWindow(){
       }
     adTable.add(adDrop,1,1);
 
-    Image newAdImage = _iwrb.getImage("new.gif");
-      newAdImage.setVerticalSpacing(3);
-      newAdImage.setHorizontalSpacing(3);
-
-    Link newAdLink = new Link(newAdImage);
+    Link newAdLink = new Link(_createImage);
       newAdLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
       newAdLink.addParameter(BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_NEW);
     if ( _update ) {
-      adTable.add(newAdLink,1,2);
-      adTable.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,1,2);
+      adTable.setWidth(2,1,"5");
+      adTable.add(newAdLink,3,1);
     }
 
-    Image deleteAdImage = _iwrb.getImage("delete.gif");
-      deleteAdImage.setVerticalSpacing(3);
-      deleteAdImage.setHorizontalSpacing(3);
-
-    Link deleteAdLink = new Link(deleteAdImage);
+    Link deleteAdLink = new Link(_deleteImage);
       deleteAdLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
       deleteAdLink.addParameter(BannerBusiness.PARAMETER_AD_ID,_adID);
       deleteAdLink.addParameter(BannerBusiness.PARAMETER_DELETE,BannerBusiness.PARAMETER_TRUE);
     if ( _update ) {
-      adTable.add(deleteAdLink,1,2);
+      adTable.add(deleteAdLink,3,1);
     }
 
-    Image detachAdImage = _iwrb.getImage("detach.gif");
-      detachAdImage.setVerticalSpacing(3);
-      detachAdImage.setHorizontalSpacing(3);
-
-    Link detachAdLink = new Link(detachAdImage);
+    Link detachAdLink = new Link(_detachImage);
       detachAdLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
       detachAdLink.addParameter(BannerBusiness.PARAMETER_AD_ID,_adID);
       detachAdLink.addParameter(BannerBusiness.PARAMETER_DETACH_AD,BannerBusiness.PARAMETER_TRUE);
     if ( _update && BannerBusiness.isRelated(_bannerID,_adID) ) {
-      adTable.add(detachAdLink,1,2);
+      adTable.add(detachAdLink,3,1);
     }
 
     addLeft(_iwrb.getLocalizedString("ad","Ad")+":",adTable,true,false);
@@ -258,7 +250,6 @@ public BannerEditorWindow(){
 
         Image fileImage;
         Link deleteFile;
-        Image deleteFileImage = _iwb.getImage("shared/delete.gif");
 
         for ( int a = 0; a < files.length; a++ ) {
           try {
@@ -270,7 +261,7 @@ public BannerEditorWindow(){
           fileImage.setWidth(120);
           fileImage.setBorder(1);
 
-          deleteFile = new Link(deleteFileImage);
+          deleteFile = new Link(_deleteImage);
             deleteFile.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
             deleteFile.addParameter(BannerBusiness.PARAMETER_AD_ID,_adID);
             deleteFile.addParameter(BannerBusiness.PARAMETER_FILE_ID,files[a].getID());
@@ -286,8 +277,8 @@ public BannerEditorWindow(){
     }
 
     addHiddenInput(new HiddenInput(BannerBusiness.PARAMETER_BANNER_ID,Integer.toString(_bannerID)));
-    addSubmitButton(new SubmitButton(_iwrb.getImage("close.gif"),BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_CLOSE));
-    addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_SAVE));
   }
 
   private void saveAd(IWContext iwc) {

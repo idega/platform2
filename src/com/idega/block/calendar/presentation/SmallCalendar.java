@@ -190,11 +190,6 @@ public SmallCalendar(int year,int month) {
           T.setColor(xpos,ypos,selectedColor);
         }
       }
-      else {
-        if ( n == stamp.getDay() ) {
-          T.setColor(xpos,ypos,selectedColor);
-        }
-      }
 
       if (daysAreLinks) {
         theLink = new Link(t);

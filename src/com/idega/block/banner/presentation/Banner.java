@@ -25,6 +25,7 @@ private String _attribute;
 private int _iLocaleID;
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.banner";
+private final static String IW_CORE_BUNDLE_IDENTIFIER="com.idega.core";
 protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
 
@@ -103,11 +104,13 @@ public Banner(String attribute){
 
     int row = 1;
     if(_isAdmin){
-      _myTable.add(getAdminPart(),1,row);
+      _myTable.add(getAdminPart(iwc),1,row);
       row++;
     }
 
-    _myTable.add(getBanner(iwc,banner),1,row);
+    Link link = getBanner(iwc,banner);
+    if ( link != null )
+      _myTable.add(link,1,row);
     add(_myTable);
 	}
 
@@ -144,18 +147,17 @@ public Banner(String attribute){
     if ( bannerLink != null )
       return bannerLink;
 
-    return new Link();
+    return null;
   }
 
-  private Link getAdminPart() {
-    Image adminImage = _iwrb.getImage("bannermanager.gif");
-      adminImage.setVerticalSpacing(2);
+  private Link getAdminPart(IWContext iwc) {
+    Image createImage = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER).getImage("shared/create.gif");
 
-    Link adminLink = new Link(adminImage);
-      adminLink.setWindowToOpen(BannerEditorWindow.class);
-      adminLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
+    Link createLink = new Link(createImage);
+      createLink.setWindowToOpen(BannerEditorWindow.class);
+      createLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
 
-    return adminLink;
+    return createLink;
   }
 
   private void doMode(String mode, IWContext iwc) {
