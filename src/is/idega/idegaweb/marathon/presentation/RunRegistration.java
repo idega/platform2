@@ -5,15 +5,16 @@ package is.idega.idegaweb.marathon.presentation;
 
 import is.idega.idegaweb.marathon.business.RunBusiness;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Page;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -489,9 +490,9 @@ public class RunRegistration extends Block {
 		t.setHeight(row++, 18);
 
 		Link stepTwoGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_one", "Next step")), STYLENAME_BLUE_TEXT);
-		stepTwoGreen.setToFormSubmit(f);
+		stepTwoGreen.setFormToSubmit(f, true);
 		Link stepTwoBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
-		stepTwoGreen.setToFormSubmit(f);
+		stepTwoGreen.setFormToSubmit(f, true);
 
 		t.add(stepTwoGreen, 1, row);
 		t.add(Text.getNonBrakingSpace(), 1, row);
@@ -560,6 +561,7 @@ public class RunRegistration extends Block {
 		t.setHeight(row++, 3);
 		t.add(agreeField,column,row);
 		t.add(agreeText,column,row);
+		t.add(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE, column, row);
 		t.add(disagreeField,column,row);
 		t.add(disagreeText,column,row++);
 
@@ -570,9 +572,9 @@ public class RunRegistration extends Block {
 		buttonTable.setCellspacing(0);
 		buttonTable.setWidth(2, 1, 12);
 		Link finishGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_two", "Next step")), STYLENAME_BLUE_TEXT);
-		finishGreen.setToFormSubmit(f);
+		finishGreen.setFormToSubmit(f, true);
 		Link finishBlue = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
-		finishBlue.setToFormSubmit(f);
+		finishBlue.setFormToSubmit(f, true);
 
 		buttonTable.add(backGreen, 1, 1);
 		buttonTable.add(Text.getNonBrakingSpace(), 1, 1);
