@@ -77,12 +77,10 @@ public void main(ModuleInfo modinfo) throws Exception {
   String text_id2 = modinfo.getParameter("text_id");
         if( text_id2 != null ) text_id = text_id2;
 
-
 		if ( this.text_id == null ) {
 			noTextID();
 			add(myTable);
 		}
-
 		else {
 //EIKI þetta mætti allt hreinsa til og gera þennan hlut í constructornum
 			text = new TextModule(Integer.parseInt(text_id));
@@ -92,7 +90,6 @@ public void main(ModuleInfo modinfo) throws Exception {
 	}
 
 	public void textTable() throws IOException,SQLException {
-
 			myTable.setCellpadding(3);
 			myTable.setCellspacing(3);
 			myTable.mergeCells(1,1,2,1);
@@ -117,7 +114,7 @@ public void main(ModuleInfo modinfo) throws Exception {
       text_body = textCrazy(text_body);
     }
 
-                text_body = formatText(text_body);
+    text_body = formatText(text_body);
 
 		Text body = new Text(text_body);
 			body.setFontSize(textSize);
@@ -160,11 +157,15 @@ public void main(ModuleInfo modinfo) throws Exception {
         adminWindow.setWidth(570);
         adminWindow.setHeight(430);
 
-      Link breyta = new Link(iwrb.getImage("change.gif"),adminWindow);
+      //Link breyta = new Link(iwrb.getImage("change.gif"),adminWindow);
+      Link breyta = new Link(iwrb.getImage("change.gif"));
+        breyta.setWindowToOpen(TextEditor.class);
 				breyta.addParameter("mode","update");
 				breyta.addParameter("text_id",text_id);
 
-      Link delete = new Link(iwrb.getImage("delete.gif"),adminWindow);
+      //Link delete = new Link(iwrb.getImage("delete.gif"),adminWindow);
+      Link delete = new Link(iwrb.getImage("delete.gif"));
+        delete.setWindowToOpen(TextEditor.class);
 				delete.addParameter("mode","delete");
 				delete.addParameter("text_id",text_id);
 
