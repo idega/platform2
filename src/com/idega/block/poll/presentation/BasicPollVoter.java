@@ -17,7 +17,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
 public class BasicPollVoter extends JModuleObject{
 
-/*private String attributeName = "idega_id";
+private String attributeName = "idega_id";
 private int attributeId = 1;
 
 private boolean showTotalVotes = false;
@@ -664,5 +664,5 @@ private String color_2 = null;
 
   public void setVoteImage(Image voteImage) {
       this.voteImage = voteImage;
-  }*/
+  }
 }

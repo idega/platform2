@@ -40,6 +40,7 @@ private int _pollID = -1;
 private int _pollQuestionID = -1;
 private int _iLocaleID;
 private Image line;
+private int border = 0;
 
 public static final String prmPollFirst = "i_poll_first";
 
@@ -55,7 +56,7 @@ public PollResult() {
   public void main(ModuleInfo modinfo) throws Exception {
     _iwrb = getResourceBundle(modinfo);
     _iwb = getBundle(modinfo);
-    setOnLoad("window.resize(\"239\",\"422\");");
+
     setAllMargins(0);
     setTitle(_iwrb.getLocalizedString("results","Results"));
 
@@ -127,6 +128,7 @@ public PollResult() {
     layoutTable.setHeight(2,"9");
     layoutTable.setHeight(4,"17");
     layoutTable.setAlignment(1,5,"center");
+    layoutTable.setBorder(border);
 
     Image header = _iwrb.getImage("top.gif");
     line = _iwb.getImage("/shared/line.gif");
@@ -142,7 +144,7 @@ public PollResult() {
 
   private Table showResults(int pollQuestionID) {
     Table myTable = new Table();
-      myTable.setBorder(0);
+      myTable.setBorder(border);
       myTable.setWidth(1,1,"2");
       myTable.mergeCells(2,1,6,1);
       myTable.setWidth("100%");
@@ -168,7 +170,7 @@ public PollResult() {
       myTable.add(questionText,2,1);
 
       int numberOfAnswers = PollBusiness.getNumberOfAnswers(question);
-      //setWindowHeight(numberOfAnswers);
+      setWindowHeight(numberOfAnswers);
 
       if (answers != null) {
         if (answers.length > 0) {
@@ -249,6 +251,7 @@ public PollResult() {
 
     Table myTable = new Table(1,tableSize);
       myTable.setWidth("100%");
+      myTable.setBorder(border);
 
     if ( pollQuestions != null ) {
       for (int i = first; i < pollSize; i++) {
@@ -271,11 +274,11 @@ public PollResult() {
       }
     }
 
-    //setWindowHeight(numberOfAnswers,pollSize);
+    setWindowHeight(numberOfAnswers,pollSize);
 
-    Text nextText = new Text(_iwrb.getLocalizedString("next","Next")+" "+Integer.toString(_numberOfPolls));
+    Text nextText = new Text(_iwrb.getLocalizedString("next","Next"));
         nextText.setFontSize(1);
-    Text prevText = new Text(_iwrb.getLocalizedString("lst","Last")+" "+Integer.toString(_numberOfPolls));
+    Text prevText = new Text(_iwrb.getLocalizedString("lst","Last"));
         prevText.setFontSize(1);
 
     Link next = new Link(nextText);
@@ -288,16 +291,18 @@ public PollResult() {
         prev.addParameter(PollResult.prmPollFirst,Integer.toString(first - _numberOfPolls));
 
 
-    Table table = new Table(3,1);
+    Table table = new Table(4,1);
         table.setWidth("100%");
-        table.setBorder(0);
+        table.setBorder(border);
         table.setAlignment(3,1,"right");
+        table.setWidth(1,1,"2");
+        table.setWidth(4,1,"10");
         if (! (first - _numberOfPolls < 0)) {
-          table.add(prev,1,1);
+          table.add(prev,2,1);
         }
         else {
           prevText.setFontColor("#999999");
-          table.add(prevText,1,1);
+          table.add(prevText,2,1);
         }
 
         if ( !( first + _numberOfPolls >= pollSize ) ) {
@@ -317,17 +322,17 @@ public PollResult() {
   }
 
   private void setWindowHeight(int numberOfAnswers,int numberOfQuestions) {
-    int questionHeight = 30;
+    int questionHeight = 26;
     int answerHeight = 26;
-    int height = 86;
+    int height = 116;
     if ( numberOfQuestions > 1 ) {
-      height += 20;
+      height += 26;
     }
 
     System.out.println("numberOfAnswers: "+numberOfAnswers);
     int windowHeight = (numberOfAnswers * answerHeight) + (numberOfQuestions * questionHeight) + height;
 
-    setOnLoad("window.resize("+Integer.toString(this.getWidth())+","+windowHeight+");");
+    setOnLoad("window.resizeTo("+Integer.toString(292)+","+windowHeight+");");
   }
 
   public String getBundleIdentifier(){

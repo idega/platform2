@@ -25,6 +25,7 @@ public class PollQuestionChooser extends IWAdminWindow{
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.poll";
 private boolean isAdmin = false;
 private boolean close = false;
+private int pollID = -1;
 public static String prmQuestions = "poll.questions";
 
 private IWBundle iwb;
@@ -64,6 +65,14 @@ public PollQuestionChooser(){
 
   private void processForm(ModuleInfo modinfo, int iLocaleId) {
     String pollQuestion = modinfo.getParameter(prmQuestions);
+    String pollIDString = modinfo.getParameter(Poll._prmPollID);
+    try {
+      pollID = Integer.parseInt(pollIDString);
+    }
+    catch (NumberFormatException e) {
+      pollID = -1;
+    }
+
     int pollQuestionID = -1;
     try {
       pollQuestionID = Integer.parseInt(pollQuestion);
@@ -83,7 +92,7 @@ public PollQuestionChooser(){
         localeDrop.setToSubmit();
         localeDrop.setSelectedElement(Integer.toString(iLocaleId));
 
-      DropdownMenu questionDrop = PollBusiness.getQuestions(prmQuestions,iLocaleId);
+      DropdownMenu questionDrop = PollBusiness.getQuestions(prmQuestions,pollID,iLocaleId);
         questionDrop.setAttribute("style",STYLE);
         questionDrop.setToSubmit();
 

@@ -115,7 +115,7 @@ public PollAdminWindow(){
         _newObjInst = -1;
       }
     }
-    else if ( (String) modinfo.getApplicationAttribute(prmObjInstId) != null ) {
+    else if ( (Integer) modinfo.getApplicationAttribute(prmObjInstId) != null ) {
       try {
         _newObjInst = ((Integer) modinfo.getApplicationAttribute(prmObjInstId)).intValue();
       }
@@ -132,6 +132,8 @@ public PollAdminWindow(){
       _newWithAttribute = (String) modinfo.getApplicationAttribute(prmAttribute);
     }
 
+    System.out.println("PollID: "+_pollID);
+
     DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(PollAdminWindow.prmLocale);
       localeDrop.setToSubmit();
       localeDrop.setSelectedElement(Integer.toString(iLocaleId));
@@ -144,8 +146,10 @@ public PollAdminWindow(){
     Text choosePollText = formatText(iwrb.getLocalizedString("choose_poll","Choose poll")+":&nbsp;",true);
     Link choosePollLink = new Link(iwrb.getImage("choose.gif"));
       choosePollLink.setWindowToOpen(PollQuestionChooser.class);
+      choosePollLink.addParameter(Poll._prmPollID,_pollID);
     Link createPollLink = new Link(createImage);
       createPollLink.setWindowToOpen(PollQuestionEditor.class);
+      createPollLink.addParameter(Poll._prmPollID,_pollID);
       pollTable.add(choosePollText,1,1);
       pollTable.add(choosePollLink,2,1);
       pollTable.add(createPollLink,3,1);
@@ -154,6 +158,7 @@ public PollAdminWindow(){
 
     String pollQuestionID = (String) modinfo.getApplicationAttribute(PollQuestionChooser.prmQuestions);
     if ( pollQuestionID != null ) {
+      modinfo.removeApplicationAttribute(PollQuestionChooser.prmQuestions);
       try {
         _pollQuestionID = Integer.parseInt(pollQuestionID);
       }
@@ -231,6 +236,7 @@ public PollAdminWindow(){
     Link questionEditLink = new Link(editImage);
       questionEditLink.setWindowToOpen(PollQuestionEditor.class);
       questionEditLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestionID);
+      questionEditLink.addParameter(Poll._prmPollID,_pollID);
     Link questionDeleteLink = new Link(deleteImage);
       questionDeleteLink.setWindowToOpen(PollQuestionEditor.class);
       questionDeleteLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestionID);
