@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulationBMPBean.java,v 1.13 2003/12/15 08:48:29 anders Exp $
+ * $Id: VATRegulationBMPBean.java,v 1.14 2004/01/05 13:01:24 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,8 +10,6 @@
 package se.idega.idegaweb.commune.accounting.regulations.data;
 
 import java.sql.Date;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -19,15 +17,15 @@ import javax.ejb.FinderException;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOQuery;
-import com.idega.util.IWTimestamp;
+import com.idega.util.CalendarMonth;
 
 /**
  * Entity bean for VATRegulation entries.
  * <p>
- * Last modified: $Date: 2003/12/15 08:48:29 $ by $Author: anders $
+ * Last modified: $Date: 2004/01/05 13:01:24 $ by $Author: kjell $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class VATRegulationBMPBean extends GenericEntity implements VATRegulation {
 
@@ -116,7 +114,8 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	}
 
 	public void setPeriodTo(Date to) { 
-		setColumn(COLUMN_PERIOD_TO, to); 
+		CalendarMonth month = new CalendarMonth(to);
+		setColumn(COLUMN_PERIOD_TO, month.getLastDateOfMonth()); 
 	}
 
 	public void setDescription(String description) { 
@@ -208,24 +207,7 @@ public class VATRegulationBMPBean extends GenericEntity implements VATRegulation
 	 * See nacp377 
 	 */
 	private Date getEndOfMonth(Date date) {
-		SimpleDateFormat formatter = new SimpleDateFormat ("yyMM");
-		IWTimestamp modDate;
-		Date outDate;
-		String dateString = "";
-		if (formatter != null) {
-			java.util.Date d = new java.util.Date(date.getTime());
-			dateString = formatter.format(d);		
-		} else {
-			return date;
-		}
-		formatter = new SimpleDateFormat ("yyyyMMdd");
-		java.util.Date d = formatter.parse("20" + dateString + "01", new ParsePosition(0));
-
-		modDate = new IWTimestamp(d.getTime());
-		modDate.setAsDate();
-		modDate.addMonths(1);
-		modDate.addDays(-1);
-		outDate = modDate.getDate();
-		return outDate;
+		CalendarMonth fixedDate = new CalendarMonth(date);
+		return fixedDate.getLastDateOfMonth();
 	}	
 }

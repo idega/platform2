@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.28 2004/01/05 11:12:09 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.29 2004/01/05 13:01:24 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,13 +12,10 @@ package se.idega.idegaweb.commune.accounting.posting.data;
 import java.util.Collection;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.text.ParsePosition;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.util.IWTimestamp;
 import com.idega.data.IDOQuery;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
@@ -26,6 +23,7 @@ import com.idega.block.school.data.SchoolYear;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
 import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.util.CalendarMonth;
 
 /**
  * PostingParameters Holds information about default posting info.
@@ -43,10 +41,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.28 2004/01/05 11:12:09 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.29 2004/01/05 13:01:24 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -140,8 +138,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	}
 	
 	public void setPeriodTo(Date period) {
-		period = getEndOfMonth(period);   
-		setColumn(COLUMN_PERIOD_TO, period); 
+		CalendarMonth month = new CalendarMonth(period);
+		setColumn(COLUMN_PERIOD_TO, month.getLastDateOfMonth()); 
 	}
 	
 	public void setActivity(int id) {
@@ -484,25 +482,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
  * See nacp377 
  */
 	private Date getEndOfMonth(Date date) {
-		SimpleDateFormat formatter = new SimpleDateFormat ("yyMM");
-		IWTimestamp modDate;
-		Date outDate;
-		String dateString = "";
-		if (formatter != null) {
-			java.util.Date d = new java.util.Date(date.getTime());
-			dateString = formatter.format(d);		
-		} else {
-			return date;
-		}
-		formatter = new SimpleDateFormat ("yyyyMMdd");
-		java.util.Date d = formatter.parse("20" + dateString + "01", new ParsePosition(0));
-
-		modDate = new IWTimestamp(d.getTime());
-		modDate.setAsDate();
-		modDate.addMonths(1);
-		modDate.addDays(-1);
-		outDate = modDate.getDate();
-		return outDate;
+		CalendarMonth fixedDate = new CalendarMonth(date);
+		return fixedDate.getLastDateOfMonth();
 	}	
 
 }
