@@ -221,6 +221,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 			application.setCaseStatus(getCaseStatusInactive());
+			IWTimestamp now = new IWTimestamp();
+			application.setRejectionDate(now.getDate());
 			application.store();
 			
 			if (application.getChildCount() != 0) {
