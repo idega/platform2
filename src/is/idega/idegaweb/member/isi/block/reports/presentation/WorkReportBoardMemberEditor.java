@@ -326,7 +326,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     browser.setEntities("dummy_string", entities);
     return browser;
   }
- 
+  
   /**
    * Converter for status column
    */
@@ -548,6 +548,10 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       if (NO_LEAGUE_VALUE.equals(newWorkGroupName)) {
         // the entry shall not reference a league, set name to null 
         newWorkGroupName = null;
+      }
+      if (NO_LEAGUE_VALUE.equals(oldWorkGroupName))  {
+        // the entry did not reference a league, set name to null
+        oldWorkGroupName = null;
       }
       int year = getYear();
       try {
