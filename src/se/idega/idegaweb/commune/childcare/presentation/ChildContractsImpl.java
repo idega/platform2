@@ -1,5 +1,5 @@
 /*
- * $Id: ChildContractsImpl.java,v 1.2 2004/10/14 17:32:26 thomas Exp $
+ * $Id: ChildContractsImpl.java,v 1.3 2004/10/19 17:20:02 thomas Exp $
  * Created on Oct 8, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,8 +11,8 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import se.idega.idegaweb.commune.care.presentation.ChildContracts;
+import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
-import se.idega.idegaweb.commune.school.business.SchoolConstants;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
@@ -22,10 +22,10 @@ import com.idega.presentation.PresentationObject;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/14 17:32:26 $ by $Author: thomas $
+ *  Last modified: $Date: 2004/10/19 17:20:02 $ by $Author: thomas $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ChildContractsImpl implements ChildContracts {
 	
@@ -42,7 +42,7 @@ public class ChildContractsImpl implements ChildContracts {
 	}
 	
 	public String getParameterChildID() {
-		return SchoolConstants.PARAMETER_CHILD_ID;
+		return ChildCareConstants.PARAMETER_CHILD_ID;
 	}
 	
 	public void storeChildInSession(int childID, IWContext iwc) {

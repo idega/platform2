@@ -39,6 +39,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
+import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -54,7 +55,6 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
-import se.idega.idegaweb.commune.school.business.SchoolConstants;
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
@@ -2375,7 +2375,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		String caseCode = "unreachable";
 		try {
 			caseCode = theCase.getCode();
-			if (ChildCareConstants.CASE_CODE_KEY.equals(caseCode) || ChildCareConstants.AFTER_SCHOOL_CASE_CODE_KEY.equals(caseCode)) {
+			if (ChildCareConstants.CASE_CODE_KEY.equals(caseCode) || CareConstants.AFTER_SCHOOL_CASE_CODE_KEY.equals(caseCode)) {
 				int caseID = ((Integer) theCase.getPrimaryKey()).intValue();
 				return this.getApplicationByPrimaryKey(String.valueOf(caseID));
 			}
@@ -4129,7 +4129,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 				IWTimestamp now = new IWTimestamp();
 				application.setRejectionDate(now.getDate());
-				application.setApplicationStatus(SchoolConstants.STATUS_DENIED);
+				application.setApplicationStatus(ChildCareConstants.STATUS_DENIED);
 				caseBiz.changeCaseStatus(application, getCaseStatusDenied().getStatus(), user);
 				sendMessageToParents(application, subject, message);
 
@@ -4140,7 +4140,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							Case element = (Case) iter.next();
 							if (isAfterSchoolApplication(element) && element.getCaseStatus().equals(getCaseStatusInactive())) {
 								application = getApplication(((Integer) element.getPrimaryKey()).intValue());
-								application.setApplicationStatus(SchoolConstants.STATUS_SENT_IN);
+								application.setApplicationStatus(ChildCareConstants.STATUS_SENT_IN);
 								caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
 
 								subject = this.getLocalizedString("after_school.application_received_subject", "After school care application received.");
@@ -4225,7 +4225,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		public boolean isAfterSchoolApplication(Case application) {
-			if (application.getCode().equals(SchoolConstants.AFTER_SCHOOL_CASE_CODE_KEY)) return true;
+			if (application.getCode().equals(CareConstants.AFTER_SCHOOL_CASE_CODE_KEY)) return true;
 			return false;
 		}
 

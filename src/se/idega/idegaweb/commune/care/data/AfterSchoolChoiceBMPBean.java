@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.1 2004/10/18 12:03:51 thomas Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.2 2004/10/19 17:20:02 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package se.idega.idegaweb.commune.care.data;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.care.business.CareConstants;
 
 import com.idega.block.process.data.CaseStatus;
 import com.idega.block.school.data.School;
@@ -26,7 +27,6 @@ import com.idega.data.IDOQuery;
  */
 public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implements AfterSchoolChoice {
 
-	private final static String CASE_CODE_KEY = "MBFRITV";
 	private final static String CASE_CODE_KEY_DESC = "Application for after school centre";
 
 	private final static String SCHOOL_SEASON = "school_season_id";
@@ -35,7 +35,7 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
 	 */
 	public String getCaseCodeKey() {
-		return CASE_CODE_KEY;
+		return CareConstants.AFTER_SCHOOL_CASE_CODE_KEY;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		sql.appendAndEquals("c."+CHOICE_NUMBER,choiceNumber.intValue());
 		sql.appendAndEquals("c."+CHILD_ID,childID.intValue());
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CareConstants.AFTER_SCHOOL_CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
 		return super.idoFindOnePKByQuery(sql);
@@ -100,7 +100,7 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
 		sql.appendAndEquals("c."+CHILD_ID,childID);
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().appendEqualsQuoted("p.case_code", CareConstants.AFTER_SCHOOL_CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
 		return super.idoFindOnePKByQuery(sql);
@@ -124,7 +124,7 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		sql.appendAnd().appendEqualsQuoted("p.case_status",caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CareConstants.AFTER_SCHOOL_CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString());
@@ -136,7 +136,7 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CareConstants.AFTER_SCHOOL_CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString());
@@ -153,7 +153,7 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
 		sql.appendAnd().appendEquals("c.child_id","iu.ic_user_id");
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
-		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendAnd().appendEqualsQuoted("p.case_code", CareConstants.AFTER_SCHOOL_CASE_CODE_KEY);
 		sql.appendOrderBy(sorting+",c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString());

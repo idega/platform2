@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.2 2004/10/14 12:44:30 thomas Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.3 2004/10/19 17:20:02 thomas Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,11 +11,9 @@ package se.idega.idegaweb.commune.care.data;
 
 import java.sql.Date;
 import java.util.Collection;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
-
+import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
@@ -38,7 +36,6 @@ import com.idega.user.data.User;
  */
 public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements ChildCareApplication, Case {
 	public final static String ENTITY_NAME = "comm_childcare";
-	private final static String CASE_CODE_KEY = "MBANBOP";
 	private final static String CASE_CODE_KEY_DESC = "Application for child care";
 	
 	public final static String PROVIDER_ID = "provider_id";
@@ -79,7 +76,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
 	 */
 	public String getCaseCodeKey() {
-		return CASE_CODE_KEY;
+		return ChildCareConstants.CASE_CODE_KEY;
 	}
 
 	/**

@@ -8,10 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
 import javax.ejb.RemoveException;
-
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
@@ -19,7 +18,6 @@ import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 import com.idega.block.contract.data.Contract;
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
@@ -42,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.75 2004/10/14 11:42:34 thomas Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.76 2004/10/19 17:20:02 thomas Exp $
  * @since 12.2.2003 
  */
 
@@ -208,7 +206,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			_caseCode = ChildCareConstants.CASE_CODE_KEY;
 		}
 		else if (_showOnlyAfterSchoolCare) {
-			_caseCode = ChildCareConstants.AFTER_SCHOOL_CASE_CODE_KEY;
+			_caseCode = CareConstants.AFTER_SCHOOL_CASE_CODE_KEY;
 		}
 		else {
 			_caseCode = null;

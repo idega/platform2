@@ -2,10 +2,14 @@ package se.idega.idegaweb.commune.childcare;
 
 import java.util.Iterator;
 import java.util.List;
+import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.presentation.ChildContracts;
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.childcare.business.ChildCareDeceasedUserBusiness;
 import se.idega.idegaweb.commune.childcare.presentation.ChildContractsImpl;
 import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
+import com.idega.block.process.business.CaseCodeManager;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
@@ -38,6 +42,10 @@ public class IWBundleStarter implements IWBundleStartable {
 		ImplementorRepository repository = ImplementorRepository.getInstance();
 		repository.addImplementor(DeceasedUserBusiness.class, ChildCareDeceasedUserBusiness.class);
 		repository.addImplementor(ChildContracts.class, ChildContractsImpl.class);
+		CaseCodeManager caseCodeManager = CaseCodeManager.getInstance();
+		caseCodeManager.addCaseBusinessForCode( ChildCareConstants.CASE_CODE_KEY,ChildCareBusiness.class);
+		caseCodeManager.addCaseBusinessForCode( CareConstants.AFTER_SCHOOL_CASE_CODE_KEY,ChildCareBusiness.class);
+		
 	}
 
 	
