@@ -199,11 +199,6 @@ public class RegulationSearchPanel extends AccountingBlock {
 		}
 	}	
 	
-	private boolean _maintainAllParameters = false;
-	public void maintainAllParameters(){
-		_maintainAllParameters = true;
-	}	
-	
 	private List _setParameters = new ArrayList();	
 	public void setParameter(String par, String value){
 		_setParameters.add(new Parameter(par, value));
