@@ -175,6 +175,7 @@ public class QueryServiceBean extends IBOServiceBean  implements QueryService {
 		if(helper.hasSourceEntity()){		
 			QueryEntityPart source = helper.getSourceEntity();
 			QueryEntityPart root = new QueryEntityPart(source.getName(),source.getBeanClassName());
+			root.setPath(source.getBeanClassName());
 			resultList.add(root);
 			getRelatedEntities(resultList, root,level-1);
 		}
@@ -237,6 +238,8 @@ public class QueryServiceBean extends IBOServiceBean  implements QueryService {
           String queryEntityPartName = entityDef.getInterfaceClass().getName();
 					// thi comment QueryEntityPart child2 = new QueryEntityPart (entityDef.getUniqueEntityName(),entityDef.getInterfaceClass().getName());
           QueryEntityPart child2 = new QueryEntityPart (queryEntityPartName, queryEntityPartName);
+          String path = node.getPath() + "#" + queryEntityPartName;
+          child2.setPath(path);
 					resultList.add(child2);
 					if(level >0)
 						getRelatedEntities(resultList, child2,level-1);
@@ -252,6 +255,8 @@ public class QueryServiceBean extends IBOServiceBean  implements QueryService {
 				if(attribute.isPartOfManyToOneRelationship()){
 					QueryEntityPart child = new QueryEntityPart(attribute.getName(),attribute.getRelationShipClassName());
 					//child = getTreeNode(entityPart);
+					String path = node.getPath() + "#" + attribute.getName();
+					child.setPath(path);
 					resultList.add(child);
 					//entityPart.setPath(child.getNodePath());
 					if(level>0){
