@@ -143,6 +143,7 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
 						System.out.println("Store Invoice Header with Category '"+category+"' and custodian "+custodian);
+						System.out.println("Databean: "+invoiceHeader);
 						invoiceHeader.store();
 					}
 				
@@ -231,22 +232,22 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 				} catch(MissingMandatoryFieldException e){
 					e.printStackTrace();
-					createNewErrorMessage(contract.getContract().getText(),"invoice.MissingMandatoryFieldInPostingParameter");
+					createNewErrorMessage(contract.getChild().getName(),"invoice.MissingMandatoryFieldInPostingParameter");
 				} catch (PostingParametersException e) {
 					e.printStackTrace();
-					createNewErrorMessage(contract.getContract().getText(),"invoice.ErrorInPostingParameter");
+					createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorInPostingParameter");
 				} catch (PostingException e) {
 					e.printStackTrace();
-					createNewErrorMessage(contract.getContract().getText(),"invoice.PostingParameterIncorrectlyFormatted");
+					createNewErrorMessage(contract.getChild().getName(),"invoice.PostingParameterIncorrectlyFormatted");
 				} catch (CreateException e) {
 					e.printStackTrace();
-					createNewErrorMessage(contract.getContract().getText(),"invoice.DBProblem");
+					createNewErrorMessage(contract.getChild().getName(),"invoice.DBProblem");
 				} catch (EJBException e) {
 					e.printStackTrace();
-					createNewErrorMessage(contract.getContract().getText(),"invoice.EJBError");
+					createNewErrorMessage(contract.getChild().getName(),"invoice.EJBError");
 				} catch (SiblingOrderException e) {
 					e.printStackTrace();
-					createNewErrorMessage(contract.getContract().getText(),"invoice.CouldNotGetSiblingOrder");
+					createNewErrorMessage(contract.getChild().getName(),"invoice.CouldNotGetSiblingOrder");
 				}
 			}
 		} catch (RemoteException e) {

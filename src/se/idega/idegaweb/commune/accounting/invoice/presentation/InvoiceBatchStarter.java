@@ -13,6 +13,7 @@ import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
@@ -112,7 +113,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 				readDate = new IWTimestamp(iwc.getParameter(PARAM_READ_DATE)).getDate();
 			}
 			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
-			add(getLocalizedLabel("invbr.batchrun_started._click_link_to_see_progress","Batchrun started. Click link to see progress."));
+			add(getLocalizedLabel("invbr.batchrun_started","Batchrun started."));
+			add(new Break());
 			if(link!=null)
 			{
 				Link uiLink = new Link();

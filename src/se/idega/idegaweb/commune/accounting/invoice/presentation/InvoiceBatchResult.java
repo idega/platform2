@@ -21,7 +21,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -44,10 +43,10 @@ public class InvoiceBatchResult extends AccountingBlock{
 			handleAction(iwc);
 		
 			//"Top section"
-			add(form);
-			
 			add(opFields);
 
+			add(form);
+			
 			table.add(getLocalizedLabel("invbr.period","Period"),1,1);
 			table.add(getLocalizedLabel("invbr.batchrun_starttime","Batchrun start-time"),1,2);
 			table.add(getLocalizedLabel("invbr.batchrun_endtime","Batchrun end-time"),1,3);
@@ -100,7 +99,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 				
 				while(errorIter.hasNext()){
 					BatchRunError batchRunError = (BatchRunError)errorIter.next();
-					table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
+					errorTable.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
 									   : getZebraColor2 ());
 					errorTable.add(new Text(new Integer(row).toString()),1,row+1);
 					if(batchRunError.getRelated().indexOf("invoice.")!=-1){
@@ -130,30 +129,16 @@ public class InvoiceBatchResult extends AccountingBlock{
 	 * @param iwc
 	 */
 	private void handleAction(IWContext iwc) {
-		if(iwc.isParameterSet(PARAM_SAVE)){
-			handleSave(iwc);
-		}
+		System.out.println("WARNING, program should not reach this point...");
+		iwc.toString();	//Dummy line to remove warning
 	}
 	
-	/**
-	 * @param iwc
-	 */
-	private void handleSave(IWContext iwc) {
-		User user = iwc.getCurrentUser();
-		//Not used...
-		if(user!=null){
-			add("Save pressed for user: "+user.getName());
-		} else {
-			add("Need to log in again.");
-		}
-	}
-
 	protected PostingBusiness getPostingBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 	}	
 	
 	protected InvoiceBusiness getInvoiceBusiness(IWApplicationContext iwc) throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-	}	
-	
+	}
+
 }

@@ -196,60 +196,67 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										System.out.println("created payment record");
 										
 										//Find the oppen verksamhet and fritidsklubb
-										int schoolYear = schoolClassMember.getSchoolYear().getSchoolYearAge();
-										if(schoolYear<=3){
-											Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
-											while (typeIter.hasNext()) {
-												SchoolType schoolType = (SchoolType) typeIter.next();
-												if(schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)){
-													ArrayList oppenConditions = new ArrayList();
-													oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,OPPEN_VERKSAMHET));
-													Collection regulationForTypeArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-														category.getCategory(),			//The ID that selects barnomsorg in the regulation
-														PaymentFlowConstant.OUT, 		//The payment flow is out
-														currentDate,						//Current date to select the correct date range
-														RuleTypeConstant.DERIVED,		//The conditiontype
-														conditions							//The conditions that need to fulfilled
-														);
-													Iterator regulationForTypeIter = regulationForTypeArray.iterator();
-													while(regulationForTypeIter.hasNext())
-													{
-														regulation = (Regulation)regulationForTypeIter.next();
-														postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
-														regSpecType = getRegulationSpecTypeHome().
-															findByRegulationSpecType(postingDetail.getRuleSpecType());
-														createPaymentRecord(postingDetail,postings[0],postings[1]);
-													}
+										try{
+											int schoolYear = Integer.parseInt(schoolClassMember.getSchoolYear().getName());
+										
+											if(schoolYear<=3){
+												Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
+												while (typeIter.hasNext()) {
+													SchoolType schoolType = (SchoolType) typeIter.next();
+													if(schoolType.getLocalizationKey().equalsIgnoreCase(OPPEN_VERKSAMHET)){
+														ArrayList oppenConditions = new ArrayList();
+														oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,OPPEN_VERKSAMHET));
+														Collection regulationForTypeArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+															category.getCategory(),			//The ID that selects barnomsorg in the regulation
+															PaymentFlowConstant.OUT, 		//The payment flow is out
+															currentDate,						//Current date to select the correct date range
+															RuleTypeConstant.DERIVED,		//The conditiontype
+															oppenConditions					//The conditions that need to fulfilled
+															);
+														Iterator regulationForTypeIter = regulationForTypeArray.iterator();
+														while(regulationForTypeIter.hasNext())
+														{
+															regulation = (Regulation)regulationForTypeIter.next();
+															postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+															regSpecType = getRegulationSpecTypeHome().
+																findByRegulationSpecType(postingDetail.getRuleSpecType());
+															createPaymentRecord(postingDetail,postings[0],postings[1]);
+															System.out.println("created payment info for oppen verksamhet "+schoolClassMember.getStudent().getName());
+														}
 
-													//TODO (JJ) Supposed to do something here... Waiting for info from Lotta
+														//TODO (JJ) Supposed to do something here... Waiting for info from Lotta
+													}
 												}
-											}
-										} else if(schoolYear<=6){
-											Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
-											while (typeIter.hasNext()) {
-												SchoolType schoolType = (SchoolType) typeIter.next();
-												if(schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)){
-													//TODO (JJ) Supposed to do something here... Waiting for info from Lotta
-													ArrayList oppenConditions = new ArrayList();
-													oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,OPPEN_VERKSAMHET));
-													Collection regulationForTypeArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-														category.getCategory(),			//The ID that selects barnomsorg in the regulation
-														PaymentFlowConstant.OUT, 		//The payment flow is out
-														currentDate,						//Current date to select the correct date range
-														RuleTypeConstant.DERIVED,		//The conditiontype
-														conditions							//The conditions that need to fulfilled
-														);
-													Iterator regulationForTypeIter = regulationForTypeArray.iterator();
-													while(regulationForTypeIter.hasNext())
-													{
-														regulation = (Regulation)regulationForTypeIter.next();
-														postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
-														regSpecType = getRegulationSpecTypeHome().
-															findByRegulationSpecType(postingDetail.getRuleSpecType());
-														createPaymentRecord(postingDetail,postings[0],postings[1]);
+											} else if(schoolYear<=6){
+												Iterator typeIter = schoolClassMember.getSchoolClass().getSchool().getSchoolTypes().iterator();
+												while (typeIter.hasNext()) {
+													SchoolType schoolType = (SchoolType) typeIter.next();
+													if(schoolType.getLocalizationKey().equalsIgnoreCase(FRITIDSKLUBB)){
+														//TODO (JJ) Supposed to do something here... Waiting for info from Lotta
+														ArrayList oppenConditions = new ArrayList();
+														oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,FRITIDSKLUBB));
+														Collection regulationForTypeArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
+															category.getCategory(),			//The ID that selects barnomsorg in the regulation
+															PaymentFlowConstant.OUT, 		//The payment flow is out
+															currentDate,						//Current date to select the correct date range
+															RuleTypeConstant.DERIVED,		//The conditiontype
+															oppenConditions					//The conditions that need to fulfilled
+															);
+														Iterator regulationForTypeIter = regulationForTypeArray.iterator();
+														while(regulationForTypeIter.hasNext())
+														{
+															regulation = (Regulation)regulationForTypeIter.next();
+															postingDetail = regBus.getPostingDetailForPlacement(0.0f,schoolClassMember, regulation);
+															regSpecType = getRegulationSpecTypeHome().
+																findByRegulationSpecType(postingDetail.getRuleSpecType());
+															createPaymentRecord(postingDetail,postings[0],postings[1]);
+															System.out.println("created payment info for fritidsklubb "+schoolClassMember.getStudent().getName());
+														}
 													}
 												}
 											}
+										}catch(NumberFormatException e){
+											//That's OK I only want years 1-6
 										}
 
 										Iterator resourceIter = getResourceBusiness().getResourcePlacementsByMemberId((Integer)schoolClassMember.getStudent().getPrimaryKey()).iterator();
