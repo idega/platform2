@@ -22,6 +22,7 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	private static String COLUMN_BOOKING_CODE = "BOOKING_CODE";
 	private static String COLUMN_IS_VALID = "IS_VALID";
 	private static String COLUMN_GROUP_ID = "GROUP_ID";
+	private static String MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE = "sr_supplier_service_engine";
 
 	
 	public String getEntityName() {
@@ -37,7 +38,7 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 		addAttribute(COLUMN_GROUP_ID, "staff group Id", true, true, Integer.class, super.ONE_TO_ONE, ServiceSearchEngineStaffGroup.class);
 		this.setUnique(COLUMN_NAME, true);
 		this.setUnique(COLUMN_BOOKING_CODE, true);
-		this.addManyToManyRelationShip(Supplier.class);
+		this.addManyToManyRelationShip(Supplier.class, MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE);
 		
 	}
 	
