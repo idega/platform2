@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.77 2004/10/20 15:13:36 thomas Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.78 2004/11/25 09:54:43 aron Exp $
  * @since 12.2.2003 
  */
 
@@ -63,6 +63,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	final static String DELETED_APPLICATIONS = "DELETED_APPLICATIONS";
 
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();
+	private int childID = -1;
 
 	ChildCareBusiness childCarebusiness = null;
 
@@ -80,13 +81,15 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		if (iwc.isInEditMode()){
 			return;
 		}
+		
+		childID = getChildId(iwc);
 
 		setCacheable(false);
 		childCarebusiness = getChildCareBusiness(iwc);
 		
 		if (_renewQueuePage != null) {
-			if (_showOnlyChildcare && childCarebusiness.hasPendingApplications(getChildId(iwc), _caseCode)) {
-				getChildCareSession(iwc).setChildID(getChildId(iwc));
+			if (_showOnlyChildcare && childCarebusiness.hasPendingApplications(childID, _caseCode)) {
+				getChildCareSession(iwc).setChildID(childID);
 				iwc.forwardToIBPage(getParentPage(), _renewQueuePage);
 			}
 		}
@@ -106,7 +109,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				boolean forwardToEndPage = handleAcceptStatus(iwc, getAcceptedStatus(iwc));
 				applications = findApplications(iwc);
 				
-				if (getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc), _caseCode)) {
+				if (getChildCareBusiness(iwc).hasOutstandingOffers(childID, _caseCode)) {
 					form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
 				}
 				else {
@@ -470,16 +473,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @throws RemoteException
 	 */
 	private String createPagePhase1(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException {
-		int numberOfApplications = getChildCareBusiness(iwc).getNumberOfApplicationsForChildNotInactive(getChildId(iwc), _caseCode);
+		int numberOfApplications = getChildCareBusiness(iwc).getNumberOfApplicationsForChildNotInactive(childID, _caseCode);
 		if (numberOfApplications == 0) {
 			layoutTbl.add(getSmallErrorText(localize(NO_APPLICATION)));
 			return "";
 		}
 		layoutTbl.add(new HiddenInput(CCConstants.ACTION, "-1"));
-		boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(getChildId(iwc), _caseCode);
+		boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(childID, _caseCode);
 		Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
 
-		boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(getChildId(iwc), _caseCode);
+		boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(childID, _caseCode);
 
 		Table appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication);
 
@@ -523,18 +526,19 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		layoutTbl.setWidth(2, 6);
 		int row = 1;
 
-		String childId = iwc.getParameter(CHILD_ID);
+		/*String childId = iwc.getParameter(CHILD_ID);
 		if (childId == null) {
 			childId = (String) iwc.getSessionAttribute(CHILD_ID);
-		}
-
-		User child = UserBusiness.getUser(Integer.parseInt(childId));
+		}*/
+		
+		//User child = UserBusiness.getUser(Integer.parseInt(childId));
+		User child = UserBusiness.getUser(childID);
 		layoutTbl.add(getSmallHeader(localize(NAME) + ":"), 1, row);
 		layoutTbl.add(getSmallText(child.getName()), 3, row++);
 		layoutTbl.add(getSmallHeader(localize(PERSONAL_ID) + ":"), 1, row);
 		layoutTbl.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 
-		ChildCareApplication acceptedApplication = getChildCareBusiness(iwc).getAcceptedApplicationsByChild(Integer.parseInt(childId));
+		ChildCareApplication acceptedApplication = getChildCareBusiness(iwc).getAcceptedApplicationsByChild(childID);
 		if (acceptedApplication != null) {
 			IWTimestamp fromDate = new IWTimestamp(acceptedApplication.getFromDate());
 			layoutTbl.setHeight(row++, 12);
@@ -565,7 +569,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			}			
 		}
 	
-		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getActiveApplicationByChild(Integer.parseInt(childId)); 
+		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getActiveApplicationByChild(childID); 
 		
 		if (activeApplication != null) {
 			ChildCareContract archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
@@ -649,6 +653,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		Collection applications = null;
 
 		try {
+		    /*
 			String childId = iwc.getParameter(CHILD_ID);
 
 			if (childId != null) {
@@ -657,8 +662,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			else {
 				childId = (String) iwc.getSessionAttribute(CHILD_ID);
 			}
+			*/
 			
-			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(Integer.parseInt(childId), _caseCode);
+			
+			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(childID, _caseCode);
 
 			//Add canceled and removed applications from this session	
 			/*Collection deletedApps = (Collection) iwc.getSessionAttribute(DELETED_APPLICATIONS);
@@ -683,16 +690,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private int getChildId(IWContext iwc) {
 
 		String childId = iwc.getParameter(CHILD_ID);
-
 		if (childId != null) {
 			iwc.setSessionAttribute(CHILD_ID, childId);
 		}
 		else {
 			childId = (String) iwc.getSessionAttribute(CHILD_ID);
 		}
-
-		//System.out.println("getChildId()eturning:" + childId);
-		return Integer.parseInt(childId);
+		if(childId!=null)
+		    return Integer.parseInt(childId);
+		else
+		    return -1;
 	}
 
 	/**
