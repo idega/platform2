@@ -454,6 +454,21 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			throw new IDOFinderException(e);
 		}
 	}
+	
+	public boolean isRootCommuneAdministrator(User user) throws RemoteException {
+		try {
+			if (user.getPrimaryGroup().equals(getRootCommuneAdministratorGroup()))
+				return true;
+			return false;
+		}
+		catch (CreateException e) {
+			return false;
+		}
+		catch (FinderException e) {
+			return false;
+		}
+	}
+	
 	protected IWBundle getCommuneBundle() {
 		return this.getIWApplicationContext().getApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 	}

@@ -81,4 +81,5 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	public boolean haveSameAddress(User user, User compareUser) throws RemoteException;
 	public Email getEmail(User user);
 	public Phone getHomePhone(User user);
+	public boolean isRootCommuneAdministrator(User user) throws RemoteException;
 }
