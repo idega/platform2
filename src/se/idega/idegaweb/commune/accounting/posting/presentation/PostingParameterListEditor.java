@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.9 2003/08/25 21:51:47 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.10 2003/08/26 09:18:55 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,8 +10,6 @@
 package se.idega.idegaweb.commune.accounting.posting.presentation;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.sql.Date;
 import java.sql.Timestamp;
 
@@ -30,9 +28,6 @@ import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
-import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
-import se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParamException;
@@ -45,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParamExcepti
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.9 2003/08/25 21:51:47 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.10 2003/08/26 09:18:55 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -100,6 +95,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String PARAM_BUTTON_CANCEL = "button_cancel";
 	
 	private final static String PARAM_POSTING_ID = "pp_edit_posting_id";
+	private final static String PARAM_EDIT_ID = "param_edit_id";
 	private final static String PARAM_ACCOUNT = "pp_edit_account";
 	private final static String PARAM_LIABILITY = "pp_edit_liability";
 	private final static String PARAM_RESOURCE = "pp_edit_resource";
@@ -163,7 +159,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private void saveData(IWContext iwc) {
 		
 			try {
-				getPostingBusiness(iwc).savePostingParameter(iwc.getParameter(PARAM_POSTING_ID),
+				getPostingBusiness(iwc).savePostingParameter(iwc.getParameter(PARAM_EDIT_ID),
 				(Date) parseDate(iwc.getParameter(PARAM_PERIODE_FROM)),
 				(Date) parseDate(iwc.getParameter(PARAM_PERIODE_TO)),
 				iwc.getParameter(PARAM_SIGNED),
@@ -361,7 +357,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	}
 
 	/*
-	 * Retrives from business the current posting data that is pointed out by PARAM_POSTING_ID.
+	 * Retrives from business the current posting data that is pointed out by PARAM_EDIT_ID.
 	 * Remeber that this app only can edit one record at a time.
 	 *    
 	 * @param iwc Idega Web Context 
@@ -374,8 +370,8 @@ public class PostingParameterListEditor extends AccountingBlock {
 		try {
 			int postingID = 0;
 			
-			if(iwc.isParameterSet(PARAM_POSTING_ID)) {
-				postingID = Integer.parseInt(iwc.getParameter(PARAM_POSTING_ID));
+			if(iwc.isParameterSet(PARAM_EDIT_ID)) {
+				postingID = Integer.parseInt(iwc.getParameter(PARAM_EDIT_ID));
 			}
 			
 			pBiz = getPostingBusiness(iwc);
@@ -397,29 +393,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @return the drop down menu
 	 */
 	private DropdownMenu activitySelector(IWContext iwc, String name, int refIndex) throws Exception {
-
-//		Collection col = getRegulationsBusiness(iwc).findAllActivityTypes();
-		
-		return getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllActivityTypes(), 
-										"getTextKey", ""+refIndex);
-
-		/*
-		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-		menu.addMenuElement(0, localize(KEY_ACTIVITY_HEADER, "Välj aktivitet"));
-		Collection col = getRegulationsBusiness(iwc).findAllActivityTypes();
-		if(col != null){
-			Iterator iter = col.iterator();
-			while (iter.hasNext()) {
-				ActivityType element = (ActivityType) iter.next();
-				menu.addMenuElement("" + (((Integer) element.getPrimaryKey()).intValue()), 
-									localize(element.getTextKey(), element.getTextKey()));
-			}
-			if (refIndex != -1) {
-				menu.setSelectedElement(refIndex);
-			}
-		}
-		return (DropdownMenu) menu;
-		*/	
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(
+					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllActivityTypes(), 
+					"getTextKey"));
+		menu.addMenuElementFirst("0", localize(KEY_ACTIVITY_HEADER, "Välj Aktivitet"));
+		menu.setSelectedElement(refIndex);
+		return menu;
 	}
 
 	/*
@@ -433,22 +412,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @return the drop down menu
 	 */
 	private DropdownMenu regSpecSelector(IWContext iwc, String name, int refIndex) throws Exception {
-		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-		menu.addMenuElement(0, localize(KEY_REGSPEC_HEADER, "Välj regelspec.typ"));
-		Collection col = getRegulationsBusiness(iwc).findAllRegulationSpecTypes();
-
-		if(col != null){
-			Iterator iter = col.iterator();
-			while (iter.hasNext()) {
-				RegulationSpecType element = (RegulationSpecType) iter.next();
-				menu.addMenuElement("" + (((Integer) element.getPrimaryKey()).intValue()), 
-										localize(element.getTextKey(), element.getTextKey()));
-			}
-			if (refIndex != -1) {
-				menu.setSelectedElement(refIndex);
-			}
-		}
-		return (DropdownMenu) menu;	
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(
+					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllRegulationSpecTypes(), 
+					"getTextKey"));
+		menu.addMenuElementFirst("0", localize(KEY_REGSPEC_HEADER, "Välj Regelspec. typ"));
+		menu.setSelectedElement(refIndex);
+		return menu;
 	}
 
 	/*
@@ -462,22 +431,12 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @return the drop down menu
 	 */
 	private DropdownMenu companyTypeSelector(IWContext iwc, String name, int refIndex) throws Exception {
-		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-		menu.addMenuElement(0, localize(KEY_COMPANY_TYPE_HEADER, "Välj bolagstyp"));
-		Collection col = getRegulationsBusiness(iwc).findAllCompanyTypes();
-
-		if(col != null){
-			Iterator iter = col.iterator();
-			while (iter.hasNext()) {
-				CompanyType element = (CompanyType) iter.next();
-				menu.addMenuElement("" + (((Integer) element.getPrimaryKey()).intValue()), 
-										localize(element.getTextKey(), element.getTextKey()));
-			}
-			if (refIndex != -1) {
-				menu.setSelectedElement(refIndex);
-			}
-		}
-		return (DropdownMenu) menu;	
+			DropdownMenu menu = (DropdownMenu) getStyledInterface(
+					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllCompanyTypes(), 
+					"getTextKey"));
+		menu.addMenuElementFirst("0", localize(KEY_COMPANY_TYPE_HEADER, "Välj Bolagstyp"));
+		menu.setSelectedElement(refIndex);
+		return menu;
 	}
 
 	/*
@@ -491,24 +450,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @return the drop down menu
 	 */
 	private DropdownMenu communeBelongingSelector(IWContext iwc, String name, int refIndex) throws Exception {
-		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-		menu.addMenuElement(0, localize(KEY_COM_BEL_HEADER, "Välj kommuntillhörighet"));
-		Collection col = getRegulationsBusiness(iwc).findAllCommuneBelongingTypes();
-
-		if(col != null){
-			Iterator iter = col.iterator();
-			while (iter.hasNext()) {
-				CommuneBelongingType element = (CommuneBelongingType) iter.next();
-				menu.addMenuElement("" + (((Integer) element.getPrimaryKey()).intValue()), 
-										localize(element.getTextKey(), element.getTextKey()));
-			}
-			if (refIndex != -1) {
-				menu.setSelectedElement(refIndex);
-			}
-		}
-		return (DropdownMenu) menu;	
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(
+				getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllCommuneBelongingTypes(), 
+				"getTextKey"));
+		menu.addMenuElementFirst("0", localize(KEY_COM_BEL_HEADER, "Välj Kommuntillhörighet"));
+		menu.setSelectedElement(refIndex);
+		return menu;
 	}
-
 
 	private RegulationsBusiness getRegulationsBusiness(IWContext iwc) throws RemoteException {
 		return (RegulationsBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.8 2003/08/25 21:45:06 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.9 2003/08/26 09:18:40 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -14,10 +14,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.sql.Date;
 
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 import com.idega.builder.data.IBPage;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.TextInput;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
@@ -42,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.8 2003/08/25 21:45:06 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.9 2003/08/26 09:18:40 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -79,23 +81,24 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String PARAM_FROM = "param_from";
 	private final static String PARAM_TO = "param_to";
 	private final static String PARAM_POSTING_ID = "param_posting_id";
+	private final static String PARAM_EDIT_ID = "param_edit_id";
 
-	private IBPage editPage;
-	private Date currentFromDate;
-	private Date currentToDate;
+	private IBPage _editPage;
+	private Date _currentFromDate;
+	private Date _currentToDate;
 
 	/**
 	 * Handles the property setEditPage
 	 */
 	public void setEditPage(IBPage page) {
-		editPage = page;
+		_editPage = page;
 	}
 
 	/**
 	 * Handles the property setEditPage
 	 */
 	public IBPage getEditPage() {
-		return editPage;
+		return _editPage;
 	}
 
 
@@ -135,15 +138,15 @@ public class PostingParameterList extends AccountingBlock {
 		ApplicationForm app = new ApplicationForm(this);
 		
 		if (iwc.isParameterSet(PARAM_FROM)) {
-			currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
+			_currentFromDate = parseDate(iwc.getParameter(PARAM_FROM));
 		} else{
-			currentFromDate = new Date(System.currentTimeMillis());
+			_currentFromDate = parseDate("2001-01-01");
 		}
 		
 		if (iwc.isParameterSet(PARAM_TO)) {
-			currentToDate = parseDate(iwc.getParameter(PARAM_TO));
+			_currentToDate = parseDate(iwc.getParameter(PARAM_TO));
 		} else {
-			currentToDate = new Date(System.currentTimeMillis());
+			_currentToDate = parseDate("2009-01-01");
 		}
 
 		app.setLocalizedTitle(KEY_HEADER, "Konteringlista");
@@ -155,7 +158,7 @@ public class PostingParameterList extends AccountingBlock {
 
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel buttonPanel = new ButtonPanel(this);
-		buttonPanel.addLocalizedButton(PARAM_NEW, KEY_NEW, "Ny", editPage);
+		buttonPanel.addLocalizedButton(PARAM_NEW, KEY_NEW, "Ny", _editPage);
 		buttonPanel.addLocalizedConfirmButton(
 								PARAM_REMOVE, 
 								KEY_REMOVE, 
@@ -188,12 +191,16 @@ public class PostingParameterList extends AccountingBlock {
 			pBiz = getPostingBusiness(iwc);
 			pBiz.findAllPostingParameters();
 
-			Collection items = pBiz.findPostingParametersByPeriode(currentFromDate, currentToDate);
+			Collection items = pBiz.findPostingParametersByPeriode(_currentFromDate, _currentToDate);
 			if(items != null) {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
 					PostingParameters p = (PostingParameters) iter.next();
-					list.add(formatDate(p.getPeriodeFrom(), 4) + "-" + formatDate(p.getPeriodeTo(), 4));
+					Link link = getLink(formatDate(p.getPeriodeFrom(), 4) + "-" + formatDate(p.getPeriodeTo(), 4),
+										 PARAM_EDIT_ID, p.getPrimaryKey().toString());
+					
+					link.setPage(_editPage);
+					list.add(link);
 
 					list.add(p.getActivity().getTextKey(), p.getActivity().getTextKey());
 					list.add(p.getRegSpecType().getTextKey(), p.getRegSpecType().getTextKey());
@@ -224,7 +231,7 @@ public class PostingParameterList extends AccountingBlock {
 		table.setWidth("75%");
 
 		table.add(getLocalizedLabel(KEY_PERIOD_SEARCH, "Period"), 1, 1);
-		table.add(getFromToDatePanel(PARAM_FROM, currentFromDate, PARAM_TO, currentToDate), 2, 1);
+		table.add(getFromToDatePanel(PARAM_FROM, _currentFromDate, PARAM_TO, _currentToDate), 2, 1);
 		table.add(getLocalizedButton(PARAM_SEARCH, KEY_SEARCH, "Sök"), 3, 1);
 
 		return table;
@@ -232,8 +239,8 @@ public class PostingParameterList extends AccountingBlock {
 
 	private Table getFromToDatePanel(String param_from, Date date_from, String param_to, Date date_to) {
 		Table table = new Table();
-		TextInput fromDate = getTextInput(param_from, formatDate(date_from, 6),  100, 10);
-		TextInput toDate = getTextInput(param_to, formatDate(date_to, 6),  100, 10);
+		TextInput fromDate = getTextInput(param_from, formatDate(date_from, 6),  60, 10);
+		TextInput toDate = getTextInput(param_to, formatDate(date_to, 6),  60, 10);
 		table.add(fromDate, 1, 1);
 		table.add(new String("-"), 2, 1);
 		table.add(toDate, 3, 1);
