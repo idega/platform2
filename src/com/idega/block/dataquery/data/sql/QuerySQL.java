@@ -224,7 +224,9 @@ public class QuerySQL implements DynamicExpression {
       QueryFieldPart field = (QueryFieldPart) fieldIterator.next();
       setField(field);
       // mark that this entity is used
-      fieldOrder.add(field);
+      if (! field.isHidden()) {
+      	fieldOrder.add(field);
+      }
     }
   }
   

@@ -42,6 +42,7 @@ public final static String FUNC_AVG = "avg";
 public final static String PATH = "path";
 public final static String TEMPLATE = "template";
 public final static String LOCK = "lock";
+public final static String HIDDEN = "hidden";
 public final static String DESCRIPTION = "description";
 public final static String DYNAMIC = "dynamic";
 

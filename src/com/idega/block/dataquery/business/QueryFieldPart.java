@@ -36,13 +36,20 @@ public class QueryFieldPart implements QueryPart {
 	private String display = null;
 	private String typeClass = null;
 	private boolean locked = false;
+	private boolean hidden = false;
 	
-	public QueryFieldPart(String name, String entity, String path, String[] columns,String function, String display,String typeClass){
-		this(name,entity, path, "",function,display,typeClass);
+	public QueryFieldPart(String name, String entity, String path, String[] columns,String function, String display,String typeClass, String hidden){
+		this(name,entity, path, "",function,display,typeClass, Boolean.getBoolean(hidden));
 		this.columns = stringArrayToCommaList(columns);
 	}
 	
-	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass){
+	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, String hidden){
+		this( name, entity, path, column, function, display, typeClass, Boolean.getBoolean(hidden));
+	}
+	
+	
+	
+	public QueryFieldPart(String name,String entity,String path, String column,String function,String display,String typeClass, boolean hidden){
 		this.name = name;
 		this.entity = entity;
 		this.path = path;
@@ -50,6 +57,7 @@ public class QueryFieldPart implements QueryPart {
 		this.function = function;
 		this.display = display;
 		this.typeClass = typeClass;
+		this.hidden = hidden;
 	}
 	
 	public QueryFieldPart(XMLElement xml){
@@ -66,6 +74,8 @@ public class QueryFieldPart implements QueryPart {
 			display = xmlDisplay.getTextTrim();
 			XMLElement xmlLock = xml.getChild(QueryXMLConstants.LOCK);
 			locked = xmlLock!=null;
+			XMLElement hidden = xml.getChild(QueryXMLConstants.HIDDEN);
+			this.hidden = hidden!= null;
 		}
 		
 		
@@ -89,8 +99,12 @@ public class QueryFieldPart implements QueryPart {
 	  	XMLElement xmlDisplay = new XMLElement(QueryXMLConstants.DISPLAY);
 	  	xmlDisplay.addContent(this.display);
 	  	el.addContent(xmlDisplay);
-	  	if(locked)
-			el.addContent(new XMLElement(QueryXMLConstants.LOCK));
+	  	if(locked) {
+				el.addContent(new XMLElement(QueryXMLConstants.LOCK));
+	  	}
+			if (hidden) {
+				el.addContent(new XMLElement(QueryXMLConstants.HIDDEN));
+			}
 
 		return el;
 	}
@@ -210,14 +224,15 @@ public class QueryFieldPart implements QueryPart {
 		buffer.append(columns).append(';');
 		buffer.append(function).append(';');
 		buffer.append(display).append(';');
-		buffer.append(typeClass);
+		buffer.append(typeClass).append(';');
+		buffer.append(hidden);		
 		return buffer.toString();
 	}
 	
 	public static QueryFieldPart  decode(String encoded){
 			StringTokenizer toker = new StringTokenizer(encoded,";");
-			if(toker.countTokens()==7){
-				return new QueryFieldPart(toker.nextToken(),toker.nextToken(), toker.nextToken(), toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken());
+			if(toker.countTokens()==8){
+				return new QueryFieldPart(toker.nextToken(),toker.nextToken(), toker.nextToken(), toker.nextToken(),toker.nextToken(),toker.nextToken(),toker.nextToken(), toker.nextToken());
 				
 			}
 			return null;
@@ -244,6 +259,14 @@ public class QueryFieldPart implements QueryPart {
 		return locked;
 	}
 
+	public boolean isHidden()	{
+		return hidden;
+	}
+	
+	public void setHidden(boolean hidden)	{
+		this.hidden = hidden;
+	}
+	
 	
 	/* (non-Javadoc)
 	 * @see com.idega.block.dataquery.business.QueryPart#setLocked(boolean)

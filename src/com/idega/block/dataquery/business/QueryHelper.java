@@ -419,6 +419,18 @@ public class QueryHelper {
 		}
 	}
 	
+	public void addHiddenField(QueryFieldPart field)	{
+		field.setHidden(false);
+		if (hasFieldPart(field)) {
+			// a visible field is already there and not hidden, do not change that field
+			field.setHidden(true);
+			return;
+		}
+		// add the hidden field
+		field.setHidden(true);
+		addField(field);
+	}
+	
 	public void addQuery(QueryHelper queryHelper)	{
 		this.previousQuery = queryHelper;
 	}

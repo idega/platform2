@@ -292,7 +292,7 @@ public class QueryServiceBean extends IBOServiceBean   implements QueryService {
 	}
 	
 	public QueryFieldPart createQueryFieldPart(IWResourceBundle iwrb,String entityName, String path, EntityAttribute attribute){
-		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName());
+		return new QueryFieldPart(attribute.getName(),entityName, path, attribute.getColumnName(),(String)null,iwrb.getLocalizedString(attribute.getName(),attribute.getName()),attribute.getStorageClassName(), false);
 	}
 	
 	public QueryResult generateQueryResult(Integer queryID, IWContext iwc) throws QueryGenerationException{

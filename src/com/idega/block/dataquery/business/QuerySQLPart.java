@@ -134,7 +134,7 @@ public class QuerySQLPart implements QueryPart {
 		while (iterator.hasNext())	{
 			String field = (String) iterator.next();
 			String type = (String) resultFieldType.get(field);
-			QueryFieldPart fieldPart = new QueryFieldPart(field,queryName,queryName,field, null,field, type);
+			QueryFieldPart fieldPart = new QueryFieldPart(field,queryName,queryName,field, null,field, type, false);
 			fields.add(fieldPart);
 		}
 		return fields;

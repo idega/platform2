@@ -287,7 +287,7 @@ public class QueryBuilder extends Block {
 			String description = iwc.getParameter(PARAM_COND_DESCRIPTION);
 			if (!"".equals(pattern) || iwc.isParameterSet(PARAM_DYNAMIC)){
 				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
-				helper.addField(fieldPart);
+				helper.addHiddenField(fieldPart);
 				if(pattern ==null || "".equals(pattern)){
 					pattern = defaultDynamicPattern;
 				}
@@ -821,7 +821,7 @@ public class QueryBuilder extends Block {
 				String type = fieldPart.getTypeClass();
 							
 				QueryFieldPart newFieldPart = 
-					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
+					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type, false);
 				resultFields.add(newFieldPart);
 			}
 			fillFieldSelectionBox(previousQueryName, resultFields, fieldMap,box);
