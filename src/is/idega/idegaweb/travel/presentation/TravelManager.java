@@ -252,7 +252,7 @@ public class TravelManager extends Block {
           logoTable.setCellspacing(0);
           logoTable.setAlignment("center");
           logoTable.setWidth(tableWidth);
-          logoTable.add(bundle.getImage("buttons/admin_logo.gif"));
+          logoTable.add(iwrb.getImage("images/admin_logo.gif"));
           logoTable.setAlignment(1,1,"left");
 
         if (showLogo)
