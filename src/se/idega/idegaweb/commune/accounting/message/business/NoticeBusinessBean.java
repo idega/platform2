@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.10 2004/04/06 14:17:19 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.11 2004/04/13 14:06:33 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -25,16 +25,17 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolUser;
+import com.idega.core.contact.data.Email;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2004/04/06 14:17:19 $ by $Author: anders $
+ * Last modified: $Date: 2004/04/13 14:06:33 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -75,6 +76,7 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 			SchoolCategory childCareCategory = sb.getCategoryChildcare();
 			String childCareCategoryId = childCareCategory.getCategory();
 			HashMap messageReceivers = new HashMap();
+			HashMap emailReceivers = new HashMap();
 			Collection schoolTypes = sb.findAllSchoolTypes();
 			Iterator iter = schoolTypes.iterator();
 			while (iter.hasNext()) {
@@ -101,7 +103,19 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 								s[0] = school.getName();
 								s[1] = user.getName();
 								c.add(s);
-								Message message = getMessageBusiness().createUserMessage(user, subject, body, false);
+								boolean sendEMail = true;
+								Email email = getUserBusiness().getUserMail(user);
+								String emailAddress = null;
+								if (email != null) {
+									emailAddress = email.getEmailAddress();
+								}
+								if (emailAddress != null) {
+									if (emailReceivers.get(emailAddress) != null) {
+										sendEMail = false;
+									}
+									emailReceivers.put(emailAddress, user);
+								}
+								Message message = getMessageBusiness().createUserMessage(null, user, null, null, subject, body, body, false, null, false, sendEMail);
 								message.store();
 								messageReceivers.put(user.getPrimaryKey(), user);
 							}
