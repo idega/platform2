@@ -1,5 +1,5 @@
 /*
- * $Id: VATBusinessBean.java,v 1.10 2003/10/07 10:55:59 anders Exp $
+ * $Id: VATBusinessBean.java,v 1.11 2003/10/08 15:27:55 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,11 +10,14 @@
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.sql.Date;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
+
+import com.idega.util.IWTimestamp;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
@@ -25,10 +28,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 /** 
  * Business logic for VAT values and regulations.
  * <p>
- * Last modified: $Date: 2003/10/07 10:55:59 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/08 15:27:55 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class VATBusinessBean extends com.idega.business.IBOServiceBean implements VATBusiness  {
 
@@ -37,6 +40,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_DATE_FORMAT = KP + "date_format";
 	public final static String KEY_SEARCH_PERIOD_VALUES = KP + "search_period_values";
 	public final static String KEY_PERIOD_VALUES = KP + "period_values";
+	public final static String KEY_PERIOD_OVERLAP = KP + "period_overlap";
 	public final static String KEY_FROM_DATE_MISSING = KP + "from_date_missing";
 	public final static String KEY_TO_DATE_MISSING = KP + "to_date_missing";
 	public final static String KEY_DESCRIPTION_MISSING = KP + "description_missing";
@@ -52,6 +56,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String DEFAULT_DATE_FORMAT = "Datum mŒste anges pŒ formen MM, MMDD, eller MMDD.";
 	public final static String DEFAULT_SEARCH_PERIOD_VALUES = "Sškperiodens startdatum mŒste vara mindre eller lika med slutdatum.";
 	public final static String DEFAULT_PERIOD_VALUES = "Periodens startdatum mŒste vara mindre eller lika med slutdatum.";
+	public final static String DEFAULT_PERIOD_OVERLAP = "Det finns redan en momssats inom denna period.";
 	public final static String DEFAULT_FROM_DATE_MISSING = "Periodens startdatum mŒste fyllas i.";
 	public final static String DEFAULT_TO_DATE_MISSING = "Periodens slutdatum mŒste fyllas i.";
 	public final static String DEFAULT_DESCRIPTION_MISSING = "BenŠmning av momssatsen mŒste fyllas i.";
@@ -211,7 +216,7 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 		if (periodFrom.getTime() > periodTo.getTime()) {
 			throw new VATException(KEY_PERIOD_VALUES, DEFAULT_PERIOD_VALUES);
 		}
-
+		
 		// Description
 		s = description.trim();
 		if (s.equals("")) {
@@ -254,6 +259,33 @@ public class VATBusinessBean extends com.idega.business.IBOServiceBean implement
 			throw new VATException(KEY_OPERATIONAL_FIELD_MISSING, DEFAULT_OPERATIONAL_FIELD_MISSING);
 		}
 		
+		// Overlapping date intervals
+		Collection c = findAllVATRegulations(operationalField);
+		Iterator iter = c.iterator();
+		while (iter.hasNext()) {
+			VATRegulation vr = (VATRegulation) iter.next();
+			if (((Integer) vr.getPrimaryKey()).intValue() == id) {
+				continue;
+			}
+			
+			IWTimestamp from = new IWTimestamp(vr.getPeriodFrom());
+			from.setAsDate();
+			IWTimestamp to = new IWTimestamp(vr.getPeriodTo());
+			to.setAsDate();
+			IWTimestamp vatFrom = new IWTimestamp(periodFrom);
+			vatFrom.setAsDate();
+			IWTimestamp vatTo = new IWTimestamp(periodTo);
+			vatTo.setAsDate();
+			
+			if (vatFrom.isBetween(from, to) || vatTo.isBetween(from, to) ||
+					((vatFrom.isEarlierThan(from) || vatFrom.equals(from)) && (vatTo.isLaterThanOrEquals(to)))) {
+				if ((vr.getPaymentFlowTypeId() == paymentFlowTypeId) && 
+						(vr.getProviderTypeId() == providerTypeId)) {				
+					throw new VATException(KEY_PERIOD_OVERLAP, DEFAULT_PERIOD_OVERLAP);
+				}
+			}								 
+		}
+
 		try {
 			VATRegulationHome home = getVATRegulationHome();
 			VATRegulation vr = null;
