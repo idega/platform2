@@ -585,7 +585,16 @@ public class ReportGenerator extends Block {
 						add(iwrb.getLocalizedString("no_query_has_been_chosen_for_this_instance", "No query has been chosen for this instance"));
 					} //else{//Do nothing}
 
-		}
+		}catch (OutOfMemoryError e){
+			add(iwrb.getLocalizedString("datareport.out_of_memory", "The server was not able to finish your request. Try to be more specific in your request or partition it so the result will be smaller."));
+			add(Text.getBreak());
+			add(Text.getBreak());
+			BackButton back = new BackButton();
+			setStyle(back);
+			add(back);
+			e.printStackTrace();
+
+		}		
 		catch (ReportGeneratorException e) {
 			add(e.getLocalizedMessage());
 			add(Text.getBreak());
