@@ -1137,13 +1137,16 @@ public class UserEditor extends Block {
 						if(isValidPersonalID(iwc.getParameter(prm_personal_id))) {
 							pid = iwc.getParameter(prm_personal_id);
 						}
-						else if(warnIfPersonalIDIsIllegal){
+						else {
 							legalState = false;
+							if(warnIfPersonalIDIsIllegal){
+							
 							String mainPostalExists =
 							iwrb.getLocalizedString(
 									"mbe.warning.personal_id_illegal",
 									"Personal ID is illegally formatted");
 							this.getParentPage().setOnLoad("alert('" + mainPostalExists + "');");
+						}
 						}
 					}
 					if (isNewValue(iwc, prm_first_name)) {
