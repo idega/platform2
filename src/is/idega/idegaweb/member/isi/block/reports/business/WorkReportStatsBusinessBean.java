@@ -172,7 +172,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Collection leaguesFilter)
 		throws RemoteException {
 
+		
 		//initialize stuff
+		int age = 16;
 		initializeBundlesIfNeeded();
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
@@ -212,21 +214,19 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(leagueString);
 
 		ReportableField womenUnderAgeLimit = new ReportableField("womenUnderAgeLimit", Integer.class);
-		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit", "kvk -15"), currentLocale);
+		womenUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenUnderAgeLimit_"+age, "women -"+age), currentLocale);
 		reportCollection.addField(womenUnderAgeLimit);
 
 		ReportableField womenOverOrEqualAgeLimit = new ReportableField("womenOverOrEqualAgeLimit", Integer.class);
-		womenOverOrEqualAgeLimit.setLocalizedName(
-			_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit", "kvk 16+"),
-			currentLocale);
+		womenOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.womenOverOrEqualAgeLimit_"+age, "women "+age+"+"),currentLocale);
 		reportCollection.addField(womenOverOrEqualAgeLimit);
 
 		ReportableField menUnderAgeLimit = new ReportableField("menUnderAgeLimit", Integer.class);
-		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit", "kk -15"), currentLocale);
+		menUnderAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimit_"+age, "men -"+age), currentLocale);
 		reportCollection.addField(menUnderAgeLimit);
 
 		ReportableField menOverOrEqualAgeLimit = new ReportableField("menOverOrEqualAgeLimit", Integer.class);
-		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit", "kk 16+"), currentLocale);
+		menOverOrEqualAgeLimit.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menOverOrEqualAgeLimit_"+age, "men "+age+"+"), currentLocale);
 		reportCollection.addField(menOverOrEqualAgeLimit);
 
 		//Real data stuff
@@ -257,7 +257,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			//get last years report for comparison
 			WorkReport lastYearReport=null;
 			try {
-				lastYearReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(report.getGroupId().intValue(),report.getYearOfReport().intValue());
+				lastYearReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(report.getGroupId().intValue(),year.intValue()-1);
 			}
 			catch (FinderException e1) {
 				//e1.printStackTrace();
@@ -296,13 +296,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 //					get the stats
 					//int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
 								  
-					data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
-					data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
-					data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
-					data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+					data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
+					data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
+					data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
+					data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league)));
 					
 					if(lastYearReport!=null){
-						Integer lastYear = new Integer(getWorkReportBusiness().getCountOfPlayersInLeagueForWorkReportByWorkReportIdAndWorkReportGroupId(((Integer)lastYearReport.getPrimaryKey()).intValue(),((Integer)league.getPrimaryKey()).intValue()));
+						Integer lastYear = new Integer(getWorkReportBusiness().getCountOfPlayersByWorkReportAndWorkReportGroup(lastYearReport,league));
 						data.addData(comparingYearStat,lastYear);
 					}
 			

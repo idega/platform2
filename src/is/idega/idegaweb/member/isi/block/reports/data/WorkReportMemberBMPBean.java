@@ -259,12 +259,14 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 			sql.appendEqualsQuoted("memb."+COLUMN_NAME_GENDER, gender)
 			.appendAnd();
 		}
+		if(age>=0){
+			sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
+			.appendGreaterThanSign()
+			.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
+			.appendAnd();
+		}
 		
-		sql.append("memb."+COLUMN_NAME_DATE_OF_BIRTH)
-		.appendGreaterThanSign()
-		.appendSingleQuote().append(stamp.toSQLString()).appendSingleQuote()
-		.appendAnd()
-		.append("memb.")
+		sql.append("memb.")
 		.append(IDColumnName)
 		.appendEqualSign()
 		.append("middle.")
@@ -283,6 +285,19 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 			e.printStackTrace();
 			return 0;
 		}
+	}
+	
+	//any age
+	public int ejbHomeGetCountOfPlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(-1,null,report,league);
+	}
+	
+	public int ejbHomeGetCountOfMalePlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(-1,MALE,report,league);
+	}
+	
+	public int ejbHomeGetCountOfFemalePlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
+		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(-1,FEMALE,report,league);
 	}
 	
 	//equal or older

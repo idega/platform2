@@ -156,17 +156,52 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,wrGroup);
 	}
 	
-	public int getCountOfPlayersInLeagueForWorkReportByWorkReportIdAndWorkReportGroupId(int reportId, int wrGroupId) {
-		int count = 0;
-		try {
-			WorkReportDivisionBoard board = getWorkReportDivisionBoardHome().findWorkReportDivisionBoardByWorkReportIdAndWorkReportGroupId(reportId,wrGroupId);
-			count = board.getNumberOfPlayers();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-		return count;
+	//any age
+	public int getCountOfPlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfPlayersByWorkReportAndWorkReportGroup(report,league);
 	}
+	
+	public int getCountOfMalePlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfMalePlayersByWorkReportAndWorkReportGroup(report,league);
+	}
+	
+	public int getCountOfFemalePlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfFemalePlayersByWorkReportAndWorkReportGroup(report,league);
+	}
+	
+	//equal or older
+	public int getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
+	public int getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
+	public int getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
+	//younger
+	public int getCountOfPlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfPlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
+	public int getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
+	public int getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
+		return getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age,report,league);
+	}
+	
+	
+/*	data.addData(womenUnderAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+						data.addData(womenOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+						data.addData(menUnderAgeLimit,new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+						data.addData(menOverOrEqualAgeLimit, new Integer(getWorkReportBusiness().getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league)));
+					
+					*/
 	
 
 	/**
