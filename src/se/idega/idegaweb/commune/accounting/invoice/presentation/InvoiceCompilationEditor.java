@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.FinderException;
+import javax.ejb.CreateException;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
@@ -63,10 +64,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/18 14:56:09 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/19 08:12:44 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.44 $
+ * @version $Revision: 1.45 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -276,8 +277,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 
     private void newRecord (final IWContext context)
-        throws RemoteException, javax.ejb.CreateException,
-               javax.ejb.FinderException {
+        throws RemoteException, CreateException, FinderException {
         final User currentUser = context.getCurrentUser ();
         final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
         final Date checkEndPeriod = getPeriodParameter (context,
@@ -335,8 +335,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private void saveRecord (final IWContext context)
-        throws RemoteException, javax.ejb.CreateException,
-               javax.ejb.FinderException {
+        throws RemoteException, CreateException, FinderException {
         // get updated values
         final User currentUser = context.getCurrentUser ();
         final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
@@ -380,7 +379,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         record.setAmountVAT (vatAmount.floatValue ());
         record.setChangedBy (getSignature (currentUser));
         record.setDateChanged (new java.sql.Date (System.currentTimeMillis ()));
-        record.setDays (numberOfDays.intValue ());
+        if (null != numberOfDays) record.setDays (numberOfDays.intValue ());
         record.setDoublePosting (doublePosting);
         record.setInvoiceText (null != invoiceText && 0 < invoiceText.length ()
                                ? invoiceText : ruleText);
@@ -394,10 +393,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                         (placementStartPeriod.getTime ()));
         record.setPeriodEndPlacement (new java.sql.Date
                                       (placementEndPeriod.getTime ()));
-        record.setProviderId (providerId.intValue ());
-        record.setSchoolClassMemberId (placementId.intValue ());
+        if (null != providerId) record.setProviderId (providerId.intValue ());
+        if (null != placementId) record.setSchoolClassMemberId
+                                         (placementId.intValue ());
         record.setRuleSpecType (regulationSpecType);
-        record.setVATType (vatRule.intValue ());
+        if (null != vatRule) record.setVATType (vatRule.intValue ());
         record.setRuleText (ruleText);
 
         // store updated record
@@ -444,7 +444,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private void showNewRecordForm (final IWContext context)
-        throws RemoteException, javax.ejb.FinderException {
+        throws RemoteException, FinderException {
         final java.util.Map inputs = new java.util.HashMap ();
         final String nowPeriod = periodFormatter.format (new Date ());
         inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY));
@@ -490,7 +490,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private void showEditRecordForm (final IWContext context)
-        throws RemoteException, javax.ejb.FinderException {
+        throws RemoteException, FinderException {
         final InvoiceBusiness business = (InvoiceBusiness)
                 IBOLookup.getServiceInstance (context, InvoiceBusiness.class);
         final InvoiceRecord record = getInvoiceRecord (context);
@@ -548,10 +548,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      EDIT_INVOICE_RECORD_DEFAULT));
         inputs.put (HEADER_KEY, localize (EDIT_INVOICE_RECORD_KEY,
                                           EDIT_INVOICE_RECORD_DEFAULT));
-        inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY,
-                                                   record.getRuleText ()));
-        final String providerName = getProviderName (context,
-                                                     record.getProviderId ());
+        inputs.put (RULE_TEXT_KEY, getSmallText (record.getRuleText ()));
+        final String providerName = getProviderName
+                (context, record.getProviderId (),
+                 record.getSchoolClassMemberId ());
         inputs.put (PROVIDER_KEY, getSmallText (providerName));
         renderRecordDetailsOrForm (context, inputs);
     }
@@ -584,8 +584,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                             record.getPeriodStartPlacement ());
         addSmallPeriodText (details, PLACEMENT_END_PERIOD_KEY,
                             record.getPeriodEndPlacement ());
-        addSmallText (details, PROVIDER_KEY,
-                      getProviderName (context, record.getProviderId ()));
+        addSmallText (details, PROVIDER_KEY, getProviderName
+                      (context, record.getProviderId (),
+                       record.getSchoolClassMemberId ()));
         final String ruleSpecType = record.getRuleSpecType ();
         addSmallText (details, REGULATION_SPEC_TYPE_KEY,
                       localize (ruleSpecType, ruleSpecType));
@@ -617,7 +618,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void renderRecordDetailsOrForm
         (final IWContext context, final java.util.Map presentationObjects)
-        throws RemoteException, javax.ejb.FinderException {
+        throws RemoteException, FinderException {
         final InvoiceHeader header = getInvoiceHeader (context);
 		final User custodian
                 = getUser  (context, new Integer (header.getCustodianId ()));
@@ -992,7 +993,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private void newCompilation (final IWContext context)
-        throws RemoteException, javax.ejb.CreateException {
+        throws RemoteException, CreateException {
         final String operationalField = getSession ().getOperationalField ();
         final Date period = getPeriodParameter (context, PERIOD_KEY);
         final int custodianId = Integer.parseInt (context.getParameter
@@ -1347,12 +1348,19 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private String getProviderName
-        (final IWContext context, final int providerId) throws RemoteException {
+        (final IWContext context, final int providerId, final int placementId)
+        throws RemoteException, FinderException {
         final StringBuffer result = new StringBuffer ();
-        if (0 < providerId) {
-            final SchoolBusiness schoolBusiness
-                    = (SchoolBusiness) IBOLookup.getServiceInstance
-                    (context, SchoolBusiness.class);
+        final SchoolBusiness schoolBusiness
+                = (SchoolBusiness) IBOLookup.getServiceInstance
+                (context, SchoolBusiness.class);
+        if (0 < placementId) {
+            final SchoolClassMemberHome placementHome
+                    = schoolBusiness.getSchoolClassMemberHome ();
+            final SchoolClassMember placement = placementHome.findByPrimaryKey
+                    (new Integer (placementId));
+            result.append (getProviderName (placement));
+        } else if (0 < providerId) {
             final School school = schoolBusiness.getSchool
                     (new Integer (providerId));
             result.append (school.getName ());
