@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
@@ -48,7 +49,9 @@ import com.idega.business.IBOLookup;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.presentation.IWContext;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 
@@ -70,7 +73,7 @@ public abstract class BillingThread extends Thread{
 	protected CalendarMonth month;	//Holds working month
 	protected IWTimestamp startPeriod;	//Holds first day of period
 	protected IWTimestamp endPeriod;		//Holds last day of period
-	protected IWContext iwc;
+	protected IWApplicationContext iwc;
 	protected Date currentDate = new Date( System.currentTimeMillis());
 	protected Date calculationDate; //Date used mainly for HighSchool
 	protected SchoolCategory category = null;
@@ -80,8 +83,9 @@ public abstract class BillingThread extends Thread{
 	protected boolean running;
 	private boolean testRun;
 	private School school;
+	private static String IW_BUNDLE_IDENTIFIER="se.idega.idegaweb.commune.accounting";
 	
-	public BillingThread(Date dateInMonth, IWContext iwc, School school, boolean testRun){
+	public BillingThread(Date dateInMonth, IWApplicationContext iwc, School school, boolean testRun){
 		month = new CalendarMonth(dateInMonth);
 		startPeriod = month.getFirstTimestamp();
 		endPeriod = month.getLastTimestamp();
@@ -92,7 +96,7 @@ public abstract class BillingThread extends Thread{
 		this.school = school;
 	}
 
-	public BillingThread(Date dateInMonth, IWContext iwc){
+	public BillingThread(Date dateInMonth, IWApplicationContext iwc){
 		this(dateInMonth, iwc, null, false);
 	}	
 	
@@ -102,6 +106,19 @@ public abstract class BillingThread extends Thread{
 	
 	public void terminate(){
 		running = false;
+	}
+	
+	public IWBundle getBundle(){
+		return iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+	}
+	
+	public IWResourceBundle getResourceBundle(){
+		Locale locale = iwc.getApplicationSettings().getDefaultLocale();
+		return getBundle().getResourceBundle(locale);
+	}
+	
+	public String getLocalizedString(String key,String defaultValue){
+		return getResourceBundle().getLocalizedString(key,defaultValue);
 	}
 
 	protected PaymentHeader getPaymentHeader(School school)throws CreateException, IDOLookupException{
@@ -233,7 +250,8 @@ public abstract class BillingThread extends Thread{
 					e.printStackTrace();
 				}
 				catch (PostingException e) {
-					errorRelated.append("Category:"+category);
+					
+					errorRelated.append(getLocalizedString("billingthread_category","Category")+": "+category);
 					errorRelated.append("School Type:"+sType);
 					errorRelated.append("Provider:"+provider);
 					errorRelated.append("Period:"+startPeriod.getDate());
