@@ -13,7 +13,7 @@ public interface ContractService extends com.idega.business.IBOService
 	 public void changeApplicationStatus(is.idega.idegaweb.campus.block.allocation.data.Contract p0)throws java.lang.Exception, java.rmi.RemoteException;
 	 public is.idega.idegaweb.campus.block.allocation.data.Contract createNewContract(java.lang.Integer p0,java.lang.Integer p1,java.lang.Integer p2,java.util.Date p3,java.util.Date p4)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
 	 public com.idega.user.data.User createNewUser(com.idega.block.application.data.Applicant p0,java.lang.String[] p1)throws java.rmi.RemoteException,javax.ejb.CreateException, java.rmi.RemoteException;
-	 public void createUserLogin(java.lang.Integer p0,java.lang.Integer p1,java.lang.String p2,java.lang.String p3,boolean p4)throws java.lang.Exception, java.rmi.RemoteException;
+	 public void createUserLogin(com.idega.user.data.User p0,java.lang.Integer p1,java.lang.String p2,java.lang.String p3,boolean p4)throws java.lang.Exception, java.rmi.RemoteException;
 	 public boolean deleteAllocation(java.lang.Integer p0,com.idega.user.data.User p1) throws java.rmi.RemoteException;
 	 public void deleteFromWaitingList(is.idega.idegaweb.campus.block.allocation.data.Contract p0) throws java.rmi.RemoteException;
 	 public void deliverKey(java.lang.Integer p0,java.sql.Timestamp p1) throws java.rmi.RemoteException;

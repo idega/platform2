@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.37 2004/06/21 18:02:13 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.38 2004/06/25 11:09:45 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -103,6 +103,7 @@ public class ReferenceNumberInfo extends CampusBlock {
 			String cypherKey = getCypherKey(iwc);
 
 			ref = cyph.doDeCypher(refnum,cypherKey);
+			//System.out.println("refnum = "+ref);
 			addReferenceNumberLookupResults(iwc);
 		}
 		else {

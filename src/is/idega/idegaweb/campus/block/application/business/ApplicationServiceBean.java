@@ -623,7 +623,7 @@ import com.idega.util.IWTimestamp;
 					
 					// Contracts
 					ContractHome cHome = (ContractHome) IDOLookup.getHome(Contract.class);
-					resultSet = cHome.findByApplicantID((Integer) applicant.getPrimaryKey());
+					resultSet = cHome.findByApplicantInCreatedStatus((Integer) applicant.getPrimaryKey());
 					if (resultSet != null && !resultSet.isEmpty()) {
 						contract = (Contract) resultSet.iterator().next();
 					}

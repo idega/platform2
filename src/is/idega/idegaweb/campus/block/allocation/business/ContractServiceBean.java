@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.16 2004/06/25 10:05:13 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.17 2004/06/25 11:09:45 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -127,7 +127,9 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 						financeCategoryID.intValue());
 				}
 				if (newLogin && groupID.intValue() > 0) {
-					createUserLogin(userID, groupID, login, pass, generatePasswd);
+					User user = getUserService().getUser(userID);
+					createUserLogin(user, groupID, login, pass, generatePasswd);
+					addUserToTenantGroup(groupID,user);
 				}
 				deleteFromWaitingList(eContract);
 				changeApplicationStatus(eContract);
@@ -148,13 +150,25 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		}
 		return pass;
 	}
-	public void createUserLogin(Integer userID, Integer groupID, String login, String pass, boolean generatePasswd)
+	
+	public void createUserLogin(User user, Integer groupID, String login, String pass, boolean generatePasswd)
 		throws Exception {
-		User user = getUserService().getUser(userID);
 		getUserService().generateUserLogin(user);
+	}
+	
+	
+	
+	/**
+	 * @param groupID
+	 * @param user
+	 * @throws FinderException
+	 * @throws RemoteException
+	 */
+	public void addUserToTenantGroup(Integer groupID, User user) throws FinderException, RemoteException {
 		Group group = getUserService().getGroupHome().findByPrimaryKey(groupID);
 		group.addGroup(user);
 	}
+
 	public void changeApplicationStatus(Contract eContract) throws Exception {
 		
 		Collection L = getApplicationService().getApplicationHome().findByApplicantID(eContract.getApplicantId());

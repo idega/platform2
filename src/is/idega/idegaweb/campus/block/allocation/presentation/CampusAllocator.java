@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.65 2004/06/24 21:35:06 aron Exp $
+ * $Id: CampusAllocator.java,v 1.66 2004/06/25 11:09:45 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1242,6 +1242,9 @@ public class CampusAllocator extends CampusBlock implements Campus {
 				boolean redColorSet = false;
 				int numberOnList = 1;
 				IWTimestamp now = IWTimestamp.RightNow();
+				ReferenceNumberHandler h =	new ReferenceNumberHandler();
+				String key = ReferenceNumberHandler.getCypherKey(iwc);
+				com.idega.util.CypherText ct = new com.idega.util.CypherText();
 				while (it.hasNext()) {
 					col = 1;
 					con_id = -1;
@@ -1278,10 +1281,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						numberOnList++;
 						Frame.add(getText(WL.getPriorityLevel()), col++, row);
 						String cypher = null;
-						if (application != null && applicationID.intValue() != -1) {
-							ReferenceNumberHandler h =	new ReferenceNumberHandler();
-							String key = ReferenceNumberHandler.getCypherKey(iwc);
-							com.idega.util.CypherText ct = new com.idega.util.CypherText();
+						if (application != null && applicationID.intValue() >0) {
+							
 							String id = application.getPrimaryKey().toString();
 							while (id.length() < 6)
 								id = "0" + id;
