@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.51 2003/10/27 16:15:01 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.52 2003/10/28 10:06:43 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -856,15 +856,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		arr.add(new Object[]{new Integer(3), "4-5"});
 		arr.add(new Object[]{new Integer(4), "6"});
 		arr.add(new Object[]{new Integer(5), ">=7"});
-		arr.add(new Object[]{new Integer(6), "1-3"});
-		arr.add(new Object[]{new Integer(7), "1-6"});
-		arr.add(new Object[]{new Integer(8), "7-9"});
-		arr.add(new Object[]{new Integer(9), "G1"});
-		arr.add(new Object[]{new Integer(10), "G1-G3"});
-		arr.add(new Object[]{new Integer(11), "G2"});
-		arr.add(new Object[]{new Integer(12), "G3"});
-		arr.add(new Object[]{new Integer(13), "G4"});
-		arr.add(new Object[]{new Integer(14), "G1-G4"});
 
 		return arr; 
 	}	
@@ -879,8 +870,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection findAllSchoolYearIntervals() {
 		ArrayList arr = new ArrayList();
 
-		arr.add(new Object[]{new Integer(1), "1-6"});
-		arr.add(new Object[]{new Integer(2), "7-9"});
+		arr.add(new Object[]{new Integer(1), "1-3"});
+		arr.add(new Object[]{new Integer(2), "1-6"});
+		arr.add(new Object[]{new Integer(3), "7-9"});
+		arr.add(new Object[]{new Integer(4), "G1"});
+		arr.add(new Object[]{new Integer(5), "G1-G3"});
+		arr.add(new Object[]{new Integer(6), "G2"});
+		arr.add(new Object[]{new Integer(7), "G3"});
+		arr.add(new Object[]{new Integer(8), "G4"});
+		arr.add(new Object[]{new Integer(9), "G1-G4"});
 
 		return arr; 
 	}	
