@@ -144,7 +144,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 	}	
 	
 	protected String[] getPostingStrings(SchoolCategory category, SchoolType schoolType, int regSpecTypeId, Provider provider, Date calculationDate, int schoolYearId, int studyPathId) throws PostingException, RemoteException {
-		if (studyPathId == -1){
+		if (studyPathId != -1){
 			try {
 				return getPostingBusiness().getPostingStrings(category, schoolType, regSpecTypeId, provider, calculationDate,schoolYearId, studyPathId, false);
 			} catch (PostingException e) {
