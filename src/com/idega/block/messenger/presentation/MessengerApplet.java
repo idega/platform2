@@ -83,7 +83,7 @@ public class MessengerApplet extends Applet implements Runnable{
       ImageLabel lb = null;
     try {
       lb = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
-      System.out.println("AAAAARRGG:"+hostURL+resourceURL);
+      System.out.println("AAAAARRGG2:"+hostURL+resourceURL);
     }
     catch (Exception ex) {
       ex.printStackTrace(System.err);
