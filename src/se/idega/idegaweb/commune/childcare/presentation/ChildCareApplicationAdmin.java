@@ -16,8 +16,10 @@ import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.Converter;
 import com.idega.user.data.User;
 
@@ -58,12 +60,10 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String PARAM_NO = "ccaa_no";
 	private final static String PARAM_ID = "ccaa_id";
 	
-	private final static String NOT_LOGGED_IN = "ccaa_not_logged_in";
-	private final static String NO_UNHANDLED = "ccaa_no_unhandled";
-	private final static String NO_PRELIMINARY = "ccaa_no_preliminary";
-	private final static String NO_SIGNED = "ccaa_no_signed";
-
+	private final static String ERROR_NOT_LOGGED_IN = "ccaa_not_logged_in";
+	private final static String ERROR_NO_APPLICATIONS = "ccaa_no_applications";
 	private final static String ERROR_UNABLE_TO_CHANGE = "ccaa_unable_to_change_status";
+	private final static String ERROR_MUST_BE_INTEGER	 = "ccaa_must_be_integer";
 	
 	protected User _user = null;
 	protected IWBundle _iwb;
@@ -91,7 +91,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			}
 		}
 		else {
-			add(getErrorText(localize(NOT_LOGGED_IN, "No user logged in")));
+			add(getErrorText(localize(ERROR_NOT_LOGGED_IN, "No user logged in")));
 		}		
 	}
 
@@ -121,6 +121,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		
 		if (appl != null) {
 			int row = 1;
+			Table outer = new Table(1,2);
 			Table data = new Table(10,appl.size()+1);
 			data.setCellspacing(2);
 			data.setCellpadding(4);
@@ -165,19 +166,21 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 
 				try {
 					String status = application.getStatus();
-					System.out.println("status = " + status);
-					
-					if (status.equals(caseBiz.getCaseStatusOpen())) {
+										
+					if (status.equals(caseBiz.getCaseStatusOpen().toString())) {
+						System.out.println("Status open");
 						ubeh = true;
 						prel = false;
 						kout = false;
 					}
-					else if (status.equals(caseBiz.getCaseStatusPreliminary())) {
+					else if (status.equals(caseBiz.getCaseStatusPreliminary().toString())) {
+						System.out.println("Status preliminary");
 						ubeh = false;
 						prel = true;
 						kout = false;
 					}
-					if (status.equals(caseBiz.getCaseStatusContract())) {
+					else if (status.equals(caseBiz.getCaseStatusContract().toString())) {
+						System.out.println("Status contract");
 						ubeh = false;
 						prel = false;
 						kout = true;
@@ -202,15 +205,27 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					data.add(yes,8,row);
 					data.add(Text.getNonBrakingSpace(),8,row);
 					data.add(no,8,row);
+
+					TextInput careTime = new TextInput(PARAM_CARE_TIME);
+					careTime.setAsIntegers(localize(ERROR_MUST_BE_INTEGER,"You must enter an integer here"));
+					careTime.setStyleAttribute(getSmallTextFontStyle());
+					careTime.setLength(3);
+					data.add(careTime,5,row);
+					
+					CheckBox check = new CheckBox();
+					check.setName(PARAM_WANT_FROM_OK);
+					data.add(check,7,row);
 					
 					row++;
 				}
 			}
 			
-			form.add(data);
+			outer.add(data,1,1);
+			outer.setAlignment(1,2,"RIGHT");
+			form.add(outer);
 		}
 		else {
-			form.add(getErrorText(localize(NO_UNHANDLED,"No unhandled applications")));	
+			form.add(getErrorText(localize(ERROR_NO_APPLICATIONS,"No applications")));	
 		}
 		
 		add(form);		
