@@ -18,12 +18,14 @@ public interface ChildCareSession extends com.idega.business.IBOSession
  public java.lang.String getParameterGroupID() throws java.rmi.RemoteException;
  public java.lang.String getParameterSchoolTypeID() throws java.rmi.RemoteException;
  public java.lang.String getParameterSeasonID() throws java.rmi.RemoteException;
+ public java.lang.String getParameterStatus() throws java.rmi.RemoteException;
  public java.lang.String getParameterSortBy() throws java.rmi.RemoteException;
  public java.lang.String getParameterTo() throws java.rmi.RemoteException;
  public java.lang.String getParameterUserID() throws java.rmi.RemoteException;
  public com.idega.block.school.data.School getProvider()throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getSchoolTypeID() throws java.rmi.RemoteException;
  public int getSeasonID() throws java.rmi.RemoteException;
+ public String getStatus() throws java.rmi.RemoteException;
  public int getSortBy() throws java.rmi.RemoteException;
  public com.idega.util.IWTimestamp getToTimestamp() throws java.rmi.RemoteException;
  public int getUserID() throws java.rmi.RemoteException;
@@ -39,6 +41,7 @@ public interface ChildCareSession extends com.idega.business.IBOSession
  public void setHasPrognosis(boolean p0) throws java.rmi.RemoteException;
  public void setSchoolTypeID(int p0) throws java.rmi.RemoteException;
  public void setSeasonID(int p0) throws java.rmi.RemoteException;
+ public void setStatus(String p0) throws java.rmi.RemoteException;
  public void setSortBy(int p0) throws java.rmi.RemoteException;
  public void setToTimestamp(java.lang.String p0) throws java.rmi.RemoteException;
  public void setUserID(int p0) throws java.rmi.RemoteException;

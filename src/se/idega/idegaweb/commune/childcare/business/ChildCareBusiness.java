@@ -55,6 +55,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public java.util.Collection getApplicationsByProvider(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
  public java.util.Collection getApplicationsByProvider(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public java.util.Collection getApplicationsByProvider(int p0) throws java.rmi.RemoteException;
+ public java.util.Collection getApplicationsByProviderAndApplicationStatus(int providerID, String applicationStatus) throws java.rmi.RemoteException;
  public java.util.Collection getApplicationsByUser(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public java.util.Collection getApplicationsForChild(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public java.util.Collection getApplicationsForChild(int p0) throws java.rmi.RemoteException;

@@ -217,6 +217,21 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		
 		return "";
 	}
+	
+	protected DropdownMenu getRejectedStatuses() throws RemoteException {
+		DropdownMenu menu = new DropdownMenu(getSession().getParameterStatus());
+		menu.addMenuElement("-1", localize("child_care.all_rejected_applications", "Show all rejected"));
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusCancelled()), getStatusString(getBusiness().getStatusCancelled()));
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusDenied()), getStatusString(getBusiness().getStatusDenied()));
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusNotAnswered()), getStatusString(getBusiness().getStatusNotAnswered()));
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusRejected()), getStatusString(getBusiness().getStatusRejected()));
+		menu.addMenuElement(String.valueOf(getBusiness().getStatusTimedOut()), getStatusString(getBusiness().getStatusTimedOut()));
+		if (getSession().getStatus() != null) {
+			menu.setSelectedElement(getSession().getStatus());
+		}
+
+		return menu;
+	}
 
 	protected DropdownMenu getSeasons() throws RemoteException {
 		SelectorUtility util = new SelectorUtility();

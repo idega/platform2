@@ -8,9 +8,11 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
+import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
@@ -32,7 +34,16 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 	public void init(IWContext iwc) throws Exception {
 		if (canSeeRejected()) {
 			performAction(iwc);
-			add(getApplicationTable(iwc));
+			
+			Table table = new Table(1, 3);
+			table.setCellpadding(0);
+			table.setCellspacing(0);
+			table.setHeight(2, 12);
+			
+			table.add(getNavigationForm(), 1, 1);
+			table.add(getApplicationTable(iwc), 1, 3);
+			
+			add(table);
 		}
 		else {
 			add(getSmallErrorText(localize("child_care.prognosis_must_be_set","Prognosis must be set or updated before you can continue!")));
@@ -57,14 +68,13 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 	
 	private Form getApplicationTable(IWContext iwc) throws RemoteException {
 		Form form = new Form();
-		form.setMethod("get");
 		form.add(new HiddenInput(PARAMETER_APPLICATION_ID, ""));
 		
 		Table table = new Table();
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(6);
+		table.setColumns(7);
 		table.setRowColor(1, getHeaderColor());
 		form.add(table);
 		int row = 1;
@@ -73,13 +83,21 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.reject_date","Reject date"), column++, row++);
 				
-		Collection applications = getBusiness().getInactiveApplicationsByProvider(getSession().getChildCareID());
+		Collection applications = null;
+		if (getSession().getStatus() != null) {
+			applications = getBusiness().getApplicationsByProviderAndApplicationStatus(getSession().getChildCareID(), getSession().getStatus());
+		}
+		else {
+			applications = getBusiness().getInactiveApplicationsByProvider(getSession().getChildCareID());
+		}
 		if (applications != null && !applications.isEmpty()) {
 			ChildCareApplication application;
 			User child;
+			IWCalendar queueDate;
 			IWCalendar placementDate;
 			IWCalendar rejectDate;
 			SubmitButton activateApplication;
@@ -89,6 +107,10 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				column = 1;
 				application = (ChildCareApplication) iter.next();
 				child = application.getChild();
+				if (application.getQueueDate() != null)
+					queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
+				else	
+					queueDate = null;
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
 				if (application.getRejectionDate() != null)
 					rejectDate = new IWCalendar(iwc.getCurrentLocale(), application.getRejectionDate());
@@ -103,6 +125,9 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
 				table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				table.add(getSmallText(getStatusString(application)), column++, row);
+				if (queueDate != null)
+					table.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column, row);
+				column++;
 				table.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
 				if (rejectDate != null)
 					table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column, row);
@@ -131,6 +156,17 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 			
+		return form;
+	}
+	
+	private Form getNavigationForm() throws RemoteException {
+		Form form = new Form();
+		form.setEventListener(ChildCareEventListener.class);
+		
+		DropdownMenu statuses = getRejectedStatuses();
+		statuses.setToSubmit();
+		form.add(statuses);
+		
 		return form;
 	}
 	

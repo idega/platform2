@@ -28,6 +28,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected static final String PARAMETER_TO = "cc_to";
 	protected static final String PARAMETER_SORT_BY = "cc_sort_by";
 	protected static final String PARAMETER_SEASON = "cc_season";
+	protected static final String PARAMETER_STATUS = "cc_status";
 
 	protected int _childcareID = -1;
 	protected School _provider;
@@ -43,6 +44,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected IWTimestamp toTimestamp;
 	protected Boolean hasPrognosis;
 	protected boolean _outDatedPrognosis = false;
+	protected String _status;
 
 	public CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneUserBusiness.class);
@@ -266,6 +268,13 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	/**
 	 * @return String
 	 */
+	public String getParameterStatus() {
+		return PARAMETER_STATUS;
+	}
+
+	/**
+	 * @return String
+	 */
 	public String getParameterSortBy() {
 		return PARAMETER_SORT_BY;
 	}
@@ -275,6 +284,13 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public String getParameterTo() {
 		return PARAMETER_TO;
+	}
+
+	/**
+	 * @return String
+	 */
+	public String getStatus() {
+		return _status;
 	}
 
 	/**
@@ -296,6 +312,14 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public IWTimestamp getToTimestamp() {
 		return toTimestamp;
+	}
+
+	/**
+	 * Sets the status.
+	 * @param status The status to set
+	 */
+	public void setStatus(String status) {
+		_status = status;
 	}
 
 	/**
