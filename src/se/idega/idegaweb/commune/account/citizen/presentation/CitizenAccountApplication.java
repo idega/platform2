@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.45 2003/01/11 08:19:05 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.46 2003/01/11 11:28:19 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,11 +32,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/01/11 08:19:05 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/11 11:28:19 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.45 $
+ * @version $Revision: 1.46 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -586,7 +586,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, 1);
 		table.add(getSingleInput(iwc, SSN_KEY, 12, true), 3, 1);
 		table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, 2);
-		table.add(getSingleInput(iwc, EMAIL_KEY, 40, false), 3, 2);
+		table.add(getSingleInput(iwc, EMAIL_KEY, 50, false), 3, 2);
 		table.add(getHeader(PHONE_HOME_KEY, PHONE_HOME_DEFAULT), 1, 3);
 		table.add(getSingleInput(iwc, PHONE_HOME_KEY, 20, false), 3, 3);
 		table.add(getHeader(PHONE_WORK_KEY, PHONE_WORK_DEFAULT), 1, 4);
