@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountChangePassword.java,v 1.2 2005/03/25 11:22:33 laddi Exp $ Created on
+ * $Id: CitizenAccountChangePassword.java,v 1.3 2005/03/29 06:00:45 laddi Exp $ Created on
  * 24.3.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -172,6 +172,8 @@ public class CitizenAccountChangePassword extends CommuneBlock {
 			home.setPageToOpen(homepage);
 			table.add(home, 1, row);
 		}
+		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+		table.add(getHelpButton("change_password_help_key"), 1, row);
 		
 		add(form);
 	}

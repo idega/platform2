@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/03/22 13:39:23 $ by $Author: anna $
+ * Last modified: $Date: 2005/03/29 06:00:45 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.77 $
+ * @version $Revision: 1.78 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -187,9 +187,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		addSimpleInputs(table, iwc);
 		table.setHeight(table.getRows() + 1, 12);
-		SubmitButton button = getSubmitButton(SIMPLE_FORM_SUBMIT_KEY, SIMPLE_FORM_SUBMIT_DEFAULT);
+		SubmitButton button = getSubmitButton(SIMPLE_FORM_SUBMIT_KEY + "_button", SIMPLE_FORM_SUBMIT_DEFAULT);
 		table.add(button, 1, table.getRows() + 1);
 		accountForm.setToDisableOnSubmit(button, true);
+		accountForm.addParameter(SIMPLE_FORM_SUBMIT_KEY, Boolean.TRUE.toString());
 		add(accountForm);
 	}
 	

@@ -487,6 +487,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			home.setPageToOpen(homepage);
 			table.add(home, 1, row);
 		}
+		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
+		table.add(getHelpButton("preferences_help_key"), 1, row);
 		add(form);
 	}
 
