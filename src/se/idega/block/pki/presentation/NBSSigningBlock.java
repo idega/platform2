@@ -18,6 +18,7 @@ import se.nexus.nbs.sdk.servlet.ServletUtil;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -52,8 +53,8 @@ public class NBSSigningBlock extends Block implements Builderaware{
 	
 	public void main(IWContext iwc) throws Exception{
 		try{
-		
-			add(new Text("<h2>Sign Contract</h2>"));
+			IWResourceBundle iwrb = getResourceBundle(iwc);
+			add(new Text(iwrb.getLocalizedString("nbssb_signcon","Sign Contract")));
 			
 			if (iwc.isInEditMode() || iwc.isInPreviewMode()){
 				return;
@@ -77,7 +78,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 					break;
 				
 				case NBSSignedEntity.ACTION_END:
-					add(new Text("Forwarding..."));				
+					add(new Text(iwrb.getLocalizedString("nbssb_forwarding","Forwarding..."));				
 					break;
 				
 			}
@@ -111,7 +112,7 @@ public class NBSSigningBlock extends Block implements Builderaware{
 					errorMsg = "NBS Error";	
 					break;											
 			}
-			add(new Text(errorMsg + "( Error code: " + ex.getCode() + ")"));			
+			add(new Text(iwrb.getLocalizedString("NBSException_code_"+ex.getCode(),errorMsg+" ErrorCode: "+ex.getCode())));			
 			
 		}catch(Exception ex){
 			ex.printStackTrace();
