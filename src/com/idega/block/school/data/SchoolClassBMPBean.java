@@ -324,6 +324,16 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	public Collection ejbFindBySeasonAndYear(SchoolSeason schoolSeason,SchoolYear schoolYear)throws FinderException {
 	return ejbFindBySeasonAndYear(((Integer)schoolSeason.getPrimaryKey()).intValue(),((Integer)schoolYear.getPrimaryKey()).intValue());
   }
+	
+  public Collection ejbFindBySchoolAndSchoolTypeAndSeason(int schoolID,int schoolTypeID,int seasonID,boolean showSubGroups)throws FinderException{
+  	IDOQuery query = idoQueryGetSelect().appendWhereEquals(SCHOOL,schoolID).appendWhereEquals(SCHOOLTYPE,schoolTypeID);
+  	if(seasonID>0)
+  		query.appendWhereEquals(SEASON,seasonID);
+  	if(!showSubGroups)
+  		query.appendWhereEquals(COLUMN_SUB_GROUP,false);
+  	return super.idoFindPKsByQuery(query);
+  }
+  	
   
   public Collection ejbFindBySeasonAndYear(int schoolSeasonID,int schoolYearID)throws FinderException {
 		IDOQuery query = idoQuery();

@@ -1,5 +1,9 @@
 package com.idega.block.school.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public class SchoolClassHomeImpl extends com.idega.data.IDOFactory implements SchoolClassHome
 {
@@ -250,4 +254,16 @@ public int getNumberOfStudentsInClass(int p0)throws com.idega.data.IDOException{
 }
 
 
+	/* (non-Javadoc)
+	 * @see com.idega.block.school.data.SchoolClassHome#findBySchoolAndSchoolTypeAndSeason(int, int, int, boolean)
+	 */
+	public Collection findBySchoolAndSchoolTypeAndSeason(int schoolID,
+			int schoolTypeID, int seasonID, boolean showSubGroups)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassBMPBean)entity).ejbFindBySchoolAndSchoolTypeAndSeason(schoolID,
+				schoolTypeID,  seasonID, showSubGroups);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

@@ -1,5 +1,7 @@
 package com.idega.block.school.business;
 
+import java.util.Collection;
+
 
 public interface SchoolBusiness extends com.idega.business.IBOService
 {
@@ -61,6 +63,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection findSchoolClassesBySchoolAndSeasonAndYears(int p0,int p1,java.lang.String[] p2,boolean p3) throws java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesBySchoolAndTeacher(int p0,int p1) throws java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesBySchoolAndYear(int p0,int p1) throws java.rmi.RemoteException;
+ public Collection findSchoolClassesBySchoolAndSchoolTypeAndSeason(int schoolID,int schoolTypeID, int schoolSeasonID, boolean showSubGroups)throws java.rmi.RemoteException;
  public java.util.Collection findSchoolClassesByTeacher(int p0) throws java.rmi.RemoteException;
  public java.util.Collection findSchoolYearsBySchoolCategory(java.lang.String p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findStudentsBySchoolAndSeason(int p0,int p1) throws java.rmi.RemoteException;
