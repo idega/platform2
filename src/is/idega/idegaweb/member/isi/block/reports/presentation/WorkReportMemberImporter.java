@@ -91,8 +91,8 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedString("workreportimporter.start", "start"));
 		submit.setAsImageButton(true);
 
-		SubmitButton confirm = new SubmitButton(iwrb.getLocalizedString("workreportimporter.confirm", "confirm"),"MEMBER_IMPORT_CONFIRM");
-		SubmitButton reject = new SubmitButton(iwrb.getLocalizedString("workreportimporter.reject", "reject"),"MEMBER_IMPORT_REJECT");
+		SubmitButton confirm = new SubmitButton("MEMBER_IMPORT_CONFIRM",iwrb.getLocalizedString("workreportimporter.confirm", "confirm"));
+		SubmitButton reject = new SubmitButton("MEMBER_IMPORT_REJECT",iwrb.getLocalizedString("workreportimporter.reject", "reject"));
 		t.add(confirm,2,i);
 		t.add(reject,2,i);
 			
