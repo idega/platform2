@@ -32,7 +32,7 @@ private boolean limitNumberOfImages=true;
 private int numberOfDisplayedImages=9;
 private int iNumberInRow = 3; //iXXXX for int
 private int ifirst = 0;
-private int maxImageWidth =100;
+private int maxImageWidth = 140;
 private boolean limitImageWidth=true;
 private String callingModule = "image_id";
 
@@ -264,7 +264,7 @@ public void main(ModuleInfo modinfo)throws Exception{
              handler = (ImageHandler) modinfo.getSessionAttribute("handler");
           }
           else if( "use".equalsIgnoreCase(action) ){
-            modinfo.setSessionAttribute("image_id",callingModule);
+            modinfo.setSessionAttribute(callingModule,imageId);
             //debug is this legal? check if opened from another page or not. close or not
             Page parent = getParentPage();
             parent.close();
@@ -489,6 +489,8 @@ private Table displayCatagory( ImageEntity[] imageEntity )  throws SQLException 
   int k = 0;
   Image image;
 
+  this.limitImageWidth = true;
+
   if( limitNumberOfImages ) k = numberOfDisplayedImages;
   else k = imageEntity.length;
 
@@ -590,7 +592,7 @@ public void setMaxImageWidth(int maxImageWidth){
 }
 
 public void limitImageWidth( boolean limitImageWidth ){
-  this.limitImageWidth=true;
+  this.limitImageWidth=limitImageWidth;
 }
 
 public void setTableWidth(int width){

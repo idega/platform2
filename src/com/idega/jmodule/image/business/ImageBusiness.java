@@ -33,6 +33,7 @@ public class ImageBusiness  {
 
   public static int IM_BROWSER_WIDTH = 800;
   public static int IM_BROWSER_HEIGHT = 600;
+  public static int IM_MAX_WIDTH = 140;
 
 public static Properties getBundleProperties(ModuleInfo modinfo) throws FileNotFoundException,IOException{
   //IWMainApplication application = getApplication();

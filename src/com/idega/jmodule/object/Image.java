@@ -20,7 +20,7 @@ public class Image extends ModuleObject{
 
 private Script theAssociatedScript;
 private String overImageUrl;
-private int maxImageWidth = 200;
+private int maxImageWidth = 140;
 private boolean limitImageWidth = false;
 private int imageId = -1;
 private ModuleObject tableOrImage = null;
@@ -100,16 +100,14 @@ public Image(String url,String name,int width,int height){
 */
 
 public Image(int imageId) throws SQLException{
+  this.imageId = imageId;
+  setBorder(0);
 /*  super();
   this.imageId = imageId;
   String URIString = "/servlet/imageModule";
   URIString = URIString+"?image_id="+imageId;
   setURL(URIString);
   setBorder(0);*/
-  this.imageId = imageId;
-  setBorder(0);
-  setTableOrImage();
-
 
 }
 
@@ -204,14 +202,20 @@ Table imageTable = null;
     String width = image.getWidth();
     String height = image.getHeight();
 
-    if( (width!=null) && (!width.equalsIgnoreCase("")) && (!width.equalsIgnoreCase("-1")) ) {
-      theImage.setWidth(width);
+    if(limitImageWidth){
+        System.out.println("ImageViewer : LIMITIMAGEWIDTH XXXXXXXXXXXXXXXXXXXXXXXXXXX");
+      theImage.setMaxImageWidth(maxImageWidth);
     }
-    if( (height!=null) && (!height.equalsIgnoreCase("")) && (!height.equalsIgnoreCase("-1")) ) {
-      theImage.setHeight(height);
+    else{
+      if( (width!=null) && (!width.equalsIgnoreCase("")) && (!width.equalsIgnoreCase("-1")) ) {
+        theImage.setWidth(width);
+      }
+      if( (height!=null) && (!height.equalsIgnoreCase("")) && (!height.equalsIgnoreCase("-1")) ) {
+        theImage.setHeight(height);
+      }
     }
 
-    if( limitImageWidth ) theImage.setMaxImageWidth(maxImageWidth);
+
 
     if ( (texti!=null) && (!"".equalsIgnoreCase(texti)) ){
       imageTable = new Table(1, 2);
@@ -244,8 +248,8 @@ Table imageTable = null;
 
   }
   catch(Exception e){
-  e.printStackTrace(System.err);
-  System.out.println(e.getMessage());
+    e.printStackTrace(System.err);
+    System.out.println(e.getMessage());
   }
 
 }
@@ -256,13 +260,16 @@ public void setMaxImageWidth(int maxImageWidth){
 }
 
 public void limitImageWidth( boolean limitImageWidth ){
-  this.limitImageWidth=true;
+  this.limitImageWidth=limitImageWidth;
 }
 
 public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	//if( doPrint(modinfo) ){
 		if (getLanguage().equals("HTML")){
+                  if( imageId!=-1 )  setTableOrImage();
+
+                  if(limitImageWidth) setWidth(maxImageWidth);
 
 			//if (getInterfaceStyle().equals("something")){
 			//}
@@ -289,11 +296,6 @@ public void print(ModuleInfo modinfo)throws IOException{
 
                         }
                         else{
-
-                           if(limitImageWidth){
-                           setWidth(maxImageWidth);
-                           setHeight("");
-                          }
                           tableOrImage.print(modinfo);
                         }
 				//println("</img>");
