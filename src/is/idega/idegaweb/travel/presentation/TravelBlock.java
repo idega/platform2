@@ -51,6 +51,8 @@ public class TravelBlock extends Block {
   protected boolean expiredLogin = false;
   
   public static final String IW_BUNDLE_IDENTIFIER = "is.idega.travel";
+  
+  private static final String TEST_MODE_PARAMETER_NAME = "test_mode";
 
 	public TravelBlock() {
 		super();
@@ -277,6 +279,11 @@ public class TravelBlock extends Block {
   		tsm = getTravelSessionManagerStatic(iwc);
   	}
   	return tsm;
+  }
+  
+  protected boolean isTestMode() throws RemoteException {
+  	String par = getBundle().getProperty(TEST_MODE_PARAMETER_NAME);
+  	return (par != null && par.equalsIgnoreCase("yes"));
   }
 
   public static TravelSessionManager getTravelSessionManagerStatic(IWContext iwc) throws RemoteException{
