@@ -27,8 +27,6 @@ public class ForumFlatLayout extends Forum {
 	private int initialHeaderIndent = 10;
 	private int indent = 15;
 	private int _threadID = -1;
-	private boolean _showTopicName = true;
-	private String _headingColor;
 	
 	//finds all threads and their children, displays children (answer to a thread) following their parent (thread)  - ac
 	protected int displaySelectedForum(IWContext iwc, Table table, int row, ForumData thread, int depth) {

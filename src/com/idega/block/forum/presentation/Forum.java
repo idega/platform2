@@ -33,7 +33,6 @@ import com.idega.presentation.StatefullPresentation;
 import com.idega.presentation.StatefullPresentationImplHandler;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
-import com.idega.presentation.text.LinkContainer;
 import com.idega.presentation.text.Text;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
@@ -65,7 +64,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private int _numberOfThreads = 10;
 	private String _spaceBetween = "8";
 	private boolean _showOverviewLink = true;
-	private boolean _showTopicName = false;
+	protected boolean _showTopicName = false;
 	private boolean _showResponses = true;
 
 	protected int _state = ForumBusiness.FORUM_TOPICS;
@@ -88,7 +87,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	protected static final String HEADER_ROW_STYLE = "HeaderRowStyle";
 	protected static final String BODY_ROW_STYLE = "BodyRowStyle";
 	
-	private String _headingColor;
+	protected String _headingColor;
 
 	private String _width;
 	private ICPage _page;
@@ -362,6 +361,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 				table.add(formatText("," + Text.NON_BREAKING_SPACE), 1, row);
 				table.add(getThreadDate(iwc, thread, TEXT_STYLE), 1, row);
 				table.add(Text.getBreak(), 1, row);
+				table.add(getThreadImage(), 1, row);
+				table.add(Text.getNonBrakingSpace(), 1, row);
 				table.add(getThreadLink(thread, TOPIC_LINK_STYLE), 1, row);
 				if (_showResponses) {
 					table.add(formatText(Text.NON_BREAKING_SPACE), 1, row);
@@ -766,12 +767,14 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			_selectedObjectID = -1;
 		}
 
-		try {
-			_state = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_STATE));
+		if (_state != ForumBusiness.FORUM_COLLECTION) {
+			try {
+				_state = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_STATE));
+			}
+			catch (NumberFormatException e) {
+			}
 		}
-		catch (NumberFormatException e) {
-		}
-
+		
 		try {
 			_topicID = Integer.parseInt(iwc.getParameter(ForumBusiness.PARAMETER_TOPIC_ID));
 		}
