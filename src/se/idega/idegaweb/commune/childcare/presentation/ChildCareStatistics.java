@@ -26,12 +26,14 @@ import com.idega.core.location.business.CommuneBusiness;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.ScrollTable;
 import com.idega.presentation.ui.SelectDropdownDouble;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
@@ -177,9 +179,17 @@ public class ChildCareStatistics extends ChildCareBlock {
 	}
 */
 	
-	private Table getAllProviderTable(IWContext iwc, boolean isFirstHandOnly) throws RemoteException {
-		Table table = getTable(8);
-		table.setWidth(Table.HUNDRED_PERCENT);
+	private PresentationObject getAllProviderTable(IWContext iwc, boolean isFirstHandOnly) throws RemoteException {
+		//Table table = getTable(8);
+		
+		ScrollTable table = new ScrollTable();
+		table.setCellpadding(getCellpadding());
+		table.setCellspacing(getCellspacing());
+		table.setColumns(8);
+		table.setRowColor(1, getHeaderColor());
+		table.setScrollLayerHeaderRowThickness(47);
+		table.setWidth(600);
+		table.setHeight(400);
 		int row = 1;
 		int column = 1;
 
