@@ -864,19 +864,19 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     if ( order.equalsIgnoreCase("tournament_handicap") ) {
       order = "9";
     }
-    if ( order.equalsIgnoreCase("holes_played") ) {
+    else if ( order.equalsIgnoreCase("holes_played") ) {
       order = "10";
     }
-    if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
+    else if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
       order = "11";
     }
-    if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
+    else if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
       order = "12";
     }
-    if ( order.equalsIgnoreCase("total_points") ) {
+    else if ( order.equalsIgnoreCase("total_points") ) {
       order = "13 desc";
     }
-    if ( order.equalsIgnoreCase("difference") ) {
+    else if ( order.equalsIgnoreCase("difference") ) {
       order = "14";
     }
 
@@ -897,19 +897,19 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     if ( order.equalsIgnoreCase("holes_played") ) {
       order = "13";
     }
-    if ( order.equalsIgnoreCase("round_handicap") ) {
+    else if ( order.equalsIgnoreCase("round_handicap") ) {
       order = "14";
     }
-    if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
+    else if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
       order = "15";
     }
-    if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
+    else if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
       order = "16";
     }
-    if ( order.equalsIgnoreCase("total_par") ) {
+    else if ( order.equalsIgnoreCase("total_par") ) {
       order = "18";
     }
-    if ( order.equalsIgnoreCase("difference") ) {
+    else if ( order.equalsIgnoreCase("difference") ) {
       order = "19";
     }
 
@@ -940,19 +940,19 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     if ( order.equalsIgnoreCase("holes_played") ) {
       order = "13";
     }
-    if ( order.equalsIgnoreCase("round_handicap") ) {
+    else if ( order.equalsIgnoreCase("round_handicap") ) {
       order = "14";
     }
-    if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
+    else if ( order.equalsIgnoreCase("strokes_without_handicap") ) {
       order = "15";
     }
-    if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
+    else if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
       order = "16";
     }
-    if ( order.equalsIgnoreCase("total_par") ) {
+    else if ( order.equalsIgnoreCase("total_par") ) {
       order = "18";
     }
-    if ( order.equalsIgnoreCase("difference") ) {
+    else if ( order.equalsIgnoreCase("difference") ) {
       order = "19";
     }
 
