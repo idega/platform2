@@ -78,7 +78,6 @@ public class AddressAdder extends TravelWindow {
     }catch (SQLException sql) {
       sql.printStackTrace();
     }
-    System.err.println("productId : "+_productId);
   }
 
   private void error(IWContext iwc) {
@@ -128,7 +127,6 @@ public class AddressAdder extends TravelWindow {
             }
           }
         }catch (Exception e) {
-          e.printStackTrace(System.err);
           // Error, nenni ekki að eyða loggnum í svona vitleysu
         }
       }

@@ -35,6 +35,7 @@ public class CreditcardRefunderWindow extends TravelWindow {
 
   public CreditcardRefunderWindow() {
     this.setTitle("idegaWeb Travel");
+    this.setStatus(true);
   }
 
   public void main(IWContext iwc){
