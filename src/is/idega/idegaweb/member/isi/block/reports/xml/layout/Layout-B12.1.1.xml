@@ -211,7 +211,7 @@
       <textField isStretchWithOverflow="true" isBlankWhenNull="true">
         <reportElement positionType="Float" mode="Opaque" x="0" y="1" width="530" height="19" backcolor="#9eb400" />
         <textElement textAlignment="Center">
-          <font fontName="sansserif" size="16" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
+          <font fontName="Helvetica" size="16" isBold="true" isUnderline="true" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false" />
         </textElement>
         <textFieldExpression class="java.lang.String">$P{ReportTitle}</textFieldExpression>
       </textField>
