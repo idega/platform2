@@ -544,10 +544,12 @@ public class PublicBooking extends Block  {
 
 
 //    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
-    ProductPrice[] pPrices = {};
+    ProductPrice[] prices = {};
+    ProductPrice[] misc = {};
     Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp, Integer.parseInt(depAddressId));
     if (tFrame != null && depAddressId != null) {
-      pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
+      prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
+      misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
     }
 
     Table table = new Table();
@@ -669,18 +671,32 @@ public class PublicBooking extends Block  {
       int current = 0;
       Currency currency = null;
 
+      int pricesLength = prices.length;
+      int miscLength = misc.length;
+      ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
+      for (int i = 0; i < pricesLength; i++) {
+        pPrices[i] = prices[i];
+      }
+      for (int i = 0; i < miscLength; i++) {
+        pPrices[i+pricesLength] = misc[i];
+      }
+
       for (int i = 0; i < pPrices.length; i++) {
         ++row;
         table.setAlignment(1,row,"right");
         table.setAlignment(2,row,"left");
 
         try {
-          current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+          if (i >= pricesLength) {
+            current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+(i-pricesLength)));
+          }else {
+            current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+            total += current;
+          }
         }catch (NumberFormatException n) {
           current = 0;
         }
 
-        total += current;
         try {
           if (i == 0)
           currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());

@@ -160,6 +160,15 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     return getProductPrices(productId, timeframeId, -1, netBookingOnly);
   }
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
+    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 0);
+  }
+  public static ProductPrice[] getMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
+    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 1);
+  }
+  //                           -1 = both
+  // Count as person status ... 0 = selects when COUNT_AS_PERSON = 'Y' or NULL
+  //                            1 = selects when COUNT_AS_PERSON = 'N'
+  private static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus) {
       ProductPrice[] prices = {};
       try {
         ProductPrice price = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
@@ -186,6 +195,17 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
             SQLQuery.append(ptmTable+"."+timeframe.getIDColumnName()+" = "+timeframeId);
             SQLQuery.append(" AND ");
             SQLQuery.append(ptmTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
+            SQLQuery.append(" AND ");
+          }
+          if (countAsPersonStatus == 0) {
+            SQLQuery.append("(");
+            SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" = 'Y'");
+            SQLQuery.append(" OR ");
+            SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" is null");
+            SQLQuery.append(")");
+            SQLQuery.append(" AND ");
+          }else if (countAsPersonStatus == 1) {
+            SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" = 'N'");
             SQLQuery.append(" AND ");
           }
           if (addressId != -1) {

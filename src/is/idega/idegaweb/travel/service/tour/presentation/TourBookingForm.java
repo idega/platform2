@@ -132,16 +132,19 @@ public class TourBookingForm extends TravelManager {
       }
 
 
-      ProductPrice[] pPrices = {};
+      ProductPrice[] prices = {};
+      ProductPrice[] misc = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, addressId);
 //      Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
       if (tFrame != null) {
-        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
+        prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
+        misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, false);
       }else{
         debug("tFrame == null");
       }
 
-      if (pPrices.length > 0) {
+
+      if (prices.length > 0) {
 
           int row = 1;
           int textInputSizeLg = 38;
@@ -369,6 +372,15 @@ public class TourBookingForm extends TravelManager {
           pTable.add(unitPrice, 2, 1);
           pTable.add(amount, 3, 1);
 
+          int pricesLength = prices.length;
+          int miscLength = misc.length;
+          ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
+          for (int i = 0; i < pricesLength; i++) {
+            pPrices[i] = prices[i];
+          }
+          for (int i = 0; i < miscLength; i++) {
+            pPrices[i+pricesLength] = misc[i];
+          }
 
           for (int i = 0; i < pPrices.length; i++) {
               try {
@@ -384,8 +396,24 @@ public class TourBookingForm extends TravelManager {
 
                   pPriceMany = new TextInput("priceCategory"+i ,"0");
                     pPriceMany.setSize(5);
-                    //pPriceMany.setAsNotEmpty("T - Ekki tómt");
-                    //pPriceMany.setAsIntegers("T - Bara tölur takk");
+
+                  if (i == pricesLength) {
+                    Text tempTexti = (Text) theBoldText.clone();
+                      tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
+                    table.mergeCells(1, row, 2, row);
+                    table.add(tempTexti, 1, row);
+                    ++row;
+                  }else if (i == 0) {
+                    Text tempTexti = (Text) theBoldText.clone();
+                      tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
+                      tempTexti.setUnderline(true);
+                    table.mergeCells(1, row, 2, row);
+                    table.add(tempTexti, 1, row);
+                    ++row;
+                  }
+                  if (i >= pricesLength) {
+                    pPriceMany.setName("miscPriceCategory"+(i-pricesLength));
+                  }
 
                   if (_booking != null) {
                     if (entries != null) {
@@ -431,7 +459,6 @@ public class TourBookingForm extends TravelManager {
 
 
       //                    pTable.add();
-
                   table.add(pTable, 2, row);
 
               }catch (SQLException sql) {
@@ -464,6 +491,7 @@ public class TourBookingForm extends TravelManager {
            table.add(new HiddenInput("available",Integer.toString(available)),2,row);
 
           ++row;
+          table.add(Text.NON_BREAKING_SPACE,1, row);
 
           if (super.user != null) {
             ++row;
@@ -676,10 +704,12 @@ public class TourBookingForm extends TravelManager {
         addressId = ((TravelAddress) addresses.get(0)).getID();
       }
 
-      ProductPrice[] pPrices = {};
+      ProductPrice[] prices = {};
+      ProductPrice[] misc = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, stamp, addressId);
       if (tFrame != null) {
-        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, true);
+        prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, true);
+        misc = ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), addressId, true);
       }
 
       Text availSeats = (Text) theText.clone();
@@ -704,11 +734,21 @@ public class TourBookingForm extends TravelManager {
       Text pleaseFindAnotherDay = (Text) theText.clone();
         pleaseFindAnotherDay.setText(iwrb.getLocalizedString("travel.please_find_another_day","Please find another day"));
 
-      if (pPrices.length > 0) {
+      if (prices.length > 0) {
           int row = 1;
           int textInputSizeLg = 28;
           int textInputSizeMd = 28;//18;
           int textInputSizeSm = 28;//5;
+
+          Table pTable;
+          Table pTableToClone = new Table();
+          int pWidthLeft = 60;
+          int pWidthCenter = 60;
+          int pWidthRight = 75;
+            pTableToClone.setWidth(1, Integer.toString(pWidthLeft));
+            pTableToClone.setWidth(2, Integer.toString(pWidthCenter));
+            pTableToClone.setWidth(3, Integer.toString(pWidthRight));
+            pTableToClone.setCellpaddingAndCellspacing(0);
 
           HorizontalRule hr = new HorizontalRule("100%");
             hr.setColor(WHITE);
@@ -864,19 +904,24 @@ public class TourBookingForm extends TravelManager {
           Text space = (Text) super.theSmallBoldText.clone();
             space.setText(Text.NON_BREAKING_SPACE);
 
-          Table priceTable = new Table();
-            priceTable.setBorder(0);
-            priceTable.setCellpadding(0);
-            priceTable.setCellspacing(6);
-          int pRow = 1;
+//          Table priceTable = new Table();
+//            priceTable.setBorder(0);
+//            priceTable.setCellpadding(0);
+//            priceTable.setCellspacing(6);
+//          int pRow = 1;
 
-          priceTable.add(count, 1, pRow);
-          priceTable.add(unitPrice, 2, pRow);
-          priceTable.add(amount, 3, pRow);
+          pTable = (Table) pTableToClone.clone();
+          pTable.add(count, 1, 1);
+          pTable.add(unitPrice, 2, 1);
+          pTable.add(amount, 3, 1);
+
+//          priceTable.add(count, 1, pRow);
+//          priceTable.add(unitPrice, 2, pRow);
+//          priceTable.add(amount, 3, pRow);
 
           table.add(space, 1, row);
-          table.add(priceTable, 2, row);
-          table.mergeCells(2, row, 2, row + pPrices.length +1);
+          table.add(pTable, 2, row);
+//          table.mergeCells(2, row, 2, row + prices.length + misc.length + 1);
 
 
           BookingEntry[] entries = null;
@@ -889,10 +934,21 @@ public class TourBookingForm extends TravelManager {
             entries = getTourBooker(iwc).getBookingEntries(_booking);
           }
 
+          int pricesLength = prices.length;
+          int miscLength = misc.length;
+          ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
+          for (int i = 0; i < pricesLength; i++) {
+            pPrices[i] = prices[i];
+          }
+          for (int i = 0; i < miscLength; i++) {
+            pPrices[i+pricesLength] = misc[i];
+          }
+
           for (int i = 0; i < pPrices.length; i++) {
               try {
                   ++row;
-                  ++pRow;
+                  pTable = (Table) pTableToClone.clone();
+//                  ++pRow;
                   category = pPrices[i].getPriceCategory();
                   int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,_product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
     //              pPrices[i].getPrice();
@@ -904,6 +960,26 @@ public class TourBookingForm extends TravelManager {
 
                   pPriceMany = new TextInput("priceCategory"+i ,"0");
                     pPriceMany.setSize(5);
+
+                  if (i == pricesLength) {
+                    Text tempTexti = (Text) theBoldText.clone();
+                      tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
+                    //table.mergeCells(1, row, 2, row);
+                    table.setAlignment(1, row, "RIGHT");
+                    table.add(tempTexti, 1, row);
+                    ++row;
+                  }else if (i == 0) {
+                    Text tempTexti = (Text) theBoldText.clone();
+                      tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
+                      tempTexti.setUnderline(true);
+                    //table.mergeCells(1, row, 2, row);
+                    table.setAlignment(1, row, "RIGHT");
+                    table.add(tempTexti, 1, row);
+                    ++row;
+                  }
+                  if (i >= pricesLength) {
+                    pPriceMany.setName("miscPriceCategory"+(i-pricesLength));
+                  }
 
                   if (_booking != null) {
                     if (entries != null) {
@@ -932,14 +1008,15 @@ public class TourBookingForm extends TravelManager {
 
 
                   table.add(pPriceCatNameText, 1,row);
-                  priceTable.add(pPriceMany,1,pRow);
-                  priceTable.add(pPriceText, 3,pRow);
+                  pTable.add(pPriceMany,1,1);
+                  pTable.add(pPriceText, 3,1);
 
                   txtPrice = (Text) theText.clone();
                     txtPrice.setText(Integer.toString(price));
-                  priceTable.add(txtPrice, 2,pRow);
+                  pTable.add(txtPrice, 2,1);
 //                  table.add(txtPerPerson,3,row);
 
+                  table.add(pTable, 2, row);
                   table.setAlignment(1,row,"right");
                   table.setAlignment(2,row,"left");
                   table.setAlignment(3,row,"left");
@@ -952,19 +1029,22 @@ public class TourBookingForm extends TravelManager {
           }
 
           ++row;
-          ++pRow;
+//          ++pRow;
 
           table.add(totalText,1,row);
           if (_booking != null) {
             TotalPassTextInput.setContent(Integer.toString(totalCount));
             TotalTextInput.setContent(Integer.toString(totalSum));
           }
-          priceTable.add(TotalPassTextInput,1,pRow);
-          priceTable.add(TotalTextInput,3,pRow);
-          priceTable.setColumnAlignment(2, "right");
+          pTable = (Table) pTableToClone.clone();
+          pTable.add(TotalPassTextInput,1,1);
+          pTable.add(TotalTextInput,3,1);
+          pTable.setColumnAlignment(2, "right");
           table.setAlignment(1,row,"right");
           table.setAlignment(2,row,"left");
+          table.add(pTable, 2, row);
 
+          //priceTable.setBorder(1);
 
           ++row;
           table.mergeCells(1,row,6,row);
@@ -1133,7 +1213,7 @@ public class TourBookingForm extends TravelManager {
               table.add(ccSlash,5,row);
               table.add(year,6,row);
 
-              table.setBorder(0);
+//              table.setBorder(1);
             //            table.setWidth(4,"2");
               table.setAlignment(4,row,"right");
               table.setWidth(5,"2");
@@ -1595,9 +1675,11 @@ public class TourBookingForm extends TravelManager {
 
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
+      ProductPrice[] misc = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, iAddressId);
       if (tFrame != null) {
         pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
+        misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
       }
       int lbookingId = -1;
 
@@ -1606,23 +1688,25 @@ public class TourBookingForm extends TravelManager {
 
       try {
         int[] manys = new int[pPrices.length];
+        int[] manyMiscs = new int[misc.length];
         for (int i = 0; i < manys.length; i++) {
-            pCat = pPrices[i].getPriceCategory();
-            many = iwc.getParameter("priceCategory"+i);
-            System.err.println("count yes ? = "+pCat.getCountAsPerson());
-            if (pCat.getCountAsPerson()) {
-              if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
-                manys[i] = Integer.parseInt(many);
-                iMany += Integer.parseInt(many);
-              }else {
-                manys[i] = 0;
-              }
-            }else {
-              if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
-                manys[i] = Integer.parseInt(many);
-              }
-            }
+          many = iwc.getParameter("priceCategory"+i);
+          if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
+            manys[i] = Integer.parseInt(many);
+            iMany += Integer.parseInt(many);
+          }else {
+            manys[i] = 0;
+          }
         }
+        for (int i = 0; i < manyMiscs.length; i++) {
+          many = iwc.getParameter("miscPriceCategory"+i);
+          if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
+            manyMiscs[i] = Integer.parseInt(many);
+          }else {
+            manyMiscs[i] = 0;
+          }
+        }
+
 
         try {
           iHotelId = Integer.parseInt(hotelPickupPlaceId);
@@ -1745,6 +1829,15 @@ public class TourBookingForm extends TravelManager {
                   bEntry.store();
                 }
               }
+              for (int i = 0; i < misc.length; i++) {
+                if (manyMiscs[i] != 0) {
+                  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
+                    bEntry.setProductPriceId(misc[i].getID());
+                    bEntry.setBookingId(bookingIds[k]);
+                    bEntry.setCount(manyMiscs[i]);
+                  bEntry.store();
+                }
+              }
             }else {
               BookingEntry bEntry;
               ProductPrice price;
@@ -1770,6 +1863,24 @@ public class TourBookingForm extends TravelManager {
                     bEntry.setProductPriceId(pPrices[i].getID());
                     bEntry.setBookingId(bookingIds[k]);
                     bEntry.setCount(manys[i]);
+                  bEntry.store();
+                }
+              }
+              for (int i = 0; i < misc.length; i++) {
+                done = false;
+                for (int j = 0; j < entries.length; j++) {
+                  if (misc[i].getID() == entries[j].getProductPriceId()) {
+                    done = true;
+                    entries[j].setCount(manyMiscs[i]);
+                    entries[j].store();
+                    break;
+                  }
+                }
+                if (!done && manyMiscs[i] != 0) {
+                  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
+                    bEntry.setProductPriceId(misc[i].getID());
+                    bEntry.setBookingId(bookingIds[k]);
+                    bEntry.setCount(manyMiscs[i]);
                   bEntry.store();
                 }
               }
