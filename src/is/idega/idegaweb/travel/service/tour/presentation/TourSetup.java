@@ -248,7 +248,7 @@ public class TourSetup extends TravelManager {
 		Form form = new Form();
 		Table table = getTable();
 		form.add(table);
-		form.maintainParameter(ACTION_PARAMETER);
+		//form.maintainParameter(ACTION_PARAMETER);
 		int row = 1;
 		int empty = 1;
 		
@@ -272,8 +272,10 @@ public class TourSetup extends TravelManager {
 			++row;
 			
 			table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("travel.back", "Back"), ACTION_PARAMETER, ""), 1, row);
-			table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"), ACTION, ACTION_SAVE), 1, row);
+			table.add(new SubmitButton(iwrb.getLocalizedImageButton("travel.back", "Back")), 1, row);
+			table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"), ACTION_PARAMETER, PARAMETER_PRICE ), 1, row);
+			table.add(new HiddenInput(ACTION, ACTION_SAVE), 1, row);
+			
 			table.setRowColor(row, GRAY);
 		}catch (Exception fe) {
 			++row;
