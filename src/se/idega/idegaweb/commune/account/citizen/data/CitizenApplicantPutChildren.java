@@ -1,17 +1,11 @@
 package se.idega.idegaweb.commune.account.citizen.data;
 
-import com.idega.data.IDOEntity;
+public interface CitizenApplicantPutChildren extends com.idega.data.IDOEntity
+{
+ public int getApplicationId();
+ public int getCurrentCommuneId();
+ public void initializeAttributes();
+ public void setApplicationId(int p0);
+ public void setCurrentCommuneID(int p0);
 
-/**
- * Last modified: $Date: 2003/10/06 12:29:53 $ by $Author: laddi $
- *
- * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
- */
-public interface CitizenApplicantPutChildren extends IDOEntity {
-    int getApplicationId ();
-    String getCurrentKommun ();
-
-    void setApplicationId (int applicationId);
-    void setCurrentKommun (String currentKommun);
 }

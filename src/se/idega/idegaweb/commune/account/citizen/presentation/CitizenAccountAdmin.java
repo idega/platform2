@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.21 2003/09/08 08:10:07 laddi Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.22 2003/10/22 10:01:39 gimmi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -24,6 +24,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
+import com.idega.core.location.data.Commune;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -42,11 +43,11 @@ import com.idega.util.PersonalIDFormatter;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/09/08 08:10:07 $ by $Author: laddi $
+ * Last modified: $Date: 2003/10/22 10:01:39 $ by $Author: gimmi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -241,8 +242,11 @@ public class CitizenAccountAdmin extends CommuneBlock {
                     (CitizenAccount.PUT_CHILDREN_IN_NACKA_CHILDCARE_KEY)) {
                     try {
                         final CitizenApplicantPutChildren capc = business.findCitizenApplicantPutChildren (id);
+                        Commune commune = business.findCommuneByCommunePK(new Integer(capc.getCurrentCommuneId()));
                         table.add(getSmallHeader(localize(CitizenAccountApplication.CURRENT_KOMMUN_KEY, CitizenAccountApplication.CURRENT_KOMMUN_DEFAULT)), 1, row);
-                        table.add(getSmallText(capc.getCurrentKommun ()), 3, row++);
+                        if (commune != null) {
+                        	table.add(getSmallText(commune.getCommuneName()), 3, row++);
+                        }
                     } catch (FinderException e) {
                         System.err.println (e.getMessage ());
                     }
