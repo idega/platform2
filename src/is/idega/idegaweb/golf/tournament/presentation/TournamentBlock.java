@@ -6,8 +6,6 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import java.util.Enumeration;
-
 import is.idega.idegaweb.golf.moduleobject.GolfTournamentAdminDialog;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
