@@ -130,13 +130,42 @@ public class MemberFamilyLogicBean extends IBOServiceBean {
     }
   }
 
-
-  public boolean isChildOf(User childToCheck,User parent){
-    throw new java.lang.UnsupportedOperationException("Not implemented yet");
+  /**
+   * @returns True if the childToCheck is a child of parent else false
+   */
+  public boolean isChildOf(User childToCheck,User parent)throws RemoteException{
+    if(this.hasPersonGotChildren(parent)){
+      try{
+        Collection children = this.getChildrenFor(parent);
+        Iterator iter = children.iterator();
+        while (iter.hasNext()) {
+          User child = (User)iter.next();
+          if(child.equals(childToCheck)){
+            return true;
+          }
+        }
+      }
+      catch(NoChildrenFound ncf){
+      }
+    }
+    return false;
   }
 
-  public boolean isSpouseOf(User personToCheck,User relatedPerson){
-    throw new java.lang.UnsupportedOperationException("Not implemented yet");
+  /**
+   * @returns True if the personToCheck is a spouse of relatedPerson else false
+   */
+  public boolean isSpouseOf(User personToCheck,User relatedPerson)throws RemoteException{
+    if(this.hasPersonGotSpouse(personToCheck)){
+      try{
+        User spouse = this.getSpouseFor(personToCheck);
+        if(spouse.equals(relatedPerson)){
+          return true;
+        }
+      }
+      catch(NoSpouseFound nsf){
+      }
+    }
+    return false;
   }
 
   public void setAsChildFor(User personToSet,User parent)throws CreateException,RemoteException{
