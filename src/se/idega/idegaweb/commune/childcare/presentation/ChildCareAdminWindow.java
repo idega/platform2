@@ -1450,7 +1450,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void placeInGroup(IWContext iwc) throws RemoteException {
 		int childCareTime = Integer.parseInt(iwc.getParameter(PARAMETER_CHILDCARE_TIME));
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
-		String typeParam = getSession().getParameterSchoolTypeID();
 		int typeID = Integer.parseInt(iwc.getParameter(getSession().getParameterSchoolTypeID()));
 		
 		String subject = localize("child_care.placing_subject","Your child placed in child care.");

@@ -902,7 +902,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			alterValidFromDate(application, application.getFromDate(), locale, user);
 			if (groupID != -1) {
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-				SchoolClassMember mbr = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
+				getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
 				sendMessageToParents(application, subject, body);
 			}
 		}
