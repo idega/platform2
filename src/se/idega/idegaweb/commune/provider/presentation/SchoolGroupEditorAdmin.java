@@ -41,9 +41,9 @@ import com.idega.presentation.ui.RadioButton;
  */
 public class SchoolGroupEditorAdmin extends SchoolGroupEditor {
 	
-	private final static String PARAM_BUNADM = "PARAM_BUNADM";		
+	public final static String PARAM_BUNADM = "PARAM_BUNADM";		
 	private boolean _centralAdmin = false;
-	private IWContext _iwc = null;
+	protected IWContext _iwc = null;
 	
 	
 	public void init(IWContext iwc) throws Exception {
@@ -104,6 +104,7 @@ public class SchoolGroupEditorAdmin extends SchoolGroupEditor {
 		try{
 			Form form2 = super.getNavigationForm();
 			form2.maintainParameter(SchoolCommuneSessionBean.PARAMETER_SCHOOL_ID);
+			form2.maintainParameter(PARAMETER_TYPE_ID);
 			form.add(form2);
 		}catch(NullPointerException ex){
 			//ex.printStackTrace();

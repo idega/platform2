@@ -47,26 +47,26 @@ import com.idega.user.presentation.UserChooser;
  */
 public class SchoolGroupEditor extends ProviderBlock {
 
-	public final static String PARAMETER_ACTION = "sge_action";
+	public final String PARAMETER_ACTION = "sge_action";
 	private final String PARAMETER_GROUP_ID = "sge_group_id";
 	private final String PARAMETER_GROUP_NAME ="sge_group_name";
 	private final String PARAMETER_SCHOOL_YEARS ="sge_school_years";
 	private final String PARAMETER_TEACHERS ="sge_teachers";
-	private final String PARAMETER_SEASON_ID ="sge_season_id";
-	private final String PARAMETER_TYPE_ID ="sge_type_id";
+	protected final String PARAMETER_SEASON_ID ="sge_season_id";
+	public final static String PARAMETER_TYPE_ID ="sge_type_id";
 	private final String PARAMETER_IS_SUBGROUP = "sge_is_subgroup";
 	
-	public final static int ACTION_VIEW = 1;
-	private final int ACTION_EDIT = 2;
+	public final int ACTION_VIEW = 1;
+	protected final int ACTION_EDIT = 2;
 	private final int ACTION_DELETE = 3;
 	private final int ACTION_SAVE = 4;
 	
 	private int _action = ACTION_VIEW;
 	private int _groupID = -1;
 	private SchoolClass _group;
-	private School _provider;
+	protected School _provider;
 
-	public final static String PARAMETER_PROVIDER_ID = "Goran please fix this, ACTION_VIEW and PARAMETER_ACTION";
+	//public final String PARAMETER_PROVIDER_ID = "Goran please fix this, ACTION_VIEW and PARAMETER_ACTION";
 	
 
 	/* (non-Javadoc)
@@ -77,6 +77,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 			_provider = getProvider();
 			parseAction(iwc);
 			
+
 			switch (_action) {
 				case ACTION_VIEW :
 					add(getOverview());
@@ -92,7 +93,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 					saveGroup(iwc);
 					add(getOverview());
 					break;
-			}
+			} 
+
+	
 		}
 		catch (FinderException e) {
 			add(getSmallErrorText(localize("school.no_provider_found", "No provider found for this user...")));
@@ -107,7 +110,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 	
 
 	
-	private Table getOverview() throws RemoteException {
+	protected Table getOverview() throws RemoteException {
 		Table table = new Table(1, 5);
 		table.setCellpadding(0);
 		table.setCellspacing(0);
@@ -130,7 +133,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		return table;
 	}
 	
-	private Table getGroupTable() {
+	protected Table getGroupTable() {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
@@ -235,7 +238,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		return new Parameter("", "");
 	}
 	
-	private Form getEditForm() {
+	protected Form getEditForm() {
 		Form form = new Form();
 		form.addParameter(PARAMETER_GROUP_ID, _groupID);
 		form.addParameter(PARAMETER_ACTION, -1);
@@ -272,8 +275,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		DropdownMenu types = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_TYPE_ID), providerTypes, "getSchoolTypeName"));
 		types.addMenuElementFirst("-1", "");
-		if (_group != null && _group.getSchoolTypeId() != -1)
-			types.setSelectedElement(_group.getSchoolTypeId());
+		setSelectedSchoolType(types);
 		table.add(types, 3, row);
 		
 		table.setHeight(row++, 3);
@@ -288,8 +290,8 @@ public class SchoolGroupEditor extends ProviderBlock {
 		}
 		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SEASON_ID), providerSeasons, "getSchoolSeasonName"));
 		seasons.addMenuElementFirst("-1", "");
-		if (_group != null && _group.getSchoolSeasonId() != -1)
-			seasons.setSelectedElement(_group.getSchoolSeasonId());
+		setSelectedSeason(seasons);
+
 		table.add(seasons, 3, row++);
 		
 		table.setHeight(row++, 3);
@@ -383,6 +385,16 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.add(cancel, 1, row);
 		
 		return form;
+	}
+
+	protected void setSelectedSchoolType(DropdownMenu types) {
+		if (_group != null && _group.getSchoolTypeId() != -1)
+			types.setSelectedElement(_group.getSchoolTypeId());
+	}
+
+	protected void setSelectedSeason(DropdownMenu seasons) {
+		if (_group != null && _group.getSchoolSeasonId() != -1)
+			seasons.setSelectedElement(_group.getSchoolSeasonId());
 	}
 	
 	private void deleteGroup() {
