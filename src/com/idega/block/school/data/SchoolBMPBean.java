@@ -254,7 +254,12 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.setColumn(TERMINATION_DATE, date);
 	}
 	public boolean getCentralizedAdministration() {
-		return ((Boolean) this.getColumnValue(CENTRALIZED_ADMINISTRATION)).booleanValue();
+		boolean isCA = false;
+		Boolean b = (Boolean) this.getColumnValue(CENTRALIZED_ADMINISTRATION));
+		if (b != null) {
+			is CA = b..booleanValue();
+		}
+		return isCA;
 	}
 	public void setCentralizedAdministration(boolean b) {
 		this.setColumn(CENTRALIZED_ADMINISTRATION, b);
