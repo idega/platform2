@@ -469,7 +469,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     runThread = true;
 
     if ( t == null ){
-      t = new Thread(this);
+      t = new Thread(this,"MessengerApplet");
       t.setPriority(t.NORM_PRIORITY);
       t.start();
     }

@@ -44,7 +44,7 @@ public class MessageListener implements Runnable{
   public void start(){
     runThread = true;
     if( t == null ){
-      t = new Thread(this);
+      t = new Thread(this,"MessageListener");
       t.setPriority(t.MIN_PRIORITY);
       t.start();
     }
