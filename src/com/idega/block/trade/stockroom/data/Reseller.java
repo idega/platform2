@@ -4,6 +4,7 @@ import com.idega.data.*;
 import com.idega.core.data.*;
 
 import java.util.List;
+import java.util.Vector;
 import java.sql.SQLException;
 
 /**
@@ -74,6 +75,21 @@ public class Reseller extends GenericEntity {
     return EntityFinder.findRelated(this,Phone.getStaticInstance(Phone.class));
   }
 
+  public List getPhones(int PhoneTypeId) throws SQLException{
+    Vector phones = new Vector();
+    List allPhones = getPhones();
+    if (allPhones != null) {
+      Phone temp = null;
+      for (int i = 0; i < allPhones.size(); i++) {
+        temp = (Phone) allPhones.get(i);
+        if (temp.getPhoneTypeId() == PhoneTypeId) {
+          phones.add(temp);
+        }
+      }
+    }
+    return phones;
+  }
+
   public List getEmails() throws SQLException {
     return EntityFinder.findRelated(this,Email.getStaticInstance(Email.class));
   }
@@ -104,6 +120,28 @@ public class Reseller extends GenericEntity {
   public void setReferenceNumber(String key) {
     setColumn(getColumnNameReferenceNumber(), key);
   }
+
+  public Address getAddress() throws SQLException {
+    Address address = null;
+    List addr = getAddresses();
+    if (addr !=null) {
+      address = (Address) addr.get(addr.size() -1);
+    }
+    return address;
+  }
+
+  public List getAddresses() throws SQLException{
+    return EntityFinder.findRelated(this,Address.getStaticInstance(Address.class));
+  }
+
+  public List getHomePhone() throws SQLException {
+    return getPhones(Phone.getHomeNumberID());
+  }
+
+  public List getFaxPhone() throws SQLException {
+    return getPhones(Phone.getFaxNumberID());
+  }
+
 
   public void delete() throws SQLException{
     this.setIsValid(false);

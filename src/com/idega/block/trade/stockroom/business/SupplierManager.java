@@ -35,65 +35,102 @@ public class SupplierManager {
     throw new Exception("not implimented");
   }
 
+  public static Supplier updateSupplier(int supplierId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+      return createSupplier(supplierId, name, null,null, description, addressIds, phoneIds, emailIds);
+  }
 
   public static Supplier createSupplier(String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+    return createSupplier(-1, name, userName, password, description, addressIds, phoneIds, emailIds);
+  }
+
+  private static Supplier createSupplier(int supplierId,String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
 
     boolean isUpdate = false;
-    SupplierStaffGroup sGroup = new SupplierStaffGroup();
-    Supplier supp = new Supplier();
+    if (supplierId != -1) isUpdate = true;
 
-    sGroup.setName(name);
-    sGroup.insert();
+    if (isUpdate) {
+      Supplier supp = new Supplier(supplierId);
+        supp.setName(name);
+        supp.setDescription(description);
+      supp.update();
 
-    supp.setName(name);
-    supp.setDescription(description);
-    supp.setGroupId(sGroup.getID());
-    supp.setIsValid(true);
-
-    supp.insert();
-
-    UserBusiness uBus = new UserBusiness();
-    User user = uBus.insertUser(name,"","- admin",name+" - admin","Supplier administrator",null,idegaTimestamp.RightNow(),null);
-    LoginDBHandler.createLogin(user.getID(), userName, password);
-
-    sGroup.addUser(user);
-
-    int[] userIDs = {user.getID()};
-
-    AccessControl ac = new AccessControl();
-    int permissionGroupID = ac.createPermissionGroup(name+" - admins", SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, "", userIDs ,null);
-
-    //sGroup.addTo(PermissionGroup.class, permissionGroupID);
-
-    if(addressIds != null){
+      supp.removeFrom(Address.getStaticInstance(Address.class));
       for (int i = 0; i < addressIds.length; i++) {
         supp.addTo(Address.class, addressIds[i]);
       }
-    }
 
-    if(phoneIds != null){
+      supp.removeFrom(Phone.getStaticInstance(Phone.class));
       for (int i = 0; i < phoneIds.length; i++) {
         supp.addTo(Phone.class, phoneIds[i]);
       }
-    }
 
-    if(emailIds != null){
+      supp.removeFrom(Email.getStaticInstance(Email.class));
       for (int i = 0; i < emailIds.length; i++) {
         supp.addTo(Email.class, emailIds[i]);
       }
+
+      return supp;
+
+    }else {
+      SupplierStaffGroup sGroup = new SupplierStaffGroup();
+      Supplier supp = new Supplier();
+
+      sGroup.setName(name);
+      sGroup.insert();
+
+      supp.setName(name);
+      supp.setDescription(description);
+      supp.setGroupId(sGroup.getID());
+      supp.setIsValid(true);
+
+      supp.insert();
+
+      UserBusiness uBus = new UserBusiness();
+      User user = uBus.insertUser(name,"","- admin",name+" - admin","Supplier administrator",null,idegaTimestamp.RightNow(),null);
+      LoginDBHandler.createLogin(user.getID(), userName, password);
+
+      sGroup.addUser(user);
+
+      int[] userIDs = {user.getID()};
+
+      AccessControl ac = new AccessControl();
+      int permissionGroupID = ac.createPermissionGroup(name+" - admins", SUPPLIER_ADMINISTRATOR_GROUP_DESCRIPTION, "", userIDs ,null);
+
+      //sGroup.addTo(PermissionGroup.class, permissionGroupID);
+
+      if(addressIds != null){
+        for (int i = 0; i < addressIds.length; i++) {
+          supp.addTo(Address.class, addressIds[i]);
+        }
+      }
+
+      if(phoneIds != null){
+        for (int i = 0; i < phoneIds.length; i++) {
+          supp.addTo(Phone.class, phoneIds[i]);
+        }
+      }
+
+      if(emailIds != null){
+        for (int i = 0; i < emailIds.length; i++) {
+          supp.addTo(Email.class, emailIds[i]);
+        }
+      }
+
+      PriceCategory pCategory = new PriceCategory();
+        pCategory.setSupplierId(supp.getID());
+        pCategory.setType(PriceCategory.PRICETYPE_PRICE);
+        pCategory.setDescription(PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME);
+        pCategory.setName("Full price");
+        pCategory.setExtraInfo("PriceCategory created at "+idegaTimestamp.RightNow().toSQLString()+" when creating "+supp.getName());
+      pCategory.insert();
+
+      return supp;
     }
-
-    PriceCategory pCategory = new PriceCategory();
-      pCategory.setSupplierId(supp.getID());
-      pCategory.setType(PriceCategory.PRICETYPE_PRICE);
-      pCategory.setDescription(PRICE_CATEGORY_FULL_PRICE_DEFAULT_NAME);
-      pCategory.setName("Full price");
-      pCategory.setExtraInfo("PriceCategory created at "+idegaTimestamp.RightNow().toSQLString()+" when creating "+supp.getName());
-    pCategory.insert();
-
-    return supp;
   }
 
+  /**
+   * @deprecated
+   */
   public static PermissionGroup getPermissionGroup(Supplier supplier) {
     PermissionGroup pGroup = null;
     try {
@@ -118,36 +155,6 @@ public class SupplierManager {
     supplier.update();
   }
 
-  public void updateSupplier(Supplier supplier, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-    supplier.setName(name);
-    supplier.setDescription(description);
-    supplier.update();
-    /**
-     * implementa
-     */
-/*
-    supplier.reverseRemoveFrom(Address.getStaticInstance(Address.class));
-
-    if(addressIds != null){
-      for (int i = 0; i < addressIds.length; i++) {
-        supplier.addTo(Address.class, addressIds[i]);
-      }
-    }
-
-    if(phoneIds != null){
-      if (phoneIds.length == 0) {
-        supplier.reverseRemoveFrom(Phone.getStaticInstance(Phone.class));
-      }
-    }
-
-    if(emailIds != null){
-      if (emailIds.length == 0) {
-        supplier.reverseRemoveFrom(Phone.getStaticInstance(Email.class));
-      }
-    }
-*/
-
-  }
 
 
 

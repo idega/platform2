@@ -31,65 +31,98 @@ public class ResellerManager {
         res.delete();
   }
 
+  public static Reseller updateReseller(int resellerId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+      return createReseller(resellerId, name, null,null, description, addressIds, phoneIds, emailIds);
+  }
 
   public static Reseller createReseller(String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-    Reseller reseller = new Reseller();
+    return createReseller(-1, name, userName, password, description, addressIds, phoneIds, emailIds);
+  }
 
-    CypherText cyph = new CypherText();
-    String key = cyph.getKey(10);
-    String[] check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+Reseller.getResellerTableName()+" where "+Reseller.getColumnNameReferenceNumber()+" = '"+key+"'");
-    while (check.length > 0) {
-      cyph.getKey(10);
-      check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+Reseller.getResellerTableName()+" where "+Reseller.getColumnNameReferenceNumber()+" = '"+key+"'");
-    }
-
+  private static Reseller createReseller(int resellerId, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
     boolean isUpdate = false;
-    ResellerStaffGroup sGroup = new ResellerStaffGroup();
+    if (resellerId != -1) isUpdate = true;
 
-    sGroup.setName(name);
-    sGroup.insert();
 
-    reseller.setName(name);
-    reseller.setDescription(description);
-    reseller.setGroupId(sGroup.getID());
-    reseller.setIsValid(true);
-    reseller.setReferenceNumber(key);
+    if (isUpdate) {
+      Reseller res = new Reseller(resellerId);
+        res.setName(name);
+        res.setDescription(description);
+      res.update();
 
-    reseller.insert();
-
-    UserBusiness uBus = new UserBusiness();
-    User user = uBus.insertUser(name,"","- admin",name+" - admin","Reseller administrator",null,idegaTimestamp.RightNow(),null);
-    LoginDBHandler.createLogin(user.getID(), userName, password);
-
-    sGroup.addUser(user);
-
-    int[] userIDs = {user.getID()};
-
-    AccessControl ac = new AccessControl();
-    int permissionGroupID = ac.createPermissionGroup(name+" - admins", "Reseller administator group", "", userIDs ,null);
-
-    //sGroup.addTo(PermissionGroup.class, permissionGroupID);
-
-    if(addressIds != null){
+      res.removeFrom(Address.getStaticInstance(Address.class));
       for (int i = 0; i < addressIds.length; i++) {
-        reseller.addTo(Address.class, addressIds[i]);
+        res.addTo(Address.class, addressIds[i]);
       }
-    }
 
-    if(phoneIds != null){
+      res.removeFrom(Phone.getStaticInstance(Phone.class));
       for (int i = 0; i < phoneIds.length; i++) {
-        reseller.addTo(Phone.class, phoneIds[i]);
+        res.addTo(Phone.class, phoneIds[i]);
       }
-    }
 
-    if(emailIds != null){
+      res.removeFrom(Email.getStaticInstance(Email.class));
       for (int i = 0; i < emailIds.length; i++) {
-        reseller.addTo(Email.class, emailIds[i]);
+        res.addTo(Email.class, emailIds[i]);
       }
+
+      return res;
     }
+    else {
+      Reseller reseller = new Reseller();
+      CypherText cyph = new CypherText();
+      String key = cyph.getKey(10);
+      String[] check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+Reseller.getResellerTableName()+" where "+Reseller.getColumnNameReferenceNumber()+" = '"+key+"'");
+      while (check.length > 0) {
+        cyph.getKey(10);
+        check = SimpleQuerier.executeStringQuery("SELECT "+reseller.getIDColumnName()+" from "+Reseller.getResellerTableName()+" where "+Reseller.getColumnNameReferenceNumber()+" = '"+key+"'");
+      }
 
-    return reseller;
+      ResellerStaffGroup sGroup = new ResellerStaffGroup();
 
+      sGroup.setName(name);
+      sGroup.insert();
+
+      reseller.setName(name);
+      reseller.setDescription(description);
+      reseller.setGroupId(sGroup.getID());
+      reseller.setIsValid(true);
+      reseller.setReferenceNumber(key);
+
+      reseller.insert();
+
+      UserBusiness uBus = new UserBusiness();
+      User user = uBus.insertUser(name,"","- admin",name+" - admin","Reseller administrator",null,idegaTimestamp.RightNow(),null);
+      LoginDBHandler.createLogin(user.getID(), userName, password);
+
+      sGroup.addUser(user);
+
+      int[] userIDs = {user.getID()};
+
+      AccessControl ac = new AccessControl();
+      int permissionGroupID = ac.createPermissionGroup(name+" - admins", "Reseller administator group", "", userIDs ,null);
+
+      //sGroup.addTo(PermissionGroup.class, permissionGroupID);
+
+      if(addressIds != null){
+        for (int i = 0; i < addressIds.length; i++) {
+          reseller.addTo(Address.class, addressIds[i]);
+        }
+      }
+
+      if(phoneIds != null){
+        for (int i = 0; i < phoneIds.length; i++) {
+          reseller.addTo(Phone.class, phoneIds[i]);
+        }
+      }
+
+      if(emailIds != null){
+        for (int i = 0; i < emailIds.length; i++) {
+          reseller.addTo(Email.class, emailIds[i]);
+        }
+      }
+
+      return reseller;
+    }
   }
 
   public static void invalidateReseller(Reseller reseller) throws SQLException {

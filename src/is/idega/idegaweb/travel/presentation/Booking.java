@@ -493,7 +493,7 @@ public class Booking extends TravelManager {
           sm.T.setCellpadding(2);
 //          sm.T.setCellspacing(2);
           sm.T.setBorderColor(super.backgroundColor);
-          sm.useNextAndPreviousLinks(false);
+          sm.useNextAndPreviousLinks(true);
           sm.setBackgroundColor(super.backgroundColor);
           sm.setTextColor("WHITE");
           sm.setDaysAsLink(true);
@@ -506,6 +506,8 @@ public class Booking extends TravelManager {
           sm.setInActiveCellColor("#B1B1E5");
 //          sm.useColorToday(true);
           sm.setColorToday(colorForToday);
+
+          sm.setDayFontColor(idegaTimestamp.RightNow(),super.backgroundColor);
 
 
       int month = stamp.getMonth();
@@ -529,6 +531,7 @@ public class Booking extends TravelManager {
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(productId, temp, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
+              sm.setDayFontColor(temp,colorForAvailableDayText);
             }else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
               sm.setDayFontColor(temp,colorForAvailableDayText);
@@ -540,6 +543,7 @@ public class Booking extends TravelManager {
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(productId, temp,resellerId, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
+              sm.setDayFontColor(temp,colorForAvailableDayText);
             }else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
               sm.setDayFontColor(temp,colorForAvailableDayText);
@@ -788,9 +792,9 @@ public class Booking extends TravelManager {
       ++row;
       table.add(bookingStatusText,1,row);
       table.setColor(2,row,super.backgroundColor);
-      table.setColor(3,row,super.RED);
-      table.setColor(4,row,super.YELLOW);
-      table.setColor(5,row,super.LIGHTGREEN);
+//      table.setColor(3,row,super.RED);
+//      table.setColor(4,row,super.YELLOW);
+//      table.setColor(5,row,super.LIGHTGREEN);
 
       table.add(countTextBold,2,row);
       table.add(bookedTextBold,3,row);

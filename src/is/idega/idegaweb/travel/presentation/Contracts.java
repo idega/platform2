@@ -35,8 +35,10 @@ public class Contracts extends TravelManager {
   private String parameterProductId = "contractProductId";
   private String parameterSaveProductInfo = "contractSaveProductInfo";
   private String parameterNewReseller = "contractNewReseller";
+  private String parameterEditReseller = "contractEditReseller";
   private String parameterContractId = "contractContractId";
   private String parameterSaveNewReseller = "contractSaveNewReseller";
+  private String parameterUpdateReseller = "contractUpdateReseller";
 
   Reseller[] resellers = {};
 
@@ -54,9 +56,15 @@ public class Contracts extends TravelManager {
     if (action.equals("")) {
       mainMenu(iwc);
     }else if (action.equals(this.parameterNewReseller)) {
-      resellerCreation();
+      resellerCreation(-1);
+    }else if (action.equals(this.parameterEditReseller)) {
+      String sResellerId = iwc.getParameter(this.parameterResellerId);
+      resellerCreation(Integer.parseInt(sResellerId));
     }else if (action.equals(this.parameterSaveNewReseller)) {
-      saveReseller(iwc);
+      saveReseller(iwc,-1);
+    }else if (action.equals(this.parameterUpdateReseller)) {
+      String sResellerId = iwc.getParameter(this.parameterResellerId);
+      saveReseller(iwc,Integer.parseInt(sResellerId));
     }else if (action.equals(this.parameterAssignReseller)) {
       assignReseller(iwc);
     }else if (action.equals(this.parameterSaveProductInfo)) {
@@ -96,6 +104,7 @@ public class Contracts extends TravelManager {
       Text resName;
       Text refNum;
       Link assign;
+      Link edit;
 
       ++row;
       resName = (Text) theText.clone();
@@ -121,9 +130,14 @@ public class Contracts extends TravelManager {
             assign.setFontColor(super.textColor);
             assign.addParameter(this.sAction,this.parameterAssignReseller);
             assign.addParameter(this.parameterResellerId,resellers[i].getID());
+          edit = new Link(iwrb.getImage("buttons/change.gif"));
+            edit.setFontColor(super.textColor);
+            edit.addParameter(this.sAction,this.parameterEditReseller);
+            edit.addParameter(this.parameterResellerId,resellers[i].getID());
 
           table.add(resName,1,row);
           table.add(refNum,2,row);
+          table.add(edit,3,row);
           table.add(assign,3,row);
           table.setColor(1,row,super.backgroundColor);
           table.setColor(2,row,super.backgroundColor);
@@ -134,7 +148,7 @@ public class Contracts extends TravelManager {
       add(form);
   }
 
-  public void resellerCreation() throws SQLException{
+  public void resellerCreation(int resellerId) throws SQLException{
   /*
       ShadowBox sb = new ShadowBox();
         sb.setWidth("90%");
@@ -146,6 +160,11 @@ public class Contracts extends TravelManager {
         table.setColumnAlignment(1,"right");
         table.setColumnAlignment(2,"left");
         table.setBorder(0);
+
+      boolean isUpdate = false;
+      if (resellerId != -1) {
+        isUpdate = true;
+      }
 
       int row = 0;
 
@@ -210,6 +229,49 @@ public class Contracts extends TravelManager {
       BackButton back = new BackButton("Til baka");
 
 
+
+      if (resellerId != -1) {
+        table.add(new HiddenInput(this.parameterResellerId,Integer.toString(resellerId)));
+
+        Reseller reseller = new Reseller(resellerId);
+          name.setContent(reseller.getName());
+          description.setContent(reseller.getDescription());
+
+          Address addr = reseller.getAddress();
+          if (addr != null) {
+            String namer = addr.getStreetName();
+            String number = addr.getStreetNumber();
+            if (number == null) {
+                address.setContent(namer);
+            }else {
+                address.setContent(namer+" "+number);
+            }
+          }
+
+          List phones = reseller.getHomePhone();
+          if (phones != null) {
+            if (phones.size() > 0) {
+              Phone phone1 = (Phone) phones.get(0);
+              phone.setContent(phone1.getNumber());
+            }
+          }
+
+          phones = reseller.getFaxPhone();
+          if (phones != null) {
+            if (phones.size() > 0) {
+              Phone phone2 = (Phone) phones.get(0);
+              fax.setContent(phone2.getNumber());
+            }
+          }
+
+          Email eEmail = reseller.getEmail();
+          if (eEmail != null) {
+            email.setContent(eEmail.getEmailAddress());
+          }
+          submit = new SubmitButton("update",this.sAction,this.parameterUpdateReseller);
+      }
+
+
       ++row;
       table.mergeCells(1,row,2,row);
       table.setAlignment(1,row,"center");
@@ -241,16 +303,18 @@ public class Contracts extends TravelManager {
       table.add(emailText,1,row);
       table.add(email,2,row);
 
-      ++row;
-      table.add(loginText,1,row);
-      table.add(userName,2,row);
+      if (!isUpdate) {
+        ++row;
+        table.add(loginText,1,row);
+        table.add(userName,2,row);
 
-      ++row;
-      table.add(passwordText,1,row);
-      table.setVerticalAlignment(1,row,"top");
-      table.add(passOne,2,row);
-      table.addBreak(2,row);
-      table.add(passTwo,2,row);
+        ++row;
+        table.add(passwordText,1,row);
+        table.setVerticalAlignment(1,row,"top");
+        table.add(passOne,2,row);
+        table.addBreak(2,row);
+        table.add(passTwo,2,row);
+      }
 
       ++row;
       table.setAlignment(1,row,"left");
@@ -262,7 +326,11 @@ public class Contracts extends TravelManager {
       add(form);
   }
 
-  public void saveReseller(IWContext iwc)  {
+  public void saveReseller(IWContext iwc) {
+    saveReseller(iwc, -1);
+  }
+
+  public void saveReseller(IWContext iwc, int resellerId)  {
       add(Text.getBreak());
 
       try {
@@ -277,6 +345,80 @@ public class Contracts extends TravelManager {
           String passOne = iwc.getParameter("reseller_password_one");
           String passTwo = iwc.getParameter("reseller_password_one");
 //                  tm.begin();
+          boolean isUpdate = false;
+          if (resellerId != -1) isUpdate = true;
+
+
+          if (isUpdate) {
+              Vector phoneIDS = new Vector();
+              Reseller reseller = new Reseller(resellerId);
+
+              Phone ph;
+              List phones = reseller.getPhones(Phone.getHomeNumberID());
+              if (phones != null) {
+                if (phones.size() > 0) {
+                  for (int i = 0; i < phones.size(); i++) {
+                    ph = (Phone) phones.get(i);
+                      ph.setNumber(phone);
+                    ph.update();
+                    phoneIDS.add(new Integer(ph.getID()));
+                  }
+                }else {
+                  ph = new Phone();
+                    ph.setNumber(phone);
+                    ph.setPhoneTypeId(Phone.getHomeNumberID());
+                  ph.insert();
+                  phoneIDS.add(new Integer(ph.getID()));
+                }
+              }
+
+              phones = reseller.getPhones(Phone.getFaxNumberID());
+              if (phones != null) {
+                if (phones.size() > 0 ) {
+                  for (int i = 0; i < phones.size(); i++) {
+                    ph = (Phone) phones.get(i);
+                      ph.setNumber(fax);
+                    ph.update();
+                    phoneIDS.add(new Integer(ph.getID()));
+                  }
+                }else {
+                  ph = new Phone();
+                    ph.setNumber(phone);
+                    ph.setPhoneTypeId(Phone.getFaxNumberID());
+                  ph.insert();
+                  phoneIDS.add(new Integer(ph.getID()));
+                }
+              }
+
+              int[] phoneIds = new int[phoneIDS.size()];
+              for (int i = 0; i < phoneIDS.size(); i++) {
+                  phoneIds[i] = ((Integer) phoneIDS.get(i)).intValue() ;
+              }
+
+
+              Address addr = reseller.getAddress();
+                addr.setStreetName(address);
+              addr.update();
+
+              int[] addressIds = new int[1];
+              addressIds[0] = addr.getID();
+
+
+              Email eml = reseller.getEmail();
+                eml.setEmailAddress(email);
+              eml.update();
+
+              int[] emailIds = new int[1];
+              emailIds[0] = eml.getID();
+
+              ResellerManager resMan = new ResellerManager();
+              reseller = resMan.updateReseller(resellerId,name, description, addressIds, phoneIds, emailIds);
+
+
+              add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
+              resellerCreation(resellerId);
+
+          }else {
             if (passOne.equals(passTwo)) {
 
                 Vector phoneIDS = new Vector();
@@ -322,8 +464,8 @@ public class Contracts extends TravelManager {
                 this.mainMenu(iwc);
             }else {
                 add("TEMP - PASSWORDS not the same");
-
             }
+          }
 
       }
       catch (Exception sql) {

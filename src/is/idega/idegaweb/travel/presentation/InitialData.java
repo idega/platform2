@@ -40,11 +40,13 @@ public class InitialData extends TravelManager {
   private Supplier supplier;
   String tableBackgroundColor = "#FFFFFF";
 
-  public static String sAction = "admin_action";
-  public static String parameterEdit = "edit";
-  public static String parameterNew = "new";
-  public static String parameterInvalidate = "invalidate";
-  public static String parameterChoose = "InitialDataChooseSupplier";
+  private static String sAction = "admin_action";
+  private static String parameterEdit = "edit";
+  private static String parameterNew = "new";
+  private static String parameterInvalidate = "invalidate";
+  private static String parameterChoose = "InitialDataChooseSupplier";
+
+  private static String parameterSupplierId = "supplier_id";
 
 
   public InitialData() {
@@ -69,6 +71,8 @@ public class InitialData extends TravelManager {
           displayForm(iwc);
       }else if (action.equals("create")) {
           createSupplier(iwc);
+      }else if (action.equals("update")) {
+          updateSupplier(iwc);
       }
 
       super.addBreak();
@@ -87,25 +91,26 @@ public class InitialData extends TravelManager {
         if (action == null) action = "";
 
       Form form = new Form();
+      /*
       ShadowBox sb = new ShadowBox();
         form.add(sb);
         sb.setWidth("90%");
         sb.setAlignment("center");
-
+      */
 
 
         if (supplier != null) {
-            sb.add(getSupplierCreation(supplier.getID()));
+            form.add(getSupplierCreation(supplier.getID()));
         }
         else {
             if (action.equals("")) {
-              sb.add(selectSupplier(iwc));
+              form.add(selectSupplier(iwc));
             }
             else if (action.equals(this.parameterNew)) {
-              sb.add(getSupplierCreation(-1));
+              form.add(getSupplierCreation(-1));
             }
             else if (action.equals(this.parameterEdit)) {
-              sb.add(getSupplierCreation(Integer.parseInt(iwc.getParameter(Supplier.getSupplierTableName()))));
+              form.add(getSupplierCreation(Integer.parseInt(iwc.getParameter(Supplier.getSupplierTableName()))));
             }
             else if (action.equals(this.parameterInvalidate)) {
               String supplier_id = iwc.getParameter(Supplier.getSupplierTableName());
@@ -114,10 +119,10 @@ public class InitialData extends TravelManager {
                 SupplierManager.invalidateSupplier(new Supplier(Integer.parseInt(supplier_id)));
               }catch (Exception e) {
                 e.printStackTrace(System.err);
-                sb.add("TEMP - henti ekki");
+                form.add("TEMP - henti ekki");
               }
 
-              sb.add(selectSupplier(iwc));
+              form.add(selectSupplier(iwc));
             }
         }
 
@@ -232,7 +237,7 @@ public class InitialData extends TravelManager {
       Table table = new Table();
         table.setColumnAlignment(1,"right");
         table.setColumnAlignment(2,"left");
-        table.setBorder(1);
+        table.setBorder(0);
 
       int row = 0;
       Supplier supplier = null;
@@ -294,7 +299,7 @@ public class InitialData extends TravelManager {
       PasswordInput passTwo = new PasswordInput("supplier_password_two");
 
       if (supplier_id != -1) {
-        table.add(new HiddenInput("supplier_id",Integer.toString(supplier_id)));
+        table.add(new HiddenInput(this.parameterSupplierId,Integer.toString(supplier_id)));
 
         supplier = new Supplier(supplier_id);
           name.setContent(supplier.getName());
@@ -333,7 +338,12 @@ public class InitialData extends TravelManager {
           }
       }
 
-      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),"supplier_action","create");
+      SubmitButton submit = null;
+      if (supplier_id == -1) {
+        submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),"supplier_action","create");
+      } else {
+        submit = new SubmitButton("update","supplier_action","update");
+      }
       BackButton back = new BackButton("Til baka");
 
 
@@ -391,7 +401,19 @@ public class InitialData extends TravelManager {
       return table;
   }
 
+  public void updateSupplier(IWContext iwc) {
+    String supplierId = iwc.getParameter(this.parameterSupplierId);
+    try {
+      createSupplier(iwc, Integer.parseInt(supplierId));
+    }catch (NumberFormatException n) {}
+
+  }
+
   public void createSupplier(IWContext iwc)  {
+    createSupplier(iwc, -1);
+  }
+
+  public void createSupplier(IWContext iwc, int supplierId)  {
       add(Text.getBreak());
 //      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
 
@@ -410,13 +432,76 @@ public class InitialData extends TravelManager {
 
 
               boolean isUpdate = false;
-              if (supplier != null) {
-                isUpdate = true;
-              }
+              if (supplierId != -1) isUpdate = true;
 
 
               if (isUpdate) {
-                  add("TEMP - Unimplemented");
+                  Vector phoneIDS = new Vector();
+                  Supplier supplier = new Supplier(supplierId);
+
+                  Phone ph;
+                  List phones = supplier.getPhones(Phone.getHomeNumberID());
+                  if (phones != null) {
+                    if (phones.size() > 0) {
+                      for (int i = 0; i < phones.size(); i++) {
+                        ph = (Phone) phones.get(i);
+                          ph.setNumber(phone);
+                        ph.update();
+                        phoneIDS.add(new Integer(ph.getID()));
+                      }
+                    }else {
+                      ph = new Phone();
+                        ph.setNumber(phone);
+                        ph.setPhoneTypeId(Phone.getHomeNumberID());
+                      ph.insert();
+                      phoneIDS.add(new Integer(ph.getID()));
+                    }
+                  }
+                  phones = supplier.getPhones(Phone.getFaxNumberID());
+                  if (phones != null) {
+                    if (phones.size() > 0) {
+                      for (int i = 0; i < phones.size(); i++) {
+                        ph = (Phone) phones.get(i);
+                          ph.setNumber(fax);
+                        ph.update();
+                        phoneIDS.add(new Integer(ph.getID()));
+                      }
+                    }else {
+                      ph = new Phone();
+                        ph.setNumber(phone);
+                        ph.setPhoneTypeId(Phone.getFaxNumberID());
+                      ph.insert();
+                      phoneIDS.add(new Integer(ph.getID()));
+                    }
+                  }
+
+                  int[] phoneIds = new int[phoneIDS.size()];
+                  for (int i = 0; i < phoneIDS.size(); i++) {
+                      phoneIds[i] = ((Integer) phoneIDS.get(i)).intValue() ;
+                  }
+
+
+                  Address addr = supplier.getAddress();
+                    addr.setStreetName(address);
+                  addr.update();
+
+                  int[] addressIds = new int[1];
+                  addressIds[0] = addr.getID();
+
+
+                  Email eml = supplier.getEmail();
+                    eml.setEmailAddress(email);
+                  eml.update();
+
+                  int[] emailIds = new int[1];
+                  emailIds[0] = eml.getID();
+
+                  SupplierManager suppMan = new SupplierManager();
+                  supplier = suppMan.updateSupplier(supplierId,name, description, addressIds, phoneIds, emailIds);
+
+
+                  add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
+                  this.displayForm(iwc);
               }
               else {
 //                  tm.begin();
