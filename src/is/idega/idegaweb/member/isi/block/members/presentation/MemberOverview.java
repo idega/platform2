@@ -56,14 +56,17 @@ public class MemberOverview extends Block {
 		boolean showStatus = status==null || "true".equals(status);
 		boolean showHistory = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_HISTORY));
 		
+		Table mainTable = new Table();
+		
 		User user = iwc.getCurrentUser();
 		_iwrb = getResourceBundle(iwc);
 		_data = new MemberGroupData(user, _iwrb);
-		Table table = new Table();
-		add(getMemberInfo(user));
+		mainTable.add(getMemberInfo(user), 1, 1);
 		addBreak();
 		addBreak();
 		
+		Table table = new Table();
+		table.setWidth("100%");
 		int row = 1;
 		
 		// show registration status section
@@ -95,10 +98,14 @@ public class MemberOverview extends Block {
 			row = insertRegistrationInfoIntoTable(table, row, true);
 		}
 		
-		row += 3;
+		mainTable.add(table, 1, 2);
 		
-		row = insertPrintButtonIntoTable(table, row);
-		add(table);
+		PrintButton button = new PrintButton();
+		mainTable.add(button, 1, 3);
+		mainTable.setAlignment(1, 3, "right");
+		
+		
+		add(mainTable);
 	}
 	
 	private PresentationObject getMemberInfo(User user) {
@@ -160,6 +167,7 @@ public class MemberOverview extends Block {
 		}
 		
 		Table table = new Table();
+		table.setWidth("100%");
 		table.setCellpadding(1);
 		table.setCellspacing(2);
 		int row = 1;
@@ -296,12 +304,6 @@ public class MemberOverview extends Block {
 			
 			row++;
 		}
-		return row;
-	}
-	
-	private int insertPrintButtonIntoTable(Table table, int row) {
-		PrintButton button = new PrintButton();
-		table.add(button, 3, row++);
 		return row;
 	}
 	
