@@ -623,6 +623,7 @@ public class UserEditor extends Block {
 			addressTable.add(getOldParameter(prm_mainaddress_street, primaryAddress.getStreetAddress()));
 			try {
 				PostalCode postalCode = primaryAddress.getPostalCode();
+				System.err.println("postal ID: "+postalCode.getPrimaryKey().toString());
 				if(postalCode!=null){
 					primaryPostalCodeInput.setContent(postalCode.getPostalCode());
 					primaryPostalNameInput.setContent(postalCode.getName());
@@ -632,9 +633,14 @@ public class UserEditor extends Block {
 					
 						Country country = postalCode.getCountry();
 						if(country!=null){
+							//primaryCountryInput.setSelectedElement(country.getPrimaryKey().toString());
 							primaryCountryInput.setSelectedCountry(country);
 							addressTable.add(getOldParameter(prm_mainaddress_country, country.getPrimaryKey().toString()));
 						}
+						/*else if(defaultCountry != null){
+							//primaryCountryInput.setSelectedElement(defaultCountry.getPrimaryKey().toString());
+							primaryCountryInput.setSelectedCountry(defaultCountry);
+						}*/
 					
 				}
 			}
@@ -664,7 +670,10 @@ public class UserEditor extends Block {
 					if(country!=null){
 							coCountryInput.setSelectedCountry(country);
 							addressTable.add(getOldParameter(prm_coaddress_country_id, country.getPrimaryKey().toString()));
-						}
+					}
+					/*else if(defaultCountry != null){
+							coCountryInput.setSelectedCountry(defaultCountry);
+					}*/
 				}
 				  catch (Exception e3) {
 				}
@@ -761,9 +770,24 @@ public class UserEditor extends Block {
 							e1.printStackTrace();
 						}
 					}
-					 if(country!=null && (isNewValue(iwc,prm_mainaddress_postal_code)|| isNewValue(iwc,prm_mainaddress_postal_name))){
+					 if(country!=null && (isNewValue(iwc,prm_mainaddress_postal_code)|| isNewValue(iwc,prm_mainaddress_postal_name) || isNewValue(iwc,prm_mainaddress_country))){
 						String code = iwc.getParameter(prm_mainaddress_postal_code);
 						String name = iwc.getParameter(prm_mainaddress_postal_name);
+						boolean postalExists = false;
+						try {
+							
+							PostalCode existingCode = userService.getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(code,((Integer)country.getPrimaryKey()).intValue());
+							postalExists = existingCode!=null;
+						}
+						catch (RemoteException e2) {
+						}
+						catch (FinderException e2) {
+						}
+						if(postalExists && (isNewValue(iwc,prm_mainaddress_postal_code) || isNewValue(iwc,prm_mainaddress_postal_name) )){
+							String mainPostalExists = iwrb.getLocalizedString("mbe.warning.zip_code_and_city_already_exist","Zip code and city already exist in database");
+							
+							this.getParentPage().setOnLoad("alert('"+mainPostalExists+"');");
+						}
 						try {
 							PostalCode pcode = userService.getAddressBusiness().getPostalCodeAndCreateIfDoesNotExist(code,name,country);
 							postalID = (Integer) pcode.getPrimaryKey();
@@ -821,9 +845,23 @@ public class UserEditor extends Block {
 								e1.printStackTrace();
 							}
 						}
-						if(country!=null && (isNewValue(iwc,prm_coaddress_postal_code) || isNewValue(iwc,prm_coaddress_postal_name))){
+						if(country!=null && (isNewValue(iwc,prm_coaddress_postal_code) || isNewValue(iwc,prm_coaddress_postal_name) || isNewValue(iwc,prm_coaddress_country))){
 							String code = iwc.getParameter(prm_coaddress_postal_code);
 							String name = iwc.getParameter(prm_coaddress_postal_name);
+							boolean postalExists = false;
+							try {
+	
+								PostalCode existingCode = userService.getAddressBusiness().getPostalCodeHome().findByPostalCodeAndCountryId(code,((Integer)country.getPrimaryKey()).intValue());
+								postalExists = existingCode!=null;
+							}
+							catch (RemoteException e2) {
+							}
+							catch (FinderException e2) {
+							}
+							if(postalExists && (isNewValue(iwc,prm_coaddress_postal_code)|| isNewValue(iwc,prm_coaddress_postal_name))){
+								String mainPostalExists = iwrb.getLocalizedString("mbe.warning.zip_code_and_city_already_exist","Zipl code and city already exist in database");
+								this.getParentPage().setOnLoad("alert('"+mainPostalExists+"');");
+							}
 							try {
 								PostalCode pcode = userService.getAddressBusiness().getPostalCodeAndCreateIfDoesNotExist(code,name,country);
 								postalID = (Integer) pcode.getPrimaryKey();
