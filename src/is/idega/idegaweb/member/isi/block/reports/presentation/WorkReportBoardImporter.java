@@ -3,6 +3,10 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException;
+
+import java.rmi.RemoteException;
+
 import com.idega.presentation.IWContext;
 
 /**
@@ -12,32 +16,38 @@ import com.idega.presentation.IWContext;
  * @author <a href="mailto:eiki@idega.is">Eirikur S. Hrafnsson</a>
  */
 public class WorkReportBoardImporter extends WorkReportImporter {
-	
+
 	private static final String STEP_NAME_LOCALIZATION_KEY = "workreportboardimporter.step_name";
 
 	protected WorkReportBoardImporter() {
 		super();
 		setStepNameLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 	}
-	
-	
+
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
-		
-		if(getWorkReportFileId()!=-1){ //do nothing before we have the file id
-		
+
+		if (getWorkReportFileId() != -1) { //do nothing before we have the file id
+
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
-			
-			boolean success = getWorkReportBusiness(iwc).importBoardPart(getWorkReportFileId(),getWorkReportId());
-			if(success){
-				add(iwrb.getLocalizedString("WorkReportBoardImporter.import_successful","Importing board info completed successfully."));
+
+			try {
+				boolean success = getWorkReportBusiness(iwc).importBoardPart(getWorkReportFileId(), getWorkReportId());
+				if (success) {
+					add(iwrb.getLocalizedString("WorkReportBoardImporter.import_successful", "Importing board info completed successfully."));
+				}
+				else {
+					add(iwrb.getLocalizedString("WorkReportBoardImporter.import_failed", "Importing board account failed!"));
+				}
 			}
-			else{
-				add(iwrb.getLocalizedString("WorkReportBoardImporter.import_failed","Importing board account failed!"));
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (WorkReportImportException e) {
+				e.printStackTrace();
+				add(iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
 			}
 		}
 	}
-	
-
 }

@@ -3,6 +3,10 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation;
 
+import is.idega.idegaweb.member.isi.block.reports.business.WorkReportImportException;
+
+import java.rmi.RemoteException;
+
 import com.idega.presentation.IWContext;
 
 /**
@@ -25,13 +29,22 @@ public class WorkReportAccountImporter extends WorkReportImporter {
 		if (getWorkReportFileId() != -1) { //do nothing before we have the file id
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
+			try {
 
-			boolean success = getWorkReportBusiness(iwc).importAccountPart(getWorkReportFileId(), getWorkReportId());
-			if (success) {
-				add(iwrb.getLocalizedString("WorkReportAccountImporter.import_successful", "Importing yearly account info completed successfully."));
+				boolean success = getWorkReportBusiness(iwc).importAccountPart(getWorkReportFileId(), getWorkReportId());
+				if (success) {
+					add(iwrb.getLocalizedString("WorkReportAccountImporter.import_successful", "Importing yearly account info completed successfully."));
+				}
+				else {
+					add(iwrb.getLocalizedString("WorkReportAccountImporter.import_failed", "Importing yearly account failed!"));
+				}
 			}
-			else {
-				add(iwrb.getLocalizedString("WorkReportAccountImporter.import_failed", "Importing yearly account failed!"));
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (WorkReportImportException e) {
+				e.printStackTrace();
+				add(iwrb.getLocalizedString(e.getMessage(), e.getMessage()));
 			}
 		}
 	}
