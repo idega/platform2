@@ -39,6 +39,9 @@ public class ClubNavigation extends ClubBlock {
 		Table returnTable = new Table();
 		returnTable = getUnionListTable(modinfo, location);
 
+		Modernus modernus = new Modernus("6725", "Club_overview_" + location, "golf-is");
+		add(modernus);
+
 		return returnTable;
 	}
 
@@ -168,9 +171,6 @@ public class ClubNavigation extends ClubBlock {
 		contentTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
 		contentTable.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
 		contentTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-
-		Modernus modernus = new Modernus("6725", "Club_overview_" + location, "golf-is");
-		contentTable.add(modernus, 3, 1);
 
 		return contentTable;
 	}
