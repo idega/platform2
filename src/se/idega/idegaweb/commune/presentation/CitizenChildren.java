@@ -29,7 +29,6 @@ public class CitizenChildren extends CommuneBlock {
   private IWBundle iwb;
   private IWResourceBundle iwrb;
   private int userID;
-  private int pageID;
   private Text buttonLabel;
   private Text ssnLabel;
   private static final String prmChildId = "comm_child_id";
@@ -50,11 +49,11 @@ public class CitizenChildren extends CommuneBlock {
     int col = 1;
     if(iwc.isParameterSet(prmSubmitName) && iwc.getParameter(prmSubmitName).equals("true")){
       try{
-        User child = processSSNRequest(iwc);
-        T.add(getChildLink(child),col,row);
+	User child = processSSNRequest(iwc);
+	T.add(getChildLink(child),col,row);
       }
       catch(javax.ejb.FinderException fix){
-        T.add(fix.getMessage(),col,row);
+	T.add(fix.getMessage(),col,row);
       }
       row++;
     }
@@ -78,10 +77,6 @@ public class CitizenChildren extends CommuneBlock {
     return new Parameter(prmChildSSN,String.valueOf(child_ssn));
   }
 
-  public void setPage(IBPage page){
-    this.pageID = page.getID();
-  }
-
   public void setLocalizedButtonLabel(String localeString,String text){
     buttonLabel.setLocalizedText(localeString,text);
   }
@@ -92,15 +87,15 @@ public class CitizenChildren extends CommuneBlock {
     int row = 1;
       Collection childs = getChilds(this.userID);
       if(!childs.isEmpty()){
-        java.util.Iterator iter = childs.iterator();
-        User user;
-        RadioButton rad;
-        while(iter.hasNext()){
-          user = (User) iter.next();
-          rad = new RadioButton(prmChildId,((Integer) user.getPrimaryKey()).toString());
-          T.add(getChildLink(user),1,row);
-          row++;
-        }
+	java.util.Iterator iter = childs.iterator();
+	User user;
+	RadioButton rad;
+	while(iter.hasNext()){
+	  user = (User) iter.next();
+	  rad = new RadioButton(prmChildId,((Integer) user.getPrimaryKey()).toString());
+	  T.add(getChildLink(user),1,row);
+	  row++;
+	}
 
     }
     TextInput inputSSN = new TextInput(prmChildSSN);
@@ -117,8 +112,8 @@ public class CitizenChildren extends CommuneBlock {
 
   private Link getChildLink(User child) throws java.rmi.RemoteException{
     Link L = new Link(child.getName());
-    if(pageID>0)
-      L.setPage(pageID);
+    if(getResponsePage()!=null)
+      L.setPage(getResponsePage());
     L.addParameter(prmChildId,((Integer)child.getPrimaryKey()).toString());
     return L;
   }
@@ -129,7 +124,7 @@ public class CitizenChildren extends CommuneBlock {
       UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
       User child = userHome.findByPersonalID(ssn);
       if(child!=null){
-        return child;
+	return child;
       }
     }
     throw new javax.ejb.FinderException("No user with that ssn");
