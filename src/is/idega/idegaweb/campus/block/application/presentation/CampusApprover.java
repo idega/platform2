@@ -121,6 +121,8 @@ public class CampusApprover extends Block{
 
         if(iwc.getParameter("save")!= null){
           id = updateWholeApplication(iwc,id);
+          if(iwc.isParameterSet("status_drop"))
+            updateApplication(iwc,id);
         }
 
         else{
@@ -378,7 +380,7 @@ public class CampusApprover extends Block{
         Table Right =new Table(1,3);
           Right.add(getRemoteControl(iwrb),1,1);
           Right.add(getKnobs(iwrb),1,2);
-          Right.add(getButtons(eApplication.getStatus(),bEdit,iwrb),1,3);
+          Right.add(getButtons(eApplication,eApplication.getStatus(),bEdit,iwrb),1,3);
 
           OuterFrame.add(Left,1,1);
           OuterFrame.add(Middle,2,1);
@@ -453,7 +455,7 @@ public class CampusApprover extends Block{
           Right.add(getRemoteControl(iwrb),1,1);
           Right.add(getKnobs(iwrb),1,2);
           String status = eApplication!=null ? eApplication.getStatus():"";
-          Right.add(getButtons(status,bEdit,iwrb),1,3);
+          Right.add(getButtons(eApplication,status,bEdit,iwrb),1,3);
 
           OuterFrame.add(Left,1,1);
           OuterFrame.add(Middle,2,1);
@@ -1135,16 +1137,18 @@ public class CampusApprover extends Block{
     return T;
   }
 
-  private PresentationObject getButtons(String sStatus,boolean bEdit,IWResourceBundle iwrb){
+  private PresentationObject getButtons(Application eApplication,String sStatus,boolean bEdit,IWResourceBundle iwrb){
     DataTable T = new DataTable();
     T.setWidth("100%");
     T.addTitle(iwrb.getLocalizedString("control","Control"));
     int row = 1;
     int col = 1;
-     DropdownMenu status = statusDrop("status_drop",sStatus);
-      status.setToSubmit();
-      Edit.setStyle(status);
-      T.add(status,col,row);
+      if(eApplication !=null){
+        DropdownMenu status = statusDrop("status_drop",sStatus);
+        //status.setToSubmit();
+        Edit.setStyle(status);
+        T.add(status,col,row);
+      }
       if(bEdit){
         SubmitButton view = new SubmitButton("viewer","View");
         T.add(view,col,row);
@@ -1164,12 +1168,12 @@ public class CampusApprover extends Block{
 
     if(iterator != null){
       if(iterator.hasPrevious()){
-        Link lLast = new Link(iwb.getImage("last.gif"));
+        Link lLast = new Link(iwrb.getImage("back.gif"));
         lLast.addParameter("view","-2");
         T.add(lLast,1,1);
       }
       if(iterator.hasNext()){
-        Link lNext = new Link(iwb.getImage("next.gif"));
+        Link lNext = new Link(iwrb.getImage("next.gif"));
         lNext.addParameter("view","-4");
         T.add(lNext,5,1);
       }

@@ -188,7 +188,9 @@ public class CampusAllocator extends Block{
   }
 
   private PresentationObject getCategoryLists(){
-    Table T = new Table();
+    DataTable T = new DataTable();
+    T.setTitlesHorizontal(true);
+    T.addTitle(iwrb.getLocalizedString("apartment_category","Apartment category"));
     T.setWidth("100%");
     List Categories = BuildingFinder.listOfApartmentCategory();
     if(Categories != null){
@@ -207,7 +209,6 @@ public class CampusAllocator extends Block{
           int lLen = L.size();
           int catlist = 0,catfree=0,catcont=0,catapp=0,catcnt1=0,catcnt2=0,catcnt3=0;
           T.add(boldText(AC.getName()),1,row);
-          T.mergeCells(1,row,2,row);
           row++;
           for (int j = 0; j < lLen; j++) {
             ApartmentTypeComplexHelper eAprtType = (ApartmentTypeComplexHelper)L.get(j);
@@ -251,13 +252,13 @@ public class CampusAllocator extends Block{
         }
       }
 
-      T.add(headerText(iwrb.getLocalizedString("apartment_category","Apartment category")),1,1);
-      T.add(headerText(iwrb.getLocalizedString("apartments","Apartments")),3,1);
-      T.add(headerText(iwrb.getLocalizedString("available","Available")),4,1);
-      T.add(headerText(iwrb.getLocalizedString("applied","Applied")),5,1);
-      T.add(headerText(iwrb.getLocalizedString("choice1","1.Choice")),6,1);
-      T.add(headerText(iwrb.getLocalizedString("choice2","2.Choice")),7,1);
-      T.add(headerText(iwrb.getLocalizedString("choice3","3.Choice")),8,1);
+      T.add(boldText(iwrb.getLocalizedString("apartment_category","Apartment category")),1,1);
+      T.add(boldText(iwrb.getLocalizedString("apartments","Apartments")),3,1);
+      T.add(boldText(iwrb.getLocalizedString("available","Available")),4,1);
+      T.add(boldText(iwrb.getLocalizedString("applied","Applied")),5,1);
+      T.add(boldText(iwrb.getLocalizedString("choice1","1.Choice")),6,1);
+      T.add(boldText(iwrb.getLocalizedString("choice2","2.Choice")),7,1);
+      T.add(boldText(iwrb.getLocalizedString("choice3","3.Choice")),8,1);
       T.add(getPDFLink(printImage,-1,-1),1,row);
       T.add(boldText(totalCount),3,row);
       T.add(boldText(totalFree),4,row);
@@ -266,6 +267,7 @@ public class CampusAllocator extends Block{
       T.add(boldText(totApp2),7,row);
       T.add(boldText(totApp3),8,row);
       row++;
+      /*
       for (int i = 3; i <= 8; i++) {
          T.setColumnAlignment(i,"right");
       }
@@ -279,6 +281,7 @@ public class CampusAllocator extends Block{
       T.setColumnAlignment(1,"left");
       T.setHeight(row,bottomThickness);
       T.setWidth("100%");
+      */
 
     }
     return T;
@@ -323,22 +326,24 @@ public class CampusAllocator extends Block{
   }
 
   private PresentationObject getWaitingList(int aprtTypeId,int cmplxId,int ContractId){
-    Table Frame = new Table();
+    DataTable Frame = new DataTable();
+    Frame.addTitle(iwrb.getLocalizedString("applicants","Applicants"));
+    Frame.setTitlesHorizontal(true);
     int row = 1;
     int col = 1;
     boolean ifLong = ContractId < 0? true:false;
 
-    Frame.add(headerText(iwrb.getLocalizedString("nr","Nr")),col++,row);
-    Frame.add(headerText(iwrb.getLocalizedString("a","A")),col++,row);
-    Frame.add(headerText(iwrb.getLocalizedString("name","Name")),col++,row);
-    Frame.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
-    Frame.add(headerText(iwrb.getLocalizedString("residence","Residence")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("nr","Nr")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("a","A")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("name","Name")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("residence","Residence")),col++,row);
     if(ifLong)
-      Frame.add(headerText(iwrb.getLocalizedString("legal_residence","Legal residence")),col++,row);
-    Frame.add(headerText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
-    Frame.add(headerText(iwrb.getLocalizedString("phone","Phone")),col++,row);
+      Frame.add(formatText(iwrb.getLocalizedString("legal_residence","Legal residence")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
+    Frame.add(formatText(iwrb.getLocalizedString("phone","Phone")),col++,row);
     if(ifLong)
-      Frame.add(headerText(iwrb.getLocalizedString("application","Application")),col++,row);
+      Frame.add(formatText(iwrb.getLocalizedString("application","Application")),col++,row);
 
     List L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId);
     Hashtable HT = ContractFinder.hashOfApplicantsContracts();
@@ -392,6 +397,7 @@ public class CampusAllocator extends Block{
     }
     else
       Frame.add(formatText(iwrb.getLocalizedString("not_to_allocate","Nothing to Allocate!")));
+      /*
     Frame.setCellpadding(2);
     Frame.setCellspacing(1);
     Frame.setHorizontalZebraColored(lightBlue,WhiteColor);
@@ -406,6 +412,7 @@ public class CampusAllocator extends Block{
     Frame.setColumnAlignment(2,"center");
     if(ifLong)
     Frame.setColumnAlignment(9,"center");
+    */
     return Frame;
   }
 
@@ -492,6 +499,7 @@ public class CampusAllocator extends Block{
     ApartmentTypePeriods ATP = getPeriod(AT.getID());
 
     Table Frame = new Table();
+    /*
     Table Header = new Table();
     Header.add(headerText(AT.getName()+" "),1,1);
     Header.add(headerText(CX.getName()),1,1);
@@ -499,7 +507,10 @@ public class CampusAllocator extends Block{
     Header.setRowColor(1,blueColor);
     Header.setWidth("100%");
     Frame.add(Header,1,1);
-    Frame.add(getContractMakingTable(C,ATP,applicant_id,null ));
+    */
+    if(C!=null)
+      Frame.add(getContractMakingTable(C,ATP,applicant_id,null,C.getApartmentId().intValue() ));
+
     Frame.add(getFreeApartments(AT,CX,applicant_id ,C),1,3);
     myForm.add(Frame);
     return myForm;
@@ -512,6 +523,7 @@ public class CampusAllocator extends Block{
 
     Form myForm = new Form();
     Table Frame = new Table();
+    /*
     Table Header = new Table();
     StringBuffer sHeader = new StringBuffer(A.getName());
     Floor F = BuildingCacher.getFloor(A.getFloorId());
@@ -523,14 +535,22 @@ public class CampusAllocator extends Block{
     Header.setRowColor(1,blueColor);
     Header.setWidth("100%");
     Frame.add(Header,1,1);
-    Frame.add(getContractMakingTable(C,ATP,applicant_id ,from));
+    */
+    Frame.add(getContractMakingTable(C,ATP,applicant_id ,from,A.getID()));
     Frame.add(getApartmentContracts(A.getID()),1,3);
     myForm.add(Frame);
     return myForm;
   }
 
   private PresentationObject getApartmentContracts(int iApartmentId){
-    Table T = new Table();
+    DataTable T = new DataTable();
+    T.addTitle((iwrb.getLocalizedString("apartment_contracts","Apartment contracts")));
+    T.setTitlesHorizontal(true);
+    int row = 1;
+    T.add(formatText(iwrb.getLocalizedString("tenant","Tenant")),1,row);
+    T.add(formatText(iwrb.getLocalizedString("valid_from","From")),2,row);
+    T.add(formatText(iwrb.getLocalizedString("valid_to","To")),3,row);
+    T.add(formatText(iwrb.getLocalizedString("status","Status")),4,row);
     List L = ContractFinder.listOfApartmentContracts(iApartmentId);
     java.util.Map M = ContractFinder.mapOfApartmentUsersBy(ContractFinder.listOfApartmentUsers(iApartmentId));
     if(L!= null){
@@ -540,7 +560,7 @@ public class CampusAllocator extends Block{
       User user;
       Integer UID;
       idegaTimestamp temp = null;
-      int row = 1;
+      row = 2;
       while(I.hasNext()){
         C = (Contract) I.next();
         UID = C.getUserId();
@@ -571,14 +591,21 @@ public class CampusAllocator extends Block{
     boolean bcontracts = false;
     if(M!=null)
       bcontracts = true;
-    Table T = new Table();
+    DataTable T = new DataTable();
+    T.setTitlesHorizontal(true);
+    T.addTitle(AT.getName()+" "+CX.getName());
+    int row = 1;
+    T.add(formatText(iwrb.getLocalizedString("name","Name")),2,row);
+    T.add(formatText(iwrb.getLocalizedString("floor","Floor")),3,row);
+    T.add(formatText(iwrb.getLocalizedString("building","Building")),4,row);
+    T.add(formatText(iwrb.getLocalizedString("rented_to","Rented until")),5,row);
     if(L!=null){
       int len = L.size();
       Apartment A ;
       Floor F;
       Building B;
 
-      int row = 1;
+      row = 2;
       RadioButton RB1,RB2;
       Integer apId;
       boolean Available = false;
@@ -639,7 +666,7 @@ public class CampusAllocator extends Block{
           TextFontColor = "#000000";
         row++;
       }
-
+/*
       T.setHorizontalZebraColored(lightBlue,WhiteColor);
       int lastrow = row;
       T.setRowColor(row,redColor);
@@ -648,6 +675,7 @@ public class CampusAllocator extends Block{
       T.setHeight(row,bottomThickness);
       T.setWidth(1,"50");
       T.setWidth("100%");
+      */
     }
     return T;
   }
@@ -697,8 +725,17 @@ public class CampusAllocator extends Block{
         return contractDateTo;
   }
 
-  private PresentationObject getContractMakingTable(Contract C,ApartmentTypePeriods ATP,int applicant_id,idegaTimestamp from){
-    Table T = new Table();
+  private PresentationObject getContractMakingTable(Contract C,ApartmentTypePeriods ATP,int applicant_id,idegaTimestamp from,int iApartmentId){
+    DataTable T = new DataTable();
+    if(iApartmentId > 0){
+      Apartment A = BuildingCacher.getApartment(iApartmentId );
+      Floor F = BuildingCacher.getFloor(A.getFloorId());
+
+      T.addTitle(A.getName()+" "+F.getName()+" "+BuildingCacher.getBuilding(F.getBuildingId()).getName());
+    }
+    else
+      T.addTitle(iwrb.getLocalizedString("contract_dates","Contract dates"));
+
       int row = 1;
       SubmitButton save = new SubmitButton("save_allocation","Save");
 
@@ -736,6 +773,9 @@ public class CampusAllocator extends Block{
       if(from != null)
         contractDateFrom = from;
 
+       int year =  idegaTimestamp.RightNow().getYear();
+      dateFrom.setYearRange(year-2,year+5);
+      dateTo.setYearRange(year-2,year+5);
       dateFrom.setDate(contractDateFrom.getSQLDate());
       dateTo.setDate(contractDateTo.getSQLDate());
       dateFrom.setStyleAttribute("style",styleAttribute);
@@ -747,13 +787,13 @@ public class CampusAllocator extends Block{
       T.add(formatText(iwrb.getLocalizedString("validfrom","Valid from")),1,row);
       T.add(dateFrom,3,row);
 
-      T.mergeCells(1,row,2,row);
-      T.mergeCells(3,row,4,row);
+     // T.mergeCells(1,row,2,row);
+     // T.mergeCells(3,row,4,row);
       row++;
       T.add(formatText(iwrb.getLocalizedString("validto","Valid to")),1,row);
       T.add(dateTo,3,row);
-      T.mergeCells(1,row,2,row);
-      T.mergeCells(3,row,4,row);
+     // T.mergeCells(1,row,2,row);
+     // T.mergeCells(3,row,4,row);
       row++;
       if(C!=null){
         SubmitButton delete = new SubmitButton("delete_allocation","Delete");
@@ -762,8 +802,8 @@ public class CampusAllocator extends Block{
         T.add(new HiddenInput("contract_id",String.valueOf(C.getID())));
       }
       T.add(save,3,row);
-      T.mergeCells(1,row,2,row);
-      T.mergeCells(3,row,4,row);
+     // T.mergeCells(1,row,2,row);
+     // T.mergeCells(3,row,4,row);
     return T;
   }
 
@@ -879,13 +919,13 @@ public class CampusAllocator extends Block{
 
   private User makeNewUser(Applicant A){
     UserBusiness ub = new UserBusiness();
-		try{
-		return ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
-		}
-		catch(SQLException ex){
-		  ex.printStackTrace();
-		}
-		return null;
+    try{
+    return ub.insertUser(A.getFirstName(),A.getMiddleName(),A.getLastName(),A.getFirstName(),"",null,null,null);
+    }
+    catch(SQLException ex){
+      ex.printStackTrace();
+    }
+    return null;
   }
 
   private boolean makeNewContract(User eUser,Applicant eApplicant,int iApartmentId,idegaTimestamp from,idegaTimestamp to){
@@ -991,7 +1031,7 @@ public class CampusAllocator extends Block{
     return r;
   }
 
-public Text formatText(String s){
+  public Text formatText(String s){
     Text T= new Text();
     if(s!=null){
       T= new Text(s);
@@ -1013,5 +1053,4 @@ public Text formatText(String s){
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);
   }
-
 }
