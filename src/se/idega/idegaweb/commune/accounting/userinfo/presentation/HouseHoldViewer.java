@@ -111,6 +111,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherOne.setShowResetButton(false);
 		searcherOne.setShowMultipleResetButton(true);
 		searcherOne.addClearButtonIdentifiers("two");
+		searcherOne.setLegalNonDigitPIDLetters("TFtf");
 		searcherTwo = new UserSearcher();
 		searcherTwo.setShowMiddleNameInSearch(false);
 		searcherTwo.setOwnFormContainer(false);
@@ -123,6 +124,7 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherTwo.setLastNameLength(nameInputLength);
 		searcherTwo.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
 		searcherTwo.addMonitoredSearchIdentifier("one");
+		searcherTwo.setLegalNonDigitPIDLetters("TFtf");
 	}
 
 	public void process(IWContext iwc) {
