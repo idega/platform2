@@ -259,7 +259,7 @@ public String getCategoryType(){
   }
 
   private SmallCalendar getCalendar(idegaTimestamp stamp) {
-    List list = CalendarFinder.getMonthEntries(stamp);
+    List list = CalendarFinder.getMonthEntries(stamp,getCategoryId());
 
     SmallCalendar calendar = new SmallCalendar(stamp);
       calendar.setDaysAsLink(true);
