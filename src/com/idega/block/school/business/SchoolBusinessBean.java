@@ -2711,7 +2711,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		SchoolClassMember placement = null;
 		try {
 			SchoolClassMemberHome home = getSchoolClassMemberHome();
-			placement = home.findActiveByStudentSchoolAndCategory(studentId, schoolId, getCategoryElementarySchool());
+			placement = home.findNotTerminatedByStudentSeasonSchoolAndCategory(studentId, getCurrentSchoolSeason(), schoolId, category);
 		} catch (FinderException e) {}
 		return placement != null;
 	}
