@@ -74,6 +74,7 @@ public class TeeTimeSearch extends GolfBlock {
 	
 	private boolean lockedAsWapLayout = false;
 	private ICPage backPage = null;
+	private ICPage wmlRegisterPage = null;
 
 	public void main(IWContext modinfo) throws Exception {
 		IWTimestamp funcDate = new IWTimestamp();
@@ -534,7 +535,15 @@ public class TeeTimeSearch extends GolfBlock {
 	public void addWapResults(IWContext modinfo, Vector Groups, GolfField info2, String date) throws SQLException, IOException, FinderException {
 		
 		Form myForm = new Form();
-		myForm.setClassToInstanciateAndSendTo(RegisterTime.class);
+		
+		if(wmlRegisterPage!=null){
+			myForm.setPageToSubmitTo(wmlRegisterPage);
+		} else {
+			myForm.setClassToInstanciateAndSendTo(RegisterTime.class);
+			if(backPage!=null){
+				myForm.addParameter(RegisterTime.PRM_BACK_PAGE,backPage.getPrimaryKey().toString());
+			}
+		}
 		
 		TeetimeSearchResult result = (TeetimeSearchResult)IBOLookup.getSessionInstance(modinfo,TeetimeSearchResult.class);		
 		result.setSublistSize(10);
@@ -566,9 +575,7 @@ public class TeeTimeSearch extends GolfBlock {
 		myForm.addParameter("skraMarga",modinfo.getParameter("fjoldi"));
 		
 		myForm.addParameter(RegisterTime.PRM_LOCKED_AS_WML_LAYOUT, "y");
-		if(backPage!=null){
-			myForm.addParameter(RegisterTime.PRM_BACK_PAGE,backPage.getPrimaryKey().toString());
-		}
+		
 
 		
 		String headerString = getFieldName(result.getFieldInfo().get_field_id())+" - "+result.getDate();
@@ -1271,5 +1278,11 @@ public class TeeTimeSearch extends GolfBlock {
 	 */
 	public void setBackPageForWMLMode(ICPage backPage) {
 		this.backPage = backPage;
+	}
+	/**
+	 * @param wmlRegisterPage The wmlRegisterPage to set.
+	 */
+	public void setWmlRegisterPage(ICPage wmlRegisterPage) {
+		this.wmlRegisterPage = wmlRegisterPage;
 	}
 }
