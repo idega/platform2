@@ -402,7 +402,7 @@ public class AssessmentBusinessBean extends IBOServiceBean  implements Assessmen
 			t.begin();
 			AssessmentRound AR = ((AssessmentRoundHome) getIDOHome(AssessmentRound.class)).findByPrimaryKey(new Integer(iAssessmentRoundId));
 			com.idega.data.SimpleQuerier.execute(sql.toString());
-			AR.delete();
+			AR.remove();
 			t.commit();
 			return true;
 		} // Try block
