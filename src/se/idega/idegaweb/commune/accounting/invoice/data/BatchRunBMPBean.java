@@ -71,6 +71,6 @@ public class BatchRunBMPBean extends GenericEntity implements BatchRun{
 	}
 	
 	public Collection ejbFindAllOrderByStart() throws FinderException {
-		return (Collection)idoFindAllIDsOrderedBySQL(COLUMN_START);
+		return idoFindAllIDsOrderedBySQL(COLUMN_START);
 	}
 }
