@@ -382,13 +382,10 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
   }
 
   public List getDepartureAddresses(Product product, IWTimestamp stamp, boolean ordered) throws RemoteException, IDOFinderException  {
-		//System.out.println("[ProductBusiness] starting  : "+IWTimestamp.RightNow().toString());
 		List list = getDepartureAddresses(product, ordered);
 		List returner = new Vector();
-		//System.out.println("[ProductBusiness] ... addresses gathered  : "+IWTimestamp.RightNow().toString());
 		try {
 			Timeframe[] timeframes = product.getTimeframes();
-			//System.out.println("[ProductBusiness] ... timeframes gathered (length = "+timeframes.length+") : "+IWTimestamp.RightNow().toString());
 			ProductPrice[] pPrices;
 			TravelAddress ta;
 			boolean add = false;
@@ -396,29 +393,19 @@ public class ProductBusinessBean extends IBOServiceBean implements ProductBusine
 				Iterator iter = list.iterator();
 				while (iter.hasNext()) {
 					ta = (TravelAddress) iter.next();
-					//System.out.println("[ProductBusiness] starting with address : "+ta.getStreetName()+" : "+ta.getTime());
 					add = false;
 					for (int i = 0; i < timeframes.length; i++) {
 						if (getStockroomBusiness().isInTimeframe(new IWTimestamp(timeframes[i].getFrom()), new IWTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getYearly())) {
-							//System.out.println("[ProductBusiness] Stamp is in timeframe ("+new IWTimestamp(timeframes[i].getFrom())+"-"+new IWTimestamp(timeframes[i].getTo())+")");
 							pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), ta.getID(), false);
 							if (pPrices.length > 0) {
 								add = true;
-								//System.out.println("[ProductBusiness] add set to true... breaking");
 								break;
-							}//else {
-								//System.out.println("[ProductBusiness] add till False");
-							//}
-						}//else{
-							//System.out.println("[ProductBusiness] Stamp NOT in timeframe");
-						//}
+							}
+						}
 					}
 					if (add) {
-						//System.out.println("[ProductBusiness] Adding "+ta.getStreetName());
 						returner.add(ta);	
-					}//else {
-						//System.out.println("[ProductBusiness] NOT Adding "+ta.getStreetName());
-					//}
+					}
 				}
 			}
 		}catch (SQLException sql) {

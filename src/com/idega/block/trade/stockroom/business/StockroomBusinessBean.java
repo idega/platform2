@@ -89,7 +89,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   }
 
   public  float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
-    return getPrice(productPriceId, productId, priceCategoryId, time, -1, -1);
+    return getPrice(productPriceId, productId, priceCategoryId, currencyId, time, -1, -1);
   }
 
   public  ProductPrice getPrice(Product product) throws RemoteException {
@@ -128,6 +128,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   public float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, int timeframeId, int addressId) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
+
     try {
         PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
         ProductPrice ppr = ((ProductPrice)com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class));
