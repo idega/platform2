@@ -504,6 +504,10 @@ public SmallCalendar(int year,int month) {
     _link = link;
   }
 
+  public void setTimestamp(idegaTimestamp stamp) {
+    this.stamp = stamp;
+  }
+
   public synchronized Object clone() {
     SmallCalendar obj = null;
     try {
