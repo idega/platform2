@@ -122,7 +122,8 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String PAR_TO = KEY_TO;
 	private static final String PAR_SEEK_TO = "SEEK_" + KEY_TO;	
 	/** The current user. Used to set user in userSearcher (if not set) */
-	private static final String PAR_USER_SSN = "selected_user_pid"; 
+	private static final String PAR_USER_SSN = "selected_user_pid";
+	private static final String PAR_USER_ID = "selected_user_id";
 	private static final String PAR_OWN_POSTING = KEY_OWN_POSTING;	
 	private static final String PAR_VAT_PR_MONTH = KEY_VAT_PR_MONTH;
 	private static final String PAR_VAT_RULE = KEY_VAT_RULE;
@@ -271,11 +272,20 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	
 	private User getUser(IWContext iwc){
 		String userPid = iwc.getParameter(PAR_USER_SSN);
+		String userID = iwc.getParameter(PAR_USER_ID);
 		User user = null;
+		if(userPid !=null){
 		try{
 			user = getUserBusiness(iwc.getApplicationContext()).getUser(userPid);
 		}catch(FinderException ex){
 			ex.printStackTrace(); 
+		}}
+		else if(userID!=null){
+			try{
+				user = getUserBusiness(iwc.getApplicationContext()).getUser(Integer.parseInt(userID));
+			}catch(Exception ex){
+				ex.printStackTrace(); 
+			}
 		}
 		return user;	
 	}
@@ -1096,7 +1106,11 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		String opField = getSession().getOperationalField();
 		return schoolBusiness.getSchoolCategoryHome().findByPrimaryKey(opField);					
 	}
-		
+	
+	
+	public static String getUserIDParameterName(){
+		return PAR_USER_ID;
+	}
 	
 	
 
