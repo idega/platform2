@@ -31,6 +31,7 @@ import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.business.IBOLookup;
+import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -61,7 +62,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   
   private static final String ACTION_SHOW_NEW_ENTRY = "action_show_new_entry";
   
-  private static final String LEAGUE = "league";
+  protected static final String LEAGUE = "league";
 
   private static final String STATUS = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.STATUS";
   private static final String NAME = "is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember.NAME";
@@ -90,7 +91,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   }
     
   
-  private List orderedHelperList;
+//  private List orderedHelperList;
 
   public WorkReportBoardMemberEditor() {
     super();
@@ -191,6 +192,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     // add a value holder for a new entry if desired
     if (ACTION_SHOW_NEW_ENTRY.equals(action)) {
       EntityValueHolder valueHolder = new EntityValueHolder(); 
+      // trick , because postal code is a "foreign" column 
       valueHolder.setColumnValue("POSTAL_CODE_ID", valueHolder); 
       WorkReportBoardMemberHelper valueHolderHelper = new WorkReportBoardMemberHelper("", valueHolder);
       list.add(valueHolderHelper);
@@ -198,22 +200,22 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     // sort list
     Comparator comparator = new Comparator()  {
       public int compare(Object first, Object second) {
-        String firstLeague = ((WorkReportBoardMemberHelper) first).getLeague();
-        String secondLeague = ((WorkReportBoardMemberHelper) second).getLeague();
+        String firstLeague = (String) ((WorkReportBoardMemberHelper) first).getColumnValue(LEAGUE);
+        String secondLeague = (String) ((WorkReportBoardMemberHelper) second).getColumnValue(LEAGUE);
         return firstLeague.compareTo(secondLeague);
       }
     };
     Collections.sort(list, comparator);
-    // store this list for converters
-    orderedHelperList = list;
-    Collection entities = new ArrayList();
-    Iterator iteratorHelper = list.iterator();
-    while (iteratorHelper.hasNext())  {
-      WorkReportBoardMemberHelper helper = (WorkReportBoardMemberHelper) iteratorHelper.next();
-      entities.add(helper.getMember());
-    }      
+//    // store this list for converters
+//    orderedHelperList = list;
+//    Collection entities = new ArrayList();
+//    Iterator iteratorHelper = list.iterator();
+//    while (iteratorHelper.hasNext())  {
+//      WorkReportBoardMemberHelper helper = (WorkReportBoardMemberHelper) iteratorHelper.next();
+//      entities.add(helper.getMember());
+//    }      
 
-    EntityBrowser browser = getEntityBrowser(entities, resourceBundle, form);
+    EntityBrowser browser = getEntityBrowser(list, resourceBundle, form);
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
@@ -300,18 +302,21 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return converter;
   }
   
+  /**
+   * Converter for league column 
+   */
   private EntityToPresentationObjectConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
-    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
-      protected Object getValue(
-        Object entity,
-        EntityPath path,
-        EntityBrowser browser,
-        IWContext iwc)  {
-          int i = browser.getCurrentIndexOfEntities();
-          WorkReportBoardMemberHelper helper = (WorkReportBoardMemberHelper) orderedHelperList.get(i);
-          return helper.getLeague();
-        }
-    };
+    DropDownMenuConverter converter = new DropDownMenuConverter(form);
+//      protected Object getValue(
+//        Object entity,
+//        EntityPath path,
+//        EntityBrowser browser,
+//        IWContext iwc)  {
+//          int i = browser.getCurrentIndexOfEntities();
+//          WorkReportBoardMemberHelper helper = (WorkReportBoardMemberHelper) orderedHelperList.get(i);
+//          return helper.getLeague();
+        
+
         
     OptionProvider optionProvider = new OptionProvider() {
       
@@ -453,7 +458,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
    *
    */ 
     
-  class WorkReportBoardMemberHelper {
+  class WorkReportBoardMemberHelper implements EntityRepresentation {
     
     String league = null;
     Object member = null;
@@ -474,12 +479,15 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       this.member = member;
     }
     
-    public String getLeague() {
-      return league;
+    public Object getColumnValue(String columnName) {
+      if (WorkReportBoardMemberEditor.LEAGUE.equals(columnName))  {
+        return league;
+      }
+      return ((EntityRepresentation) member).getColumnValue(columnName);
     }  
     
-    public Object getMember() {
-      return member;
+    public Object getPrimaryKey() {
+      return ((EntityRepresentation) member).getPrimaryKey();
     }
   }
 
