@@ -13,6 +13,8 @@ import java.io.*;
 
 public class EJBWizard {
 
+  protected boolean legacyIDO=false;
+
 
   public static void main(String[] args)throws Exception{
     try{
@@ -25,10 +27,14 @@ public class EJBWizard {
     }
   }
 
+  public void setLegacyIDO(boolean ifLegacy){
+    this.legacyIDO=ifLegacy;
+  }
 
 
   public void doJavaFileCreate(String className)throws Exception{
       EJBWizardClassCreator inst = new EJBWizardClassCreator(className);
+      inst.setLegacyIDO(this.legacyIDO);
       setClassCreatorProperties(inst);
       inst.createAllFiles();
   }

@@ -15,6 +15,7 @@ public class EJBLegacyWizard extends EJBWizard{
     try{
       String className = args[0];
       EJBLegacyWizard instance = new EJBLegacyWizard();
+      instance.setLegacyIDO(true);
       instance.doJavaFileCreate(className);
     }
     catch(java.lang.ArrayIndexOutOfBoundsException e){

@@ -18,6 +18,7 @@ public class EJBWizardClassCreator {
   private String baseName;
 
   private String entityBeanClassSuffix = "BMPBean";
+  protected boolean legacyIDO = true;
 
   private String factorySuperClass="com.idega.data.IDOFactory";
   private String remoteInterfaceSuperInterface = "com.idega.data.IDOEntity";
@@ -43,6 +44,10 @@ public class EJBWizardClassCreator {
 
   public void setToThrowRemoteExceptions(boolean ifToThrow){
     this.throwRemoteExceptions=ifToThrow;
+  }
+
+  public void setLegacyIDO(boolean ifLegacy){
+    this.legacyIDO=ifLegacy;
   }
 
   public String getRemoteInterfaceSuperInterface(){
@@ -134,6 +139,15 @@ public class EJBWizardClassCreator {
           codeString+=", java.rmi.RemoteException";
         }
         codeString+=";\n";
+
+        if(legacyIDO){
+          codeString+=" public "+this.introspector.getShortName()+" createLegacy()";
+          if(throwRemoteExceptionsInHome()){
+            codeString+=", java.rmi.RemoteException";
+          }
+          codeString+=";\n";
+        }
+
         codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
         if(throwRemoteExceptionsInHome()){
           codeString+=", java.rmi.RemoteException";
@@ -144,6 +158,15 @@ public class EJBWizardClassCreator {
           codeString+=", java.rmi.RemoteException";
         }
         codeString+=";\n";
+
+        if(legacyIDO){
+          codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKeyLegacy(int id) throws java.sql.SQLException";
+          if(throwRemoteExceptionsInHome()){
+            codeString+=", java.rmi.RemoteException";
+          }
+          codeString+=";\n";
+        }
+
 
     codeString +="\n}";
     return codeString;
@@ -176,22 +199,46 @@ public class EJBWizardClassCreator {
         codeString+=" protected Class getEntityInterfaceClass()";
         codeString+="{\n";
         codeString+="  return "+this.introspector.getShortName()+".class;";
-        codeString+="\n }\n";
+        codeString+="\n }\n\n";
 
         codeString+=" public "+this.introspector.getShortName()+" create() throws javax.ejb.CreateException";
         codeString+="{\n";
         codeString+="  return ("+this.introspector.getShortName()+") super.idoCreate(getEntityInterfaceClass());";
-        codeString+="\n }\n";
+        codeString+="\n }\n\n";
+
+        if(legacyIDO){
+          codeString+=" public "+this.introspector.getShortName()+" createLegacy()";
+          codeString+="{\n";
+          codeString+="\ttry{\n";
+          codeString+="\t\treturn create();\n";
+          codeString+="\t}\n";
+          codeString+="\tcatch(javax.ejb.CreateException ce){\n";
+          codeString+="\t\tce.printStackTrace();\n";
+          codeString+="\t}\n";
+          codeString+="\n }\n\n";
+        }
 
         codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(int id) throws javax.ejb.FinderException";
         codeString+="{\n";
         codeString+="  return ("+this.introspector.getShortName()+") super.idoFindByPrimaryKey(getEntityInterfaceClass(),id);";
-        codeString+="\n }\n";
+        codeString+="\n }\n\n";
 
         codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKey(Integer id) throws javax.ejb.FinderException";
         codeString+="{\n";
         codeString+="  return ("+this.introspector.getShortName()+") super.idoFindByPrimaryKey(getEntityInterfaceClass(),id);";
-        codeString+="\n }\n";
+        codeString+="\n }\n\n";
+
+        if(legacyIDO){
+          codeString+=" public "+this.introspector.getShortName()+" findByPrimaryKeyLegacy(int id) throws java.sql.SQLException";
+          codeString+="{\n";
+          codeString+="\ttry{\n";
+          codeString+="\t\treturn findByPrimaryKey(id);\n";
+          codeString+="\t}\n";
+          codeString+="\tcatch(javax.ejb.FinderException fe){\n";
+          codeString+="\t\tthrow new java.sql.SQLException(fe.getMessage());\n";
+          codeString+="\t}\n";
+          codeString+="\n }\n\n";
+        }
 
     codeString +="\n}";
     return codeString;
