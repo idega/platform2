@@ -153,26 +153,13 @@ public void main(ModuleInfo modinfo)throws Exception{
 
 
   try{
-    //debug this is not done yet!
     if(news_category_id !=null) {
         categoryId = Integer.parseInt(news_category_id);//overrides the preset category
         showSingleNews = false;//nope we are showing a collection!
         showAll = false;
-        //System.out.println("inni í category");
-    }else if( (news_category_id==null) && (news_id != null) ){ //yup only one to see if this. owns the newscategory!
-     // System.out.println("(news_category_id==null) && (news_id =="+news_id);
-      /*if( categoryId != 0 ){
-         System.out.println("categoryId != 0 ");
-        if( news[0].getNewsCategoryId() == categoryId ) {
-          System.out.println("My category! ");
-          showSingleNews = true;
-        }
-      }
-      else{
-       System.out.println("categoryId is 0 ");
-       showSingleNews = true;
-      }
-      */
+        LAYOUT = SINGLE_FILE_LAYOUT;
+    }
+    else if ( (news_category_id==null) && (news_id != null) ) { //yup only one to see if this. owns the newscategory!
       showSingleNews = true;
     }
 
@@ -181,17 +168,15 @@ public void main(ModuleInfo modinfo)throws Exception{
       add(newsEditor);
     }
 
-    if(showSingleNews){//single news
+    if(showSingleNews) {//single news
       news[0] = new News(Integer.parseInt(news_id));
       showAll=false;
-      //news[0] = new News(Integer.parseInt(news_id)); did this before
       backbutton=true;
       cutNews = false;
       setNumberOfDisplayedNews(1);
       add(drawNewsTable(news));
     }
-    else{//view all or category view
-
+    else {//view all or category view
       NewsCategoryAttribute[] attribs = null;
       String categoryString = null;
 
@@ -430,10 +415,8 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   Table newsTable = new Table();
     newsTable.setWidth("100%");
     newsTable.add(information, 1, 1);
-    newsTable.setHeight(2,"15");
-    //newsTable.setHeight(1,3,"100%");
     newsTable.setRowVerticalAlignment(1,"top");
-    //newsTable.setRowVerticalAlignment(2,"top");
+    newsTable.setRowVerticalAlignment(2,"top");
     newsTable.setRowVerticalAlignment(3,"top");
 
   if ( showHeadlineImage ) {
@@ -455,11 +438,8 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   if (image_id!=-1){
     if ( showImages ) {
       newsTable.mergeCells(1,1,2,1);
-      if ( alignWithHeadline ) {
-        newsTable.mergeCells(2,2,2,3);
-      }
-      else {
-        newsTable.mergeCells(1,2,2,2);
+      if ( !alignWithHeadline ) {
+        newsTable.mergeCells(1,2,2,1);
       }
       Image newsImage = new Image(image_id);
         newsImage.setVerticalSpacing(3);
@@ -483,21 +463,44 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
 
   }
 
-  newsTable.add(newstext, 1, 3);
+  if ( alignWithHeadline ) {
+    newsTable.add(Text.getBreak(),1,2);
+    newsTable.add(newstext, 1, 2);
+  }
+  else {
+    newsTable.add(newstext, 1, 3);
+  }
 
   if( backbutton ) {
-        newsTable.mergeCells(1,4,2,4);
-         newsTable.add(new BackButton(back), 1, 4);
+    if ( alignWithHeadline ) {
+      newsTable.mergeCells(1,3,2,3);
+      newsTable.add(new BackButton(back), 1, 3);
+    }
+    else {
+      newsTable.mergeCells(1,4,2,4);
+      newsTable.add(new BackButton(back), 1, 4);
+    }
   }
   else {
     //if(showMore && !headlineAsLink) {//always show the more button
       if(showMoreButton) {
-        if ( !NewsText.equals("") ) { newsTable.add(Text.getBreak(),1,3); }
+        if ( !backbutton ) {
+          if ( alignWithHeadline ) {
+            newsTable.mergeCells(1,3,2,3);
+          }
+          else {
+            newsTable.mergeCells(1,4,2,4);
+          }
+        }
 
         Link moreLink = new Link(more,newsReaderURL);
         moreLink.addParameter("news_id",newsId);
-        newsTable.add(moreLink, 1, 4);
-        newsTable.mergeCells(1,4,2,4);
+        if ( alignWithHeadline ) {
+          newsTable.add(moreLink, 1, 3);
+        }
+        else {
+          newsTable.add(moreLink, 1, 4);
+        }
       }
   }
 
