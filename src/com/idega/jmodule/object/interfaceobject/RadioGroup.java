@@ -68,31 +68,77 @@ public void setVertical(boolean value){
 
 
 public void addRadioButton(String value, Text DisplayString){
-  buttons.add(new RadioButton(name,value));
-  texts.add(DisplayString);
+  addRadioButton(value, DisplayString, false);
 }
 
 public void addRadioButton(int value,Text DisplayString){
-  buttons.add(new RadioButton(name,Integer.toString(value)));
-  texts.add(DisplayString);
+  addRadioButton(value, DisplayString, false);
 }
 
 public void addRadioButton(String value){
-  buttons.add(new RadioButton(name,value));
-  texts.add(new Text(value));
+  addRadioButton(value, false);
 }
 
 public void addRadioButton(RadioButton radioButton, Text DisplayText){
-    buttons.add(radioButton);
-    texts.add(DisplayText);
+    addRadioButton(radioButton, DisplayText, false);
 }
 
 public void addRadioButton(RadioButton[] radioButtons, Text[] DisplayTexts){
+  addRadioButton(radioButtons, DisplayTexts,-1);
+}
+
+
+
+
+
+/**/
+
+public void addRadioButton(String value, Text DisplayString, boolean isSelected){
+  RadioButton button = new RadioButton(name,value);
+  buttons.add(button);
+  texts.add(DisplayString);
+  if(isSelected){
+    button.setSelected();
+  }
+}
+
+public void addRadioButton(int value,Text DisplayString, boolean isSelected){
+  RadioButton button = new RadioButton(name,Integer.toString(value));
+  buttons.add(button);
+  texts.add(DisplayString);
+  if(isSelected){
+    button.setSelected();
+  }
+}
+
+public void addRadioButton(String value, boolean isSelected){
+  RadioButton button = new RadioButton(name,value);
+  buttons.add(button);
+  texts.add(new Text(value));
+  if(isSelected){
+    button.setSelected();
+  }
+}
+
+public void addRadioButton(RadioButton radioButton, Text DisplayText, boolean isSelected){
+  buttons.add(radioButton);
+  texts.add(DisplayText);
+  if(isSelected){
+    radioButton.setSelected();
+  }
+}
+
+public void addRadioButton(RadioButton[] radioButtons, Text[] DisplayTexts, int selectedIndex){
   for (int i = 0; i < radioButtons.length; i++) {
     buttons.add(radioButtons[i]);
     texts.add(DisplayTexts[i]);
+    if(i == selectedIndex){
+      radioButtons[i].setSelected();
+    }
   }
 }
+
+/**/
 
 private void heightenIndexes(){
   if(fillVertical){

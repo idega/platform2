@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.15 2001/08/20 13:43:29 laddi Exp $
+ * $Id: Table.java,v 1.16 2001/08/27 20:37:37 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -828,7 +828,7 @@ public class Table extends ModuleObjectContainer {
                                                             printString.append(theObjects[x-1][y-1].getAttributeString());
                                                             printString.append(" >");
                                                             println(printString.toString());
-                                                            theObjects[x-1][y-1].print(modinfo);
+                                                            theObjects[x-1][y-1]._print(modinfo);
                                                             printNbsp(modinfo,x,y);
 
                 }
@@ -870,7 +870,7 @@ public class Table extends ModuleObjectContainer {
                                                                           printString.append("\" >");
                                                                           println(printString.toString());
 
-                                                                          theObjects[x-1][y-1].print(modinfo);
+                                                                          theObjects[x-1][y-1]._print(modinfo);
                     printNbsp(modinfo,x,y);
                     println("</td>");
 
@@ -890,7 +890,7 @@ public class Table extends ModuleObjectContainer {
                                                                     printString.append(" >");
                                                                     println(printString.toString());
 
-                                                                    theObjects[x-1][y-1].print(modinfo);
+                                                                    theObjects[x-1][y-1]._print(modinfo);
                                                                     printNbsp(modinfo,x,y);
 
                   }
@@ -921,7 +921,7 @@ public class Table extends ModuleObjectContainer {
         for(int y=1;y<=rows;){
           for(int x=1;x<=cols;){
             if(theObjects[x-1][y-1] != null){
-              theObjects[x-1][y-1].print(modinfo);
+              theObjects[x-1][y-1]._print(modinfo);
             }
             x++;
           }
@@ -932,7 +932,7 @@ public class Table extends ModuleObjectContainer {
                           for(int y=1;y<=rows;){
                                   for(int x=1;x<=cols;){
                                           if(theObjects[x-1][y-1] != null){
-                                                  theObjects[x-1][y-1].print(modinfo);
+                                                  theObjects[x-1][y-1]._print(modinfo);
                                           }
                                           x++;
                                   }

@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.17 2001/08/27 09:42:37 laddi Exp $
+ * $Id: Page.java,v 1.18 2001/08/27 20:37:37 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -344,7 +344,7 @@ public class Page extends ModuleObjectContainer {
         }
         println("\n<head>");
         if (getAssociatedScript() != null) {
-          getAssociatedScript().print(modinfo);
+          getAssociatedScript()._print(modinfo);
         }
         //println("\n<meta http-equiv=\"content-type\" content=\"text/html; charset=iso-8859-1\">\n<meta name=\"generator\" content=\"idega arachnea 1.2\">\n<meta name=\"author\" content=\"idega.is\">\n<meta name=\"copyright\" content=\"idega.is\">\n");
         //if (getRedirectInfo() != null) {

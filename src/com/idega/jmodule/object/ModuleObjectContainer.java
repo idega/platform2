@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObjectContainer.java,v 1.9 2001/08/09 12:40:01 tryggvil Exp $
+ * $Id: ModuleObjectContainer.java,v 1.10 2001/08/27 20:37:37 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,7 +19,7 @@ import java.io.*;
  */
 public class ModuleObjectContainer extends ModuleObject {
   protected Vector theObjects;
-  private boolean goneThroughMain = false;
+  protected boolean goneThroughMain = false;
 
   public ModuleObjectContainer() {
   }
@@ -204,9 +204,12 @@ public class ModuleObjectContainer extends ModuleObject {
      // }
   }*/
 
+  public void _print(ModuleInfo modinfo) throws Exception {
+    goneThroughMain = false;
+    super._print(modinfo);
+  }
 
   public void print(ModuleInfo modinfo) throws Exception {
-    goneThroughMain = false;
     initVariables(modinfo);
     //Workaround for JRun - JRun has hardcoded content type text/html in JSP pages
     //if(this.doPrint(modinfo)){
@@ -219,13 +222,13 @@ public class ModuleObjectContainer extends ModuleObject {
         ModuleObject tempobj = objectAt(index);
         try {
           if (tempobj != null) {
-            tempobj.print(modinfo);
+            tempobj._print(modinfo);
             flush();
           }
         }
         catch(Exception ex) {
           ExceptionWrapper exep = new ExceptionWrapper(ex,this);
-          exep.print(modinfo);
+          exep._print(modinfo);
         }
       }
     }

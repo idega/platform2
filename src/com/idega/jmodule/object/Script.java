@@ -143,7 +143,7 @@ public void print(ModuleInfo modinfo)throws Exception{
 		}
 	}
 	else{
-		super.print(modinfo);
+		super._print(modinfo);
 	}
 }
 

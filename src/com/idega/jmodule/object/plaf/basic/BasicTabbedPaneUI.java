@@ -325,7 +325,7 @@ public class BasicTabbedPaneUI extends GenericTabbedPaneUI{
 
 //    super.setHeight(3,1, Integer.toString(paneModel.getTabPageHeight()-2));
 //    super.setWidth(3,1,Integer.toString(paneModel.getTabPageWidth()-4));
-    super.setHeight(3,1, Integer.toString(400));
+    super.setHeight(3,1, Integer.toString(410));
     super.setWidth(3,1,Integer.toString(390));
 
     this.setAlignment(3,1,"center");

@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.17 2001/08/23 20:43:49 gummi Exp $
+ * $Id: DateInput.java,v 1.18 2001/08/27 20:37:37 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -39,6 +39,7 @@ private int toYear;
 private int selectedYear=-1;
 private String styleAttribute = "font-size: 8pt";
 private boolean inShort=false;
+protected boolean justConstructed = false;
 
 
 final static String DAY_KEY = "dateinput.day_long";
@@ -55,6 +56,7 @@ public DateInput(){
 
 public DateInput(String name){
   super();
+  justConstructed = true;
   script = new Script();
   theDay = new DropdownMenu(name+"_day");
   theMonth = new DropdownMenu(name+"_month");
@@ -68,6 +70,7 @@ public DateInput(String name){
 
 public DateInput(String name, boolean inShort){
   super();
+  justConstructed = true;
   script = new Script();
   theDay = new DropdownMenu(name+"_day");
   theMonth = new DropdownMenu(name+"_month");
@@ -361,19 +364,21 @@ public void setNoDayView(){
 
 //}
 public void main(ModuleInfo modinfo)throws Exception{
-  if (isShowDay) {
-    super.add(theDay);
-  }
-  super.add(theMonth);
-  super.add(theYear);
-  super.add(theWholeDate);
 
-  addLocalized(modinfo);
+  if(justConstructed){
+    if (isShowDay) {
+      super.add(theDay);
+    }
+    super.add(theMonth);
+    super.add(theYear);
+    super.add(theWholeDate);
+
+    addLocalized(modinfo);
+    justConstructed = false;
+  }
 
 
 }
-
-
 
   private void addLocalized(ModuleInfo modinfo){
       Locale locale = modinfo.getCurrentLocale();

@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.18 2001/08/23 20:43:49 gummi Exp $
+ * $Id: ModuleObject.java,v 1.19 2001/08/27 20:37:37 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -241,6 +241,10 @@ public class ModuleObject extends Object implements Cloneable {
    */
   public void println(String string) {
     out.println(string);
+  }
+
+  public void _print(ModuleInfo modinfo) throws Exception {
+    this.print(modinfo);
   }
 
   /**

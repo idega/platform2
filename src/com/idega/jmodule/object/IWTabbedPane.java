@@ -12,6 +12,7 @@ import com.idega.util.IWColor;
 import com.idega.event.IWLinkEvent;
 import com.idega.event.IWLinkListener;
 import com.idega.jmodule.object.plaf.GenericTabbedPaneUI;
+import com.idega.util.Disposable;
 
 import javax.swing.SwingConstants;
 import javax.swing.SingleSelectionModel;
@@ -32,7 +33,7 @@ import java.util.Locale;
  * @version 1.0
  */
 
-public class IWTabbedPane extends Table implements SwingConstants {
+public class IWTabbedPane extends Table implements SwingConstants, Disposable {
 
     private static final String uiClassID = "IWTabbedPaneUI";
     protected int tabPlacement = TOP;
@@ -96,6 +97,13 @@ public class IWTabbedPane extends Table implements SwingConstants {
 
     public void dispose(ModuleInfo modinfo){
       modinfo.getSession().removeAttribute(attributeString);
+      ModuleObject[] obs = this.getAddedTabs();
+      for (int i = 0; i < obs.length; i++) {
+        if(obs[i] instanceof Disposable){
+          ((Disposable)obs[i]).dispose(modinfo);
+        }
+      }
+
       Vector evetLinks = this.getUI().getTabPresentation().getAddedTabs();
       if ( evetLinks != null ) {
         for (int i = 0; i < evetLinks.size(); i++) {
@@ -338,6 +346,14 @@ public class IWTabbedPane extends Table implements SwingConstants {
         return pages.size();
     }
 
+    public ModuleObject[] getAddedTabs(){
+      ModuleObject obj[] = new ModuleObject[pages.size()];
+      for (int i = 0; i < pages.size(); i++) {
+        obj[i] = ((Page)pages.get(i)).content;
+      }
+      return obj;
+    }
+
     public int getTabRunCount() {
         if (ui != null) {
 //            return ((IWTabbedPaneUI)ui).getTabRunCount(this);
@@ -465,7 +481,7 @@ public class IWTabbedPane extends Table implements SwingConstants {
       this.getUI().getTabPagePresentation().add(this.getSelectedComponent());
     }
 */
-    if(this.getUI().getTabPresentation() instanceof ModuleObject){
+    if(this.getUI().getTabPresentation() instanceof ModuleObject && this.justConstructed()){
       addTabs((ModuleObject)this.getUI().getTabPresentation());
     }
 

@@ -114,8 +114,16 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
   public void initializeLayout(){
     frameTable.resize(1,2);
     frameTable.add(tpane,1,1);
+    frameTable.setAlignment(1,1,"center");
   }
 
+  public void setAlignment(String align){
+    frameTable.setAlignment(align);
+  }
+
+  public void setVerticalAlignment(String vAlign){
+    frameTable.setVerticalAlignment(vAlign);
+  }
 
   public void stateChanged(ChangeEvent e){
     if(useCollector && !first){
@@ -167,6 +175,10 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
       collector.addCollectable((Collectable)collectable, index);
       useCollector = true;
     }
+  }
+
+  public ModuleObject[] getAddedTabs(){
+    return tpane.getAddedTabs();
   }
 
   public void disableOkButton(boolean value){

@@ -18,6 +18,7 @@ public class Text extends ModuleObject{
 
 private static Text emptyText;
 private static Text HTMLbreak;
+private static Text HTMLnbsp;
 
 protected String text;
 protected boolean attributeSet;
@@ -185,6 +186,14 @@ public static Text getBreak(){
     HTMLbreak.setFontSize("1");
   }
   return HTMLbreak;
+}
+
+public static Text getNonBrakingSpace(){
+  if (HTMLnbsp == null){
+    HTMLnbsp = new Text("&nbsp;");
+    HTMLnbsp.setFontSize("1");
+  }
+  return HTMLnbsp;
 }
 
 
