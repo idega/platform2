@@ -4,8 +4,6 @@ package is.idega.idegaweb.golf.presentation;
 
 
 
-import com.idega.presentation.JModuleAdminWindow;
-
 import com.idega.presentation.text.Link;
 
 import com.idega.jmodule.login.business.AccessControl;

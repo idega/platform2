@@ -1534,9 +1534,9 @@ public void SaveTournament(IWContext iwc) throws SQLException,IOException{
 
 	//getResponse().sendRedirect(getRequest().getRequestURI());
 
-        getWindow().setParentToReload();
+        this.setParentToReload();
 
-        getWindow().close();
+        this.close();
 
 }
 

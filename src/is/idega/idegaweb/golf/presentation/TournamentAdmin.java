@@ -26,7 +26,7 @@ import is.idega.idegaweb.golf.moduleobject.GolfDialog;
 
 */
 
- public class TournamentAdmin extends com.idega.presentation.JModuleAdminWindow {
+ public class TournamentAdmin extends com.idega.presentation.ui.Window {
 
 
 

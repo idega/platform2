@@ -160,7 +160,7 @@ public void main(IWContext iwc){
 
                 TournamentController.removeTournamentTableApplicationAttribute(iwc);
 
-                getWindow().setParentToReload();
+                this.setParentToReload();
 
 
 
