@@ -22,8 +22,8 @@ public class TourVoucher extends Voucher{
   }
 
   public void main(IWContext iwc) throws Exception{
-    setupVoucher(iwc);
     super.main(iwc);
+    setupVoucher(iwc);
   }
   protected void setupVoucher(IWContext iwc) throws RemoteException {
     IWResourceBundle iwrb = super.getResourceBundle(iwc);
