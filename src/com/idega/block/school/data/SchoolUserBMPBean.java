@@ -21,6 +21,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	private final String TABLE_NAME = "sch_school_user";
 	private final String COLUMN_NAME_SHOW_IN_CONTACTS = "show_in_contact";
 	private final String COLUMN_NAME_MAIN_HEADMASTER = "main_headmaster";
+	private final String COLUMN_NAME_ECONOMY_RESP = "economy_resp";
 	
 
 	public static final int USER_TYPE_HEADMASTER = 0;
@@ -48,6 +49,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		this.addAttribute(COLUMN_NAME_USER_TYPE, "user type", true, true, Integer.class);
 		this.addAttribute(COLUMN_NAME_SHOW_IN_CONTACTS, "show in contacts", true, true, Boolean.class);
 		this.addAttribute(COLUMN_NAME_MAIN_HEADMASTER, "main headmaster", true, true, Boolean.class);	
+		this.addAttribute(COLUMN_NAME_ECONOMY_RESP, "economical responsible", true, true, Boolean.class);	
 	}
 
 	public void setSchoolId(int schoolId) {
@@ -78,12 +80,20 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		return getIntColumnValue(COLUMN_NAME_USER_TYPE);	
 	}
 
-public void setMainHeadmaster(boolean mainHead) {
+	public void setMainHeadmaster(boolean mainHead) {
 		setColumn(COLUMN_NAME_MAIN_HEADMASTER, mainHead);	
 	}
 	
 	public boolean getMainHeadmaster() {
 		return getBooleanColumnValue(COLUMN_NAME_MAIN_HEADMASTER);	
+	}
+	
+	public void setIsEconomicalResponsible(boolean b) {
+		setColumn(COLUMN_NAME_ECONOMY_RESP, b);	
+	}
+	
+	public boolean isEconomicalResponsible() {
+		return getBooleanColumnValue(COLUMN_NAME_ECONOMY_RESP, false);	
 	}
 	
 	public void setShowInContact(boolean showinContacts) {
