@@ -71,6 +71,7 @@ public class AllocationMenu extends KeyEditor{
     Link Properties = new Link("Kerfisstillingar","/allocation/sysprops.jsp");
     Link Emails = new Link("Tölvupóstar","/allocation/emails.jsp");
     Link ContractText = new Link("Samningstextar","/allocation/contracttext.jsp");
+    Link TypePeriods = new Link("Samnings dagsetningar","/allocation/aprttypeperiods.jsp");
 
     Right.add(Approve,1,1);
     Right.add(Contracts,1,2);
@@ -81,6 +82,7 @@ public class AllocationMenu extends KeyEditor{
     Right.add(Properties,1,7);
     Right.add(Emails,1,8);
     Right.add(ContractText,1,9);
+    Right.add(TypePeriods,1,10);
 
     return Frame;
   }
