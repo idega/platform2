@@ -26,10 +26,12 @@ public class TournamentType extends GolfEntity{
 
 	public void initializeAttributes(){
 		addAttribute(getIDColumnName());
-		addAttribute("name","Tegund móts",true,true,"java.lang.String");
 		addAttribute("tournament_type","Einkvæmur strengur",true,true,"java.lang.String");
-		addAttribute("number_in_group","Hámarksfjöldi í hóp",true,true,"java.lang.String");
-	}
+		addAttribute("with_handicap","Með forgjöf",true,true,"java.lang.Boolean");
+		addAttribute("without_handicap","Án forgjafar",true,true,"java.lang.Boolean");
+		addAttribute("modifier","Margföldunarstuðull",true,true,"java.lang.Float");
+		addAttribute("name","Tegund móts",true,true,"java.lang.String");
+      	}
 
 	public String getEntityName(){
 		return "tournament_type";
@@ -43,14 +45,29 @@ public class TournamentType extends GolfEntity{
 		return getStringColumnValue("tournament_type");
 	}
 
-	public void setNumberInGroup(int number){
-		setColumn("number_in_group",new Integer(number));
-	}
+        public void setWithHandicap(boolean with_handicap) {
+            setColumn("with_handicap",with_handicap);
+        }
 
-	public int getNumberInGroup(){
-		return getIntColumnValue("number_in_group");
-	}
+        public boolean getWithHandicap() {
+            return getBooleanColumnValue("with_handicap");
+        }
 
+        public void setWithoutHandicap(boolean without_handicap) {
+            setColumn("without_handicap",without_handicap);
+        }
+
+        public boolean getWithoutHandicap() {
+            return getBooleanColumnValue("without_handicap");
+        }
+
+        public void setModifier(float modifier) {
+            setColumn("modifier",modifier);
+        }
+
+        public float getModifier() {
+            return getFloatColumnValue("modifier");
+        }
 
 	public String getName(){
 		return getStringColumnValue("name");
