@@ -24,6 +24,7 @@ import java.util.List;
 
 import com.idega.core.contact.data.Email;
 import com.idega.core.location.data.Address;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -48,7 +49,8 @@ public class MemberOverview extends Block {
 	
 	public static final String PARAM_NAME_SHOW_STATUS = "showStatus";
 	public static final String PARAM_NAME_SHOW_HISTORY = "showHistory";
-	public static final String PARAM_NAME_SHOW_FINANCE_OVERVIEW = "showFinanceOverview";	
+	public static final String PARAM_NAME_SHOW_FINANCE_OVERVIEW = "showFinanceOverview";
+	public static final String PARAM_NAME_FINANCE_ENTRY_ID = "financeEntryID";
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
@@ -125,7 +127,7 @@ public class MemberOverview extends Block {
 		String[] financeOverviewHeaderAlignments = {null, null, "right"};
 		row = insertSectionHeaderIntoTable(table, row, financeOverviewHeaders, financeOverviewLink);
 		if(showFinanceOverview) {
-			row = insertFinanceInfoIntoTable(table, row, true);
+			row = insertFinanceInfoIntoTable(table, row, true, iwc);
 		}
 		mainTable.add(table, 1, 2);
 		
@@ -339,7 +341,7 @@ public class MemberOverview extends Block {
 		return row;
 	}
 	
-	private int insertFinanceInfoIntoTable(Table table, int row, boolean showHistory) {
+	private int insertFinanceInfoIntoTable(Table table, int row, boolean showHistory, IWContext iwc) {
 		ArrayList finEntryList = new ArrayList(_financeData); 
 		Collections.sort(finEntryList, new Comparator() {
 
@@ -348,7 +350,7 @@ public class MemberOverview extends Block {
 				FinanceEntryBMPBean fin1 = (FinanceEntryBMPBean) arg1;
 				Timestamp stamp0 = fin0.getDateOfEntry();
 				Timestamp stamp1 = fin1.getDateOfEntry();
-				return _collator.compare(stamp0.toString(),stamp1.toString());
+				return _collator.compare(stamp1.toString(),stamp0.toString());
 			}
 			
 		});
@@ -358,14 +360,24 @@ public class MemberOverview extends Block {
 		NumberFormat format = NumberFormat.getInstance(_iwrb.getLocale());
 		format.setMaximumFractionDigits(0);
 		format.setMinimumIntegerDigits(1);
+		IWBundle iwb = getBundle(iwc);
 		while(finIter.hasNext()) {
 			FinanceEntry finEntry = (FinanceEntry) finIter.next();
-			String displayName = finEntry.getGroup().getName()+" - "+finEntry.getDivision().getName()+" - "+finEntry.getClub(); 
+			
+			Link financeDetailLink = new Link(iwb.getImage("magnify.gif"));
+			financeDetailLink.setWindowToOpen(MemberFinanceEntryDetailWindow.class);
+			financeDetailLink.addParameter(PARAM_NAME_FINANCE_ENTRY_ID, finEntry.getPrimaryKey().toString());
+			
+			String displayName = finEntry.getGroup().getName()+" - "+finEntry.getDivision().getName()+" - "+finEntry.getClub(); 	
 			table.add(displayName,2,row);
 			table.add(new IWTimestamp(finEntry.getDateOfEntry()).getDateString("dd-MM-yyyy"),3,row);
-			//table.add(finEntry.getInfo(),3,row);
-			table.add(format.format(finEntry.getAmount()),4,row);
+			Text amountText = new Text(format.format(finEntry.getAmount()));
+			if (finEntry.getType() == FinanceEntryBMPBean.TYPE_PAYMENT) {
+				amountText.setFontColor("red");
+			}
+			table.add(amountText,4,row);
 			table.setAlignment(4, row, "right");
+			table.add(financeDetailLink,5,row);
 		row++;
 		}
 		return row;
