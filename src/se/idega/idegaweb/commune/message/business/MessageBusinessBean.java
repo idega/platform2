@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.58 2004/02/20 16:36:50 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.59 2004/03/05 16:19:29 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -221,7 +221,7 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	}	
 	
 	public Message createUserMessage(User user, String subject, Group handler, String body, boolean sendLetter,String contentCode) {
-		return createUserMessage(null, user, null, handler, subject, body, sendLetter,contentCode);
+		return createUserMessage(null, user, null, handler, subject, body, sendLetter,contentCode, false);
 	}	
 	
 	public Message createUserMessage(User receiver, String subject, String body, User sender, boolean sendLetter) {
@@ -232,14 +232,22 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return createUserMessage(parentCase, receiver, null, subject, body, sendLetter);
 	}
 	
+	public Message createUserMessage(Case parentCase, User receiver, String subject, String body, boolean sendLetter, boolean alwaysSendLetter) {
+		return createUserMessage(parentCase, receiver, null, null, subject, body, sendLetter, null, alwaysSendLetter);
+	}
+	
 	public Message createUserMessage(Case parentCase, User receiver, User sender, String subject, String body, boolean sendLetter) {
 		return createUserMessage(parentCase, receiver, sender, null, subject, body, sendLetter);	
 	}
 	
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter) {
-		return createUserMessage(parentCase, receiver,sender,handler,subject,body,sendLetter,null);
+		return createUserMessage(parentCase, receiver,sender,handler,subject,body,sendLetter,null, false);
 	}
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean pSendLetterIfNoEmail,String contentCode) {
+		return createUserMessage(parentCase, receiver,sender,handler,subject,body,pSendLetterIfNoEmail,contentCode, false);
+	}
+	
+	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean pSendLetterIfNoEmail,String contentCode, boolean alwaysSendLetter) {
 		try {
 			Message message = null;
 			boolean sendMail = getIfUserPreferesMessageByEmail(receiver);
@@ -286,6 +294,9 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			//	if (pSendLetterIfNoEmail)
 			//		createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 			//}
+			if (alwaysSendLetter) {
+				doSendLetter = true;
+			}
 			if(doSendLetter){
 				createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 			}
