@@ -18,7 +18,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 public class AccountingBlock extends CommuneBlock {
 	
-	public final static String IW_ACCOUNTING_BUNDLE_IDENTIFER = "idega.idegaweb.commune.accounting";
+	public final static String IW_ACCOUNTING_BUNDLE_IDENTIFER = "se.idega.idegaweb.commune.accounting";
 	
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
