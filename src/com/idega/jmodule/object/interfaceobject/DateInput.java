@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.3 2001/04/30 16:40:40 palli Exp $
+ * $Id: DateInput.java,v 1.4 2001/05/23 15:32:31 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,42 +30,43 @@ private boolean setCheck = false;
 private int fromYear;
 private int toYear;
 private int selectedYear=-1;
+private String styleAttribute = "font-size: 8pt";
 
 public DateInput(){
 	this("dateinput");
 }
 
 public DateInput(String name){
-	super();
-	script = new Script();
-	theDay = new DropdownMenu(name+"_day");
-	theMonth = new DropdownMenu(name+"_month");
-	theYear = new DropdownMenu(name+"_year");
-	theWholeDate = new Parameter(name,"");
+  super();
+  script = new Script();
+  theDay = new DropdownMenu(name+"_day");
+  theMonth = new DropdownMenu(name+"_month");
+  theYear = new DropdownMenu(name+"_year");
+  theWholeDate = new Parameter(name,"");
 
-        super.add(theDay);
-	super.add(theMonth);
-	super.add(theYear);
-	super.add(theWholeDate);
+  super.add(theDay);
+  super.add(theMonth);
+  super.add(theYear);
+  super.add(theWholeDate);
 
-        doSomeShit("Dagur", "Mánuður", "Ár");
+  doSomeShit("Dagur", "Mánuður", "Ár");
 
 }
 
 public DateInput(String name, boolean inShort){
-	super();
-	script = new Script();
-	theDay = new DropdownMenu(name+"_day");
-	theMonth = new DropdownMenu(name+"_month");
-	theYear = new DropdownMenu(name+"_year");
-	theWholeDate = new Parameter(name,"");
+  super();
+  script = new Script();
+  theDay = new DropdownMenu(name+"_day");
+  theMonth = new DropdownMenu(name+"_month");
+  theYear = new DropdownMenu(name+"_year");
+  theWholeDate = new Parameter(name,"");
 
-        super.add(theDay);
-	super.add(theMonth);
-	super.add(theYear);
-	super.add(theWholeDate);
+  super.add(theDay);
+  super.add(theMonth);
+  super.add(theYear);
+  super.add(theWholeDate);
 
-        doSomeShit("Dag", "Mán", "Ár");
+  doSomeShit("D", "M", "Y");
 
 }
 
@@ -95,7 +96,7 @@ private void doSomeShit(String strDay, String strMonth, String strYear) {
 	//theYear.addMenuElement("2000","2000");
 	//theYear.addMenuElement("2001","2001");
 	//theYear.addMenuElement("2002","2002");
-
+        /*
 	theMonth.addMenuElement("",strMonth);
 	theMonth.addMenuElement("01","janúar");
 	theMonth.addMenuElement("02","febrúar");
@@ -109,6 +110,21 @@ private void doSomeShit(String strDay, String strMonth, String strYear) {
 	theMonth.addMenuElement("10","október");
 	theMonth.addMenuElement("11","nóvember");
 	theMonth.addMenuElement("12","desember");
+        */
+
+        theMonth.addMenuElement("",strMonth);
+	theMonth.addMenuElement("01","jan");
+	theMonth.addMenuElement("02","feb");
+	theMonth.addMenuElement("03","mar");
+	theMonth.addMenuElement("04","apr");
+	theMonth.addMenuElement("05","maí");
+	theMonth.addMenuElement("06","jún");
+	theMonth.addMenuElement("07","júl");
+	theMonth.addMenuElement("08","ágú");
+	theMonth.addMenuElement("09","sep");
+	theMonth.addMenuElement("10","okt");
+	theMonth.addMenuElement("11","nóv");
+	theMonth.addMenuElement("12","des");
 
 	theDay.addMenuElement("",strDay);
 	theDay.addMenuElement("01","1");
@@ -177,6 +193,12 @@ private void doSomeShit(String strDay, String strMonth, String strYear) {
 
 private Script getScript(){
 	return this.script;
+}
+
+public void setStyle(String styleAttribute){
+  theDay.setAttribute("style",styleAttribute);
+  theMonth.setAttribute("style",styleAttribute);
+  theYear.setAttribute("style",styleAttribute);
 }
 
 
