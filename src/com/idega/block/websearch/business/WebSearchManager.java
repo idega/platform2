@@ -55,7 +55,7 @@ public final class WebSearchManager {
 		//System.out.println(configURI);
 		try {
 			SAXBuilder builder = new SAXBuilder(false);
-			Document doc = builder.build(configURI);
+			Document doc = builder.build("file://"+configURI);
 			Element root = doc.getRootElement();
 			
 			// Get indexes 
