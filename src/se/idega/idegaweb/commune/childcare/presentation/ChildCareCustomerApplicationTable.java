@@ -40,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.96 2005/02/25 15:38:20 anders Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.97 2005/04/04 09:24:26 malin Exp $
  * @since 12.2.2003 
  */
 
@@ -348,8 +348,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 							+ child.getPersonalID()
 							+ " "
 							+ localize(
-								"ccot_reject_msg1",
+								"ccot_reject_msg2",
 								"tackar nej till erbjudandet om platsen hos")
+							+ " "
 							+ application.getProvider().getName(),
 						application.getOwner());					
 				}
