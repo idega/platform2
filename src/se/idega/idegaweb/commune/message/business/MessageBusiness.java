@@ -4,7 +4,10 @@ import java.rmi.RemoteException;
 import javax.ejb.*;
 
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
+import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 
+import se.idega.idegaweb.commune.message.data.Message;
+import com.idega.core.data.ICFile;
 import com.idega.user.data.User;
 
 import java.util.Collection;
@@ -52,6 +55,9 @@ public interface MessageBusiness extends com.idega.business.IBOService
 	public boolean getIfUserPreferesMessageInMessageBox(User user)throws RemoteException;
 	public void setIfUserPreferesMessageByEmail(User user,boolean preference)throws RemoteException;
 	public void setIfUserPreferesMessageInMessageBox(User user,boolean preference)throws RemoteException;
+
+	public SystemArchivationMessage createPrintArchivationMessage(User forUser, User creator, String subject, String body,ICFile attatchement) throws CreateException, RemoteException;
+	public SystemArchivationMessage createPrintArchivationMessage(int forUserID, int creatorUserID, String subject, String body,int attatchementFileID) throws CreateException, RemoteException;
 
 
 }

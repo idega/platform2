@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.14 2002/10/08 14:11:09 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.15 2002/10/08 22:14:39 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -20,11 +20,13 @@ import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.MessageHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
+import se.idega.idegaweb.commune.message.data.SystemArchivationMessage;
 import se.idega.idegaweb.commune.message.data.UserMessage;
 
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.CaseCode;
 import com.idega.core.data.Email;
+import com.idega.core.data.ICFile;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
@@ -60,8 +62,11 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		if (messageType.equals(TYPE_USER_MESSAGE)) {
 			return (MessageHome) this.getIDOHome(UserMessage.class);
 		}
-		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
+		if (messageType.equals(TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE)) {
 			return (MessageHome) this.getIDOHome(PrintedLetterMessage.class);
+		}
+		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
+			return (MessageHome) this.getIDOHome(SystemArchivationMessage.class);
 		}
 		else {
 			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
@@ -220,6 +225,39 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		}
 
 		return createPrintArchivationMessage(user, subject, body);
+	}
+
+	public SystemArchivationMessage createPrintArchivationMessage(User forUser, User creator, String subject, String body,ICFile attatchement) throws CreateException {
+		int forUserID=-1;
+		int creatorUserID=-1;
+		int fileID=-1;
+		try{
+			forUserID=((Integer)forUser.getPrimaryKey()).intValue();
+			creatorUserID=((Integer)creator.getPrimaryKey()).intValue();
+			fileID=((Integer)attatchement.getPrimaryKey()).intValue();
+		}
+		catch(Exception e){
+			throw new IDOCreateException(e);	
+		}
+		return createPrintArchivationMessage(forUserID,creatorUserID,subject,body,fileID);
+	}
+
+	public SystemArchivationMessage createPrintArchivationMessage(int forUserID, int creatorUserID, String subject, String body,int attatchementFileID) throws CreateException {
+
+		/**
+		 * @todo implement support for creator
+		 */
+		try{
+			Message message = createMessage(getTypeArchivationMessage(), forUserID, subject, body);
+			SystemArchivationMessage saMessage = (SystemArchivationMessage)message;
+			saMessage.setAttatchedFile(attatchementFileID);
+			message.store();
+			return saMessage;
+		}
+		catch(Exception e){
+			throw new IDOCreateException(e);	
+		}
+
 	}
 
 	private Message createMessage(String messageType, int userID, String subject, String body) throws CreateException, RemoteException {
