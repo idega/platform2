@@ -23,6 +23,8 @@ import javax.transaction.TransactionManager;
 
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountPhoneEntry;
+import com.idega.block.finance.data.AccountPhoneEntryHome;
+import com.idega.data.IDOLookup;
 import com.idega.transaction.IdegaTransactionManager;
 import com.idega.util.IWTimestamp;
 
@@ -72,7 +74,7 @@ public class PhoneFileHandler {
 						sec = Integer.parseInt(st.nextToken());
 						price = Float.parseFloat(st.nextToken());
 
-						ape = ((com.idega.block.finance.data.AccountPhoneEntryHome) com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
+						ape = ((AccountPhoneEntryHome) IDOLookup.getHome(AccountPhoneEntry.class)).create();
 						ape.setLastUpdated(IWTimestamp.getTimestampRightNow());
 						ape.setDayDuration(daysec);
 						ape.setNightDuration(nightsec);
@@ -174,7 +176,7 @@ public class PhoneFileHandler {
 						cont = false;
 						st = new StringTokenizer(line, ";");
 						if (st.countTokens() == 8) {
-							ape = ((com.idega.block.finance.data.AccountPhoneEntryHome) com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
+							ape = ((AccountPhoneEntryHome) IDOLookup.getHome(AccountPhoneEntry.class)).create();
 							try {
 								anumber = st.nextToken().trim();
 								snumber = st.nextToken().trim();
@@ -244,7 +246,7 @@ public class PhoneFileHandler {
 													eAccount.addAmount(ape.getPrice());
 													M2.put(ap.getAccountId(), eAccount);
 												}
-												ape.insert();
+												ape.store();
 												foundAccount=true;
 												totPrice += ape.getPrice();
 												break;
@@ -394,7 +396,7 @@ public class PhoneFileHandler {
 					cont = false;
 					st = new StringTokenizer(line, ";");
 					if (st.countTokens() == 8) {
-						ape = ((com.idega.block.finance.data.AccountPhoneEntryHome) com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
+						ape = ((AccountPhoneEntryHome) IDOLookup.getHome(AccountPhoneEntry.class)).create();
 						try {
 							anumber = st.nextToken().trim();
 							snumber = st.nextToken().trim();
@@ -477,7 +479,7 @@ public class PhoneFileHandler {
 								}
 	
 							}
-							ape.insert();
+							ape.store();
 						}
 						// account for phonenumber doesn´t exist
 						else {
