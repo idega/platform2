@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.7 2003/08/21 15:25:27 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.8 2003/08/25 21:40:54 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.idega.data.IDOLookup;
-
+import com.idega.util.IWTimestamp;
 
 import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldHome;
@@ -91,15 +91,14 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		return ret.toString();
 	}
 
-	public void savePostingParameter(int ppID,
+	public void savePostingParameter(String sppID,
 				Date periodeFrom, 
 				Date periodeTo,
-				Date updatedDate,
 				String changedSign,
-				int activityID,
-				int regSpecTypeID,
-				int companyTypeID,
-				int communeBelongingID,
+				String activityID,
+				String regSpecTypeID,
+				String companyTypeID,
+				String communeBelongingID,
 				String ownAccount,
 				String ownLiability,
 				String ownResource,
@@ -123,13 +122,23 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 										
 			try {
 				home = (PostingParametersHome) IDOLookup.getHome(PostingParameters.class);
+	
+				if (activityID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR1);
+				if (regSpecTypeID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR2);
+				if (companyTypeID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR3);
+				if (communeBelongingID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR4);
+//				if (sppID == null) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR5);
 
-				if (activityID == 0) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR1);
-				if (regSpecTypeID == 0) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR2);
-				if (companyTypeID == 0) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR3);
-				if (communeBelongingID == 0) throw new PostingParamException(KEY_ERROR_POST_PARAM_ERROR4);
-
-				pp = home.findPostingParameter(ppID);
+				
+				int ppID = 0;
+				if(sppID != null) {
+					ppID = Integer.parseInt(sppID);
+				}
+				if(ppID != 0) {				
+					pp = home.findPostingParameter(ppID);
+				} else {
+					pp = null;
+				}
 
 			} catch (FinderException e) {
 				pp = null;
@@ -141,12 +150,13 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				}
 				pp.setPeriodeFrom(periodeFrom);
 				pp.setPeriodeTo(periodeTo);
-				pp.setUpdatedDate(updatedDate);
 				pp.setChangedSign(changedSign);
-				pp.setActivity(activityID);
-				pp.setRegSpecType(regSpecTypeID);
-				pp.setCompanyType(companyTypeID);
-				pp.setCommuneBelonging(communeBelongingID);
+				pp.setChangedDate(IWTimestamp.getTimestampRightNow());
+
+				pp.setActivity(activityID != null ? Integer.parseInt(activityID) : 0);
+				pp.setRegSpecType(regSpecTypeID != null ? Integer.parseInt(regSpecTypeID) : 0);
+				pp.setCompanyType(companyTypeID != null ? Integer.parseInt(companyTypeID) : 0);
+				pp.setCommuneBelonging(communeBelongingID != null ? Integer.parseInt(communeBelongingID) : 0);
 				
 				pp.setPostingAccount(ownAccount);
 				pp.setPostingLiability(ownLiability);
@@ -181,7 +191,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	 * @author Kjell
 	 * 
 	 */
-	public Collection findPostingParametersByPeriode(String from, String to) {
+	public Collection findPostingParametersByPeriode(Date from, Date to) {
 		try {
 			PostingParametersHome home = getPostingParametersHome();
 			return home.findPostingParametersByPeriode(from, to);				
@@ -208,6 +218,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}
 	}	
 	
+	
 	/**
 	 * Gets a posting parameter by the ID
 	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters; 
@@ -219,6 +230,23 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		try {
 			PostingParametersHome home = getPostingParametersHome();
 			return home.findPostingParameter(id);				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}
+	/**
+	 * Gets a posting parameter by a periode
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters; 
+	 * @return PostingParameters
+	 * @author Kjell
+	 */
+	public Object findPostingParameterByPeriode(Date from, Date to) throws FinderException {
+		// Move this
+		try {
+			PostingParametersHome home = getPostingParametersHome();
+			return home.findPostingParametersByPeriode(from, to);				
 		} catch (RemoteException e) {
 			return null;
 		} catch (FinderException e) {
