@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.24 2003/09/24 16:59:05 joakim Exp $
+ * $Id: PostingBusinessBean.java,v 1.25 2003/09/25 10:22:07 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -49,7 +49,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	private final static String KEY_ERROR_POST_PARAM_DATE_ORDER = "posting_parm_edit.post_dateorder";
 	private final static String KEY_ERROR_POST_PARAM_SAME_ENTRY = "posting_parm_edit.post_sameentry";
 	private final static String KEY_ERROR_POST_PARAM_SCHOOL_YEAR_ORDER = "posting_parm_edit.post_school_year_order";
-	
+	private final static String KEY_ERROR_POST_PARAM_DATE_MISSING = "posting_parm_edit.post_date_empty";
+		
 	/**
 	 * Merges two posting strings according to 15.2 and 15.3 in the Kravspecification Check & Peng
 	 * @param first posting string
@@ -309,6 +310,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				if (Integer.parseInt(schoolYear1ID) > Integer.parseInt(schoolYear2ID)) {
 					throw new PostingParametersException(KEY_ERROR_POST_PARAM_SCHOOL_YEAR_ORDER, "Fel ordning bland skolŒren!");			
 				}
+			}
+			if(periodeFrom == null || periodeTo == null) {
+				throw new PostingParametersException(KEY_ERROR_POST_PARAM_DATE_MISSING, "Datum saknas!");			
 			}
 			if (periodeFrom.after(periodeTo)) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
