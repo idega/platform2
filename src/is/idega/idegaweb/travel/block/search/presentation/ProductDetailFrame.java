@@ -92,6 +92,16 @@ public class ProductDetailFrame extends TravelBlock {
 					ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID);
 				}
 				bookingForm = getServiceHandler(iwc).getBookingForm(iwc, product);
+
+				try {
+					fromDate = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_FROM_DATE));
+				} catch (NullPointerException n) {
+					fromDate = IWTimestamp.RightNow();
+				}
+
+				try {
+					depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, fromDate, true);
+				} catch (Exception e) {}
 				
 			} catch (Exception e ) {
 				e.printStackTrace();
@@ -156,15 +166,7 @@ public class ProductDetailFrame extends TravelBlock {
 				e1.printStackTrace();
 			}
 			//IWTimestamp fromDate = null;
-			try {
-				fromDate = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_FROM_DATE));
-			} catch (NullPointerException n) {
-				fromDate = IWTimestamp.RightNow();
-			}
-			try {
-				depAddresses = getProductBusiness(iwc).getDepartureAddresses(product, fromDate, true);
-			} catch (Exception e) {}
-
+			
 			String productPriceId = iwc.getParameter(AbstractSearchForm.PARAMETER_PRODUCT_PRICE_ID);
 			String sAddressId = iwc.getParameter(AbstractSearchForm.PARAMETER_ADDRESS_ID);
 			int addressId = -1;
