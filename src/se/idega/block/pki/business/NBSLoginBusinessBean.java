@@ -9,7 +9,6 @@ package se.idega.block.pki.business;
 import java.io.File;
 import java.sql.SQLException;
 
-import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import se.nexus.nbs.sdk.HttpMessage;
