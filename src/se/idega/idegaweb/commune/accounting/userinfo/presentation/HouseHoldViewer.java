@@ -160,10 +160,10 @@ public class HouseHoldViewer extends AccountingBlock {
 				firstUser = searcherOne.getUser();
 			}
 			catch (RemoteException e) {
-				e.printStackTrace();
+				log(e);
 			}
 			catch (FinderException e) {
-				e.printStackTrace();
+				log(e);
 			}
 		}
 		if (secondUser == null && searcherTwo != null) {
@@ -172,10 +172,10 @@ public class HouseHoldViewer extends AccountingBlock {
 				secondUser = searcherTwo.getUser();
 			}
 			catch (RemoteException e) {
-				e.printStackTrace();
+				log(e);
 			}
 			catch (FinderException e) {
-				e.printStackTrace();
+				log(e);
 			}
 		}
 		lookupFamilies(iwc);
@@ -188,7 +188,7 @@ public class HouseHoldViewer extends AccountingBlock {
 			secondFamily = getUserInfoService(iwc).getHouseHoldFamily(secondUser);
 		}
 		catch (RemoteException e) {
-			e.printStackTrace();
+			log(e);
 		}
 	}
 
