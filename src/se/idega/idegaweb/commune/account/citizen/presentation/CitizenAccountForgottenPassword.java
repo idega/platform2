@@ -38,10 +38,29 @@ import se.idega.util.PIDChecker;
 
 
 /**
- * Title:        idegaWeb
- * Description:
- * Copyright:    Copyright (c) 2002
- * Company:      idega software
+ *  * 
+ * 
+ * Title:         idegaWeb
+ * Description:   This class handles the case, when a user has forgotten his password.  
+ *                The presentation provides a single input field for the personal id. 
+ *                After submitting the input is checked. 
+ *                If the inputfield is empty a warning dialog pops up.
+ *                If the input represents an impossible social security number (SSN) 
+ *                an error message is returned (with the inputfield again). If the input is a
+ *                possible valid ssn the value is checked if this ssn can be found in the table 
+ *                of already known citizen in the database.
+ *                If the ssn is unknown a link to the citizen application form is returned.
+ *                If the ssn is known it is checked if the citizen has already activated his account.
+ *                If the citizen has not an activated account yet again a link to to the citizen 
+ *                application form is returned.
+ *                There are two different cases if the citizen has already an activated account:
+ *                If the user has never logged in you can not trust his registered email address. 
+ *                Therefore a new password is generated and send by regular post 
+ *                to the person.
+ *                If the the user has logged at some time a new password is generated and send by email.
+ *                  
+ * Copyright:     Copyright (c) 2002
+ * Company:       idega software
  * @author <a href="mailto:thomas@idega.is">Thomas Hilbig</a>
  * @version 1.0
  */
@@ -57,11 +76,11 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
   
   private final static String LETTER_SENT_KEY = "cafp_letter_was_sent";
   private final static String LETTER_SENT_DEFAULT = 
-    "A letter with the new password is sent to you.";      
+    "A letter containing the new password is sent to you.";      
   
   private final static String EMAIL_SENT_KEY = "cafp_email_was_sent";
   private final static String EMAIL_SENT_DEFAULT = 
-    "An email with the new password is sent to you.";
+    "An email containing the new password is sent to you.";
   
   private final static String ACCOUNT_APPLICATION_KEY = "cafp_go_to_citizen_account";
   private final static String ACCOUNT_APPLICATION_DEFAULT = 
@@ -72,8 +91,8 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
   private final static String FORMAT_ERROR_KEY = "caa_format_error";
   private final static String FORMAT_ERROR_DEFAULT = "Felaktigt inmatat värde";
   
-  private final static String FORM_SUBMIT_KEY = "caf_form_submit_key";
-  private final static String FORM_SUBMIT_DEFAULT = "Skicka ansökan";
+  private final static String FORM_SUBMIT_KEY = "cafp_form_submit_key";
+  private final static String FORM_SUBMIT_DEFAULT = "Forgot my password";
 	
 	private final static String ERROR_FIELD_CAN_NOT_BE_EMPTY_DEFAULT = "Fältet måste fyllas i";
   private final static String ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY = "caf_field_can_not_be_empty";
@@ -81,17 +100,23 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
   private final static String ACTION_VIEW_FORM = "action_view_form";
   private final static String ACTION_FORM_SUBMIT = "action_form_submit";  
   
-  // display
+  /** number of characters of the new password */
+  private final static int LENGTH_OF_PASSWORD = 8;
+  
+  /** The color of all messages shown. */
   private final static String COLOR_RED = "#ff0000";
 
-	private IBPage citizenAccountApplicationPage;
+	/** Contains the page where the user can apply for a new account. */
+  private IBPage citizenAccountApplicationPage;
 
-
+  /** Sets the page where a user can apply for a new account.
+   * @param citizenAccountApplicationPage the page where the user can apply for a new account.
+   */
   public void setCitizenAccountApplicationPage(IBPage citizenAccountApplicationPage) {
     this.citizenAccountApplicationPage = citizenAccountApplicationPage;
   }
 
-
+  
 	public void main(final IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
 
@@ -103,11 +128,13 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	}
 
 	/**
-	 * Method submitForm.
-	 * @param iwc
+	 * Handles the input. Checks if the input is a possible valid ssn and if the 
+   * user is known or unknown.
+	 * @param iwc 
 	 */
 	private void submitForm(IWContext iwc) {
-    String ssn = getSsn(iwc, SSN_KEY);
+    String ssn = getSsn(SSN_KEY, iwc);
+    // in does not represent a possible ssn number
     if (ssn == null)  {
       // set error text and show input field again
       IWResourceBundle bundle = getResourceBundle();
@@ -123,6 +150,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
         // user unknown show link to "Citizen account application"
         viewCitizienAccountApplication();
       else {
+        // user is known
          handleKnownUser(user, iwc);
       }
     }
@@ -132,7 +160,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	}
 
 	/**
-	 * Method viewCitizienAccountApplication.
+	 * Builds a presentation containing the link to the citizen application page.
 	 */
 	private void viewCitizienAccountApplication() {        
     IWResourceBundle bundle = getResourceBundle(); 
@@ -147,8 +175,13 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     add(link);
   }
 
-
-
+  /**
+   * Handles the case if the user is a known user with or without an activated account.
+   * @param user the known user.
+   * @param iwc
+   * @throws RemoteException
+   * @throws CreateException
+   */
   private void handleKnownUser(User user, IWContext iwc) throws RemoteException, CreateException {
     int userID = user.getID();
     LoginTable loginTable = LoginDBHandler.getUserLogin(userID);
@@ -158,14 +191,14 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     }
     
     IWResourceBundle bundle = getResourceBundle();    
-    // get login info because of access to password
+    // check if user has ever logged in
     int loginID = loginTable.getID();
-    // LoginInfo loginInfo = LoginDBHandler.getLoginInfo(loginTable.getID());
     LoginRecord loginRecord;
     boolean lastLoginRecordWasFound;
     try {
       loginRecord =
         ((LoginRecordHome) com.idega.data.IDOLookup.getHomeLegacy(LoginRecord.class)).findByLoginID(loginID);
+        // last login was found
       lastLoginRecordWasFound = true;  
     }
     catch (FinderException ex) {
@@ -173,11 +206,15 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
       lastLoginRecordWasFound = false;
     }
     String message;
+    // different messages are returned depending on the result 
+    // if the user has ever logged in
     if (lastLoginRecordWasFound)  {
+      // email is sent
       handleKnownUserLoggedIn(loginTable, user, iwc);
       message = bundle.getLocalizedString(EMAIL_SENT_KEY, EMAIL_SENT_DEFAULT);
     }
     else {
+      // letter is sent
       handleKnownUserNeverLoggedIn(loginTable, user, iwc);
       message = bundle.getLocalizedString(LETTER_SENT_KEY, LETTER_SENT_DEFAULT);
     }
@@ -193,8 +230,12 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
   }
 
 	/**
-	 * Method handleKnownUserLoggedIn.
-	 * 
+	 * Handles known user, that has logged in at some time. 
+   * Creates new password, stores it and send it by an email to the user.
+   * @param loginTable  login of the user
+   * @param user        user
+   * @throws RemoteException
+   * @throws CreateException
 	 */
 	private void handleKnownUserLoggedIn(LoginTable loginTable, User user, IWContext iwc) throws RemoteException, CreateException  {
     String newPassword = createNewPassword();
@@ -203,8 +244,8 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	}
 
 	/**
-	 * Method handleKnownUserNeverLoggedIn.
-   * Creates new password, stores it and send a letter to the user
+	 * Handles known user, that has never logged in.
+   * Creates new password, stores it and send it by a letter to the user.
    * @param loginTable
 	 * @param user
    * @param iwc
@@ -221,8 +262,8 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 
 
 	/**
-	 * Method viewForm.
-	 * @param iwc
+	 * Builds a presentation containing the form with input field and submit button.
+   * @param iwc
 	 */
 	private void viewForm(final IWContext iwc) {
 	  final Table table = createTable();
@@ -235,7 +276,7 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
   }
 
 	/**
-	 * Method getSubmitButton.
+	 * Gets submit button.
 	 * @param submitId
 	 * @param defaultText
 	 * @return SubmitButton
@@ -246,20 +287,27 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 
 
 	/**
-	 * Method addSimpleInputs.
+	 * Puts an input field for the social security number into the specified table.
 	 * @param table
    * @param iwc
 	 */
 	private void addSimpleInputs(Table table, IWContext iwc) {
     Text header = getSmallHeader(localize(SSN_KEY, SSN_DEFAULT));
     table.add(header, 1, 1);
-    table.add(getSingleInput(iwc, SSN_KEY, 12, true), 3, 1);
+    table.add(getSingleInput(SSN_KEY, 12, true, iwc), 3, 1);
 	}
 
 
-
-  private TextInput getSingleInput (IWContext iwc, final String paramId,
-                                      final int maxLength, boolean notEmpty) {
+  /**
+   * Gets input field for the social security number.
+   * @param iwc
+   * @param paramID 
+   * @param maxLength
+   * @param notEmpty
+   * @return the input field
+   */
+  private TextInput getSingleInput (final String paramId,
+                                    final int maxLength, boolean notEmpty, IWContext iwc) {
     TextInput textInput = (TextInput) getStyledInterface
                 (new TextInput(paramId));
     textInput.setMaxlength(maxLength);
@@ -282,8 +330,8 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 
 
 	/**
-	 * Method createTable.
-	 * 
+	 * Creates table.
+	 * @return the table
 	 */
 	private Table createTable() {
     final Table table = new Table();
@@ -295,7 +343,12 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 	}
 
 			
-			
+  /** 
+   * Parses the parameter string.
+   * @param iwc
+   * @return	either string for action "view form" 
+   * or string for action "form was submitted".		
+   */
 	private String parseAction(final IWContext iwc) {
 		String action = ACTION_VIEW_FORM;
 
@@ -305,9 +358,10 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 		return action;
 	}
 			
-    
-
-
+  /** Builds a presentation containing an error message and the inputfield
+   * @param errorMessage the message to be shown.
+   * @param iwc
+   */
   private void viewError(String errorMessage, IWContext iwc) {
     final Text text = new Text(errorMessage, true, false, false);
     text.setFontColor(COLOR_RED);
@@ -315,9 +369,21 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     add(Text.getBreak());
     viewForm(iwc);
   } 
-			
 
-  private String getSsn(final IWContext iwc, final String key) {
+
+  /**
+   * Gets social security number. Checks if the parameter 
+   * that corresponds to the specified key represents a possible 
+   * social security number. Returns the number without any non
+   * digit characters. Returns null if the parameter does not represent 
+   * a possible social security number. This method does not check if the 
+   * social security number is a real existing one. 
+   * This method does not use any database access.
+   * @param iwc
+   * @param key the key of the social security number parameter.
+   * @return a digit string representing a (possible) social security number else null.
+   */
+  private String getSsn( final String key, final IWContext iwc) {
     final String rawInput = iwc.getParameter(key);
     if (rawInput == null) {
       return null;
@@ -349,14 +415,22 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     return digitOnlyInput.toString();
   }
   
-  
+
+  /**
+   * Looks up service bean citizen account business
+   * @param iwc
+   * @return a service bean CitizenAccountBusiness.
+   */  
   private CitizenAccountBusiness getBusiness(IWContext iwc) throws RemoteException  {
     return (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
   }
   
-  
+  /**
+   * Creates a new unencrypted password.
+   * @return an unencrypted password.
+   */
   private String createNewPassword() {
-    return com.idega.util.StringHandler.getRandomString(8);
+    return com.idega.util.StringHandler.getRandomString(LENGTH_OF_PASSWORD);
   }
    
 }
