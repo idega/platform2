@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.18 2003/07/01 21:31:51 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.19 2003/07/02 10:49:12 roar Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ import java.io.StringReader;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -257,49 +258,61 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		return fields;
 	}
 
+
+	public static void main(String args[]){
+		Map map = new HashMap();
+		map.put("name", "Roar");
+		System.out.println(new ContractBMPBean().setUnsetFields(map, "Enter the name: <name/>. Age: <age/>."));
+	}
+
 	/**
 	 * Gives value to xml-fields in the contract text. The xml field is substituted with the text value.
 	 * If no value is given in the fieldValues parameter, the xml field is left unchanged.
 	 */
 	public void setUnsetFields(Map fieldValues) {
+		String text = setUnsetFields(fieldValues, getText());
+		setText(text);
+		store();
+		
+	}
+
+	//TODO: (roar) remove dbg code:
+	private static String setUnsetFields(Map fieldValues, String text) {
+		String retValue = null;
 		StringBuffer merged = new StringBuffer();
 
 		try {
 			XMLParser parser = new XMLParser();
-			//TODO: (roar) remove dbg code:
-			System.out.println("### setUnsetFields:getText(): " + getText());
-			XMLDocument document = parser.parse(new StringReader("<dummy>" + getText() + "</dummy>"));
+			System.out.println("### INPUT: " + text);
+			XMLDocument document = parser.parse(new StringReader("<dummy>" + text + "</dummy>"));
 
 			XMLElement root = document.getRootElement();
 			Iterator it = root.getContent().iterator();
 			while (it.hasNext()) {
 				Object obj = it.next();
-				System.out.println("### Class name:"+ obj.getClass().getName());
 				
 				if (obj instanceof XMLElement) {
+					System.out.println("### INSTANCEOF XMLELEMENT: " + (XMLElement) obj);						
 					String name = ((XMLElement)obj).getName();
-					String value = (String)fieldValues.get(name);
-					System.out.println("name: " + name + " value: " + value);
-
+					String value = (String) fieldValues.get(name);
+					System.out.println("    (name: " + name + ", value: " + value + ")");
 					merged.append(value != null ? value : "<" + name + "/>");
-				}
-				//				else if (obj instanceof XMLCDATA) { ignore	}
-				else if (obj instanceof Text) {
-					String text = ((Text)obj).getText();				
-//				else if (obj instanceof String) {
-//					//TODO: (roar) remove dbg code:
-					System.out.println("### setUnsetFields:obj instanceof Text: " + text);				
-					merged.append(text);
+				} else if (obj instanceof String) {
+					System.out.println("### INSTANCEOF STRING: " + (String) obj);				
+					merged.append((String) obj);
+				} else {
+					System.out.println("### CLASS NAME: "+ obj.getClass().getName());					
 				}
 			}
-			//TODO: (roar) remove dbg code:
-			System.out.println("### setUnsetFields:merged: " + merged.toString());					
-			setText(merged.toString());
-			store();
+			System.out.println("### RESULT " + merged.toString());	
+			retValue = merged.toString();				
+
+
 			
 		} catch (XMLException ex) {
 			ex.printStackTrace();
 		}
+		return retValue;		
 	}
 
 	public Contract ejbHomeCreate(int userID, int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map) {
