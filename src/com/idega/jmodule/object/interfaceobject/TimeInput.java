@@ -1,5 +1,5 @@
 /*
- * $Id: TimeInput.java,v 1.4 2001/07/04 18:11:54 tryggvil Exp $
+ * $Id: TimeInput.java,v 1.5 2001/08/21 14:33:47 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -302,6 +302,15 @@ public void setSecond(String second){
 }
 */
 
+
+public String getHourName() {
+  return theHour.getName();
+}
+
+public String getMinuteName() {
+  return theMinute.getName();
+}
+
 private Script getScript(){
 	return this.script;
 }
@@ -327,5 +336,7 @@ public void print(ModuleInfo modinfo)throws Exception{
 	}
 	super.print(modinfo);
 }
+
+
 
 }
