@@ -100,7 +100,7 @@ public class UpdateHandicap {
 		    scorecard[m].setHandicapAfter((float) grunn);
 		  }
 		  else {
-		    if ( scorecard[m].getHandicapCorrection().equalsIgnoreCase("N") ) {
+		    if ( !scorecard[m].getHandicapCorrection() ) {
 			slope = scorecard[m].getSlope();
 			course_rating = scorecard[m].getCourseRating();
 			teeColorID = scorecard[m].getTeeColorID();
@@ -110,7 +110,7 @@ public class UpdateHandicap {
 			if ( tournamentRoundID > 1 ) {
 			  isTournament = true;
 			}
-			updateHandicap = scorecard[m].getUpdateHandicapBoolean();
+			updateHandicap = scorecard[m].getUpdateHandicap();
 
 
 			stroke2 = (Stroke[]) ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).findAll("select s.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = "+scorecardID+" order by hole_number");
@@ -167,11 +167,12 @@ public class UpdateHandicap {
 			heildarpunktar = 0;
 			realTotalPoints = 0;
 
-			heildarpunktar = Handicap.calculatePoints(scorecard[m],strokeVector,leik);
+			Handicap handicap = Handicap.getInstance();
+			heildarpunktar = handicap.calculatePoints(scorecard[m],strokeVector,leik);
 
 			if ( isTournament ) {
 			  scorecard[m].setHandicapBefore((float) tournamentHandicap);
-			  realTotalPoints = Handicap.calculatePointsWithoutUpdate(stroke2,realLeik);
+			  realTotalPoints = handicap.calculatePointsWithoutUpdate(stroke2,realLeik);
 			}
 			else {
 			  //grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));

@@ -279,7 +279,7 @@ public class HandicapCard extends GolfBlock {
 
 		Handicap realLeik = new Handicap((double) realHandicap);
 		int realPlayHandicap = realLeik.getLeikHandicap(slope, course_rating, field_par);
-		int realPoints = Handicap.getTotalPoints(scoreCard.getID(), realPlayHandicap);
+		int realPoints = realLeik.getTotalPoints(scoreCard.getID(), realPlayHandicap);
 		return realPoints;
 	}
 }

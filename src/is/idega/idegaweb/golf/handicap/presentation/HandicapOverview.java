@@ -213,7 +213,7 @@ public class HandicapOverview extends GolfBlock {
 				}
 			}
 			else {
-				if (scoreCards[a].getHandicapCorrection().equals("N")) {
+				if (!scoreCards[a].getHandicapCorrection()) {
 					Field field = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(scoreCards[a].getFieldID());
 					TeeColor teeColor = ((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(scoreCards[a].getTeeColorID());
 					TournamentRound tournamentRound = null;
@@ -283,7 +283,7 @@ public class HandicapOverview extends GolfBlock {
 
 					int realPoints = 0;
 					if (showRealHandicap) {
-						realPoints = Handicap.getTotalPoints(scoreCards[a].getID(), realPlayHandicap);
+						realPoints = courseHandicap.getTotalPoints(scoreCards[a].getID(), realPlayHandicap);
 					}
 
 					table.add(date, 1, row);

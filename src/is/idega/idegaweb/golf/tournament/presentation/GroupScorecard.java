@@ -356,7 +356,7 @@ public class GroupScorecard extends GolfBlock {
 							}
 						}
 					}
-					int heildarpunktar = Handicap.calculatePoints(sc, strokes, playHandicap);
+					int heildarpunktar = Handicap.getInstance().calculatePoints(sc, strokes, playHandicap);
 					trans.commit();
 				}
 				catch (Exception e) {
