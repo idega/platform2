@@ -1357,7 +1357,9 @@ public class ReportQueryBuilder extends Block {
 		// FileChooser folderChooser = new FileChooser(PARAM_FOLDER_ID);
 
 		TextInput queryNameInput = new TextInput(PARAM_QUERY_NAME);
-		queryNameInput.setLength(10);
+		
+		
+		queryNameInput.setLength(20);
 		if (this.queryID > 0) {
 			ICFile currentFile = sessionBean.getXMLFile(queryID);
 			queryNameInput.setContent(currentFile.getName().toString());
