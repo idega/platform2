@@ -667,6 +667,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			sClassMember.setSchoolClassId(((Integer) sClass.getPrimaryKey()).intValue());
 			sClassMember.setClassMemberId(((Integer) user.getPrimaryKey()).intValue());
 			sClassMember.setRegisterDate(IWTimestamp.getTimestampRightNow());
+			sClassMember.setRegistrationCreatedDate(IWTimestamp.getTimestampRightNow());
 			//NEEDS THE CURRENT USER ID FOR REGISTERING USER
 
 			return sClassMember;
@@ -1378,6 +1379,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			if (member != null) {
 				member.setClassMemberId(studentID);
 				member.setSchoolClassId(schoolClassID);
+				member.setRegistrationCreatedDate(IWTimestamp.getTimestampRightNow());
 				if (registerDate != null)
 					member.setRegisterDate(registerDate);
 				if (removedDate != null)
