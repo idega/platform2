@@ -182,7 +182,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_EMAIL = "email";
 	private static final String FIELD_NAME_MEMBERS = "members";
 	private static final String FIELD_NAME_PLAYERS = "players";
-	private static final String FIELD_NAME_YEAR = "players";
+	private static final String FIELD_NAME_YEAR = "year";
 	
 	
 	/**
