@@ -3,13 +3,9 @@
  */
 package is.idega.idegaweb.marathon.business;
 
-import is.idega.idegaweb.marathon.data.Run;
-
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.TreeSet;
 
-import com.idega.util.Counter;
 import com.idega.util.datastructures.MultivaluedHashMap;
 
 
@@ -27,20 +23,6 @@ public class RunGroupMap extends MultivaluedHashMap {
 			values = new TreeSet(new RunResultsComparator());
 		}
 		values.add(value);
-		
-		Counter counter = new Counter();
-		
-		int index = 0;
-		Iterator iter = values.iterator();
-		while (iter.hasNext()) {
-			Run element = (Run) iter.next();
-			if (index < 3) {
-				counter.addSeconds(element.getRunTime());
-			}
-			index++;
-		}
-		
-		((RunGroup) key).setCounter(counter);
 		
 		return super.put(key, values);
 	}

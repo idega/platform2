@@ -233,12 +233,10 @@ public class RunResultViewer extends Block {
 			
 			Map runGroups = new HashMap();
 			RunGroupMap map = new RunGroupMap();
-			List groupRunners = new ArrayList();
 			Iterator iterator = runs.iterator();
 			while (iterator.hasNext()) {
 				Run runner = (Run) iterator.next();
 				if (runner.getRunGroupName() != null && runner.getRunGroupName().trim().length() > 0) {
-					groupRunners.add(runner);
 					RunGroup runnerGroup = (RunGroup) runGroups.get(runner.getRunGroupName());
 					if (runnerGroup == null) {
 						runnerGroup = new RunGroup(runner.getRunGroupName());
@@ -249,7 +247,7 @@ public class RunResultViewer extends Block {
 			}
 
 			List groupList = new ArrayList(map.keySet());
-			Collections.sort(groupList, new RunGroupComparator());
+			Collections.sort(groupList, new RunGroupComparator(map));
 
 			iterator = groupList.iterator();
 			while (iterator.hasNext()) {
