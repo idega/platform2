@@ -23,9 +23,7 @@ public class IWMemberConstants {
 	public static final String META_DATA_CLUB_MEMBER = "CLUBINFO_MEMBER";
 	public static final String META_DATA_CLUB_TYPE = "CLUBINFO_TYPE";
 	public static final String META_DATA_CLUB_FOUNDED = "CLUBINFO_FOUNDED";
-	public static final String META_DATA_CLUB_NAME = "CLUBINFO_NAME";
-	public static final String META_DATA_CLUB_SHORT_NAME = "CLUBINFO_SHORT";
-	public static final String META_DATA_CLUB_ABRV = "CLUBINFO_ABRV";
+
 	public static final String META_DATA_CLUB_SSN = "CLUBINFO_SSN";
 	public static final String META_DATA_CLUB_NUMBER = "CLUBINFO_NUMBER";
 	
