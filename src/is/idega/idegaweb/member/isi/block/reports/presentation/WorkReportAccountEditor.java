@@ -493,6 +493,20 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       }
       return mainTable;
     }
+		//if the report is read only, then it is printed out:
+		else if(isReadOnly){
+			Table mainTable = new Table(1,2);
+			mainTable.add(browser, 1,1);
+			mainTable.setCellspacing(0);
+			mainTable.setCellpadding(0);
+			Table readOnlyTable = new Table(1,1);
+			readOnlyTable.setCellspacing(0);
+			readOnlyTable.setCellpadding(0);
+			Text readOnlyText = new Text(resourceBundle.getLocalizedString("WorkReportAccountEditor.report_is_read_only", "The report is read only"));
+			readOnlyTable.add(readOnlyText,1,1);
+			mainTable.add(readOnlyTable,1,2);
+			return mainTable;
+		}
     return browser;
   }
 	public Table getErrorMessageTable() {
