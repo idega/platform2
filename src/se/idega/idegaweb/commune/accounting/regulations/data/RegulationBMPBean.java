@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.11 2003/10/10 14:31:08 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.12 2003/10/10 15:16:35 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.11 2003/10/10 14:31:08 kjell Exp $
+ * $Id: RegulationBMPBean.java,v 1.12 2003/10/10 15:16:35 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -46,6 +46,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	private static final String COLUMN_SPECIAL_CALCULATION_ID = "special_calc_id";
 	private static final String COLUMN_CONDITION_ORDER = "condition_order";
 	private static final String COLUMN_VAT_ELIGIBLE = "vat_eligible";
+	private static final String COLUMN_MAX_AMOUNT_DISCOUNT = "max_amount_discount";
 	
 	
 	/**
@@ -88,6 +89,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		 
 		addAttribute(COLUMN_VAT_RULE_ID, "VAT rule relation", true, true,
 						Integer.class, "many-to-one", VATRule.class);
+		addAttribute(COLUMN_MAX_AMOUNT_DISCOUNT, "Max amount discount", true, true, java.lang.Float.class);
 		
 		setAsPrimaryKey(getIDColumnName(), true);
 		setNullable(COLUMN_OPERATION_ID, true);
@@ -109,7 +111,8 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	public Integer getAmount() { return getIntegerColumnValue(COLUMN_AMOUNT); }
 	public Integer getConditionOrder() { return getIntegerColumnValue(COLUMN_CONDITION_ORDER); }
 	public Integer getVATEligible() { return getIntegerColumnValue(COLUMN_VAT_ELIGIBLE); }
-
+	public float getMaxAmountDiscount() { return getFloatColumnValue(COLUMN_MAX_AMOUNT_DISCOUNT); }
+	
 	public SchoolCategory getOperation() { 
 		return (SchoolCategory) getColumnValue(COLUMN_OPERATION_ID); 
 	}
@@ -138,6 +141,7 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 	public void setLocalizationKey(String name) { setColumn(COLUMN_NAME, name); }	
 	public void setAmount(int amount) { setColumn(COLUMN_AMOUNT, amount); }	
 	public void setConditionOrder(int value) { setColumn(COLUMN_CONDITION_ORDER, value); }	
+	public void setMaxAmountDiscount(float discount) { setColumn(COLUMN_MAX_AMOUNT_DISCOUNT, discount); }	
 
 	public void setOperation(String id) { 
 		if (id.compareTo("0") != 0) {

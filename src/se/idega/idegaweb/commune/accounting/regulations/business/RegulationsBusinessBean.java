@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.42 2003/10/10 14:31:08 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.43 2003/10/10 15:16:35 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -122,13 +122,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				String specialCalculation,
 				String vatRule,
 				String changedBy,
-				String discount
+				String discount,
+				String maxAmountdiscount
 		) throws RegulationException, RemoteException {
 
 		RegulationHome home = null;
 		Regulation r = null;
 		int amountVal = 0;
 		float discountVal = 0;
+		float maxAmountDiscountVal = 0;
+		
 		Integer conditionOrderID = null; 
 		Integer regSpecTypeID = null;  
 		Integer conditionTypeID = null;  
@@ -186,6 +189,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 			if (amount == null) amount = "0"; 
 			if (discount == null) discount = "0"; 
+			if (maxAmountdiscount == null) maxAmountdiscount = "0"; 
 			
 			if (conditionOrder == null) conditionOrder = ""; 
 			if (regSpecType == null) regSpecType = ""; 
@@ -206,6 +210,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					discountVal = Float.parseFloat(discount);
 				} catch ( NumberFormatException e) {
 					discountVal = 0;
+				}
+			}
+			if (maxAmountdiscount.length() != 0) {
+				try {
+					maxAmountDiscountVal = Float.parseFloat(maxAmountdiscount);
+				} catch ( NumberFormatException e) {
+					maxAmountDiscountVal = 0;
 				}
 			}
 			
@@ -240,6 +251,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			r.setName(name);
 			r.setAmount(amountVal);
 			r.setDiscount(discountVal);
+			r.setMaxAmountDiscount(maxAmountDiscountVal);
 			r.setChangedDate(IWTimestamp.getTimestampRightNow());
 
 			if (vatEligible != null) {

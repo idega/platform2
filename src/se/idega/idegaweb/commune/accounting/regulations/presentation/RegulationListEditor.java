@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.15 2003/10/10 14:31:08 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.16 2003/10/10 15:16:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.15 2003/10/10 14:31:08 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.16 2003/10/10 15:16:34 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -82,6 +82,7 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String KEY_MENU_VAT_RULE_HEADER = PP + "menu_vat_rule_header";
 	private final static String KEY_MENU_COND_TYPE_HEADER = PP + "menu_cond_type_header";
 	private final static String KEY_MENU_PAY_FLOW_HEADER = PP + "menu_pay_flow_header";
+	private final static String KEY_MAX_AMOUNT = PP + "menu_max_amount_header";
 		
 	private final static String KEY_FROM_DATE = PP + "from_date";
 	private final static String KEY_TO_DATE = PP + "to_date";
@@ -94,6 +95,7 @@ public class RegulationListEditor extends AccountingBlock {
 	private final static String PARAM_NAME = "param_name";
 	private final static String PARAM_AMOUNT = "param_amount";
 	private final static String PARAM_DISCOUNT = "param_discount";
+	private final static String PARAM_MAX_AMOUNT_DISCOUNT = "param_max_amount_discount";
 	private final static String PARAM_PERIOD_FROM = "param_period_from";
 	private final static String PARAM_PERIOD_TO = "param_period_to";
 
@@ -176,6 +178,7 @@ public class RegulationListEditor extends AccountingBlock {
 		_pMap.put(PARAM_SELECTOR_VAT_RULE, iwc.getParameter(PARAM_SELECTOR_VAT_RULE));
 		_pMap.put(PARAM_CHANGED_SIGN, iwc.getParameter(PARAM_CHANGED_SIGN));
 		_pMap.put(PARAM_DISCOUNT, iwc.getParameter(PARAM_DISCOUNT));
+		_pMap.put(PARAM_MAX_AMOUNT_DISCOUNT, iwc.getParameter(PARAM_MAX_AMOUNT_DISCOUNT));
 
 		for (int index = 1; index <= 5; index++) {
 			_pMap.put(PARAM_SELECTOR_OPERATION +"_" +index, 
@@ -209,7 +212,8 @@ public class RegulationListEditor extends AccountingBlock {
 					iwc.getParameter(PARAM_SELECTOR_SPECIAL_CALCULATION),
 					iwc.getParameter(PARAM_SELECTOR_VAT_RULE),
 					iwc.getParameter(PARAM_CHANGED_SIGN),
-					iwc.getParameter(PARAM_DISCOUNT)
+					iwc.getParameter(PARAM_DISCOUNT), 
+					iwc.getParameter(PARAM_MAX_AMOUNT_DISCOUNT) 
 			);
 		} catch (RegulationException e) {
 			_errorText = localize(e.getTextKey(), e.getDefaultText());
@@ -375,7 +379,7 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_PAYMENT_FLOW, "Ström"),3 ,row++);
 		table.add("", 3, row++);
 		table.add("", 3, row++);
-		table.add("", 3, row++);
+		table.add(getLocalizedLabel(KEY_MAX_AMOUNT, "Maxbelopp"),3 ,row++);
 		table.add(getLocalizedLabel(KEY_TO_DATE, "Tom datum"),3 ,row++);
 		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,row++);
 
@@ -384,7 +388,11 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add(paymentFlowTypeSelector(iwc, PARAM_SELECTOR_PAYMENT_FLOW_TYPE, payStreamPK), 4, row++);
 		table.add("", 4, row++);
 		table.add("", 4, row++);
-		table.add("", 4, row++);
+
+		table.add(getTextInput(PARAM_MAX_AMOUNT_DISCOUNT, r != null ? ""+r.getMaxAmountDiscount() : 
+				(String) _pMap.get(PARAM_MAX_AMOUNT_DISCOUNT), 40, 5), 4, row);
+		table.add(getSmallText("%"), 4, row++);
+
 		table.add(getTextInput(PARAM_PERIOD_TO, (formatDate(r != null ? 
 				r.getPeriodTo() : 
 				parseDate((String) _pMap.get(PARAM_PERIOD_TO)), 4)),
@@ -784,6 +792,7 @@ public class RegulationListEditor extends AccountingBlock {
 			_pMap.put(PARAM_SELECTOR_VAT_RULE, "0");
 			_pMap.put(PARAM_CHANGED_SIGN, "");
 			_pMap.put(PARAM_DISCOUNT, "");
+			_pMap.put(PARAM_MAX_AMOUNT_DISCOUNT, "");
 		}
 	}
 
