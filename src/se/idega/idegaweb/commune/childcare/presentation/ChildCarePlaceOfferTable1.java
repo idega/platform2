@@ -149,9 +149,9 @@ class ChildCarePlaceOfferTable1 extends Table{
 		
 //		ti.setWidth("10");
 
-        if (!disable){
-			add(reqBtn, 4, row);
-        }
+//        if (!disable){
+		add(reqBtn, 4, row);
+//        }
 
 			
 		if (offer){
