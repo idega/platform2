@@ -180,6 +180,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 	
 	
 	public void copyHoleTextForFieldOverview(IWContext iwc) {
+		System.out.println("[GOLF] Start: Copy HoldeText...");
 		try {
 			HoleTextHome hth = (HoleTextHome)IDOLookup.getHome(HoleText.class);
 			TxTextHome txth = (TxTextHome)IDOLookup.getHome(TxText.class);
@@ -206,9 +207,11 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 		} catch (IBOLookupException e) {
 			e.printStackTrace();
 		}
+		System.out.println("[GOLF] Finish: Copy HoldeText...");
 	}
 	
 	public void copyFieldImagesForFieldOverview(IWContext iwc) {
+		System.out.println("[GOLF] Start: Copy FieldImages...");
 		try {
 			FieldImageHome fih = (FieldImageHome)IDOLookup.getHome(FieldImage.class);
 			ICFileHome fh = (ICFileHome)IDOLookup.getHome(ICFile.class);
@@ -260,9 +263,11 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 		} catch (CreateException e) {
 			e.printStackTrace();
 		}
+		System.out.println("[GOLF] Finish: Copy FieldImages...");
 	}
 	
 	public void copyTeeImagesForFieldOverview(IWContext iwc) {
+		System.out.println("[GOLF] Start: Copy TeeImages...");
 		try {
 			TeeImageHome fih = (TeeImageHome)IDOLookup.getHome(TeeImage.class);
 			ICFileHome fh = (ICFileHome)IDOLookup.getHome(ICFile.class);
@@ -312,6 +317,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 		} catch (CreateException e) {
 			e.printStackTrace();
 		}
+		System.out.println("[GOLF] Finish: Copy TeeImages...");
 	}
 	
 	
