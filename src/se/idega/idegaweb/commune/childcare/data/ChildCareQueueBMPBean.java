@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.13 2003/05/23 08:06:16 laddi Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.14 2004/11/22 09:29:07 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -81,20 +81,19 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(CONTRACT_ID,"",true,true,java.lang.Integer.class);
-		addAttribute(CHILD_ID,"",true,true,java.lang.Integer.class,MANY_TO_ONE,User.class);
+		addManyToOneRelationship(CHILD_ID,User.class);
 		addAttribute(PROVIDER_NAME,"",true,true,java.lang.String.class,1000);
-		addAttribute(PROVIDER_ID,"",true,true,java.lang.Integer.class,MANY_TO_ONE,School.class);
+		addManyToOneRelationship(PROVIDER_ID, School.class);
 		addAttribute(PRIORITY,"",true,true,java.lang.String.class,1000);
 		addAttribute(CHOICE_NUMBER,"",true,true,java.lang.Integer.class);
 		addAttribute(SCHOOL_AREA_NAME,"",true,true,java.lang.String.class,1000);
-		addAttribute(SCHOOL_AREA_ID,"",true,true,java.lang.Integer.class,MANY_TO_ONE,SchoolArea.class);
+		addManyToOneRelationship(SCHOOL_AREA_ID, SchoolArea.class);
 		addAttribute(QUEUE_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(START_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(IMPORT_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(QUEUE_TYPE,"",true,true,java.lang.Integer.class);
 		addAttribute(EXPORTED,"",true,true,java.lang.Boolean.class);
 
-		addManyToOneRelationship(CHILD_ID,User.class);
 	}
 	
 	public int getContractId() {
