@@ -27,6 +27,14 @@ public java.util.Collection findUnbilledByAccountAndPeriod(java.lang.Integer p0,
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findByPhoneNumber(String number)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((AccountPhoneEntryBMPBean)entity).ejbFindByPhoneNumber(number);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+
  public AccountPhoneEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (AccountPhoneEntry) super.findByPrimaryKeyIDO(pk);
  }

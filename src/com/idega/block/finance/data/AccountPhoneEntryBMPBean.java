@@ -234,6 +234,10 @@ public class AccountPhoneEntryBMPBean extends com.idega.data.GenericEntity imple
    		query.appendAnd().appendWithinDates(getColumnNamePhonedStamp(),fromDate,to.getDate());
    		return super.idoFindPKsByQuery(query);
    }
+   
+   public Collection ejbFindByPhoneNumber(String number)throws FinderException{
+   		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEqualsQuoted(getColumnNameSubNumber(),number));
+   }
 
 }
 
