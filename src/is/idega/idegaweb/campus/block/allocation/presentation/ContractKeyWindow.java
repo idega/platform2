@@ -139,10 +139,10 @@ public class ContractKeyWindow extends CampusWindow{
 
       row++;
       T.add(getHeader(localize("valid_from","Valid from")),1,row);
-      T.add(getText(from.getLocaleDate(iwc)),2,row);
+      T.add(getText(from.getLocaleDate(iwc.getCurrentLocale())),2,row);
       row++;
       T.add(getHeader(localize("valid_to","Valid to")),1,row);
-      T.add(getText(to.getLocaleDate(iwc)),2,row);
+      T.add(getText(to.getLocaleDate(iwc.getCurrentLocale())),2,row);
       row++;
       T.add(getHeader(localize("status","Status")),1,row);
       T.add(getText(getStatus(eContract.getStatus())),2,row);
@@ -151,20 +151,20 @@ public class ContractKeyWindow extends CampusWindow{
       java.sql.Timestamp retstamp = eContract.getReturnTime();
       if(retstamp !=null){
         IWTimestamp ret = new IWTimestamp(retstamp);
-        T.add(getText(ret.getLocaleDate(iwc)),2,row);
+        T.add(getText(ret.getLocaleDate(iwc.getCurrentLocale())),2,row);
       }
       row++;
       T.add(getHeader(localize("delivered","Delivered")),1,row);
       java.sql.Timestamp delstamp = eContract.getDeliverTime();
       if(delstamp !=null){
         IWTimestamp del = new IWTimestamp(delstamp);
-        T.add(getText(del.getLocaleDate(iwc)),2,row);
+        T.add(getText(del.getLocaleDate(iwc.getCurrentLocale())),2,row);
       } 
       else {
       	if (canSave) {
 	      	IWTimestamp	del = new IWTimestamp();
   	    	DateInput input = new DateInput("deliveredDate");
-    	  	input.setDate(del.getSQLDate());
+    	  	input.setDate(del.getDate());
       		
         	T.add(input,2,row);
       	}

@@ -440,8 +440,8 @@ public class ContractTextSetter extends CampusBlock{
   private TextArea getTextArea(String name,String content){
     TextArea TA = new TextArea(name,content);
     TA.setStyleClass(Edit.styleAttribute);
-    TA.setWidth(80);
-    TA.setHeight(20);
+    TA.setColumns(80);
+    TA.setRows(20);
     return TA;
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.8 2004/06/05 07:44:41 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.9 2004/06/07 18:25:59 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -341,8 +341,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
       eContract.setApplicantId((Integer)eApplicant.getPrimaryKey());
       eContract.setUserId(((Integer)eUser.getPrimaryKey()).intValue());
       eContract.setStatusCreated();
-      eContract.setValidFrom(from.getSQLDate());
-      eContract.setValidTo(to.getSQLDate());
+      eContract.setValidFrom(from.getDate());
+      eContract.setValidTo(to.getDate());
 
         eContract.store();
         getMailingListService().processMailEvent(((Integer)eContract.getPrimaryKey()).intValue(),LetterParser.ALLOCATION);

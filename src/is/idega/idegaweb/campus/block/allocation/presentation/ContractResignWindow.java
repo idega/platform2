@@ -17,7 +17,6 @@ import com.idega.block.building.data.Apartment;
 import com.idega.block.building.data.Building;
 import com.idega.block.building.data.Complex;
 import com.idega.block.building.data.Floor;
-import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
@@ -34,6 +33,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.Group;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -58,7 +58,7 @@ public class ContractResignWindow extends CampusWindow {
 
     private SystemProperties SysProps = null;
 
-    private GenericGroup eGroup = null;
+    private Group eGroup = null;
 
     private User eUser = null;
 
@@ -132,7 +132,7 @@ public class ContractResignWindow extends CampusWindow {
                 User user = eContract.getUser();
 
                 if (user != null) {
-                    boolean isContractUser = user.getID() == eUser.getID();
+                    boolean isContractUser = user.getPrimaryKey().toString().equals(eUser.getPrimaryKey().toString());
                     T.add(new HiddenInput("contract_id",(eContract.getPrimaryKey().toString())), 1, row);
                     T.add(new HiddenInput("applicant_id", eContract
                             .getApplicantId().toString()), 1, row);
@@ -157,12 +157,12 @@ public class ContractResignWindow extends CampusWindow {
                     T.add(Edit.formatText(localize("valid_from",
                             "Valid from")), 1, row);
                     T.add(Edit.formatText(new IWTimestamp(eContract
-                            .getValidFrom()).getLocaleDate(iwc)), 2, row);
+                            .getValidFrom()).getLocaleDate(iwc.getCurrentLocale())), 2, row);
                     row++;
                     T.add(Edit.formatText(localize("valid_to",
                             "Valid to")), 1, row);
                     T.add(Edit.formatText(new IWTimestamp(eContract
-                            .getValidTo()).getLocaleDate(iwc)), 2, row);
+                            .getValidTo()).getLocaleDate(iwc.getCurrentLocale())), 2, row);
                     row++;
                     T.add(Edit.formatText(localize(
                             "moving_date", "Moving date")), 1, row);
@@ -185,7 +185,7 @@ public class ContractResignWindow extends CampusWindow {
                             .getValidTo())))
                         movDate.setDate(eContract.getValidTo());
                     else
-                        movDate.setDate(moving.getSQLDate());
+                        movDate.setDate(moving.getDate());
 
                     //Edit.setStyle(movDate);
                     movDate.setStyleAttribute("style", Edit.styleAttribute);
@@ -195,7 +195,7 @@ public class ContractResignWindow extends CampusWindow {
                     if (isAdmin || isContractUser)
                         T.add(movDate, 2, row);
                     else if (moving != null)
-                            T.add(Edit.formatText(moving.getLocaleDate(iwc)),
+                            T.add(Edit.formatText(moving.getLocaleDate(iwc.getCurrentLocale())),
                                     2, row);
 
                     row++;
@@ -280,7 +280,7 @@ public class ContractResignWindow extends CampusWindow {
 			    getContractService(iwc).endContract(id,movDate,sInfo,datesync);
 			    //ContractBusiness.endContract(id, movDate, sInfo, datesync);
 
-			} else if (eUser != null && usid == eUser.getID()) {
+			} else if (eUser != null && String.valueOf(usid).equals(eUser.getPrimaryKey().toString())) {
 			    System.out.println("is other user");
 			    getContractService(iwc).resignContract(id,movDate,sInfo,datesync);
 			    //ContractBusiness.resignContract(id, movDate, sInfo, datesync);
@@ -359,7 +359,7 @@ public class ContractResignWindow extends CampusWindow {
     }
 
     public void main(IWContext iwc) throws Exception {
-        eUser = iwc.getUser();
+        eUser = iwc.getCurrentUser();
         isAdmin = iwc.isParameterSet(prmAdmin);
         isLoggedOn = com.idega.core.accesscontrol.business.LoginBusinessBean
                 .isLoggedOn(iwc);

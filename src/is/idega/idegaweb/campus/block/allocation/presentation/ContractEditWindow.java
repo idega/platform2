@@ -99,7 +99,7 @@ public class ContractEditWindow extends CampusWindow{
         Applicant eApplicant = eContract.getApplicant();
         User user = eContract.getUser();
 
-        boolean isContractUser = user.getID() == eUser.getID();
+        boolean isContractUser = user.getPrimaryKey().toString().equals(eUser.getPrimaryKey().toString());
         if(user !=null){
 
          
@@ -203,13 +203,13 @@ public class ContractEditWindow extends CampusWindow{
       IWTimestamp from = null,to = null,moving = null,deliver = null, retur = null;
       String sfrom = iwc.getParameter("from_date");
       if(sfrom!=null && sfrom.length() == 10)
-        eContract.setValidFrom(new IWTimestamp(sfrom).getSQLDate());
+        eContract.setValidFrom(new IWTimestamp(sfrom).getDate());
       String to_date = iwc.getParameter("to_date");
       if(to_date!=null && to_date.length() == 10)
-        eContract.setValidTo(new IWTimestamp(to_date).getSQLDate());
+        eContract.setValidTo(new IWTimestamp(to_date).getDate());
       String moving_date = iwc.getParameter("moving_date");
       if(moving_date!=null && moving_date.length() == 10)
-        eContract.setMovingDate(new IWTimestamp(moving_date).getSQLDate());
+        eContract.setMovingDate(new IWTimestamp(moving_date).getDate());
       String deliver_date = iwc.getParameter("deliver_date");
       if(deliver_date!=null && deliver_date.length() > 0)
         eContract.setDeliverTime(new IWTimestamp(deliver_date).getTimestamp());
@@ -218,7 +218,7 @@ public class ContractEditWindow extends CampusWindow{
         eContract.setReturnTime(new IWTimestamp(return_date).getTimestamp());
       if(iwc.isParameterSet("status")){
         eContract.setStatus((iwc.getParameter("status")));
-        eContract.setStatusDate(IWTimestamp.RightNow().getSQLDate());
+        eContract.setStatusDate(IWTimestamp.RightNow().getDate());
       }
       if(iwc.isParameterSet("info")){
         eContract.setResignInfo((iwc.getParameter("info")));

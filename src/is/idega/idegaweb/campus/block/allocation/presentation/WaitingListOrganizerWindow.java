@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
-import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
+
 import is.idega.idegaweb.campus.block.application.data.WaitingList;
 import is.idega.idegaweb.campus.block.application.data.WaitingListHome;
 import is.idega.idegaweb.campus.data.SystemProperties;
@@ -92,8 +92,9 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 			e.printStackTrace();
 		}
 		//String priority = iwc.getParameter(PRIORITY);
-		
-		Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId, complexId);
+		try{
+		Collection L = getContractService(iwc).getWaitingListHome().findByApartmentTypeAndComplex(aprtTypeId, complexId);
+		//Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId, complexId);
 		if (L != null) {
 			WaitingList currentListEntry = null;
 			WaitingList beforeEntry = null;
@@ -129,7 +130,8 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 					}
 				}
 			}
-		}		
+		}	
+		}catch(Exception e){}
 		return false;
 	}
 	/**
@@ -220,7 +222,7 @@ public class WaitingListOrganizerWindow extends CampusWindow {
 	
 
 	public void main(IWContext iwc) {
-		eUser = iwc.getUser();
+		eUser = iwc.getCurrentUser();
 		isAdmin = iwc.isParameterSet(prmAdmin);
 		isLoggedOn = com.idega.core.accesscontrol.business.LoginBusinessBean.isLoggedOn(iwc);
 		control(iwc);

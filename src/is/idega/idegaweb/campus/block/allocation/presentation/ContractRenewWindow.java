@@ -12,7 +12,6 @@ import java.util.Collection;
 
 import com.idega.block.application.data.Applicant;
 import com.idega.block.building.data.ApartmentView;
-import com.idega.core.data.GenericGroup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -24,6 +23,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -48,7 +48,7 @@ public class ContractRenewWindow extends CampusWindow{
   private String passwd = null;
   private boolean print = false;
   
-  private GenericGroup group = null;
+  private Group group = null;
   private User eUser = null;
   private Contract contract = null;
   private Applicant applicant = null;
@@ -142,7 +142,7 @@ public class ContractRenewWindow extends CampusWindow{
 
       if(newContracts ==null || newContracts.isEmpty()){
       	T.addButton(new SubmitButton(getResourceBundle().getImage("save.gif"),"save"));
-        boolean isContractUser = contractUser.getID() == eUser.getID();
+        boolean isContractUser = contractUser.getPrimaryKey().toString().equals(eUser.getPrimaryKey().toString());
 
         if(contractUser !=null){
 
@@ -186,10 +186,10 @@ public class ContractRenewWindow extends CampusWindow{
           DateInput from = new DateInput("from_date",true);
           from.setYearRange(today.getYear()-3,today.getYear()+7);
           if(lastDate.isLaterThan(fromDate)){
-            from.setDate(lastDate.getSQLDate());
+            from.setDate(lastDate.getDate());
           }
           else{
-            from.setDate(fromDate.getSQLDate());
+            from.setDate(fromDate.getDate());
           }
           from.keepStatusOnAction(true);
        
@@ -201,7 +201,7 @@ public class ContractRenewWindow extends CampusWindow{
           DateInput to = new DateInput("to_date",true);
           to.setYearRange(today.getYear()-3,today.getYear()+7);
 
-            to.setDate(toDate.getSQLDate());
+            to.setDate(toDate.getDate());
             to.keepStatusOnAction(true);
        
 
@@ -221,7 +221,7 @@ public class ContractRenewWindow extends CampusWindow{
             row++;
             DateInput moving = new DateInput("moving_date",true);
             moving.setYearRange(today.getYear()-3,today.getYear()+7);
-              moving.setDate(today.getSQLDate());
+              moving.setDate(today.getDate());
               moving.keepStatusOnAction();
             
             T.add(getHeader(localize("moving_date","Moving date")),1,row);

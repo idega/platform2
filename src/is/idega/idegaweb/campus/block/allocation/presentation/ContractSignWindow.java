@@ -21,7 +21,6 @@ import com.idega.block.finance.data.Account;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.contact.data.Email;
-import com.idega.core.data.GenericGroup;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -35,6 +34,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.PrintButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -51,7 +51,7 @@ public class ContractSignWindow extends CampusWindow {
 	private String login = null;
 	private String passwd = null;
 	private boolean print = false;
-	private GenericGroup eGroup = null;
+	private Group eGroup = null;
 	public static final String prmAdmin = "is_camp_csat";
 	private FinanceService finServ = null;
 	/*
@@ -158,10 +158,10 @@ public class ContractSignWindow extends CampusWindow {
 				T.add(getText(getApartmentString(contract.getApartment())), 2, row);
 				row++;
 				T.add(getHeader(localize("valid_from", "Valid from")), 1, row);
-				T.add(getText(from.getLocaleDate(iwc)), 2, row);
+				T.add(getText(from.getLocaleDate(iwc.getCurrentLocale())), 2, row);
 				row++;
 				T.add(getHeader(localize("valid_to", "Valid to")), 1, row);
-				T.add(getText(to.getLocaleDate(iwc)), 2, row);
+				T.add(getText(to.getLocaleDate(iwc.getCurrentLocale())), 2, row);
 				row++;
 				boolean canSign = true;
 				Integer con_id = new Integer(-1);
@@ -189,7 +189,7 @@ public class ContractSignWindow extends CampusWindow {
 				}
 				row++;
 				if (eGroup != null) {
-					HiddenInput Hgroup = new HiddenInput("user_group", String.valueOf(eGroup.getID()));
+					HiddenInput Hgroup = new HiddenInput("user_group", eGroup.getPrimaryKey().toString() );
 					T.add(Hgroup);
 					if (financeAccounts.isEmpty()) {
 						T.add(accountCheck, 2, row);

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.60 2004/06/06 11:57:13 gimmi Exp $
+ * $Id: CampusAllocator.java,v 1.61 2004/06/07 18:25:59 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicantHome;
 import com.idega.block.application.data.Application;
@@ -486,7 +487,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 			for (Iterator iter = Categories.iterator(); iter.hasNext();) {
 				ApartmentCategory AC = (ApartmentCategory) iter.next();
 				
-				List L = (List) allocationView.get(AC.getIDInteger());
+				List L = (List) allocationView.get(((Integer)AC.getPrimaryKey()));
 				//BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
 				if (L != null) {
 					int lLen = L.size();
@@ -1170,7 +1171,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 		if (SysProps.getContractYears() > 0) {
 			IWTimestamp now = IWTimestamp.RightNow();
 			IWTimestamp iT = new IWTimestamp(1, now.getMonth(), now.getYear() + years);
-			return iT.getSQLDate();
+			return iT.getDate();
 		}
 		else
 			return SysProps.getContractDate();
@@ -1247,9 +1248,8 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						Frame.add(formatText(WL.getPriorityLevel()), col++, row);
 						String cypher = null;
 						if (application != null && applicationID.intValue() != -1) {
-							com.idega.block.application.business.ReferenceNumberHandler h =
-								new com.idega.block.application.business.ReferenceNumberHandler();
-							String key = h.getCypherKey(iwc);
+							ReferenceNumberHandler h =	new ReferenceNumberHandler();
+							String key = ReferenceNumberHandler.getCypherKey(iwc);
 							com.idega.util.CypherText ct = new com.idega.util.CypherText();
 							String id = application.getPrimaryKey().toString();
 							while (id.length() < 6)

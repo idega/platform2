@@ -24,7 +24,7 @@ public class ContractFiler extends Block {
 		String identifier = "is.idega.idegaweb.campus.block.contract";
 		IWResourceBundle iwrb = iwc.getIWMainApplication().getBundle(identifier).getResourceBundle(iwc);
 		String fileSeperator = System.getProperty("file.separator");
-		String filepath = iwc.getServletContext().getRealPath(fileSeperator + "allocation/files" + fileSeperator);
+		String filepath = iwc.getIWMainApplication().getRealPath(fileSeperator + "allocation/files" + fileSeperator);
 		String prefFilename = iwc.getParameter("fname");
 		String filename = "contract.pdf";
 		String filetest = "test.pdf";
