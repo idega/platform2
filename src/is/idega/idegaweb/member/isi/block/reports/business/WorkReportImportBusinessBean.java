@@ -890,7 +890,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				}
 
 				WorkReportGroup group = null;
-				if (league != null && !"".equals(league.trim())) {
+/*				if (league != null && !"".equals(league.trim())) {
 					league = league.toUpperCase();
 					try {
 						group = getWorkReportBusiness()
@@ -913,8 +913,49 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 									null, null, league);
 						}
 					}
+				}*/
+
+				//stupid framework returns "null" as a string
+				if (league != null && !"".equals(league.trim())) {
+					String shortName = null;
+					String name = null;
+					int index = league.indexOf('-');
+					shortName = (index != -1)
+							? league.substring(0, index)
+							: league;
+					name = (index != -1) ? league.substring(index,
+							league.length()) : league;
+
+					shortName = shortName.toUpperCase();
+					name = name.toUpperCase();
+
+					try {
+						group = getWorkReportBusiness()
+								.getWorkReportGroupHome()
+								.findWorkReportGroupByShortNameAndYear(
+										shortName, year);
+					} catch (FinderException e) {
+						e.printStackTrace();
+
+						try {
+							group = getWorkReportBusiness()
+									.getWorkReportGroupHome()
+									.findWorkReportGroupByNameAndYear(name,
+											year);
+						} catch (FinderException e1) {
+							throw new WorkReportImportException(
+									"workreportimportexception.league_not_found",
+									null, null, name);
+						} catch (RemoteException e1) {
+							e.printStackTrace();
+						}
+
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 				}
 
+				
 				try {
 					report.addLeague(group);
 				} catch (IDORelationshipException e5) {
@@ -1062,7 +1103,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 			if (row != null) {
 				String league = getStringValueFromExcelNumberOrStringCell(row,
 						(short) 0);
-				if (league != null && !"".equals(league.trim())) {
+/*				if (league != null && !"".equals(league.trim())) {
 					league = league.toUpperCase();
 					try {
 						group = getWorkReportBusiness()
@@ -1085,7 +1126,50 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 									row.getRowNum(), 1, league);
 						}
 					}
-				} else {
+				}*/
+
+				//stupid framework returns "null" as a string
+				if (league != null && !"".equals(league.trim())) {
+					String shortName = null;
+					String name = null;
+					int index = league.indexOf('-');
+					shortName = (index != -1)
+							? league.substring(0, index)
+							: league;
+					name = (index != -1) ? league.substring(index,
+							league.length()) : league;
+
+					shortName = shortName.toUpperCase();
+					name = name.toUpperCase();
+
+					try {
+						group = getWorkReportBusiness()
+								.getWorkReportGroupHome()
+								.findWorkReportGroupByShortNameAndYear(
+										shortName, year);
+					} catch (FinderException e) {
+						e.printStackTrace();
+						//					System.err.println("WorkReportGroup not found by
+						// short name : " + shortName + " trying group name");
+
+						try {
+							group = getWorkReportBusiness()
+									.getWorkReportGroupHome()
+									.findWorkReportGroupByNameAndYear(name,
+											year);
+						} catch (FinderException e1) {
+							throw new WorkReportImportException(
+									"workreportimportexception.league_not_found",
+									null, null, name);
+						} catch (RemoteException e1) {
+							e.printStackTrace();
+						}
+
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
+				else {
 					break;
 				}
 
