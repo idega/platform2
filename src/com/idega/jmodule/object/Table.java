@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.18 2001/09/10 10:52:16 palli Exp $
+ * $Id: Table.java,v 1.19 2001/09/12 12:42:01 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,10 @@ import com.idega.util.IWColor;
 *@version 1.2
 */
 public class Table extends ModuleObjectContainer {
+
+  /**
+   * @todo Laga changeSize dótið, þannig að _lockRegions uppfærist líka.
+   */
 
   private static Image transparentcell;
   private static final String IW_BUNDLE_IDENTIFIER="com.idega.core";
@@ -190,20 +194,16 @@ public class Table extends ModuleObjectContainer {
 
 
     ModuleObjectContainer theNewObjects[][];
+    Boolean newLockedRegions[][];
     theNewObjects = new ModuleObjectContainer[columns][rows];
+    newLockedRegions = new Boolean[columns][rows];
 
-    /*for (int x=0;x<columns;x++){
-      for(int y=0;y<rows;y++){
-        if(x<this.cols && y<this.rows){
-          theNewObjects[x][y]=theObjects[x][y];
-        }
-
-      }
-    }*/
     for (int x=0;x<this.cols;x++){
       System.arraycopy(theObjects[x],0,theNewObjects[x],0,this.rows);
+        System.arraycopy(_lockedRegions[x],0,newLockedRegions[x],0,this.rows);
     }
     theObjects=theNewObjects;
+    _lockedRegions = newLockedRegions;
     this.cols=columns;
     this.rows=rows;
 
@@ -443,28 +443,6 @@ public class Table extends ModuleObjectContainer {
     this.theObjects[xpos-1][ypos-1].setAttribute(attributeName,attributeValue);
 
   }
-
-  /*
-  public void _main(ModuleInfo modinfo)throws Exception{
-    for (int x=0;x<theObjects.length;x++){
-      for (int y=0;y<theObjects[x].length;y++){
-        ModuleObjectContainer tempobj = theObjects[x][y];
-                          if (tempobj != null){
-                            try{
-                              tempobj._main(modinfo);
-                            }
-                            catch(Throwable ex){
-
-                              add("Exception: "+ex.getMessage());
-                              setErrorMessage(ex.getClass().getName()+" - "+ex.getMessage());
-                              System.err.println(ex.getMessage());
-                              ex.printStackTrace(System.err);
-                            }
-                          }
-      }
-    }
-  }
-  */
 
   /*Tells if a cell in a table is merged with another*/
   private boolean isInMergedCell(int xpos, int ypos){
@@ -822,17 +800,18 @@ public class Table extends ModuleObjectContainer {
               for(int x=1;x<=cols;){
 
                 if(theObjects[x-1][y-1] != null){
-                                                            if (printString==null){
-                                                              printString = new StringBuffer();
-                                                            }
-                                                            else{
-                                                              printString.delete(0,printString.length());
-                                                            }                                                         printString.append("\n<td ");
-                                                            printString.append(theObjects[x-1][y-1].getAttributeString());
-                                                            printString.append(" >");
-                                                            println(printString.toString());
-                                                            theObjects[x-1][y-1]._print(modinfo);
-                                                            printNbsp(modinfo,x,y);
+                  if (printString==null){
+                    printString = new StringBuffer();
+                  }
+                  else{
+                    printString.delete(0,printString.length());
+                  }
+                  printString.append("\n<td ");
+                  printString.append(theObjects[x-1][y-1].getAttributeString());
+                  printString.append(" >");
+                  println(printString.toString());
+                  theObjects[x-1][y-1]._print(modinfo);
+                  printNbsp(modinfo,x,y);
 
                 }
                 else{
@@ -858,22 +837,22 @@ public class Table extends ModuleObjectContainer {
                     if (theObjects[x-1][y-1] == null){
                       theObjects[x-1][y-1] = new ModuleObjectContainer();
                     }
-                    //StringBuffer printString = new StringBuffer();
-                                                                          if (printString==null){
-                                                                            printString = new StringBuffer();
-                                                                          }
-                                                                          else{
-                                                                            printString.delete(0,printString.length());
-                                                                          }                                                                        printString.append("\n<td ");
-                                                                          printString.append(theObjects[x-1][y-1].getAttributeString());
-                                                                          printString.append(" colspan=\"");
-                                                                          printString.append(getWidthOfMergedCell(x,y));
-                                                                          printString.append("\" rowspan=\"");
-                                                                          printString.append(getHeightOfMergedCell(x,y));
-                                                                          printString.append("\" >");
-                                                                          println(printString.toString());
+                    if (printString==null){
+                      printString = new StringBuffer();
+                    }
+                    else{
+                      printString.delete(0,printString.length());
+                    }
+                    printString.append("\n<td ");
+                    printString.append(theObjects[x-1][y-1].getAttributeString());
+                    printString.append(" colspan=\"");
+                    printString.append(getWidthOfMergedCell(x,y));
+                    printString.append("\" rowspan=\"");
+                    printString.append(getHeightOfMergedCell(x,y));
+                    printString.append("\" >");
+                    println(printString.toString());
 
-                                                                          theObjects[x-1][y-1]._print(modinfo);
+                    theObjects[x-1][y-1]._print(modinfo);
                     printNbsp(modinfo,x,y);
                     println("</td>");
 
@@ -882,19 +861,19 @@ public class Table extends ModuleObjectContainer {
                 else{
 
                   if(theObjects[x-1][y-1] != null){
-                                                                    if (printString==null){
-                                                                      printString = new StringBuffer();
-                                                                    }
-                                                                    else{
-                                                                      printString.delete(0,printString.length());
-                                                                    }
-                                                                    printString.append("\n<td ");
-                                                                    printString.append(theObjects[x-1][y-1].getAttributeString());
-                                                                    printString.append(" >");
-                                                                    println(printString.toString());
+                    if (printString==null){
+                      printString = new StringBuffer();
+                    }
+                    else{
+                      printString.delete(0,printString.length());
+                    }
+                    printString.append("\n<td ");
+                    printString.append(theObjects[x-1][y-1].getAttributeString());
+                    printString.append(" >");
+                    println(printString.toString());
 
-                                                                    theObjects[x-1][y-1]._print(modinfo);
-                                                                    printNbsp(modinfo,x,y);
+                    theObjects[x-1][y-1]._print(modinfo);
+                    printNbsp(modinfo,x,y);
 
                   }
                   else{
@@ -913,13 +892,13 @@ public class Table extends ModuleObjectContainer {
           println("\n</table>");
         //}
       }
-                  else{
-                    println("<pre>");
-                    println("Exception:");
-                    println(theErrorMessage);
-                    println("</pre>");
-                  }
-                  }
+      else{
+        println("<pre>");
+        println("Exception:");
+        println(theErrorMessage);
+        println("</pre>");
+      }
+      }
       else if (getLanguage().equals("WML")){
         for(int y=1;y<=rows;){
           for(int x=1;x<=cols;){
@@ -944,70 +923,6 @@ public class Table extends ModuleObjectContainer {
                   }
             //}//end doPrint(modinfo)
   }
-
-
-
-  /*
-  protected void updateTreeIDs(){
-          //int id = 0;
-          String thisTreeID=this.getTreeID();
-
-    for (int x=0;x<theObjects.length;x++){
-      for (int y=0;y<theObjects[x].length;y++){
-        ModuleObjectContainer tempobj = theObjects[x][y];
-                          if (tempobj != null){
-
-                            if(thisTreeID==null){
-                              tempobj.setTreeID(x+"-"+y);
-                            }
-                            else{
-            tempobj.setTreeID(thisTreeID+"."+x+"-"+y);
-                            }
-
-                          }
-                        ///id++;
-                    }
-
-          }
-  }
-
-  public ModuleObject getContainedObject(String objectTreeID){
-    int x,y;
-    String thisTreeID=this.getTreeID();
-    if (thisTreeID==null){
-      if(objectTreeID.indexOf(".") == -1){
-        x=Integer.parseInt(objectTreeID.substring(0,objectTreeID.indexOf("-")));
-        y=Integer.parseInt(objectTreeID.substring(objectTreeID.indexOf("-")+1,objectTreeID.length()));
-        return (ModuleObjectContainer)this.theObjects[x][y];
-      }
-      else{
-
-        String newString=objectTreeID.substring(objectTreeID.indexOf(".")+1,objectTreeID.length());
-        String index = objectTreeID.substring(0,objectTreeID.indexOf("."));
-        x=Integer.parseInt(index.substring(0,index.indexOf("-")));
-        y=Integer.parseInt(index.substring(index.indexOf("-")+1,index.length()));
-        return ((ModuleObjectContainer)this.theObjects[x][y]).getContainedObject(newString);
-      }
-    }
-    else{
-
-      if(objectTreeID.indexOf(".") == -1){
-        return this;
-      }
-      else{
-        String newString=objectTreeID.substring(objectTreeID.indexOf(".")+1,objectTreeID.length());
-        String newString2=newString.substring(newString.indexOf(".")+1,newString.length());
-        String index = newString.substring(0,newString.indexOf("."));
-        x=Integer.parseInt(index.substring(0,index.indexOf("-")));
-        y=Integer.parseInt(index.substring(index.indexOf("-")+1,index.length()));
-        return ((ModuleObjectContainer)this.theObjects[x][y]).getContainedObject(newString2);
-      }
-    }
-
-  }
-  */
-
-
 
   public int numberOfObjects(){
     if(theObjects!=null){
@@ -1097,6 +1012,7 @@ public boolean isEmpty(int x, int y){
 
   public synchronized Object clone(ModuleInfo modinfo, boolean askForPermission) {
     Table obj = null;
+
     try {
       obj = (Table)super.clone(modinfo, askForPermission);
       if (this.theObjects != null) {
@@ -1105,6 +1021,16 @@ public boolean isEmpty(int x, int y){
                   for(int y = 0; y < theObjects[x].length;y++){
                           if (this.theObjects[x][y] != null){
                                   obj.theObjects[x][y]=(ModuleObjectContainer)((ModuleObjectContainer)this.theObjects[x][y])._clone(modinfo,askForPermission);
+                          }
+                  }
+          }
+      }
+      if (this._lockedRegions != null) {
+        obj._lockedRegions=new Boolean[cols][rows];
+          for (int x = 0;x<_lockedRegions.length;x++){
+                  for(int y = 0; y < _lockedRegions[x].length;y++){
+                          if (this._lockedRegions[x][y] != null){
+                                  obj._lockedRegions[x][y]=(Boolean)this._lockedRegions[x][y];
                           }
                   }
           }
@@ -1131,44 +1057,7 @@ public boolean isEmpty(int x, int y){
     }
     return obj;
   }
-/*
-  public synchronized Object clone() {
-    Table obj = null;
-    try {
-      obj = (Table)super.clone();
-      if (this.theObjects != null) {
-        obj.theObjects=new ModuleObjectContainer[cols][rows];
-	for (int x = 0;x<theObjects.length;x++){
-		for(int y = 0; y < theObjects[x].length;y++){
-			if (this.theObjects[x][y] != null){
-				obj.theObjects[x][y]=(ModuleObjectContainer)((ModuleObjectContainer)this.theObjects[x][y]).clone();
-			}
-		}
-	}
-      }
-      obj.cols = this.cols;
-      obj.rows = this.rows;
-      if (this.beginMergedxpos != null) {
-        obj.beginMergedxpos = (Vector)this.beginMergedxpos.clone();
-      }
-      if (this.beginMergedypos != null) {
-        obj.beginMergedypos = (Vector)this.beginMergedypos.clone();
-      }
-      if (this.endMergedxpos != null) {
-        obj.endMergedxpos = (Vector)this.endMergedxpos.clone();
-      }
-      if (this.endMergedypos != null) {
-        obj.endMergedypos = (Vector)this.endMergedypos.clone();
-      }
-      obj.isResizable = this.isResizable;
-      obj.cellsAreMerged = this.cellsAreMerged;
-    }
-    catch(Exception ex) {
-      ex.printStackTrace(System.err);
-    }
-    return obj;
-  }
-*/
+
   public ModuleObjectContainer containerAt(int x,int y){
     ModuleObjectContainer cont = theObjects[x-1][y-1];
     if(cont==null){
@@ -1229,6 +1118,9 @@ public boolean isEmpty(int x, int y){
   }
 
   public boolean isLocked(int xpos, int ypos) {
+    if (_lockedRegions == null)
+      return(false);
+
     if (_lockedRegions[xpos-1][ypos-1] == null)
       return(false);
     else

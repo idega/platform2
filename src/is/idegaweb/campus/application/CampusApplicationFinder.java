@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.13 2001/08/08 12:46:36 palli Exp $
+ * $Id: CampusApplicationFinder.java,v 1.14 2001/09/12 12:41:52 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -450,7 +450,7 @@ public abstract class CampusApplicationFinder {
 
         Applicant applicant = new Applicant(a.getApplicantId());
 
-        cah = new CampusApplicationHolder(a,applicant,ca,v);
+        cah = new CampusApplicationHolder(a,applicant,ca,v,null,null);
       }
       catch (SQLException ex) {
         ex.printStackTrace();
