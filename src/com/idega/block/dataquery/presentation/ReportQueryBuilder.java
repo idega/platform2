@@ -263,8 +263,7 @@ public class ReportQueryBuilder extends Block {
 					form.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
 				}
 
-				String width = getWidth();
-				table.setWidth(width != null ? width : "300");
+				table.setWidth("300");
 				table.setBorder(tableBorder);
 				table.setColor(stepTableColor);
 				table.setStyleClass(stepTableStyle);
