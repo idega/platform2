@@ -300,7 +300,7 @@ public class RunRegistration extends Block{
     int column = 1;
     int formRow = -1;
     
-    t.add(iwrb.getLocalizedString("step", "Step") + " " + "1" + iwrb.getLocalizedString("of", "of") + "2", column, row++);
+    t.add(iwrb.getLocalizedString("step", "Step") + " 1 " + iwrb.getLocalizedString("of", "of") + " 2", column, row++);
     t.setHeight(row++, 12);
     
     t.mergeCells(column, row, t.getColumns(), row);
@@ -308,14 +308,15 @@ public class RunRegistration extends Block{
     t.add(Text.getNonBrakingSpace(), column, row);
     t.add(infoRedStarText, column, row++);
     
-    t.setHeight(row++, 12);
+    t.setHeight(row++, 8);
     
-    t.add(distanceText, column, row++);
+    t.add(distanceText, column, row);
+    t.add(redStar, column, row++);
     t.setHeight(row++, 3);
     t.mergeCells(column, row, t.getColumns(), row);
     t.add(runDisDropdownField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 12);
     
     formRow = row;
     t.add(nameText, column, row);
@@ -323,7 +324,7 @@ public class RunRegistration extends Block{
     t.setHeight(row++, 3);
     t.add(nameField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
     
     t.add(ssnText, column, row);
     t.add(redStar, column, row++);
@@ -335,25 +336,25 @@ public class RunRegistration extends Block{
       t.add(ssnField, column, row++);
     }
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
     
     t.add(addressText, column, row++);
     t.setHeight(row++, 3);
     t.add(addressField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
     
     t.add(cityText, column, row++);
     t.setHeight(row++, 3);
     t.add(cityField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
     
     t.add(postalText, column, row++);
     t.setHeight(row++, 3);
     t.add(postalField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
 
     t.add(countryText, column, row++);
     t.setHeight(row++, 3);
@@ -367,37 +368,37 @@ public class RunRegistration extends Block{
     t.setHeight(row++, 3);
     t.add(genderField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
     
     t.add(nationalityText, column, row++);
     t.setHeight(row++, 3);
     t.add(nationalityField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
 
     t.add(emailText, column, row++);
     t.setHeight(row++, 3);
     t.add(emailField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
 
     t.add(telText, column, row++);
     t.setHeight(row++, 3);
     t.add(telField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
 
     t.add(mobileText, column, row++);
     t.setHeight(row++, 3);
     t.add(mobileField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
 
     t.add(tShirtText, column, row++);
     t.setHeight(row++, 3);
     t.add(tShirtField, column, row++);
     
-    t.setHeight(row++, 12);
+    t.setHeight(row++, 18);
 
     Link stepTwoGreen = getStyleLink(new Link(iwrb.getLocalizedString("run_reg.submit_step_one","Next step")), STYLENAME_GREEN_TEXT);
     stepTwoGreen.setToFormSubmit(f);
@@ -419,10 +420,8 @@ public class RunRegistration extends Block{
   
   private void stepTwo(IWContext iwc) {
     Table t = new Table();
-    t.setColumns(2);
     t.setCellpadding(0);
     t.setCellspacing(0);
-    t.setWidth(Table.HUNDRED_PERCENT);
     int column = 1;
     int row = 1;
     int formRow = -1;
@@ -434,47 +433,41 @@ public class RunRegistration extends Block{
     t.add(chipText, column, row++);
     t.setHeight(row++, 3);
     t.add(ownChipField, column, row);
-    t.add(Text.getNonBrakingSpace(), column, row);
     t.add(ownChipText, column, row++);
-    t.add(buyChipField, column, row);
-    t.add(Text.getNonBrakingSpace(), column, row);
-    t.add(buyChipText, column, row++);
-    t.add(rentChipField, column, row);
-    t.add(Text.getNonBrakingSpace(), column, row);
-    t.add(rentChipText, column, row++);
-    
-    t.setHeight(row++, 6);
-    
-    t.add(chipNumberText, column, row++);
-    t.setHeight(row++, 3);
+    t.add(", ", column, row);
+    t.add(chipNumberText, column, row);
+    t.add(": ", column, row);
     t.add(chipNumberField, column, row++);
-
-    row = formRow;
-    column = 2;
+    t.setHeight(row++, 3);
+    t.add(buyChipField, column, row);
+    t.add(buyChipText, column, row++);
+    t.setHeight(row++, 3);
+    t.add(rentChipField, column, row);
+    t.add(rentChipText, column, row++);
     
     t.add(groupCompetitionField, column, row);
     t.add(Text.getNonBrakingSpace(), column, row);
     t.add(groupCompetitionText, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
     
     t.add(groupNameText, column, row++);
     t.setHeight(row++, 3);
     t.add(groupNameField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
     
     t.add(bestTimeText, column, row++);
     t.setHeight(row++, 3);
     t.add(bestTimeField, column, row++);
     
-    t.setHeight(row++, 6);
+    t.setHeight(row++, 8);
     
     t.add(goalTimeText, column, row++);
     t.setHeight(row++, 3);
     t.add(goalTimeField, column, row++);
     
-    t.setHeight(row++, 12);
+    t.setHeight(row++, 18);
     
     Table buttonTable = new Table(3, 1);
     buttonTable.setCellpadding(0);
@@ -493,10 +486,6 @@ public class RunRegistration extends Block{
     buttonTable.add(finishBlue,3,1);
     
     t.add(buttonTable, 1, row);
-    t.setWidth(1, "50%");
-    t.setWidth(2, "50%");
-    t.setColumnPaddingRight(1, 8);
-    t.setColumnPaddingLeft(2, 8);
     
     f.addParameter(PARAMETER_ACTION,ACTION_SAVE);
     f.keepStatusOnAction();
