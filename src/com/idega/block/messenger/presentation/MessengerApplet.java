@@ -383,11 +383,11 @@ System.out.println("ADD");
 
       refresh();
 
-      add(item);
+      add(item,null);
   }
 
   private void refresh(){
-     // doLayout();
+      doLayout();
       repaint();
   }
 
