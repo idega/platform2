@@ -4,7 +4,16 @@ import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import java.util.Collection;
 import is.idega.idegaweb.travel.data.PickupPlace;
+import is.idega.idegaweb.travel.data.ServiceBMPBean;
+
+import com.idega.block.trade.stockroom.data.ProductBMPBean;
+import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.block.trade.stockroom.data.SupplierBMPBean;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.*;
+import com.idega.util.IWTimestamp;
+
 import is.idega.idegaweb.travel.data.Service;
 import java.sql.*;
 
@@ -37,6 +46,8 @@ public class TourBMPBean extends GenericEntity implements Tour {
     addAttribute(getNumberOfDaysColumnName(), "Fjöldi daga", true, true, Integer.class);
     addAttribute(getLengthColumnName(), "Lengd", true, true, Float.class);
     addAttribute(getEstimatedSeatsUsedColumnName(), "estimated seats used", true, true, Integer.class);
+    
+    addManyToManyRelationShip(TourTypeBMPBean.class, "TB_TOUR_TOUR_TYPE");
   }
   public String getEntityName() {
     return getTripTableName();
@@ -129,7 +140,121 @@ public class TourBMPBean extends GenericEntity implements Tour {
     return getIntColumnValue(getEstimatedSeatsUsedColumnName());
   }
 
+  public Collection getTourTypes() throws IDORelationshipException {
+  	return this.idoGetRelatedEntities(TourType.class);
+  }
+  
+  public void setTourTypes(Object[] tourTypePKs) throws IDORelationshipException {
+  	this.idoRemoveFrom(TourType.class);
+  	if (tourTypePKs != null) {
+  		for (int i = 0; i < tourTypePKs.length; i++) {
+  			this.idoAddTo(TourType.class, tourTypePKs[i]);
+  		}
+  	}
+  }
 
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] tourTypeId, Object[] postalCodeId, Object[] supplierId) throws FinderException {
+		
+		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
+		boolean timeframe = (fromStamp != null && toStamp != null);
+		boolean tourType = (tourTypeId != null && tourTypeId.length > 0);
+		boolean supplier = (supplierId != null && supplierId.length > 0);
+
+		try {		
+			String addressSupplierMiddleTableName = EntityControl.getManyToManyRelationShipTableName(Address.class, Supplier.class);
+			String tourTypeTourMiddleTableName = EntityControl.getManyToManyRelationShipTableName(TourType.class, Tour.class);
+			
+			String postalCodeTableName = IDOLookup.getEntityDefinitionForClass(PostalCode.class).getSQLTableName();//  PostalCodeBMPBean.getEntityName();
+			String addressTableName = IDOLookup.getEntityDefinitionForClass(Address.class).getSQLTableName();
+			String serviceTableName = ServiceBMPBean.getServiceTableName();
+			String productTableName = ProductBMPBean.getProductEntityName();
+			String supplierTableName = SupplierBMPBean.getSupplierTableName();
+			String tourTypeTableName = IDOLookup.getEntityDefinitionForClass(TourType.class).getSQLTableName();
+	
+			String postalCodeTableIDColumnName = postalCodeTableName+"_id";
+			String addressTableIDColumnName = addressTableName+"_id";
+			String serviceTableIDColumnName = serviceTableName+"_id";
+			String productTableIDColumnName = productTableName+"_id";
+			String supplierTableIDColumnName = supplierTableName+"_id";
+			String tourTypeTableIDColumnName = null;
+			try {
+				tourTypeTableIDColumnName = IDOLookup.getEntityDefinitionForClass(TourType.class).getPrimaryKeyDefinition().getField().getSQLFieldName();
+			} catch (IDOCompositePrimaryKeyException e1) {
+				tourTypeTableIDColumnName = tourTypeTableName+"_id";
+			}
+			
+			StringBuffer sql = new StringBuffer();
+			sql.append("select distinct h.* from ").append(getEntityName()).append(" h, ")
+			.append(serviceTableName).append(" s, ")
+			.append(productTableName).append(" p");
+			
+			if (postalCode || supplier) {
+				sql.append(", ").append(supplierTableName).append(" su");
+			}	
+			if (tourType) {
+				sql.append(", ").append(tourTypeTourMiddleTableName).append(" rth");
+				sql.append(", ").append(tourTypeTableName).append(" rt");
+			}
+
+			if (postalCode) {
+				sql.append(", ").append(addressSupplierMiddleTableName).append(" asm, ")
+				.append(addressTableName).append(" a, ")
+				.append(postalCodeTableName).append(" pc ");
+			}
+			
+			sql.append(" where ")
+			.append(" h.").append(getIDColumnName()).append(" = s.").append(serviceTableIDColumnName)
+			.append(" AND s.").append(serviceTableIDColumnName).append(" = p.").append(productTableIDColumnName)
+			.append(" AND p.").append(ProductBMPBean.getColumnNameIsValid()).append(" = 'Y'");
+			
+			if (supplier) {
+				sql.append(" AND su.").append(supplierTableIDColumnName).append(" in (");
+				for (int i = 0; i < supplierId.length; i++) {
+					if (i != 0) {
+						sql.append(", ");
+					}
+					sql.append(supplierId[i].toString());
+				}
+				sql.append(")");
+			}
+
+			if (postalCode) {
+				sql.append(" AND asm.").append(supplierTableIDColumnName).append(" = su.").append(supplierTableIDColumnName)
+				.append(" AND asm.").append(addressTableIDColumnName).append(" = a.").append(addressTableIDColumnName)
+				.append(" AND p.").append(ProductBMPBean.getColumnNameSupplierId()).append(" = su.").append(supplierTableIDColumnName)
+				// HARDCODE OF DEATH ... courtesy of AddressBMPBean
+				.append(" AND a.postal_code_id = pc.").append(postalCodeTableIDColumnName)
+				.append(" AND pc.").append(postalCodeTableIDColumnName).append(" in (");
+				for (int i = 0; i < postalCodeId.length; i++) {
+					if (i != 0) {
+						sql.append(", ");
+					}
+					sql.append(postalCodeId[i]);
+				}
+				sql.append(")");
+			}
+			
+			if (tourType) {
+				sql.append(" AND h.").append(getIDColumnName()).append("= rth.").append(getIDColumnName());
+				sql.append(" AND rth.").append(tourTypeTableIDColumnName).append("= rt.").append(tourTypeTableIDColumnName);
+				sql.append(" AND  rt.").append(tourTypeTableIDColumnName).append(" in (");
+				for (int i = 0; i < tourTypeId.length; i++) {
+					if (i != 0) {
+						sql.append(", ");
+					}
+					sql.append(tourTypeId[i]);
+				}			
+				sql.append(") ");
+			}
+
+			//sql.append(" order by ").append();
+			
+			System.out.println(sql.toString());
+			return this.idoFindPKsBySQL(sql.toString());
+		}catch (IDOLookupException e) {
+			return null;
+		}
+	}
 
   public static String getTripTableName() {return "TB_TOUR";}
   public static String getHotelPickupColumnName() {return "HOTEL_PICKUP";}
