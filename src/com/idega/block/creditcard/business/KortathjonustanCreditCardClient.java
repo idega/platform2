@@ -196,6 +196,18 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 		}
 	}
 	
+	protected String convertStringToNumbers(String string) {
+		if (string != null) {
+			int length = string.length();
+			StringBuffer str = new StringBuffer();
+			for (int i = 0; i < length; i++) {
+				str.append(Character.getNumericValue(string.charAt(i)));
+			}
+			return str.toString();
+		}
+		return string;
+	}
+	
 	public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException {
 		try {
 			IWTimestamp stamp = IWTimestamp.RightNow();
@@ -205,9 +217,11 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 			strCCVerify = ccVerifyNumber;
 			setCurrencyAndAmount(currency, amount);
 			strCurrentDate = getDateString(stamp);
-			strReferenceNumber = referenceNumber;
-	
+			strReferenceNumber = convertStringToNumbers(referenceNumber);
+
 			StringBuffer logText = new StringBuffer();
+			System.out.println("referenceNumber => "+strReferenceNumber);
+	
 			
 			Hashtable returnedProperties = getFirstResponse();
 			String authCode = null;
@@ -313,7 +327,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 			String strCCExpire								= "0504";
 			String strCCVerify								= "150";
 			String strReferenceNumber					= Integer.toString((int) (Math.random() * 43200));
-			String keystore = "/demoFolder/testkeys.jks";
+			String keystore = "/Applications/idega/webs/nat/idegaweb/bundles/com.idega.block.creditcard.bundle/resources/demoFolder/testkeys.jks";
 			String keystorePass = "changeit";
 
 		KortathjonustanCreditCardClient client = new KortathjonustanCreditCardClient(IWContext.getInstance(), host, port, keystore, keystorePass, SITE, USER, PASSWORD, ACCEPTOR_TERM_ID, ACCEPTOR_IDENTIFICATION);
@@ -665,7 +679,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 		tmp.add(CreditCardBusiness.CARD_TYPE_ELECTRON);
 		tmp.add(CreditCardBusiness.CARD_TYPE_DINERS);
 		tmp.add(CreditCardBusiness.CARD_TYPE_JCB);
-		tmp.add(CreditCardBusiness.CARD_TYPE_DANKORT);
+		//tmp.add(CreditCardBusiness.CARD_TYPE_DANKORT); // Virkar v’st bara ’ .dk
 		return tmp;
 	}
 	
