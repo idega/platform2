@@ -3572,6 +3572,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				SchoolClassMemberLog log = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, archive.getValidFromDate());
 				log.setEndDate(archive.getTerminatedDate());
 				log.store();
+				
+				member.setSchoolClassId(log.getSchoolClassID());
+				member.store();
 			}
 			catch (FinderException fe) {
 				//Nothing done...
