@@ -1,4 +1,4 @@
-/* $Id: ControlListWriter.java,v 1.6 2004/01/11 21:54:18 kjell Exp $
+/* $Id: ControlListWriter.java,v 1.7 2004/01/12 10:08:42 gimmi Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -51,7 +51,7 @@ import com.lowagie.text.pdf.PdfWriter;
 /** 
  * PDF and XLS Writer for the Control List
  * <p>
- * $Id: ControlListWriter.java,v 1.6 2004/01/11 21:54:18 kjell Exp $
+ * $Id: ControlListWriter.java,v 1.7 2004/01/12 10:08:42 gimmi Exp $
  *
  * @author Kelly
  */
@@ -78,6 +78,9 @@ public class ControlListWriter extends AccountingBlock implements MediaWritable 
 	public void init(HttpServletRequest req, IWMainApplication iwma) {
 		try {
 			locale = iwma.getIWApplicationContext().getApplicationSettings().getApplicationLocale();
+			//TODO The correnct bundle_ident variable is called IW_ACCOUNTING_BUNDLE_IDENTIFER and this
+			//     one points to CommuneBlock.IW_BUNDLE_IDENTIFIER and therefore this class is using the
+			//     wrong resourceBundle. Remember that, when fixing this, whoever you are ....
 			iwrb = iwma.getBundle(AccountingBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
 			ControlListBusiness business = getControlListBusiness(iwma.getIWApplicationContext());
 			
