@@ -125,10 +125,32 @@ public static final int PAGE = 3;
     }
   }
 
+	public static boolean deleteBox(int iObjectInstanceId) {
+		BoxEntity box = BoxFinder.getObjectInstanceFromID(iObjectInstanceId);
+		if(box !=null){
+		  return deleteBox(box,iObjectInstanceId);
+		}
+		return false;
+  }
+
 	public static boolean deleteBox(int iBoxId,int iObjectInstanceId) {
+		try{
+	    BoxEntity box= new BoxEntity(iBoxId);
+			if(box !=null){
+				return deleteBox(box,iObjectInstanceId);
+			}
+		}
+		catch(SQLException ex){
+
+		}
+		return false;
+
+	}
+
+	public static boolean deleteBox(BoxEntity box,int iObjectInstanceId) {
     try {
-      if (iBoxId > 0 ) {
-				BoxEntity box= new BoxEntity(iBoxId);
+      if (box !=null ) {
+
 				disconnectBox(box,iObjectInstanceId);
         box.delete();
       }
