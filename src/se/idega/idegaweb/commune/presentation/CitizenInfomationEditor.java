@@ -151,7 +151,7 @@ public class CitizenInfomationEditor extends CommuneBlock {
 		form.add(table);
 		int row = 1;
 
-		Text tEmail = super.getSmallText(getResourceBundle().getLocalizedString("email","...Email")+":..");
+		Text tEmail = super.getSmallText(getResourceBundle().getLocalizedString("email","Email"));
 
 		Text tLogin = super.getSmallText(getResourceBundle().getLocalizedString("login","Login")+":");
 		TextInput tiLogin = (TextInput) super.getStyledInterface(new TextInput(PARAMETER_LOGIN));
@@ -226,9 +226,7 @@ public class CitizenInfomationEditor extends CommuneBlock {
 		++row;
 		table.add(update, 2, row);
 		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
-
-		table.add(new Text("test"), 1, ++row);
-		
+	
 		add(form);
 	}
 
