@@ -40,9 +40,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	protected final static String COLUMN_NAME_WORK_PHONE = "WORK_PHONE";
 	protected final static String COLUMN_NAME_FAX = "FAX";
 	protected final static String COLUMN_NAME_EMAIL = "EMAIL";;
-	
-	protected final static String COLUMN_NAME_BOARD_MEMBER = "BOARD_MEMBER";
-	protected final static String COLUMN_NAME_STATUS = "STATUS";//precident,vice president etc.
+
 	
 	protected final static String MALE = "m";
 	protected final static String FEMALE = "f";
@@ -61,9 +59,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		addAttribute(COLUMN_NAME_DATE_OF_BIRTH,"Date of birth",true,true,Timestamp.class);
 		addAttribute(COLUMN_NAME_AGE, "The yearly age of the member",true,true,Integer.class);
 		addAttribute(COLUMN_NAME_GENDER,"Gender m/f",true,true,String.class,1);
-		
-		addAttribute(COLUMN_NAME_BOARD_MEMBER, "Is a board member", true, true, Boolean.class);
-		addAttribute(COLUMN_NAME_STATUS,"Precident,vice president etc.",true,true,String.class,30);
+	
 		
 		addAttribute(COLUMN_NAME_STREET_NAME,"Streetname",true,true,String.class);
 		addAttribute(COLUMN_NAME_POSTAL_CODE_ID, "Postal code id",true,true,Integer.class,"many-to-one",PostalCode.class);
@@ -158,18 +154,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
 	
-	
-	public Collection ejbFindAllWorkReportBoardMembersByWorkReportId(int reportId) throws FinderException{
-		IDOQuery sql = idoQuery();
-		
-		sql.appendSelectAllFrom(this.getEntityName())
-		.appendWhere()
-		.appendEqualsQuoted(COLUMN_NAME_BOARD_MEMBER,"Y")
-		.appendAndEquals(COLUMN_NAME_REPORT_ID,reportId);
-			
-		return idoFindPKsByQuery(sql);
-	}
-	
+
 	public Integer ejbFindWorkReportMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		
@@ -185,14 +170,6 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	public Collection getLeaguesForMember() throws IDOException {
 		//could be optimized by only getting league workreportgroups
 		return idoGetRelatedEntities(WorkReportGroup.class);
-	}
-	
-	public void setAsBoardMember(boolean boardMember){
-		setColumn(COLUMN_NAME_BOARD_MEMBER,boardMember);
-	}
-	
-	public boolean isBoardMember(){
-		return getBooleanColumnValue(COLUMN_NAME_BOARD_MEMBER,false);
 	}
 	
 	public String getStreetName() {
@@ -249,17 +226,6 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	public String getEmail(){
 		return getStringColumnValue(COLUMN_NAME_EMAIL);
 	}
-	
-	
-	public void setStatus(String status){
-		setColumn(COLUMN_NAME_STATUS,status);
-	}
-	
-	public String getStatus(){
-		return getStringColumnValue(COLUMN_NAME_STATUS);
-	}
-	
-	
 	
 	
 	/* (non-Javadoc)

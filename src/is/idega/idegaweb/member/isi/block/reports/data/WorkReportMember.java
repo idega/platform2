@@ -14,16 +14,13 @@ public interface WorkReportMember extends com.idega.data.IDOEntity
  public com.idega.core.data.PostalCode getPostalCode()throws java.sql.SQLException;
  public int getPostalCodeID();
  public int getReportId();
- public java.lang.String getStatus();
  public java.lang.String getStreetName();
  public int getUserId();
  public java.lang.String getWorkPhone();
  public void initializeAttributes();
- public boolean isBoardMember();
  public boolean isFemale();
  public boolean isMale();
  public void setAge(int p0);
- public void setAsBoardMember(boolean p0);
  public void setAsFemale();
  public void setAsMale();
  public void setDateOfBirth(java.sql.Timestamp p0);
@@ -35,7 +32,6 @@ public interface WorkReportMember extends com.idega.data.IDOEntity
  public void setPostalCode(com.idega.core.data.PostalCode p0);
  public void setPostalCodeID(int p0);
  public void setReportId(int p0);
- public void setStatus(java.lang.String p0);
  public void setStreetName(java.lang.String p0);
  public void setUserId(int p0);
  public void setWorkPhone(java.lang.String p0);

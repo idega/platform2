@@ -160,7 +160,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
 		if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			if (iwc.isParameterSet("ssn")) {
 				try {
-					getWorkReportBusiness(iwc).createWorkReportMember(getWorkReportId(), iwc.getParameter("ssn"),false);
+					getWorkReportBusiness(iwc).createWorkReportMember(getWorkReportId(), iwc.getParameter("ssn"));
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();

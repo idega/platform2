@@ -13,13 +13,6 @@ public class WorkReportMemberHomeImpl extends com.idega.data.IDOFactory implemen
  }
 
 
-public java.util.Collection findAllWorkReportBoardMembersByWorkReportId(int p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((WorkReportMemberBMPBean)entity).ejbFindAllWorkReportBoardMembersByWorkReportId(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findAllWorkReportMembersByWorkReportIdOrderedByMemberName(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((WorkReportMemberBMPBean)entity).ejbFindAllWorkReportMembersByWorkReportIdOrderedByMemberName(p0);

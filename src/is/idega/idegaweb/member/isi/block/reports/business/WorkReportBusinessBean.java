@@ -4,6 +4,8 @@ import is.idega.idegaweb.member.business.MemberUserBusinessBean;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKey;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKeyHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMemberHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecord;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
@@ -57,6 +59,7 @@ import com.idega.util.text.TextSoap;
 public class WorkReportBusinessBean extends MemberUserBusinessBean implements MemberUserBusiness, WorkReportBusiness {
 
 
+
 	private static int SHEET_BOARD_PART = 0;
 	private static int SHEET_ACCOUNT_PART = 1;
 	private static int SHEET_MEMBER_PART = 2;
@@ -66,6 +69,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	private WorkReportAccountKeyHome workReportAccountKeyHome;
 	private WorkReportHome workReportHome;
 	private WorkReportMemberHome workReportMemberHome;
+	private WorkReportBoardMemberHome workReportBoardMemberHome;
 	
 	private static final short COLUMN_MEMBER_NAME = 0;
 	private static final short COLUMN_MEMBER_SSN = 1;
@@ -147,6 +151,18 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportMemberHome;
 	}
 	
+	public WorkReportBoardMemberHome getWorkReportBoardMemberHome(){
+		if(workReportBoardMemberHome==null){
+			try{
+				workReportBoardMemberHome = (WorkReportBoardMemberHome) IDOLookup.getHome(WorkReportBoardMember.class);
+			}
+			catch(RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportBoardMemberHome;
+	}
+	
 	
 	public WorkReportGroupHome getWorkReportGroupHome(){
 		if(workReportGroupHome==null){
@@ -186,7 +202,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 	
 	
-	public WorkReportMember createWorkReportMember(int reportID, String personalID, boolean isBoardMember) throws CreateException {
+	public WorkReportMember createWorkReportMember(int reportID, String personalID) throws CreateException {
 
 		User user = null;
 		try {
@@ -205,7 +221,36 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		member.setAge(age.getYears());
 		member.setDateOfBirth( (new IWTimestamp(user.getDateOfBirth())).getTimestamp() );
 		member.setUserId(((Integer)user.getPrimaryKey()).intValue());
-		member.setAsBoardMember(isBoardMember);
+		
+		if (true)
+			member.setAsMale();
+		else
+			member.setAsFemale();
+		
+		member.store();
+		return member;
+	
+	}
+	
+	public WorkReportBoardMember createWorkReportBoardMember(int reportID, String personalID) throws CreateException {
+
+		User user = null;
+		try {
+			user = getUser(personalID);
+		}
+		catch (FinderException e) {
+			return null;
+		}
+		
+		Age age = new Age(user.getDateOfBirth());
+
+		WorkReportBoardMember member = getWorkReportBoardMemberHome().create();
+		member.setReportId(reportID);
+		member.setName(user.getName());
+		member.setPersonalId(personalID);
+		member.setAge(age.getYears());
+		member.setDateOfBirth( (new IWTimestamp(user.getDateOfBirth())).getTimestamp() );
+		member.setUserId(((Integer)user.getPrimaryKey()).intValue());
 		
 		if (true)
 			member.setAsMale();
@@ -313,7 +358,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						//this should happen, we don't want them created twice	
 						
 						
-							WorkReportMember member = createWorkReportMember(workReportId,ssn,false);//sets basic data
+							WorkReportMember member = createWorkReportMember(workReportId,ssn);//sets basic data
 							//member.setAsBoardMember( (boardMember!=null && "X".equals(boardMember.toUpperCase())) );
 							if(streetName!=null && !"".equals(streetName)){	
 								member.setStreetName(streetName);
@@ -385,7 +430,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		
 			deleteWorkReportBoardMembersForReport(workReportId);
 	
-			WorkReportMemberHome membHome = getWorkReportMemberHome();
+			WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
 			WorkReport report = getWorkReportById(workReportId);
 			int year = report.getYearOfReport().intValue();
 			createOrUpdateLeagueWorkReportGroupsForYear(year);
@@ -431,21 +476,20 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 					String postalCode = getStringValueFromExcelNumberOrStringCell(row,COLUMN_BOARD_MEMBER_POSTAL_CODE);
 		
 				
-					WorkReportMember member;
+					WorkReportBoardMember member;
 					
 					try {
 						//the user must already exist in the database
 						User user = this.getUser(ssn);
 						try {
-							//TODO EIKI find board member
-							member = membHome.findWorkReportMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
-							member.setAsBoardMember(true);
+							
+							member = membHome.findWorkReportBoardMemberByUserIdAndWorkReportId(((Integer)user.getPrimaryKey()).intValue(),workReportId);
 							member.store();
 						}
 						catch (FinderException e4) {
 						//this should happen, we don't want them created twice	
-							member = createWorkReportMember(workReportId,ssn,true);//sets basic data
-							member.setAsBoardMember( true);
+							member = createWorkReportBoardMember(workReportId,ssn);//sets basic data
+							
 							
 							if(streetName!=null && !"".equals(streetName)){	
 								member.setStreetName(streetName);
@@ -641,7 +685,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 */
 	private void deleteWorkReportBoardMembersForReport(int reportId) {
 		try {
-			Collection members = getWorkReportMemberHome().findAllWorkReportBoardMembersByWorkReportId(reportId);
+			Collection members = getWorkReportBoardMemberHome().findAllWorkReportBoardMembersByWorkReportIdOrderedByMemberName(reportId);
 			Iterator iter = members.iterator();
 			
 			while (iter.hasNext()) {
@@ -662,6 +706,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			//do nothing because its empty
 		}
 	}
+	
 
 	/**
 	 * Gets the cell value as string even if it is a number and strips all ".", "-" and trailing exponent "098098809E8"
@@ -851,13 +896,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 	
 	/**
-	 * Gets all the WorkReportMembers that are board members for the supplied WorkReport id
+	 * Gets all the WorkReportBoardMembers for the supplied WorkReport id
 	 * @param workReportId
 	 * @return a collection of WorkReportMember or an empty list
 	 */
 	public Collection getAllWorkReportBoardMembersForWorkReportId(int workReportId){
 		try {
-			return getWorkReportMemberHome().findAllWorkReportBoardMembersByWorkReportId(workReportId);
+			return getWorkReportBoardMemberHome().findAllWorkReportBoardMembersByWorkReportIdOrderedByMemberName(workReportId);
 		}
 		catch (FinderException e) {
 			return ListUtil.getEmptyList();
