@@ -424,8 +424,6 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
 			e.printStackTrace(System.out);	
 		}
 */
-
-		System.out.println("[ProductPriceBMPBean] sql : "+SQLQuery.toString());
     return SQLQuery.toString();
   }
 
