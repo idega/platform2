@@ -81,7 +81,7 @@ public class WorkReportMultiEditor extends Block {
 
 
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return IW_BUNDLE_IDENTIFIER;
 	}
 	
   public WorkReportMultiEditor() {
@@ -207,7 +207,7 @@ public class WorkReportMultiEditor extends Block {
       
       
     EntityBrowser browser = new EntityBrowser();
-    browser.setWidth(browser.HUNDRED_PERCENT);
+    browser.setWidth(EntityBrowser.HUNDRED_PERCENT);
     browser.setCellpadding(3);
     browser.setRowHeight(1,"15");
     browser.setLeadingEntity(WorkReport.class);
@@ -226,6 +226,7 @@ public class WorkReportMultiEditor extends Block {
     }
     
     browser.setEntities("dummy_string", entities);
+    browser.setNullValueForNumbers("0");
     return browser;
   }
   

@@ -105,7 +105,7 @@ public class WorkReportOverViewCloseView extends Block {
 
 
 	public String getBundleIdentifier(){
-		return this.IW_BUNDLE_IDENTIFIER;
+		return IW_BUNDLE_IDENTIFIER;
 	}
 	
   public WorkReportOverViewCloseView() {
@@ -235,7 +235,7 @@ public class WorkReportOverViewCloseView extends Block {
       
       
     EntityBrowser browser = new EntityBrowser();
-    browser.setWidth(browser.HUNDRED_PERCENT);
+    browser.setWidth(EntityBrowser.HUNDRED_PERCENT);
     browser.setCellpadding(3);
     browser.setRowHeight(1,"15");
     browser.setLeadingEntity(WorkReportDivisionBoard.class);
@@ -258,6 +258,7 @@ public class WorkReportOverViewCloseView extends Block {
     }
     
     browser.setEntities("dummy_string", entities);
+    browser.setNullValueForNumbers("0");
     return browser;
   }
   
