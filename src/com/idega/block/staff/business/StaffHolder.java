@@ -2,12 +2,15 @@ package com.idega.block.staff.business;
 
 import java.util.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.core.user.data.User;
 
 public class StaffHolder {
-  private int userID_ = -1;
-  private String firstName_ = null;
-  private String middleName_ = null;
-  private String lastName_ = null;
+
+  private User _user = null;
+  //private int userID_ = -1;
+  //private String firstName_ = null;
+  //private String middleName_ = null;
+  //private String lastName_ = null;
   private String workPhone_ = null;
   private String mobilePhone_ = null;
   private String email_ = null;
@@ -21,11 +24,13 @@ public class StaffHolder {
   private int imageID_ = -1;
   private int age_ = -1;
 
-  public StaffHolder() {
+  public StaffHolder( User user) {
+    _user = user;
   }
 
 
   /* Setters */
+  /*
   public void setUserID(int userID) {
     userID_ = userID;
   }
@@ -41,7 +46,7 @@ public class StaffHolder {
   public void setLastName(String lastName) {
     lastName_ = lastName;
   }
-
+*/
   public void setWorkPhone(String phone) {
     workPhone_ = phone;
   }
@@ -89,11 +94,12 @@ public class StaffHolder {
 
   /* Getters */
   public int getUserID() {
-    return userID_;
+    //return userID_;
+    return _user.getID();
   }
 
   public String getName() {
-    StringBuffer name = new StringBuffer();
+ /*   StringBuffer name = new StringBuffer();
     if ( firstName_ != null )
       name.append(firstName_);
     if ( middleName_ != null && "" != middleName_ )
@@ -102,18 +108,24 @@ public class StaffHolder {
       name.append(" "+lastName_);
 
     return name.toString();
+    */
+
+    return _user.getName();
   }
 
   public String getFirstName() {
-    return firstName_;
+    return _user.getFirstName();
+    //return firstName_;
   }
 
   public String getMiddleName() {
-    return middleName_;
+    return _user.getMiddleName();
+    //return middleName_;
   }
 
   public String getLastName() {
-    return lastName_;
+    return _user.getLastName();
+    //return lastName_;
   }
 
   public String getWorkPhone() {
@@ -159,4 +171,9 @@ public class StaffHolder {
   public String[] getMetaValues() {
     return metaValues_;
   }
+
+  public int getGroupID(){
+    return _user.getGroupID();
+  }
+
 }

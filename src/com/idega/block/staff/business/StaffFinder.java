@@ -211,7 +211,7 @@ public class StaffFinder {
     Phone mobilePhone = UserBusiness.getUserPhone(user.getID(),PhoneType.MOBILE_PHONE_ID);
     Email email = UserBusiness.getUserMail(user);
 
-    StaffHolder holder = new StaffHolder();
+    StaffHolder holder = new StaffHolder(user);
     if ( user != null ) {
      idegaTimestamp stamp = null;
      if ( user.getDateOfBirth() != null )
@@ -221,12 +221,13 @@ public class StaffFinder {
       int userAge = 0;
       if ( stamp != null )
         userAge = (new idegaTimestamp().getDaysBetween(stamp,dateToday))/365;
-
+/*
       holder.setFirstName(user.getFirstName());
       holder.setMiddleName(user.getMiddleName());
       holder.setLastName(user.getLastName());
+*/
       holder.setAge(userAge);
-      holder.setUserID(user.getID());
+//      holder.setUserID(user.getID());
     }
     if ( staff != null ) {
       if ( staff.getBeganWork() != null )
