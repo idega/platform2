@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.93 2002/04/23 13:38:46 laddi Exp $
+ * $Id: NewsReader.java,v 1.94 2002/04/23 13:55:39 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1095,6 +1095,9 @@ public class NewsReader extends CategoryBlock implements IWBlock {
   }
   public void setShowInfo(boolean showInfo) {
     this.showInfo=showInfo;
+  }
+  public void setShowCollectionText(boolean showText) {
+    this.showCollectionText = showText;
   }
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
