@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.8 2003/05/26 15:30:26 laddi Exp $
+ * $Id: ContractBusiness.java,v 1.9 2003/05/26 16:35:16 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -455,13 +455,15 @@ public class ContractBusiness
 		}
 		return false;
 	}
-	public static int createContract(int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
+	public static int createContract(int userID, int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
 	{
 		try
 		{
 			Contract C = ((com.idega.block.contract.data.ContractHome) com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
 			C.setStatus(sStatus);
 			C.setValidFrom(ValFrom.getSQLDate());
+			if (userID != -1)
+				C.setUserId(userID);
 			if (ValTo != null)
 				C.setValidTo(ValTo.getSQLDate());
 			C.setCategoryId(iCategoryId);
@@ -484,5 +486,9 @@ public class ContractBusiness
 		}
 		
 		return -1;
+	}	
+	public static int createContract(int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map)
+	{
+		return createContract(-1, iCategoryId, ValFrom, ValTo, sStatus, map);
 	}	
 }
