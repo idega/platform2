@@ -81,11 +81,14 @@ public class SchoolTypeEditor extends Block {
       String id = iwc.getParameter("sch_school_type_id");
       String name = iwc.getParameter("sch_type_name");
       String info = iwc.getParameter("sch_type_info");
-      int aid = -1;
+      String cat = iwc.getParameter("sch_type_catid");
+      int aid = -1,catId = -1;
       if(id!=null)
         aid = Integer.parseInt(id);
+      if(cat!=null)
+        catId = Integer.parseInt(cat);
 
-      sabBean.storeSchoolType(aid,name,info);
+      sabBean.storeSchoolType(aid,name,info,catId);
     }
   }
 
@@ -130,8 +133,13 @@ public class SchoolTypeEditor extends Block {
     Table T = new Table(3,6);
     T.mergeCells(1,1,3,1);
     T.add(tFormat.format(iwrb.getLocalizedString("school_type","Schooltype"),tFormat.TITLE),1,1);
-    T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,2);
-    T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,3);
+    T.add(tFormat.format(iwrb.getLocalizedString("category","Category")),1,2);
+    T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,3);
+    T.add(tFormat.format(iwrb.getLocalizedString("info","Info")),1,4);
+
+    DropdownMenu drpCategory = new DropdownMenu("sch_type_catid");
+    drpCategory.addMenuElement(SchoolType.CHILDCARE,iwrb.getLocalizedString("childcare","Childcare"));
+    drpCategory.addMenuElement(SchoolType.SCHOOL,iwrb.getLocalizedString("school","School"));
 
     TextInput inputName = new TextInput("sch_type_name");
     TextArea inputInfo = new TextArea("sch_type_info");
@@ -147,14 +155,17 @@ public class SchoolTypeEditor extends Block {
         inputInfo.setContent(info);
         typeId = ((Integer)type.getPrimaryKey()).intValue();
         T.add(new HiddenInput("sch_school_type_id",String.valueOf(typeId)));
+        int category = type.getSchoolCategoryId();
+        drpCategory.setSelectedElement(String.valueOf(category) );
       }
       catch(Exception ex){
         ex.printStackTrace();
       }
     }
 
-    T.add(inputName,3,2);
-    T.add(inputInfo,3,3);
+    T.add(drpCategory,3,2);
+    T.add(inputName,3,3);
+    T.add(inputInfo,3,4);
     T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_type","true"),3,5);
     Link cancel = new Link(iwrb.getLocalizedImageButton("cancel","Cancel"));
     T.add(cancel,3,5);

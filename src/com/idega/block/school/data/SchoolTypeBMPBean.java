@@ -18,12 +18,14 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 
   public static final String NAME = "type_name";
   public static final String INFO = "type_info";
+  public static final String TYPECATEGORY = "category_id";
   public static final String SCHOOLTYPE = "sch_school_type";
 
   public void initializeAttributes() {
     this.addAttribute(getIDColumnName());
-    this.addAttribute("type_name","Schooltype",true,true,String.class);
-    this.addAttribute("type_info","Info",true,true,String.class);
+    this.addAttribute(TYPECATEGORY,"category",true,true,Integer.class);
+    this.addAttribute(NAME,"Schooltype",true,true,String.class);
+    this.addAttribute(INFO,"Info",true,true,String.class);
   }
 
   public String getEntityName() {
@@ -50,8 +52,20 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     return getStringColumnValue(INFO);
   }
 
+  public int getSchoolCategoryId(){
+    return getIntColumnValue(TYPECATEGORY);
+  }
+
+  public void setSchoolCategoryId(int categoryId){
+    setColumn(TYPECATEGORY,categoryId);
+  }
+
   public Collection ejbFindAllSchoolTypes() throws javax.ejb.FinderException{
     return super.idoFindAllIDsBySQL();
+  }
+
+  public Collection ejbFindAllByCategory(int iCategory) throws javax.ejb.FinderException {
+    return super.idoFindAllIDsByColumnOrderedBySQL(TYPECATEGORY,iCategory);
   }
 
 }
