@@ -55,6 +55,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
   private  String bookingPriceApplication = "bookingPriceApplication_";
   private  String bookingEntryPriceApplication = "bookingEntryPriceApplication_";
 
+  public static String COMMAND_BOOKING = "commandBooking";
+  
   private GeneralBookingHome gbHome;
   
   private List cacheKeys = new ArrayList();
@@ -162,7 +164,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
         temp.addTravelAddress(tAddress);
       }
       
-      invalidateCache();
+      invalidateCache(returner);
   //    temp.addTo(TravelAddress.class, addressId);
     }catch (FinderException fe) {
       throw new CreateException(fe.getMessage());
@@ -800,7 +802,8 @@ public class BookerBean extends IBOServiceBean implements Booker{
     return -1;
   }
   
-  private void invalidateCache() {
+  private void invalidateCache(int bookingID) {
+  	this.triggerActionEvent(COMMAND_BOOKING, bookingID);
     Iterator iter = cacheKeys.iterator();
     while (iter.hasNext()) {
     		getIWApplicationContext().getIWMainApplication().getIWCacheManager().invalidateCache((String) iter.next());

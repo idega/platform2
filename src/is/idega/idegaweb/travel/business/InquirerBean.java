@@ -173,7 +173,8 @@ public class InquirerBean extends IBOServiceBean implements Inquirer{
         if (book == false) {
             responseString.append(iwrb.getLocalizedString("travel.request_is_denied","Request is denied."));
         }else if (book == true) {
-            responseString.append(iwrb.getLocalizedString("travel.request_is_granted_booking_confirmed","Request is granted. Booking has been confimed"));
+        	this.triggerActionEvent(BookerBean.COMMAND_BOOKING, booking.getID());
+	        responseString.append(iwrb.getLocalizedString("travel.request_is_granted_booking_confirmed","Request is granted. Booking has been confimed"));
         }
 
         for (int i = 0; i < inquiries.size(); i++) {
