@@ -9,20 +9,26 @@ public class Message extends Packet{
   private String theRecipientName;
   private int hashId = 0;
 
-  public Message (String message, String senderId, String recipientId, String senderName){
-    this.theSender = senderId;
-    this.theRecipient = recipientId;
-    this.theMessage = message;
-    this.theSenderName = senderName;
-  }
-
-  public Message (String message, String senderId, String recipientId){
-    this(message, senderId, recipientId,null);
+  public Message (){
   }
 
   public Message (String message, String senderId){
-    this(message, senderId, senderId,null);
+    this();
+    theSender = senderId;
+    theMessage = message;
   }
+
+  public Message (String message, String senderId, String recipientId){
+    this(message, senderId);
+    theRecipient = recipientId;
+
+  }
+
+  public Message (String message, String senderId, String recipientId, String senderName){
+    this(message,senderId,recipientId);
+    this.theSenderName = senderName;
+  }
+
 
   public void setMessage(String theMessage){
    this.theMessage = theMessage;
