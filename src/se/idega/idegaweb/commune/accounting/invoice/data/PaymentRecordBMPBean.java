@@ -308,6 +308,18 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		return (Integer)idoFindOnePKByQuery(sql);
 	}		
 	
+	public Integer ejbFindByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(String ownPostingString,String doublePostingString,Regulation vatRuleRegulation,String text,CalendarMonth month,char status) throws FinderException {
+		IDOQuery sql = idoQueryFindByMonth(month);
+		sql.appendAndEqualsQuoted(COLUMN_OWN_POSTING,ownPostingString);
+		sql.appendAndEqualsQuoted(COLUMN_DOUBLE_POSTING,doublePostingString);
+		if(vatRuleRegulation!=null){
+			sql.appendAndEquals(COLUMN_VAT_RULE_REGULATION_ID,vatRuleRegulation.getPrimaryKey().toString());
+		}
+		sql.appendAndEqualsQuoted(COLUMN_PAYMENT_TEXT,text);
+		sql.appendAndEqualsQuoted(COLUMN_STATUS,status + "");
+		return (Integer)idoFindOnePKByQuery(sql);
+	}		
+	
 	/**
 	 * Gets a Collection of payment records for the specified month and all categories
 	 * @param month

@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/17 14:06:52 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/18 13:21:08 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.110 $
+ * @version $Revision: 1.111 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -695,12 +695,14 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					record.store ();
 					// inte till kommun landsting, stat ?
 					
+					/*
 					final SchoolClassMember placement = record.getSchoolClassMember ();
 					createVatPaymentRecord
 							(paymentRecord, null, //final PostingDetail postingDetail
 							 school, placement.getSchoolType (),
 							 placement.getSchoolYear (), new CalendarMonth (period),
 							 ConstantStatus.PRELIMINARY, createdBySignature);
+					*/
 			}
 		} catch (Exception e) {
 			e.printStackTrace ();
@@ -714,7 +716,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final SchoolYear schoolYear, final CalendarMonth month, final char status,
 		 final String createdBySignature)
 	throws RemoteException, CreateException {
-
 		// get vat regulation
 		final Regulation vatRuleRegulation = paymentRecord.getVATRuleRegulation();
 		if (null == vatRuleRegulation) return null;
@@ -746,8 +747,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 
 		// count increase value for amount
-		System.err.println ("### VATAmount = " + vatRuleRegulation.getAmount ());
-		System.err.println ("### TotalAmount = " + paymentRecord.getTotalAmount ());
 		final float newTotalVatAmount = AccountingUtil.roundAmount
 				(vatRuleRegulation.getAmount ().intValue () * paymentRecord.getTotalAmount ());				
 		final String paymentText = vatRuleRegulation.getName ();
@@ -757,12 +756,14 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		try {
 			// update old vat payment record
 			vatPaymentRecord = getPaymentRecordHome ()
-					.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth
+					.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus
 					(ownPosting, doublePosting, null, paymentText,
-					 new CalendarMonth (startDate));
+					 new CalendarMonth (startDate),status);
 			vatPaymentRecord.setTotalAmount
 					(AccountingUtil.roundAmount (vatPaymentRecord.getTotalAmount ()
 																			 + newTotalVatAmount));
+			vatPaymentRecord.setChangedBy (createdBySignature);
+			vatPaymentRecord.setDateChanged (now ());
 			vatPaymentRecord.store ();
 		} catch (FinderException e1) {
 			//It didn't exist, so we create it
@@ -777,10 +778,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			vatPaymentRecord.setPieceAmount (0);
 			vatPaymentRecord.setTotalAmount (newTotalVatAmount);
 			vatPaymentRecord.setTotalAmountVAT (0);
-			vatPaymentRecord.setRuleSpecType (regSpecType.getRegSpecType ());
+			//			vatPaymentRecord.setRuleSpecType (regSpecType.getRegSpecType ());
 			vatPaymentRecord.setOwnPosting (ownPosting);
 			vatPaymentRecord.setDoublePosting (doublePosting);
-			vatPaymentRecord.setOrderId (postingDetail.getOrderID());
+			//			vatPaymentRecord.setOrderId (postingDetail.getOrderID());
 			vatPaymentRecord.store();
 		}
 		return vatPaymentRecord;

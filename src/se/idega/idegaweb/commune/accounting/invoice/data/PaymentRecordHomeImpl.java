@@ -69,6 +69,13 @@ public PaymentRecord findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMo
 	return this.findByPrimaryKey(pk);
 }
 
+public PaymentRecord findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(java.lang.String p0,java.lang.String p1,se.idega.idegaweb.commune.accounting.regulations.data.Regulation p2,java.lang.String p3,com.idega.util.CalendarMonth p4,char p5)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((PaymentRecordBMPBean)entity).ejbFindByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonthAndStatus(p0,p1,p2,p3,p4,p5);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public PaymentRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (PaymentRecord) super.findByPrimaryKeyIDO(pk);
  }
