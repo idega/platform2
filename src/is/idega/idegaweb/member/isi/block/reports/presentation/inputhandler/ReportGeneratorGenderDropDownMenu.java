@@ -30,7 +30,7 @@ public class ReportGeneratorGenderDropDownMenu extends SelectionBox implements I
 		super();
 	}
 
-	public void main(IWContext iwc) throws Exception {
+	public void main(IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		this.addMenuElement(MALE, iwrb.getLocalizedString("GenderDropdownmenu.male", "Male"));
 		this.addMenuElement(FEMALE, iwrb.getLocalizedString("GenderDropdownmenu.female", "Female"));
