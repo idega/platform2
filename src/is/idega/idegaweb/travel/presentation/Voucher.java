@@ -387,7 +387,7 @@ public abstract class Voucher extends TravelManager {
 
 
 				_table.add(getText(_iwrb.getLocalizedString("travel.comment_lg","COMMENT")),1,2);
-				_table.add(getText(" : "),1,2);
+				_table.add(getText(" : "+Text.BREAK),1,2);
 				_table.add(getText(_booking.getComment()), 1, 2);
 				_table.add(getText(Text.BREAK), 1, 2);
 
