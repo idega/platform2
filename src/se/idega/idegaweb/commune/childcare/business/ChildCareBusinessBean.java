@@ -2976,7 +2976,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, STATUS_IN_QUEUE, null, toDate, isOnlyFirstHand);
+			return getChildCareApplicationHome().getQueueSizeInStatus(providerID, STATUS_IN_QUEUE, IWTimestamp.RightNow().getDate(), toDate, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -3006,7 +3006,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, null, toDate, isOnlyFirstHand);
+			return getChildCareApplicationHome().getBruttoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, IWTimestamp.RightNow().getDate(), toDate, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
@@ -3036,7 +3036,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			IWTimestamp to = IWTimestamp.RightNow();
 			to.addMonths(months);
 			Date toDate = to.getDate();
-			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, null, toDate, isOnlyFirstHand);
+			return getChildCareApplicationHome().getNettoQueueSizeInStatus(providerID, STATUS_IN_QUEUE, IWTimestamp.RightNow().getDate(), toDate, isOnlyFirstHand);
 		}
 		catch (IDOException e) {
 			return 0;
