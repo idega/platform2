@@ -400,7 +400,7 @@ private Table resultTable;
         Window scoreWindow = new Window("Gluggi",796,600,"/tournament/holeview.jsp");
           scoreWindow.setMenubar(true);
           scoreWindow.setResizable(true);
-        Image scoreImage = new Image("http://clarke.idega.is/takki1.swt?type=gif&texti="+iwrb.getLocalizedString("tournament.hole_by_hole","HOLE BY HOLE"),"",145,19);
+        Image scoreImage = iwrb.getImage("buttons/holebyhole.gif",iwrb.getLocalizedString("tournament.hole_by_hole","HOLE BY HOLE"),145,19);
         Link scoreLink = new Link(scoreImage,scoreWindow);
           scoreLink.addParameter("tournamentID",tournamentID);
           scoreLink.addParameter("tournamentGroupID",tournamentGroupID);
@@ -428,9 +428,11 @@ private Table resultTable;
             }
           }
           else {
-            System.out.println("Trying 2");
             idegaTimestamp date = new idegaTimestamp();
-            TournamentRound[] rounds = (TournamentRound[]) TournamentRound.getStaticInstance("com.idega.projects.golf.entity.TournamentRound").findAll("select * from tournament_round where tournament_id = "+Integer.toString(tournamentID)+" and round_date = '"+date.getSQLDate()+"'");
+            idegaTimestamp date2 = new idegaTimestamp();
+              date2.addDays(1);
+
+            TournamentRound[] rounds = (TournamentRound[]) TournamentRound.getStaticInstance("com.idega.projects.golf.entity.TournamentRound").findAll("select * from tournament_round where tournament_id = "+Integer.toString(tournamentID)+" and round_date >= '"+date.getSQLDate()+"' and round_date <= '"+date2.getSQLDate()+"'");
             if ( rounds.length > 0 ) {
               tournamentRoundID = rounds[0].getID();
             }

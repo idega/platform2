@@ -136,10 +136,11 @@ public class TournamentResultsDetailed extends JModuleObject {
             stroke.setText(Integer.toString(strokeValue));
           Text differ = getDifference(difference);
 
-          /*String color = this.getBackgroundColor(strokeValue,parValue);
+          String color = this.getBackgroundColor(strokeValue,parValue);
           if ( color != null ) {
             myTable.setColor(column,row,color);
-          }*/
+            stroke.setFontColor("#FFFFFF");
+          }
 
           myTable.add(stroke,column,row);
           myTable.add(differ,column,row+1);
@@ -350,16 +351,16 @@ public class TournamentResultsDetailed extends JModuleObject {
     int birdie = score - par;
 
     if ( birdie >= 2 ) {
-      color = "51787E";
+      color = "#777D1A";
     }
     else if ( birdie == 1 ) {
-      color = "AACFCF";
+      color = "#04463C";
     }
     else if ( birdie == -1 ) {
-      color = "F5D6CD";
+      color = "#BB2322";
     }
     else if ( birdie == -2 ) {
-      color = "F6A690";
+      color = "#2050A8";
     }
 
     return color;
