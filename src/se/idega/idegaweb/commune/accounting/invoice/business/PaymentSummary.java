@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 
 /**
- * Last modified: $Date: 2004/01/15 12:28:57 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/20 20:03:02 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PaymentSummary {
 	private int placementCount = 0;
@@ -52,7 +52,8 @@ public class PaymentSummary {
 				final MainRule mainRule = regSpecType.getMainRule ();
 				mainRuleName = mainRule.getMainRule ();
 			} catch (Exception e) {
-				System.err.println ("Record id = " + paymentRecord.getPrimaryKey ());
+				System.err.println ("PaymentRecord id with incorrect reg spec type = "
+														+ paymentRecord.getPrimaryKey ());
 				e.printStackTrace ();
 			}
 			final long amountExcl = se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (paymentRecord.getTotalAmount ());

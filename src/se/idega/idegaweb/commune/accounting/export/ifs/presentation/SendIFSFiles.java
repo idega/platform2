@@ -51,31 +51,12 @@ public class SendIFSFiles extends AccountingBlock {
 					break;
 				case ACTION_SEND :
 					viewForm();
-					final Map filesMaps = sendFiles(iwc);
-					for (Iterator i = filesMaps.keySet ().iterator (); i.hasNext ();) {
-						final String mapKey = "" + i.next ();
-						add ("<p>" + localize (mapKey, mapKey) + ":</p>");
-						final Map fileMap = (Map) filesMaps.get (mapKey);
-						for (Iterator j = fileMap.keySet ().iterator (); j.hasNext ();) {
-							final String providerName = "" + j.next ();
-							final int fileId
-									= ((Integer) fileMap.get (providerName)).intValue ();
-							if (0 < fileId) {
-								final Link viewLink = new Link (providerName);
-								viewLink.setFile (fileId);
-								viewLink.setTarget ("letter_window_" + fileId);
-								add (viewLink);
-							} else {
-								add (providerName);
-							}
-							add ("<br/>");
-						}
-					}
+					add ("<p>"); 
+					sendFiles (iwc);					
 					break;
 			}
-		}
-		catch (Exception e) {
-			super.add(new ExceptionWrapper(e, this));
+		}	catch (Exception e) {
+			add(new ExceptionWrapper(e, this));
 		}
 	}
 
@@ -94,8 +75,39 @@ public class SendIFSFiles extends AccountingBlock {
 		return ACTION_VIEW;
 	}
 
-	private Map sendFiles(IWContext iwc) throws RemoteException {
-			return getIFSBusiness(iwc).sendFiles(_currentOperation,iwc.getCurrentUser());
+	private void sendFiles(IWContext iwc) throws RemoteException {
+		final Map filesMaps = getIFSBusiness(iwc).sendFiles(_currentOperation,iwc.getCurrentUser());
+		final Table table = new Table();
+		table.setCellpadding (getCellpadding ());
+		table.setCellspacing (getCellspacing ());
+		table.setWidth (Table.HUNDRED_PERCENT);
+		table.setColumns (filesMaps.size ());
+		add (table);
+		int col = 0;
+		for (Iterator i = filesMaps.keySet ().iterator (); i.hasNext ();) {
+			col++;
+			int row = 1;
+			final String mapKey = "" + i.next ();
+			final Map fileMap = (Map) filesMaps.get (mapKey);
+			table.setRowColor(row, getHeaderColor ());
+			table.add (getSmallHeader (localize (mapKey, mapKey)), col, row);
+			for (Iterator j = fileMap.keySet ().iterator (); j.hasNext ();) {
+				row++;
+				table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
+													 : getZebraColor2 ());
+				final String providerName = "" + j.next ();
+				final int fileId
+						= ((Integer) fileMap.get (providerName)).intValue ();
+				if (0 < fileId) {
+					final Link viewLink = new Link (providerName);
+					viewLink.setFile (fileId);
+					viewLink.setTarget ("letter_window_" + fileId);
+					table.add (viewLink, col, row);
+				} else {
+					table.add (getSmallText (providerName), col, row);
+				}
+			}
+		}
 	}
 
 	private void viewForm() {

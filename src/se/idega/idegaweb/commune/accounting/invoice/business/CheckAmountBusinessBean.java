@@ -66,11 +66,11 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
 /**
- * Last modified: $Date: 2004/01/20 14:51:13 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/20 20:03:02 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -83,21 +83,6 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		= new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 	private static final Color LIGHT_BLUE = new Color (0xf4f4f4);
 
-	/*
-	public void main(IWContext iwc) {
-		//IWBundle bundle = super.
-		//iwrb = super.getResourceBundle(iwc);
-		IWBundle accountingBundle = iwc.getApplication().getBundle(AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER);
-		IWResourceBundle iwrb = accountingBundle.getResourceBundle(iwc);
-		String schoolCategory = null;
-		try {
-			schoolCategory = "ELEMENTARY_SCHOOL";
-			sendCheckAmountLists(iwc, iwrb, schoolCategory);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	*/
 	public Map sendCheckAmountLists(IWContext iwc, String schoolCategoryPK) {
 		IWBundle accountingBundle = iwc.getApplication().getBundle(AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER);
 		IWResourceBundle iwrb = accountingBundle.getResourceBundle(iwc);
@@ -129,11 +114,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				Iterator schoolIter = schools.iterator();
 				while (schoolIter.hasNext()) {
 					school = (School) schoolIter.next();
-
 					File file = createExternalCheckAmountList (iwc, schoolCategory, school);
-					//Link link = new Link(file.getName(),"file://"+file.getAbsolutePath());
-					//add(link);
-
 					SchoolUserBusiness sub = (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
 					Collection headmasters = sub.getHeadmasters(school);
 					Collection assheadmasters = sub.getAssistantHeadmasters(school);
@@ -176,21 +157,15 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 						filesSentByPapermail.put (school.getName (),
 																			icFile.getPrimaryKey ());
 					} else {
-						//add(" <b>Email</b> ");
 						for (Iterator i = emails.iterator(); i.hasNext();) {
 							email = (Email) i.next();
 							if (mBusiness.getIfCanSendEmail()) {
 								mBusiness.sendMessage(email.getEmailAddress(), iwrb.getLocalizedString( CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT)+" - "+school.getName(), "", file);
 							}
-							//mBusiness.sendMessage("gimmi@idega.is", "CheckbeloppsLista "+school.getName(), "Test Text", file);
-							//SendMail.send( null, email.getEmailAddress(), null, null, "mail.idega.is", "CheckbeloppsLista "+school.getName(), "Test Text", file);
-							//SendMail.send( null, "gimmi@idega.is", null, null, "mail.idega.is", "CheckbeloppsLista "+school.getName(), "Test Text", file);
-							//add(email.getEmailAddress() +", ");
 						}
 						filesSentByEmail.put (school.getName (), new Integer (-1));					
 					}
 					file.delete();
-					//add("<br>");
 				}
 			}
 			
@@ -238,135 +213,28 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		final PdfPTable outerTable = new PdfPTable (1);
 		outerTable.setWidthPercentage (100f);
 		outerTable.getDefaultCell ().setBorder (0);
-		//addPhrase (outerTable, getTitle (school.getPrimaryKey()) + "\n\n");
-		//final PdfPTable headerTable	= getInternalHeaderTable (schoolCategory.getPrimaryKey (), school.getPrimaryKey (), startPeriod, endPeriod);
-		//outerTable.addCell (headerTable);
-		//addPhrase (outerTable, "\n");
-		final PdfPTable recordListTable = getRecordListTable(records);
+		addPhrase (outerTable, "\n\n" + localize
+							 (CHECK_AMOUNT_LIST_KEY, CHECK_AMOUNT_LIST_DEFAULT)  + "\n\n");
+		final PdfPTable headerTable	= getExternalHeaderTable (schoolCategory);
+		outerTable.addCell (headerTable);
+		addPhrase (outerTable, "\n");
+		final PdfPTable recordListTable = getRecordListTable(records, false);
 		outerTable.addCell (recordListTable);
 		addPhrase (outerTable, "\n");
-		final PdfPTable summaryTable = getSummaryTable(records);
+		final PdfPTable summaryTable = getSummaryTable(records, false);
 		outerTable.addCell (summaryTable);
 		outerDocument.add (outerTable);        
-		/*
-		float totalAmountSum = 0;
-		int placements = 0;
-		String placementText = "";
-		String comment = "";
-		int totalPlacements = 0;
-		float totalVatSum = 0;
-
-		Table table = new Table(5);
-		table.setPadding(1);
-		table.setSpacing(1);
-		table.setWidths(new int[]{1,3,1,2,3});
-		table.setWidth(100);
-		//table.setBorderColor(Color.WHITE);
-		table.addCell(new Cell(iwrb.getLocalizedString(PERIOD_KEY , PERIOD_DEFAULT)));
-		table.addCell(new Cell(iwrb.getLocalizedString( PLACEMENT_KEY, PLACEMENT_DEFAULT)));
-		table.addCell(new Cell(iwrb.getLocalizedString( NO_OF_PLACEMENTS_KEY, NO_OF_PLACEMENTS_DEFAULT)));
-		table.addCell(new Cell(iwrb.getLocalizedString( TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT)));
-		table.addCell(new Cell(iwrb.getLocalizedString( NOTE_KEY, NOTE_DEFAULT)));
-		
-		
-		paymentHeaders = phHome.findBySchoolAndSchoolCategoryPKAndStatus(school.getPrimaryKey(), schoolCategory.getPrimaryKey(), "L");
-		if (paymentHeaders != null && !paymentHeaders.isEmpty()) {
-			paymentRecords = prHome.findByPaymentHeaders(paymentHeaders);
-			
-			if (paymentRecords != null && !paymentRecords.isEmpty()) {
-				paymentRecordIter = paymentRecords.iterator();
-				while (paymentRecordIter.hasNext()) {
-					paymentRecord = (PaymentRecord) paymentRecordIter.next();
-					placementText = paymentRecord.getPaymentText();
-					placements = paymentRecord.getPlacements();
-					totalPlacements += placements;
-					comment = paymentRecord.getNotes();
-					totalAmountSum += paymentRecord.getTotalAmount();
-					totalVatSum += paymentRecord.getTotalAmountVAT();
-					//students.add(paymentRecord.get);
-					
-					Cell per = new Cell(getFormattedPeriod(paymentRecord.getPeriod()));
-					table.addCell(per);
-					Cell pla = new Cell("");
-					if (placementText != null) {
-						pla = new Cell(placementText);
-					}
-					table.addCell(pla);
-					Cell noPl = new Cell(Integer.toString(placements));
-					noPl.setHorizontalAlignment(Element.ALIGN_RIGHT);
-					table.addCell(noPl);
-					Cell tot = new Cell(Float.toString(paymentRecord.getTotalAmount()));
-					tot.setHorizontalAlignment(Element.ALIGN_RIGHT);
-					table.addCell(tot);
-					Cell notes = new Cell("");
-					if (comment != null) {
-						notes = new Cell(comment);
-					}
-					table.addCell(notes);
-				}
-			}
-		}
-		Cell totPlacStr = new Cell(iwrb.getLocalizedString(TOTAL_AMOUNT_PLACEMENTS_KEY, TOTAL_AMOUNT_DEFAULT));
-		totPlacStr.setColspan(2);
-		totPlacStr.setBorderColor(Color.WHITE);
-		table.addCell(totPlacStr);
-		Cell totPlac = new Cell(Integer.toString(totalPlacements));
-		totPlac.setColspan(3);
-		totPlac.setBorderColor(Color.WHITE);
-		table.addCell(totPlac);
-
-		Cell totXMomStr = new Cell(iwrb.getLocalizedString(TOTAL_AMOUNT_VAT_EXCLUDED_KEY, TOTAL_AMOUNT_VAT_EXCLUDED_DEFAULT));
-		totXMomStr.setColspan(2);
-		totXMomStr.setBorderColor(Color.WHITE);
-		table.addCell(totXMomStr);
-		Cell totXMom = new Cell(Float.toString(totalAmountSum));
-		totXMom.setColspan(3);
-		totXMom.setBorderColor(Color.WHITE);
-		table.addCell(totXMom);
-		
-		Cell totMomsStr = new Cell(iwrb.getLocalizedString(TOTAL_AMOUNT_VAT_KEY, TOTAL_AMOUNT_VAT_DEFAULT));
-		totMomsStr.setColspan(2);
-		totMomsStr.setBorderColor(Color.WHITE);
-		table.addCell(totMomsStr);
-		Cell totMoms = new Cell(Float.toString(totalVatSum));
-		totMoms.setColspan(3);
-		totMoms.setBorderColor(Color.WHITE);
-		table.addCell(totMoms);
-		outerDocument.add(table);
-		*/
-		
 		outerDocument.close();
 		writer.close();
 		fileOut.close();
 		return file;
 	}
 
-	/*
-	public CheckAmountListFile (final IWResourceBundle bundle, , final InvoiceBusiness invoiceBusiness, final PostingBusiness postingBusiness)
-		throws RemoteException, FinderException {
-		this.bundle = bundle;
-		this.schoolCategoryId = schoolCategoryId;
-		this.providerId = providerId;
-		this.startPeriod = startPeriod;
-		this.endPeriod = endPeriod;
-		try {
-			fileId = createCheckAmountListFile (invoiceBusiness, postingBusiness);
-		} catch (DocumentException e) {
-			e.printStackTrace ();
-			throw new RemoteException (e.getMessage ());
-		}
+	private PdfPTable getExternalHeaderTable (final SchoolCategory category) {
+		return getHeaderTable ("" + category.getPrimaryKey (), null, null,
+													 null, false);
 	}
-	*/
 
-	private void addPhrase (final PdfPTable table, final String string) {
-		table.addCell (new Phrase (new Chunk (null != string ? string : "",
-																					SANSSERIF_FONT)));
-	}
-	
-	private static float mmToPoints (final float mm) {
-		return mm*72/25.4f;
-	}
-	
 	public int createInternalCheckAmountList
 		(final String schoolCategoryId, final Integer providerId,
 		 final Date startPeriod, final Date endPeriod) throws RemoteException,
@@ -399,14 +267,14 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 			outerTable.getDefaultCell ().setBorder (0);
 			addPhrase (outerTable, localize (CHECK_AMOUNT_LIST_KEY,
 																			 CHECK_AMOUNT_LIST_DEFAULT)  + "\n\n");
-			final PdfPTable headerTable	= getInternalHeaderTable
-					(schoolCategoryId, providerId, startPeriod, endPeriod);
+			final PdfPTable headerTable	= getHeaderTable
+					(schoolCategoryId, providerId, startPeriod, endPeriod, true);
 			outerTable.addCell (headerTable);
 			addPhrase (outerTable, "\n");
-			final PdfPTable recordListTable = getRecordListTable(records);
+			final PdfPTable recordListTable = getRecordListTable(records, true);
 			outerTable.addCell (recordListTable);
 			addPhrase (outerTable, "\n");
-			final PdfPTable summaryTable = getSummaryTable(records);
+			final PdfPTable summaryTable = getSummaryTable(records, true);
 			outerTable.addCell (summaryTable);
 			addPhrase (outerTable, "\n");
 			addPhrase (outerTable,
@@ -435,7 +303,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		}
 	}
 
-	private PdfPTable getRecordListTable(PaymentRecord[] records) {
+	private PdfPTable getRecordListTable (final PaymentRecord[] records,
+																				final boolean isInternal) {
 		final String [][] columnNames =
 				{{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
 				 { PLACEMENT_KEY, PLACEMENT_DEFAULT },
@@ -443,20 +312,25 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				 { PIECE_AMOUNT_2_KEY, PIECE_AMOUNT_2_DEFAULT },
 				 { AMOUNT_KEY, AMOUNT_DEFAULT },
 				 { NOTE_KEY, NOTE_DEFAULT }};
-		final PdfPTable table = new PdfPTable
-				(new float [] { 1.0f, 1.0f, 5.0f, 1.0f, 1.2f, 1.4f, 3.0f });
+		final float [] externalColWidth
+				= new float [] {1.0f, 5.0f, 1.0f, 1.2f, 1.4f};
+		final float [] internalColWidth
+				= new float [] { 1.0f, 1.0f, 5.0f, 1.0f, 1.2f, 1.4f, 3.0f };
+		final PdfPTable table
+				= new PdfPTable	(isInternal ? internalColWidth : externalColWidth);
 		table.setWidthPercentage (100f);
 		table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
 		for (int i = 0; i < columnNames.length; i++) {
-			addPhrase (table, localize (columnNames [i][0],
-																	columnNames [i][1]));
+			if (isInternal || (0 != i && columnNames.length - 1 != i)) {
+				addPhrase (table, localize (columnNames [i][0],	columnNames [i][1]));
+			}
 		}
 		table.setHeaderRows (1);  // this is the end of the table header
 		for (int i = 0; i < records.length; i++) {
 			table.getDefaultCell ().setBackgroundColor (i % 2 == 0 ? Color.white
 																									: LIGHT_BLUE);
 			final PaymentRecord record = records [i];
-			addRecordOnARow (table, record);
+			addRecordOnARow (table, record, isInternal);
 		}
 		return table;
 	}
@@ -505,51 +379,57 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return table;
 	}
 
-	private PdfPTable getInternalHeaderTable
+	private PdfPTable getHeaderTable
 		(final String schoolCategoryId, final Integer providerId,
-		 final Date startPeriod, final Date endPeriod) {
+		 final Date startPeriod, final Date endPeriod, final boolean isInternal) {
 		final PdfPTable headerTable = new PdfPTable (new float [] { 2.0f, 3.0f });
 		headerTable.getDefaultCell ().setBorder (0);
 		addPhrase (headerTable,
 							 localize (MAIN_ACTIVITY_KEY, MAIN_ACTIVITY_DEFAULT) + ": ");
 		addPhrase (headerTable, getSchoolCategoryName (schoolCategoryId));
-		addPhrase (headerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": ");
-		final String period	= (getFormattedPeriod (startPeriod)) + " - "
-				+ (getFormattedPeriod (endPeriod));
-		addPhrase (headerTable, period);
+		if (isInternal) {
+			addPhrase (headerTable, localize (PERIOD_KEY, PERIOD_DEFAULT) + ": ");
+			final String period	= (getFormattedPeriod (startPeriod)) + " - "
+					+ (getFormattedPeriod (endPeriod));
+			addPhrase (headerTable, period);
+		}
 		addPhrase (headerTable, localize (PRINT_DATE_KEY, PRINT_DATE_DEFAULT)
 							 + ": ");
 		addPhrase (headerTable,
 							 dateAndTimeFormatter.format (new java.util.Date ()));
-		try {
-			final SchoolHome schoolHome
-					=	(SchoolHome) IDOLookup.getHome (School.class);
-			final School school	= schoolHome.findByPrimaryKey (providerId);
-			addPhrase (headerTable, localize (PROVIDER_KEY, PROVIDER_DEFAULT)
-								 + ": ");
-			addPhrase (headerTable, school.getName ());
-			final Provider provider = new Provider (school);
-			addPhrase (headerTable, localize (BANKGIRO_KEY, BANKGIRO_DEFAULT)
-								 + ": ");
-			final String bankgiro = provider.getBankgiro ();
-			addPhrase (headerTable, bankgiro != null ? bankgiro : "");
-			addPhrase (headerTable, localize (POSTGIRO_KEY, POSTGIRO_DEFAULT)
-								 + ": ");
-			final String postgiro = provider.getPostgiro ();
-			addPhrase (headerTable, postgiro != null ? postgiro : "");
-			
-		} catch (Exception e) {
-			e.printStackTrace ();
+		if (isInternal) {
+			try {
+				final SchoolHome schoolHome
+						=	(SchoolHome) IDOLookup.getHome (School.class);
+				final School school	= schoolHome.findByPrimaryKey (providerId);
+				addPhrase (headerTable, localize (PROVIDER_KEY, PROVIDER_DEFAULT)
+									 + ": ");
+				addPhrase (headerTable, school.getName ());
+				final Provider provider = new Provider (school);
+				addPhrase (headerTable, localize (BANKGIRO_KEY, BANKGIRO_DEFAULT)
+									 + ": ");
+				final String bankgiro = provider.getBankgiro ();
+				addPhrase (headerTable, bankgiro != null ? bankgiro : "");
+				addPhrase (headerTable, localize (POSTGIRO_KEY, POSTGIRO_DEFAULT)
+									 + ": ");
+				final String postgiro = provider.getPostgiro ();
+				addPhrase (headerTable, postgiro != null ? postgiro : "");
+				
+			} catch (Exception e) {
+				e.printStackTrace ();
+			}
 		}
 		
 		return headerTable;
 	}
 	
 	private PdfPTable getSummaryTable
-		(PaymentRecord [] records) throws RemoteException,
-																															 FinderException {
+		(final PaymentRecord [] records, final boolean isInternal)
+		throws RemoteException, FinderException {
+		final float [] externalColWidth	= new float [] { 6.0f, 3.6f, 0.0f };
+		final float [] internalColWidth	= new float [] { 7.0f, 3.6f, 3.0f };
 		final PdfPTable summaryTable
-				= new PdfPTable (new float [] { 7.0f, 3.6f, 3.0f });
+				= new PdfPTable	(isInternal ? internalColWidth : externalColWidth);
 		summaryTable.getDefaultCell ().setBorder (0);
 		final PaymentSummary summary = new PaymentSummary (records);
 		addPhrase (summaryTable,
@@ -584,12 +464,15 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		return summaryTable;
 	}
 	
-	private void addRecordOnARow (final PdfPTable table,
-																	 final PaymentRecord record) {
+	private void addRecordOnARow
+		(final PdfPTable table, final PaymentRecord record,
+		 final boolean isInternal) {
+		if (isInternal) {
+			addPhrase (table, record.getStatus () + "");
+		}
 		final Date period = record.getPeriod ();
 		final String periodText = null != period
 				? getFormattedPeriod (period) : "";
-		addPhrase (table, record.getStatus () + "");
 		addPhrase (table, periodText);
 		addPhrase (table, record.getPaymentText ());
 		table.getDefaultCell ().setHorizontalAlignment
@@ -598,7 +481,9 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		addPhrase (table, getFormattedAmount (record.getPieceAmount ()));
 		addPhrase (table, getFormattedAmount (record.getTotalAmount ()));
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
-		addPhrase (table, record.getNotes ());
+		if (isInternal) {
+			addPhrase (table, record.getNotes ());
+		}
 	}
 
 	private PostingField [] getCurrentPostingFields
@@ -608,6 +493,15 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		final PostingField [] array = new PostingField [0];
 		return fields != null ? (PostingField []) fields.toArray (array)
 				: array;
+	}
+	
+	private void addPhrase (final PdfPTable table, final String string) {
+		table.addCell (new Phrase (new Chunk (null != string ? string : "",
+																					SANSSERIF_FONT)));
+	}
+	
+	private static float mmToPoints (final float mm) {
+		return mm*72/25.4f;
 	}
 	
 	private long roundAmount (final float f) {

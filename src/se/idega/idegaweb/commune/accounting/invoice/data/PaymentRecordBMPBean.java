@@ -236,8 +236,6 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		}
 		sql.appendOrderBy (COLUMN_PERIOD + "," + COLUMN_ORDER_ID);
 		
-		System.out.println("sql = " + sql.toString());
-		
 		return idoFindPKsByQuery (sql);
 	}
 	
