@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.11 2002/07/09 23:38:50 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.12 2002/08/28 16:35:31 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -478,7 +478,7 @@ public abstract class CampusApplicationFinder {
           wl = new Vector(resultSet);
 
         Contract contract = null;
-        if (contracts != null)
+        if (contracts != null && !contracts.isEmpty())
           contract = (Contract)contracts.elementAt(0);
 
         ListIterator it = v.listIterator(v.size());
