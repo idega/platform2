@@ -58,6 +58,10 @@ private Table resultTable;
     try {
       iwrb = getResourceBundle(modinfo);
       tournament = new Tournament(tournamentID);
+      if ( tournament.getNumberOfRounds() > 4 ) {
+        championship = true;
+      }
+
       add(getResult(modinfo));
     }
     catch (Exception e) {
@@ -94,7 +98,9 @@ private Table resultTable;
         }
       }
       else {
-        showAllGroups = true;
+        if ( championship ) {
+          showAllGroups = true;
+        }
       }
 
     String tournamentRounds_ = modinfo.getParameter("tournament_round_id");
@@ -193,10 +199,6 @@ private Table resultTable;
       genderMenu.addMenuElement("F",iwrb.getLocalizedString("tournament.females","Female"));
       genderMenu.addMenuElement("B",iwrb.getLocalizedString("tournament.both","Both"));
       genderMenu.keepStatusOnAction();
-
-    if ( tournament.getNumberOfRounds() > 4 ) {
-      championship = true;
-    }
 
     String all = "";
     String allGroups = "0";
