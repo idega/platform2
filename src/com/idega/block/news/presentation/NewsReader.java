@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.58 2001/12/10 22:20:41 aron Exp $
+ * $Id: NewsReader.java,v 1.59 2001/12/11 13:45:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -317,7 +317,7 @@ public class NewsReader extends Block implements IWBlock {
   }
 
   private PresentationObject getNewsOverViewTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,IWContext iwc){
-    Table T = new Table(1,4);
+    Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
     T.setBorder(0);
@@ -389,16 +389,25 @@ public class NewsReader extends Block implements IWBlock {
       infoTable.add(hTo,3,2);
       infoTable.add(tTo,4,2);
 
-    T.add(newsInfo,1,1);
-    T.add(headLine,1,2);
-    T.add(infoTable,1,3);
+    int row = 1;
+    T.add(newsInfo,1,row++);
+    T.add(headLine,1,row++);
+    T.add(infoTable,1,row++);
 
-    Link moreLink = new Link(iwrb.getImage("more.gif"));
-    checkFromPage(moreLink);
-    moreLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
-    T.add(moreLink, 1, 4);
+    T.setHeight(row++,String.valueOf(iSpaceBetweenNewsAndBody));
+
+    if(moreImage !=null){
+      T.add(getMoreLink(moreImage,news.getID(),iwc), 1, row);
+      T.add(Text.getNonBrakingSpace(), 1, row);
+    }
+    if(showMoreText){
+      Text tMore = new Text(iwrb.getLocalizedString("more","More"));
+      tMore =  setInformationAttributes(tMore);
+      T.add(getMoreLink(tMore,news.getID(),iwc), 1, row);
+    }
+    row++;
     if(isAdmin){
-      T.add(getNewsAdminPart(news,iwc),1,4);
+      T.add(getNewsAdminPart(news,iwc),1,row);
     }
     return T;
   }
@@ -427,8 +436,8 @@ public class NewsReader extends Block implements IWBlock {
       Integer I;
       NewsHelper newsHelper;
       for (int i = 0; i < len; i++) {
-      if (numberOfExpandedNews == i)
-        collection = true;
+        if (numberOfExpandedNews == i)
+          collection = true; // show the rest as collection
         newsHelper = (NewsHelper) L.get(i);
         I = new Integer(i);
         if(objectsBetween != null && objectsBetween.containsKey(I)){
@@ -550,12 +559,7 @@ public class NewsReader extends Block implements IWBlock {
       }
 
       if ( headlineAsLink ) {
-        Link headlineLink = new Link(headLine);
-        checkFromPage(headlineLink);
-        headlineLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
-        if(viewPageId > 0)
-          headlineLink.setPage(viewPageId);
-        T.add(headlineLink, 1,row);
+        T.add(getMoreLink(headLine,news.getID(),iwc), 1,row);
       }
       else {
         T.add(headLine, 1, row);
