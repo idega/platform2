@@ -1,5 +1,5 @@
 /*
- * $Id: CampusPage.java,v 1.4 2001/08/27 08:28:16 aron Exp $
+ * $Id: CampusPage.java,v 1.5 2001/08/28 18:56:55 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.jmodule.object.textObject.Link;
 import is.idegaweb.campus.service.Menu;
 import is.idegaweb.campus.service.Title;
 import is.idegaweb.campus.service.Tabber;
+import is.idegaweb.campus.service.TitleIcons;
 import com.idega.idegaweb.IWBundle;
 
 
@@ -78,8 +79,8 @@ public class CampusPage extends MainPage{
     ref.setSubmitButtonAlignment("right");
     ref.addHelpButton();
 
-    addMenuTitle(new Image("/pics/titles/IS/menutitle.gif"));
-    addRightTitle(new Image("/pics/titles/IS/logintitle.gif"));
+    addMenuTitle(new TitleIcons(TitleIcons.MAINMENU));
+    addRightTitle(new TitleIcons(TitleIcons.LOGIN));
     addTopLeft(new Menu());
     addTopRight(login);
     addTopRightDivider();
