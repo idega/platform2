@@ -440,22 +440,31 @@ public class TourBookingForm extends TravelManager {
             table.add(pleaseBook,1,row);
             ++row;
 
+          String star = " * ";
+
           Text surnameText = (Text) theText.clone();
-              surnameText.setText(iwrb.getLocalizedString("travel.surname","surname"));
+              surnameText.setText(star);
+              surnameText.addToText(iwrb.getLocalizedString("travel.surname","surname"));
           Text lastnameText = (Text) theText.clone();
-              lastnameText.setText(iwrb.getLocalizedString("travel.last_name","last name"));
+              lastnameText.setText(star);
+              lastnameText.addToText(iwrb.getLocalizedString("travel.last_name","last name"));
           Text addressText = (Text) theText.clone();
-              addressText.setText(iwrb.getLocalizedString("travel.address","address"));
+              addressText.setText(star);
+              addressText.addToText(iwrb.getLocalizedString("travel.address","address"));
           Text areaCodeText = (Text) theText.clone();
-              areaCodeText.setText(iwrb.getLocalizedString("travel.area_code","area code"));
+              areaCodeText.setText(star);
+              areaCodeText.addToText(iwrb.getLocalizedString("travel.area_code","area code"));
           Text emailText = (Text) theText.clone();
-              emailText.setText(iwrb.getLocalizedString("travel.email","e-mail"));
+              emailText.setText(star);
+              emailText.addToText(iwrb.getLocalizedString("travel.email","e-mail"));
           Text telNumberText = (Text) theText.clone();
               telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
           Text cityText = (Text) theText.clone();
-              cityText.setText(iwrb.getLocalizedString("travel.city_sm","city"));
+              cityText.setText(star);
+              cityText.addToText(iwrb.getLocalizedString("travel.city_sm","city"));
           Text countryText = (Text) theText.clone();
-              countryText.setText(iwrb.getLocalizedString("travel.country_sm","country"));
+              countryText.setText(star);
+              countryText.addToText(iwrb.getLocalizedString("travel.country_sm","country"));
 
           DropdownMenu pickupMenu = null;
           TextInput roomNumber = null;
@@ -601,6 +610,7 @@ public class TourBookingForm extends TravelManager {
           subHeader = (Text) theBoldText.clone();
             subHeader.setFontColor(WHITE);
             subHeader.setText(iwrb.getLocalizedString("travel.booking_passenger_info","Passenger infomation"));
+            subHeader.addToText(star);
           table.add(subHeader,1,row);
           table.setAlignment(1,row,"left");
           ++row;
@@ -723,6 +733,7 @@ public class TourBookingForm extends TravelManager {
           subHeader = (Text) theBoldText.clone();
             subHeader.setFontColor(WHITE);
             subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
+            subHeader.addToText(star);
           table.add(subHeader,1,row);
           table.setAlignment(1,row,"left");
           ++row;
@@ -757,7 +768,15 @@ public class TourBookingForm extends TravelManager {
             //table.setColumnAlignment(2,"left");
             //table.setColumnAlignment(3,"right");
             //table.setColumnAlignment(4,"left");
+            Text starText = (Text) theText.clone();
+              starText.setFontColor(WHITE);
+              starText.setText(iwrb.getLocalizedString("travel.fields_marked_with_a_star","* Fields marked with a star must be filled."));
+
+            table.mergeCells(1,row,3,row);
+            table.add(starText,1,row);
             table.setAlignment(4,row,"right");
+
+
           }
           else {
             table.add(notAvailSeats,1,row);
@@ -881,7 +900,6 @@ public class TourBookingForm extends TravelManager {
   public int handleInsert(IWContext iwc) throws Exception{
     String action = iwc.getParameter(this.BookingAction);
     if (action != null) {
-      System.err.println("Action = "+action);
       if (action.equals(this.BookingParameter)) {
         return checkBooking(iwc);
       }else if (action.equals(this.parameterBookAnyway)) {
@@ -922,18 +940,13 @@ public class TourBookingForm extends TravelManager {
       try {
         _stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
       }catch (NumberFormatException n) {
-        System.err.println("YEAR  : "+year);
-        System.err.println("MONTH : "+month);
-        System.err.println("DAY   : "+day);
         n.printStackTrace(System.err);
       }
 
       String sBookingId = iwc.getParameter(this.parameterBookingId);
-      System.err.println("sBookingId "+sBookingId);
 
       int iBookingId = -1;
       if (sBookingId != null) iBookingId = Integer.parseInt(sBookingId);
-      System.err.println("iBookingId "+iBookingId);
 
       int returner = 0;
 
@@ -995,20 +1008,16 @@ public class TourBookingForm extends TravelManager {
         /*
         if (supplier != null) {
           if (iBookingId == -1) {
-            System.err.println("1");
             lbookingId = TourBooker.BookBySupplier(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
           }else {
-            System.err.println("2");
             lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
           }
             displayFormInternal = true;
         }else if (_reseller != null) {
             if (_reseller.getReferenceNumber().equals(referenceNumber)) {
               if (iBookingId == -1) {
-            System.err.println("3");
                 lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode, Booking.PAYMENT_TYPE_ID_VOUCHER);
               }else {
-            System.err.println("4");
                 lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_VOUCHER);
               }
               _reseller.addTo(GeneralBooking.class, iBookingId);
@@ -1073,9 +1082,8 @@ public class TourBookingForm extends TravelManager {
       }
 
 //      if (displayForm)
-      if (displayFormInternal)
+//      if (displayFormInternal)
 //      displayForm(iwc);
-  System.err.println("TourBookingForm displayForm shit");
 
 
       return returner;

@@ -40,6 +40,8 @@ public class ServiceOverview extends TravelManager {
   private String actionParameter = "service_overview_action";
   private String deleteParameter = "service_to_delete_id";
 
+  private Supplier supplier;
+
   private idegaCalendar cal = new idegaCalendar();
   TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
   String[] dayOfWeekName = new String[8];
@@ -60,6 +62,7 @@ public class ServiceOverview extends TravelManager {
 
   public void main(IWContext iwc) throws Exception{
       super.main(iwc);
+      supplier = super.getSupplier();
       init(iwc);
 
       if (super.isLoggedOn(iwc) ) {
@@ -214,8 +217,10 @@ public class ServiceOverview extends TravelManager {
             table.add("&nbsp;&nbsp;",1,row);
             table.add(book,1,row);
             table.add("&nbsp;&nbsp;",1,row);
-            table.add(getLink,1,row);
-            table.add("&nbsp;&nbsp;",1,row);
+            if (this.supplier != null) {
+              table.add(getLink,1,row);
+              table.add("&nbsp;&nbsp;",1,row);
+            }
             table.add(delete,1,row);
 
 
@@ -311,7 +316,7 @@ public class ServiceOverview extends TravelManager {
             activeDaysText.addToText(":");
             activeDaysText.setFontColor(super.BLACK);
 
-        Image imageToClone = new Image("/pics/mynd.gif");
+        Image imageToClone = iwrb.getImage("images/picture.gif");
         Image image;
 
         Service service;

@@ -321,11 +321,22 @@ public class ServiceDesigner extends TravelManager {
         this.removeService(iwc);
         this.priceCategoryCreation = null;
 
+        saveSuccessful();
+
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }
 
 
+  }
+
+  private void saveSuccessful() {
+    Text text = (Text) theText.clone();
+      text.setFontColor(WHITE);
+      text.setText(iwrb.getLocalizedString("travel.service_was_created","Service was created"));
+
+    add(Text.BREAK);
+    add(text);
   }
 
   private String getSessionServiceId(IWContext iwc) {

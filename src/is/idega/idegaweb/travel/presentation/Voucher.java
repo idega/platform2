@@ -27,6 +27,7 @@ import java.sql.SQLException;
 public class Voucher extends TravelManager {
 
   public static int width = 580;
+  public static final int voucherNumberChanger = 4098;
 
   private IWContext _iwc;
   private IWResourceBundle _iwrb;
@@ -56,6 +57,10 @@ public class Voucher extends TravelManager {
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
+  }
+
+  private int getVoucherNumber() {
+    return _booking.getID() + voucherNumberChanger;
   }
 
   private Text getBigText(String content) {
@@ -111,7 +116,8 @@ public class Voucher extends TravelManager {
       try {
         Table leftHeader = new Table();
           leftHeader.add(getSmallText(_iwrb.getLocalizedString("travel.NR","NR")),1,1);
-          leftHeader.add(getSmallText(":"),1,1);
+          leftHeader.add(getSmallText(" : "),1,1);
+          leftHeader.add(getSmallText(Integer.toString(getVoucherNumber())),1,1);
           leftHeader.add(getSmallText(_iwrb.getLocalizedString("travel.reference_number_show","Reference nr. ")),1,2);
           leftHeader.add(getSmallText(_booking.getReferenceNumber()),1,2);
         table.add(leftHeader,1,1);
@@ -133,11 +139,11 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
         table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.to_contractor","TO (contractor):")),1,2);
+        table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO :")),1,2);
         table.add(getText(_supplier.getName()),1,2);
         table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.address_lg","ADDRESS:")),1,2);
+        table.add(getText(_iwrb.getLocalizedString("travel.address_lg","ADDRESS :")),1,2);
         Address address = _supplier.getAddress();
         table.add(getText(address.getStreetName()),1,2);
         table.add(Text.BREAK,1,2);

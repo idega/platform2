@@ -646,20 +646,6 @@ public class Contracts extends TravelManager {
         table.add(pName,1,row);
 //        table.mergeCells(1,row,3,row);
 
-        if (products[i].getID() == productId) {
-          table.mergeCells(1,row,3,row);
-            form.add(new HiddenInput(this.parameterResellerId , Integer.toString(tReseller.getID())));
-            form.add(new HiddenInput(this.parameterProductId , Integer.toString(products[i].getID())));
-
-            table.setAlignment(4,row,"right");
-            temp = (Link) closeLook.clone();
-            table.add(temp,4,row);
-            table.add(Text.NON_BREAKING_SPACE,4,row);
-
-            ++row;
-            table.mergeCells(1,row,4,row);
-            table.add(viewContract(iwc,products[i]),1,row);
-        }else {
           if (supplier != null) {
             if (ResellerManager.isActiveContract(supplier.getID() , tReseller.getID(), products[i].getID())) {
               pIsActive = (Text) theBoldText.clone();
@@ -673,6 +659,21 @@ public class Contracts extends TravelManager {
               table.mergeCells(1,row,3,row);
             }
           }
+
+        if (products[i].getID() == productId) {
+//          table.mergeCells(1,row,3,row);
+            form.add(new HiddenInput(this.parameterResellerId , Integer.toString(tReseller.getID())));
+            form.add(new HiddenInput(this.parameterProductId , Integer.toString(products[i].getID())));
+
+            table.setAlignment(4,row,"right");
+            temp = (Link) closeLook.clone();
+            table.add(temp,4,row);
+            table.add(Text.NON_BREAKING_SPACE,4,row);
+
+            ++row;
+            table.mergeCells(1,row,4,row);
+            table.add(viewContract(iwc,products[i]),1,row);
+        }else {
           temp = (Link) closerLook.clone();
             temp.addParameter(this.parameterProductId, products[i].getID());
           table.setAlignment(4,row,"right");
@@ -927,9 +928,9 @@ public class Contracts extends TravelManager {
     Text tTimeframe = (Text) theText.clone();
       tTimeframe.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
     Text tValidUntil = (Text) theText.clone();
-      tValidUntil.setText("T - valid until");
+      tValidUntil.setText(iwrb.getLocalizedString("travel.valid_until","Valid until"));
     Text tDaysBefore = (Text) theText.clone();
-      tDaysBefore.setText("T - days before departure");
+      tDaysBefore.setText(iwrb.getLocalizedString("travel_days_before_departure","days before departure"));
     Text tfFromText = (Text) theText.clone();
       tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
     Text tfToText = (Text) theText.clone();
@@ -1114,10 +1115,15 @@ public class Contracts extends TravelManager {
                 SubmitButton deleter = new SubmitButton(iwrb.getImage("buttons/delete.gif"), this.sAction, this.paramaterDeleteContract);
                 infoTable.add(deleter,4,infoRow);
                 infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+
+                SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction,this.parameterSaveProductInfo);
+                infoTable.add(submit,4,infoRow);
+                infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
+              }else {
+                SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
+                infoTable.add(submit,4,infoRow);
+                infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
               }
-              SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/save.gif"),this.sAction,this.parameterSaveProductInfo);
-              infoTable.add(submit,4,infoRow);
-              infoTable.add(Text.NON_BREAKING_SPACE,4,infoRow);
             }
             infoTable.setAlignment(4,infoRow,"right");
             //table.mergeCells(1,row,3,row);

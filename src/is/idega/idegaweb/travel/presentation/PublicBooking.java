@@ -51,6 +51,7 @@ public class PublicBooking extends Block  {
   private String parameterSubmitBooking = "publicBookingSubmitBooking";
   private String parameterBookingVerified = "publicBookingBookingVerified";
 
+
   public PublicBooking() {
   }
 
@@ -596,22 +597,40 @@ public class PublicBooking extends Block  {
 
       Text display = getBoldTextWhite("");
       boolean success = false;
-      String heimild;
+      String heimild = "";
 
       try {
-        System.out.println("Starting TPOS test");
-        //com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
-        //heimild = t.doSale(ccNumber,ccMonth,ccYear,20000,"ISK");
+        float price = 0;
+        int total = 0;
+        int current = 0;
+
+        ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
+        for (int i = 0; i < pPrices.length; i++) {
+          try {
+            current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+          }catch (NumberFormatException n) {
+            current = 0;
+          }
+
+          total += current;
+          if (i == 0)
+          price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow());
+
+        }
+
+        System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
+        com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+        heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
         //System.out.println("heimild = " + heimild);
-        System.out.println("Ending TPOS test");
+        System.out.println("Ending TPOS test : "+idegaTimestamp.RightNow().toString());
         success = true;
-      }/*
+      }
       catch(com.idega.block.tpos.business.TPosException e) {
-        System.out.println("message = " + e.getErrorMessage());
-        System.out.println("number = " + e.getErrorNumber());
-        System.out.println("display = " + e.getDisplayError());
+        //System.out.println("message = " + e.getErrorMessage());
+        //System.out.println("number = " + e.getErrorNumber());
+        //System.out.println("display = " + e.getDisplayError());
         display.setText(e.getDisplayError());
-      }*/
+      }
       catch (Exception e) {
         e.printStackTrace(System.err);
       }
@@ -629,15 +648,20 @@ public class PublicBooking extends Block  {
           table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_booking_has_been_confirmed","your booking has been confirmed.")));
           table.add(Text.BREAK);
           table.add(Text.BREAK);
+          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_credidcard_authorization_number_is","Your creditcard authorization number is")));
+          table.add(getBoldTextWhite(" : "));
+          table.add(getBoldTextWhite(heimild));
+          table.add(Text.BREAK);
           table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.your_reference_number_is","Your reference number is")));
-          table.add(Text.BREAK);
-          table.add(Text.BREAK);
+          table.add(getBoldTextWhite(" : "));
           table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
           table.add(Text.BREAK);
+          //table.add(getBoldTextWhite(gBooking.getReferenceNumber()));
+          //table.add(Text.BREAK);
           table.add(Text.BREAK);
-          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write this number down else proceed to printing the voucher.")));
+          table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
 
-          Link printVoucher = new Link("Print voucher");
+          Link printVoucher = new Link(getBoldTextWhite("Print voucher"));
             printVoucher.addParameter(VoucherWindow.parameterBookingId, bookingId);
             printVoucher.setWindowToOpen(VoucherWindow.class);
 
