@@ -1625,24 +1625,23 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 		
 		if (teacherIDs != null) {
-			Collection teachers = null;
 			Collection newTeachers = null;
 			
 			try {
-				teachers = schoolClass.findRelatedUsers();
-			}
-			catch (IDORelationshipException e1) {
-				teachers = new ArrayList();
-			}
-			try {
 				newTeachers = getUserBusiness().getUsers(teacherIDs);
+				if (newTeachers == null)
+					newTeachers = new ArrayList();
 			}
 			catch (RemoteException e1) {
 				newTeachers = new ArrayList();
 			}
 			
-			newTeachers.removeAll(teachers);
-			teachers.removeAll(newTeachers);
+			try {
+				schoolClass.removeFromUser();
+			}
+			catch (IDORemoveRelationshipException e2) {
+				e2.printStackTrace();
+			}
 			
 			Iterator iter = newTeachers.iterator();
 			while (iter.hasNext()) {
@@ -1652,16 +1651,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				}
 				catch (IDOAddRelationshipException iare) {
 					iare.printStackTrace();
-				}
-			}
-			iter = teachers.iterator();
-			while (iter.hasNext()) {
-				User teacher = (User) iter.next();
-				try {
-					schoolClass.removeTeacher(teacher);
-				}
-				catch (IDORemoveRelationshipException irre) {
-					irre.printStackTrace();
 				}
 			}
 		}

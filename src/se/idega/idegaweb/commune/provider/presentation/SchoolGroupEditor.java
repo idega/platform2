@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.FinderException;
 
@@ -33,6 +34,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.util.SelectorUtility;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserChooser;
 
 /**
  * @author laddi
@@ -221,13 +223,15 @@ public class SchoolGroupEditor extends ProviderBlock {
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
 		table.setColumns(3);
-		table.setWidth(2, 6);
+		table.setWidth(2, 10);
+		table.setWidth(3, Table.HUNDRED_PERCENT);
 		form.add(table);
 		
 		int row = 1;
 		SelectorUtility util = new SelectorUtility();
 		
 		table.add(getSmallHeader(localize("group_name", "Name") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		TextInput name = (TextInput) getStyledInterface(new TextInput(PARAMETER_GROUP_NAME));
 		if (_group != null && _group.getSchoolClassName() != null)
 			name.setContent(_group.getSchoolClassName());
@@ -235,6 +239,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("group_type", "Type") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		Collection providerTypes = null;
 		try {
 			providerTypes = _provider.findRelatedSchoolTypes();
@@ -250,6 +255,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		
 		table.setHeight(row++, 3);
 		table.add(getSmallHeader(localize("school_season", "Season") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		Collection providerSeasons = null;
 		try {
 			providerSeasons = getSchoolBusiness().findAllSchoolSeasons();
@@ -261,7 +267,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		seasons.addMenuElementFirst("-1", "");
 		if (_group != null && _group.getSchoolSeasonId() != -1)
 			seasons.setSelectedElement(_group.getSchoolSeasonId());
-		table.add(seasons, 3, row);
+		table.add(seasons, 3, row++);
 		
 		Collection schoolYears = null;
 		try {
@@ -283,9 +289,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 				groupYears.add(_group.getSchoolYear());
 		}
 				
-		table.setHeight(row++, 6);
-		table.add(getSmallHeader(localize("school_years", "Years") + ":"), 1, row++);
-		table.setHeight(row++, 3);
+		table.setHeight(row++, 15);
+		table.add(getSmallHeader(localize("school_years", "Years") + ":"), 1, row);
+		table.setNoWrap(1, row);
 		
 		Iterator iter = schoolYears.iterator();
 		while (iter.hasNext()) {
@@ -294,13 +300,43 @@ public class SchoolGroupEditor extends ProviderBlock {
 			if (groupYears.contains(year))
 				box.setChecked(true);
 			
-			table.mergeCells(1, row, 3, row);
-			table.setCellpadding(1, row, 2);
-			table.add(box, 1, row);
-			table.add(Text.getNonBrakingSpace(), 1, row);
-			table.add(getSmallText(year.getSchoolYearName()), 1, row++);
+			table.setCellpadding(3, row, 2);
+			table.add(box, 3, row);
+			table.add(Text.getNonBrakingSpace(), 3, row);
+			table.add(getSmallText(year.getSchoolYearName()), 3, row++);
+		}
+		table.setHeight(row++, 15);
+		
+		List groupTeachers = new ArrayList();
+		if (_group != null) {
+			try {
+				groupTeachers = new ArrayList(_group.findRelatedUsers());
+			}
+			catch (IDORelationshipException e2) {
+				groupTeachers = new ArrayList();
+			}
 		}
 		
+		UserChooser chooser;
+		int size = groupTeachers.size();
+
+		for (int a = 0; a < 4; a++) {
+			if (a == 0) {
+				table.add(getSmallHeader(localize("teacher", "Teacher") + ":"), 1, row);
+				table.setNoWrap(1, row);
+			}
+			
+			chooser = new UserChooser(PARAMETER_TEACHERS+"_"+(a+1));
+			if (a < size) {
+				User teacher = (User) groupTeachers.get(a);
+				chooser.setSelected(teacher);
+			}
+			table.add(chooser, 3, row++);
+			
+			if ((a + 1) < 4)
+				table.setHeight(row++, 3);
+		}
+				
 		table.setHeight(row++, 12);
 		table.mergeCells(1, row, 3, row);
 		SubmitButton save = (SubmitButton) getButton(new SubmitButton(localize("save_group", "Save group")));
@@ -328,13 +364,20 @@ public class SchoolGroupEditor extends ProviderBlock {
 	private void saveGroup(IWContext iwc) {
 		String name = iwc.getParameter(PARAMETER_GROUP_NAME);
 		String[] years = iwc.getParameterValues(PARAMETER_SCHOOL_YEARS);
-		String[] teachers = iwc.getParameterValues(PARAMETER_TEACHERS);
+		String[] teachers = new String[4];
 		int typeID = -1;
 		if (iwc.isParameterSet(PARAMETER_TYPE_ID))
 			typeID = Integer.parseInt(iwc.getParameter(PARAMETER_TYPE_ID));
 		int seasonID = -1;
 		if (iwc.isParameterSet(PARAMETER_SEASON_ID))
 			seasonID = Integer.parseInt(iwc.getParameter(PARAMETER_SEASON_ID));
+		
+		for (int a = 1; a <= 4; a++) {
+			String teacher = "-1";
+			if (iwc.isParameterSet(PARAMETER_TEACHERS+"_"+a))
+				teacher = iwc.getParameter(PARAMETER_TEACHERS+"_"+a);
+			teachers[a-1] = teacher;
+		}
 		
 		try {
 			getSchoolBusiness().storeSchoolClass(_groupID, name, getSession().getProviderID(), typeID, seasonID, years, teachers);
