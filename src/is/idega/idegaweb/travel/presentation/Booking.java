@@ -823,11 +823,13 @@ public class Booking extends TravelManager {
 //      if (reseller != null) tbf.setReseller(reseller);
       bf.setTimestamp(stamp);
       if (_booking != null)  {
+      	System.out.println("[Booking] booking != null");
       	bf.setBooking(_booking);
       	bf.setTimestamp(new IWTimestamp(_booking.getBookingDate()));	
       }
       return bf.getBookingForm(iwc);
     }catch (Exception e) {
+    	e.printStackTrace(System.err);
       return new Form();
     }
   }
