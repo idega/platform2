@@ -116,92 +116,94 @@ public class CitizenBMPBean extends UserBMPBean {
 		}
 	}
 	
-	
-	public Collection ejbFindAllCitizensRegisteredToChildCare(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateInRegistrationPeriode, Date lastDateInRegistrationPeriode) throws FinderException, IDOLookupException{
-		//select usr.* from ic_user usr, comm_childcare care where usr.DATE_OF_BIRTH>='2002-03-01' AND usr.DATE_OF_BIRTH<='2002-03-02' and care.child_id=usr.ic_user_id and care.from_date <='lastDate' and (care.REJECTION_DATE is null or care.REJECTION_DATE > 'firstDate' )
-		try {
-			//preparing
-		  	
-			IDOEntityDefinition childCareAppDef = IDOLookup.getEntityDefinitionForClass(ChildCareApplication.class);
-			IDOEntityDefinition thisDef = this.getEntityDefinition();
-			  	
-			String[] tables = new String[2];
-			String[] variables = new String[2];
-			//table name
-			tables[0] = thisDef.getSQLTableName();
-			//as variable
-			variables[0] = "usr";
-			//table name
-			tables[1] = childCareAppDef.getSQLTableName();
-			//as variable
-			variables[1] = "care";
-			  	
-			//constructing query
-			IDOQuery query = idoQuery();
-			//select
-			query.appendSelect();
-			query.append(variables[0]);
-			query.append(".* ");
-			//from
-			query.appendFrom(tables,variables);
-			//where
-			query.appendWhere();
-			query.append(variables[0]);
-			query.append(".");
-			query.append(getColumnNameDateOfBirth());
-			query.appendGreaterThanOrEqualsSign();
-			query.append(firstBirthDateInPeriode);
-			//and
-			query.appendAnd();
-			query.append(variables[0]);
-			query.append(".");
-			query.append(getColumnNameDateOfBirth());
-			query.appendLessThanOrEqualsSign();
-			query.append(lastBirthDateInPeriode);
-			
-			// and care.child_id=usr.ic_user_id 
-			query.appendAnd();
-			query.append(variables[1]);
-			query.append(".");
-			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_CHILD_ID).getSQLFieldName());
-			query.appendEqualSign();
-			query.append(variables[0]);
-			query.append(".");
-			query.append(thisDef.getPrimaryKeyDefinition().getField().getSQLFieldName());
-		
-			//and care.from_date <='lastDate' 
-			query.appendAnd();
-			query.append(variables[1]);
-			query.append(".");
-			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_FROM_DATE).getSQLFieldName());
-			query.appendLessThanOrEqualsSign();
-			query.append(lastDateInRegistrationPeriode);
-			
-			//and (care.REJECTION_DATE is null 
-			query.appendAnd();
-			query.appendLeftParenthesis();
-			query.append(variables[1]);
-			query.append(".");
-			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_REJECTION_DATE).getSQLFieldName());
-			query.appendIsNull();
-			
-			//or care.REJECTION_DATE > 'firstDate' )
-			query.appendOr();
-			query.append(variables[1]);
-			query.append(".");
-			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_REJECTION_DATE).getSQLFieldName());
-			query.appendGreaterThanSign();
-			query.append(firstDateInRegistrationPeriode);
-			query.appendRightParenthesis();
-			  	
-			System.out.println("SQL -> "+this.getClass()+":"+query);
-			return idoFindPKsByQuery(query); 
-		  	
-		} catch (IDOCompositPrimaryKeyException e) {
-			e.printStackTrace();
-			return ListUtil.getEmptyList();
-		}
-	}
+
+
+//   WRONG	
+//	public Collection ejbFindAllCitizensRegisteredToChildCare(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateInRegistrationPeriode, Date lastDateInRegistrationPeriode) throws FinderException, IDOLookupException{
+//		//select usr.* from ic_user usr, comm_childcare care where usr.DATE_OF_BIRTH>='2002-03-01' AND usr.DATE_OF_BIRTH<='2002-03-02' and care.child_id=usr.ic_user_id and care.from_date <='lastDate' and (care.REJECTION_DATE is null or care.REJECTION_DATE > 'firstDate' )
+//		try {
+//			//preparing
+//		  	
+//			IDOEntityDefinition childCareAppDef = IDOLookup.getEntityDefinitionForClass(ChildCareApplication.class);
+//			IDOEntityDefinition thisDef = this.getEntityDefinition();
+//			  	
+//			String[] tables = new String[2];
+//			String[] variables = new String[2];
+//			//table name
+//			tables[0] = thisDef.getSQLTableName();
+//			//as variable
+//			variables[0] = "usr";
+//			//table name
+//			tables[1] = childCareAppDef.getSQLTableName();
+//			//as variable
+//			variables[1] = "care";
+//			  	
+//			//constructing query
+//			IDOQuery query = idoQuery();
+//			//select
+//			query.appendSelect();
+//			query.append(variables[0]);
+//			query.append(".* ");
+//			//from
+//			query.appendFrom(tables,variables);
+//			//where
+//			query.appendWhere();
+//			query.append(variables[0]);
+//			query.append(".");
+//			query.append(getColumnNameDateOfBirth());
+//			query.appendGreaterThanOrEqualsSign();
+//			query.append(firstBirthDateInPeriode);
+//			//and
+//			query.appendAnd();
+//			query.append(variables[0]);
+//			query.append(".");
+//			query.append(getColumnNameDateOfBirth());
+//			query.appendLessThanOrEqualsSign();
+//			query.append(lastBirthDateInPeriode);
+//			
+//			// and care.child_id=usr.ic_user_id 
+//			query.appendAnd();
+//			query.append(variables[1]);
+//			query.append(".");
+//			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_CHILD_ID).getSQLFieldName());
+//			query.appendEqualSign();
+//			query.append(variables[0]);
+//			query.append(".");
+//			query.append(thisDef.getPrimaryKeyDefinition().getField().getSQLFieldName());
+//		
+//			//and care.from_date <='lastDate' 
+//			query.appendAnd();
+//			query.append(variables[1]);
+//			query.append(".");
+//			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_FROM_DATE).getSQLFieldName());
+//			query.appendLessThanOrEqualsSign();
+//			query.append(lastDateInRegistrationPeriode);
+//			
+//			//and (care.REJECTION_DATE is null 
+//			query.appendAnd();
+//			query.appendLeftParenthesis();
+//			query.append(variables[1]);
+//			query.append(".");
+//			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_REJECTION_DATE).getSQLFieldName());
+//			query.appendIsNull();
+//			
+//			//or care.REJECTION_DATE > 'firstDate' )
+//			query.appendOr();
+//			query.append(variables[1]);
+//			query.append(".");
+//			query.append(childCareAppDef.findFieldByUniqueName(ChildCareApplication.FIELD_REJECTION_DATE).getSQLFieldName());
+//			query.appendGreaterThanSign();
+//			query.append(firstDateInRegistrationPeriode);
+//			query.appendRightParenthesis();
+//			  	
+//			System.out.println("SQL -> "+this.getClass()+":"+query);
+//			return idoFindPKsByQuery(query); 
+//		  	
+//		} catch (IDOCompositPrimaryKeyException e) {
+//			e.printStackTrace();
+//			return ListUtil.getEmptyList();
+//		}
+//	}
 	
 	
 	

@@ -100,13 +100,14 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	
 	public ReportableCollection getCitizensRelatedToChildCareOrSchoolAndHaveChangedStatusInSelectedPeriod(Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode, Date firstBirthDateInPeriode, Date lastBirthDateInPeriode) throws RemoteException, CreateException, FinderException{
 		ReportableCollection rColl = null;
-		
-		rColl = getCitizensRelatedToChildCareAndHaveChangedStatusInSelectedPeriod(firstBirthDateInPeriode,lastBirthDateInPeriode,firstDateOfContitionInPeriode,lastDateOfConditionInPeriode);
+
+//WRONG - enough to check relation to school, child care is registered there to	
+//		rColl = getCitizensRelatedToChildCareAndHaveChangedStatusInSelectedPeriod(firstBirthDateInPeriode,lastBirthDateInPeriode,firstDateOfContitionInPeriode,lastDateOfConditionInPeriode);
 		
 		try {
 			Collection seasons = ((SchoolSeasonHome)IDOLookup.getHome(SchoolSeason.class)).findSchoolSeasonsActiveInTimePeriod(firstDateOfContitionInPeriode,lastDateOfConditionInPeriode);
 			Iterator iter = seasons.iterator();
-			if(rColl == null && iter.hasNext()){
+			if(iter.hasNext()){
 				rColl = getCitizensRelatedToSchoolAndHaveChangedStatusInSelectedPeriod((SchoolSeason)iter.next(),firstBirthDateInPeriode,lastBirthDateInPeriode,firstDateOfContitionInPeriode,lastDateOfConditionInPeriode);
 			}
 			while (iter.hasNext()) {
@@ -358,12 +359,14 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		return filterOutCitizensAndAddToReportDataSource(reportData,registeredCitizens,firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 	}
 	
-	public ReportableCollection getCitizensRelatedToChildCareAndHaveChangedStatusInSelectedPeriod(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException{
-		ReportableCollection reportData = new ReportableCollection();		
-
-		Collection registeredCitizens = ((CitizenHome)IDOLookup.getHome(Citizen.class)).findAllCitizensRegisteredToChildCare(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
-		return filterOutCitizensAndAddToReportDataSource(reportData,registeredCitizens,firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
-	}
+	
+//	WRONG
+//	public ReportableCollection getCitizensRelatedToChildCareAndHaveChangedStatusInSelectedPeriod(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException{
+//		ReportableCollection reportData = new ReportableCollection();		
+//
+//		Collection registeredCitizens = ((CitizenHome)IDOLookup.getHome(Citizen.class)).findAllCitizensRegisteredToChildCare(firstBirthDateInPeriode, lastBirthDateInPeriode, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//		return filterOutCitizensAndAddToReportDataSource(reportData,registeredCitizens,firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+//	}
 	
 	
 	private ReportableCollection filterOutCitizensAndAddToReportDataSource(ReportableCollection reportData, Collection citizenCollection,Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) throws RemoteException, CreateException, FinderException{

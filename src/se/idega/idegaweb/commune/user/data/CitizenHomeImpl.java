@@ -15,12 +15,12 @@ public class CitizenHomeImpl extends com.idega.data.IDOFactory implements Citize
  }
 
 
-public java.util.Collection findAllCitizensRegisteredToChildCare(java.sql.Date p0,java.sql.Date p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException,com.idega.data.IDOLookupException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CitizenBMPBean)entity).ejbFindAllCitizensRegisteredToChildCare(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getIDOEntityListForPrimaryKeys(ids);
-}
+//public java.util.Collection findAllCitizensRegisteredToChildCare(java.sql.Date p0,java.sql.Date p1,java.sql.Date p2,java.sql.Date p3)throws javax.ejb.FinderException,com.idega.data.IDOLookupException{
+//	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+//	java.util.Collection ids = ((CitizenBMPBean)entity).ejbFindAllCitizensRegisteredToChildCare(p0,p1,p2,p3);
+//	this.idoCheckInPooledEntity(entity);
+//	return this.getIDOEntityListForPrimaryKeys(ids);
+//}
 
 public java.util.Collection findAllCitizensRegisteredToSchool(com.idega.block.school.data.SchoolSeason p0,java.sql.Date p1,java.sql.Date p2)throws javax.ejb.FinderException,com.idega.data.IDOLookupException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
