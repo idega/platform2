@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import com.idega.core.contact.data.Email;
 import com.idega.core.location.data.Address;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -128,29 +129,13 @@ public class MemberOverview extends Block {
 		Text phoneLabel = new Text(_iwrb.getLocalizedString("member_overview_phone", "Phone: "));
 		phoneLabel.setBold();
 		
-		String clubs = null;
+		String clubs = getClubList();
 		Text clubsLabel = new Text(_iwrb.getLocalizedString("member_overview_clubs", "Clubs: "));
 		clubsLabel.setBold();
-		List clubList = _data.getClubList();
-		int clCount = clubList.size();
-		if(clubList != null && clCount>0) {
-			StringBuffer clubListBuf = new StringBuffer();
-			boolean first = true;
-			for(int i = 0; i<clCount; i++) {
-				if(!first) {
-					clubListBuf.append(", ");
-				} else {
-					first = false;
-				}
-				String clubName = (String) clubList.get(i);
-				if(clubName == null) {
-					clubName = "";
-				}
-				clubListBuf.append(clubName);
-			}
-			
-			clubs = clubListBuf.toString();
-		}
+		
+		Table emails = getEmailTable(user);
+		Text emailLabel = new Text(_iwrb.getLocalizedString("member_overview_email", "Email: "));
+		emailLabel.setBold();
 		
 		user.getSystemImageID();
 		
@@ -181,10 +166,32 @@ public class MemberOverview extends Block {
 		table.add(phone, 2, row++);
 		table.add(clubsLabel, 1, row);
 		table.add(clubs, 2, row++);
+		table.add(emailLabel, 1, row);
+		table.mergeCells(2, row, 2, row+emails.getRows());
+		table.add(emails, 2, row++);
 		if(image!=null) {
 			table.mergeCells(3, 1, 3, row-1);
 			table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_MIDDLE);
 			table.add(image, 3, 1);
+		}
+		return table;
+	}
+	
+	private Table getEmailTable(User user) {
+		Table table = new Table();
+		int row = 1;
+		try {
+			Iterator emailIter = user.getEmails().iterator();
+			while(emailIter.hasNext()) {
+				Email email = (Email) emailIter.next();
+				Text address = new Text(email.getEmailAddress());
+				Link link = new Link(address);
+				link.setURL("mailto:" + address);
+				link.setSessionId(false);
+				table.add(link, 1, row++);
+			}
+		} catch(Exception e) {
+			// don't give a pair of donkeys kiddneys, most likely means there are no emails for user
 		}
 		return table;
 	}
@@ -305,6 +312,29 @@ public class MemberOverview extends Block {
 			row++;
 		}
 		return row;
+	}
+	
+	private String getClubList() {
+		String result = null;
+		List clubList = _data.getClubList();
+		int clCount = clubList.size();
+		if(clubList != null && clCount>0) {
+			StringBuffer clubListBuf = new StringBuffer();
+			for(int i = 0; i<clCount; i++) {
+				if(clubListBuf.length()>0) {
+					clubListBuf.append(", ");
+				}
+				String clubName = (String) clubList.get(i);
+				if(clubName == null) {
+					clubName = "";
+				}
+				clubListBuf.append(clubName);
+			}
+			
+			result = clubListBuf.toString();
+		}
+		
+		return result;
 	}
 	
 	public String emptyIfNull(String str) {

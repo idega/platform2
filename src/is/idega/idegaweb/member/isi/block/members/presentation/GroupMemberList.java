@@ -82,40 +82,44 @@ public class GroupMemberList extends Block {
 		int group_id = Integer.parseInt(group.getPrimaryKey().toString());
 		while(userIter.hasNext()) {
 			User user = (User) userIter.next();
-			
-			int user_id = Integer.parseInt(user.getPrimaryKey().toString());
-			int column = 1;
-			String color = getColor();
-			
-			String name = user.getName();
-			System.out.println("Listing user " + name);
-			table.add(name, column, row);
-			table.setColor(column++, row, color);
-			
-			if(showStatus) {
-				String status = "";
-				try {
-					int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
-					if(status_id != -1) {
-						Status st = (Status) IDOLookup.findByPrimaryKey(Status.class, status_id);
-						status = st.getStatusKey();
+			try {
+				int user_id = Integer.parseInt(user.getPrimaryKey().toString());
+				int column = 1;
+				String color = getColor();
+				
+				String name = user.getName();
+				System.out.println("Listing user " + name);
+				table.add(name, column, row);
+				table.setColor(column++, row, color);
+				
+				if(showStatus) {
+					String status = "";
+					try {
+						int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
+						if(status_id != -1) {
+							Status st = (Status) IDOLookup.findByPrimaryKey(Status.class, status_id);
+							status = st.getStatusKey();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
+					if(status.length()>0) {
+						status = _iwrb.getLocalizedString("member_status_" + status, "");
+					}
+					table.add(status, column, row);
+					table.setColor(column++, row, color);
 				}
-				if(status.length()>0) {
-					status = _iwrb.getLocalizedString("member_status_" + status, "");
+				if(showGroup) {
+					String groupNames = getGroupNamesForTrainer(user, division);
+					table.add(groupNames, column, row);
+					table.setColor(column++, row, color);
 				}
-				table.add(status, column, row);
-				table.setColor(column++, row, color);
+				
+				row++;
+			} catch(Exception e) {
+				System.out.println("Exception lising user " + user.getName());
+				e.printStackTrace(); 
 			}
-			if(showGroup) {
-				String groupNames = getGroupNamesForTrainer(user, division);
-				table.add(groupNames, column, row);
-				table.setColor(column++, row, color);
-			}
-			
-			row++;
 		}
 		
 		return table;
