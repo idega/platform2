@@ -245,7 +245,7 @@ public class MessengerApplet extends Applet implements Runnable{
     ObjectOutputStream outputToServlet = null;
 
     try{
-      System.out.println("sending packets");
+
       if( isfirstRun ){
         packetToServlet = new Packet();
         packetToServlet.addProperty(new Property(sessionId,userId));
@@ -254,17 +254,18 @@ public class MessengerApplet extends Applet implements Runnable{
       }
 
       if( packetToServlet != null ){
+        System.out.println("sending packets");
         outputToServlet = new ObjectOutputStream(conn.getOutputStream());
         // serialize the object
         outputToServlet.writeObject(packetToServlet);
 
         outputToServlet.flush();
         outputToServlet.close();
+
+        System.out.println("Sending Complete.");
       }
 
-      packetToServlet = null;
-      System.out.println("Sending Complete.");
-    }
+      packetToServlet = null;    }
     catch (IOException e){
         System.out.println(e.getMessage());
         e.printStackTrace(System.err);
