@@ -11,6 +11,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.ui.GenericButton;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author laddi
@@ -22,7 +23,7 @@ public class PrognosisViewer extends ChildCareBlock {
 	 */
 	public void init(IWContext iwc) throws Exception {
 		if (getSession().hasPrognosis()) {
-			add(getPrognosisTable());
+			add(getPrognosisTable(iwc));
 			add(new Break());
 			add(getAdminButton());
 		}
@@ -36,31 +37,36 @@ public class PrognosisViewer extends ChildCareBlock {
 		}
 	}
 	
-	public Table getPrognosisTable() throws RemoteException {
+	public Table getPrognosisTable(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		table.setColumns(2);
+		table.setColumns(3);
 		table.setRows(3);
 		table.setRowColor(1, getHeaderColor());
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 		int row = 1;
 		int column = 1;
 		
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(getSession().getChildCareID());
+		IWTimestamp stamp = new IWTimestamp(prognosis.getUpdatedDate());
 			
 		table.add(getLocalizedSmallHeader("child_care.prognosis","Prognosis"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.placings","Placings"), column, row++);
+		table.add(getLocalizedSmallHeader("child_care.placings","Placings"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), column, row++);
 		column = 1;
 		
 		table.setRowColor(row, getZebraColor1());
 		table.add(getLocalizedSmallText("child_care.three_months_prognosis","Three months prognosis"), column++, row);
-		table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPrognosis())), column, row++);
+		table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPrognosis())), column++, row);
+		table.add(getSmallText(stamp.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
 		column = 1;
 		
 		table.setRowColor(row, getZebraColor2());
 		table.add(getLocalizedSmallText("child_care.one_year_prognosis","Twelve months prognosis"), column++, row);
-		table.add(getSmallText(String.valueOf(prognosis.getOneYearPrognosis())), column, row++);
+		table.add(getSmallText(String.valueOf(prognosis.getOneYearPrognosis())), column++, row);
+		table.add(getSmallText(stamp.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
 
 		return table;
 	}
