@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.48 2003/07/24 20:48:10 aron Exp $
+ * $Id: CampusAllocator.java,v 1.49 2003/07/24 20:55:17 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -54,6 +54,7 @@ import com.idega.block.building.data.Floor;
 import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
@@ -223,23 +224,22 @@ public class CampusAllocator extends Block implements Campus {
 				}
 				else if(iwc.isParameterSet("reactivate_waitinglist")){
 					Integer wID = new Integer(iwc.getParameter("reactivate_waitinglist"));
-					try {
-						WaitingList wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(wID);
-						wl.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.NO);
-						wl.store();
-					}
-					catch (IDOLookupException e) {
-						e.printStackTrace();
-					}
-					catch (EJBException e) {
-						e.printStackTrace();
-					}
-					catch (FinderException e) {
-						e.printStackTrace();
-					}
-					catch (RemoveException e) {
-						e.printStackTrace();
-					}
+				try {
+					
+					WaitingList wl = ((WaitingListHome) IDOLookup.getHome(WaitingList.class)).findByPrimaryKey(wID);
+					wl.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.NO);
+					wl.store();
+					
+				}
+				catch (IDOLookupException e) {
+					e.printStackTrace();
+				}
+				catch (IDOStoreException e) {
+					e.printStackTrace();
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
 					Frame.add(getWaitingList(iTypeId, iComplexId, -1, iwc), 1, row);
 										row++;
 										Frame.add(getColorButtonInfo(),1,row);
