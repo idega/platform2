@@ -12,6 +12,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOEntity;
+import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.Group;
@@ -178,6 +179,10 @@ public class WorkReportGroupBMPBean extends GenericEntity implements WorkReportG
 	
 	public String getEmail(){
 		return getStringColumnValue(COLUMN_NAME_EMAIL);
+	}
+	
+	public Collection getMembers() throws IDOException {
+		return idoGetRelatedEntities(WorkReportMember.class);
 	}
 	
 	public void addEntity(IDOEntity entity) throws IDOAddRelationshipException{

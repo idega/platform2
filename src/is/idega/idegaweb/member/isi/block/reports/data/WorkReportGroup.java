@@ -5,6 +5,7 @@ public interface WorkReportGroup extends com.idega.data.IDOEntity
 {
  public void addEntity(com.idega.data.IDOEntity p0)throws com.idega.data.IDOAddRelationshipException;
  public java.lang.String getEmail();
+ public java.util.Collection getMembers()throws com.idega.data.IDOException;
  public java.lang.String getFax();
  public java.lang.Integer getGroupId();
  public java.lang.String getGroupType();
