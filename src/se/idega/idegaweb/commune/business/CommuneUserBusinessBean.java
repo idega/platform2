@@ -56,9 +56,7 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
     User user;
     try{
       user = getUserBusiness().getUserHome().findByPersonalID(personalID);
-      user.setFirstName(firstName);
-      user.setMiddleName(middleName);
-      user.setLastName(lastName);
+      user.setFullName(firstName+" "+middleName+" "+lastName);
       user.store();
     }
     catch(FinderException ex){
