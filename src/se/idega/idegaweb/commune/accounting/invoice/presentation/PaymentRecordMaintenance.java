@@ -8,6 +8,7 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.data.ICPage;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
@@ -66,11 +67,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/22 20:50:38 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/23 09:08:14 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.42 $
+ * @version $Revision: 1.43 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -210,7 +211,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		= new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 	private final static Font SANSSERIF_FONT
 		= FontFactory.getFont (FontFactory.HELVETICA, 9);
-	
+
+	private ICPage providerAuthorizationPage = null;
+	private ICPage createPaymentPage = null;
 	
 	/**
 	 * Init is the event handler of InvoiceCompilationEditor
@@ -808,13 +811,14 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 									 1, row++);
 				table.setHeight (row++, 12);
 				table.mergeCells (1, row, columnCount, row);
-				final SubmitButton providerConfirmButton = new SubmitButton
-						(localize (PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT), "ib_page", "1344");
-				table.add (getButton (providerConfirmButton), 1, row);
+				addButtonWithPageToOpen
+						(table, 1, row, PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
+						 providerAuthorizationPage, "providerAuthorizationPage");
 				table.add (Text.getNonBrakingSpace(), 1, row);
-				table.add (getSubmitButton (0, NEW_KEY, NEW_DEFAULT), 1, row);
+				addButtonWithPageToOpen	(table, 1, row, NEW_KEY, NEW_DEFAULT,
+																 createPaymentPage, "createPaymentPage");
 				table.add (Text.getNonBrakingSpace(), 1, row);
-				table.add (getSubmitButton (0, REMOVE_KEY, REMOVE_DEFAULT), 1, row);
+				//table.add (getSubmitButton (0, REMOVE_KEY, REMOVE_DEFAULT), 1, row);
 			} else {
 				addSmallText (table, 1, row++, NO_PAYMENT_RECORDS_FOUND_KEY,
 											NO_PAYMENT_RECORDS_FOUND_DEFAULT);
@@ -828,6 +832,42 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		add (createMainTable
 				 (localize (PAYMENT_HEADER_KEY, PAYMENT_HEADER_DEFAULT),
 					outerTable));
+	}
+
+	private void addButtonWithPageToOpen
+		(final Table table, final int col, final int row, final String key,
+		 final String label, final ICPage page, final String propertyName) {
+		final SubmitButton button = getSubmitButton (0, key, label);
+		if (null != page) {
+			System.err.println ("### getDeleted() " + page.getDeleted() );
+			System.err.println ("### getDeletedBy() " + page.getDeletedBy() );
+			System.err.println ("### getDeletedWhen() " + page.getDeletedWhen() );
+			System.err.println ("### getFile() " + page.getFile() );
+			System.err.println ("### getLockedBy() " + page.getLockedBy() );
+			System.err.println ("### getName() " + page.getName() );
+			System.err.println ("### getPageValue() " + page.getPageValue() );
+			System.err.println ("### getPageValueForWrite() " + page.getPageValueForWrite() );
+			System.err.println ("### getSubType() " + page.getSubType() );
+			System.err.println ("### getTemplateId() " + page.getTemplateId() );
+			System.err.println ("### getTreeOrder() " + page.getTreeOrder() );
+			System.err.println ("### getType() " + page.getType() );
+			System.err.println ("### isCategory() " + page.isCategory() );
+			System.err.println ("### isDraft() " + page.isDraft() );
+			System.err.println ("### isDynamicTriggeredPage() " + page.isDynamicTriggeredPage() );
+			System.err.println ("### isDynamicTriggeredTemplate() " + page.isDynamicTriggeredTemplate() );
+			System.err.println ("### isFolder() " + page.isFolder() );
+			System.err.println ("### isLeaf() " + page.isLeaf() );
+
+			System.err.println ("### isPage() " + page.isPage() );
+			System.err.println ("### isTemplate() " + page.isTemplate() );
+			log ("################ set page to open: " + page);
+			button.setPageToOpen (page);
+			log ("################ after page to open");
+			table.add (button, col, row);
+		} else {
+			logError ("Property " + propertyName + " must be set in block "
+								+ getClass ());
+		}
 	}
 	
 	private Table getDetailedPaymentRecordListTable
@@ -1757,6 +1797,22 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		}
 	}
 	
+	public ICPage getProviderAuthorizationPage () {
+		return providerAuthorizationPage;
+	}
+	
+	public void setProviderAuthorizationPage (final ICPage page) {
+		providerAuthorizationPage = page;
+	}
+
+	public ICPage getCreatePaymentPage () {
+		return createPaymentPage;
+	}
+	
+	public void setCreatePaymentPage (final ICPage page) {
+		createPaymentPage = page;
+	}
+
 	private SchoolCommuneSession getSchoolCommuneSession
 		(final IWContext context) throws RemoteException {
 		return (SchoolCommuneSession) IBOLookup.getServiceInstance
