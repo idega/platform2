@@ -1889,6 +1889,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public Collection getRejectedApplicationsByProvider(Integer providerID, String fromDateOfBirth, String toDateOfBirth, String fromDate, String toDate) throws FinderException {
+		if (fromDateOfBirth.length() == 0) {
+			fromDateOfBirth = null;
+		}
+		if (toDateOfBirth.length() == 0) {
+			toDateOfBirth = null;
+		}
+		if (fromDate.length() == 0) {
+			fromDate = null;
+		}
+		if (toDate.length() == 0) {
+			toDate = null;
+		}
 		String applicationStatus[] = { String.valueOf(getStatusRejected()), String.valueOf(getStatusTimedOut()), String.valueOf(getStatusDenied()) };
 		return getChildCareApplicationHome().findApplicationsByProviderAndStatus(providerID, applicationStatus, fromDateOfBirth != null ? new IWTimestamp(fromDateOfBirth).getDate() : null, toDateOfBirth != null ? new IWTimestamp(toDateOfBirth).getDate() : null, fromDate != null ? new IWTimestamp(fromDate).getDate() : null, toDate != null ? new IWTimestamp(toDate).getDate() : null);
 	}
