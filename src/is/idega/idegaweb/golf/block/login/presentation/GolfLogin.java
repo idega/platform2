@@ -16,6 +16,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Label;
@@ -327,7 +328,9 @@ public class GolfLogin extends GolfBlock {
 			
 			int row = 1;
 			
-			myTable.add(userName, 1, row++);
+			Paragraph p = new Paragraph();
+			p.add(userName);
+			myTable.add(p, 1, row++);
 			
 			if(_logOnPage>0){
 				Link go = new Link(getResourceBundle().getLocalizedString("login.forward","forward >"));
@@ -344,11 +347,11 @@ public class GolfLogin extends GolfBlock {
 				}
 			}
 			
-			myTable.add(logout, 1,row++);
+			myForm.add(logout);
 
-			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "logoff"));
-			myForm.add(myTable);
-			add(myForm);
+			myForm.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "logoff"));
+			myTable.add(myForm, 1,row++);
+			add(myTable);
 	}
 
 
