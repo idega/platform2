@@ -197,7 +197,7 @@ public class RunResultViewer extends Block {
 		Iterator runnerIter = runners.iterator();
 		while (runnerIter.hasNext()) {
 			User runner = (User) runnerIter.next();
-			Run run = null; // @TODO (jonas) get run using biz method birna will create
+			Run run = getRunBiz().getRunObjByUserIDandDistanceID(((Integer) runner.getPrimaryKey()).intValue(), ((Integer) distance.getPrimaryKey()).intValue()); // @TODO (jonas) get run using biz method birna will create
 			_runToRunnerMap.put(run, runner);
 			runs.add(run);
 		}
