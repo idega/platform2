@@ -3,6 +3,7 @@ package com.idega.projects.golf;
 import java.util.*;
 import java.sql.*;
 import com.idega.projects.golf.entity.*;
+import com.idega.util.idegaTimestamp;
 
 public class ResultDataHandler {
 
@@ -132,6 +133,7 @@ public class ResultDataHandler {
             r.addRoundNumber(roundNumber);
           }
 
+          r.setDate(new idegaTimestamp(RS2.getTimestamp("scorecard_date")));
           r.addStroke(stroke);
           r.addPoints(point);
           r.addPar(par);
@@ -182,7 +184,7 @@ public class ResultDataHandler {
 
   private String getMemberSQLString(int memberId) {
     StringBuffer sql = new StringBuffer();
-      sql.append("select round_number,tournament_group_id,holes,rounds,stroke_count,point_count,hole_par,");
+      sql.append("select round_number,tournament_group_id,holes,rounds,stroke_count,point_count,hole_par,scorecard_date,");
       sql.append(" cast(( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par ) as numeric(3,0)) as tournament_handicap");
       sql.append(" from scorecard s, stroke st, tee t, tournament_round tr, tournament tou, field f, tournament_member tm");
       sql.append(" where t.tee_id = st.tee_id");

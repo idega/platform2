@@ -2,6 +2,7 @@ package com.idega.projects.golf;
 
 import java.util.*;
 import com.idega.projects.golf.business.TournamentController;
+import com.idega.util.idegaTimestamp;
 
 public class ResultsCollector {
   public static boolean strokeGameType = true;
@@ -24,6 +25,7 @@ public class ResultsCollector {
   private double lastThree_ = 0;
   private double last_ = 0;
   private int realLastNine_ = 0;
+  private idegaTimestamp scorecardDate = null;
 
   private boolean sortByRound = false;
   private int resultType_ = 0;
@@ -111,6 +113,10 @@ public class ResultsCollector {
       par_ = new Vector();
 
     par_.add(new Integer(par));
+  }
+
+  public void setDate(idegaTimestamp date) {
+    scorecardDate = date;
   }
 
   public void setMemberId(int memberId) {
@@ -348,6 +354,10 @@ public class ResultsCollector {
 
   public String getLastName() {
     return lastName_;
+  }
+
+  public idegaTimestamp getDate() {
+    return scorecardDate;
   }
 
   public int getMemberId() {
