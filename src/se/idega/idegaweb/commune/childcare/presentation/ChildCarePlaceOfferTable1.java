@@ -11,6 +11,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.block.school.data.School;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -71,9 +72,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 		}
 	}
 
-	public ChildCarePlaceOfferTable1(IWContext iwc, ChildCareCustomerApplicationTable page, SortedSet applications, boolean hasOffer, boolean hasActivePlacement) throws RemoteException {
+	public ChildCarePlaceOfferTable1(IWContext iwc, ChildCareCustomerApplicationTable parent, SortedSet applications, boolean hasOffer, boolean hasActivePlacement) throws RemoteException {
 
-		initConstants(page);
+		initConstants(parent);
 		Iterator i = applications.iterator();
 		int row = 2;
 		boolean offerPresented = false;
@@ -134,13 +135,18 @@ class ChildCarePlaceOfferTable1 extends Table {
 
 		//Cannot use DateInput.setAsNotEmpty because we doesn't want this requirement 
 		//unless the user has selected the actual radio button.		
+		System.out.print("Am here...");
 
+		Page page = parent.getParentPage();
 		Script script = null;
-		if (getParentPage() != null)
-			script = getParentPage().getAssociatedScript();
+		if (page != null) {
+			System.out.println("Adding script to parent page");
+			script = page.getAssociatedScript();
+		}
 		else {
+			System.out.println("Adding script to parent page");
 			script = new Script();
-			_page.add(script);
+			parent.add(script);
 		}
 		script.setFunction("validateDates", "function validateDates() { if(" + validateDateScript + ") { alert('" + _page.localize(SUBMIT_UNVALID_DATE) + "'); return false; } else {return true;}}");
 		script.setFunction("alertTerminateContract", "function alertTerminateContract() { " + (!hasActivePlacement ? "return true; }" : "if(" + alertTerminateContractScript + ") { alert('" + _page.localize(ALERT_TERMINATE_CONTRACT) + "'); return true; } else {return true;}}"));
