@@ -256,11 +256,15 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		Collection users = new ArrayList();
 		Collection applications = findChoicesByProvider(providerId, "c.QUEUE_DATE");
 		Iterator iter = applications.iterator();
+		SchoolSeason season = null;
+		try { 
+			season = getCareBusiness().getCurrentSeason();
+		} catch (Exception e) {}
 		while (iter.hasNext()) {
 			ChildCareApplication application = (ChildCareApplication) iter.next();
 			boolean hasSchoolPlacement = false;
 			try { 
-				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId, getSchoolBusiness().getCategoryElementarySchool());
+				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId, season, getSchoolBusiness().getCategoryElementarySchool());
 			} catch (RemoteException e) {}
 			if (hasSchoolPlacement && (application.getApplicationStatus() == getStatusSentIn())) {
 				users.add(application.getChild());
