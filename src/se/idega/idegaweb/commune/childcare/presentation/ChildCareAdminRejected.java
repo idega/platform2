@@ -103,7 +103,8 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 			IWCalendar rejectDate;
 			SubmitButton activateApplication;
 			int numberOfChildren = applications.size();
-				
+			String name = null;
+			
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				column = 1;
@@ -123,8 +124,8 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 					table.setRowColor(row, getZebraColor1());
 				else
 					table.setRowColor(row, getZebraColor2());
-					
-				table.add(getSmallText(child.getNameLastFirst(true)), column++, row);
+				name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
+				table.add(getSmallText(name), column++, row);
 				table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				table.add(getSmallText(getStatusString(application)), column++, row);
 				if (queueDate != null)

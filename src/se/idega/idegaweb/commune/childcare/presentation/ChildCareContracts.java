@@ -69,6 +69,7 @@ public class ChildCareContracts extends ChildCareBlock {
 				boolean isCancelled;
 				boolean isNotYetActive;
 				boolean hasComment = false;
+				String name = null;
 				
 				Iterator iter = contracts.iterator();
 				while (iter.hasNext()) {
@@ -140,7 +141,8 @@ public class ChildCareContracts extends ChildCareBlock {
 						if (hasComment)
 							table.add(getSmallErrorText(Text.NON_BREAKING_SPACE), column, row);
 						if (getResponsePage() != null) {
-							archive = getSmallLink(child.getNameLastFirst(true));
+							name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
+							archive = getSmallLink(name);
 							archive.setEventListener(ChildCareEventListener.class);
 							archive.addParameter(getSession().getParameterUserID(), application.getChildId());
 							archive.addParameter(getSession().getParameterApplicationID(), ((Integer)application.getPrimaryKey()).intValue());
