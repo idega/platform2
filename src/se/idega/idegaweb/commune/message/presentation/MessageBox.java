@@ -15,6 +15,7 @@ import se.idega.idegaweb.commune.message.event.MessageListener;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 
+import com.idega.presentation.CollectionNavigator;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -47,6 +48,9 @@ public class MessageBox extends CommuneBlock {
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
 	private boolean showSettings = false;
+	private int _messageSize = 0;
+	private int _numberPerPage = 10;
+	private int _start = 0;
 	
 	public MessageBox() {
 	}
@@ -80,7 +84,7 @@ public class MessageBox extends CommuneBlock {
 		Form f = new Form();
 		f.setEventListener(MessageListener.class);
 		
-		int row = 1;
+		int row = 2;
 		Table messageTable = new Table();
 		messageTable.setWidth(getWidth());
 		messageTable.setCellpadding(getCellpadding());
@@ -88,15 +92,19 @@ public class MessageBox extends CommuneBlock {
 		f.add(messageTable);
 
 
-		addTableHeader(messageTable);
+		addTableHeader(messageTable, row);
 		messageTable.setRowColor(row++, getHeaderColor());
 		boolean hasMessages = false;
 
 		if (iwc.isLoggedOn()) {
 			MessageSession messageSession = getMessageSession(iwc);
-			
 			User user = iwc.getCurrentUser();
-			Collection messages = getMessages(iwc, user); 
+
+			CollectionNavigator navigator = getNavigator(iwc, user);
+			messageTable.mergeCells(1, 1, messageTable.getColumns(), 1);
+			messageTable.add(navigator, 1, 1);
+			
+			Collection messages = getMessages(iwc, user, _numberPerPage, _start); 
 						
 //			Link subject = null;
 //			Text date = null;
@@ -109,10 +117,11 @@ public class MessageBox extends CommuneBlock {
 				Vector messageVector = new Vector(messages);
 				Collections.sort(messageVector, new MessageComparator());
 				Iterator iter = messageVector.iterator();
+				int messageNumber = _start + 1;
 				while (iter.hasNext()) {
 					Message msg = (Message) iter.next();
 					
-					addMessageToTable(iwc, messageTable, msg, row, dateFormat);
+					addMessageToTable(iwc, messageTable, msg, row, dateFormat, messageNumber++);
 
 					if (row % 2 == 0)
 						messageTable.setRowColor(row++, getZebraColor1());
@@ -172,13 +181,38 @@ public class MessageBox extends CommuneBlock {
 		add(f);
 	}
 
+	private CollectionNavigator getNavigator(IWContext iwc, User user) {
+		_messageSize = getNumberOfMessages(iwc, user);
+
+		CollectionNavigator navigator = new CollectionNavigator(_messageSize);
+		navigator.setTextStyle(STYLENAME_SMALL_TEXT);
+		navigator.setLinkStyle(STYLENAME_SMALL_LINK);
+		navigator.setNumberOfEntriesPerPage(_numberPerPage);
+		navigator.setPadding(getCellpadding());
+		_start = navigator.getStart(iwc);
+		
+		return navigator;
+	}
+	
+	int getNumberOfMessages(IWContext iwc, User user) {
+		try {
+			return getMessageBusiness(iwc).getNumberOfMessages(user);
+		}
+		catch (Exception e) {
+			return 0;
+		}
+	}
+	
 /**
  * Adds headers to the table. 
  * @param messageTable
  */
-	void addTableHeader(Table messageTable) {
-		messageTable.add(getSmallHeader(localize("message.subject", "Subject")), getSubjectColumn(), 1);
-		messageTable.add(getSmallHeader(localize("message.date", "Date")), getDateColumn(), 1);
+	void addTableHeader(Table messageTable, int row) {
+		messageTable.add(getSmallHeader(localize("message.#", "#")), getMessageNumberColumn(), row);
+		messageTable.setAlignment(getMessageNumberColumn(), row, Table.HORIZONTAL_ALIGN_CENTER);
+		messageTable.setWidth(getMessageNumberColumn(), row, 8);
+		messageTable.add(getSmallHeader(localize("message.subject", "Subject")), getSubjectColumn(), row);
+		messageTable.add(getSmallHeader(localize("message.date", "Date")), getDateColumn(), row);
 		messageTable.setWidth(getDeleteColumn(), "12");
 	}
 	
@@ -190,8 +224,8 @@ public class MessageBox extends CommuneBlock {
 	 * @return
 	 * @throws Exception
 	 */
-	Collection getMessages(IWContext iwc, User user) throws Exception{
-		return getMessageBusiness(iwc).findMessages(user);		
+	Collection getMessages(IWContext iwc, User user, int numberOfEntries, int startingEntry) throws Exception{
+		return getMessageBusiness(iwc).findMessages(user, numberOfEntries, startingEntry);		
 	}
 	
 	/**
@@ -203,7 +237,7 @@ public class MessageBox extends CommuneBlock {
 	 * @param dateFormat
 	 * @throws Exception
 	 */
-	void addMessageToTable(IWContext iwc, Table messageTable, Message msg, int row, DateFormat dateFormat) throws Exception{
+	void addMessageToTable(IWContext iwc, Table messageTable, Message msg, int row, DateFormat dateFormat, int messageNumber) throws Exception{
 		Date msgDate = new Date(msg.getCreated().getTime());
 
 		boolean isRead = getMessageBusiness(iwc).isMessageRead(msg);
@@ -222,21 +256,28 @@ public class MessageBox extends CommuneBlock {
 					
 		CheckBox deleteCheck = getCheckBox(PARAM_MESSAGE_ID, msg.getPrimaryKey().toString());
 
+		messageTable.add(getSmallHeader(String.valueOf(messageNumber)), getMessageNumberColumn(), row);
+		messageTable.setAlignment(getMessageNumberColumn(), row, Table.HORIZONTAL_ALIGN_CENTER);
+		messageTable.setWidth(getMessageNumberColumn(), row, 8);
 		messageTable.add(subject, getSubjectColumn(), row);
 		messageTable.add(date, getDateColumn(), row);
 		messageTable.add(deleteCheck, getDeleteColumn(), row);	
 	}
 	
-	int getSubjectColumn(){
+	int getMessageNumberColumn(){
 		return 1;
 	}
 	
-	int getDateColumn(){
+	int getSubjectColumn(){
 		return 2;
 	}
 	
-	int getDeleteColumn(){
+	int getDateColumn(){
 		return 3;
+	}
+	
+	int getDeleteColumn(){
+		return 4;
 	}
 	
 
@@ -247,4 +288,10 @@ public class MessageBox extends CommuneBlock {
   private MessageSession getMessageSession(IWContext iwc) throws Exception {
     return (MessageSession)com.idega.business.IBOLookup.getSessionInstance(iwc,MessageSession.class);
   }
+	/**
+	 * @param numberPerPage The numberPerPage to set.
+	 */
+	public void setNumberPerPage(int numberPerPage) {
+		this._numberPerPage = numberPerPage;
+	}
 }

@@ -6,6 +6,7 @@ import javax.ejb.FinderException;
 
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
+import com.idega.data.IDOException;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -92,8 +93,27 @@ public class UserMessageBMPBean extends AbstractCaseBMPBean implements UserMessa
 		return super.ejbFindAllCasesByUserAndStatusArray(user, status);
 	}
 	
+	public Collection ejbFindMessagesByStatus(User user, String[] status, int numberOfEntries, int startingEntry)throws FinderException{
+		return super.ejbFindAllCasesByUserAndStatusArray(user, status, numberOfEntries, startingEntry);
+	}
+	
 	public Collection ejbFindMessagesByStatus(Group group, String[] status)throws FinderException{
 		return super.ejbFindAllCasesByGroupAndStatusArray(group, status);
 	}	
  
+	public Collection ejbFindMessagesByStatus(Group group, String[] status, int numberOfEntries, int startingEntry)throws FinderException{
+		return super.ejbFindAllCasesByGroupAndStatusArray(group, status, numberOfEntries, startingEntry);
+	}	
+ 
+	public Collection ejbFindMessagesByStatus(User user, Collection groups, String[] status, int numberOfEntries, int startingEntry)throws FinderException{
+		return super.ejbFindAllCasesByUserAndGroupsAndStatusArray(user, groups, status, numberOfEntries, startingEntry);
+	}	
+ 
+	public int ejbGetNumberOfMessagesByStatus(User user, String[] status) throws IDOException {
+		return super.ejbHomeGetCountCasesByUserAndStatusArray(user, status);
+	}
+
+	public int ejbGetNumberOfMessagesByStatus(User user, Collection groups, String[] status) throws IDOException {
+		return super.ejbHomeGetCountCasesByUserAndGroupsAndStatusArray(user, groups, status);
+	}
 }

@@ -30,7 +30,10 @@ public interface MessageBusiness extends CaseBusiness
  public void deleteMessage(java.lang.String p0,int p1)throws javax.ejb.FinderException,javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
  public void deleteUserMessage(int p0)throws javax.ejb.FinderException,javax.ejb.RemoveException,java.rmi.RemoteException, java.rmi.RemoteException;
  public java.util.Collection findMessages(com.idega.user.data.User p0)throws java.lang.Exception, java.rmi.RemoteException;
+ public java.util.Collection findMessages(com.idega.user.data.User p0, int p1, int p2)throws java.lang.Exception, java.rmi.RemoteException;
+ public java.util.Collection findMessages(com.idega.user.data.User p0, Collection p1, int p2, int p3)throws java.lang.Exception, java.rmi.RemoteException;
  public java.util.Collection findMessages(com.idega.user.data.Group p0)throws java.lang.Exception, java.rmi.RemoteException;
+ public java.util.Collection findMessages(com.idega.user.data.Group p0, int p1, int p2)throws java.lang.Exception, java.rmi.RemoteException;
  public void flagPrintedLetterAsPrinted(com.idega.user.data.User p0,se.idega.idegaweb.commune.message.data.PrintedLetterMessage p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.process.data.CaseCode getCaseCodePrintedLetterMessage()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public com.idega.block.process.data.CaseCode getCaseCodeSystemArchivationMessage()throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
@@ -66,4 +69,6 @@ public interface MessageBusiness extends CaseBusiness
  public Message createUserMessage(User user, String subject, String body, boolean sendLetter);
  public Message createUserMessage(User receiver, String subject, String body, User sender, boolean sendLetter);
  public void sendMessageToCommuneAdministrators(Case theCase, String subject, String body) throws RemoteException;
+ public int getNumberOfMessages(User user) throws Exception;
+ public int getNumberOfMessages(User user,Collection groups) throws Exception;
 }

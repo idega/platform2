@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.47 2003/11/01 14:15:38 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.48 2003/11/06 13:55:54 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -167,16 +167,42 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 		return getMessage(getTypeUserMessage(), messageId);
 	}
 
+	public int getNumberOfMessages(User user) throws Exception {
+		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+		return getMessageHome(TYPE_USER_MESSAGE).getNumberOfMessages(user,validStatuses);
+	}
+	
+	public int getNumberOfMessages(User user, Collection groups) throws Exception {
+		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+		return getMessageHome(TYPE_USER_MESSAGE).getNumberOfMessages(user,groups,validStatuses);
+	}
+	
+
 	public Collection findMessages(User user) throws Exception {
-		String[] validStatuses = { getCaseStatusOpen().getPrimaryKey().toString(), getCaseStatusGranted().getPrimaryKey().toString() };
+		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
 		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user,validStatuses);
 	}
 	
+	public Collection findMessages(User user, int numberOfEntries, int startingEntry) throws Exception {
+		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user,validStatuses,numberOfEntries,startingEntry);
+	}
+	
+	public Collection findMessages(User user, Collection groups, int numberOfEntries, int startingEntry) throws Exception {
+		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+		return getMessageHome(TYPE_USER_MESSAGE).findMessages(user,groups,validStatuses,numberOfEntries,startingEntry);
+	}
+	
 	public Collection findMessages(Group group) throws Exception {
-		String[] validStatuses = { getCaseStatusOpen().getPrimaryKey().toString(), getCaseStatusGranted().getPrimaryKey().toString() };
+		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
 		return getMessageHome(TYPE_USER_MESSAGE).findMessages(group, validStatuses);
 	}	
 
+	public Collection findMessages(Group group, int numberOfEntries, int startingEntry) throws Exception {
+		String[] validStatuses = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
+		return getMessageHome(TYPE_USER_MESSAGE).findMessages(group,validStatuses,numberOfEntries,startingEntry);
+	}
+	
 	public Message createUserMessage(User user, String subject, String body) {
 		return createUserMessage(null, user, subject, body, true);
 	}
