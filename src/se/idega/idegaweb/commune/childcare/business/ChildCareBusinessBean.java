@@ -89,6 +89,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static char STATUS_NOT_ANSWERED = 'Y';
 	private final static char STATUS_REJECTED = 'Z';
 	
+	public String getBundleIdentifier() {
+		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
+	}
+
 	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
 		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 	}
@@ -352,12 +356,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					application.store();
 				}
 				else if (newestApplication == null && oldestApplication != null){
-					queueOrder = oldestApplication.getQueueOrder() - 10;
+					queueOrder = oldestApplication.getQueueOrder() - 100;
 					application.setQueueOrder(queueOrder);
 					application.store();
 				}
 				else if (newestApplication != null && oldestApplication == null){
-					queueOrder = newestApplication.getQueueOrder() + 10;
+					queueOrder = newestApplication.getQueueOrder() + 100;
 					application.setQueueOrder(queueOrder);
 					application.store();
 				}
