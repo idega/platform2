@@ -204,8 +204,8 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			table.add(getSmallText("("+queuePosition+")"), column++, row);
 			table.add(select, column++, row++);
-			//if (!iter.hasNext())
-				//select.setMustBeChecked(localize("child_care.must_check_provider","You must select at least one provider."));
+			if (!iter.hasNext())
+				select.setMustBeChecked(localize("child_care.must_check_provider","You must select at least one provider."));
 		}
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
