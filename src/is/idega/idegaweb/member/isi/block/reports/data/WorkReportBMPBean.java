@@ -3,6 +3,8 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.data;
 
+import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -60,6 +62,9 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 	protected final static String COLUMN_NAME_REGIONAL_UNION_ABBR = "REG_UNI_ABBR";
 	protected final static String COLUMN_NAME_CONTINUANCE_TILL = "CONTINUANCE_TILL";
 
+	protected final static String COLUMN_NAME_CLUB_TYPE = "CLUB_TYPE";
+	protected final static String COLUMN_NAME_IS_IN_UMFI = "IN_UMFI";
+
 	public WorkReportBMPBean() {
 		super();
 	}
@@ -95,6 +100,10 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 		addAttribute(COLUMN_NAME_REGIONAL_UNION_NR, "Regional union nr", true, true, String.class, 30);
 		addAttribute(COLUMN_NAME_REGIONAL_UNION_ABBR, "Regional union abbreviation", true, true, String.class, 30);
 		addAttribute(COLUMN_NAME_CONTINUANCE_TILL, "Continuance till text field", true, true, String.class, 30);
+
+		addAttribute(COLUMN_NAME_CLUB_TYPE, "Type of club, single-, multidivision or no members", true, true, String.class, 2);
+		
+		addAttribute(COLUMN_NAME_IS_IN_UMFI, "Is the club in UMFI", true, true, Boolean.class);
 
 		addManyToManyRelationShip(WorkReportGroup.class); //so we can get the
 														  // clubs related to
@@ -249,6 +258,23 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport, IDOR
 	public boolean isMembersPartDone() {
 		return getBooleanColumnValue(COLUMN_NAME_MEMBERS_DONE, false);
 	}
+	
+	public void setType(String type) {
+		setColumn(COLUMN_NAME_CLUB_TYPE, type);
+	}
+	
+	public String getType() {
+		return getStringColumnValue(COLUMN_NAME_CLUB_TYPE);
+	}
+	
+	public void setIsInUMFI(boolean value) {
+		setColumn(COLUMN_NAME_IS_IN_UMFI, value);
+	}
+
+	public boolean isInUMFI() {
+		return getBooleanColumnValue(COLUMN_NAME_CLUB_TYPE, false);
+	}
+	
 
 	public void setAsSent(boolean sent) {
 		setColumn(COLUMN_NAME_SENT, sent);

@@ -23,12 +23,14 @@ public interface WorkReport extends com.idega.data.IDOEntity,com.idega.data.IDOR
  public java.lang.String getRegionalUnionNumber();
  public java.lang.String getSentReportText();
  public java.lang.String getStatus();
+ public java.lang.String getType();
  public java.lang.Integer getYearOfReport();
  public void initializeAttributes();
  public boolean isAccountPartDone();
  public boolean isBoardPartDone();
  public boolean isCreationFromDatabaseDone();
  public boolean isInActive();
+ public boolean isInUMFI();
  public boolean isMembersPartDone();
  public boolean isSent();
  public void setAccountFileId(int p0);
@@ -46,17 +48,19 @@ public interface WorkReport extends com.idega.data.IDOEntity,com.idega.data.IDOR
  public void setGroupNumber(java.lang.String p0);
  public void setGroupShortName(java.lang.String p0);
  public void setGroupType(java.lang.String p0);
+ public void setIsInUMFI(boolean p0);
  public void setMemberFileId(int p0);
  public void setMembersPartDone(boolean p0);
  public void setNumberOfCompetitors(int p0);
  public void setNumberOfMembers(int p0);
  public void setNumberOfPlayers(int p0);
  public void setRegionalUnionAbbreviation(java.lang.String p0);
- public void setRegionalUnionGroupId(int p0);
  public void setRegionalUnionGroupId(java.lang.Integer p0);
+ public void setRegionalUnionGroupId(int p0);
  public void setRegionalUnionName(java.lang.String p0);
  public void setRegionalUnionNumber(java.lang.String p0);
  public void setSentReportText(java.lang.String p0);
  public void setStatus(java.lang.String p0);
+ public void setType(java.lang.String p0);
  public void setYearOfReport(int p0);
 }
