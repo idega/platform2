@@ -259,7 +259,11 @@ public class ApplicationEditor extends ChildCareBlock {
 				
 				table.add(link, column++, row);
 				table.add(getSmallText(getStatusString(application)), column++, row);
-				table.add(getSmallText(placementDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+				if (placementDate != null) {
+					table.add(getSmallText(placementDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+				} else {
+					table.add(getSmallText("-"), column++, row);
+				}
 
 				if (rejectionDate != null) {
 					table.add(getSmallText(rejectionDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
