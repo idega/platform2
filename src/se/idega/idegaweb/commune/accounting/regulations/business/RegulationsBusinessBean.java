@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.47 2003/10/23 21:10:34 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.48 2003/10/24 13:04:32 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -829,13 +829,52 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection findAllHourIntervals() {
 		ArrayList arr = new ArrayList();
 
-		arr.add(new Object[]{new Integer(1), "<11"});
-		arr.add(new Object[]{new Integer(2), "11-25"});
-		arr.add(new Object[]{new Integer(3), "0-25"});
-		arr.add(new Object[]{new Integer(4), ">25"});
+		arr.add(new Object[]{new Integer(1), "1-25"});
+		arr.add(new Object[]{new Integer(2), "26-35"});
+		arr.add(new Object[]{new Integer(3), ">=36"});
+		arr.add(new Object[]{new Integer(4), "<=24"});
+		arr.add(new Object[]{new Integer(5), ">=25"});
+		arr.add(new Object[]{new Integer(6), "<=13"});
+		arr.add(new Object[]{new Integer(7), ">=14"});
 
 		return arr; 
 	}	
+
+	/**
+	 * Finds allage intervals
+	 * These are not put in an entity bean since Lotta Ringborg 
+	 * tells me they shall be fixed and never changed.
+	 * @return Collection of hour intervals
+	 * @author Kelly
+	 */
+	public Collection findAllAgeIntervals() {
+		ArrayList arr = new ArrayList();
+
+		arr.add(new Object[]{new Integer(1), "1-2"});
+		arr.add(new Object[]{new Integer(2), "3-5"});
+		arr.add(new Object[]{new Integer(3), "7"});
+		arr.add(new Object[]{new Integer(4), ">=7"});
+
+		return arr; 
+	}	
+
+	/**
+	 * Finds all school year intervalls hardcoded
+	 * These are not put in an entity bean since Lotta Ringborg 
+	 * tells me they shall be fixed and never changed.
+	 * @return Collection of hour intervals
+	 * @author Kelly
+	 */
+	public Collection findAllSchoolYearIntervals() {
+		ArrayList arr = new ArrayList();
+
+		arr.add(new Object[]{new Integer(1), "1-6"});
+		arr.add(new Object[]{new Integer(2), "7-9"});
+
+		return arr; 
+	}	
+
+
 
 	/**
 	 * Gets a yes/no to use in the regulation framework.
@@ -969,7 +1008,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * TODO: getSession.getOperationalField() 
 	 * 
 	 */
-	public Collection findAllConditionSelections(String OperationID) {
+	public Collection findAllConditionSelections(String operationID) {
 			// LP = Localization path
 			ArrayList arr = new ArrayList();
 			arr.add(new ConditionHolder(
@@ -998,17 +1037,17 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness", 
 					"findAllVATRegulations",
 					"getDescription",
-					OperationID)
+					operationID)
 			);
 	
 			arr.add(new ConditionHolder(
 					RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, 
 					"Årskurs", 
 					LP + "aarskurs", 
-					"com.idega.block.school.business.SchoolBusiness", 
-					"findSchoolYearsBySchoolCategory",
-					"getSchoolYearName",
-					OperationID)
+					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
+					"findAllSchoolYearIntervals",
+					"",	
+					"")
 			);
 	
 			arr.add(new ConditionHolder(
@@ -1035,10 +1074,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					RuleTypeConstant.CONDITION_ID_AGE_INTERVAL, 
 					"Ålder", 
 					LP + "alder", 
-					"se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness", 
-					"findByOperationalField",
-					"getAgeInterval",
-					OperationID)
+					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
+					"findAllAgeIntervals",
+					"",
+					"")
 			);
 
 			arr.add(new ConditionHolder(
@@ -1059,7 +1098,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				"getCommuneName",
 				"")
 			);
-			if (OperationID.compareTo(SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL) == 0) {
+			if (operationID.compareTo(SchoolCategoryBMPBean.CATEGORY_HIGH_SCHOOL) == 0) {
 				arr.add(new ConditionHolder(
 					RuleTypeConstant.CONDITION_ID_STUDY_PATH, 
 					"Studieväg", 
@@ -1071,28 +1110,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				);
 			}
 		
-
-	/*
-			arr.add(new ConditionHolder(
-					RuleTypeConstant.CONDITION_ID_MAX_AMOUNT, 
-					"Maxbelopp", 
-					LP + "maxbelopp", 
-					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
-					"findAllMaxAmounts",
-					"")
-			);
-
-		
-			arr.add(new ConditionHolder(
-					"8", 
-					"Rabattsats", 
-					LP + "rabattsats", 
-					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
-					"findAllDiscountValues",
-					"")
-			);
-			
-*/
 			return (Collection) arr;	
 
 	}
