@@ -10,7 +10,6 @@ public interface PickupPlace extends com.idega.data.IDOEntity
  public boolean getIsPickup();
  public java.lang.String getName();
  public int getType();
- public void initializeAttributes();
  public void removeFromService(is.idega.idegaweb.travel.data.Service p0)throws com.idega.data.IDORemoveRelationshipException;
  public void removeFromSupplier(com.idega.block.trade.stockroom.data.Supplier p0)throws com.idega.data.IDORemoveRelationshipException;
  public void setAddress(com.idega.core.location.data.Address p0);

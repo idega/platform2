@@ -133,34 +133,46 @@ public class PickupPlaceBMPBean extends com.idega.data.GenericEntity implements 
 		return ejbFindHotelPickupPlaces(supplier, TYPE_PICKUP);
   }
   
+  public Collection ejbFindAllPlaces(int PLACE_TYPE) throws FinderException {
+  		return ejbFindHotelPickupPlacesBySupplier(null, PLACE_TYPE);
+  }
+  
   public Collection ejbFindHotelPickupPlaces(Supplier supplier, int PLACE_TYPE) throws FinderException{
+  		return ejbFindHotelPickupPlacesBySupplier(supplier, PLACE_TYPE);
+  }
+  
+  private Collection ejbFindHotelPickupPlacesBySupplier(Supplier supplier, int PLACE_TYPE) throws FinderException{
     Collection returner = null;
+    boolean useSupplier = (supplier != null);
 
     StringBuffer buffer = new StringBuffer();
-      buffer.append("select h.* from ");
-      buffer.append(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s,");
-      buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Supplier.class,PickupPlace.class)+" smh, ");
-      buffer.append(getEntityName() +" h ");
-      buffer.append(" WHERE ");
-      buffer.append("s."+supplier.getIDColumnName()+" = "+supplier.getID());
-      buffer.append(" AND ");
-      buffer.append("s."+supplier.getIDColumnName()+" = smh."+supplier.getIDColumnName());
-      buffer.append(" AND ");
-      buffer.append(" smh."+getIDColumnName()+" = h."+getIDColumnName());
-			if (PLACE_TYPE == TYPE_DROPOFF) {
-					  buffer.append(" AND ");
-					  buffer.append(" h."+getTypeColumnName()+" = "+PLACE_TYPE);
-			}else if  (PLACE_TYPE == TYPE_PICKUP) {
-					  buffer.append(" AND ");
-					  buffer.append(" h."+getTypeColumnName()+" not in ("+TYPE_DROPOFF+")");
-			}
-      buffer.append(" AND ");
-      buffer.append("h."+is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
-      buffer.append(" ORDER BY h."+is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getNameColumnName());
-
+	  buffer.append("select h.* from ");
+	  if (useSupplier) {
+	  		buffer.append(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s,");
+	  		buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Supplier.class,PickupPlace.class)+" smh, ");
+	  }
+	  buffer.append(getEntityName() +" h ");
+	  buffer.append(" WHERE ");
+	  if (useSupplier) {
+		  buffer.append("s."+supplier.getIDColumnName()+" = "+supplier.getID());
+		  buffer.append(" AND ");
+		  buffer.append("s."+supplier.getIDColumnName()+" = smh."+supplier.getIDColumnName());
+		  buffer.append(" AND ");
+		  buffer.append(" smh."+getIDColumnName()+" = h."+getIDColumnName());
+		  buffer.append(" AND ");
+	  }
+		if (PLACE_TYPE == TYPE_DROPOFF) {
+		  buffer.append(" h."+getTypeColumnName()+" = "+PLACE_TYPE);
+		}else if  (PLACE_TYPE == TYPE_PICKUP) {
+		  buffer.append(" h."+getTypeColumnName()+" not in ("+TYPE_DROPOFF+")");
+		}
+	  buffer.append(" AND ");
+	  buffer.append("h."+is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
+	  buffer.append(" ORDER BY h."+is.idega.idegaweb.travel.data.PickupPlaceBMPBean.getNameColumnName());
+	
 		//System.out.println("[PickupPlaceBMPBean] sql = "+buffer.toString());
-
-      returner = this.idoFindPKsBySQL(buffer.toString());
+	
+	  returner = this.idoFindPKsBySQL(buffer.toString());
 //                  returner = (HotelPickupPlace[]) hp.findAll(buffer.toString());
     return returner;
   }
