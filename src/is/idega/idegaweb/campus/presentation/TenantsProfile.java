@@ -39,6 +39,9 @@ import com.idega.util.idegaTimestamp;
 import com.idega.util.text.TextSoap;
 import com.idega.util.text.TextStyler;
 import com.idega.util.text.StyleConstants;
+import java.util.Vector;
+import java.util.Iterator;
+import java.util.Hashtable;
 
 
 /**
@@ -65,7 +68,10 @@ public class TenantsProfile extends Block {
                               STUDYEND = "studyend",
                               SPOUSENAME = "spousename",
                               SPOUSESSN = "spousessn",
-                              CHILDREN = "children";
+                              CHILDNAME = "childname",
+                              CHILDSSN = "childssn",
+                              CHILDID = "childid",
+                              CHILDCOUNT = "childcount";
 
   private final static String PARAMETER_MODE = "profile_mode";
   private final static String PARAMETER_SAVE = "save";
@@ -80,6 +86,8 @@ public class TenantsProfile extends Block {
 
   private Contract _contract;
   private Applicant _applicant;
+  private Applicant spouse;
+  private Vector children;
   private CampusApplication _campusApplication;
   private TextStyler _styler;
   private Image _image;
@@ -101,6 +109,7 @@ public class TenantsProfile extends Block {
    *
    */
   public void main(IWContext iwc) {
+    debugParameters(iwc);
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
     try {
@@ -138,7 +147,7 @@ public class TenantsProfile extends Block {
 
 
       try {
-        _contract = ContractFinder.findApplicant(_userID);
+        _contract = ContractFinder.findByUser(_userID);
       }
       catch(Exception e) {
         _contract = null;
@@ -146,8 +155,27 @@ public class TenantsProfile extends Block {
     if(_contract !=null){
       try {
         _applicant = ContractFinder.getApplicant(_contract);
+        // Spouse and childs
+        java.util.Iterator iter = _applicant.getChildren();
+        if(iter !=null){
+          String status;
+          while(iter.hasNext()){
+            Applicant cant = (Applicant) iter.next();
+            status = cant.getStatus();
+            if("P".equals(status)){
+              spouse = cant;
+            }
+            else if("C".equals(status)){
+              if(children==null)
+                children = new Vector();
+              children.add(cant);
+            }
+
+          }
+        }
       }
       catch(Exception e) {
+        e.printStackTrace();
         _applicant = null;
       }
 
@@ -216,16 +244,33 @@ public class TenantsProfile extends Block {
     addToTable(table,row++,_iwrb.getLocalizedString("studyBegin","Study began"),_campusApplication.getStudyBeginMonth()+"."+_campusApplication.getStudyBeginYear(),new TextInput(STUDYBEGIN),7);
     addToTable(table,row++,_iwrb.getLocalizedString("studyEnd","Study ends"),_campusApplication.getStudyEndMonth()+"."+_campusApplication.getStudyEndYear(),new TextInput(STUDYEND),7);
 
-    if ( _update || (_campusApplication.getSpouseName() != null && _campusApplication.getSpouseName().length() > 0) ) {
-      addToTable(table,row++,_iwrb.getLocalizedString("spouseName","Spouse"),_campusApplication.getSpouseName(),new TextInput(SPOUSENAME),35);
-      addToTable(table,row++,_iwrb.getLocalizedString("spouseSSN","Spouse SSN"),_campusApplication.getSpouseSSN(),new TextInput(SPOUSESSN),10);
+    if ( _update  ) {
+      String name = "";
+      String ssn = "";
+      if(spouse!=null){
+        name = spouse.getName();
+        ssn = spouse.getSSN();
+      }
+      addToTable(table,row++,_iwrb.getLocalizedString("spouseName","Spouse"),name,new TextInput(SPOUSENAME),35);
+      addToTable(table,row++,_iwrb.getLocalizedString("spouseSSN","Spouse SSN"),ssn,new TextInput(SPOUSESSN),10);
     }
 
-    if ( _update || (_campusApplication.getChildren() != null && _campusApplication.getChildren().length() > 0) ) {
-      String children = _campusApplication.getChildren();
-      if ( !_update )
-        children = TextSoap.findAndReplace(_campusApplication.getChildren(),",",Text.getBreak().toString());
-      addToTable(table,row++,_iwrb.getLocalizedString("childrenProfile","Children"),children,new TextArea(CHILDREN,45,3),45);
+    if ( _update  ) {
+
+      int size = 0;
+      if( children != null && children.size() > 0){
+       size = children.size();
+       for (int i = 0; i < size; i++) {
+          Applicant child = (Applicant) children.get(i);
+          addToTable(table,row++,_iwrb.getLocalizedString("childName","Child name"),child.getName(),new TextInput(CHILDNAME+i),35);
+          addToTable(table,row++,_iwrb.getLocalizedString("childSSN","Child ssn"),child.getSSN(),new TextInput(CHILDSSN+i),10);
+          table.add(new HiddenInput(CHILDID+i,String.valueOf(child.getID())));
+        }
+      }
+      addToTable(table,row++,_iwrb.getLocalizedString("childName","Child name"),"",new TextInput(CHILDNAME+size),35);
+      addToTable(table,row++,_iwrb.getLocalizedString("childSSN","Child ssn"),"",new TextInput(CHILDSSN+size),10);
+      size++;
+      table.add(new HiddenInput(CHILDCOUNT,String.valueOf(size)));
     }
 
     table.setHorizontalZebraColored(white,lightGray);
@@ -423,271 +468,184 @@ public class TenantsProfile extends Block {
 
 
   private void save(IWContext iwc) {
-
     String name = iwc.getParameter(NAME);
-
     String ssn = iwc.getParameter(SSN);
-
     String email = iwc.getParameter(EMAIL);
-
     String mobile = iwc.getParameter(MOBILE);
-
     String faculty = iwc.getParameter(FACULTY);
-
     String studyTrack = iwc.getParameter(STUDYTRACK);
-
     String studyBegin = iwc.getParameter(STUDYBEGIN);
-
     String studyEnd = iwc.getParameter(STUDYEND);
-
     String spouseName = iwc.getParameter(SPOUSENAME);
-
     String spouseSSN = iwc.getParameter(SPOUSESSN);
-
-    String children = iwc.getParameter(CHILDREN);
-
-
+    String childcount = iwc.getParameter(CHILDCOUNT);
 
     if ( name != null && name.length() > 0 ) {
-
-      StringTokenizer tokens = new StringTokenizer(name," ");
-
-      int count = 1;
-
-      int number = tokens.countTokens();
-
-      while ( tokens.hasMoreTokens() ) {
-
-        String token = tokens.nextToken();
-
-        if ( count == 1 )
-
-          _applicant.setFirstName(token);
-
-        if ( count > 1 && count < number )
-
-          _applicant.setMiddleName(token);
-
-        if ( count > 2 && count < number )
-
-          _applicant.setMiddleName(" "+token);
-
-        if ( count == number )
-
-          _applicant.setLastName(token);
-
-        count++;
-
-      }
-
+      _applicant.setFullName(name);
     }
 
     if ( ssn != null ) {
-
       _applicant.setSSN(ssn);
-
     }
-
     if ( email != null ) {
-
       _campusApplication.setEmail(email);
-
     }
-
     if ( mobile != null ) {
-
       _applicant.setMobilePhone(mobile);
-
     }
-
     if ( faculty != null ) {
-
       _campusApplication.setFaculty(faculty);
-
     }
-
     if ( studyTrack != null ) {
-
       _campusApplication.setStudyTrack(studyTrack);
+    }
+    ////// spouse //////////////
+    try{
+      if ( spouseName != null ) {
+        if(spouseName.length()>0){
+          boolean update = true;
+          if(spouse == null){
+            spouse = new Applicant();
+            spouse.setStatus("P");
+            update = false;
+          }
 
+          if(!spouseName.equals(spouse.getName())){
+            spouse.setFullName(spouseName);
+          }
+          spouse.setSSN(spouseSSN);
+
+          if(update)
+            spouse.update();
+          else{
+            spouse.insert();
+            _applicant.addChild(spouse);
+          }
+        }
+      }
+     }catch(SQLException ex){
+      ex.printStackTrace();
     }
 
-    if ( spouseName != null ) {
+    try{
+      if(childcount!=null){
+        int count = Integer.parseInt(childcount);
+        if(count > 0){
+          Hashtable chi = new Hashtable();
+          if(children!=null){
+            for (int i = 0; i < children.size(); i++) {
+              Applicant child = (Applicant) children.get(i);
+              chi.put(new Integer(child.getID()),child);
+            }
+          }
+          for (int i = 0; i < count; i++) {
+            String childName = iwc.getParameter(CHILDNAME+i);
+            String childSSN = iwc.getParameter(CHILDSSN+i);
+            int childId = iwc.isParameterSet(CHILDID+i)?Integer.parseInt(iwc.getParameter(CHILDID+i)):-1;
+            if(childName.length() > 0){
 
-      _campusApplication.setSpouseName(spouseName);
-
-    }
-
-    if ( spouseSSN != null ) {
-
-      _campusApplication.setSpouseSSN(spouseSSN);
-
-    }
-
-    if ( children != null ) {
-
-      _campusApplication.setChildren(children);
-
+              Applicant child = (Applicant) chi.get(new Integer(childId));
+              boolean update = true;
+              if(child == null){
+                child = new Applicant();
+                child.setStatus("C");
+                update = false;
+              }
+              if(!childName.equals(child.getName())){
+                child.setFullName(childName);
+              }
+              child.setSSN(childSSN);
+              if(update)
+                child.update();
+              else{
+                child.insert();
+                _applicant.addChild(child);
+              }
+            }
+          }
+        }
+      }
+    }catch(SQLException ex){
+      ex.printStackTrace();
     }
 
     if ( studyBegin != null && studyBegin.length() > 0 ) {
-
       String studyBeginMo = studyBegin.substring(0,studyBegin.indexOf("."));
-
       String studyBeginYe = studyBegin.substring(studyBegin.indexOf(".")+1);
-
       _campusApplication.setStudyBeginMonth(Integer.parseInt(studyBeginMo));
-
       _campusApplication.setStudyBeginYear(Integer.parseInt(studyBeginYe));
-
     }
 
     if ( studyBegin != null && studyBegin.length() > 0 ) {
-
       String studyEndMo = studyEnd.substring(0,studyEnd.indexOf("."));
-
       String studyEndYe = studyEnd.substring(studyEnd.indexOf(".")+1);
-
       _campusApplication.setStudyEndMonth(Integer.parseInt(studyEndMo));
-
       _campusApplication.setStudyEndYear(Integer.parseInt(studyEndYe));
-
     }
 
-
-
     try {
-
       _applicant.update();
-
     }
-
     catch (SQLException e) {
-
       e.printStackTrace(System.err);
-
     }
-
-
 
     try {
-
       _campusApplication.update();
-
     }
-
     catch (SQLException e) {
-
       e.printStackTrace(System.err);
-
     }
-
   }
-
-
 
   private void addToTable(Table table,int row,String attribute,String value,PresentationObject iObj,int width) {
-
     String className = iObj.getClassName().substring(iObj.getClassName().lastIndexOf(".")+1);
-
     table.add(formatText(attribute),1,row);
-
-
-
     if ( _update ) {
-
         if ( className.equalsIgnoreCase("TextInput") ) {
-
           ((TextInput) iObj).setLength(width);
-
           if ( value != null )
-
             ((TextInput) iObj).setContent(value);
-
         }
-
         else if ( className.equalsIgnoreCase("TextArea") ) {
-
           ((TextArea) iObj).setWidth(width);
-
           if ( value != null )
-
             ((TextArea) iObj).setContent(value);
-
         }
-
       iObj.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
-
      table.add(iObj,2,row);
-
     }
-
     else {
-
       table.add(formatText(value),2,row);
-
     }
-
   }
-
-
 
   private Text formatText(String text){
-
     return formatText(text,"#000000",false);
-
   }
-
-
 
   private Text formatText(String text,String color){
-
     return formatText(text,color,false);
-
   }
-
-
 
   private Text formatText(String text,String color,boolean bold){
-
     if ( text == null ) text = "";
-
     Text T =new Text(text);
-
       _styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR,color);
-
       if ( bold )
-
         _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_BOLD);
-
       else
-
         _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_NORMAL);
-
-
-
       T.setFontStyle(_styler.getStyleString());
-
-
-
     return T;
-
   }
-
-
 
   public static Parameter getUserParameter(int userID) {
-
     return new Parameter(PARAMETER_USER_ID,Integer.toString(userID));
-
   }
 
-
-
   public String getBundleIdentifier(){
-
     return IW_BUNDLE_IDENTIFIER;
-
   }
 
 }

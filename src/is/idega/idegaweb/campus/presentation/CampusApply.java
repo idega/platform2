@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApply.java,v 1.13 2002/03/18 15:50:44 palli Exp $
+ * $Id: CampusApply.java,v 1.14 2002/03/19 22:34:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -50,9 +50,9 @@ public class CampusApply extends PresentationObjectContainer {
     T.setAlignment(1,1,"center");
     T.setVerticalAlignment(1,1,"top");
 
-    if(iwc.hasEditPermission(this))
+   /* if(iwc.hasEditPermission(this))
       T.add("Átt þú ekki að skrá umsóknir á öðrum stað "+iwc.getUser().getName()+" !!",1,1);
-    else
+    else*/
 //      T.add(iwrb.getLocalizedString("app_opens_soon","The site will be accepting applications online from April 1st 2002"),1,1);
       T.add(new CampusApplicationForm(),1,1);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.3 2002/03/18 19:59:27 aron Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.4 2002/03/19 22:34:54 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -309,25 +309,9 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
     // spouse part
     if(spouseName.length() > 0){
-      StringTokenizer tok = new StringTokenizer(spouseName);
-      String temp = "";
-      if(tok.hasMoreTokens()){
-        temp = tok.nextToken();
-        spouse.setFirstName(temp);
-      }
-      if(tok.hasMoreTokens()){
-        temp = tok.nextToken();
-        spouse.setMiddleName(temp);
-      }
-      if(tok.hasMoreTokens()){
-        temp = tok.nextToken();
-        spouse.setLastName(temp);
-      }
-      else{
-        spouse.setMiddleName("");
-        spouse.setLastName(temp);
-      }
+      spouse.setFullName(spouseName);
       spouse.setSSN(spouseSSN);
+      spouse.setStatus("P");
       iwc.setSessionAttribute("spouse",spouse);
     }
     // Children part
@@ -339,25 +323,9 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
         name = iwc.getParameter("childname"+i);
         birth = iwc.getParameter("childbirth"+i);
         if(name.length() >0){
-          StringTokenizer tok = new StringTokenizer(name);
-          String temp = "";
-          if(tok.hasMoreTokens()){
-            temp = tok.nextToken();
-            child.setFirstName(temp);
-          }
-          if(tok.hasMoreTokens()){
-            temp = tok.nextToken();
-            child.setMiddleName(temp);
-          }
-          if(tok.hasMoreTokens()){
-            temp = tok.nextToken();
-            child.setLastName(temp);
-          }
-          else{
-            child.setMiddleName("");
-            child.setLastName(temp);
-          }
+          child.setFullName(name);
           child.setSSN(birth);
+          child.setStatus("C");
           childs.add(child);
         }
       }
