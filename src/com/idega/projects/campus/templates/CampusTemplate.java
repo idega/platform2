@@ -7,6 +7,7 @@ import com.idega.jmodule.login.presentation.Login;
 import com.idega.jmodule.poll.moduleobject.BasicPollVoter;
 import com.idega.projects.campus.service.*;
 import com.idega.jmodule.object.Image;
+import com.idega.jmodule.object.textObject.Text;
 
 
 /**
@@ -48,8 +49,12 @@ public abstract class CampusTemplate extends MainTemplate{
     addRightTitle(new Image("/pics/titles/IS/logintitle.gif"));
     addTopLeft(new Menu());
     addTopRight(login);
+    addRight(new Image("/pics/titles/IS/poll.gif"));
     addRight(poll);
+    addRight(Text.getBreak());
+    addRight(new Image("/pics/titles/IS/calendar.gif"));
     addMainTitle(new Title());
     addTabs(new Tabber());
+
   }
 }
