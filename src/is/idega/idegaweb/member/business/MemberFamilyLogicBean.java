@@ -338,36 +338,36 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 
   public void setAsChildFor(User personToSet,User parent)throws CreateException,RemoteException{
     if(!this.isChildOf(personToSet,parent)){
-      personToSet.addRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
-      parent.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_PARENT);
+      personToSet.addUniqueRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
+      parent.addUniqueRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_PARENT);
     }
   }
 
   public void setAsParentFor(User parent,User child)throws CreateException,RemoteException{
     if(!this.isParentOf(parent,child)){
-      child.addRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
-      parent.addRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_PARENT);
+      child.addUniqueRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
+      parent.addUniqueRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_PARENT);
     }
   }
   
 	public void setAsCustodianFor(User custodian,User child)throws CreateException,RemoteException{
 		if(!this.isCustodianOf(custodian,child)){
-			child.addRelation(convertUserToGroup(custodian),this.RELATION_TYPE_GROUP_CHILD);
-			custodian.addRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_CUSTODIAN);
+			child.addUniqueRelation(convertUserToGroup(custodian),this.RELATION_TYPE_GROUP_CHILD);
+			custodian.addUniqueRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_CUSTODIAN);
 		}
 	}
 
   public void setAsSpouseFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
     if(!this.isSpouseOf(personToSet,relatedPerson)){
-      personToSet.addRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SPOUSE);
-      relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SPOUSE);
+      personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SPOUSE);
+      relatedPerson.addUniqueRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SPOUSE);
     }
   }
 
   public void setAsSiblingFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
     if(!this.isSiblingOf(personToSet,relatedPerson)){
-      personToSet.addRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SIBLING);
-      relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
+      personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SIBLING);
+      relatedPerson.addUniqueRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
     }
   }
 
