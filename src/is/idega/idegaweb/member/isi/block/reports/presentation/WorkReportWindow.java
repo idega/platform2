@@ -84,6 +84,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		table.setRowHeight(1, Table.HUNDRED_PERCENT);
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
+		table.setCellpaddingAndCellspacing(0);
 
 		//add left menu of links
 		table.add(getMenuTable(iwc), 1, 1);

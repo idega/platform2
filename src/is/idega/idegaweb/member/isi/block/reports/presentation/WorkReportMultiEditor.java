@@ -71,6 +71,7 @@ public class WorkReportMultiEditor extends Block {
   private static final String REGIONAL_UNION_NUMBER = IWMemberConstants.META_DATA_CLUB_NUMBER;
   private static final String REGIONAL_UNION_ABBR = IWMemberConstants.META_DATA_CLUB_ABRV;
 	private static final String REPORT_STATUS = "STATUS";
+	private static final String MEMBER_COUNT = WorkReport.class.getName()+".TOTAL_MEMBERS";
   
 
   
@@ -181,7 +182,8 @@ public class WorkReportMultiEditor extends Block {
 			REGIONAL_UNION_NUMBER, metaConverter,
 			REGIONAL_UNION_ABBR, metaConverter,
 			INACTIVE, inActiveConverter,
-			REPORT_STATUS, reportStatusDropDownMenuConverter
+			REPORT_STATUS, reportStatusDropDownMenuConverter,
+			MEMBER_COUNT,null
 		};
       
       
@@ -267,10 +269,7 @@ public class WorkReportMultiEditor extends Block {
 		return (new IWTimestamp(IWTimestamp.getTimestampRightNow()).getYear());
 	}
 	
-	//TODO Eiki remove
-	protected int getWorkReportId(){
-	 return -1;
-	}
+
 	
 	class TextToLocalizedTextConverter implements EntityToPresentationObjectConverter {
 		
