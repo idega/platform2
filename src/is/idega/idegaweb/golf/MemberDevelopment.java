@@ -135,7 +135,7 @@ private boolean phones = false;
 
               if ( handicapBefore > 40 ) {
                 if ( scorecardAfter.length > 0 ) {
-                  if ( scorecardAfter[scorecardAfter.length-1].getHandicapCorrectionBoolean() ) {
+                  if ( scorecardAfter[scorecardAfter.length-1].getHandicapCorrection() ) {
                     handicapBefore = scorecardAfter[scorecardAfter.length-1].getHandicapAfter();
                   }
                 }

@@ -912,7 +912,7 @@ public class TournamentController {
 		scorecard.setCourseRating(CR);
 		scorecard.setFieldID(field.getID());
 		scorecard.setTeeColorID(tTGroup.getTeeColorId());
-		scorecard.setHandicapCorrection("N");
+		scorecard.setHandicapCorrection(false);
 		scorecard.setUpdateHandicap(false);
 		scorecard.insert();
 

@@ -120,7 +120,7 @@ public class HandicapRegisterForeign extends GolfWindow {
 						scoreCard.setCourseRating(0);
 						scoreCard.setTeeColorID(0);
 						scoreCard.setFieldID(0);
-						scoreCard.setHandicapCorrection("N");
+						scoreCard.setHandicapCorrection(false);
 						scoreCard.setForeignRound(true);
 						scoreCard.setForeignCourseName(nameString);
 						scoreCard.insert();

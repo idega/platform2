@@ -24,6 +24,20 @@ public class ScorecardHomeImpl extends com.idega.data.IDOFactory implements Scor
  }
 
 
+public Scorecard findBestRoundAfterDateByMember(int p0,java.sql.Date p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ScorecardBMPBean)entity).ejbFindBestRoundAfterDateByMember(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
+public Scorecard findLastPlayedRoundByMember(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ScorecardBMPBean)entity).ejbFindLastPlayedRoundByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public Scorecard findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Scorecard) super.findByPrimaryKeyIDO(pk);
  }
@@ -48,6 +62,13 @@ public class ScorecardHomeImpl extends com.idega.data.IDOFactory implements Scor
 public int getCountRoundsPlayedByMember(int p0)throws com.idega.data.IDOException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	int theReturn = ((ScorecardBMPBean)entity).ejbHomeGetCountRoundsPlayedByMember(p0);
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public int getNumberOfRoundsAfterDateByMember(int p0,java.sql.Date p1)throws com.idega.data.IDOException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	int theReturn = ((ScorecardBMPBean)entity).ejbHomeGetNumberOfRoundsAfterDateByMember(p0,p1);
 	this.idoCheckInPooledEntity(entity);
 	return theReturn;
 }

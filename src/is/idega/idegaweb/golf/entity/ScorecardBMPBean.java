@@ -1,9 +1,12 @@
-//idega 2000 - Ægir
+// idega 2000 - Ægir
 
 package is.idega.idegaweb.golf.entity;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+
+import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
@@ -11,250 +14,235 @@ import com.idega.data.IDOLookup;
 import com.idega.data.query.Column;
 import com.idega.data.query.CountColumn;
 import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.Order;
 import com.idega.data.query.SelectQuery;
 import com.idega.data.query.SumColumn;
 import com.idega.data.query.Table;
 
-
 public class ScorecardBMPBean extends GenericEntity implements Scorecard {
-  private final String FOREIGN_ROUND = "foreign_round";
-  private final String FOREIGN_COURSE_NAME = "foreign_name";
 
-  private final String YES = "Y";
-  private final String NO = "N";
+	private final String YES = "Y";
+	private final String NO = "N";
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute("member_id","Meðlimur id",true,true,"java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.Member");
-		addAttribute("tournament_round_id","Mót id",true,true,"java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.TournamentRound");
-		addAttribute("scorecard_date","Dagsetning",true,true,"java.sql.Timestamp");
-		addAttribute("total_points","Heildarstig",true,true,"java.lang.Integer");
-		addAttribute("handicap_before","Forgjöf áður",true,true,"java.lang.Float");
-		addAttribute("handicap_after","Forgjöf eftir",true,true,"java.lang.Float");
-		addAttribute("slope", "Slope",true,true,"java.lang.Integer");
-		addAttribute("course_rating","CR",true,true,"java.lang.Float");
-		addAttribute("field_id","Völlur",true,true,"java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.Field");
-		addAttribute("tee_color_id","Tee litur",true,true,"java.lang.Integer");
-		addAttribute("handicap_correction","Leiðrétting forgjafar",true,true,"java.lang.String");
-		addAttribute("update_handicap","Uppfærsla forgjafar",true,true,"java.lang.String");
-    addAttribute(FOREIGN_ROUND,"Hringur á erlendum velli",true,true,"java.lang.String");
-    addAttribute(FOREIGN_COURSE_NAME,"Nafn á erlendum velli",true,true,"java.lang.String");
-    setMaxLength(FOREIGN_ROUND,1);
-    setMaxLength(FOREIGN_COURSE_NAME,255);
+		
+		addManyToOneRelationship(COLUMN_MEMBER, Member.class);
+		addManyToOneRelationship(COLUMN_TOURNAMENT_ROUND, TournamentRound.class);
+		addManyToOneRelationship(COLUMN_FIELD, Field.class);
+		addManyToOneRelationship(COLUMN_TEE_COLOR, TeeColor.class);
+		
+		addAttribute(COLUMN_SCORECARD_DATE, "Date", true, true, Timestamp.class);
+		addAttribute(COLUMN_TOTAL_POINTS, "Total points", true, true, Integer.class);
+		addAttribute(COLUMN_HANDICAP_BEFORE, "Handicap before", true, true, Float.class);
+		addAttribute(COLUMN_HANDICAP_AFTER, "Handicap after", true, true, Float.class);
+		addAttribute(COLUMN_SLOPE, "Slope", true, true, Integer.class);
+		addAttribute(COLUMN_COURSE_RATING, "Course rating", true, true, Float.class);
+		addAttribute(COLUMN_HANDICAP_CORRECTION, "Handicap correction", true, true, Boolean.class);
+		addAttribute(COLUMN_UPDATE_HANDICAP, "Update handicap", true, true, Boolean.class);
+		addAttribute(COLUMN_FOREIGN_ROUND, "Foreign round", true, true, Boolean.class);
+		addAttribute(COLUMN_FOREIGN_COURSE_NAME, "Foreign course name", true, true, "java.lang.String");
+		setMaxLength(COLUMN_FOREIGN_ROUND, 1);
+		setMaxLength(COLUMN_FOREIGN_COURSE_NAME, 255);
 	}
 
 	public String getEntityName() {
-		return "scorecard";
+		return TABLE_NAME;
 	}
 
 	public int getMemberId() {
-		return getIntColumnValue("member_id");
+		return getIntColumnValue(COLUMN_MEMBER);
 	}
 
 	public void setMemberId(int memberId) {
-		setColumn("member_id",memberId);
+		setColumn(COLUMN_MEMBER, memberId);
 	}
 
 	public int getTournamentRoundId() {
-		return getIntColumnValue("tournament_round_id");
+		return getIntColumnValue(COLUMN_TOURNAMENT_ROUND);
 	}
 
 	public void setTournamentRoundId(int tournamentRoundId) {
-		setColumn("tournament_round_id",tournamentRoundId);
+		setColumn(COLUMN_TOURNAMENT_ROUND, tournamentRoundId);
 	}
 
 	public TournamentRound getTournamentRound() {
-		return (TournamentRound)getColumnValue("tournament_round_id");
+		return (TournamentRound) getColumnValue(COLUMN_TOURNAMENT_ROUND);
 	}
 
 	public void setTournamentRound(TournamentRound tournamentRound) {
-		setColumn("tournament_round_id",tournamentRound );
+		setColumn(COLUMN_TOURNAMENT_ROUND, tournamentRound);
 	}
 
-	public java.sql.Timestamp getScorecardDate() {
-		return (Timestamp)getColumnValue("scorecard_date");
+	public Timestamp getScorecardDate() {
+		return (Timestamp) getColumnValue(COLUMN_SCORECARD_DATE);
 	}
 
 	public void setScorecardDate(Timestamp scorecardDate) {
-		setColumn("scorecard_date",scorecardDate);
+		setColumn(COLUMN_SCORECARD_DATE, scorecardDate);
 	}
 
 	public int getTotalPoints() {
-		return getIntColumnValue("total_points");
+		return getIntColumnValue(COLUMN_TOTAL_POINTS);
 	}
 
 	public void setTotalPoints(int totalPoints) {
-		setColumn("total_points",totalPoints);
+		setColumn(COLUMN_TOTAL_POINTS, totalPoints);
 	}
 
 	public float getHandicapBefore() {
-		return getFloatColumnValue("handicap_before");
+		return getFloatColumnValue(COLUMN_HANDICAP_BEFORE);
 	}
 
 	public void setHandicapBefore(float handicapBefore) {
-		setColumn("handicap_before",handicapBefore);
+		setColumn(COLUMN_HANDICAP_BEFORE, handicapBefore);
 	}
 
 	public float getHandicapAfter() {
-		return getFloatColumnValue("handicap_after");
+		return getFloatColumnValue(COLUMN_HANDICAP_AFTER);
 	}
 
 	public void setHandicapAfter(float handicapAfter) {
-		setColumn("handicap_after",handicapAfter);
+		setColumn(COLUMN_HANDICAP_AFTER, handicapAfter);
 	}
 
 	public void setMember(Member member) {
-		setColumn("member_id",member);
+		setColumn(COLUMN_MEMBER, member);
 	}
 
 	public Member getMember() {
-		return (Member)getColumnValue("member_id");
+		return (Member) getColumnValue(COLUMN_MEMBER);
 	}
 
 	public int getSlope() {
-		return getIntColumnValue("slope");
+		return getIntColumnValue(COLUMN_SLOPE);
 	}
 
 	public void setSlope(int slope) {
-		setColumn("slope",slope);
+		setColumn(COLUMN_SLOPE, slope);
 	}
 
 	public float getCourseRating() {
-		return getFloatColumnValue("course_rating");
+		return getFloatColumnValue(COLUMN_COURSE_RATING);
 	}
 
-	public void setCourseRating(float course_rating) {
-		setColumn("course_rating",course_rating);
+	public void setCourseRating(float courseRating) {
+		setColumn(COLUMN_COURSE_RATING, courseRating);
 	}
 
 	public int getFieldID() {
-		return getIntColumnValue("field_id");
+		return getIntColumnValue(COLUMN_FIELD);
+	}
+	
+	public Field getField() {
+		return (Field) getColumnValue(COLUMN_FIELD);
 	}
 
-	public void setFieldID(int field_id) {
-		setColumn("field_id",field_id);
+	public void setFieldID(int fieldID) {
+		setColumn(COLUMN_FIELD, fieldID);
 	}
 
 	public int getTeeColorID() {
-		return getIntColumnValue("tee_color_id");
+		return getIntColumnValue(COLUMN_TEE_COLOR);
 	}
 
-	public void setTeeColorID(int tee_color_id) {
-		setColumn("tee_color_id",tee_color_id);
+	public void setTeeColorID(int teeColorID) {
+		setColumn(COLUMN_TEE_COLOR, teeColorID);
 	}
 
-  public String getHandicapCorrection() {
-		return getStringColumnValue("handicap_correction");
+	public boolean getHandicapCorrection() {
+		return getBooleanColumnValue(COLUMN_HANDICAP_CORRECTION, false);
 	}
 
-  public boolean getHandicapCorrectionBoolean(){
-		String correction = getStringColumnValue("handicap_correction");
-    boolean handicapCorrection = true;
-
-    if (correction.equalsIgnoreCase("n")) {
-      handicapCorrection = false;
-    }
-
-    return handicapCorrection;
+	public void setHandicapCorrection(boolean correction) {
+		setColumn(COLUMN_HANDICAP_CORRECTION, correction);
 	}
 
-	public void setHandicapCorrection(String handicap_correction){
-		setColumn("handicap_correction", handicap_correction);
-	}
-
-	public void setHandicapCorrection(boolean correction){
-		String handicap_correction = YES;
-
-    if (correction == false) {
-      handicap_correction = NO;
-    }
-
-    setColumn("handicap_correction", handicap_correction);
-	}
-
-  public String getUpdateHandicap() {
-		return getStringColumnValue("update_handicap");
-	}
-
-  public boolean getUpdateHandicapBoolean() {
-    String update = getStringColumnValue("update_handicap");
-    boolean updateHandicap = true;
-
-    if (update.equalsIgnoreCase("n")) {
-      updateHandicap = false;
-    }
-
-    return updateHandicap;
-  }
-
-	public void setUpdateHandicap(String update_handicap) {
-		setColumn("update_handicap", update_handicap);
+	public boolean getUpdateHandicap() {
+		return getBooleanColumnValue(COLUMN_UPDATE_HANDICAP, false);
 	}
 
 	public void setUpdateHandicap(boolean handicap) {
-    String update_handicap = YES;
-
-    if (handicap == false) {
-      update_handicap = NO;
-    }
-
-    setColumn("update_handicap",update_handicap);
+		setColumn(COLUMN_UPDATE_HANDICAP, handicap);
 	}
 
-  public void delete() throws SQLException {
-    ((Stroke) IDOLookup.instanciateEntity(Stroke.class)).deleteMultiple("scorecard_id",Integer.toString(this.getID()));
-    ((Statistic) IDOLookup.instanciateEntity(Statistic.class)).deleteMultiple("scorecard_id",Integer.toString(this.getID()));
+	public void delete() throws SQLException {
+		((Stroke) IDOLookup.instanciateEntity(Stroke.class)).deleteMultiple("scorecard_id", Integer.toString(this.getID()));
+		((Statistic) IDOLookup.instanciateEntity(Statistic.class)).deleteMultiple("scorecard_id", Integer.toString(this.getID()));
 
-    super.delete();
-  }
+		super.delete();
+	}
 
-  public void setForeignRound(boolean foreign) {
-    String isForeign = NO;
+	public void setForeignRound(boolean foreign) {
+		setColumn(COLUMN_FOREIGN_ROUND, foreign);
+	}
 
-    if (foreign)
-      isForeign = YES;
+	public boolean getForeignRound() {
+		return getBooleanColumnValue(COLUMN_FOREIGN_ROUND, false);
+	}
 
-    setColumn(FOREIGN_ROUND,isForeign);
-  }
+	public void setForeignCourseName(String name) {
+		setColumn(COLUMN_FOREIGN_COURSE_NAME, name);
+	}
 
-  public boolean getForeignRound() {
-    String isForeign = getStringColumnValue(FOREIGN_ROUND);
-    boolean foreign = true;
+	public String getForeignCourseName() {
+		return this.getStringColumnValue(COLUMN_FOREIGN_COURSE_NAME);
+	}
 
-    if (isForeign == null || isForeign.equalsIgnoreCase("n")) {
-      foreign = false;
-    }
-
-    return foreign;
-  }
-
-  public void setForeignCourseName(String name) {
-    setColumn(FOREIGN_COURSE_NAME,name);
-  }
-
-  public String getForeignCourseName() {
-    return this.getStringColumnValue(FOREIGN_COURSE_NAME);
-  }
-  
-  public int ejbHomeGetCountRoundsPlayedByMember(int member) throws IDOException {
+	public int ejbHomeGetCountRoundsPlayedByMember(int member) throws IDOException {
 		Table table = new Table(this);
 
 		SelectQuery query = new SelectQuery(table);
-		Column column = new Column(table, "scorecard_date");
+		Column column = new Column(table, COLUMN_SCORECARD_DATE);
 		query.addColumn(new CountColumn(table, this.getIDColumnName()));
-		query.addCriteria(new MatchCriteria(table, "member_id", MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, COLUMN_MEMBER, MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, COLUMN_HANDICAP_CORRECTION, MatchCriteria.EQUALS, false));
 		query.addCriteria(new MatchCriteria(column, true));
 		return this.idoGetNumberOfRecords(query.toString());
-  }
+	}
 
-  public int ejbHomeGetSumPointsByMember(int member) throws IDOException {
+	public int ejbHomeGetSumPointsByMember(int member) throws IDOException {
 		Table table = new Table(this);
 
 		SelectQuery query = new SelectQuery(table);
-		Column column = new Column(table, "scorecard_date");
-		query.addColumn(new SumColumn(table, "total_points"));
-		query.addCriteria(new MatchCriteria(table, "member_id", MatchCriteria.EQUALS, member));
+		Column column = new Column(table, COLUMN_SCORECARD_DATE);
+		query.addColumn(new SumColumn(table, COLUMN_TOTAL_POINTS));
+		query.addCriteria(new MatchCriteria(table, COLUMN_MEMBER, MatchCriteria.EQUALS, member));
 		query.addCriteria(new MatchCriteria(column, true));
 		return this.idoGetNumberOfRecords(query.toString());
-  }
+	}
+	
+	public int ejbHomeGetNumberOfRoundsAfterDateByMember(int member, Date scorecardDate) throws IDOException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new CountColumn(table, getIDColumnName()));
+		query.addCriteria(new MatchCriteria(table, COLUMN_MEMBER, MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, COLUMN_SCORECARD_DATE, MatchCriteria.GREATEREQUAL, scorecardDate));
+		query.addCriteria(new MatchCriteria(table, COLUMN_HANDICAP_CORRECTION, MatchCriteria.EQUALS, false));
+		return this.idoGetNumberOfRecords(query.toString());
+	}
+
+	public Integer ejbFindBestRoundAfterDateByMember(int member, Date scorecardDate) throws FinderException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new MatchCriteria(table, COLUMN_MEMBER, MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(table, COLUMN_SCORECARD_DATE, MatchCriteria.GREATEREQUAL, scorecardDate));
+		query.addOrder(table, COLUMN_TOTAL_POINTS, false);
+		return (Integer) this.idoFindOnePKBySQL(query.toString());
+	}
+
+	public Integer ejbFindLastPlayedRoundByMember(int member) throws FinderException {
+		Table table = new Table(this);
+		Column column = new Column(table, COLUMN_SCORECARD_DATE);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new MatchCriteria(table, COLUMN_MEMBER, MatchCriteria.EQUALS, member));
+		query.addCriteria(new MatchCriteria(column, true));
+		query.addOrder(new Order(column, false));
+		return (Integer) this.idoFindOnePKBySQL(query.toString());
+	}
 }

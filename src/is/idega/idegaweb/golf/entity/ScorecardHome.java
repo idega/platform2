@@ -8,7 +8,10 @@ public interface ScorecardHome extends com.idega.data.IDOHome
  public Scorecard findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public Scorecard findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public Scorecard findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
+ public Scorecard findBestRoundAfterDateByMember(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
+ public Scorecard findLastPlayedRoundByMember(int p0)throws javax.ejb.FinderException;
  public int getCountRoundsPlayedByMember(int p0)throws com.idega.data.IDOException;
+ public int getNumberOfRoundsAfterDateByMember(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
  public int getSumPointsByMember(int p0)throws com.idega.data.IDOException;
 
 }

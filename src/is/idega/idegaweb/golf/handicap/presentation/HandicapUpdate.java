@@ -211,7 +211,7 @@ public class HandicapUpdate extends GolfWindow {
 						scoreCard.setCourseRating(0);
 						scoreCard.setTeeColorID(0);
 						scoreCard.setFieldID(0);
-						scoreCard.setHandicapCorrection("Y");
+						scoreCard.setHandicapCorrection(true);
 
 						scoreCard.insert();
 

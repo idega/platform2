@@ -867,7 +867,6 @@ public class HandicapRegister extends GolfBlock {
 		}
 
 		if (mode.equalsIgnoreCase(iwrb.getLocalizedString("handicap.save", "Save"))) {
-			System.err.println(new IWTimestamp().getTimestampRightNow().toString() + ": Getting BulkUpdater...(" + member_id + ")");
 			String new_handicap = modinfo.getParameter("handicap");
 			if (new_handicap == null) {
 				new_handicap = "0";
@@ -889,7 +888,7 @@ public class HandicapRegister extends GolfBlock {
 				scoreCard = ((ScorecardHome) IDOLookup.getHomeLegacy(Scorecard.class)).findByPrimaryKey(Integer.parseInt(scorecard_id));
 				scoreCard.setTotalPoints(Integer.parseInt(total_points));
 				if (tournament == true) {
-					scoreCard.setUpdateHandicap("N");
+					scoreCard.setUpdateHandicap(false);
 
 					TournamentRound round = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(Integer.parseInt(tournament_round_id));
 					stampur2 = new IWTimestamp(round.getRoundDate());
@@ -916,8 +915,8 @@ public class HandicapRegister extends GolfBlock {
 				scoreCard.setCourseRating((float) course_rating);
 				scoreCard.setTeeColorID(tee_color_id);
 				scoreCard.setFieldID(Integer.parseInt(field_id));
-				scoreCard.setHandicapCorrection("N");
-				scoreCard.setUpdateHandicap("Y");
+				scoreCard.setHandicapCorrection(false);
+				scoreCard.setUpdateHandicap(true);
 
 				scoreCard.insert();
 				scorecardID = scoreCard.getID();

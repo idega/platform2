@@ -6,8 +6,8 @@ package is.idega.idegaweb.golf.handicap.presentation;
  * @author @version 1.0
  */
 
+import is.idega.idegaweb.golf.business.ScorecardBusiness;
 import is.idega.idegaweb.golf.entity.Field;
-import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.MemberInfo;
@@ -22,7 +22,11 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -92,9 +96,11 @@ public class HandicapInfo extends GolfBlock {
 		MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
 		Union mainUnion = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(member.getMainUnionID());
 		int clubOrder = memberInfo.getNumberOfRecords("select count(*) from union_,union_member,member_info where union_.union_id='" + mainUnion.getID() + "' and union_.union_id=union_member.union_id and union_member.member_id=member_info.member_id and handicap<'" + member.getHandicap() + "'") + 1;
-		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and handicap_correction='N' and scorecard_date is not null order by scorecard_date desc");
-		Scorecard[] scoreCards2 = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and scorecard_date>='" + date.toSQLDateString() + "' and scorecard_date is not null and handicap_correction='N' order by total_points desc");
-
+		int numberOfRounds = getScorecardBusiness(iwc).getNumberOfRoundsAfterDate(Integer.parseInt(iMemberID), date.getDate());
+		double pointsAverage = getScorecardBusiness(iwc).getPointsAverage(Integer.parseInt(iMemberID));
+		Scorecard lastRound = getScorecardBusiness(iwc).getLastPlayedRound(Integer.parseInt(iMemberID));
+		Scorecard bestRound = getScorecardBusiness(iwc).getBestRoundAfterDate(Integer.parseInt(iMemberID), date.getDate());
+		
 		Text name = getHeader(iwrb.getLocalizedString("handicap.member_name", "Member name"));
 		Text mainUnionText = getHeader(iwrb.getLocalizedString("handicap.union_name", "Club name"));
 		Text cardTotal = getHeader(iwrb.getLocalizedString("handicap.rounds_played", "Number of rounds played this year"));
@@ -106,10 +112,10 @@ public class HandicapInfo extends GolfBlock {
 		Text memberText = getText(member.getName());
 		Text unionText = getText(mainUnion.getAbbrevation() + " - " + mainUnion.getName());
 
-		String cardText = String.valueOf(scoreCards.length);
+		String cardText = String.valueOf(numberOfRounds);
 		String noRounds = iwrb.getLocalizedString("handicap.no_round", "No rounds registered");
 		Text cardTotalText = getText(cardText);
-		if (scoreCards2.length > 0) {
+		if (numberOfRounds > 0) {
 			if (cardText.substring(cardText.length() - 1, cardText.length()).equals("1")) {
 				cardTotalText.addToText(" " + iwrb.getLocalizedString("handicap.round", "round"));
 			}
@@ -117,37 +123,33 @@ public class HandicapInfo extends GolfBlock {
 				cardTotalText.addToText(" " + iwrb.getLocalizedString("handicap.rounds", "rounds"));
 			}
 		}
-		if (scoreCards2.length < 1) {
+		if (numberOfRounds < 1) {
 			cardTotalText = getText(noRounds);
 		}
 
 		Text scoreCardsText = getText(noRounds);
-		if (scoreCards.length > 0) {
-			IWTimestamp scoreTime = new IWTimestamp(scoreCards[0].getScorecardDate());
-			Field fieldId = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(scoreCards[0].getFieldID());
-			scoreCardsText = getText(scoreTime.getLocaleDate(iwc.getCurrentLocale()) + "  -  " + fieldId.getName());
+		if (lastRound  != null) {
+			IWTimestamp scoreTime = new IWTimestamp(lastRound.getScorecardDate());
+			Field field = lastRound.getField();
+			scoreCardsText = getText(scoreTime.getLocaleDate(iwc.getCurrentLocale()) + "  -  " + field.getName());
 		}
 		else {
 			scoreCardsText = getText(noRounds);
 		}
 
 		Text pointsText;
-		if (scoreCards2.length > 0) {
-			IWTimestamp scoreTime = new IWTimestamp(scoreCards2[0].getScorecardDate());
-			Field fieldId = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(scoreCards2[0].getFieldID());
-			pointsText = getText(String.valueOf(scoreCards2[0].getTotalPoints()) + " " + iwrb.getLocalizedString("handicap.points", "points") + "  -  " + fieldId.getName() + ", " + scoreTime.getLocaleDate(iwc.getCurrentLocale()));
+		if (bestRound != null) {
+			IWTimestamp scoreTime = new IWTimestamp(bestRound.getScorecardDate());
+			Field field = bestRound.getField();
+			pointsText = getText(String.valueOf(bestRound.getTotalPoints()) + " " + iwrb.getLocalizedString("handicap.points", "points") + "  -  " + field.getName() + ", " + scoreTime.getLocaleDate(iwc.getCurrentLocale()));
 		}
 		else {
 			pointsText = getText(noRounds);
 		}
 
 		Text averageText;
-		if (scoreCards.length > 0) {
-			float punktar = 0;
-			for (int b = 0; b < scoreCards.length; b++) {
-				punktar += (float) scoreCards[b].getTotalPoints();
-			}
-			String averagePoints = TextSoap.decimalFormat(String.valueOf((punktar / (float) scoreCards.length)), 2);
+		if (pointsAverage > 0) {
+			String averagePoints = TextSoap.decimalFormat(pointsAverage, 2);
 			averageText = getText(averagePoints + " " + iwrb.getLocalizedString("handicap.points", "points"));
 		}
 		else {
@@ -203,5 +205,14 @@ public class HandicapInfo extends GolfBlock {
 		textTable.add(clubText, 1, row);
 		
 		add(textTable);
+	}
+	
+	private ScorecardBusiness getScorecardBusiness(IWApplicationContext iwac) {
+		try {
+			return (ScorecardBusiness) IBOLookup.getServiceInstance(iwac, ScorecardBusiness.class);
+		}
+		catch (IBOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
 	}
 }
