@@ -59,7 +59,6 @@ public class QueryHelper {
 		if(root!=null){
 		XMLAttribute template = root.getAttribute(QueryXMLConstants.TEMPLATE);
 		isTemplate = (template!=null && Boolean.getBoolean(template.getValue()));
-		System.out.println("is query a template "+isTemplate);
 		XMLElement source = root.getChild(QueryXMLConstants.SOURCE_ENTITY);
 		if(source!=null){
 			// SOURCE ENTITY PART (STEP 1)
@@ -80,7 +79,7 @@ public class QueryHelper {
 							XMLElement xmlEntity = (XMLElement) entities.next();
 							listOfRelatedEntities.add(new QueryEntityPart(xmlEntity));
 						}
-						
+					}	
 						// FIELD PART (STEP 3)
 						XMLElement fields = root.getChild(QueryXMLConstants.FIELDS);
 						XMLAttribute fieldLock  = related.getAttribute(QueryXMLConstants.LOCK);
@@ -104,7 +103,7 @@ public class QueryHelper {
 								}
 							}
 						}
-					}
+					
 				}
 			}		
 			checkStep();	
@@ -487,6 +486,26 @@ public class QueryHelper {
 	 */
 	public void setFieldsLock(boolean b) {
 		fieldsLock = b;
+	}
+	
+	/**
+	 * Searches the entity with the given name
+	 * @param name
+	 * @return query entity part if found, else null
+	 */
+	public QueryEntityPart getEntityPart(String name){
+		if(hasSourceEntity() && getSourceEntity().getName().equals(name)){
+				return getSourceEntity();
+		}
+		else if(hasRelatedEntities()){
+			Iterator iter = getListOfRelatedEntities().iterator();
+			while (iter.hasNext()) {
+				QueryEntityPart part = (QueryEntityPart) iter.next();
+				if(part.getName().equals(name))
+					return part;
+			}
+		}
+		return null;
 	}
 
 }

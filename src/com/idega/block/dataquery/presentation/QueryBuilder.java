@@ -972,27 +972,42 @@ public class QueryBuilder extends Block {
 	
 	private DropdownMenu getAvailableFieldsDropdown(IWContext iwc)throws RemoteException {
 		QueryService service = getQueryService(iwc);
+		Map drpMap = new HashMap();
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
+		if(helper.hasFields()){
+			Iterator iter  = helper.getListOfFields().iterator();
+			while (iter.hasNext()) {
+				QueryFieldPart part = (QueryFieldPart) iter.next();
+				drpMap.put(part.encode(),part);
+				
+				drp.addMenuElement(part.encode(),	iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getDisplay());
+			}
+		}
+		
+		
 		QueryEntityPart entityPart = helper.getSourceEntity();
 		List entities = helper.getListOfRelatedEntities();
 		if (entities == null)
 			entities = new Vector();
 		Iterator iterator = entities.iterator();
 		
-		filldropdown(service, entityPart,drp);
+		filldropdown(service, entityPart,drpMap,drp);
 		while (iterator.hasNext()) {
 			entityPart = (QueryEntityPart) iterator.next();
-			filldropdown(service, entityPart,drp);
+			filldropdown(service, entityPart,drpMap,drp);
 		}
 		return drp;
 	}
 	
-	private void filldropdown(QueryService service,QueryEntityPart entityPart,DropdownMenu drp)throws RemoteException {
+	private void filldropdown(QueryService service,QueryEntityPart entityPart,Map drpMap,DropdownMenu drp)throws RemoteException {
 		Iterator iter = service.getListOfFieldParts(iwrb, entityPart).iterator();
+		String enc;
 		while (iter.hasNext()) {
-		QueryFieldPart part = (QueryFieldPart) iter.next();
-		//System.out.println(" " + part.getName());
-		drp.addMenuElement(part.encode(),	iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+			QueryFieldPart part = (QueryFieldPart) iter.next();
+			enc = part.encode();
+			if(!drpMap.containsKey(enc)){
+				drp.addMenuElement(part.encode(),	iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+			}
 		}
 	}
 
