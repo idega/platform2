@@ -54,6 +54,11 @@ public class TPosClient {
       System.err.println("Error no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
       System.err.println("Error string : " + _client.getProperty(TPOS3Client.PN_ERRORTEXT));
     }
+    else {
+      System.err.println("Got certifycate!!!");
+      System.err.println("Return no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+      System.err.println("Return string : " + _client.getProperty(TPOS3Client.PN_ERRORTEXT));
+    }
 
     return(valid);
   }
@@ -62,6 +67,7 @@ public class TPosClient {
     _client.setProperty(TPOS3Client.PN_MERCHANTID, "TST");
     _client.setProperty(TPOS3Client.PN_LOCATIONID, "BJORG");
     _client.setProperty(TPOS3Client.PN_POSID, "BJO003001");
+
     _client.setProperty(TPOS3Client.PN_KEYRECEIVEPASSWORD, "5JGL64EF");
 
     boolean valid = _client.sendKeyPairReq();
@@ -69,6 +75,11 @@ public class TPosClient {
     if (!valid) {
       System.err.println("Error no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
       System.err.println("Error string : " + _client.getProperty(TPOS3Client.PN_ERRORTEXT));
+    }
+    else {
+      System.err.println("Got certifycate!!!");
+      System.err.println("Return no: " + _client.getProperty(TPOS3Client.PN_ERRORNUMBER));
+      System.err.println("Return string : " + _client.getProperty(TPOS3Client.PN_ERRORTEXT));
     }
 
     return(valid);
