@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.17 2002/08/12 13:00:42 palli Exp $
+ * $Id: ContractBusiness.java,v 1.18 2002/08/22 15:08:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -261,7 +261,7 @@ public  class ContractBusiness {
       ex.printStackTrace( );
     }
   }
-  
+
   public static void deliverKey(IWApplicationContext iwac,int iContractId){
   	deliverKey(iwac,iContractId,null);
   }
@@ -396,6 +396,7 @@ public  class ContractBusiness {
       case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
       case 'T': r = iwrb.getLocalizedString("terminated","Terminated");   break;
       case 'E': r = iwrb.getLocalizedString("ended","Ended");  break;
+      case 'G': r = iwrb.getLocalizedString("garbage","Garbage");  break;
     }
     return r;
   }
