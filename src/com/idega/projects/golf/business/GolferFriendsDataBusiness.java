@@ -2,6 +2,7 @@ package com.idega.projects.golf.business;
 
 import java.sql.Timestamp;
 import com.idega.projects.golf.entity.GolferPageFriendsData;
+import com.idega.projects.golf.entity.GolferPageData;
 import java.sql.Date;
 import java.lang.String;
 import com.idega.util.idegaTimestamp;
@@ -20,29 +21,42 @@ import java.sql.SQLException;
 
 public class GolferFriendsDataBusiness {
 
-public static void insertFriendsData(String name, String sSNumber, String email, String adress,
+  public static void insertFriendsData(String name, String sSNumber, String email, String adress,
   /* TimeStamp signingDate,*/ String cardType, String cardNumber, String cardExpDate,
-   boolean nameAppearance, String paymentAmount, String paymentDuration, String billAdress,
-   String billName, String billSSNumber, String nameToAppear, String golferName) throws SQLException{
+    boolean nameAppearance, String paymentAmount, String paymentDuration, String billAdress,
+    String billName, String billSSNumber, String nameToAppear, String golferName) throws SQLException{
 
-   GolferPageFriendsData golferPageFriendsData = new GolferPageFriendsData();
-     golferPageFriendsData.setName(name);
-     golferPageFriendsData.setGolferName(golferName);
-     golferPageFriendsData.setAdress(adress);
-     golferPageFriendsData.setCreditCardExpDate(cardExpDate);
-     golferPageFriendsData.setCreditCardNumber(cardNumber);
-     golferPageFriendsData.setCreditCardType(cardType);
-     golferPageFriendsData.setEmail(email);
-     golferPageFriendsData.setNameAppearance(nameAppearance);
-     golferPageFriendsData.setPaymentAmount(paymentAmount);
-     golferPageFriendsData.setPaymentDuration(paymentDuration);
-     golferPageFriendsData.setSigningDate(new idegaTimestamp().getTimestampRightNow());
-     golferPageFriendsData.setSocialSecurityNumber(sSNumber);
-     golferPageFriendsData.setBillAdress(billAdress);
-     golferPageFriendsData.setBillName(billName);
-     golferPageFriendsData.setBillSSNumber(billSSNumber);
-     golferPageFriendsData.setNameToView(nameToAppear);
-     golferPageFriendsData.insert();
-   }
+    GolferPageFriendsData golferPageFriendsData = new GolferPageFriendsData();
+    golferPageFriendsData.setName(name);
+    golferPageFriendsData.setGolferName(golferName);
+    golferPageFriendsData.setAdress(adress);
+    golferPageFriendsData.setCreditCardExpDate(cardExpDate);
+    golferPageFriendsData.setCreditCardNumber(cardNumber);
+    golferPageFriendsData.setCreditCardType(cardType);
+    golferPageFriendsData.setEmail(email);
+    golferPageFriendsData.setNameAppearance(nameAppearance);
+    golferPageFriendsData.setPaymentAmount(paymentAmount);
+    golferPageFriendsData.setPaymentDuration(paymentDuration);
+    golferPageFriendsData.setSigningDate(new idegaTimestamp().getTimestampRightNow());
+    golferPageFriendsData.setSocialSecurityNumber(sSNumber);
+    golferPageFriendsData.setBillAdress(billAdress);
+    golferPageFriendsData.setBillName(billName);
+    golferPageFriendsData.setBillSSNumber(billSSNumber);
+    golferPageFriendsData.setNameToView(nameToAppear);
+    golferPageFriendsData.insert();
+  }
+
+  public static void insertNewGolferPageData(int memberID){
+   /**@todo Implement insertNewGolferPageData, especially NewsReader.
+   */
+  }
+
+  public static void insertGolferPageData(int memberID, int newsReaderID,
+    int profileID, int golfbagID, int resultsAbroadID, int statisticsID,
+    int supportesID, int supportPreSigningID) throws SQLException{
+    GolferPageData golferPageData = new GolferPageData();
+
+
+  }
 
 }
