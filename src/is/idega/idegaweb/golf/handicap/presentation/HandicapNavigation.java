@@ -72,8 +72,8 @@ public class HandicapNavigation extends GolfBlock {
 		myTable.setWidth("100%");
 		myTable.setHeight("100%");
 		myTable.setColor(1, 1, "#FFFFFF");
-		myTable.setColor(1, 2, "#CEDFD0");
-		myTable.setColor(1, 3, "#CEDFD0");
+		myTable.setColor(1, 2, "#FFFFFF");
+		myTable.setColor(1, 3, "#FFFFFF");
 		myTable.setAlignment(1, 1, "right");
 		myTable.setAlignment(1, 3, "center");
 		myTable.setVerticalAlignment(1, 3, "middle");

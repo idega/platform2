@@ -21,11 +21,21 @@ import is.idega.idegaweb.golf.entity.Statistic;
 import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 /**
  * @author laddi
  */
-public class HandicapStatistics extends GolfBlock {
+public class HandicapStatistics extends GolfWindow {
+	
+	public HandicapStatistics() {
+		setWidth(600);
+		setHeight(350);
+		setTitle("Edit statistics");
+		add(new Statistics());
+	}
+
+	public class Statistics extends GolfBlock {
 
 	public void main(IWContext modinfo) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle();
@@ -391,5 +401,6 @@ public class HandicapStatistics extends GolfBlock {
 	public String scaleDecimals(String handicap, int scale) {
 		BigDecimal decimal = new BigDecimal(handicap);
 		return decimal.setScale(scale, 5).toString();
+	}
 	}
 }

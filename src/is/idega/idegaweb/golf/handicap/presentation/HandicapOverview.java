@@ -23,13 +23,13 @@ import is.idega.idegaweb.golf.entity.TournamentRoundHome;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.service.GolfGroup;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -38,8 +38,9 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWCalendar;
@@ -51,7 +52,7 @@ public class HandicapOverview extends GolfBlock {
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
 
-	private String member_id;
+	private String iMemberID;
 	private boolean isAdmin = false;
 
 	//Bjarni added this boolean and color String 14.08.01
@@ -61,15 +62,11 @@ public class HandicapOverview extends GolfBlock {
 	private int year = 0;
 	private int month = 0;
 	private int day = 0;
-	private IWCalendar dagatalid;
-	private String start_year;
-	private String start_month;
-	private String start_day;
-	private String end_year;
-	private String end_month;
-	private String end_day;
-	private Table myTable;
-	private Form myForm = new Form();
+	private IWCalendar calendar;
+	private IWTimestamp start;
+	private IWTimestamp end;
+	private Table table;
+	private Form form = new Form();
 	private boolean noIcons = false;
 
 	private boolean setDifferentOverviewButton = false;
@@ -79,216 +76,127 @@ public class HandicapOverview extends GolfBlock {
 	private boolean isFraPicture = false;
 	private String tilPictureUrlInBundle;
 	private String fraPictureUrlInBundle;
+	private String getOverviewButtonImageUrlInBundle;
 	private String getOverViewParameterName;
 	private String getOverViewParameterValue;
 
-	private String headerColor = "#336660";
-	private String headerTextColor = "#FFFFFF";
-
-	private String viewScoreIceonUrlInBundle = "shared/eye.gif";
-	private String getOverviewButtonImageUrlInBundle = "getOverview.gif";
-	private Text headerText = new Text(); //Bjarni added 14.08.01
-	private Text tableText = new Text();
-	private Text tilFraText = new Text();
-	private Link textLink = new Link();
+	private String headerColor = "#FFFFFF";
 
 	private boolean isWindow = false;
-
-	{ //text properties initialized.
-		headerText.setFontSize(1);
-		headerText.setFontColor(headerTextColor);
-
-		tilFraText.setFontColor(headerTextColor);
-		tilFraText.setBold();
-
-		tableText.setFontSize(1);
-
-		textLink.setFontSize(1);
-	}
+	
+	private ICPage iFieldPage;
+	private ICPage iTournamentPage;
 
 	public HandicapOverview() {
 	}
 
 	public HandicapOverview(String member_id) {
-		this.member_id = member_id;
+		this.iMemberID = member_id;
 	}
 
 	public HandicapOverview(int member_id) {
-		this.member_id = String.valueOf(member_id);
+		this.iMemberID = String.valueOf(member_id);
 	}
 
 	public void main(IWContext modinfo) throws Exception {
-
 		iwrb = getResourceBundle();
 		iwb = getBundle();
 
 		this.isAdmin = isAdministrator(modinfo);
 
-		if (member_id == null) {
-			member_id = modinfo.getParameter("member_id");
-			if (member_id == null) {
-				member_id = (String) modinfo.getSession().getAttribute("member_id");
-				if (member_id == null) {
+		if (iMemberID == null) {
+			iMemberID = modinfo.getParameter("member_id");
+			if (iMemberID == null) {
+				iMemberID = (String) modinfo.getSession().getAttribute("member_id");
+				if (iMemberID == null) {
 					Member memberinn = (Member) modinfo.getSession().getAttribute("member_login");
 					if (memberinn != null) {
-						member_id = String.valueOf(memberinn.getID());
-						if (member_id == null) {
-							member_id = "1";
+						iMemberID = String.valueOf(memberinn.getID());
+						if (iMemberID == null) {
+							iMemberID = "1";
 						}
 					}
 					else {
-						member_id = "1";
+						iMemberID = "1";
 					}
 				}
 			}
 		}
 
 		fillTable(modinfo);
-		myForm.add(myTable);
+		form.add(table);
 
-		add(myForm);
-
+		add(form);
 	}
 
 	private void fillTable(IWContext modinfo) throws IOException, SQLException, FinderException {
-
-		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(this.member_id));
+		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(this.iMemberID));
 		MemberInfo memberInfo = member.getMemberInfo();
 
 		String[] dates = getDates(modinfo);
 
-		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + member_id + "' and scorecard_date>='" + dates[0] + "' and scorecard_date<='" + (dates[1] + " 23:59:59.0") + "' and scorecard_date is not null order by scorecard_date");
-		Scorecard[] scoreCardsBefore = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id = " + member_id + " and scorecard_date < '" + dates[0] + "' order by scorecard_date desc");
+		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and scorecard_date>='" + dates[0] + "' and scorecard_date<='" + (dates[1] + " 23:59:59.0") + "' and scorecard_date is not null order by scorecard_date");
+		Scorecard[] scoreCardsBefore = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id = " + iMemberID + " and scorecard_date < '" + dates[0] + "' order by scorecard_date desc");
 
-		myTable = new Table();
-		myTable.setWidth("100%");
-		myTable.setBorder(0);
-		myTable.setCellpadding(4);
-		myTable.setCellspacing(0);
-		myTable.setRowAlignment(1, "center");
-		myTable.setRowVerticalAlignment(1, "bottom");
+		table = new Table();
+		table.setWidth("100%");
+		table.setBorder(0);
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setRowAlignment(1, "center");
+		table.setRowVerticalAlignment(1, "bottom");
+		int row = 2;
 
-		Text dags;
-		dags = ((Text) this.headerText.clone());
-		dags.setText(iwrb.getLocalizedString("handicap.date", "Date"));
-		if (noIcons) {
-			dags.setBold();
-		}
-		Text vollur;
-		vollur = ((Text) this.headerText.clone());
-		vollur.setText(iwrb.getLocalizedString("handicap.course", "Course"));
-		if (noIcons) {
-			vollur.setBold();
-		}
-		Text mot;
-		mot = ((Text) this.headerText.clone());
-		mot.setText(iwrb.getLocalizedString("handicap.tournament", "Tournament"));
-		if (noIcons) {
-			mot.setBold();
-		}
-		Text teigar;
-		teigar = ((Text) this.headerText.clone());
-		teigar.setText(iwrb.getLocalizedString("handicap.tees", "Tees"));
-		if (noIcons) {
-			teigar.setBold();
-		}
-		Text vaegi = ((Text) this.headerText.clone());
-		vaegi.setText(iwrb.getLocalizedString("handicap.slope", "Slope/CR"));
-		if (noIcons) {
-			vaegi.setBold();
-		}
-		Text leikforgjof = ((Text) this.headerText.clone());
-		leikforgjof.setText(iwrb.getLocalizedString("handicap.course_handicap", "Course"));
-		leikforgjof.addBreak();
-		leikforgjof.addToText(iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap"));
-		if (noIcons) {
-			leikforgjof.setBold();
-		}
-		Text punktar = ((Text) headerText.clone());
-		punktar.setText(iwrb.getLocalizedString("handicap.points", "Points"));
-		if (noIcons) {
-			punktar.setBold();
-		}
-		Text mismunur = ((Text) headerText.clone());
-		mismunur.setText(iwrb.getLocalizedString("handicap.difference", "Difference"));
-		if (noIcons) {
-			mismunur.setBold();
-		}
-		Text grunnforgjof = ((Text) headerText.clone());
-		grunnforgjof.setText(iwrb.getLocalizedString("handicap.handicap", "Handicap"));
-		if (noIcons) {
-			grunnforgjof.setBold();
-		}
-		Text ny_grunnforgjof = ((Text) headerText.clone());
-		ny_grunnforgjof.setText(iwrb.getLocalizedString("handicap.new", "New"));
-		ny_grunnforgjof.addBreak();
-		ny_grunnforgjof.addToText(iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap"));
-		if (noIcons) {
-			ny_grunnforgjof.setBold();
-		}
-		Text skor = ((Text) headerText.clone());
-		skor.setText(iwrb.getLocalizedString("handicap.scorecard", "Scorecard"));
-		if (noIcons) {
-			skor.setBold();
-		}
-
-		myTable.add(dags, 1, 2);
-		myTable.add(vollur, 2, 2);
-		myTable.add(mot, 3, 2);
-		myTable.add(teigar, 4, 2);
-		myTable.add(vaegi, 5, 2);
-		myTable.add(leikforgjof, 6, 2);
-		myTable.add(punktar, 7, 2);
-		myTable.add(mismunur, 8, 2);
-		myTable.add(grunnforgjof, 9, 2);
-		myTable.add(ny_grunnforgjof, 10, 2);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.date", "Date")), 1, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.course", "Course")), 2, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.tournament", "Tournament")), 3, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.tees", "Tees")), 4, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.slope", "Slope/CR")), 5, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.course_handicap", "Course") + Text.BREAK + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap")), 6, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.points", "Points")), 7, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.difference", "Difference")), 8, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap")), 9, row);
+		table.add(getSmallHeader(iwrb.getLocalizedString("handicap.new", "New") + Text.BREAK + iwrb.getLocalizedString("handicap.handicap_lowercase", "handicap")), 10, row);
 
 		if (!isWindow) {
-			myTable.add(skor, 11, 2);
+			table.add(getSmallHeader(iwrb.getLocalizedString("handicap.scorecard", "Scorecard")), 11, row);
 		}
-		myTable.setRowAlignment(2, "center");
-		myTable.setRowVerticalAlignment(2, "bottom");
+		table.setRowColor(row, getHeaderColor());
+		table.setRowPadding(row, getCellpadding());
+		table.setRowAlignment(row, "center");
+		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
+		table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_LEFT);
+		table.setRowVerticalAlignment(row++, "bottom");
 
-		int grunn_punktar = 36;
-
+		int basePoints = 36;
+		int zebraRow = 1;
+		boolean mergedCells = false;
+		
 		for (int a = 0; a < scoreCards.length; a++) {
+			Text date = getSmallText(new IWTimestamp(scoreCards[a].getScorecardDate()).getDateString("dd/MM/yy"));
 
-			IWTimestamp date = new IWTimestamp(scoreCards[a].getScorecardDate());
-			Text date2 = ((Text) tableText.clone());
-			date2.setText(date.getDate() + "/" + date.getMonth() + "/" + String.valueOf(date.getYear()).substring(2, 4));
-
-			GolfWindow deleteWindow = new GolfWindow(iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"), 400, 220);
-			deleteWindow.add(new HandicapUtility());
-			Link eyda = new Link(iwb.getImage("shared/trash.gif", iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"), 9, 13), deleteWindow);
-			eyda.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, String.valueOf(scoreCards[a].getID()));
-			eyda.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_DELETE_SCORECARD);
+			Image deleteImage = iwb.getImage("shared/handicap/delete.gif", iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"));
+			deleteImage.setToolTip(iwrb.getLocalizedString("handicap.scorecard_delete", "Delete scorecard"));
+			deleteImage.setHorizontalSpacing(1);
+			Link deleteScorecard = new Link(deleteImage);
+			deleteScorecard.setWindowToOpen(HandicapUtility.class);
+			deleteScorecard.addParameter(HandicapUtility.PARAMETER_SCORECARD_ID, String.valueOf(scoreCards[a].getID()));
+			deleteScorecard.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_DELETE_SCORECARD);
 
 			if (scoreCards[a].getForeignRound()) {
-				myTable.mergeCells(2, a + 3, 6, a + 3);
-				myTable.setRowAlignment(a + 3, "center");
+				table.mergeCells(2, row, 6, row);
+				mergedCells = true;
 
-				Text fieldText = ((Text) tableText.clone());
-				fieldText.setText("- " + scoreCards[a].getForeignCourseName() + " -");
-				Text handicapBefore = ((Text) tableText.clone());
-				handicapBefore.setText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore()));
-				Text handicapAfter = ((Text) tableText.clone());
-				handicapAfter.setText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapAfter()));
-				Text heildarPunktar = (Text) tableText.clone();
-				heildarPunktar.setText("" + scoreCards[a].getTotalPoints());
-				Text mispunktar = ((Text) tableText.clone());
-				mispunktar.setText(String.valueOf(scoreCards[a].getTotalPoints() - grunn_punktar));
-
-				myTable.add(date2, 1, a + 3);
-				myTable.add(fieldText, 2, a + 3);
-				myTable.add(heildarPunktar, 7, a + 3);
-				myTable.add(mispunktar, 8, a + 3);
-				myTable.add(handicapBefore, 9, a + 3);
-				myTable.add(handicapAfter, 10, a + 3);
+				table.add(date, 1, row);
+				table.add(getSmallText("- " + scoreCards[a].getForeignCourseName() + " -"), 2, row);
+				table.add(getSmallText("" + scoreCards[a].getTotalPoints()), 7, a + 3);
+				table.add(getSmallText(String.valueOf(scoreCards[a].getTotalPoints() - basePoints)), 8, row);
+				table.add(getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore())), 9, row);
+				table.add(getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapAfter())), 10, row);
 
 				if (!isWindow) {
-					myTable.addText("", 11, a + 3);
-					if (isAdmin || member_id.equalsIgnoreCase("1")) {
-						myTable.add(eyda, 11, a + 3);
+					if (isAdmin || iMemberID.equalsIgnoreCase("1")) {
+						table.add(deleteScorecard, 11, row);
 					}
 				}
 			}
@@ -297,31 +205,32 @@ public class HandicapOverview extends GolfBlock {
 					Field field = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(scoreCards[a].getFieldID());
 					TeeColor teeColor = ((TeeColorHome) IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKey(scoreCards[a].getTeeColorID());
 					TournamentRound tournamentRound = null;
-					String tournament_name = "";
+					String tournamentName = "";
 					Tournament tournament = (Tournament) IDOLookup.instanciateEntity(Tournament.class);
+					mergedCells = false;
 
 					if (scoreCards[a].getTournamentRoundId() != 1 && scoreCards[a].getTournamentRoundId() != -1) {
 						tournamentRound = ((TournamentRoundHome) IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKey(scoreCards[a].getTournamentRoundId());
 						tournament = ((TournamentHome) IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKey(tournamentRound.getTournamentID());
-						tournament_name = tournament.getName();
+						tournamentName = tournament.getName();
 					}
 
 					int teeColorID = scoreCards[a].getTeeColorID();
-					String field_name = field.getName();
-					String tee_name = teeColor.getName();
+					String fieldName = field.getName();
+					String teeName = teeColor.getName();
 
 					double slope = (double) scoreCards[a].getSlope();
-					double course_rating = (double) scoreCards[a].getCourseRating();
-					String cr = TextSoap.singleDecimalFormat(String.valueOf(course_rating));
-					double field_par = (double) field.getFieldPar();
-					double grunn = (double) scoreCards[a].getHandicapBefore();
-					int heildarpunktar = scoreCards[a].getTotalPoints();
-					float ny_grunn = scoreCards[a].getHandicapAfter();
+					double courseRating = (double) scoreCards[a].getCourseRating();
+					String cr = TextSoap.singleDecimalFormat(String.valueOf(courseRating));
+					double fieldPar = (double) field.getFieldPar();
+					double baseHandicap = (double) scoreCards[a].getHandicapBefore();
+					int totalPoints = scoreCards[a].getTotalPoints();
+					float newBaseHandicap = scoreCards[a].getHandicapAfter();
 
-					int leik_forgjof = 0;
+					int playHandicap = 0;
 
-					Handicap leik = new Handicap(grunn);
-					leik_forgjof = leik.getLeikHandicap(slope, course_rating, field_par);
+					Handicap leik = new Handicap(baseHandicap);
+					playHandicap = leik.getLeikHandicap(slope, courseRating, fieldPar);
 
 					float realHandicap = 0;
 
@@ -337,8 +246,8 @@ public class HandicapOverview extends GolfBlock {
 						realHandicap = scoreCards[a - 1].getHandicapAfter();
 					}
 
-					Handicap realLeik = new Handicap((double) realHandicap);
-					int realPlayHandicap = realLeik.getLeikHandicap(slope, course_rating, field_par);
+					Handicap courseHandicap = new Handicap((double) realHandicap);
+					int realPlayHandicap = courseHandicap.getLeikHandicap(slope, courseRating, fieldPar);
 
 					boolean showRealHandicap = false;
 					if (scoreCards[a].getTournamentRoundId() > 1) {
@@ -365,142 +274,105 @@ public class HandicapOverview extends GolfBlock {
 						realPoints = Handicap.getTotalPoints(scoreCards[a].getID(), realPlayHandicap);
 					}
 
-					String grunn2 = TextSoap.singleDecimalFormat(String.valueOf(grunn));
-					String ny_grunn3 = TextSoap.singleDecimalFormat(String.valueOf(ny_grunn));
+					table.add(date, 1, row);
 
-					/*
-					 * Text field_name2 = new Text(field_name);
-					 */
-					Link fieldLink = ((Link) textLink.clone());
-					fieldLink.setText(field_name);
-					fieldLink.setURL("/clubs/field.jsp");
-					fieldLink.setFontSize("1");
-					fieldLink.addParameter("field_id", field.getID());
-					fieldLink.addParameter("union_id", field.getUnionID());
-					/*
-					 * Text tournament_id2 = new Text(tournament_name); if (
-					 * tournament_name == null ) { tournament_id2 = new Text(""); }
-					 */
-					Text slope2 = ((Text) tableText.clone());
-					slope2.setText(String.valueOf((int) Math.rint(slope)) + "&nbsp;/&nbsp;" + cr);
-					Text leik_forgjof2 = ((Text) tableText.clone());
-					leik_forgjof2.setText(String.valueOf(leik_forgjof));
-					Text realLeikForgjof = (Text) tableText.clone();
-					if (showRealHandicap) {
-						realLeikForgjof.setText("" + realPlayHandicap);
-					}
-					Text heildarpunktar2 = ((Text) tableText.clone());
-					heildarpunktar2.setText(String.valueOf(heildarpunktar));
-					Text realHeildarPunktar = (Text) tableText.clone();
-					if (showRealHandicap) {
-						realHeildarPunktar.setText("" + realPoints);
-					}
-					Text mispunktar = ((Text) tableText.clone());
-					mispunktar.setText(String.valueOf(heildarpunktar - grunn_punktar));
-					Text realMisPunktar = (Text) tableText.clone();
-					if (showRealHandicap) {
-						realMisPunktar.setText("" + String.valueOf(realPoints - grunn_punktar));
-					}
-					Text grunn3 = ((Text) tableText.clone());
-					grunn3.setText(grunn2);
-					Text realGrunn = (Text) tableText.clone();
-					if (showRealHandicap) {
-						realGrunn.setText(TextSoap.singleDecimalFormat(String.valueOf(realHandicap)));
-					}
-					realGrunn.setFontSize(1);
-					Text ny_grunn2 = ((Text) tableText.clone());
-					ny_grunn2.setText(ny_grunn3);
-					ny_grunn2.setFontSize("1");
-					Text tee_text = ((Text) tableText.clone());
-					tee_text.setText(tee_name);
-					tee_text.setFontSize(1);
-
-					if (isDefaultColors)
-						tee_text.setFontColor(getTeeColor(teeColorID));
-					else
-						tee_text.setFontColor(teeTextColor);
-
-					myTable.setRowVerticalAlignment(a + 3, "middle");
-					myTable.add(date2, 1, a + 3);
-					myTable.add(fieldLink, 2, a + 3);
-					if (tournament_name != null) {
-						//Link tournamentLink = new Link(tournament_name,
-						// "/tournament/tournamentinfo.jsp");
-						Link tournamentLink = ((Link) textLink.clone());
-						tournamentLink.setText(tournament_name);
-						tournamentLink.setURL("/tournament/tournamentinfo.jsp");
-						tournamentLink.setFontSize(1);
-						tournamentLink.addParameter("tournament_id", tournament.getID());
-						myTable.add(tournamentLink, 3, a + 3);
+					if (iFieldPage != null) {
+						Link fieldLink = getSmallLink(fieldName);
+						fieldLink.setPage(iFieldPage);
+						fieldLink.addParameter("field_id", field.getID());
+						fieldLink.addParameter("union_id", field.getUnionID());
+						table.add(fieldLink, 2, row);
 					}
 					else {
-						myTable.addText("", 3, a + 3);
+						table.add(getSmallText(fieldName), 2, row);
 					}
-					myTable.add(tee_text, 4, a + 3);
-					myTable.add(slope2, 5, a + 3);
-					if (showRealHandicap) {
-						myTable.add(realLeikForgjof, 6, a + 3);
+
+					if (tournamentName != null) {
+						if (iTournamentPage != null) {
+							Link tournamentLink = getSmallLink(tournamentName);
+							tournamentLink.setPage(iTournamentPage);
+							tournamentLink.addParameter("tournament_id", tournament.getID());
+							table.add(tournamentLink, 3, row);
+						}
+						else {
+							table.add(getSmallText(tournamentName), 3, row);
+						}
 					}
 					else {
-						myTable.add(leik_forgjof2, 6, a + 3);
+						table.addText("", 3, row);
 					}
+
+					table.add(getSmallText(teeName), 4, row);
+					table.add(getSmallText(String.valueOf((int) Math.rint(slope)) + Text.NON_BREAKING_SPACE + "/" + Text.NON_BREAKING_SPACE + cr), 5, row);
 
 					if (showRealHandicap) {
-						myTable.add(realHeildarPunktar, 7, a + 3);
+						table.add(getSmallText(String.valueOf(realPlayHandicap)), 6, row);
+						table.add(getSmallText(String.valueOf(realPoints)), 7, row);
+						table.add(getSmallText(String.valueOf(realPoints - basePoints)), 8, row);
+						table.add(getSmallText(TextSoap.singleDecimalFormat(String.valueOf(realHandicap))), 9, row);
 					}
 					else {
-						myTable.add(heildarpunktar2, 7, a + 3);
+						table.add(getSmallText(String.valueOf(playHandicap)), 6, row);
+						table.add(getSmallText(String.valueOf(totalPoints)), 7, row);
+						table.add(getSmallText(String.valueOf(totalPoints - basePoints)), 8, row);
+						table.add(getSmallText(TextSoap.singleDecimalFormat(String.valueOf(baseHandicap))), 9, row);
 					}
 
-					if (showRealHandicap) {
-						myTable.add(realMisPunktar, 8, a + 3);
-					}
-					else {
-						myTable.add(mispunktar, 8, a + 3);
+					if (Double.toString(baseHandicap) != null) {
+						table.add(getSmallText(TextSoap.singleDecimalFormat(String.valueOf(newBaseHandicap))), 10, row);
 					}
 
-					if (showRealHandicap) {
-						myTable.add(realGrunn, 9, a + 3);
-					}
-					else {
-						myTable.add(grunn3, 9, a + 3);
-					}
+					table.setRowAlignment(row, "center");
 
-					if (Double.toString(grunn) != null) {
-						myTable.add(ny_grunn2, 10, a + 3);
-					}
-
-					myTable.setRowAlignment(a + 3, "center");
-
-					GolfGroup golfGroup = new GolfGroup(member_id);
+					GolfGroup golfGroup = new GolfGroup(iMemberID);
 					boolean canWrite = true;
 					if (!isAdmin) {
 						canWrite = golfGroup.getCanWrite();
 					}
-					if (member_id.equalsIgnoreCase("1")) {
+					if (iMemberID.equalsIgnoreCase("1")) {
 						canWrite = true;
 					}
 
-					GolfWindow scorecardWindow = new GolfWindow(iwrb.getLocalizedString("handicap.view_scorecard", "View scorecard"), 650, 475);
-					scorecardWindow.add(new HandicapScorecardView());
-					GolfWindow updateWindow = new GolfWindow(iwrb.getLocalizedString("handicap.edit_scorecard", "Edit scorecard"), 600, 600);
-					updateWindow.add(new HandicapRegister());
-					GolfWindow updateWindow2 = new GolfWindow(iwrb.getLocalizedString("handicap.register_statistics", "Register statistics"), 600, 350);
-					updateWindow2.add(new HandicapStatistics());
-					
-					/* MYNDA LINKUR */Link tengill = new Link(iwb.getImage(viewScoreIceonUrlInBundle, iwrb.getLocalizedString("handicap.view_scorecard", "View scorecard"), 13, 13), scorecardWindow); //
-					/*
-					 * if ( noIcons ) { tengill = new
-					 * Link(iwb.getImage("shared/eye2.gif",iwrb.getLocalizedString("handicap.view_scorecard","View
-					 * scorecard"),13,13),scorecardWindow); //
-					 */
+					Image view = iwb.getImage("shared/handicap/eye.gif", iwrb.getLocalizedString("handicap.view_scorecard", "View scorecard"));
+					view.setToolTip(iwrb.getLocalizedString("handicap.view_scorecard", "View scorecard"));
+					view.setHorizontalSpacing(1);
+					Link tengill = new Link(view);
+					tengill.setWindowToOpen(HandicapScorecardView.class);
 					tengill.addParameter("scorecard_id", String.valueOf(scoreCards[a].getID()));
 
-					Link update = new Link(iwb.getImage("shared/pad.gif", iwrb.getLocalizedString("handicap.update_scorecard", "Change scorecard"), 11, 13), updateWindow); //
+					Image updateImage = iwb.getImage("shared/handicap/edit.gif", iwrb.getLocalizedString("handicap.update_scorecard", "Change scorecard"));
+					updateImage.setToolTip(iwrb.getLocalizedString("handicap.update_scorecard", "Change scorecard"));
+					updateImage.setHorizontalSpacing(1);
+					Link update = new Link(updateImage);
+					update.setWindowToOpen(HandicapRegisterWindow.class);
 					update.addParameter("scorecard_id", String.valueOf(scoreCards[a].getID()));
 
-					Link update2 = new Link(iwb.getImage("shared/pad.gif", iwrb.getLocalizedString("handicap.register_statistics", "Register statistics"), 11, 13), updateWindow2); //
+					Image statisticsImage = iwb.getImage("shared/handicap/edit.gif", iwrb.getLocalizedString("handicap.register_statistics", "Register statistics"));
+					statisticsImage.setToolTip(iwrb.getLocalizedString("handicap.register_statistics", "Register statistics"));
+					statisticsImage.setHorizontalSpacing(1);
+					Link update2 = new Link(statisticsImage);
+					update2.setWindowToOpen(HandicapStatistics.class);
 					update2.addParameter("scorecard_id", String.valueOf(scoreCards[a].getID()));
+
+					if (!isWindow) {
+						if (isAdmin || iMemberID.equalsIgnoreCase("1")) {
+							table.add(deleteScorecard, 11, row);
+						}
+
+						if (isAdmin) {
+							table.add(update, 11, row);
+						}
+						else {
+							if (canWrite && tournamentName.length() == 0 && !noIcons) {
+								table.add(update, 11, row);
+							}
+							if (tournamentName.length() > 0 && !noIcons) {
+								table.add(update2, 11, row);
+							}
+						}
+
+						table.add(tengill, 11, row);
+					}
 
 					if (tournamentRound != null) {
 						boolean increase = tournamentRound.getIncreaseHandicap();
@@ -510,366 +382,210 @@ public class HandicapOverview extends GolfBlock {
 						if (increase && !decrease) {
 							image = iwb.getImage("shared/handicap/up.gif");
 							image.setName(iwrb.getLocalizedString("handicap.increase", "Til hækkunar"));
+							image.setToolTip(iwrb.getLocalizedString("handicap.increase", "Til hækkunar"));
 						}
 						else if (!increase && decrease) {
 							image = iwb.getImage("shared/handicap/down.gif");
 							image.setName(iwrb.getLocalizedString("handicap.decrease", "Til lækkunar"));
+							image.setToolTip(iwrb.getLocalizedString("handicap.decrease", "Til lækkunar"));
 						}
 						else if (increase && decrease) {
 							image = iwb.getImage("shared/handicap/updown.gif");
 							image.setName(iwrb.getLocalizedString("handicap.increase_decrease", "Til hækkunar/lækkunar"));
+							image.setToolTip(iwrb.getLocalizedString("handicap.increase_decrease", "Til hækkunar/lækkunar"));
 						}
 						else {
 							image = iwb.getImage("shared/handicap/nochange.gif");
 							image.setName(iwrb.getLocalizedString("handicap.no_change", "Engin áhrif á forgjöf"));
+							image.setToolTip(iwrb.getLocalizedString("handicap.no_change", "Engin áhrif á forgjöf"));
 						}
+						image.setHorizontalSpacing(1);
 
 						if (!isWindow) {
-							myTable.add(image, 11, a + 3);
-							myTable.addText("&nbsp;", 11, a + 3);
-						}
-					}
-
-					if (!isWindow) {
-						myTable.add(tengill, 11, a + 3);
-						myTable.addText("&nbsp;", 11, a + 3);
-
-						if (isAdmin) {
-							myTable.add(update, 11, a + 3);
-						}
-						else {
-							if (canWrite && tournament_name.length() == 0 && !noIcons) {
-								myTable.add(update, 11, a + 3);
-							}
-							if (tournament_name.length() > 0 && !noIcons) {
-								myTable.add(update2, 11, a + 3);
-							}
-						}
-
-						if (isAdmin || member_id.equalsIgnoreCase("1")) {
-							myTable.addText("&nbsp;", 11, a + 3);
-							myTable.add(eyda, 11, a + 3);
+							table.add(image, 11, row);
 						}
 					}
 
 				}
 
 				else {
+					mergedCells = true;
+					table.mergeCells(2, row, 8, row);
+					table.setRowAlignment(row, "center");
 
-					myTable.mergeCells(2, a + 3, 8, a + 3);
-					myTable.setRowAlignment(a + 3, "center");
+					Text updateText = getSmallText("- " + iwrb.getLocalizedString("handicap.handicap_correction", "Handicap correction") + " -");
+					Text handicapBefore = getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore()));
+					Text handicapAfter = getSmallText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapAfter()));
 
-					Text updateText = ((Text) tableText.clone());
-					updateText.setText("- " + iwrb.getLocalizedString("handicap.handicap_correction", "Handicap correction") + " -");
-					Text handicapBefore = ((Text) tableText.clone());
-					handicapBefore.setText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapBefore()));
-					Text handicapAfter = ((Text) tableText.clone());
-					handicapAfter.setText(TextSoap.singleDecimalFormat((double) scoreCards[a].getHandicapAfter()));
-
-					myTable.add(date2, 1, a + 3);
-					myTable.add(updateText, 2, a + 3);
-					myTable.add(handicapBefore, 9, a + 3);
-					myTable.add(handicapAfter, 10, a + 3);
+					table.add(date, 1, row);
+					table.add(updateText, 2, row);
+					table.add(handicapBefore, 9, row);
+					table.add(handicapAfter, 10, row);
 					if (!isWindow) {
-						myTable.addText("", 11, a + 3);
-						if (isAdmin || member_id.equalsIgnoreCase("1")) {
-							myTable.add(eyda, 11, a + 3);
+						table.addText("", 11, row);
+						if (isAdmin || iMemberID.equalsIgnoreCase("1")) {
+							table.add(deleteScorecard, 11, row);
 						}
 					}
-
 				}
 			}
 
+			table.setRowPadding(row, getCellpadding());
+			table.setRowVerticalAlignment(row, "middle");
+			table.setRowAlignment(row, "center");
+			table.setHeight(row, 20);
+			if (!mergedCells) {
+				table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_LEFT);
+				table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_LEFT);
+			}
+			if (!isWindow) {
+				table.setAlignment(11, row, Table.HORIZONTAL_ALIGN_LEFT);
+			}
+			if (zebraRow % 2 != 0) {
+				table.setRowColor(row++, getZebraColor1());
+			}
+			else {
+				table.setRowColor(row++, getZebraColor2());
+			}
+			zebraRow++;
+			table.setRowColor(row, "#B2B2B2");
+			table.setHeight(row++, 1);
 		}
 
 		if (!isWindow) {
-			int rows = myTable.getRows() + 1;
-			myTable.mergeCells(1, 1, 11, 1);
-			myTable.setAlignment(1, 1, "right");
-			myTable.setRowColor(1, headerColor);
-			myTable.setRowColor(2, headerColor);
-			myTable.setHeight(1, "20");
-			myTable.setHeight(2, "20");
-			myTable.setHeight(rows + 1, "100%");
+			table.mergeCells(1, 1, 11, 1);
+			table.setAlignment(1, 1, "right");
+			table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_MIDDLE);
+			table.setHeight(1, "40");
+			table.setHeight(2, "20");
 			getForm();
 
-			Text tprint = (Text) this.tableText.clone();
-			tprint.setText(iwrb.getLocalizedString("handical.print", "print"));
-			Link print = new Link(tprint);
+			GenericButton print = getButton(new GenericButton("print", iwrb.getLocalizedString("handical.print", "print")));
 			print.setWindowToOpen(HandicapOverviewWindow.class);
-			print.addParameter(HandicapOverviewWindow.PARAMETER_MEMBER_ID, member_id);
-			print.addParameter("start_year", modinfo.getParameter("start_year"));
-			print.addParameter("start_month", modinfo.getParameter("start_month"));
-			print.addParameter("start_day", modinfo.getParameter("start_day"));
-			print.addParameter("end_year", modinfo.getParameter("end_year"));
-			print.addParameter("end_month", modinfo.getParameter("end_month"));
-			print.addParameter("end_day", modinfo.getParameter("end_day"));
+			print.addParameterToWindow(HandicapOverviewWindow.PARAMETER_MEMBER_ID, iMemberID);
+			print.addParameterToWindow("start_date", modinfo.getParameter("start_date"));
+			print.addParameterToWindow("end_date", modinfo.getParameter("end_date"));
 
-			GolfWindow recalculate = new GolfWindow(iwrb.getLocalizedString("handicap.recalculate", "Recalculate"), 350, 200);
-			recalculate.add(new HandicapUtility());
-			/* MYNDA LINKUR */Link recalculateLink = new Link(iwrb.getImage("buttons/update.gif", iwrb.getLocalizedString("handicap.update_handicap", "Update handicap"), 76, 19), recalculate); //
-			recalculateLink.addParameter(HandicapUtility.PARAMETER_MEMBER_ID, member_id);
-			recalculateLink.addParameter(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_RECALCULATE_HANDICAP);
+			GenericButton recalculate = getButton(new GenericButton("recalculate", iwrb.getLocalizedString("handicap.update_handicap", "Update handicap")));
+			recalculate.setWindowToOpen(HandicapUtility.class);
+			recalculate.addParameterToWindow(HandicapUtility.PARAMETER_MEMBER_ID, iMemberID);
+			recalculate.addParameterToWindow(HandicapUtility.PARAMETER_METHOD, HandicapUtility.ACTION_RECALCULATE_HANDICAP);
 
-			myTable.mergeCells(1, rows, 11, rows);
-			myTable.setAlignment(1, rows, "right");
-			if (Integer.parseInt(this.member_id) > 1 && !noIcons) {
-				myTable.add(recalculateLink, 1, rows);
-				++rows;
-				myTable.mergeCells(1, rows, 11, rows);
-				myTable.setAlignment(1, rows, "right");
-				myTable.add(print, 1, rows);
+			table.mergeCells(1, row, 11, row);
+			table.setAlignment(1, row, "right");
+			table.setHeight(row, "40");
+			if (Integer.parseInt(this.iMemberID) > 1 && !noIcons) {
+				table.add(print, 1, row);
+				table.add(Text.getNonBrakingSpace(), 1, row);
+				table.add(recalculate, 1, row);
+				table.setCellpaddingRight(1, row, 5);
 			}
 			if (noIcons) {
-				myTable.setAlignment(1, 1, "left");
+				table.setAlignment(1, 1, "left");
 			}
 		}
 
 	}
 
 	private void getForm() throws IOException {
+		form.add(new HiddenInput("member_id", iMemberID));
+		form.add(new HiddenInput("handicap_action", "overView"));
+		
+		DateInput startDate = (DateInput) getStyledInterface(new DateInput("start_date"));
+		startDate.setYearRange(2000, year);
+		startDate.setDate(start.getDate());
 
-		myForm.add(new HiddenInput("member_id", member_id));
-		myForm.add(new HiddenInput("handicap_action", "overView"));
+		DateInput endDate = (DateInput) getStyledInterface(new DateInput("end_date"));
+		endDate.setYearRange(2000, year);
+		endDate.setDate(end.getDate());
 
-		DropdownMenu start_y = new DropdownMenu("start_year");
-		for (int y = 2000; y <= year; y++) {
-
-			start_y.addMenuElement(String.valueOf(y), String.valueOf(y));
-
-		}
-
-		start_y.setSelectedElement(start_year);
-		start_y.setStyleAttribute("font-size: 8pt");
-
-		DropdownMenu start_m = new DropdownMenu("start_month");
-
-		int mon = 12;
-
-		for (int m = 1; m <= mon; m++) {
-
-			start_m.addMenuElement(String.valueOf(m), dagatalid.getMonthName(m).toLowerCase().substring(0, 3) + ".");
-
-		}
-
-		start_m.setSelectedElement(start_month);
-		start_m.setStyleAttribute("font-size: 8pt");
-
-		DropdownMenu start_d = new DropdownMenu("start_day");
-
-		for (int d = 1; d <= 31; d++) {
-
-			start_d.addMenuElement(String.valueOf(d), String.valueOf(d) + ".");
-
-		}
-
-		start_d.setSelectedElement(start_day);
-		start_d.setStyleAttribute("font-size: 8pt");
-
-		DropdownMenu end_y = new DropdownMenu("end_year");
-		for (int y = 2000; y <= year; y++) {
-
-			end_y.addMenuElement(String.valueOf(y), String.valueOf(y));
-
-		}
-
-		end_y.setSelectedElement(end_year);
-		end_y.setStyleAttribute("font-size: 8pt");
-
-		DropdownMenu end_m = new DropdownMenu("end_month");
-
-		mon = 12;
-
-		for (int m = 1; m <= mon; m++) {
-
-			end_m.addMenuElement(String.valueOf(m), dagatalid.getMonthName(m).toLowerCase().substring(0, 3) + ".");
-
-		}
-
-		end_m.setSelectedElement(end_month);
-		end_m.setStyleAttribute("font-size: 8pt");
-
-		DropdownMenu end_d = new DropdownMenu("end_day");
-
-		for (int d = 1; d <= 31; d++) {
-
-			end_d.addMenuElement(String.valueOf(d), String.valueOf(d) + ".");
-
-		}
-
-		end_d.setSelectedElement(end_day);
-		end_d.setStyleAttribute("font-size: 8pt");
-
-		SubmitButton skoda = new SubmitButton(iwrb.getLocalizedString("handicap.get_overview", "Get overview"));
-		skoda.setStyleAttribute("font-size: 8pt");
+		SubmitButton getOverview = (SubmitButton) getButton(new SubmitButton(iwrb.getLocalizedString("handicap.get_overview", "Get overview")));
 		if (setDifferentOverviewButton) {
-			skoda = new SubmitButton(iwrb.getImage(getOverviewButtonImageUrlInBundle), getOverviewButtonParameterName, getOverviewButtonParameterValue);
+			getOverview = new SubmitButton(iwrb.getImage(getOverviewButtonImageUrlInBundle), getOverviewButtonParameterName, getOverviewButtonParameterValue);
 		}
-		Table dummyTable = new Table(12, 1);
-		dummyTable.setCellpadding(0);
-		dummyTable.setCellspacing(0);
 
-		Image iFra = new Image();
-		Image iTil = new Image();
+		Table navigationTable = new Table();
+		navigationTable.setCellpadding(0);
+		navigationTable.setCellspacing(0);
+		int row = 1;
 
-		Text fra = new Text();
-		Text til = new Text();
+		navigationTable.add(getHeader(iwrb.getLocalizedString("handicap.from", "From") + ": "), row++, 1);
+		navigationTable.setWidth(row++, 5);
+		navigationTable.add(startDate, row++, 1);
+		navigationTable.setWidth(row++, 12);
 
-		if (!isFraPicture) {
-			fra = ((Text) tilFraText.clone());
-			fra.setText(iwrb.getLocalizedString("handicap.from", "From") + ": ");
-		}
-		else {
-			iFra = iwrb.getImage(fraPictureUrlInBundle, iwrb.getLocalizedString("handicap.from", "From") + ": ");
-		}
-		if (!isTilPicture) {
-			til = ((Text) tilFraText.clone());
-			til.setText(iwrb.getLocalizedString("handicap.to", "To") + ": ");
-		}
-		else {
-			iTil = iwrb.getImage(tilPictureUrlInBundle, iwrb.getLocalizedString("handicap.to", "To") + ": ");
-		}
-		Text strik = new Text("&nbsp;");
-		Text bil = new Text("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+		navigationTable.add(getHeader(iwrb.getLocalizedString("handicap.to", "To") + ": "), row++, 1);
+		navigationTable.setWidth(row++, 5);
+		navigationTable.add(endDate, row++, 1);
+		navigationTable.setWidth(row++, 12);
 
-		if (!isFraPicture) {
+		navigationTable.add(getOverview, row++, 1);
+		navigationTable.setWidth(row++, 5);
 
-		}
-		else {
-		}
-		dummyTable.add(start_d, 2, 1);
-		dummyTable.add(start_m, 3, 1);
-		dummyTable.add(start_y, 4, 1);
-
-		dummyTable.add(bil, 5, 1);
-
-		if (!isFraPicture) {
-			dummyTable.add(fra, 1, 1);
-			dummyTable.add(til, 6, 1);
-			dummyTable.add(skoda, 11, 1);
-		}
-		else {
-			Table dummyTable2 = new Table(2, 1);
-			dummyTable2.add(iFra, 1, 1);
-			dummyTable.add(dummyTable2, 1, 1);
-
-			Table dummyTable3 = new Table(2, 1);
-			dummyTable3.add(iTil, 1, 1);
-			dummyTable.add(dummyTable3, 7, 1);
-
-			Table dummyTable4 = new Table(2, 1);
-			//                                  dummyTable4.add(" ",1,1);
-			dummyTable4.add(skoda, 2, 1);
-			dummyTable.add(dummyTable4, 11, 1);
-		}
-		dummyTable.add(end_d, 8, 1);
-		dummyTable.add(end_m, 9, 1);
-		dummyTable.add(end_y, 10, 1);
-
-		dummyTable.add(strik, 12, 1);
-
-		myTable.add(dummyTable, 1, 1);
-
+		table.add(navigationTable, 1, 1);
 	}
 
 	private String[] getDates(IWContext modinfo) throws IOException {
-
 		String[] dates = {"", ""};
 
-		dagatalid = new IWCalendar();
-		year = dagatalid.getYear();
-		month = dagatalid.getMonth();
-		day = dagatalid.getDay();
+		calendar = new IWCalendar();
+		year = calendar.getYear();
+		month = calendar.getMonth();
+		day = calendar.getDay();
 
-		this.start_year = modinfo.getParameter("start_year");
-		if (start_year == null) {
-			start_year = String.valueOf(year - 1);
+		if (modinfo.isParameterSet("start_date")) {
+			start = new IWTimestamp(modinfo.getParameter("start_date"));
+		}
+		else {
+			start = new IWTimestamp();
+			start.addYears(-1);
 		}
 
-		this.start_month = modinfo.getParameter("start_month");
-		if (start_month == null) {
-			start_month = String.valueOf(month);
+		if (modinfo.isParameterSet("end_date")) {
+			end = new IWTimestamp(modinfo.getParameter("end_date"));
 		}
-		this.start_day = modinfo.getParameter("start_day");
-		if (start_day == null) {
-			start_day = String.valueOf(day);
+		else {
+			end = new IWTimestamp();
 		}
 
-		if (Integer.parseInt(start_day) > dagatalid.getLengthOfMonth(Integer.parseInt(start_month), Integer.parseInt(start_year))) {
-			start_day = String.valueOf(dagatalid.getLengthOfMonth(Integer.parseInt(start_month), Integer.parseInt(start_year)));
-		}
-
-		this.end_year = modinfo.getParameter("end_year");
-		if (end_year == null) {
-			end_year = String.valueOf(year);
-		}
-		this.end_month = modinfo.getParameter("end_month");
-		if (end_month == null) {
-			end_month = String.valueOf(month);
-		}
-		this.end_day = modinfo.getParameter("end_day");
-		if (end_day == null) {
-			end_day = String.valueOf(day);
-		}
-
-		if (Integer.parseInt(end_day) > dagatalid.getLengthOfMonth(Integer.parseInt(end_month), Integer.parseInt(end_year))) {
-			end_day = String.valueOf(dagatalid.getLengthOfMonth(Integer.parseInt(end_month), Integer.parseInt(end_year)));
-		}
-
-		String start_time = start_year + "-" + start_month + "-" + start_day;
-		String end_time = end_year + "-" + end_month + "-" + end_day;
-
-		dates[0] = start_time;
-		dates[1] = end_time;
-
+		dates[0] = start.toSQLDateString();
+		dates[1] = end.toSQLDateString();
+		
 		return dates;
 	}
 
 	private String formatDate(String date) {
-
-		IWCalendar dagatal = new IWCalendar();
-
 		String ReturnString = date.substring(8, 10);
 
 		ReturnString += "/" + date.substring(5, 7);
 		ReturnString += "/" + date.substring(2, 4);
 
 		return ReturnString;
-
 	}
 
 	private String getTeeColor(int teeColorID) throws IOException {
-
 		String litur = "";
-
 		switch (teeColorID) {
 			case 1 :
 				litur = "FFFFFF";
 				break;
-
 			case 2 :
 				litur = "FFFF00";
 				break;
-
 			case 3 :
 				litur = "5757FF";
 				break;
-
 			case 4 :
 				litur = "FF5757";
 				break;
-
 			case 5 :
 				litur = "5757FF";
 				break;
-
 			case 6 :
 				litur = "FF5757";
 				break;
 		}
-
 		return litur;
-
 	}
 
 	public void setHeaderColor(String headerColor) {
@@ -877,8 +593,6 @@ public class HandicapOverview extends GolfBlock {
 	}
 
 	public void setHeaderTextColor(String headerTextColor) {
-		this.headerTextColor = headerTextColor;
-		headerText.setFontColor(headerTextColor);
 	}
 
 	//Bjarni added these methood 14.08.01
@@ -892,23 +606,18 @@ public class HandicapOverview extends GolfBlock {
 	 */
 
 	public void setHeaderTextProperties(Text textToClonePropertiesFrom) {
-		this.headerText = textToClonePropertiesFrom;
 	}
 
 	public void setTableTextProperties(Text textToClonePropertiesFrom) {
-		this.tableText = textToClonePropertiesFrom;
 	}
 
 	public void setTilFraTextProperties(Text textToClonePropertiesFrom) {
-		this.tilFraText = textToClonePropertiesFrom;
 	}
 
 	public void setTextLinkProperties(Link linkToClonePropertiesFrom) {
-		this.textLink = linkToClonePropertiesFrom;
 	}
 
 	public void setViewScoreIconUrlInBundle(String viewScoreIconUrlInBundle) {
-		this.viewScoreIceonUrlInBundle = viewScoreIconUrlInBundle;
 	}
 
 	public void setGetOverviewButton(String getOverviewButtonImageUrlInBundle, String getOverviewButtonParameterName, String getOverviewButtonParameterValue) {

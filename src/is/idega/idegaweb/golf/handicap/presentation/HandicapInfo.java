@@ -17,7 +17,9 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.Window;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import is.idega.idegaweb.golf.entity.Field;
@@ -38,7 +40,7 @@ import com.idega.util.text.TextSoap;
 
 public class HandicapInfo extends GolfBlock {
 
-	private String member_id;
+	private String iMemberID;
 	private boolean isAdmin = false;
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb;
@@ -48,12 +50,12 @@ public class HandicapInfo extends GolfBlock {
 	public HandicapInfo() {
 	}
 
-	public HandicapInfo(String member_id) {
-		this.member_id = member_id;
+	public HandicapInfo(String memberID) {
+		this.iMemberID = memberID;
 	}
 
 	public HandicapInfo(int member_id) {
-		this.member_id = String.valueOf(member_id);
+		this.iMemberID = String.valueOf(member_id);
 	}
 
 	public void main(IWContext modinfo) throws Exception {
@@ -66,38 +68,34 @@ public class HandicapInfo extends GolfBlock {
 			modinfo.getSession().removeAttribute("member_id");
 		}
 
-		if (member_id == null) {
-			member_id = modinfo.getRequest().getParameter("member_id");
+		if (iMemberID == null) {
+			iMemberID = modinfo.getRequest().getParameter("member_id");
 		}
-		if (member_id == null) {
-			member_id = (String) modinfo.getSession().getAttribute("member_id");
+		if (iMemberID == null) {
+			iMemberID = (String) modinfo.getSession().getAttribute("member_id");
 		}
-		if (member_id == null) {
+		if (iMemberID == null) {
 			Member memberinn = (Member) modinfo.getSession().getAttribute("member_login");
 			if (memberinn != null) {
-				member_id = String.valueOf(memberinn.getID());
-				if (member_id == null) {
-					member_id = "1";
+				iMemberID = String.valueOf(memberinn.getID());
+				if (iMemberID == null) {
+					iMemberID = "1";
 				}
 			}
 			else {
-				member_id = "1";
+				iMemberID = "1";
 			}
 
 		}
 
 		drawTable(modinfo);
-
 		add(myTable);
-
 	}
 
 	private void drawTable(IWContext iwc) throws IOException, SQLException, FinderException {
 		myTable = new Table(3, 3);
-		//myTable.setBorder(1);
 		myTable.setCellpadding(6);
 		myTable.setCellspacing(6);
-		//myTable.setWidth("95%");
 		myTable.setAlignment("center");
 		myTable.setAlignment(1, 1, "center");
 		myTable.setVerticalAlignment(1, 1, "top");
@@ -111,52 +109,38 @@ public class HandicapInfo extends GolfBlock {
 		date.setDay(1);
 		date.setMonth(1);
 
-		Member memberInfo = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(member_id));
-		MemberInfo memberInfo2 = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(member_id));
-		Union mainUnion = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(memberInfo.getMainUnionID());
-		int order = memberInfo2.getNumberOfRecords("handicap", "<", "" + memberInfo.getHandicap()) + 1;
-		int clubOrder = memberInfo2.getNumberOfRecords("select count(*) from union_,union_member,member_info where union_.union_id='" + mainUnion.getID() + "' and union_.union_id=union_member.union_id and union_member.member_id=member_info.member_id and handicap<'" + memberInfo.getHandicap() + "'") + 1;
-		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + member_id + "' and handicap_correction='N' and scorecard_date is not null order by scorecard_date desc");
-		Scorecard[] scoreCards2 = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + member_id + "' and scorecard_date>='" + date.toSQLDateString() + "' and scorecard_date is not null and handicap_correction='N' order by total_points desc");
+		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
+		MemberInfo memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
+		Union mainUnion = ((UnionHome) IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKey(member.getMainUnionID());
+		int order = memberInfo.getNumberOfRecords("handicap", "<", "" + member.getHandicap()) + 1;
+		int clubOrder = memberInfo.getNumberOfRecords("select count(*) from union_,union_member,member_info where union_.union_id='" + mainUnion.getID() + "' and union_.union_id=union_member.union_id and union_member.member_id=member_info.member_id and handicap<'" + member.getHandicap() + "'") + 1;
+		Scorecard[] scoreCards = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and handicap_correction='N' and scorecard_date is not null order by scorecard_date desc");
+		Scorecard[] scoreCards2 = (Scorecard[]) ((Scorecard) IDOLookup.instanciateEntity(Scorecard.class)).findAll("select * from scorecard where member_id='" + iMemberID + "' and scorecard_date>='" + date.toSQLDateString() + "' and scorecard_date is not null and handicap_correction='N' order by total_points desc");
 
-		Text member = new Text(iwrb.getLocalizedString("handicap.member_name", "Member name"));
-		member.setFontSize(1);
-		Text mainUnionText = new Text(iwrb.getLocalizedString("handicap.union_name", "Club name"));
-		mainUnionText.setFontSize(1);
-		Text handicap = new Text(iwrb.getLocalizedString("handicap.handicap", "Handicap"));
-		handicap.setFontSize(1);
-		Text cardTotal = new Text(iwrb.getLocalizedString("handicap.rounds_played", "Number of rounds played this year"));
-		cardTotal.setFontSize(1);
-		Text scoreText = new Text(iwrb.getLocalizedString("handicap.last_round", "Last round played"));
-		scoreText.setFontSize(1);
-		Text points = new Text(iwrb.getLocalizedString("handicap.best_round", "Best round played this year"));
-		points.setFontSize(1);
-		Text averagepoints = new Text(iwrb.getLocalizedString("handicap.average", "Average sum of points"));
-		averagepoints.setFontSize(1);
-		Text totalOrder = new Text(iwrb.getLocalizedString("handicap.national_ranking", "National ranking"));
-		totalOrder.setFontSize(1);
-		Text clubOrderText = new Text(iwrb.getLocalizedString("handicap.club_ranking", "Club ranking"));
-		clubOrderText.setFontSize(1);
-		Text memberText = new Text(memberInfo.getName());
-		memberText.setFontSize(2);
-		memberText.setBold();
-		Text unionText = new Text(mainUnion.getAbbrevation() + " - " + mainUnion.getName());
-		unionText.setFontSize(2);
-		unionText.setBold();
+		Text name = getHeader(iwrb.getLocalizedString("handicap.member_name", "Member name"));
+		Text mainUnionText = getHeader(iwrb.getLocalizedString("handicap.union_name", "Club name"));
+		Text handicap = getBigHeader(iwrb.getLocalizedString("handicap.handicap", "Handicap"));
+		Text cardTotal = getHeader(iwrb.getLocalizedString("handicap.rounds_played", "Number of rounds played this year"));
+		Text scoreText = getHeader(iwrb.getLocalizedString("handicap.last_round", "Last round played"));
+		Text points = getHeader(iwrb.getLocalizedString("handicap.best_round", "Best round played this year"));
+		Text averagepoints = getHeader(iwrb.getLocalizedString("handicap.average", "Average sum of points"));
+		Text totalOrder = getBigHeader(iwrb.getLocalizedString("handicap.national_ranking", "National ranking"));
+		Text clubOrderText = getHeader(iwrb.getLocalizedString("handicap.club_ranking", "Club ranking"));
 
-		String handicapScaled = TextSoap.singleDecimalFormat(String.valueOf(memberInfo2.getHandicap()));
-		Text handicapText = new Text(handicapScaled);
-		if ((int) memberInfo2.getHandicap() == 100) {
-			handicapText = new Text(iwrb.getLocalizedString("handicap.no_handicap", "No handicap"));
+		Text memberText = getText(member.getName());
+		Text unionText = getText(mainUnion.getAbbrevation() + " - " + mainUnion.getName());
+
+		Text handicapText = null;
+		if ((int) memberInfo.getHandicap() == 100) {
+			handicapText = getText(iwrb.getLocalizedString("handicap.no_handicap", "No handicap"));
 		}
 		else {
-			handicapText.setFontSize(6);
+			handicapText = getBigText(TextSoap.singleDecimalFormat(String.valueOf(memberInfo.getHandicap())));
 		}
-		handicapText.setBold();
 
 		String cardText = String.valueOf(scoreCards.length);
 		String noRounds = iwrb.getLocalizedString("handicap.no_round", "No rounds registered");
-		Text cardTotalText = new Text(cardText);
+		Text cardTotalText = getText(cardText);
 		if (scoreCards2.length > 0) {
 			if (cardText.substring(cardText.length() - 1, cardText.length()).equals("1")) {
 				cardTotalText.addToText(" " + iwrb.getLocalizedString("handicap.round", "round"));
@@ -166,34 +150,28 @@ public class HandicapInfo extends GolfBlock {
 			}
 		}
 		if (scoreCards2.length < 1) {
-			cardTotalText = new Text(noRounds);
+			cardTotalText = getText(noRounds);
 		}
-		cardTotalText.setFontSize(2);
-		cardTotalText.setBold();
 
-		Text scoreCardsText = new Text(noRounds);
+		Text scoreCardsText = getText(noRounds);
 		if (scoreCards.length > 0) {
 			IWTimestamp scoreTime = new IWTimestamp(scoreCards[0].getScorecardDate());
 			Field fieldId = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(scoreCards[0].getFieldID());
-			scoreCardsText = new Text(scoreTime.getLocaleDate(iwc.getCurrentLocale()) + "  -  " + fieldId.getName());
+			scoreCardsText = getText(scoreTime.getLocaleDate(iwc.getCurrentLocale()) + "  -  " + fieldId.getName());
 		}
 		else {
-			scoreCardsText = new Text(noRounds);
+			scoreCardsText = getText(noRounds);
 		}
-		scoreCardsText.setFontSize(2);
-		scoreCardsText.setBold();
 
 		Text pointsText;
 		if (scoreCards2.length > 0) {
 			IWTimestamp scoreTime = new IWTimestamp(scoreCards2[0].getScorecardDate());
 			Field fieldId = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(scoreCards2[0].getFieldID());
-			pointsText = new Text(String.valueOf(scoreCards2[0].getTotalPoints()) + " " + iwrb.getLocalizedString("handicap.points", "points") + "  -  " + fieldId.getName() + ", " + scoreTime.getLocaleDate(iwc.getCurrentLocale()));
+			pointsText = getText(String.valueOf(scoreCards2[0].getTotalPoints()) + " " + iwrb.getLocalizedString("handicap.points", "points") + "  -  " + fieldId.getName() + ", " + scoreTime.getLocaleDate(iwc.getCurrentLocale()));
 		}
 		else {
-			pointsText = new Text(noRounds);
+			pointsText = getText(noRounds);
 		}
-		pointsText.setFontSize(2);
-		pointsText.setBold();
 
 		Text averageText;
 		if (scoreCards.length > 0) {
@@ -202,54 +180,37 @@ public class HandicapInfo extends GolfBlock {
 				punktar += (float) scoreCards[b].getTotalPoints();
 			}
 			String averagePoints = TextSoap.decimalFormat(String.valueOf((punktar / (float) scoreCards.length)), 2);
-			averageText = new Text(averagePoints + " " + iwrb.getLocalizedString("handicap.points", "points"));
+			averageText = getText(averagePoints + " " + iwrb.getLocalizedString("handicap.points", "points"));
 		}
 		else {
-			averageText = new Text(noRounds);
+			averageText = getText(noRounds);
 		}
-		averageText.setFontSize(2);
-		averageText.setBold();
 
-		Text orderText = new Text(Integer.toString(order));
-		if ((int) memberInfo2.getHandicap() == 100) {
-			orderText = new Text(noRounds);
-			orderText.setFontSize(2);
+		Text orderText = getBigText(Integer.toString(order));
+		if ((int) memberInfo.getHandicap() == 100) {
+			orderText = getText(noRounds);
 		}
-		else {
-			orderText.setFontSize(6);
-		}
-		orderText.setBold();
 
-		Text clubText = new Text("" + clubOrder);
-		if ((int) memberInfo2.getHandicap() == 100) {
-			clubText = new Text(iwrb.getLocalizedString("handicap.no_handicap", "No handicap"));
+		Text clubText = getText("" + clubOrder);
+		if ((int) memberInfo.getHandicap() == 100) {
+			clubText = getText(iwrb.getLocalizedString("handicap.no_handicap", "No handicap"));
 		}
 		if (clubOrder == 0) {
-			clubText = new Text(iwrb.getLocalizedString("handicap.no_club", "Not registered"));
+			clubText = getText(iwrb.getLocalizedString("handicap.no_club", "Not registered"));
 		}
-		clubText.setFontSize(2);
-		clubText.setBold();
 
-		GolfWindow memberWindow = new GolfWindow("", 400, 280);
-		memberWindow.add(new HandicapFindMember());
-		memberWindow.setResizable(true);
-		Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif", "handicap.select", "Select member");
-		selectMemberImage.setHorizontalSpacing(10);
-		Link selectMember = new Link(selectMemberImage, memberWindow);
-		selectMember.clearParameters();
-
-		GolfWindow handicapWindow = new GolfWindow("", 400, 280);
-		handicapWindow.add(new HandicapUpdate());
-		Image updateHandicapImage = iwrb.getImage("buttons/update.gif", "handicap.update_handicap", "Update handicap");
-		updateHandicapImage.setHorizontalSpacing(10);
-		Link handicapUpdate = new Link(updateHandicapImage, handicapWindow);
-		handicapUpdate.addParameter("member_id", member_id);
+		GenericButton selectMember = getButton(new GenericButton("select_member", iwrb.getLocalizedString("handicap.select", "Select member")));
+		selectMember.setWindowToOpen(HandicapFindMember.class);
+		
+		GenericButton handicapUpdate = getButton(new GenericButton("update_handicap", iwrb.getLocalizedString("handicap.update_handicap", "Update handicap")));
+		handicapUpdate.setWindowToOpen(HandicapUpdate.class);
+		handicapUpdate.addParameterToWindow("member_id", iMemberID);
 
 		Table textTable = new Table();
 		textTable.setCellpadding(4);
 		textTable.setCellspacing(4);
 
-		textTable.add(member, 1, 1);
+		textTable.add(name, 1, 1);
 		textTable.addBreak(1, 1);
 		textTable.add(memberText, 1, 1);
 		if (isAdmin) {
@@ -274,75 +235,40 @@ public class HandicapInfo extends GolfBlock {
 		textTable.addBreak(1, 7);
 		textTable.add(clubText, 1, 7);
 
-		Table imageTable = new Table();
-		imageTable.setAlignment(1, 1, "center");
-		imageTable.setBorder(0);
-		imageTable.setAlignment("center");
-		imageTable.setCellpadding(0);
-		imageTable.setCellspacing(1);
-		imageTable.setColor("#000000");
-		imageTable.setColor(1, 1, "#CEDFD0");
-
 		Image memberImage = null;
-		if (memberInfo.getImageId() == 1) {
+		if (member.getImageId() == 1) {
 			memberImage = iwrb.getImage("/member/x2.gif");
 		}
 		else {
-			memberImage = new GolfImage(memberInfo.getImageId());
+			memberImage = new GolfImage(member.getImageId());
 		}
 
 		memberImage.setMaxImageWidth(102);
-		memberImage.setAlt(memberInfo.getName());
+		memberImage.setAlt(member.getName());
 		memberImage.setAlignment("absmiddle");
+		memberImage.setBorder(1);
+		memberImage.setBorderColor("000000");
+		memberImage.setBorderStyle("solid");
 
 		Image swingImage = iwb.getImage("shared/handicap/swing.gif", "", 161, 300);
 
-		imageTable.add(memberImage);
-
-		Table outerHandicapTable = new Table(1, 2);
-		outerHandicapTable.setCellpadding(0);
-		outerHandicapTable.setCellspacing(0);
-
-		Table handicapTable = new Table(1, 1);
-		handicapTable.setWidth(120);
-		handicapTable.setCellspacing(3);
-		handicapTable.setCellpadding(6);
-		handicapTable.setAlignment("center");
-		handicapTable.setAlignment(1, 1, "center");
-		handicapTable.setColor("#336660");
-		handicapTable.setColor(1, 1, "#FFFFFF");
-		handicapTable.add(handicapText, 1, 1);
+		myTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
+		myTable.add(handicap, 1, 2);
+		myTable.add(new Break(), 1, 2);
+		myTable.add(handicapText, 1, 2);
 		if (isAdmin) {
-			handicapTable.add("<br>", 1, 1);
-			handicapTable.add(handicapUpdate, 1, 1);
+			myTable.add(new Break(), 1, 2);
+			myTable.add(handicapUpdate, 1, 2);
 		}
 
-		outerHandicapTable.add(handicap, 1, 1);
-		outerHandicapTable.add(handicapTable, 1, 2);
+		myTable.add(totalOrder, 1, 3);
+		myTable.add(new Break(), 1, 3);
+		myTable.add(orderText, 1, 3);
 
-		Table outerRankingTable = new Table(1, 2);
-		outerRankingTable.setCellpadding(0);
-		outerRankingTable.setCellspacing(0);
-
-		Table rankingTable = new Table(1, 1);
-		rankingTable.setWidth(120);
-		rankingTable.setCellspacing(3);
-		rankingTable.setCellpadding(6);
-		rankingTable.setAlignment("center");
-		rankingTable.setAlignment(1, 1, "center");
-		rankingTable.setColor("#336660");
-		rankingTable.setColor(1, 1, "#FFFFFF");
-		rankingTable.add(orderText, 1, 1);
-
-		outerRankingTable.add(totalOrder, 1, 1);
-		outerRankingTable.add(rankingTable, 1, 2);
-
-		myTable.add(imageTable, 1, 1);
-		myTable.add(outerHandicapTable, 1, 2);
-		myTable.add(outerRankingTable, 1, 3);
+		myTable.add(memberImage, 1, 1);
 		myTable.add(textTable, 2, 1);
 
-		HandicapCard hcCard = new HandicapCard(Integer.parseInt(member_id));
+		HandicapCard hcCard = new HandicapCard(Integer.parseInt(iMemberID));
 		hcCard.setWidth("215");
 		hcCard.addPrintLink(true);
 		myTable.setVerticalAlignment(3, 1, "top");
