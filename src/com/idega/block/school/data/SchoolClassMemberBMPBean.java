@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/28 09:21:51 $ by $Author: staffan $
- * @version $Revision: 1.74 $
+ * Last modified: $Date: 2003/11/30 12:02:40 $ by $Author: laddi $
+ * @version $Revision: 1.75 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -334,6 +334,13 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public int ejbHomeGetNumberOfPlacingsAtSchool(int userID, int schoolID) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+
+		return this.idoGetNumberOfRecords(sql);
+	}
+
+	public int ejbHomeGetNumberOfPlacings(int userID) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this).appendWhereEquals(MEMBER, userID);
 
 		return this.idoGetNumberOfRecords(sql);
 	}

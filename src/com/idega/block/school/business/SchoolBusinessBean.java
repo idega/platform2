@@ -1951,6 +1951,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 	
+	public boolean hasSchoolPlacements(int userID) {
+		try {
+			int placings = getSchoolClassMemberHome().getNumberOfPlacings(userID);
+			return placings > 0;
+		}
+		catch (IDOException ie) {
+			return false;
+		}
+	}
+	
 	public String getSchoolPhone(int schoolID) {
 		School school = getSchool(new Integer(schoolID));
 		return school.getSchoolPhone();
