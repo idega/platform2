@@ -1,28 +1,22 @@
 package com.idega.block.finance.presentation;
-import com.idega.util.text.Edit;
-import com.idega.block.finance.business.*;
-import com.idega.block.finance.data.*;
-import com.idega.block.building.data.*;
-import com.idega.block.finance.business.*;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Block;
-import com.idega.presentation.text.*;
-import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
-import java.sql.SQLException;
-import java.util.StringTokenizer;
 import java.util.List;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Hashtable;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
+
+import com.idega.block.finance.business.AssessmentBusiness;
+import com.idega.block.finance.business.Finder;
+import com.idega.block.finance.data.AccountEntry;
+import com.idega.block.finance.data.EntryGroup;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.Edit;
 /**
 
  * Title:

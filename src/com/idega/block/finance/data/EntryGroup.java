@@ -1,6 +1,5 @@
 package com.idega.block.finance.data;
 
-import javax.ejb.*;
 
 public interface EntryGroup extends com.idega.data.IDOLegacyEntity
 {

@@ -1,6 +1,5 @@
 package com.idega.block.finance.data;
 
-import javax.ejb.*;
 
 public interface Cashier extends com.idega.data.IDOLegacyEntity
 {

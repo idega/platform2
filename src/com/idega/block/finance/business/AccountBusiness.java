@@ -1,6 +1,5 @@
 package com.idega.block.finance.business;
 
-import javax.ejb.*;
 
 public interface AccountBusiness extends com.idega.business.IBOService
 {

@@ -1,8 +1,6 @@
 package com.idega.block.finance.data;
 
-import com.idega.block.finance.business.Key;
-import java.sql.*;
-import com.idega.data.*;
+import java.sql.SQLException;
 
 /**
  * Title:

@@ -1,6 +1,5 @@
 package com.idega.block.finance.data;
 
-import javax.ejb.*;
 
 public interface AccountPhoneEntry extends com.idega.data.IDOLegacyEntity,com.idega.block.finance.data.Entry
 {

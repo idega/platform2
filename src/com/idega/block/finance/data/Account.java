@@ -1,6 +1,5 @@
 package com.idega.block.finance.data;
 
-import javax.ejb.*;
 
 public interface Account extends com.idega.data.IDOEntity,FinanceAccount
 {

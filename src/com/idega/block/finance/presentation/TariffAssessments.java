@@ -1,6 +1,11 @@
 package com.idega.block.finance.presentation;
 
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import com.idega.block.finance.business.AssessmentBusiness;
 import com.idega.block.finance.business.AssessmentTariffPreview;
 import com.idega.block.finance.business.FinanceFinder;
@@ -10,11 +15,8 @@ import com.idega.block.finance.data.AccountInfo;
 import com.idega.block.finance.data.RoundInfo;
 import com.idega.block.finance.data.TariffGroup;
 import com.idega.core.user.data.User;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.BusyBar;
 import com.idega.idegaweb.presentation.StatusBar;
-import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
@@ -29,10 +31,6 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.Edit;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Title:

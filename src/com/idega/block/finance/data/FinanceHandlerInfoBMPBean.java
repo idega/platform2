@@ -2,11 +2,7 @@ package com.idega.block.finance.data;
 
 
 
-import java.sql.*;
-
-import com.idega.data.*;
-
-import com.idega.util.IWTimestamp;
+import java.sql.SQLException;
 
 
 

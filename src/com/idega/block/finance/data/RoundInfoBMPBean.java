@@ -1,10 +1,7 @@
 package com.idega.block.finance.data;
 
-import com.idega.data.IDOLegacyEntity;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.lang.IllegalStateException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 /**
  * Title:   idegaclasses

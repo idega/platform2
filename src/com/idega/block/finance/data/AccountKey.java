@@ -1,6 +1,5 @@
 package com.idega.block.finance.data;
 
-import javax.ejb.*;
 
 public interface AccountKey extends com.idega.data.IDOLegacyEntity,com.idega.block.finance.business.Key
 {
