@@ -111,7 +111,7 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterViewSupplierInfo, iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
         menu.addMenuElement(this.parameterViewHotelPickup, iwrb.getLocalizedString("travel.hotel_pickup_places","Hotel pick-up places"));
         menu.addMenuElement(this.parameterViewPriceCategories, iwrb.getLocalizedString("travel.price_categories","Price categories"));
-        menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.refunds","Refunds"));
+        menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
         menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
         menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
     }else if (reseller != null) {
@@ -120,7 +120,7 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
     }else {
         menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
-        menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.refunds","Refunds"));
+        menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
     }
     menu.setToSubmit();
 

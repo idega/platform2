@@ -78,6 +78,7 @@ public class AddressAdder extends TravelWindow {
     }catch (SQLException sql) {
       sql.printStackTrace();
     }
+    System.err.println("productId : "+_productId);
   }
 
   private void error(IWContext iwc) {
@@ -122,11 +123,12 @@ public class AddressAdder extends TravelWindow {
                 tAddress.setTime(new idegaTimestamp("2001-01-01 "+time));
               Address newAddress = new Address(tAddress.getAddressId());
                 newAddress.setStreetName(name[i]);
+                newAddress.update();
               tAddress.update();
-              newAddress.update();
             }
           }
         }catch (Exception e) {
+          e.printStackTrace(System.err);
           // Error, nenni ekki að eyða loggnum í svona vitleysu
         }
       }

@@ -41,7 +41,7 @@ public class Voucher extends TravelManager {
   private Product _product;
   private Supplier _supplier;
   private Timeframe _timeframe;
-  private Address _address;
+  private TravelAddress _address;
 
   private DecimalFormat df = new DecimalFormat("0.00");
 
@@ -62,9 +62,8 @@ public class Voucher extends TravelManager {
       _supplier = new Supplier(_product.getSupplierId());
       _timeframe = ProductBusiness.getTimeframe(_product, new idegaTimestamp(_booking.getBookingDate()));
       GeneralBooking gBooking = new GeneralBooking(_booking.getID());
-      /*
-      Address[] addresses = (Address[]) gBooking.findRelated(Address.getStaticInstance(Address.class));
-      _address = addresses[addresses.length - 1];*/
+      TravelAddress[] addresses = (TravelAddress[]) gBooking.findRelated(TravelAddress.getStaticInstance(TravelAddress.class));
+      _address = addresses[addresses.length - 1];
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
@@ -184,6 +183,17 @@ public class Voucher extends TravelManager {
         }
         table.add(Text.BREAK,1,2);
 
+        table.add(getText(_iwrb.getLocalizedString("travel.email_lg","E-MAIL")+" : "), 1, 2);
+        List emails = _supplier.getEmails();
+        Email email;
+        if (emails != null)
+        for (int i = 0; i < emails.size(); i++) {
+          if (i != 0) table.add(getText(", "), 1, 2);
+          email = (Email) emails.get(i);
+          table.add(getText(email.getEmailAddress()), 1,2);
+        }
+        table.add(Text.BREAK,1,2);
+
         table.add(Text.BREAK,1,2);
 
         table.add(getText(_iwrb.getLocalizedString("travel.this_order_to_be_accepted","This order to be accepted at amount shown as part or full payment for the following services")),1,2);
@@ -193,19 +203,15 @@ public class Voucher extends TravelManager {
         table.add(getText(ProductBusiness.getProductName(_product)),1,2);
         table.add(Text.BREAK,1,2);
         table.add(getText(new idegaTimestamp(_booking.getBookingDate()).getLocaleDate(_iwc)),1,2);
-        table.add(getText(" "+_iwrb.getLocalizedString("travel.at","at"))+" ",1,2);
-        table.add(getText(new idegaTimestamp(_service.getDepartureTime()).toSQLTimeString().substring(0,5)),1,2);
+        //table.add(getText(" "+_iwrb.getLocalizedString("travel.at","at"))+" ",1,2);
+        //table.add(getText(new idegaTimestamp(_service.getDepartureTime()).toSQLTimeString().substring(0,5)),1,2);
         table.add(Text.BREAK,1,2);
-        try {
-          Address[] addresses = (Address[]) _booking.findRelated((Address) Address.getStaticInstance(Address.class));
-          if (addresses.length >0) {
-            table.add(_iwrb.getLocalizedString("travel.departure_place","Departure place"), 1,2);
-            table.add(getText(" : "),1,2);
-            table.add(getText(addresses[0].getStreetName()),1,2);
-          }
-        }catch (SQLException sql) {
-          sql.printStackTrace(System.err);
+        if (_address != null) {
+          table.add(_iwrb.getLocalizedString("travel.departure_place","Departure place"), 1,2);
+          table.add(getText(" : "),1,2);
+          table.add(getText(_address.getName()),1,2);
         }
+
         table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
