@@ -1,8 +1,5 @@
 package is.idega.idegaweb.golf.tournament.business;
 
-import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.entity.Tournament;
-
 
 public interface TournamentBusiness extends com.idega.business.IBOService
 {
@@ -21,8 +18,8 @@ public interface TournamentBusiness extends com.idega.business.IBOService
  public com.idega.presentation.ui.DropdownMenu getDropdownOrderedByUnion(com.idega.presentation.ui.DropdownMenu p0,com.idega.presentation.IWContext p1) throws java.rmi.RemoteException;
  public com.idega.presentation.ui.DropdownMenu getDropdownOrderedByUnion(com.idega.presentation.ui.DropdownMenu p0,com.idega.presentation.IWContext p1,int p2) throws java.rmi.RemoteException;
  public boolean getHasMemberPaid(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.Member p1)throws java.lang.Exception, java.rmi.RemoteException;
+ public boolean[] getIfTeetimeGroupsAreFull(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.TournamentRound p1,int p2,int p3) throws java.rmi.RemoteException;
  public int getInt() throws java.rmi.RemoteException;
- public int getTournamentGroup(Member member, Tournament tournament) throws Exception;
  public is.idega.idegaweb.golf.entity.Tournament[] getLastClosedTournaments(int p0)throws java.lang.Exception, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Tournament[] getLastTournaments(int p0)throws java.lang.Exception, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Tournament[] getLastTwoTournaments()throws java.lang.Exception, java.rmi.RemoteException;
@@ -43,11 +40,12 @@ public interface TournamentBusiness extends com.idega.business.IBOService
  public is.idega.idegaweb.golf.tournament.presentation.TournamentStartingtimeList getStartingtimeTable(is.idega.idegaweb.golf.entity.Tournament p0,java.lang.String p1,boolean p2,boolean p3)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.tournament.presentation.TournamentStartingtimeList getStartingtimeTable(is.idega.idegaweb.golf.entity.Tournament p0,java.lang.String p1,boolean p2,boolean p3,boolean p4)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.tournament.presentation.TournamentStartingtimeList getStartingtimeTable(is.idega.idegaweb.golf.entity.Tournament p0,java.lang.String p1,boolean p2,boolean p3,boolean p4,boolean p5)throws java.sql.SQLException, java.rmi.RemoteException;
- public is.idega.idegaweb.golf.entity.StartingtimeView[] getStartingtimeView(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.StartingtimeView[] getStartingtimeView(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5,java.lang.String p6)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.StartingtimeView[] getStartingtimeView(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,int p5,java.lang.String p6,int p7,int p8)throws java.sql.SQLException, java.rmi.RemoteException;
+ public is.idega.idegaweb.golf.entity.StartingtimeView[] getStartingtimeView(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5)throws java.sql.SQLException, java.rmi.RemoteException;
  public int getTotalStrokes(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.TournamentRound p1,is.idega.idegaweb.golf.entity.Member p2)throws java.lang.Exception, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.tournament.presentation.TournamentBox getTournamentBox(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
+ public int getTournamentGroup(is.idega.idegaweb.golf.entity.Member p0,is.idega.idegaweb.golf.entity.Tournament p1)throws java.lang.Exception, java.rmi.RemoteException;
  public java.util.List getTournamentGroups(is.idega.idegaweb.golf.entity.Member p0)throws java.sql.SQLException, java.rmi.RemoteException;
  public java.util.List getTournamentGroups(is.idega.idegaweb.golf.entity.Member p0,is.idega.idegaweb.golf.entity.Tournament p1)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.TournamentParticipants[] getTournamentParticipants(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws java.sql.SQLException, java.rmi.RemoteException;
@@ -56,22 +54,22 @@ public interface TournamentBusiness extends com.idega.business.IBOService
  public is.idega.idegaweb.golf.entity.TournamentRoundParticipants[] getTournamentRoundParticipants(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Tournament[] getTournamentToday()throws java.lang.Exception, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Tournament[] getTournaments(com.idega.util.IWTimestamp p0)throws java.lang.Exception, java.rmi.RemoteException;
- public is.idega.idegaweb.golf.entity.Tournament[] getTournamentsWithRegistration(com.idega.util.IWTimestamp p0, int p1)throws java.lang.Exception, java.rmi.RemoteException;
- public java.util.List getUnionTournamentGroups(com.idega.presentation.IWContext p0)throws java.sql.SQLException, java.rmi.RemoteException;
+ public is.idega.idegaweb.golf.entity.Tournament[] getTournamentsWithRegistration(com.idega.util.IWTimestamp p0,int p1)throws java.lang.Exception, java.rmi.RemoteException;
  public java.util.List getUnionTournamentGroups(is.idega.idegaweb.golf.entity.Union p0)throws java.sql.SQLException, java.rmi.RemoteException;
+ public java.util.List getUnionTournamentGroups(com.idega.presentation.IWContext p0)throws java.sql.SQLException, java.rmi.RemoteException;
  public boolean hasMemberStartingtime(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.TournamentRound p1,is.idega.idegaweb.golf.entity.Member p2) throws java.rmi.RemoteException;
- public void invalidateStartingTimeCache(com.idega.presentation.IWContext p0,int p1,java.lang.String p2) throws java.rmi.RemoteException;
  public void invalidateStartingTimeCache(com.idega.presentation.IWContext p0,is.idega.idegaweb.golf.entity.Tournament p1)throws java.sql.SQLException, java.rmi.RemoteException;
+ public void invalidateStartingTimeCache(com.idega.presentation.IWContext p0,int p1,java.lang.String p2) throws java.rmi.RemoteException;
  public int[] isMemberAllowedToRegister(is.idega.idegaweb.golf.entity.Member p0,is.idega.idegaweb.golf.entity.Tournament p1)throws java.sql.SQLException, java.rmi.RemoteException;
  public boolean isMemberInTournamentGroup(is.idega.idegaweb.golf.entity.Member p0,is.idega.idegaweb.golf.entity.TournamentGroup p1)throws java.sql.SQLException, java.rmi.RemoteException;
  public boolean isMemberRegisteredInTournament(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.Member p1)throws java.sql.SQLException, java.rmi.RemoteException;
  public boolean isMemberRegisteredInTournament(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.TournamentRound p1,int p2,is.idega.idegaweb.golf.entity.Member p3)throws java.sql.SQLException, java.rmi.RemoteException;
- public boolean isOnlineRegistration(is.idega.idegaweb.golf.entity.Tournament p0,com.idega.util.IWTimestamp p1) throws java.rmi.RemoteException;
  public boolean isOnlineRegistration(is.idega.idegaweb.golf.entity.Tournament p0) throws java.rmi.RemoteException;
+ public boolean isOnlineRegistration(is.idega.idegaweb.golf.entity.Tournament p0,com.idega.util.IWTimestamp p1) throws java.rmi.RemoteException;
  public boolean isTournamentRegistrable(is.idega.idegaweb.golf.entity.Tournament p0) throws java.rmi.RemoteException;
  public int registerMember(is.idega.idegaweb.golf.entity.Member p0,is.idega.idegaweb.golf.entity.Tournament p1,java.lang.String p2)throws java.sql.SQLException, java.rmi.RemoteException;
- public void removeMemberFromTournament(com.idega.presentation.IWContext p0,is.idega.idegaweb.golf.entity.Tournament p1,is.idega.idegaweb.golf.entity.Member p2) throws java.rmi.RemoteException;
  public void removeMemberFromTournament(com.idega.presentation.IWContext p0,is.idega.idegaweb.golf.entity.Tournament p1,is.idega.idegaweb.golf.entity.Member p2,int p3) throws java.rmi.RemoteException;
+ public void removeMemberFromTournament(com.idega.presentation.IWContext p0,is.idega.idegaweb.golf.entity.Tournament p1,is.idega.idegaweb.golf.entity.Member p2) throws java.rmi.RemoteException;
  public void removeTournamentBoxApplication(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
  public void removeTournamentTableApplicationAttribute(com.idega.presentation.IWContext p0) throws java.rmi.RemoteException;
  public void setAllMemberToNotPaid(is.idega.idegaweb.golf.entity.Tournament p0)throws java.lang.Exception, java.rmi.RemoteException;

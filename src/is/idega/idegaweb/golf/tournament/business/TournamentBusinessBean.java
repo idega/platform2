@@ -720,6 +720,8 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 
 		return counter;
 	}
+	
+
 
 	public int getNextAvailableStartingGroup(Tournament tournament, TournamentRound tourRound) {
 		return getNextAvailableStartingGroup(tournament, tourRound, false);
@@ -774,6 +776,45 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 
 		return menu;
 	}
+	
+	/**
+	 * @return Returns boolean array where "boolean"[0] is the answer for teetime group number 1 and "boolean"[maximumGroupNumber-1] is the answer for the last teetime group
+	 */
+	public boolean[] getIfTeetimeGroupsAreFull(Tournament tournament, TournamentRound tourRound, int maximumGroupNumber, int teeNumber) {
+		boolean[] groupIsFull = new boolean[maximumGroupNumber];
+		try {
+			boolean done = false;
+			Startingtime[] startingtimes = (Startingtime[]) ((Startingtime) IDOLookup.instanciateEntity(Startingtime.class)).findAll("SELECT * FROM STARTINGTIME s, TOURNAMENT_ROUND_STARTINGTIME trs WHERE trs.startingtime_id = s.startingtime_id AND trs.tournament_round_id = " + tourRound.getID() + " AND s.field_id=" + tournament.getFieldId()+"and s.tee_number="+teeNumber+" order_by s.grup_num");
+			com.idega.util.IWTimestamp startStamp = new com.idega.util.IWTimestamp(tourRound.getRoundDate());
+			int maximumInGroup = tournament.getNumberInGroup();
+			
+			int currentGroup = 1; // first groupnumber
+			int counter = 0;  //count of people
+			boolean currentHasBeenAdded=false;
+			if(startingtimes!=null && startingtimes.length>0){  // if any startingtimes reserved
+				for (int i = 0; i < startingtimes.length; i++) {
+					currentHasBeenAdded=false;
+					Startingtime startingtime = startingtimes[i];
+					int newGroup = startingtime.getGroupNum();
+					if(newGroup==currentGroup){
+						counter++;
+					}else{
+						if(counter>=maximumInGroup){ // if the group is not full
+							groupIsFull[currentGroup]=true;
+						}
+						currentGroup=newGroup; //Set the new group as current group
+						counter=1; // must be one registered to the new current group
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+		
+		return groupIsFull;
+	}
+
 
 	public int registerMember(is.idega.idegaweb.golf.entity.Member member, Tournament theTournament, String tournament_group_id) throws SQLException {
 		int returner = 0;
