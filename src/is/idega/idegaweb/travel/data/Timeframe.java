@@ -51,7 +51,7 @@ public class Timeframe extends GenericEntity{
     return (Timestamp) getColumnValue(getTimeframeFromColumnName());
   }
 
-  public void getFrom(Timestamp timestamp) {
+  public void setFrom(Timestamp timestamp) {
     setColumn(getTimeframeFromColumnName(), timestamp);
   }
 
@@ -59,7 +59,7 @@ public class Timeframe extends GenericEntity{
     return (Timestamp) getColumnValue(getTimeframeToColumnName());
   }
 
-  public void getTo(Timestamp timestamp) {
+  public void setTo(Timestamp timestamp) {
     setColumn(getTimeframeToColumnName(), timestamp);
   }
 
