@@ -420,6 +420,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		return getUserBusiness().getGroupBusiness().getUsersContained(school.getHeadmasterGroupId());
 	}
 	
+	public User getHeadmaster(int schoolID) throws RemoteException {
+		try {
+			School school = getSchoolHome().findByPrimaryKey(new Integer(schoolID));
+			return getUserBusiness().getUser(school.getHeadmasterUserId());
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
 	public void addHeadmaster(School school, User user) throws RemoteException {
 		getUserBusiness().getGroupBusiness().addUser(school.getHeadmasterGroupId(), user);	
 	}
