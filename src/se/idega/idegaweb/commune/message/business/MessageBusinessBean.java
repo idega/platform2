@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.54 2004/01/12 09:43:07 laddi Exp $
+ * $Id: MessageBusinessBean.java,v 1.55 2004/01/12 12:17:50 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -236,18 +236,20 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter) {
 		return createUserMessage(parentCase, receiver,sender,handler,subject,body,sendLetter,null);
 	}
-	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean sendLetter,String contentCode) {
+	public Message createUserMessage(Case parentCase, User receiver, User sender, Group handler, String subject, String body, boolean pSendLetterIfNoEmail,String contentCode) {
 		try {
 			Message message = null;
 			boolean sendMail = getIfUserPreferesMessageByEmail(receiver);
 			boolean sendToBox = getIfUserPreferesMessageInMessageBox(receiver);
 			boolean canSendEmail = getIfCanSendEmail();
-			//TODO:TL implement
-			//boolean alwaysSendLetter=false;
+			boolean sendLetterEvenWhenHavingEmail=getIfCreateLetterMessageHavingEmail();
+			//By default: copies in-parameter value:
+			boolean doSendLetter=pSendLetterIfNoEmail;
 			
 			if (sendToBox) {
 				message = createMessage(getTypeUserMessage(), receiver, sender, handler, subject, body, parentCase);
 			}
+			
 			if (sendMail) {
 				boolean sendEmail = false;
 				Email mail = ((UserBusiness)com.idega.business.IBOLookup.getServiceInstance(getIWApplicationContext(),UserBusiness.class)).getUserMail(receiver);	
@@ -260,22 +262,29 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 					if (canSendEmail)
 						try {
 							sendMessage(mail.getEmailAddress(),subject,body);
+							if(!sendLetterEvenWhenHavingEmail){
+								//do not send message letter when having email address
+								doSendLetter=false;
+							}
 						}
 						catch (Exception e) {
 							System.err.println("Couldn't send message to user via e-mail.");
 						}
 				}
-				else {
-					if (sendLetter)
-						createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
-				}
+				//else {
+				//	if (pSendLetterIfNoEmail)
+				//		createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
+				//}
 				
 				
 				
 			}
-			else {
-				if (sendLetter)
-					createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
+			//else {
+			//	if (pSendLetterIfNoEmail)
+			//		createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
+			//}
+			if(doSendLetter){
+				createPrintedLetterMessage(parentCase, receiver, subject, body,null,contentCode);
 			}
 
 			if (IWMainApplication.isDebugActive()) {
@@ -297,6 +306,14 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			e.printStackTrace(System.err);
 			return null;
 		}
+	}
+	
+	/**
+	 * This property is for setting if to create letter messages even when the user has an email address.
+	 * @return value of the set property. Default is false.
+	 */
+	protected boolean getIfCreateLetterMessageHavingEmail(){
+		return getBundle().getBooleanProperty("create_letter_message_having_email",false);
 	}
 
 	public Message createUserMessage(int userID, String subject, String body) throws CreateException, RemoteException {
@@ -699,6 +716,10 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 	
 	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
+	}
+	
+	protected String getBundleIdentifier(){
+		return IW_BUNDLE_IDENTIFIER;
 	}
 
 }
