@@ -33,6 +33,7 @@ public class CalendarEditor extends IWAdminWindow {
 	private int _typeID = -1;
 	private int _userID = -1;
 	private int _groupID = -1;
+	private int _instanceID = -1;
 	private IWTimestamp _stamp;
 	private IWTimestamp _endStamp;
 
@@ -87,6 +88,14 @@ public class CalendarEditor extends IWAdminWindow {
 	}
 
 	private void processForm(IWContext iwc, int iLocaleId, int iCategoryId) {
+		if (iwc.getParameter(CalendarBusiness.PARAMETER_INSTANCE_ID) != null) {
+			try {
+				_instanceID = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_INSTANCE_ID));
+			} catch (NumberFormatException e) {
+				_instanceID = -1;
+			}
+		}
+
 		if (iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_ID) != null) {
 			try {
 				_entryID = Integer.parseInt(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_ID));
@@ -117,12 +126,9 @@ public class CalendarEditor extends IWAdminWindow {
 			try {
 				_endStamp = new IWTimestamp(iwc.getParameter(CalendarBusiness.PARAMETER_ENTRY_END_DATE));
 			} catch (Exception e) {
-				_endStamp = new IWTimestamp();
 			}
-		} else {
-			_endStamp = new IWTimestamp();
 		}
-
+		
 		if (iwc.getParameter(CalendarBusiness.PARAMETER_MODE) != null) {
 			if (iwc.getParameter(CalendarBusiness.PARAMETER_MODE).equalsIgnoreCase(CalendarBusiness.PARAMETER_MODE_CLOSE)) {
 				closeEditor(iwc);
@@ -155,10 +161,10 @@ public class CalendarEditor extends IWAdminWindow {
 		addLeft(_iwrb.getLocalizedString("locale", "Locale") + ": ", localeDrop, false);
 		addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_ENTRY_ID, Integer.toString(_entryID)));
 
-		initializeFields(iLocaleId, iCategoryId);
+		initializeFields(iwc, iLocaleId, iCategoryId);
 	}
 
-	private void initializeFields(int iLocaleId, int iCategoryId) {
+	private void initializeFields(IWContext iwc, int iLocaleId, int iCategoryId) {
 		CalendarEntry entry = null;
 		if (_update)
 			entry = CalendarFinder.getInstance().getEntry(_entryID);
@@ -172,10 +178,15 @@ public class CalendarEditor extends IWAdminWindow {
 				_endStamp = new IWTimestamp(entry.getEndDate());
 		}
 
+		DropdownMenu categories = CalendarBusiness.getCategories(CalendarBusiness.PARAMETER_IC_CAT, iwc.getCurrentLocale(), _instanceID);
+		if (entry != null)
+			categories.setSelectedElement(Integer.toString(entry.getCategoryId()));
+		addLeft(_iwrb.getLocalizedString("category", "Category") + ":", categories, false);
+		
 		DropdownMenu entryTypes = CalendarBusiness.getEntryTypes(CalendarBusiness.PARAMETER_TYPE_ID, iLocaleId);
 		if (entry != null)
 			entryTypes.setSelectedElement(Integer.toString(entry.getEntryTypeID()));
-		addLeft(_iwrb.getLocalizedString("type", "Type") + ":", entryTypes, true);
+		addLeft(_iwrb.getLocalizedString("type", "Type") + ":", entryTypes, false);
 
 		TextInput entryHeadline = new TextInput(CalendarBusiness.PARAMETER_ENTRY_HEADLINE);
 		entryHeadline.setLength(24);
@@ -204,15 +215,14 @@ public class CalendarEditor extends IWAdminWindow {
 		IWTimestamp endStamp = new IWTimestamp();
 		TimestampInput entryEndDate = new TimestampInput(CalendarBusiness.PARAMETER_ENTRY_END_DATE);
 		entryEndDate.setYearRange(stamp.getYear() - 5, stamp.getYear() + 10);
-		if (_endStamp == null) {
-			_endStamp = IWTimestamp.RightNow();
-		}
-		entryEndDate.setTimestamp(_endStamp.getTimestamp());
+		if (_endStamp != null)
+			entryEndDate.setTimestamp(_endStamp.getTimestamp());
 		entryEndDate.setStyleAttribute(STYLE);
 
 		addLeft(_iwrb.getLocalizedString("date_start", "Start date") + ":", entryDate, true);
 		addLeft(_iwrb.getLocalizedString("date_end", "End date") + ":", entryEndDate, true);
 		addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_IC_CAT, String.valueOf(iCategoryId)));
+		addHiddenInput(new HiddenInput(CalendarBusiness.PARAMETER_INSTANCE_ID, String.valueOf(_instanceID)));
 		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close", "CLOSE"), CalendarBusiness.PARAMETER_MODE, CalendarBusiness.PARAMETER_MODE_CLOSE));
 		addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save", "SAVE"), CalendarBusiness.PARAMETER_MODE, CalendarBusiness.PARAMETER_MODE_SAVE));
 	}

@@ -18,6 +18,8 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.block.calendar.data.*;
 import com.idega.block.text.data.LocalizedText;
+import com.idega.core.business.CategoryFinder;
+import com.idega.core.data.ICCategory;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.block.category.business.CategoryBusiness;
 import java.util.Locale;
@@ -49,6 +51,7 @@ public class CalendarBusiness {
 	public static final String PARAMETER_ENTRY_END_DATE = "entry_end_date";
 	public static final String PARAMETER_ENTRY_TIME = "entry_time";
 	public static final String PARAMETER_IC_CAT = "ic_cat_id";
+	public static final String PARAMETER_INSTANCE_ID = "ic_instance_id";
 
 	public static final String PARAMETER_MODE = PARAMETER_CALENDAR + "_mode";
 	public static final String PARAMETER_MODE_DELETE = PARAMETER_CALENDAR + "_delete";
@@ -115,6 +118,20 @@ public class CalendarBusiness {
 					locString = locText.getHeadline();
 				}
 				drp.addMenuElement(((CalendarEntryType) list.get(a)).getID(), locString);
+			}
+		}
+
+		return drp;
+	}
+	
+	public static DropdownMenu getCategories(String name, Locale locale, int instanceID) {
+		DropdownMenu drp = new DropdownMenu(name);
+
+		List list = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(instanceID);
+		if (list != null) {
+			for (int a = 0; a < list.size(); a++) {
+				ICCategory category = (ICCategory) list.get(a);
+				drp.addMenuElement(category.getID(), category.getName(locale));
 			}
 		}
 

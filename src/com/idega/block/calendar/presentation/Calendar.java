@@ -16,6 +16,7 @@ import com.idega.presentation.IWContext;
 import com.idega.block.IWBlock;
 import com.idega.block.calendar.data.*;
 import com.idega.block.calendar.business.*;
+import com.idega.core.business.CategoryFinder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.util.IWTimestamp;
 import com.idega.util.IWCalendar;
@@ -65,12 +66,15 @@ public class Calendar extends CategoryBlock implements IWBlock {
 	private static final String HEADLINE_STYLE_NAME = "headline";
 	private static final String BODY_STYLE_NAME = "body";
 	private static final String DATE_STYLE_NAME = "date";
+	private String CATEGORY_STYLE_NAME = "category";
 	private String HEADLINE_STYLE = "font-family: Arial,Helvetica,sans-serif; font-size: 11px; font-weight: bold;";
 	private String BODY_STYLE = "font-family: Arial,Helvetica,sans-serif; font-size: 10px;";
 	private String DATE_STYLE = "font-family: Arial,Helvetica,sans-serif; font-size: 10px; font-weight: bold;";
+	private String CATEGORY_STYLE = "font-family: Arial,Helvetica,sans-serif; font-size: 10px; font-weight: bold; color: #666666;";
 
 	private int _spaceBetween = 16;
-	
+	private boolean _showCategory;
+
 	public Calendar() {
 		//_stamp = IWTimestamp.getTimestampRightNow();
 	}
@@ -335,6 +339,8 @@ public class Calendar extends CategoryBlock implements IWBlock {
 		if (_width != null)
 			outerTable.setWidth(_width);
 		outerTable.setWidth(1, Table.HUNDRED_PERCENT);
+		
+		Table dateTable;
 
 		Table entriesTable;
 
@@ -382,6 +388,12 @@ public class Calendar extends CategoryBlock implements IWBlock {
 			  entriesTable.setWidth(Table.HUNDRED_PERCENT);
 			  entriesTable.setCellpaddingAndCellspacing(0);
 			  outerTable.add(entriesTable, 1, ypos++);
+			  
+			  dateTable = new Table(2,1);
+			  dateTable.setWidth(Table.HUNDRED_PERCENT);
+			  dateTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+			  dateTable.setCellpaddingAndCellspacing(0);
+			  
 			  if ((a + 1) < numberOfShown && _spaceBetween > 0) {
 			  	outerTable.setHeight(ypos++, _spaceBetween);
 			  }
@@ -403,8 +415,12 @@ public class Calendar extends CategoryBlock implements IWBlock {
 				int row = 1;
 				if (headlineText != null) {
 					stamp = new IWTimestamp(entry.getDate());
-					Text dateText = getStyleText(stamp.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), DATE_STYLE_NAME);
-					entriesTable.add(dateText, 1, row++);
+					Text dateText = getStyleText(stamp.getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT), DATE_STYLE_NAME);
+					Text category = getStyleText(CategoryFinder.getInstance().getCategory(entry.getCategoryId()).getName(iwc.getCurrentLocale()), CATEGORY_STYLE_NAME);
+					dateTable.add(dateText, 1, 1);
+					if (_showCategory)
+						dateTable.add(category, 2, 1);
+					entriesTable.add(dateTable, 1, row++);
 					entriesTable.add(headlineText, 1, row++);
 
 					if (bodyText != null && bodyText.getText().length() > 0) {
@@ -539,6 +555,7 @@ public class Calendar extends CategoryBlock implements IWBlock {
 		Link link = new Link(image);
 		link.setWindowToOpen(CalendarEditor.class);
 		link.addParameter(CalendarBusiness.PARAMETER_IC_CAT, getCategoryId());
+		link.addParameter(CalendarBusiness.PARAMETER_INSTANCE_ID, getICObjectInstanceID());
 		if (this._isSelectedDay)
 			link.addParameter(CalendarBusiness.PARAMETER_ENTRY_DATE, _stamp.toSQLString());
 		return link;
@@ -572,6 +589,7 @@ public class Calendar extends CategoryBlock implements IWBlock {
 		editLink.addParameter(CalendarBusiness.PARAMETER_ENTRY_ID, entryID);
 		editLink.addParameter(CalendarBusiness.PARAMETER_MODE, CalendarBusiness.PARAMETER_MODE_EDIT);
 		editLink.addParameter(CalendarBusiness.PARAMETER_IC_CAT, getCategoryId());
+		editLink.addParameter(CalendarBusiness.PARAMETER_INSTANCE_ID, getICObjectInstanceID());
 		table.add(editLink, 1, 1);
 		Link deleteLink = new Link(deleteImage);
 		deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
@@ -661,8 +679,8 @@ public class Calendar extends CategoryBlock implements IWBlock {
 	 */
 	public Map getStyleNames() {
 		HashMap map = new HashMap();
-		String[] styleNames = { HEADLINE_STYLE_NAME, BODY_STYLE_NAME, DATE_STYLE_NAME };
-		String[] styleValues = { HEADLINE_STYLE, BODY_STYLE, DATE_STYLE };
+		String[] styleNames = { HEADLINE_STYLE_NAME, BODY_STYLE_NAME, DATE_STYLE_NAME, CATEGORY_STYLE_NAME };
+		String[] styleValues = { HEADLINE_STYLE, BODY_STYLE, DATE_STYLE, CATEGORY_STYLE };
 
 		for (int a = 0; a < styleNames.length; a++) {
 			map.put(styleNames[a], styleValues[a]);
@@ -676,6 +694,14 @@ public class Calendar extends CategoryBlock implements IWBlock {
 	 */
 	public void setSpaceBetween(int spaceBetween) {
 		_spaceBetween = spaceBetween;
+	}
+
+	/**
+	 * Sets the showCategory.
+	 * @param showCategory The showCategory to set
+	 */
+	public void setShowCategory(boolean showCategory) {
+		_showCategory = showCategory;
 	}
 
 }
