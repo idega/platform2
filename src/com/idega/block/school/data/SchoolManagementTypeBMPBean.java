@@ -119,10 +119,10 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 		return (Integer) idoFindOnePKByQuery(query);
 	}
 	
-	public Integer ejbFindPrivateManagementType() throws FinderException {
+	public String ejbFindPrivateManagementType() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_NAME, TYPE_PRIVATE);
-		return (Integer) idoFindOnePKByQuery(query);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_MANAGEMENT_TYPE, TYPE_PRIVATE);
+		return (String) idoFindOnePKByQuery(query);
 	}
 	
 	public Integer ejbFindPublicManagementType() throws FinderException {
