@@ -61,7 +61,7 @@ public class CriterionExpression implements DynamicExpression {
   		// something wrong
   		return;
   	}
-  	String firstColumnClass = querySQL.getTypeClassForField(field);
+  	//String firstColumnClass = querySQL.getTypeClassForField(field);
   	valueField = (String) fieldValueList.get(0);
     String type = condition.getType();
     comparison = (String) typeSQL.get(type);
