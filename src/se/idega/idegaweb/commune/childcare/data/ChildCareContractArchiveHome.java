@@ -9,5 +9,6 @@ public interface ChildCareContractArchiveHome extends com.idega.data.IDOHome
  public java.util.Collection findByChild(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findByChildAndProvider(int p0,int p1)throws javax.ejb.FinderException;
  public ChildCareContractArchive findByContractFileID(int p0)throws javax.ejb.FinderException;
+ public ChildCareContractArchive findValidContractByApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
 
 }

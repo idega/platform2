@@ -41,6 +41,13 @@ public ChildCareContractArchive findByContractFileID(int p0)throws javax.ejb.Fin
 	return this.findByPrimaryKey(pk);
 }
 
+public ChildCareContractArchive findValidContractByApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareContractArchiveBMPBean)entity).ejbFindValidContractByApplication(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public ChildCareContractArchive findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (ChildCareContractArchive) super.findByPrimaryKeyIDO(pk);
  }

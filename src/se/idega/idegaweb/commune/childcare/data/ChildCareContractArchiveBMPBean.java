@@ -154,6 +154,16 @@ public class ChildCareContractArchiveBMPBean extends GenericEntity implements Ch
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Integer ejbFindValidContractByApplication(int applicationID, Date date) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
+		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(date);
+		sql.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+
 	public Integer ejbFindByContractFileID(int contractFileID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CONTRACT_FILE_ID, contractFileID);
