@@ -39,7 +39,7 @@ public class WorkReportMemberImporter extends WorkReportImporter {
 				String mainBoardName = getBundle(iwc).getProperty(WorkReportConstants.WR_MAIN_BOARD_NAME);
 				WorkReportImportReport report = getWorkReportImportBusiness(iwc).importMemberPart(getWorkReportFileId(),getWorkReportId(),mainBoardName);
 				if(report != null){
-					add(iwrb.getLocalizedString("WorkReportMemberImporter.import_successful","Importing members completed successfully."));
+//					add(iwrb.getLocalizedString("WorkReportMemberImporter.import_successful","Importing members completed successfully."));
 					setWorkReportMemberImportReport(report);
 				}
 				else{

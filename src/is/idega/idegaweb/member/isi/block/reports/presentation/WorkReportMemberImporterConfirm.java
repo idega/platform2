@@ -30,7 +30,7 @@ public class WorkReportMemberImporterConfirm extends WorkReportMemberImporter {
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
 		
-		if (getWorkReportMemberImportReport() != null) { //do nothing before we have the file id
+		if (getWorkReportMemberImportReport() != null) { 
 			//sets this step as bold, if another class calls it this will be overridden
 			setAsCurrentStepByStepLocalizableKey(STEP_NAME_LOCALIZATION_KEY);
 		
@@ -80,5 +80,7 @@ public class WorkReportMemberImporterConfirm extends WorkReportMemberImporter {
 				t.add((String)it.next(),2,i++);
 			}
 		}
+		
+		add(t);
 	}
 }
