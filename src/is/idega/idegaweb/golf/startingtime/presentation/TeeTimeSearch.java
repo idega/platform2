@@ -73,7 +73,7 @@ public class TeeTimeSearch extends GolfBlock {
 	private int width = 160;
 	
 	private boolean lockedAsWapLayout = false;
-
+	private ICPage backPage = null;
 
 	public void main(IWContext modinfo) throws Exception {
 		IWTimestamp funcDate = new IWTimestamp();
@@ -537,7 +537,7 @@ public class TeeTimeSearch extends GolfBlock {
 		myForm.setClassToInstanciateAndSendTo(RegisterTime.class);
 		
 		TeetimeSearchResult result = (TeetimeSearchResult)IBOLookup.getSessionInstance(modinfo,TeetimeSearchResult.class);		
-		
+		result.setSublistSize(10);
 		if(Groups != null){
 			Vector myVector = new Vector();
 			Vector boolVector = new Vector();
@@ -566,10 +566,12 @@ public class TeeTimeSearch extends GolfBlock {
 		myForm.addParameter("skraMarga",modinfo.getParameter("fjoldi"));
 		
 		myForm.addParameter(RegisterTime.PRM_LOCKED_AS_WML_LAYOUT, "y");
-		
+		if(backPage!=null){
+			myForm.addParameter(RegisterTime.PRM_BACK_PAGE,backPage.getPrimaryKey().toString());
+		}
 
 		
-		String headerString = getFieldName(result.getFieldInfo().get_field_id());
+		String headerString = getFieldName(result.getFieldInfo().get_field_id())+" - "+result.getDate();
 		
 		int count = result.getResultSize();
 
@@ -615,11 +617,15 @@ public class TeeTimeSearch extends GolfBlock {
 			if(result.hasPrevious()){
 				Link prev = new Link(localize("prev","Previous"));
 				prev.addParameter("part","prev");
+				prev.maintainParameter("skraMarga",modinfo);
+				prev.maintainParameter("fjoldi",modinfo);
 				add(prev);
 			}
 			if(result.hasNext()){
 				Link next = new Link(localize("next","Next"));
 				next.addParameter("part","next");
+				next.maintainParameter("skraMarga",modinfo);
+				next.maintainParameter("fjoldi",modinfo);
 				add(next);
 			}
 			myForm.add(new SubmitButton(localize("start.reserve","Reserve")));
@@ -1259,5 +1265,11 @@ public class TeeTimeSearch extends GolfBlock {
 	 */
 	public void setLockedAsWapLayout(boolean lockedAsWapLayout) {
 		this.lockedAsWapLayout = lockedAsWapLayout;
+	}
+	/**
+	 * @param backPage The backPage to set.
+	 */
+	public void setBackPageForWMLMode(ICPage backPage) {
+		this.backPage = backPage;
 	}
 }

@@ -18,10 +18,11 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CloseButton;
@@ -64,6 +65,8 @@ public class RegisterTime extends GolfBlock {
 
   private boolean lockedAsWapLayout = false;
   public static final String PRM_LOCKED_AS_WML_LAYOUT = "iw_lock_as_wml_layout";
+  private int backPage = -1;
+  public static final String PRM_BACK_PAGE = "bpage";
 
   public RegisterTime() {
     myForm = new Form();
@@ -350,7 +353,9 @@ public class RegisterTime extends GolfBlock {
     public void handleFormInfo(IWContext modinfo)throws SQLException, IOException {
 
       Vector illegal = new Vector(0);
+      Vector legal = new Vector(0);
       int k = 0;
+      int l = 0;
       frameTable.empty();
       frameTable.setAlignment(1,1,"center");
         if( modinfo.getParameter("secure_num") != null){
@@ -422,7 +427,7 @@ public class RegisterTime extends GolfBlock {
 								unionAbbr, "", 
 								"");
 					   }
-                        			
+					   legal.add(l++,new Integer(j));
                         ones = true;
                       }
                     }else{
@@ -436,6 +441,42 @@ public class RegisterTime extends GolfBlock {
                 illegal.add(k++,new Integer(j));
               }
             }
+            	
+            
+            if(legal.size() > 0){
+                Text myText = (Text)templText.clone();
+                myText.setText(localize("start.the_following_where_registered","The following where registered:"));
+
+                Table tempTable = new Table(3,legal.size());
+
+                for (int i = 0; i < legal.size(); i++) {
+                  int index = ((Integer)legal.get(i)).intValue();
+
+                  Text tempIllegal1 = (Text)templText.clone();
+                  tempIllegal1.setText(sentSecureNums[index]);
+                  tempTable.add(tempIllegal1,1,i+1);
+
+                  if(playerCard != null && playerCard.length>index){
+    	                  Text tempIllegal2 = (Text)templText.clone();
+    	                  tempIllegal2.setText(playerCard[index]);
+    	                  tempTable.add(tempIllegal2,2,i+1);
+    	
+    	                  Text tempIllegal3 = (Text)templText.clone();
+    	                  tempIllegal3.setText(playerCardNo[index]);
+    	                  tempTable.add(tempIllegal3,3,i+1);
+                  }
+                }
+
+                frameTable.add(Text.getBreak());
+                frameTable.add(myText);
+                frameTable.add(Text.getBreak());
+                frameTable.add(tempTable);
+
+//                frameTable.add(Text.getBreak());
+//                frameTable.add(Text.getBreak());
+//                frameTable.add(new CloseButton(localize("start.close_window","Close Window")));
+
+              }
 
               if(illegal.size() > 0){
 
@@ -507,15 +548,32 @@ public class RegisterTime extends GolfBlock {
                   frameTable.add(Text.getBreak());
                   frameTable.add(comment);
                 }
-
+                
+                if(lockedAsWapLayout || modinfo.isClientHandheld()){
+                		if(backPage!=-1){
+                			frameTable.add(new Break());
+                			Link link = new Link(localize("start.wml_back_link","Back to overview"));
+                			link.setPage(backPage);
+                          frameTable.add(link);
+                		}
+                } else{
                   //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
                   frameTable.add(Text.getBreak());
                   frameTable.add(Text.getBreak());
                   frameTable.add(new CloseButton(localize("start.close_window","Close Window")));
-
+                }
               }else{
-                this.getParentPage().setParentToReload();
-                this.getParentPage().close();
+              	if(lockedAsWapLayout || modinfo.isClientHandheld()){    
+                    if(backPage!=-1){
+            			frameTable.add(new Break());
+            			Link link = new Link(localize("start.wml_back_link","Back to overview"));
+            			link.setPage(backPage);
+                      frameTable.add(link);
+                	   }
+              	}else{
+	                this.getParentPage().setParentToReload();
+	                this.getParentPage().close();
+              	}
               }
 
           }else{
@@ -633,6 +691,14 @@ public class RegisterTime extends GolfBlock {
 	    
 	    String wmlLock = modinfo.getParameter(PRM_LOCKED_AS_WML_LAYOUT);
 	    lockedAsWapLayout = (wmlLock != null && !"".equals(wmlLock));
+	    
+	    String bPage = modinfo.getParameter(PRM_BACK_PAGE);
+	    if(bPage!=null){
+	    		try {
+				backPage = Integer.parseInt(bPage);
+			} catch (NumberFormatException e1) {
+			}
+	    }
 	
 	
         currentMember = Integer.toString(GolfLoginBusiness.getMember(modinfo).getID());
@@ -656,6 +722,7 @@ public class RegisterTime extends GolfBlock {
 	      myForm.maintainParameter("field_id");
 	      myForm.maintainParameter("union_id");
 	      myForm.maintainParameter(PRM_LOCKED_AS_WML_LAYOUT);
+	      myForm.maintainParameter(PRM_BACK_PAGE);
 	      
 	      int skraMargaInt = 0;
 	      String skraMarga = modinfo.getParameter("skraMarga");
@@ -668,11 +735,15 @@ public class RegisterTime extends GolfBlock {
 	      }
 	      else{
 	        if( modinfo.getParameter("secure_num") != null){
-	          handleFormInfo(modinfo);
+	        	handleFormInfo(modinfo);
+	          if(lockedAsWapLayout || modinfo.isClientHandheld()){
+	          	this.empty();
+	          	this.add(frameTable);
+	          }
 	        }else{
 	          fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
 	          skraMargaInt = Integer.parseInt(skraMarga);
-	          if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+	          if(lockedAsWapLayout || modinfo.isClientHandheld()){
 	          	lineUpWMLTable(skraMargaInt, modinfo);
 	          } else {
 	          	lineUpTable(skraMargaInt, modinfo);
@@ -685,4 +756,10 @@ public class RegisterTime extends GolfBlock {
 	   }
     } // method main() ends
 
+/**
+ * @param backPage The backPage to set.
+ */
+public void setBackPage(int backPage) {
+	this.backPage = backPage;
+}
 } // Class ends

@@ -23,7 +23,7 @@ public class TeetimeSearchResultBean extends IBOSessionBean implements TeetimeSe
 	private List result = null;
 	private GolfField info = null;
 	private String date = null;
-	private int sublistSize = 6;
+	private int sublistSize = 100;
 	private int index = 0;
 	
 	/**
@@ -69,7 +69,7 @@ public class TeetimeSearchResultBean extends IBOSessionBean implements TeetimeSe
 	}
 	
 	public List prev(){
-		index -= (2*sublistSize);
+		index -= (sublistSize);
 		return current();
 	}
 	
