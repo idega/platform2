@@ -3,6 +3,8 @@ package se.idega.idegaweb.commune.business;
 import java.util.Collection;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
+
 import com.idega.business.IBOServiceBean;
 import com.idega.core.data.Commune;
 import com.idega.core.data.CommuneHome;
@@ -33,6 +35,15 @@ public class CommuneBusinessBean extends IBOServiceBean implements CommuneBusine
 			e.printStackTrace(System.err);
 			return null;
 		}	
+	}
+	
+	public Commune getCommune(String code) {
+		try {
+			return getCommuneHome().findByCommuneCode(code);
+		} catch (Exception e) {
+			//e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public Commune getDefaultCommune() {
