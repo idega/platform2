@@ -255,16 +255,18 @@ public class ProductEditorBusiness extends IBOServiceBean{
   public DropdownMenu getCurrencyDropdown(String dropdownName, String defaultCurrency) {
     DropdownMenu _currencies = new DropdownMenu(dropdownName);
     List currencyList = CurrencyBusiness.getCurrencyList();
-    Iterator iter = currencyList.iterator();
-    while (iter.hasNext()) {
-      CurrencyHolder holder = (CurrencyHolder) iter.next();
-      _currencies.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
-    }
-    if (defaultCurrency != null) {
-      try {
-	_currencies.setSelectedElement(Integer.toString(CurrencyBusiness.getCurrencyHolder(defaultCurrency).getCurrencyID()));
+    if (currencyList != null) {
+      Iterator iter = currencyList.iterator();
+      while (iter.hasNext()) {
+        CurrencyHolder holder = (CurrencyHolder) iter.next();
+        _currencies.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
       }
-      catch (Exception e) {
+      if (defaultCurrency != null) {
+        try {
+          _currencies.setSelectedElement(Integer.toString(CurrencyBusiness.getCurrencyHolder(defaultCurrency).getCurrencyID()));
+        }
+        catch (Exception e) {
+        }
       }
     }
     return _currencies;
