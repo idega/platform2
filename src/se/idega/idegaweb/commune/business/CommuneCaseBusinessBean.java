@@ -3,9 +3,7 @@ package se.idega.idegaweb.commune.business;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBOServiceBean;
@@ -24,7 +22,6 @@ import com.idega.user.data.User;
 public class CommuneCaseBusinessBean extends IBOServiceBean implements CommuneCaseBusiness
 {
 	private CaseCode[] userHiddenCaseCodes;
-	private CaseCode[] providerCaseCodes;
 	
 	public CaseBusiness getCaseBusiness()throws RemoteException{
 		return (CaseBusiness)this.getServiceInstance(CaseBusiness.class);
@@ -35,22 +32,6 @@ public class CommuneCaseBusinessBean extends IBOServiceBean implements CommuneCa
 	}
 	
 	
-	
-	public CaseCode[] getProviderCaseCodes() {
-		if (providerCaseCodes == null) {
-			try {
-				SchoolChoiceBusiness scBus = (SchoolChoiceBusiness) getServiceInstance(SchoolChoiceBusiness.class);
-				providerCaseCodes = new CaseCode[3];
-				providerCaseCodes[0] = getCaseBusiness().getCaseCode(ChildCareConstants.AFTER_SCHOOL_CASE_CODE_KEY);
-				providerCaseCodes[1] = getCaseBusiness().getCaseCode(ChildCareConstants.CASE_CODE_KEY);
-				providerCaseCodes[2] = getCaseBusiness().getCaseCode(scBus.getSchoolChoiceCaseCode());
-			} 
-			catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
-		}
-		return providerCaseCodes;
-	}
 	
 	public CaseCode[] getUserHiddenCaseCodes(){
 		if(userHiddenCaseCodes==null){
