@@ -104,7 +104,7 @@ public class InvoiceBatchResult extends AccountingBlock{
 					errorTable.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
 									   : getZebraColor2 ());
 					errorTable.add(new Text(new Integer(row).toString()),1,row+1);
-					if(batchRunError.getRelated().indexOf("invoice.")!=-1){
+					if(batchRunError.getRelated().indexOf("invoice.")==0){
 						errorTable.add(getLocalizedLabel(batchRunError.getRelated(),batchRunError.getRelated()),2,row+1);
 						System.out.println("Error "+batchRunError.getRelated());
 					}else{
