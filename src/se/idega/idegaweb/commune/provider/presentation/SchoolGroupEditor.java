@@ -306,11 +306,8 @@ public class SchoolGroupEditor extends ProviderBlock {
 		if (useStyleNames) {
 			table.setCellpaddingLeft(1, row, 12);
 		}
-		table.add(name, 3, row);
+		table.add(name, 3, row++);
 		
-		if (useStyleNames) {
-			table.setCellpaddingLeft(1, row, 12);
-		}
 		table.add(getSmallHeader(localize("group_type", "Type") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		Collection providerTypes = null;
@@ -323,11 +320,11 @@ public class SchoolGroupEditor extends ProviderBlock {
 		DropdownMenu types = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_TYPE_ID), providerTypes, "getSchoolTypeName"));
 		types.addMenuElementFirst("-1", "");
 		setSelectedSchoolType(types);
-		table.add(types, 3, row);
-		
 		if (useStyleNames) {
 			table.setCellpaddingLeft(1, row, 12);
 		}
+		table.add(types, 3, row++);
+		
 		table.add(getSmallHeader(localize("school_season", "Season") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		Collection providerSeasons = null;
@@ -340,12 +337,11 @@ public class SchoolGroupEditor extends ProviderBlock {
 		DropdownMenu seasons = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(PARAMETER_SEASON_ID), providerSeasons, "getSchoolSeasonName"));
 		seasons.addMenuElementFirst("-1", "");
 		setSelectedSeason(seasons);
-
-		table.add(seasons, 3, row++);
-		
 		if (useStyleNames) {
 			table.setCellpaddingLeft(1, row, 12);
 		}
+		table.add(seasons, 3, row++);
+		
 		table.add(getSmallHeader(localize("group_type", "Group type") + ":"), 1, row);
 		table.setNoWrap(1, row);
 		DropdownMenu subGroup = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_IS_SUBGROUP));
@@ -353,6 +349,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 		subGroup.addMenuElement("true", localize("sub_group", "Sub group"));
 		if (_group != null)
 			subGroup.setSelectedElement(String.valueOf(_group.getIsSubGroup()));
+		if (useStyleNames) {
+			table.setCellpaddingLeft(1, row, 12);
+		}
 		table.add(subGroup, 3, row++);
 		
 		List schoolYears = null;
@@ -392,7 +391,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 			table.setCellpadding(3, row, 2);
 			table.add(box, 3, row);
 			table.add(Text.getNonBrakingSpace(), 3, row);
-			table.add(getSmallText(year.getSchoolYearName()), 3, row++);
+			table.add(getSmallText(localize(year.getSchoolYearName(), year.getSchoolYearName())), 3, row++);
 		}
 		table.setHeight(row++, 15);
 		
