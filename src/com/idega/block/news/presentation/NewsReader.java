@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.102 2002/08/20 16:48:47 aron Exp $
+ * $Id: NewsReader.java,v 1.103 2002/10/27 11:49:47 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -632,7 +632,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
           sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
         }
 
-        sNewsBody = NewsFormatter.formatNews(sNewsBody,String.valueOf(textSize));
+        sNewsBody = TextFormatter.formatText(sNewsBody,1,Table.HUNDRED_PERCENT);
 
         Text newsBody = new Text(sNewsBody);
         newsBody = setTextAttributes(newsBody);
