@@ -16,6 +16,7 @@ import com.idega.block.trade.stockroom.data.SupplyPoolDayBMPBean;
 import com.idega.block.trade.stockroom.data.SupplyPoolDayHome;
 import com.idega.block.trade.stockroom.data.SupplyPoolDayPK;
 import com.idega.block.trade.stockroom.data.SupplyPoolHome;
+import com.idega.data.IDOCompositePrimaryKeyException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
@@ -46,6 +47,7 @@ public class SupplyPoolEditor extends TravelBlock {
 	private static final String PARAMETER_EDIT_POOL_DAYS = "ae_pd";
 	private static final String PARAMETER_SAVE_POOL = "as_p";
 	private static final String PARAMETER_SAVE_POOL_DAYS = "as_pd";
+	private static final String PARAMETER_DELETE_POOL = "ad_p";
 	private static final String PARAMETER_SHOW_POOLS = "ash_p";
 	
 	private static final String PARAMETER_POOL_ID = "p_i";
@@ -94,8 +96,23 @@ public class SupplyPoolEditor extends TravelBlock {
 			} else if (action.equals(PARAMETER_SAVE_POOL_DAYS)) {
 				savePoolDays(iwc);
 				form = getPoolDaysEditor(iwc);
-			} 
+			} else if (action.equals(PARAMETER_DELETE_POOL)) {
+				deletePool(iwc);
+				form.add(getPoolList(iwc));
+			}
 			return form;
+		}
+	}
+	
+	private void deletePool(IWContext iwc) {
+		String sPoolID = iwc.getParameter(PARAMETER_POOL_ID);
+		SupplyPool pool = null;
+		try {
+			pool = getSupplyPoolHome().findByPrimaryKey(new Integer(sPoolID));
+			pool.remove();
+		} catch (Exception n) {
+			System.out.println("Failed to delete supplyPool");
+			n.printStackTrace();
 		}
 	}
 	
@@ -361,6 +378,9 @@ public class SupplyPoolEditor extends TravelBlock {
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
+		catch (IDOCompositePrimaryKeyException e) {
+			e.printStackTrace();
+		}
 				
 		return form;
 	}
@@ -374,7 +394,7 @@ public class SupplyPoolEditor extends TravelBlock {
 		
 		table.add(getHeaderText(iwrb.getLocalizedString("name", "Name")), 1, row);
 		table.add(getHeaderText(iwrb.getLocalizedString("description", "Desciption")), 2, row);
-		table.add("", 3, row);
+		table.add("", 4, row);
 		table.setRowColor(row++, TravelManager.backgroundColor);
 		try {
 			Collection pools = getSupplyPoolHome().findBySupplier(super.getSupplier());
@@ -383,6 +403,7 @@ public class SupplyPoolEditor extends TravelBlock {
 				SupplyPool pool;
 				Link link;
 				Link edit;
+				Link delete;
 				while (iter.hasNext()) {
 					pool = (SupplyPool) iter.next();
 					link = getLink(getText(pool.getName()));
@@ -393,9 +414,14 @@ public class SupplyPoolEditor extends TravelBlock {
 					edit.addParameter(ACTION_PARAMETER, PARAMETER_EDIT_POOL);
 					edit.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
 					
+					delete = getLink(getText(iwrb.getLocalizedString("delete", "Delete")));
+					delete.addParameter(ACTION_PARAMETER, PARAMETER_DELETE_POOL);
+					delete.addParameter(PARAMETER_POOL_ID, pool.getPrimaryKey().toString());
+
 					table.add(link, 1, row);
 					table.add(getText(pool.getDescription()), 2, row);
 					table.add(edit, 3, row);
+					table.add(delete, 4, row);
 					table.setRowColor(row++, TravelManager.GRAY);
 				}
 			}
