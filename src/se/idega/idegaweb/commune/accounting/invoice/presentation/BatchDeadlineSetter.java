@@ -1,5 +1,5 @@
 /*
- * $Id: BatchDeadlineSetter.java,v 1.1 2004/11/01 17:00:59 aron Exp $
+ * $Id: BatchDeadlineSetter.java,v 1.2 2004/11/22 16:40:26 aron Exp $
  * Created on 1.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,14 +9,12 @@
  */
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
-import javax.ejb.FinderException;
+import java.rmi.RemoteException;
 
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchDeadline;
-import se.idega.idegaweb.commune.accounting.invoice.data.BatchDeadlineHome;
+import se.idega.idegaweb.commune.accounting.business.BatchDeadlineService;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
+import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
@@ -28,10 +26,10 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/01 17:00:59 $ by $Author: aron $
+ *  Last modified: $Date: 2004/11/22 16:40:26 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class BatchDeadlineSetter extends AccountingBlock {
 
@@ -46,25 +44,13 @@ public class BatchDeadlineSetter extends AccountingBlock {
         int currentDay = stamp.getDay();
         IWCalendar cal = new IWCalendar();
         int daysInMonth = cal.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
-      
-        try {
-            BatchDeadlineHome deadlineHome = (BatchDeadlineHome)IDOLookup.getHome(BatchDeadline.class);
-            if(iwc.isParameterSet("save_dld")){
-                deadlineDay = Integer.parseInt(iwc.getParameter("deadline_day"));
-                BatchDeadline deadLine = deadlineHome.create();
-                deadLine.setDeadlineDay(deadlineDay);
-                deadLine.setIsCurrent(true);
-                deadLine.store();
-            }
-            else{
-                BatchDeadline deadline = deadlineHome.findCurrent();
-                deadlineDay = deadline.getDeadlineDay();
-            }
-        } catch (IDOLookupException e) {
-            e.printStackTrace();
-        } catch (FinderException e) {
-           
+        
+        if(iwc.isParameterSet("deadline_day")){
+            deadlineDay = Integer.parseInt(iwc.getParameter("deadline_day"));
+            getDeadlineService(iwc).storeDeadline(deadlineDay);
         }
+      
+        
         // still valid this month
         stamp.setDay(deadlineDay);
         if(deadlineDay>=currentDay){
@@ -94,6 +80,10 @@ public class BatchDeadlineSetter extends AccountingBlock {
         
         
         add(form);
+    }
+    
+    public BatchDeadlineService getDeadlineService(IWContext iwc)throws RemoteException{
+        return (BatchDeadlineService)IBOLookup.getServiceInstance(iwc, BatchDeadlineService.class);
     }
     
     
