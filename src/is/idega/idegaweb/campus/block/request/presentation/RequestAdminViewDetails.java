@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminViewDetails.java,v 1.5 2003/05/03 02:19:48 tryggvil Exp $
+ * $Id: RequestAdminViewDetails.java,v 1.6 2003/08/11 21:06:19 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -264,7 +264,7 @@ public class RequestAdminViewDetails extends Window {
       special = request.getSpecialTime();
       requestStatus = request.getStatus();
     }
-    catch(RemoteException e) {
+    catch(Exception e) {
       e.printStackTrace();
     }
     data.add(Edit.formatText(dateFailure.toString()),2,row);
@@ -319,7 +319,7 @@ public class RequestAdminViewDetails extends Window {
       special = request.getSpecialTime();
       requestStatus = request.getStatus();
     }
-    catch(RemoteException e) {
+    catch(Exception e) {
       e.printStackTrace();
     }
     data.add(Edit.formatText(dateFailure.toString()),2,row);

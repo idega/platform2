@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.11 2003/08/11 20:56:04 aron Exp $
+ * $Id: RequestAdminView.java,v 1.12 2003/08/11 21:11:14 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -120,12 +120,12 @@ public class RequestAdminView extends Block {
         try {
           type = request.getRequestType();
         }
-        catch(java.rmi.RemoteException e) {}
+        catch(Exception e) {}
         String status = null;
         try {
           status = request.getStatus();
         }
-        catch(java.rmi.RemoteException e) {}
+        catch(Exception e) {}
         String linkText = _iwrb.getLocalizedString("REQUEST_TYPE_" + type,"Almenn viðgerð");
         Link details = new Link(linkText);
         Edit.setStyle(details);
@@ -143,7 +143,7 @@ public class RequestAdminView extends Block {
         try {
           table.add(Edit.formatText(new IWTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
         }
-        catch(java.rmi.RemoteException e) {
+        catch(Exception e) {
           table.add(null,2,row);
         }
         table.add(Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_" + status,"Innsend")),3,row);
