@@ -189,7 +189,7 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
     */
     try{
       //System.err.println(firstName);
-      user = biz.createUserByPersonalIDIfDoesNotExist("","","",PIN, gender, dateOfBirth);
+      user = biz.createUserByPersonalIDIfDoesNotExist(name,PIN, gender, dateOfBirth);
     }
     catch(Exception e){
       e.printStackTrace();
