@@ -87,7 +87,7 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	}
 
 	public Timestamp getDateOfBirth() {
-		return (Timestamp) getColumnValue(COLUMN_NAME_AGE);
+		return (Timestamp) getTimestampColumnValue(COLUMN_NAME_DATE_OF_BIRTH);
 	}
 
 
