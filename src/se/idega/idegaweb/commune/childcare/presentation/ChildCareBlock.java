@@ -40,17 +40,22 @@ public class ChildCareBlock extends CommuneBlock {
 	//public static final String ACCEPTED_COLOR = "#FFEAEA";
 	//public static final String PARENTS_ACCEPTED_COLOR = "#EAFFEE";
 	//public static final String CONTRACT_COLOR = "#EAF1FF";
-	public static final String ACCEPTED_COLOR = "#FFE0E0";
-	public static final String PARENTS_ACCEPTED_COLOR = "#E0FFE0";
-	public static final String CONTRACT_COLOR = "#E0E0FD";
+	public static String ACCEPTED_COLOR = "#FFE0E0";
+	public static String PARENTS_ACCEPTED_COLOR = "#E0FFE0";
+	public static String CONTRACT_COLOR = "#E0E0FD";
 	//public static final String PENDING_COLOR = "#FDFFDD";
-	public static final String PENDING_COLOR = "#FFEBDD";
+	public static String PENDING_COLOR = "#FFEBDD";
 	
 	public static final String STATUS_ALL = "status_all";
 	
 	private static final String PROPERTY_CHECK_REQUIRED = "check_required";
 	private static final String PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES = "use_predefined_care_time_values";
 	
+	private static final String PROPERTY_ACCEPTED_COLOR = "child_care_accepted_color";
+	private static final String PROPERTY_PARENTS_ACCEPTED_COLOR = "child_care_parents_accepted_color";
+	private static final String PROPERTY_CONTRACT_COLOR = "child_care_contract_color";
+	private static final String PROPERTY_PENDING_COLOR = "child_care_pending_color";
+
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
 		business = getChildCareBusiness(iwc);
@@ -59,6 +64,11 @@ public class ChildCareBlock extends CommuneBlock {
 		checkRequired = getBundle(iwc).getBooleanProperty(PROPERTY_CHECK_REQUIRED, true);
 		usePredefinedCareTimeValues = getBundle(iwc).getBooleanProperty(PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, false);
 		initialize();
+		
+		ACCEPTED_COLOR = getBundle(iwc).getProperty(PROPERTY_ACCEPTED_COLOR, "#FFE0E0");
+		PARENTS_ACCEPTED_COLOR = getBundle(iwc).getProperty(PROPERTY_PARENTS_ACCEPTED_COLOR, "#E0FFE0");
+		CONTRACT_COLOR = getBundle(iwc).getProperty(PROPERTY_CONTRACT_COLOR, "#E0E0FD");
+		PENDING_COLOR = getBundle(iwc).getProperty(PROPERTY_PENDING_COLOR, "#FFEBDD");
 
 		init(iwc);
 	}
