@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.14 2004/06/04 17:32:48 aron Exp $
+ * $Id: RequestAdminView.java,v 1.15 2004/06/11 17:26:50 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -49,7 +49,7 @@ public class RequestAdminView extends CampusBlock {
     
     String selected = iwc.getParameter(CAM_REQ_VIEW_SELECTED);
 
-    add(getRequests(selected));
+    add(getRequests(iwc,selected));
   }
 
   /**
@@ -73,7 +73,7 @@ public class RequestAdminView extends CampusBlock {
     return(IW_BUNDLE_IDENTIFIER);
   }
 
-  private Form getRequests(String selected) {
+  private Form getRequests(IWContext iwc,String selected) {
     Form f = new Form();
     Table t = new Table(1,2);
     t.setWidth("100%");
@@ -135,7 +135,7 @@ public class RequestAdminView extends CampusBlock {
 
         table.add(details,1,row);
         try {
-          table.add(getText(new IWTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
+          table.add(getText(new IWTimestamp(request.getDateSent()).getLocaleDate(iwc.getCurrentLocale())),2,row);
         }
         catch(Exception e) {
           table.add(null,2,row);

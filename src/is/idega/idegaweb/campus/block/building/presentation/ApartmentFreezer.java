@@ -157,7 +157,7 @@ public class ApartmentFreezer extends CampusBlock {
 		    T.add(getText(apView.getFloorName()),2,row);
 		    T.add(getText(apView.getBuildingName()),3,row);
 		    if(ap.getUnavailableUntil()!=null)
-		      T.add(getText((new IWTimestamp(ap.getUnavailableUntil())).getLocaleDate(iwc)),4,row);
+		      T.add(getText((new IWTimestamp(ap.getUnavailableUntil())).getLocaleDate(iwc.getCurrentLocale())),4,row);
 		    else
 		      T.add(getText("Unfrozen"),4,row);
 		    row++;
@@ -188,7 +188,7 @@ public class ApartmentFreezer extends CampusBlock {
 		    T.add(getText(F.getName()),2,row);
 		    T.add(getText(B.getName()),3,row);
 		    if(A.getUnavailableUntil()!=null)
-		      T.add(getText((new IWTimestamp(A.getUnavailableUntil())).getLocaleDate(iwc)),4,row);
+		      T.add(getText((new IWTimestamp(A.getUnavailableUntil())).getLocaleDate(iwc.getCurrentLocale())),4,row);
 		    else
 		      T.add(getText("Unfrozen"),4,row);
 		    row++;
@@ -250,7 +250,7 @@ public class ApartmentFreezer extends CampusBlock {
       Integer id = Integer.valueOf(appId);
       Apartment A = ((ApartmentHome)IDOLookup.getHome(Apartment.class)).findByPrimaryKey(id);
       IWTimestamp iT = new IWTimestamp(frozenDate);
-      A.setUnavailableUntil(iT.getSQLDate());
+      A.setUnavailableUntil(iT.getDate());
       A.store();
       }
     }

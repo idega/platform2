@@ -97,13 +97,13 @@ public class AprtTypePeriodMaker extends CampusBlock{
 		
 	
         T.add(Edit.formatText(AT.getName()),1,row);
-        Integer typeId = new Integer(AT.getID());
+        Integer typeId =  (Integer)(AT.getPrimaryKey());
         DropdownMenu drpDayOne = dayDrop("dayone"+i);
         DropdownMenu drpMonthOne = monthDrop("monthone"+i);
         DropdownMenu drpDayTwo = dayDrop("daytwo"+i);
         DropdownMenu drpMonthTwo = monthDrop("monthtwo"+i);
         int id = -1;
-        if(ht !=null && ht.containsKey(new Integer(AT.getID())) ){
+        if(ht !=null && ht.containsKey(typeId) ){
           ApartmentTypePeriods ATP = (ApartmentTypePeriods) ht.get(typeId);
 
           drpDayOne.setSelectedElement(String.valueOf(ATP.getFirstDateDay()));
@@ -116,7 +116,7 @@ public class AprtTypePeriodMaker extends CampusBlock{
         Edit.setStyle(drpMonthOne);
         Edit.setStyle(drpDayTwo);
         Edit.setStyle(drpMonthTwo);
-        T.add(new HiddenInput("typeid"+i,String.valueOf(AT.getID())),1,row);
+        T.add(new HiddenInput("typeid"+i,AT.getPrimaryKey().toString()),1,row);
         T.add(new HiddenInput("id"+i,String.valueOf(id)),1,row);
         T.add(drpDayOne,2,row);
         T.add(drpMonthOne,2,row);

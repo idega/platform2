@@ -3,9 +3,8 @@ package is.idega.idegaweb.campus.block.questionaire1011.data;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
-
-import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
+import com.idega.user.data.User;
 
 /**
  * @author palli
@@ -56,7 +55,7 @@ public class QuestionaireBMPBean extends GenericEntity implements Questionaire{
 		addAttribute(ANSWER_8,"Answer to question 8",true,true,java.lang.Integer.class);
 		addAttribute(ANSWER_9,"Answer to question 9",true,true,java.lang.Integer.class);
 		
-		addManyToOneRelationship(USER_ID,com.idega.core.user.data.UserBMPBean.class);
+		addManyToOneRelationship(USER_ID,User.class);
 	}
 
 	public int getAnswer1() {
@@ -161,6 +160,6 @@ public class QuestionaireBMPBean extends GenericEntity implements Questionaire{
 		sql.append(" = ");
 		sql.append(userID);
 
-		return super.idoFindIDsBySQL(sql.toString());		
+		return super.idoFindPKsBySQL(sql.toString());		
 	}
 }

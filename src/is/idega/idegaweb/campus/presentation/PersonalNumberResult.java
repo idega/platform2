@@ -231,7 +231,7 @@ public class PersonalNumberResult extends CampusBlock implements Campus {
 
   public void main(IWContext iwc){
    
-    df = DateFormat.getDateInstance(df.SHORT,iwc.getCurrentLocale());
+    df = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
     control(iwc);
   }
 }

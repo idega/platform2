@@ -1,7 +1,9 @@
 package is.idega.idegaweb.campus.business;
 
+import java.text.Collator;
 import java.util.Comparator;
-import com.idega.util.IsCollator;
+import java.util.Locale;
+
 
 /**
  * Title:
@@ -18,15 +20,20 @@ public class HabitantsComparator implements Comparator {
   public static final int APARTMENT = 2;
   public static final int FLOOR = 3;
   public static final int ADDRESS = 4;
-
+  private Locale locale = Locale.ENGLISH;
+  private Collator collator = null;
   private int sortBy;
 
-  public HabitantsComparator() {
+  public HabitantsComparator(Locale locale) {
     sortBy = NAME;
+    this.locale = locale;
+    this.collator = Collator.getInstance(locale);
   }
 
-  public HabitantsComparator(int toSortBy) {
+  public HabitantsComparator(Locale locale,int toSortBy) {
       sortBy = toSortBy;
+      this.locale = locale;
+      this.collator = Collator.getInstance(locale);
   }
 
   public void sortBy(int toSortBy) {
@@ -83,7 +90,7 @@ public class HabitantsComparator implements Comparator {
 
     String one = r1.getName()!=null?r1.getName():"";
     String two = r2.getName()!=null?r2.getName():"";
-    result = IsCollator.getIsCollator().compare(one,two);
+    result = collator.compare(one,two);
     /*
     String one = r1.getFirstName()!=null?r1.getFirstName():"";
     String two = r2.getFirstName()!=null?r2.getFirstName():"";
@@ -111,7 +118,7 @@ public class HabitantsComparator implements Comparator {
 
     String one = r1.getApartment()!=null?r1.getApartment():"";
     String two = r2.getApartment()!=null?r2.getApartment():"";
-    result = IsCollator.getIsCollator().compare(one,two);
+    result = collator.compare(one,two);
 
     return result;
   }
@@ -123,7 +130,7 @@ public class HabitantsComparator implements Comparator {
 
     String one = r1.getFloor()!=null?r1.getFloor():"";
     String two = r2.getFloor()!=null?r2.getFloor():"";
-    result = IsCollator.getIsCollator().compare(one,two);
+    result = collator.compare(one,two);
 
     return result;
   }
@@ -137,7 +144,7 @@ public class HabitantsComparator implements Comparator {
 
     String one = r1.getAddress()!=null?r1.getAddress():"";
     String two = r2.getAddress()!=null?r2.getAddress():"";
-    result = IsCollator.getIsCollator().compare(one,two);
+    result = collator.compare(one,two);
 
     return result;
   }

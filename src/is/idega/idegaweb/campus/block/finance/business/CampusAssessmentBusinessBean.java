@@ -78,7 +78,7 @@ public class CampusAssessmentBusinessBean extends AssessmentBusinessBean impleme
 			SimpleQuerier.execute(sql3.toString());
 			SimpleQuerier.execute(sql2.toString());
 			SimpleQuerier.execute(sql.toString());
-			AR.delete();
+			AR.remove();
 			t.commit();
 			return true;
 		} // Try block

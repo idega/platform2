@@ -244,9 +244,9 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
        
 
         
-          Integer ID = new Integer(A.getID());
+          Integer ID = (Integer)(A.getPrimaryKey());
           TextInput ti = new TextInput("ti_"+i);
-          T.add(new HiddenInput("apid"+i,String.valueOf(A.getID())));
+          T.add(new HiddenInput("apid"+i,ID.toString()));
 
           T.add(getText(String.valueOf(i+1)),1,row);
           T.add((getApartmentTable(A)),2,row);
@@ -257,8 +257,8 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
           if(M != null && M.containsKey(ID)){
             P = (CampusPhone)M.get(ID);
             ti.setContent(P.getPhoneNumber());
-            T.add(getText(new IWTimestamp(P.getDateInstalled()).getLocaleDate(iwc)),4,row);
-            T.add(new HiddenInput("phoneid"+i,String.valueOf(P.getID())),1,row);
+            T.add(getText(new IWTimestamp(P.getDateInstalled()).getLocaleDate(iwc.getCurrentLocale())),4,row);
+            T.add(new HiddenInput("phoneid"+i,P.getPrimaryKey().toString()),1,row);
           }
           row++;
           i++;
@@ -317,8 +317,8 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
                 CampusPhone P = (CampusPhone)M.get(iPHId);
                 if(!P.getPhoneNumber().equals(sNumber)){
                   P.setPhoneNumber(sNumber);
-                  P.setDateInstalled(IWTimestamp.RightNow().getSQLDate());
-                  P.update();
+                  P.setDateInstalled(IWTimestamp.RightNow().getDate());
+                  P.store();
                 }
               }
               // if new entity
@@ -326,8 +326,8 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
                 CampusPhone P = ((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(CampusPhone.class)).createLegacy();
                 P.setPhoneNumber(sNumber);
                 P.setApartmentId(iAPId.intValue());
-                P.setDateInstalled(IWTimestamp.RightNow().getSQLDate());
-                P.insert();
+                P.setDateInstalled(IWTimestamp.RightNow().getDate());
+                P.store();
               }
             }
           }

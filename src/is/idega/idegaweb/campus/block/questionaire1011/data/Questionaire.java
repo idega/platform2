@@ -12,7 +12,7 @@ public interface Questionaire extends com.idega.data.IDOEntity
  public int getAnswer7();
  public int getAnswer8();
  public int getAnswer9();
- public com.idega.core.user.data.User getUser();
+ public com.idega.user.data.User getUser();
  public int getUserID();
  public void initializeAttributes();
  public void setAnswer1(int p0);
@@ -24,6 +24,6 @@ public interface Questionaire extends com.idega.data.IDOEntity
  public void setAnswer7(int p0);
  public void setAnswer8(int p0);
  public void setAnswer9(int p0);
- public void setUser(com.idega.core.user.data.User p0);
+ public void setUser(com.idega.user.data.User p0);
  public void setUserID(int p0);
 }

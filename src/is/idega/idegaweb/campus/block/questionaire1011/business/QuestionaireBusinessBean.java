@@ -9,7 +9,7 @@ import java.util.Collection;
 import javax.ejb.CreateException;
 
 import com.idega.business.IBOServiceBean;
-import com.idega.core.user.data.User;
+import com.idega.user.data.User;
 import com.idega.data.IDOLookup;
 
 /**

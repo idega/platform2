@@ -1,5 +1,5 @@
 /*
- * $Id: RequestView.java,v 1.10 2004/06/04 17:32:48 aron Exp $
+ * $Id: RequestView.java,v 1.11 2004/06/11 17:26:50 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -117,7 +117,7 @@ public class RequestView extends CampusWindow {
     IWTimestamp t = new IWTimestamp();
     t = IWTimestamp.RightNow();
 
-    boolean insert = RequestBusiness.insertRequest(_eUser.getID(),comment,t.getTimestamp(),type,special);
+    boolean insert = RequestBusiness.insertRequest(((Integer)_eUser.getPrimaryKey()).intValue(),comment,t.getTimestamp(),type,special);
 
     return(insert);
   }
@@ -229,7 +229,7 @@ public class RequestView extends CampusWindow {
    *
    */
   public void main(IWContext iwc) throws Exception {
-    _eUser = iwc.getUser();
+    _eUser = iwc.getCurrentUser();
     _isAdmin = iwc.hasEditPermission(this);
     _isLoggedOn = LoginBusinessBean.isLoggedOn(iwc);
     control(iwc);

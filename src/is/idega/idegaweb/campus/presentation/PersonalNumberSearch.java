@@ -1,5 +1,5 @@
 /*
- * $Id: PersonalNumberSearch.java,v 1.5 2004/05/24 14:21:40 palli Exp $
+ * $Id: PersonalNumberSearch.java,v 1.6 2004/06/11 17:26:50 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -141,7 +141,7 @@ public class PersonalNumberSearch extends Block {
         }
         inputTable.setCellpadding(0);
         inputTable.setCellspacing(0);
-        inputTable.setAlignment("center");
+        inputTable.setHorizontalAlignment("center");
         inputTable.mergeCells(1,2,3,2);
         inputTable.addText("",1,2);
         inputTable.setHeight(2,"10");
@@ -159,7 +159,7 @@ public class PersonalNumberSearch extends Block {
         inputTable.setBorder(0);
         inputTable.setCellpadding(0);
         inputTable.setCellspacing(0);
-        inputTable.setAlignment("center");
+        inputTable.setHorizontalAlignment("center");
         inputTable.addText("",1,2);
         inputTable.setHeight(1,"2");
         if (!(_colour.equals(""))) {
@@ -232,7 +232,7 @@ public class PersonalNumberSearch extends Block {
     _outerTable = new Table();
     _outerTable.setCellpadding(0);
     _outerTable.setCellspacing(0);
-    _outerTable.setAlignment("left");
+    _outerTable.setHorizontalAlignment("left");
 
     _myForm = new Form();
     _myForm.setMethod("post");
@@ -295,7 +295,7 @@ public class PersonalNumberSearch extends Block {
   }
 
   public void setPage(com.idega.core.builder.data.ICPage page){
-    _pageId = page.getID();
+    _pageId = ((Integer)page.getPrimaryKey()).intValue();
   }
 
   public synchronized Object clone() {

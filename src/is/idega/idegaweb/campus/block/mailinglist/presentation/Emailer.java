@@ -358,8 +358,8 @@ public class Emailer extends CampusBlock {
 		TextInput from = new TextInput(prmFrom);
 		TextInput host = new TextInput(prmHost);
 		TextArea body = new TextArea(prmBody);
-		body.setWidth(80);
-		body.setHeight(14);
+		body.setColumns(80);
+		body.setRows(14);
 		CheckBox parse = new CheckBox(prmParse);
 		CheckBox useronly = new CheckBox(prmUserOnly);
 
@@ -760,7 +760,7 @@ public class Emailer extends CampusBlock {
     public Link getListDeleteLink(MailingList list) {
         Link L = new Link(deleteImage);
         L.addParameter(prmListDelete, "true");
-        L.addParameter(prmListId, list.getID());
+        L.addParameter(prmListId, list.getPrimaryKey().toString());
         L.addParameter(prmLists, "true");
         L.setToolTip(localize("tooltip.delete_list","Delete list"));
         return L;
@@ -775,7 +775,7 @@ public class Emailer extends CampusBlock {
      */
     public Link getListChangeLink(MailingList list) {
         Link L = new Link(editImage);
-        L.addParameter(prmListId, list.getID());
+        L.addParameter(prmListId, list.getPrimaryKey().toString());
         L.addParameter(prmLists, "true");
         L.setToolTip(localize("tooltip.edit_list","Edit email list"));
         return L;

@@ -159,7 +159,7 @@ public class QuestionaireForm extends CampusBlock {
 		int ia9 = Integer.parseInt(a9);
 		
 		try {
-			return getQuestionaireBusiness(iwc).insertAnswers(ia1,ia2,ia3,ia4,ia5,ia6,ia7,ia8,ia9,iwc.getUser());
+			return getQuestionaireBusiness(iwc).insertAnswers(ia1,ia2,ia3,ia4,ia5,ia6,ia7,ia8,ia9,iwc.getCurrentUser());
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

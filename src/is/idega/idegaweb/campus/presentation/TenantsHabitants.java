@@ -334,7 +334,7 @@ public class TenantsHabitants extends CampusBlock implements Campus{
 
     List vector = listOfComplexHabitants(_campusID,iwc);
 
-    HabitantsComparator comparator = new HabitantsComparator(_orderID);
+    HabitantsComparator comparator = new HabitantsComparator(iwc.getCurrentLocale(),_orderID);
     //System.err.println("starting sort "+com.idega.util.IWTimestamp.getTimestampRightNow().toString());
     Collections.sort(vector,comparator);
     //System.err.println("ending sort "+com.idega.util.IWTimestamp.getTimestampRightNow().toString());

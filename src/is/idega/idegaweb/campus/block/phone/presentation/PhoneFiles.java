@@ -61,7 +61,7 @@ public class PhoneFiles extends Finance {
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
-    T.setWidth(T.HUNDRED_PERCENT);
+    T.setWidth(Table.HUNDRED_PERCENT);
     if(isAdmin){
       //T.add(Edit.headerText(iwrb.getLocalizedString("phone_files","Phone Files"),3),1,1);
       T.add(makeLinkTable(  1),1,2);
@@ -86,11 +86,11 @@ public class PhoneFiles extends Finance {
    protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
-    LinkTable.setWidth(LinkTable.HUNDRED_PERCENT);
+    LinkTable.setWidth(Table.HUNDRED_PERCENT);
     LinkTable.setCellpadding(2);
     LinkTable.setCellspacing(1);
     LinkTable.setColor(getHeaderColor());
-    LinkTable.setWidth(last,LinkTable.HUNDRED_PERCENT);
+    LinkTable.setWidth(last,Table.HUNDRED_PERCENT);
 
     return LinkTable;
   }

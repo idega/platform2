@@ -13,7 +13,7 @@ public class QuestionaireHomeImpl extends com.idega.data.IDOFactory implements Q
  }
 
 
-public java.util.Collection findAllByUser(com.idega.core.user.data.User p0)throws javax.ejb.FinderException{
+public java.util.Collection findAllByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((QuestionaireBMPBean)entity).ejbFindAllByUser(p0);
 	this.idoCheckInPooledEntity(entity);
