@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.37 2001/08/27 23:52:10 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.38 2001/08/29 16:20:10 bjarni Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -534,7 +534,16 @@ public class GolfMainJSPModulePage extends MainPage {
       //this should be automated
       Table golfers = new Table(1,1);
 
+      /**@todo If golfersPage should be generalized then new data could be inserted through
+       * the GolfersFriendsDataBusiness class, "into" the GolferPageData class.  That class could
+       * contain possibly only golfers who would have their own pages.  Then here we would use a
+       * findAll-function on that Data class, to extract all the "pro"-golfers and when clicked on
+       * they would submit their member_union_id.  Then the rest should work???  (depends on what
+       * you want to get).  Bjarni.
+       * */
+
       Link golferLink = new Link("Björgvin Sigurbergsson","/golfers/");
+      golferLink.addParameter("member_union_id", "3152");  //Björgvins ID!!!!!!!
       golferLink.setFontSize(1);
 
       golfers.add(golferLink,1,1);

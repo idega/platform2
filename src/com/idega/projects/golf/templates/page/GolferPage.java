@@ -16,6 +16,7 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.projects.golf.presentation.GolferFriendsSigningSheet;
 
 
 /**
@@ -218,30 +219,18 @@ public class GolferPage extends Page{
   public void addRightTopImage(String rightTopImageIWBundleUrl){
     Image rightTopImage;
     rightTopImage = iwb.getImage(rightTopImageIWBundleUrl);
-    Table dummyTable = new Table(1,1);
-    dummyTable.setCellpadding(26);
-    dummyTable.setCellspacing(0);
-   // dummyTable.add(leftTopImage,1,1);
     addRightTopBanner(rightTopImage);
   }
 
   public void addCenterTopImage(String centerTopImageIWBundleUrl){
     Image centerTopImage;
     centerTopImage = iwb.getImage(centerTopImageIWBundleUrl);
-    Table dummyTable = new Table(1,1);
-    dummyTable.setCellpadding(26);
-    dummyTable.setCellspacing(0);
-    //dummyTable.add(leftTopImage,1,1);
     addCenterTopBanner(centerTopImage);
   }
 
   public void addLeftTopImage(String leftTopImageIWBundleUrl){
     Image leftTopImage;
     leftTopImage = iwb.getImage(leftTopImageIWBundleUrl);
-   /* Table dummyTable = new Table(1,1);
-    dummyTable.setCellpadding(26);
-    dummyTable.setCellspacing(0);
-    dummyTable.add(leftTopImage,1,1);*/
     addLeftTopBanner(leftTopImage);
   }
 

@@ -56,6 +56,15 @@ public class GolferFriendsDataBusiness {
     int supportesID, int supportPreSigningID) throws SQLException{
     GolferPageData golferPageData = new GolferPageData();
 
+    golferPageData.setGolfbagID(golfbagID);
+    golferPageData.setMemberID(memberID);
+    golferPageData.setNewsReaderID(newsReaderID);
+    golferPageData.setProfilerID(profileID);
+    golferPageData.setResultsAbroadID(resultsAbroadID);
+    golferPageData.setStatisticsID(statisticsID);
+    golferPageData.setSupportesID(supportesID);
+    golferPageData.setSupportPreSigningID(supportPreSigningID);
+    golferPageData.insert();
   }
 
 }

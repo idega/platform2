@@ -1,0 +1,84 @@
+package com.idega.projects.golf.presentation;
+
+import com.idega.jmodule.object.ModuleInfo;
+import com.idega.jmodule.object.Image;
+import java.sql.SQLException;
+import java.lang.String;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+
+/**
+ * Title:        idegaWeb Classes
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author <a href="bjarni@idega.is">Bjarni Viljhalmsson</a>
+ * @version 1.0
+ */
+
+public class CornerImageController extends GolferJModuleObject implements LinkParameters{
+
+  public CornerImageController() {
+
+  }
+
+  public void chooseView(ModuleInfo modinfo){
+
+    if (modinfo.isParameterSet(sTopMenuParameterName)) {
+
+      String[] chosenParameterValue;
+       chosenParameterValue = modinfo.getParameterValues(sTopMenuParameterName);
+
+      //GOLFBAG
+      if (chosenParameterValue[0].equals(sInfoParameterValue)) {
+        Image iWelcomeLogo = iwrb.getImage("/golferpage/upplysingar.gif");
+        add(iWelcomeLogo);
+      }
+
+      //RESULTS HOME
+      else if ((chosenParameterValue[0].equals(sRecordParameterValue)) || (chosenParameterValue[0].equals(homeResultsParameterValue))) {
+        Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
+        add(iWelcomeLogo);
+      }
+
+      //RESULTS ABROAD
+      else if (chosenParameterValue[0].equals(abroadResultsParameterValue)) {
+        Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
+        add(iWelcomeLogo);
+      }
+
+      //STATISTICS
+      else if (chosenParameterValue[0].equals(sStatisticsParameterValue)) {
+        Image iStatisticsLogo = iwrb.getImage("/golferpage/tolfraedi.gif");
+        add(iStatisticsLogo);
+      }
+
+      //PICTURES
+      else if (chosenParameterValue[0].equals(sPicturesParameterValue)) {
+        Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
+        add(iWelcomeLogo);
+      }
+
+      //HOME
+      else if (chosenParameterValue[0].equals(sHomeParameterValue)) {
+        Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
+        add(iWelcomeLogo);
+      }
+
+      //SUPPORTERS
+      else if ((chosenParameterValue[0].equals(sInterviewsParameterValue)) || (chosenParameterValue[0].equals(sSubmitParameterValue))) {
+        Image iInterviewsLogo = iwrb.getImage("/golferpage/velkomin.gif");
+        add(iInterviewsLogo);
+      }
+    }
+    else{
+        Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
+        add(iWelcomeLogo);
+    }
+  }
+
+  public void main(ModuleInfo modinfo) throws SQLException{
+    super.main(modinfo);
+    chooseView(modinfo);
+  }
+}
