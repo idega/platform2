@@ -45,7 +45,7 @@ import javax.transaction.UserTransaction;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
-	public boolean insertApplications(User user, int provider[], String date[], int checkId, int childId, String subject, String message, boolean freetimeApplication) {
+	public boolean insertApplications(User user, int provider[], String date, int checkId, int childId, String subject, String message, boolean freetimeApplication) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -60,7 +60,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				if (user != null)
 					appl.setOwner(user);
 				appl.setProviderId(provider[i]);
-				IWTimestamp fromDate = new IWTimestamp(date[i]);
+				IWTimestamp fromDate = new IWTimestamp(date);
 				appl.setFromDate(fromDate.getDate());
 				appl.setChildId(childId);
 				appl.setQueueDate(now.getDate());
