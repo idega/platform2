@@ -51,7 +51,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String COLUMN_DISCOUNT_INFO = "discount_info";
 	protected final static String COLUMN_PAYMENT_DATE = "payment_date";
 	protected final static String COLUMN_SENT = "sent";
-	protected final static String COLUMN_CREDIT_CARD_CONTRACT_ID = "contrqct_id";
+	protected final static String COLUMN_CREDIT_CARD_CONTRACT_ID = "contract_id";
 	
 	protected final static String STATUS_CREATED = "C";
 	protected final static String STATUS_READY = "R";

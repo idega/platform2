@@ -735,6 +735,119 @@ public class AccountingBusinessBean extends IBOServiceBean implements
         return true;
     }
 
+    public boolean insertPayment(Group club, Group division, User contractUser, String cardNumber, String cardType, IWTimestamp expires, IWTimestamp firstPayment, int nop, String paymentType, String amount[], User currentUser,
+            Map basket, IWUserContext iwuc) {
+        PaymentType eType = null;
+        if (paymentType != null) {
+            try {
+                PaymentTypeHome pHome = (PaymentTypeHome) IDOLookup
+                        .getHome(PaymentType.class);
+                eType = pHome.findByPrimaryKey(new Integer(paymentType));
+            } catch (IDOLookupException e) {
+                e.printStackTrace();
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch (FinderException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        CreditCardType eCreditCardType = null;
+        if (cardType != null) {
+            try {
+                CreditCardTypeHome ccHome = (CreditCardTypeHome) IDOLookup
+                        .getHome(CreditCardType.class);
+                eCreditCardType = ccHome.findByPrimaryKey(new Integer(cardType));
+            } catch (IDOLookupException e) {
+                e.printStackTrace();
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch (FinderException e) {
+                e.printStackTrace();
+            }            
+        }
+
+        int am[] = new int[nop];
+        for (int i = 0; i < nop; i++) {
+            try {
+                am[i] = Integer.parseInt(amount[i]);
+            } catch (Exception e) {
+                am[i] = 0;
+            }            
+        }
+
+        return insertPayment(club, division, contractUser, cardNumber, eCreditCardType, expires, firstPayment, nop, eType, am, currentUser, basket, iwuc);
+    }
+
+    public boolean insertPayment(Group club, Group division, User contractUser, String cardNumber, CreditCardType cardType, IWTimestamp expires, IWTimestamp firstPayment, int nop, PaymentType type, int amount[],
+            User currentUser, Map basket, IWUserContext iwuc) {
+
+        UserTransaction trans = null;
+        try {
+            trans = getSessionContext().getUserTransaction();
+            trans.begin();
+
+            CreditCardContract contract = getCreditCardContractHome().create();
+            contract.setCardExpires(expires.getDate());
+            contract.setCardNumber(cardNumber);
+            contract.setCardType(cardType);
+            contract.setClub(club);
+            contract.setDivision(division);
+            contract.setFirstPayment(firstPayment.getDate());
+            contract.setNumberOfPayments(nop);
+            contract.setUser(contractUser);
+            contract.store();
+            
+            int totalAmount = 0;
+            for (int i = 0; i < nop; i++) {
+                totalAmount += amount[i];
+            }
+            
+            Map users = equalizeBasket(basket, totalAmount, iwuc);
+            Iterator it = users.values().iterator();
+            while (it.hasNext()) {
+                Map divisions = (HashMap) it.next();
+
+                Iterator it2 = divisions.values().iterator();
+                while (it2.hasNext()) {
+                    PaymentInfo info = (PaymentInfo) it2.next();
+
+                    FinanceEntry entry = getFinanceEntryHome().create();
+                    entry.setUser(info.getUser());
+                    entry.setClub(info.getClub());
+                    entry.setDivision(info.getDivision());
+                    entry.setAmount(info.getAmount());
+                    entry.setDateOfEntry(firstPayment.getTimestamp());
+                    entry.setStatusCreated();
+                    entry.setTypePayment();
+                    entry.setPaymentType(type);
+                    entry.setEntryOpen(false);
+                    entry.setInsertedByUser(currentUser);
+                    entry.setContract(contract);
+                    entry.setSent(false);
+                    entry.store();
+                }
+            }
+            
+            trans.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                trans.rollback();
+            } catch (IllegalStateException e1) {
+                e1.printStackTrace();
+            } catch (SecurityException e1) {
+                e1.printStackTrace();
+            } catch (SystemException e1) {
+                e1.printStackTrace();
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+    
     private Map equalizeBasket(Map basket, double amount, IWUserContext iwuc) {
         Map users = new HashMap();
         Map divisions = null;
