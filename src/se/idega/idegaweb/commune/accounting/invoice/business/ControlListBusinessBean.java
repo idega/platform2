@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.13 2004/02/13 13:51:52 kjell Exp $
+ * $Id: ControlListBusinessBean.java,v 1.14 2004/02/16 10:09:28 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -16,11 +16,10 @@ import java.rmi.RemoteException;
 import javax.ejb.FinderException;
 import java.sql.Date;
 
-import com.idega.business.IBOServiceBean;
-import com.idega.util.IWTimestamp;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOException;
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
@@ -36,9 +35,13 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * $Id: ControlListBusinessBean.java,v 1.13 2004/02/13 13:51:52 kjell Exp $
+ * <p>
+ * Last modified: $Date: 2004/02/16 10:09:28 $ by $Author: staffan $
  *
- * @author Kelly
+ * @author <a href="mailto:kjell@lindman.se">Kjell Lindman</a>
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.14 $
+ *
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
 
@@ -58,17 +61,7 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 	 *
 	 * @return array of data for the ControlList
 	 */
-	public Collection getControlListValues(Date compareMonth, Date withMonth, String opField) throws ControlListException {
-		
-		int childrenCountCurrent;
-		int childrenCountLast;
-		int amountCurrent;
-		int amountLast;
-
-		IWTimestamp startLastPeriod;
-		IWTimestamp endLastPeriod;
-		IWTimestamp startCurrentPeriod;
-		IWTimestamp endCurrentPeriod;
+	public Collection getControlListValues(Date compareMonth, Date withMonth, String opField) throws ControlListException, RemoteException {
 		Iterator providers = null;
 		ArrayList arr = new ArrayList();
 
@@ -80,26 +73,6 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 		if(withMonth == null) {		
 			throw new ControlListException(KEY_DATE_MISSING, ERROR_DATE_MISSING);
 		}
-
-	
-		Date currentDate = withMonth;
-
-		startLastPeriod = new IWTimestamp(compareMonth);
-		startLastPeriod.setAsDate();
-		startLastPeriod.setDay(1);
-		
-		endLastPeriod = new IWTimestamp(startLastPeriod);
-		endLastPeriod.setAsDate();
-		endLastPeriod.addMonths(1);
-
-		startCurrentPeriod = new IWTimestamp(currentDate);
-		startCurrentPeriod.setAsDate();
-		startCurrentPeriod.setDay(1);
-
-		endCurrentPeriod = new IWTimestamp(startCurrentPeriod);
-		endCurrentPeriod.setAsDate();
-		endCurrentPeriod.addMonths(1);
-
 
 		int cnt = 1;
 		
@@ -113,52 +86,53 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 		);
 
 		providers = getProvidersFromPaymentHeadersByPeriodAndSchoolCategory(
-				startCurrentPeriod.getDate(),
+				withMonth,
 				opField).iterator();
 		
+		final InvoiceBusiness invoiceBusiness = getInvoiceBusiness ();
+
 		while (providers.hasNext()) {
 			PaymentHeader ph = (PaymentHeader) providers.next();
-			
-			try {				
-				amountCurrent = getPaymentRecordHome().getTotAmountForProviderAndPeriod(
-					ph.getSchoolID(),
-					startCurrentPeriod.getDate(), opField
-				);
-				amountLast = getPaymentRecordHome().getTotAmountForProviderAndPeriod(
-					ph.getSchoolID(),
-					startLastPeriod.getDate(), opField
-				);
-				childrenCountCurrent = 
-					getPaymentRecordHome().getPlacementCountForSchoolIdAndDateAndSchoolCategory(
-					ph.getSchoolID(),
-					startCurrentPeriod.getDate(), opField
-				);
-				childrenCountLast = 
-					getPaymentRecordHome().getPlacementCountForSchoolIdAndDateAndSchoolCategory(
-					ph.getSchoolID(),
-					startLastPeriod.getDate(), opField
-				);
-				arr.add(new Object[] {
-					new Integer(cnt++), 
-					getSchoolBusiness().getSchoolHome().findByPrimaryKey(new Integer(ph.getSchoolID())).getName(), 
-					""+childrenCountCurrent,
-					""+childrenCountLast,
-					""+amountCurrent,
-					""+amountLast
-					}
-				);
-			} catch (FinderException e) {
-				e.printStackTrace();
-			} catch (IDOException e) {
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-				
-		}
+			final School school = ph.getSchool ();
+			long currentMonthIndividualsCount = 0;
+			long compareMonthIndividualsCount = 0;
+			long currentMonthTotalAmount = 0;
+			long compareMonthTotalAmount = 0;
 
+			try {				
+				final PaymentSummary currentSummary = getPaymentSummary (invoiceBusiness, opField, school, withMonth);
+				currentMonthIndividualsCount = currentSummary.getIndividualsCount ();
+				currentMonthTotalAmount = currentSummary.getTotalAmountVatExcluded ();
+				final PaymentSummary compareSummary = getPaymentSummary (invoiceBusiness, opField, school, compareMonth);
+				compareMonthIndividualsCount = compareSummary.getIndividualsCount ();
+				compareMonthTotalAmount = compareSummary.getTotalAmountVatExcluded ();
+			} catch (FinderException e) {
+				// continue with initial values, but logg error
+				e.printStackTrace ();
+			}
+			
+			arr.add(new Object[] {
+				new Integer(cnt++), 
+				school.getName(), 
+				""+currentMonthIndividualsCount,
+				""+compareMonthIndividualsCount,
+				""+currentMonthTotalAmount,
+				""+compareMonthTotalAmount
+			});				
+		}
+		
 		return arr;
 	}
+
+	private PaymentSummary getPaymentSummary
+		(final InvoiceBusiness invoiceBusiness, final String schoolCategory,
+		 final School school, final Date period) throws RemoteException,
+																										FinderException {
+		return new PaymentSummary
+				(invoiceBusiness.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
+				 (schoolCategory, (Integer) school.getPrimaryKey (), period, period));
+	}
+
 	private Collection getProvidersFromPaymentHeadersByPeriodAndSchoolCategory(Date from, String sc) {
 		Collection providers = new ArrayList();		
 		try {
@@ -191,4 +165,7 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 	}
 
 
+	protected InvoiceBusiness getInvoiceBusiness() throws RemoteException {
+		return (InvoiceBusiness) this.getServiceInstance(InvoiceBusiness.class);
+	}
 }
