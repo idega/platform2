@@ -1,8 +1,14 @@
 //idega 2000 - Laddi
 package com.idega.block.text.data;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collection;
 
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDORelationshipException;
 import com.idega.util.text.TextSoap;
 
 public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implements com.idega.block.text.data.LocalizedText {
@@ -89,6 +95,62 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
   private String addBreaks(String text){
     //replace with local bean method? and a none html specific xml
     return TextSoap.findAndReplaceOnPrefixCondition(text, "\r\n", ">","<br/>",true);
+  }
+  public Collection ejbFindRelatedEntities(IDOEntity entity) throws IDORelationshipException{
+  	return idoGetRelatedEntities(entity);
+  }
+  /*
+   *  (non-Javadoc)
+   * @see com.idega.data.GenericEntity#idoAddTo(com.idega.data.IDOEntity)
+   */
+  public void idoAddTo(IDOEntity entity) throws IDOAddRelationshipException {
+
+  	try {
+  		idoAddTo(getNameOfMiddleTable(entity, this), entity.getEntityDefinition().getPrimaryKeyDefinition().getField().getSQLFieldName(), entity.getPrimaryKey());
+  	} catch (Exception e) {
+  		throw new IDOAddRelationshipException(e, this);
+  	}
+  }
+  /*
+   * copy and paste from GenericEntity
+   */
+  public void idoAddTo(String middleTableName, String sqlFieldName, Object primaryKey) throws IDOAddRelationshipException {
+  	/**
+  	 * @todo Change implementation
+  	 */
+  	try {
+  		Connection conn = null;
+  		Statement Stmt = null;
+  		try {
+  			conn = getConnection(getDatasource());
+  			Stmt = conn.createStatement();
+  			//String sql = "insert into "+getNameOfMiddleTable(entityToAddTo,this)+"("+getIDColumnName()+","+entityToAddTo.getIDColumnName()+") values("+getID()+","+entityToAddTo.getID()+")";
+  			String sql = null;
+  			//try
+  			//{
+  			sql = "insert into " + middleTableName + "(" + getIDColumnName() + "," + sqlFieldName + ") values(" + getPrimaryKeyValueSQLString() + "," + getKeyValueSQLString(primaryKey) + ")";
+  			/*}
+  			 catch (RemoteException rme)
+  			 {
+  			 throw new SQLException("RemoteException in addTo, message: " + rme.getMessage());
+  			 }*/
+
+  			//debug("statement: "+sql);
+
+  			Stmt.executeUpdate(sql);
+  		} finally {
+  			if (Stmt != null) {
+  				Stmt.close();
+  			}
+  			if (conn != null) {
+  				freeConnection(getDatasource(), conn);
+  			}
+  		}
+
+  	} catch (Exception ex) {
+  		//ex.printStackTrace();
+  		throw new IDOAddRelationshipException(ex, this);
+  	}
   }
 
 }

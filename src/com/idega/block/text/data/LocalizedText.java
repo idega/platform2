@@ -18,4 +18,8 @@ public interface LocalizedText extends com.idega.data.IDOLegacyEntity
  public void setLocaleId(int p0);
  public void setTitle(java.lang.String p0);
  public void setUpdated(java.sql.Timestamp p0);
+ public java.util.Collection ejbFindRelatedEntities(com.idega.data.IDOEntity entity) throws com.idega.data.IDORelationshipException;
+ public void idoAddTo(com.idega.data.IDOEntity entity) throws com.idega.data.IDOAddRelationshipException;
+ public void idoAddTo(String middleTableName, String sqlFieldName, Object primaryKey) throws com.idega.data.IDOAddRelationshipException; 
+ 	 
 }
