@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.84 2005/01/11 14:50:33 laddi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.85 2005/04/06 08:28:02 anna Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -72,11 +72,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/01/11 14:50:33 $ by $Author: laddi $
+ * Last modified: $Date: 2005/04/06 08:28:02 $ by $Author: anna $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.84 $
+ * @version $Revision: 1.85 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -842,6 +842,18 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		}
 		catch (IDOException ie) {
 			return 0;
+		}
+	}
+	
+	public boolean hasAccountApplication(String personalID) {
+		try {
+			return getCitizenAccountHome().getCount(personalID, getCaseStatusOpenString()) > 0;
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (IDOException ie) {
+			return false;
 		}
 	}
 
