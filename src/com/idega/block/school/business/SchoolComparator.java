@@ -27,8 +27,21 @@ public class SchoolComparator implements Comparator {
 	public int compare(Object o1, Object o2) {
 		Collator collator = Collator.getInstance(_locale);
 		
-		School school1 = (School) o1;
-		School school2 = (School) o2;
+		School school1;
+		try {
+			school1 = (School) o1;
+		}
+		catch (ClassCastException e) {
+			return -1;
+		}
+		
+		School school2;
+		try {
+			school2 = (School) o2;
+		}
+		catch (ClassCastException e) {
+			return 1;
+		}
 		
 		return collator.compare(school1.getSchoolName(), school2.getSchoolName());
 	}
