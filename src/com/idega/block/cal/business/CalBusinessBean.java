@@ -898,7 +898,8 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		Group group = null;
 		User user = null;
 		User coach = null;
-		Timestamp stamp = Timestamp.valueOf(date);
+		IWTimestamp iwstamp = new IWTimestamp(date);
+		Timestamp stamp = iwstamp.getTimestamp();
 		stamp.setHours(0);
 		stamp.setMinutes(0);
 		stamp.setSeconds(0);
