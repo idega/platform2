@@ -131,10 +131,10 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 					table.add(getFirstStage(iwc, choices), 1, row);
 					break;
 				case STAGE_TWO :
-					table.add(getSecondStage(iwc, choiceMap), 1, row);
+					table.add(getSecondStage(iwc, choices, choiceMap), 1, row);
 					break;
 				case STAGE_THREE :
-					table.add(getThirdStage(iwc, choiceMap), 1, row);
+					table.add(getThirdStage(iwc, choices, choiceMap), 1, row);
 					break;
 			}
 		
@@ -204,8 +204,8 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			table.add(getSmallText("("+queuePosition+")"), column++, row);
 			table.add(select, column++, row++);
-			if (!iter.hasNext())
-				select.setMustBeChecked(localize("child_care.must_check_provider","You must select at least one provider."));
+			//if (!iter.hasNext())
+				//select.setMustBeChecked(localize("child_care.must_check_provider","You must select at least one provider."));
 		}
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
@@ -235,117 +235,137 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		return form;
 	}
 	
-	private Form getSecondStage(IWContext iwc, Map choiceMap) {
-		Form form = new Form();
-		form.maintainParameter(CitizenChildren.prmChildId);
-		form.setOnSubmit("return checkInputs(findObj('"+PARAMETER_QUEUE+"'),'"+localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.")+"')");
-		
-		Script script = form.getAssociatedFormScript();
-		if (script == null)
-			script = new Script();
-		script.addFunction("checkInputs", getCheckSubmitString());
-		form.setAssociatedFormScript(script);
-		
+	private Form getSecondStage(IWContext iwc, Collection choiceCollection, Map choiceMap) {
 		String[] choices = iwc.getParameterValues(PARAMETER_QUEUE);
-		DropdownMenu drop = getChoiceDropdown(choices, choiceMap);
-		
-		Table table = new Table();
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-		table.setColumns(3);
-		table.setWidth(1, 100);
-		table.setWidth(2, 6);
-		int row = 1;
-			
-		DropdownMenu provider;
-		for (int a = 0; a < choices.length; a++) {
-			provider = (DropdownMenu) drop.clone();
-			provider.setSelectedElement(choices[a]);
-			table.add(getSmallHeader(localize("child_care.provider","Provider")+" "+String.valueOf(a+1)+":"), 1, row);
-			table.add(provider, 3, row++);
+		if (choices == null || choices.length == 0) {
+			return getFirstStage(iwc, choiceCollection);
 		}
+		else {
+			Form form = new Form();
+			form.maintainParameter(CitizenChildren.prmChildId);
+			form.setOnSubmit("return checkInputs(findObj('"+PARAMETER_QUEUE+"'),'"+localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.")+"')");
 		
-		TextArea area = (TextArea) getStyledInterface(new TextArea(PARAMETER_MESSAGE));
-		area.setWidth(Table.HUNDRED_PERCENT);
-		area.setRows(6);
-		table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-		table.add(getSmallHeader(localize("child_care.message","Message")+":"), 1, row);
-		table.add(area, 3, row++);
+			Script script = form.getAssociatedFormScript();
+			if (script == null)
+				script = new Script();
+			script.addFunction("checkInputs", getCheckSubmitString());
+			form.setAssociatedFormScript(script);
 		
-		Table buttonTable = new Table(2,1);
-		buttonTable.setCellpadding(getCellpadding());
-		buttonTable.setCellspacing(getCellspacing());
-		buttonTable.setWidth(Table.HUNDRED_PERCENT);
-		buttonTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+			DropdownMenu drop = getChoiceDropdown(choices, choiceMap);
+		
+			Table table = new Table();
+			table.setWidth(Table.HUNDRED_PERCENT);
+			table.setCellpadding(getCellpadding());
+			table.setCellspacing(getCellspacing());
+			table.setColumns(3);
+			table.setWidth(1, 100);
+			table.setWidth(2, 6);
+			int row = 1;
+			
+			DropdownMenu provider;
+			for (int a = 0; a < choices.length; a++) {
+				provider = (DropdownMenu) drop.clone();
+				provider.setSelectedElement(choices[a]);
+				table.add(getSmallHeader(localize("child_care.provider","Provider")+" "+String.valueOf(a+1)+":"), 1, row);
+				table.add(provider, 3, row++);
+			}
+		
+			TextArea area = (TextArea) getStyledInterface(new TextArea(PARAMETER_MESSAGE));
+			area.setWidth(Table.HUNDRED_PERCENT);
+			area.setRows(6);
+			table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+			table.add(getSmallHeader(localize("child_care.message","Message")+":"), 1, row);
+			table.add(area, 3, row++);
+		
+			Table buttonTable = new Table(2,1);
+			buttonTable.setCellpadding(getCellpadding());
+			buttonTable.setCellspacing(getCellspacing());
+			buttonTable.setWidth(Table.HUNDRED_PERCENT);
+			buttonTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
-		SubmitButton next = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.next","Next"), PARAMETER_STAGE, String.valueOf(STAGE_THREE)));
-		buttonTable.add(back, 1, 1);
-		buttonTable.add(next, 2, 1);
+			SubmitButton next = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.next","Next"), PARAMETER_STAGE, String.valueOf(STAGE_THREE)));
+			buttonTable.add(back, 1, 1);
+			buttonTable.add(next, 2, 1);
 
-		form.add(table);
-		form.add(buttonTable);
+			form.add(table);
+			form.add(buttonTable);
 		
-		return form;
+			return form;
+		}
 	}
 	
-	private Form getThirdStage(IWContext iwc, Map choiceMap) {
-		Form form = new Form();
-		form.maintainParameter(CitizenChildren.prmChildId);
-		form.maintainParameter(PARAMETER_MESSAGE);
-		
+	private Form getThirdStage(IWContext iwc, Collection choiceCollection, Map choiceMap) {
 		String[] choices = iwc.getParameterValues(PARAMETER_QUEUE);
-		
-		Table table = new Table();
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-		table.setColumns(5);
-		table.setWidth(1, 100);
-		table.setWidth(2, 6);
-		table.setWidth(4, 3);
-		int row = 1;
-			
-		ChildCareQueue queue;
-		School provider;
-		SchoolArea area;
-		DateInput date;
-		HiddenInput choice;
-		
-		//IWTimestamp earliestDate = new IWTimestamp(1, 6, 2003);
-		
+		boolean sameChoice = false;
 		for (int a = 0; a < choices.length; a++) {
-			queue = (ChildCareQueue) choiceMap.get(choices[a]);
-			provider = queue.getProvider();
-			area = provider.getSchoolArea();
-			
-			date = new DateInput(PARAMETER_DATE+"_"+(a+1));
-			date.setDate(queue.getStartDate());
-			date.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
-			//date.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.invalid_dates_selected","Earliest selectable date is 01-06-2003."));
-			choice = new HiddenInput(PARAMETER_QUEUE, choices[a]);
-			
-			table.add(getSmallHeader(localize("child_care.provider","Provider")+" "+String.valueOf(a+1)+":"), 1, row);
-			table.add(getSmallText(area.getSchoolAreaName()+": "+provider.getSchoolName()), 3, row);
-			table.add(date, 5, row);
-			table.add(choice, 5, row++);
+			int choice = Integer.parseInt(choices[a]);
+			for (int b = 0; b < choices.length; b++) {
+				int otherChoice = Integer.parseInt(choices[b]);
+				if (a != b && choice == otherChoice) {
+					sameChoice = true;
+				}
+			}
 		}
 		
-		Table buttonTable = new Table(2,1);
-		buttonTable.setCellpadding(getCellpadding());
-		buttonTable.setCellspacing(getCellspacing());
-		buttonTable.setWidth(Table.HUNDRED_PERCENT);
-		buttonTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-
-		SubmitButton update = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.update","Update"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
-		update.setSingleSubmitConfirm(localize("child_care.confirm_queue_update","Are you sure you want to update? Selection can not be altered."));
-		buttonTable.add(back, 1, 1);
-		buttonTable.add(update, 2, 1);
-
-		form.add(table);
-		form.add(buttonTable);
+		if (sameChoice)	{
+			return getSecondStage(iwc, choiceCollection, choiceMap);
+		}
+		else {
+			Form form = new Form();
+			form.maintainParameter(CitizenChildren.prmChildId);
+			form.maintainParameter(PARAMETER_MESSAGE);
 		
-		return form;
+			Table table = new Table();
+			table.setWidth(Table.HUNDRED_PERCENT);
+			table.setCellpadding(getCellpadding());
+			table.setCellspacing(getCellspacing());
+			table.setColumns(5);
+			table.setWidth(1, 100);
+			table.setWidth(2, 6);
+			table.setWidth(4, 3);
+			int row = 1;
+			
+			ChildCareQueue queue;
+			School provider;
+			SchoolArea area;
+			DateInput date;
+			HiddenInput choice;
+		
+			//IWTimestamp earliestDate = new IWTimestamp(1, 6, 2003);
+		
+			for (int a = 0; a < choices.length; a++) {
+				queue = (ChildCareQueue) choiceMap.get(choices[a]);
+				provider = queue.getProvider();
+				area = provider.getSchoolArea();
+			
+				date = new DateInput(PARAMETER_DATE+"_"+(a+1));
+				date.setDate(queue.getStartDate());
+				date.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
+				//date.setEarliestPossibleDate(earliestDate.getDate(), localize("child_care.invalid_dates_selected","Earliest selectable date is 01-06-2003."));
+				choice = new HiddenInput(PARAMETER_QUEUE, choices[a]);
+			
+				table.add(getSmallHeader(localize("child_care.provider","Provider")+" "+String.valueOf(a+1)+":"), 1, row);
+				table.add(getSmallText(area.getSchoolAreaName()+": "+provider.getSchoolName()), 3, row);
+				table.add(date, 5, row);
+				table.add(choice, 5, row++);
+			}
+		
+			Table buttonTable = new Table(2,1);
+			buttonTable.setCellpadding(getCellpadding());
+			buttonTable.setCellspacing(getCellspacing());
+			buttonTable.setWidth(Table.HUNDRED_PERCENT);
+			buttonTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+
+			SubmitButton update = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.update","Update"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
+			update.setSingleSubmitConfirm(localize("child_care.confirm_queue_update","Are you sure you want to update? Selection can not be altered."));
+			buttonTable.add(back, 1, 1);
+			buttonTable.add(update, 2, 1);
+
+			form.add(table);
+			form.add(buttonTable);
+		
+			return form;
+		}
 	}
 	
 	private GenericButton getExportAllButton() {
@@ -429,7 +449,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		buffer.append("}").append("\n\t\t");
 		buffer.append("}").append("\n\t");
 		buffer.append("}").append("\n\t");
-		buffer.append("return true").append("\n");
+		buffer.append("return true;").append("\n");
 		buffer.append("}");
 		return buffer.toString();
 	}
