@@ -74,7 +74,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	}
 
 	/**
-	 * Returns a Collection of UserPrimaryKeys NOT SchoolUserPrimaryKeys	 * @param school School	 * @param userType User type	 * @return Collection	 * @throws FinderException	 * @throws RemoteException
+	 * Returns a Collection of SchoolUsers	 * @param school School	 * @param userType User type	 * @return Collection	 * @throws FinderException
 	 */
 	public Collection ejbFindBySchoolAndType(School school, int userType) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -93,24 +93,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 			 
 			 /** THARF AD SKILA USERUM ...*/
 		Collection coll = this.idoFindIDsBySQL(sql.toString());
-		Collection userPks = new Vector();
-		
-		SchoolUser sUser;
-		Iterator iter = coll.iterator();
-		while (iter.hasNext()) {
-			try
-			{
-				sUser = getHome().findByPrimaryKey(iter.next());
-				userPks.add(new Integer(sUser.getUserId()));
-			}
-			catch (RemoteException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-				
-		return userPks;
+		return coll;
 	}
 	
 	public Collection ejbFindByUser(User user) throws FinderException {

@@ -93,39 +93,98 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		}
 		getUserBusiness().deleteUser(user, currentUser);
 	}
-
+	/**
+	 * Gets the Users of type Teacher for School with id schID
+	 * @return A collection of com.idega.user.data.User entites
+	 */
 	public Collection getTeachers(int schoolID) throws RemoteException, FinderException {
 		return getTeachers(getSchoolHome().findByPrimaryKey(new Integer(schoolID)));	
 	}
-
+	
+	/**
+	 * Gets the UserIds for Users of type Teacher for School with id schID
+	 * @return A collection of Integer PKs
+	 */
+	public Collection getTeacherUserIds(int schoolID) throws RemoteException, FinderException {
+		return getTeacherUserIds(getSchoolHome().findByPrimaryKey(new Integer(schoolID)));	
+	}
+	/**
+	 * Gets the Users of type Teacher for School school
+	 * @return A collection of com.idega.user.data.User entites
+	 */
 	public Collection getTeachers(School school) throws RemoteException, FinderException{
-		return getSchoolUserHome().findBySchoolAndType(school, USER_TYPE_TEACHER);	
+		return getUsers(school, USER_TYPE_TEACHER);	
 	}
 	
+	/**
+	 * Gets the UserIds for Users of type Teacher for School school
+	 * @return A collection of Integer PKs
+	 */
+	public Collection getTeacherUserIds(School school) throws RemoteException, FinderException{
+		return getUserIds(school, USER_TYPE_TEACHER);	
+	}
+	/**
+	 * Gets the Users of type Headmaster for School school
+	 * @return A collection of com.idega.user.data.User entites
+	 */
 	public Collection getHeadmasters(School school) throws RemoteException, FinderException{
-		return getSchoolUserHome().findBySchoolAndType(school, USER_TYPE_HEADMASTER);	
+		return getUsers(school, USER_TYPE_HEADMASTER);	
 	}
-
+	/**
+	 * Gets the Users of type AssistantHeadMaster for School school
+	 * @return A collection of com.idega.user.data.User entites
+	 */
 	public Collection getAssistantHeadmasters(School school) throws RemoteException, FinderException{
-		return getSchoolUserHome().findBySchoolAndType(school, USER_TYPE_ASSISTANT_HEADMASTER);	
+		return getUsers(school, USER_TYPE_ASSISTANT_HEADMASTER);	
 	}
-	
+	/**
+	 * Gets the Users of type WebAdmin for School school
+	 * @return A collection of com.idega.user.data.User entites
+	 */
 	public Collection getWebAdmins(School school) throws RemoteException, FinderException{
-		return getSchoolUserHome().findBySchoolAndType(school, USER_TYPE_WEB_ADMIN);	
+		return getUsers(school, USER_TYPE_WEB_ADMIN);	
 	}
 
+	/**
+	 * Gets the Users of a aspecific type for School school
+	 * @return A collection of com.idega.user.data.User entites
+	 */
 	public Collection getUsers(School school, int userType) throws RemoteException, FinderException {
-		return getSchoolUserHome().findBySchoolAndType(school, userType);	
+		Collection schUsers = getSchoolUserHome().findBySchoolAndType(school, userType);
+		Collection users = new Vector();
+		Iterator iter = schUsers.iterator();
+		while (iter.hasNext()) {
+			SchoolUser sUser = (SchoolUser)iter.next();
+			users.add(sUser.getUser());
+		}
+		return users;
 	}
+
+
+	/**
+	 * Gets the UserIds of a aspecific type for School school
+	 * @return A collection of Integer Primary keys for com.idega.user.data.User
+	 */
+	public Collection getUserIds(School school, int userType) throws RemoteException, FinderException {
+		Collection schUsers = getSchoolUserHome().findBySchoolAndType(school, userType);
+		Collection users = new Vector();
+		Iterator iter = schUsers.iterator();
+		while (iter.hasNext()) {
+			SchoolUser sUser = (SchoolUser)iter.next();
+			users.add(sUser.getUser().getPrimaryKey());
+		}
+		return users;
+	}
+
 
 	public Collection getSchools(User user) throws RemoteException, FinderException {
-		Collection csUser = getSchoolUserHome().findByUser(user);
-		if (csUser != null || !csUser.isEmpty()) {
+		Collection schUsers = getSchoolUserHome().findByUser(user);
+		if (schUsers != null || !schUsers.isEmpty()) {
 			Collection coll = new Vector();
-			Iterator iter = csUser.iterator();
+			Iterator iter = schUsers.iterator();
 			SchoolUser sUser;
 			while (iter.hasNext()) {
-				sUser = getSchoolUserHome().findByPrimaryKey(iter.next());
+				sUser = (SchoolUser)iter.next();
 				coll.add(new Integer(sUser.getSchoolId()));	
 			}
 			return coll;

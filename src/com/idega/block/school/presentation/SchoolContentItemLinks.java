@@ -172,10 +172,11 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				} else {
 					table.add(getHeader(_iwrb.getLocalizedString("school.childcare_manager","Manager")+":"), 1, row);
 				}
-				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
+				//UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
 				Iterator iter = hmUsers.iterator();
 				while (iter.hasNext()) {
-					User user = uHome.findByPrimaryKey(iter.next());
+					//User user = uHome.findByPrimaryKey(iter.next());
+					User user = (User)iter.next();
 					row = insertUser(table, row, user);
 				}
 				useBreak = true;
@@ -198,10 +199,9 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				} else {
 					table.add(getHeader(_iwrb.getLocalizedString("school.childcare_assistant_manager","Assistant Manager")+":"), 1, row);
 				}
-				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
 				Iterator iter = hmUsers.iterator();
 				while (iter.hasNext()) {
-					User user = uHome.findByPrimaryKey(iter.next());
+					User user = (User)iter.next();
 					row = insertUser(table, row, user);
 				}
 				useBreak = true;
