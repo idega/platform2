@@ -156,10 +156,10 @@ public class ProductCatalogLayoutExpandedList extends AbstractProductCatalogLayo
       table.mergeCells(1, row, 3, row);
       table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
       String viewerIm = productCatalog.iwrb.getLocalizedString("more","more");
-      Link viewerLn = new Link(viewerIm);
+/*      Link viewerLn = new Link(viewerIm);
         viewerLn.setWindowToOpen(ProductViewerWindow.class);
         viewerLn.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
-      PresentationObject po = productCatalog.getNamePresentationObject(product, productCatalog.iwrb.getLocalizedString("more","more"),false);
+*/      Link po = productCatalog.getNameLink(product, productCatalog.getText(productCatalog.iwrb.getLocalizedString("more","more")));
       table.add(po, 1, row);
     }
 

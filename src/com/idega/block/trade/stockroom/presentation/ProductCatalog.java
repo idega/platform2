@@ -50,7 +50,7 @@ public class ProductCatalog extends CategoryBlock{
 
   String _width = null;
   IBPage _productLinkPage = null;
-  boolean _viewerInWindow = false;
+  String _windowString = null;
   boolean _productIsLink = false;
   boolean _showCategoryName = true;
   boolean _showImage = false;
@@ -72,6 +72,7 @@ public class ProductCatalog extends CategoryBlock{
 
 
   public ProductCatalog() {
+    super.setAutoCreate(false);
   }
 
   public void main(IWContext iwc) {
@@ -225,7 +226,6 @@ public class ProductCatalog extends CategoryBlock{
 
   public void setProductLinkPage(IBPage page) {
     this._productLinkPage = page;
-    setProductAsLink(true);
   }
 
   public void setProductAsLink(boolean isLink) {
@@ -260,9 +260,8 @@ public class ProductCatalog extends CategoryBlock{
     this._useAnchor = useAnchor;
   }
 
-  public void setViewerToOpenInWindow(boolean openInWindow) {
-    this._viewerInWindow = openInWindow;
-    setProductAsLink(true);
+  public void setViewerToOpenInWindow(String windowString) {
+    this._windowString = windowString;
   }
 
   public void setExpandSelectedOnyl(boolean expaneSelectedOnly) {
@@ -345,6 +344,20 @@ public class ProductCatalog extends CategoryBlock{
     }
     Link productLink;
     if (_productIsLink) {
+      productLink = getNameLink(product, nameText);
+      if (productLink != null) {
+        return productLink;
+      }else {
+        return nameText;
+      }
+    }else {
+      return nameText;
+    }
+  }
+
+  Link getNameLink(Product product, Text nameText) {
+    Link productLink;
+    if (_productIsLink) {
       if (_useAnchor) {
         productLink = new AnchorLink(nameText, getAnchorString(product.getID()));
       }else {
@@ -352,17 +365,16 @@ public class ProductCatalog extends CategoryBlock{
       }
 
       productLink.addParameter(ProductBusiness.PRODUCT_ID, product.getID());
-
       if (_productLinkPage != null) {
         productLink.setPage(_productLinkPage);
-      }else if (_viewerInWindow) {
-        productLink.setWindowToOpen(ProductViewerWindow.class);
+      }else if (this._windowString != null) {
+        debug("Repps : windowString != null");
+        productLink.setWindowToOpenScript(_windowString);
       }
       return productLink;
-    }else {
-      return nameText;
+    }else{
+      return null;
     }
-
   }
 
   Product getSelectedProduct(IWContext iwc) {
