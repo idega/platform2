@@ -502,11 +502,11 @@ public class SupplyPoolEditor extends TravelBlock {
 		table.mergeCells(1, row, 7, row);
 		table.setRowColor(row, TravelManager.GRAY);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
-		table.add(getLastMonthsLink(iwrb, pool, timeStamp), 1, row);
+		table.add(getLastMonthsLink(iwrb, pool, stamp), 1, row);
 		table.add(Text.NON_BREAKING_SPACE, 1, row);
 		table.add(new Text(stamp.getDateString("MMMMMMMM yyyy",iwc.getCurrentLocale())), 1, row); 
 		table.add(Text.NON_BREAKING_SPACE, 1, row);
-		table.add(getNextMonthsLink(iwrb, pool, timeStamp), 1, row++); 
+		table.add(getNextMonthsLink(iwrb, pool, stamp), 1, row++); 
 		
 		for(int i=1; i<=7; i++) {
 			int max = -1; 
