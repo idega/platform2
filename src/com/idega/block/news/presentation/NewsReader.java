@@ -42,6 +42,7 @@ private String selectFrom = "select news.* from news where ";
 private String orderBy = " order by news_date DESC";
 private String sNewsCategoryId = "news_category_id ='";
 private String sNewsEditorUrl ="/news/editor.jsp";
+private String headlineImageURL = "/pics/jmodules/news/nanar2.gif";
 
 private Text textProxy = new Text();
 private Text headlineProxy = new Text();
@@ -428,7 +429,7 @@ private Table insertTable(String TimeStamp, String Headline, String NewsText, Te
   if ( headlineAsLink ) {
     Link headlineLink = new Link(headline,getNewsReaderURL());
     headlineLink.addParameter("news_id",newsId);
-    Image headlineImage = new Image("pics/jmodules/news/nanar2.gif","");
+    Image headlineImage = new Image(headlineImageURL,"");
     headlineImage.setAttribute("align","absmiddle");
 
     newsTable.add(headlineImage, 1, 2);
@@ -576,19 +577,15 @@ private Text getInfoText(String Author, String Source, String Category, String T
   TimeStamp = formatDateWithTime(TimeStamp,DatastoreType);
 
   if ( showOnlyDates ) {
+    idegaTimestamp timeStamp = new idegaTimestamp(TimeStamp.substring(6,10)+"-"+TimeStamp.substring(3,5)+"-"+TimeStamp.substring(0,2));
 
-      if ( language.equalsIgnoreCase("is") ) {
-        idegaTimestamp timeStamp = new idegaTimestamp(TimeStamp.substring(6,10)+"-"+TimeStamp.substring(3,5)+"-"+TimeStamp.substring(0,2));
-        String timeStamp2 = timeStamp.getISLDate();
+    String date = Integer.toString(timeStamp.getDate());
+    if ( date.length() == 1 ) date = "0" + date;
+    String month = Integer.toString(timeStamp.getMonth());
+    if ( month.length() == 1 ) month = "0" + month;
+    String year = Integer.toString(timeStamp.getYear());
 
-        information = new Text(timeStamp.getDate()+"."+timeStamp2.substring(timeStamp2.indexOf(".")+1,timeStamp2.indexOf(".")+4)+".&nbsp;"+timeStamp.getYear());
-      }
-
-      if ( language.equalsIgnoreCase("en") ) {
-        idegaTimestamp timeStamp = new idegaTimestamp(TimeStamp.substring(6,10)+"-"+TimeStamp.substring(3,5)+"-"+TimeStamp.substring(0,2));
-
-        information = new Text(timeStamp.getENGDate());
-      }
+    information = new Text(date+"."+month+"."+year);
   }
 
   else {
@@ -839,6 +836,10 @@ public void setShowImages(boolean showImages) {
 
 public void setHeadlineAsLink(boolean headlineAsLink) {
   this.headlineAsLink=headlineAsLink;
+}
+
+public void setHeadlineImageURL(String headlineImageURL) {
+  this.headlineImageURL=headlineImageURL;
 }
 
 public void setShowOnlyDates(boolean showOnlyDates) {
