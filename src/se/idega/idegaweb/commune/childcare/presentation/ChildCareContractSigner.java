@@ -67,11 +67,12 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 	}	
 		
 	public void main(IWContext iwc) {
-		try{
-			control(iwc);
-		}catch(Exception ex){
-			ex.printStackTrace();
-		}
+		add(makeTableOfContracts(iwc));			
+//		try{
+//			control(iwc);
+//		}catch(Exception ex){
+//			ex.printStackTrace();
+//		}
 	}	
 	
 	private static String ACTION = "se.idega.idegaweb.commune.childcare.presentation.ChildCareContractSigner.ACTION";
@@ -200,9 +201,11 @@ public class ChildCareContractSigner extends Block implements Builderaware{
 			}else {
 
 				Link signBtn = new Link(iwrb.getLocalizedString("ccconsign_signcon","Sign Contract"));
+				signBtn.setWindowToOpen(ChildCareWindow.class);
+				signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
+				signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, ""+contract.getID());
 				signBtn.setAsImageButton(true);
-				signBtn.setParameter(PAR_CONTRACT_ID, ""+contract.getID());
-				signBtn.setParameter(ACTION, ACTION_FILLOUT);
+//				signBtn.setParameter(ACTION, ACTION_FILLOUT);
 				t.add(signBtn, 3, row);				
 			}
 				
