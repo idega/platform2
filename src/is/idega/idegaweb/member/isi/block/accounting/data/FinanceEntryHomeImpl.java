@@ -27,6 +27,20 @@ public java.util.Collection findAllByUser(com.idega.user.data.Group p0,com.idega
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllDivisionsBelongingToClub(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllDivisionsBelongingToClub(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(java.util.Date p0,java.util.Date p1,java.util.Collection p2,java.util.Collection p3)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(p0,p1,p2,p3);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public FinanceEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (FinanceEntry) super.findByPrimaryKeyIDO(pk);
  }
