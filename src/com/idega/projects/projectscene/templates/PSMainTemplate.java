@@ -16,6 +16,7 @@ public abstract class PSMainTemplate extends JSPModule implements JspPage{
 public Table tafla;
 public Table frame;
 
+private Link linkGeneral ;
 private Link linkCommunications ;
 private Link linkCalendar ;
 private Link linkParticipants ;
@@ -91,7 +92,7 @@ public String language = "IS";
 
     getModuleInfo().getSession().setAttribute("language",language);
 
-
+    String generalImage = "/pics/Slysaskraning/"+language+"/general.gif";
     String commImage = "/pics/Slysaskraning/"+language+"/comm.gif";
     String calendarImage = "/pics/Slysaskraning/"+language+"/calendar.gif";
     String participantsImage = "/pics/Slysaskraning/"+language+"/participants.gif";
@@ -101,6 +102,7 @@ public String language = "IS";
     String accidentImage = "/pics/Slysaskraning/"+language+"/committee.gif";
     String topImage = "/pics/Slysaskraning/"+language+"/topleft.gif";
 
+        linkGeneral = new Link(new Image(generalImage,"general info"),"/general.jsp");
         linkCommunications = new Link(new Image(commImage,"communications"),"/communications.jsp");
 	linkCalendar = new Link(new Image(calendarImage,"calendar"),"/calendar.jsp");
 	linkParticipants = new Link(new Image(participantsImage,"participants"),"/participants.jsp");
@@ -131,6 +133,8 @@ addToLink("language",language);
                 header.add(new Image("/pics/spacer.gif","",518,50),1,1);
                 header.add(bottomRight,3,2);
                 header.setAlignment(3,2,"right");
+
+                header.add(linkGeneral,1,2);
 		header.add(linkCommunications,1,2);
 		header.add(linkCalendar,1,2);
 		header.add(linkParticipants,1,2);
