@@ -16,7 +16,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public int getAssistantHeadmasterGroupId();
  public boolean getCentralizedAdministration();
  public com.idega.core.location.data.Commune getCommune();
- public int getCommuneId();
+ public Object getCommunePK();
  public com.idega.core.location.data.Country getCountry();
  public int getCountryId();
  public java.lang.String getExtraProviderId();
@@ -54,7 +54,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public void setActivity(java.lang.String p0);
  public void setAssistantHeadmasterGroupId(int p0);
  public void setCentralizedAdministration(boolean p0);
- public void setCommuneId(int p0);
+ public void setCommunePK(Object p0);
  public void setCountryId(int p0);
  public void setExtraProviderId(java.lang.String p0);
  public void setHeadmasterGroupId(int p0);

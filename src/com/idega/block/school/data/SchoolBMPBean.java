@@ -16,6 +16,7 @@ import com.idega.block.text.data.TxTextHome;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.core.location.data.Country;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
@@ -65,10 +66,8 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	/** Kelly 13-14 May 2003 */
 	public final static String ACTIVITY = "activity";
 	public final static String OPEN_HOURS = "open_hours";
-	
-	/** Laddi 3 Sep 2003 */
+		/** Laddi 3 Sep 2003 */
 	public final static String COMMUNE = "commune";
-
 	/** Anders 15 Sep 2003 */
 	public final static String ORGANIZATION_NUMBER = "organization_number";
 	public final static String EXTRA_PROVIDER_ID = "extra_provider_id";
@@ -139,14 +138,32 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public void setSchoolAreaId(int id) {
 		this.setColumn(SCHOOLAREA, id);
 	}
-	public int getCommuneId() {
-		return this.getIntColumnValue(COMMUNE);
+	public Object getCommunePK() {
+		Object communeId = getColumnValue(COMMUNE);
+		if (communeId == null) {
+			try {
+				System.out.print("[SchoolBMPBean] communeId not found ...");
+				CommuneHome cHome = (CommuneHome) IDOLookup.getHome(Commune.class);
+				Commune comm = cHome.findDefaultCommune();
+				if (comm != null) {
+					this.setCommunePK(comm.getPrimaryKey());
+					this.store();
+					System.out.print("set as defaul (pk="+comm.getPrimaryKey()+")");
+					return comm.getPrimaryKey();
+				}
+				System.out.print("NOT set. (Default not found)");
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return communeId;
 	}
 	public Commune getCommune() {
 		return (Commune) getColumnValue(COMMUNE);
 	}
-	public void setCommuneId(int id) {
-		this.setColumn(COMMUNE, id);
+	public void setCommunePK(Object pk) {
+		this.setColumn(COMMUNE, pk);
 	}
 	public int getCountryId() {
 		return this.getIntColumnValue(COUNTRY);
