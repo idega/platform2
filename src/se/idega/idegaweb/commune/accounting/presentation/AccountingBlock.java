@@ -232,7 +232,7 @@ public class AccountingBlock extends CommuneBlock {
 	 */
 	protected String formatDate(Date date, int length) {
 		if (date == null) {
-			return "null";
+			return "";
 		}
 		
 		SimpleDateFormat formatter = null;
