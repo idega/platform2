@@ -25,13 +25,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	
 	protected final static String DEBET = "d";
 	protected final static String CREDIT = "c";
-	
-	public String keyName;
-	public String keyNumber;
-	public String keyType;
-	public String debetOrCredit;
-	
-	
+		
 	public WorkReportAccountKeyBMPBean() {
 		super();
 	}
