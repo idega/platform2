@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.10 2003/08/27 14:02:13 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.11 2003/08/27 22:45:03 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -43,7 +43,8 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 
 	private final static String KEY_ERROR_POST_PARAM_CREATE = "posting_param_err.create";
 	private final static String KEY_ERROR_POST_NOT_FOUND = "posting_parm_edit.post_not_found";
-
+	private final static String KEY_ERROR_POST_PARAM_DATE_ORDER = "posting_parm_edit.post_dateorder";
+	private final static String KEY_ERROR_POST_PARAM_SAME_ENTRY = "posting_parm_edit.post_sameentry";
 	/**
 	 * Merges two posting strings according to 15.2 and 15.3 in the Kravspecification Check & Peng
 	 * @param first posting string
@@ -209,6 +210,11 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			int parm2 = 0;
 			int parm3 = 0;
 			int parm4 = 0;
+			
+
+			if (periodeFrom.after(periodeTo)) {
+				throw new PostingParametersException(KEY_ERROR_POST_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
+			}
 		
 			try {
 				home = (PostingParametersHome) IDOLookup.getHome(PostingParameters.class);
@@ -227,18 +233,32 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				parm2 = Integer.parseInt(regSpecTypeID);
 				parm3 = Integer.parseInt(companyTypeID);
 				parm4 = Integer.parseInt(communeBelongingID);
+
+				if(searchPP(
+						periodeFrom, 
+						periodeTo, 
+						ownAccount, 
+						ownResource, 
+						ownActivityCode, 
+						ownDoubleEntry,
+						parm1,
+						parm2,
+						parm3,
+						parm4
+					)) {
+					throw new PostingParametersException(KEY_ERROR_POST_PARAM_SAME_ENTRY, "Denna post finns redan sparad!");			
+				}
 				
 
 				int ppID = 0;
 				if(sppID != null) {
 					ppID = Integer.parseInt(sppID);
 				}
+				pp = null;
 				if(ppID != 0) {				
+					int eq = 0;
 					pp = home.findPostingParameter(ppID);
-				} else {
-					pp = null;
 				}
-
 			} catch (FinderException e) {
 				pp = null;
 			}
@@ -281,7 +301,66 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			}
 		}
 
-
+	/*
+	 * Compares a Posting Parameter with stored parameters
+	 * @author Kjell
+	 */
+	private boolean searchPP(Date from, Date to, String parm1, String parm2, String parm3, String parm4,
+								int code1, int code2, int code3, int code4) {
+	
+		try {
+			int match;
+			ActivityTypeHome ath = getActivityTypeHome();
+			PostingParametersHome home = getPostingParametersHome();
+			Collection ppCol = (Collection) home.findAllPostingParameters();
+			Iterator iter = ppCol.iterator();
+	
+			while(iter.hasNext())  {
+				PostingParameters pp = (PostingParameters) iter.next();
+				int eq = 0;
+				if (pp.getPostingAccount().trim().compareToIgnoreCase(parm1.trim()) == 0) {
+					eq++;
+				}
+				if (pp.getPostingResource().trim().compareToIgnoreCase(parm2.trim()) == 0) {
+					eq++;
+				}
+				if (pp.getPostingActivityCode().trim().compareToIgnoreCase(parm3.trim()) == 0) {
+					eq++;
+				}
+				if (pp.getPostingDoubleEntry().trim().compareToIgnoreCase(parm4.trim()) == 0) {
+					eq++;
+				}
+				if (pp.getPeriodeFrom() != null) {
+					if(pp.getPeriodeFrom().compareTo(from) == 0) {
+						eq++;
+					}
+				}
+				if (pp.getPeriodeTo() != null) {
+					if(pp.getPeriodeTo().compareTo(to) == 0) {
+						eq++;
+					}
+				}
+				if (Integer.parseInt(pp.getActivity().getPrimaryKey().toString()) == code1) {
+					eq++;				
+				}	
+				if (Integer.parseInt(pp.getRegSpecType().getPrimaryKey().toString()) == code2) {
+					eq++;				
+				}	
+				if (Integer.parseInt(pp.getCompanyType().getPrimaryKey().toString()) == code3) {
+					eq++;				
+				}	
+				if (Integer.parseInt(pp.getCommuneBelonging().getPrimaryKey().toString()) == code4) {
+					eq++;				
+				}	
+				if(eq == 10) {
+					return true;
+				}
+			}
+		} catch (RemoteException e) {
+		} catch (FinderException e) {
+		}
+		return false;
+	}
 
 	/**
 	 * Deletes a posting parameter
