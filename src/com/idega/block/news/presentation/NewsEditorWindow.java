@@ -329,7 +329,8 @@ private IWResourceBundle iwrb;
       //System.err.println(pubFrom.toSQLString());
       //System.err.println(pubTo.toString());
       NwNews news = NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,sTeaser,sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V);
-      sNewsId = String.valueOf(news.getID());
+      if(news!=null)
+        sNewsId = String.valueOf(news.getID());
     }
   }
 
@@ -707,7 +708,6 @@ private IWResourceBundle iwrb;
     isAdmin = iwc.hasEditPermission(this);
     eUser = com.idega.block.login.business.LoginBusiness.getUser(iwc);
     iUserId = eUser != null?eUser.getID():-1;
-    isAdmin = true;
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
 		core = iwc.getApplication().getBundle(NewsReader.IW_CORE_BUNDLE_IDENTIFIER);
