@@ -279,7 +279,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					invoiceRecord.setInvoiceHeader(invoiceHeader);
 					invoiceRecord.setInvoiceText(regularInvoiceEntry.getNote());
 
-					invoiceRecord.setProviderId(regularInvoiceEntry.getProvider());
+					invoiceRecord.setProviderId(regularInvoiceEntry.getSchool());
 					invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
 					invoiceRecord.setDays(days);
 					invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
@@ -290,7 +290,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					invoiceRecord.setCreatedBy(BATCH_TEXT);
 					invoiceRecord.setAmount(regularInvoiceEntry.getAmount()*months);
 					invoiceRecord.setAmountVAT(regularInvoiceEntry.getVAT()*months);
-					invoiceRecord.setVATType(regularInvoiceEntry.getVatRegulationID());
+					invoiceRecord.setVATType(regularInvoiceEntry.getVatRegulationId());
 					invoiceRecord.setRuleSpecType(regularInvoiceEntry.getRegSpecType());
 
 					invoiceRecord.setOwnPosting(regularInvoiceEntry.getOwnPosting());
