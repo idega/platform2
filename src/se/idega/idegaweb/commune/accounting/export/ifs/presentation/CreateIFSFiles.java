@@ -9,6 +9,9 @@ package se.idega.idegaweb.commune.accounting.export.ifs.presentation;
 
 import java.rmi.RemoteException;
 
+import javax.ejb.FinderException;
+
+import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
 import se.idega.idegaweb.commune.accounting.export.ifs.business.IFSBusiness;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
@@ -51,11 +54,11 @@ public class CreateIFSFiles extends AccountingBlock {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_VIEW :
-					viewForm();
+					viewForm(iwc);
 					break;
 				case ACTION_CREATE :
 					createFiles(iwc);
-					viewForm();
+					viewForm(iwc);
 					break;
 			}
 		}
@@ -91,7 +94,7 @@ public class CreateIFSFiles extends AccountingBlock {
 		}
 	}
 
-	private void viewForm() {
+	private void viewForm(IWContext iwc) {
 		ApplicationForm form = new ApplicationForm(this);
 
 		try {
@@ -101,12 +104,12 @@ public class CreateIFSFiles extends AccountingBlock {
 		}
 
 		form.setLocalizedTitle(KEY_HEADER, "Create files");
-		form.setSearchPanel(getTopPanel());
+		form.setSearchPanel(getTopPanel(iwc));
 		form.setButtonPanel(getButtonPanel());
 		add(form);
 	}
 
-	private Table getTopPanel() {
+	private Table getTopPanel(IWContext iwc) {
 		Table table = new Table();
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_LEFT);
@@ -116,7 +119,22 @@ public class CreateIFSFiles extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "School category"), 1, 1);
 		table.add(new OperationalFieldsMenu(), 2, 1);
 
+		int paymentDate = -1;
+		try {
+			paymentDate = getExportBusiness(iwc).getExportDataMapping(_currentOperation).getStandardPaymentDay();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			paymentDate = -1;		
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			paymentDate = -1;		
+		}
+
 		DateInput date = new DateInput();
+		if (paymentDate != -1)
+			date.setDay(paymentDate-1);
 		TextInput period = getTextInput(PARAM_PERIOD_TEXT,"");
 		period.setMaxlength(20);
 		period.setSize(20);
@@ -138,5 +156,9 @@ public class CreateIFSFiles extends AccountingBlock {
 		
 	private IFSBusiness getIFSBusiness(IWContext iwc) throws RemoteException {
 		return (IFSBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, IFSBusiness.class);
-	}	
+	}
+	
+	private ExportBusiness getExportBusiness(IWContext iwc) throws RemoteException {
+		return (ExportBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ExportBusiness.class);
+	}			
 }
