@@ -86,8 +86,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
     String path = getRealPathToReportFile(nameOfReport, HTML_FILE_EXTENSION,folderIdentifier);
     try {
 		JasperExportManager.exportReportToHtmlFile(print, path);
-		/* Not needed since jasper 0.5
-		 * well maybe it is
+		/* Not needed since jasper 0.5 if you use utf-8
+		 * UNLESS APACHE ALWAYS OUTPUTS ISO AS THE ENCODING
 		 */
 		  JRHtmlExporter exporter = new JRHtmlExporter();
 			//to handle icelandic in html
