@@ -9,7 +9,7 @@ import java.util.Collection;
  * <p>Copyright: (c) 2002</p>
  * <p>Company: Idega Software</p>
  * @author <a href="mailto:eiki@idega.is">Eirikur Sveinn Hrafnsson</a>
- * @version 1.0
+ * @version 1.0 
  */
 
 public interface ImportFileHandler {
