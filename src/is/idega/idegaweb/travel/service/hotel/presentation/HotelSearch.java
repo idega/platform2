@@ -90,15 +90,18 @@ public class HotelSearch extends AbstractSearchForm {
 			HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
 			Collection coll = hHome.find(null, null, roomTypeIds, postalCodeIds);
 			HashMap map = getSearchBusiness(iwc).checkResults(iwc, coll);
-			
+			int mapSize = map.size();
 			String foundString = "";
-			if (coll != null) {
-				foundString = "Found "+coll.size()+" matches !<br>";
+			if (map != null) {
+				foundString = "Found "+mapSize+" match";
+				if (mapSize != 1) foundString += "es !<br>";
 			} else {
 				foundString = getText(iwrb.getLocalizedString("travel.search.no_matches","No matches"))+"<BR>";
 			}
 			
-			add(foundString);
+			if (mapSize > 0) {
+				add(foundString);
+			}
 			listResults(iwc, map);
 			add(foundString);
 
