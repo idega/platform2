@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.16 2003/11/12 15:06:05 roar Exp $
+ * $Id: RegulationBMPBean.java,v 1.17 2003/11/18 10:41:56 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import com.idega.block.school.data.SchoolCategory;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.16 2003/11/12 15:06:05 roar Exp $
+ * $Id: RegulationBMPBean.java,v 1.17 2003/11/18 10:41:56 staffan Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -362,6 +362,23 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		return idoFindPKsBySQL(sql.toString());
 	}
 		
+
+	public Collection ejbFindRegulationsByPeriodAndOperationId
+        (final Date validDate, final String operationID)
+        throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom (this)
+                .appendWhere (COLUMN_PERIOD_FROM)
+                .appendLessThanOrEqualsSign ()
+                .append (validDate)
+                .appendAnd ()
+                .append (COLUMN_PERIOD_TO)
+                .appendGreaterThanOrEqualsSign ()
+                .append (validDate)
+                .appendAndEquals (COLUMN_OPERATION_ID, "'" + operationID + "'")
+                .appendOrderBy (COLUMN_NAME);
+		return idoFindPKsBySQL (sql.toString());
+	}
 			
 
 	public Collection ejbFindRegulationsByPeriod(Date from, Date to, String operationID, int flowTypeID, int sortByID) throws FinderException {

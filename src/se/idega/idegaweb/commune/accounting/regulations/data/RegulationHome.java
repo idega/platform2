@@ -18,6 +18,7 @@ public interface RegulationHome extends com.idega.data.IDOHome
  public java.util.Collection findRegulationsByNameNoCaseAndDate(String string, Date validDate) throws javax.ejb.FinderException;
  public java.util.Collection findRegulationsByNameNoCaseAndCategory(String name, String catId) throws javax.ejb.FinderException;
  public java.util.Collection findRegulationsByNameNoCaseDateAndCategory(String string, Date validDate, String catId) throws javax.ejb.FinderException;
+    java.util.Collection findRegulationsByPeriodAndOperationId (final java.sql.Date validDate, final String operationID) throws javax.ejb.FinderException;
 
 
 

@@ -43,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/12 14:55:55 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/18 10:41:56 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -357,7 +357,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
          final Integer numberOfDays, final String ownPosting,
          final Date placementStartPeriod, final Date placementEndPeriod,
          final Integer providerId, final String regulationSpecType,
-         final Integer vatAmount, final Integer vatRule)
+         final Integer vatAmount, final Integer vatRule, final String ruleText)
         throws CreateException {
         try {
             final InvoiceRecord record = getInvoiceRecordHome ().create ();
@@ -375,7 +375,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             record.setDoublePosting (doublePosting);
             if (null != invoiceHeaderId) record.setInvoiceHeader
                                                  (invoiceHeaderId.intValue ());
-            record.setInvoiceText (invoiceText);
+            record.setInvoiceText
+                    (null != invoiceText && 0 < invoiceText.length ()
+                     ? invoiceText : ruleText);
+            record.setRuleText (ruleText);
             record.setNotes (note);
             record.setOwnPosting (ownPosting);
             if (null != checkEndPeriod) record.setPeriodEndCheck
