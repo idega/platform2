@@ -14,6 +14,9 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 
+import is.idega.travel.business.Assigner;
+import is.idega.travel.business.Booker;
+import is.idega.travel.business.Inquirer;
 import is.idega.travel.data.*;
 /**
  * Title:        idegaWeb TravelBooking
@@ -416,14 +419,14 @@ public class BookingOverview extends TravelManager {
 
                           if (supplier != null) {
                               iCount = tour.getTotalSeats();
-                              iBooked = tsb.getNumberOfBookings(service.getID(), tempStamp);
-                              iAssigned = tsb.getNumberOfAssignedSeats(service.getID(), tempStamp);
+                              iBooked = Booker.getNumberOfBookings(service.getID(), tempStamp);
+                              iAssigned = Assigner.getNumberOfAssignedSeats(service.getID(), tempStamp);
 
-                              iInquery = tsb.getInqueredSeats(service.getID() ,tempStamp, true);
+                              iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
                               iAvailable = iCount - iBooked - iAssigned;
                           }else if (reseller != null) {
                               iCount = contract.getAlotment();
-                              iBooked = tsb.getNumberOfBookings(reseller.getID() ,service.getID(), tempStamp);
+                              iBooked = Booker.getNumberOfBookings(reseller.getID() ,service.getID(), tempStamp);
                               iAssigned = 0;
 
                               iInquery = 0;
@@ -579,15 +582,15 @@ public class BookingOverview extends TravelManager {
 
           if (supplier != null) {
             seats = tour.getTotalSeats();
-            assigned = tsb.getNumberOfAssignedSeats(service.getID(), currentStamp);
-            iInqueries = tsb.getInqueredSeats(service.getID() ,currentStamp, true);
-            booked = tsb.getNumberOfBookings(service.getID(), currentStamp);
+            assigned = Assigner.getNumberOfAssignedSeats(service.getID(), currentStamp);
+            iInqueries = Inquirer.getInqueredSeats(service.getID() ,currentStamp, true);
+            booked = Booker.getNumberOfBookings(service.getID(), currentStamp);
             available = seats - booked;
           }else if (reseller != null) {
             seats = contract.getAlotment();
             assigned = 0;
             iInqueries = 0;
-            booked = tsb.getNumberOfBookings(reseller.getID(),service.getID(), currentStamp);
+            booked = Booker.getNumberOfBookings(reseller.getID(),service.getID(), currentStamp);
             available = seats - booked;
           }
 
@@ -646,7 +649,7 @@ public class BookingOverview extends TravelManager {
               }catch (SQLException sql) {sql.printStackTrace(System.err);}
               //                Temail.setText(reseller[i].getEmail());
               Tbooked = (Text) super.theSmallBoldText.clone();
-                Tbooked.setText(Integer.toString(tsb.getNumberOfAssignedSeats(service.getID(), resellers[i].getID() ,currentStamp)));
+                Tbooked.setText(Integer.toString(Assigner.getNumberOfAssignedSeats(service.getID(), resellers[i].getID() ,currentStamp)));
 
               table.mergeCells(2,row,3, row);
               table.add(Tname,1,row);
@@ -667,7 +670,7 @@ public class BookingOverview extends TravelManager {
 
 
           // ------------------ INQUERIES ------------------------
-          Inquery[] inqueries = tsb.getInqueries(service.getID(), currentStamp, true, Inquery.getNameColumnName());
+          Inquery[] inqueries = Inquirer.getInqueries(service.getID(), currentStamp, true, Inquery.getNameColumnName());
           for (int i = 0; i < inqueries.length; i++) {
             ++row;
             Tname = (Text) super.theSmallBoldText.clone();
@@ -695,7 +698,7 @@ public class BookingOverview extends TravelManager {
 
 
           // ------------------ BOOKINGS ------------------------
-          is.idega.travel.data.Booking[] bookings = tsb.getBookings(this.service.getID(), currentStamp);
+          is.idega.travel.data.Booking[] bookings = Booker.getBookings(this.service.getID(), currentStamp);
           for (int i = 0; i < bookings.length; i++) {
               ++row;
               if (tour.getHotelPickup()) {

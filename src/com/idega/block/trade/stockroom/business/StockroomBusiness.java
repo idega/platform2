@@ -60,7 +60,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
    prPrice.insert();
   }
 
-  public float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
+  public static float getPrice(int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
     PriceCategory cat = new PriceCategory(priceCategoryId);
@@ -82,7 +82,7 @@ public class StockroomBusiness /* implements SupplyManager */ {
         disc = ((ProductPrice)result.get(0)).getPrice();
       }
 
-      float pr = this.getPrice(productId,cat.getParentId(),currencyId,time);
+      float pr = StockroomBusiness.getPrice(productId,cat.getParentId(),currencyId,time);
       return pr*((100-disc) /100);
     }else{
       throw new ProductPriceException();

@@ -268,6 +268,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         StringBuffer sqlQuery = new StringBuffer();
           sqlQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+tTable);
           sqlQuery.append(" WHERE "+pTable+"."+Product.getStaticInstance(Product.class).getIDColumnName()+" = "+tTable+"."+Timeframe.getStaticInstance(Timeframe.class).getIDColumnName());
+          sqlQuery.append(" AND ");
+          sqlQuery.append(pTable+"."+Product.getColumnNameIsValid()+" = 'Y'");
           if (supplierId != -1)
           sqlQuery.append(" AND "+pTable+"."+Product.getColumnNameSupplierId()+" = "+supplierId);
           sqlQuery.append(" ORDER by "+Product.getColumnNameProductName());
@@ -315,6 +317,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
               timeframeSQL.append(Timeframe.getTimeframeFromColumnName()+" <= '"+stamp.toSQLDateString()+"'");
               timeframeSQL.append(" AND ");
               timeframeSQL.append(Timeframe.getTimeframeToColumnName()+" >= '"+stamp.toSQLDateString()+"'");
+              timeframeSQL.append(" AND ");
+              timeframeSQL.append(Ptable+"."+Product.getColumnNameIsValid()+" = 'Y'");
               timeframeSQL.append(" ORDER BY "+Ttable+"."+Timeframe.getTimeframeFromColumnName()+","+Ptable+"."+Product.getColumnNameProductName());
 
             products = (Product[]) (new Product()).findAll(timeframeSQL.toString());
@@ -713,32 +717,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return prices;
   }
 
-  public int BookBySupplier(int serviceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, String postalCode) throws SQLException {
-    return Book(serviceId, hotelPickupPlaceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode);
-  }
-
-  public int Book(int serviceId, int hotelPickupPlaceId, String country, String name, String address, String city, String telephoneNumber, String email, idegaTimestamp date, int totalCount, int bookingType, String postalCode) throws SQLException {
-    Booking booking = new Booking();
-      booking.setServiceID(serviceId);
-      booking.setAddress(address);
-      booking.setBookingDate(date.getTimestamp());
-      booking.setBookingTypeID(bookingType);
-      booking.setCity(city);
-      booking.setCountry(country);
-      booking.setDateOfBooking(idegaTimestamp.getTimestampRightNow());
-      booking.setEmail(email);
-      if (hotelPickupPlaceId != -1) {
-        booking.setHotelPickupPlaceID(hotelPickupPlaceId);
-      }
-      booking.setName(name);
-      booking.setPostalCode(postalCode);
-      booking.setTelephoneNumber(telephoneNumber);
-//      booking.setProductPriceId(productPriceId);
-      booking.setTotalCount(totalCount);
-    booking.insert();
-
-    return booking.getID();
-  }
 
 
   public Reseller[] getResellers(int serviceId, idegaTimestamp stamp) {
@@ -766,147 +744,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
     return returner;
 
-  }
-  public int getNumberOfAssignedSeats(int serviceId, idegaTimestamp stamp) {
-    return getNumberOfAssignedSeats(serviceId, -1, stamp);
-  }
-
-  public int getNumberOfAssignedSeats(int serviceId,int resellerId, idegaTimestamp stamp) {
-    int returner = 0;
-    try {
-        String[] many = {};
-          StringBuffer sql = new StringBuffer();
-            sql.append("Select sum("+Contract.getColumnNameAlotment()+") from "+Contract.getContractTableName());
-            sql.append(" where ");
-            sql.append(Contract.getColumnNameServiceId()+"="+serviceId);
-            sql.append(" and ");
-            sql.append(Contract.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
-            sql.append(" and ");
-            sql.append(Contract.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
-            if (resellerId != -1) {
-              sql.append(" and ");
-              sql.append(Contract.getColumnNameResellerId()+"="+resellerId);
-            }
-
-        many = SimpleQuerier.executeStringQuery(sql.toString());
-
-        if (many != null) {
-          if (many[0] != null)
-          returner += Integer.parseInt(many[0]);
-        }
-    }catch (Exception e) {
-        e.printStackTrace(System.err);
-    }
-
-    return returner;
-  }
-
-  public int getNumberOfBookings(int resellerId, int serviceId, idegaTimestamp stamp) {
-    int returner = 0;
-    try {
-        Booking booking = (Booking) (Booking.getStaticInstance(Booking.class));
-        Reseller reseller = (Reseller) (Reseller.getStaticInstance(Reseller.class));
-
-        String[] many = {};
-          StringBuffer sql = new StringBuffer();
-            sql.append("Select sum(b."+Booking.getTotalCountColumnName()+") from "+Booking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(Booking.class,Reseller.class)+" br");
-            sql.append(" where ");
-            sql.append(" br."+reseller.getIDColumnName()+" = "+resellerId);
-            sql.append(" and ");
-            sql.append(" b."+booking.getIDColumnName()+" = br."+booking.getIDColumnName());
-            sql.append(" and ");
-            sql.append(" b."+Booking.getIsValidColumnName()+"='Y'");
-            sql.append(" and ");
-            sql.append(" b."+Booking.getServiceIDColumnName()+"="+serviceId);
-            sql.append(" and ");
-            sql.append(" b."+Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
-        many = SimpleQuerier.executeStringQuery(sql.toString());
-
-        if (many != null) {
-          if (many[0] != null)
-            returner = Integer.parseInt(many[0]);
-        }
-
-
-    }catch (Exception e) {
-        e.printStackTrace(System.err);
-    }
-
-    return returner;
-  }
-
-  public int getNumberOfBookings(int serviceId, idegaTimestamp stamp){
-      return getNumberOfBookings(serviceId, stamp, null);
-  }
-
-  public int getNumberOfBookings(int serviceId, idegaTimestamp stamp, int bookingType){
-      return getNumberOfBookings(serviceId, stamp, null, bookingType);
-  }
-
-  public int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp){
-      return getNumberOfBookings(serviceId, fromStamp, toStamp, -1);
-  }
-
-  public int getNumberOfBookings(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp, int bookingType){
-    int returner = 0;
-    try {
-        String[] many = {};
-          StringBuffer sql = new StringBuffer();
-            sql.append("Select "+Booking.getTotalCountColumnName()+" from "+Booking.getBookingTableName());
-            sql.append(" where ");
-            sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
-            sql.append(" and ");
-            sql.append(Booking.getIsValidColumnName()+" = 'Y'");
-            if ( (fromStamp != null) && (toStamp == null) ) {
-              sql.append(" and ");
-              sql.append(Booking.getBookingDateColumnName()+" = '"+fromStamp.toSQLDateString()+"'");
-            }else if ( (fromStamp != null) && (toStamp != null)) {
-              sql.append(" and (");
-              sql.append(Booking.getBookingDateColumnName()+" >= '"+fromStamp.toSQLDateString()+"'");
-              sql.append(" and ");
-              sql.append(Booking.getBookingDateColumnName()+" <= '"+toStamp.toSQLDateString()+"')");
-            }
-            if (bookingType != -1) {
-              sql.append(" and ");
-              sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingType);
-            }
-        many = SimpleQuerier.executeStringQuery(sql.toString());
-
-        for (int i = 0; i < many.length; i++) {
-            returner += Integer.parseInt(many[i]);
-        }
-
-
-    }catch (Exception e) {
-        e.printStackTrace(System.err);
-    }
-
-    return returner;
-  }
-
-  public static int getNumberOfUnansweredInqueries(int productId, idegaTimestamp stamp) {
-    int returner = 0;
-    try {
-      Inquery inq = (Inquery) Inquery.getStaticInstance(Inquery.class);
-
-      StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT count("+inq.getIDColumnName()+") FROM "+Inquery.getInqueryTableName());
-        buffer.append(" WHERE ");
-        buffer.append(inq.getAnsweredColumnName() +" = 'N'");
-        buffer.append(" AND ");
-        buffer.append(inq.getServiceIDColumnName()+" = "+productId);
-        buffer.append(" AND ");
-        buffer.append(inq.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
-      String[] bufferReturn = SimpleQuerier.executeStringQuery(buffer.toString());
-      if (bufferReturn != null)
-        if (bufferReturn.length > 0) {
-          returner = Integer.parseInt(bufferReturn[0]);
-        }
-
-    }catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
-    return returner;
   }
 
   public int getNumberOfTours(int serviceId, idegaTimestamp fromStamp, idegaTimestamp toStamp) {
@@ -953,45 +790,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
-  public Booking[] getBookings(int serviceId, idegaTimestamp stamp) {
-    return getBookings(serviceId,stamp,new int[]{});
-  }
-
-  public Booking[] getBookings(int serviceId, idegaTimestamp stamp, int bookingTypeId) {
-    return getBookings(serviceId,stamp,new int[]{bookingTypeId});
-  }
-
-  public Booking[] getBookings(int serviceId, idegaTimestamp stamp, int[] bookingTypeIds) {
-    Booking[] returner = {};
-    StringBuffer sql = new StringBuffer();
-    try {
-        sql.append("Select * from "+Booking.getBookingTableName());
-        sql.append(" where ");
-        sql.append(Booking.getServiceIDColumnName()+"="+serviceId);
-        sql.append(" and ");
-        sql.append(Booking.getIsValidColumnName()+" = 'Y'");
-        sql.append(" and ");
-        sql.append(Booking.getBookingDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
-        if (bookingTypeIds != null) {
-          if (bookingTypeIds.length > 0 ) {
-            sql.append(" and (");
-            for (int i = 0; i < bookingTypeIds.length; i++) {
-              if (bookingTypeIds[i] != -1) {
-                if (i > 0) sql.append(" OR ");
-                sql.append(Booking.getBookingTypeIDColumnName()+" = "+bookingTypeIds[i]);
-              }
-            }
-            sql.append(") ");
-          }
-        }
-
-        returner = (Booking[]) (new Booking()).findAll(sql.toString());
-    }catch (Exception e) {
-        e.printStackTrace(System.err);
-    }
-
-    return returner;
-  }
 
   public Product[] getProductsForReseller(int resellerId) throws SQLException {
     Product[] products = {};
@@ -1025,29 +823,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     //(Product[]) Product.getStaticInstance(Product.class).findAllByColumnOrdered(Service.getIsValidColumnName(),"Y",Supplier.getStaticInstance(Supplier.class).getIDColumnName() , Integer.toString(supplierId), Product.getColumnNameProductName());
   }
 
-  public float getBookingPrice(Booking booking) {
-      float total = 0;
-
-      try {
-
-        BookingEntry[] entries = booking.getBookingEntries();
-
-        float price;
-        ProductPrice pPrice;
-
-        for (int i = 0; i < entries.length; i++) {
-          pPrice = entries[i].getProductPrice();
-          price = this.getPrice(booking.getServiceID(), pPrice.getPriceCategoryID(), pPrice.getCurrencyId(), booking.getDateOfBooking());
-          total += price * entries[i].getCount();
-        }
-
-      }catch (SQLException sql) {
-        sql.printStackTrace(System.err);
-      }
-
-
-      return total;
-  }
 
   public Reseller[] getResellers(int supplierId) {
     return getResellers(supplierId,"");
@@ -1083,59 +858,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return resellers;
   }
 
-  public static Inquery[] getInqueries(int serviceId, idegaTimestamp stamp, boolean unansweredOnly, String orderBy) {
-    Inquery[] inqueries = {};
-    if (orderBy == null) orderBy = "";
-    try {
-      StringBuffer sql = new StringBuffer();
-        sql.append("Select * from "+Inquery.getInqueryTableName());
-        sql.append(" WHERE ");
-        sql.append(Inquery.getInqueryDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
-        sql.append(" AND ");
-        sql.append(Inquery.getServiceIDColumnName()+" = "+serviceId);
-        if (unansweredOnly) {
-          sql.append(" AND ");
-          sql.append(Inquery.getAnsweredColumnName()+" = 'N'");
-        }
-        if (!orderBy.equals("")) {
-          sql.append(" ORDER BY "+orderBy);
-        }
 
-      inqueries = (Inquery[]) (Inquery.getStaticInstance(Inquery.class)).findAll(sql.toString());
-    }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
-    }
-
-    return inqueries;
-  }
-
-  public static int getInqueredSeats(int serviceId, idegaTimestamp stamp, boolean unansweredOnly) {
-    int returner = 0;
-    try {
-      StringBuffer sql = new StringBuffer();
-        sql.append("Select sum("+Inquery.getNumberOfSeatsColumnName()+") from "+Inquery.getInqueryTableName());
-        sql.append(" WHERE ");
-        sql.append(Inquery.getInqueryDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
-        sql.append(" AND ");
-        sql.append(Inquery.getServiceIDColumnName()+" = "+serviceId);
-        if (unansweredOnly) {
-          sql.append(" AND ");
-          sql.append(Inquery.getAnsweredColumnName()+" = 'N'");
-        }
-
-        String[] result = SimpleQuerier.executeStringQuery(sql.toString());
-        if (result != null) {
-          if (result.length > 0) {
-            if (result[0] != null)
-            returner = Integer.parseInt(result[0]);
-          }
-        }
-    }catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
-
-    return returner;
-  }
 
 
 }

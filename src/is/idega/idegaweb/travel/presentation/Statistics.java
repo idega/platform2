@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import is.idega.travel.business.TravelStockroomBusiness;
 import is.idega.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
+import is.idega.travel.business.Booker;
 
 
 /**
@@ -305,10 +306,10 @@ public class Statistics extends TravelManager {
       Text seatNrText = (Text) smallText.clone();
       Text usageNrText = (Text) smallText.clone();
 
-      int iNetBooking = tsb.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
-      int iInqBooking = tsb.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
-      int iSupBooking = tsb.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
-      int i3rdBooking = tsb.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING);
+      int iNetBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
+      int iInqBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
+      int iSupBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING);
+      int i3rdBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING);
 
 
       int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;

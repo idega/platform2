@@ -13,6 +13,7 @@ import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.sql.SQLException;
 
+import is.idega.travel.business.Booker;
 import is.idega.travel.business.TravelStockroomBusiness;
 import is.idega.travel.data.*;
 /**
@@ -311,7 +312,7 @@ public class DailyReport extends TravelManager {
       int[] bookingTypeIds = {is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING , is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING };
 
 
-      is.idega.travel.data.Booking[] bookings = tsb.getBookings(product.getID(),stamp,bookingTypeIds);
+      is.idega.travel.data.Booking[] bookings = Booker.getBookings(product.getID(),stamp,bookingTypeIds);
       for (int i = 0; i < bookings.length; i++) {
           row++;
           attendance = 0;
@@ -320,7 +321,7 @@ public class DailyReport extends TravelManager {
 
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
-          amount = tsb.getBookingPrice(bookings[i]);
+          amount = Booker.getBookingPrice(bookings[i]);
 
           totalBookings += ibookings;
           totalAttendance += attendance;
@@ -369,12 +370,12 @@ public class DailyReport extends TravelManager {
           addTable.setWidth(4,fourWidth);
           addTable.setWidth(5,fiveWidth);
 
-      bookings = tsb.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
+      bookings = Booker.getBookings(product.getID(),stamp,is.idega.travel.data.Booking.BOOKING_TYPE_ID_ADDITIONAL_BOOKING);
       for (int i = 0; i < bookings.length; i++) {
           ++addRow;
           ibookings = bookings[i].getTotalCount();
           attendance = bookings[i].getAttendance();
-          amount = tsb.getBookingPrice(bookings[i]);
+          amount = Booker.getBookingPrice(bookings[i]);
 
           totalBookings += ibookings;
           totalAttendance += attendance;

@@ -15,6 +15,8 @@ import is.idega.travel.business.TravelStockroomBusiness;
 import com.idega.util.text.*;
 import java.sql.SQLException;
 
+import is.idega.travel.business.Booker;
+import is.idega.travel.business.Inquirer;
 import is.idega.travel.data.*;
 import javax.swing.*;
 /**
@@ -328,7 +330,7 @@ public class Booking extends TravelManager {
       if (isDayVisible) {
           table.mergeCells(1,row,5,row);
           if (supplier != null) {
-            Inquery[] inqueries = tsb.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(modinfo, inqueries),1,row);
@@ -510,7 +512,7 @@ public class Booking extends TravelManager {
         }
         else if (supplier != null) {
           for (int i = 1; i <= lengthOfMonth; i++) {
-            if (tsb.getNumberOfUnansweredInqueries(productId, temp) > 0) {
+            if (Inquirer.getNumberOfUnansweredInqueries(productId, temp) > 0) {
               sm.setDayColor(temp, colorForInquery);
             }else if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
@@ -669,7 +671,7 @@ public class Booking extends TravelManager {
               countTextBold.setText(Integer.toString(iCount));
             }
 
-            iBooked = tsb.getNumberOfBookings(resellerId, service.getID(), this.stamp);
+            iBooked = Booker.getNumberOfBookings(resellerId, service.getID(), this.stamp);
             bookedTextBold.setText(Integer.toString(iBooked));
 
             iInquery = 0;
@@ -686,8 +688,8 @@ public class Booking extends TravelManager {
         else {
           if (TravelStockroomBusiness.getIfDay(modinfo, this.product, this.stamp)) {
             iCount = tour.getTotalSeats();
-            iBooked = tsb.getNumberOfBookings(service.getID(), this.stamp);
-            iInquery = tsb.getInqueredSeats(service.getID() ,stamp, true);
+            iBooked = Booker.getNumberOfBookings(service.getID(), this.stamp);
+            iInquery = Inquirer.getInqueredSeats(service.getID() ,stamp, true);
 
             if (supplier != null) {
               if (iCount >0) {
@@ -1112,17 +1114,17 @@ public class Booking extends TravelManager {
         }
 
         if (supplier != null) {
-            bookingId = tsb.BookBySupplier(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
+            bookingId = Booker.BookBySupplier(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, areaCode);
             displayFormInternal = true;
         }else if (reseller != null) {
             if (reseller.getReferenceNumber().equals(referenceNumber)) {
-              bookingId = tsb.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode);
+              bookingId = Booker.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode);
               reseller.addTo(is.idega.travel.data.Booking.class, bookingId);
               displayFormInternal= true;
             }
         }else if ((supplier == null) && (reseller == null) ) {
             // if (Median.isCCValid(ccNumber,ccMonth, ccYear));
-            bookingId = tsb.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
+            bookingId = Booker.Book(service.getID(), iHotelId, country, surname+" "+lastname, address, city, phone, email, stamp, iMany, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode);
         }
 
         returner = bookingId;
@@ -1177,21 +1179,8 @@ public class Booking extends TravelManager {
           booking.setIsValid(false);
           booking.update();
 
-        Inquery inq = new Inquery();
-          inq.setAnswered(false);
-          inq.setEmail(email);
-          inq.setInqueryDate(stamp.getTimestamp());
-          inq.setInquery("TEMP - IS available here ???");
-          inq.setInqueryPostDate(idegaTimestamp.getTimestampRightNow());
-          inq.setName(surname+" "+lastname);
-          inq.setServiceID(product.getID());
-          inq.setNumberOfSeats(Integer.parseInt(numberOfSeats));
-          inq.setBookingId(bookingId);
-        inq.insert();
 
-        if (this.reseller != null) {
-          inq.addTo(reseller);
-        }
+        Inquirer.sendInquery(surname+" "+lastname, email, stamp, product.getID() , Integer.parseInt(numberOfSeats), bookingId, reseller);
 
     }catch (SQLException sql) {
       sql.printStackTrace();
