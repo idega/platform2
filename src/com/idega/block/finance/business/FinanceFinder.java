@@ -212,6 +212,19 @@ public class FinanceFinder  {
       return null;
   }
 
+  public static List listOfTariffsByAttribute(String attribute){
+     try{
+      EntityFinder.debug = true;
+      List L =  EntityFinder.findAllByColumn(new Tariff(),Tariff.getColumnAttribute(),attribute);
+      EntityFinder.debug = false;
+      return L;
+      }
+      catch(SQLException e){
+
+      }
+      return null;
+  }
+
   public static List listOfTariffGroups(int iCategoryId){
      try{
        return EntityFinder.findAllByColumn(new TariffGroup(),TariffGroup.getColumnCategoryId(),iCategoryId);
