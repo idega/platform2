@@ -38,6 +38,13 @@ public ChildCareQueue findQueueByChildAndChoiceNumber(int p0,int p1)throws javax
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
+//Malin
+public ChildCareQueue findQueueByChildAndChoiceNumberAndProviderID(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ChildCareQueueBMPBean)entity).ejbFindQueueByChildAndChoiceNumberAndProviderID(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
 
 public ChildCareQueue findQueueByChildChoiceNumberAndQueueType(int p0,int p1,int p2)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
