@@ -49,6 +49,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -64,11 +65,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/03/04 14:45:29 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/08 12:39:10 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -123,6 +124,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 							sendEmails(schoolCategory, school, records, emailReceivers);
 							filesSentByEmail.add (school.getName ());
 						}
+						setStatusToHistory (records);
 					}
 				}
 				document.close();
@@ -136,6 +138,19 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 			e.printStackTrace();
 		}	
 		return result;
+	}
+
+	private static void setStatusToHistory (final PaymentRecord[] records) {
+		for (int i = 0; records.length > i; i++) {
+			final PaymentRecord record = records [i];
+			record.setStatus (ConstantStatus.HISTORY);
+			record.store ();
+			final PaymentHeader header = record.getPaymentHeader ();
+			if (null != header) {
+				header.setStatus (ConstantStatus.HISTORY);
+				header.store ();
+			}
+		}
 	}
 
 	private Document createPdfDocument() {
@@ -284,7 +299,8 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	private PaymentRecord[] getLockedPaymentRecords(SchoolCategory schoolCategory, School school) throws FinderException, IDOLookupException {
 		Collection paymentHeaders
 				= getPaymentHeaderHome ().findBySchoolAndSchoolCategoryPKAndStatus
-				(school.getPrimaryKey(), schoolCategory.getPrimaryKey(), "L");
+				(school.getPrimaryKey(), schoolCategory.getPrimaryKey(),
+				 ConstantStatus.LOCKED + "");
 		PaymentRecord [] records = new PaymentRecord [0];
 		if (paymentHeaders != null && !paymentHeaders.isEmpty()) {
 			final Collection recordCollection
