@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.ejb.FinderException;
@@ -104,7 +105,11 @@ public class BatchRunQueue {
 		}
 	}
 	
-	private static class BatchRunObject{
+	public static Iterator iterator(){
+		return queue.iterator();
+	}
+	
+	public static class BatchRunObject{
 		Date month;
 		Date readDate;
 		String schoolCategory;
