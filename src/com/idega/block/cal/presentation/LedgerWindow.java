@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
 import com.idega.block.cal.business.LedgerVariationsHandler;
@@ -52,7 +51,6 @@ import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
-import com.idega.user.presentation.UserPropertyWindow;
 import com.idega.util.IWTimestamp;
 
 /**
