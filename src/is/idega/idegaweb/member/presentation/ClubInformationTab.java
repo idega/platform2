@@ -10,6 +10,7 @@ import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
 
 import java.rmi.RemoteException;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
 import javax.ejb.FinderException;
@@ -22,6 +23,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.presentation.UserGroupTab;
@@ -36,22 +38,26 @@ import com.idega.util.IWTimestamp;
 public class ClubInformationTab extends UserGroupTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
+	private static final String TAB_NAME = "cit_name";
+	private static final String DEFAULT_TAB_NAME = "Club Information";
+
 	private TextInput _numberField;
 	private TextInput _ssnField;
 	private TextInput _abbreviationField;
 	private TextInput _shortNameField;
 	private TextInput _nameField;
 	private DateInput _foundedField;
-	private TextInput _typeField;
+//	private TextInput _typeField;
+	private DropdownMenu _typeField;
 	private CheckBox _memberUMFIField;
-	private TextInput _makeField;
+//	private TextInput _makeField;
+	private DropdownMenu _makeField;
 	private TextInput _connectionToSpecialField;
-	//	private CheckBox _belongsToUMFIField;
 	private TextInput _regionalUnionField;
-	private TextInput _statusField;
+//	private TextInput _statusField;
+	private DropdownMenu _statusField;
 	private CheckBox _premierLeagueField;
 	private CheckBox _inOperationField;
-	//	private Image _clubLogoField;
 	private CheckBox _usingMemberSystemField;
 
 	private Text _numberText;
@@ -64,12 +70,10 @@ public class ClubInformationTab extends UserGroupTab {
 	private Text _memberUMFIText;
 	private Text _makeText;
 	private Text _connectionToSpecialText;
-	//	private Text _belongsToUMFIText;
 	private Text _regionalUnionText;
 	private Text _statusText;
 	private Text _premierLeagueText;
 	private Text _inOperationText;
-	//	private Text _clubLogoText;
 	private Text _usingMemberSystemText;
 
 	private String _numberFieldName;
@@ -82,16 +86,20 @@ public class ClubInformationTab extends UserGroupTab {
 	private String _memberUMFIFieldName;
 	private String _makeFieldName;
 	private String _connectionToSpecialFieldName;
-	//	private String _belongsToUMFIFieldName;
 	private String _regionalUnionFieldName;
 	private String _statusFieldName;
 	private String _premierLeagueFieldName;
 	private String _inOperationFieldName;
-	//	private String _clubLogoFieldName;
 	private String _usingMemberSystemFieldName;
 
 	public ClubInformationTab() {
-		setName("ClubInformation");
+		super();
+		IWContext iwc = IWContext.getInstance();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+
+		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
+
+		//		setName(DEFAULT_TAB_NAME);
 	}
 
 	public ClubInformationTab(Group group) {
@@ -107,23 +115,21 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-		_numberFieldName = "number";
-		_ssnFieldName = "ssn";
-		_abrvFieldName = "abrv";
-		_shortNameFieldName = "short";
-		_nameFieldName = "name";
-		_foundedFieldName = "founded";
-		_typeFieldName = "type";
-		_memberUMFIFieldName = "memberOfUMFI";
-		_makeFieldName = "make";
-		_connectionToSpecialFieldName = "special";
-		//		_belongsToUMFIFieldName = "belongs";
-		_regionalUnionFieldName = "regional";
-		_statusFieldName = "status";
-		_premierLeagueFieldName = "premier";
-		_inOperationFieldName = "operation";
-		//		_clubLogoFieldName = "logo";
-		_usingMemberSystemFieldName = "usingSystem";
+		_numberFieldName = "cit_number";
+		_ssnFieldName = "cit_ssn";
+		_abrvFieldName = "cit_abrv";
+		_shortNameFieldName = "cit_short";
+		_nameFieldName = "cit_name";
+		_foundedFieldName = "cit_founded";
+		_typeFieldName = "cit_type";
+		_memberUMFIFieldName = "cit_memberOfUMFI";
+		_makeFieldName = "cit_make";
+		_connectionToSpecialFieldName = "cit_special";
+		_regionalUnionFieldName = "cit_regional";
+		_statusFieldName = "cit_status";
+		_premierLeagueFieldName = "cit_premier";
+		_inOperationFieldName = "cit_operation";
+		_usingMemberSystemFieldName = "cit_usingSystem";
 	}
 
 	/* (non-Javadoc)
@@ -141,12 +147,10 @@ public class ClubInformationTab extends UserGroupTab {
 		fieldValues.put(_memberUMFIFieldName, new Boolean(false));
 		fieldValues.put(_makeFieldName, "");
 		fieldValues.put(_connectionToSpecialFieldName, "");
-		//		fieldValues.put(_belongsToUMFIFieldName, new Boolean(false));
 		fieldValues.put(_regionalUnionFieldName, "");
 		fieldValues.put(_statusFieldName, "");
 		fieldValues.put(_premierLeagueFieldName, new Boolean(false));
 		fieldValues.put(_inOperationFieldName, new Boolean(false));
-		//		fieldValues.put(_clubLogoFieldName, new Integer(-1));
 		fieldValues.put(_usingMemberSystemFieldName, new Boolean(false));
 	}
 
@@ -154,22 +158,24 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#updateFieldsDisplayStatus()
 	 */
 	public void updateFieldsDisplayStatus() {
+		lineUpFields();
 		_numberField.setContent((String) fieldValues.get(_numberFieldName));
 		_ssnField.setContent((String) fieldValues.get(_ssnFieldName));
 		_abbreviationField.setContent((String) fieldValues.get(_abrvFieldName));
 		_shortNameField.setContent((String) fieldValues.get(_shortNameFieldName));
 		_nameField.setContent((String) fieldValues.get(_nameFieldName));
 		_foundedField.setContent((String) fieldValues.get(_foundedFieldName));
-		_typeField.setContent((String) fieldValues.get(_typeFieldName));
+//		_typeField.setContent((String) fieldValues.get(_typeFieldName));
+		_typeField.setSelectedElement((String) fieldValues.get(_typeFieldName));
 		_memberUMFIField.setChecked(((Boolean) fieldValues.get(_memberUMFIFieldName)).booleanValue());
-		_makeField.setContent((String) fieldValues.get(_makeFieldName));
+//		_makeField.setContent((String) fieldValues.get(_makeFieldName));
+		_makeField.setSelectedElement((String) fieldValues.get(_makeFieldName));
 		_connectionToSpecialField.setContent((String) fieldValues.get(_connectionToSpecialFieldName));
-		//		_belongsToUMFIField.setChecked(((Boolean) fieldValues.get(_belongsToUMFIFieldName)).booleanValue());
 		_regionalUnionField.setContent((String) fieldValues.get(_regionalUnionFieldName));
-		_statusField.setContent((String) fieldValues.get(_statusFieldName));
+//		_statusField.setContent((String) fieldValues.get(_statusFieldName));
+		_statusField.setSelectedElement((String) fieldValues.get(_statusFieldName));
 		_premierLeagueField.setChecked(((Boolean) fieldValues.get(_premierLeagueFieldName)).booleanValue());
 		_inOperationField.setChecked(((Boolean) fieldValues.get(_inOperationFieldName)).booleanValue());
-		//		_clubLogoField.setImageID(-1);
 		_usingMemberSystemField.setChecked(((Boolean) fieldValues.get(_usingMemberSystemFieldName)).booleanValue());
 	}
 
@@ -179,31 +185,53 @@ public class ClubInformationTab extends UserGroupTab {
 	public void initializeFields() {
 		_numberField = new TextInput(_numberFieldName);
 		_ssnField = new TextInput(_ssnFieldName);
-//		_ssnField.setAsIcelandicSSNumber("Vartöluprófun stemmir ekki");
 		_abbreviationField = new TextInput(_abrvFieldName);
 		_shortNameField = new TextInput(_shortNameFieldName);
 		_nameField = new TextInput(_nameFieldName);
 		_foundedField = new DateInput(_foundedFieldName);
-		_typeField = new TextInput(_typeFieldName);
+		_foundedField.setYearRange(1900, GregorianCalendar.getInstance().get(GregorianCalendar.YEAR));
+//		_typeField = new TextInput(_typeFieldName);
+		_typeField = new DropdownMenu(_typeFieldName);
 		_memberUMFIField = new CheckBox(_memberUMFIFieldName);
-		_makeField = new TextInput(_makeFieldName);
+//		_makeField = new TextInput(_makeFieldName);
+		_makeField = new DropdownMenu(_makeFieldName);
 		_connectionToSpecialField = new TextInput(_connectionToSpecialFieldName);
-		//		_belongsToUMFIField = new CheckBox(_belongsToUMFIFieldName);
 		_regionalUnionField = new TextInput(_regionalUnionFieldName);
-		_statusField = new TextInput(_statusFieldName);
+//		_statusField = new TextInput(_statusFieldName);
+		_statusField = new DropdownMenu(_statusFieldName);
 		_premierLeagueField = new CheckBox(_premierLeagueFieldName);
 		_inOperationField = new CheckBox(_inOperationFieldName);
-		//		_clubLogoField = new Image(_clubLogoFieldName);
 		_usingMemberSystemField = new CheckBox(_usingMemberSystemFieldName);
+		
+		/**
+		 * @todo Setja í töflu og sækja þaðan.
+		 */
+		_typeField.addMenuElement("1","Innlent félag");
+		_typeField.addMenuElement("2","Sérsamband");
+		_typeField.addMenuElement("3","Héraðssamband/Íþróttabandalag");
+		_typeField.addMenuElement("4","Erlent félag");
+		
+		_makeField.addMenuElement("0","");
+		_makeField.addMenuElement("1","Fjölgreinafélag");
+		_makeField.addMenuElement("2","Sérgreinafélag");
+		_makeField.addMenuElement("3","Félag án iðkenda");
+		_makeField.addMenuElement("4","Ungmennafélag");
+		_makeField.addMenuElement("5","Óvirkt");
+		
+		_statusField.addMenuElement("0","");
+		_statusField.addMenuElement("1","Virkt");
+		_statusField.addMenuElement("2","Óvirkt");
+		_statusField.addMenuElement("3","Keppnisbann");
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.presentation.UserGroupTab#initializeTexts()
 	 */
 	public void initializeTexts() {
-			IWContext iwc = //getEventIWContext();
-	IWContext.getInstance();
+		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+
+		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
 
 		_numberText = new Text(iwrb.getLocalizedString(_numberFieldName, "Number") + ":");
 		_ssnText = new Text(iwrb.getLocalizedString(_ssnFieldName, "SSN") + ":");
@@ -215,12 +243,10 @@ public class ClubInformationTab extends UserGroupTab {
 		_memberUMFIText = new Text(iwrb.getLocalizedString(_memberUMFIFieldName, "UMFI membership") + ":");
 		_makeText = new Text(iwrb.getLocalizedString(_makeFieldName, "Make") + ":");
 		_connectionToSpecialText = new Text(iwrb.getLocalizedString(_connectionToSpecialFieldName, "Connection to special") + ":");
-		//		_belongsToUMFIText = new Text(iwrb.getLocalizedString(_belongsToUMFIFieldName,"Belongs to") + ":");
 		_regionalUnionText = new Text(iwrb.getLocalizedString(_regionalUnionFieldName, "Regional union") + ":");
 		_statusText = new Text(iwrb.getLocalizedString(_statusFieldName, "Status") + ":");
 		_premierLeagueText = new Text(iwrb.getLocalizedString(_premierLeagueFieldName, "Premier league") + ":");
 		_inOperationText = new Text(iwrb.getLocalizedString(_inOperationFieldName, "In operation") + ":");
-		//		_clubLogoText = new Text("Merki:");
 		_usingMemberSystemText = new Text(iwrb.getLocalizedString(_usingMemberSystemFieldName, "In member system") + ":");
 	}
 
@@ -228,6 +254,8 @@ public class ClubInformationTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
+		empty();
+		
 		Table t = new Table(2, 16);
 		t.add(_numberText, 1, 1);
 		t.add(_numberField, 2, 1);
@@ -249,8 +277,6 @@ public class ClubInformationTab extends UserGroupTab {
 		t.add(_makeField, 2, 9);
 		t.add(_connectionToSpecialText, 1, 10);
 		t.add(_connectionToSpecialField, 2, 10);
-		//		t.add(_belongsToUMFIText,1,11);
-		//		t.add(_belongsToUMFIField,2,11);
 		t.add(_regionalUnionText, 1, 12);
 		t.add(_regionalUnionField, 2, 12);
 		t.add(_statusText, 1, 13);
@@ -259,8 +285,6 @@ public class ClubInformationTab extends UserGroupTab {
 		t.add(_premierLeagueField, 2, 14);
 		t.add(_inOperationText, 1, 15);
 		t.add(_inOperationField, 2, 15);
-		//		t.add(_clubLogoText,1,16);
-		//		t.add(_clubLogoField,2,16);
 		t.add(_usingMemberSystemText, 1, 16);
 		t.add(_usingMemberSystemField, 2, 16);
 
@@ -282,7 +306,6 @@ public class ClubInformationTab extends UserGroupTab {
 			String member = iwc.getParameter(_memberUMFIFieldName);
 			String make = iwc.getParameter(_makeFieldName);
 			String connection = iwc.getParameter(_connectionToSpecialFieldName);
-			//			String belongs = iwc.getParameter(_belongsToUMFIFieldName);
 			String regional = iwc.getParameter(_regionalUnionFieldName);
 			String status = iwc.getParameter(_statusFieldName);
 			String premier = iwc.getParameter(_premierLeagueFieldName);
@@ -364,7 +387,6 @@ public class ClubInformationTab extends UserGroupTab {
 			Boolean memberUMFI = (Boolean) fieldValues.get(_memberUMFIFieldName);
 			String make = (String) fieldValues.get(_makeFieldName);
 			String connection = (String) fieldValues.get(_connectionToSpecialFieldName);
-			//			fieldValues.put(_belongsToUMFIFieldName, new Boolean(belongs != null));
 			String regional = (String) fieldValues.get(_regionalUnionFieldName);
 			String status = (String) fieldValues.get(_statusFieldName);
 			Boolean premier = (Boolean) fieldValues.get(_premierLeagueFieldName);
@@ -447,7 +469,6 @@ public class ClubInformationTab extends UserGroupTab {
 				fieldValues.put(_makeFieldName, make);
 			if (connection != null)
 				fieldValues.put(_connectionToSpecialFieldName, connection);
-			//			fieldValues.put(_belongsToUMFIFieldName, new Boolean(belongs != null));
 			if (regional != null)
 				fieldValues.put(_regionalUnionFieldName, regional);
 			if (status != null)
@@ -455,7 +476,7 @@ public class ClubInformationTab extends UserGroupTab {
 			fieldValues.put(_premierLeagueFieldName, new Boolean(premier != null));
 			fieldValues.put(_inOperationFieldName, new Boolean(inOperation != null));
 			fieldValues.put(_usingMemberSystemFieldName, new Boolean(using != null));
-			
+
 			updateFieldsDisplayStatus();
 		}
 		catch (RemoteException e) {

@@ -1,12 +1,14 @@
 /*
- * Created on Mar 11, 2003
+ * $Id$
  *
- * To change this generated comment go to 
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * Copyright (C) 2000-2003 Idega Software. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega Software.
+ * Use is subject to license terms.
  */
 package is.idega.idegaweb.member.business.plugins;
 
-import is.idega.idegaweb.member.presentation.ClubDivisionTab;
+import is.idega.idegaweb.member.presentation.ClubDivisionHandlerTab;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -28,34 +30,30 @@ import com.idega.user.data.User;
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class DeildirPluginBusinessBean extends IBOServiceBean implements DeildirPluginBusiness, UserGroupPlugInBusiness {
+public class ClubDivisionHandlerPluginBusinessBean extends IBOServiceBean implements ClubDivisionHandlerPluginBusiness, UserGroupPlugInBusiness {
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
 	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
-		
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
 	public void afterUserCreate(User user) throws CreateException, RemoteException {
-
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
 	 */
 	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
-
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
 	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
-
 	}
 
 	/* (non-Javadoc)
@@ -91,9 +89,8 @@ public class DeildirPluginBusinessBean extends IBOServiceBean implements Deildir
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
 		List list = new ArrayList();
-		list.add(new ClubDivisionTab(group));
-		
-		return list;
+		list.add(new ClubDivisionHandlerTab(group));  
+		return list;  
 	}
 
 	/* (non-Javadoc)

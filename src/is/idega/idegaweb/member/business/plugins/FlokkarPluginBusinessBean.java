@@ -6,7 +6,7 @@
  */
 package is.idega.idegaweb.member.business.plugins;
 
-import is.idega.idegaweb.member.presentation.FlokkarTab;
+import is.idega.idegaweb.member.presentation.ClubPlayerTab;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public class FlokkarPluginBusinessBean extends IBOServiceBean implements Flokkar
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
 		List list = new ArrayList();
-		list.add(new FlokkarTab(group));
+		list.add(new ClubPlayerTab(group));
 		
 		return list;
 	}

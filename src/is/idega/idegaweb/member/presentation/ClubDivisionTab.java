@@ -1,4 +1,4 @@
-/*
+ /*
  * Created on Mar 11, 2003
  *
  * To change this generated comment go to 
@@ -33,9 +33,12 @@ import com.idega.util.IWTimestamp;
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class DeildirTab extends UserGroupTab {
+public class ClubDivisionTab extends UserGroupTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
-
+	
+	private static final String TAB_NAME = "cdiv_name";
+	private static final String DEFAULT_TAB_NAME = "Club Division";
+	
 	private TextInput _numberField;
 	private TextInput _ssnField;
 	private DateInput _foundedField;
@@ -48,11 +51,17 @@ public class DeildirTab extends UserGroupTab {
 	private String _ssnFieldName;
 	private String _foundedFieldName;
 
-	public DeildirTab() {
-		setName("Deildir");
+	public ClubDivisionTab() {
+		super();
+		IWContext iwc = IWContext.getInstance();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+
+		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
+		
+//		setName("Deildir");
 	}
 
-	public DeildirTab(Group group) {
+	public ClubDivisionTab(Group group) {
 		this();
 		setGroupId(((Integer) group.getPrimaryKey()).intValue());
 	}
@@ -65,9 +74,9 @@ public class DeildirTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-		_numberFieldName = "number";
-		_ssnFieldName = "ssn";
-		_foundedFieldName = "founded";
+		_numberFieldName = "cdiv_number";
+		_ssnFieldName = "cdiv_ssn";
+		_foundedFieldName = "cdiv_founded";
 	}
 
 	/* (non-Javadoc)
@@ -196,7 +205,7 @@ public class DeildirTab extends UserGroupTab {
 
 			String number = group.getMetaData("CLUBDIV_NUMBER");
 			String ssn = group.getMetaData("CLUBDIV_SSN");
-			String founded = group.getMetaData("CLUBINFO_FOUNDED");
+			String founded = group.getMetaData("CLUBDIV_FOUNDED");
 
 			if (number != null)
 				fieldValues.put(_numberFieldName, number);

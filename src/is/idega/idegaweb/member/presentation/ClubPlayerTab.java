@@ -32,32 +32,43 @@ import com.idega.util.IWTimestamp;
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class FlokkarTab extends UserGroupTab {
+public class ClubPlayerTab extends UserGroupTab {
 	private static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 
+	private static final String TAB_NAME = "cplay_name";
+	private static final String DEFAULT_TAB_NAME = "Club Player";
+
 	private TextInput _unionField;
-	private TextInput _flokkurField;
+	private TextInput _cplayField;
 	private TextInput _nameField;
 	private TextInput _competitionField;
 	private TextArea _coachesField;
 
 	private Text _unionText;
-	private Text _flokkurText;
+	private Text _cplayText;
 	private Text _nameText;
 	private Text _competitionText;
 	private Text _coachesText;
 
 	private String _unionFieldName;
-	private String _flokkurFieldName;
+	private String _cplayFieldName;
 	private String _nameFieldName;
 	private String _competitionFieldName;
 	private String _coachesFieldName;
 
-	public FlokkarTab() {
-		setName("Deildir");
+	public ClubPlayerTab() {
+		super();
+		IWContext iwc = IWContext.getInstance();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+
+		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
+
+		//		setName(DEFAULT_TAB_NAME);
+		
+//		setName("Flokkar/hópar - grunngögn");
 	}
 
-	public FlokkarTab(Group group) {
+	public ClubPlayerTab(Group group) {
 		this();
 		setGroupId(((Integer) group.getPrimaryKey()).intValue());
 	}
@@ -70,11 +81,11 @@ public class FlokkarTab extends UserGroupTab {
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFieldNames()
 	 */
 	public void initializeFieldNames() {
-		_unionFieldName = "union";
-		_flokkurFieldName = "flokkur";
-		_nameFieldName = "name";
-		_competitionFieldName = "comp";
-		_coachesFieldName = "coach";		
+		_unionFieldName = "cplay_union";
+		_cplayFieldName = "cplay_division";
+		_nameFieldName = "cplay_name";
+		_competitionFieldName = "cplay_comp";
+		_coachesFieldName = "cplay_coach";		
 	}
 
 	/* (non-Javadoc)
@@ -83,7 +94,7 @@ public class FlokkarTab extends UserGroupTab {
 	public void initializeFieldValues() {
 		fieldValues = new Hashtable();
 		fieldValues.put(_unionFieldName, "");
-		fieldValues.put(_flokkurFieldName, "");
+		fieldValues.put(_cplayFieldName, "");
 		fieldValues.put(_nameFieldName, "");
 		fieldValues.put(_competitionFieldName, "");
 		fieldValues.put(_coachesFieldName, "");
@@ -94,7 +105,7 @@ public class FlokkarTab extends UserGroupTab {
 	 */
 	public void updateFieldsDisplayStatus() {
 		_unionField.setContent((String) fieldValues.get(_unionFieldName));
-		_flokkurField.setContent((String) fieldValues.get(_flokkurFieldName));
+		_cplayField.setContent((String) fieldValues.get(_cplayFieldName));
 		_nameField.setContent((String) fieldValues.get(_nameFieldName));
 		_competitionField.setContent((String) fieldValues.get(_competitionFieldName));		
 		_coachesField.setContent((String) fieldValues.get(_coachesFieldName));		
@@ -106,7 +117,7 @@ public class FlokkarTab extends UserGroupTab {
 	public void initializeFields() {
 		_unionField = new TextInput(_unionFieldName);
 		_nameField = new TextInput(_nameFieldName);
-		_flokkurField = new TextInput(_flokkurFieldName);
+		_cplayField = new TextInput(_cplayFieldName);
 		_competitionField = new TextInput(_competitionFieldName);
 		_coachesField = new TextArea(_coachesFieldName);
 	}
@@ -120,7 +131,7 @@ public class FlokkarTab extends UserGroupTab {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 
 		_unionText = new Text(iwrb.getLocalizedString(_unionFieldName, "Sérsamband") + ":");
-		_flokkurText = new Text(iwrb.getLocalizedString(_flokkurFieldName, "Flokkur") + ":");
+		_cplayText = new Text(iwrb.getLocalizedString(_cplayFieldName, "Flokkur") + ":");
 		_nameText = new Text(iwrb.getLocalizedString(_nameFieldName, "Heiti flokks") + ":");
 		_competitionText = new Text(iwrb.getLocalizedString(_competitionFieldName, "Keppendamerking") + ":");
 		_coachesText = new Text(iwrb.getLocalizedString(_coachesFieldName, "Þjálfarar") + ":");
@@ -133,8 +144,8 @@ public class FlokkarTab extends UserGroupTab {
 		Table t = new Table(2, 5);
 		t.add(_unionText, 1, 1);
 		t.add(_unionField, 2, 1);
-		t.add(_flokkurText, 1, 2);
-		t.add(_flokkurField, 2, 2);
+		t.add(_cplayText, 1, 2);
+		t.add(_cplayField, 2, 2);
 		t.add(_nameText, 1, 3);
 		t.add(_nameField, 2, 3);
 		t.add(_competitionText, 1, 4);
@@ -151,7 +162,7 @@ public class FlokkarTab extends UserGroupTab {
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
 			String union = iwc.getParameter(_unionFieldName);
-			String flokkur = iwc.getParameter(_flokkurFieldName);
+			String flokkur = iwc.getParameter(_cplayFieldName);
 			String name = iwc.getParameter(_nameFieldName);
 			String comp = iwc.getParameter(_competitionFieldName);
 			String coach = iwc.getParameter(_coachesFieldName);
@@ -162,9 +173,9 @@ public class FlokkarTab extends UserGroupTab {
 			else
 				fieldValues.put(_unionFieldName, "");
 			if (flokkur != null)
-				fieldValues.put(_flokkurFieldName, flokkur);
+				fieldValues.put(_cplayFieldName, flokkur);
 			else
-				fieldValues.put(_flokkurFieldName, "");
+				fieldValues.put(_cplayFieldName, "");
 			if (name != null)
 				fieldValues.put(_nameFieldName, name);
 			else
@@ -196,16 +207,16 @@ public class FlokkarTab extends UserGroupTab {
 			ClubInformationPluginBusiness ageGenderPluginBusiness = getClubInformationPluginBusiness(iwc);
 
 			String union = (String) fieldValues.get(_unionFieldName);
-			String flokkur = (String) fieldValues.get(_flokkurFieldName);
+			String flokkur = (String) fieldValues.get(_cplayFieldName);
 			String name = (String) fieldValues.get(_nameFieldName);
 			String comp = (String) fieldValues.get(_competitionFieldName);
 			String coach = (String) fieldValues.get(_coachesFieldName);
 
-			group.setMetaData("CLUBFLOKKUR_UNION", union);
-			group.setMetaData("CLUBFLOKKUR_FLOKKUR", flokkur);
-			group.setMetaData("CLUBFLOKKUR_NAME", name);
-			group.setMetaData("CLUBFLOKKUR_COMP", comp);
-			group.setMetaData("CLUBFLOKKUR_COACH", coach);
+			group.setMetaData("CLUBPLAYER_UNION", union);
+			group.setMetaData("CLUBPLAYER_FLOKKUR", flokkur);
+			group.setMetaData("CLUBPLAYER_NAME", name);
+			group.setMetaData("CLUBPLAYER_COMP", comp);
+			group.setMetaData("CLUBPLAYER_COACH", coach);
 
 			group.store();
 		}
@@ -228,16 +239,16 @@ public class FlokkarTab extends UserGroupTab {
 		try {
 			group = (Group) (((GroupHome) com.idega.data.IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(getGroupId())));
 
-			String union = group.getMetaData("CLUBFLOKKUR_UNION");
-			String flokkur = group.getMetaData("CLUBFLOKKUR_FLOKKUR");
-			String name = group.getMetaData("CLUBFLOKKUR_NAME");
-			String comp = group.getMetaData("CLUBFLOKKUR_COMP");
-			String coach = group.getMetaData("CLUBFLOKKUR_COACH");
+			String union = group.getMetaData("CLUBPLAYER_UNION");
+			String flokkur = group.getMetaData("CLUBPLAYER_FLOKKUR");
+			String name = group.getMetaData("CLUBPLAYER_NAME");
+			String comp = group.getMetaData("CLUBPLAYER_COMP");
+			String coach = group.getMetaData("CLUBPLAYER_COACH");
 
 			if (union != null)
 				fieldValues.put(_unionFieldName, union);
 			if (flokkur != null)
-				fieldValues.put(_flokkurFieldName, flokkur);
+				fieldValues.put(_cplayFieldName, flokkur);
 			if (name != null)
 				fieldValues.put(_nameFieldName, name);
 			if (comp != null)
