@@ -25,6 +25,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   public static final String SCHOOLTYPE = "sch_school_type";
   public static final String MAXSCHOOLAGE = "max_school_age";
 	public static final String IS_FREETIME_TYPE = "is_freetime_type";
+	public static final String IS_FAMILY_FREETIME_TYPE = "is_family_freetime_type";
 	public static final String ORDER = "type_order";
 
   public void initializeAttributes() {
@@ -34,6 +35,7 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     this.addAttribute(MAXSCHOOLAGE,"Max school age",true,true,Integer.class);
     this.addAttribute(LOC_KEY,"Localization key",String.class);
 		this.addAttribute(IS_FREETIME_TYPE,"Is freetime type",Boolean.class);
+		this.addAttribute(IS_FAMILY_FREETIME_TYPE,"Is freetime type",Boolean.class);
 		this.addAttribute(ORDER,"Order",true,true,Integer.class);
     
     addManyToOneRelationship(SCHOOLCATEGORY, SchoolCategory.class);
@@ -103,7 +105,15 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
   	setColumn(IS_FREETIME_TYPE, isFreetimeType);
   }
 
-	public int getOrder(){
+  public boolean getIsFamilyFreetimeType() {
+  	return getBooleanColumnValue(IS_FAMILY_FREETIME_TYPE, false);
+  }
+  
+  public void setIsFamilyFreetimeType(boolean isFamilyFreetimeType) {
+  	setColumn(IS_FAMILY_FREETIME_TYPE, isFamilyFreetimeType);
+  }
+
+  public int getOrder(){
 		return getIntColumnValue(ORDER);
 	}
 
