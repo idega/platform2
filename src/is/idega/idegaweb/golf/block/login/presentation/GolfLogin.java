@@ -62,8 +62,8 @@ public class GolfLogin extends GolfBlock {
 			myTable.setCellpaddingLeft(1, 1, _indent);
 			myTable.setCellpaddingRight(5, 1, _indent);
 	
-			Text loginTexti = getSmallText(userText);
-			Text passwordTexti = getSmallText(passwordText);
+			Text loginTexti = getStyleText(userText, STYLENAME_TEMPLATE_SMALL_HEADER);
+			Text passwordTexti = getStyleText(passwordText, STYLENAME_TEMPLATE_SMALL_HEADER);
 	
 			myTable.add(loginTexti, 1, 1);
 	
@@ -198,7 +198,7 @@ public class GolfLogin extends GolfBlock {
 			Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
 			myTable.add(spacer, 2, 1);
 			
-			Link logout = getStyleLink(localize("login.logout","Log out"), this.STYLENAME_TEMPLATE_HEADER_LINK);
+			Link logout = getStyleLink(localize("login.logout","Log out"), this.STYLENAME_TEMPLATE_HEADER_LINK2);
 			logout.setToFormSubmit(myForm);
 			myTable.add(logout, 3, 1);
 	
@@ -249,7 +249,7 @@ public class GolfLogin extends GolfBlock {
 			
 			Link tryAgain = getStyleLink(localize("login.try_again","Try again"), this.STYLENAME_TEMPLATE_LINK3);
 			tryAgain.setToFormSubmit(myForm);
-			myTable.add(tryAgain, 3, 1);
+			myTable.add(tryAgain, 2, 1);
 	
 			/*GenericButton tryAgain = getSaveButton();
 			tryAgain.setContent(localize("login.try_again","Try again"));
