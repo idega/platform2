@@ -1,8 +1,11 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
@@ -76,28 +79,33 @@ public class PaymentRecordMaintenance extends AccountingBlock{
 //			GenericButton cancelButton = this.getCancelButton();
 //			form.add(cancelButton);
 			
-
 			//Middle section with the payment list
-			Table paymentTable = new Table();
+			try{
+				Table paymentTable = new Table();
 
-			int row = 2;
-			Collection paymentColl = null;
-			//TODO (JJ) 
-			Iterator paymentIter = paymentColl.iterator();
-			if(paymentIter.hasNext()){
-				paymentTable.add(getLocalizedLabel(PREFIX+"status","Status"),1,1);
-				paymentTable.add(getLocalizedLabel(PREFIX+"period","Period"),2,1);
-				paymentTable.add(getLocalizedLabel(PREFIX+"placedd","Placed"),3,1);
-				paymentTable.add(getLocalizedLabel(PREFIX+"nr_of_placements","Nr of placements"),4,1);
-				paymentTable.add(getLocalizedLabel(PREFIX+"tot_sum","Total sum"),5,1);
-				paymentTable.add(getLocalizedLabel(PREFIX+"notes","notes"),6,1);
+				int row = 2;
+				Collection paymentColl = getInvoiceBusiness(iwc).getPaymentRecordsByCategoryProviderAndPeriod(schoolCategory,providerDropdown.getSelectedValue(),new Date(System.currentTimeMillis()));
+				//TODO (JJ) 
+				Iterator paymentIter = paymentColl.iterator();
+				if(paymentIter.hasNext()){
+					paymentTable.add(getLocalizedLabel(PREFIX+"status","Status"),1,1);
+					paymentTable.add(getLocalizedLabel(PREFIX+"period","Period"),2,1);
+					paymentTable.add(getLocalizedLabel(PREFIX+"placedd","Placed"),3,1);
+					paymentTable.add(getLocalizedLabel(PREFIX+"nr_of_placements","Nr of placements"),4,1);
+					paymentTable.add(getLocalizedLabel(PREFIX+"tot_sum","Total sum"),5,1);
+					paymentTable.add(getLocalizedLabel(PREFIX+"notes","notes"),6,1);
 				
-				while(paymentIter.hasNext()){
-					PaymentRecord paymentRecord = (PaymentRecord)paymentIter.next();
-					paymentTable.add(new Text(""+paymentRecord.getStatus()),1,row);
-					row++;
+					while(paymentIter.hasNext()){
+						PaymentRecord paymentRecord = (PaymentRecord)paymentIter.next();
+						paymentTable.add(new Text(""+paymentRecord.getStatus()),1,row);
+						row++;
+					}
+					add(paymentTable);
+				} else {
+					add(getLocalizedLabel(PREFIX+"no_payment_records_found","No payment records found."));
 				}
-				add(paymentTable);
+			}catch(FinderException e){
+				add(getLocalizedLabel(PREFIX+"no_payment_records_found","No payment records found."));
 			}
 			
 		} catch (Exception e) {
