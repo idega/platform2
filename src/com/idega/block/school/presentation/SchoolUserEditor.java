@@ -17,6 +17,8 @@ import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.business.SchoolUserBusinessBean;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Email;
 import com.idega.core.data.EmailHome;
@@ -75,6 +77,7 @@ public class SchoolUserEditor extends Block {
 	private int userToEdit = -1;
 	private List parameterNames;
 	private List parameterValues;
+	private Collection schoolTypeIds;
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
@@ -87,7 +90,18 @@ public class SchoolUserEditor extends Block {
   
   
   private Table schoolList(IWContext iwc) throws RemoteException{
-  	Collection schools = getSchoolBusiness(iwc).findAllSchools();
+		Collection schools = new java.util.Vector(0);
+		try{
+			if (schoolTypeIds == null) {
+				schools = getSchoolBusiness(iwc).findAllSchools();
+			}else {
+				schools = getSchoolBusiness(iwc).findAllSchoolsByType(schoolTypeIds);	
+			}
+		}
+		catch(java.rmi.RemoteException rex){
+
+		}
+//  	Collection schools = getSchoolBusiness(iwc).findAllSchools();
   	Table table = new Table();
   	int row = 0;
  	
@@ -759,4 +773,18 @@ public class SchoolUserEditor extends Block {
 			
 		}
 	}
+	
+	public void setSchoolTypeCategory(String typeCategory) {
+		if (typeCategory != null && !typeCategory.equals("") ) {
+			try {
+				SchoolTypeHome sth = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
+				SchoolType st;
+				Object stPk;
+				schoolTypeIds = sth.findAllByCategory(typeCategory);
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+  	
+	}	
 }

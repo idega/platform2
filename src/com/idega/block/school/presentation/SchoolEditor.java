@@ -17,6 +17,10 @@ import com.idega.block.school.business.*;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Vector;
+
+import javax.ejb.FinderException;
+
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 /**
@@ -34,6 +38,9 @@ public class SchoolEditor extends Block {
   IWBundle iwb;
   TextFormat tFormat;
   SchoolBusiness sabBean;
+  
+  Collection schoolTypeIds = null;
+  
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
 
   public String getBundleIdentifier(){
@@ -127,7 +134,11 @@ public class SchoolEditor extends Block {
 
     Collection schools = new java.util.Vector(0);
     try{
-      schools = sabBean.findAllSchools();
+    	if (schoolTypeIds == null) {
+      	schools = sabBean.findAllSchools();
+    	}else {
+    		schools = sabBean.findAllSchoolsByType(schoolTypeIds);	
+    	}
     }
     catch(java.rmi.RemoteException rex){
 
@@ -354,4 +365,19 @@ public class SchoolEditor extends Block {
     tFormat = tFormat.getInstance();
     control(iwc);
   }
+  
+  public void setSchoolTypeCategory(String typeCategory) {
+		if (typeCategory != null && !typeCategory.equals("") ) {
+			try {
+				SchoolTypeHome sth = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
+				SchoolType st;
+				Object stPk;
+				schoolTypeIds = sth.findAllByCategory(typeCategory);
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+  	
+  }
+
 }
