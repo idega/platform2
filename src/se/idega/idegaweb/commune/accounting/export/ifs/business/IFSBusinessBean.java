@@ -233,7 +233,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 
 			GregorianCalendar cal = new GregorianCalendar();
 			int year = cal.get(GregorianCalendar.YEAR);
-			int month = cal.get(GregorianCalendar.MONTH);
+			int month = cal.get(GregorianCalendar.MONTH) + 1;
 			int day = cal.get(GregorianCalendar.DAY_OF_MONTH);
 			int hour = cal.get(GregorianCalendar.HOUR_OF_DAY);
 			int min = cal.get(GregorianCalendar.MINUTE);
@@ -391,13 +391,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(Math.round(pRec.getTotalAmount()));
+					bWriter.write(Integer.toString(Math.round(pRec.getTotalAmount())));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(Math.round(pRec.getTotalAmount()));					
+					bWriter.write(Integer.toString(Math.round(pRec.getTotalAmount())));					
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -458,13 +458,13 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(Math.round(pRec.getTotalAmount()));
+					bWriter.write(Integer.toString(Math.round(pRec.getTotalAmount())));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
-					bWriter.write(Math.round(pRec.getTotalAmount()));
+					bWriter.write(Integer.toString(Math.round(pRec.getTotalAmount())));
 					bWriter.write(";");
 					//empty
 					bWriter.write(";");
@@ -535,6 +535,8 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 				String giro = prov.getAccountingProperties().getBankgiro();
 				if (giro ==null)
 					giro = prov.getAccountingProperties().getPostgiro();
+				if (giro == null)
+					giro = "";
 
 				bWriter.write("H");
 				bWriter.write(";");
