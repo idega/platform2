@@ -244,6 +244,13 @@ public class ForumList{
     return myEmailInput;
   }
 
+  /**
+   * beta
+   */
+  public static Link getForumCreateLink(){
+    return new Link("Create Forum");
+  }
+
 
 
 
