@@ -1,6 +1,3 @@
-/*
- * Created on 4.3.2004
- */
 package is.idega.idegaweb.golf.startingtime.presentation;
 
 import java.io.IOException;
@@ -10,6 +7,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Vector;
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.Image;
@@ -33,7 +31,7 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
+import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
@@ -41,14 +39,26 @@ import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
 /**
- * @author laddi
+ * Title: TeeTimeSearch 
+ * 
+ * Description: 
+ * Copyright: Copyright (c) 2004 
+ * Company: idega Software
+ * 
+ * @author 2004 - idega team -<br>
+ *         <a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson </a> <br>
+ * @version 1.0
  */
-public class StartingTimeTable extends GolfBlock {
 
-	TeeTimeBusiness service = new TeeTimeBusiness();
+public class TeeTimeTable extends GolfBlock {
+
+	TeeTimeBusinessBean service = new TeeTimeBusinessBean();
+	
+	private ICPage _teeTimeSearchPage = null;
+	private ICPage _teeTimesPage = null;
 
 	public void main(IWContext modinfo) throws Exception {
-		getParentPage().setTitle("R‡st’maskr‡ning");
+		getParentPage().setTitle(localize("start.teetimes", "Tee Times"));
 		IWCalendar funcDate = new IWCalendar();
 		IWTimestamp stamp = new IWTimestamp();
 
@@ -66,42 +76,34 @@ public class StartingTimeTable extends GolfBlock {
 				//}else
 				if (now.isLaterThan(noon)) {
 					modinfo.setSessionAttribute("when", "1");
-				}
-				else {
+				} else {
 					modinfo.setSessionAttribute("when", "0");
 				}
-			}
-			else if (modinfo.getParameter("hvenaer") != null) {
+			} else if (modinfo.getParameter("hvenaer") != null) {
 				modinfo.setSessionAttribute("when", modinfo.getParameter("hvenaer"));
 			}
 
-			if ((modinfo.getSessionAttribute("union_id") == null || (!(modinfo.getSessionAttribute("union_id").equals(modinfo.getParameter("club"))) && modinfo.getParameter("club") != null)) && modinfo.getParameter("search") == null)
-				clubField = true;
+			if ((modinfo.getSessionAttribute("union_id") == null || (!(modinfo.getSessionAttribute("union_id").equals(modinfo.getParameter("club"))) && modinfo.getParameter("club") != null)) && modinfo.getParameter("search") == null) clubField = true;
 
 			if (modinfo.getSessionAttribute("union_id") == null && modinfo.getParameter("club") == null)
 				modinfo.setSessionAttribute("union_id", "1"); //  Exception
-			else if (modinfo.getParameter("club") != null)
-				modinfo.setSessionAttribute("union_id", modinfo.getParameter("club"));
+			else if (modinfo.getParameter("club") != null) modinfo.setSessionAttribute("union_id", modinfo.getParameter("club"));
 
 			if ((clubField && modinfo.getParameter("hvar") == null) || (modinfo.getSessionAttribute("field_id") == null && modinfo.getParameter("hvar") == null))
 				modinfo.setSessionAttribute("field_id", "" + service.getFirstField((String) modinfo.getSessionAttribute("union_id")));
-			else if (modinfo.getParameter("hvar") != null)
-				modinfo.setSessionAttribute("field_id", modinfo.getParameter("hvar"));
+			else if (modinfo.getParameter("hvar") != null) modinfo.setSessionAttribute("field_id", modinfo.getParameter("hvar"));
 
 			if (modinfo.getSessionAttribute("date") == null && modinfo.getParameter("day") == null)
 				modinfo.setSessionAttribute("date", new IWTimestamp().toSQLDateString());
-			else if (modinfo.getParameter("day") != null)
-				modinfo.setSessionAttribute("date", modinfo.getParameter("day"));
+			else if (modinfo.getParameter("day") != null) modinfo.setSessionAttribute("date", modinfo.getParameter("day"));
 
 			if (modinfo.getSessionAttribute("member_id") == null && getMember() == null)
 				modinfo.setSessionAttribute("member_id", "1"); // Exception
-			else if (getMember() != null)
-				modinfo.setSessionAttribute("member_id", "" + getMember().getID());
+			else if (getMember() != null) modinfo.setSessionAttribute("member_id", "" + getMember().getID());
 
 			if (modinfo.getSessionAttribute("member_main_union_id") == null && getMember() == null)
 				modinfo.setSessionAttribute("member_main_union_id", "1"); // Exception
-			else if (getMember() != null)
-				modinfo.setSessionAttribute("member_main_union_id", "" + getMember().getMainUnionID());
+			else if (getMember() != null) modinfo.setSessionAttribute("member_main_union_id", "" + getMember().getMainUnionID());
 
 			String field_id2 = (String) modinfo.getSessionAttribute("field_id");
 
@@ -116,36 +118,33 @@ public class StartingTimeTable extends GolfBlock {
 				if (isAdmin() || (isClubAdmin() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (isClubWorker() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id")))) {
 					add(getConfigLinks(modinfo, "admin"));
 					add(User(modinfo, funcDate));
-				}
-				else if (isUser(modinfo)) {//|| isDeveloper() // isUser er overwritaÝ fall
-														// sem kannar hvort getMember() skili null ß.e. ef
-														// skr‡Ýur inn, fellur ekki aÝ skilyriÝi eitt, ß‡
-														// User
-					add(getConfigLinks(modinfo, "others")); // ßangaÝ til aÝ klœbbar vilja leifa
-																				 // almenna skr‡ningu ß‡ ßarf
-																				 // v¾ntanlega nàtt tŽkk og nàjan d‡lk
-																				 // ’ tšflu
+				} else if (isUser(modinfo)) {//|| isDeveloper() // isUser er
+											 // overwritaÝ fall
+					// sem kannar hvort getMember() skili null ß.e. ef
+					// skr‡Ýur inn, fellur ekki aÝ skilyriÝi eitt, ß‡
+					// User
+					add(getConfigLinks(modinfo, "others")); // ßangaÝ til aÝ
+															// klœbbar vilja
+															// leifa
+					// almenna skr‡ningu ß‡ ßarf
+					// v¾ntanlega nàtt tŽkk og nàjan d‡lk
+					// ’ tšflu
 					add(User(modinfo, funcDate));
-				}
-				else {
+				} else {
 					add(getConfigLinks(modinfo, "others"));
 					add(User(modinfo, funcDate));
 				}
-			}
-			else {
-				add(getErrorText(localize("start.session_expired","Session expired")));
+			} else {
+				add(getErrorText(localize("start.session_expired", "Session expired")));
 			}
 
-		}
-		catch (SQLException E) {
+		} catch (SQLException E) {
 			System.out.print("SQLException: " + E.getMessage());
 			System.out.print("SQLState:     " + E.getSQLState());
 			System.out.print("VendorError:  " + E.getErrorCode());
-		}
-		catch (Exception E) {
+		} catch (Exception E) {
 			E.printStackTrace();
-		}
-		finally {
+		} finally {
 		}
 	}
 
@@ -156,9 +155,9 @@ public class StartingTimeTable extends GolfBlock {
 		 * if (getServletContext().getAttribute(AccessType+"-" + When ) != null)
 		 * temp = (Table)getServletContext().getAttribute(AccessType+"-" + When );
 		 * else{ temp = TableConfig(
-		 * ((String)getModuleInfo().getSession().getAttribute("when")), AccessType );
-		 * getServletContext().setAttribute(AccessType + "-" + When, temp); }
-		 * return temp;
+		 * ((String)getModuleInfo().getSession().getAttribute("when")),
+		 * AccessType ); getServletContext().setAttribute(AccessType + "-" +
+		 * When, temp); } return temp;
 		 */
 		return TableConfig(modinfo, ((String) modinfo.getSessionAttribute("when")), AccessType);
 	}
@@ -170,7 +169,7 @@ public class StartingTimeTable extends GolfBlock {
 
 	public Table User(IWContext modinfo, IWCalendar funcDate) throws SQLException, IOException {
 		IWTimestamp stamp = new IWTimestamp(funcDate.getCalendar());
-		
+
 		Form myForm = new Form();
 		myForm.setMethod("get");
 		GolfField myField = null;
@@ -183,7 +182,7 @@ public class StartingTimeTable extends GolfBlock {
 		RTTop.setCellpadding(0);
 		RTTop.setCellspacing(0);
 		RTTop.setWidth("675");
-		RTTop.setBackgroundImage(getBundle().getSharedImage("greenback.gif","greenback.gif"));
+		RTTop.setBackgroundImage(getBundle().getSharedImage("greenback.gif", "greenback.gif"));
 		RTTop.setAlignment("center");
 		RTTop.setHeight("45");
 		RTTop.setRowVerticalAlignment(1, "top");
@@ -232,7 +231,7 @@ public class StartingTimeTable extends GolfBlock {
 					IWTimestamp End_ = new IWTimestamp(tempRound.getRoundEndDate());
 					End_.setAsTime();
 					/**
-					 *
+					 *  
 					 */
 					End_.addMinutes(myTableInfo.get_interval());
 					IWTimestamp begintime = new IWTimestamp(0, 1, 0, myField.get_open_hour(), myField.get_open_min(), 0);
@@ -275,19 +274,17 @@ public class StartingTimeTable extends GolfBlock {
 					if (now.isLaterThan(opent)) {
 						RTTop.add(entry_part(modinfo, funcDate, myTableInfo, false, tournamentGroups), 2, 1);
 					}
-				}
-				else {
+				} else {
 					RTTop.add(entry_part(modinfo, funcDate, myTableInfo, false, tournamentGroups), 2, 1);
 				}
 			}
 
 			mainTable.add(RTTop, 1, 1);
 			mainTable.add(innerMain, 1, 2);
-		}
-		else {
+		} else {
 
 			mainTable = new Table();
-			mainTable.add(getErrorText(localize("start.session_expired","Session expired")));
+			mainTable.add(getErrorText(localize("start.session_expired", "Session expired")));
 
 		}
 		return mainTable;
@@ -296,19 +293,16 @@ public class StartingTimeTable extends GolfBlock {
 
 	public boolean isMemberOfUnion(IWContext modinfo, String union) {
 		try {
-			if (union == null)
-				return false;
+			if (union == null) return false;
 
-			if (getMember() == null)
-				return false;
+			if (getMember() == null) return false;
 
 			int union_id = new Integer(union).intValue();
 			Union unionentry = (Union) IDOLookup.createLegacy(Union.class);
 			unionentry.setID(union_id);
 
 			return getMember().isMemberInUnion(unionentry);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -435,8 +429,7 @@ public class StartingTimeTable extends GolfBlock {
 			if (TournamentName == null) {
 				group1[tafla] = (Table) group1Template.clone();
 				group2[tafla] = (Table) group2Template.clone();
-			}
-			else {
+			} else {
 				Text tName = (Text) templateText.clone();
 				tName.setText(TournamentName);
 				group1[tafla] = (Table) roundGroup1Template.clone();
@@ -481,17 +474,20 @@ public class StartingTimeTable extends GolfBlock {
 				time = "" + pic_hour + ":" + pic_min;
 
 			//myTable.add(new
-			// Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+ time,
+			// Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+
+			// time,
 			// time , 50, 36 ), 1, i);
 
 			timeText = (Text) tTime.clone();
 			timeText.setText(time);
 			myTable.add(timeText, 1, i);
 
-			//			myTable.add(new Flash("http://jgenerator.sidan.is/time.swt?time="+
+			//			myTable.add(new
+			// Flash("http://jgenerator.sidan.is/time.swt?time="+
 			// time, time , 50, 36 ), 1, i);
 
-			//	 		## Bætir við hvítri línu milli allra holla en ekki undir það síðasta
+			//	 		## Bætir við hvítri línu milli allra holla en ekki undir það
+			// síðasta
 			if (i != end * 2 - 1) {
 				myTable.setBackgroundImage(1, i + 1, line);
 				myTable.setBackgroundImage(2, i + 1, line);
@@ -499,8 +495,9 @@ public class StartingTimeTable extends GolfBlock {
 				myTable.add(myText, 1, i + 1);
 				myTable.add(myText, 2, i + 1);
 				myTable.add(myText, 3, i + 1);
-				myTable.setHeight(i + 1, "4"); // #$%"#%&"$#%&"#%"#$#$ virkar ekki
-																			 // ??????????
+				myTable.setHeight(i + 1, "4"); // #$%"#%&"$#%&"#%"#$#$ virkar
+											   // ekki
+				// ??????????
 			}
 
 			pic_min += interval;
@@ -549,8 +546,8 @@ public class StartingTimeTable extends GolfBlock {
 
 				// Not visible on the net...
 				/*
-				 * try { Member member = start[i].getMember(); UnionMemberInfo uni =
-				 * member.getUnionMemberInfo(member.getMainUnionID()); if (
+				 * try { Member member = start[i].getMember(); UnionMemberInfo
+				 * uni = member.getUnionMemberInfo(member.getMainUnionID()); if (
 				 * !uni.getVisible() ) "; } catch (Exception e) { name =
 				 * start[i].getPlayerName();
 				 */
@@ -563,22 +560,22 @@ public class StartingTimeTable extends GolfBlock {
 				tempClub.setText(club);
 
 				switch (count) {
-					case 1 :
+					case 1:
 						group1[row - 1].add(tempName, 2, 1);
 						group1[row - 1].add(tempHandycap, 3, 1);
 						group1[row - 1].add(tempClub, 4, 1);
 						break;
-					case 2 :
+					case 2:
 						group1[row - 1].add(tempName, 2, 2);
 						group1[row - 1].add(tempHandycap, 3, 2);
 						group1[row - 1].add(tempClub, 4, 2);
 						break;
-					case 3 :
+					case 3:
 						group2[row - 1].add(tempName, 2, 1);
 						group2[row - 1].add(tempHandycap, 3, 1);
 						group2[row - 1].add(tempClub, 4, 1);
 						break;
-					case 4 :
+					case 4:
 						group2[row - 1].add(tempName, 2, 2);
 						group2[row - 1].add(tempHandycap, 3, 2);
 						group2[row - 1].add(tempClub, 4, 2);
@@ -615,8 +612,7 @@ public class StartingTimeTable extends GolfBlock {
 
 	public GolfField get_field_info(IWContext modinfo, int field, String date, String union_id) throws SQLException, IOException {
 		StartingtimeFieldConfig FieldConfig = service.getFieldConfig(field, date);
-		if (FieldConfig == null)
-			return null;
+		if (FieldConfig == null) return null;
 
 		GolfField field_info = null;
 		if (isAdmin() || isClubAdmin() || isClubWorker() || isMemberOfUnion(modinfo, union_id))
@@ -640,7 +636,7 @@ public class StartingTimeTable extends GolfBlock {
 		interval = field.get_interval();
 
 		switch (daytime) {
-			case 0 :
+			case 0:
 				time = (14 - field.get_open_hour()) * 60 - field.get_open_min();
 				row = (time / interval);
 				first_group = 1;
@@ -651,14 +647,14 @@ public class StartingTimeTable extends GolfBlock {
 			 * case 1: 60; row = (time / interval); 60-field.get_open_min()) /
 			 * interval)+1; first_pic_hour = 13; first_pic_min = 0;
 			 */
-			case 1 :
+			case 1:
 				time = (field.get_close_hour() - 14) * 60 + field.get_close_min();
 				row = (time / interval);
 				first_group = (((14 - field.get_open_hour()) * 60 - field.get_open_min()) / interval) + 1;
 				first_pic_hour = 14;
 				first_pic_min = 0;
 				break;
-			default :
+			default:
 				time = 0;
 				row = 0;
 				first_pic_hour = 0;
@@ -723,8 +719,7 @@ public class StartingTimeTable extends GolfBlock {
 			myDropdown.setToSubmit();
 			myDropdown.setSelectedElement(modinfo.getSession().getAttribute("field_id").toString());
 
-		}
-		catch (SQLException E) {
+		} catch (SQLException E) {
 			E.printStackTrace();
 		}
 		return myDropdown;
@@ -757,13 +752,11 @@ public class StartingTimeTable extends GolfBlock {
 		if (isClubAdmin() || isClubWorker() || isAdmin()) {
 			if (isClubWorker() && today.get_field_id() == 33) {
 				daysShown = today.get_days_shown();
-			}
-			else {
+			} else {
 				daysShown = 240;
 				stamp.addDays(-30);
 			}
-		}
-		else {
+		} else {
 			daysShown = today.get_days_shown();
 		}
 
@@ -777,8 +770,7 @@ public class StartingTimeTable extends GolfBlock {
 					else
 						addElement = false;
 					//add(" + AddElement: "+addElement);
-				}
-				else {
+				} else {
 					addElement = true;
 				}
 			}
@@ -876,11 +868,10 @@ public class StartingTimeTable extends GolfBlock {
 			if (sDate != null) {
 				stamp = new IWTimestamp(sDate);
 			}
-			Link reportLink = is.idega.idegaweb.golf.startingtime.presentation.StartingtimeReportWindow.getLink(stamp, field_id, getResourceBundle().getImage("/tabs/lists1.gif"));
+			Link reportLink = is.idega.idegaweb.golf.startingtime.presentation.TeeTimeReportWindow.getLink(stamp, field_id, getResourceBundle().getImage("/tabs/lists1.gif"));
 			frame.add(reportLink, 2, 1);
 			frame.setAlignment(2, 1, "right");
-		}
-		else if (access_type.equals("user")) {
+		} else if (access_type.equals("user")) {
 			frame.add(Change(modinfo), 3, 1);
 		}
 
@@ -912,7 +903,6 @@ public class StartingTimeTable extends GolfBlock {
 		else
 			myLink = new Link(getResourceBundle().getImage("tabs/morning1.gif"));
 
-		myLink.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
 		myLink.addParameter("hvenaer", "0");
 
 		return myLink;
@@ -924,8 +914,7 @@ public class StartingTimeTable extends GolfBlock {
 			myLink = new Link(getResourceBundle().getImage("tabs/afternoon.gif"));
 		else
 			myLink = new Link(getResourceBundle().getImage("tabs/afternoon1.gif"));
-		
-		myLink.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
+
 		myLink.addParameter("hvenaer", "1");
 
 		return myLink;
@@ -938,35 +927,41 @@ public class StartingTimeTable extends GolfBlock {
 		else
 			myLink = new Link(getResourceBundle().getImage("tabs/evening1.gif"));
 
-		myLink.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
 		myLink.addParameter("hvenaer", "2");
 
 		return myLink;
 	}
 
 	public Link ConfigFieldLink(IWContext modinfo) {
-//		Link myLink = new Link(getResourceBundle().getImage("tabs/options1.gif"), new Window("Gluggi", 520, 470, "admin.jsp?"));
-		
+		//		Link myLink = new
+		// Link(getResourceBundle().getImage("tabs/options1.gif"), new
+		// Window("Gluggi", 520, 470, "admin.jsp?"));
+
 		GolfWindow myWindow = new GolfWindow("Gluggi", 520, 320);
-		myWindow.add(new StartingTimeAdmin());
+		myWindow.add(new TeeTimeFieldConfiguration());
 		myWindow.setContentHorizontalAlignment(Table.HORIZONTAL_ALIGN_CENTER);
 		myWindow.setContentVerticalAlignment(Table.VERTICAL_ALIGN_MIDDLE);
 		Link myLink = new Link(getResourceBundle().getImage("tabs/options1.gif"), myWindow);
 
-//		Link myLink = new Link(getResourceBundle().getImage("tabs/options1.gif"), StartingTimeAdmin.class);
-		
-		
+		//		Link myLink = new
+		// Link(getResourceBundle().getImage("tabs/options1.gif"),
+		// StartingTimeAdmin.class);
+
 		return myLink;
 	}
 
 	public Link Change(IWContext modinfo) {
-		//Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), new Window("Gluggi", 800, 600, "admbreyting.jsp?"));
+		//Link myLink = new
+		// Link(getResourceBundle().getImage("tabs/change1.gif"), new
+		// Window("Gluggi", 800, 600, "admbreyting.jsp?"));
 
 		Window myWindow = new GolfWindow("Gluggi", 800, 600);
-		myWindow.add(new StartingTimeAdminChange());
+		myWindow.add(new AdminRegisterTeeTime());
 		Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), myWindow);
-		
-		//Link myLink = new Link(getResourceBundle().getImage("tabs/change1.gif"), StartingTimeAdminChange.class);
+
+		//Link myLink = new
+		// Link(getResourceBundle().getImage("tabs/change1.gif"),
+		// StartingTimeAdminChange.class);
 
 		return myLink;
 	}
@@ -994,7 +989,6 @@ public class StartingTimeTable extends GolfBlock {
 		firstTable.add(insertDropdown("day", dateFunc, Today, modinfo), 3, 2);
 
 		day_field.add(firstTable);
-		day_field.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
 
 		return day_field;
 
@@ -1008,23 +1002,21 @@ public class StartingTimeTable extends GolfBlock {
 		if (admin) {
 			mainForm = new Form();
 			mainForm.setWindowToOpen(AdminRegisterTimeWindow.class);
-			mainForm.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
-	//		mainForm.setAction("registeradmin.jsp");
+			//		mainForm.setAction("registeradmin.jsp");
 			plainUser = false;
-		}
-		else {
+		} else {
 			mainForm = new Form();
 			mainForm.setWindowToOpen(RegisterTimeWindow.class);
 			mainForm.setMethod("get");
-			mainForm.addParameter(StartingTime.PRM_MODE,StartingTime.MODE_TIMETABLE);
-	//		mainForm.setAction("register.jsp");
+			//		mainForm.setAction("register.jsp");
 			plainUser = true;
 		}
 
 		mainForm.add(new HiddenInput("daytime", (String) modinfo.getSessionAttribute("when")));
 
-		Window updateWindow = new Window("Gluggi", 800, 600);//, "admbreyting.jsp");
-		updateWindow.add(new StartingTimeAdminChange());
+		Window updateWindow = new Window("Gluggi", 800, 600);//,
+															 // "admbreyting.jsp");
+		updateWindow.add(new AdminRegisterTeeTime());
 
 		Table fTable = new Table(2, 2);
 		Table entry = new Table(7, 1);
@@ -1090,7 +1082,7 @@ public class StartingTimeTable extends GolfBlock {
 	}
 
 	public Table lineUpTournamentDay(IWContext modinfo, List Tournaments) {
-		Text dayReserved = getMessageText(localize("start.message1","Dagur fr‡tekinn fyrir m—t"));
+		Text dayReserved = getMessageText(localize("start.message1", "Dagur fr‡tekinn fyrir m—t"));
 		dayReserved.setFontSize(4);
 		Table AlignmentTable = new Table();
 		AlignmentTable.setBorder(0);
@@ -1102,8 +1094,20 @@ public class StartingTimeTable extends GolfBlock {
 		AlignmentTable.setAlignment("center");
 		AlignmentTable.add(Text.getBreak());
 		AlignmentTable.add(Text.getBreak());
-		AlignmentTable.add(getMessageText(localize("start.message1b","HafiÝ samband viÝ klœbb vegna skr‡ninga ’ dag.<br>R‡st’ma m‡ sj‡ ’ m—taskr‡")));
+		AlignmentTable.add(getMessageText(localize("start.message1b", "HafiÝ samband viÝ klœbb vegna skr‡ninga ’ dag.<br>R‡st’ma m‡ sj‡ ’ m—taskr‡")));
 
 		return AlignmentTable;
+	}
+	public ICPage getTeeTimeSearchPage() {
+		return _teeTimeSearchPage;
+	}
+	public void setTeeTimeSearchPage(ICPage p) {
+		_teeTimeSearchPage = p;
+	}
+	public ICPage getTeeTimesPage() {
+		return _teeTimesPage;
+	}
+	public void setTeeTimesPage(ICPage p) {
+		_teeTimesPage = p;
 	}
 }

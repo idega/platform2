@@ -1,7 +1,14 @@
-/*
- * Created on 4.3.2004
- */
 package is.idega.idegaweb.golf.startingtime.presentation;
+
+import is.idega.idegaweb.golf.GolfField;
+import is.idega.idegaweb.golf.SqlTime;
+import is.idega.idegaweb.golf.TableInfo;
+import is.idega.idegaweb.golf.entity.Field;
+import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
+import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,106 +17,45 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.presentation.Image;
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Page;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.text.Text;
-import is.idega.idegaweb.golf.GolfField;
-import is.idega.idegaweb.golf.SqlTime;
-import is.idega.idegaweb.golf.TableInfo;
-import is.idega.idegaweb.golf.entity.Field;
-import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
-import is.idega.idegaweb.golf.entity.Union;
-import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
-import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 
+
 /**
- * @author laddi
+ * Title: TeeTimeSearch
+ * Description:
+ * Copyright: Copyright (c) 2004
+ * Company: idega Software
+ * @author 2004 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
+ * @version 1.0
  */
-public class StartingTime extends GolfBlock {
 
-	private TeeTimeBusiness service = new TeeTimeBusiness();
-	private String COLOR1 = "#FFFFFF"; //  #336661
-	private String COLOR2 = "#6E9173"; //  #CDDFD1
-	private String COLOR3 = "#ADC9B0"; //  #ADC9B0
-	private String COLOR4 = "#CDDFD1"; //  #6E9173
-	private String COLOR5 = "#336661";
-	private String COLOR6 = "#FFFFFF";
-	private String COLOR7 = "#336661";
+public class TeeTimeSearch extends GolfBlock {
 	
-	static final String 	PRM_ACTION = "GO_ST_ACTON";
-	static final int ACTION_NO_ACTION = 0;
-	static final int  ACTION_GO_TO_TIMETABLE = 1;
-	int _action = ACTION_NO_ACTION;
-	static final String PRM_MODE = "GO_ST_MODE";
-	static final int MODE_MENU = 0;
-	static final int MODE_TIMETABLE = 1;
-	int _mode = MODE_MENU;
+
+	private TeeTimeBusinessBean service = new TeeTimeBusinessBean();
 
 	
-	public void processActionAndModeParameters(IWContext iwc) throws Exception {
-		
-		String mode = iwc.getParameter(PRM_MODE);
-		if(mode!=null) {
-			try {
-				_mode = Integer.parseInt(mode);
-			} catch(NumberFormatException e) {
-				_mode=MODE_MENU;
-				System.err.println("[Warning]: "+this.getClassName()+": unsupported mode parameter value "+mode);
-			}
-		} else {
-			_mode = MODE_MENU;
-		}
+	private String _searchTableWidth = Table.HUNDRED_PERCENT;
 	
-		
-		String action = iwc.getParameter(PRM_ACTION);
-		if(action!=null) {
-			try {
-				_action = Integer.parseInt(action);
-			} catch(NumberFormatException e) {
-				_action=ACTION_NO_ACTION;
-				System.err.println("[Warning]: "+this.getClassName()+": unsupported action parameter value "+action);
-			}
-		} else {
-			_action = ACTION_NO_ACTION;
-		}
-	}
-		
-	public void main(IWContext iwc) throws Exception {
-		processActionAndModeParameters(iwc);
-		
-		switch (_action) {
-			case ACTION_GO_TO_TIMETABLE :
-				_mode = MODE_TIMETABLE;
-				break;
-			default : // _action = ACTION_NO_ACTION;
-				break;
-		}
-		
-		switch (_mode) {
-		case MODE_TIMETABLE:
-			this.add(new StartingTimeTable());
-			break;
-	
-		default: // _mode = MODE_MENU;
-			mainStartingTimeSearch(iwc);
-			break;
-		}
-		
-	}
-	
-	public void mainStartingTimeSearch(IWContext modinfo) throws Exception {
+	private ICPage _teeTimeTablePage = null;
+	private ICPage _teeTimesPage = null;
+
+
+	public void main(IWContext modinfo) throws Exception {
 		IWTimestamp funcDate = new IWTimestamp();
 
 		try {
@@ -117,28 +63,22 @@ public class StartingTime extends GolfBlock {
 
 			if (modinfo.getSessionAttribute("side_num") == null && modinfo.getParameter("side") == null)
 				modinfo.setSessionAttribute("side_num", "0");
-			else if (modinfo.getParameter("side") != null)
-				modinfo.setSessionAttribute("side_num", modinfo.getParameter("side"));
+			else if (modinfo.getParameter("side") != null) modinfo.setSessionAttribute("side_num", modinfo.getParameter("side"));
 
 			if (modinfo.getSessionAttribute("when") == null && modinfo.getParameter("hvenaer") == null)
 				modinfo.setSessionAttribute("when", "0");
-			else if (modinfo.getParameter("hvenaer") != null)
-				modinfo.setSessionAttribute("when", modinfo.getParameter("hvenaer"));
+			else if (modinfo.getParameter("hvenaer") != null) modinfo.setSessionAttribute("when", modinfo.getParameter("hvenaer"));
 
 			if (modinfo.getSessionAttribute("field_id") == null && modinfo.getParameter("hvar") == null)
 				modinfo.setSessionAttribute("field_id", "1");
-			else if (modinfo.getParameter("hvar") != null)
-				modinfo.setSessionAttribute("field_id", modinfo.getParameter("hvar"));
+			else if (modinfo.getParameter("hvar") != null) modinfo.setSessionAttribute("field_id", modinfo.getParameter("hvar"));
 
 			if (modinfo.getSessionAttribute("date") == null && modinfo.getRequest().getParameter("day") == null)
 				modinfo.setSessionAttribute("date", new IWTimestamp().toSQLDateString());
-			else if (modinfo.getRequest().getParameter("day") != null)
-				modinfo.setSessionAttribute("date", modinfo.getRequest().getParameter("day"));
+			else if (modinfo.getRequest().getParameter("day") != null) modinfo.setSessionAttribute("date", modinfo.getRequest().getParameter("day"));
 
-			modinfo.setDefaultFontSize("2");
 
-		}
-		catch (Exception E) {
+		} catch (Exception E) {
 			E.printStackTrace();
 		}
 
@@ -146,14 +86,6 @@ public class StartingTime extends GolfBlock {
 		GolfField myField = new GolfField();
 		GolfField Today = new GolfField();
 		TableInfo myTableInfo = new TableInfo();
-		Page myPage = new Page(getResourceBundle().getLocalizedString("start.search.register_tee_times", "Register tee times"));
-
-		myPage.setMarginWidth(5);
-		myPage.setMarginHeight(5);
-		myPage.setLeftMargin(5);
-		myPage.setTopMargin(5);
-		myPage.setAlinkColor(COLOR1);
-		myPage.setVlinkColor(COLOR1);
 
 		Table myTable = new Table(1, 1);
 		myTable.setCellpadding(0);
@@ -163,46 +95,19 @@ public class StartingTime extends GolfBlock {
 
 		Vector Groups = new Vector();
 
-		if ((String) modinfo.getParameter("results") == null) {
-			boolean search = ((String) modinfo.getParameter("state") != null && ((String) modinfo.getParameter("state")).equals("search"));
-			Table startTable = new Table(1, 2);
-			startTable.setHeight(1, "15");
-			startTable.setCellpadding(0);
-			startTable.setCellspacing(0);
-			startTable.add(getEntryLink(modinfo, !search), 1, 1);
-			startTable.add(getSearchLink(modinfo, search), 1, 1);
-			startTable.add(Text.emptyString(), 1, 1);
-			if (search) {
-				startTable.add(searchEntry(modinfo, funcDate), 1, 2);
-			}
-			else {
-				startTable.add(enterClub(modinfo), 1, 2);
-			}
-			myTable.add(startTable, 1, 1);
-
-			//setVerticalAlignment("top");
-			add(myTable);
+		boolean search = true;
+		Table startTable = new Table(1, 2);
+		startTable.setHeight(1, "15");
+		startTable.setCellpadding(0);
+		startTable.setCellspacing(0);
+		startTable.add(Text.emptyString(), 1, 1);
+		if (search) {
+			startTable.add(searchEntry(modinfo, funcDate), 1, 2);
 		}
-		else {
-			boolean search = ((String) modinfo.getParameter("state") != null && ((String) modinfo.getParameter("state")).equals("search"));
-			Table startTable = new Table(1, 2);
-			startTable.setHeight(1, "15");
-			startTable.setCellpadding(0);
-			startTable.setCellspacing(0);
-			startTable.add(getEntryLink(modinfo, !search), 1, 1);
-			startTable.add(getSearchLink(modinfo, search), 1, 1);
-			startTable.add(Text.emptyString(), 1, 1);
-			if (search) {
-				startTable.add(searchEntry(modinfo, funcDate), 1, 2);
-			}
-			else {
-				startTable.add(enterClub(modinfo), 1, 2);
-			}
-			myTable.add(startTable, 1, 1);
+		myTable.add(startTable, 1, 1);
 
-			//setVerticalAlignment("top");
-			add(myTable);
-		}
+		add(myTable);
+
 
 		if ((String) modinfo.getParameter("results") != null) {
 			if (modinfo.getParameterValues("fields") != null && modinfo.getParameter("fjoldi") != null && !modinfo.getParameter("fjoldi").equals("")) {
@@ -216,8 +121,7 @@ public class StartingTime extends GolfBlock {
 						try {
 							Groups = search(funcDate, modinfo, myField, Today, Integer.parseInt(modinfo.getParameter("fjoldi").toString()), modinfo.getParameter("date").toString(), modinfo.getParameter("ftime").toString(), modinfo.getParameter("ltime").toString(), 0, 36);
 							myTable.add(Results(modinfo, Groups, myField, modinfo.getParameter("date").toString(), 8), 1, 1);
-						}
-						catch (Exception E) {
+						} catch (Exception E) {
 							if (E.getMessage().equals("Error1")) {
 								Table Error1 = new Table(1, 1);
 								Error1.setWidth("381");
@@ -225,7 +129,6 @@ public class StartingTime extends GolfBlock {
 								//Error1.setBorder(1);
 								Error1.setColumnAlignment(1, "center");
 								Error1.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error1", "_")), 1, 1);
-								Error1.setRowColor(1, COLOR2);
 								myTable.add(Error1, 1, 1);
 								break;
 							}
@@ -236,14 +139,12 @@ public class StartingTime extends GolfBlock {
 								//Error2.setBorder(1);
 								Error2.setColumnAlignment(1, "center");
 								Error2.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error2", "_")), 1, 1);
-								Error2.setRowColor(1, COLOR2);
 								myTable.add(Error2, 1, 1);
 								break;
 							}
 							if (E.getMessage().equals("Error3")) {
 								Table Error3 = new Table(1, 3);
-								Error3.setRowColor(1, COLOR2);
-								Error3.setRowColor(2, COLOR3);
+
 								Error3.setWidth("381");
 								Error3.setHeight(1, "30");
 								Error3.setHeight(2, "25");
@@ -256,22 +157,20 @@ public class StartingTime extends GolfBlock {
 							}
 						}
 					}
-				}
-				else {
+				} else {
 					Table Error = new Table(1, 1);
 					Error.setWidth("381");
 					Error.setHeight(1, "21");
-					Error.setRowColor(1, COLOR2);
+
 					Error.setColumnAlignment(1, "center");
 					Error.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error4", "_")), 1, 1);
 					myTable.add(Error, 1, 1);
 				}
-			}
-			else {
+			} else {
 				Table Error = new Table(1, 1);
 				Error.setWidth("381");
 				Error.setHeight(1, "21");
-				Error.setRowColor(1, COLOR2);
+
 				Error.setColumnAlignment(1, "center");
 				Error.add(this.getSmallErrorText(getResourceBundle().getLocalizedString("start.search.error5", "_")), 1, 1);
 				myTable.add(Error, 1, 1);
@@ -298,179 +197,71 @@ public class StartingTime extends GolfBlock {
 		else
 			myLink = new Link(getResourceBundle().getImage("tabs/teetimes1.gif"));
 
+		if(_teeTimesPage!=null) {
+			myLink.setPage(_teeTimesPage);
+		}
+		
 		return myLink;
 	}
 
-	public Form enterClub(IWContext modinfo) throws IOException, SQLException {
-		Form myForm = new Form();
-		//myForm.setAction("/start/start.jsp");
-		myForm.addParameter(PRM_ACTION,ACTION_GO_TO_TIMETABLE);
 
-		Table myTable = new Table(3, 4);
-		myTable.setAlignment("center");
-		myTable.setColor(COLOR4);
-		myTable.setWidth("381");
-		//		myTable.setBorder(1);
-		myTable.setCellspacing(0);
-		myTable.setCellpadding(0);
-
-		Text myText = getSmallText(" ");
-		myText.setFontSize(1);
-		myTable.add(myText, 1, 1);
-		myTable.add(myText, 2, 1);
-		myTable.add(myText, 3, 1);
-		myTable.setHeight(1, "10");
-
-		myTable.add(myText, 1, 4);
-		myTable.add(myText, 2, 4);
-		myTable.add(myText, 3, 4);
-		myTable.setHeight(4, "30");
-
-		myTable.setWidth(1, "15");
-		myTable.setWidth(2, "183");
-		myTable.setAlignment(3, 3, "center");
-
-		Text klubbur = getSmallHeader(getResourceBundle().getLocalizedString("start.search.club", "Club"));
-		klubbur.setFontColor(COLOR7);
-		klubbur.setFontSize("2");
-		klubbur.setFontStyle("Arial");
-		klubbur.setBold();
-
-		myTable.setVerticalAlignment(3, 3, "bottom");
-
-		myTable.add(klubbur, 2, 2);
-		myTable.add(insertClubSelectionBox("club", modinfo, 6), 2, 3);
-		
-		SubmitButton sNext = new SubmitButton(getResourceBundle().getImage("buttons/continue.gif"), "  çfram  ");
-		
-		myTable.add(sNext, 3, 3);
-
-		myForm.add(myTable);
-
-		return myForm;
-	}
 
 	public Form searchEntry(IWContext modinfo, IWTimestamp dateFunc) throws IOException, SQLException {
 
 		Form myForm = new Form();
-		//		myForm.setMethod("Get");
 		myForm.add(new HiddenInput("state", "search"));
 
-		Table myTable = new Table(2, 5);
-		myTable.setAlignment("center");
-		myTable.setColor(COLOR4);
-		myTable.setWidth("381");
-		//		myTable.setBorder(1);
-		myTable.setCellspacing(0);
-		myTable.setCellpadding(0);
-		myTable.setWidth(1, "15");
-
-		//		myTable.setColumnAlignment(1, "center");
-		//		myTable.setColumnAlignment(1, "center");
-
-		Table mergeTable = new Table(4, 2);
+		Table mergeTable = new Table(3, 4);
+		mergeTable.mergeCells(2,1,3,1);
+		mergeTable.mergeCells(2,2,3,2);
+		mergeTable.mergeCells(2,3,3,3);
 		mergeTable.setAlignment("left");
-		//		mergeTable.setBorder(1);
-		mergeTable.setCellspacing(5);
+		//mergeTable.setBorder(1);
+		mergeTable.setCellspacing(0);
 		mergeTable.setCellpadding(0);
-		mergeTable.setWidth(1, "60");
-		mergeTable.setWidth(2, "80");
-		mergeTable.setWidth(3, "80");
-		//mergeTable.setWidth(4, "110");
+		mergeTable.setAlignment(3,4,Table.HORIZONTAL_ALIGN_RIGHT);
 
-		Table SelectSubmit = new Table(2, 2);
+		Table SelectSubmit = new Table(2, 3);
 		SelectSubmit.setAlignment("left");
-		//		SelectSubmit.setBorder(1);
+		//SelectSubmit.setBorder(3);
 		SelectSubmit.setCellspacing(0);
 		SelectSubmit.setCellpadding(0);
 		SelectSubmit.setWidth(1, "183");
 		SelectSubmit.setWidth(2, "183");
 		SelectSubmit.setAlignment(2, 2, "center");
 
-		Text myText = getSmallText(" ");
-		myText.setFontSize(1);
-		myTable.add(myText, 1, 1);
-		myTable.add(myText, 2, 1);
-		myTable.setHeight(1, "10");
+		Text vollur = getText(getResourceBundle().getLocalizedString("start.search.course", "Course"));
+		Text fjoldi = getText(getResourceBundle().getLocalizedString("start.search.how_many", "How many?"));
+		Text fKL = getText(getResourceBundle().getLocalizedString("start.search.from", "From"));
+		Text tKL = getText(getResourceBundle().getLocalizedString("start.search.to", "To"));
+		Text dags = getText(getResourceBundle().getLocalizedString("start.search.date", "Date"));
 
-		myTable.add(myText, 1, 3);
-		myTable.add(myText, 2, 3);
-		myTable.setHeight(3, "10");
-
-		myTable.add(myText, 1, 5);
-		myTable.add(myText, 2, 5);
-		myTable.setHeight(5, "10");
-
-		//		myTable.setRowAlignment (1, "center");
-		//		myTable.setRowAlignment (2, "center");
-		//		myTable.setRowAlignment (3, "center");
-		//		myTable.setRowAlignment (4, "center");
-
-		//		myTable.mergeCells( 1, 2, 3, 2 );
-		//		myTable.mergeCells( 1, 3, 3, 3 );
-
-		Text vollur = getSmallHeader(getResourceBundle().getLocalizedString("start.search.course", "Course"));
-		Text fjoldi = getSmallHeader(getResourceBundle().getLocalizedString("start.search.how_many", "How many?"));
-		Text fKL = getSmallHeader(getResourceBundle().getLocalizedString("start.search.from", "From"));
-		Text tKL = getSmallHeader(getResourceBundle().getLocalizedString("start.search.to", "To"));
-		Text dags = getSmallHeader(getResourceBundle().getLocalizedString("start.search.date", "Date"));
-
-//		vollur.setFontColor(COLOR7);
-//		fjoldi.setFontColor(COLOR7);
-//		fKL.setFontColor(COLOR7);
-//		tKL.setFontColor(COLOR7);
-//		dags.setFontColor(COLOR7);
-//
-//		vollur.setFontSize("2");
-//		fjoldi.setFontSize("2");
-//		fKL.setFontSize("2");
-//		tKL.setFontSize("2");
-//		dags.setFontSize("2");
-//
-//		vollur.setFontStyle("Arial");
-//		fjoldi.setFontStyle("Arial");
-//		fKL.setFontStyle("Arial");
-//		tKL.setFontStyle("Arial");
-//		dags.setFontStyle("Arial");
-//
-//		vollur.setBold();
-//		fjoldi.setBold();
-//		fKL.setBold();
-//		tKL.setBold();
-//		dags.setBold();
 
 		SelectSubmit.setVerticalAlignment(2, 2, "bottom");
 
-		myTable.setAlignment(2, 3, "left");
-		//		myTable.setAlignment( 2, 3, "center" );
-
 		SelectSubmit.add(vollur, 1, 1);
-		//		System.out.println(" insertSelectionBox ....");
+
 		SelectSubmit.add(insertSelectionBox("fields", modinfo, 6), 1, 2);
-
-		mergeTable.add(fjoldi, 1, 1);
-
-		mergeTable.add(insertEditBox("fjoldi", 2), 1, 2);
-		mergeTable.add(fKL, 2, 1); //	insertTimeDrowdown( String dropdownName,
-		// String auto, int firstHour, int lastHour
-		// int interval);
+		
+		mergeTable.add(dags, 1, 1);
+		mergeTable.add(insertDropdown("date", dateFunc, getMaxDaysShown(), modinfo), 2, 1);
+		
+		mergeTable.add(fKL, 1, 2); 
 		mergeTable.add(insertTimeDrowdown("ftime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30), 2, 2);
-		//		mergeTable.add(insertDrowdown( "ftime" , "08:00", 30 ), 2, 2);
-		mergeTable.add(tKL, 3, 1);
-		mergeTable.add(insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30), 3, 2);
-		//		mergeTable.add(insertDrowdown( "ltime", "22:00", 30 , true ), 3, 2);
-
-		myTable.add(SelectSubmit, 2, 2);
-		myTable.add(mergeTable, 2, 4);
-
-		mergeTable.add(dags, 4, 1);
-
-		mergeTable.add(insertDropdown("date", dateFunc, getMaxDaysShown(), modinfo), 4, 2);
-
-		SelectSubmit.add(new SubmitButton(getResourceBundle().getImage("buttons/search.gif"), "  Leita  "), 2, 2);
+		
+		mergeTable.add(tKL, 1, 3);
+		mergeTable.add(insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30), 2, 3);
+		
+		mergeTable.add(fjoldi, 1, 4);
+		mergeTable.add(insertEditBox("fjoldi", 2), 2, 4);
+		
+		mergeTable.add(new SubmitButton(getResourceBundle().getImage("buttons/search.gif"), localize("start.search","Search")), 3, 4);
+		
+		SelectSubmit.add(mergeTable, 2, 2);
+		
 		insertHiddenInput("results", "1", myForm);
 
-		myForm.add(myTable);
+		myForm.add(SelectSubmit);
 
 		return myForm;
 	}
@@ -482,11 +273,10 @@ public class StartingTime extends GolfBlock {
 	public Table Results(IWContext modinfo, Vector Groups, GolfField info, String date1, int resultCol) throws SQLException, IOException, FinderException {
 
 		Table myTable = new Table(1, 2);
-		myTable.setRowColor(1, COLOR2);
+		myTable.setRowStyleClass(1,getHeaderRowClass());
 		myTable.setCellspacing(0);
 		myTable.setCellpadding(0);
-		myTable.setHeight(1, "30");
-		myTable.setRowAlignment(1, "center");
+		myTable.setRowAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 
 		Vector myVector = new Vector();
 		Vector boolVector = new Vector();
@@ -497,12 +287,13 @@ public class StartingTime extends GolfBlock {
 		int count = 0;
 
 		for (int i = 0; i < boolVector.size(); i++) {
-			if (((Boolean) boolVector.elementAt(i)).booleanValue())
-				count++;
+			if (((Boolean) boolVector.elementAt(i)).booleanValue()) count++;
 		}
 
-		Link myLink = new Link(getFieldName(info.get_field_id()));//, "/start/start.jsp");
-		myLink.addParameter(PRM_ACTION,ACTION_GO_TO_TIMETABLE);
+		Link myLink = getSmallHeaderLink(getFieldName(info.get_field_id()));
+		if(_teeTimeTablePage != null) {
+			myLink.setPage(_teeTimeTablePage);
+		}
 		myLink.addParameter("hvar", "" + info.get_field_id());
 		myLink.addParameter("search", "1");
 		myLink.addParameter("club", "" + getFieldUnion(info.get_field_id()));
@@ -511,25 +302,23 @@ public class StartingTime extends GolfBlock {
 		myTable.add(myLink, 1, 1);
 		//		myTable.addText("" + getFieldUnion(info.get_field_id(), Conn), 1, 1);
 
-		Text smallText = getSmallText("");
-//		smallText.setFontSize(1);
+		Text smallText = getSmallHeader("");
+		//		smallText.setFontSize(1);
 
 		if ((count % 10 == 1 || (count % 100) % 10 == 1) && count % 100 != 11) {
 			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_time", "Available tee time") + ")");
 			myTable.add(smallText, 1, 1);
-		}
-		else if (count != 0) {
+		} else if (count != 0) {
 			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_times", "Available tee_times") + ")");
 			myTable.add(smallText, 1, 1);
-		}
-		else {
+		} else {
 			Table zero = new Table(1, 2);
 			zero.setCellspacing(0);
 			zero.setRowAlignment(1, "center");
 			zero.setHeight(1, "21");
 			zero.setWidth("381");
-			zero.add(getText(getResourceBundle().getLocalizedString("start.search.no_tee_times", "_")), 1, 1);
-			zero.setRowColor(1, COLOR3);
+			zero.add(getSmallHeader(getResourceBundle().getLocalizedString("start.search.no_tee_times", "_")), 1, 1);
+			zero.setRowStyleClass(1,getHeaderRowClass());
 			myTable.add(zero, 1, 2);
 			//					myTable.setRows(2);
 		}
@@ -560,7 +349,7 @@ public class StartingTime extends GolfBlock {
 
 					hour = getHours(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info) + ":00");
 
-					Times[links] = new Link(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info));//, "/start/start.jsp");
+					Times[links] = getLink(TimeVsGroupnum(Integer.parseInt(myVector.elementAt(i).toString()), info));
 
 					if (hour < 13)
 						Times[links].addParameter("hvenaer", "0");
@@ -569,18 +358,18 @@ public class StartingTime extends GolfBlock {
 					else
 						Times[links].addParameter("hvenaer", "2");
 
-					Times[links].addParameter(PRM_ACTION,ACTION_GO_TO_TIMETABLE);
+					if(_teeTimeTablePage != null) {
+						Times[links].setPage(_teeTimeTablePage);
+					}
 					Times[links].addParameter("hvar", "" + info.get_field_id());
 					Times[links].addParameter("search", "1");
 					Times[links].addParameter("club", "" + getFieldUnion(info.get_field_id()));
 					Times[links].addParameter("day", date1);
 
-					Times[links].setFontColor(COLOR5);
-
 					if (links % resultCol == 0) {
 						rows++;
 						resultTable.setRows(rows);
-						resultTable.setHeight(rows, "25");
+						resultTable.setRowStyleClass(rows,((rows%2==0)?getDarkRowClass():getLightRowClass()));
 					}
 
 					resultTable.add(Times[links], links % resultCol + 1, rows);
@@ -597,11 +386,8 @@ public class StartingTime extends GolfBlock {
 				resultTable.setColumnAlignment(i, "center");
 			}
 
-			resultTable.setHorizontalZebraColored(COLOR4, COLOR3);
 
 			resultTable.setRows(++rows);
-			resultTable.setHeight(rows, "25");
-			resultTable.setRowColor(rows, COLOR6);
 
 			myTable.add(resultTable, 1, 2);
 		}
@@ -618,12 +404,10 @@ public class StartingTime extends GolfBlock {
 				is_allowed = true;
 			}
 		}
-		if (!is_allowed)
-			throw new Exception("Error3");
+		if (!is_allowed) throw new Exception("Error3");
 
 		int numOfGroup = fjoldi / 4;
-		if (fjoldi % 4 > 0)
-			numOfGroup++;
+		if (fjoldi % 4 > 0) numOfGroup++;
 
 		Vector frameGroups = new Vector();
 		Vector Groups = new Vector();
@@ -677,9 +461,11 @@ public class StartingTime extends GolfBlock {
 				if (Integer.parseInt(group_num.elementAt(n).toString()) >= m && Integer.parseInt(group_num.elementAt(n).toString()) < (m + numOfGroup)) {
 					count++;
 				}
-				//				out.print( "<br>" +count + " > " + (numOfGroup * 4 - fjoldi) + " ||
+				//				out.print( "<br>" +count + " > " + (numOfGroup * 4 - fjoldi)
+				// + " ||
 				// ( " + (m
-				// + numOfGroup) + " > " + getLastGroup(info)+1 + " && " + count + " >
+				// + numOfGroup) + " > " + getLastGroup(info)+1 + " && " + count
+				// + " >
 				// " +
 				// (-(m-getLastGroup(info))*4 - fjoldi ) + " )" );
 				if (count > (numOfGroup * 4 - fjoldi) || (((m + numOfGroup) > getLastGroup(info) + 1) && (count > (-(m - getLastGroup(info)) * 4 - fjoldi)))) {
@@ -692,8 +478,7 @@ public class StartingTime extends GolfBlock {
 		}
 
 		for (int i = 0; i < Groups.size(); i++) {
-			if (Integer.parseInt(Groups.elementAt(i).toString()) < 1 || Integer.parseInt(Groups.elementAt(i).toString()) > getLastGroup(info))
-				boolGroups.set(i, new Boolean(false));
+			if (Integer.parseInt(Groups.elementAt(i).toString()) < 1 || Integer.parseInt(Groups.elementAt(i).toString()) > getLastGroup(info)) boolGroups.set(i, new Boolean(false));
 		}
 
 		return frameGroups;
@@ -709,8 +494,7 @@ public class StartingTime extends GolfBlock {
 		int lasthour = mySqlTime.get_hour();
 		int lastmin = mySqlTime.get_min();
 
-		if (!checkTime(firsthour, firstmin, lasthour, lastmin))
-			throw new Exception("Error1");
+		if (!checkTime(firsthour, firstmin, lasthour, lastmin)) throw new Exception("Error1");
 
 		int time = (lasthour - firsthour) * 60 + (lastmin - firstmin);
 
@@ -789,8 +573,7 @@ public class StartingTime extends GolfBlock {
 		for (int i = 0; i < union.length; i++) {
 			mySelectionBox.addMenuElement("" + union[i].getID(), union[i].getName());
 		}
-		if (union.length > 0)
-			mySelectionBox.setSelectedElement(Integer.toString(union[0].getID()));
+		if (union.length > 0) mySelectionBox.setSelectedElement(Integer.toString(union[0].getID()));
 		mySelectionBox.keepStatusOnAction();
 		return mySelectionBox;
 	}
@@ -888,10 +671,10 @@ public class StartingTime extends GolfBlock {
 	/*
 	 * public String getTime( int end, GolfField myGolfField) { int interval =
 	 * myGolfField.get_interval(); int openMin = myGolfField.get_open_min(); int
-	 * openHour = myGolfField.get_open_hour(); String Time = ""; for(int i = 1; i <=
-	 * end; i ++){ if (openMin >= 60){ openMin -= 60; openHour++; } if (openMin <
-	 * 10) Time = openHour + ":0" + openMin; else Time = openHour + ":" +
-	 * openMin; openMin += interval; } return Time; }
+	 * openHour = myGolfField.get_open_hour(); String Time = ""; for(int i = 1;
+	 * i <= end; i ++){ if (openMin >= 60){ openMin -= 60; openHour++; } if
+	 * (openMin < 10) Time = openHour + ":0" + openMin; else Time = openHour +
+	 * ":" + openMin; openMin += interval; } return Time; }
 	 */
 
 	public DropdownMenu insertDrowdown(String dropdownName, String auto, int bil) {
@@ -921,8 +704,7 @@ public class StartingTime extends GolfBlock {
 
 					myDropdown.addMenuElement(TimeVal, time);
 				}
-			}
-			else {
+			} else {
 				myDropdown.addMenuElement("24:00:00", "00:00");
 				continue;
 			}
@@ -965,8 +747,7 @@ public class StartingTime extends GolfBlock {
 					}
 					first = false;
 				}
-			}
-			else {
+			} else {
 				myDropdown.addMenuElement("24:00:00", "00:00");
 				continue;
 			}
@@ -987,8 +768,7 @@ public class StartingTime extends GolfBlock {
 		String TimeVal;
 		//		boolean first = true;
 		int pic_hour;
-		if (lastHour != 24)
-			lastHour++;
+		if (lastHour != 24) lastHour++;
 
 		for (int i = firstHour; i <= lastHour; i++) {
 			pic_hour = i;
@@ -1007,12 +787,10 @@ public class StartingTime extends GolfBlock {
 
 					myDropdown.addMenuElement(TimeVal, time);
 
-					if (i == lastHour)
-						break;
+					if (i == lastHour) break;
 
 				}
-			}
-			else {
+			} else {
 				myDropdown.addMenuElement("24:00:00", "00:00");
 				continue;
 			}
@@ -1106,24 +884,22 @@ public class StartingTime extends GolfBlock {
 
 	public String getFirstOpentime() throws SQLException, IOException {
 		String time = "08:00:00";
-		if (service.getFirstOpentime() != null)
-			time = service.getFirstOpentime().toSQLTimeString();
+		if (service.getFirstOpentime() != null) time = service.getFirstOpentime().toSQLTimeString();
 		return time;
 	}
 
 	public int getMaxDaysShown() throws SQLException, IOException {
-		return service.getMax_days_shown();
+		return service.getMaxDaysShown();
 	}
 
 	public String getLastClosetime() throws SQLException, IOException {
 		String time = "23:00:00";
-		if (service.getLastClosetime() != null)
-			time = service.getLastClosetime().toSQLTimeString();
+		if (service.getLastClosetime() != null) time = service.getLastClosetime().toSQLTimeString();
 		return time;
 	}
 
 	public int getFieldUnion(int field_id) throws SQLException, IOException, FinderException {
-		return service.get_field_union(field_id);
+		return service.getFieldUnion(field_id);
 	}
 
 	//	/#### Skilar Klukkustundinni úr streng á forminu 'klst:min:sec'
@@ -1180,10 +956,27 @@ public class StartingTime extends GolfBlock {
 		boolean isTrue = true;
 
 		for (int i = 0; i < myString.length(); i++) {
-			if (!(myString.charAt(i) == '0' || myString.charAt(i) == '1' || myString.charAt(i) == '2' || myString.charAt(i) == '3' || myString.charAt(i) == '4' || myString.charAt(i) == '5' || myString.charAt(i) == '6' || myString.charAt(i) == '7' || myString.charAt(i) == '8' || myString.charAt(i) == '9'))
-				isTrue = false;
+			if (!(myString.charAt(i) == '0' || myString.charAt(i) == '1' || myString.charAt(i) == '2' || myString.charAt(i) == '3' || myString.charAt(i) == '4' || myString.charAt(i) == '5' || myString.charAt(i) == '6' || myString.charAt(i) == '7' || myString.charAt(i) == '8' || myString.charAt(i) == '9')) isTrue = false;
 		}
 
 		return isTrue;
+	}
+
+
+
+	public ICPage getTeeTimesPage() {
+		return _teeTimesPage;
+	}
+
+	public void setTeeTimesPage(ICPage p) {
+		_teeTimesPage = p;
+	}
+
+	public ICPage getTeeTimeTablePage() {
+		return _teeTimeTablePage;
+	}
+
+	public void setTeeTimeTablePage(ICPage p) {
+		_teeTimeTablePage = p;
 	}
 }

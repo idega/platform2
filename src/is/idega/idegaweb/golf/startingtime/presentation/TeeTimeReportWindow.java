@@ -11,12 +11,12 @@ import com.idega.util.IWTimestamp;
 /**
  * @author gimmi
  */
-public class StartingtimeReportWindow extends GolfWindow {
+public class TeeTimeReportWindow extends GolfWindow {
 
 	public static final String PARAMETER_DATE = "sr_prm_d";
 	public static final String PARAMETER_FIELD_ID = "sr_prm_f";
 
-	public StartingtimeReportWindow() {
+	public TeeTimeReportWindow() {
 		super.setWidth(400);
 		super.setHeight(450);
 		super.setResizable(true);
@@ -24,15 +24,15 @@ public class StartingtimeReportWindow extends GolfWindow {
 
 	public void main(IWContext modinfo) throws Exception{
 		super.main(modinfo);
-		StartingtimeReport sr = new StartingtimeReport();
+		TeeTimeReport sr = new TeeTimeReport();
 		add(sr);
 	}
 	
 	public static Link getLink(IWTimestamp date, int fieldId, PresentationObject po) { 
 		Link print = new Link(po);
-		print.setWindowToOpen(StartingtimeReportWindow.class);
-		print.addParameter(StartingtimeReportWindow.PARAMETER_DATE, date.toSQLDateString());
-		print.addParameter(StartingtimeReportWindow.PARAMETER_FIELD_ID, fieldId);
+		print.setWindowToOpen(TeeTimeReportWindow.class);
+		print.addParameter(TeeTimeReportWindow.PARAMETER_DATE, date.toSQLDateString());
+		print.addParameter(TeeTimeReportWindow.PARAMETER_FIELD_ID, fieldId);
 		return print;
 	}
 

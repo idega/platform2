@@ -3,7 +3,8 @@ package is.idega.idegaweb.golf.startingtime.presentation;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
-import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 
 import java.sql.SQLException;
@@ -29,7 +30,7 @@ import com.idega.util.text.TextSoap;
 /**
  * @author gimmi
  */
-public class StartingtimeReport extends Block {
+public class TeeTimeReport extends GolfBlock {
 
 	public final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.golf";
 	public static final String PARAMETER_DATE = "sr_prm_d";
@@ -41,7 +42,7 @@ public class StartingtimeReport extends Block {
 	private String VIEW = VIEW_DAY;
 	private int numberInGroup = 4;
 
-	private TeeTimeBusiness ttBus;
+	private TeeTimeBusinessBean ttBus;
 	private IWResourceBundle iwrb;
 	private IWTimestamp stamp;
 	private Field field;
@@ -55,7 +56,7 @@ public class StartingtimeReport extends Block {
 		iwrb = getResourceBundle(modinfo);
 		
 		if (sFieldId != null) {
-			ttBus = new TeeTimeBusiness();
+			ttBus = new TeeTimeBusinessBean();
 			field = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(Integer.parseInt(sFieldId));
 			nf.setMaximumFractionDigits(2);
 			if (sView != null && sView.length() > 0) {
@@ -92,12 +93,12 @@ public class StartingtimeReport extends Block {
 	private Table getNavigationTable() {
 		Table table = getTable();
 		
-		Link day = new Link(iwrb.getLocalizedString("startingtime.day","Day"));
+		Link day = getLink(iwrb.getLocalizedString("startingtime.day","Day"));
 		day.addParameter(PARAMETER_VIEW, VIEW_DAY);
 		day.addParameter(PARAMETER_FIELD_ID, field.getID());
 		day.addParameter(PARAMETER_DATE, stamp.toSQLDateString());
 
-		Link week = new Link(iwrb.getLocalizedString("startingtime.week","Week"));
+		Link week = getLink(iwrb.getLocalizedString("startingtime.week","Week"));
 		week.addParameter(PARAMETER_VIEW, VIEW_WEEK);
 		week.addParameter(PARAMETER_FIELD_ID, field.getID());
 		week.addParameter(PARAMETER_DATE, stamp.toSQLDateString());
@@ -223,7 +224,7 @@ public class StartingtimeReport extends Block {
 		for (int i = 1; i <= 7; i++) {
 			++row;
 			fromStamp.addDays(1);
-			link = new Link(getText(iCal.getDayName(i, modinfo.getCurrentLocale(), iCal.SHORT)+" "+fromStamp.getLocaleDate(modinfo)));
+			link = getLink(iCal.getDayName(i, modinfo.getCurrentLocale(), iCal.SHORT)+" "+fromStamp.getLocaleDate(modinfo));
 			link.addParameter(PARAMETER_VIEW, VIEW_DAY);
 			link.addParameter(PARAMETER_FIELD_ID, field.getID());
 			link.addParameter(PARAMETER_DATE, fromStamp.toSQLDateString());
@@ -347,11 +348,6 @@ public class StartingtimeReport extends Block {
 		Table table = new Table();
 		table.setWidth("100%");
 		return table;
-	}
-	
-	private Text getText(String content) {
-		Text text = new Text(content);
-		return text;	
 	}
 	
 	private Text getHeaderText(String content) {

@@ -77,7 +77,7 @@ public class StartingTimeLogin extends GolfBlock {
 					AlignmentTable.setAlignment("center");
 					AlignmentTable.add(Text.getBreak());
 					AlignmentTable.add(Text.getBreak());
-					Link close = new Link("Loka glugga");
+					Link close = getLink("Loka glugga");
 					close.addParameter(closeParameterString, "true");
 					AlignmentTable.add(close);
 					myForm.add(AlignmentTable);

@@ -40,7 +40,7 @@ import com.idega.util.IWTimestamp;
 /**
  * @author laddi
  */
-public class StartingTimeAdmin extends GolfBlock {
+public class TeeTimeFieldConfiguration extends GolfBlock {
 
 	private StartService service = new StartService();
 	private StartingtimeFieldConfig _currentFieldConfig = null;

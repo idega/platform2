@@ -41,13 +41,13 @@ import com.idega.util.IWTimestamp;
 /**
  * @author laddi
  */
-public class StartingTimeAdminChange extends GolfBlock {
+public class AdminRegisterTeeTime extends GolfBlock {
 
 	private StartService service = new StartService();
 
 	public void main(IWContext modinfo) throws Exception {
 		int temp = 0;
-		getParentPage().setTitle("Skrá spilara");
+		getParentPage().setTitle(localize("start.register_player", "Register Player"));
 		getParentPage().setBackgroundColor("white");
 
 		Form myForm = new Form();
@@ -426,7 +426,7 @@ public class StartingTimeAdminChange extends GolfBlock {
 				myTable.add(getText(formatDate(funcDate, stime.getStartingtimeDate().toString())), 7, i + 2);
 				myTable.add(getText(group_num), 8, i + 2);
 				if (admin)
-					myTable.add(insertHyperlink(stime.getMember().getName(), stime.getMemberID(), StartingTimeAdminChange.class), 9, i + 2);
+					myTable.add(insertHyperlink(stime.getMember().getName(), stime.getMemberID(), AdminRegisterTeeTime.class), 9, i + 2);
 			}
 			String btnUpdateUrl = "/pics/rastimask/Takkar/Tuppfaera1.gif";
 			String btnCancelUrl = "/pics/rastimask/Takkar/Thaetta-vid1.gif";
@@ -460,14 +460,16 @@ public class StartingTimeAdminChange extends GolfBlock {
 	}
 
 	private Link insertHyperlink(String name, int value, String action) {
-		Link myLink = new Link(name);
+		Link myLink = getLink(name);
 		myLink.setURL(action);
 		myLink.addParameter(name, new Integer(value).toString());
 		return myLink;
 	}
 	
 	private Link insertHyperlink(String name, int value, Class action) {
-		Link myLink = new Link(name,action);
+		Link myLink = getLink(name);
+		myLink.setClassToInstanciate(action);
+		
 		myLink.addParameter(name, new Integer(value).toString());
 		return myLink;
 	}

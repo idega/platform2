@@ -7,7 +7,7 @@ import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
-import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
+import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ import com.idega.util.IWTimestamp;
 
 public class RegisterTime extends GolfWindow {
 
-  private TeeTimeBusiness business;
+  private TeeTimeBusinessBean business;
   private DropdownMenu unionDropdown;
   private Form myForm = null;
   private Table frameTable;
@@ -66,7 +66,7 @@ public class RegisterTime extends GolfWindow {
     frameTable.setWidth("100%");
     myForm.add(frameTable);
     this.add(myForm);
-    business = new TeeTimeBusiness();
+    business = new TeeTimeBusinessBean();
     unionDropdown = (DropdownMenu)GolfCacher.getUnionAbbreviationDropdown("club").clone();
     templText = getSmallText("");
     templText.setFontSize(1);

@@ -7,7 +7,7 @@ import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
-import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
+import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
 import is.idega.idegaweb.golf.startingtime.data.TeeTime;
 import is.idega.idegaweb.golf.startingtime.data.TeeTimeHome;
 import is.idega.idegaweb.golf.templates.page.GolfWindow;
@@ -50,7 +50,7 @@ import com.idega.util.text.TextSoap;
 
 public class AdminRegisterTime extends GolfWindow {
 
-	private TeeTimeBusiness business;
+	private TeeTimeBusinessBean business;
 	private Form myForm;
 	private Table frameTable;
 	private IWTimestamp currentDay;
@@ -92,7 +92,7 @@ public class AdminRegisterTime extends GolfWindow {
 		myForm.add(frameTable);
 		super.add(Text.getBreak());
 		super.add(myForm);
-		business = new TeeTimeBusiness();
+		business = new TeeTimeBusinessBean();
 		hadycapFormat = new DecimalFormat("###.0");
 	}
 
@@ -877,7 +877,7 @@ public class AdminRegisterTime extends GolfWindow {
 				if (!forPrinting) {
 					Paragraph p = new Paragraph();
 					p.setAlign("center");
-					Link print = new Link(_iwrb.getLocalizedString("startingtime.print", "print"));
+					Link print = getLink(_iwrb.getLocalizedString("startingtime.print", "print"));
 					print.setWindowToOpen(AdminRegisterTeeTimeWindow.class);
 					print.addParameter("date", date);
 					print.addParameter("field_id", currentField);
