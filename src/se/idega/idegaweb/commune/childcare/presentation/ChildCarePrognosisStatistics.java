@@ -29,7 +29,7 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
      */
     public ChildCarePrognosisStatistics() {
         // cache for 30 minutes
-       // setCacheable(getCacheKey(),30*60*1000);  //remove //
+       setCacheable(getCacheKey(),30*60*1000);
     }
     
     
@@ -206,6 +206,9 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(8, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(9, Table.HORIZONTAL_ALIGN_CENTER);
+		table.setColumnAlignment(10, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		return table;
 	}
