@@ -40,6 +40,7 @@ import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.Check;
+import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
@@ -66,6 +67,7 @@ import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.core.data.Address;
 import com.idega.core.data.ICFile;
@@ -762,6 +764,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public ChildCareApplication getUnhandledApplicationsByChildAndProvider(int childID, int providerID) throws FinderException, RemoteException {
+		String[] statuses = { String.valueOf(getStatusSentIn()) };
+		return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
 	}
 
 	public Collection getUnhandledApplicationsByProvider(School provider) {
@@ -2621,7 +2628,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			t.begin();
 
-			application = getChildCareApplicationHome().create();
+			try {
+				application = getUnhandledApplicationsByChildAndProvider(childID, providerID);
+			}
+			catch (FinderException fe) {
+				application = getChildCareApplicationHome().create();
+			}
 			application.setChildId(childID);
 			application.setProviderId(providerID);
 			application.setFromDate(fromDate.getDate());
@@ -2631,6 +2643,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (toDate != null) {
 				application.setRejectionDate(toDate.getDate());
 			}
+			GrantedCheck check = getCheckBusiness().getGrantedCheckByChild(childID);
+			if (check != null)
+				application.setCheck(check);
 	
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.TXT+ITextXMLHandler.PDF);
 			List buffers = pdfHandler.writeToBuffers(getTagMap(application,locale,fromDate,false),getXMLContractPdfURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
@@ -2659,6 +2674,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				Timestamp removedDate = null;
 				if (toDate != null)
 					removedDate = toDate.getTimestamp();
+					
+				if (groupID == -1) {
+					String className = "Placerade barn";
+					SchoolClass group = null;
+					try {
+						group = getSchoolBusiness().getSchoolClassHome().findByNameAndSchool(className, providerID);
+					}
+					catch (Exception e) {
+						group = getSchoolBusiness().storeSchoolClass(-1, className, providerID, -1, -1, -1);
+					}
+					
+					if (group != null)
+						groupID = ((Integer) group.getPrimaryKey()).intValue();
+					else
+						return false;
+				}
 				getSchoolBusiness().storeSchoolClassMember(childID, groupID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), null);
 			}
 			t.commit();
