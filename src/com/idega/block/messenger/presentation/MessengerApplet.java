@@ -505,7 +505,7 @@ public class MessengerApplet extends Applet implements Runnable{
   }
 
   public void update(Graphics g){
-    super.paint(g);
+    super.repaint();
   }
 
   public void paint(Graphics g){
