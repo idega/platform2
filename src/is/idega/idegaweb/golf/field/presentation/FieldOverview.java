@@ -356,6 +356,14 @@ public class FieldOverview extends GolfBlock {
 			myTable.setColor(a + 3, 1, getTeeColor(tee[a].getIntColumnValue("tee_color_id")));
 		}
 
+		if (tee.length > 0) {
+			if (tee[0].getStringColumnValue("hole_name") != null) {
+				Text holeName = getBigHeader(tee[0].getStringColumnValue("hole_name"));
+				outerTable.add(holeName, 1, row++);
+				outerTable.setHeight(row++, 6);
+			}
+		}
+
 		TeeImage[] teeImage = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()), "hole_number", hole_number);
 		if (teeImage.length != 0) {
 			Image teeMynd = new Image(teeImage[0].getImageID());
@@ -367,14 +375,6 @@ public class FieldOverview extends GolfBlock {
 		outerTable.setAlignment(1, row, Table.HORIZONTAL_ALIGN_CENTER);
 		outerTable.add(myTable, 1, row++);
 		outerTable.setHeight(row++, 6);
-
-		if (tee.length > 0) {
-			if (tee[0].getStringColumnValue("hole_name") != null) {
-				Text holeName = getHeader(tee[0].getStringColumnValue("hole_name"));
-				outerTable.add(holeName, 1, row++);
-				outerTable.setHeight(row++, 3);
-			}
-		}
 
 		TextReader fieldText = null;
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", hole_number);
