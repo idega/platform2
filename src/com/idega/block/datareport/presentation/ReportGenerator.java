@@ -151,8 +151,13 @@ public class ReportGenerator extends Block {
 		//_dynamicFields
 	}
 	
+	private int calculateTextFieldWidthForString(String str){
+		int fontSize = 9;
+		return (int) (str.length()*fontSize*0.55);
+	}
+	
 	private void generateLayout(IWContext iwc) throws IOException, JRException{
-		int columnWidth = 100;
+		int columnWidth = 120;
 		int prmLableWidth = 95;
 		int prmValueWidth = 55;
 		String tmpName = iwc.getParameter(getParameterName(PRM_REPORT_NAME));
@@ -176,18 +181,26 @@ public class ReportGenerator extends Block {
 				while (iter.hasNext()) {
 					ReportableField element = (ReportableField)iter.next();
 					String prmName =element.getName();
-					designTemplate.addHeaderParameter(_prmLablePrefix+prmName,prmLableWidth,prmName,String.class,prmValueWidth);
+					
+					String tmpPrmLabel = (String)_parameterMap.get(_prmLablePrefix+prmName);
+					String tmpPrmValue = (String)_parameterMap.get(prmName);
+					int tmpPrmLabelWidth = (tmpPrmLabel != null)?calculateTextFieldWidthForString(tmpPrmLabel):prmLableWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null)?calculateTextFieldWidthForString(tmpPrmLabel):prmValueWidth;
+					designTemplate.addHeaderParameter(_prmLablePrefix+prmName,tmpPrmLabelWidth,prmName,String.class,tmpPrmValueWidth);
 				}
 			} else {
 				Iterator iter = _dynamicFields.iterator();
 				while (iter.hasNext()) {
 					ClassDescription element = (ClassDescription)iter.next();
 					String prmName =element.getName();
-					designTemplate.addHeaderParameter(_prmLablePrefix+prmName,prmLableWidth,prmName,String.class,prmValueWidth);
+					
+					String tmpPrmLabel = (String)_parameterMap.get(_prmLablePrefix+prmName);
+					String tmpPrmValue = (String)_parameterMap.get(prmName);
+					int tmpPrmLabelWidth = (tmpPrmLabel != null)?calculateTextFieldWidthForString(tmpPrmLabel):prmLableWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null)?calculateTextFieldWidthForString(tmpPrmValue):prmValueWidth;
+					designTemplate.addHeaderParameter(_prmLablePrefix+prmName,tmpPrmLabelWidth,prmName,String.class,tmpPrmValueWidth);
 				}
 			}
-			
-
 		}
 		
 		
