@@ -7,6 +7,7 @@ package is.idega.idegaweb.member.presentation;
 import java.rmi.RemoteException;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
@@ -199,6 +200,41 @@ public class FamilyRelationConnector extends UserRelationConnector {
 		catch (RemoveException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.member.presentation.UserRelationConnector#hasActiveRelations(com.idega.user.data.User, com.idega.user.data.User, java.lang.String, java.lang.String)
+	 */
+	protected boolean hasActiveRelations(IWContext iwc,User roleUser, User victimUser, String mainType, String reverseType) {
+		try {
+			MemberFamilyLogic familyService = getMemberFamilyLogic(iwc);
+			String childType = familyService.getChildRelationType();
+			if(mainType!=null && reverseType!=null){
+				int roleUserID = ((Integer)roleUser.getUserGroup().getPrimaryKey()).intValue();
+				int victimUserID = ((Integer)victimUser.getUserGroup().getPrimaryKey()).intValue();
+				if(childType.equalsIgnoreCase(mainType)){
+					//if(reverseType.equalsIgnoreCase(familyService.getParentRelationType()))
+						return victimUser.hasRelationTo(roleUserID,reverseType);
+					//else if (reverseType.equalsIgnoreCase(familyService.getCustodianRelationType()))
+					//	return victimUser.hasRelationTo(roleUserID,reverseType);
+				}
+				else if(childType.equalsIgnoreCase(reverseType)){
+					return roleUser.hasRelationTo(victimUserID,mainType);
+				}
+			}
+			else return super.hasActiveRelations(iwc,roleUser,victimUser,mainType,reverseType);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (EJBException e) {
+			e.printStackTrace();
+		}
+		return super.hasActiveRelations(iwc,roleUser,victimUser,mainType,reverseType);
+			
+		
+			
+		
 	}
 
 }

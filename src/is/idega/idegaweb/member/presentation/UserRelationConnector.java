@@ -207,7 +207,7 @@ public class UserRelationConnector extends Window {
 			row++;
 
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
-			mainTable.add(getActionButton(relatedUser, user, type), 1, row);
+			mainTable.add(getActionButton(iwc,relatedUser, user, type,rtype), 1, row);
 			row++;
 			mainTable.add(searcher.getUniqueUserParameter((Integer) relatedUser.getPrimaryKey()));
 		}
@@ -231,17 +231,10 @@ public class UserRelationConnector extends Window {
 
 	}
 
-	private PresentationObject getActionButton(User roleUser, User victimUser, String type) {
+	private PresentationObject getActionButton(IWContext iwc,User roleUser, User victimUser, String mainType,String reverseType) {
 		// if we have a relation we offer a remove action
-		if (hasSelectedType()
-			&& roleUser.hasRelationTo(((Integer) victimUser.getUserGroup().getPrimaryKey()).intValue(), type)) {
-			String detachWarning = 
-				iwrb.getLocalizedString("warning_detach_relation", "Are you shure you want to remove this relation ?");
-			SubmitButton detach =
-				getActionButton(iwrb.getLocalizedString("detach", "Detach"), ACTION_DETACH, detachWarning);
-			return detach;
-		}
-		else if(hasSelectedReverseType() && victimUser.hasRelationTo(((Integer) roleUser.getUserGroup().getPrimaryKey()).intValue(), rtype)) {
+		//System.err.println("type "+mainType+" reversetype "+reverseType);
+		if (hasActiveRelations(iwc,roleUser,victimUser,mainType,reverseType)) {
 			String detachWarning = 
 			iwrb.getLocalizedString("warning_detach_relation", "Are you shure you want to remove this relation ?");
 			SubmitButton detach =
@@ -257,8 +250,21 @@ public class UserRelationConnector extends Window {
 				getActionButton(iwrb.getLocalizedString("attach", "Attach"), ACTION_ATTACH, attachWarning);
 			return attach;
 		}
-	
+}
 
+protected boolean hasActiveRelations(IWContext iwc,User roleUser, User victimUser, String mainType,String reverseType){
+	boolean returner = true , reltypes = false;
+	
+	if(mainType!=null){
+		returner &=( roleUser.hasRelationTo(((Integer) victimUser.getUserGroup().getPrimaryKey()).intValue(), mainType));
+		reltypes = true;
+	}
+	if(reverseType!=null)	{
+ 		returner &=(victimUser.hasRelationTo(((Integer) roleUser.getUserGroup().getPrimaryKey()).intValue(), reverseType));
+		reltypes = true;
+	} 
+ 	returner &=reltypes;
+ 	return returner;
 }
 
 protected SubmitButton getActionButton(String display, int action, String warningMsg) {
