@@ -1380,8 +1380,8 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//each age and create a row and insert into an ordered map by league
 		//then iterate the map and insert into the final report collection.
 		Collection clubs = getWorkReportBusiness().getWorkReportsForRegionalUnionCollection(year.intValue(), regionalUnionsFilter);
-
-		Map clubMap = new TreeMap();
+		
+		Map ruMap = new TreeMap();
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
 		while (iter.hasNext()) {
@@ -1396,6 +1396,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			System.out.println("Procesing club \"" + cName + "\".");
 			String regUniIdentifier = getRegionalUnionIdentifier(report);
 
+			Map clubMap = (Map) ruMap.get(regUniIdentifier);
+			if(clubMap==null) {
+				clubMap = new TreeMap();
+				ruMap.put(regUniIdentifier, clubMap);
+			}
+			
 			ReportableData regData = (ReportableData) clubMap.get(cName);
 			// create a new ReportData for each row
 			if(regData==null) {
@@ -1439,8 +1445,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		}
 
 		// iterate through the ordered map and ordered lists and add to the final collection
-		reportCollection.addAll(clubMap.values());
-
+		Iterator ruIter = ruMap.values().iterator();
+		while(ruIter.hasNext()) {
+			Map clubMap = (Map) ruIter.next();
+			reportCollection.addAll(clubMap.values());
+		}
 		ReportableField[] sortFields = new ReportableField[] {regionalUnionAbbreviation, clubName};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
