@@ -7,6 +7,7 @@
 package com.idega.block.survey.business;
 
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 
 import com.idega.block.survey.data.SurveyAnswer;
 import com.idega.block.survey.data.SurveyAnswerHome;
@@ -18,6 +19,8 @@ import com.idega.block.survey.data.SurveyQuestion;
 import com.idega.block.survey.data.SurveyQuestionHome;
 import com.idega.block.survey.data.SurveyReply;
 import com.idega.block.survey.data.SurveyReplyHome;
+import com.idega.block.survey.data.SurveyStatus;
+import com.idega.block.survey.data.SurveyStatusHome;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.category.data.InformationFolder;
 import com.idega.core.localisation.data.ICLocale;
@@ -43,6 +46,7 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 	private SurveyQuestionHome questionHome;
 	private SurveyReplyHome surveyReplyHome;
 	private SurveyParticipantHome surveyParticipantHome;
+	private SurveyStatusHome statHome;
 	
 	public final static char ANSWERTYPE_SINGLE_CHOICE = 's';
 	public final static char ANSWERTYPE_MULTI_CHOICE = 'm';
@@ -62,6 +66,7 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		questionHome = (SurveyQuestionHome)IDOLookup.getHome(SurveyQuestion.class);
 		surveyReplyHome = (SurveyReplyHome)IDOLookup.getHome(SurveyReply.class);		
 		surveyParticipantHome = (SurveyParticipantHome)IDOLookup.getHome(SurveyParticipant.class);		
+		statHome = (SurveyStatusHome) IDOLookup.getHome(SurveyStatus.class);
 	}
 	
 	public SurveyEntity createSurvey(InformationFolder folder, String name, String description, IWTimestamp startTime, IWTimestamp endTime) throws IDOLookupException, CreateException{
@@ -251,7 +256,13 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		}
 		return surveyParticipantHome;
 	}
-
+	
+	public SurveyStatusHome getSurveyStatusHome() throws IDOLookupException {
+		if(statHome==null){
+			initializeHomes();
+		}
+		return statHome;
+	}
 	/* (non-Javadoc)
 	 * @see com.idega.block.survey.business.SurveyBusiness#reportParticipation(com.idega.block.survey.data.SurveyEntity, java.lang.String)
 	 */
@@ -262,5 +273,23 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		sp.store();
 		return sp;
 	}
-
+	
+	public SurveyStatus getSurveyStatus(SurveyEntity survey) {
+		try {
+			return statHome.findBySurvey(survey);
+		} catch (FinderException e) {
+			try {
+				SurveyStatus status = statHome.create();
+				status.setSurvey(survey);
+				status.setIsModified(true);
+				status.store();
+				return status;
+			} catch (CreateException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
+	
 }

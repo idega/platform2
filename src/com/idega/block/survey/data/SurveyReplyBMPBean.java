@@ -7,6 +7,10 @@
 package com.idega.block.survey.data;
 
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 
 /**
@@ -103,6 +107,10 @@ public class SurveyReplyBMPBean extends GenericEntity implements SurveyReply{
 	public String getAnswer(){
 		return getStringColumnValue(COLUMNNAME_ANSWER);
 	}
+	
+	public SurveyAnswer getSurveyAnswer() {
+		return (SurveyAnswer)getColumnValue(COLUMNNAME_ANSWER_ID);
+	}
 
 	public SurveyEntity getSurvey(){
 		return (SurveyEntity)getColumnValue(COLUMNNAME_SURVEY_ID);
@@ -112,6 +120,9 @@ public class SurveyReplyBMPBean extends GenericEntity implements SurveyReply{
 		return (SurveyQuestion)getColumnValue(COLUMNNAME_QUESTION_ID);
 	}
 	
+	public Collection ejbFindByQuestion(SurveyQuestion question) throws FinderException{
+		return this.idoFindAllIDsByColumnOrderedBySQL(COLUMNNAME_QUESTION_ID, question.getPrimaryKey().toString());
+		//return this.idoFindAllIDsByColumnOrderedBySQL(COLUMNNAME_QUESTION_ID, question.getPrimaryKey().toString(), COLUMNNAME_ANSWER_ID);
+	}
 	
-
 }

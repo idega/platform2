@@ -184,10 +184,14 @@ public class SurveyEntityBMPBean extends com.idega.data.GenericEntity implements
 			querypart2.append(getColumnNameEndTime());
 			querypart2.appendGreaterThanOrEqualsSign();
 			querypart2.append(time);
-		query.appendWithinParentheses(querypart2);
+			querypart2.appendOr();
+			querypart2.append(getColumnNameEndTime());
+			querypart2.appendLessThanOrEqualsSign();
+			querypart2.append("0000-00-00");				//MySQL Fix ??	
+			query.appendWithinParentheses(querypart2);
 		query.appendOrderBy(getColumnNameStartTime());
 		
-//		System.out.println(query);
+		//System.out.println(query.toString());
 		
 		return idoFindPKsByQuery(query);		
 	}

@@ -23,6 +23,7 @@ import com.idega.block.survey.business.SurveyBusinessBean;
 import com.idega.block.survey.data.SurveyAnswer;
 import com.idega.block.survey.data.SurveyEntity;
 import com.idega.block.survey.data.SurveyQuestion;
+import com.idega.block.survey.data.SurveyStatus;
 import com.idega.business.IBOLookup;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.data.ICLocale;
@@ -123,6 +124,7 @@ public class Survey extends FolderBlock {
 	
 	public final static String MODE_EDIT = "edit";
 	public static final String MODE_SURVEY = "survey";
+	public static final String MODE_RESULTS = "results";
 	private String _mode = MODE_SURVEY;
 	public final static String PRM_MODE = "su_mode";
 	public final static String PRM_SWITCHTO_MODE = "su_swto_mode";
@@ -285,6 +287,16 @@ public class Survey extends FolderBlock {
 				editor.setMessageTextHighlightStyle(messageTextHighlightStyle);
 			}
 			add(editor);
+		} else if (_mode.equals(MODE_RESULTS)) { 
+			SurveyResultEditor editor = new SurveyResultEditor();
+			if(messageTextStyle != null){
+				editor.setMessageTextStyle(messageTextStyle);
+			}
+			
+			if(messageTextHighlightStyle != null){
+				editor.setMessageTextHighlightStyle(messageTextHighlightStyle);
+			}
+			add(editor);
 		} else {
 			if(this.hasEditPermission()){
 				add(getAdminPart());
@@ -341,6 +353,10 @@ public class Survey extends FolderBlock {
 				_sBusiness.reportParticipation(_currentSurvey,_participant);	 	
 			}
 		}
+		
+		SurveyStatus status = _sBusiness.getSurveyStatus(_currentSurvey);
+		status.setIsModified(true);
+		status.store();
 	}
 
 	/**
@@ -742,6 +758,12 @@ public class Survey extends FolderBlock {
 			adminLink.addParameter(PRM_SWITCHTO_MODE,MODE_EDIT);
 			adminLink.addParameter(SurveyEditor.PRM_SURVEY_ID,_currentSurvey.getPrimaryKey().toString());
 			table.add(adminLink);
+			
+			Image resultImage = _iwb.getImage("shared/info.gif");
+			Link resultLink = new Link(resultImage);
+			resultLink.addParameter(PRM_SWITCHTO_MODE,MODE_RESULTS);
+			resultLink.addParameter(SurveyResultEditor.PARAMETER_SURVEY_ID, _currentSurvey.getPrimaryKey().toString());
+			table.add(resultLink);
 		}
 
 		return table;
