@@ -7,6 +7,7 @@
  */
 package is.idega.idegaweb.member.isi.block.accounting.presentation.plugin;
 
+import is.idega.idegaweb.member.isi.block.accounting.business.FinanceExtraBasketInfo;
 import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound;
 import is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRoundHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
@@ -16,6 +17,8 @@ import is.idega.idegaweb.member.isi.block.accounting.presentation.CheckoutPlugin
 
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.idega.block.basket.business.BasketBusiness;
@@ -45,12 +48,9 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 
 	protected static final String LABEL_DIVISION = "isi_acc_alw_div";
 	protected static final String LABEL_GROUP = "isi_acc_alw_group";
-	protected static final String LABEL_TARIFF = "isi_acc_alw_tariff";
+	protected static final String LABEL_INFO = "isi_acc_alw_info";
 	protected static final String LABEL_USER = "isi_acc_alw_user";
-	protected static final String LABEL_DATE = "isi_acc_alw_date";
 	protected static final String LABEL_AMOUNT = "isi_acc_alw_amount";
-	protected static final String LABEL_ROUND_NAME = "isi_acc_alw_round_name";
-	protected static final String LABEL_EXECUTED_BY = "isi_acc_alw_executed_by";
 	protected static final String LABEL_SUM = "isi_acc_alw_sum";
 
 	private String backTableStyle = "back";
@@ -131,12 +131,7 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 		backTable.setHeight(1, 1, "6");
 		backTable.setWidth(1, 2, "6");
 		backTable.setWidth(3, 2, "6");
-		Table heading = new Table();
-		heading.setColor("#ffffff");
-		heading.setStyleClass(borderTableStyle);
-		heading.setWidth(Table.HUNDRED_PERCENT);
 		Table t = new Table();
-		heading.setCellpadding(5);
 		t.setWidth(Table.HUNDRED_PERCENT);
 		t.setCellpadding(5);
 		t.setColor("#ffffff");
@@ -151,79 +146,71 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 		labelGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelUser = new Text(iwrb.getLocalizedString(LABEL_USER, "User"));
 		labelUser.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelTariff = new Text(iwrb.getLocalizedString(LABEL_TARIFF,
-				"Tariff"));
-		labelTariff.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelDate = new Text(iwrb.getLocalizedString(LABEL_DATE, "Date"));
-		labelDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelInfo = new Text(iwrb.getLocalizedString(LABEL_INFO, "Info"));
+		labelInfo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelAmount = new Text(iwrb.getLocalizedString(LABEL_AMOUNT,
 				"Amount"));
 		labelAmount.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelExecutedBy = new Text(iwrb.getLocalizedString(
-				LABEL_EXECUTED_BY, "Executed by"));
-		labelExecutedBy.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-		Text labelRoundName = new Text(iwrb.getLocalizedString(
-				LABEL_ROUND_NAME, "Round name"));
-		labelRoundName.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+		Text labelAmountPaid = new Text(iwrb.getLocalizedString(LABEL_AMOUNT,
+		"Amount paid"));
+		labelAmountPaid.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 		Text labelSum = new Text(iwrb.getLocalizedString(LABEL_SUM, "Sum"));
 		labelSum.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 
 		t.add(labelDiv, 1, row);
 		t.add(labelGroup, 2, row);
-		t.add(labelUser, 3, row);
-		t.add(labelTariff, 4, row);
+		t.add(labelUser, 3, row);		
+		t.add(labelInfo, 4, row);
 		t.add(labelAmount, 5, row);
+		t.add(labelAmountPaid, 6, row);
 		row++;
 
 		NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
 		nf.setMaximumFractionDigits(0);
 
-/*		try {
-			Map basket = getBasketBusiness(iwc).getBasket();
-			
-			
-			Collection col = getFinanceEntryHome().findAllByAssessmentRound(
-					round);
-
-			int headingRow = 1;
-			heading.add(labelRoundName, 1, headingRow);
-			heading.add(labelExecutedBy, 2, headingRow);
-			heading.add(labelDate, 3, headingRow++);
-			heading.add(round.getName(), 1, headingRow);
-			heading.add(round.getExecutedBy().getName(), 2, headingRow);
-			IWTimestamp ex = new IWTimestamp(round.getStartTime());
-			heading.add(ex.getDateString("dd.MM.yyyy"), 3, headingRow);
-
-			if (col != null && !col.isEmpty()) {
-				Iterator it = col.iterator();
+		try {
+			List paid = null;
+            try {
+                paid = getBasketBusiness(iwc).getExtraInfo();
+            } catch (RemoteException e1) {
+                e1.printStackTrace();
+            }
+            
+            if (paid != null && !paid.isEmpty()) {
+				Iterator it = paid.iterator();
 				double sum = 0;
 				while (it.hasNext()) {
-					FinanceEntry entry = (FinanceEntry) it.next();
-					if (entry.getDivision() != null)
-						t.add(entry.getDivision().getName(), 1, row);
-					t.add(entry.getGroup().getName(), 2, row);
-					t.add(entry.getUser().getName(), 3, row);
-					if (entry.getInfo() != null)
-						t.add(entry.getInfo(), 4, row);
-					t.add(nf.format(entry.getAmount()), 5, row);
+					FinanceExtraBasketInfo info = (FinanceExtraBasketInfo) it.next();
+					if (info.division != null)
+						t.add(info.division.getName(), 1, row);
+					t.add(info.group.getName(), 2, row);
+					t.add(info.user.getName(), 3, row);
+					if (info.info != null)
+						t.add(info.info, 4, row);
+					t.add(nf.format(info.amount.doubleValue()), 5, row);
 					t.setAlignment(5, row, "RIGHT");
-					sum += entry.getAmount();
+					t.add(nf.format(info.amountPaid), 6, row);
+					t.setAlignment(6, row, "RIGHT");
+					sum += info.amountPaid;
 					row++;
 				}
-				t.mergeCells(1, row, 5, row);
+				t.mergeCells(1, row, 6, row);
 				t.add("<hr>", 1, row++);
-				t.add(labelSum, 4, row);
-				t.add(nf.format(sum), 5, row);
-				t.setAlignment(5, row, "RIGHT");
+				t.add(labelSum, 5, row);
+				t.add(nf.format(sum), 6, row);
+				t.setAlignment(6, row, "RIGHT");
 			}
+            
+            try {
+                getBasketBusiness(iwc).emtpyExtraInfo();
+            } catch (RemoteException e2) {
+                e2.printStackTrace();
+            }
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
-		} catch (FinderException e) {
-			e.printStackTrace();
-		}*/
+		}
 
-		backTable.add(heading, 2, 2);
-		backTable.add(t, 2, 3);
+		backTable.add(t, 2, 2);
 		
 		returnObject.add(backTable);
 		returnObject.add(new PrintButton("Prenta"));

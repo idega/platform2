@@ -30,6 +30,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.Form;
@@ -54,6 +55,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 	private final static String LABEL_TARIFF = "isi_acc_ma_tariff";
 	private final static String LABEL_AMOUNT = "isi_acc_ma_amount";
 	private final static String LABEL_INFO = "isi_acc_ma_info";
+	private final static String LABEL_PAYMENT_DATE = "isi_acc_ma_payment_date";
 		
 	private final static String ERROR_NO_GROUP_SELECTED = "isi_acc_ma_no_group_selected";
 	private final static String ERROR_NO_TARIFF_SELECTED = "isi_acc_ma_no_tariff_selected";
@@ -77,6 +79,7 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		String tariff = iwc.getParameter(LABEL_TARIFF);
 		String amount = iwc.getParameter(LABEL_AMOUNT);
 		String info = iwc.getParameter(LABEL_INFO);
+		String paymentDate = iwc.getParameter(LABEL_PAYMENT_DATE);
 
 		if (group == null || "".equals(group)) {
 			errorList.add(ERROR_NO_GROUP_SELECTED);
@@ -94,10 +97,23 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			return false;
 		}
 		
+		IWTimestamp paymentDateTimestamp = null;
+		
+		try {
+			paymentDateTimestamp = new IWTimestamp(paymentDate);
+		}
+		catch (IllegalArgumentException e) {
+			paymentDateTimestamp = new IWTimestamp(Long.parseLong(paymentDate));
+			paymentDateTimestamp.setHour(0);
+			paymentDateTimestamp.setMinute(0);
+			paymentDateTimestamp.setSecond(0);
+			paymentDateTimestamp.setMilliSecond(0);
+		}
+		
 		boolean insert = false;
 		
 		try {
-			insert = getAccountingBusiness(iwc).insertManualAssessment(getClub(), getDivision(), getUser(), group, tariff, amount, info, iwc.getCurrentUser());
+			insert = getAccountingBusiness(iwc).insertManualAssessment(getClub(), getDivision(), getUser(), group, tariff, amount, info, iwc.getCurrentUser(), paymentDateTimestamp.getTimestamp());
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -187,11 +203,14 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			labelAmount.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			Text labelInfo = new Text(iwrb.getLocalizedString(LABEL_INFO, "Info"));
 			labelInfo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+			Text labelPaymentDate = new Text(iwrb.getLocalizedString(LABEL_PAYMENT_DATE, "Payment date"));
+			labelPaymentDate.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			
 			inputTable.add(labelUsersGroups, 1, row);
 			inputTable.add(labelTariff, 2, row);
 			inputTable.add(labelAmount, 3, row);
-			inputTable.add(labelInfo, 4, row++);
+			inputTable.add(labelInfo, 4, row);
+			inputTable.add(labelPaymentDate, 5, row++);
 			
 			DropdownMenu usersGroupsInput = new DropdownMenu(LABEL_USERS_GROUPS);
 			Collection groups = getGroupsForUser(iwc);
@@ -253,14 +272,16 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			TextInput infoInput = new TextInput(LABEL_INFO);
 			infoInput.setLength(20);
 			infoInput.setMaxlength(255);
+			DatePicker paymentDateInput = new DatePicker(LABEL_PAYMENT_DATE);
 			
 			inputTable.add(usersGroupsInput, 1, row);
 			inputTable.add(tariffInput, 2, row);
 			inputTable.add(amountInput, 3, row);
 			inputTable.add(infoInput, 4, row);
+			inputTable.add(paymentDateInput, 5, row);
 			
 			SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
-			inputTable.add(submit, 4, row++);	
+			inputTable.add(submit, 6, row++);	
 			
 			try {
 			    IWTimestamp now = IWTimestamp.RightNow();

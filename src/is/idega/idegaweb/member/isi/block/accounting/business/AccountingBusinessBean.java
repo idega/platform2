@@ -716,12 +716,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 			
 			entry.setAmount(amount);
 			entry.setDateOfEntry(IWTimestamp.getTimestampRightNow());
-//			if (info != null && !"".equals(info))
-//				entry.setInfo(info);
-//			else
-//				entry.setInfo(tariff.getText());
-//			entry.setTariffID(((Integer)tariff.getPrimaryKey()).intValue());
-//			entry.setTariffTypeID(tariff.getTariffTypeId());
 			entry.setStatusCreated();
 			entry.setTypePayment();
 			entry.setPaymentType(type);
@@ -740,31 +734,53 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 	}
 	
 	public void equalizeBasket(Map basket, float amount, IWUserContext iwuc) {
-            if (basket != null && !basket.isEmpty()) {
-                Iterator it = basket.keySet().iterator();
+        if (basket != null && !basket.isEmpty()) {
+            List toRemove = new ArrayList();
+            
+            BasketBusiness bBiz = getBasketBusiness(iwuc);
+            Iterator it = basket.keySet().iterator();
 
-                while (it.hasNext() && amount != 0.0f) {
-                    BasketEntry bEntry = (BasketEntry) basket
-                            .get(it.next());
-                    FinanceEntry entry = (FinanceEntry) bEntry.getItem();
-                    if (amount >= entry.getItemPrice().doubleValue()) {
-                        amount -= entry.getItemPrice().doubleValue();
-                        entry.setAmountEqualized(entry.getAmountEqualized() + entry.getItemPrice().doubleValue());
-                        entry.setEntryOpen(false);
-                        try {
-                            System.out.println("Removing equalized entry");
-                            getBasketBusiness(iwuc).removeItem(entry);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }                        
-                    } else {
-                        entry.setAmountEqualized(entry.getAmountEqualized() + amount);
-                        amount = 0.0f;
+            while (it.hasNext() && amount != 0.0f) {
+                BasketEntry bEntry = (BasketEntry) basket
+                        .get(it.next());
+                FinanceEntry entry = (FinanceEntry) bEntry.getItem();
+                if (amount >= entry.getItemPrice().doubleValue()) {
+                    FinanceExtraBasketInfo info = new FinanceExtraBasketInfo(entry, entry.getItemPrice().doubleValue());
+                    try {
+                        bBiz.addExtraInfo(info);
+                    } catch (RemoteException e1) {
+                        e1.printStackTrace();
                     }
-                    
-                    entry.store();
+                    amount -= entry.getItemPrice().doubleValue();
+                    entry.setAmountEqualized(entry.getAmountEqualized() + entry.getItemPrice().doubleValue());
+                    entry.setEntryOpen(false);
+                    toRemove.add(entry);
+                } else {
+                    FinanceExtraBasketInfo info = new FinanceExtraBasketInfo(entry, amount);
+                    try {
+                        bBiz.addExtraInfo(info);
+                    } catch (RemoteException e1) {
+                        e1.printStackTrace();
+                    }
+                    entry.setAmountEqualized(entry.getAmountEqualized() + amount);
+                    amount = 0.0f;
+                }
+                
+                entry.store();
+            }
+            
+            if (!toRemove.isEmpty()) {
+                Iterator it2 = toRemove.iterator();
+                while (it2.hasNext()) {
+                    FinanceEntry entry = (FinanceEntry) it2.next();
+                    try {
+                        getBasketBusiness(iwuc).removeItem(entry);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }                        
                 }
             }
+        }
 	}
 
     private BasketBusiness getBasketBusiness(IWUserContext iwuc) {
@@ -775,7 +791,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
         }
     }
 
-	public boolean insertManualAssessment(Group club, Group div, User user, String groupId, String tariffId, String amount, String info, User currentUser) {
+	public boolean insertManualAssessment(Group club, Group div, User user, String groupId, String tariffId, String amount, String info, User currentUser, Timestamp paymentDate) {
 		Group group = null;
 		if (groupId != null) {
 			try {
@@ -813,10 +829,10 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 		catch (Exception e) {
 		}
 
-		return insertManualAssessment(club, div, user, group, tariff, am, info, currentUser);
+		return insertManualAssessment(club, div, user, group, tariff, am, info, currentUser, paymentDate);
 	}
 
-	public boolean insertManualAssessment(Group club, Group div, User user, Group group, ClubTariff tariff, float amount, String info, User currentUser) {
+	public boolean insertManualAssessment(Group club, Group div, User user, Group group, ClubTariff tariff, float amount, String info, User currentUser, Timestamp paymentDate) {
 		try {
 			FinanceEntry entry = getFinanceEntryHome().create();
 			entry.setUser(user);
@@ -844,6 +860,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements Accounting
 				entry.setEntryOpen(true);
 			}
 			entry.setInsertedByUser(currentUser);
+			entry.setPaymentDate(paymentDate);
 			entry.store();
 
 			

@@ -48,6 +48,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	protected final static String COLUMN_DISCOUNT_PERC = "discount_perc";
 	protected final static String COLUMN_DISCOUNT_AMOUNT = "discount_amount";
 	protected final static String COLUMN_DISCOUNT_INFO = "discount_info";
+	protected final static String COLUMN_PAYMENT_DATE = "payment_date";
 	
 	protected final static String STATUS_CREATED = "C";
 	protected final static String STATUS_READY = "R";
@@ -96,6 +97,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		addAttribute(COLUMN_DISCOUNT_PERC, "Discount %", true, true, Double.class);
 		addAttribute(COLUMN_DISCOUNT_AMOUNT, "Discount amount", true, true, Double.class);
 		addAttribute(COLUMN_DISCOUNT_INFO, "Discount info", true, true, String.class, 255);
+		addAttribute(COLUMN_PAYMENT_DATE, "Payment date", true, true, Timestamp.class);
 		
 		setNullable(COLUMN_USER_ID, false);
 		setNullable(COLUMN_ASSESSMENT_ROUND_ID, true);
@@ -359,6 +361,14 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	    return getStringColumnValue(COLUMN_DISCOUNT_INFO);
 	}
 	
+	public Timestamp getPaymentDate() {
+		return (Timestamp) getColumnValue(COLUMN_PAYMENT_DATE);
+	}
+
+	public void setPaymentDate(Timestamp date) {
+		setColumn(COLUMN_PAYMENT_DATE ,date);
+	}
+
 	public Collection ejbFindAllByAssessmentRound(AssessmentRound round) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
