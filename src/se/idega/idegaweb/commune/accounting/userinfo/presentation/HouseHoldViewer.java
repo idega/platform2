@@ -501,10 +501,13 @@ public class HouseHoldViewer extends AccountingBlock {
 	}
 
 	private String getButtonOnClickForWindow(IWContext iwc, Class windowClass, String userParameterName) {
-		String prm = "";
-		if (userParameterName != null)
-			prm = "&" + userParameterName + "=" + "'+this.form.usr_drp.value+' ";
-		String URL = Window.getWindowURL(windowClass, iwc) + prm;
+	    String URL =null;
+		if (userParameterName != null){
+		    URL = Window.getWindowURLWithParameter(windowClass,iwc,userParameterName,"'+this.form.usr_drp.value+' ");
+		}
+		else{
+		    URL = Window.getWindowURL(windowClass,iwc);
+		}
 		return "javascript:" + Window.getCallingScriptString(windowClass, URL, true, iwc) + ";return false;";
 	}
 
