@@ -344,7 +344,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       STREET_NAME, textEditorConverter,
       POSTAL_CODE_ID, dropDownPostalCodeConverter};
     EntityBrowser browser = new EntityBrowser();
-    browser.setLeadingEntity(WorkReportDivisionBoard.class);
+    browser.setLeadingEntity(WorkReportMember.class);
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     browser.setUseEventSystem(false);
     // set parameters
