@@ -16,6 +16,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
 import com.idega.block.user.data.UserExtraInfo;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -23,7 +26,9 @@ import com.idega.business.IBOServiceBean;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.contact.data.PhoneType;
+import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
@@ -227,7 +232,9 @@ public class UserInfoBusinessBean extends IBOServiceBean implements UserInfoBusi
 	public UserExtraInfo getInfo(User user) {
 		try {
 			return (UserExtraInfo) com.idega.data.IDOLookup.findByPrimaryKey(UserExtraInfo.class, Integer.parseInt(user.getPrimaryKey().toString()));
-		} catch(Exception e) {
+		} catch(FinderException e) {
+			// dont have to handle this, just return null
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -248,6 +255,23 @@ public class UserInfoBusinessBean extends IBOServiceBean implements UserInfoBusi
 		}
 		
 		return group;
+	}
+	
+	/**
+	 * Gets a groups address
+	 * @param iwc IWContext
+	 * @param group The group to get address for
+	 * @return The groups address
+	 */
+	public Address getGroupAddress(IWContext iwc, Group group) {
+		Address address = null;
+		try {
+			address = getGroupBusiness(iwc).getGroupMainAddress(group);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return address;
 	}
 	
 	private UserBusiness getUserBusiness(IWApplicationContext iwc){
