@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -54,6 +55,7 @@ import com.idega.util.IWTimestamp;
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceChildcareThread
  */
 public abstract class BillingThread extends Thread{
+	protected Logger log = Logger.getLogger(this.getClass().getName());
 	protected static final String BATCH_TEXT = "invoice.batchrun";		//Localize this text in the user interface
 	protected int days;
 	protected float months;
@@ -101,7 +103,7 @@ public abstract class BillingThread extends Thread{
 			paymentHeader = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).
 					findBySchoolCategorySchoolPeriod(school,category,currentDate);
 		} catch (FinderException e) {
-			//If No header found, create it
+			//If No header found, create it	
 			paymentHeader = (PaymentHeader) IDOLookup.create(PaymentHeader.class);
 			paymentHeader.setSchoolID(school);
 			paymentHeader.setSchoolCategoryID(category);
@@ -116,6 +118,8 @@ public abstract class BillingThread extends Thread{
 
 		//Update or create the payment record
 		try {
+			System.out.println("payHeader "+paymentHeader.getPrimaryKey());
+			System.out.println("RuleSpec "+postingDetail.getRuleSpecType());
 			paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).
 					findByPaymentHeaderAndRuleSpecType(paymentHeader,postingDetail.getRuleSpecType());
 			//If it already exists, just update the changes needed.

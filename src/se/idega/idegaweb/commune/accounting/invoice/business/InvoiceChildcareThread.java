@@ -43,6 +43,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolType;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -95,6 +96,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
 			createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
+			batchRunLoggerDone();
 		}
 	}
 	
@@ -138,13 +140,14 @@ public class InvoiceChildcareThread extends BillingThread{
 						//Fill in all the field available at this times
 						invoiceHeader.setSchoolCategoryID(category);
 						invoiceHeader.setPeriod(startPeriod.getDate());
-						invoiceHeader.setCustodianId(custodian);
+						invoiceHeader.setCustodianId(((Integer)custodian.getPrimaryKey()).intValue());
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
 						invoiceHeader.setOwnPosting(categoryPosting.getAccount());
 						invoiceHeader.setDoublePosting(categoryPosting.getCounterAccount());
 						invoiceHeader.setStatus(ConstantStatus.PRELIMINARY);
-						System.out.println("Store Invoice Header with Category '"+category+"' and custodian "+custodian);
+						System.out.println("Store Invoice Header with Category '"+invoiceHeader.getSchoolCategoryID());
+						System.out.println("and custodian "+invoiceHeader.getCustodianId());
 						System.out.println("Databean: "+invoiceHeader);
 						invoiceHeader.store();
 					}
@@ -161,7 +164,10 @@ public class InvoiceChildcareThread extends BillingThread{
 				
 					//Get all the parameters needed to select the correct contract
 					SchoolClassMember schoolClassMember = contract.getSchoolClassMmeber();
-					String childcareType = schoolClassMember.getSchoolType().getName();
+					System.out.println("Contract id "+contract.getPrimaryKey());
+					System.out.println("SchoolClassMmeberid "+schoolClassMember.getPrimaryKey());
+					SchoolType schoolType = schoolClassMember.getSchoolType();
+					String childcareType =schoolType.getName();
 					//childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
 					hours = contract.getCareTime();
 					age = new Age(contract.getChild().getDateOfBirth());
@@ -182,9 +188,19 @@ public class InvoiceChildcareThread extends BillingThread{
 							conditions,						//The conditions that need to fulfilled
 							totalSum,						//Sent in to be used for "Specialutrakning"
 							contract);						//Sent in to be used for "Specialutrakning"
+						System.out.println("RuleSpecType: "+postingDetail.getRuleSpecType());
 					}
 					catch (RegulationException e1) {
 						// TODO Auto-generated catch block
+						log.warning("Could not get posting detail for:\n" +						"  Category:"+category.getCategory()+"\n"+
+						"  PaymentFlowConstant.OUT:"+PaymentFlowConstant.OUT+"\n"+
+						"  currentDate:"+currentDate+"\n"+
+						"  RuleTypeConstant.DERIVED:"+RuleTypeConstant.DERIVED+"\n"+
+						"  RegSpecConstant.CHECK:"+RegSpecConstant.CHECK+"\n"+
+						"  conditions:"+conditions.size()+"\n"+
+						"  totalSum:"+totalSum+"\n"+
+						"  contract:"+contract.getPrimaryKey()+"\n"
+							);
 						e1.printStackTrace();
 					}
 		

@@ -52,10 +52,10 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(COLUMN_INVOICE_HEADER, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_PAYMENT_RECORD_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_PROVIDER_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_SCHOOL_CLASS_MEMBER_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_INVOICE_HEADER, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_PAYMENT_RECORD_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_PROVIDER_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_SCHOOL_CLASS_MEMBER_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_INVOICE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_RULE_TEXT, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DAYS, "", true, true, java.lang.Integer.class);
@@ -71,7 +71,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_AMOUNT_VAT, "", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_NOTES, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_ORDER_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_RULE_SPEC_TYPE, "", true, true, java.lang.String.class, 255);
+//		addAttribute(COLUMN_RULE_SPEC_TYPE, "", true, true, java.lang.String.class, 255);
 		addAttribute(COLUMN_OWN_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class, 1000);
 		addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
@@ -81,6 +81,8 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addManyToOneRelationship(COLUMN_SCHOOL_CLASS_MEMBER_ID, SchoolClassMember.class);
 		addManyToOneRelationship(COLUMN_PROVIDER_ID, School.class);
 		addManyToOneRelationship(COLUMN_RULE_SPEC_TYPE, RegulationSpecType.class);
+		
+		setNullable(COLUMN_INVOICE_HEADER, true);
 	}
 	public int getInvoiceHeader() {
 		return getIntColumnValue(COLUMN_INVOICE_HEADER);

@@ -27,7 +27,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.ProviderTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness;
-import se.idega.idegaweb.commune.accounting.resource.data.Resource;
+import se.idega.idegaweb.commune.accounting.resource.data.ResourceClassMember;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
@@ -92,10 +92,10 @@ public abstract class PaymentThreadSchool extends BillingThread{
 	
 	private void dispTime(String s){
 		long t = System.currentTimeMillis();
-		time = t - start;
-		log.info(s+"  total time:"+(time/1000f));
+		long tt;
+		tt = t - start;
 		time = t - stop;
-		log.info(s+"  from last stop, time:"+(time/1000f));
+		log.info(s+"  total time:"+(tt/1000f)+"  from last stop, time:"+(time/1000f));
 		stop = t;
 	}
 
@@ -266,7 +266,7 @@ public abstract class PaymentThreadSchool extends BillingThread{
 												"  provider "+provider.getSchool().getName()+
 												"  Date "+currentDate.toString()+"\n");
 										String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
-//										dispTime("about to create payment record");
+										dispTime("about to create payment record");
 										createPaymentRecord(postingDetail,postings[0],postings[1]);
 										dispTime("created payment record");
 										
@@ -336,18 +336,18 @@ public abstract class PaymentThreadSchool extends BillingThread{
 										dispTime("Done with oppen verksamhet + fritidsverksamhet");
 
 										//Get all the resources for the child
-										Iterator resourceIter = getResourceBusiness().getResourcePlacementsByMemberId((Integer)schoolClassMember.getStudent().getPrimaryKey()).iterator();
+										Iterator resourceIter = getResourceBusiness().getResourcePlacementsByMemberId((Integer)schoolClassMember.getPrimaryKey()).iterator();
 										while (resourceIter.hasNext()) {
-											Resource resource = (Resource) resourceIter.next();
-											dispTime("Gotten resource "+resource.getResourceName());
+											ResourceClassMember resource = (ResourceClassMember) resourceIter.next();
+											dispTime("Gotten resource "+resource.getResource().getResourceName());
 											ArrayList resourceConditions = new ArrayList();
-											resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE,resource.getResourceName()));
+											resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE,resource.getResource().getResourceName()));
 											
 											Collection regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
 												category.getCategory(),			//The ID that selects barnomsorg in the regulation
 												PaymentFlowConstant.OUT, 		//The payment flow is out
 												currentDate,						//Current date to select the correct date range
-												RuleTypeConstant.DERIVED,		//The conditiontype
+												RuleTypeConstant.MANUAL,		//The conditiontype
 												resourceConditions				//The conditions that need to fulfilled
 												);
 

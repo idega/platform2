@@ -47,6 +47,7 @@ public class PaymentThreadElementarySchool extends PaymentThreadSchool{
 			//This is a spawned off thread, so we cannot report back errors to the browser, just log them
 			e.printStackTrace();
 			createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
+			batchRunLoggerDone();
 		}
 	}
 }

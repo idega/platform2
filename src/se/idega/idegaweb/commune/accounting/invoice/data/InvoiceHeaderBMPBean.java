@@ -41,7 +41,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_PERIOD, "", true, true, java.sql.Date.class);
-		addAttribute(COLUMN_CUSTODIAN_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_CUSTODIAN_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_STATUS, "", true, true, java.lang.String.class, 1);
 		addAttribute(COLUMN_DATE_CREATED, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_DATE_ADJUSTED, "", true, true, java.sql.Date.class);
