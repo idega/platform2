@@ -297,17 +297,17 @@ public class CampusAllocator extends ModuleObjectContainer{
     int col = 1;
     boolean ifLong = ContractId < 0? true:false;
 
-    Frame.add(boldText(iwrb.getLocalizedString("nr","Nr")),col++,row);
-    Frame.add(boldText(iwrb.getLocalizedString("a","A")),col++,row);
-    Frame.add(boldText(iwrb.getLocalizedString("name","Name")),col++,row);
-    Frame.add(boldText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
-    Frame.add(boldText(iwrb.getLocalizedString("residence","Residence")),col++,row);
+    Frame.add(headerText(iwrb.getLocalizedString("nr","Nr")),col++,row);
+    Frame.add(headerText(iwrb.getLocalizedString("a","A")),col++,row);
+    Frame.add(headerText(iwrb.getLocalizedString("name","Name")),col++,row);
+    Frame.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),col++,row);
+    Frame.add(headerText(iwrb.getLocalizedString("residence","Residence")),col++,row);
     if(ifLong)
-      Frame.add(boldText(iwrb.getLocalizedString("legal_residence","Legal residence")),col++,row);
-    Frame.add(boldText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
-    Frame.add(boldText(iwrb.getLocalizedString("phone","Phone")),col++,row);
+      Frame.add(headerText(iwrb.getLocalizedString("legal_residence","Legal residence")),col++,row);
+    Frame.add(headerText(iwrb.getLocalizedString("mobile_phone","Mobile phone")),col++,row);
+    Frame.add(headerText(iwrb.getLocalizedString("phone","Phone")),col++,row);
     if(ifLong)
-      Frame.add(boldText(iwrb.getLocalizedString("application","Application")),col++,row);
+      Frame.add(headerText(iwrb.getLocalizedString("application","Application")),col++,row);
 
     List L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId);
     Hashtable HT = ContractFinder.hashOfApplicantsContracts();

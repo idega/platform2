@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.7 2001/08/19 16:39:02 aron Exp $
+ * $Id: ContractFinder.java,v 1.8 2001/08/19 16:45:41 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -158,7 +158,7 @@ public abstract class ContractFinder {
       sql.append(order);
     }
     String sSQL = sql.toString();
-    System.err.println(sSQL);
+    //System.err.println(sSQL);
     try{
       return  EntityFinder.findAll(new Contract(),sql.toString());
     }
