@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.26 2003/11/06 10:27:17 anders Exp $
+ * $Id: PostingParameterList.java,v 1.27 2003/11/25 23:04:04 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.26 2003/11/06 10:27:17 anders Exp $
+ * $Id: PostingParameterList.java,v 1.27 2003/11/25 23:04:04 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -76,8 +76,9 @@ public class PostingParameterList extends AccountingBlock {
 	private final static String KEY_REMOVE = "posting_parm_list.remove";
 	private final static String KEY_REMOVE_CONFIRM = "posting_parm_list.remove_confirm";
 	private final static String KEY_CLICK_REMOVE = "posting_parm_list.click_to_remove";
-	private final static String KEY_DEFAULT_BLANK = "posting_parm_list.blank";
 	private final static String KEY_SCHOOL_YEAR = "posting_parm_list.school_year";
+
+	private final static String BLANK = " ";
 
 	private final static String PARAM_SEARCH = "button_search";
 	private final static String PARAM_NEW = "button_new";
@@ -216,28 +217,27 @@ public class PostingParameterList extends AccountingBlock {
 					list.add(link);
 
 					if (p.getActivity() == null) {
-						list.add(KEY_DEFAULT_BLANK, "");					
+						list.add(BLANK);					
 					} else {
-						list.add(p.getActivity().getLocalizationKey(), 
-								p.getActivity().getLocalizationKey());
+						list.add(p.getActivity().getName());
 					}
 					
 					if (p.getRegSpecType() == null) {
-						list.add(KEY_DEFAULT_BLANK, "");					
+						list.add(BLANK);					
 					} else {
 						list.add(p.getRegSpecType().getLocalizationKey(), 
 								p.getRegSpecType().getLocalizationKey());
 					}
 					
 					if (p.getCompanyType() == null) {
-						list.add(KEY_DEFAULT_BLANK, "");					
+						list.add(BLANK);					
 					} else {
 						list.add(p.getCompanyType().getLocalizedKey(), 
 								p.getCompanyType().getLocalizedKey());
 					}
 					
 					if (p.getCommuneBelonging() == null) {
-						list.add(KEY_DEFAULT_BLANK, "");					
+						list.add(BLANK);					
 					} else {
 						list.add(p.getCommuneBelonging().getLocalizationKey(), 
 								p.getCommuneBelonging().getLocalizationKey());
@@ -246,7 +246,7 @@ public class PostingParameterList extends AccountingBlock {
 					if (p.getSchoolYear1() != null && p.getSchoolYear2() != null) {
 						list.add(p.getSchoolYear1().getSchoolYearName() + "-" + p.getSchoolYear2().getSchoolYearName()); 
 					} else {
-						list.add(KEY_DEFAULT_BLANK, "");					
+						list.add(BLANK);					
 					}
 
 					int accountLength = pBiz.getPostingFieldByDateAndFieldNo(_currentFromDate, 1);						
