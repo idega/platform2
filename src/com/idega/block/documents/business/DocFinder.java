@@ -115,6 +115,7 @@ public class DocFinder {
             DocLink link = new DocLink(boxLinkID);
             return link;
         } catch (SQLException e) {
+            e.printStackTrace();
             return null;
         }
     }

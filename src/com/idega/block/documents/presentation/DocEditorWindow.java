@@ -50,52 +50,24 @@ public class DocEditorWindow extends IWAdminWindow {
     private final static int _ACTION_UPLOADFILE = 2;
     private final static int _ACTION_SAVEDOC = 3;
     private final static int _ACTION_CLOSEWITHOUTSAVING = 4;
+    private final static int _ACTION_DELETEDOCLINK = 5;
     private int _action = _ACTION_OPENWINDOW;
     private final static String _PRM_LASTACTION = "doc_l_act";
     private final static String _PRM_ACTION = "doc_act";
 
     private final static int _MODE_NEWDOC = 0;
-    /**
-     *  Description of the Field
-     */
     public final static int _MODE_EDITDOC = 1;
-    /**
-     *  Description of the Field
-     */
     public final static int _MODE_DELETE = 2;
-    /**
-     *  Description of the Field
-     */
     public final static int _MODE_VERSION = 3;
     private int _mode = _MODE_NEWDOC;
 
-    /**
-     *  Description of the Field
-     */
     public static String _PRM_MODE = "doc_mode";
-    /**
-     *  Description of the Field
-     */
+    private static final String _PRM_NEW_MODE = "doc_mode_n";
     public static String _PRM_DOC_ID = "doc_update";
-    /**
-     *  Description of the Field
-     */
     public static String _PRM_OBJECT_ID = DocBusiness.PARAMETER_OBJECT_ID;
-    /**
-     *  Description of the Field
-     */
     public static String _PRM_OBJECT_INSTANCE_ID = DocBusiness.PARAMETER_OBJECT_INSTANCE_ID;
-    /**
-     *  Description of the Field
-     */
     public static String _PRM_FOLDER_ID = DocBusiness.PARAMETER_FOLDER_ID;
-    /**
-     *  Description of the Field
-     */
     public static String _PRM_CONTENT_LOCALE_IDENTIFIER = DocBusiness.PARAMETER_CONTENT_LOCALE_IDENTIFIER;
-    /**
-     *  Description of the Field
-     */
     public static String _PRM_CATEGORY_ID = DocBusiness.PARAMETER_CATEGORY_ID;
 
     private boolean _hasEditpermission = false;
@@ -156,8 +128,6 @@ public class DocEditorWindow extends IWAdminWindow {
      */
     public void main(IWContext iwc) throws Exception {
 
-        this.debugParameters(iwc);
-
         business = FolderBlockBusiness.getInstance();
 
         _hasEditpermission = true;
@@ -166,7 +136,6 @@ public class DocEditorWindow extends IWAdminWindow {
         _iwrb = getResourceBundle(iwc);
         addTitle(_iwrb.getLocalizedString("doc_admin", "Doc Admin"));
         Locale currentLocale = iwc.getCurrentLocale();
-        Locale chosenLocale;
 
         try {
             _userID = LoginBusiness.getUser(iwc).getID();
@@ -180,17 +149,14 @@ public class DocEditorWindow extends IWAdminWindow {
 
         String sLocaleId = iwc.getParameter(DocBusiness.PARAMETER_LOCALE_DROP);
 
-        int iLocaleId = -1;
         if (sLocaleId != null) {
-            iLocaleId = Integer.parseInt(sLocaleId);
-            chosenLocale = TextFinder.getLocale(iLocaleId);
+            _localeID = Integer.parseInt(sLocaleId);
         } else {
-            chosenLocale = currentLocale;
-            iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);
+            _localeID = ICLocaleBusiness.getLocaleId(currentLocale);
         }
 
         setActionAndMode(iwc);
-        processParameters(iwc, iLocaleId, sLocaleId);
+        processParameters(iwc);
         setDefultValues();
 
         //debug
@@ -212,11 +178,10 @@ public class DocEditorWindow extends IWAdminWindow {
                     switch (_mode) {
                         case _MODE_NEWDOC:
                         case _MODE_EDITDOC:
-                            lineUpElements(iLocaleId, instanceId);
+                            lineUpElements();
                             break;
                         case _MODE_DELETE:
-                            deleteDocLink(iwc);
-                            closeEditor(iwc);
+                            confirmLineup();
                             break;
                         default:
                             addLeft("MODE: " + _mode + ", not yet supported");
@@ -227,21 +192,15 @@ public class DocEditorWindow extends IWAdminWindow {
                 case _ACTION_CHANGELOCALE:
                 case _ACTION_CHANGETYPE:
                 case _ACTION_UPLOADFILE:
-                    lineUpElements(iLocaleId, instanceId);
+                    lineUpElements();
                     break;
                 case _ACTION_SAVEDOC:
                     System.out.println("Saving...");
                     switch (_type) {
                         case DocBusiness.LINK:
-                            saveLink(iwc, iLocaleId);
-                            closeEditor(iwc);
-                            break;
                         case DocBusiness.FILE:
-                            saveFile(iwc, iLocaleId);
-                            closeEditor(iwc);
-                            break;
                         case DocBusiness.PAGE:
-                            savePage(iwc, iLocaleId);
+                            saveDocLink(iwc);
                             closeEditor(iwc);
                             break;
                         default:
@@ -252,6 +211,10 @@ public class DocEditorWindow extends IWAdminWindow {
                     }
                     break;
                 case _ACTION_CLOSEWITHOUTSAVING:
+                    closeEditor(iwc);
+                    break;
+                case _ACTION_DELETEDOCLINK:
+                    deleteDocLink(iwc);
                     closeEditor(iwc);
                     break;
                 default:
@@ -286,18 +249,28 @@ public class DocEditorWindow extends IWAdminWindow {
     }
 
 
-    /**
-     *  Sets the actionAndMode attribute of the DocEditorWindow object
-     *
-     *@param  iwc  The new actionAndMode value
-     */
     private void setActionAndMode(IWContext iwc) {
 
         // mode
-        try {
-            _mode = Integer.parseInt(iwc.getParameter(_PRM_MODE));
-        } catch (Exception ex) {
-            _mode = _MODE_NEWDOC;
+        String newMode = iwc.getParameter(_PRM_NEW_MODE);
+        String mode = iwc.getParameter(_PRM_MODE);
+        if( newMode != null){
+          try {
+            _mode = Integer.parseInt(newMode);
+          }
+          catch (Exception ex) {
+            try {
+                _mode = Integer.parseInt(mode);
+            } catch (Exception e) {
+                _mode = _MODE_NEWDOC;
+            }
+          }
+        } else {
+          try {
+              _mode = Integer.parseInt(mode);
+          } catch (Exception ex) {
+              _mode = _MODE_NEWDOC;
+          }
         }
 
         this.addHiddenInput(new HiddenInput(_PRM_MODE, Integer.toString(_mode)));
@@ -336,157 +309,62 @@ public class DocEditorWindow extends IWAdminWindow {
     }
 
 
-    /**
-     *  Description of the Method
-     *
-     *@param  iwc        Description of the Parameter
-     *@param  iLocaleId  Description of the Parameter
-     *@param  sLocaleID  Description of the Parameter
-     */
-    private void processParameters(IWContext iwc, int iLocaleId, String sLocaleID) {
 
-        if (iwc.getParameter(_PRM_TYPE) != null) {
+    private void processParameters(IWContext iwc) {
+
+        com.idega.block.documents.data.DocLink editLink = null;
+
+        if (iwc.getParameter(_PRM_DOC_ID) != null) {
             try {
-                _type = Integer.parseInt(iwc.getParameter(_PRM_TYPE));
+                _linkID = Integer.parseInt(iwc.getParameter(_PRM_DOC_ID));
+                this.getUnderlyingForm().maintainParameter(_PRM_DOC_ID);
             } catch (NumberFormatException e) {
-                _type = -1;
+                _linkID = -1;
             }
-        } else {
-            if (iwc.getParameter(_PRM_TYPE_OLD_VALUE) != null) {
-                try {
-                    _type = Integer.parseInt(iwc.getParameter(_PRM_TYPE_OLD_VALUE));
-                } catch (NumberFormatException e) {
-                    _type = -1;
-                }
+
+            if(_linkID != -1 && _mode == _MODE_EDITDOC && _action == _ACTION_OPENWINDOW){
+              editLink = DocFinder.getLink(_linkID);
+//              if(editLink == null){
+//                // ERROR
+//              }
             }
+
         }
 
-        String sLocale = iwc.getParameter(DocBusiness.PARAMETER_CONTENT_LOCALE_IDENTIFIER);
+        String sLocale = iwc.getParameter(_PRM_CONTENT_LOCALE_IDENTIFIER);
         if (sLocale != null) {
             try {
                 _contentLocaleId = Integer.parseInt(sLocale);
-                this.addHiddenInput(new HiddenInput(DocBusiness.PARAMETER_CONTENT_LOCALE_IDENTIFIER, Integer.toString(_contentLocaleId)));
+                this.addHiddenInput(new HiddenInput(_PRM_CONTENT_LOCALE_IDENTIFIER, Integer.toString(_contentLocaleId)));
             } catch (NumberFormatException e) {
                 ICLocale locale = ICLocaleBusiness.getICLocale(sLocale);
                 if (locale != null) {
                     _contentLocaleId = locale.getID();
-                    this.addHiddenInput(new HiddenInput(DocBusiness.PARAMETER_CONTENT_LOCALE_IDENTIFIER, Integer.toString(_contentLocaleId)));
+                    this.addHiddenInput(new HiddenInput(_PRM_CONTENT_LOCALE_IDENTIFIER, Integer.toString(_contentLocaleId)));
                 } else {
                     _contentLocaleId = -1;
                 }
             }
         }
 
-        String localeString = iwc.getParameter(DocBusiness.PARAMETER_LOCALE_ID);
-        if (localeString != null) {
-            try {
-                if (localeString != null) {
-                    _localeID = Integer.parseInt(localeString);
-                } else {
-                    _localeID = -1;
-                }
-            } catch (NumberFormatException e) {
-                _localeID = -1;
-            }
-        }
+//        String localeString = iwc.getParameter(DocBusiness.PARAMETER_LOCALE_ID);
+//        if (localeString != null) {
+//            try {
+//                if (localeString != null) {
+//                    _localeID = Integer.parseInt(localeString);
+//                } else {
+//                    _localeID = -1;
+//                }
+//            } catch (NumberFormatException e) {
+//                _localeID = -1;
+//            }
+//        }
 
         if (iwc.getParameter(DocBusiness.PARAMETER_OBJECT_ID) != null) {
             try {
                 _iObjId = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_OBJECT_ID));
             } catch (NumberFormatException e) {
                 _iObjId = -1;
-            }
-        }
-
-        if (iwc.getParameter(DocBusiness.PARAMETER_TARGET) != null) {
-            _target = iwc.getParameter(DocBusiness.PARAMETER_TARGET);
-        } else {
-            _target = null;
-        }
-
-        if (iwc.getParameter(_PRM_LINK_NAME) != null) {
-            _docLinkName = iwc.getParameter(_PRM_LINK_NAME);
-        } else {
-            _docLinkName = null;
-        }
-
-        if (iwc.getParameter(DocBusiness.PARAMETER_LINK_ID) != null) {
-            try {
-                _linkID = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_LINK_ID));
-            } catch (NumberFormatException e) {
-                _linkID = -1;
-            }
-        }
-
-        if ((Integer) iwc.getSessionAttribute(DocBusiness.PARAMETER_LINK_ID) != null) {
-            try {
-                _linkID = ((Integer) iwc.getSessionAttribute(DocBusiness.PARAMETER_LINK_ID)).intValue();
-            } catch (NumberFormatException e) {
-                _linkID = -1;
-            }
-        }
-
-        if (iwc.getParameter(DocBusiness.PARAMETER_CATEGORY_ID) != null) {
-            try {
-                _infoCatID = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_CATEGORY_ID));
-            } catch (NumberFormatException e) {
-                _infoCatID = -1;
-            }
-        }
-
-        if (iwc.getParameter(_PRM_FILE_ID) != null) {
-            try {
-                _fileID = Integer.parseInt(iwc.getParameter(_PRM_FILE_ID));
-            } catch (NumberFormatException e) {
-                _fileID = -1;
-            }
-            this.addHiddenInput(new HiddenInput(_PRM_LAST_UPLOADED_FILE, iwc.getParameter(_PRM_FILE_ID)));
-        } else if (iwc.getParameter(_PRM_LAST_UPLOADED_FILE) != null) {
-            try {
-                _fileID = Integer.parseInt(iwc.getParameter(_PRM_LAST_UPLOADED_FILE));
-            } catch (NumberFormatException e) {
-                _pageID = -1;
-            }
-            switch (_action) {
-                case _ACTION_UPLOADFILE:
-                    break;
-                default:
-                    this.addHiddenInput(new HiddenInput(_PRM_LAST_UPLOADED_FILE, iwc.getParameter(_PRM_LAST_UPLOADED_FILE)));
-                    break;
-            }
-        }
-
-        if (iwc.getParameter(_PRM_PAGE_ID) != null) {
-            try {
-                _pageID = Integer.parseInt(iwc.getParameter(_PRM_PAGE_ID));
-            } catch (NumberFormatException e) {
-                _pageID = -1;
-            }
-            this.addHiddenInput(new HiddenInput(_PRM_LAST_SELECTED_PAGE, iwc.getParameter(_PRM_PAGE_ID)));
-        } else if (iwc.getParameter(_PRM_LAST_SELECTED_PAGE) != null) {
-            try {
-                _pageID = Integer.parseInt(iwc.getParameter(_PRM_LAST_SELECTED_PAGE));
-            } catch (NumberFormatException e) {
-                _pageID = -1;
-            }
-            this.addHiddenInput(new HiddenInput(_PRM_LAST_SELECTED_PAGE, iwc.getParameter(_PRM_LAST_SELECTED_PAGE)));
-        }
-
-        if (iwc.getParameter(_PRM_LINK_URL) != null) {
-            _linkUrl = iwc.getParameter(_PRM_LINK_URL);
-            if (_linkUrl.equals("")) {
-                _linkUrl = null;
-            }
-            if (_linkUrl != null) {
-                this.addHiddenInput(new HiddenInput(_PRM_LAST_LINK_URL, _linkUrl));
-            }
-        } else if (iwc.getParameter(_PRM_LAST_LINK_URL) != null) {
-            _linkUrl = iwc.getParameter(_PRM_LAST_LINK_URL);
-            if (_linkUrl.equals("")) {
-                _linkUrl = null;
-            }
-            if (_linkUrl != null) {
-                this.addHiddenInput(new HiddenInput(_PRM_LAST_LINK_URL, _linkUrl));
             }
         }
 
@@ -516,8 +394,133 @@ public class DocEditorWindow extends IWAdminWindow {
                 _folderID = -1;
             }
         }
+
+        if(editLink != null){  // if _mode = _MODE_EDITDOC
+          _target = editLink.getTarget();
+          _linkUrl = editLink.getURL();
+          _docLinkName = editLink.getName();
+          _infoCatID = editLink.getCategoryID();
+          _fileID = editLink.getFileID();
+          _pageID = editLink.getPageID();
+
+          if(_linkUrl != null){
+            _type = DocBusiness.LINK;
+          } else if(_pageID != -1){
+            _type = DocBusiness.PAGE;
+          } else if(_fileID != -1){
+            _type = DocBusiness.FILE;
+          }
+
+        } else {
+
+          if (iwc.getParameter(_PRM_TYPE) != null) {
+              try {
+                  _type = Integer.parseInt(iwc.getParameter(_PRM_TYPE));
+              } catch (NumberFormatException e) {
+                  _type = -1;
+              }
+          } else {
+              if (iwc.getParameter(_PRM_TYPE_OLD_VALUE) != null) {
+                  try {
+                      _type = Integer.parseInt(iwc.getParameter(_PRM_TYPE_OLD_VALUE));
+                  } catch (NumberFormatException e) {
+                      _type = -1;
+                  }
+              }
+          }
+
+
+
+          if (iwc.getParameter(DocBusiness.PARAMETER_TARGET) != null) {
+              _target = iwc.getParameter(DocBusiness.PARAMETER_TARGET);
+          } else {
+              _target = null;
+          }
+
+          if (iwc.getParameter(_PRM_LINK_NAME) != null) {
+              _docLinkName = iwc.getParameter(_PRM_LINK_NAME);
+          } else {
+              _docLinkName = null;
+          }
+
+
+          if (iwc.getParameter(DocBusiness.PARAMETER_CATEGORY_ID) != null) {
+              try {
+                  _infoCatID = Integer.parseInt(iwc.getParameter(DocBusiness.PARAMETER_CATEGORY_ID));
+              } catch (NumberFormatException e) {
+                  _infoCatID = -1;
+              }
+          }
+
+          if (iwc.getParameter(_PRM_FILE_ID) != null) {
+              try {
+                  _fileID = Integer.parseInt(iwc.getParameter(_PRM_FILE_ID));
+              } catch (NumberFormatException e) {
+                  _fileID = -1;
+              }
+              this.addHiddenInput(new HiddenInput(_PRM_LAST_UPLOADED_FILE, iwc.getParameter(_PRM_FILE_ID)));
+          } else if (iwc.getParameter(_PRM_LAST_UPLOADED_FILE) != null) {
+              try {
+                  _fileID = Integer.parseInt(iwc.getParameter(_PRM_LAST_UPLOADED_FILE));
+              } catch (NumberFormatException e) {
+                  _fileID = -1;
+              }
+              switch (_action) {
+                  case _ACTION_UPLOADFILE:
+                      break;
+                  default:
+                      this.addHiddenInput(new HiddenInput(_PRM_LAST_UPLOADED_FILE, iwc.getParameter(_PRM_LAST_UPLOADED_FILE)));
+                      break;
+              }
+          }
+
+          if (iwc.getParameter(_PRM_PAGE_ID) != null) {
+              try {
+                  _pageID = Integer.parseInt(iwc.getParameter(_PRM_PAGE_ID));
+              } catch (NumberFormatException e) {
+                  _pageID = -1;
+              }
+              this.addHiddenInput(new HiddenInput(_PRM_LAST_SELECTED_PAGE, iwc.getParameter(_PRM_PAGE_ID)));
+          } else if (iwc.getParameter(_PRM_LAST_SELECTED_PAGE) != null) {
+              try {
+                  _pageID = Integer.parseInt(iwc.getParameter(_PRM_LAST_SELECTED_PAGE));
+              } catch (NumberFormatException e) {
+                  _pageID = -1;
+              }
+              this.addHiddenInput(new HiddenInput(_PRM_LAST_SELECTED_PAGE, iwc.getParameter(_PRM_LAST_SELECTED_PAGE)));
+          }
+
+          if (iwc.getParameter(_PRM_LINK_URL) != null) {
+              _linkUrl = iwc.getParameter(_PRM_LINK_URL);
+              if (_linkUrl.equals("")) {
+                  _linkUrl = null;
+              }
+              if (_linkUrl != null) {
+                  this.addHiddenInput(new HiddenInput(_PRM_LAST_LINK_URL, _linkUrl));
+              }
+          } else if (iwc.getParameter(_PRM_LAST_LINK_URL) != null) {
+              _linkUrl = iwc.getParameter(_PRM_LAST_LINK_URL);
+              if (_linkUrl.equals("")) {
+                  _linkUrl = null;
+              }
+              if (_linkUrl != null) {
+                  this.addHiddenInput(new HiddenInput(_PRM_LAST_LINK_URL, _linkUrl));
+              }
+          }
+
+       }
+
     }
 
+
+    private void confirmLineup(){
+
+      addLeft("Are you sure you want to delete this document?");
+
+      addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("yes", "YES"), _PRM_ACTION, Integer.toString(_ACTION_DELETEDOCLINK)));
+      addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("cancel", "CANCEL"), _PRM_ACTION, Integer.toString(_ACTION_CLOSEWITHOUTSAVING)));
+
+    }
 
     /**
      *  Description of the Method
@@ -525,7 +528,7 @@ public class DocEditorWindow extends IWAdminWindow {
      *@param  iLocaleId   Description of the Parameter
      *@param  instanceId  Description of the Parameter
      */
-    private void lineUpElements(int iLocaleId, int instanceId) {
+    private void lineUpElements() {
 //    DocLink link = DocFinder.getLink(_linkID);
 //    /**
 //     * @todo: localice
@@ -542,15 +545,15 @@ public class DocEditorWindow extends IWAdminWindow {
         } else {
             DropdownMenu localeDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(DocBusiness.PARAMETER_LOCALE_DROP);
             localeDrop.setToSubmit();
-            localeDrop.setSelectedElement(Integer.toString(iLocaleId));
+            localeDrop.setSelectedElement(Integer.toString(_localeID));
             addLeft(_iwrb.getLocalizedString("locale", "Locale") + ": ", localeDrop, false);
         }
 
         DropdownMenu categoryDrop = new DropdownMenu(DocBusiness.PARAMETER_CATEGORY_ID);
 
         List list = null;
-        if (instanceId != -1) {
-            list = business.getInstanceCategories(instanceId);
+        if (_iObjInsId != -1) {
+            list = business.getInstanceCategories(_iObjInsId);
         }
 
         if (list != null) {
@@ -606,7 +609,7 @@ public class DocEditorWindow extends IWAdminWindow {
             case DocBusiness.FILE:
                 SimpleFileChooser fileChooser = new SimpleFileChooser(this.getUnderlyingForm(), _PRM_FILE_ID);
                 this.setStyle(fileChooser);
-                if (_action == _ACTION_CHANGETYPE && _fileID != -1) {
+                if ( _fileID != -1 && (_action == _ACTION_CHANGETYPE || (_mode == _MODE_EDITDOC && _action == _ACTION_OPENWINDOW))) {
                     fileChooser.setSelectedFile(_fileID);
                 }
                 addLeft(_iwrb.getLocalizedString("file", "File") + ":", fileChooser, true);
@@ -625,49 +628,46 @@ public class DocEditorWindow extends IWAdminWindow {
 
         addLeft(_iwrb.getLocalizedString("target", "Target") + ":", targetDrop, true);
 
-        addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close", "CLOSE"), _PRM_ACTION, Integer.toString(_ACTION_CLOSEWITHOUTSAVING)));
         addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save", "SAVE"), _PRM_ACTION, Integer.toString(_ACTION_SAVEDOC)));
+        addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close", "CLOSE"), _PRM_ACTION, Integer.toString(_ACTION_CLOSEWITHOUTSAVING)));
+
     }
 
 
-    /**
-     *@param  iwc
-     *@param  iLocaleID
-     *@todo              implement
-     */
-    private void saveFile(IWContext iwc, int iLocaleID) {
-        saveDocLink(iwc, iLocaleID);
-    }
-
-
-    /**
-     *@param  iwc
-     *@param  iLocaleID
-     *@todo              implement
-     */
-    private void savePage(IWContext iwc, int iLocaleID) {
-        saveDocLink(iwc, iLocaleID);
-    }
-
-
-    /**
-     *@param  iwc
-     *@param  iLocaleID
-     *@todo              implement
-     */
-    private void saveLink(IWContext iwc, int iLocaleID) {
-        saveDocLink(iwc, iLocaleID);
-    }
+//    /**
+//     *@param  iwc
+//     *@todo              implement
+//     */
+//    private void saveFile(IWContext iwc) {
+//        saveDocLink(iwc, iLocaleID);
+//    }
+//
+//
+//    /**
+//     *@param  iwc
+//     *@todo              implement
+//     */
+//    private void savePage(IWContext iwc) {
+//        saveDocLink(iwc, iLocaleID);
+//    }
+//
+//
+//    /**
+//     *@param  iwc
+//     *@todo              implement
+//     */
+//    private void saveLink(IWContext iwc) {
+//        saveDocLink(iwc);
+//    }
 
 
     /**
      *  Description of the Method
      *
      *@param  iwc        Description of the Parameter
-     *@param  iLocaleID  Description of the Parameter
      *@return            Description of the Return Value
      */
-    private boolean saveDocLink(IWContext iwc, int iLocaleID) {
+    private boolean saveDocLink(IWContext iwc) {
 
         int fileID = -1;
         int pageID = -1;
@@ -716,7 +716,9 @@ public class DocEditorWindow extends IWAdminWindow {
                 folderID = _folderID;
             }
             try {
+
                 _linkID = DocBusiness.saveLink(_userID, _infoCatID, folderID, _linkID, docLinkName, fileID, pageID, linkUrl, _target, localeID);
+                this.addHiddenInput(new HiddenInput(_PRM_DOC_ID, Integer.toString(_linkID)));
                 return true;
             } catch (Exception e) {
                 e.printStackTrace(System.err);
@@ -733,8 +735,6 @@ public class DocEditorWindow extends IWAdminWindow {
      */
     private void deleteDocLink(IWContext iwc) {
         System.out.println("Deleting...");
-        //tmp
-        iwc.removeSessionAttribute(DocBusiness.PARAMETER_LINK_ID);
         DocBusiness.deleteLink(_linkID);
 //    setParentToReload();
 //    close();
@@ -747,8 +747,6 @@ public class DocEditorWindow extends IWAdminWindow {
      *@param  iwc  Description of the Parameter
      */
     private void closeEditor(IWContext iwc) {
-        //tmp
-        iwc.removeSessionAttribute(DocBusiness.PARAMETER_LINK_ID);
         setParentToReload();
         close();
     }

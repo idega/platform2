@@ -647,10 +647,11 @@ public class Doc extends FolderBlock implements IWBlock {
     private Link getDeleteLink(int linkID) {
         Link deleteLink = new Link(_deleteImage);
         deleteLink.setWindowToOpen(DocEditorWindow.class);
-        deleteLink.addParameter(DocBusiness.PARAMETER_LINK_ID, linkID);
-        deleteLink.addParameter(DocBusiness.PARAMETER_FOLDER_ID, _folderID);
-        deleteLink.addParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID, this.getICObjectInstanceID());
-        deleteLink.addParameter(DocBusiness.PARAMETER_DELETE, DocBusiness.PARAMETER_TRUE);
+        deleteLink.addParameter(DocEditorWindow._PRM_DOC_ID, linkID);
+        deleteLink.addParameter(DocEditorWindow._PRM_MODE, DocEditorWindow._MODE_DELETE);
+//        deleteLink.addParameter(DocBusiness.PARAMETER_FOLDER_ID, _folderID);
+//        deleteLink.addParameter(DocBusiness.PARAMETER_OBJECT_INSTANCE_ID, this.getICObjectInstanceID());
+//        deleteLink.addParameter(DocBusiness.PARAMETER_DELETE, DocBusiness.PARAMETER_TRUE);
         return deleteLink;
     }
 
