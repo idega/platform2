@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderBusinessBean.java,v 1.1 2003/09/17 09:29:04 anders Exp $
+ * $Id: ProviderBusinessBean.java,v 1.2 2003/09/17 16:28:13 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.school.data.ProviderAccountingProper
 /** 
  * Business logic for providers with accounting information.
  * <p>
- * Last modified: $Date: 2003/09/17 09:29:04 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/17 16:28:13 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ProviderBusinessBean extends com.idega.business.IBOServiceBean implements ProviderBusiness {
 
@@ -94,6 +94,7 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			String paymentByInvoice,
 			String postgiro,
 			String bankgiro,
+			String statisticsType,
 			String ownPosting,
 			String doublePosting) throws ProviderException {
 
@@ -140,6 +141,9 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 			pap.setPaymentByInvoice(getBoolean(paymentByInvoice).booleanValue());
 			pap.setPostgiro(postgiro);
 			pap.setBankgiro(bankgiro);
+			if (!statisticsType.equals("")) {
+				pap.setStatisticsType(statisticsType);
+			}
 			pap.setOwnPosting(ownPosting);
 			pap.setDoublePosting(doublePosting);
 			pap.store();
@@ -158,11 +162,11 @@ public class ProviderBusinessBean extends com.idega.business.IBOServiceBean impl
 	public void deleteProvider(String id) throws ProviderException {
 		try {
 			Integer schoolId = new Integer(id);
+			SchoolBusiness sb = getSchoolBusiness();
+			sb.removeSchool(schoolId.intValue());
 			ProviderAccountingPropertiesHome home = getProviderAccountingPropertiesHome();
 			ProviderAccountingProperties pap = home.findByPrimaryKey(schoolId);
 			pap.remove();
-			SchoolBusiness sb = getSchoolBusiness();
-			sb.removeSchool(schoolId.intValue());
 		} catch (RemoteException e) { 
 			throw new ProviderException(KEY_CANNOT_DELETE_PROVIDER, DEFAULT_CANNOT_DELETE_PROVIDER);
 		} catch (FinderException e) { 

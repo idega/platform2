@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.1 2003/09/17 09:29:04 anders Exp $
+ * $Id: ProviderAccountingPropertiesBMPBean.java,v 1.2 2003/09/17 16:28:13 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -16,10 +16,10 @@ import com.idega.block.school.data.School;
 /**
  * Entity bean holding accounting information for school (provider) entries.
  * <p>
- * Last modified: $Date: 2003/09/17 09:29:04 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/17 16:28:13 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ProviderAccountingPropertiesBMPBean extends GenericEntity implements ProviderAccountingProperties {
 
@@ -54,7 +54,8 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		addOneToOneRelationship(getIDColumnName(), School.class);
 		setAsPrimaryKey (getIDColumnName(), true);
 
-		addAttribute(COLUMN_STATISTICS_TYPE, "Statistics type", true, true, Integer.class);
+		addAttribute(COLUMN_STATISTICS_TYPE, "Provider statistics type (foreign key)", true, true, 
+				String.class, "many-to-one", ProviderStatisticsType.class);
 		addAttribute(COLUMN_PAYMENT_BY_INVOICE, "Invoice yes/no", true, true, Boolean.class);
 		addAttribute(COLUMN_POSTGIRO, "Postgiro", true, true, String.class);
 		addAttribute(COLUMN_BANKGIRO, "Bankgiro", true, true, String.class);
@@ -66,8 +67,8 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		return (School) getColumnValue(COLUMN_SCHOOL_ID);	
 	}
 
-	public int getStatisticsType() {
-		return getIntColumnValue(COLUMN_STATISTICS_TYPE);	
+	public String getStatisticsType() {
+		return getStringColumnValue(COLUMN_STATISTICS_TYPE);	
 	}
 
 	public boolean getPaymentByInvoice() {
@@ -94,7 +95,7 @@ public class ProviderAccountingPropertiesBMPBean extends GenericEntity implement
 		setColumn(COLUMN_SCHOOL_ID, id); 
 	}
 
-	public void setStatisticsType(int type) { 
+	public void setStatisticsType(String type) { 
 		setColumn(COLUMN_STATISTICS_TYPE, type); 
 	}
 
