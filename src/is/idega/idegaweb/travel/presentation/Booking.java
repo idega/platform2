@@ -27,13 +27,6 @@ import is.idega.idegaweb.travel.service.presentation.*;
 import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
 import is.idega.idegaweb.travel.service.business.*;
 
-/**
- * @todo losna við below
- */
-import is.idega.idegaweb.travel.service.tour.presentation.*;
-import is.idega.idegaweb.travel.service.tour.data.*;
-import is.idega.idegaweb.travel.service.tour.business.*;
-
 
 
 /**
@@ -888,11 +881,7 @@ public class Booking extends TravelManager {
 		    stamp = new IWTimestamp(dateStr);
 		  }
 		}else {
-			try {
-				stamp = new IWTimestamp(_booking.getBookingDate());	
-			}catch (RemoteException r) {
-				/** not handled */
-			}
+			stamp = new IWTimestamp(_booking.getBookingDate());	
 		}
 	  return stamp;
   }
@@ -934,6 +923,8 @@ public class Booking extends TravelManager {
 	private Table bookingError(Exception e) throws RemoteException {
 		Text bookingFailed = (Text) super.theBoldText.clone();
 		bookingFailed.setText(iwrb.getLocalizedString("travel.booking_failed","Booking failed"));
+
+		e.printStackTrace(System.err);
 
 		Text reason = (Text) super.theText.clone();
 			reason.setText(e.getMessage());
@@ -1080,7 +1071,4 @@ public class Booking extends TravelManager {
     return table;
   }
 
-  private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
-    return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
-  }
 }
