@@ -11,10 +11,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -98,6 +102,8 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
   }
   
   private boolean editable = true;
+  
+  private Set referencedLeagues = new HashSet();
     
   public WorkReportDivisionBoardEditor() {
     super();
@@ -267,6 +273,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         throw new RuntimeException("[WorkReportDivsionBoardEditor]: Can't retrieve league.");
       }
       String leagueName = (league == null) ? "" : league.getName();
+      referencedLeagues.add(leagueName);
       WorkReportDivisionBoardHelper helper = new WorkReportDivisionBoardHelper(leagueName, board);
       list.add(helper);
     }
@@ -325,7 +332,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
         buttonTable.add(getFinishButton(resourceBundle), 4, 1);
       }
       else {
-        Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part is finished."));
+        Text text = new Text(resourceBundle.getLocalizedString("wr_division_board_editor_board_part_finished", "Board part is finished."));
         text.setBold();
         buttonTable.add(text, 4,1);
       }
@@ -445,10 +452,19 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
           ex.printStackTrace(System.err);
           throw new RuntimeException("[WorkReportDivisionBoardEditor]: Can't retrieve WorkReportBusiness.");
         }
+        SortedSet names = new TreeSet();
         Iterator collIterator = coll.iterator();
         while (collIterator.hasNext())  {
           WorkReportGroup league = (WorkReportGroup) collIterator.next();
           String name = league.getName(); 
+          // do not offer to create a board with the same league twice
+          if (! referencedLeagues.contains(name)) {
+            names.add(name);
+          }
+        }        
+        Iterator nameIterator = names.iterator();
+        while (collIterator.hasNext())  {
+          String name = (String) nameIterator.next();
           String display = resourceBundle.getLocalizedString(name, name);
           optionMap.put(name, display);
           }
