@@ -43,7 +43,7 @@ public class Content extends GenericEntity{
 
   public static String getColumnNameUserId(){     return "IC_USER_ID";}
   public static String getColumnNameTitle(){      return "TITLE";}
-  public static String getColumnNameCreated(){    return "CREATED_DATE";}
+  public static String getColumnNameCreated(){    return "CREATED";}
   public static String getColumnNameUpdated(){    return "UPDATED";}
   public static String getColumnNamePublishFrom(){return "PUBLISH_FROM";}
   public static String getColumnNamePublishTo(){  return "PUBLISH_TO";}

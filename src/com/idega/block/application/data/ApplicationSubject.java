@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationSubject.java,v 1.5 2002/01/25 20:15:22 aron Exp $
+ * $Id: ApplicationSubject.java,v 1.6 2002/01/26 00:44:46 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -21,7 +21,7 @@ import java.sql.Date;
 public class ApplicationSubject extends GenericEntity {
   private static final String name_ = "app_subject";
   private static final String description_ = "description";
-  private static final String created_ = "created_date";
+  private static final String created_ = "created";
   private static final String expires_ = "expires";
   private static final String status_ = "status";
 

@@ -13,7 +13,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ProductCategory extends GenericEntity {
+public class ProductCategory extends TreeableEntity {
 
   public ProductCategory() {
   }
@@ -43,9 +43,30 @@ public class ProductCategory extends GenericEntity {
   public static String getCategoryTypeColumnName(){return "category_type";}
   public static String getIsValidColumnName(){return "is_valid";}
 
-
-
-
+  public String getName(){
+    return getStringColumnValue(getCategoryNameColumnName());
+  }
+  public String getDescription(){
+    return getStringColumnValue(getDescriptionColumnName());
+  }
+  public String getExtraInfo(){
+    return getStringColumnValue(getExtraInfoColumnName());
+  }
+  public boolean getIsValid(){
+    return getBooleanColumnValue(getIsValidColumnName());
+  }
+  public void setName(String name){
+    setColumn(getCategoryNameColumnName(),name);
+  }
+  public void setDescription(String description){
+    setColumn(getDescriptionColumnName(),description);
+  }
+  public void setExtraInfo(String info){
+    setColumn(getExtraInfoColumnName(),info);
+  }
+  public void setIsValid(boolean valid){
+    setColumn(getIsValidColumnName(),valid);
+  }
 
 
 } // Class ProductCategory

@@ -99,10 +99,11 @@ public class TextBusiness{
           eTxText.update();
         else
           eTxText.insert();
-        if(InstanceId > 0){
+        if(InstanceId > 0 && !update){
           //System.err.println("instance er til");
           ICObjectInstance objIns = new ICObjectInstance(InstanceId);
           //System.err.println(" object instance "+objIns.getID() + objIns.getName());
+          //objIns.removeFrom(new ICCategory());
           eTxText.addTo(objIns);
         }
         return eTxText;

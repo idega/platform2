@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.2 2002/01/25 20:14:37 aron Exp $
+ * $Id: Contract.java,v 1.3 2002/01/26 00:44:46 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ public class Contract extends GenericEntity {
   private static final String validFrom_ = "valid_from";
   private static final String validTo_ = "valid_to";
   private static final String status_ = "status";
-	private static final String created_ = "created_date";
+  private static final String created_ = "created";
   private static final String statusDate_ = "status_date";
 
   public static final String statusCreated = "C";

@@ -30,7 +30,7 @@ public class LocalizedText extends GenericEntity{
   public static String getColumnNameHeadline(){ return "HEADLINE";}
   public static String getColumnNameTitle(){ return "TITLE";}
   public static String getColumnNameBody(){ return "BODY";}
-  public static String getColumnNameCreated(){ return "CREATED_DATE";}
+  public static String getColumnNameCreated(){ return "CREATED";}
   public static String getColumnNameUpdated(){ return "UPDATED";}
 
 
