@@ -26,7 +26,7 @@ public class ReportBMPBean extends com.idega.block.category.data.CategoryEntityB
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameName(),"Name",true,true,java.lang.String.class);
-    addAttribute(getColumnNameSql(), "SQL", true, true, java.lang.String.class,2000);
+    addAttribute(getColumnNameSql(), "SQL", true, true, java.lang.String.class,4000);
     addAttribute(getColumnNameHeaders(),"Titles",true,true,java.lang.String.class);
     addAttribute(getColumnNameInfo(),"Info",true,true,java.lang.String.class);
     addAttribute(getColumnType(),"Type",true,true,java.lang.String.class);
