@@ -35,6 +35,7 @@ import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
@@ -94,6 +95,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			School school = getSchool(new Integer(id));
 			school.addSchoolTypesRemoveOther(new int[0]);
 			school.addSchoolYearsRemoveOther(new int[0]);
+			try {
+				school.removeFromClass(User.class);
+			} catch (IDORemoveRelationshipException e) {
+				System.err.println("Cannot remove school from users");
+			}
+			try {
+				school.removeFromClass(Group.class);
+			} catch (IDORemoveRelationshipException e) {
+				System.err.println("Cannot remove school from groups");
+			}
 			school.remove();
 		}
 		catch (RemoveException re) {
