@@ -162,7 +162,6 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			choice.setFromDate(placementDate);
 		IWTimestamp stamp = new IWTimestamp();
 		stamp.addSeconds((10 - (choiceNumber.intValue() * 10)));
-		choice.setCreated(stamp.getTimestamp());
 		choice.setCaseStatus(caseStatus);
 
 		if (parentCase != null)
@@ -177,9 +176,9 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 		return choice;
 	}
 	
-	public List createAfterSchoolChoices(User user, Integer childId, Integer[] providerIDs, String message, Date placementDate, SchoolSeason season) throws IDOCreateException {
+	public List createAfterSchoolChoices(User user, Integer childId, Integer[] providerIDs, String message, String[] placementDates, SchoolSeason season) throws IDOCreateException {
 		int caseCount = 3;
-		IWTimestamp stamp = new IWTimestamp();
+		IWTimestamp stamp;
 		List returnList = new Vector(3);
 		javax.transaction.UserTransaction trans = this.getSessionContext().getUserTransaction();
 
@@ -190,7 +189,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 			AfterSchoolChoice choice = null;
 			for (int i = 0; i < caseCount; i++) {
 				if (providerIDs[i] != null && providerIDs[i].intValue() > 0) {
-					choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, stamp.getTimestamp(), i == 0 ? first : other, choice, placementDate, season);
+					stamp = new IWTimestamp(placementDates[i]);
+					choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, stamp.getTimestamp(), i == 0 ? first : other, choice, stamp.getDate(), season);
 					returnList.add(choice);
 				}
 			}
