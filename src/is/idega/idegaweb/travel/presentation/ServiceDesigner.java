@@ -183,25 +183,36 @@ public class ServiceDesigner extends TravelManager {
             tc.setValue(product.getText());
           }
 
-          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra_info"));
+          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
 
           Link tfAdder = new Link(iwrb.getLocalizedImageButton("travel.timeframes","Timeframes"));
             tfAdder.addParameter(TimeframeAdder._parameterProductId, product.getID());
             tfAdder.setWindowToOpen(TimeframeAdder.class);
 
-          Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure_places"));
+          Link addAdder = new Link(iwrb.getLocalizedImageButton("travel.departure_place","Departure places"));
             addAdder.addParameter(AddressAdder._parameterProductId, product.getID());
             addAdder.setWindowToOpen(AddressAdder.class);
 
 
           Timeframe[] tFrames = product.getTimeframes();
 
+          Text serviceNameText = (Text) super.theBoldText.clone();
+            serviceNameText.setText(ProductBusiness.getProductNameWithNumber(product));
+          table.add(serviceNameText,1,row);
+          table.mergeCells(1,row,3,row);
+          table.setRowColor(row, super.backgroundColor);
+          ++row;
           table.add(tc,1,row);
+          table.setRowColor(row, super.GRAY);
+          table.mergeCells(1,row,3,row);
           ++row;
           table.add(tfAdder,1,row);
+          table.setRowColor(row, super.GRAY);
+          table.mergeCells(1,row,3,row);
           ++row;
           table.add(addAdder,1,row);
-          ++row;
+          table.setRowColor(row, super.GRAY);
+          table.mergeCells(1,row,3,row);          ++row;
 
           for (int k = 0; k < tFrames.length; k++) {
 
