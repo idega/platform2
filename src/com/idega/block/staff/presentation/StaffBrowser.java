@@ -52,7 +52,7 @@ public static final int DIVISION_STAFF = 2;
 public static final int USER = 3;
 private int _layout = ALL_STAFF;
 
-private boolean _addAlphabet = true;
+private boolean _addAlphabet = false;
 private boolean _hasAlphabetLetter;
 private String _alphabetLetter;
 private String _selectedLetterColor;
@@ -68,7 +68,6 @@ private boolean _showGender;
 private boolean _showEducation;
 private boolean _showTitle;
 private boolean _showListTitle;
-private boolean _showSchool;
 private boolean _showBeganWork;
 private boolean _showArea;
 private boolean _showImage;
@@ -638,7 +637,7 @@ private Table _myTable;
   }
 
   private void setDefaultValues() {
-    _width = "300";
+    _width = "100%";
     _selectedLetterColor = "#0000CC";
     _linkStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
     _visitedStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
@@ -656,11 +655,14 @@ private Table _myTable;
     _showGender = true;
     _showEducation = true;
     _showTitle = true;
-    _showSchool = true;
     _showBeganWork = true;
     _showArea = true;
     _showImage = true;
     _showMetaData = true;
+    _showListTitle = false;
+    _showWorkPhone = true;
+    _showListWorkPhone = false;
+    _showMobilePhone = true;
   }
 
   public void setShowAlphabet(boolean showAlphabet) {
@@ -697,10 +699,6 @@ private Table _myTable;
 
   public void setShowListTitle(boolean showTitle) {
     _showListTitle = showTitle;
-  }
-
-  public void setShowSchool(boolean showSchool) {
-    _showSchool = showSchool;
   }
 
   public void setShowBeganWork(boolean showBeganWork) {
