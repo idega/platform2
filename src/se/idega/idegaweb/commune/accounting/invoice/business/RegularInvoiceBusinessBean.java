@@ -26,10 +26,10 @@ import com.idega.data.IDOLookupException;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class RegularInvoiceBusinessBean extends IBOServiceBean implements RegularInvoiceBusiness {
-	public Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId, String schoolCategoryId) throws IDOLookupException, FinderException{
+	public Collection findRegularInvoicesForPeriodeUserAndCategory(Date from, Date to, int userId, String schoolCategoryId) throws IDOLookupException, FinderException{
 
 		RegularInvoiceEntryHome home =(RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
-		return home.findRegularInvoicesForPeriodeAndUser(from, to, userId, schoolCategoryId);
+		return home.findRegularInvoicesForPeriodeUserAndCategory(from, to, userId, schoolCategoryId);
 
 	}
 	public Collection findRegularInvoicesForPeriode(Date from, Date to){

@@ -18,7 +18,7 @@ import javax.ejb.FinderException;
 public interface RegularInvoiceEntryHome extends com.idega.data.IDOHome{
 	RegularInvoiceEntry create() throws javax.ejb.CreateException;
 		
-	Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId, String schoolCategoryId) throws FinderException;
+	Collection findRegularInvoicesForPeriodeUserAndCategory(Date from, Date to, int userId, String schoolCategoryId) throws FinderException;
 
 //	Collection findRegularInvoicesForPeriode(Date from, Date to);
 	
