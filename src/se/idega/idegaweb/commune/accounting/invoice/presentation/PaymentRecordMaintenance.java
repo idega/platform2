@@ -11,7 +11,7 @@ import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
-import com.idega.data.IDOLookup;
+//import com.idega.data.IDOLookup;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
@@ -50,7 +50,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javax.ejb.FinderException;
-import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
+//import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
 //import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
@@ -68,22 +68,22 @@ import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
+//import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+//import se.idega.idegaweb.commune.accounting.regulations.data.MainRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+//import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 /**
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/16 14:00:35 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/16 14:05:28 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.75 $
+ * @version $Revision: 1.76 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -835,7 +835,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 									 columnCount, 2);
 				table.add (getPaymentRecordListTable (context, records), 1, row++);
 				table.mergeCells (1, row, columnCount, row);
-				table.add (getPaymentSummaryTable (context, records), 1, row++);
+				table.add (getPaymentSummaryTable (records), 1, row++);
 				if (null != providerAuthorizationPage) {
 					buttonPanel.addLocalizedButton
 							("no_param", PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT,
@@ -999,8 +999,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		addSmallText (table, col++, row, changedBy);
 	}
 
-	private Table getPaymentSummaryTable (final IWContext context,
-																				final PaymentRecord [] records)
+	private Table getPaymentSummaryTable (final PaymentRecord [] records)
 		throws RemoteException, FinderException {
 		final PaymentSummary summary = new PaymentSummary (records);
 
@@ -1036,7 +1035,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	
 	private Table getPaymentRecordListTable
 		(final IWContext context, final PaymentRecord [] records)
-	throws FinderException, RemoteException {
+	throws /*FinderException,*/ RemoteException {
 		// set up header row
 		final String [][] columnNames =
 				{{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
@@ -1063,11 +1062,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return table;
 	}
 	
+	/*
 	private static boolean isManualRecord (final PaymentRecord record) {
 		final String autoSignature = BillingThread.getBatchRunSignatureKey ();
 		final String createdBy = record.getCreatedBy ();
 		return null == createdBy || !createdBy.equals (autoSignature);
 	}
+	*/
 	
 	private Text getSmallSignature (final String string) {
 		final StringBuffer result = new StringBuffer ();
@@ -1082,6 +1083,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return getSmallText (result.toString ());
 	}
 	
+	/*
 	private boolean isCheck (final RegulationSpecType regSpecType) {
 		try {
 				final MainRule mainRule = regSpecType.getMainRule ();
@@ -1091,7 +1093,9 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			return false;
 		}
 	}
+*/
 
+	/*
 	private boolean isCheck (final String regSpecTypeName) {
 		try {
 			final RegulationSpecTypeHome regSpecTypeHome =
@@ -1103,10 +1107,11 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			return false;
 		}
 	}
-
+*/
+	
 	private void showPaymentRecordOnARow
 		(final IWContext context, final Table table, final int row,
-		 final PaymentRecord record) throws RemoteException, FinderException {
+		 final PaymentRecord record) throws RemoteException/*, FinderException*/ {
 		final String recordId = record.getPrimaryKey () + "";
 		final String [][] showDetailsLinkParameters
 				= {{ ACTION_KEY, ACTION_SHOW_RECORD_DETAILS + "" },
@@ -1904,11 +1909,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				(context, SchoolBusiness.class);	
 	}
 	
+	/*
 	private ExportBusiness getExportBusiness
 		(final IWContext context) throws RemoteException {
 		return (ExportBusiness) IBOLookup.getServiceInstance
 				(context, ExportBusiness.class);	
 	}
+	*/
 	
 	private PostingBusiness getPostingBusiness
 		(final IWContext context) throws RemoteException {
