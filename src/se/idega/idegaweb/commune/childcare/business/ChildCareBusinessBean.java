@@ -1798,7 +1798,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		String caseCode = "unreachable";
 		try {
 			caseCode = theCase.getCode();
-			if (CASE_CODE_KEY.equals(caseCode)) {
+			if (CASE_CODE_KEY.equals(caseCode) || AFTER_SCHOOL_CASE_CODE_KEY.equals(caseCode)) {
 				int caseID = ((Integer) theCase.getPrimaryKey()).intValue();
 				return this.getApplicationByPrimaryKey(String.valueOf(caseID));
 			}
