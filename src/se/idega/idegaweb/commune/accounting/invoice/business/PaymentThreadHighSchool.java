@@ -135,57 +135,5 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		}
 		
 		return detail;
-	}
-	
-/*	protected Collection getRegulationForResourceArray(RegulationsBusiness regBus, SchoolClassMember schoolClassMember, ResourceClassMember resource, Provider provider) throws RemoteException {
-		Collection resourceConditions = new ArrayList();
-		Collection all = new ArrayList();
-		errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName());
-		errorRelated.append("SchoolYear "+schoolClassMember.getSchoolYear().getName());
-		errorRelated.append("StudyPath" + schoolClassMember.getStudyPathId());
-		Commune defaultCommune = null;
-		try {
-			defaultCommune = getCommuneHome().findDefaultCommune();
-		}
-		catch(Exception e) {
-			
-		}
-		errorRelated.append("Commune " + defaultCommune.getCommuneName());
-		errorRelated.append("StateSubsidyGrant " + provider.getStateSubsidyGrant());
-		
-		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
-		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
-		if (schoolClassMember.getStudyPathId() != -1)
-			all.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(schoolClassMember.getStudyPathId())));
-		if (provider.getSchool() != null)
-			if (provider.getSchool().getCommune() != null)
-				resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_COMMUNE, provider.getSchool().getCommune().getPrimaryKey()));
-		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STADSBIDRAG, new Boolean(provider.getStateSubsidyGrant())));
-		
-		Collection regulationForResourceArray = null;
-		
-		all.addAll(resourceConditions);
-		
-		regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-				category.getCategory(),
-				PaymentFlowConstant.OUT,
-				calculationDate,
-				RuleTypeConstant.DERIVED,
-				RegSpecConstant.RESOURCE, 
-				all
-		);
-		
-		if (regulationForResourceArray == null || regulationForResourceArray.isEmpty()) {
-			regulationForResourceArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-					category.getCategory(),
-					PaymentFlowConstant.OUT,
-					calculationDate,
-					RuleTypeConstant.DERIVED,
-					RegSpecConstant.RESOURCE, 
-					resourceConditions
-			);
-		}
-		
-		return regulationForResourceArray;
-	}	*/
+	}	
 }
