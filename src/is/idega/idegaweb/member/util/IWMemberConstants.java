@@ -82,6 +82,7 @@ public class IWMemberConstants {
 	public static final String GROUP_TYPE_CLUB_DIVISION_COMMITTEE = "iwme_club_division_committee";
 	public static final String GROUP_TYPE_CLUB_DIVISION_TEMPLATE = "iwme_club_division_template";
 	public static final String GROUP_TYPE_TEMPORARY = "iwme_temporary";
+	public static final String GROUP_TYPE_CLUB_PRACTICE_PLAYER = "iwme_club_practice_player";
 	
 
 	public static final String MEMBER_BOARD_CHAIR_MAN = "chairman";

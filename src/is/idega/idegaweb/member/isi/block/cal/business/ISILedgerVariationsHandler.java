@@ -72,6 +72,7 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 		groupTypes.add(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 		groupTypes.add(IWMemberConstants.GROUP_TYPE_TEMPORARY);
 		groupTypes.add(IWMemberConstants.GROUP_TYPE_GENERAL);
+		groupTypes.add(IWMemberConstants.GROUP_TYPE_CLUB_PRACTICE_PLAYER);
 		
 		String[] groupTypeDivision = { IWMemberConstants.GROUP_TYPE_CLUB_DIVISION };
 		
@@ -114,7 +115,8 @@ public class ISILedgerVariationsHandler extends PresentationObject implements Le
 			}			
 			else if(groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER) ||
 					groupType.equals(IWMemberConstants.GROUP_TYPE_TEMPORARY) ||
-					groupType.equals(IWMemberConstants.GROUP_TYPE_GENERAL)){	
+					groupType.equals(IWMemberConstants.GROUP_TYPE_GENERAL) ||
+					groupType.equals(IWMemberConstants.GROUP_TYPE_CLUB_PRACTICE_PLAYER)){	
 				if(name == null || name.equals("")) {
 					if(getDivisionAbbrevation(g,grBiz,groupTypeDivision) != null) {
 						name = getDivisionAbbrevation(g,grBiz,groupTypeDivision) + " " + g.getName();
