@@ -2,14 +2,20 @@ package is.idega.idegaweb.member.isi.block.reports.business;
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.MemberUserBusinessBean;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKey;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportAccountKeyHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMemberHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecord;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubAccountRecordHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportClubMemberHome;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroupHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportHome;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
-import java.sql.Timestamp;
-import java.util.Date;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
@@ -18,9 +24,6 @@ import com.idega.data.IDOLookup;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.Age;
-import com.idega.util.IWTimestamp;
-import com.idega.util.PersonalIDFormatter;
-import com.idega.util.text.SocialSecurityNumber;
 
 /**
  * Description:	Use this business class to handle work report related business.
@@ -31,8 +34,12 @@ import com.idega.util.text.SocialSecurityNumber;
  */
 public class WorkReportBusinessBean extends MemberUserBusinessBean implements MemberUserBusiness, WorkReportBusiness {
 	
+	private WorkReportGroupHome workReportGroupHome;
+	private WorkReportClubAccountRecordHome workReportClubAccountRecordHome;
+	private WorkReportAccountKeyHome workReportAccountKeyHome;
 	private WorkReportHome workReportHome;
 	private WorkReportClubMemberHome workReportClubMemberHome;
+	private WorkReportBoardMemberHome workReportBoardMemberHome;
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
 	/**
@@ -99,6 +106,54 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 		return workReportClubMemberHome;
+	}
+	
+	public WorkReportBoardMemberHome getWorkReportBoardMemberHome(){
+		if(workReportBoardMemberHome==null){
+			try{
+				workReportBoardMemberHome = (WorkReportBoardMemberHome) IDOLookup.getHome(WorkReportBoardMember.class);
+			}
+			catch(RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportBoardMemberHome;
+	}
+	
+	public WorkReportGroupHome getWorkReportGroupHome(){
+		if(workReportGroupHome==null){
+			try{
+				workReportGroupHome = (WorkReportGroupHome) IDOLookup.getHome(WorkReportGroup.class);
+			}
+			catch(RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportGroupHome;
+	}
+	
+	public WorkReportAccountKeyHome getWorkReportAccountKeyHome(){
+		if(workReportAccountKeyHome==null){
+			try{
+				workReportAccountKeyHome = (WorkReportAccountKeyHome) IDOLookup.getHome(WorkReportAccountKey.class);
+			}
+			catch(RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportAccountKeyHome;
+	}
+	
+	public WorkReportClubAccountRecordHome getWorkReportClubAccountRecordHome(){
+		if(workReportClubAccountRecordHome==null){
+			try{
+				workReportClubAccountRecordHome = (WorkReportClubAccountRecordHome) IDOLookup.getHome(WorkReportClubAccountRecord.class);
+			}
+			catch(RemoteException rme){
+				throw new RuntimeException(rme.getMessage());
+			}
+		}
+		return workReportClubAccountRecordHome;
 	}
 	
 	public boolean createEntry(int reportID, String personalID) {
