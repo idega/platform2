@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBMPBean.java,v 1.10 2002/11/06 13:01:29 staffan Exp $
+ * $Id: CitizenAccountBMPBean.java,v 1.11 2002/11/14 12:32:39 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -28,44 +28,42 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 	private final static String CASE_CODE_KEY_DESC
         = "Request for citizen account";
 
-	protected final static String NAME = "name";
-	protected final static String EMAIL = "email";
-	protected final static String PHONE_HOME = "phone_home";
-	protected final static String PHONE_WORK = "phone_work";
-	protected final static String PID = "pid";
-    protected final static String BIRTH_DATE = "birth_date";
-    protected final static String CUSTODIAN1_PID = "custodian1_pid";
-    protected final static String CUSTODIAN1_CIVIL_STATUS
-        = "custodian1_civil_status";
-    protected final static String CUSTODIAN2_PID = "custodian2_pid";
-    protected final static String CUSTODIAN2_CIVIL_STATUS
-        = "custodian2_civil_status";
-    protected final static String STREET = "street";
-    protected final static String ZIP_CODE = "zipCode";
-    protected final static String CITY = "city";
-    protected final static String GENDER_ID = "gender_id";
+	private final static String NAME = "name";
+	private final static String SSN = "ssn";
+	private final static String EMAIL = "email";
+	private final static String PHONE_HOME = "phone_home";
+	private final static String PHONE_WORK = "phone_work";
+    private final static String BIRTH_DATE = "birth_date";
+    private final static String STREET = "street";
+    private final static String ZIP_CODE = "zip_code";
+    private final static String CITY = "city";
+    private final static String GENDER_ID = "gender_id";
+    private final static String CIVIL_STATUS = "civil_status";
+    private final static String HAS_COHABITANT = "has_cohabitant";
+    private final static String CHILDREN_COUNT = "children_count";
+    private final static String APPLICATION_REASON = "application_reason";
 
 	public void initializeAttributes() {
 		addAttribute (getIDColumnName());
 		addAttribute (NAME, "Name", true, true, String.class, 40);
+		addAttribute (SSN, "SSN", true, true, String.class, 40);
 		addAttribute (EMAIL, "E-mail", true, true, String.class, 40);
 		addAttribute (PHONE_HOME, "Home phone", true, true, String.class, 20);
 		addAttribute (PHONE_WORK, "Work phone", true, true, String.class, 20);
-       	addAttribute (GENDER_ID, "Gender", true, true, Integer.class,
-                      "many-to-one", Gender.class);
-		addAttribute (PID, "PID", true, true, String.class, 40);
         addAttribute (BIRTH_DATE, "Date of birth", Timestamp.class);
-        addAttribute (CUSTODIAN1_PID, "custodian1_pid", true, true,
-                      String.class, 40);
-        addAttribute (CUSTODIAN1_CIVIL_STATUS, "custodian1_civilStatus", true,
-                      true, String.class, 40);
-        addAttribute (CUSTODIAN2_PID, "custodian2_pid", true, true,
-                      String.class, 40);
-        addAttribute (CUSTODIAN2_CIVIL_STATUS, "custodian2_civilStatus", true,
-                      true, String.class, 40);
         addAttribute (STREET, "street", true, true, String.class, 40);
         addAttribute (ZIP_CODE, "zipCode", true, true, String.class, 40);
         addAttribute (CITY, "city", true, true, String.class, 40);
+       	addAttribute (GENDER_ID, "Gender", true, true, Integer.class,
+                      "many-to-one", Gender.class);
+        addAttribute (CIVIL_STATUS, "Civil Status", true, true, String.class,
+                      40);
+        addAttribute (HAS_COHABITANT, "Has Cohabitant", true, true,
+                      Boolean.class);
+        addAttribute (CHILDREN_COUNT, "Children Count", true, true,
+                      Integer.class);
+        addAttribute (APPLICATION_REASON, "Application Reason", true, true,
+                      String.class, 40);
 	}
 
 	public String getEntityName() {
@@ -87,6 +85,10 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		return getStringColumnValue (NAME);
 	}
 
+	public String getSsn () {
+		return getStringColumnValue (SSN);
+	}
+
 	public String getEmail () {
 		return getStringColumnValue (EMAIL);
 	}
@@ -99,29 +101,9 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		return getStringColumnValue (PHONE_WORK);
 	}
 
-	public String getPID () {
-		return getStringColumnValue (PID);
-	}
-
 	public Date getBirthDate () {
         return (Timestamp) getColumnValue (BIRTH_DATE);
 	}
-
-    public String getCustodian1Pid () {
-        return getStringColumnValue (CUSTODIAN1_PID);
-    }
-
-    public String getCustodian1CivilStatus () {
-        return getStringColumnValue (CUSTODIAN1_CIVIL_STATUS);
-    }
-
-    public String getCustodian2Pid () {
-        return getStringColumnValue (CUSTODIAN2_PID);
-    }
-
-    public String getCustodian2CivilStatus () {
-        return getStringColumnValue (CUSTODIAN2_CIVIL_STATUS);
-    }
 
     public String getStreet () {
         return getStringColumnValue (STREET);
@@ -146,10 +128,44 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
         return genderId;
     }
 
+    public String getCivilStatus () {
+        return getStringColumnValue (CIVIL_STATUS);
+    }
+
+    public boolean hasCohabitant () {
+        boolean result = false;
+        try {
+            result = getBooleanColumnValue (HAS_COHABITANT);
+        } catch (Exception e) {
+            // nothing
+        }
+
+        return result;
+    }
+
+    public int getChildrenCount () {
+        Integer result = null;
+        try {
+            result = getIntegerColumnValue (CHILDREN_COUNT);
+        } catch (Exception e) {
+            // nothing
+        }
+        
+        return result != null ? result.intValue () : 0;
+    }
+    
+    public String getApplicationReason () {
+        return getStringColumnValue (APPLICATION_REASON);
+    }
+
     // set methods for bean properties
 
 	public void setApplicantName (final String name) {
 		setColumn (NAME, name);
+	}
+
+	public void setSsn (final String ssn) {
+		setColumn (SSN, ssn);
 	}
 
 	public void setEmail (final String email) {
@@ -164,32 +180,10 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
 		setColumn (PHONE_WORK, phone);
 	}
 
-	public void setPID (final String pid) {
-		setColumn (PID, pid);
-	}
-
 	public void setBirthDate (final Date birthDate) {
         setColumn (BIRTH_DATE, new Timestamp (birthDate.getTime ()));
 	}
 
-    public void setCustodian1Pid (final String pid) throws RemoteException {
-        setColumn (CUSTODIAN1_PID, pid);
-    }
-    
-    public void setCustodian1CivilStatus (final String civilStatus)
-        throws RemoteException {
-        setColumn (CUSTODIAN1_CIVIL_STATUS, civilStatus);
-    }
-    
-    public void setCustodian2Pid (final String pid) throws RemoteException {
-        setColumn (CUSTODIAN2_PID, pid);
-    }
-    
-    public void setCustodian2CivilStatus (final String civilStatus)
-        throws RemoteException {
-        setColumn (CUSTODIAN2_CIVIL_STATUS, civilStatus);
-    }
-    
     public void setStreet (final String street) throws RemoteException {
         setColumn (STREET, street);
     }
@@ -206,6 +200,22 @@ public class CitizenAccountBMPBean extends AbstractCaseBMPBean
         setColumn (GENDER_ID, genderId);
     }
     
+    public void setCivilStatus (final String civilStatus) {
+        setColumn (CIVIL_STATUS, civilStatus);
+    }
+
+    public void setHasCohabitant (final boolean hasCohabitant) {
+        setColumn (HAS_COHABITANT, new Boolean (hasCohabitant));
+    }
+
+    public void setChildrenCount (final int childrenCount) {
+        setColumn (CHILDREN_COUNT, childrenCount);
+    }
+
+    public void setApplicationReason (final String applicationReason) {
+        setColumn (APPLICATION_REASON, applicationReason);
+    }
+
 	/**
 	 * Finds all cases for all users with the specified caseStatus and the
      * associated caseCode

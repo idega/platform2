@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.7 2002/11/14 10:21:14 laddi Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.8 2002/11/14 12:32:39 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -165,11 +165,6 @@ public class CitizenAccountAdmin extends CommuneBlock {
 		table.add(getSmallHeader(localize(PARAM_PHONE_HOME, "Telefon (hem)")), col, row++);
 		table.add(getSmallHeader(localize(PARAM_PHONE_WORK, "Telefon (arbete/mobil)")), col, row++);
 		table.add(getSmallHeader(localize(PARAM_ADDRESS, "Adress")), col, row++);
-		table.add(getSmallHeader("Vårdnadshavare 1: " + localize(PARAM_CUSTODIAN1_PID, "Personnummer")), col, row++);
-		table.add(getSmallHeader("Vårdnadshavare 1: " + localize(PARAM_CUSTODIAN1_CIVIL_STATUS, "Civilstånd")), col, row++);
-		table.add(getSmallHeader("Vårdnadshavare 2: " + localize(PARAM_CUSTODIAN2_PID, "Personnummer")), col, row++);
-		table.add(getSmallHeader("Vårdnadshavare 2: " + localize(PARAM_CUSTODIAN2_CIVIL_STATUS, "Civilstånd")), col, row++);
-
 		table.add(getSmallHeader(localize(PARAM_NOT_CITIZEN, "Not citizen")), col, row++);
 		table.add(getSmallHeader(localize(PARAM_MESSAGE, "Message")), col++, row);
 
@@ -180,7 +175,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			final CitizenAccount applicant = (CitizenAccount) business.getAccount(id);
 			row = 1;
 			table.add(getSmallText(applicant.getApplicantName()), col, row++);
-			final String pid = PersonalIDFormatter.format(applicant.getPID(), iwc.getApplication().getSettings().getApplicationLocale());
+			final String pid = PersonalIDFormatter.format(applicant.getSsn (), iwc.getApplication().getSettings().getApplicationLocale());
 			table.add(getText(pid), col, row++);
 			final String email = applicant.getEmail();
 			table.add(new Link(email, "mailto:" + email), col, row++);
@@ -188,10 +183,6 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			table.add(getSmallText(applicant.getPhoneWork()), col, row++);
 			final String address = applicant.getStreet() + "; " + applicant.getZipCode() + " " + applicant.getCity();
 			table.add(getSmallText(address), col, row++);
-			table.add(getSmallText(applicant.getCustodian1Pid()), col, row++);
-			table.add(getSmallText(applicant.getCustodian1CivilStatus()), col, row++);
-			table.add(getSmallText(applicant.getCustodian2Pid()), col, row++);
-			table.add(getSmallText(applicant.getCustodian2CivilStatus()), col, row++);
 			table.add(new CheckBox(PARAM_NOT_CITIZEN), col, row++);
 			TextArea area = new TextArea(PARAM_MESSAGE);
 			area.setHeight(7);

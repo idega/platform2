@@ -32,11 +32,11 @@ public interface CitizenAccountBusiness extends IBOService, AccountBusiness {
     		throws RemoteException, UserHasLoginException;
 
     boolean insertApplication
-        (String name, int genderId, String pid, Date birthDate, String email,
-         String phoneHome, String phoneWork,
-         String custodian1Pid, String custodian1CivilStatus,
-         String custodian2Pid, String custodian2CivilStatus,
-         String street, String zipCode, String city) throws RemoteException;
+        (String name, String ssn, String email, String phoneHome,
+         String phoneWork, Date birthDate, String street, String zipCode,
+         String city, int genderId, String civilStatus, boolean hasCohabitant,
+         int childrenCount, String applicationReason)
+        throws RemoteException;
     void rejectApplication (int p0, User p1, String p2 )
         throws RemoteException,CreateException,FinderException, RemoteException;
 }

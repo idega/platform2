@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.22 2002/11/13 22:22:44 gimmi Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.23 2002/11/14 12:32:39 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -36,20 +36,20 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 	/**
 	 * Creates an application for CitizenAccount for a user with a personalId that is in the system.
 	 * @param user The user that makes the application
-	 * @param pid 	The PersonalId of the User to apply for.
+	 * @param ssn 	The PersonalId of the User to apply for.
 	 * @param email Email of the user
 	 * @param phoneHome the Home phone of the user
 	 * @param phoneWork the Work phone of the user
 	 * @return boolean	If the Application is successfully created.
 	 * @throws UserHasLoginException If A User already has a login in the system.
 	 */
-	public boolean insertApplication (User user, String pid, String email,
+	public boolean insertApplication (User user, String ssn, String email,
                                       String phoneHome, String phoneWork) throws UserHasLoginException{
 		try {
 			CitizenAccount application =
                     ((CitizenAccountHome) IDOLookup.getHome
                      (CitizenAccount.class)).create();
-			application.setPID(pid);
+			application.setSsn (ssn);
 			if (user != null)
 				application.setOwner(user);
 			application.setPhoneHome(phoneHome);
@@ -78,36 +78,34 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 		return true;
 	}
+
+
     public boolean insertApplication
-        (final String name, final int genderId, final String pid,
-         final Date date,
-         final String email, final String phoneHome, final String phoneWork,
-         final String custodian1Pid, final String custodian1CivilStatus,
-         final String custodian2Pid, final String custodian2CivilStatus,
-         final String street, final String zipCode, final String city)
-        throws RemoteException {
+        (final String name, final String ssn, final String email,
+         final String phoneHome, final String phoneWork, final Date date,
+         final String street, final String zipCode, final String city,
+         final int genderId, final String civilStatus,
+         final boolean hasCohabitant, final int childrenCount,
+         final String applicationReason) throws RemoteException {
 		try {
             final CitizenAccountHome citizenAccountHome = (CitizenAccountHome)
                     IDOLookup.getHome(CitizenAccount.class);
 			final CitizenAccount application = citizenAccountHome.create ();
 			application.setApplicantName (name != null ? name : "");
-			application.setGenderId (genderId);
-			application.setPID (pid != null ? pid : "");
-            application.setBirthDate (date);
-			application.setPhoneHome (phoneHome != null ? phoneHome : "");
+			application.setSsn (ssn != null ? ssn : "");
             application.setEmail (email != null ? email : "");
+			application.setPhoneHome (phoneHome != null ? phoneHome : "");
             application.setPhoneWork (phoneWork != null ? phoneWork : "");
-            application.setCustodian1Pid (custodian1Pid != null ? custodian1Pid
-                                          : "");
-            application.setCustodian1CivilStatus (custodian1CivilStatus != null
-                                                  ? custodian1CivilStatus : "");
-            application.setCustodian2Pid (custodian2Pid != null ? custodian2Pid
-                                          : "");
-            application.setCustodian2CivilStatus (custodian2CivilStatus != null
-                                                  ? custodian2CivilStatus : "");
+            application.setBirthDate (date);
             application.setStreet (street != null ? street : "");
             application.setZipCode (zipCode != null ? zipCode : "");
             application.setCity (city != null ? city : "");
+			application.setGenderId (genderId);
+            application.setCivilStatus (civilStatus != null ? civilStatus : "");
+            application.setHasCohabitant (hasCohabitant);
+            application.setChildrenCount (childrenCount);
+            application.setApplicationReason (applicationReason != null
+                                              ? applicationReason : "");
 			application.setCaseStatus (getCaseStatusOpen());
 			application.store ();
 		}
@@ -132,29 +130,29 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
         }
     }
 
-	public User getUser(String pid) {
+	public User getUser(String ssn) {
 		User user = null;
 		try {
-			StringBuffer userPid = new StringBuffer(pid);
-			int i = pid.indexOf('-');
+			StringBuffer userSsn = new StringBuffer(ssn);
+			int i = ssn.indexOf('-');
 			if (i != -1) {
-				userPid.deleteCharAt(i);
-				pid = userPid.toString();
+				userSsn.deleteCharAt(i);
+				ssn = userSsn.toString();
 			}
-			if (userPid.length() == 10) {
-				userPid.insert(0, "19");
+			if (userSsn.length() == 10) {
+				userSsn.insert(0, "19");
 			}
-			user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userPid.toString());
+			user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userSsn.toString());
 		}
 		catch (RemoteException e) {
 			return null;
 		}
 		catch (FinderException e) {
-			if (pid.length() == 10) {
-				StringBuffer userPid = new StringBuffer("20");
-				userPid.append(pid);
+			if (ssn.length() == 10) {
+				StringBuffer userSsn = new StringBuffer("20");
+				userSsn.append(ssn);
 				try {
-					user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userPid.toString());
+					user = ((UserHome) IDOLookup.getHome(User.class)).findByPersonalID(userSsn.toString());
 				}
 				catch (Exception ex) {
 					return null;
@@ -180,16 +178,16 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 				CitizenAccount account = (CitizenAccount) it.next();
 				User user = account.getOwner();
 				AdminListOfApplications apps = new AdminListOfApplications();
-				apps.setPID(account.getPID());
+				apps.setPID (account.getSsn());
 				apps.setId(((Integer) account.getPrimaryKey()).toString());
 				if (user == null) {
-                    // There's no user with this pid in the system
+                    // There's no user with this ssn in the system
                     apps.setName (account.getApplicantName ());
                     apps.setAddress (account.getStreet () + "; "
                                      + account.getZipCode () + " "
                                      + account.getCity ());
                 } else {
-                    // User is allready with this pid in the system
+                    // User is allready with this ssn in the system
 					apps.setName(user.getName());
 					Collection addresses = user.getAddresses();
 					Iterator it2 = addresses.iterator();
@@ -253,7 +251,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                 ? new IWTimestamp (birthDate.getTime ()) : null;
         final CommuneUserBusiness userBusiness = getUserBusiness ();
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
-                (firstName, "", lastName, applicant.getPID (), gender,
+                (firstName, "", lastName, applicant.getSsn (), gender,
                  timestamp);
 		applicant.setOwner (user);
         applicant.store ();
@@ -330,7 +328,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                 ? new IWTimestamp (birthDate.getTime ()) : null;
         final CommuneUserBusiness userBusiness = getUserBusiness ();
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
-                (firstName, "", lastName, applicant.getPID (), gender,
+                (firstName, "", lastName, applicant.getSsn (), gender,
                  timestamp);
         return user;        
 	}
