@@ -4,6 +4,7 @@ import java.io.*;
 import java.sql.*;
 import java.text.DecimalFormat;
 import com.idega.projects.golf.entity.*;
+import java.util.Vector;
 
 public class Handicap {
 
@@ -130,4 +131,60 @@ private double grunn;
 
 	}
 
+  public static void calculatePoints(Scorecard sc, Vector strokes, int playHandicap) {
+    int leik = playHandicap;
+    int leikpunktar = leik + 36;
+    int punktar = leikpunktar/18;
+    int afgangur = leikpunktar%18;
+    int punktar2 = punktar + 1;
+    int punktar3 = 0;
+    int heildarpunktar = 0;
+    int hole_handicap = 0;
+    int hole_par = 0;
+
+    try {
+      for (int c = 0 ; c < strokes.size(); c++ ) {
+        Stroke stroke2 = (Stroke)strokes.elementAt(c);
+        hole_handicap = (int) stroke2.getHoleHandicap();
+        hole_par = stroke2.getHolePar();
+
+        int strokes2 = stroke2.getStrokeCount();
+
+        if (hole_handicap > afgangur) {
+          punktar3 = hole_par + punktar - strokes2;
+        }
+
+        if (hole_handicap <= afgangur) {
+          punktar3 = hole_par + punktar2 - strokes2;
+        }
+
+        if (punktar2 < 0) {
+          punktar3 = 0;
+        }
+
+        if (punktar3 < 0) {
+          punktar3 = 0;
+        }
+
+        if (strokes2 == 0) {
+          punktar3 = 0;
+        }
+
+        heildarpunktar += punktar3;
+
+        stroke2.setPointCount(punktar3);
+        stroke2.update();
+      }
+
+      if ( strokes.size() == 9 ) {
+        heildarpunktar *= 2;
+      }
+
+      sc.setTotalPoints(heildarpunktar);
+      sc.update();
+    }
+    catch(java.sql.SQLException e) {
+      e.printStackTrace();
+    }
+  }
 }
