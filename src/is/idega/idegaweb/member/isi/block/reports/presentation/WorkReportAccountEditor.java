@@ -68,6 +68,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String SUBMIT_CREATE_NEW_ENTRY_KEY = "submit_cr_new_entry_key";
   private static final String SUBMIT_DELETE_ENTRIES_KEY = "submit_del_new_entry_key";
   private static final String SUBMIT_CANCEL_KEY = "submit_cancel_key";
+  private static final String SUBMIT_SAVE_NEW_ENTRY_KEY = "submit_sv_new_entry_key";
   
   private static final String LEAGUE_NAME = "FIN_league_name";
   
@@ -152,7 +153,11 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         return action;
       }
     }
-
+    
+    // does th euser want to save a new entry?
+    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
+      return action;
+    }
     // does the user want to create a new entry?
     if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
       return ACTION_SHOW_NEW_ENTRY;
@@ -404,7 +409,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
     // add buttons
-    PresentationObject newEntryButton = getCreateNewEntityButton(resourceBundle);
+    PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
+      getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
     PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
     PresentationObject cancelButton = getCancelButton(resourceBundle);
     // add buttons
@@ -442,6 +448,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     button.setAsImageButton(true);
     return button;
   }
+
+  private PresentationObject getSaveNewEntityButton(IWResourceBundle resourceBundle)  {
+    String saveNewEntityText = resourceBundle.getLocalizedString("wr_div_board_member_editor_save_new_entry", "Save");
+    SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
+    button.setAsImageButton(true);
+    return button;
+  }    
   
   private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
     String deleteEntityText = resourceBundle.getLocalizedString("wr_account_editor_remove_entries", "Remove");
@@ -707,7 +720,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     try {
       workReportGroup = 
         workReportBusiness.getWorkReportGroupHome().findWorkReportGroupByNameAndYear(newLeagueName, getYear());
-      newGroupId = (Integer) workReportGroup.getPrimaryKey();
+      newGroupId = (Integer) workReportGroup.getGroupId();
     }
     catch (RemoteException rmEx) {
       String message =
