@@ -146,7 +146,7 @@ public class CitizenBMPBean extends UserBMPBean implements Citizen {
 	}
 	
 	
-	public Collection ejbFindCitizensNotAssignedToClassOnGivenDate(Group citizenGroup, Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOException, IDOLookupException, FinderException{
+	public Collection ejbFindCitizensNotAssignedToClassOnGivenDate(Group citizenGroup, Date date, Collection classes, Date firstDateOfBirth, Date lastDateOfBirth) throws IDOLookupException, FinderException{
 		try {
 			
 			IDOEntityDefinition usrDef = IDOLookup.getEntityDefinitionForClass(User.class);
