@@ -94,6 +94,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 	private final static String FATE_REMOVED = "BRFL";
 	private final static String FATE_CHANGE_OLD_ID = "BRNN";
 	private boolean postalCodeFix = false;
+	private boolean relationsOnly = false;
 	private Group citizenGroup = null;
 	private User performer = null;
 	private FamilyLogic famLog = null;
@@ -118,6 +119,7 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			String sGroupID = bundle.getProperty(PROPERTY_NAME_GROUP_ID_FIX);
 			affectedFamilies = new HashSet();
 			postalCodeFix = (sPostal != null && sPostal.equalsIgnoreCase("yes"));
+			relationsOnly = (sRelationOnly != null && sRelationOnly.equalsIgnoreCase("yes"));
 			if (sGroupID != null) {
 				try {
 					citizenGroup = ((GroupHome) IDOLookup.getHome(Group.class)).findByPrimaryKey(new Integer(sGroupID));
@@ -131,6 +133,9 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 			int count = 0;
 			if (postalCodeFix) {
 				System.out.println("NationalRegisterHandler postalCodeFix variable set to TRUE");
+			}
+			if (relationsOnly) {
+				System.out.println("NationalRegisterHandler relationsOnly variable set to TRUE");
 			}
 			
 			System.out.println("NationalRegisterHandler processing RECORD [0] time: " + IWTimestamp.getTimestampRightNow().toString());
@@ -564,75 +569,78 @@ public class NationalRegisterFileImportHandlerBean extends IBOServiceBean implem
 		String dateOfBirth = getProperty(COLUMN_DATE_OF_BIRTH);
 		
 		//		System.out.println("ssn = " + ssn);
-
+		boolean success = true;
+		
 		if (ssn == null || ssn.equals(""))
 			return false;
 
-		//initialize business beans and data homes           
-		NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
-		UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
 
-		boolean success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
-		    floor,sex,maritialStatus,empty,prohibitMarking,
-		    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
-				addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
-				agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, citizenGroup);
-
-
-		if(FATE_DECEASED.equalsIgnoreCase(fate)){
-			User user;
-			try {
-				user = uBiz.getUser(ssn);
+		if (!relationsOnly) {
+			//initialize business beans and data homes           
+			NationalRegisterBusiness natReg = (NationalRegisterBusiness) getServiceInstance(NationalRegisterBusiness.class);
+			UserBusiness uBiz = (UserBusiness) getServiceInstance(UserBusiness.class);
+	
+			success = natReg.updateEntry(symbol,oldId,ssn,familyId,name,commune,street,building,
+			    floor,sex,maritialStatus,empty,prohibitMarking,
+			    nationality,placeOfBirth,spouseSSN,fate,parish,po,address,
+					addressCode, dateOfModification, placementCode, dateOfCreation, lastDomesticAddress,
+					agentSsn, sNew, addressName, dateOfDeletion, newSsnOrName, dateOfBirth, citizenGroup);
+	
+	
+			if(FATE_DECEASED.equalsIgnoreCase(fate)){
+				User user;
+				try {
+					user = uBiz.getUser(ssn);
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+					return false;
+				}
+				FamilyLogic familyService = getMemberFamilyLogic();
+				IWTimestamp dom = new IWTimestamp();
+				if (dateOfModification != null && !"".equals(dateOfModification.trim())) {
+					dom = new IWTimestamp(dateOfModification);
+				}
+				else {
+					dom = IWTimestamp.RightNow();
+				}
+				familyService.registerAsDeceased(user, dom.getDate(), performer);
 			}
-			catch (FinderException e) {
-				e.printStackTrace();
-				return false;
+			
+			if(FATE_CHANGE_PERSONAL_ID.equalsIgnoreCase(fate)){
+				natReg.updateUserPersonalID(ssn,newSsnOrName);
+				return true;
 			}
-			FamilyLogic familyService = getMemberFamilyLogic();
-			IWTimestamp dom = new IWTimestamp();
-			if (dateOfModification != null && !"".equals(dateOfModification.trim())) {
-				dom = new IWTimestamp(dateOfModification);
-			}
-			else {
-				dom = IWTimestamp.RightNow();
-			}
-			familyService.registerAsDeceased(user, dom.getDate(), performer);
-		}
-		
-		if(FATE_CHANGE_PERSONAL_ID.equalsIgnoreCase(fate)){
-			natReg.updateUserPersonalID(ssn,newSsnOrName);
-			return true;
-		}
-		
-		if (FATE_REMOVED.equalsIgnoreCase(fate)) {
-			try {
-				User user = uBiz.getUser(ssn);
-				uBiz.deleteUser(user,performer);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			}
-			return true;
-		}
-		
-		if(FATE_CHANGE_OLD_ID.equalsIgnoreCase(fate)){
-			natReg.updateUserOldID(oldId,ssn);
-			return true;
-		}
-		
-		if (postalCodeFix) {
-			try {
-//				User user = uBiz.getUser(ssn);
-				if (postalCodeFix) {
-					natReg.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
+			
+			if (FATE_REMOVED.equalsIgnoreCase(fate)) {
+				try {
+					User user = uBiz.getUser(ssn);
+					uBiz.deleteUser(user,performer);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					return false;
 				}
 				return true;
-			} catch (Exception e){
-				return false;
+			}
+			
+			if(FATE_CHANGE_OLD_ID.equalsIgnoreCase(fate)){
+				natReg.updateUserOldID(oldId,ssn);
+				return true;
+			}
+			
+			if (postalCodeFix) {
+				try {
+	//				User user = uBiz.getUser(ssn);
+					if (postalCodeFix) {
+						natReg.updateUserAddress(uBiz.getUser(ssn), uBiz, address, po);
+					}
+					return true;
+				} catch (Exception e){
+					return false;
+				}
 			}
 		}
-
 		// Family is marked as affected, and needs to be updated
 		affectedFamilies.add(familyId);
 		try {
