@@ -2,7 +2,9 @@ package is.idega.idegaweb.golf.entity;
 
 import javax.ejb.*;
 
-public interface Union extends com.idega.data.TreeableEntity,com.idega.util.datastructures.idegaTreeNode,com.idega.core.ICTreeNode
+import com.idega.data.IDOLegacyEntity;
+
+public interface Union extends com.idega.data.TreeableEntity,IDOLegacyEntity,com.idega.util.datastructures.idegaTreeNode,com.idega.core.ICTreeNode
 {
  public java.util.Enumeration children();
  public void delete()throws java.sql.SQLException;
