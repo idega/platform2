@@ -68,6 +68,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
   private static String color3 = "#ADC9D0";
   private static String color5 = "#FFFFFF";
   private static String color4 = "#6E9173";
+  private static String color6 = "#FF6666";
 
   public AdminRegisterTime() {
     super();
@@ -80,8 +81,6 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     this.add(myForm);
     business = new StartService();
   }
-
-
 
   public void lineUpTable(ModuleInfo modinfo) throws SQLException {
 
@@ -106,8 +105,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
 
     Table startTable = new Table(5,lines+1);
     Table headerTable = new Table(5,1);
-    frameTable.add(headerTable);
-    frameTable.add(startTable);
+    Table illegalTable = null;
 
     startTable.setAlignment("center");
     startTable.setWidth(width);
@@ -200,6 +198,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
             freeGroups[tempGroupNum-1] = 1;
           }
           if(groupCounter > countInGroups){
+            System.err.println("yfirfullt holl : "+tempGroupNum);
             illegalTimes.insertElementAt(tempStart,illegalTimesIndex++);
             //continue;
             insert = false;
@@ -280,7 +279,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
         openTime.addMinutes(-min);
         tempTimeMenu.setSelectedElement(Integer.toString((i-2)/countInGroups));
         startTable.add(tempTimeMenu,1,i);
-        startTable.add(new HiddenInput(lastGroupParameterString,Integer.toString((i-2)/countInGroups)));
+        startTable.add(new HiddenInput(lastGroupParameterString,Integer.toString((i-2)/countInGroups)),1,i);
       }
       if(i>1){
         if(count >= countInGroups){
@@ -308,13 +307,83 @@ public class AdminRegisterTime extends ModuleObjectContainer {
       }
     }
 
+    int illegal = illegalTimes.size();
+    System.err.println("illegal = " + illegal);
+    if(illegal > 0){
+      illegalTable = new Table(5,illegal);
+      illegalTable.setAlignment("center");
+      illegalTable.setWidth(width);
+      illegalTable.setCellspacing(1);
+
+      illegalTable.setWidth(1,width1);
+      illegalTable.setWidth(2,width2);
+      illegalTable.setWidth(3,width3);
+      illegalTable.setWidth(4,width4);
+      //startTable.setWidth(5,width5);
+
+      illegalTable.setColumnAlignment(1,"center");
+      illegalTable.setColumnAlignment(3,"center");
+      illegalTable.setColumnAlignment(4,"center");
+      illegalTable.setAlignment(5,1,"center");
+
+
+      for (int i = 1; i <= illegal; i++) {
+
+
+        Startingtime tempStart = (Startingtime)illegalTimes.get(i-1);
+
+        illegalTable.setColor(1,i,color6);
+        illegalTable.setColor(2,i,color6);
+        illegalTable.setColor(3,i,color6);
+        illegalTable.setColor(4,i,color6);
+        illegalTable.setColor(5,i,color6);
+
+
+        illegalTable.add(tempStart.getPlayerName(),2,i);
+        illegalTable.add(tempStart.getClubName(),3,i);
+        if(tempStart.getHandicap()>= 0){
+          illegalTable.add(Float.toString(tempStart.getHandicap()),4,i);
+        }else{
+          illegalTable.add("-",4,i);
+        }
+        CheckBox tempDelCheck = (CheckBox)delCheck.clone();
+        tempDelCheck.setContent(Integer.toString(tempStart.getID()));
+        illegalTable.add(new HiddenInput(timeChangeStartIDParameterString,Integer.toString(tempStart.getID())),1,i);
+        illegalTable.add(tempDelCheck,5,i);
+        illegalTable.setAlignment(5,i,"center");
+
+        DropdownMenu tempTimeMenu = (DropdownMenu)timeMenu.clone();
+        min = (tempStart.getGroupNum()-1)*minBetween;
+        openTime.addMinutes(min);
+        tempTimeMenu.addMenuElement(Integer.toString(tempStart.getGroupNum()),TextSoap.addZero(openTime.getHour()) + ":" + TextSoap.addZero(openTime.getMinute()));
+        openTime.addMinutes(-min);
+        tempTimeMenu.setSelectedElement(Integer.toString(tempStart.getGroupNum()));
+        illegalTable.add(tempTimeMenu,1,i);
+        illegalTable.add(new HiddenInput(lastGroupParameterString,Integer.toString(tempStart.getGroupNum())),1,i);
+
+
+
+      }
+
+    }
+
+
+    frameTable.add(headerTable);
+
+    if(illegalTable != null){
+      frameTable.add(illegalTable);
+    }
+    frameTable.add(startTable);
+
 
 //    SubmitButton save = new SubmitButton("  Vista  ", saveParameterString+".x", "do");
     SubmitButton save = new SubmitButton(new Image("/pics/formtakks/vista.gif","Vista"), saveParameterString, "do");
     Table submSave = new Table();
     submSave.add(save);
-    submSave.setAlignment("right");
+    submSave.setAlignment("center");
+    submSave.setAlignment(1,1,"right");
     submSave.setHeight(1,"30");
+    submSave.setWidth(width);
     frameTable.add(submSave);
   }
 
