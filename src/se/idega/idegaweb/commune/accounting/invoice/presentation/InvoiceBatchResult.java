@@ -137,13 +137,14 @@ public class InvoiceBatchResult extends AccountingBlock{
 					errorTable.setRowColor (row + 1, (row % 2 == 0) ? getZebraColor1 ()
 									   : getZebraColor2 ());
 					errorTable.add(new Text(new Integer(row).toString()),1,row+1);
-					if(batchRunError.getRelated()!=null && batchRunError.getRelated().indexOf("invoice.")==0){
-						errorTable.add(getLocalizedLabel(batchRunError.getRelated(),batchRunError.getRelated()),2,row+1);
-						System.out.println("Error "+batchRunError.getRelated());
-					}else{
+//Should not need this anymore. Keep it for a while just in case.
+//					if(batchRunError.getRelated()!=null && batchRunError.getRelated().indexOf("invoice.")==0){
+//						errorTable.add(getLocalizedLabel(batchRunError.getRelated(),batchRunError.getRelated()),2,row+1);
+//						System.out.println("Error "+batchRunError.getRelated());
+//					}else{
 						errorTable.add(new Text(batchRunError.getRelated()),2,row+1);
-						System.out.println("Error Plain text "+batchRunError.getRelated());
-					}
+//						System.out.println("Error Plain text "+batchRunError.getRelated());
+//					}
 					errorTable.add(new Text(batchRunError.getDescription()),3,row+1);
 					row++;
 				}
