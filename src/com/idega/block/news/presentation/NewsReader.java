@@ -392,7 +392,7 @@ public class NewsReader extends Block implements IWBlock{
         T.add(getNewsTable(newsHelper,newsCategory,locale ,false,collection,iwc),useDividedTable,"left");
       }
 			// news collection
-			if(len < count){
+			if(showNewsCollectionButton && len < count){
 				Link collectionLink = new Link(iwrb.getImage("collection.gif"));
 				collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
 				collectionLink.addParameter(prmCollection,"true");
