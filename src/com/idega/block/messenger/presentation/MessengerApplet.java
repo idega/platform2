@@ -362,6 +362,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.addActionListener(this);
 
       item.add(new ImageLabel(getImage(getCodeBase(),"face_in.gif")));
+      item.setNextToFillRight(true);
       item.add(new Label(name));
 
       add(item);
@@ -373,6 +374,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
    doLayout();
    Component[] comps = getComponents();
    for (int i = 0; i < comps.length; i++) {
+    comps[i].doLayout();
     comps[i].repaint();
     comps[i].paintAll(getGraphics());
    }
@@ -417,37 +419,9 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     refresh();
   }
 
-  /**
-   *  Reads a text response from the servlet.
-   */
-  protected void readServletResponse(URLConnection servletConnection)
-  {
-      BufferedReader inFromServlet = null;
-
-      try
-      {
-              // now, let's read the response from the servlet.
-              // this is simply a confirmation string
-              inFromServlet = new BufferedReader(new InputStreamReader(servletConnection.getInputStream()));
-
-          String str;
-          while (null != ((str = inFromServlet.readLine())))
-          {
-              System.out.println("Reading servlet response: " + str);
-          }
-
-          inFromServlet.close();
-      }
-      catch (IOException e)
-      {
-        System.out.println(e.toString());
-      }
-  }
-
-
- public void update(Graphics g){
+ /*public void update(Graphics g){
   paint(g);
- }
+ }*/
 
   /**Start the applet*/
   public void start() {
