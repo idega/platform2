@@ -35,7 +35,16 @@ public class ProductCatalogLayoutMetadataList extends AbstractProductCatalogLayo
 		table.setCellspacing(1);
 		table.setCellpadding(2);
 
+		System.out.println("[ProductCatalogLayoutMetadata] - debug starts");
+		if (productCategories != null) {
+			System.out.println("productCategories.size() = "+productCategories.size());
+		}
 		Collection products = productCatalog.getProducts(productCategories);
+		if (products != null) {
+			System.out.println("products.size() = "+products.size());
+		}
+		
+		
 		Iterator iter = products.iterator();
 		Iterator catIter = productCategories.iterator();
 		
