@@ -959,7 +959,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 				}
 			}
 		}
-		Collections.sort(distances, new RunDistanceComparator());
+		if(distances != null) {
+			Collections.sort(distances, new RunDistanceComparator());
+		}
+		
 		return distances;
 	}
 	public Group getDistanceByUserID(int userID) {
