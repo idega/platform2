@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.51 2003/04/30 09:39:11 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.52 2003/05/22 10:11:04 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -50,11 +50,11 @@ import com.idega.user.data.User;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/04/30 09:39:11 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/22 10:11:04 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.51 $
+ * @version $Revision: 1.52 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -292,32 +292,21 @@ public class CitizenAccountApplication extends CommuneBlock {
 		add(accountForm);
 	}
 
-	private void submitUnknownCitizenForm1(final IWContext iwc) {
-		/*final Collection mandatoryParameterNames = Arrays.asList (new String []
-		{
-			SSN_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, CIVIL_STATUS_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CHILDREN_COUNT_KEY });
-		final Collection stringParameterNames = Arrays.asList(new String[] {
-		EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY, HAS_COHABITANT_KEY, APPLICATION_REASON_KEY });
-	final Collection ssnParameterNames = Collections.singleton(SSN_KEY);
-	final Collection integerParameters = Arrays.asList(new String[] {
-	CHILDREN_COUNT_KEY });*/
-
-try {
-	if (!(iwc.isParameterSet(PHONE_HOME_KEY) || iwc.isParameterSet(PHONE_WORK_KEY))) {
-		throw new ParseException(getResourceBundle(), PHONE_HOME_KEY);
-	}
-	//final Map parameters = parseParameters(getResourceBundle(), iwc, mandatoryParameterNames, stringParameterNames, ssnParameterNames, integerParameters);
-	viewUnknownCitizenApplicationForm2(iwc);
-
-}
-catch (final Exception e) {
-	final Text text = new Text(e.getMessage(), true, false, false);
-	text.setFontColor(COLOR_RED);
-	add(text);
-	add(Text.getBreak());
-	viewUnknownCitizenApplicationForm1(iwc);
-}
-}
+	private void submitUnknownCitizenForm1 (final IWContext iwc) {
+        try {
+            if (!(iwc.isParameterSet (PHONE_HOME_KEY)
+                  || iwc.isParameterSet (PHONE_WORK_KEY))) {
+                throw new ParseException (getResourceBundle(), PHONE_HOME_KEY);
+            }
+            viewUnknownCitizenApplicationForm2(iwc);
+        } catch (final Exception e) {
+            final Text text = new Text (e.getMessage(), true, false, false);
+            text.setFontColor (COLOR_RED);
+            add (text);
+            add (Text.getBreak());
+            viewUnknownCitizenApplicationForm1 (iwc);
+        }
+    }
 
 private void viewUnknownCitizenApplicationForm2(final IWContext iwc) {
 	final Form form = new Form();
@@ -434,18 +423,6 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 	ssnParameterNames.add(SSN_KEY);
 	final Collection integerParameters = new ArrayList();
 	integerParameters.addAll(Arrays.asList(new String[] { CHILDREN_COUNT_KEY }));
-	try {
-		//final Map parameters = parseParameters(getResourceBundle(), iwc, mandatoryParameterNames, stringParameterNames, ssnParameterNames, integerParameters);
-	}
-	catch (final Exception e) {
-		final Text text = new Text(e.getMessage(), true, false, false);
-		text.setFontColor(COLOR_RED);
-		add(text);
-		add(Text.getBreak());
-		viewUnknownCitizenApplicationForm1(iwc);
-		return;
-	}
-
 	final boolean hasCohabitant = getBooleanParameter(iwc, HAS_COHABITANT_KEY);
 	if (hasCohabitant) {
 		stringParameterNames.addAll(Arrays.asList(new String[] { FIRST_NAME_KEY + COHABITANT_KEY, LAST_NAME_KEY + COHABITANT_KEY, CIVIL_STATUS_KEY + COHABITANT_KEY, PHONE_WORK_KEY + COHABITANT_KEY }));
@@ -477,6 +454,12 @@ private void submitUnknownCitizenForm2(final IWContext iwc) {
 		if (!isOver18(ssn)) {
 			throw new ParseException(localize(YOU_MUST_BE_18_KEY, YOU_MUST_BE_18_DEFAULT));
 		}
+
+        if (hasCohabitant &&
+            ssn.equals (parameters.get(SSN_KEY + COHABITANT_KEY).toString())) {
+            throw new ParseException ("Samma personnummer inmatat två gånger");
+        }
+
 		final String email = parameters.get(EMAIL_KEY).toString();
 		final String phoneHome = parameters.get(PHONE_HOME_KEY).toString();
 		final String phoneWork = parameters.get(PHONE_WORK_KEY).toString();
