@@ -110,7 +110,7 @@ public class NewProductApplicationForm extends Block {
 			appl.setBarCode(bar);
 			appl.setAmount(amount);
 			appl.setWeigth(weight);
-			appl.setProductCategoryId(Integer.parseInt(cat));
+			appl.setProductCategoryId(Integer.parseInt(sub));
 			appl.setSupplierId(iwc.getUserId());
 			appl.setApplicationSent(IWTimestamp.getTimestampRightNow());
 			if (monoxide != null)
