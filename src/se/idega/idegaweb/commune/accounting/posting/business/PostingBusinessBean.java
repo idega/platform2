@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.37 2003/11/18 10:04:09 roar Exp $
+ * $Id: PostingBusinessBean.java,v 1.38 2003/11/18 23:03:58 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -107,6 +107,48 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			throw new PostingException("posting.exception","malformated posting field encountered");
 		}
 		return ret.toString();
+	}
+	
+	/**
+	 * A method that goes through a posting string and compares it to the definition 
+	 * until it finds a field with the correct name.
+	 * 
+	 * @param postingString The posting string we are searching through
+	 * @param name The name of the field we are trying to find
+	 * @return The value of the field or null if not found
+	 */
+	public String findFieldInStringByName(String postingString, String name) {
+		String temp;
+		int readPointer = 0;						//Pointer to place where next field is
+		int fieldLength=0;							//Length of next field. Fetched from the definition 
+
+		try {
+			PostingStringHome ksHome = getPostingStringHome();
+			PostingFieldHome kfHome = getPostingFieldHome();
+
+			PostingString posting = ksHome.findPostingStringByDate(new Date(IWTimestamp.getTimestampRightNow().getTime()));
+			Collection list = kfHome.findAllFieldsByPostingString(Integer.parseInt(posting.getPrimaryKey().toString()));
+
+			Iterator iter = list.iterator();
+			while (iter.hasNext()) {
+				PostingField field = (PostingField)iter.next();
+				fieldLength = field.getLen();
+				temp = trim(postingString.substring(readPointer,readPointer+fieldLength),field);
+
+				if (field.getFieldTitle().equals(name))
+					return temp;		
+
+				readPointer += fieldLength;
+			}
+		}
+		catch(FinderException e) {
+			e.printStackTrace();
+		}
+		catch(RemoteException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	/**
