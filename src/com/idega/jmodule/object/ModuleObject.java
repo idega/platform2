@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.12 2001/07/09 16:18:28 tryggvil Exp $
+ * $Id: ModuleObject.java,v 1.13 2001/07/16 13:24:55 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -592,7 +592,7 @@ public class ModuleObject extends Object implements Cloneable {
   public String getLocalizedString(String key,ModuleInfo modinfo){
     IWResourceBundle bundle = getResourceBundle(modinfo);
     if(bundle!=null){
-      return bundle.getStringChecked(key);
+      return bundle.getLocalizedString(key);
     }
     return null;
   }
