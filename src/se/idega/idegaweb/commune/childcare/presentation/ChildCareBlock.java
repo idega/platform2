@@ -6,10 +6,12 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
@@ -133,13 +135,37 @@ public abstract class ChildCareBlock extends CommuneBlock {
 
 	protected DropdownMenu getSchoolTypes(int typeID, int typeToIgnoreID) throws RemoteException {
 		DropdownMenu menu = new DropdownMenu(getSession().getParameterSchoolTypeID());
+		int ccId =getSession().getChildCareID();
 		
-		Collection types = getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare();
+		School childcare = null;
+		Collection types = null;
+		String catChildcare = getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory();
+		
+		try {
+		childcare = getBusiness().getSchoolBusiness().getSchoolHome().findByPrimaryKey(new Integer (ccId));
+		}
+		catch (FinderException e){
+			log(e);
+		}
+		
+		//Collection types = getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare();
+		try {
+			types = childcare.getSchoolTypes();
+		}
+		catch (IDORelationshipException relEx)	{
+			log (relEx);
+		}
+				
 		Iterator iter = types .iterator();
 		while (iter.hasNext()) {
 			SchoolType element = (SchoolType) iter.next();
-			if (((Integer)element.getPrimaryKey()).intValue() != typeToIgnoreID)
-				menu.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolTypeName());
+			String catCC = element.getCategory().getCategory().toString().toUpperCase();
+			//only add to list if category is childcare
+			if (catCC.equals(catChildcare)){
+				if (((Integer)element.getPrimaryKey()).intValue() != typeToIgnoreID)
+					menu.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolTypeName());	
+			}
+			
 		}
 		if (typeID != -1)
 			menu.setSelectedElement(typeID);
