@@ -33,6 +33,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 	 */
 	public ReportableCollection getPaymentStatusByLeaguesGroupsAndDateIntervalFiltering(
 			Date dateFromFilter,
+			Date dateToFilter,
 			Collection leaguesFilter,
 			Collection regionalUnionsFilter)
 	throws RemoteException {
