@@ -740,7 +740,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
 		IWTimestamp validFrom = new IWTimestamp(archive.getValidFromDate());
-		validFrom.addDays(1);
+		//validFrom.addDays(1);
 		dateInput.setDate(validFrom.getDate());
 		if (restrictDates) {
 			IWTimestamp stamp = new IWTimestamp();
