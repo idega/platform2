@@ -1314,6 +1314,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableCollection reportCollection = new ReportableCollection();
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
 
+		WorkReportGroup mainBoardGroup = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
+		Integer mbId = mainBoardGroup.getGroupId();
+		
 		//PARAMETES
 
 		//A way to set a static parameter
@@ -1425,6 +1428,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				Iterator iterator = leagues.iterator();
 				while (iterator.hasNext()) {
 					WorkReportGroup league = (WorkReportGroup) iterator.next();
+					
+					boolean isMainBoard = mbId.equals(league.getGroupId());
+					if(isMainBoard) {
+						continue;
+					}
 					
 					int womenPlayersUnder = getWorkReportBusiness().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age, report, league);
 					int womenPlayersEqualOrOver = getWorkReportBusiness().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age, report, league);
