@@ -1,5 +1,5 @@
 /*
- * $Id: Link.java,v 1.33 2001/09/14 14:40:40 palli Exp $
+ * $Id: Link.java,v 1.34 2001/09/14 16:45:50 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,7 +41,11 @@ public class Link extends Text {
   private static final String HASH = "#";
   private static final String JAVASCRIPT = "javascript:";
   private static final String TARGET_ATTRIBUTE = "target";
+  private static final String HREF_ATTRIBUTE = "href";
+
   private static final String OBJECT_TYPE_WINDOW = "Window";
+  private static final String OBJECT_TYPE_MODULEOBJECT="ModuleObject";
+  private static final String OBJECT_TYPE_TEXT = "Text";
 
   public static final String TARGET_NEW_WINDOW = "_new";
   public static final String TARGET_BLANK_WINDOW = "_blank";
@@ -69,7 +73,6 @@ public class Link extends Text {
     _myWindow = myWindow;
     myWindow.setParentObject(this);
     _objectType = OBJECT_TYPE_WINDOW;
-
     _obj = mo;
     _obj.setParentObject(this);
   }
@@ -87,7 +90,7 @@ public class Link extends Text {
   public Link(ModuleObject mo) {
     _obj = mo;
     _obj.setParentObject(this);
-    _objectType = "ModuleObject";
+    _objectType = OBJECT_TYPE_MODULEOBJECT;
   }
 
   /**
@@ -97,7 +100,7 @@ public class Link extends Text {
     text.setFontColor("");
     _obj = (ModuleObject)text;
     _obj.setParentObject(this);
-    _objectType = "Text";
+    _objectType = OBJECT_TYPE_TEXT;
   }
 
   /**
@@ -114,7 +117,7 @@ public class Link extends Text {
     _obj = mo;
     setURL(url);
     _obj.setParentObject(this);
-    _objectType = "ModuleObject";
+    _objectType = OBJECT_TYPE_MODULEOBJECT;
   }
 
   /**
@@ -125,7 +128,7 @@ public class Link extends Text {
     _obj = (ModuleObject)text;
     setURL(url);
     _obj.setParentObject(this);
-    _objectType = "Text";
+    _objectType = OBJECT_TYPE_MODULEOBJECT;
   }
 
   /**
@@ -151,7 +154,7 @@ public class Link extends Text {
     _obj = mo;
     setURL("/servlet/FileModule?file_id="+file_id);
     _obj.setParentObject(this);
-    _objectType = "ModuleObject";
+    _objectType = OBJECT_TYPE_MODULEOBJECT;
   }
 
   /**
@@ -221,7 +224,7 @@ public class Link extends Text {
    *
    */
   public void main(ModuleInfo modinfo)throws Exception {
-    if (_objectType.equals(OBJECT_TYPE_WINDOW)) {
+    if (_objectType==(OBJECT_TYPE_WINDOW)) {
       if (_myWindow != null) {
         if (_myWindow.getURL(modinfo).indexOf(IWMainApplication.windowOpenerURL) != -1) {
           String sessionParameterName = com.idega.servlet.WindowOpener.storeWindow(modinfo,_myWindow);
@@ -238,14 +241,14 @@ public class Link extends Text {
    *
    */
   public void setURL(String url) {
-    setAttribute("href",url);
+    setAttribute(HREF_ATTRIBUTE,url);
   }
 
   /**
    *
    */
   public String getURL() {
-    return(getAttribute("href"));
+    return(getAttribute(HREF_ATTRIBUTE));
   }
 
   /**
@@ -395,7 +398,7 @@ public class Link extends Text {
    *
    */
   public void setFontSize(String s) {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
       ((Text)_obj).setFontSize(s);
     }
   }
@@ -411,7 +414,7 @@ public class Link extends Text {
    *
    */
   public void setFontFace(String s) {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
       ((Text)_obj).setFontFace(s);
     }
   }
@@ -420,7 +423,7 @@ public class Link extends Text {
    *
    */
   public void setFontColor(String color) {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
       ((Text)_obj).setFontColor(color);
     }
   }
@@ -429,7 +432,7 @@ public class Link extends Text {
    *
    */
   public void setFontStyle(String style) {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
       ((Text)_obj).setFontStyle(style);
     }
   }
@@ -445,7 +448,7 @@ public class Link extends Text {
    *
    */
   public void addBreak() {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
 	    ((Text)_obj).addBreak();
     }
   }
@@ -454,7 +457,7 @@ public class Link extends Text {
    *
    */
   public void setTeleType() {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
 	    ((Text)_obj).setTeleType();
     }
   }
@@ -463,7 +466,7 @@ public class Link extends Text {
    *
    */
   public void setBold() {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
     	((Text)_obj).setBold();
     }
   }
@@ -472,7 +475,7 @@ public class Link extends Text {
    *
    */
   public void setItalic() {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
 	    ((Text)_obj).setItalic();
     }
   }
@@ -481,7 +484,7 @@ public class Link extends Text {
    *
    */
   public void setUnderline() {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
 	    ((Text)_obj).setUnderline();
     }
   }
@@ -490,7 +493,7 @@ public class Link extends Text {
    *
    */
   public void setText(String text) {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
       ((Text)_obj).setText(text);
     }
   }
@@ -499,7 +502,7 @@ public class Link extends Text {
    *
    */
   public void addToText(String text) {
-    if (_objectType.equals("Text")) {
+    if (_objectType==(OBJECT_TYPE_TEXT)) {
       ((Text)_obj).addToText(text);
     }
   }
@@ -516,7 +519,7 @@ public class Link extends Text {
    */
   public void setObject(ModuleObject object) {
     _obj = object;
-    _objectType = "ModuleObject";
+    _objectType = OBJECT_TYPE_MODULEOBJECT;
   }
 
   /**
@@ -734,7 +737,7 @@ public class Link extends Text {
     }
 
 		if (getLanguage().equals("HTML")) {
-      if (_objectType.equals(OBJECT_TYPE_WINDOW)) {
+      if (_objectType==(OBJECT_TYPE_WINDOW)) {
         if (_windowClass == null) {
           setOnClick(_myWindow.getCallingScriptString(modinfo,_myWindow.getURL(modinfo)+getParameterString(modinfo,_myWindow.getURL(modinfo))));
         }
