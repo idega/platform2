@@ -1286,7 +1286,7 @@ public class ReportQueryBuilder extends Block {
 
 		DropdownMenu equators = getConditionTypeDropdown();
 		DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc);//getFieldDropdown();
-		chosenFields.setOnClick(FORM_NAME + ".submit()");
+		chosenFields.setOnChange(FORM_NAME + ".submit()");//was set onclick
 		// set the prior selected field
 		String fieldPartCode = iwc.getParameter(PARAM_COND_FIELD);
 		QueryFieldPart fieldPart = null;
