@@ -647,7 +647,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		initializeContitionSrings();
 					
 		hasDeceasedInTimePeriode(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
-		livesInNacka(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
+		livesNotInCommune(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		hasMovedFromNacka(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		hasChangedAddressToHidden(usr, firstDateOfContitionInPeriode, lastDateOfConditionInPeriode);
 		
@@ -686,7 +686,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	 * @param lastDateOfConditionInPeriode
 	 * @return Returns true if user lives in nacka the whole time periode
 	 */
-	private boolean livesInNacka(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
+	private boolean livesNotInCommune(User usr, Date firstDateOfContitionInPeriode, Date lastDateOfConditionInPeriode) {
 		// TODO Auto-generated method stub
 		return false;
 	}
