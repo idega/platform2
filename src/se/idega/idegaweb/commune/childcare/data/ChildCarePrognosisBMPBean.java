@@ -22,6 +22,8 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	private final static String UPDATED_DATE = "updated_date";
 	private final static String THREE_MONTHS_PROGNOSIS = "three_months_prognosis";
 	private final static String ONE_YEAR_PROGNOSIS = "one_year_prognosis";
+	private final static String THREE_MONTHS_PRIORITY = "three_months_priority";
+	private final static String ONE_YEAR_PRIORITY = "one_year_priority";
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -38,6 +40,8 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 		addAttribute(UPDATED_DATE,"",true,true,java.sql.Date.class);
 		addAttribute(THREE_MONTHS_PROGNOSIS,"",true,true,java.lang.Integer.class);
 		addAttribute(ONE_YEAR_PROGNOSIS,"",true,true,java.lang.Integer.class);
+		addAttribute(THREE_MONTHS_PRIORITY,"",true,true,java.lang.Integer.class);
+		addAttribute(ONE_YEAR_PRIORITY,"",true,true,java.lang.Integer.class);
 		addOneToOneRelationship(PROVIDER_ID,School.class);
 	}
 
@@ -46,6 +50,13 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	 */
 	public int getOneYearPrognosis() {
 		return getIntColumnValue(ONE_YEAR_PROGNOSIS);
+	}
+
+	/**
+	 * @return int
+	 */
+	public int getOneYearPriority() {
+		return getIntColumnValue(ONE_YEAR_PRIORITY);
 	}
 
 	/**
@@ -60,6 +71,13 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	 */
 	public int getThreeMonthsPrognosis() {
 		return getIntColumnValue(THREE_MONTHS_PROGNOSIS);
+	}
+
+	/**
+	 * @return int
+	 */
+	public int getThreeMonthsPriority() {
+		return getIntColumnValue(THREE_MONTHS_PRIORITY);
 	}
 
 	/**
@@ -78,6 +96,14 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	}
 
 	/**
+	 * Sets the oneYearPriority.
+	 * @param oneYearPriority The oneYearPriority to set
+	 */
+	public void setOneYearPriority(int oneYearPriority) {
+		setColumn(ONE_YEAR_PRIORITY,oneYearPriority);
+	}
+
+	/**
 	 * Sets the providerID.
 	 * @param providerID The providerID to set
 	 */
@@ -91,6 +117,14 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	 */
 	public void setThreeMonthsPrognosis(int threeMonthsPrognosis) {
 		setColumn(THREE_MONTHS_PROGNOSIS,threeMonthsPrognosis);
+	}
+
+	/**
+	 * Sets the threeMonthsPriority.
+	 * @param threeMonthsPriority The threeMonthsPriority to set
+	 */
+	public void setThreeMonthsPriority(int threeMonthsPriority) {
+		setColumn(THREE_MONTHS_PRIORITY,threeMonthsPriority);
 	}
 
 	/**
