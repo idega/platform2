@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.2 2003/10/30 09:12:07 kjell Exp $
+/* $Id: ControlList.java,v 1.3 2003/10/30 23:25:00 kjell Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -29,9 +29,17 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListBusiness
 
 /**
  * ControlList
- * used to check the a batch run after it has completed
  * 
- * $Id: ControlList.java,v 1.2 2003/10/30 09:12:07 kjell Exp $ 
+ * used to check the a batch run after it has completed
+ * It presents:
+ * Provider name
+ * Number of childs last period
+ * Number of childs this period
+ * Amount paid last period
+ * Amount paid this period
+ * The list can also be presented as an Excel sheet
+ * 
+ * $Id: ControlList.java,v 1.3 2003/10/30 23:25:00 kjell Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
