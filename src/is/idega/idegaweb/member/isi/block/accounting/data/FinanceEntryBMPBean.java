@@ -363,6 +363,17 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		return idoFindPKsByQuery(sql);
 	}	
 	
+	public Collection ejbFindAllByUser(User user) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_USER_ID, user);
+		//sql.appendOrderBy();
+		//sql.append(getIDColumnName());
+		//sql.appendDescending();
+		
+		return idoFindPKsByQuery(sql);		
+	}
+	
 	public Collection ejbFindAllByUser(Group club, Group division, User user) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);

@@ -13,13 +13,6 @@ public class FinanceEntryHomeImpl extends com.idega.data.IDOFactory implements F
  }
 
 
-public java.util.Collection findAllAssessmentByUser(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllAssessmentByUser(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
 public java.util.Collection findAllAssessmentByUser(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2,com.idega.util.IWTimestamp p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllAssessmentByUser(p0,p1,p2,p3);
@@ -27,9 +20,23 @@ public java.util.Collection findAllAssessmentByUser(com.idega.user.data.Group p0
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllAssessmentByUser(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllAssessmentByUser(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllByAssessmentRound(is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllByAssessmentRound(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public java.util.Collection findAllByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllByUser(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
