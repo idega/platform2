@@ -139,7 +139,7 @@ public class HandicapScore extends GolfWindow {
 			statTable.add(getSmallHeader(iwrb.getLocalizedString("handicap.total", "Total")), rounds - 2, statRow);
 
 			for (int a = 1; a <= rounds - 4; a++) {
-				statTable.add(getSmallHeader(String.valueOf(a)), a + 1, statRow++);
+				statTable.add(getSmallHeader(String.valueOf(a)), a + 1, statRow);
 			}
 
 			for (int a = 1; a <= statTable.getRows(); a++) {
