@@ -207,13 +207,13 @@ public class GolfLogin extends GolfBlock {
 		String state = internalGetState(modinfo);
 		if (state != null) {
 			if (state.equals("loggedon")) {
-				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
 					isLoggedOnWML(modinfo);
 				} else {
 					isLoggedOn(modinfo);
 				}
 			} else if (state.equals("loggedoff")) {
-				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
 					startStateWML(modinfo);
 				} else {
 					startState(modinfo);
@@ -234,7 +234,7 @@ public class GolfLogin extends GolfBlock {
 			} else if (state.equals("loginfailed")) {
 				loginFailed("");
 			} else {
-				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
 					startStateWML(modinfo);
 				} else {
 					startState(modinfo);
@@ -242,7 +242,7 @@ public class GolfLogin extends GolfBlock {
 			}
 
 		} else {
-			if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+			if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
 				startStateWML(modinfo);
 			} else {
 				startState(modinfo);

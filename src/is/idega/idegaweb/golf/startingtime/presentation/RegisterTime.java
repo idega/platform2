@@ -663,7 +663,7 @@ public class RegisterTime extends GolfBlock {
 	        }else{
 	          fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
 	          skraMargaInt = Integer.parseInt(skraMarga);
-	          if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())){
+	          if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
 	          	lineUpWMLTable(skraMargaInt, modinfo);
 	          } else {
 	          	lineUpTable(skraMargaInt, modinfo);

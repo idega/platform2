@@ -117,7 +117,7 @@ public class TeeTimeSearch extends GolfBlock {
 		
 		boolean results = (modinfo.getParameter("results") != null);
 		
-		if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+		if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
 			if(!results) {
 				add(getWapSearchForm(modinfo, funcDate));
 			}
@@ -136,7 +136,7 @@ public class TeeTimeSearch extends GolfBlock {
 						Today = getFieldInfo(fields, funcDate.toSQLDateString());
 						try {
 							Groups = search(funcDate, modinfo, myField, Today, Integer.parseInt(modinfo.getParameter("fjoldi").toString()), modinfo.getParameter("date").toString(), modinfo.getParameter("ftime").toString(), modinfo.getParameter("ltime").toString(), 0, 36);
-							if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+							if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())) {
 								addWapResults(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns);
 							} else {
 								this.add(getResultTable(modinfo, Groups, myField, modinfo.getParameter("date").toString(), _numberOfResultColumns));
