@@ -743,24 +743,39 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 							if(ruId>0){
 								
 								Group regionalUnion = groupBiz.getGroupByGroupID(ruId);
+								String ruNumber = regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+								String ruName = regionalUnion.getName();
+								String ruAbbr = regionalUnion.getAbbrevation();
 								
-								report.setRegionalUnionNumber(regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
-								String abbr = regionalUnion.getAbbrevation();
-								if (abbr == null || "".equals(abbr)) {
-									abbr = regionalUnion.getShortName();
-									if (abbr == null) {
-										abbr = regionalUnion.getName();
+								
+								if (ruAbbr == null || "".equals(ruAbbr)) {
+									ruAbbr = regionalUnion.getShortName();
+									if (ruAbbr == null) {
+										ruAbbr = regionalUnion.getName();
 									}
 								}
-								report.setRegionalUnionAbbreviation(abbr);
-								report.setRegionalUnionName(regionalUnion.getName());
+								
+								if(ruNumber!=null && !"".equals(ruNumber)){
+									report.setRegionalUnionNumber(ruNumber);
+								}
+								
+								report.setRegionalUnionAbbreviation(ruAbbr);
+								report.setRegionalUnionName(ruName);
 								
 								
 							}
+							String number = club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+							String shortName = club.getShortName();
 							
-							report.setGroupNumber(club.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER));
+							if(number!=null && !"".equals(number)){
+								report.setGroupNumber(number);
+							}
+							
+							if(shortName!=null && !"".equals(shortName)){
+								report.setGroupShortName(shortName);
+							}
+							
 							report.setGroupName(club.getName());
-							report.setGroupShortName(club.getShortName());
 							
 							report.store();
 							
@@ -772,8 +787,8 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 							
 							Group regionalUnion = groupBiz.getGroupByGroupID(report.getGroupId().intValue());
 							String number = regionalUnion.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
-							report.setRegionalUnionGroupId((Integer) regionalUnion.getPrimaryKey());
-							report.setRegionalUnionNumber(number);
+							String shortName = regionalUnion.getShortName();
+														
 							String abbr = regionalUnion.getAbbrevation();
 							if (abbr == null || "".equals(abbr)) {
 								abbr = regionalUnion.getShortName();
@@ -781,12 +796,21 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 									abbr = regionalUnion.getName();
 								}
 							}
+							
+							
 							report.setRegionalUnionAbbreviation(abbr);
+							
+							if(number!=null && !"".equals(number)){
+								report.setGroupNumber(number);
+								report.setRegionalUnionNumber(number);
+							}
+							
+							report.setGroupName(regionalUnion.getName());
 							report.setRegionalUnionName(regionalUnion.getName());
 							
-							report.setGroupNumber(number);
-							report.setGroupName(regionalUnion.getName());
-							report.setGroupShortName(regionalUnion.getShortName());
+							if(shortName!=null && !"".equals(shortName)){
+								report.setGroupShortName(shortName);
+							}
 							
 							report.store();
 							
@@ -796,11 +820,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 						else if(IWMemberConstants.GROUP_TYPE_LEAGUE.equals(type)){
 							Group league = groupBiz.getGroupByGroupID(report.getGroupId().intValue());
 							String number = league.getMetaData(IWMemberConstants.META_DATA_CLUB_NUMBER);
+							String shortName = league.getShortName();
 							
-							
-							report.setGroupNumber(number);
+							if(number!=null && !"".equals(number)){
+								report.setGroupNumber(number);
+							}
 							report.setGroupName(league.getName());
-							report.setGroupShortName(league.getShortName());
+							
+							if(shortName!=null && !"".equals(shortName)){
+								report.setGroupShortName(shortName);
+							}
 							
 							report.store();
 						}
