@@ -181,7 +181,29 @@ public class CampusMenu extends Block implements Campus{
     Requests.addParameter(getParameter(REQUESTS));
     LinkTable.add(Requests,1,row);
     LinkTable.setAlignment(1,row,"center");*/
-    add( LinkTable);
+    Window w = new Window("gardar_popup",550,550,"http://einar.vortex.is/hjalp/index.html");
+    w.setResizable(true);
+    w.setScrollbar(true);
+    w.setLocation(false);
+    w.setStatus(false);
+    w.setMenubar(false);
+    Link RHI = new Link(iwrb.getLocalizedString("rhi","Uppsetning nettengingar"));
+    RHI.setWindow(w);
+    RHI.setURL("http://einar.vortex.is/hjalp/index.html");
+    Edit.setStyle(RHI);
+    RHI.setFontSize(Edit.textFontSize);
+    LinkTable.add(RHI,1,row);
+    LinkTable.setAlignment(1,row,"left");
+    row++;
+    Link telephone = new Link(iwrb.getLocalizedString("telephone","Símaskrá"));
+    telephone.addParameter(getParameter(TEN_HABITANTS));
+    telephone.addParameter(strAction,22);
+    Edit.setStyle(telephone);
+    telephone.setFontSize(Edit.textFontSize);
+    LinkTable.add(telephone,1,row);
+    LinkTable.setAlignment(1,row,"left");
+
+    add(LinkTable);
   }
 
   public static Parameter getParameter(int contentView){

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.12 2002/02/15 11:05:19 palli Exp $
+ * $Id: CampusFactory.java,v 1.13 2002/02/20 16:34:16 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -87,7 +87,10 @@ public class CampusFactory extends Block implements Campus {
       int iView = 0;
       if (view !=null){
         iView = Integer.parseInt(view);
-        if(iView < 20 && !iwc.isLoggedOn()){
+        if (iView == 13) {
+
+        }
+        else if(iView < 20 && !iwc.isLoggedOn()){
           iwc.removeSessionAttribute(prmContentViewContent);
           iView = HOME;
 

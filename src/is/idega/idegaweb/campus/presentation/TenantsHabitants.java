@@ -34,7 +34,7 @@ import com.idega.util.text.StyleConstants;
  * @version 1.1
  */
 
-public class TenantsHabitants extends Block {
+public class TenantsHabitants extends Block implements Campus{
   private static final String NAME_KEY = "cam_habitants_view";
   private static final String DEFAULT_VALUE = "Habitant list";
   private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.campus";
@@ -47,6 +47,7 @@ public class TenantsHabitants extends Block {
 
   private boolean _isAdmin = false;
   private boolean _isLoggedOn = false;
+  private boolean _isPublic = true;
   private int _userID = -1;
   private int _campusID = -1;
   private int _orderID = -1;
@@ -64,16 +65,18 @@ public class TenantsHabitants extends Block {
     try {
       _isAdmin = iwc.hasEditPermission(this);
       _isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
+      if (_isLoggedOn)
+        _isPublic = false;
     }
     catch(Exception sql) {
       _isAdmin = false;
     }
 
-    if( _isAdmin || _isLoggedOn ) {
-      styler = new TextStyler();
-        styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,StyleConstants.FONT_FAMILY_ARIAL);
-        styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,"8pt");
+    styler = new TextStyler();
+    styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_FAMILY,StyleConstants.FONT_FAMILY_ARIAL);
+    styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_SIZE,"8pt");
 
+    if( _isAdmin || _isLoggedOn ) {
       try {
         _userID = LoginBusiness.getUser(iwc).getID();
       }
@@ -106,7 +109,25 @@ public class TenantsHabitants extends Block {
       add(myTable);
     }
     else {
-      add(iwrb.getLocalizedString("accessdenied","Access denied"));
+      _isPublic = true;
+
+      try {
+        _campusID = Integer.parseInt(iwc.getParameter(PARAMETER_CAMPUS_ID));
+      }
+      catch (NumberFormatException e) {
+        _campusID = -1;
+      }
+
+      Table myTable = new Table(1,2);
+        myTable.setWidth("100%");
+      myTable.add(getLinkTable(),1,1);
+      myTable.add(getTenantsTable(iwc),1,2);
+
+      image = myTable.getTransparentCell(iwc);
+        image.setHeight(6);
+
+      add(myTable);
+//      add(iwrb.getLocalizedString("accessdenied","Access denied"));
     }
   }
 
@@ -126,7 +147,9 @@ public class TenantsHabitants extends Block {
       for ( int a = 0; a < complexes.size(); a++ ) {
         complex = (Complex) complexes.get(a);
         link = new Link(formatText(complex.getName(),"#000000",true));
-          link.addParameter(this.PARAMETER_CAMPUS_ID,complex.getID());
+          link.addParameter(PARAMETER_CAMPUS_ID,complex.getID());
+//          link.addParameter(CampusMenu.getParameter(TEN_HABITANTS));
+//          link.addParameter(TabAction.sAction,22);
 
         table.add(link,column,1);
         column++;
@@ -148,7 +171,7 @@ public class TenantsHabitants extends Block {
     HabitantsCollector collector = null;
     CampusApplication campusApplication = null;
 
-    if(!_isAdmin){
+    if(!_isAdmin && !_isPublic){
       contract = ContractFinder.findApplicant(_userID);
       applicant = ContractFinder.getApplicant(contract);
       apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
@@ -215,7 +238,7 @@ public class TenantsHabitants extends Block {
     Complex complex = null;
     if ( _campusID != -1 )
       complex = BuildingCacher.getComplex(_campusID);
-    else if(!_isAdmin){
+    else if(!_isAdmin && !_isPublic){
       BuildingCacher bc = new BuildingCacher();
       complex = bc.getComplex(bc.getBuilding(bc.getFloor(bc.getApartment(ContractFinder.findApplicant(_userID).getApartmentId().intValue()).getFloorId()).getBuildingId()).getComplexId() );
     }
