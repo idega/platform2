@@ -105,7 +105,7 @@ public class WorkReportCloser extends Block {
 		
 		IWTimestamp earliest = new IWTimestamp();
 		int currentYear = earliest.getYear();
-		earliest.addYears(-2);
+		earliest.addYears(2001-currentYear);//so the earliest selectable year is always 2001
 		earliest.setMonth(1);
 		earliest.setDay(1);
 		
