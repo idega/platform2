@@ -130,11 +130,11 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			
 			switch (_stage) {
 				case STAGE_ONE :
-					if (_hasPlacing) {
+//					if (_hasPlacing) {
 						table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 						table.add(getExportAllButton(), 1, row++);
 						table.setHeight(row++, 18);
-					}
+//					}
 					table.add(getFirstStage(iwc, choices), 1, row);
 					break;
 				case STAGE_TWO :
@@ -389,10 +389,10 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	
 	private Text getStageText() {
 		if (_hasPlacing) {
-			return getSmallText(localize("child_care.placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
+			return getSmallText(localize("child_care.non_placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
 		}
 		else {
-			return getSmallText(localize("child_care.non_placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
+			return getSmallText(localize("child_care.placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
 		}
 	}
 	
