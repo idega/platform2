@@ -494,12 +494,18 @@ public class Doc extends FolderBlock implements Builderaware,DPTInheritable {
 
 				for (int b = 0; b < links.length; b++) {
 					Link link = getLink(links[b], iwc);
-					IWTimestamp stamp = new IWTimestamp(links[b].getCreationDate());
+					IWTimestamp stamp = null;
+					try {
+						stamp = new IWTimestamp(links[b].getCreationDate());
+					} catch (NullPointerException n) {}
 
 					if (link != null) {
 						linksTable.add(link, 1, linkRow);
 
-						Text dateText = new Text(TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear()));
+						Text dateText = new Text("");
+						if (stamp != null) {
+							dateText.setText(TextSoap.addZero(stamp.getDay()) + "." + TextSoap.addZero(stamp.getMonth()) + "." + Integer.toString(stamp.getYear()));
+						}
 						dateText.setFontStyle(_linkStyle);
 						linksTable.add(dateText, 2, linkRow);
 
