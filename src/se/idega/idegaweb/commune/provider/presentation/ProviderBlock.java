@@ -121,6 +121,7 @@ public abstract class ProviderBlock extends CommuneBlock {
 		
 		SelectorUtility selector = new SelectorUtility();
 
+		table.setCellpaddingLeft(1, row, 12);
 		table.add(getSmallHeader(localize("school.season","Season")+":"+Text.NON_BREAKING_SPACE),1,row);
 		DropdownMenu seasons = (DropdownMenu) getStyledInterface(selector.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterSeasonID()), getSchoolBusiness().findAllSchoolSeasons(), "getSchoolSeasonName"));
 		seasons.addMenuElementFirst("-1","");

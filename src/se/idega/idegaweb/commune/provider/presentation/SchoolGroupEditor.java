@@ -284,6 +284,9 @@ public class SchoolGroupEditor extends ProviderBlock {
 		form.addParameter(PARAMETER_GROUP_ID, _groupID);
 		form.addParameter(PARAMETER_ACTION, -1);
 		form.maintainParameter(SchoolCommuneSessionBean.PARAMETER_SCHOOL_ID);
+		if (useStyleNames) {
+			form.setPaddingLeft(12);
+		}
 		
 		Table table = new Table();
 		table.setCellpadding(0);
