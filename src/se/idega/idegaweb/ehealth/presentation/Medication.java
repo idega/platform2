@@ -123,7 +123,7 @@ public class Medication extends EHealthBlock {
 			layers.setID("lay" + theRow + "_");	
 			String theInfo = (String) iter.next();
 			layers.add(theInfo);
-			layers.add(new Break());
+			layers.add(new Break(2));
 			layers.add(renew);
 						
 			T.add(layers, 1, 3);
@@ -330,7 +330,7 @@ public class Medication extends EHealthBlock {
 		
 		GenericButton fass = getButton(new GenericButton("linkFass", localize(prmLinkFass, "Link to Fass >")));
 		if (_fassPage != null)
-			fass.setPageToOpen(_fassPage);
+			fass.setURLToOpen("http://www.fass.se");
 		
 		
 		table.add(fass, 2, 1);
