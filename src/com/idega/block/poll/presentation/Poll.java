@@ -103,13 +103,13 @@ private int _layout = RADIO_BUTTON_VIEW;
     if(_pollID <= 0){
       String sPollID = iwc.getParameter(_prmPollID);
       if(sPollID != null)
-        _pollID = Integer.parseInt(sPollID);
+	_pollID = Integer.parseInt(sPollID);
       else if(getICObjectInstanceID() > 0){
-        _pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
-        if(_pollID <= 0 ){
-          _newObjInst = true;
-          PollBusiness.savePoll(_pollID,-1,getICObjectInstanceID(),null);
-        }
+	_pollID = PollFinder.getRelatedEntityId(getICObjectInstance());
+	if(_pollID <= 0 ){
+	  _newObjInst = true;
+	  PollBusiness.savePoll(_pollID,-1,getICObjectInstanceID(),null);
+	}
       }
     }
 
@@ -123,7 +123,7 @@ private int _layout = RADIO_BUTTON_VIEW;
     else if ( _sAttribute != null ){
       poll = PollFinder.getPoll(_sAttribute);
       if ( poll != null ) {
-        _pollID = poll.getID();
+	_pollID = poll.getID();
       }
       _newWithAttribute = true;
     }
@@ -143,9 +143,9 @@ private int _layout = RADIO_BUTTON_VIEW;
       adminLink.setWindowToOpen(PollAdminWindow.class,this.getICObjectInstanceID());
       adminLink.addParameter(PollAdminWindow.prmID,pollID);
       if(newObjInst)
-        adminLink.addParameter(PollAdminWindow.prmObjInstId,getICObjectInstanceID());
+	adminLink.addParameter(PollAdminWindow.prmObjInstId,getICObjectInstanceID());
       else if(newWithAttribute)
-        adminLink.addParameter(PollAdminWindow.prmAttribute,_sAttribute);
+	adminLink.addParameter(PollAdminWindow.prmAttribute,_sAttribute);
 
     return adminLink;
   }
@@ -158,11 +158,11 @@ private int _layout = RADIO_BUTTON_VIEW;
 
     if(pollQuestion != null){
       if ( pollQuestion.getEndTime() != null ) {
-        after = new idegaTimestamp(pollQuestion.getEndTime());
-        if ( _date.isLaterThan(after) ) {
-          pollQuestion = PollBusiness.getPollByDate(poll,_date);
-          pollByDate = true;
-        }
+	after = new idegaTimestamp(pollQuestion.getEndTime());
+	if ( _date.isLaterThan(after) ) {
+	  pollQuestion = PollBusiness.getPollByDate(poll,_date);
+	  pollByDate = true;
+	}
       }
     }
     else {
@@ -173,7 +173,7 @@ private int _layout = RADIO_BUTTON_VIEW;
     if ( pollQuestion != null ) {
       locText = TextFinder.getLocalizedText(pollQuestion,_iLocaleID);
       if ( pollByDate ) {
-        PollBusiness.setPollQuestion(poll,pollQuestion);
+	PollBusiness.setPollQuestion(poll,pollQuestion);
       }
     }
 
@@ -181,12 +181,12 @@ private int _layout = RADIO_BUTTON_VIEW;
 
     if ( locText != null ) {
       switch (_layout) {
-        case RADIO_BUTTON_VIEW:
-          obj = getRadioButtonView(locText,pollQuestion);
-          break;
-        case LINK_VIEW:
-          obj = getLinkView(iwc,locText,pollQuestion);
-          break;
+	case RADIO_BUTTON_VIEW:
+	  obj = getRadioButtonView(locText,pollQuestion);
+	  break;
+	case LINK_VIEW:
+	  obj = getLinkView(iwc,locText,pollQuestion);
+	  break;
       }
       return obj;
     }
@@ -200,20 +200,20 @@ private int _layout = RADIO_BUTTON_VIEW;
     Image olderPollsImage = _iwrb.getImage("older_polls.gif");
 
       Form form = new Form();
-        form.setWindowToOpen(PollResult.class);
+	form.setWindowToOpen(PollResult.class);
 
       Table pollTable = new Table(2,3);
-        pollTable.setCellpadding(5);
-        pollTable.setCellspacing(0);
-        pollTable.mergeCells(1,1,2,1);
-        pollTable.mergeCells(1,2,2,2);
-        pollTable.setWidth(_pollWidth);
-        pollTable.setAlignment(1,1,_questionAlignment);
-        pollTable.setAlignment(2,3,"right");
+	pollTable.setCellpadding(5);
+	pollTable.setCellspacing(0);
+	pollTable.mergeCells(1,1,2,1);
+	pollTable.mergeCells(1,2,2,2);
+	pollTable.setWidth(_pollWidth);
+	pollTable.setAlignment(1,1,_questionAlignment);
+	pollTable.setAlignment(2,3,"right");
       form.add(pollTable);
 
       Text question = new Text(locText.getHeadline());
-        question.setFontStyle(_questionStyleAttribute);
+	question.setFontStyle(_questionStyleAttribute);
 
       pollTable.add(question,1,1);
 
@@ -223,43 +223,43 @@ private int _layout = RADIO_BUTTON_VIEW;
       boolean hasAnswers = false;
 
       if ( answers != null ) {
-        for ( int a = 0; a < answers.length; a++ ) {
-          LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a],_iLocaleID);
-          if ( locAnswerText != null ) {
-            hasAnswers = true;
-            radioGroup.addRadioButton(answers[a].getID(),new Text(locAnswerText.getHeadline()),false,_styleAttribute,_styleAttribute);
-          }
-        }
+	for ( int a = 0; a < answers.length; a++ ) {
+	  LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a],_iLocaleID);
+	  if ( locAnswerText != null ) {
+	    hasAnswers = true;
+	    radioGroup.addRadioButton(answers[a].getID(),new Text(locAnswerText.getHeadline()),false,_styleAttribute,_styleAttribute);
+	  }
+	}
       }
 
       if ( hasAnswers ) {
-        radioGroup.setStyle(_styleAttribute);
-        pollTable.add(radioGroup,1,2);
+	radioGroup.setStyle(_styleAttribute);
+	pollTable.add(radioGroup,1,2);
       }
 
       Link collectionLink = new Link(olderPollsImage);
-        collectionLink.setWindowToOpen(PollResult.class);
-        collectionLink.addParameter(Poll._prmPollID,_pollID);
-        collectionLink.addParameter(Poll._prmPollCollection,PollBusiness._PARAMETER_TRUE);
-        collectionLink.addParameter(Poll._prmNumberOfPolls,_numberOfShownPolls);
-        if ( _showVotes ) {
-          collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE);
-        }
-        else {
-          collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE);
-        }
+	collectionLink.setWindowToOpen(PollResult.class);
+	collectionLink.addParameter(Poll._prmPollID,_pollID);
+	collectionLink.addParameter(Poll._prmPollCollection,PollBusiness._PARAMETER_TRUE);
+	collectionLink.addParameter(Poll._prmNumberOfPolls,_numberOfShownPolls);
+	if ( _showVotes ) {
+	  collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE);
+	}
+	else {
+	  collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE);
+	}
 
       if ( _showCollection ) {
-        pollTable.add(collectionLink,1,3);
+	pollTable.add(collectionLink,1,3);
       }
       pollTable.add(new SubmitButton(submitImage),2,3);
       pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_VOTER,PollBusiness._PARAMETER_TRUE));
       pollTable.add(new Parameter(PollBusiness._PARAMETER_POLL_QUESTION,Integer.toString(pollQuestion.getID())));
       if ( _showVotes ) {
-        pollTable.add(new Parameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE));
+	pollTable.add(new Parameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE));
       }
       else {
-        pollTable.add(new Parameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE));
+	pollTable.add(new Parameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE));
       }
 
       return form;
@@ -281,10 +281,10 @@ private int _layout = RADIO_BUTTON_VIEW;
 
     if ( _questionImage != null ) {
       Table questionTable = new Table(3,1);
-        questionTable.setCellpadding(0);
-        questionTable.setCellspacing(0);
-        questionTable.setAlignment(_questionAlignment);
-        questionTable.setVerticalAlignment(1,1,"top");
+	questionTable.setCellpadding(0);
+	questionTable.setCellspacing(0);
+	questionTable.setAlignment(_questionAlignment);
+	questionTable.setVerticalAlignment(1,1,"top");
       _questionImage.setVerticalSpacing(2);
       questionTable.add(_questionImage,1,1);
       questionTable.setWidth(2,1,"4");
@@ -313,57 +313,57 @@ private int _layout = RADIO_BUTTON_VIEW;
       boolean hasAnswers = false;
 
       if ( answers != null ) {
-        int row = 1;
+	int row = 1;
 
-        for ( int a = 0; a < answers.length; a++ ) {
-          LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a],_iLocaleID);
-          if ( locAnswerText != null ) {
-            hasAnswers = true;
+	for ( int a = 0; a < answers.length; a++ ) {
+	  LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a],_iLocaleID);
+	  if ( locAnswerText != null ) {
+	    hasAnswers = true;
 
-            Link answerLink = new Link(locAnswerText.getHeadline());
-              answerLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestion.getID());
-              answerLink.addParameter(PollBusiness._PARAMETER_POLL_ANSWER,answers[a].getID());
-              answerLink.addParameter(PollBusiness._PARAMETER_POLL_VOTER,PollBusiness._PARAMETER_TRUE);
-              answerLink.addParameter(PollBusiness._PARAMETER_CLOSE,PollBusiness._PARAMETER_TRUE);
-              answerLink.setEventListener(PollListener.class);
-              if ( _name != null )
-                answerLink.setStyle(_name);
+	    Link answerLink = new Link(locAnswerText.getHeadline());
+	      answerLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestion.getID());
+	      answerLink.addParameter(PollBusiness._PARAMETER_POLL_ANSWER,answers[a].getID());
+	      answerLink.addParameter(PollBusiness._PARAMETER_POLL_VOTER,PollBusiness._PARAMETER_TRUE);
+	      answerLink.addParameter(PollBusiness._PARAMETER_CLOSE,PollBusiness._PARAMETER_TRUE);
+	      answerLink.setEventListener(PollListener.class);
+	      if ( _name != null )
+		answerLink.setStyle(_name);
 
-            if ( _linkImage != null ) {
-              Table imageTable = new Table(3,1);
-                imageTable.setCellspacing(0);
-                imageTable.setCellpadding(0);
+	    if ( _linkImage != null ) {
+	      Table imageTable = new Table(3,1);
+		imageTable.setCellspacing(0);
+		imageTable.setCellpadding(0);
 
-              Image image = new Image(_linkImage.getMediaServletString());
+	      Image image = new Image(_linkImage.getMediaServletString());
 
-              image.setVerticalSpacing(3);
-              if ( _linkOverImage != null ) {
-                  image.setOverImage(_linkOverImage);
-                  _linkOverImage.setVerticalSpacing(3);
+	      image.setVerticalSpacing(3);
+	      if ( _linkOverImage != null ) {
+		  image.setOverImage(_linkOverImage);
+		  _linkOverImage.setVerticalSpacing(3);
 
-                answerLink.setAttribute("onMouseOver","swapImage('"+image.getName()+"','','"+_linkOverImage.getMediaServletString()+"',1)");
-                answerLink.setAttribute("onMouseOut","swapImgRestore()");
-              }
+		answerLink.setAttribute("onMouseOver","swapImage('"+image.getName()+"','','"+_linkOverImage.getMediaServletString()+"',1)");
+		answerLink.setAttribute("onMouseOut","swapImgRestore()");
+	      }
 
-              imageTable.add(image,1,1);
-              imageTable.setVerticalAlignment(1,1,"top");
-              imageTable.setWidth(2,"8");
-              imageTable.add(answerLink,3,1);
-              answerTable.add(imageTable,1,row);
-            }
-            else {
-              answerTable.add(answerLink,1,row);
-            }
-            row++;
-            answerTable.setHeight(row,"4");
-            row++;
-          }
-        }
+	      imageTable.add(image,1,1);
+	      imageTable.setVerticalAlignment(1,1,"top");
+	      imageTable.setWidth(2,"8");
+	      imageTable.add(answerLink,3,1);
+	      answerTable.add(imageTable,1,row);
+	    }
+	    else {
+	      answerTable.add(answerLink,1,row);
+	    }
+	    row++;
+	    answerTable.setHeight(row,"4");
+	    row++;
+	  }
+	}
       }
 
       if ( hasAnswers ) {
-        pollTable.add(answerTable,1,pollRow);
-        pollRow++;
+	pollTable.add(answerTable,1,pollRow);
+	pollRow++;
       }
     }
     else {
@@ -372,78 +372,78 @@ private int _layout = RADIO_BUTTON_VIEW;
       int row = 0;
 
       if (answers != null) {
-        if (answers.length > 0) {
-          for ( int i = 0; i < answers.length; i++ ) {
-            total += answers[i].getHits();
-          }
-          for (int i = 0 ; i < answers.length ; i++ ) {
-            LocalizedText answerLocText = TextFinder.getLocalizedText(answers[i],_iLocaleID);
-            if ( answerLocText != null ) {
-              ++row;
+	if (answers.length > 0) {
+	  for ( int i = 0; i < answers.length; i++ ) {
+	    total += answers[i].getHits();
+	  }
+	  for (int i = 0 ; i < answers.length ; i++ ) {
+	    LocalizedText answerLocText = TextFinder.getLocalizedText(answers[i],_iLocaleID);
+	    if ( answerLocText != null ) {
+	      ++row;
 
-              float percent = 0;
-              if ( answers[i].getHits() > 0 )
-                percent = ( (float) answers[i].getHits() / (float) total ) * 100;
+	      float percent = 0;
+	      if ( answers[i].getHits() > 0 )
+		percent = ( (float) answers[i].getHits() / (float) total ) * 100;
 
-              Text answerText = new  Text(answerLocText.getHeadline());
-                if ( _showVotes || _isAdmin ) answerText.addToText(" ("+Integer.toString(answers[i].getHits())+")");
-                answerText.setFontSize(1);
-                answerText.setFontStyle(_styleAttribute);
-              Text percentText = new Text(Text.NON_BREAKING_SPACE+com.idega.util.text.TextSoap.decimalFormat(percent,1)+"%");
-                percentText.setFontSize(1);
+	      Text answerText = new  Text(answerLocText.getHeadline());
+		if ( _showVotes || _isAdmin ) answerText.addToText(" ("+Integer.toString(answers[i].getHits())+")");
+		answerText.setFontSize(1);
+		answerText.setFontStyle(_styleAttribute);
+	      Text percentText = new Text(Text.NON_BREAKING_SPACE+com.idega.util.text.TextSoap.decimalFormat(percent,1)+"%");
+		percentText.setFontSize(1);
 
-              answerTable.mergeCells(1,row,2,row);
-              answerTable.add(answerText,1,row);
-              row++;
+	      answerTable.mergeCells(1,row,2,row);
+	      answerTable.add(answerText,1,row);
+	      row++;
 
-              Table table = new Table();
-                table.setCellpadding(0);
-                table.setCellspacing(1);
-                table.setWidth("100%");
-                table.setColor("#000000");
+	      Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(1);
+		table.setWidth("100%");
+		table.setColor("#000000");
 
-              Image transImage = answerTable.getTransparentCell(iwc);
-                transImage.setHeight(10);
-                transImage.setWidth("100%");
-              Image transImage2 = answerTable.getTransparentCell(iwc);
-                transImage2.setHeight(10);
-                transImage2.setWidth("100%");
-              if ( percent > 0 ) {
-                table.setColor(1,1,_votedColor);
-                table.add(transImage,1,1);
-                table.setWidth(1,1,Integer.toString((int) percent)+"%");
-                if ( percent < 100 ) {
-                  table.setColor(2,1,_whiteColor);
-                  table.add(transImage2,2,1);
-                  table.setWidth(2,1,Integer.toString(100 - (int) percent)+"%");
-                }
-              }
-              else if ( percent <= 0 ) {
-                table.setColor(1,1,_whiteColor);
-                table.setWidth(1,1,"100%");
-                table.add(transImage2,1,1);
-              }
+	      Image transImage = answerTable.getTransparentCell(iwc);
+		transImage.setHeight(10);
+		transImage.setWidth("100%");
+	      Image transImage2 = answerTable.getTransparentCell(iwc);
+		transImage2.setHeight(10);
+		transImage2.setWidth("100%");
+	      if ( percent > 0 ) {
+		table.setColor(1,1,_votedColor);
+		table.add(transImage,1,1);
+		table.setWidth(1,1,Integer.toString((int) percent)+"%");
+		if ( percent < 100 ) {
+		  table.setColor(2,1,_whiteColor);
+		  table.add(transImage2,2,1);
+		  table.setWidth(2,1,Integer.toString(100 - (int) percent)+"%");
+		}
+	      }
+	      else if ( percent <= 0 ) {
+		table.setColor(1,1,_whiteColor);
+		table.setWidth(1,1,"100%");
+		table.add(transImage2,1,1);
+	      }
 
-              answerTable.add(table,1,row);
-              answerTable.add(percentText,2,row);
-              answerTable.setWidth(1,row,"100%");
+	      answerTable.add(table,1,row);
+	      answerTable.add(percentText,2,row);
+	      answerTable.setWidth(1,row,"100%");
 
-              row++;
-              answerTable.setHeight(row,"6");
-            }
-          }
-        }
-        answerTable.setWidth(1,"100%");
-        pollTable.add(answerTable,1,pollRow);
-        pollRow++;
+	      row++;
+	      answerTable.setHeight(row,"6");
+	    }
+	  }
+	}
+	answerTable.setWidth(1,"100%");
+	pollTable.add(answerTable,1,pollRow);
+	pollRow++;
 
-        String information = PollBusiness.getLocalizedInformation(pollQuestion.getID(),_iLocaleID);
-        if ( information != null && _showInformation ) {
-          Text informationText = new Text(information);
-            informationText.setFontStyle(_styleAttribute);
-          pollTable.add(informationText,1,pollRow);
-          pollRow++;
-        }
+	String information = PollBusiness.getLocalizedInformation(pollQuestion.getID(),_iLocaleID);
+	if ( information != null && _showInformation ) {
+	  Text informationText = new Text(information);
+	    informationText.setFontStyle(_styleAttribute);
+	  pollTable.add(informationText,1,pollRow);
+	  pollRow++;
+	}
       }
     }
 
@@ -453,10 +453,10 @@ private int _layout = RADIO_BUTTON_VIEW;
       collectionLink.addParameter(Poll._prmPollCollection,PollBusiness._PARAMETER_TRUE);
       collectionLink.addParameter(Poll._prmNumberOfPolls,_numberOfShownPolls);
       if ( _showVotes ) {
-        collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE);
+	collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_TRUE);
       }
       else {
-        collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE);
+	collectionLink.addParameter(Poll._prmShowVotes,PollBusiness._PARAMETER_FALSE);
       }
 
     if ( _showCollection ) {
@@ -468,9 +468,9 @@ private int _layout = RADIO_BUTTON_VIEW;
 
   private void setDefaultValues() {
     _pollWidth = "150";
-    _styleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;";
-    _hoverStyle = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;";
-    _questionStyleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt; font-weight: bold";
+    _styleAttribute = "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;";
+    _hoverStyle = "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;";
+    _questionStyleAttribute = "font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt; font-weight: bold";
     _numberOfShownPolls = 3;
     _showVotes = true;
     _showCollection = true;
@@ -485,9 +485,9 @@ private int _layout = RADIO_BUTTON_VIEW;
       _name = this.getName();
     if ( _name == null ) {
       if ( _sAttribute == null )
-        _name = "poll_"+Integer.toString(_pollID);
+	_name = "poll_"+Integer.toString(_pollID);
       else
-        _name = "poll_"+_sAttribute;
+	_name = "poll_"+_sAttribute;
     }
 
     if ( getParentPage() != null ) {
@@ -580,16 +580,16 @@ private int _layout = RADIO_BUTTON_VIEW;
       obj = (Poll) super.clone();
 
       if ( this._myTable != null ) {
-        obj._myTable = (Table) this._myTable.clone();
+	obj._myTable = (Table) this._myTable.clone();
       }
       if ( this._linkImage != null ) {
-        obj._linkImage = (Image) this._linkImage.clone();
+	obj._linkImage = (Image) this._linkImage.clone();
       }
       if ( this._linkOverImage != null ) {
-        obj._linkOverImage = (Image) this._linkOverImage.clone();
+	obj._linkOverImage = (Image) this._linkOverImage.clone();
       }
       if ( this._questionImage != null ) {
-        obj._questionImage = (Image) this._questionImage.clone();
+	obj._questionImage = (Image) this._questionImage.clone();
       }
     }
     catch (Exception ex) {

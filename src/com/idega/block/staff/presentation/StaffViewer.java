@@ -131,14 +131,14 @@ private Table _myTable;
 
     switch (_layout) {
       case ALL_STAFF:
-        getAllStaff(iwc);
-        break;
+	getAllStaff(iwc);
+	break;
       case DIVISION_STAFF:
-        getDivisionStaff(iwc);
-        break;
+	getDivisionStaff(iwc);
+	break;
       case USER:
-        getUser(iwc);
-        break;
+	getUser(iwc);
+	break;
     }
   }
 
@@ -174,44 +174,44 @@ private Table _myTable;
       GenericUserComparator comparator = new GenericUserComparator(GenericUserComparator.NAME);
       Collections.sort(users,comparator);
       for ( int a = 0; a < users.size(); a++ ) {
-        column = 1;
-        user = (User)users.get(a);
-        email = StaffFinder.getUserEmail(user);
-        if ( _showListTitle )
-          staffInfo = StaffFinder.getStaffInfo(user.getID());
-        if ( _showListWorkPhone )
-          phone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
+	column = 1;
+	user = (User)users.get(a);
+	email = StaffFinder.getUserEmail(user);
+	if ( _showListTitle )
+	  staffInfo = StaffFinder.getStaffInfo(user.getID());
+	if ( _showListWorkPhone )
+	  phone = UserBusiness.getUserPhone(user.getID(),PhoneType.WORK_PHONE_ID);
 
-        userLink = getStaffLink(user);
-        emailLink = getEmailLink(email);
+	userLink = getStaffLink(user);
+	emailLink = getEmailLink(email);
 
-        if ( staffInfo != null && staffInfo.getTitle() != null ) {
-          titleText = new Text(staffInfo.getTitle());
-        }
-        else
-          titleText = new Text("");
-        titleText.setFontStyle(_textStyle);
+	if ( staffInfo != null && staffInfo.getTitle() != null ) {
+	  titleText = new Text(staffInfo.getTitle());
+	}
+	else
+	  titleText = new Text("");
+	titleText.setFontStyle(_textStyle);
 
-        if ( phone != null ) {
-          phoneText = new Text(phone.getNumber());
-        }
-        else
-          phoneText = new Text("");
-        phoneText.setFontStyle(_textStyle);
+	if ( phone != null ) {
+	  phoneText = new Text(phone.getNumber());
+	}
+	else
+	  phoneText = new Text("");
+	phoneText.setFontStyle(_textStyle);
 
-        table.add(userLink,column++,staffRow);
-        if ( _showListTitle )
-          table.add(titleText,column++,staffRow);
-        if ( _showListWorkPhone )
-          table.add(phoneText,column++,staffRow);
-        if ( emailLink != null )
-          table.add(emailLink,column++,staffRow);
+	table.add(userLink,column++,staffRow);
+	if ( _showListTitle )
+	  table.add(titleText,column++,staffRow);
+	if ( _showListWorkPhone )
+	  table.add(phoneText,column++,staffRow);
+	if ( emailLink != null )
+	  table.add(emailLink,column++,staffRow);
 
-        if ( _isAdmin ) {
-          table.add(getEditLink(user),column++,staffRow);
-        }
+	if ( _isAdmin ) {
+	  table.add(getEditLink(user),column++,staffRow);
+	}
 
-        staffRow++;
+	staffRow++;
       }
     }
 
@@ -226,15 +226,15 @@ private Table _myTable;
     List groups = StaffFinder.getAllGroups(iwc);
     if ( groups != null ) {
       for ( int a = 0; a < groups.size(); a++ ) {
-        List users = StaffFinder.getUsersInPrimaryGroup((GenericGroup)groups.get(a));
-        if ( users != null && users.size() > 0 ) {
-          _myTable.add(((GenericGroup)groups.get(a)).getName(),1,row);
-          row++;
-          getStaffTable(iwc,users);
-          row++;
-          _myTable.setHeight(1,row,"6");
-          row++;
-        }
+	List users = StaffFinder.getUsersInPrimaryGroup((GenericGroup)groups.get(a));
+	if ( users != null && users.size() > 0 ) {
+	  _myTable.add(((GenericGroup)groups.get(a)).getName(),1,row);
+	  row++;
+	  getStaffTable(iwc,users);
+	  row++;
+	  _myTable.setHeight(1,row,"6");
+	  row++;
+	}
       }
     }
   }
@@ -261,27 +261,27 @@ private Table _myTable;
     Image image = null;
     if ( staffInfo != null && staffInfo.getImageID() != -1 ) {
       try {
-        image = new Image(staffInfo.getImageID());
-        if ( _imageWidth != null ) image.setWidth(_imageWidth);
-        if ( _imageHeight != null ) image.setHeight(_imageHeight);
-        image.setBorder(1);
-        image.setVerticalSpacing(3);
-        image.setHorizontalSpacing(10);
+	image = new Image(staffInfo.getImageID());
+	if ( _imageWidth != null ) image.setWidth(_imageWidth);
+	if ( _imageHeight != null ) image.setHeight(_imageHeight);
+	image.setBorder(1);
+	image.setVerticalSpacing(3);
+	image.setHorizontalSpacing(10);
       }
       catch (Exception e) {
-        image = null;
+	image = null;
       }
 
       if ( image != null ) {
-        userTable.add(image,1,1);
+	userTable.add(image,1,1);
       }
     }
 
     if ( user != null ) {
       Text name = new Text(_iwrb.getLocalizedString("user_name","Name")+":");
-        name.setFontStyle(_headlineStyle);
+	name.setFontStyle(_headlineStyle);
       Text nameText = new Text(user.getName());
-        nameText.setFontStyle(_textStyle);
+	nameText.setFontStyle(_textStyle);
 
       textTable.add(name,column,tableRow);
       textTable.add(nameText,column+1,tableRow);
@@ -289,137 +289,137 @@ private Table _myTable;
 
       idegaTimestamp dateOfBirth = null;
       if ( user.getDateOfBirth() != null )
-        dateOfBirth = new idegaTimestamp(user.getDateOfBirth());
+	dateOfBirth = new idegaTimestamp(user.getDateOfBirth());
       idegaTimestamp dateToday = new idegaTimestamp();
 
       int userAge = 0;
       if ( dateOfBirth != null )
-        userAge = (new idegaTimestamp().getDaysBetween(dateOfBirth,dateToday))/365;
+	userAge = (new idegaTimestamp().getDaysBetween(dateOfBirth,dateToday))/365;
 
       Text age = new Text(_iwrb.getLocalizedString("user_age","Age")+":");
-        age.setFontStyle(_headlineStyle);
+	age.setFontStyle(_headlineStyle);
       Text ageText = new Text(Integer.toString(userAge));
-        ageText.setFontStyle(_textStyle);
+	ageText.setFontStyle(_textStyle);
 
       if ( _showAge && userAge > 0 ) {
-        textTable.add(age,column,tableRow);
-        textTable.add(ageText,column+1,tableRow);
-        tableRow++;
+	textTable.add(age,column,tableRow);
+	textTable.add(ageText,column+1,tableRow);
+	tableRow++;
       }
 
       /*Text gender = new Text(_iwrb.getLocalizedString("user_gender","Gender")+":");
-        gender.setFontStyle(_headlineStyle);
+	gender.setFontStyle(_headlineStyle);
       Text genderText = new Text("");
-        genderText.setFontStyle(_textStyle);
+	genderText.setFontStyle(_textStyle);
 
       if ( _showGender ) {
-        textTable.add(gender,column,tableRow);
-        textTable.add(genderText,column+1,tableRow);
-        tableRow++;
+	textTable.add(gender,column,tableRow);
+	textTable.add(genderText,column+1,tableRow);
+	tableRow++;
       }*/
 
       Text title = new Text(_iwrb.getLocalizedString("user_title","Title")+":");
-        title.setFontStyle(_headlineStyle);
+	title.setFontStyle(_headlineStyle);
       Text titleText = new Text("");
-        if ( staffInfo != null )
-          titleText.setText(staffInfo.getTitle());
-        titleText.setFontStyle(_textStyle);
+	if ( staffInfo != null )
+	  titleText.setText(staffInfo.getTitle());
+	titleText.setFontStyle(_textStyle);
 
       if ( _showTitle ) {
-        textTable.add(title,column,tableRow);
-        textTable.add(titleText,column+1,tableRow);
-        tableRow++;
+	textTable.add(title,column,tableRow);
+	textTable.add(titleText,column+1,tableRow);
+	tableRow++;
       }
 
       Text workPhone = new Text(_iwrb.getLocalizedString("work_phone","Work phone")+":");
-        workPhone.setFontStyle(_headlineStyle);
+	workPhone.setFontStyle(_headlineStyle);
       Text workPhoneText = new Text("");
-        if ( workphone != null )
-          workPhoneText.setText(workphone.getNumber());
-        workPhoneText.setFontStyle(_textStyle);
+	if ( workphone != null )
+	  workPhoneText.setText(workphone.getNumber());
+	workPhoneText.setFontStyle(_textStyle);
 
       if ( _showWorkPhone ) {
-        textTable.add(workPhone,column,tableRow);
-        textTable.add(workPhoneText,column+1,tableRow);
-        tableRow++;
+	textTable.add(workPhone,column,tableRow);
+	textTable.add(workPhoneText,column+1,tableRow);
+	tableRow++;
       }
 
       Text mobilePhone = new Text(_iwrb.getLocalizedString("Mobile_phone","Mobile phone")+":");
-        mobilePhone.setFontStyle(_headlineStyle);
+	mobilePhone.setFontStyle(_headlineStyle);
       Text mobilePhoneText = new Text("");
-        if ( mobilephone != null )
-          mobilePhoneText.setText(mobilephone.getNumber());
-        mobilePhoneText.setFontStyle(_textStyle);
+	if ( mobilephone != null )
+	  mobilePhoneText.setText(mobilephone.getNumber());
+	mobilePhoneText.setFontStyle(_textStyle);
 
       if ( _showMobilePhone ) {
-        textTable.add(mobilePhone,column,tableRow);
-        textTable.add(mobilePhoneText,column+1,tableRow);
-        tableRow++;
+	textTable.add(mobilePhone,column,tableRow);
+	textTable.add(mobilePhoneText,column+1,tableRow);
+	tableRow++;
       }
 
       Text area = new Text(_iwrb.getLocalizedString("user_area","Area")+":");
-        area.setFontStyle(_headlineStyle);
+	area.setFontStyle(_headlineStyle);
       Text areaText = new Text("");
-        if ( staffInfo != null )
-          areaText.setText(staffInfo.getArea());
-        areaText.setFontStyle(_textStyle);
+	if ( staffInfo != null )
+	  areaText.setText(staffInfo.getArea());
+	areaText.setFontStyle(_textStyle);
 
       if ( _showArea ) {
-        textTable.add(area,column,tableRow);
-        textTable.add(areaText,column+1,tableRow);
-        tableRow++;
+	textTable.add(area,column,tableRow);
+	textTable.add(areaText,column+1,tableRow);
+	tableRow++;
       }
 
       Text beganWork = new Text(_iwrb.getLocalizedString("user_began_work","Began work")+":");
-        beganWork.setFontStyle(_headlineStyle);
+	beganWork.setFontStyle(_headlineStyle);
       Text beganWorkText = new Text("");
-        if ( staffInfo != null && staffInfo.getBeganWork() != null )
-          beganWorkText.setText(new idegaTimestamp(staffInfo.getBeganWork()).getLocaleDate(iwc));
-        beganWorkText.setFontStyle(_textStyle);
+	if ( staffInfo != null && staffInfo.getBeganWork() != null )
+	  beganWorkText.setText(new idegaTimestamp(staffInfo.getBeganWork()).getLocaleDate(iwc));
+	beganWorkText.setFontStyle(_textStyle);
 
       if ( _showBeganWork ) {
-        textTable.add(beganWork,column,tableRow);
-        textTable.add(beganWorkText,column+1,tableRow);
-        tableRow++;
+	textTable.add(beganWork,column,tableRow);
+	textTable.add(beganWorkText,column+1,tableRow);
+	tableRow++;
       }
 
       Text education = new Text(_iwrb.getLocalizedString("user_education","Education")+":");
-        education.setFontStyle(_headlineStyle);
+	education.setFontStyle(_headlineStyle);
       Text educationText = new Text("");
-        if ( staffInfo != null )
-          educationText.setText(staffInfo.getEducation());
-        educationText.setFontStyle(_textStyle);
+	if ( staffInfo != null )
+	  educationText.setText(staffInfo.getEducation());
+	educationText.setFontStyle(_textStyle);
 
       if ( _showEducation ) {
-        textTable.add(education,column,tableRow);
-        textTable.add(educationText,column+1,tableRow);
-        tableRow++;
+	textTable.add(education,column,tableRow);
+	textTable.add(educationText,column+1,tableRow);
+	tableRow++;
       }
 
       Text school = new Text(_iwrb.getLocalizedString("user_school","School")+":");
-        school.setFontStyle(_headlineStyle);
+	school.setFontStyle(_headlineStyle);
       Text schoolText = new Text("");
-        if ( staffInfo != null )
-          schoolText.setText(staffInfo.getSchool());
-        schoolText.setFontStyle(_textStyle);
+	if ( staffInfo != null )
+	  schoolText.setText(staffInfo.getSchool());
+	schoolText.setFontStyle(_textStyle);
 
       if ( _showSchool ) {
-        textTable.add(school,column,tableRow);
-        textTable.add(schoolText,column+1,tableRow);
-        tableRow++;
+	textTable.add(school,column,tableRow);
+	textTable.add(schoolText,column+1,tableRow);
+	tableRow++;
       }
 
       if ( staffMeta != null && staffMeta.length > 0 && _showMetaData ) {
-        for ( int a = 0; a < staffMeta.length; a++ ) {
-          Text meta = new Text(staffMeta[a].getAttribute()+":");
-            meta.setFontStyle(_headlineStyle);
-          Text metaText = new Text(staffMeta[a].getValue());
-            metaText.setFontStyle(_textStyle);
+	for ( int a = 0; a < staffMeta.length; a++ ) {
+	  Text meta = new Text(staffMeta[a].getAttribute()+":");
+	    meta.setFontStyle(_headlineStyle);
+	  Text metaText = new Text(staffMeta[a].getValue());
+	    metaText.setFontStyle(_textStyle);
 
-          textTable.add(meta,column,tableRow);
-          textTable.add(metaText,column+1,tableRow);
-          tableRow++;
-        }
+	  textTable.add(meta,column,tableRow);
+	  textTable.add(metaText,column+1,tableRow);
+	  tableRow++;
+	}
       }
     }
 
@@ -505,7 +505,7 @@ private Table _myTable;
 
     Link link = new Link(name);
       if ( _styles )
-        link.setStyle(_name);
+	link.setStyle(_name);
       link.addParameter(StaffBusiness.PARAMETER_USER_ID,user.getID());
 
     return link;
@@ -516,9 +516,9 @@ private Table _myTable;
 
     if ( email != null ) {
       link = new Link(email.getEmailAddress());
-        if ( _styles )
-          link.setStyle(_name);
-        link.setURL("mailto:"+email.getEmailAddress());
+	if ( _styles )
+	  link.setStyle(_name);
+	link.setURL("mailto:"+email.getEmailAddress());
     }
 
     return link;
@@ -544,21 +544,21 @@ private Table _myTable;
 
     for ( int a = 0; a < alphabet.length; a++ ) {
       if ( _alphabetLetter != null && _alphabetLetter.equalsIgnoreCase(alphabet[a]) ) {
-        Text text = new Text(alphabet[a]);
-          if ( _styles ) {
-            TextStyler styler = new TextStyler(_alphabetLinkStyle);
-              styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR,_selectedLetterColor);
-              styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_BOLD);
-              text.setFontStyle(styler.getStyleString());
-          }
-        table.add(text,column,1);
+	Text text = new Text(alphabet[a]);
+	  if ( _styles ) {
+	    TextStyler styler = new TextStyler(_alphabetLinkStyle);
+	      styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR,_selectedLetterColor);
+	      styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_BOLD);
+	      text.setFontStyle(styler.getStyleString());
+	  }
+	table.add(text,column,1);
       }
       else {
-        link = new Link(alphabet[a]);
-          if ( _styles )
-            link.setStyle(_alphabetName);
-          link.addParameter(StaffBusiness.PARAMETER_LETTER,alphabet[a]);
-        table.add(link,column,1);
+	link = new Link(alphabet[a]);
+	  if ( _styles )
+	    link.setStyle(_alphabetName);
+	  link.addParameter(StaffBusiness.PARAMETER_LETTER,alphabet[a]);
+	table.add(link,column,1);
       }
       column++;
     }
@@ -579,7 +579,7 @@ private Table _myTable;
       _alphabetLetter = iwc.getParameter(StaffBusiness.PARAMETER_LETTER);
       _hasAlphabetLetter = true;
       if ( _alphabetLetter != null && _alphabetLetter.equalsIgnoreCase(_iwrb.getLocalizedString("all","Allir")) )
-        _hasAlphabetLetter = false;
+	_hasAlphabetLetter = false;
     }
     else {
       _alphabetLetter = _iwrb.getLocalizedString("all","Allir");
@@ -588,12 +588,12 @@ private Table _myTable;
 
     if ( iwc.getParameter(StaffBusiness.PARAMETER_USER_ID) != null ) {
       try {
-        _userID = Integer.parseInt(iwc.getParameter(StaffBusiness.PARAMETER_USER_ID));
-        _layout = USER;
+	_userID = Integer.parseInt(iwc.getParameter(StaffBusiness.PARAMETER_USER_ID));
+	_layout = USER;
       }
       catch ( NumberFormatException e ) {
-        _userID = -1;
-        _layout = ALL_STAFF;
+	_userID = -1;
+	_layout = ALL_STAFF;
       }
 
     }
@@ -604,9 +604,9 @@ private Table _myTable;
       _name = this.getName();
     if ( _name == null ) {
       if ( getICObjectInstanceID() != -1 )
-        _name = "staff_"+Integer.toString(getICObjectInstanceID());
+	_name = "staff_"+Integer.toString(getICObjectInstanceID());
       else
-        _name = "staff_"+Double.toString(Math.random());
+	_name = "staff_"+Double.toString(Math.random());
     }
     _alphabetName = "alpha_"+_name;
 
@@ -628,16 +628,16 @@ private Table _myTable;
   private void setDefaultValues() {
     _width = "300";
     _selectedLetterColor = "#0000CC";
-    _linkStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _visitedStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _activeStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _hoverStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
-    _alphabetLinkStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _alphabetVisitedStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _alphabetActiveStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
-    _alphabetHoverStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
-    _textStyle = "font-face: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
-    _headlineStyle = "font-face: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 8pt;color: #000000;";
+    _linkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+    _visitedStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+    _activeStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+    _hoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
+    _alphabetLinkStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+    _alphabetVisitedStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+    _alphabetActiveStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: none;";
+    _alphabetHoverStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;text-decoration: underline;";
+    _textStyle = "font-family: Arial, Helvetica,sans-serif;font-size: 8pt;color: #000000;";
+    _headlineStyle = "font-family: Arial, Helvetica,sans-serif;font-weight:bold;font-size: 8pt;color: #000000;";
 
     _showAge = true;
     _showGender = true;
@@ -767,7 +767,7 @@ private Table _myTable;
       obj = (StaffViewer)super.clone();
 
       if (this._myTable != null) {
-        obj._myTable=(Table)this._myTable.clone();
+	obj._myTable=(Table)this._myTable.clone();
       }
     }
     catch(Exception ex) {
