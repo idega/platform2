@@ -162,4 +162,17 @@ public class AddressBMPBean extends com.idega.data.GenericEntity implements Addr
       throw new RemoteException(e.getMessage());
     }
   }
+    
+    public String getStreetAddress(){
+    	StringBuffer addr = new StringBuffer();
+    	String street = getStreetName();
+    	if(street!=null)
+    		addr.append(street).append(" ");
+    	String number = this.getStreetNumber();
+    	if(number !=null)
+    		addr.append(number);
+    	return addr.toString();
+    }
+    
+  
 }
