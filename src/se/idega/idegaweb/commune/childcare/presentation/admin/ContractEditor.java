@@ -89,7 +89,7 @@ public class ContractEditor extends ChildCareBlock {
 			ChildCareContractHome contractHome = (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 			ChildCareContract contract = contractHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CONTRACT_ID)));
 			getBusiness().removeContract(contract, iwc.getCurrentUser());
-			add(getLocalizedSmallHeader("child_care.delete_failed", "Application successfully deleted"));
+			add(getLocalizedSmallHeader("child_care.delete_successful", "Application successfully deleted"));
 		} catch (Exception e) {
 			add(getLocalizedSmallHeader("child_care.delete_failed", "Application was NOT deleted"));
 		}
