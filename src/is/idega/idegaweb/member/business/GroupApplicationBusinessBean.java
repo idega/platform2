@@ -123,10 +123,13 @@ public class GroupApplicationBusinessBean extends IBOServiceBean implements Grou
 		appl.setApplicationGroupId(((Integer)applicationGroup.getPrimaryKey()).intValue());
 		appl.setUserId(((Integer)user.getPrimaryKey()).intValue());
 		appl.setStatus(status);
-		appl.addGroups(groups);
 		appl.setUserComment(userComment);
 		appl.setCreated(IWTimestamp.getTimestampRightNow());
 		appl.store();
+		
+		appl.addGroups(groups);
+
+		
 		
 		return appl;
  
