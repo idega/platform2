@@ -61,6 +61,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     addAttribute(getCreditcardAuthorizationNumberColumnName(), "cc auth", true, true, String.class);
     addAttribute(getPickupPlaceIDColumnName(),"Rick-up staður",true,true,Integer.class,"many_to_one",PickupPlace.class);
     addAttribute(getPickupExtraInfoColumnName(), "Pickup extra info", true, true, String.class);
+    addAttribute(getRefererUrlColumnName(), "Referer url", true, true, String.class, 2000);
 
     this.addManyToManyRelationShip(Reseller.class);
     this.addManyToManyRelationShip(Address.class);
@@ -277,6 +278,14 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 		setColumn(getPickupExtraInfoColumnName(), info);	
 	}
 
+	public String getRefererUrl() {
+		return getStringColumnValue(getRefererUrlColumnName());
+	}
+	
+	public void setRefererUrl(String url) {
+		setColumn(getRefererUrlColumnName(), url);
+	}
+
   public void store() {
     CypherText cyph = new CypherText();
     String key = cyph.getKey(8);
@@ -318,6 +327,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
   public static String getCreditcardAuthorizationNumberColumnName() {return "CC_AUTH_NUMBER";}
 	public static String getPickupPlaceIDColumnName() {return "PICKUP_PLACE_ID";}
 	public static String getPickupExtraInfoColumnName() {return "PICKUP_EXTRA_INFO";}
+	public static String getRefererUrlColumnName() {return "REFERER_URL";} 
 
 
   public  Collection ejbFindBookings(int resellerId, int serviceId, IWTimestamp stamp) throws FinderException{
@@ -536,7 +546,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
 //              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(fromStamp.toSQLDateString(),"-")+"'");
               sql.append(dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
               sql.append(" and ");
-//              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
+//              sql.append(dateColumn+" <= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
               sql.append(dateColumn+" <= '"+toStamp.toSQLDateString()+"'"); // Gimmi fixar ... +"')");
 	            sql.append(" )");
             }
