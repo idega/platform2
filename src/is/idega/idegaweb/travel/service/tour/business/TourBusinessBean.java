@@ -520,10 +520,11 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
   }
 
 	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
-		int max = super.getMaxBookings(product, stamp);
+		Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+		int max = tour.getTotalSeats();
 		if (max == BookingForm.UNLIMITED_AVAILABILITY) {
-			Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
-			return tour.getTotalSeats();
+			return super.getMaxBookings(product, stamp);
+			//return tour.getTotalSeats();
 		}
 		return max;
 	}
