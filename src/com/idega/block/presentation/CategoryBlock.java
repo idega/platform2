@@ -134,6 +134,9 @@ public abstract class CategoryBlock extends Block{
     if (orderManually) {
       L.addParameter(CategoryWindow.prmOrder, "true");
     }
+    if(getCacheKey().equals(IW_BLOCK_CACHE_KEY)){
+      L.addParameter(CategoryWindow.prmCategoryId,getCacheKey());
+    }
 
     L.setWindowToOpen(CategoryWindow.class);
     return L;
