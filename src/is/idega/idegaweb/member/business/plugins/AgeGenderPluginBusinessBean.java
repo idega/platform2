@@ -8,12 +8,17 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import com.idega.business.IBOServiceBean;
 import com.idega.data.GenericEntity;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserGroupPlugInBusiness;
+import com.idega.user.data.Gender;
+import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -23,28 +28,94 @@ import com.idega.user.data.User;
  */
 public class AgeGenderPluginBusinessBean extends IBOServiceBean implements AgeGenderPluginBusiness, UserGroupPlugInBusiness {
   
-  public void setGender(Group group, String gender){
-    ((GenericEntity) group).setMetaData("gender", gender);
+  private static final int LOWER_AGE_LIMIT_DEFAULT = 0;
+  private static final int UPPER_AGE_LIMIT_DEFAULT = 110;
+  
+  public void setMale(Group group, boolean isMale){
+    
+    try {
+			GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
+      if (isMale) {
+        String maleId = ((Integer) home.getMaleGender().getPrimaryKey()).toString();
+        ((GenericEntity) group).setMetaData("gender", maleId);
+      } 
+      else  {
+        String femaleId = ((Integer) home.getFemaleGender().getPrimaryKey()).toString();
+        ((GenericEntity) group).setMetaData("gender", femaleId);
+      }
+    }
+		catch (RemoteException e) {
+      System.err.println("[GeneralGroupInfoTab] remote error, GroupId : " + group.getPrimaryKey().toString());
+      e.printStackTrace(System.err);
+		}
+    catch (FinderException e) {
+      System.err.println("[GeneralGroupInfoTab] find error, GroupId : " + group.getPrimaryKey().toString());
+      e.printStackTrace(System.err);
+    }
   }  
   
-  public String getGender(Group group) {
-    return (String) ((GenericEntity) group).getMetaData("gender");
+  public void setMale(Group group)  {
+    setMale(group, true);
   }
   
-  public void setLowerAgeLimit(Group group, String lowerAgeLimit)  {
-    ((GenericEntity) group).setMetaData("lowerAgeLimit", lowerAgeLimit);
+  public void setFemale(Group group, boolean isFemale)  {
+    setMale(group, (! isFemale));
   }
   
-  public String getLowerAgeLimit(Group group)  {
-    return (String) ((GenericEntity) group).getMetaData("lowerAgeLimit"); 
+  public void setFemale(Group group)  {
+    setFemale(group, true);
   }
   
-  public void setUpperAgeLimit(Group group, String upperAgeLimit)  {
-    ((GenericEntity) group).setMetaData("upperAgeLimit", upperAgeLimit);
+  public boolean isMale(Group group) throws RemoteException, FinderException {
+    String genderIdString = (String) ((GenericEntity) group).getMetaData("gender");
+    if (genderIdString == null)
+      // meta data was not set
+      // male is default value
+      return true;
+    Integer genderId = new Integer(genderIdString);
+    GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
+    Integer maleId = ((Integer) home.getMaleGender().getPrimaryKey());
+    Integer femaleId = ((Integer) home.getFemaleGender().getPrimaryKey());
+    if (genderId.equals(maleId))
+      return true;
+    else if (genderId.equals(femaleId))
+      return false;
+    else 
+      throw new FinderException("Id of gender was not found"); 
+  }
+  
+  public boolean isFemale(Group group) throws RemoteException, FinderException  {
+    return (! isMale(group));
+  }
+  
+  public void setLowerAgeLimit(Group group, int lowerAgeLimit)  {
+    if (lowerAgeLimit == LOWER_AGE_LIMIT_DEFAULT)
+      ((GenericEntity) group).removeMetaData("lowerAgeLimit");
+    else
+      ((GenericEntity) group).setMetaData("lowerAgeLimit", Integer.toString(lowerAgeLimit));   
+  }
+  
+  public int getLowerAgeLimit(Group group)  {
+    String lowerAgeLimitString = (String) ((GenericEntity) group).getMetaData("lowerAgeLimit");
+    if (lowerAgeLimitString == null)
+      return LOWER_AGE_LIMIT_DEFAULT;
+    else
+      return Integer.parseInt(lowerAgeLimitString); 
+  }
+  
+  public void setUpperAgeLimit(Group group, int upperAgeLimit)  {
+    if (upperAgeLimit == UPPER_AGE_LIMIT_DEFAULT)
+      ((GenericEntity) group).removeMetaData("upperAgeLimit");
+    else
+      ((GenericEntity) group).setMetaData("upperAgeLimit", Integer.toString(upperAgeLimit));
   }
  
-  public String getUpperAgeLimit(Group group)  {
-    return (String) ((GenericEntity) group).getMetaData("upperAgeLimit");
+  public int getUpperAgeLimit(Group group)  {
+    String upperAgeLimitString = (String) ((GenericEntity) group).getMetaData("lowerAgeLimit");
+    if (upperAgeLimitString == null)
+      return UPPER_AGE_LIMIT_DEFAULT;
+    else
+      return Integer.parseInt(upperAgeLimitString); 
   }
   
   
