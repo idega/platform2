@@ -41,7 +41,7 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
 
     private final static String LABEL_DIVISION = "isi_acc_uph_division";
 
-    private final static String LABEL_GROUP = "isi_acc_uph_group";
+//    private final static String LABEL_GROUP = "isi_acc_uph_group";
 
     private final static String LABEL_INFO = "isi_acc_uph_info";
 
@@ -72,8 +72,8 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
         Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION,
                 "Division"));
         labelDiv.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-        Text labelGrp = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
-        labelGrp.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
+//        Text labelGrp = new Text(iwrb.getLocalizedString(LABEL_GROUP, "Group"));
+//        labelGrp.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelInfo = new Text(iwrb.getLocalizedString(LABEL_INFO, "Info"));
         labelInfo.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
         Text labelType = new Text(iwrb.getLocalizedString(LABEL_PAYMENT_TYPE,
@@ -122,12 +122,12 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
             row = 1;
             paymentTable.add(labelDate, 1, row);
             paymentTable.add(labelDiv, 2, row);
-            paymentTable.add(labelGrp, 3, row);
-            paymentTable.add(labelInfo, 4, row);
-            paymentTable.add(labelType, 5, row);
-            paymentTable.add(labelAmount, 6, row);
-			paymentTable.setAlignment(6, row, "RIGHT");            
-            paymentTable.add(labelCashier, 7, row++);
+//            paymentTable.add(labelGrp, 3, row);
+            paymentTable.add(labelInfo, 3, row);
+            paymentTable.add(labelType, 4, row);
+            paymentTable.add(labelAmount, 5, row);
+			paymentTable.setAlignment(5, row, "RIGHT");            
+            paymentTable.add(labelCashier, 6, row++);
 
             NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
             nf.setMaximumFractionDigits(0);
@@ -145,25 +145,22 @@ public class UserPaymentHistory extends CashierSubWindowTemplate {
                     if (entry.getDivision() != null) {
                         paymentTable.add(entry.getDivision().getName(), 2, row);
                     }
-                    if (entry.getGroup() != null) {
-                        paymentTable.add(entry.getGroup().getName(), 3, row);
-                    }
                     if (entry.getInfo() != null) {
-                        paymentTable.add(entry.getInfo(), 4, row);
+                        paymentTable.add(entry.getInfo(), 3, row);
                     }
                     if (entry.getPaymentType() != null) {
                         paymentTable
                                 .add(iwrb.getLocalizedString(entry
                                         .getPaymentType().getLocalizationKey(),
                                         entry.getPaymentType()
-                                                .getLocalizationKey()), 5, row);
+                                                .getLocalizationKey()), 4, row);
                     }
 
-                    paymentTable.add(nf.format(entry.getAmount()), 6, row);
-                    paymentTable.setAlignment(6, row, "RIGHT");            
+                    paymentTable.add(nf.format(entry.getAmount()), 5, row);
+                    paymentTable.setAlignment(5, row, "RIGHT");            
                     if (entry.getInsertedByUser() != null) {
                         paymentTable.add(entry.getInsertedByUser().getName(),
-                                7, row);
+                                6, row);
                     }
 
                     row++;

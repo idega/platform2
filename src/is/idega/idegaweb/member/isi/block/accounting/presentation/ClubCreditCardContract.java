@@ -176,7 +176,6 @@ public class ClubCreditCardContract extends CashierSubWindowTemplate {
         "Group"));
         labelDivisionGroup.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
     
-        
         inputTable.add(labelDivisionGroup, 1, row);
         inputTable.add(labelContractNumber, 2, row);
         inputTable.add(labelCardType, 3, row++);

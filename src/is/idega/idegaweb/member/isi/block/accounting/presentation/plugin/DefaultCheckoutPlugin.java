@@ -31,8 +31,8 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.PrintButton;
 
 /**
  * The simple default plugin for the payment types that do not specify a plugin.
@@ -53,6 +53,8 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 	protected static final String LABEL_AMOUNT = "isi_acc_dcp_amount";
 	protected static final String LABEL_AMOUNT_PAID = "isi_acc_dcp_amount_paid";
 	protected static final String LABEL_SUM = "isi_acc_dcp_sum";
+	
+	protected static final String LABEL_RECEIPT = "isi_acc_dcp_receipt";
 
 	private String backTableStyle = "back";
 	private String borderTableStyle = "borderAll";
@@ -107,16 +109,6 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 		return null;
 	}
 
-	//session business
-	private BasketBusiness getBasketBusiness(IWContext iwc) {
-		try {
-			return (BasketBusiness) IBOLookup.getSessionInstance(iwc,
-					BasketBusiness.class);
-		} catch (IBOLookupException e) {
-			throw new RuntimeException(e.getMessage());
-		}
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -126,17 +118,8 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 		Table returnObject = new Table();
 		
 		IWResourceBundle iwrb = getResourceBundle(iwc);
-		Table backTable = new Table(3, 3);
-		backTable.setStyleClass(backTableStyle);
-		backTable.setWidth(Table.HUNDRED_PERCENT);
-		backTable.setHeight(1, 1, "6");
-		backTable.setWidth(1, 2, "6");
-		backTable.setWidth(3, 2, "6");
 		Table t = new Table();
-		t.setWidth(Table.HUNDRED_PERCENT);
 		t.setCellpadding(5);
-		t.setColor("#ffffff");
-		t.setStyleClass(borderTableStyle);
 
 		int row = 1;
 		Text labelDiv = new Text(iwrb.getLocalizedString(LABEL_DIVISION,
@@ -182,19 +165,21 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 				double sum = 0;
 				while (it.hasNext()) {
 					FinanceExtraBasketInfo info = (FinanceExtraBasketInfo) it.next();
-					if (info.division != null) {
-						t.add(info.division.getName(), 1, row);
+					if (info.getDivision() != null) {
+						t.add(info.getDivision().getName(), 1, row);
 					}
-					t.add(info.group.getName(), 2, row);
-					t.add(info.user.getName(), 3, row);
-					if (info.info != null) {
-						t.add(info.info, 4, row);
+					if (info.getGroup() != null) {
+					    t.add(info.getGroup().getName(), 2, row);
 					}
-					t.add(nf.format(info.amount.doubleValue()), 5, row);
+					t.add(info.getUser().getName(), 3, row);
+					if (info.getInfo() != null) {
+						t.add(info.getInfo(), 4, row);
+					}
+					t.add(nf.format(info.getAmount().doubleValue()), 5, row);
 					t.setAlignment(5, row, "RIGHT");
-					t.add(nf.format(info.amountPaid), 6, row);
+					t.add(nf.format(info.getAmountPaid()), 6, row);
 					t.setAlignment(6, row, "RIGHT");
-					sum += info.amountPaid;
+					sum += info.getAmountPaid();
 					row++;
 				}
 				t.mergeCells(1, row, 6, row);
@@ -207,11 +192,21 @@ public class DefaultCheckoutPlugin extends CashierSubWindowTemplate
 			e.printStackTrace();
 		}
 
-		backTable.add(t, 2, 2);
-		
-		returnObject.add(backTable);
-		returnObject.add(new PrintButton("Prenta"));
+		returnObject.add(t);
+		Link receipt = new Link(iwrb.getLocalizedString(LABEL_RECEIPT,"Receipt"));
+		receipt.setWindowToOpen(DefaultCheckoutReceiptWindow.class);
+		returnObject.add(receipt);
 
 		return returnObject;
+	}
+	
+	//session business
+	private BasketBusiness getBasketBusiness(IWContext iwc) {
+		try {
+			return (BasketBusiness) IBOLookup.getSessionInstance(iwc,
+					BasketBusiness.class);
+		} catch (IBOLookupException e) {
+			throw new RuntimeException(e.getMessage());
+		}
 	}
 }

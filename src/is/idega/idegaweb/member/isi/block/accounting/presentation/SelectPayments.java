@@ -158,10 +158,10 @@ public class SelectPayments extends CashierSubWindowTemplate {
             paymentTable.add(labelDiv, 3, row);
             paymentTable.add(labelGrp, 4, row);
             paymentTable.add(labelInfo, 5, row);
-            paymentTable.add(labelAmount, 6, row);
 			paymentTable.setAlignment(6, row, "RIGHT");            
-            paymentTable.add(labelRemaining, 7, row);
-			paymentTable.setAlignment(7, row++, "RIGHT");            
+            paymentTable.add(labelAmount, 6, row);
+			paymentTable.setAlignment(7, row, "RIGHT");            
+            paymentTable.add(labelRemaining, 7, row++);
 
             NumberFormat nf = NumberFormat.getInstance(iwc.getCurrentLocale());
             nf.setMaximumFractionDigits(0);
@@ -200,23 +200,23 @@ public class SelectPayments extends CashierSubWindowTemplate {
                     if (entry.getInfo() != null) {
                         paymentTable.add(entry.getInfo(), 5, row);
                     }
+                    paymentTable.setAlignment(6, row, "RIGHT");
                     paymentTable.add(nf.format(entry.getAmount()), 6, row);
-                    paymentTable.add(nf.format(entry.getItemPrice().doubleValue()), 7, row);
+                    paymentTable.setAlignment(7, row, "RIGHT");
+                    paymentTable.add(nf.format(entry.getItemPrice().doubleValue()), 7, row++);
 
                     sumAmount += entry.getAmount();
                     sumRemaining += entry.getItemPrice().doubleValue();
 
-                    paymentTable.setAlignment(6, row, "RIGHT");
-                    paymentTable.setAlignment(7, row++, "RIGHT");
                 }
 
                 paymentTable.mergeCells(6, row, 7, row);
                 paymentTable.add("<hr>", 6, row++);
                 paymentTable.add(labelSum, 5, row);
-                paymentTable.add(nf.format(sumAmount), 6, row);
-                paymentTable.add(nf.format(sumRemaining), 7, row);
                 paymentTable.setAlignment(6, row, "RIGHT");
-                paymentTable.setAlignment(7, row++, "RIGHT");
+                paymentTable.add(nf.format(sumAmount), 6, row);
+                paymentTable.setAlignment(7, row, "RIGHT");
+                paymentTable.add(nf.format(sumRemaining), 7, row++);
 
                 SubmitButton moveToBasket = new SubmitButton(iwrb
                         .getLocalizedString(ACTION_ADD_TO_BASKET,
@@ -229,10 +229,10 @@ public class SelectPayments extends CashierSubWindowTemplate {
                         "checkout");
                 checkout.setToEnableWhenChecked(LABEL_ADD_TO_BASKET);
                 	checkout.setValueOnClick(CashierWindow.ACTION, CashierWindow.ACTION_CHECKOUT);
+                    paymentTable.setAlignment(6, row, "RIGHT");
                 paymentTable.add(moveToBasket, 6, row);
-                paymentTable.add(checkout, 7, row);
-                paymentTable.setAlignment(6, row, "RIGHT");
                 paymentTable.setAlignment(7, row, "RIGHT");
+                paymentTable.add(checkout, 7, row);
             }
         }
 
