@@ -384,11 +384,25 @@ public class HotelBookingForm extends BookingForm {
                 pPriceCatNameText = (Text) theText.clone();
                   pPriceCatNameText.setText(category.getName());
 
-                pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
-                  pPriceText.setSize(8);
+	              if (pricesLength == 1) {
+	                pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(price));
+	                pPriceText.setSize(8);
+	                pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"1");
+	                pPriceMany.setSize(5);
+	                TotalPassTextInput.setContent("1");
+	                TotalTextInput.setContent(Integer.toString(price));
+	              } else {
+	                pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
+	                pPriceText.setSize(8);
+	                pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
+	                pPriceMany.setSize(5);
+	              }
 
-                pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
-                  pPriceMany.setSize(5);
+ //                 pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
+ //                 pPriceText.setSize(8);
+
+//                pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
+//                  pPriceMany.setSize(5);
 
                 if (i == pricesLength) {
                   Text tempTexti = (Text) theBoldText.clone();
@@ -769,12 +783,12 @@ public class HotelBookingForm extends BookingForm {
               city.setSize(textInputSizeLg);
           TextInput country = new TextInput("country");
               country.setSize(textInputSizeMd);
-
+/*
           DateInput fromDate = new DateInput(parameterFromDate);
             fromDate.setDay(_stamp.getDay());
             fromDate.setMonth(_stamp.getMonth());
             fromDate.setYear(_stamp.getYear());
-            fromDate.setDisabled(true);
+            fromDate.setDisabled(true);*/
 
           TextInput manyDays = new TextInput(parameterManyDays);
             manyDays.setContent("1");
@@ -796,7 +810,10 @@ public class HotelBookingForm extends BookingForm {
 
           ++row;
           table.add(fromText, 1, row);
-          table.add(fromDate, 2, row);
+          table.add(new HiddenInput(parameterFromDate, _stamp.toSQLString()));
+          Text currDate = (Text) theText.clone();
+          currDate.setText(_stamp.getLocaleDate(iwc.getCurrentLocale()));
+          table.add(currDate,  2, row);//fromDate, 2, row);
           table.setAlignment(1,row,"right");
           table.setAlignment(2,row,"left");
           table.mergeCells(2,row,6,row);
@@ -888,11 +905,20 @@ public class HotelBookingForm extends BookingForm {
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
 
-                  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
-                    pPriceText.setSize(8);
-
-                  pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
-                    pPriceMany.setSize(5);
+                    if (pricesLength == 1) {
+                      pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(price));
+                      pPriceText.setSize(8);
+                      pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"1");
+                      pPriceMany.setSize(5);
+    	                		TotalPassTextInput.setContent("1");
+    	                		TotalTextInput.setContent(Integer.toString(price));
+                    } else {
+                      pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
+                      pPriceText.setSize(8);
+                      pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
+                      pPriceMany.setSize(5);
+                    }
+                    
 
                   if (i == pricesLength) {
                     Text tempTexti = (Text) theBoldText.clone();
