@@ -194,6 +194,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 					val = c.getNumericCellValue();
 
 				System.out.println("val = " + val);
+				System.out.println("celltype == " + c.getCellType());
 
 				WorkReportGroup league = (WorkReportGroup)leaguesMap.get(new Integer(leaguesStartColumn + i));
 
