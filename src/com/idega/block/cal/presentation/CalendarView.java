@@ -679,8 +679,10 @@ public class CalendarView extends Block{
 	}
 	
 	/**
+	 * The display of the entry in the calendar is in the form:
+	 * "fromtime - totime nameOfEntry, locationOfEntry"
 	 * @param entry
-	 * @return
+	 * @return headline - the display string of the calendar entry
 	 */
 	private String getEntryHeadline(CalendarEntry entry) {
 		Timestamp startDate = entry.getDate();
@@ -690,9 +692,17 @@ public class CalendarView extends Block{
 		int endHours = endDate.getHours();
 		int endMinutes = endDate.getMinutes();
 		
+		String name = entry.getName();
+		String location = entry.getLocation();
+		
 		String headline = getTimeString(startHours,startMinutes) + 
-		"-" + getTimeString(endHours,endMinutes) + 
-		" " + entry.getName();
+		"-" + getTimeString(endHours,endMinutes);
+		if(name != null && !name.equals("")) {
+			headline = headline + " " + name;
+		}
+		if(location != null && !location.equals("")) {
+			headline = headline + ", " + location;
+		}
 		return headline;
 	}
 	/**
