@@ -6,18 +6,22 @@ import is.idega.idegaweb.project.data.IPCategory;
 import is.idega.idegaweb.project.data.IPCategoryType;
 import is.idega.idegaweb.project.data.IPProject;
 import is.idega.idegaweb.project.data.IPParticipantGroup;
+
+import com.idega.core.ICTreeNode;
 import com.idega.core.data.ICObject;
 import com.idega.builder.dynamicpagetrigger.business.DPTTriggerBusiness;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo;
 import com.idega.data.EntityFinder;
+import com.idega.event.EventLogic;
 import com.idega.presentation.IWContext;
-import com.idega.builder.business.BuilderLogic;
 import com.idega.core.data.GenericGroup;
 import com.idega.builder.dynamicpagetrigger.data.DPTPermissionGroup;
-import com.idega.builder.business.PageTreeNode;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.accesscontrol.data.ICPermission;
+import com.idega.core.builder.business.BuilderConstants;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.util.IWTimestamp;
 
 import java.util.List;
@@ -339,7 +343,7 @@ public class ProjectBusiness {
   }
 
 
-  public void createPageLink(IWContext iwc, int projectId, String name) throws SQLException {
+  public void createPageLink(IWContext iwc, int projectId, String name) throws Exception {
 
     IPProject project = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(projectId);
 
@@ -364,10 +368,9 @@ public class ProjectBusiness {
       List participantGroups = DPTTriggerBusiness.getDPTPermissionGroups(info);
 
       if(participantGroups != null && participantGroups.size() > 0 ){
-
-        BuilderLogic logic = BuilderLogic.getInstance();
-
-        PageTreeNode rootPage = new PageTreeNode(pageLink.getPageId(),iwc);
+		BuilderService bservice = BuilderServiceFactory.getBuilderService(iwc);
+		
+        ICTreeNode rootPage = bservice.getPageTree(pageLink.getPageId(),iwc.getCurrentUserId());
         Vector v = new Vector();
         //System.out.println("collecting subpages");
         this.collectSubpages(v,rootPage);
@@ -376,12 +379,12 @@ public class ProjectBusiness {
         Set pages = new HashSet();
         Iterator setIter = v.iterator();
         while (setIter.hasNext()) {
-          PageTreeNode item = (PageTreeNode)setIter.next();
+			ICTreeNode item = (ICTreeNode)setIter.next();
           pages.add(Integer.toString(item.getNodeID()));
           //System.out.println("----------------------------------");
           //System.out.println("getInstanceIdsOnPage("+item.getNodeID()+")");
           //BuilderLogic.getInstance().getIBXMLPage(item.getNodeID())
-          Set set = logic.getInstanceIdsOnPage(item.getNodeID());
+          Set set = EventLogic.getInstanceIdsOnPage(item.getNodeID());
 
           if(set != null){
             s.addAll(set);
@@ -514,13 +517,13 @@ public class ProjectBusiness {
 
 
 
-  private static void collectSubpages( List l, PageTreeNode node){
+  private static void collectSubpages( List l, ICTreeNode node){
     if(node != null){
       l.add(node);
       Iterator tmp = node.getChildren();
       if(tmp != null){
         while (tmp.hasNext()) {
-          collectSubpages(l,(PageTreeNode)tmp.next());
+          collectSubpages(l,(ICTreeNode)tmp.next());
         }
       }
     }
@@ -641,7 +644,7 @@ public class ProjectBusiness {
     pagePropertieIds.put(Integer.toString(pageId),Integer.toString(projectId));
   }
 
-  public static synchronized int getCurrentProjectId(IWContext iwc){
+  public static synchronized int getCurrentProjectId(IWContext iwc)throws Exception{
 
     Map pagePropertieIds = (Map)iwc.getApplicationAttribute(_APPADDRESS_PROJECTPAGES);
     if(pagePropertieIds == null){
@@ -649,7 +652,7 @@ public class ProjectBusiness {
       iwc.setApplicationAttribute(_APPADDRESS_PROJECTPAGES,pagePropertieIds);
     }
 
-    String pageId = iwc.getParameter(BuilderLogic.IB_PAGE_PARAMETER);
+    String pageId = iwc.getParameter(BuilderConstants.IB_PAGE_PARAMETER);
 
     if(pageId != null){
       String projectID = (String)pagePropertieIds.get(pageId);
@@ -665,6 +668,7 @@ public class ProjectBusiness {
         }
 
         if(links != null){
+			BuilderService bservice = BuilderServiceFactory.getBuilderService(iwc);
           Iterator iter = links.iterator();
           while (iter.hasNext()) {
             PageLink item = (PageLink)iter.next();
@@ -677,7 +681,7 @@ public class ProjectBusiness {
               }
               Vector v = null;
               try {
-                PageTreeNode rootPage = new PageTreeNode(pPageId,iwc);
+				ICTreeNode rootPage = bservice.getPageTree(pPageId,iwc.getCurrentUserId());
                 v = new Vector();
                 collectSubpages(v,rootPage);
               }
@@ -688,7 +692,7 @@ public class ProjectBusiness {
               if( v != null){
                 Iterator iter2 = v.iterator();
                 while (iter2.hasNext()) {
-                  PageTreeNode item2 = (PageTreeNode)iter2.next();
+                  ICTreeNode item2 = (ICTreeNode)iter2.next();
                   int tmpPageID = item2.getNodeID();
                   if(tmpPageID > 0){
                     pagePropertieIds.put(Integer.toString(tmpPageID),projectId);

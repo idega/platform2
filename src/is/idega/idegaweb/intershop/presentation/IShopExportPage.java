@@ -1,5 +1,5 @@
 /*
- * $Id: IShopExportPage.java,v 1.5 2002/05/03 13:58:33 palli Exp $
+ * $Id: IShopExportPage.java,v 1.6 2003/08/05 19:45:27 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,9 @@ package is.idega.idegaweb.intershop.presentation;
 
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
+import com.idega.builder.data.IBPageHome;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.presentation.IWAdminWindow;
@@ -30,9 +33,9 @@ import java.util.Properties;
 public class IShopExportPage extends IWAdminWindow {
   private static final String IW_BUNDLE_IDENTIFIER  = "is.idega.idegaweb.intershop";
 
-  private boolean exportToSybase(IWContext iwc) {
-    BuilderLogic instance = BuilderLogic.getInstance();
-
+  private boolean exportToSybase(IWContext iwc) throws Exception {
+    BuilderLogic builderlogic = BuilderLogic.getInstance();
+	BuilderService bservice = getBuilderService(iwc);
     IWBundle bundle = getBundle(iwc);
     StringBuffer path = new StringBuffer(bundle.getPropertiesRealPath());
     if (!path.toString().endsWith(FileUtil.getFileSeparator()))
@@ -40,12 +43,13 @@ public class IShopExportPage extends IWAdminWindow {
 
     path.append(bundle.getProperty("sybaseproperties","sybasedb.properties"));
 
-    String ib_page_id = instance.getCurrentIBPage(iwc);
+    String ib_page_id = Integer.toString(bservice.getCurrentPageId(iwc));
     IBPage ibpage = null;
     int page_id = -1;
     try {
       page_id = Integer.parseInt(ib_page_id);
-      ibpage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(page_id);
+      IBPageHome ibPageHome = (IBPageHome)IDOLookup.getHome(IBPage.class);
+      ibpage = ibPageHome.findByPrimaryKey(page_id);
     }
     catch(Exception e) {
       return(false);
@@ -62,7 +66,7 @@ public class IShopExportPage extends IWAdminWindow {
     if (is_page == null)
       return(false);
 
-    String html = instance.getCurrentPageHtml(iwc);
+    String html = builderlogic.getCurrentPageHtml(iwc);
     if (html == null)
       return(false);
 

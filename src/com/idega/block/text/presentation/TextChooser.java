@@ -1,7 +1,7 @@
 package com.idega.block.text.presentation;
 
 import com.idega.block.text.data.TxText;
-import com.idega.builder.business.BuilderLogic;
+import com.idega.core.builder.business.BuilderConstants;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -38,7 +38,7 @@ public class TextChooser extends AbstractChooser {
   }
 
   public void main(IWContext iwc){
-    IWBundle iwb = iwc.getApplication().getBundle(BuilderLogic.IW_BUNDLE_IDENTIFIER);
+    IWBundle iwb = iwc.getApplication().getBundle(BuilderConstants.STANDARD_IW_BUNDLE_IDENTIFIER);
     if (_chooseButtonImage != null) {
       setChooseButtonImage(_chooseButtonImage);
     }else {

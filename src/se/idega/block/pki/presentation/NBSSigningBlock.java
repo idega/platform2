@@ -6,6 +6,7 @@
  */
 package se.idega.block.pki.presentation;
 
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,8 +24,8 @@ import se.nexus.nbs.sdk.NBSServerHttp;
 import se.nexus.nbs.sdk.NBSSignResult;
 import se.nexus.nbs.sdk.servlet.ServletUtil;
 
-import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBPage;
+import com.idega.core.builder.business.BuilderService;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.Block;
@@ -206,11 +207,22 @@ public class NBSSigningBlock extends Block implements Builderaware{
 
 	protected void forwardToIBPage(IWContext iwc,Page fromPage,IBPage pageTo){
 		StringBuffer URL = new StringBuffer();
-		URL.append(BuilderLogic.getInstance().getIBPageURL(iwc.getApplicationContext(), ((Integer) pageTo.getPrimaryKey()).intValue()));
-		//URL.append('&');
-		//URL.append(getRequest().getQueryString());
-		fromPage.setToRedirect(URL.toString());
-		fromPage.empty();	
+		BuilderService bservice;
+		try
+		{
+			bservice = getBuilderService(iwc);
+			URL.append(bservice.getPageURI(((Integer) pageTo.getPrimaryKey()).intValue()));
+			//URL.append('&');
+			//URL.append(getRequest().getQueryString());
+			fromPage.setToRedirect(URL.toString());
+			fromPage.empty();	
+		}
+		catch (RemoteException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}	
 	
 }

@@ -5,10 +5,10 @@ import com.idega.presentation.Table;
 import com.idega.presentation.Image;
 import com.idega.presentation.IWContext;
 import com.idega.builder.data.IBPage;
-import com.idega.builder.business.BuilderLogic;
+import com.idega.core.ICTreeNode;
+import com.idega.core.builder.business.BuilderService;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Block;
-import com.idega.builder.business.PageTreeNode;
 
 /**
  * Title:
@@ -80,14 +80,15 @@ public class CampusTab extends Block implements Campus{
     this.upHeight = height;
   }
 
-  public void main(IWContext iwc){
+  public void main(IWContext iwc)throws Exception{
     iwb = getBundle(iwc);
-    int sessId=BuilderLogic.getInstance().getCurrentIBPageID(iwc);
+    BuilderService bservice = getBuilderService(iwc);
+    int sessId=bservice.getCurrentPageId(iwc);
     boolean upTab = false;
     if(pageId == sessId)
       upTab = true;
     else{
-      PageTreeNode node = new PageTreeNode(sessId,iwc);
+      ICTreeNode node = bservice.getPageTree(sessId,iwc.getCurrentUserId());
       if(node.getParentNode()!=null && node.getParentNode().getNodeID()== pageId)
         upTab = true;
     }
