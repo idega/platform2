@@ -5,6 +5,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Applet;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
+import com.idega.block.messenger.business.ClientSessionBinder;
 
 /**
  * Title: Messenger
@@ -52,6 +53,10 @@ public class Messenger extends Block {
       messenger.setHeight(height);
 
       add(messenger);
+
+      iwc.setSessionAttribute("messenger_logoff_thingy",new ClientSessionBinder(iwc.getApplication()) );
+
+
     }
    // else add("You are not logged on");
   }
