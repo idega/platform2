@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.9 2001/05/24 23:15:47 palli Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.10 2001/06/05 22:45:46 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -215,7 +215,7 @@ public class GolfMainJSPModulePage extends MainPage {
   }
 
   protected HeaderTable clubNews() throws SQLException {
-    News[] news = (News[]) (new News()).findAll("select distinct news_category_id from news where news_category_id>3 order by news_date desc");
+    News[] news = (News[]) (new News()).findAll("select distinct news_category_id from news where news_category_id>3 and news_category_id != 226 order by news_date desc");
 
     HeaderTable headerTable = new HeaderTable();
     headerTable.setWidth(148);
