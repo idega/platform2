@@ -642,10 +642,16 @@ public class InvoiceChildcareThread extends BillingThread{
 						invoiceRecord.setProvider(regularInvoiceEntry.getSchool());
 						invoiceRecord.setRuleText(regularInvoiceEntry.getNote());
 						invoiceRecord.setDays(days);
-						invoiceRecord.setPeriodStartCheck(startPeriod.getDate());
-						invoiceRecord.setPeriodEndCheck(endPeriod.getDate());
-						invoiceRecord.setPeriodStartPlacement(placementTimes.getFirstCheckDay().getDate());
-						invoiceRecord.setPeriodEndPlacement(placementTimes.getLastCheckDay().getDate());
+
+						invoiceRecord.setPeriodStartCheck(placementTimes.getFirstCheckDay().getDate());
+						invoiceRecord.setPeriodEndCheck(placementTimes.getLastCheckDay().getDate());
+						invoiceRecord.setPeriodStartPlacement(contract.getValidFromDate());
+						invoiceRecord.setPeriodEndPlacement(contract.getTerminatedDate());
+
+						invoiceRecord.setPeriodStartCheck(placementTimes.getFirstCheckDay().getDate());
+						invoiceRecord.setPeriodEndCheck(placementTimes.getLastCheckDay().getDate());
+						invoiceRecord.setPeriodStartPlacement(regularInvoiceEntry.getFrom());
+						invoiceRecord.setPeriodEndPlacement(regularInvoiceEntry.getTo());
 						invoiceRecord.setDateCreated(currentDate);
 						invoiceRecord.setCreatedBy(BATCH_TEXT);
 						long amount = AccountingUtil.roundAmount(regularInvoiceEntry.getAmount()*months);
