@@ -5,12 +5,10 @@
 package com.idega.block.dataquery.business;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.Arrays;
 
 import javax.ejb.FinderException;
 
-//import com.idega.block.dataquery.data.Query;
 import com.idega.block.media.business.MediaBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
