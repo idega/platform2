@@ -19,6 +19,8 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
@@ -68,6 +70,7 @@ public class InvoiceBusinessBean implements Runnable{
 	private Date currentDate = new Date( new java.util.Date().getTime());
 	private IWTimestamp time, startTime, endTime;
 	private ExportDataMapping categoryPosting;
+	private SchoolCategory childcareCategory;
 	private int childcare = 0;
 	private int check = 0;
 	private int errorOrder;
@@ -80,6 +83,8 @@ public class InvoiceBusinessBean implements Runnable{
 	 * @param endPeriod
 	 */
 	public void startPostingBatch(Date month){
+		startPeriod.setAsDate();
+		endPeriod.setAsDate();
 		startPeriod = new IWTimestamp(month);
 		startPeriod.setDay(1);
 		endPeriod = new IWTimestamp(startPeriod);
@@ -107,7 +112,7 @@ public class InvoiceBusinessBean implements Runnable{
 			// **Flag all contracts as 'not processed'
 			
 
-			SchoolCategory childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategoryHome.class)).findChildcareCategory();
+			childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategoryHome.class)).findChildcareCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(childcareCategory.getPrimaryKey());
 			
 			
@@ -147,10 +152,13 @@ public class InvoiceBusinessBean implements Runnable{
 				// **Calculate how big part of time period this contract is valid for
 				//first get the start date
 				startTime = new IWTimestamp(contract.getValidFromDate());
+				startTime.setAsDate();
 				time = new IWTimestamp(startPeriod);
+				time.setAsDate();
 				startTime = startTime.isLater(startTime,time);
 				//Then get end date
 				endTime = new IWTimestamp(endPeriod);
+				endTime.setAsDate();
 				if(contract.getTerminatedDate()!=null){
 					time = new IWTimestamp(contract.getTerminatedDate());
 					endTime = endTime.isEarlier(endTime, time);
@@ -170,8 +178,7 @@ public class InvoiceBusinessBean implements Runnable{
 				RegulationsBusiness regBus = getRegulationsBusinessHome().create();
 				
 				//Get all the parameters needed to select the correct contract
-				//TODO (JJ) Tryggvi, Goran and Anders trying to figure out how this should work!
-				String childcareType = "";
+				String childcareType = contract.getSchoolClassMmeber().getSchoolClass().getSchoolType().getName();
 				hours = contract.getCareTime();
 				age = new Age(contract.getChild().getDateOfBirth());
 				ArrayList conditions = new ArrayList();
@@ -248,28 +255,57 @@ public class InvoiceBusinessBean implements Runnable{
 		}
 	}
 	
-	private PaymentRecord createPaymentRecord() throws IDOLookupException, CreateException {
-		PaymentRecord paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).create();
-		paymentRecord.setAmount(postingDetail.getAmount()*months);
-		if(categoryPosting.getProviderAuthorization()){
-			paymentRecord.setStatus(ConstantStatus.BASE);
-		} else {
-			paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
-		}
-		//TODO (JJ) paymentRecord.setPaymentHeader(paymentHeader);
-		//TODO (JJ) paymentRecord.setPeriod()
-//		TODO (JJ) paymentRecord.setBolagsform()
-		paymentRecord.setDateCreated(currentDate);
-		paymentRecord.setCreatedBy(BATCH_TEXT);
-		//TODO (JJ) paymentRecord.setPlacements();
-		//TODO (JJ) paymentRecord.setItemPrice(postingDetail.getAmount());
-		paymentRecord.setAmount(postingDetail.getAmount()*months);
-		paymentRecord.setAmountVAT(postingDetail.getVat()*months);
-		//TODO (JJ) Calculate the posting stringsT
-		paymentRecord.setVATType(postingDetail.getVatRegulationID());
+	private PaymentRecord createPaymentRecord() throws CreateException, IDOLookupException {
+		PaymentHeader paymentHeader;
+		PaymentRecord paymentRecord;
 		
-		//TODO (JJ) set the rest of the parameters needed. Check first with Lotta what really needs to go in here.
-		paymentRecord.store();
+		//Get the payment header
+		try {
+			paymentHeader = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).
+					findBySchoolCategorySchoolPeriod(school,childcareCategory,currentDate);
+		} catch (FinderException e) {
+			//If No header found, create it
+			paymentHeader = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).create();
+			paymentHeader.setSchoolID(school);
+			paymentHeader.setSchoolCategoryID(childcareCategory);
+			if(categoryPosting.getProviderAuthorization()){
+				paymentHeader.setStatus(ConstantStatus.BASE);
+			} else {
+				paymentHeader.setStatus(ConstantStatus.PRELIMINARY);
+			}
+		}
+
+		//Update or create the payment record
+		try {
+			paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).
+					findByPaymentHeaderAndRuleSpecType(paymentHeader,postingDetail.getRuleSpecType());
+			//If it already excists, just update the contents.
+			paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
+			paymentRecord.setTotalAmount(paymentRecord.getTotalAmount()+postingDetail.getAmount()*months);
+			paymentRecord.setTotalAmountVAT(paymentRecord.getTotalAmountVAT()+postingDetail.getVat()*months);
+		} catch (FinderException e1) {
+			paymentRecord = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).create();
+			//Set all the values for the payment record
+			if(categoryPosting.getProviderAuthorization()){
+				paymentRecord.setStatus(ConstantStatus.BASE);
+			} else {
+				paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
+			}
+			paymentRecord.setPaymentHeader(paymentHeader);
+			paymentRecord.setPeriod(startPeriod.getDate());
+//			TODO (JJ) paymentRecord.setBolagsform()
+			paymentRecord.setDateCreated(currentDate);
+			paymentRecord.setCreatedBy(BATCH_TEXT);
+			paymentRecord.setPlacements(1);
+			paymentRecord.setPieceAmount(postingDetail.getAmount());
+			paymentRecord.setTotalAmount(postingDetail.getAmount()*months);
+			paymentRecord.setTotalAmountVAT(postingDetail.getVat()*months);
+			//TODO (JJ) Calculate the posting strings
+			paymentRecord.setVATType(postingDetail.getVatRegulationID());
+		
+			//TODO (JJ) set the rest of the parameters needed. Check first with Lotta what really needs to go in here.
+			paymentRecord.store();
+		}
 		return paymentRecord;
 	}
 
@@ -354,6 +390,7 @@ public class InvoiceBusinessBean implements Runnable{
 		List parents = contract.getChild().getParentGroups();
 		Iterator parentIter = parents.iterator();
 		//Itterate through parents
+		//TODO (JJ) Also need to check for cohabitants. (Can be obtained through MemberFamilyLogic)
 		while(parentIter.hasNext()){
 			User parent = (User)parentIter.next();
 			Iterator siblingsIter = parent.getChildren();
@@ -372,13 +409,15 @@ public class InvoiceBusinessBean implements Runnable{
 					Iterator addr2Iter = addr2Coll.iterator();
 					while(addr2Iter.hasNext() && found==false){
 						Address addr2 = (Address)addr2Iter.next();
-						if(addr1.getPrimaryKey().equals(addr2.getPrimaryKey())){
+						//TODO (JJ) How is check of same household done best?
+						if(addr1.getPostalAddress().equals(addr2.getPostalAddress())){
 							found = true;
 						}
 					}
 				}
 				//Sort kids in age order
 				if(found){
+					//TODO (JJ) have to check that the kid has a kontract of the right sort.
 					SortableSibling sortableSibling = new SortableSibling(sibling);
 					if(!sortedSiblings.contains(sortableSibling)){
 						sortedSiblings.add(sortableSibling);
@@ -403,11 +442,8 @@ public class InvoiceBusinessBean implements Runnable{
 			error.setDescription(desc);
 			error.setOrder(errorOrder);
 			errorOrder++;
-		} catch (IDOLookupException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (CreateException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
+			System.out.println("Exception so complicated that it wasn't even possible to create an error message in the log!");
 			e.printStackTrace();
 		}
 		
