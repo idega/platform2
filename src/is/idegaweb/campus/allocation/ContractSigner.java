@@ -12,6 +12,7 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.*;
 import com.idega.block.application.data.Applicant;
 import is.idegaweb.campus.entity.Contract;
+import is.idegaweb.campus.entity.SystemProperties;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import com.idega.core.data.Email;
@@ -49,6 +50,8 @@ public class ContractSigner extends ModuleObjectContainer{
   private String login = null;
   private String passwd = null;
   private boolean print = false;
+  private SystemProperties SysProps = null;
+  private GenericGroup eGroup = null;
 
   /*
     Blár litur í topp # 27324B
@@ -65,6 +68,9 @@ public class ContractSigner extends ModuleObjectContainer{
     iwb = getBundle(modinfo);
 
     if(isAdmin){
+      if(modinfo.getApplicationAttribute(SysProps.getEntityTableName())!=null){
+      SysProps = (SystemProperties)modinfo.getApplicationAttribute(SysProps.getEntityTableName());
+      }
 
       if(modinfo.getParameter("sign")!=null || modinfo.getParameter("save")!=null){
         doSignContract(modinfo);
@@ -73,6 +79,7 @@ public class ContractSigner extends ModuleObjectContainer{
     }
     else
       add(formatText(iwrb.getLocalizedString("access_denied","Access denied")));
+
     //add(String.valueOf(iSubjectId));
   }
 
@@ -97,8 +104,16 @@ public class ContractSigner extends ModuleObjectContainer{
       List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
       List lFinanceAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),Account.typeFinancial);
       List lPhoneAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),Account.typePhone);
-      List lGroups = UserBusiness.listOfGroups();
-      List lUserGroups = eUser.getAllGroups();
+
+      if(SysProps != null){
+        int groupId = SysProps.getDefaultGroup();
+        try {
+          eGroup = new GenericGroup(groupId);
+        }
+        catch (SQLException ex) {
+          eGroup = null;
+        }
+      }
       LoginTable loginTable = LoginDBHandler.findUserLogin(eContract.getUserId().intValue());
       Table T = new Table();
 
@@ -113,7 +128,7 @@ public class ContractSigner extends ModuleObjectContainer{
       phoneAccountCheck.setChecked(true);
       CheckBox loginCheck = new CheckBox("new_login");
       loginCheck.setChecked(true);
-      DropdownMenu groupDrp = new DropdownMenu(lGroups,"user_group");
+
       int row = 2;
       T.add(boldText(iwrb.getLocalizedString("name","Name")+" : "),1,row);
       T.add(eApplicant.getFullName(),2,row);
@@ -135,60 +150,62 @@ public class ContractSigner extends ModuleObjectContainer{
         T.add(email,2,row);
       }
       row++;
-      T.add(boldText(iwrb.getLocalizedString("group","Group")+" : "),1,row);
-      if(lUserGroups !=null){
-        groupDrp.setSelectedElement( String.valueOf( ((GenericGroup)lUserGroups.get(0)).getID() ) );
-      }
-      T.add(groupDrp,2,row);
-      row++;row++;
-      if(lFinanceAccounts == null){
-        T.add(accountCheck,2,row);
-        T.add(boldText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
-      }
-      else{
-        int len = lFinanceAccounts.size();
-        for (int i = 0; i < len; i++) {
-          T.add(boldText(iwrb.getLocalizedString("fin_account","Finance account")+" : "),1,row);
-          T.add(formatText( ((Account)lFinanceAccounts.get(i)).getName() +" "),2,row);
-        }
-      }
       row++;
-      if(lPhoneAccounts == null){
-        T.add(phoneAccountCheck,2,row);
-        T.add(boldText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
-      }
-      else{
-        int len = lPhoneAccounts.size();
-        for (int i = 0; i < len; i++) {
-          T.add(boldText(iwrb.getLocalizedString("phone_account","Phone account")+" : "),1,row);
-          T.add(formatText( ((Account)lPhoneAccounts.get(i)).getName() +" "),2,row);
+      if(eGroup != null){
+        HiddenInput Hgroup = new HiddenInput("user_group",String.valueOf(eGroup.getID()));
+        T.add(Hgroup);
+        if(lFinanceAccounts == null){
+          T.add(accountCheck,2,row);
+          T.add(boldText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
         }
-      }
-      row++;
-      if(loginTable != null ){
-        T.add(boldText(iwrb.getLocalizedString("login","Login")+" : "),1,row);
-        T.add(formatText(loginTable.getUserLogin()),2,row);
+        else{
+          int len = lFinanceAccounts.size();
+          for (int i = 0; i < len; i++) {
+            T.add(boldText(iwrb.getLocalizedString("fin_account","Finance account")+" : "),1,row);
+            T.add(formatText( ((Account)lFinanceAccounts.get(i)).getName() +" "),2,row);
+          }
+        }
         row++;
-        T.add(boldText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,row);
-        if(passwd != null)
-          T.add(formatText(passwd),2,row++);
+        if(lPhoneAccounts == null){
+          T.add(phoneAccountCheck,2,row);
+          T.add(boldText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
+        }
+        else{
+          int len = lPhoneAccounts.size();
+          for (int i = 0; i < len; i++) {
+            T.add(boldText(iwrb.getLocalizedString("phone_account","Phone account")+" : "),1,row);
+            T.add(formatText( ((Account)lPhoneAccounts.get(i)).getName() +" "),2,row);
+          }
+        }
+        row++;
+        if(loginTable != null ){
+          T.add(boldText(iwrb.getLocalizedString("login","Login")+" : "),1,row);
+          T.add(formatText(loginTable.getUserLogin()),2,row);
+          row++;
+          T.add(boldText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,row);
+          if(passwd != null)
+            T.add(formatText(passwd),2,row++);
+        }
+        else{
+          T.add(loginCheck,2,row);
+          T.add(boldText(iwrb.getLocalizedString("new_login","New login")),2,row);
+        }
+        row++;
+        HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
+        if(eContract.getStatus().equalsIgnoreCase(eContract.statusSigned))
+          T.add(save,2,row);
+        else
+          T.add(signed,2,row);
+        if(print){
+          T.add(PB,2,row);
+        }
+        T.add(close,2,row);
+
+        T.add(HI,1,row);
       }
       else{
-        T.add(loginCheck,2,row);
-        T.add(boldText(iwrb.getLocalizedString("new_login","New login")),2,row);
+        T.add(formatText(iwrb.getLocalizedString("syspropserror","System property error")),1,row);
       }
-      row++;
-      HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
-      if(eContract.getStatus().equalsIgnoreCase(eContract.statusSigned))
-        T.add(save,2,row);
-      else
-        T.add(signed,2,row);
-      if(print){
-        T.add(PB,2,row);
-      }
-      T.add(close,2,row);
-
-      T.add(HI,1,row);
       Form F = new Form();
       F.add(T);
       return F;
@@ -211,20 +228,17 @@ public class ContractSigner extends ModuleObjectContainer{
     String sPhoneAccount = modinfo.getParameter("new_phone_account");
     String sCreateLogin = modinfo.getParameter("new_login");
     String sUserGroup = modinfo.getParameter("user_group");
+    String sSigned =  modinfo.getParameter("sign");
     Contract eContract = null;
 
       try {
         eContract = new Contract(id);
-        if(modinfo.getParameter("sign")!=null){
-        eContract.setStatusSigned();
-        eContract.update();
-        }
       }
       catch (SQLException ex) {
-
+        ex.printStackTrace();
       }
 
-    if(eContract != null){
+    if(eContract != null && sSigned != null){
       int iUserId = eContract.getUserId().intValue();
       if(sEmail !=null && sEmail.trim().length() >0){
         UserBusiness.addNewUserEmail(iUserId,sEmail);
@@ -237,9 +251,12 @@ public class ContractSigner extends ModuleObjectContainer{
         String prefix = iwrb.getLocalizedString("phone","Phone");
         AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",1);
       }
-      if(sCreateLogin != null){
+      if(sCreateLogin != null && sUserGroup!= null){
         try {
           User eUser = new User(iUserId);
+          int gid = Integer.parseInt(sUserGroup);
+          GenericGroup gg = new GenericGroup(gid);
+          gg.addTo(eUser);
           login = LoginCreator.createLogin(eUser.getName());
           passwd = LoginCreator.createPasswd(8);
 
@@ -256,12 +273,8 @@ public class ContractSigner extends ModuleObjectContainer{
             passwd = null;
             print = false;
           }
-
-          if(sUserGroup!= null){
-            int gid = Integer.parseInt(sUserGroup);
-            GenericGroup gg = new GenericGroup(gid);
-            gg.addTo(eUser);
-          }
+          eContract.setStatusSigned();
+          eContract.update();
         }
         catch (SQLException ex) {
           ex.printStackTrace();

@@ -35,6 +35,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
   private String localesParameter="iw_locales";
   private String bottomThickness = "8";
   private boolean isAdmin;
+  private boolean useObjectInstanciator = false;
   protected int fontSize = 2;
   protected boolean fontBold = false;
   protected String styleAttribute = "font-size: 8pt";
@@ -48,6 +49,10 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void setToUseObjectInstanciator(boolean use){
+    useObjectInstanciator=use;
   }
 
   protected void control(ModuleInfo modinfo){
@@ -396,8 +401,12 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
   }
 
   public Link getPDFLink(ModuleObject MO){
-    //Window W = new Window("PDF","/allocation/contractfile.jsp");
-    Window W = new Window("PDF",ContractFiler.class,com.idega.jmodule.object.Page.class);
+
+    Window W ;
+    if(useObjectInstanciator)
+      W = new Window("PDF",ContractFiler.class,com.idega.jmodule.object.Page.class);
+    else
+      W = new Window("PDF","/allocation/contractfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
     Link L = new Link(MO,W);

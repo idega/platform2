@@ -1,5 +1,5 @@
 /*
- * $Id: TariffIndex.java,v 1.3 2001/07/23 10:00:00 aron Exp $
+ * $Id: TariffIndex.java,v 1.4 2001/08/17 08:08:23 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,8 @@ import com.idega.data.GenericEntity;
  */
 public class TariffIndex extends GenericEntity{
 
+  public static final String A ="A",B="B",C="C",D="D",E="E";
+
   public TariffIndex(){
           super();
   }
@@ -29,38 +31,53 @@ public class TariffIndex extends GenericEntity{
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getIndexColumnName(), "Vísitala", true, true, "java.lang.Float");
-    addAttribute(getDateColumnName(), "Dags", true, true, "java.sql.Date");
-    addAttribute(getInfoColumnName(), "Upplýsingar", true, true, "java.lang.String");
+    addAttribute(getColumnNameIndex(), "Index", true, true, java.lang.Float.class);
+    addAttribute(getColumnNameDate(), "LastUpdated", true, true, java.sql.Date.class);
+    addAttribute(getColumnNameInfo(), "Name", true, true, java.lang.String.class);
+    addAttribute(getColumnNameInfo(), "Info", true, true, java.lang.String.class);
   }
 
   public static String getTariffIndexEntityName(){ return "CAM_TARIFF_INDEX"; }
-  public static String getIndexColumnName(){ return "RENT_INDEX";}
-  public static String getInfoColumnName(){return "INFO";}
-  public static String getDateColumnName(){return "FROM_DATE";}
+  public static String getColumnNameIndex(){ return "RENT_INDEX";}
+  public static String getColumnNameName(){return "NAME";}
+  public static String getColumnNameInfo(){return "INFO";}
+  public static String getColumnNameType(){return "TYPE";}
+  public static String getColumnNameDate(){return "FROM_DATE";}
 
   public String getEntityName(){
     return getTariffIndexEntityName();
   }
   public float getIndex(){
-    return getFloatColumnValue(getIndexColumnName());
+    return getFloatColumnValue(getColumnNameIndex());
   }
   public void setIndex(float index){
-    setColumn(getIndexColumnName(),index);
+    setColumn(getColumnNameIndex(),index);
   }
   public void setIndex(Float index){
-    setColumn(getIndexColumnName(),index);
+    setColumn(getColumnNameIndex(),index);
+  }
+  public String getName(){
+    return getStringColumnValue(getColumnNameName());
+  }
+  public void setName(String name){
+    setColumn(getColumnNameName(), name);
   }
   public String getInfo(){
-    return getStringColumnValue(getInfoColumnName());
+    return getStringColumnValue(getColumnNameInfo());
   }
   public void setInfo(String info){
-    setColumn(getInfoColumnName(), info);
+    setColumn(getColumnNameInfo(), info);
+  }
+  public String getType(){
+    return getStringColumnValue(getColumnNameType());
+  }
+  public void setType(String type){
+    setColumn(getColumnNameType(), type);
   }
   public java.sql.Date getDate(){
-    return (java.sql.Date) getColumnValue(getDateColumnName());
+    return (java.sql.Date) getColumnValue(getColumnNameDate());
   }
   public void setDate(java.sql.Date use_date){
-    setColumn(getDateColumnName(),use_date);
+    setColumn(getColumnNameDate(),use_date);
   }
 }
