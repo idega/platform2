@@ -461,6 +461,17 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			
 		
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.regional_unions", "Regional unions")),1,3);
+		
+		LinkContainer b12_2_1 = new LinkContainer();
+		b12_2_1.add(formatText(iwrb.getLocalizedString("workreportwindow.b12_2_1_reportname", "Members per reg.uni. -/+ 16"), false));
+		b12_2_1.addParameter(ACTION, ACTION_STATISTICS);
+		b12_2_1.addParameter(STATS_INVOCATION_PARAM, STATS_INVOCATION_PREFIX+"b12_2_1");
+		b12_2_1.addParameter(STATS_LAYOUT_PARAM, STATS_LAYOUT_PREFIX+"b12_2_1");
+		b12_2_1.addParameter(STATS_LOCALIZABLE_KEY_NAME, "workreportwindow.b12_2_1_reportname");
+		b12_2_1.setStyleClass(styledLink);
+		
+		stats.add(b12_2_1,1,3);
+		
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.clubs", "Clubs")),1,5);
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.accounts", "Accounts")),1,7);
 		stats.add(formatText(iwrb.getLocalizedString("workreportwindow.reports_list", "Reports list")),1,9);
