@@ -46,6 +46,7 @@ import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.business.UserGroupBusiness;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
@@ -238,21 +239,22 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return list;
 	}
 
-	public Collection sortProducts(Collection productIdsToSort, PriceCategory priceCat, IWTimestamp bookingDate) {
+	public Collection sortProducts(Collection productsToSort, PriceCategory priceCat, IWTimestamp bookingDate) {
 		try {
 			//if (productComparator == null) {
 			ProductComparator	productComparator = new ProductComparator(ProductComparator.PRICE);
 				productComparator.setPriceCategoryValues(priceCat, -1, bookingDate);
 			//}
 			/** Gera betra */
-			Collection tmp = getInstanceCollectionFromPKS(productIdsToSort);
+			Collection tmp = getProductInstanceCollection(productsToSort);
 			Collections.sort( (Vector) tmp, productComparator);
 			
 			return getPKCollectionFromInstances(tmp);
 		}catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
-		return productIdsToSort;		 
+		return getPKCollectionFromInstances(productsToSort);
+//		return productsToSort;		 
 	}
 
 	public HashMap checkResults(IWContext iwc, Collection results) throws RemoteException {
@@ -267,7 +269,11 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			Collection addresses = null;
 			try {
 				from = new IWTimestamp(iwc.getParameter(AbstractSearchForm.PARAMETER_FROM_DATE));
-				int betw = Integer.parseInt(iwc.getParameter(AbstractSearchForm.PARAMETER_MANY_DAYS));
+				int betw = 1;
+				try {
+					betw = Integer.parseInt(iwc.getParameter(AbstractSearchForm.PARAMETER_MANY_DAYS));
+				} catch (NumberFormatException n) {}
+				
 				to = new IWTimestamp(from);
 				to.addDays(betw);
 			}catch (Exception e) {
@@ -283,7 +289,7 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			boolean productIsValid = true;
 			while (iter.hasNext() && from != null && to != null) {
 				try {
-					product = pHome.findByPrimaryKey(iter.next());
+					product =  pHome.findByPrimaryKey(iter.next());
 					bf = getServiceHandler().getBookingForm(iwc, product);
 					addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
 					addressId = -1;
@@ -324,13 +330,13 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return new HashMap();
 	}
 
-	private Collection getInstanceCollectionFromPKS(Collection pks) {
+	private Collection getProductInstanceCollection(Collection pks) {
 		Collection coll = new Vector();
 		try {
 			ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
 			Iterator iter = pks.iterator();
 			while (iter.hasNext()) {
-				coll.add(pHome.findByPrimaryKey(iter.next()));
+				coll.add( pHome.findByPrimaryKey(((IDOEntity)iter.next()).getPrimaryKey()));
 			}
 		} catch (Exception e) {
 			
