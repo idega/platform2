@@ -12,15 +12,15 @@ private boolean usePlugin = false;
     setName(this.getID());
     setWidth(0);
     setHeight(0);
-    setCodebase(".");
   }
 
-  public Applet(String appletClass,String codeBase){
+  public Applet(String appletClass,String archive){
     this(appletClass);
     setName(this.getID());
     setWidth(0);
     setHeight(0);
-    setCodebase(codeBase);
+    setCodeArchive(archive);
+
   }
 
   public Applet(String appletClass,String codeBase, String archive){
@@ -32,17 +32,17 @@ private boolean usePlugin = false;
     setCodeArchive(archive);
   }
 
-  public Applet(String appletClass,String name,int width,int height){
+  public Applet(String appletClass,String archive,int width,int height){
     this(appletClass);
-    setName(name);
+    setAppletName(this.getID());
     setWidth(width);
     setHeight(height);
-    setCodebase(".");
+    setCodeArchive(archive);
   }
 
   public Applet(String appletClass,int width,int height){
     this(appletClass);
-    setName(this.getID());
+    setAppletName(this.getID());
     setWidth(width);
     setHeight(height);
     setCodebase(".");
@@ -50,8 +50,7 @@ private boolean usePlugin = false;
 
   public Applet(String appletClass,String name,int width,int height, String codeBase){
     this(appletClass);
-    setName(name);
-    setAppletClass(appletClass);
+    setAppletName(name);
     setWidth(width);
     setHeight(height);
     setCodebase(codeBase);
@@ -59,8 +58,7 @@ private boolean usePlugin = false;
 
   public Applet(String appletClass,int width,int height, String codeBase){
     this(appletClass);
-    setName(this.getID());
-    setAppletClass(appletClass);
+    setAppletName(this.getID());
     setWidth(width);
     setHeight(height);
     setCodebase(codeBase);
@@ -136,11 +134,11 @@ private boolean usePlugin = false;
     return getAttribute("CODE");
   }
 
-  public void setName(String NAME){
+  public void setAppletName(String NAME){
     setAttribute("NAME",NAME);
   }
 
-  public String getName(){
+  public String getAppletName(){
     return getAttribute("NAME");
   }
 
