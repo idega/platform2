@@ -1,11 +1,8 @@
-
-
 package is.idega.idegaweb.campus.presentation;
 
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
-import com.idega.block.finance.presentation.Finance;
-import is.idega.idegaweb.campus.block.phone.presentation.PhoneFiles;
+import com.idega.block.finance.presentation.AccountViewer;
 
 
 /**
@@ -17,7 +14,7 @@ import is.idega.idegaweb.campus.block.phone.presentation.PhoneFiles;
  * @version 1.0
  */
 
-public class CampusFinance extends Block {
+public class TenantsFinance extends Block {
 
 
   public String getBundleIdentifier(){
@@ -25,8 +22,7 @@ public class CampusFinance extends Block {
   }
 
   public void main(IWContext iwc){
-    Finance fin = new Finance(1);
-    fin.addFinanceObject(new PhoneFiles());
+    AccountViewer fin = new AccountViewer();
     add(fin);
   }
 
