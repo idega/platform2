@@ -51,11 +51,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/02/21 16:52:33 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/22 12:45:51 $ by $Author: anna $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.75 $
+ * @version $Revision: 1.76 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -723,7 +723,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 		
 		
 		table.add(getHeader(EMAIL_KEY, EMAIL_DEFAULT), 1, 2);
-		table.add(getSingleInput(iwc, EMAIL_KEY, 40, 100, false), 3, 2);
+		TextInput email = getSingleInput(iwc, EMAIL_KEY, 40, 100, false);
+		email.setAsEmail(localize("not_valid_email", "Not a valid e-mail"));
+		table.add(email, 3, 2);
 		table.add(getHeader(PHONE_HOME_KEY, PHONE_HOME_DEFAULT), 1, 3);
 		table.add(getSingleInput(iwc, PHONE_HOME_KEY, 20, true), 3, 3);
 		table.add(getHeader(PHONE_WORK_KEY, PHONE_WORK_DEFAULT), 1, 4);
