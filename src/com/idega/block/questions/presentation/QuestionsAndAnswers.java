@@ -545,12 +545,12 @@ public class QuestionsAndAnswers extends CategoryBlock {
 			ContentHelper ans = TextFinder.getContentHelper(question.getAnswerID(),currentLocale);
 			String aheadline = ans.getLocalizedText()!=null?ans.getLocalizedText().getHeadline():"";
 			String abody = ans.getLocalizedText()!=null?ans.getLocalizedText().getBody():"";
-			if(showQuestionTitle && aheadline!=null && aheadline.length()>0)
+			if(showAnswerTitle && aheadline!=null && aheadline.length()>0)
 				T.add(getStyleText(aheadline,STYLENAME_A_TITLE),2,row++);
-			if(cat!=null && showQuestionBody && abody!=null && abody.length()>0){
+			if(showAnswerBody && abody!=null && abody.length()>0){
 				T.add(getStyleText(abody,STYLENAME_A_BODY),2,row++);
-				if(showHomeButton && showAllCategories)
-				T.add(new AnchorLink(iwb.getImage("home.gif"),"bc"+cat.toString()),1,row);
+				if(cat!=null && showHomeButton && showAllCategories)
+				    T.add(new AnchorLink(iwb.getImage("home.gif"),"bc"+cat.toString()),1,row);
 			}
 			
 		}
