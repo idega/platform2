@@ -35,7 +35,9 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 			bruttoIncome.setIncome(income);
 			bruttoIncome.setValidFrom((java.sql.Date)validFrom);
 			bruttoIncome.setUser(userID);
-			bruttoIncome.setCreator(creatorID);
+			if (creatorID != null) {
+				bruttoIncome.setCreator(creatorID);
+			}
 			bruttoIncome.setCreated(new Timestamp(System.currentTimeMillis()));
 			bruttoIncome.store();
 		}
