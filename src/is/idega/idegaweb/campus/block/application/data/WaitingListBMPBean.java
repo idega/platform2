@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListBMPBean.java,v 1.8 2003/08/06 00:17:24 aron Exp $
+ * $Id: WaitingListBMPBean.java,v 1.9 2004/03/04 12:54:15 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -285,6 +285,10 @@ public class WaitingListBMPBean extends com.idega.data.GenericEntity implements 
 
   public void setPriorityLevelE() {
     setPriorityLevel(PRIORITY_E);
+  }
+  
+  public void setSamePriority(WaitingList listEntry){
+  	setPriorityLevel(listEntry.getPriorityLevel());
   }
 
   public static String getPriorityColumnName() {

@@ -41,4 +41,5 @@ public interface WaitingList extends com.idega.data.IDOLegacyEntity
  public void incrementRejections(boolean flagAsRejected);
  public void setAcceptedDate(Timestamp stamp);
  public Timestamp getAcceptedDate();
+ public void setSamePriority(WaitingList listEntry);
 }
