@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/06 10:34:57 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/06 19:59:31 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -41,10 +41,17 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
 public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PREFIX = "cacc_invcmp_";
 
+
     private static final String ADJUSTMENT_DATE_DEFAULT = "Justeringsdag";
     private static final String ADJUSTMENT_DATE_KEY = PREFIX + "adjustment_date";
     private static final String AMOUNT_DEFAULT = "Belopp";
     private static final String AMOUNT_KEY = PREFIX + "amount";
+    private static final String CHECK_FAMILY_CHILDCARE_40H_DEFAULT = "Check familjedaghem, 40 tim/v";
+    private static final String CHECK_FAMILY_CHILDCARE_40H_KEY = PREFIX + "check_family_childcare_40h";
+    private static final String CHECK_FROM_PERIOD_KEY = PREFIX + "check_from_period";
+    private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
+    private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
+    private static final String CHECK_TO_PERIOD_KEY = PREFIX + "check_to_period";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
@@ -55,6 +62,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String CREATE_INVOICE_RECORD_KEY = PREFIX + "create_invoice_record";
     private static final String CREATION_DATE_DEFAULT = "Skapandedag";
     private static final String CREATION_DATE_KEY = PREFIX + "creation_date";
+    private static final String DATE_ADJUSTED_DEFAULT = "Justeringsdag";
+    private static final String DATE_ADJUSTED_KEY = PREFIX + "date_adjusted";
+    private static final String DATE_CREATED_DEFAULT = "Skapandedag";
+    private static final String DATE_CREATED_KEY = PREFIX + "date_created";
     private static final String DELETE_INVOICE_COMPILATION_DEFAULT = "Ta bort fakturaunderlag";
     private static final String DELETE_INVOICE_COMPILATION_KEY = PREFIX + "delete_invoice_compilation";
     private static final String DOUBLE_POSTING_DEFAULT = "Motkontering";
@@ -63,6 +74,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String EDIT_INVOICE_COMPILATION_KEY = PREFIX + "edit_invoice_compilation";
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
+    private static final String FROM_PERIOD_DEFAULT = "Fr o m ";
     private static final String FROM_PERIOD_KEY = PREFIX + "from_period";
     private static final String GO_BACK_DEFAULT = "Tillbaka";
     private static final String GO_BACK_KEY = PREFIX + "go_back";
@@ -90,20 +102,36 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String LAST_NAME_KEY = PREFIX + "last_name";
     private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
     private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
+    private static final String NAME_DEFAULT = "Namn";
+    private static final String NAME_KEY = PREFIX + "name";
     private static final String NEW_DEFAULT = "Ny";
     private static final String NEW_KEY = PREFIX + "new";
+    private static final String NOTE_DEFAULT = "Anmärkning";
+    private static final String NOTE_KEY = PREFIX + "note";
     private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
     private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
     private static final String OWN_POSTING_DEFAULT = "Egen kontering";
     private static final String OWN_POSTING_KEY = PREFIX + "own_posting";
     private static final String PERIOD_DEFAULT = "Period";
     private static final String PERIOD_KEY = PREFIX + "period";
+    private static final String PLACEMENT_FROM_PERIOD_KEY = PREFIX + "placement_from_period";
+    private static final String PLACEMENT_PERIOD_DEFAULT = "Placeringsperiod";
+    private static final String PLACEMENT_PERIOD_KEY = PREFIX + "placement_period";
+    private static final String PLACEMENT_TO_PERIOD_KEY = PREFIX + "placement_to_period";
+    private static final String PLACMENT_DEFAULT = "Placering";
+    private static final String PLACMENT_KEY = PREFIX + "placment";
+    private static final String PROVIDER_DEFAULT = "Anordnare";
+    private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
+    private static final String RULE_SPEC_TYPE_DEFAULT = "Regelspec.typ";
+    private static final String RULE_SPEC_TYPE_KEY = PREFIX + "rule_spec_type";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_INVOICE_RECEIVER_DEFAULT = "Sök efter fakturamottagare";
     private static final String SEARCH_INVOICE_RECEIVER_KEY = PREFIX + "search_invoice_receiver";
     private static final String SEARCH_KEY = PREFIX + "search";
+    private static final String SIGNATURE_DEFAULT = "Sigantur";
+    private static final String SIGNATURE_KEY = PREFIX + "signature";
     private static final String SSN_DEFAULT = "Personnummer";
     private static final String SSN_KEY = PREFIX + "personal_id";
     private static final String STATUS_DEFAULT = "Status";
@@ -114,11 +142,17 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String TOTAL_AMOUNT_VAT_EXCLUSIVE_DEFAULT = "Totalbelopp, exklusive moms";
     private static final String TOTAL_AMOUNT_VAT_EXCLUSIVE_KEY = PREFIX + "total_amount_vat_exclusive";
     private static final String TOTAL_AMOUNT_VAT_KEY = PREFIX + "total_amount_vat";
+    private static final String TO_PERIOD_DEFAULT = "T o m ";
     private static final String TO_PERIOD_KEY = PREFIX + "to_period";
     private static final String USERSEARCHER_ACTION_KEY = "mbe_act_search" + PREFIX;
     private static final String USERSEARCHER_FIRSTNAME_KEY = "usrch_search_fname" + PREFIX;
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
     private static final String USERSEARCHER_PERSONALID_KEY = "usrch_search_pid" + PREFIX;
+    private static final String VAT_AMOUNT_DEFAULT = "Momsbelopp";
+    private static final String VAT_AMOUNT_KEY = PREFIX + "vat_amount";
+    private static final String VAT_TYPE_DEFAULT = "Momstyp";
+    private static final String VAT_TYPE_KEY = PREFIX + "vat_type";
+
 
     private static final String ACTION_KEY = PREFIX + "action_key";
 	private static final int ACTION_SHOW_COMPILATION = 0,
@@ -182,6 +216,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
             displayRedText
                     ("<p>Denna funktion är inte färdig! Bl.a. så återstår:<ol>" 
+
                      + "<li>skapa justeringsrad till en faktura"
                      + "<li>klicka på faktureringsrad och se detaljer"
                      + "<li>se faktureringsunderlag i pdf"
@@ -191,16 +226,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                      + "<li>sök på huvudverksamhet - bara barnomsorg"
                      + "<li>felhantering för periodinmatning, t ex '1313'"
                      + "<li>högerjustera totalAmount och andra tal"
-                     + "<li>skriv ut personnummer som yymmdd-xxxx"
                      + "<li>inte skriva ut null på egen kontering/motkontering"
                      + "<li>visa amount utan decimaler"
                      + "<li>confirm-page tillbaka till rätt sida"
                      + "<li>ta bort invoice record => ta bort payment-record?"
                      + "<li>sortera efter order_id eller något annat"
-                     + "<li>nested select ejbFindByCustodianOrChild (r & c)"
                      + "<li>byt inte funktion vid byte av huvudverksamhet"
                      + "<li>kontroll av felaktig eller utelämnad indata"
-                     + "<li>inte skriva ut null på egen kontering/motkontering"
+                     + "<li>'Check familjedaghem...' ska inte hårdkodas"
+                     + "<li>skriv ut inloggad signatur på skapa record"
+
                      + "</ol>\n\n(" + actionId + ')');
 		} catch (Exception exception) {
             logUnexpectedException (context, exception);
@@ -226,11 +261,82 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         setColumnWidthsEqual (table);
         int row = 2;
         addOperationFieldDropdown (table, row++); 
+        final String nowPeriod = periodFormatter.format (new Date ());
         int col = 1;
         addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
-        addSmallText(table, custodian.getPersonalID (), col++, row);
+        addSmallText(table, formatSsn (custodian.getPersonalID ()), col++, row);
+        addSmallHeader (table, col++, row, NAME_KEY, NAME_DEFAULT, ":");
+        addSmallText(table, getUserName (custodian), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, INVOICE_TEXT_KEY,
+                        INVOICE_TEXT_DEFAULT, ":");
+        table.add (getStyledInput (INVOICE_TEXT_KEY), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, PLACMENT_KEY, PLACMENT_DEFAULT, ":");
+        addSmallText(table, localize (CHECK_FAMILY_CHILDCARE_40H_KEY,
+                                      CHECK_FAMILY_CHILDCARE_40H_DEFAULT),
+                     col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
+        col = 1; row++;
+        addSmallHeader (table, col++, row, NUMBER_OF_DAYS_KEY,
+                        NUMBER_OF_DAYS_DEFAULT, ":");
+        table.add (getStyledInput (NUMBER_OF_DAYS_KEY), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, CHECK_PERIOD_KEY,
+                        CHECK_PERIOD_DEFAULT, ":");
+        addSmallHeader (table, col, row, FROM_PERIOD_KEY, FROM_PERIOD_DEFAULT);
+        table.add (getStyledInput (CHECK_FROM_PERIOD_KEY, nowPeriod), col++,
+                   row);
+        addSmallHeader (table, col, row, TO_PERIOD_KEY, TO_PERIOD_DEFAULT);
+        table.add (getStyledInput (CHECK_TO_PERIOD_KEY, nowPeriod), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, PLACEMENT_PERIOD_KEY,
+                        PLACEMENT_PERIOD_DEFAULT, ":");
+        addSmallHeader (table, col, row, FROM_PERIOD_KEY, FROM_PERIOD_DEFAULT);
+        table.add (getStyledInput (PLACEMENT_FROM_PERIOD_KEY, nowPeriod), col++,
+                   row);
+        addSmallHeader (table, col, row, TO_PERIOD_KEY, TO_PERIOD_DEFAULT);
+        table.add (getStyledInput (PLACEMENT_TO_PERIOD_KEY, nowPeriod), col++,
+                   row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, DATE_CREATED_KEY,
+                        DATE_CREATED_DEFAULT, ":");
+        addSmallText(table, dateFormatter.format (new Date ()), col++, row);
+        addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
+                        ":");
+        col = 1; row++;
+        addSmallHeader (table, col++, row, DATE_ADJUSTED_KEY,
+                        DATE_ADJUSTED_DEFAULT, ":");
+        col++;
+        addSmallHeader (table, col++, row, SIGNATURE_KEY, SIGNATURE_DEFAULT,
+                        ":");
+        col = 1; row++;
+        addSmallHeader (table, col++, row, AMOUNT_KEY, AMOUNT_DEFAULT, ":");
+        table.add (getStyledInput (AMOUNT_KEY), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, VAT_AMOUNT_KEY, VAT_AMOUNT_DEFAULT,
+                        ":");
+        table.add (getStyledInput (VAT_AMOUNT_KEY), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, NOTE_KEY, NOTE_DEFAULT, ":");
+        table.add (getStyledInput (NOTE_KEY), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, RULE_SPEC_TYPE_KEY,
+                        RULE_SPEC_TYPE_DEFAULT, ":");
+        col = 1; row++;
+        addSmallHeader (table, col++, row, OWN_POSTING_KEY, OWN_POSTING_DEFAULT,
+                        ":");
+        table.add (getStyledInput (OWN_POSTING_KEY), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
+                        DOUBLE_POSTING_DEFAULT, ":");
+        table.add (getStyledInput (DOUBLE_POSTING_KEY), col++, row);
+        col = 1; row++;
+        addSmallHeader (table, col++, row, VAT_TYPE_KEY, VAT_TYPE_DEFAULT, ":");
+        col = 1; row++;
         table.setHeight (row++, 12);
-        table.mergeCells (1, row, table.getColumns (), row);
+        table.mergeCells (col, row, table.getColumns (), row);
         table.add (getSubmitButton (ACTION_NEW_RECORD + "",
                                     CREATE_INVOICE_RECORD_KEY,
                                     CREATE_INVOICE_RECORD_DEFAULT), 1, row++);
@@ -337,7 +443,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         INVOICE_RECEIVER_DEFAULT, ":");
         addSmallText(table, getUserName (custodian), col++, row);
         addSmallHeader (table, col++, row, SSN_KEY, SSN_DEFAULT, ":");
-        addSmallText(table, custodian.getPersonalID (), col++, row);
+        addSmallText(table, formatSsn (custodian.getPersonalID ()), col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, INVOICE_ADDRESS_KEY,
                         INVOICE_ADDRESS_DEFAULT, ":");
@@ -452,7 +558,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             addSmallHeader (table, col++, row, INVOICE_RECEIVER_KEY,
                             INVOICE_RECEIVER_DEFAULT, ":");
             final String userInfo = getUserName (user) + " ("
-                    + user.getPersonalID () + "), " + getAddressString (user);
+                    + formatSsn (user.getPersonalID ()) + "), "
+                    + getAddressString (user);
             table.mergeCells (2, row, table.getColumns (), row);
             table.add (new HiddenInput (INVOICE_RECEIVER_KEY,
                                         user.getPrimaryKey () + ""), col, row);
@@ -517,7 +624,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         int row = 1;
         for (Iterator i = users.iterator (); row <= 10 && i.hasNext ();) {
             final User user = (User) i.next ();
-            final String userText = user.getPersonalID () + " "
+            final String userText = formatSsn (user.getPersonalID ()) + " "
                     + user.getFirstName () + " " + user.getLastName ();
             String [][] parameters = {{ ACTION_KEY, actionId + "" },
                                       { USERSEARCHER_PERSONALID_KEY,
@@ -689,7 +796,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		                   : getZebraColor2 ());
         final User child = business.getChildByInvoiceRecord (record);
         if (null != child) {
-            table.add (child.getPersonalID (), col++, row);
+            table.add (formatSsn (child.getPersonalID ()), col++, row);
             table.add (child.getFirstName (), col++, row);
         } else {
             col += 2;
@@ -989,6 +1096,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		    totalAmountVat += records[i].getAmountVAT ();
 		}
         return totalAmountVat;
+    }
+
+    private String formatSsn (final String ssn) {
+        return null == ssn || 12 != ssn.length () ? ssn
+                : ssn.substring (2, 8) + '-' + ssn.substring (8, 12);
     }
 
     private void displayRedText (final String string) {

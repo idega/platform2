@@ -187,22 +187,29 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
         final String userId = user.getPrimaryKey ().toString ();
         final Date fromPeriod = getPeriod (fromDate, 0);
         final Date toPeriod = getPeriod (toDate, 1);
-        final String [] tableNames =
-                { getTableName (), InvoiceRecordBMPBean.ENTITY_NAME,
-                  ChildCareContractBMPBean.ENTITY_NAME,
-                  UserBMPBean.TABLE_NAME };
-        final String [] tableAliases = { "h", "r", "c", "u" };
+        final String [] outerTableNames =
+                { getTableName (), UserBMPBean.TABLE_NAME };
+        final String [] outerTableAliases = { "h", "u" };
+        final String [] innerTableNames =
+                { InvoiceRecordBMPBean.ENTITY_NAME,
+                  ChildCareContractBMPBean.ENTITY_NAME };
+        final String [] innerTableAliases = { "r", "c" };
+
         sql.appendSelect()
                 .append (H_)
                 .appendStar ()
-                .appendFrom (tableNames, tableAliases)
+                .appendFrom (outerTableNames, outerTableAliases)
                 .appendWhere ()
                 .appendLeftParenthesis ()
-                .appendLeftParenthesis ()
                 .appendEquals (H_ + COLUMN_CUSTODIAN_ID, userId)
-                .appendRightParenthesis ()
                 .appendOr ()
+                .append (" exists ")
                 .appendLeftParenthesis ()
+                .appendSelect()
+                .append (H_)
+                .appendStar ()
+                .appendFrom (innerTableNames, innerTableAliases)
+                .appendWhere ()
                 .appendEquals (H_ + ENTITY_NAME + "_id",
                                R_ + InvoiceRecordBMPBean.COLUMN_INVOICE_HEADER)
                 .appendAndEquals
@@ -226,7 +233,8 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
                     .append (H_ + COLUMN_PERIOD);
         }
         sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
-        return new HashSet (idoFindPKsBySQL (sql.toString ()));
+
+        return idoFindPKsBySQL (sql.toString ());
     }
 
     /**
