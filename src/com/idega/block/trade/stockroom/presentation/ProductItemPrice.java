@@ -25,6 +25,7 @@ public class ProductItemPrice extends ProductItem {
 
 	private String defaultText = "Product Price";
 	private boolean showCurrency = false;
+	private boolean showLocalized = false;
 
 	public ProductItemPrice() {
 	}
@@ -50,7 +51,11 @@ public class ProductItemPrice extends ProductItem {
 				if (this.showCurrency) {
 					try {
 						text.addToText(Text.NON_BREAKING_SPACE);
-						text.addToText(((com.idega.block.trade.data.CurrencyHome) com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getCurrencyAbbreviation());
+						String abbreviation = ((com.idega.block.trade.data.CurrencyHome) com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrice.getCurrencyId()).getCurrencyAbbreviation();
+						if (showLocalized)
+							text.addToText(_iwrb.getLocalizedString("currency."+abbreviation, abbreviation));
+						else
+							text.addToText(abbreviation);
 					}
 					catch (SQLException sql) {
 					}
@@ -67,4 +72,7 @@ public class ProductItemPrice extends ProductItem {
 		this.showCurrency = show;
 	}
 
+	public void setShowLocalized(boolean showLocalized) {
+		this.showLocalized = showLocalized;
+	}
 }

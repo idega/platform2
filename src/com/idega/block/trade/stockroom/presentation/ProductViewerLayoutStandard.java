@@ -58,6 +58,7 @@ public class ProductViewerLayoutStandard extends AbstractProductViewerLayout {
 			_price.setFontStyle(productViewer._priceFontStyle);
 		}
 		_price.setShowCurrency(productViewer._showCurrency);
+		_price.setShowLocalized(true);
 
 		return printViewer(productViewer, iwc);
 	}
@@ -110,11 +111,11 @@ public class ProductViewerLayoutStandard extends AbstractProductViewerLayout {
 
 		if (productViewer._spaceBetween > 0)
 			contentTable.setHeight(1, contentRow++, String.valueOf(productViewer._spaceBetween));
-		contentTable.add(teaser, 1, contentRow++);
+		contentTable.add(_price, 1, contentRow++);
 		
 		if (productViewer._spaceBetween > 0)
 			contentTable.setHeight(1, contentRow++, String.valueOf(productViewer._spaceBetween));
-		contentTable.add(_price, 1, contentRow);
+		contentTable.add(teaser, 1, contentRow++);
 		
 		return table;
 	}
