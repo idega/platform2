@@ -148,7 +148,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendCommaDelimited(schoolTypes);
 		sql.appendRightParenthesis();
   	
-		System.out.println("SQL: "+sql.toString());
+		//System.out.println("SQL: "+sql.toString());
 		return super.idoFindPKsBySQL(sql.toString());	
 	}
   
