@@ -21,7 +21,16 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	protected final static String COLUMN_NAME_KEY_NAME = "KEY_NAME";
 	protected final static String COLUMN_NAME_KEY_NUMBER = "KEY_NUMBER";
 	protected final static String COLUMN_NAME_KEY_TYPE = "KEY_TYPE";
-	protected final static String COLUMN_NAME_KEY_DEBET_OR_CREDIT = "DEB_OR_CRED";//values d/c
+	protected final static String COLUMN_NAME_DEBET_OR_CREDIT = "DEB_OR_CRED";//values d/c
+	
+	protected final static String DEBET = "d";
+	protected final static String CREDIT = "c";
+	
+	public String keyName;
+	public String keyNumber;
+	public String keyType;
+	public String debetOrCredit;
+	
 	
 	public WorkReportAccountKeyBMPBean() {
 		super();
@@ -32,11 +41,65 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		addAttribute(COLUMN_NAME_KEY_NAME,"Account key name",true,true,String.class);
 		addAttribute(COLUMN_NAME_KEY_NUMBER,"Account key number ",true,true,String.class);
 		addAttribute(COLUMN_NAME_KEY_TYPE,"Account key type",true,true,String.class);
-		addAttribute(COLUMN_NAME_KEY_DEBET_OR_CREDIT,"Debet or Credit (d/c)",true,true,String.class);
+		addAttribute(COLUMN_NAME_DEBET_OR_CREDIT,"Debet or Credit (d/c)",true,true,String.class);
 	}
 	
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
 	
+	
+	public boolean isDebet() {
+		return DEBET.equals(getStringColumnValue(COLUMN_NAME_DEBET_OR_CREDIT));
+	}
+
+	public boolean isCredit() {
+		return CREDIT.equals(getStringColumnValue(COLUMN_NAME_DEBET_OR_CREDIT));
+	}
+	
+	public String ejbHomeGetCreditTypeString(){
+		return CREDIT;
+	}
+	
+	public String ejbHomeGetDebetTypeString(){
+		return DEBET;
+	}
+		
+
+	public void setAsDebet() {
+		setColumn(COLUMN_NAME_DEBET_OR_CREDIT,DEBET);
+	}
+	
+	public void setAsCredit() {
+		setColumn(COLUMN_NAME_DEBET_OR_CREDIT,CREDIT);
+	}
+	
+
+	public String getKeyName() {
+		return getStringColumnValue(COLUMN_NAME_KEY_NAME);
+	}
+
+	public void setKeyName(String keyName) {
+		setColumn(COLUMN_NAME_KEY_NAME, keyName);
+	}
+
+	public String getKeyNumber() {
+		return getStringColumnValue(COLUMN_NAME_KEY_NUMBER);
+	}
+
+	public void setKeyNumber(String keyNumber) {
+		setColumn(COLUMN_NAME_KEY_NUMBER,keyNumber);
+	}
+
+	public String getKeyType() {
+		return getStringColumnValue(COLUMN_NAME_KEY_TYPE);
+	}
+
+	public void setKeyType(String keyType) {
+		setColumn(COLUMN_NAME_KEY_TYPE,keyType);
+	}
+	
+	
+	
+
 }

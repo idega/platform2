@@ -18,5 +18,19 @@ public class WorkReportAccountKeyHomeImpl extends com.idega.data.IDOFactory impl
  }
 
 
+public java.lang.String getCreditTypeString(){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.lang.String theReturn = ((WorkReportAccountKeyBMPBean)entity).ejbHomeGetCreditTypeString();
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
+public java.lang.String getDebetTypeString(){
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.lang.String theReturn = ((WorkReportAccountKeyBMPBean)entity).ejbHomeGetDebetTypeString();
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
+
 
 }
