@@ -21,6 +21,8 @@ import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractHome;
+import com.idega.block.contract.data.ContractTag;
+import com.idega.block.contract.data.ContractTagHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.builder.business.BuilderLogic;
@@ -238,6 +240,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(contentTable, 2, 4);
 
 		close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
+
 		//close.setPageToOpen(getParentPageID());
 		//close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
 
@@ -955,6 +958,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(close, 1, 2);
 			table.setHeight(2, Table.HUNDRED_PERCENT);
 			table.setRowVerticalAlignment(2, Table.VERTICAL_ALIGN_BOTTOM);
+			
+			((Window) getParentObject()).setParentToReload();
+			
 			return table;
 			
 		} else {
@@ -972,9 +978,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			}
 			
 			contract.setUnsetFields(fieldValues);
+			ContractTagHome contractHome = (ContractTagHome) IDOLookup.getHome(ContractTag.class);
+			Collection tags = contractHome.findAllByCategory(contract.getCategoryId().intValue());
+			
 			
 		//create form for still unset fields
-			table = getContractFieldsForm(contract.getUnsetFields());
+			table = getContractFieldsForm(contract.getUnsetFields(), tags);
 			if (table != null){
 				return table;			
 			} else {
@@ -987,7 +996,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	} 	
 	
 	
-	private Table getContractFieldsForm(Set fields) {
+	private Table getContractFieldsForm(Set fields, Collection tags) {
 		Table table = null;			
 		if (fields.size() != 0){
 			table = new Table();
@@ -1002,6 +1011,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 			while (i.hasNext()){
 				String field = (String) i.next();
+				Iterator itags = tags.iterator();
+				while ( itags.hasNext()){
+					ContractTag tag = (ContractTag) itags.next();
+					System.out.println("Tag: " + tag.getName());
+					if (tag.getName().equals(field)){
+						System.out.println("Match: " + tag.getName());
+					}
+				}
+				
 				table.add(getSmallHeader(field.substring(0, 1).toUpperCase() + field.substring(1).toLowerCase() + ":"), 1, row);
 				table.add(getStyledInterface(new TextInput(PARAMETER_TEXT_FIELD + field)), 2, row);
 				row ++;
