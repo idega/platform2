@@ -1,5 +1,5 @@
 /*
- * $Id: CareTimeBMPBean.java,v 1.3 2004/12/28 14:47:01 malin Exp $
+ * $Id: CareTimeBMPBean.java,v 1.4 2005/01/19 15:23:35 anders Exp $
  * Created on 11.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,7 +24,7 @@ import com.idega.data.query.WildCardColumn;
  * Last modified: 11.11.2004 08:54:09 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CareTimeBMPBean extends GenericEntity implements CareTime {
 
@@ -33,6 +33,11 @@ public class CareTimeBMPBean extends GenericEntity implements CareTime {
 	public static final String COLUMN_NAME_CODE = "code";
 	public static final String COLUMN_NAME_LOCALIZED_KEY = "localized_key";
 	public static final String COLUMN_NAME_HOURS = "hours";
+	
+	public static final String CODE_FSKHEL = "FSKHEL";
+	public static final String CODE_FSKHEL4_5 = "FSKHEL4-5";
+	public static final String CODE_FSKDEL = "FSKDEL";
+	public static final String CODE_FSKDEL4_5 = "FSKDEL4-5A";
 	
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -55,7 +60,7 @@ public class CareTimeBMPBean extends GenericEntity implements CareTime {
 	public void insertStartData() throws Exception {
 		CareTimeHome home = (CareTimeHome) IDOLookup.getHome(CareTime.class);
 		
-		String[] codes = { "FSKHEL", "FSKHEL4-5", "FSKDEL", "FSKDEL4-5A"};
+		String[] codes = {CODE_FSKHEL, CODE_FSKHEL4_5, CODE_FSKDEL, CODE_FSKDEL4_5};
 		String[] localizedKeys = { "care_time.FSKHEL", "care_time.FSKHEL4-5", "care_time.FSKDEL", "care_time.FSKDEL4-5A"};
 		
 		for (int a = 0; a < codes.length; a++) {
