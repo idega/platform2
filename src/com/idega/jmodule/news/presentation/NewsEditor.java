@@ -8,6 +8,7 @@ import com.idega.jmodule.object.textObject.*;
 import	com.idega.jmodule.object.*;
 import	com.idega.jmodule.object.interfaceobject.*;
 import	com.idega.jmodule.news.data.*;
+import com.idega.jmodule.image.presentation.ImageInserter;
 import	com.idega.data.*;
 import com.idega.util.text.*;
 import javax.servlet.http.*;
@@ -332,60 +333,12 @@ public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
 
         sideToolTable.addText("<b>Mynd</b>", 1, 9);
 
-        Window insertNewsImageWindow = new Window("Nymynd", 480, 420, "/news/insertimage.jsp?submit=new");
-        //Link insertImageLink =  new Link(new Image("/servlet/imageModule?image_id=1"),insertNewsImageWindow);
-        //check if we updated the picture
-        String image_session_id = (String) modinfo.getSessionAttribute("image_id");
-        String image_id = null;
-        Table imageTable = new Table(1,2);
-        imageTable.setAlignment("center");
-
-        //CheckBox includeImg = new CheckBox("includeImage", "Y");
-        HiddenInput includeImg = new HiddenInput("includeImage", "Y");
-
-        if(image_session_id != null){
-          //debug setja inn nota mynd
-          image_id = image_session_id;
-          mainPanel.add(includeImg, 1,4);
-          imageTable.add(new Link(new Image("/servlet/imageModule?image_id="+image_id,"Fréttamynd"),insertNewsImageWindow),1,1);
-          imageTable.add(new Text("smelltu á myndina<br>til að breyta henni"),1,2);
-          sideToolTable.add(imageTable, 1, 10);
+        ImageInserter imageInsert = new ImageInserter();
+        if ( update ) {
+          imageInsert.setImageId(news.getImageId());
         }
-	else {
 
-          if(update){
-                  image_id = ""+news.getImageId();
-                  if(news.getIncludeImage().equals("Y")){
-                          Session.setAttribute("image_id",image_id);
-                          mainPanel.add(new HiddenInput("includeImage", "Y"), 1,4);
-
-                          imageTable.add(new Link(new Image("/servlet/imageModule?image_id="+image_id,"Fréttamynd"),insertNewsImageWindow),1,1);
-
-                  }
-                  else {
-                          image_id="/pics/news/x.gif";//ef engin mynd
-                          imageTable.add(new Link(new Image(image_id,"Engin mynd"),insertNewsImageWindow),1,1);
-                  }
-
-                  //imageTable.add(new Text("<b>Mynd úr grunni</b>"),1,2);
-                  imageTable.add(new Text("smelltu á myndina<br>til að breyta henni"),1,2);
-                  sideToolTable.add(imageTable, 1, 10);
-          }
-
-          if (image_id==null){
-                  image_id="/pics/news/x.gif";//ef engin mynd
-                  imageTable.add(new Link(new Image(image_id,"Engin mynd"),insertNewsImageWindow),1,1);
-                  //imageTable.add(new Text("<b>Smelltu á ný mynd</b>"),1,2);
-                  imageTable.add(new Text("smelltu á myndina<br>til að breyta henni"),1,2);
-
-
-                  sideToolTable.add(imageTable, 1, 10);
-          }
-
-		}
-
-          //sideToolTable.add(insertImageLink, 1,11);
-
+        sideToolTable.add(imageInsert, 1, 10);
           /////
 
 
@@ -485,13 +438,12 @@ if ( (news_id!=null) && !(news_id.equals("-1"))) update=true;
   if ( daysShown!=null ) news.setDaysShown(new Integer(daysShown));
 
 
-  String includeImage = modinfo.getParameter("includeImage");
+  String includeImage = modinfo.getParameter("insertImage");
   //out.println("<br> includeImage: "+includeImage);
   if( includeImage!=null ) news.setIncludeImage(includeImage);
   else news.setIncludeImage("N");
 
-  String image_id = (String) modinfo.getSessionAttribute("image_id");
-  modinfo.removeSessionAttribute("image_id");
+  String image_id = modinfo.getParameter("image_id");
 
   //laga a edison
   //if(image_id == null) image_id="-1";//ef engin mynd
