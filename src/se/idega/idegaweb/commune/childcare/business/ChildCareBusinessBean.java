@@ -2168,7 +2168,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			transaction.begin();
 			ChildCareContract archive = getContractByApplicationAndDate(applicationId, validFrom);
 			SchoolClassMember member = archive.getSchoolClassMember();
-			SchoolClassMemberLog pastLog = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, validFrom);
+			SchoolClassMemberLog pastLog = getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDateBack(member, validFrom);
 			if (pastLog.getStartDate().compareTo(validFrom) == 0) {
 				pastLog.setSchoolClass(new Integer(schoolClassId));
 				pastLog.setUserPlacing(user);
