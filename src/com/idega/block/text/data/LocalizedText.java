@@ -9,10 +9,12 @@ public class LocalizedText extends GenericEntity{
 
   public LocalizedText(){
     super();
+    setBody("");
   }
 
   public LocalizedText(int id)throws SQLException{
     super(id);
+    setBody("");
   }
 
   public void initializeAttributes(){
