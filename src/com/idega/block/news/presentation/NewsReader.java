@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.120 2003/07/07 07:32:33 laddi Exp $
+ * $Id: NewsReader.java,v 1.121 2003/07/15 14:43:22 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.block.news.presentation;
 
-import java.sql.SQLException;
+
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -1208,7 +1208,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   
   private PresentationObject getNewsImage(NewsHelper newsHelper, String headline) {
 		List files = newsHelper.getContentHelper().getFiles();
-		if(files!=null){
+		if(files!=null && !files.isEmpty()){
 			try{
 				//Table imageTable = new Table(1, 2);
 				ICFile imagefile = (ICFile)files.get(0);
@@ -1240,7 +1240,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 					return L;
 				}
 			}
-			catch(SQLException ex){
+			catch(Exception ex){
 				ex.printStackTrace();
 			}
 		}
