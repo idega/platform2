@@ -21,6 +21,7 @@ import com.idega.user.data.User;
 import com.idega.presentation.text.DownloadLink;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.InterfaceObject;
 
 /**
  * @author Malin
@@ -34,6 +35,7 @@ public class EHealthBlock extends Block {
 	
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_CHECKBOX = "CheckBox";
+	public final static String STYLENAME_INTERFACE = "Interface";
 	
 	
 	public String getBundleIdentifier() {
@@ -122,7 +124,10 @@ public class EHealthBlock extends Block {
 	protected CheckBox getCheckBox(String name, String value) {
 		return (CheckBox) setStyle(new CheckBox(name,value),STYLENAME_CHECKBOX);
 	}
-
+	public InterfaceObject getStyledInterface(InterfaceObject obj) {
+		return (InterfaceObject) setStyle(obj, STYLENAME_INTERFACE);
+	}
+	
 	public boolean isCommuneAdministrator(IWContext iwc) {
 		try {
 			if (isAdministrator(iwc))
