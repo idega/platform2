@@ -77,10 +77,10 @@ public class ReferralsXray extends EHealthBlock {
 	private String keyColumn2Row4 = prefix + "keyColumn2Row4";
 	private String keyColumn2Row5 = prefix + "keyColumn2Row5";
 	private String keyColumn3Row1 = prefix + "keyColumn3Row1";
-	private String keyColumn3Row2 = prefix + "keyColumn3Row2";
-	private String keyColumn3Row3 = prefix + "keyColumn3Row3";
-	private String keyColumn3Row4 = prefix + "keyColumn3Row4";
-	private String keyColumn3Row5 = prefix + "keyColumn3Row5";
+	//private String keyColumn3Row2 = prefix + "keyColumn3Row2";
+	//private String keyColumn3Row3 = prefix + "keyColumn3Row3";
+	//private String keyColumn3Row4 = prefix + "keyColumn3Row4";
+	//private String keyColumn3Row5 = prefix + "keyColumn3Row5";
 	private String keyColumn4Row1 = prefix + "keyColumn4Row1";
 	private String keyColumn4Row2 = prefix + "keyColumn4Row2";
 	private String keyColumn4Row3 = prefix + "keyColumn4Row3";
