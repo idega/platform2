@@ -644,10 +644,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			sClass.setSchoolClassName(schoolClassName);
 			if (school != null)
 				sClass.setSchoolId(((Integer) school.getPrimaryKey()).intValue());
-			if (year != null)
-				sClass.setSchoolSeasonId(((Integer) season.getPrimaryKey()).intValue());
 			if (season != null)
-				sClass.setSchoolYearId(((Integer) year.getPrimaryKey()).intValue());
+				sClass.setSchoolSeasonId(((Integer) season.getPrimaryKey()).intValue());
+			if (year != null) {
+				try {
+					sClass.addSchoolYear(year);
+				}
+				catch (IDOAddRelationshipException e) {
+					e.printStackTrace();
+				}
+			}
 			sClass.setValid(true);
 				
 			sClass.store();
@@ -1571,8 +1577,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		if (seasonID != -1)
 			schoolClass.setSchoolSeasonId(seasonID);
 		schoolClass.setValid(true);
-		schoolClass.setSchoolYearId(null);
-		schoolClass.setTeacherId(null);
 		schoolClass.store();
 		
 		if (schoolYearIDs != null) {
@@ -1672,10 +1676,26 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			schoolClass.setSchoolId(schoolID);
 			if (schoolSeasonID != -1)
 				schoolClass.setSchoolSeasonId(schoolSeasonID);
-			if (schoolYearID != -1)
-				schoolClass.setSchoolYearId(schoolYearID);
-			if (teacherID != -1)
-				schoolClass.setTeacherId(teacherID);
+			if (schoolYearID != -1) {
+				SchoolYear schoolYear = this.getSchoolYear(new Integer(schoolYearID));
+				if (schoolYear != null)
+					try {
+						schoolClass.addSchoolYear(schoolYear);
+					}
+					catch (IDOAddRelationshipException e) {
+						e.printStackTrace();
+					}
+			}
+			if (teacherID != -1) {
+				User teacher = getUserBusiness().getUser(teacherID);
+				if (teacher != null)
+					try {
+						schoolClass.addTeacher(teacher);
+					}
+					catch (IDOAddRelationshipException e) {
+						e.printStackTrace();
+					}
+			}
 			schoolClass.setValid(true);
 
 			schoolClass.store();
