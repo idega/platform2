@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.18 2003/09/08 08:10:07 laddi Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.19 2003/09/10 16:04:24 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -67,6 +67,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public final static String KEY_GENERAL_ERROR  = KP + "general_error";
 	public final static String DEFAULT_GENERAL_ERROR = "Systemfel";
 
+
+ 
 	/**
 	 * Save regulation. Saves the regultion. If non existing, creates it.
 	 *  
@@ -738,7 +740,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			// LP = Localization path
 			ArrayList arr = new ArrayList();
 			arr.add(new ConditionHolder(
-					"1", 
+					RuleTypeConstant.CONDITION_ID_OPERATION, 
 					"Verksamhet", 
 					LP + "verksamhet", 
 					"com.idega.block.school.business.SchoolBusiness", 
@@ -747,7 +749,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 			
 			arr.add(new ConditionHolder(
-					"2", 
+					RuleTypeConstant.CONDITION_ID_RESOURCE, 
 					"Resurs", 
 					LP + "resurs", 
 					"se.idega.idegaweb.commune.accounting.resource.business.ResourceBusiness", 
@@ -756,7 +758,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
-					"3", 
+					RuleTypeConstant.CONDITION_ID_VAT, 
 					"Momssats", 
 					LP + "momssats", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness", 
@@ -765,7 +767,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
-					"4", 
+					RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, 
 					"Årskurs", 
 					LP + "aarskurs", 
 					"com.idega.block.school.business.SchoolBusiness", 
@@ -774,7 +776,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
-					"5", 
+					RuleTypeConstant.CONDITION_ID_HOURS, 
 					"Timmar", 
 					LP + "timmar", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
@@ -783,7 +785,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
-					"6", 
+					RuleTypeConstant.CONDITION_ID_SIBLINGS, 
 					"Syskonnr", 
 					LP + "syskonnr", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
@@ -792,14 +794,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			);
 	
 			arr.add(new ConditionHolder(
-					"7", 
+					RuleTypeConstant.CONDITION_ID_AGE_INTERVAL, 
 					"Ålder", 
 					LP + "alder", 
 					"se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness", 
 					"findAllAgeRegulations",
 					"getAgeInterval")
 			);
-	
+			
+	/*
 			arr.add(new ConditionHolder(
 					"8", 
 					"Rabattsats", 
@@ -817,7 +820,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"findAllMaxAmounts",
 					"")
 			);
+*/
 			return (Collection) arr;	
+
 	}
 	
 	/**
