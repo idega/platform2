@@ -42,8 +42,8 @@ import com.idega.user.data.UserBMPBean;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/05/16 18:57:48 $ by $Author: laddi $
- * @version $Revision: 1.114 $
+ *         Last modified: $Date: 2004/05/17 11:37:16 $ by $Author: laddi $
+ * @version $Revision: 1.115 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -869,7 +869,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
 		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).appendEqualSign().appendWithinSingleQuotes("N").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_SUB_GROUP).append(" is null)");
 		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
-		sql.appendAnd().append(" mb." + STUDY_PATH).appendEqualSign().append(studyPath);
+		if (studyPath != null) {
+			sql.appendAnd().append(" mb." + STUDY_PATH).appendEqualSign().append(studyPath);
+		}
 
 		return idoGetNumberOfRecords(sql.toString());
 	}
