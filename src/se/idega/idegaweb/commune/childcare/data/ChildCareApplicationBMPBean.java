@@ -819,7 +819,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		if (caseCode != null) {
 			sql.appendAnd().appendEqualsQuoted("p.case_code",caseCode);
 		}
-		sql.appendAnd().appendLeftParenthesis().append("c."+REJECTION_DATE).appendLessThanOrEqualsSign().append(activeDate);
+		sql.appendAnd().appendLeftParenthesis().append("c."+REJECTION_DATE).appendGreaterThanOrEqualsSign().append(activeDate);
 		sql.appendOr().append("c."+REJECTION_DATE).appendIsNull().appendRightParenthesis();
 		return idoGetNumberOfRecords(sql);
 	}
