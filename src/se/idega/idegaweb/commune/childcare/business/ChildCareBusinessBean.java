@@ -4880,7 +4880,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public PlacementHelper getPlacementHelper(Integer applicationID) {
 		ChildCareApplication application = getApplication(applicationID.intValue());
 		ChildCareContract contract = getLatestContractByApplication(applicationID.intValue());
-		SchoolClassMemberLog log = getLatestPlacementLogByContract(contract);
+		SchoolClassMemberLog log = null;
+		if (contract != null)
+			log = getLatestPlacementLogByContract(contract);
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 		String className = bundle.getProperty(PLACEMENT_HELPER, DefaultPlacementHelper.class.getName());
 		PlacementHelper helper = null;
@@ -4897,7 +4899,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		helper.setApplication(application);
 		helper.setContract(contract);
-		helper.setPlacementLog(log);
+		if (contract != null)
+			helper.setPlacementLog(log);
 		return helper;
 	}
 
