@@ -59,6 +59,10 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
 	table.setHeight(row++,"9");
 	int pRow = 1;
 	int pColumn = 1;
+	
+    Image spaceBetween = (Image) spacer.clone();
+	spaceBetween.setHeight(productCatalog._spaceBetween);
+
 
 	for (int j = 0; j < catProducts.size(); j++) {
 	  try {
@@ -78,7 +82,7 @@ public class ProductCatalogLayoutSimple extends AbstractProductCatalogLayout {
 	    productTable.setRowVerticalAlignment(pRow++,Table.VERTICAL_ALIGN_TOP);
 
 	    if ( productCatalog._spaceBetween > 0 ) {
-	      productTable.setHeight(pRow++,productCatalog._spaceBetween);
+	      productTable.add(spaceBetween,1,pRow++);
 	    }
 
 	    pColumn = 1;

@@ -36,6 +36,9 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
     List catProducts;
     Link configCategory;
 
+    Image spaceBetween = (Image) spacer.clone();
+	spaceBetween.setHeight(productCatalog._spaceBetween);
+
     for (int i = 0; i < productCategories.size(); i++) {
       try {
 	pCat = (ICCategory) productCategories.get(i);
@@ -57,7 +60,7 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 	column = 1;
 
 	if ( productCatalog._spaceBetween > 0 ) {
-	  table.setHeight(row++,productCatalog._spaceBetween);
+      table.add(spaceBetween,1,row++);
 	}
 
       }
