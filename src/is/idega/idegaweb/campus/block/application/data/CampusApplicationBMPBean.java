@@ -9,6 +9,8 @@ import javax.ejb.FinderException;
 import com.idega.block.application.data.Application;
 import com.idega.block.application.data.ApplicationBMPBean;
 import com.idega.data.IDOException;
+import com.idega.data.IDOHome;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
@@ -642,7 +644,7 @@ public class CampusApplicationBMPBean extends com.idega.data.GenericEntity
 
 	public Collection getApplied() {
 		try {
-			return super.idoGetRelatedEntities(Applied.class);
+			return ((AppliedHome) IDOLookup.getHome(Applied.class)).findByApplicationID((Integer)this.getPrimaryKey());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Error in getApplied() : "
