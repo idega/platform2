@@ -31,6 +31,7 @@ public interface WorkReportBusiness extends com.idega.business.IBOService,is.ide
  public java.util.Collection getAllWorkReportsForYear(int p0) throws java.rmi.RemoteException;
  public java.lang.String getFileName(int p0) throws java.rmi.RemoteException;
  public java.util.Collection getLeaguesOfWorkReportById(int p0)throws com.idega.data.IDOException, java.rmi.RemoteException;
+ public is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup getMainBoardWorkReportGroup(int p0) throws java.rmi.RemoteException;
  public int getOrCreateWorkReportIdForGroupIdByYear(int p0,int p1,boolean p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public int getTotalCountOfCompetitorsForWorkReportYear(int p0) throws java.rmi.RemoteException;
  public int getTotalCountOfMembersForWorkReportYear(int p0) throws java.rmi.RemoteException;

@@ -1080,7 +1080,11 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     return changeWorkReportGroupOfEntity(workReportID, nameOldGroup, year, null, year, entity);
   }
 
-
+  public WorkReportGroup getMainBoardWorkReportGroup(int year)  {
+    String mainBoardName  = getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.ISI_MAIN_BOARD_NAME);
+    WorkReportGroup group = findWorkReportGroupByNameAndYear(mainBoardName, year);
+    return group;
+  }
   
   public boolean createWorkReportData(int workReportId) {
     // get year and group id from work report
@@ -1180,9 +1184,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
   private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int groupId, GroupBusiness groupBusiness)  {
     // add ADA league to the work report
     // create corresponding division board
-    WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(getMainBoardName(), year);
+    WorkReportGroup mainBoardGroup = getMainBoardWorkReportGroup(year);
     try {
-      createWorkReportDivisionBoard(workReportId, null, adaGroup);
+      createWorkReportDivisionBoard(workReportId, null, mainBoardGroup);
     }
     catch (CreateException ex)  {
       System.err.println("[WorkreportBusiness] WorkReportDivisionBoard could not be created. Message is: " 
@@ -1504,7 +1508,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     // get the year of the work report
     int year = getWorkReportById(workReportId).getYearOfReport().intValue();
     // get the ADA work report group 
-    WorkReportGroup adaGroup = findWorkReportGroupByNameAndYear(getMainBoardName(), year); 
+    WorkReportGroup mainBoardGroup = getMainBoardWorkReportGroup(year); 
 
     // get the first level under the club
     Collection childGroups;
@@ -1539,7 +1543,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
           try {
             existingMember = createWorkReportMember(workReportId, userPrimaryKey);
             // add ADA league to member
-            addWorkReportGroupToEntity(workReportId, adaGroup, existingMember);
+            addWorkReportGroupToEntity(workReportId, mainBoardGroup, existingMember);
             idExistingMember.put(userPrimaryKey, existingMember);
           }
           catch (CreateException ex)  {
@@ -3627,9 +3631,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return workReportClubAccountRecordHome;
 	}
   
-    private String getMainBoardName() {
-      return getIWApplicationContext().getApplication().getBundle(ClubSelector.IW_BUNDLE_IDENTIFIER).getProperty(WorkReportConstants.ISI_MAIN_BOARD_NAME);
-    }
       
 
 } //end of class
