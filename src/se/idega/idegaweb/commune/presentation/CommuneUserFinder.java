@@ -67,6 +67,7 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 			if (last != null)
 				last = TextSoap.capitalize(last);
 			String pid = iwc.getParameter(PARAMETER_PERSONAL_ID);
+			pid = pid.replaceAll("-", "");
 			UserHome home = (UserHome) IDOLookup.getHome(User.class);
 			try {
 				users = home.findUsersByConditions(first, middle, last, pid, null, null, -1, -1, -1, -1, null, null, true, false);
