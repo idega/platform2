@@ -38,10 +38,11 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
 		addAttribute(getColumnNameEntryDate(),"CalEntryDate",true,true,Timestamp.class);
 		addAttribute(getColumnNameEntryEndDate(),"CalEntryEndDate",true,true,Timestamp.class);
 //    addAttribute(getColumnNameUserID(), "User", true, true, Integer.class);
-//    addAttribute(getColumnNameGroupID(), "Group", true, true, Integer.class);
+    addAttribute(getColumnNameGroupID(), "Group", true, true, Integer.class);
 		addAttribute(getColumnNameLedgerID(),"CalLedgerID",true,true,Integer.class);
     addAttribute(getColumnNameRepeat(), "CalEntryRepeat", true, true, String.class);
     addAttribute(getColumnNameDescription(), "CalEntryDescription",true,true,String.class);
+    addAttribute(getColumnNameLocation(), "CalEntryLocation", true,true,String.class);
     addManyToManyRelationShip(LocalizedText.class);
     addManyToManyRelationShip(User.class);
 //    addManyToManyRelationShip(Group.class);
@@ -60,6 +61,7 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
 	public static String getColumnNameLedgerID() { return com.idega.block.cal.data.CalendarLedgerBMPBean.getColumnNameLedgerID();}
 	public static String getColumnNameName() { return "CAL_ENTRY_NAME"; }
 	public static String getColumnNameDescription() { return "CAL_ENTRY_DESCRIPTION"; }
+	public static String getColumnNameLocation() { return "CAL_ENTRY_LOCATION"; }
 	public static String getColumnNameRepeat() { return "CAL_ENTRY_REPEAT"; }
 //	public static String getColumnCategoryId(){return "IC_CATEGORY_ID";}
   public String getIDColumnName(){
@@ -115,6 +117,10 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
   	return getStringColumnValue(getColumnNameDescription());
   }
   
+  public String getLocation() {
+  	return getStringColumnValue(getColumnNameLocation());
+  }
+  
   public Collection getUsers() {
   	try {
   		return idoGetRelatedEntities(User.class);
@@ -164,6 +170,9 @@ public class CalendarEntryBMPBean extends GenericEntity implements com.idega.blo
   
   public void setDescription(String description) {
   	setColumn(getColumnNameDescription(), description);
+  }
+  public void setLocation(String location) {
+  	setColumn(getColumnNameLocation(), location);
   }
 //add a user to the middle table
   public void addUser(User user) {

@@ -279,7 +279,7 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 	/**
 	 * startDate and endDate have to be of the form  yyyy-MM-dd hh:mm:ss.S
 	 */
-	public void createNewEntry(String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description) {
+	public void createNewEntry(String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String ledger, String description, String location) {
 		Timestamp startTime = Timestamp.valueOf(startDate);		
 		//modifications of the time properties of the start timestamp
 		if(startHour != null || !startHour.equals("")) {
@@ -321,126 +321,132 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		long month28 = 28L*24L*60L*60L*1000L;
 		long day = 24L*60L*60L*1000L;
 		
-	
-			while(start < end) {				
-				try {
-					CalendarEntryType entryType = getEntryTypeByName(type);
-					Integer entryTypePK = (Integer) entryType.getPrimaryKey();
-					Integer ledgerID = new Integer(ledger);
-					CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
-					CalendarEntry entry = entryHome.create();
-					entry.setName(headline);
-					entry.setEntryTypeID(entryTypePK.intValue());
-					entry.setRepeat(repeat);
-					entry.setDate(startTime);
-					entry.setEndDate(endTime);
-//			entry.setAttendees(attendees);
-					entry.setLedgerID(ledgerID.intValue());
-					entry.setDescription(description);
-					entry.store();
-					
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-				if(repeat.equals(CalendarEntryCreator.yearlyFieldParameterName)) {
-					if(startTime.getYear()%4 == 0) {
-						start += year366;
-					}
-					else {
-						start += year365; //start up one year = 31536000000 milliseconds
-					}
-					startCal.set(startTime.getYear()+1,startTime.getMonth(),startTime.getDate());
-					
-				}
+		Integer groupID = null;
+		if(attendees != null && !attendees.equals("")) {
+			groupID = new Integer(attendees);
+		}	
+		while(start < end) {				
+			try {
+				CalendarEntryType entryType = getEntryTypeByName(type);
+				Integer entryTypePK = (Integer) entryType.getPrimaryKey();
+				Integer ledgerID = new Integer(ledger);
+				CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
+				CalendarEntry entry = entryHome.create();
+				entry.setName(headline);
+				entry.setEntryTypeID(entryTypePK.intValue());
+				entry.setRepeat(repeat);
+				entry.setDate(startTime);
+				entry.setEndDate(endTime);
+				if(groupID != null) {
+					entry.setGroupID(groupID.intValue());
+				}					
+				entry.setLedgerID(ledgerID.intValue());
+				entry.setDescription(description);
+				entry.setLocation(location);
+				entry.store();
 				
-				else if(repeat.equals(CalendarEntryCreator.monthlyFieldParameterName)) {
-					//if December
-					if(startTime.getMonth() == startCal.getActualMaximum(Calendar.MONTH)) {
-						//add 1 to the year and set the month to January
-						startCal.set(startTime.getYear()+1,Calendar.JANUARY,startTime.getDate());
-					}
-					else {
-						int month = startTime.getMonth();
-						//if the month has 31 days
-						if(month == Calendar.JANUARY ||
-								month == Calendar.MARCH ||
-								month == Calendar.MAY ||
-								month == Calendar.AUGUST ||
-								month == Calendar.OCTOBER) {						
-							//and the date is the 31st
-							if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
-								//in this case the 2 months are added because the next months after
-								//January, March, May, August and October do not have the 31st!
-								startCal.set(startTime.getYear(),startTime.getMonth()+2,startTime.getDate());
-								start += month31*2L; //start up two 31 day months
-							}
-							else {
-								startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
-								start += month31; //start up one 31 day month
-							}
-							
-						}
-						else if(startTime.getMonth() == Calendar.JULY) {	
-							startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
-							start += month31;//start up one 31 day month
-						}
-						
-						else if(startTime.getMonth() == Calendar.FEBRUARY) {							 
-							//leap year
-							if(startTime.getYear()%4 == 0) {
-								start += month29;//start up 29 day month
-							}
-							else {
-								//"ordinary" February
-								start += month28;//start up 28 day month
-							}
-							startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
-						}						
-						else {
-							//this case is for months APRIL, JUNE, SEPTEMBER and NOVEMBER
-							startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
-							start += month30;	//start up 30 day month						
-						}													
-					}					
-				}
-				else if(repeat.equals(CalendarEntryCreator.weeklyFieldParameterName)) {
-					
-				}
-				//if the last day of the month
-				else if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
-					//if the the last day of month and last month of year
-					if(startTime.getMonth() == startCal.getActualMaximum(Calendar.MONTH)) {
-						//add one to year, set month = January and day = 1
-						startCal.set(startTime.getYear()+1,Calendar.JANUARY,1);
-					}
-					else {
-						//if last day of month and not last month of year
-						//year is same, add 1 to month and day = 1
-						startCal.set(startTime.getYear(),startTime.getMonth()+1,1);
-					}		
-					start += day; //start up one day = 86400000 milliseconds
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			if(repeat.equals(CalendarEntryCreator.yearlyFieldParameterName)) {
+				if(startTime.getYear()%4 == 0) {
+					start += year366;
 				}
 				else {
-					//if not the last day of month
-					//and not the last month of year
-					//year is the same, month is the same, 1 added to day
-					startCal.set(startTime.getYear(),startTime.getMonth(),startTime.getDate()+1);
-					start += day; //start up one day = 86400000 milliseconds
+					start += year365; //start up one year = 31536000000 milliseconds
 				}
+				startCal.set(startTime.getYear()+1,startTime.getMonth(),startTime.getDate());
 				
-				Date sd = startCal.getTime();
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss.S");
-				String f = format.format(sd);
+			}
+			
+			else if(repeat.equals(CalendarEntryCreator.monthlyFieldParameterName)) {
+				//if December
+				if(startTime.getMonth() == startCal.getActualMaximum(Calendar.MONTH)) {
+					//add 1 to the year and set the month to January
+					startCal.set(startTime.getYear()+1,Calendar.JANUARY,startTime.getDate());
+				}
+				else {
+					int month = startTime.getMonth();
+					//if the month has 31 days
+					if(month == Calendar.JANUARY ||
+							month == Calendar.MARCH ||
+							month == Calendar.MAY ||
+							month == Calendar.AUGUST ||
+							month == Calendar.OCTOBER) {						
+						//and the date is the 31st
+						if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
+							//in this case the 2 months are added because the next months after
+							//January, March, May, August and October do not have the 31st!
+							startCal.set(startTime.getYear(),startTime.getMonth()+2,startTime.getDate());
+							start += month31*2L; //start up two 31 day months
+						}
+						else {
+							startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+							start += month31; //start up one 31 day month
+						}
+						
+					}
+					else if(startTime.getMonth() == Calendar.JULY) {	
+						startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+						start += month31;//start up one 31 day month
+					}
+					
+					else if(startTime.getMonth() == Calendar.FEBRUARY) {							 
+						//leap year
+						if(startTime.getYear()%4 == 0) {
+							start += month29;//start up 29 day month
+						}
+						else {
+							//"ordinary" February
+							start += month28;//start up 28 day month
+						}
+						startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+					}						
+					else {
+						//this case is for months APRIL, JUNE, SEPTEMBER and NOVEMBER
+						startCal.set(startTime.getYear(),startTime.getMonth()+1,startTime.getDate());
+						start += month30;	//start up 30 day month						
+					}													
+				}					
+			}
+			else if(repeat.equals(CalendarEntryCreator.weeklyFieldParameterName)) {
 				
-				startTime = Timestamp.valueOf(f);
-				int year = sd.getYear() + 1900;
-				startTime.setYear(year);	
-				
-				
-			}			
+			}
+			//if the last day of the month
+			else if(startTime.getDate() == startCal.getActualMaximum(Calendar.DATE)) {
+				//if the the last day of month and last month of year
+				if(startTime.getMonth() == startCal.getActualMaximum(Calendar.MONTH)) {
+					//add one to year, set month = January and day = 1
+					startCal.set(startTime.getYear()+1,Calendar.JANUARY,1);
+				}
+				else {
+					//if last day of month and not last month of year
+					//year is same, add 1 to month and day = 1
+					startCal.set(startTime.getYear(),startTime.getMonth()+1,1);
+				}		
+				start += day; //start up one day = 86400000 milliseconds
+			}
+			else {
+				//if not the last day of month
+				//and not the last month of year
+				//year is the same, month is the same, 1 added to day
+				startCal.set(startTime.getYear(),startTime.getMonth(),startTime.getDate()+1);
+				start += day; //start up one day = 86400000 milliseconds
+			}
+			
+			Date sd = startCal.getTime();
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd kk:mm:ss.S");
+			String f = format.format(sd);
+			
+			startTime = Timestamp.valueOf(f);
+			int year = sd.getYear() + 1900;
+			startTime.setYear(year);	
+			
+			
+		}			
 		
 	}
-	public void updateEntry(String entryID, String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String description) {
+	public void updateEntry(String entryID, String headline, String type, String repeat, String startDate, String startHour, String startMinute, String endDate, String endHour, String endMinute, String attendees, String description, String location) {
 
 		Timestamp startTime = Timestamp.valueOf(startDate);		
 		//modifications of the time properties of the start timestamp
@@ -484,6 +490,11 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		long day = 24L*60L*60L*1000L;
 		
 		Integer id = new Integer(entryID);
+		Integer groupID = null;
+		if(attendees != null && !attendees.equals("")) {
+			groupID = new Integer(attendees);
+		}	
+		
 		while(start < end) {				
 			try {
 				CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
@@ -495,8 +506,11 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 				entry.setRepeat(repeat);
 				entry.setDate(startTime);
 				entry.setEndDate(endTime);
-//			entry.setAttendees(attendees);
+				if(groupID != null) {
+					entry.setGroupID(groupID.intValue());
+				}					
 				entry.setDescription(description);
+				entry.setLocation(location);
 				entry.store();
 				
 							
