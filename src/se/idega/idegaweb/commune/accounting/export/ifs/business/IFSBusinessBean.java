@@ -660,11 +660,11 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			format.setMaximumIntegerDigits(11);
 			format.setGroupingUsed(false);
 			NumberFormat format2 = NumberFormat.getInstance(currentLocale);
-			format.setMaximumFractionDigits(0);
-			format.setMinimumFractionDigits(0);
-			format.setMinimumIntegerDigits(10);
-			format.setMaximumIntegerDigits(10);
-			format.setGroupingUsed(false);
+			format2.setMaximumFractionDigits(0);
+			format2.setMinimumFractionDigits(0);
+			format2.setMinimumIntegerDigits(10);
+			format2.setMaximumIntegerDigits(10);
+			format2.setGroupingUsed(false);
 			FileWriter writer = new FileWriter(fileName.toString());
 			BufferedWriter bWriter = new BufferedWriter(writer);
 
