@@ -10,9 +10,6 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
 
-import com.idega.block.datareport.util.ReportableData;
-import com.idega.block.datareport.util.ReportableField;
-
 /*
  * A Comparator for ReportableFields, used to sort ReportableData by one or more ReportableFields. Comparations
  * are done in the order of  the ReportableFields in the array.
@@ -54,10 +51,15 @@ public class FieldsComparator implements Comparator {
 			int i2 = getInt(fieldValue2);
 			if(i1!=-1 && i2!=-1) {
 				// found numbers to compare, use them
-				if(i1!=i2) {
-					return i1-i2;
+				int dstr = collator.compare(getStringAfterInt(fieldValue1), getStringAfterInt(fieldValue2));
+				if(dstr==0) {
+					if(i1!=i2) {
+						return i1-i2;
+					} else {
+						continue;
+					}
 				} else {
-					continue;
+					return dstr; 
 				}
 			}
 			int comp = collator.compare(fieldValue1, fieldValue2);
@@ -69,6 +71,12 @@ public class FieldsComparator implements Comparator {
 	}
 	
 	private int getInt(String str) {
+		try {
+			int val = Integer.parseInt(str);
+			return val;
+		} catch(NumberFormatException e) {
+			// don't care, continue searching for int
+		}
 		int i = str.indexOf(" ");
 		String c1;
 		if(i==-1) {
@@ -82,6 +90,11 @@ public class FieldsComparator implements Comparator {
 			//e.printStackTrace();
 			return -1;
 		}
+	}
+	
+	private String getStringAfterInt(String str) {
+		int i = str.indexOf(" ");
+		return str.substring(i+1);
 	}
 	
 	private ReportableField[] reportableFields;	
