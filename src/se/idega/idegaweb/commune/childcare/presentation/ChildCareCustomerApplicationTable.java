@@ -3,7 +3,6 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.49 2003/07/01 14:52:43 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.50 2003/07/05 17:20:57 gummi Exp $
  * @since 12.2.2003 
  */
 
@@ -501,11 +500,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(fromDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row++);
 
 			boolean hasBankId = false;
-			try{
-				hasBankId = new NBSLoginBusinessBean().hasBankLogin(((Integer)acceptedApplication.getOwner().getPrimaryKey()).intValue());
-			}catch(SQLException ex){
-				//ignore
-			}
+			hasBankId = new NBSLoginBusinessBean().hasBankLogin(acceptedApplication.getOwner());
+
 			if (hasBankId){
 				Collection contracts = childCarebusiness.getContractsByApplication(acceptedApplication.getNodeID());
 				Iterator i = contracts.iterator();

@@ -926,7 +926,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
         try {
 
-            members = com.idega.data.EntityFinder.findAll(com.idega.data.GenericEntity.getStaticInstance("is.idega.idegaweb.golf.entity.Member"),"SELECT member.* FROM member,STARTINGTIME, TOURNAMENT_ROUND_STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.tournament_round_id = "+tournamentRound.getID()+" AND TOURNAMENT_ROUND_STARTINGTIME.startingtime_id = startingtime.startingtime_id AND member.member_id = startingtime.member_id AND STARTINGTIME_DATE = '"+SQLDate+"' AND grup_num ="+startingGroupNumber+" AND field_id="+tournament.getFieldId());
+            members = com.idega.data.EntityFinder.findAll((IDOLegacyEntity)com.idega.data.GenericEntity.getStaticInstance("is.idega.idegaweb.golf.entity.Member"),"SELECT member.* FROM member,STARTINGTIME, TOURNAMENT_ROUND_STARTINGTIME WHERE TOURNAMENT_ROUND_STARTINGTIME.tournament_round_id = "+tournamentRound.getID()+" AND TOURNAMENT_ROUND_STARTINGTIME.startingtime_id = startingtime.startingtime_id AND member.member_id = startingtime.member_id AND STARTINGTIME_DATE = '"+SQLDate+"' AND grup_num ="+startingGroupNumber+" AND field_id="+tournament.getFieldId());
 
         }
 
@@ -2568,7 +2568,7 @@ public static void createScorecardForMember(is.idega.idegaweb.golf.entity.Member
 
                         sTime.removeFrom(tRounds[j]);
 
-                        sTime.removeFrom(is.idega.idegaweb.golf.entity.TournamentBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Tournament"));
+                        sTime.removeFrom((IDOLegacyEntity)is.idega.idegaweb.golf.entity.TournamentBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Tournament"));
 
                         sTime.delete();
 

@@ -16,6 +16,7 @@ import com.idega.core.data.ICFileHome;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
@@ -33,7 +34,7 @@ import com.idega.user.data.User;
  * @version 1.0
  */
 
-public class SchoolBMPBean extends GenericEntity implements School {
+public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEntity {
 
 	public final static String SCHOOL = "sch_school";
 	public final static String NAME = "school_name";

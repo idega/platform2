@@ -1378,11 +1378,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			
 						
 			boolean hasBankId = false;
-			try{
-				hasBankId = new NBSLoginBusinessBean().hasBankLogin(((Integer)application.getOwner().getPrimaryKey()).intValue());
-			}catch(SQLException ex){
-				//ignore
-			}
+			hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
+
 						
 			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
 			ITextXMLHandler txtHandler = new ITextXMLHandler(ITextXMLHandler.TXT);

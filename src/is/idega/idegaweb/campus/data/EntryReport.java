@@ -2,7 +2,7 @@ package is.idega.idegaweb.campus.data;
 
 import javax.ejb.*;
 
-public interface EntryReport extends com.idega.data.IDOEntityBean
+public interface EntryReport
 {
  public void setEntityContext(javax.ejb.EntityContext p0) throws java.rmi.RemoteException;
  public java.lang.String getKeyName() throws java.rmi.RemoteException;

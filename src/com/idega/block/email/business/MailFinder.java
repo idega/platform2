@@ -16,6 +16,7 @@ import com.idega.core.data.Email;
 import com.idega.core.data.EmailBMPBean;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOFinderException;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOLookup;
 
 /**
@@ -267,7 +268,7 @@ public class MailFinder {
   
   public int getListEmailsCount(int listId){
   	try{
-  	return com.idega.block.email.data.MailListBMPBean.getEntityInstance(MailList.class, listId).getNumberOfRecordsRelated(EmailBMPBean.getEntityInstance(Email.class));
+  	return com.idega.block.email.data.MailListBMPBean.getEntityInstance(MailList.class, listId).getNumberOfRecordsRelated((IDOLegacyEntity)EmailBMPBean.getEntityInstance(Email.class));
   	}catch(Exception ex){ex.printStackTrace();}
   	return 0;
   }

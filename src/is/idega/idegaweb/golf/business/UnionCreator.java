@@ -108,7 +108,8 @@ public class UnionCreator {
 
     //HardCoded Issues category
     IssuesCategory cat = new IssuesCategory(1);
-    cat.addTo(issues);
+    //TODO unComment (temporary buildfix)
+    //cat.addTo(issues);
 
 
 

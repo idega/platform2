@@ -23,7 +23,7 @@ import com.idega.util.*;
  *@version    1.0
  */
 
-public class ProductBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.Product {
+public class ProductBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.Product, IDOLegacyEntity {
 
   public final static int DISCOUNT_TYPE_ID_AMOUNT = 0;
   public final static int DISCOUNT_TYPE_ID_PERCENT = 1;

@@ -7,7 +7,8 @@
 package se.idega.block.pki.business;
 
 import java.io.File;
-import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -24,6 +25,9 @@ import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.accesscontrol.business.LoginCreateException;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.accesscontrol.data.LoginTableHome;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWException;
@@ -299,7 +303,11 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 		boolean returner = false;
 		try {
 			com.idega.user.data.User user = getUserBusiness(iwc).getUser(personalID);
-			LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(), user.getPrimaryKey().toString());
+			//LoginTable[] login_table = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(), user.getPrimaryKey().toString());
+
+			Collection loginRecords = ((LoginTableHome)IDOLookup.getHome(LoginTable.class)).findLoginsForUser(user);
+			LoginTable[] login_table = (LoginTable[])loginRecords.toArray(new LoginTable[loginRecords.size()]);
+
 
 			LoginTable lTable = this.chooseLoginRecord(iwc, login_table, user);
 			if (lTable != null) {
@@ -326,18 +334,34 @@ public class NBSLoginBusinessBean extends LoginBusinessBean {
 		return new NBSLoginBusinessBean();
 	}
 
-	public boolean hasBankLogin(int userID) throws SQLException {
-
-		LoginTable[] loginRecords = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(), Integer.toString(userID));
-
-		if (loginRecords != null) {
-			for (int i = 0; i < loginRecords.length; i++) {
-				String type = loginRecords[i].getLoginType();
+	public boolean hasBankLogin(User user){
+		try {
+			Collection loginRecords = ((LoginTableHome)IDOLookup.getHome(LoginTable.class)).findLoginsForUser(user);
+			
+			for (Iterator iter = loginRecords.iterator(); iter.hasNext();) {
+				String type = ((LoginTable)iter.next()).getLoginType();
 				if (type != null && type.equals(PKI_LOGIN_TYPE)) {
 					return true;
 				}
 			}
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+			return false;
+		} catch (FinderException e) {
+			e.printStackTrace();
+			return false;
 		}
+		
+		//LoginTable[] loginRecords = (LoginTable[]) (com.idega.core.accesscontrol.data.LoginTableBMPBean.getStaticInstance()).findAllByColumn(com.idega.core.accesscontrol.data.LoginTableBMPBean.getColumnNameUserID(), Integer.toString(userID));
+		
+//		if (loginRecords != null) {
+//			for (int i = 0; i < loginRecords.length; i++) {
+//				String type = loginRecords[i].getLoginType();
+//				if (type != null && type.equals(PKI_LOGIN_TYPE)) {
+//					return true;
+//				}
+//			}
+//		}
 
 		return false;
 	}

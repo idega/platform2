@@ -559,22 +559,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		return hasUserLogin(userID);
 	}
 	
-	public boolean hasBankLogin(int userID) {
-		if (userID == -1){
+	public boolean hasBankLogin(User user) {
+		if (user == null){
 			return false;
 		} else {
-			try {
-				return NBSLoginBusinessBean.createNBSLoginBusiness().hasBankLogin(userID);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return false;
-			}				
+			return NBSLoginBusinessBean.createNBSLoginBusiness().hasBankLogin(user);			
 		}
 	}
 	
-	public boolean hasBankLogin(User user) {
-		return hasBankLogin(((Integer)user.getPrimaryKey()).intValue());
-	}
 
 	public SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);

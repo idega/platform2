@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class Question extends GenericEntity {
+public class Question extends GenericEntity implements IDOLegacyEntity{
 
   public Question(){
   }

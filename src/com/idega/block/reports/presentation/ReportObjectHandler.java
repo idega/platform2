@@ -250,7 +250,7 @@ public class ReportObjectHandler extends Block{
     java.util.List L  = null;
     try{
 
-      com.idega.data.IDOLegacyEntity leg =  com.idega.data.IDOLookup.instanciateEntity(java.lang.Class.forName(Entity));
+      com.idega.data.IDOLegacyEntity leg =  (com.idega.data.IDOLegacyEntity)com.idega.data.IDOLookup.instanciateEntity(java.lang.Class.forName(Entity));
      // java.lang.Class.forName(Entity)
       //com.idega.data.IDOHome home = (com.idega.data.IDOHome) com.idega.data.IDOLookup.getHomeLegacy(java.lang.Class.forName(Entity));
       //com.idega.data.IDOEntity ge = home.createIDO();
