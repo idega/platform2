@@ -860,7 +860,7 @@ public class PublicBooking extends Block  {
               System.out.println("TPosMerchant found");
             }catch (Exception e) {
               System.out.println("TPosMerchant NOT found");
-              e.printStackTrace(System.err);
+              //e.printStackTrace(System.err);
             }
             if (merchant == null) {
               t = new com.idega.block.tpos.business.TPosClient(iwc);
@@ -935,11 +935,14 @@ public class PublicBooking extends Block  {
         }
 
       }catch(com.idega.block.tpos.business.TPosException e) {
+        debug("TPosException caught");
         display.addToText(" ( "+e.getMessage()+" )");
         e.printStackTrace(System.err);
         gBooking.setIsValid(false);
         gBooking.store();
+        success = false;
       }catch (Exception e) {
+        debug("Exception caught");
         display.addToText(" ( "+e.getMessage()+" )");
         e.printStackTrace(System.err);
         try {
