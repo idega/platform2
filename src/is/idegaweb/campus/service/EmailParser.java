@@ -1,5 +1,5 @@
 /*
- * $Id: EmailParser.java,v 1.1 2001/08/10 11:32:51 palli Exp $
+ * $Id: EmailParser.java,v 1.2 2001/08/13 12:24:12 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,13 +9,54 @@
  */
 package is.idegaweb.campus.service;
 
+import java.util.Hashtable;
+import java.util.Enumeration;
+
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public abstract class EmailParser {
-  public static String parseAllocatedEmail(String text, int applicantId) {
+public class EmailParser {
+  private Hashtable tags_ = null;
+
+  public EmailParser() {
+    createTags();
+  }
+
+  public String parseAllocatedEmail(String text, int applicantId) {
     return(text);
+  }
+
+  public String parseApplicationSentEmail(String text, int applicantId) {
+    return(text);
+  }
+
+  public String parseInvalidEmail(String text, int applicantId) {
+    return(text);
+  }
+
+  public String parseApplicationAcceptedtEmail(String text, int applicantId) {
+    return(text);
+  }
+
+  public String parseLostPasswordEmail(String text, int applicantId) {
+    return(text);
+  }
+
+  public Enumeration getTags() {
+    return(tags_.keys());
+  }
+
+  private void createTags() {
+    tags_ = new Hashtable();
+    tags_.put("[fullname]",null);
+    tags_.put("[firstname]",null);
+    tags_.put("[middlename]",null);
+    tags_.put("[lastname]",null);
+    tags_.put("[passwd]",null);
+    tags_.put("[username]",null);
+    tags_.put("[status]",null);
+    tags_.put("[refno]",null);
   }
 }
