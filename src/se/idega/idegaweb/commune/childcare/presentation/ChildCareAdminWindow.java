@@ -843,7 +843,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
 			if (isUsePredefinedCareTimeValues()) {
-				DropdownMenu menu = getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
+				DropdownMenu menu = super.getCareTimeMenu(PARAMETER_CHILDCARE_TIME);
 				table.add(menu, 1, row++);
 			}
 			else {
