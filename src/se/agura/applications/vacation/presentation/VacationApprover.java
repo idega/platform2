@@ -1,5 +1,5 @@
 /*
- * $Id: VacationApprover.java,v 1.7 2004/12/14 07:18:28 laddi Exp $ Created on
+ * $Id: VacationApprover.java,v 1.8 2004/12/17 08:59:27 laddi Exp $ Created on
  * 18.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -11,14 +11,16 @@ package se.agura.applications.vacation.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import se.agura.applications.vacation.data.VacationRequest;
 import se.agura.applications.vacation.data.VacationType;
+
 import com.idega.business.IBORuntimeException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DropdownMenu;
@@ -35,7 +37,7 @@ import com.idega.user.data.User;
  * Last modified: 18.11.2004 10:21:40 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class VacationApprover extends VacationBlock {
 
