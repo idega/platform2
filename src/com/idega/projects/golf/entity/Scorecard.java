@@ -194,7 +194,6 @@ public class Scorecard extends GolfEntity{
             }
             catch (SQLException sql) {}
 
-
             super.delete();
         }
 
