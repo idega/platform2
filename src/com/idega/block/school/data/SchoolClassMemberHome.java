@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberHome.java,v 1.65 2005/01/07 07:42:21 malin Exp $
+ * $Id: SchoolClassMemberHome.java,v 1.66 2005/01/17 13:13:55 anders Exp $
  * Created on 29.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/07 07:42:21 $ by $Author: malin $
+ * Last modified: $Date: 2005/01/17 13:13:55 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.65 $
+ * @version $Revision: 1.66 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -187,6 +187,11 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllByCategory
 	 */
 	public Collection findAllByCategory(SchoolCategory category) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindActiveByStudentSchoolCategory
+	 */
+	public SchoolClassMember findActiveByStudentSchoolAndCategory(int studentId, int schoolId, SchoolCategory category) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindAllByUserAndSchoolCategory

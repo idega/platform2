@@ -1,6 +1,5 @@
 package com.idega.block.school.data;
 
-import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -23,6 +22,7 @@ import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.query.Column;
+import com.idega.data.query.Criteria;
 import com.idega.data.query.JoinCriteria;
 import com.idega.data.query.MatchCriteria;
 import com.idega.data.query.OR;
@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/01/07 07:42:21 $ by $Author: malin $
- * @version $Revision: 1.125 $
+ *         Last modified: $Date: 2005/01/17 13:13:55 $ by $Author: anders $
+ * @version $Revision: 1.126 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -692,6 +692,31 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		query.addOrder(table, REGISTER_DATE, true);
 		
 		return idoFindPKsByQuery(query);
+	}
+	
+	public Integer ejbFindActiveByStudentSchoolAndCategory(int studentId, int schoolId, SchoolCategory category) throws FinderException {
+		Table table = new Table(this);
+		Table typeTable = new Table(SchoolType.class);
+		Table schoolClassTable = new Table(SchoolClass.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn());
+		try {
+			query.addJoin(table, typeTable);
+			query.addJoin(table, schoolClassTable);
+		} catch (IDORelationshipException ire) {
+			throw new FinderException(ire.getMessage()); 
+		}
+		query.addCriteria(new MatchCriteria(table, MEMBER, MatchCriteria.EQUALS, studentId));
+		query.addCriteria(new MatchCriteria(schoolClassTable, SchoolClassBMPBean.SCHOOL, MatchCriteria.EQUALS, schoolId));
+		query.addCriteria(new MatchCriteria(typeTable, SchoolTypeBMPBean.SCHOOLCATEGORY, MatchCriteria.EQUALS, category));
+		Date today = new Date(System.currentTimeMillis());
+		query.addCriteria(new MatchCriteria(table, REGISTER_DATE, MatchCriteria.LESSEQUAL, today));
+		Criteria a = new MatchCriteria(table, REMOVED_DATE, MatchCriteria.GREATER, today);
+		Criteria b = new MatchCriteria(table, REMOVED_DATE, MatchCriteria.IS, "null");
+		query.addCriteria(new OR(a, b));
+		
+		return (Integer) this.idoFindOnePKByQuery(query);
 	}
 
 	public Collection ejbFindAllByUserAndSchoolCategory(User user, SchoolCategory cat) throws FinderException {

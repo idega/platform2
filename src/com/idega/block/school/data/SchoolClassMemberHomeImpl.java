@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.65 2005/01/07 07:42:21 malin Exp $
+ * $Id: SchoolClassMemberHomeImpl.java,v 1.66 2005/01/17 13:13:55 anders Exp $
  * Created on 29.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/07 07:42:21 $ by $Author: malin $
+ * Last modified: $Date: 2005/01/17 13:13:55 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.65 $
+ * @version $Revision: 1.66 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -256,6 +256,13 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllByCategory(category);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	public SchoolClassMember findActiveByStudentSchoolAndCategory(int studentId, int schoolId, SchoolCategory category) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((SchoolClassMemberBMPBean) entity).ejbFindActiveByStudentSchoolAndCategory(studentId, schoolId, category);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
 	}
 
 	public Collection findAllByUserAndSchoolCategory(User user, SchoolCategory cat) throws FinderException {
