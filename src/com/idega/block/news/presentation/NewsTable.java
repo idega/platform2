@@ -86,16 +86,20 @@ public class NewsTable extends PresentationObjectContainer {
 
   // Stilla töflu vegna óákveðinnar stærðar
   private void finite(){
+		boolean zebracolored = false;
+		if(firstColor != null ){
+			if(secondColor != null)
+			  zebracolored =true;
+		  else if(firstColor != null)
+				table.setColor(firstColor);
+		}
     for (int i = 1; i <= table.getColumns(); i++) {
       int percent = 100/iDividedColumnCount ;
       table.setWidth(i,percent+"%");
       table.setColumnVerticalAlignment(i,"top");
-    }
-		if(firstColor != null){
-		  if( secondColor !=null)
-		    table.setVerticalZebraColored(firstColor,secondColor);
-			else
-		    table.setColor(firstColor);
+			int mod = i%2;
+		  if(zebracolored)
+		    table.setColor(1,i,mod==0?firstColor:secondColor);
 		}
   }
 

@@ -129,7 +129,7 @@ public class NewsFormatter {
     }
 
 		String inf = TextSoap.findAndReplace(info.toString(), " ","&nbsp;");
-		System.err.println(inf);
+		//System.err.println(inf);
     return inf;
 
   }

@@ -728,6 +728,12 @@ public class NewsReader extends Block implements IWBlock{
 	  firstTableColor = firstColor;
 		secondTableColor = secondColor ;
 	}
+	public void setCellPadding(int cellpad){
+	  this.cellPadding = cellpad;
+	}
+	public void setCellSpacing(int cellspace){
+	  this.cellSpacing = cellspace;
+	}
   public void showNewsCollectionButton(boolean showNewsCollectionButton){
     this.showNewsCollectionButton = showNewsCollectionButton;
   }
