@@ -584,7 +584,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
 	}
 
 	public String getWidth() {
-		_width = iwb.getProperty("table.width", "600"); 
+		//_width = iwb.getProperty("table.width", "600"); 
 		return _width;
 	}
 	
