@@ -72,7 +72,6 @@ public class AccountTariffer extends Finance {
   }
 
    protected void control(IWContext iwc) throws java.rmi.RemoteException{
-
     if(isAdmin){
       accBuiz = (AccountBusiness) IBOLookup.getServiceInstance(iwc,AccountBusiness.class);
 //      iCategoryId = Finance.parseCategoryId(iwc);
@@ -126,35 +125,42 @@ public class AccountTariffer extends Finance {
       IWTimestamp Pd = new IWTimestamp(paydate);
       String SDiscount = iwc.getParameter(prmDiscount);
       int discount = SDiscount!=null && !SDiscount.equals("")?Integer.parseInt(SDiscount):-1;
+      System.out.println(discount);
 
       AssessmentBusiness assBuiz = (AssessmentBusiness) IBOLookup.getServiceInstance(iwc,AssessmentBusiness.class);
+    
       String[] qtys = iwc.getParameterValues(prmQuantity);
       String[] ids = iwc.getParameterValues(prmTariffIds);
       if(qtys!=null && qtys.length>0 && ids!=null && qtys.length==ids.length){
-		Vector t_ids = new Vector();
+		Vector tariffIDs = new Vector();
+		Vector factors = new Vector();
       	for (int i = 0; i < qtys.length; i++) {
       		
+      		if(!"".equals(qtys[i])){
 			try {
-				Integer qty = Integer.valueOf(qtys[i]);
-				for (int j = 0; j <qty.intValue(); j++) {
-					t_ids.add(qty.toString());
-				}
+				factors.add( Double.valueOf(qtys[i]));
+				tariffIDs.add( Integer.valueOf(ids[i]));
 			}
 			catch (NumberFormatException e) {
 				
-			}
+			}}
 		}
-		if(t_ids.size()>0){
-			String[] tariffIds = (String[]) t_ids.toArray(new String[0]);
-			System.err.println("trying assessTariffsToAcount("+tariffIds+","+iAccountId+","+Pd.toString()+","+discount+","+iGroupId+","+iCategoryId);
-			assBuiz.assessTariffsToAccount(tariffIds,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
+		if(tariffIDs.size()>0){
+			Integer[] tariffIds =( Integer[]) tariffIDs.toArray(new Integer[0]);
+			Double[] mfactors = (Double[]) factors.toArray(new Double[0]);
+			//System.err.println("trying assessTariffsToAcount("+tariffIds+","+iAccountId+","+Pd.toString()+","+discount+","+iGroupId+","+iCategoryId);
+			assBuiz.assessTariffsToAccount(tariffIds,mfactors,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
 		}
-		
+      
 	  }
       else if(iwc.isParameterSet(prmTariffCheck)){
-        System.err.println("using tariffs checks");
+        //System.err.println("using tariffs checks");
         String[] tariff_ids = iwc.getParameterValues(prmTariffCheck);
-        assBuiz.assessTariffsToAccount(tariff_ids,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
+        Integer[] tar_ids = new Integer[tariff_ids.length];
+        for (int i = 0; i < tariff_ids.length; i++) {
+			tar_ids[i] = new Integer(tariff_ids[i]);
+		}
+        assBuiz.assessTariffsToAccount(tar_ids,null,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
       }
       else{
         int keyId = iwc.isParameterSet(prmAccountKey)?Integer.parseInt(iwc.getParameter(prmAccountKey)):-1;;
@@ -177,11 +183,20 @@ public class AccountTariffer extends Finance {
   private PresentationObject getAccountInfo(IWContext iwc) throws java.rmi.RemoteException{
     DataTable T = new DataTable();
     T.setUseBottom(false);
-    T.setWidth("100%");
+    T.setWidth(Table.HUNDRED_PERCENT);
     T.setTitlesVertical(true);
     if(account!=null){
       T.add(textFormat.format(iwrb.getLocalizedString("account_number","Account number"),textFormat.HEADER),1,1);
-      T.add(textFormat.format(account.getAccountName()),2,1);
+      if(viewPage>0){
+		  Link viewLink = new Link(textFormat.format( account.getAccountName() ) );
+			viewLink.addParameter(prmAccountId,account.getAccountId());
+			viewLink.addParameter(getCategoryParameter(iCategoryId));
+			viewLink.setPage(viewPage);
+		  T.add(viewLink,2,1);
+      }
+      else{     
+      	 T.add(textFormat.format(account.getAccountName()),2,1);
+      }
       UserBusiness uBuiz = (UserBusiness) IBOLookup.getServiceInstance(iwc,UserBusiness.class);
       User user = uBuiz.getUser(account.getUserId());
       T.add(textFormat.format(iwrb.getLocalizedString("account_owner","Account owner"),textFormat.HEADER),1,2);
@@ -378,7 +393,7 @@ public class AccountTariffer extends Finance {
   public void setAccountSearchPage(int pageId){
     this.searchPage = pageId;
   }
-
+  
   public void main(IWContext iwc)throws java.rmi.RemoteException{
     control(iwc);
   }

@@ -27,6 +27,7 @@ public class AssessmentRoundBMPBean extends com.idega.data.CategoryEntityBMPBean
   }
 
   public void initializeAttributes(){
+	addAttribute(getIDColumnName());
     addAttribute(getColumnTariffGroupId(),"Tariff group",true,true,Integer.class,"",TariffGroup.class);
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getRoundStampColumnName(),"Round stamp",true,true,java.sql.Timestamp.class);
