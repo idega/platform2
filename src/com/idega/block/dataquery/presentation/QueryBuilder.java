@@ -95,8 +95,9 @@ public class QueryBuilder extends Block {
 	private int step = 1;
 	private int queryFolderID = -1;
 	private int queryID = -1;
-	private int relationDepth = 4;
-	private int investigationLevel = 6;
+	// thomas: not used
+	//private int relationDepth = 4;
+	private int investigationLevel = 2;
 	private int tableBorder = 0;
 	private String zebraColor1 = "#CCCC99";
 	private String zebraColor2 = "#FFFFFF";
@@ -107,6 +108,11 @@ public class QueryBuilder extends Block {
 	private boolean allowFunctions = true;
 	private QuerySession sessionBean;
 	private String defaultDynamicPattern = "";
+	
+	// added by thomas
+	// the second step is skipped when expert mode is false 
+	private boolean expertMode = false;
+	
 	
 	public static void cleanSession(IWContext iwc)	{
 		try {
@@ -127,6 +133,12 @@ public class QueryBuilder extends Block {
 		}
 	}
 		
+	// added by thomas
+	public void setExpertMode(boolean expertMode, int investigationLevel)	{
+		this.expertMode = expertMode;
+		this.investigationLevel = investigationLevel;
+	}
+	
 	
 	public void control(IWContext iwc) {
 		if (hasEditPermission || hasTemplatePermission || hasCreatePermission) {
@@ -167,7 +179,13 @@ public class QueryBuilder extends Block {
 
 				Table headerTable = new Table(2, 2);
 				headerTable.setWidth(Table.HUNDRED_PERCENT);
-				headerTable.add(getStepText(iwrb.getLocalizedString("step", "Step") + " " + step), 1, 1);
+				// added by thomas
+				// skip the second step
+				int displayStep = step;
+				if (! expertMode) {
+					displayStep = (step == 1)? 1 : step -1;
+				}
+				headerTable.add(getStepText(iwrb.getLocalizedString("step", "Step") + " " + displayStep), 1, 1);
 				headerTable.add(getMsgText(getStepMessage()), 1, 2);
 				headerTable.mergeCells(2, 1, 2, 2);
 				headerTable.add(iwb.getImage("wizard.png"), 2, 1);
@@ -250,7 +268,7 @@ public class QueryBuilder extends Block {
 				if(pattern ==null || "".equals(pattern)){
 					pattern = defaultDynamicPattern;
 				}
-				QueryConditionPart part = new QueryConditionPart(fieldPart.getEntity(),fieldPart.getName(), equator, pattern);
+				QueryConditionPart part = new QueryConditionPart(fieldPart.getEntity(), fieldPart.getPath(), fieldPart.getName(), equator, pattern);
 				part.setLocked(iwc.isParameterSet(PARAM_LOCK));
 				part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
 				helper.addCondition(part);
@@ -320,7 +338,7 @@ public class QueryBuilder extends Block {
 
 	}
 
-	private boolean processNextStep(IWContext iwc) throws ClassNotFoundException {
+	private boolean processNextStep(IWContext iwc) throws ClassNotFoundException, RemoteException  {
 		int currentStep = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
 		//System.out.println("current processing step " + currentStep);
 		switch (currentStep) {
@@ -397,13 +415,25 @@ public class QueryBuilder extends Block {
 		else
 			return helper.hasSourceEntity();
 	}
-	private boolean processStep1(IWContext iwc) {
+	private boolean processStep1(IWContext iwc) throws RemoteException{
 		if (iwc.isParameterSet(PARAM_SOURCE)) {
 			String sourceEntity = iwc.getParameter(PARAM_SOURCE);
 			if (sourceEntity.length() > 0 && !sourceEntity.equalsIgnoreCase("empty")) {
 				QueryEntityPart part = QueryEntityPart.decode(sourceEntity);
 				helper.setSourceEntity(part);
 				helper.getSourceEntity().setLocked(iwc.isParameterSet(PARAM_LOCK));
+				// added by thomas: start
+				if (! expertMode) {
+					helper.clearRelatedEntities();
+					List list = getQueryService(iwc).getRelatedEntities(helper,  investigationLevel);
+					Iterator iterator = list.iterator();
+					while (iterator.hasNext())	{
+						QueryEntityPart entityPart = (QueryEntityPart) iterator.next();
+						helper.addRelatedEntity(entityPart);
+					}
+					step = 2;
+				}
+				// added by thomas: end
 			}
 			return helper.hasSourceEntity();
 		}
@@ -477,6 +507,11 @@ public class QueryBuilder extends Block {
 				//helper.clearSourceEntity(); 
 				break;
 			case 3 :
+			// added by thomas
+			// skip the second step
+				if (! expertMode) {
+					step--;
+				}
 				//helper.clearRelatedEntities();
 				break;
 			case 4 :
@@ -629,8 +664,8 @@ public class QueryBuilder extends Block {
 		box.getLeftBox().setTextHeading(getMsgText(iwrb.getLocalizedString("available_fields", "Available fields")));
 		box.getRightBox().setTextHeading(getMsgText(iwrb.getLocalizedString("chosen_fields", "Chosen fields")));
 		box.getRightBox().addUpAndDownMovers();
-		box.getRightBox().setWidth("300");
-		box.getLeftBox().setWidth("300");
+		box.getRightBox().setWidth("400");
+		box.getLeftBox().setWidth("400");
 		box.getRightBox().setHeight("20");
 		box.getLeftBox().setHeight("20");
 		box.getRightBox().selectAllOnSubmit();
@@ -643,7 +678,10 @@ public class QueryBuilder extends Block {
 			Iterator iter = fieldMap.values().iterator();
 			while(iter.hasNext()){
 				QueryFieldPart part = (QueryFieldPart) iter.next();
-				box.getRightBox().addElement(part.encode(),iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
+				String entity = iwrb.getLocalizedString(part.getEntity(), part.getEntity());
+				String display =iwrb. getLocalizedString(part.getDisplay(), part.getDisplay());
+				
+				box.getRightBox().addElement(part.encode(), entity + " -> " + display); 
 			}
 		}
 		table.add(box, 2, row);
@@ -695,7 +733,7 @@ public class QueryBuilder extends Block {
 		SelectionDoubleBox box)
 		throws RemoteException {
 		//System.out.println("filling box with fields from " + entityPart.getName());
-		Iterator iter = service.getListOfFieldParts(iwrb, entityPart).iterator();
+		Iterator iter = service.getListOfFieldParts(iwrb, entityPart, expertMode).iterator();
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
 			//System.out.println(" " + part.getName());
@@ -839,7 +877,7 @@ public class QueryBuilder extends Block {
 	}
 
 	private Table getButtons(int currentStep) {
-		Table T = new Table(5, 1);
+		Table T = new Table(4, 1);
 		T.setWidth(getWidth());
 		T.setAlignment(1, 1, T.HORIZONTAL_ALIGN_RIGHT);
 		T.setAlignment(2, 1, T.HORIZONTAL_ALIGN_LEFT);
@@ -869,38 +907,43 @@ public class QueryBuilder extends Block {
 			SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("btn_save", "Save"), PARAM_SAVE, "true");
 			T.add(save, 3, 1);
 		}
-		if (currentStep > 4) {
-			SubmitButton quit = new SubmitButton(iwrb.getLocalizedImageButton("btn_quit", "Quit"), PARAM_QUIT, "true");
-			T.add(quit, 5, 1);
-		}
+		// thomas: removed
+//		if (currentStep > 4) {
+//			SubmitButton quit = new SubmitButton(iwrb.getLocalizedImageButton("btn_quit", "Quit"), PARAM_QUIT, "true");
+//			T.add(quit, 5, 1);
+//		}
 		return T;
 	}
-	private PresentationObject getRelatedChoice(IWContext iwc) throws ClassNotFoundException, RemoteException {
-		Table T = new Table();
-		T.setWidth(T.HUNDRED_PERCENT);
-		Collection coll = getQueryService(iwc).getRelatedQueryEntityParts(helper.getSourceEntity(), relationDepth);
-		Iterator iter = coll.iterator();
-		int row = 1;
-		CheckBox checkAll = new CheckBox("checkall");
-		checkAll.setToCheckOnClick(PARAM_RELATED, "this.checked");
-		T.add(checkAll, 1, row);
-		T.add(iwrb.getLocalizedString("entity_name", "Entity name"), 2, row++);
-		Map entityMap = getEntityMap(helper.getListOfRelatedEntities());
-		while (iter.hasNext()) {
-			QueryEntityPart entityPart = (QueryEntityPart) iter.next();
-			CheckBox checkBox = new CheckBox(PARAM_RELATED, entityPart.encode());
-			checkBox.setChecked(entityMap.containsKey(entityPart.getName()));
-			T.add(checkBox, 1, row);
-			T.add(
-				iwrb.getLocalizedString(entityPart.getName(), entityPart.getName())
-					+ " "
-					+ entityPart.getBeanClassName(),
-				2,
-				row);
-			row++;
-		}
-		return T;
-	}
+	
+// 	thomas:
+//  the method below isn't used 
+//	
+//	private PresentationObject getRelatedChoice(IWContext iwc) throws ClassNotFoundException, RemoteException {
+//		Table T = new Table();
+//		T.setWidth(T.HUNDRED_PERCENT);
+//		Collection coll = getQueryService(iwc).getRelatedQueryEntityParts(helper.getSourceEntity(), relationDepth);
+//		Iterator iter = coll.iterator();
+//		int row = 1;
+//		CheckBox checkAll = new CheckBox("checkall");
+//		checkAll.setToCheckOnClick(PARAM_RELATED, "this.checked");
+//		T.add(checkAll, 1, row);
+//		T.add(iwrb.getLocalizedString("entity_name", "Entity name"), 2, row++);
+//		Map entityMap = getEntityMap(helper.getListOfRelatedEntities());
+//		while (iter.hasNext()) {
+//			QueryEntityPart entityPart = (QueryEntityPart) iter.next();
+//			CheckBox checkBox = new CheckBox(PARAM_RELATED, entityPart.encode());
+//			checkBox.setChecked(entityMap.containsKey(entityPart.getName()));
+//			T.add(checkBox, 1, row);
+//			T.add(
+//				iwrb.getLocalizedString(entityPart.getName(), entityPart.getName())
+//					+ " "
+//					+ entityPart.getBeanClassName(),
+//				2,
+//				row);
+//			row++;
+//		}
+//		return T;
+//	}
 	public void main(IWContext iwc) throws Exception {
 		debugParameters(iwc);
 		iwb = getBundle(iwc);
@@ -1062,7 +1105,7 @@ public class QueryBuilder extends Block {
 	}
 	
 	private void filldropdown(QueryService service,QueryEntityPart entityPart,Map drpMap,DropdownMenu drp)throws RemoteException {
-		Iterator iter = service.getListOfFieldParts(iwrb, entityPart).iterator();
+		Iterator iter = service.getListOfFieldParts(iwrb, entityPart, expertMode).iterator();
 		String enc;
 		while (iter.hasNext()) {
 			QueryFieldPart part = (QueryFieldPart) iter.next();
@@ -1113,6 +1156,7 @@ public class QueryBuilder extends Block {
 			this();
 			setRootNode(node);
 		}
+		
 		/* (non-Javadoc)
 		 * @see com.idega.presentation.ui.AbstractTreeViewer#getObjectToAddToParallelExtraColumn(int, com.idega.core.ICTreeNode, com.idega.presentation.IWContext, boolean, boolean, boolean)
 		 */
