@@ -185,7 +185,7 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 
 	public void setLetterType(String letterType) {
-		setColumn(COLUMN_LETTER_TYPE, letterType);
+		setColumn(COLUMN_LETTER_TYPE, letterType); 
 	}
 
 	public String getLetterType() {
@@ -532,14 +532,14 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	//TODO Handle this in more general way...
-	public Collection ejbFindLettersByChildcare(int providerID, String ssn, String msgId) throws FinderException {
+	public Collection ejbFindLettersByChildcare(int providerID, String ssn, String msgId, IWTimestamp from, IWTimestamp to) throws FinderException {
 		IDOQuery sql = idoQuery();
-		String from = this.getEntityName() + " m, proc_case p, comm_childcare c";
+		String sqlFrom = this.getEntityName() + " m, proc_case p, comm_childcare c";
 		if (ssn != null && ! ssn.equals("")){
-			from += ", ic_user u";
+			sqlFrom += ", ic_user u";
 		}
 		
-		sql.appendSelectAllFrom(from);
+		sql.appendSelectAllFrom(sqlFrom);
 		sql.appendWhereEquals("m.msg_letter_message_id","p.proc_case_id");
 		sql.appendAndEquals("p.parent_case_id", "c.comm_childcare_id");
 		sql.appendAndEquals("c.provider_id", providerID);
@@ -551,14 +551,32 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 			sql.appendAndEqualsQuoted("m.msg_letter_message_id", msgId);
 		}
 		
-		System.out.println("########### SQL:" + sql.toString() + ".");
+		to.setHour(23);
+		to.setMinute(59);
+		to.setSecond(59);
+		from.setHour(0);
+		from.setMinute(0);
+		from.setSecond(0);
+		sql.appendAnd();
+		sql.append("p.created");
+		sql.append(" >= '");
+		sql.append(from.toSQLString());
+		sql.append("'");
+		sql.appendAnd();
+		sql.append("p.created");
+		sql.append(" <= '");
+		sql.append(to.toSQLString());
+		sql.append("' ");
+		sql.appendOrderBy("p.created");
+		
+//		System.out.println("########### SQL:" + sql.toString() + ".");
 		
 		Collection tmp = this.idoFindPKsByQuery(sql);
-		System.out.println("### ejbFindLettersByChildcare return ");
 		return tmp;
 		
 	}
 	
+		
 	public Collection ejbFindLetters(String[] msgId) throws FinderException {
 		IDOQuery sql = idoQuery();
 		
@@ -566,10 +584,9 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 		sql.appendWhere("m.msg_letter_message_id");
 		sql.appendInArray(msgId);
 		
-		System.out.println("########### SQL:" + sql.toString() + ".");
+//		System.out.println("########### SQL:" + sql.toString() + ".");
 		
 		Collection tmp = this.idoFindPKsByQuery(sql);
-		System.out.println("### ejbFindLetters return ");
 		return tmp;
 		
 	}	

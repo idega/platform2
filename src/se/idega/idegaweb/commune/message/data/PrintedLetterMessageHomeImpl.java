@@ -123,9 +123,9 @@ public java.util.Collection findSingleByTypeAndStatus(java.lang.String type,Stri
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findLetterByChildcare(int p0, String ssn, String msgid)throws javax.ejb.FinderException{
+public java.util.Collection findLetterByChildcare(int p0, String ssn, String msgid, IWTimestamp from, IWTimestamp to)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindLettersByChildcare(p0, ssn, msgid);
+	java.util.Collection ids = ((PrintedLetterMessageBMPBean)entity).ejbFindLettersByChildcare(p0, ssn, msgid, from, to);
 	System.out.print(" ### findLetterByChildcare 1");
 	this.idoCheckInPooledEntity(entity);
 	System.out.print(" ### findLetterByChildcare 2");
