@@ -17,6 +17,7 @@ import javax.ejb.FinderException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
+import se.idega.idegaweb.commune.accounting.business.BatchDeadlineService;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
 import se.idega.idegaweb.commune.childcare.business.PlacementHelper;
@@ -30,6 +31,7 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.builder.business.BuilderLogic;
+import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
@@ -54,6 +56,7 @@ import com.idega.presentation.ui.Window;
 import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
+import com.idega.util.TimePeriod;
 import com.idega.util.URLUtil;
 import com.idega.util.text.TextSoap;
 
@@ -309,7 +312,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_CHANGE_DATE :
 				headerTable.add(getHeader(localize("child_care.change_date", "Change date")+ personalIdUserName));
-				contentTable.add(getChangeDateForm(false));
+				contentTable.add(getChangeDateForm(iwc,false));
 				break;
 			case METHOD_PLACE_IN_GROUP :
 				headerTable.add(getHeader(localize("child_care.place_in_group", "Place in group")+ personalIdUserName));
@@ -333,7 +336,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			case METHOD_ALTER_CARE_TIME :
 				//headerTable.add(getHeader(localize("child_care.alter_care_time", "Alter care time")));
 				headerTable.add(getHeader(localize("child_care.alter_contract_or_schooltype_for_child","Alter the contract/schooltype for this child.") + personalIdUserName));
-				contentTable.add(getAlterCareTimeForm());
+				contentTable.add(getAlterCareTimeForm(iwc));
 				break;
 			case METHOD_CANCEL_CONTRACT :
 				headerTable.add(getHeader(localize("child_care.cancel_contract", "Cancel contract") + personalIdUserName));
@@ -349,7 +352,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 			case METHOD_ALTER_VALID_FROM_DATE :
 				headerTable.add(getHeader(localize("child_care.alter_valid_from_date", "Change placement date") + personalIdUserName));
-				contentTable.add(getChangeDateForm(true));
+				contentTable.add(getChangeDateForm(iwc,true));
 				break;
 			case METHOD_VIEW_PROVIDER_QUEUE :
 				headerTable.add(getHeader(localize("child_care.view_provider_queue", "Provider queue")));			
@@ -547,7 +550,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getChangeDateForm(boolean isAlteration) throws RemoteException {
+	private Table getChangeDateForm(IWContext iwc,boolean isAlteration) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -556,8 +559,35 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		///ChildCareApplication application = getBusiness().getApplication(_applicationID);
 		PlacementHelper helper = getPlacementHelper();
+		IWTimestamp stamp = new IWTimestamp();
+		
+//		 adding  batch deadline checks (aron) 12.11.2004
+		BatchDeadlineService deadlineService = ((BatchDeadlineService)IBOLookup.getServiceInstance(iwc,BatchDeadlineService.class));
+		TimePeriod deadlinePeriod = null;
+		deadlinePeriod = deadlineService.getValidPeriod();
 
+		
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
+		if(deadlinePeriod!=null && deadlinePeriod.getFirstTimestamp()!=null) {
+		    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
+		    // deadline has passed
+		   
+		    if(deadlineService.hasDeadlinePassed()){
+		        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));
+		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
+		    }
+		    // still within deadline
+		    else{
+		        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
+		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
+		    }
+		    
+		}
+		else{
+		    dateInput.setDate(stamp.getDate());
+		    dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
+		}
+		/*
 		if(helper.hasEarliestPlacementDate()){
 		    dateInput.setDate((java.sql.Date)helper.getEarliestPlacementDate());
 		    dateInput.setEarliestPossibleDate(helper.getEarliestPlacementDate(),localize(helper.getEarliestPlacementMessage()));
@@ -565,8 +595,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if(helper.hasLatestPlacementDate()){
 		    dateInput.setLatestPossibleDate(helper.getLatestPlacementDate(),localize(helper.getLatestPlacementMessage()));
 		}
-		
+		*/
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
+		
+		
 		///IWTimestamp stampNow = new IWTimestamp();
 		///boolean oldPlacementTerminated = false;
 		///IWTimestamp terminationDate = null;
@@ -620,7 +652,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			dateHeader = localize("child_care.change_date", "Change date");
 		}
 		table.add(getSmallHeader(dateHeader), 1, row++);
+		if(deadlineService.hasDeadlinePassed())
+		    table.add(getText(localize("school.deadline_msg_for_passedby_date","Chosen period has been invoiced. Earliest possible date is the first day of next month.")),1,row++);
 		table.add(dateInput, 1, row++);
+		
 		/*
 		if (oldPlacementTerminated) {
 			table.add(getSmallHeader(localize("child_care.old_placement_terminated", "Old placement terminated") + ":"), 1, row);
@@ -780,7 +815,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		return table;
 	}
 
-	private Table getAlterCareTimeForm() throws RemoteException {
+	private Table getAlterCareTimeForm(IWContext iwc) throws RemoteException {
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -792,6 +827,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		//getBusiness().getContractFile(application.getContractFileId());
 		PlacementHelper helper = getPlacementHelper();
+		
+		BatchDeadlineService deadlineService = ((BatchDeadlineService)IBOLookup.getServiceInstance(iwc,BatchDeadlineService.class));
+		TimePeriod deadlinePeriod = null;
+		deadlinePeriod = deadlineService.getValidPeriod();
 
 		TextInput textInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CHILDCARE_TIME));
 		textInput.setLength(helper.getMaximumCareTimeHours().toString().length());
@@ -810,14 +849,35 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.child_care_time", "Time")+":"), 1, row);
 		table.add(textInput, 1, row++);
 		
+		IWTimestamp stamp = new IWTimestamp();
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CHANGE_DATE));
+		if(deadlinePeriod!=null && deadlinePeriod.getFirstTimestamp()!=null) {
+		    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
+		    // deadline has passed
+		   
+		    if(deadlineService.hasDeadlinePassed()){
+		        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));
+		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
+		    }
+		    // still within deadline
+		    else{
+		        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
+		        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
+		    }
+		    
+		}
+		else{
+		    dateInput.setDate(stamp.getDate());
+		    dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
+		}
+		/*
 		if(helper.hasEarliestPlacementDate()){
 		    dateInput.setDate((java.sql.Date)helper.getEarliestPlacementDate());
 		    dateInput.setEarliestPossibleDate(helper.getEarliestPlacementDate(),localize(helper.getEarliestPlacementMessage()));
 		}
 		if(helper.hasLatestPlacementDate()){
 		    dateInput.setLatestPossibleDate(helper.getLatestPlacementDate(),localize(helper.getLatestPlacementMessage()));
-		}
+		}*/
 		
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
@@ -934,6 +994,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.employment_type", "Employment type")+":"), 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(employmentTypes, 1, row++);
+		
+		if(deadlineService.hasDeadlinePassed())
+		    table.add(getText(localize("school.deadline_msg_for_passedby_date","Chosen period has been invoiced. Earliest possible date is the first day of next month.")),1,row++);
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_care_time", "Alter care time"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_CARE_TIME)));
 		form.setToDisableOnSubmit(placeInGroup, true);
@@ -986,15 +1049,41 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			stampNow.addDays(-1);
 			IWTimestamp stamp = new IWTimestamp();
 			stamp.addMonths(2);
+			
+			BatchDeadlineService deadlineService = ((BatchDeadlineService)IBOLookup.getServiceInstance(iwc,BatchDeadlineService.class));
+			TimePeriod deadlinePeriod = null;
+			deadlinePeriod = deadlineService.getValidPeriod();
+			
 			DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
 			dateInput.setDate(stamp.getDate());
-			if (restrictDates)
-				dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+			//if (restrictDates)
+			//	dateInput.setEarliestPossibleDate(stampNow.getDate(), localize("child_care.not_a_valid_date", "You can not choose a date back in time."));
+			if(deadlinePeriod!=null && deadlinePeriod.getFirstTimestamp()!=null) {
+			    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
+			    // deadline has passed
+			   
+			    if(deadlineService.hasDeadlinePassed()){
+			        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ")+format.format(deadlinePeriod.getFirstTimestamp().getDate()));
+			        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate()); 
+			    }
+			    // still within deadline
+			    else{
+			        dateInput.setEarliestPossibleDate(deadlinePeriod.getFirstTimestamp().getDate(), localize("childcare.deadline_still_within", "You can not choose a date back in time."));
+			        dateInput.setDate(deadlinePeriod.getFirstTimestamp().getDate());
+			    }
+			    
+			}
+			else{
+			    dateInput.setDate(stamp.getDate());
+			    dateInput.setEarliestPossibleDate(stamp.getDate(), localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time."));
+			}
 			dateInput.setAsNotEmpty(localize("child_care.must_select_date","You must select a date."));
 			dateInput.keepStatusOnAction(true);
 	
 			table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date")+":"), 1, row++);
 			table.add(dateInput, 1, row++);
+			if(deadlineService.hasDeadlinePassed())
+			    table.add(getText(localize("school.deadline_msg_for_passedby_date","Chosen period has been invoiced. Earliest possible date is the first day of next month.")),1,row++);
 	
 			SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
 			form.setToDisableOnSubmit(placeInGroup, true);
