@@ -185,7 +185,7 @@ public class CampusAllocator extends PresentationObjectContainer{
 
   private PresentationObject getCategoryLists(){
     Table T = new Table();
-    T.setWidth(500);
+    T.setWidth("100%");
     List Categories = BuildingFinder.listOfApartmentCategory();
     if(Categories != null){
       int row = 2;
@@ -210,7 +210,7 @@ public class CampusAllocator extends PresentationObjectContainer{
             type = eAprtType.getKeyOne();
             cmpx = eAprtType.getKeyTwo();
             listCount = BuildingFinder.countApartmentsInTypeAndComplex(type,cmpx);
-            contractCount = ContractFinder.countApartmentsInTypeAndComplex(type,cmpx,"");
+            contractCount = ContractFinder.countApartmentsInTypeAndComplex(type,cmpx,Contract.statusSigned);
 
             appliedCount = CampusApplicationFinder.countWaitingWithTypeAndComplex(type,cmpx,0);
             appCnt1 = CampusApplicationFinder.countWaitingWithTypeAndComplex(type,cmpx,1);

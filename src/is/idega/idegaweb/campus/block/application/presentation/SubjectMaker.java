@@ -22,7 +22,7 @@ import java.util.List;
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
 

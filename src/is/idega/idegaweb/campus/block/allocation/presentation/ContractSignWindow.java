@@ -101,7 +101,7 @@ public class ContractSignWindow extends Window{
     int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
     try {
       Contract eContract = new Contract(iContractId);
-      List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(),Contract.statusSigned);
+      List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(),true);
       User eUser = new User(eContract.getUserId().intValue());
       idegaTimestamp from = new idegaTimestamp(eContract.getValidFrom());
       idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());

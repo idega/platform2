@@ -5,6 +5,7 @@ import com.idega.block.finance.business.*;
 import com.idega.block.finance.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.SimpleQuerier;
+import com.idega.data.EntityBulkUpdater;
 import is.idega.idegaweb.campus.exception.*;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import is.idega.idegaweb.campus.data.ContractAccounts;
@@ -16,11 +17,11 @@ import java.util.Iterator;
 import java.util.Vector;
 
 /**
- * Title:
+ * Title:   idegaclasses
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
 
@@ -36,6 +37,8 @@ public class CampusAssessmentBusiness  {
 
   public CampusAssessmentBusiness() {
   }
+
+  /*
 
   public static void rollBackAssessment(int AssessmentRoundId) throws RollBackException{
     if(AssessmentRoundId > 0){
@@ -57,19 +60,23 @@ public class CampusAssessmentBusiness  {
             ae = (AccountEntry) I.next();
             Amount = ae.getPrice();
             Aid = new Integer(ae.getAccountId());
-            if(!ae.getStatus().equals(ae.statusCreated))
-              throw new SQLException("Billed Entries");
-            ae.delete();
             if( H.containsKey( Aid ) ){
               a = (Account) H.get(Aid);
             }
             else{
               a = new Account(ae.getAccountId());
+              H.put(new Integer(a.getID()),a);
             }
+            if(!ae.getStatus().equals(ae.statusCreated))
+              throw new SQLException("Billed Entries");
+            ae.delete();
+
             // lowering the account
             a.addKredit( Amount);
             V.add(a);
+            a.update();
           }
+          /*
           Iterator hi = V.iterator();
           while(hi.hasNext()){
             a = (Account) hi.next();
@@ -91,7 +98,185 @@ public class CampusAssessmentBusiness  {
       }
     }
   }
+  */
 
+   public static void rollBackAssessment(int AssessmentRoundId) throws RollBackException{
+    EntityBulkUpdater bulk = new EntityBulkUpdater();
+    Hashtable H = new Hashtable();
+    Vector V = new Vector();
+    if(AssessmentRoundId > 0){
+      AssessmentRound AR = new AssessmentRound();
+      try{
+        AR = new AssessmentRound(AssessmentRoundId);
+
+      List L = AccountManager.listOfAccountEntries(AR.getID());
+
+      if(L!=null){
+        Iterator I = L.iterator();
+        AccountEntry ae;
+        Account a;
+        Integer Aid;
+        float Amount;
+        while(I.hasNext()){
+          ae = (AccountEntry) I.next();
+          if(ae.getStatus().equals(ae.statusCreated)){
+            Amount = ae.getPrice();
+            Aid = new Integer(ae.getAccountId());
+            if( H.containsKey( Aid ) ){
+              a = (Account) H.get(Aid);
+            }
+            else{
+              a = new Account(ae.getAccountId());
+              H.put(new Integer(a.getID()),a);
+            }
+            bulk.add(ae,bulk.delete);
+            // lowering the account
+            a.addKredit( Amount);
+          }
+        }
+      }
+      }
+      catch(Exception ex){ throw new RollBackException();}
+      bulk.addAll(H.values(),bulk.update);
+      bulk.execute();
+    }
+  }
+/*
+  public static AssessmentRound assessFinance(idegaTimestamp paydate,String roundName,String accountType,int iCashierId)throws CampusFinanceException{
+
+    List listOfTariffs = Finder.listOfTariffs();
+    List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
+		//Map mapOfContracts = ContractFinder.mapOfApartmentUsersBy();
+    int iAccountCount = 0;
+    if(listOfTariffs !=null){
+      if(listOfUsers!=null){
+        int rlen = listOfUsers.size();
+        int tlen = listOfTariffs.size();
+        Tariff eTariff;
+        char cAttribute;
+        ContractAccountApartment user;
+        Vector vEntries = new Vector();
+        int iAttributeId = -1;
+        int iRoundId  = -1;
+        AssessmentRound AR = null;
+        try {
+          AR = new AssessmentRound();
+          AR.setAsNew(roundName);
+          AR.setType(Account.typeFinancial);
+          AR.insert();
+          iRoundId = AR.getID();
+        }
+        catch (SQLException ex) {
+          ex.printStackTrace();
+          try {
+            AR.delete();
+          }
+          catch (SQLException ex2) {
+            ex2.printStackTrace();
+            AR = null;
+          }
+        }
+
+        if(AR != null){
+        javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+
+        try{
+          t.begin();
+          int totals = 0;
+           int totalAmount = 0;
+          // All tenants accounts (Outer loop)
+          for(int o = 0; o < rlen ; o++){
+            user = (ContractAccountApartment)listOfUsers.get(o);
+            Account eAccount = new Account(user.getAccountId());
+            totalAmount = 0;
+            float Amount = 0;
+            // For each tariff (Inner loop)
+            for (int i=0; i < tlen ;i++ ) {
+              Amount = 0;
+              eTariff = (Tariff) listOfTariffs.get(i);
+              String sAttribute = eTariff.getTariffAttribute();
+              // If we have an tariff attribute
+              if(sAttribute != null){
+                iAttributeId = -1;
+                cAttribute = sAttribute.charAt(0);
+                // If All
+                if(cAttribute == cAll){
+                  Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
+                }
+                // other than all
+                else{
+                  // attribute check
+                  if(sAttribute.length() >= 3){
+                  iAttributeId = Integer.parseInt(sAttribute.substring(2));
+                    switch (cAttribute) {
+                      case cType: // Apartment type
+                        if(iAttributeId == user.getApartmentTypeId())
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
+                      break;
+                      case cCategory  : // Apartment category
+                        if(iAttributeId == user.getApartmentCategoryId())
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
+                      break;
+                      case cBuilding  : // Building
+                        if(iAttributeId == user.getBuildingId())
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
+                      break;
+                      case cFloor     : // Floor
+                        if(iAttributeId == user.getFloorId())
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
+                      break;
+                      case cComplex   : // Complex
+                        if(iAttributeId == user.getComplexId())
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
+                      break;
+                      case cApartment : // Apartment
+                        if(iAttributeId == user.getApartmentId())
+                          Amount = insertEntry(vEntries,eTariff,user.getAccountId(),iRoundId,paydate,iCashierId);
+                      break;
+                    }// switch
+                  } // attribute check
+                }// other than all
+                if(sAttribute.length() >= 3){
+                  iAttributeId = Integer.parseInt(sAttribute.substring(2));
+                }
+                totalAmount += Amount;
+
+              }
+            } // Inner loop block
+            totals += totalAmount*-1;
+            eAccount.setBalance(eAccount.getBalance()+totalAmount);
+            eAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+            eAccount.update();
+            iAccountCount++;
+          } // Outer loop block
+          AR.setTotals((float)(totals));
+          AR.setAccountCount(iAccountCount);
+          AR.update();
+          t.commit();
+          return AR;
+        } // Try block
+        catch(Exception e) {
+          try {
+            t.rollback();
+          }
+          catch(javax.transaction.SystemException ex) {
+            ex.printStackTrace();
+          }
+          e.printStackTrace();
+          throw new CampusFinanceException();
+        }
+        }
+      }
+      else
+        throw new CampusFinanceException("No Users :");
+    }
+    else
+      throw new CampusFinanceException("No Tariffs :");
+
+    return null;
+  }
+
+  */
   public static AssessmentRound assessFinance(idegaTimestamp paydate,String roundName,String accountType,int iCashierId)throws CampusFinanceException{
 
     List listOfTariffs = Finder.listOfTariffs();
@@ -227,7 +412,7 @@ public class CampusAssessmentBusiness  {
   }
 
   public static AssessmentRound assessPhones(idegaTimestamp paydate,String roundName,String accountType,int iAccountKeyId,int iCashierId)throws CampusFinanceException{
-    //List listOfUsers = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
+    //List listOfAccounts = CampusAccountFinder.listOfRentingUserAccountsByType(accountType);
     List listOfAccounts = CampusAccountFinder.listOfContractAccounts();
     if(listOfAccounts != null){
       //System.err.println("phoneaccounts :"+listOfUsers.size());

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.3 2001/11/14 16:04:35 aron Exp $
+ * $Id: ContractFinder.java,v 1.4 2001/12/05 21:57:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -96,6 +96,15 @@ public abstract class ContractFinder {
   public static List listOfApartmentContracts(int iApartmentId,String status){
     try {
       return(EntityFinder.findAllByColumnDescendingOrdered( new Contract(),Contract.getApartmentIdColumnName(),String.valueOf(iApartmentId ),Contract.getStatusColumnName(),status,Contract.getValidToColumnName()));
+    }
+    catch(SQLException e){
+      return(null);
+    }
+  }
+
+   public static List listOfApartmentContracts(int iApartmentId,boolean rented){
+    try {
+      return EntityFinder.findAllByColumnDescendingOrdered( new Contract(),Contract.getApartmentIdColumnName(),String.valueOf(iApartmentId ),Contract.getRentedColumnName(),(rented? "Y":"N"),Contract.getValidToColumnName());
     }
     catch(SQLException e){
       return(null);

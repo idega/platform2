@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccountApartment.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: ContractAccountApartment.java,v 1.2 2001/12/05 21:57:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -16,29 +16,24 @@ import java.lang.IllegalStateException;
 import java.sql.SQLException;
 
 /**
- *
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * Title:   idegaclasses
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
+
 public class ContractAccountApartment extends GenericEntity {
  /*
-  "CAM_CONTRACT_ID",
-  "IC_USER_ID",
-  "BU_APARTMENT_ID",
-  "FIN_ACCOUNT_ID",
-  "FIN_CASHIER_ID",
-  "BALANCE",
-  "BU_APRT_TYPE_ID";
-*/
-
-/*
- CREATE VIEW "V_CONT_ACCT_APRT" (
+  CREATE VIEW "V_CONT_ACCT_APRT" (
   "CAM_CONTRACT_ID",
   "IC_USER_ID",
   "BU_APARTMENT_ID",
   "FIN_ACCOUNT_ID",
   "FIN_ACCOUNT_TYPE",
   "BALANCE",
+  "ACCOUNT_NAME",
   "BU_APRT_TYPE_ID",
   "BU_APRT_CAT_ID",
   "BU_FLOOR_ID",
@@ -47,8 +42,10 @@ public class ContractAccountApartment extends GenericEntity {
 ) AS
 
 
+
  select cc.cam_contract_id,cc.ic_user_id,cc.bu_apartment_id,
-fa.fin_account_id,fa.account_type, fa.balance,ba.bu_aprt_type_id , bc.bu_aprt_cat_id,
+fa.fin_account_id,fa.account_type, fa.balance,fa.name,
+ba.bu_aprt_type_id , bc.bu_aprt_cat_id,
 bf.bu_floor_id,bb.bu_building_id,bx.bu_complex_id
 from cam_contract cc,fin_account fa,bu_apartment ba,
 bu_floor bf,bu_building bb,bu_complex bx,bu_aprt_cat bc,bu_aprt_type bt
@@ -69,6 +66,7 @@ and cc.status = 'S'
   public static String getAccountIdColumnName(){return "FIN_ACCOUNT_ID";}
   public static String getAccountTypeColumnName(){return "FIN_ACCOUNT_TYPE";}
   public static String getBalanceColumnName(){return "BALANCE";}
+  public static String getAccountNameColumnName(){return "ACCOUNT_NAME";}
   public static String getApartmentTypeIdColumnName(){return "BU_APRT_TYPE_ID";}
   public static String getApartmentCategoryIdColumnName(){return "BU_APRT_CAT_ID";}
   public static String getFloorIdColumnName(){return "BU_FLOOR_ID";}
@@ -82,17 +80,18 @@ and cc.status = 'S'
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getContractIdColumnName(),"Contract id",true,true,"java.lang.Integer");
-    addAttribute(getUserIdColumnName(),"User id",true,true,"java.lang.Integer");
-    addAttribute(getApartmentIdColumnName(),"Apartment id",true,true,"java.lang.Integer");
-    addAttribute(getAccountIdColumnName(),"Account id",true,true,"java.lang.Integer");
-    addAttribute(getAccountTypeColumnName(),"Account type",true,true,"java.lang.String");
-    addAttribute(getBalanceColumnName(),"Balance",true,true,"java.lang.Integer");
-    addAttribute(getApartmentTypeIdColumnName(),"Apartmenttype id",true,true,"java.lang.Integer");
-    addAttribute(getApartmentCategoryIdColumnName(),"Apartmentcategory id",true,true,"java.lang.Integer");
-    addAttribute(getFloorIdColumnName(),"Floor id",true,true,"java.lang.Integer");
-    addAttribute(getBuildingIdColumnName(),"Building id",true,true,"java.lang.Integer");
-    addAttribute(getComplexIdColumnName(),"Complex id",true,true,"java.lang.Integer");
+    addAttribute(getContractIdColumnName(),"Contract id",true,true,java.lang.Integer.class);
+    addAttribute(getUserIdColumnName(),"User id",true,true,java.lang.Integer.class);
+    addAttribute(getApartmentIdColumnName(),"Apartment id",true,true,java.lang.Integer.class);
+    addAttribute(getAccountIdColumnName(),"Account id",true,true,java.lang.Integer.class);
+    addAttribute(getAccountTypeColumnName(),"Account type",true,true,java.lang.String.class);
+    addAttribute(getBalanceColumnName(),"Balance",true,true,java.lang.Integer.class);
+    addAttribute(getAccountNameColumnName(),"Account name",true,true,java.lang.String.class);
+    addAttribute(getApartmentTypeIdColumnName(),"Apartmenttype id",true,true,java.lang.Integer.class);
+    addAttribute(getApartmentCategoryIdColumnName(),"Apartmentcategory id",true,true,java.lang.Integer.class);
+    addAttribute(getFloorIdColumnName(),"Floor id",true,true,java.lang.Integer.class);
+    addAttribute(getBuildingIdColumnName(),"Building id",true,true,java.lang.Integer.class);
+    addAttribute(getComplexIdColumnName(),"Complex id",true,true,java.lang.Integer.class);
   }
   public String getEntityName() {
     return(getEntityTableName());
@@ -115,8 +114,12 @@ and cc.status = 'S'
   public int getAccountType(){
     return getIntColumnValue(getAccountTypeColumnName());
   }
-  public int getBalanceId(){
+  public int getBalance(){
     return getIntColumnValue(getBalanceColumnName());
+  }
+
+  public String getAccountName(){
+    return getStringColumnValue(getAccountNameColumnName());
   }
   public int getApartmentCategoryId(){
     return getIntColumnValue(getApartmentCategoryIdColumnName());

@@ -8,6 +8,7 @@ import com.idega.block.finance.data.*;
 import com.idega.block.building.data.*;
 import com.idega.block.finance.business.*;
 import com.idega.block.building.business.BuildingFinder;
+import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.data.GenericEntity;
 import com.idega.presentation.IWContext;
@@ -29,7 +30,9 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
 
 import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.finance.business.CampusAccountFinder;
 import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.data.ContractAccountApartment;
 
 
 /**
@@ -218,22 +221,26 @@ public class CampusAssessments extends PresentationObjectContainer {
     Table T = new Table();
     String id = iwc.getParameter("ass_round_id");
     if(id != null){
-      List L = Finder.listOfAccountsInAssessmentRound(Integer.parseInt(id));
+      //List L = Finder.listOfAccountsInAssessmentRound(Integer.parseInt(id));
+      List L = CampusAccountFinder.listOfContractAccountApartmentsInAssessment(Integer.parseInt(id));
       if(L!= null){
         int len = L.size();
         T.add(Edit.titleText(iwrb.getLocalizedString("account_name","Account name")),1,1);
-        T.add(Edit.titleText(iwrb.getLocalizedString("account_stamp","Last updated")),2,1);
+        //T.add(Edit.titleText(iwrb.getLocalizedString("account_stamp","Last updated")),2,1);
+        T.add(Edit.titleText(iwrb.getLocalizedString("apartment_name","Apartment")),2,1);
         T.add(Edit.titleText(iwrb.getLocalizedString("totals","Balance")),3,1);
 
         int col = 1;
         int row = 2;
-        Account A;
+        ContractAccountApartment A;
+
         java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
         for (int i = 0; i < len; i++) {
           col = 1;
-          A = (Account) L.get(i);
-          T.add(Edit.formatText(A.getName()),col++,row);
-          T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
+          A = (ContractAccountApartment) L.get(i);
+          T.add(Edit.formatText(A.getAccountName()),col++,row);
+          T.add(Edit.formatText(BuildingCacher.getApartmentString(A.getApartmentId())),col++,row);
+          //T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
           T.add(Edit.formatText(nf.format(A.getBalance())),col++,row);
           row++;
         }

@@ -1,5 +1,5 @@
 /*
- * $Id: Contract.java,v 1.2 2001/11/19 13:48:55 aron Exp $
+ * $Id: Contract.java,v 1.3 2001/12/05 21:57:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,11 +28,12 @@ public class Contract extends GenericEntity {
   private static final String validFrom_ = "valid_from";
   private static final String validTo_ = "valid_to";
   private static final String status_ = "status";
+  private static final String rented_ = "rented";
   private static final String applicantId_ = "app_applicant_id";
   private static final String resignInfo_ = "resign_info";
   private static final String statusDate_ = "status_date";
   private static final String movingDate_ = "moving_date";
-	private static final String file_ = "ic_file_id";
+  private static final String file_ = "ic_file_id";
 
   public static final String statusCreated = "C";
   public static final String statusPrinted = "P";
@@ -50,8 +51,9 @@ public class Contract extends GenericEntity {
   public static String getUserIdColumnName(){return userId_;}
   public static String getResignInfoColumnName(){return resignInfo_ ;}
   public static String getStatusDateColumnName(){return movingDate_ ;}
+  public static String getRentedColumnName(){return rented_ ;}
   public static String getMovingDateColumnName(){return movingDate_ ;}
-	public static String getFileColumnName(){return file_;}
+  public static String getFileColumnName(){return file_;}
   public static String getContractEntityName(){return name_;}
 
 
@@ -71,6 +73,7 @@ public class Contract extends GenericEntity {
     addAttribute(statusDate_,"Resign date",true,true,java.sql.Date.class);
     addAttribute(movingDate_,"Moving date",true,true,java.sql.Date.class);
     addAttribute(status_,"Status",true,true,java.lang.String.class,1);
+    addAttribute(rented_,"Rented",true,true,java.lang.Boolean.class,1);
     addAttribute(resignInfo_,"Resign info",true,true,java.lang.String.class,4000);
     addAttribute(file_,"File id",true,true,java.lang.Integer.class);
   }
@@ -163,6 +166,14 @@ public class Contract extends GenericEntity {
 
   public void setResignInfo(String info){
      setColumn(resignInfo_ , info);
+  }
+
+  public String getIsRented(){
+    return getStringColumnValue( rented_);
+  }
+
+  public void setIsRented(boolean rented){
+     setColumn(rented_ , rented);
   }
 
   public void setStatus(String status) throws IllegalStateException {

@@ -28,6 +28,27 @@ public class CampusAccountFinder  {
    }
   }
 
+  public static List listOfContractAccountApartmentsInAssessment(int iAssessmentId){
+    StringBuffer sql = new StringBuffer("select distinct v.* from V_CONT_ACCT_APRT v");
+    sql.append(" where v.fin_account_id in ( ");
+    sql.append(" select a.fin_account_id ");
+    sql.append("from fin_acc_entry e,fin_assessment_round r, fin_account a ");
+    sql.append(" where a.fin_account_id = e.fin_account_id ");
+    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
+    sql.append(" and r.fin_assessment_round_id = ");
+    sql.append(iAssessmentId);
+    sql.append(" )");
+    //System.print
+    try {
+      return EntityFinder.findAll(new ContractAccountApartment(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+
+  }
+
   public static List listOfRentingUserAccountsByType(String type){
    String sql = "select * from V_CONT_ACCT_APRT where fin_account_type = '"+type+"'";
    try {

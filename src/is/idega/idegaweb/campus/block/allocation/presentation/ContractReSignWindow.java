@@ -61,6 +61,9 @@ public class ContractReSignWindow extends Window{
   */
 
   public ContractReSignWindow() {
+    setWidth(300);
+    setHeight(300);
+    setResizable(true);
   }
 
   protected void control(IWContext iwc){

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.2 2001/11/19 00:29:05 aron Exp $
+ * $Id: ContractBusiness.java,v 1.3 2001/12/05 21:57:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -47,7 +47,7 @@ import com.idega.block.application.data.Application;
  * Description:
  * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
  * Company:      idega
-  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
  */
 public  class ContractBusiness {
@@ -71,39 +71,40 @@ public  class ContractBusiness {
         }
         if(newAccount){
           String prefix = iwrb.getLocalizedString("finance","Finance");
-					//System.err.println("adding finance account ");
+          //System.err.println("adding finance account ");
           AccountManager.makeNewFinanceAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId);
         }
         if(newPhoneAccount){
-					//System.err.println("adding phone account ");
+          //System.err.println("adding phone account ");
           String prefix = iwrb.getLocalizedString("phone","Phone");
           AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",iCashierId);
         }
         if(newLogin  && iGroupId > 0){
-					//System.err.println("creating login "+login);
+          //System.err.println("creating login "+login);
           createLogin( iUserId,iGroupId,login,pass,generatePasswd );
         }
 
-				//System.err.println("deleteing from waitinglist ");
+        //System.err.println("deleteing from waitinglist ");
         deleteFromWaitingList(eContract);
 
-				//System.err.println("changing application status ");
+        //System.err.println("changing application status ");
         changeApplicationStatus( eContract);
 
         if(sendMail){
           sendMail(iUserId,login,pass,iwrb);
         }
 
-				//System.err.println("changing contract status ");
+        //System.err.println("changing contract status ");
         eContract.setStatusSigned();
-				//System.err.println("updateing contract ");
+        eContract.setIsRented(true);
+        //System.err.println("updateing contract ");
         eContract.update();
-				//System.err.println("lets try to commit");
+        //System.err.println("lets try to commit");
       }
 
 
      t.commit();
-		 //System.err.println("done committing ");
+     //System.err.println("done committing ");
 
     }
     catch(Exception e) {

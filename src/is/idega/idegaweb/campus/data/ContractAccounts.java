@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccounts.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: ContractAccounts.java,v 1.2 2001/12/05 21:57:25 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,6 +25,54 @@ import java.sql.SQLException;
  * @version 1.1
  */
 public class ContractAccounts extends GenericEntity {
+
+/*
+
+CREATE VIEW  "V_CONTRACT_ACCOUNTS" (
+"CAM_CONTRACT_ID",
+"IC_USER_ID",
+"BU_APARTMENT_ID",
+"FIN_ACCOUNT_ID",
+"PHONE_ACCOUNT_ID",
+"FIN_BALANCE",
+"PHONE_BALANCE",
+"BU_APRT_TYPE_ID",
+"BU_APRT_CAT_ID",
+"BU_FLOOR_ID",
+"BU_BUILDING_ID",
+"BU_COMPLEX_ID",
+"CONTRACT_STATUS"
+) AS
+
+select
+cc.cam_contract_id,
+cc.ic_user_id,
+cc.bu_apartment_id,
+fa.fin_account_id,
+fa2.fin_account_id phone_account_id,
+fa.balance fin_balance,
+fa2.balance phone_balance,
+ba.bu_aprt_type_id ,
+bc.bu_aprt_cat_id,
+bf.bu_floor_id,
+bb.bu_building_id,
+bx.bu_complex_id,
+cc.status contract_status
+
+from cam_contract cc,fin_account fa, fin_account fa2,bu_apartment ba,
+bu_floor bf,bu_building bb,bu_complex bx,bu_aprt_cat bc,bu_aprt_type bt
+where cc.ic_user_id = fa.ic_user_id
+and cc.bu_apartment_id = ba.bu_apartment_id
+and ba.bu_floor_id = bf.bu_floor_id
+and bf.bu_building_id = bb.bu_building_id
+and bb.bu_complex_id = bx.bu_complex_id
+and ba.bu_aprt_type_id = bt.bu_aprt_type_id
+and bt.bu_aprt_cat_id = bc.bu_aprt_cat_id
+and fa.ic_user_id = fa2.ic_user_id
+and fa.account_type = 'FINANCE'
+and fa2.account_type = 'PHONE'
+and cc.status = 'S';
+*/
 
   public static String getEntityTableName(){return "V_CONTRACT_ACCOUNTS";}
   public static String getColumnNameContractId(){return "CAM_CONTRACT_ID";}

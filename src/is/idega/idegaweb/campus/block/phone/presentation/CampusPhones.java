@@ -257,10 +257,10 @@ public class CampusPhones extends PresentationObjectContainer implements IWEvent
     }
     else
       add(Edit.formatText(iwrb.getLocalizedString("no_apartments","No Apartments")));
-
+    form.add(T);
     form.add(new SubmitButton("save",iwrb.getLocalizedString("save","Save")));
     form.setEventListener(this.getClassName());
-    form.add(T);
+
     return form;
 
 
