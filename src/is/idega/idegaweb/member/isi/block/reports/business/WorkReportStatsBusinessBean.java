@@ -3433,7 +3433,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						regData.addData(divisionName, leagueIdentifier);
 						
 						// Find if annual report is in or missing
-						Collection records = getWorkReportBusiness().getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupId(report.getGroupId().intValue(),league.getGroupId().intValue());
+						Collection records = getWorkReportBusiness().getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupId(((Integer)report.getPrimaryKey()).intValue(),((Integer)league.getPrimaryKey()).intValue());
 						boolean hasData = (records!=null && !records.isEmpty());
 						String status;
 						if(hasData) {
