@@ -54,7 +54,6 @@ import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
-import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
