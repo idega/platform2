@@ -91,10 +91,13 @@ public class ProductCatalog extends CategoryBlock{
   private AbstractProductCatalogLayout layout = null;
 
   public ProductCatalog() {
-//    super.setCacheable(CACHE_KEY, 999999999);
+    super.setCacheable(getCacheKey(), 999999999);//CACHE_KEY, 999999999);
     super.setAutoCreate(false);
   }
 
+  public String getCacheKey(){
+    return CACHE_KEY;
+  }
   public void main(IWContext iwc) throws RemoteException, FinderException {
     init(iwc);
     catalog(iwc);
@@ -196,11 +199,11 @@ public class ProductCatalog extends CategoryBlock{
       PresentationObject po = layout.getCatalog(this, iwc, productCategories);
 
       table.add(po);
-      if (hasEditPermission()) {
+/*      if (hasEditPermission()) {
         Link clearCache = new Link(iwrb.getLocalizedImageButton("clear_cache","Clear cache"));
           clearCache.addParameter(prmClrCache, "true");
         table.add(clearCache, 1, 2);
-      }
+      }*/
 
       add(table);
     }catch (IllegalAccessException iae) {
@@ -560,12 +563,16 @@ public class ProductCatalog extends CategoryBlock{
     }
   }
 
+
   protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
     Product prod =getSelectedProduct(iwc);
+//    System.out.println("[ProductCatalog] gettingCacheState");
     String returnString = cacheStatePrefix+getICObjectInstanceID();
+
     if ( iwc.isParameterSet(CATEGORY_ID) ) {
       returnString = returnString+"_"+iwc.getParameter(CATEGORY_ID);
     }
+
     if (prod != null) {
       try {
         returnString = returnString+"_"+prod.getID();
@@ -573,6 +580,7 @@ public class ProductCatalog extends CategoryBlock{
         throw new RuntimeException(re.getMessage());
       }
     }
+
     return returnString;
   }
 

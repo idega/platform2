@@ -98,7 +98,8 @@ public abstract class CategoryBlock extends Block{
    *  @returns Collection
    */
   public Collection getCategories(){
-    return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID());
+      return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID(), orderManually);
+//      return CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(getICObjectInstanceID());
   }
 
   protected void initCategory(IWContext iwc){
@@ -146,8 +147,10 @@ public abstract class CategoryBlock extends Block{
     if (orderManually) {
       L.addParameter(CategoryWindow.prmOrder, "true");
     }
-    if(invalidateBlockCache && getCacheKey().equals(IW_BLOCK_CACHE_KEY)){
-      L.addParameter(CategoryWindow.prmCategoryId,getCacheKey());
+    if(invalidateBlockCache && !getCacheKey().equals(IW_BLOCK_CACHE_KEY)){
+//      L.addParameter(CategoryWindow.prmCategoryId,getCacheKey());
+//      L.addParameter(CategoryWindow.prmCacheClearKey ,getCacheKey());
+      L.addParameter(CategoryWindow.prmCacheClearKey ,super.getDerivedCacheKey());
     }
 
     L.setWindowToOpen(CategoryWindow.class);

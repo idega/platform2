@@ -221,7 +221,7 @@ public class BookingOverview extends TravelManager {
           tframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
           tframeText.addToText(":");
 
-      DropdownMenu trip = null;
+      DropdownMenu trip = new DropdownMenu();
         if (supplier != null) {
           trip = getProductBusiness(iwc).getDropdownMenuWithProducts(iwc, supplier.getID());
           // new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));

@@ -52,7 +52,7 @@ public class CategoryWindow extends IWAdminWindow {
 	public  final static String prmCategoryType = "iccat_type";
   public  final static String prmMulti = "iccat_multi";
   public  final static String prmOrder = "iccat_order";
-  private static final String prmCacheClearKey = "iccat_cache_clear";
+  public static final String prmCacheClearKey = "iccat_cache_clear";
 
   private static final String actDelete = "iccat_del";
   private static final String actSave = "iccat_save";
@@ -93,10 +93,11 @@ public class CategoryWindow extends IWAdminWindow {
 		}
 
     if( iwc.isParameterSet(prmCacheClearKey)){
-			sCacheKey = iwc.getParameter(prmCacheClearKey );
-      if(iwc.getApplication().getIWCacheManager().isCacheValid(sCacheKey))
+      sCacheKey = iwc.getParameter(prmCacheClearKey );
+      if(iwc.getApplication().getIWCacheManager().isCacheValid(sCacheKey)) {
         iwc.getApplication().getIWCacheManager().invalidateCache(sCacheKey);
-		}
+      }
+    }
 
 
 
@@ -145,7 +146,7 @@ public class CategoryWindow extends IWAdminWindow {
              savedids = new int[sids.length];
             for (int i = 0; i < savedids.length; i++) {
               savedids[i] = Integer.parseInt(sids[i]);
-            //	      System.err.println("save id "+savedids[i]);
+//            	      System.err.println("save id "+savedids[i]);
             }
             CategoryBusiness.getInstance().updateCategory(iCategoryId,sName,sDesc, Integer.parseInt(sOrder), iObjectInstanceId);
             CategoryBusiness.getInstance().saveRelatedCategories(iObjectInstanceId,savedids);
@@ -254,6 +255,10 @@ public class CategoryWindow extends IWAdminWindow {
           deleteLink.addParameter(prmCategoryType,sType);
           deleteLink.addParameter(prmObjInstId,String.valueOf(iObjectInstanceId));
           deleteLink.addParameter(actForm,"true");
+          if (this.sCacheKey != null) {
+            Li.addParameter(this.prmCacheClearKey, this.sCacheKey);
+            deleteLink.addParameter(this.prmCacheClearKey, this.sCacheKey);
+          }
           if (allowOrdering) {
             Li.addParameter(prmOrder, "true");
             deleteLink.addParameter(prmOrder, "true");
@@ -287,6 +292,9 @@ public class CategoryWindow extends IWAdminWindow {
         Link li = new Link(iwrb.getLocalizedImageButton("new","New"));
         li.addParameter(prmCategoryType,sType);
         li.addParameter(prmObjInstId,String.valueOf(iObjectInstanceId));
+        if (this.sCacheKey != null) {
+          li.addParameter(this.prmCacheClearKey, this.sCacheKey);
+        }
         if (allowOrdering) {
           li.addParameter(prmOrder, "true");
         }
@@ -306,6 +314,9 @@ public class CategoryWindow extends IWAdminWindow {
     if (allowOrdering) {
       addHiddenInput( new HiddenInput(prmOrder, "true"));
     }
+    if (this.sCacheKey != null) {
+      addHiddenInput( new HiddenInput(this.prmCacheClearKey, this.sCacheKey));
+    }
 
   }
 
@@ -317,6 +328,9 @@ public class CategoryWindow extends IWAdminWindow {
   }
 
   public static Link getWindowLink(int iCategoryId,int iInstanceId,String type,boolean multible, boolean allowOrdering){
+    return getWindowLink(iCategoryId, iInstanceId, type, multible, allowOrdering, null);
+  }
+  public static Link getWindowLink(int iCategoryId,int iInstanceId,String type,boolean multible, boolean allowOrdering, String cacheKey){
     Link L = new Link();
     L.addParameter(CategoryWindow.prmCategoryId,iCategoryId);
     L.addParameter(CategoryWindow.prmObjInstId,iInstanceId);
@@ -326,6 +340,9 @@ public class CategoryWindow extends IWAdminWindow {
     }
     if (allowOrdering) {
       L.addParameter(CategoryWindow.prmOrder,"true");
+    }
+    if (cacheKey != null) {
+      L.addParameter(prmCacheClearKey, cacheKey);
     }
     L.setWindowToOpen(CategoryWindow.class);
     return L;
