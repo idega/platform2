@@ -116,6 +116,10 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
       return getUserBusiness().generateUserLogin(user);
     }
     catch(Exception e){
+    	/**
+    	 * @todo: remove printStackTrace
+    	 */
+      e.printStackTrace();
       throw new com.idega.data.IDOCreateException(e);
     }
   }
