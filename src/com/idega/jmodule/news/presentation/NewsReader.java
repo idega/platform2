@@ -25,6 +25,7 @@ public class NewsReader extends JModuleObject{
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private boolean isAdmin=false;
+private boolean askForPermission = true;
 private boolean showNewsCollectionButton=true;
 private boolean byDate=false;
 private int categoryId = 0;
@@ -114,7 +115,9 @@ public NewsReader(int categoryId, idegaTimestamp timestamp){
 
 public void main(ModuleInfo modinfo)throws Exception{
 
-  this.isAdmin=this.isAdministrator(modinfo);
+  if(askForPermission){
+    this.isAdmin=this.isAdministrator(modinfo);
+  }
   IWBundle iwb = getBundle(modinfo);
   IWResourceBundle iwrb = getResourceBundle(modinfo);
 
@@ -768,6 +771,7 @@ public void setNumberOfDisplayedNews(int numberOfDisplayedNews){
 
 public void setAdmin(boolean isAdmin){
   this.isAdmin=isAdmin;
+  this.askForPermission = false;
 }
 
 public void setFromDate(String SQLdate){
