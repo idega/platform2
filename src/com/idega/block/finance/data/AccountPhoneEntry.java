@@ -28,15 +28,14 @@ public class AccountPhoneEntry extends GenericEntity {
     addAttribute(getColumnNameSubNumber(),"sub number",true,true,String.class);
     addAttribute(getColumnNamePhonedNumber(),"main number",true,true,String.class);
     addAttribute(getColumnNamePhonedStamp(),"phone stamp",true,true,java.sql.Timestamp.class);
-    addAttribute(getColumnNameDayDuration(),"main number",true,true,Integer.class);
-    addAttribute(getColumnNameNightDuration(),"phone stamp",true,true,Integer.class);
-    addAttribute(getColumnNameDuration(),"sub number",true,true,Integer.class);
+    addAttribute(getColumnNameDayDuration(),"day duration",true,true,Integer.class);
+    addAttribute(getColumnNameNightDuration(),"night duration",true,true,Integer.class);
+    addAttribute(getColumnNameDuration(),"duration",true,true,Integer.class);
     addAttribute(getColumnNamePrice(),"price",true,true,Float.class);
     addAttribute(getColumnNameLastUpdated(),"Last updated",true,true,java.sql.Timestamp.class);
-    addAttribute(getColumnNameCashierId(),"Cashier",true,true,Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
   }
 
-  public static String getEntityTableName(){ return "FIN_ACC_ENTRY"; }
+  public static String getEntityTableName(){ return "FIN_PHONE_ENTRY"; }
   public static String getColumnNameAccountId(){ return "FIN_ACCOUNT_ID"; }
   public static String getColumnNameCashierId(){ return "FIN_CASHIER_ID"; }
   public static String getColumnNameMainNumber(){ return "MAIN_NUMBER"; }
