@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.CreateException;
@@ -1908,17 +1909,9 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			return false; //no divisions
 		}
 
-		ArrayList emptyLeagues = new ArrayList();
-
-		Iterator iter = leagues.iterator();
-		while (iter.hasNext()) {
-			WorkReportGroup league = (WorkReportGroup)iter.next();
-			Collection members = getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(workReportId, league);
-			if (members.isEmpty()) {
-				emptyLeagues.add(league.getPrimaryKey());
-			}
-		}
-
+		
+		List emptyLeagues = getAllWorkReportGroupsPrimaryKeysWithNoMembers(workReportId);
+		
 		if (emptyLeagues.isEmpty()) {
 			System.out.println("No empty divisions for work report id : " + workReportId);
 			return false;
@@ -1937,17 +1930,186 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			return false;
 
 		}
+	
+  }
+  
+  
+	public boolean isBoardMissingForDivisionWithMembersOrYearlyAccount(int workReportId) {
+		WorkReportBoardMemberHome boardHome = getWorkReportBoardMemberHome();
+		WorkReportClubAccountRecordHome recHome = getWorkReportClubAccountRecordHome();
+		Collection records = null;
+		Collection leagues = null;
+		boolean checkForAccount = false;
+		
+		WorkReport report = this.getWorkReportById(workReportId);
+	
+		try {
+			leagues = report.getLeagues();
+		}
+		catch (IDOException e) {
+			System.out.println("No divisions for work report id : "+workReportId);
+			return false;//no divisions
+		}
+		
+		try {
+			records = recHome.findAllRecordsByWorkReportId(workReportId);
+			checkForAccount = true;
+		}
+		catch (FinderException e1) {
+			System.out.println("No account records for work report id : "+workReportId);
+		}
 
+
+		List nonEmptyLeagues = getAllWorkReportGroupsPrimaryKeysThatHaveMembers(workReportId);
+
+		Iterator primaryKeys = nonEmptyLeagues.iterator();
+		
+		//the real check happens here
+		while (primaryKeys.hasNext()) {
+			Integer workGroupID = (Integer) primaryKeys.next();
+			Collection boardMembers;
+			try {
+				boardMembers = boardHome.findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(workReportId,workGroupID.intValue());
+			}
+			catch (FinderException e2) {
+				System.out.println("Board members missing for a division");
+				//e2.printStackTrace();
+				return true;
+			}			
+		}
+		
+		if(checkForAccount){
+			Map leaguesMap = new HashMap();
+			Iterator recs = records.iterator();
+			//the real check happens here
+			while (recs.hasNext()) {
+				WorkReportClubAccountRecord rec = (WorkReportClubAccountRecord) recs.next();
+				leaguesMap.put(new Integer(rec.getWorkReportGroupId()),new Integer(rec.getWorkReportGroupId()));
+			}
+			
+			Iterator iter = leaguesMap.keySet().iterator();
+			Collection boardMembers;
+			
+			while (iter.hasNext()) {
+				Integer wrGroupId = (Integer) iter.next();
+		
+				try {
+					boardMembers = boardHome.findAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(workReportId,wrGroupId.intValue());
+				}
+				catch (FinderException e2) {
+					System.out.println("Board members missing for a division with account info");
+					//e2.printStackTrace();
+					return true;
+				}	
+			}
+		}
+		
+		
+		return false;
 	}
 
-	public boolean isBoardMissingForDivisionWithMembersOrYearlyAccount(int workReportId) {
+	
+	public List getAllWorkReportGroupsPrimaryKeysWithNoMembers(int workReportId){
+		ArrayList emptyLeagues = new ArrayList();
+		WorkReport report = this.getWorkReportById(workReportId);
+		Collection leagues = null;
+		try {
+			leagues = report.getLeagues();
+		}
+		catch (IDOException e) {
+			return ListUtil.getEmptyList();
+		}
+		
+		Iterator iter = leagues.iterator();
+		while (iter.hasNext()) {
+			WorkReportGroup league = (WorkReportGroup) iter.next();
+			Collection members = getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(workReportId,league);
+			if(members.isEmpty()){
+				emptyLeagues.add(league.getPrimaryKey());
+			}
+		}
+		
+		return emptyLeagues;
+	}
+	
+	public List getAllWorkReportGroupsPrimaryKeysThatHaveMembers(int workReportId){
+		ArrayList nonEmptyLeagues = new ArrayList();
+		WorkReport report = this.getWorkReportById(workReportId);
+		Collection leagues = null;
 
-		return false;
+		try {
+			leagues = report.getLeagues();
+		}
+		catch (IDOException e) {
+			return ListUtil.getEmptyList();
+		}
+		
+		Iterator iter = leagues.iterator();
+		while (iter.hasNext()) {
+			WorkReportGroup league = (WorkReportGroup) iter.next();
+			Collection members = getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(workReportId,league);
+			if(!members.isEmpty()){
+				nonEmptyLeagues.add(league.getPrimaryKey());
+			}
+		}
+		
+		return nonEmptyLeagues;
 	}
 
 	public boolean isYearlyAccountMissingForADivisionWithMembers(int workReportId) {
+		
+		WorkReportClubAccountRecordHome recHome = getWorkReportClubAccountRecordHome();
+		Collection records = null;
+		Collection leagues = null;
 
-		return false;
+
+		WorkReport report = this.getWorkReportById(workReportId);
+
+		try {
+			leagues = report.getLeagues();
+		}
+		catch (IDOException e) {
+			System.out.println("No divisions for work report id : "+workReportId);
+			return false;//no divisions
+		}
+		
+		try {
+			records = recHome.findAllRecordsByWorkReportId(workReportId);
+		}
+		catch (FinderException e1) {
+			System.out.println("No account records for work report id : "+workReportId);
+			return true;//no records but leagues
+		}
+
+
+		List nonEmptyLeagues = getAllWorkReportGroupsPrimaryKeysThatHaveMembers(workReportId);
+
+
+		if(nonEmptyLeagues.isEmpty()){
+			System.out.println("No divisions with members for work report id : "+workReportId);
+			return false;
+		}
+		else{
+			Iterator primaryKeys = nonEmptyLeagues.iterator();
+			
+			//the real check happens here
+			while (primaryKeys.hasNext()) {
+				Integer workGroupID = (Integer) primaryKeys.next();
+				Collection recs;
+				try {
+					recs = recHome.findAllRecordsByWorkReportIdAndWorkReportGroupId(workReportId,workGroupID.intValue());
+				}
+				catch (FinderException e2) {
+					
+					System.out.println("Account recs missing for a division");
+					//e2.printStackTrace();
+					return true;
+				}			
+			}
+	
+			return false;
+	
+		}	
 	}
 
 } //end of class

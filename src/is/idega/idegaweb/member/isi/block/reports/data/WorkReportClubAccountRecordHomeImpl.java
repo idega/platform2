@@ -20,6 +20,13 @@ public java.util.Collection findAllRecordsByWorkReportId(int p0)throws javax.ejb
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllRecordsByWorkReportIdAndWorkReportGroupId(int p0,int p1)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((WorkReportClubAccountRecordBMPBean)entity).ejbFindAllRecordsByWorkReportIdAndWorkReportGroupId(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public WorkReportClubAccountRecord findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (WorkReportClubAccountRecord) super.findByPrimaryKeyIDO(pk);
  }

@@ -92,4 +92,8 @@ public class WorkReportClubAccountRecordBMPBean extends GenericEntity implements
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId);
 	}
 	
+	public Collection ejbFindAllRecordsByWorkReportIdAndWorkReportGroupId(int reportId,int wrGroupId) throws FinderException{
+		return idoFindAllIDsByColumnsBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_WORK_REPORT_GROUP,wrGroupId);
+	}
+	
 }

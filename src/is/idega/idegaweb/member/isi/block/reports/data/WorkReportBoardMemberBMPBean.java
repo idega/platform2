@@ -163,6 +163,10 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 		return idoFindAllIDsByColumnOrderedBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_NAME);
 	}
 	
+	public Collection ejbFindAllWorkReportBoardMembersByWorkReportIdAndWorkReportGroupId(int reportId,int wrGroupId) throws FinderException{
+		return idoFindAllIDsByColumnsBySQL(COLUMN_NAME_REPORT_ID,reportId,COLUMN_NAME_WORK_REPORT_GROUP_ID,wrGroupId);
+	}
+	
 	public Integer ejbFindWorkReportBoardMemberByUserIdAndWorkReportId(int userId, int reportId) throws FinderException{
 		IDOQuery sql = idoQuery();
 		
