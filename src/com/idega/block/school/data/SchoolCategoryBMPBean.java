@@ -114,35 +114,35 @@ public class SchoolCategoryBMPBean extends GenericEntity implements SchoolCatego
 	
 	public String ejbFindChildcareCategory() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_CHILD_CARE);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_CATEGORY, CATEGORY_CHILD_CARE);
 		
 		return (String) idoFindOnePKByQuery(query);
 	}
 
 	public String ejbFindElementarySchoolCategory() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_ELEMENTARY_SCHOOL);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_CATEGORY, CATEGORY_ELEMENTARY_SCHOOL);
 		
 		return (String) idoFindOnePKByQuery(query);
 	}
 	
 	public String ejbFindHighSchoolCategory() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_HIGH_SCHOOL);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_CATEGORY, CATEGORY_HIGH_SCHOOL);
 		
 		return (String) idoFindOnePKByQuery(query);
 	}
 	
 	public String ejbFindCollegeCategory() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_COLLEGE);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_CATEGORY, CATEGORY_COLLEGE);
 		
 		return (String) idoFindOnePKByQuery(query);
 	}
 	
 	public String ejbFindUniversityCategory() throws FinderException {
 		IDOQuery query = idoQuery();
-		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CATEGORY, CATEGORY_UNIVERSITY);
+		query.appendSelectAllFrom(this).appendWhereEqualsQuoted(COLUMN_CATEGORY, CATEGORY_UNIVERSITY);
 		
 		return (String) idoFindOnePKByQuery(query);
 	}
