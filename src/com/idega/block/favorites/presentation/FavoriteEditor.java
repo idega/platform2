@@ -76,7 +76,7 @@ public class FavoriteEditor extends FavoriteBlock implements IWPageEventListener
 					linkName.setContent(favorite.getName());
 				}
 				linkName.setLength(iInputLength);
-				linkName.setMaxlength(iMaxLength);
+				linkName.setMaxlength(iMaximumLength);
 				
 				TextInput URL = (TextInput) getInput(new TextInput(PARAMETER_URL));
 				if (favorite != null) {
