@@ -405,11 +405,13 @@ public class UserInfoServiceBean extends IBOServiceBean implements UserInfoServi
 			if(null == address1.getStreetName() || null == address2.getStreetName()){
 				return false;
 			}
-			if (address1.getStreetName ()
-					.equalsIgnoreCase	(address2.getStreetName ())) {
+			String name1 = address1.getStreetName().trim();
+			String name2 = address2.getStreetName().trim();
+			if (name1.equalsIgnoreCase(name2)) {
 				// they have same street name
-				if (startingNumberPart (address1.getStreetNumber ())
-						.equals	(startingNumberPart (address2.getStreetNumber ()))) {
+			    String number1 = address1.getStreetNumber().trim();
+			    String number2 = address2.getStreetNumber().trim();
+				if (startingNumberPart (number1).equalsIgnoreCase	(startingNumberPart (number2))) {
 					// they have same starting number
 					if ((null != address1.getPostalCode() && null != address2.getPostalCode ()) &&
 							address1.getPostalCode ().equals (address2.getPostalCode ())) {
