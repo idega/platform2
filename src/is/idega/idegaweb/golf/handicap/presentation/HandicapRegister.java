@@ -653,9 +653,10 @@ public class HandicapRegister extends GolfBlock {
 				statsTable.add(inn, 11, 1);
 			}
 
-			for (int b = Integer.parseInt(start_hole); b <= numbers; b++) {
-				int par_three = tee_id[b - 1].getPar();
-				String tee_stats = String.valueOf(tee_id[b - 1].getID());
+			int startHole = Integer.parseInt(start_hole);
+			for (int b = startHole; b <= numbers; b++) {
+				int par_three = tee_id[b - startHole].getPar();
+				String tee_stats = String.valueOf(tee_id[b - startHole].getID());
 
 				Text hole_stats = getSmallHeader(String.valueOf(b));
 
