@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.13 2001/08/30 04:07:40 aron Exp $
+ * $Id: Tabber.java,v 1.14 2001/09/10 10:30:04 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -236,7 +236,9 @@ public class Tabber extends JModuleObject {
 
 
   private boolean getUserAccessGroups(int iUserId)throws SQLException{
-    GenericGroup[] group = (GenericGroup[])eUser.getGenericGroups();
+//    GenericGroup[] group = (GenericGroup[])eUser.getGenericGroups();
+    GenericGroup g = new GenericGroup();
+    GenericGroup[] group = g.getAllGroupsContainingUser(eUser);
     int iGroupLen = group.length;
     PermissionHash = new Hashtable(iGroupLen);
     for(int i = 0; i < iGroupLen ; i++){
