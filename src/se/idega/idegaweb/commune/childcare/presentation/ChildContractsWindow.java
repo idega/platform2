@@ -5,6 +5,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import se.idega.idegaweb.commune.accounting.userinfo.presentation.ChildContractHistoryWindow;
+import se.idega.idegaweb.commune.school.business.SchoolConstants;
 
 /**
  * ChildContractsWindow
@@ -12,8 +13,6 @@ import se.idega.idegaweb.commune.accounting.userinfo.presentation.ChildContractH
  * @version 1.0
  */
 public class ChildContractsWindow extends ChildCareWindow implements ChildContractHistoryWindow {
-	
-	public final static String PARAMETER_CHILD_ID = ChildCareChildContracts.PARAMETER_CHILD_ID;
 	
 	public ChildContractsWindow(){
 		super();		
@@ -30,7 +29,7 @@ public class ChildContractsWindow extends ChildCareWindow implements ChildContra
 	 * @see se.idega.idegaweb.commune.accounting.userinfo.presentation.ChildContractHistoryWindow#getParameterChildID()
 	 */
 	public String getParameterChildID() {
-		return PARAMETER_CHILD_ID;
+		return SchoolConstants.PARAMETER_CHILD_ID;
 	}
 	
  

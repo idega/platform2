@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import se.idega.idegaweb.commune.accounting.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.school.business.SchoolConstants;
 
 import com.idega.block.school.data.School;
 import com.idega.core.contact.data.Email;
@@ -33,7 +34,6 @@ import com.idega.util.text.Name;
 public class ChildCareChildContracts extends ChildCareBlock {
 
 	public static final String PARAMETER_APPLICATION_ID = "ccc_application_id";
-	public static final String PARAMETER_CHILD_ID = "ccc_child_id";
 	private boolean insideWindow = false;
 	
 	/**
@@ -136,7 +136,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		
 		Collection contracts = null;
 		// preventing overruling the child parameter when session got application reference
-		if(iwc.isParameterSet(PARAMETER_CHILD_ID)){
+		if(iwc.isParameterSet(SchoolConstants.PARAMETER_CHILD_ID)){
 			contracts = getBusiness().getContractsByChild(getChildID(iwc));
 		}
 		else if (getSession().getApplicationID() != -1)
@@ -329,8 +329,8 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	}
 	
 	private int getChildID(IWContext iwc) throws RemoteException {
-		if(iwc.isParameterSet(PARAMETER_CHILD_ID))
-			return Integer.parseInt(iwc.getParameter(PARAMETER_CHILD_ID));
+		if(iwc.isParameterSet(SchoolConstants.PARAMETER_CHILD_ID))
+			return Integer.parseInt(iwc.getParameter(SchoolConstants.PARAMETER_CHILD_ID));
 		else
 			return getSession().getChildID();
 	}
