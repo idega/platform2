@@ -485,49 +485,51 @@ public class VacationApplication extends VacationBlock {
 		table.add(getText(selectedHours), 2, row++);
 		table.setHeight(row++, 12);
 
-		table.setCellpaddingLeft(1, row, 0);
-		table.add(getHeader(
-				getResourceBundle().getLocalizedString("vacation.time.period", "Working days and hours under the period*")), 1,
-				row);
-		
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.week", "Week")), 2, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.monday", "Mo")), 3, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.tuesday", "Tu")), 4, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.wednesday", "We")), 5, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "th")), 6, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.friday", "Fr")), 7, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.saturday", "Sa")), 8, row);
-		table.add(getText(getResourceBundle().getLocalizedString("vacation.time.sunday", "Su")), 9, row);
-		int startRow = row;
-
-		int week = -1;
-		int a = 0;
-		toDate.addDays(1);
-		while (fromDate.isEarlierThan(toDate)) {
-			if (week != fromDate.getWeekOfYear() && !(fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
-				row++;
-				week = fromDate.getWeekOfYear();
-				table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
-			}
-			if (week == -1 && (fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
-				row++;
-				table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
-			}
+		if (workingHours != null) {
+			table.setCellpaddingLeft(1, row, 0);
+			table.add(getHeader(
+					getResourceBundle().getLocalizedString("vacation.time.period", "Working days and hours under the period*")), 1,
+					row);
 			
-			int dayOfWeek = fromDate.getDayOfWeek();
-			if (dayOfWeek == Calendar.SUNDAY) {
-				dayOfWeek = 8;
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.week", "Week")), 2, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.monday", "Mo")), 3, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.tuesday", "Tu")), 4, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.wednesday", "We")), 5, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.thursday", "th")), 6, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.friday", "Fr")), 7, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.saturday", "Sa")), 8, row);
+			table.add(getText(getResourceBundle().getLocalizedString("vacation.time.sunday", "Su")), 9, row);
+			int startRow = row;
+	
+			int week = -1;
+			int a = 0;
+			toDate.addDays(1);
+			while (fromDate.isEarlierThan(toDate)) {
+				if (week != fromDate.getWeekOfYear() && !(fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
+					row++;
+					week = fromDate.getWeekOfYear();
+					table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
+				}
+				if (week == -1 && (fromDate.getDayOfWeek() == Calendar.SUNDAY)) {
+					row++;
+					table.add(String.valueOf(fromDate.getWeekOfYear()), 2, row);
+				}
+				
+				int dayOfWeek = fromDate.getDayOfWeek();
+				if (dayOfWeek == Calendar.SUNDAY) {
+					dayOfWeek = 8;
+				}
+				dayOfWeek++;
+				
+				table.add(getText(workingHours[a]), dayOfWeek, row);
+				fromDate.addDays(1);
+				a++;
 			}
-			dayOfWeek++;
-			
-			table.add(getText(workingHours[a]), dayOfWeek, row);
-			fromDate.addDays(1);
-			a++;
+			table.setVerticalAlignment(1, startRow, Table.VERTICAL_ALIGN_TOP);
+			table.mergeCells(1, startRow, 1, row++);
+			table.setHeight(row++, 12);
 		}
-		table.setVerticalAlignment(1, startRow, Table.VERTICAL_ALIGN_TOP);
-		table.mergeCells(1, startRow, 1, row++);
-		table.setHeight(row++, 12);
-
+		
 		table.setCellpaddingLeft(1, row, 0);
 		table.add(getHeader(getResourceBundle().getLocalizedString("vacation.type", "Type")), 1, row);
 		table.mergeCells(2, row, table.getColumns(), row);
