@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.12 2004/05/11 09:57:05 anders Exp $
+ * $Id: NoticeEditor.java,v 1.13 2004/05/24 10:16:05 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2004/05/11 09:57:05 $ by $Author: anders $
+ * Last modified: $Date: 2004/05/24 10:16:05 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -61,6 +61,7 @@ public class NoticeEditor extends AccountingBlock {
 	private final static String PARAMETER_BACK = PP + "back";
 	private final static String PARAMETER_SEND = PP + "send";
 	private final static String PARAMETER_DEFAULT = PP + "default";
+	private final static String PARAMETER_ONLY_HOME_COMMUNE = PP + "only_home_commune";
 	
 	private final static String KP = "notice_editor."; // key prefix 
 	
@@ -73,6 +74,7 @@ public class NoticeEditor extends AccountingBlock {
 	private final static String KEY_NO_OPERATIONAL_FIELDS_SELECTED = KP + "no_operational_fields_selected";	
 	private final static String KEY_AND = KP + "and";
 	private final static String KEY_PREVIEW = KP + "preview";
+	private final static String KEY_ONLY_HOME_COMMUNE = KP + "only_home_commune";
 	private final static String KEY_BACK = KP + "back";
 	private final static String KEY_SEND_NOTICE = KP + "send_notice";
 	private final static String KEY_NOTICE_SENT = KP + "notice_sent";
@@ -133,7 +135,6 @@ public class NoticeEditor extends AccountingBlock {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "PŒminnelsebrev");
 
-
 		Table mainTable = new Table();
 		mainTable.setCellpadding(0);
 		mainTable.setCellspacing(0);
@@ -166,11 +167,20 @@ public class NoticeEditor extends AccountingBlock {
 					}
 				}
 				table.add(cb, 1, row);
-				table.add(localize(sc.getLocalizedKey(), sc.getLocalizedKey()), 2, row++);
+				table.add(getLocalizedText(sc.getLocalizedKey(), sc.getLocalizedKey()), 2, row++);
 			}
 			table.setColumnWidth(2, "100%");
 		} catch (RemoteException e) {}
+		CheckBox homeCommuneCheckBox = new CheckBox(PARAMETER_ONLY_HOME_COMMUNE, "true");
+		if (getParameter(iwc, PARAMETER_ONLY_HOME_COMMUNE).equals("true")) {
+			homeCommuneCheckBox.setChecked(true);
+		}
+		row += 2;
+		table.add(homeCommuneCheckBox, 1, row);
+		table.add(getText(" " + localize(KEY_ONLY_HOME_COMMUNE, "Only home commune")), 2, row);
+
 		mainTable.add(table, 1, 2);
+
 		app.setMainPanel(mainTable);
 
 		ButtonPanel bp = new ButtonPanel(this);
@@ -259,6 +269,7 @@ public class NoticeEditor extends AccountingBlock {
 
 		app.addHiddenInput(PARAMETER_SUBJECT, subject);
 		app.addHiddenInput(PARAMETER_BODY, replaceCitation(getParameter(iwc, PARAMETER_BODY)));
+		app.addHiddenInput(PARAMETER_ONLY_HOME_COMMUNE, getParameter(iwc, PARAMETER_ONLY_HOME_COMMUNE));
 		
 		add(app);
 	}
@@ -274,7 +285,8 @@ public class NoticeEditor extends AccountingBlock {
 			String subject = getParameter(iwc, PARAMETER_SUBJECT);
 			String body = restoreCitation(getParameter(iwc, PARAMETER_BODY));
 			String[] operationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
-			schools = nb.sendNotice(subject, body, operationalFields);
+			boolean onlyHomeCommune = getParameter(iwc, PARAMETER_ONLY_HOME_COMMUNE).equals("true");
+			schools = nb.sendNotice(subject, body, operationalFields, onlyHomeCommune);
 		} 
 		catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
@@ -295,6 +307,7 @@ public class NoticeEditor extends AccountingBlock {
 			app.setButtonPanel(bp);
 			
 			app.addHiddenInput(PARAMETER_BODY, getParameter(iwc, PARAMETER_BODY));
+			app.addHiddenInput(PARAMETER_ONLY_HOME_COMMUNE, getParameter(iwc, PARAMETER_ONLY_HOME_COMMUNE));
 			String[] selectedOperationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
 			if (selectedOperationalFields != null) {
 				for (int i = 0; i < selectedOperationalFields.length; i++) {

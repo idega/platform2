@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeBusinessBean.java,v 1.13 2004/05/11 09:57:05 anders Exp $
+ * $Id: NoticeBusinessBean.java,v 1.14 2004/05/24 10:15:50 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,16 +26,18 @@ import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolUser;
 import com.idega.core.contact.data.Email;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
 /** 
  * Business logic for notice messages.
  * <p>
- * Last modified: $Date: 2004/05/11 09:57:05 $ by $Author: anders $
+ * Last modified: $Date: 2004/05/24 10:15:50 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implements NoticeBusiness  {
 
@@ -55,10 +57,11 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 	 * @param subject the message subject
 	 * @param body the message body
 	 * @param operationalFields the operational field ids
+	 * @param onlyHomeCommune if true then messages are only sent to home commune schools
 	 * @return a collection of {school_name, headmaster} 
 	 * @throws NoticeException if incomplete parameters or technical send error
 	 */
-	public Collection sendNotice(String subject, String body, String[] operationalFields) throws NoticeException {
+	public Collection sendNotice(String subject, String body, String[] operationalFields, boolean onlyHomeCommune) throws NoticeException {
 		if (body.equals("")) {
 			throw new NoticeException(KEY_EMPTY_BODY, DEFAULT_EMPTY_BODY);
 		}
@@ -72,6 +75,12 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 		for (int i = 0; i < operationalFields.length; i++) {
 			schoolCategories.put(operationalFields[i], operationalFields[i]);
 		}
+		int homeCommuneId = 0;
+		try {
+			CommuneHome communeHome=(CommuneHome) getIDOHome(Commune.class);
+			Commune homeCommune = communeHome.findDefaultCommune();
+			homeCommuneId = ((Integer) homeCommune.getPrimaryKey()).intValue();
+		} catch (Exception e) {}
 		
 		Collection c = new ArrayList();
 		try {
@@ -93,6 +102,11 @@ public class NoticeBusinessBean extends com.idega.business.IBOServiceBean implem
 				Iterator iter2 = schools.iterator();
 				while (iter2.hasNext()) {
 					School school = (School) iter2.next();
+					if (onlyHomeCommune) {
+						if (school.getCommuneId() != homeCommuneId) {
+							continue;
+						}
+					}
 					Collection users = sb.getSchoolUsers(school);
 					Iterator iter3 = users.iterator();
 					while (iter3.hasNext()) {
