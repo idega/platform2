@@ -19,9 +19,11 @@ import se.idega.idegaweb.commune.accounting.business.AccountingSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWUserContext;
+import com.idega.idegaweb.UnavailableIWContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -81,6 +83,22 @@ public abstract class AccountingBlock extends CommuneBlock {
 	 * @return AccountingSession
 	 */
 	public AccountingSession getSession() {
+		if(session==null){
+			try
+			{
+				session = (AccountingSession)IBOLookup.getSessionInstance(IWContext.getInstance(),AccountingSession.class);
+			}
+			catch (IBOLookupException e)
+			{
+				System.err.print("AccountingBlock.getSession(): Error looking up AccountingSession");
+				e.printStackTrace();
+			}
+			catch (UnavailableIWContext e)
+			{
+				System.err.print("AccountingBlock.getSession(): Error getting IWContext");
+				e.printStackTrace();
+			}
+		}
 		return session;
 	}
 
