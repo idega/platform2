@@ -269,16 +269,19 @@ public void makeDefaultSizes(){
         try {
           if(deleteValue != null){
             for(int i = 0; i < deleteValue.length; i++){
-              catagory.deleteMultiple(catagory.getIDColumnName(), deleteValue[i]);
+              ImageCatagory cat = new ImageCatagory( Integer.parseInt(deleteValue[i]) );
+              cat.removeFrom(GenericEntity.getStaticInstance("com.idega.jmodule.image.data.ImageEntity"));
+              cat.delete();
             }
           }
         }
         catch (Exception ex) {
-
+          ex.printStackTrace(System.err);
+          System.err.println("ImageBusiness : error in storeEditForm");
         }
 
         try {
-          for (int i = deleteValue.length; i < catagoryName.length; i++) {
+          for (int i = 0; i < catagoryName.length; i++) {
             if (catagoryName[i] != null && !"".equals(catagoryName[i]) ) {
               ImageCatagory temp = new ImageCatagory();
               temp.setParentId(-1);
@@ -288,7 +291,8 @@ public void makeDefaultSizes(){
           }
         }
         catch (Exception ex) {
-
+          ex.printStackTrace(System.err);
+          System.err.println("ImageBusiness : error in storeEditForm");
         }
 
 //}

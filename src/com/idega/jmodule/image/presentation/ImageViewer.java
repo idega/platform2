@@ -150,11 +150,6 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   if( refreshing!=null ) refresh = true;
 
-  /*  ImageBusiness.storeEditForm(modinfo);
-
-  outerTable.add(getEditForm(),1,2);
-
-*/
   if( refresh ){
     refresh(modinfo);
     modinfo.removeSessionAttribute("im_refresh");
@@ -168,8 +163,8 @@ public void main(ModuleInfo modinfo)throws Exception{
   edit = new Image("/pics/jmodules/image/"+language+"/edit.gif","Edit this image");
   text = new Image("/pics/jmodules/image/"+language+"/text.gif","Edit this image's text");
 
-  save = new Image("/pics/jmodules/image/"+language+"/save.gif","Edit this image");
-  cancel = new Image("/pics/jmodules/image/"+language+"/cancel.gif","Edit this image");
+  save = new Image("/pics/jmodules/image/"+language+"/save.gif","Save");
+  cancel = new Image("/pics/jmodules/image/"+language+"/cancel.gif","Cancel");
   newImage = new Image("/pics/jmodules/image/"+language+"/newimage.gif","Upload a new image");
   newCategory = new Image("/pics/jmodules/image/"+language+"/newcategory.gif","Edit categories");
   reload = new Image("/pics/jmodules/image/"+language+"/refresh.gif","Refresh everything");
@@ -184,10 +179,14 @@ public void main(ModuleInfo modinfo)throws Exception{
   reloads.addParameter("refresh","true");
   reloads.addParameter("idega","best&"+modinfo.getQueryString());
 
+  Link categories = new Link(newCategory);
+  categories.addParameter("action","editcategories");
+  categories.addParameter("image_id","-1");//so it runs smoothly ; )
+
   if(isAdmin && (sEdit==null) ) {
     outerTable.add(reloads,2,1);
     outerTable.add(uploadLink,2,1);
-    outerTable.add(newCategory,2,1);
+    outerTable.add(categories,2,1);
   }
 
   outerTable.setColor(1,1,headerFooterColor);
@@ -248,8 +247,7 @@ public void main(ModuleInfo modinfo)throws Exception{
           outerTable.add(links,1,3);
         }
         else{
-          System.out.println("ImageViewer: action but not editing!");
-          Text texti = new Text("NO ACTION?");
+          Text texti = new Text("");
           ImageHandler handler = null;
           if( "delete".equalsIgnoreCase(action) ){
              texti = new Text("Image deleted.");
@@ -265,22 +263,32 @@ public void main(ModuleInfo modinfo)throws Exception{
           }
           else if( "use".equalsIgnoreCase(action) ){
             modinfo.setSessionAttribute("image_id",imageId);
-            this.getParentPage().close();
+            //debug is this legal? check if opened from another page or not. close or not
+            Page parent = getParentPage();
+            parent.close();
+            parent.setParentToReload();
+          }
+          else if( "editcategories".equalsIgnoreCase(action) ){
+            outerTable.add(getCategoryEditForm(),1,2);
+          }
+          else if( "savecategories".equalsIgnoreCase(action) ){
+            texti = new Text("Imagecategories saved.");
+            ImageBusiness.storeEditForm(modinfo);
           }
 
+          if( !("use".equalsIgnoreCase(action)) ){
+            ImageBusiness.handleEvent(modinfo,handler);
 
-          ImageBusiness.handleEvent(modinfo,handler);
-
-          texti.setBold();
-          texti.setFontColor("#FFFFFF");
-          texti.setFontSize(3);
-          outerTable.add(texti,1,2);
-          outerTable.add(Text.getBreak(),1,2);
-          outerTable.add(Text.getBreak(),1,2);
-          continueRefresh.setFontColor("#FFFFFF");
-          continueRefresh.setFontSize(3);
-          outerTable.add(continueRefresh,1,2);
-
+            texti.setBold();
+            texti.setFontColor("#FFFFFF");
+            texti.setFontSize(3);
+            outerTable.add(texti,1,2);
+            outerTable.add(Text.getBreak(),1,2);
+            outerTable.add(Text.getBreak(),1,2);
+            continueRefresh.setFontColor("#FFFFFF");
+            continueRefresh.setFontSize(3);
+            if( !("editcategories".equalsIgnoreCase(action)) ) outerTable.add(continueRefresh,1,2);
+          }
 
         }
        }
@@ -600,6 +608,7 @@ public void setTableHeight(int height){
 public void setTableHeight(String height){
   this.outerTableHeight=height;
 }
+
 public void setViewImage(String imageName){
   view = new Image(imageName);
 }
@@ -607,8 +616,6 @@ public void setViewImage(String imageName){
 public void setDeleteImage(String imageName){
   delete = new Image(imageName);
 }
-
-
 
 public void setUseImage(String imageName){
   use = new Image(imageName);
@@ -621,6 +628,8 @@ public void setCopyImage(String imageName){
 public void setCutImage(String imageName){
   cut = new Image(imageName);
 }
+
+//debug add sets for other images
 
 public void refresh(){
   this.refresh = true;
@@ -810,8 +819,10 @@ private void setAction(Link theLink, String action){
   theLink.addParameter("percent",percent);
 }
 
-private Form getEditForm(){
+private Form getCategoryEditForm(){
   Form frameForm = new Form();
+  frameForm.add(new HiddenInput("image_id","-1"));
+  frameForm.add(new HiddenInput("action","savecategories"));
   Table frameTable = new Table(1,2);
   frameTable.setCellpadding(0);
   frameTable.setCellspacing(0);
@@ -857,12 +868,17 @@ private Form getEditForm(){
   buttonTable.setHeight(40);
   buttonTable.setCellpadding(0);
   buttonTable.setCellspacing(0);
-  SubmitButton save = new SubmitButton("Vista","catagory_edit_form","save");
-  buttonTable.add(save,3,1);
+  buttonTable.setWidth(2,1,"80");
   buttonTable.setWidth(3,1,"60");
-  SubmitButton cancel = new SubmitButton("Hætta við","catagory_edit_form", "cancel");
-  buttonTable.add(cancel,2,1);
-  buttonTable.setWidth(2,1,"60");
+  buttonTable.setAlignment(2,1,"left");
+  buttonTable.setAlignment(3,1,"right");
+  buttonTable.setVerticalAlignment(2,1,"top");
+
+  SubmitButton savebutton = new SubmitButton(save);
+  Link cancelLink = new Link(cancel);
+  buttonTable.add(cancelLink,2,1);
+  buttonTable.add(savebutton,3,1);
+
   frameTable.add(buttonTable,1,2);
   frameTable.setAlignment(1,2,"right");
   //Buttons ends

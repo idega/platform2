@@ -115,8 +115,7 @@ private ImageViewer viewer = new ImageViewer();
       viewer.setFooterBackgroundImage("/pics/jmodules/image/myndamodule/footer/foottiler.gif");
       imageTable.add(viewer,3,1);
       //debug because of refresh problem could solve with an invisible businenss class that is added first
-      if( (!"delete".equalsIgnoreCase(action)) && (!"save".equalsIgnoreCase(action)) && (!"savenew".equalsIgnoreCase(action)) ){
-        System.err.println("ImageBrowser: no action add tree");
+      if( (!"delete".equalsIgnoreCase(action)) && (!"save".equalsIgnoreCase(action)) && (!"savenew".equalsIgnoreCase(action)) && (!"savecategories".equalsIgnoreCase(action)) ){
         imageTable.add(tree,1,1);
       }
     }
