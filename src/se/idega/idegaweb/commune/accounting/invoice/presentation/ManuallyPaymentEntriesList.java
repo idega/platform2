@@ -403,7 +403,10 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			pay.setPaymentText(iwc.getParameter(PAR_PLACING));
 			pay.setTotalAmountVAT(new Float(iwc.getParameter(PAR_VAT_PR_MONTH)).floatValue());
 			pay.setDateCreated(new Date(System.currentTimeMillis()));
-	
+			pay.setPeriod(periode);
+			pay.setStatus('P');
+			pay.setCreatedBy (getSignature (iwc.getCurrentUser()));
+
 			int vatType = -1;
 			try{
 				vatType = new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue();
@@ -465,6 +468,13 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 		}
 	}
 
+	private String getSignature (final User user) {
+		if (null == user) return "not logged on user";
+		final String firstName = user.getFirstName ();
+		final String lastName = user.getLastName ();
+		return (firstName != null ? firstName + " " : "") + (lastName != null ? lastName : "");
+	}
+	
 	private void checkNotNull(IWContext iwc, String par, Map errorMessages, String errorPar, String errorMsg){
 		if (iwc.getParameter(par) == null || iwc.getParameter(par).length() == 0){
 			errorMessages.put(errorPar, errorMsg);
