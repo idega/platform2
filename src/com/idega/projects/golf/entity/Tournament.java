@@ -55,6 +55,10 @@ public class Tournament extends GolfEntity{
                 addAttribute("number_in_group","Fjöldi í holli",true,true,"java.lang.Integer");
                 addAttribute("interval","Bið milli ráshopa",true,true,"java.lang.Integer");
 
+                // added 25.4.2001
+                addAttribute("FIRST_REGISTRATION_DATE","Fyrsti skráningardagur",true,true,"java.sql.Timestamp");
+                addAttribute("max_handicap","Hámarksforgjöf",true,true,"java.lang.Float");
+
         }
 
 	public void setDefaultValues(){
@@ -96,12 +100,12 @@ public class Tournament extends GolfEntity{
 		return getIntColumnValue("handicap_min");
 	}
 
-	public void setMaxHandicap(int maxHandicap){
-		setColumn("handicap_max",new Integer(maxHandicap));
+	public void setMaxHandicap(float maxHandicap){
+		setColumn("max_handicap",maxHandicap);
 	}
 
-	public int getMaxHandicap(){
-		return getIntColumnValue("handicap_max");
+	public float getMaxHandicap(){
+		return getFloatColumnValue("max_handicap");
 	}
 
 	public void setRegistrationForm(String form){
@@ -224,6 +228,14 @@ public class Tournament extends GolfEntity{
 	public Timestamp getLastRegistrationDate(){
 		return (Timestamp) getColumnValue("last_registration_date");
 	}
+	public void setFirstRegistrationDate(Timestamp firstRegistrationDate){
+		setColumn("FIRST_REGISTRATION_DATE",firstRegistrationDate);
+	}
+
+	public Timestamp getFirstRegistrationDate(){
+		return (Timestamp) getColumnValue("FIRST_REGISTRATION_DATE");
+	}
+
 
 	public void setStartTime(Timestamp startTime){
 		setColumn("start_time",startTime);
@@ -358,6 +370,7 @@ public class Tournament extends GolfEntity{
 				round.setRoundDate(com.idega.util.idegaCalendar.getTimestampAfter(getStartTime(),i+1));
                                 round.setIncreaseHandicap(true);
                                 round.setDecreaseHandicap(true);
+                                round.setRoundEndDate(com.idega.util.idegaCalendar.getTimestampAfter(getStartTime(),i+1));
 				round.insert();
 			}
 		}
