@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.6 2001/07/16 11:52:04 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.7 2001/07/16 18:08:30 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -143,6 +143,58 @@ public abstract class CampusApplicationFinder {
       }
     }
     return V;
+  }
+
+  public static CampusApplicationHolder getApplicantInfo(int iApplicantId){
+    CampusApplicationHolder CAH = null;
+    Applicant eApplicant = null;
+
+      try {
+        eApplicant = new Applicant(iApplicantId);
+        CAH = getApplicantInfo(eApplicant);
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+
+    return CAH;
+  }
+
+  public static CampusApplicationHolder getApplicantInfo(Applicant eApplicant){
+    CampusApplicationHolder CAH = null;
+    if(eApplicant !=null){
+      System.err.println(" villa 1");
+      try {
+        com.idega.block.application.data.Application eApplication =  new com.idega.block.application.data.Application();
+        List L = EntityFinder.findAllByColumn(eApplication,eApplication.getApplicantIdColumnName(),eApplicant.getID());
+        if(L!=null){
+          System.err.println(" villa 2");
+          eApplication = (com.idega.block.application.data.Application) L.get(0);
+          Application eCampusApplication = new Application();
+          L = EntityFinder.findAllByColumn(eCampusApplication,eCampusApplication.getApplicationIdColumnName(),eApplication.getID());
+          if(L!=null){
+            System.err.println(" villa 3");
+            eCampusApplication = (Application) L.get(0);
+            Applied eApplied = new Applied();
+            L = EntityFinder.findAllByColumn(eApplied,eApplied.getApplicationIdColumnName(),eCampusApplication.getID());
+            Vector V = null;
+            if(L!=null){
+              System.err.println(" villa 4");
+              V = new Vector(L.size());
+              for (int i = 0; i < L.size(); i++) {
+                Applied A = (Applied) L.get(i);
+                V.add(A);
+              }
+            }
+            CAH = new CampusApplicationHolder(eApplication,eApplicant,eCampusApplication,V);
+          }
+        }
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace();
+      }
+    }
+    return CAH;
   }
 
   public static List listOfWaitinglist(int aprtTypeId,int cmplxId){
