@@ -23,6 +23,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.core.data.ICFile;
+import java.text.DateFormat;
 
 
 /**
@@ -257,7 +258,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     T.setCellspacing(0);
     T.setBorder(0);
     T.setWidth("100%");
-
+    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,locale);
     ContentHelper contentHelper = newsHelper.getContentHelper();
     NwNews news = newsHelper.getNwNews();
     LocalizedText locText = contentHelper.getLocalizedText(locale);
@@ -290,8 +291,8 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     idegaTimestamp from = new idegaTimestamp(newsHelper.getContentHelper().getContent().getPublishFrom());
     idegaTimestamp to = new idegaTimestamp(newsHelper.getContentHelper().getContent().getPublishTo());
 
-    Text tFrom = formatText(from.getLocaleDate(locale),false);
-    Text tTo = formatText(to.getLocaleDate(locale),false);
+    Text tFrom = formatText(df.format((java.util.Date)from.getTimestamp()),false);
+    Text tTo = formatText(df.format((java.util.Date)to.getTimestamp()),false);
     if(from.isLaterThan(now)){
       tFrom.setFontColor("#FF0000");
       tTo.setFontColor("#FF0000");

@@ -163,7 +163,7 @@ private IWResourceBundle iwrb;
         else if(iwc.getParameter(prmFormProcess).equals("C"))
           processCategoryForm(iwc,sCategoryId,iObjInsId);
 
-        doView = false;
+        //doView = false;
       }
       if(doView)
         doViewNews(sNewsId,sAttribute,chosenLocale,iLocaleId,iCategoryId );
@@ -260,8 +260,8 @@ private IWResourceBundle iwrb;
 
       }
 
-      System.err.println(pubFrom.toSQLString());
-      System.err.println(pubTo.toString());
+      //System.err.println(pubFrom.toSQLString());
+      //System.err.println(pubTo.toString());
       NewsBusiness.saveNews(iNwNewsId,iLocalizedTextId,iCategoryId ,sHeadline,"",sAuthor,sSource,sBody,iLocaleId,iUserId,iObjInsId,pubFrom.getTimestamp(),pubTo.getTimestamp(),V);
     }
     setParentToReload();
@@ -354,8 +354,8 @@ private IWResourceBundle iwrb;
     tiAuthor.setLength(22);
     tiAuthor.setMaxlength(255);
 
-    DropdownMenu drpDaysShown = counterDropdown(prmDaysshown, 1, 30);
-    drpDaysShown.addMenuElementFirst("-1", iwrb.getLocalizedString("undetermined","Undetermined") );
+    //DropdownMenu drpDaysShown = counterDropdown(prmDaysshown, 1, 30);
+    //drpDaysShown.addMenuElementFirst("-1", iwrb.getLocalizedString("undetermined","Undetermined") );
 
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
@@ -407,19 +407,20 @@ private IWResourceBundle iwrb;
       }
       idegaTimestamp today = idegaTimestamp.RightNow();
       publishFrom.setTimestamp(today.getTimestamp());
-      today.addDays(50);
+      today.addDays(defaultPublishDays);
       publishTo.setTimestamp(today.getTimestamp());
       addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(iCategoryId)));
     }
 
     addLeft(sHeadline,tiHeadline,true);
     addLeft(sLocale, LocaleDrop,true);
+    addLeft(sNews,taBody,true);
     addLeft(sPublisFrom, publishFrom,true);
     addLeft(sPublisTo,publishTo,true);
-    addLeft(sNews,taBody,true);
+
     addRight(sAuthor,tiAuthor,true);
     addRight(sSource,tiSource,true);
-    addRight(sDaysShown,drpDaysShown,true);
+    //addRight(sDaysShown,drpDaysShown,true);
     addRight(sImage,imageInsert,true);
     if(propslink != null)
       addRight("props",propslink,true);
