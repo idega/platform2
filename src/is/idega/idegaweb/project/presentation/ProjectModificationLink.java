@@ -7,6 +7,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Page;
 import com.idega.presentation.text.Link;
 import is.idega.idegaweb.project.business.ProjectBusiness;
+import com.idega.idegaweb.IWUserContext;
 
 /**
  * Title:        IW Project
@@ -37,7 +38,7 @@ public class ProjectModificationLink extends Block {
   }
 
 
-  public synchronized Object _clone(IWContext iwc, boolean askForPermission){
+  public synchronized Object _clone(IWUserContext iwc, boolean askForPermission){
     if(askForPermission){
       if(iwc.hasViewPermission(this) || this.isOwnerOfProject(iwc)){
         return this.clone();
@@ -52,7 +53,7 @@ public class ProjectModificationLink extends Block {
   /**
    * @todo reimplement
    */
-  public boolean isOwnerOfProject(IWContext iwc){
+  public boolean isOwnerOfProject(IWUserContext iwc){
     Page p = this.getParentPage();
     if(p != null){
       try {
