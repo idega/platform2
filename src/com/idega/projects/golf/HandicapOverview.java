@@ -775,5 +775,4 @@ private String headerTextColor = "#FFFFFF";
     public void setHeaderTextColor(String headerTextColor) {
       this.headerTextColor=headerTextColor;
     }
-
 }
