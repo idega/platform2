@@ -117,7 +117,7 @@ public class UserCreditcard extends CashierSubWindowTemplate {
 			labelCardNumber.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			Text labelExpMonth = new Text(iwrb.getLocalizedString(LABEL_EXP_MONTH, "Expiration month"));
 			labelExpMonth.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
-			Text labelExpYear = new Text(iwrb.getLocalizedString(LABEL_CARD_NO, "Expiration year"));
+			Text labelExpYear = new Text(iwrb.getLocalizedString(LABEL_EXP_YEAR, "Expiration year"));
 			labelExpYear.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);
 			
 			inputTable.add(labelDivision, 1, row);
