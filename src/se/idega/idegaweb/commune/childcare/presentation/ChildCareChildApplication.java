@@ -72,6 +72,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	
 	private boolean _noCheckError = false;
 	private boolean isAdmin = false;
+	private boolean hasActivePlacement = false;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -143,6 +144,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			try {
 				hasOffers = getBusiness().hasUnansweredOffers(((Integer) child.getPrimaryKey()).intValue(), null);
 				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) child.getPrimaryKey()).intValue());
+				hasActivePlacement = getBusiness().hasActiveApplication(((Integer) child.getPrimaryKey()).intValue());
 			}
 			catch (RemoteException e) {
 				hasOffers = false;
@@ -206,11 +208,12 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private void submitForm(IWContext iwc) {
 		boolean done = false;
 		try {
-			int[] providers = new int[5];
-			String[] dates = new String[5];
-			Date[] queueDates = new Date[5];
+			int numberOfApplications = hasActivePlacement ? 5 : 4;
+			int[] providers = new int[numberOfApplications];
+			String[] dates = new String[numberOfApplications];
+			Date[] queueDates = new Date[numberOfApplications];
 			
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < numberOfApplications; i++) {
 				providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
 				dates[i] = iwc.isParameterSet(PARAM_DATE + "_" + (i + 1)) ? iwc.getParameter(PARAM_DATE + "_" + (i + 1)) : null;
 				if (isAdmin) {
@@ -288,7 +291,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		ChildCareApplication application = null;
 		int areaID = -1;
-		for (int i = 1; i < 6; i++) {
+		int numberOfApplications = hasActivePlacement ? 5 : 4;
+		for (int i = 1; i < (numberOfApplications + 1); i++) {
 			try {
 				application = getBusiness().getNonActiveApplication(getSession().getChildID(), i);
 				if (application != null) {
