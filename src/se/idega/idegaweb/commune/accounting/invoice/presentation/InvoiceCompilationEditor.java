@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/03 20:14:57 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/04 09:15:17 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -82,8 +82,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PERIOD_KEY = PREFIX + "period";
     private static final String REMARK_DEFAULT = "Anmärkning";
     private static final String REMARK_KEY = PREFIX + "remark";
-    private static final String REMOVE_DEFAULT = "Ta bort";
-    private static final String REMOVE_KEY = PREFIX + "remove";
+    //private static final String REMOVE_DEFAULT = "Ta bort";
+    //private static final String REMOVE_KEY = PREFIX + "remove";
     private static final String SEARCH_DEFAULT = "Sök";
     private static final String SEARCH_KEY = PREFIX + "search";
     private static final String SSN_DEFAULT = "Personnummer";
@@ -106,7 +106,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private static final int ACTION_SHOW_COMPILATION = 0,
             ACTION_SHOW_COMPILATION_LIST = 1,
             ACTION_NEW_INVOICE_RECORD = 2,
-            ACTION_REMOVE_INVOICE_RECORD = 3,
+            //ACTION_REMOVE_INVOICE_RECORD = 3,
             ACTION_DELETE_COMPILATION = 4;
 
     private static final SimpleDateFormat periodFormatter
@@ -538,7 +538,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         }
     }
 
-    private Table getButtonTable (final String [][] buttonInfo) {
+    /*private Table getButtonTable (final String [][] buttonInfo) {
         final Table table = new Table ();
         for (int i = 0; i < buttonInfo.length; i++) {
             table.add (getSubmitButton (buttonInfo [i][0], buttonInfo [i][1],
@@ -546,7 +546,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             table.add (Text.getNonBrakingSpace (), i + 1, 1);
         }
         return table;
-    }
+    }*/
 
     private SubmitButton getSubmitButton (final String action, final String key,
                                           final String defaultName) {
