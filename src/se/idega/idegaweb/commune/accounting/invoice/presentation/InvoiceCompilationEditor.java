@@ -29,10 +29,10 @@ import se.idega.idegaweb.commune.accounting.presentation.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/05 14:46:56 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/05 15:28:22 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -252,7 +252,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             table.add (getStyledInput (OWN_POSTING_KEY), col++, row);
             addSmallHeader (table, col++, row, DOUBLE_POSTING_KEY,
                             DOUBLE_POSTING_DEFAULT, ":");
-            table.add (getStyledInput (DOUBLE_POSTING_KEY), col++, row);
+            table.add (getStyledInput (DOUBLE_POSTING_KEY), col++, row++);
             table.setHeight (row++, 12);
             table.mergeCells (1, row, table.getColumns (), row);
             table.add (getSubmitButton (ACTION_NEW_COMPILATION + "",
@@ -260,8 +260,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                                         CREATE_INVOICE_COMPILATION_DEFAULT), 1,
                        row++);
         } else if (null != searcher.getUsersFound ()) {
-            table.mergeCells (1, row, table.getColumns (), row);            
-            table.add (searcher, 1, row++);
+            table.mergeCells (1, row, table.getColumns (), row);
+            table.add (getSearcherResultTable
+                       (searcher.getUsersFound (),
+                        ACTION_SHOW_NEW_COMPILATION_FORM), 1, row++);
         }
         final Form form = new Form ();
         form.setOnSubmit("return checkInfoForm()");
@@ -270,6 +272,27 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         outerTable.add (form, 1, 1);
         add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
                               CREATE_INVOICE_COMPILATION_DEFAULT,  outerTable));
+    }
+
+    private Table getSearcherResultTable (final Collection users,
+                                          int actionId) {
+        final Table table = createTable (1);
+        int row = 1;
+        for (Iterator i = users.iterator (); row <= 10 && i.hasNext ();) {
+            final User user = (User) i.next ();
+            final String userText = user.getPersonalID () + " "
+                    + user.getFirstName () + " " + user.getLastName ();
+            String [][] parameters = {{ ACTION_KEY, actionId + "" },
+                                      { USERSEARCHER_PERSONALID_KEY,
+                                        user.getPersonalID () }};
+            final Link link = createSmallLink (userText, parameters);
+            table.add (link, 1, row++);
+        }
+        if (10 < users.size ()) {
+            table.add ("För många sökresultat - försök begränsa din sökning");
+        }
+
+        return table;
     }
 
     private void deleteCompilation (final IWContext context)
