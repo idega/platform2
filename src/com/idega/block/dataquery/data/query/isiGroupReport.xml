@@ -210,12 +210,12 @@
 <!-- end of email view -->
 	<sql>
 	<statement>
-	create view hp_UNIQUE_IDENTIFER (ic_group_id, homepage) as select g.ic_group_id, m.metadata_value 
+	create view hp_UNIQUE_IDENTIFIER (ic_group_id, homepage) as select g.ic_group_id, m.metadata_value 
 	from ic_group g, ic_group_ic_metadata gm, ic_metadata m where g.ic_group_id = gm.ic_group_id and gm.ic_metadata_id = m.ic_metadata_id and 
 	metadata_name = 'homepage'
 	</statement>
 	<poststatement>
-	drop view hp_UNIQUE_IDENTIFER
+	drop view hp_UNIQUE_IDENTIFIER
 	</poststatement>
 	</sql>
 	</query>
