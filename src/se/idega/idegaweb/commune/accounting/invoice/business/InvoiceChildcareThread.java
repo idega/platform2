@@ -247,12 +247,12 @@ public class InvoiceChildcareThread extends BillingThread{
 					String[] checkPost = getPostingBusiness().getPostingStrings(
 						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,currentDate);
 					log.info("About to create payment record check");
-					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], checkPost[1], placementTimes.getMonths(), school);			//MUST create payment record first, since it is used in invoice record
+					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);			//MUST create payment record first, since it is used in invoice record
 					log.info("created payment record, Now creating invoice record");
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
 							school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK, paymentRecord, 
-							postings[0], postings[1], placementTimes, school, contract);
+							checkPost[0], checkPost[1], placementTimes, school, contract);
 					log.info("created invoice record");
 
  					totalSum = postingDetail.getAmount()*placementTimes.getMonths();
