@@ -140,26 +140,21 @@ public class ProductEditorBusiness extends IBOServiceBean{
   public SelectionBox getCategorySelectionBox(Product product, String name, int productCatalogObjectInstanceId) {
       SelectionBox catSel = new SelectionBox(name);
       List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(productCatalogObjectInstanceId);
-      if (cats != null) {
-	catSel = new SelectionBox(cats);
-	catSel.setName(name);
-      }
       if (product != null) {
-	try {
-	  List rCats = ProductBusiness.getProductCategories(product);
-	  Category icCat;
-	  if (rCats != null && rCats.size() > 0) {
-	    for (int i = 0; i < rCats.size(); i++) {
-	      icCat = (Category) rCats.get(i);
-	      if ( cats == null )
-		catSel.addMenuElement(icCat.getID(),icCat.getName());
-	      catSel.setSelectedElement(Integer.toString(icCat.getID()));
-	    }
-	  }
-	}catch (IDOFinderException ido) {
-	  ido.printStackTrace(System.err);
-	}
+		try {
+		  cats = ProductBusiness.getProductCategories(product);
+		}catch (IDOFinderException ido) {
+		  ido.printStackTrace(System.err);
+		}
       }
+
+  	Category icCat;
+	  if (cats != null) {
+	  	catSel.addMenuElements(cats);
+	  	if ( product != null )
+		  	catSel.setAllSelected(true);
+	  }
+
     return catSel;
   }
 
@@ -176,21 +171,9 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	
 	  Category icCat;
 	  if (cats != null ) {
-	  	System.err.println("Number of categories: "+cats.size());
 	  	catSel.addMenuElements(cats);
-	  	catSel.setAllSelected(true);
-	  	Iterator iter = cats.iterator();
-	  	while ( iter.hasNext() ) {
-	  	  icCat = (Category) iter.next();	
-	      catSel.addMenuElement(icCat.getID(),icCat.getName());
-	      catSel.setSelectedElement(Integer.toString(icCat.getID()));
-		  System.err.println(icCat.getID()+": "+icCat.getName());
-	  	}
-	    /*for (int i = 0; i < rCats.size(); i++) {
-	      icCat = (Category) rCats.get(i);
-	      catSel.addMenuElement(icCat.getID(),icCat.getName());
-	      catSel.setSelectedElement(Integer.toString(icCat.getID()));
-	    }*/
+	  	if ( product != null )
+		  	catSel.setAllSelected(true);
 	  }
 
 	  return catSel;
