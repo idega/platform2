@@ -296,6 +296,28 @@ public class BuildingFinder {
     return L;
   }
 
+  public static List listOfApartmentsInTypeAndComplex(int typeId,int cmplxId){
+    Apartment A = new Apartment();
+    List L = null;
+    StringBuffer sql = new StringBuffer("select bu_apartment.* ");
+    sql.append("from bu_apartment,bu_floor,bu_building,bu_aprt_type,bu_complex ");
+    sql.append("where bu_apartment.bu_aprt_type_id = bu_aprt_type_id ");
+    sql.append("and bu_apartment.bu_floor_id = bu_floor_id ");
+    sql.append("and bu_building.bu_building_id = bu_floor.bu_building_id ");
+    sql.append("and bu_building.bu_complex_id = bu_complex.bu_complex_id ");
+    sql.append("and bu_complex.bu_complex_id = ");
+    sql.append(cmplxId);
+    sql.append(" and bu_aprt_type.bu_aprt_type_id = ");
+    sql.append(typeId);
+    sql.append(" order by bu_apartment.bu_floor_id ");
+    System.err.println(sql.toString());
+    try{
+      L = EntityFinder.findAll(A,sql.toString());
+    }
+    catch(SQLException ex){}
+    return L;
+  }
+
   public static List searchApartment(String searchname){
     Apartment A = new Apartment();
     List L = null;
