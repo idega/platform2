@@ -275,6 +275,7 @@ public class IFSFileCreationThread extends Thread {
 		
 		now = IWTimestamp.RightNow();
 		header.setEventEndTime(now.getTimestamp());
+		header.store();
 	}
 
 	private void createPaymentFiles(String fileName1, String fileName2, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate, Locale currentLocale) throws IOException {
