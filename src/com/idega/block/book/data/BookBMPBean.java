@@ -117,7 +117,7 @@ public class BookBMPBean extends GenericEntity implements Book {
     sql.append(") group by b.bo_book_id,b.bo_publisher_id,b.book_name,b.review,b.ic_file_id,b.date_added,b.published order by ");
     sql.append(getColumnDate());
     sql.append(" desc");
-    return super.idoFindIDsBySQL(sql.toString());
+    return super.idoFindIDsBySQL(sql.toString(),numberOfReturns);
   }
 
   public Collection ejbFindAllBooksByPublisher(int publisherID)throws FinderException{
@@ -154,6 +154,14 @@ public class BookBMPBean extends GenericEntity implements Book {
 
   public void addToAuthor(Author author) throws IDOException {
     super.idoAddTo(author);
+  }
+
+  public void removeFromAuthor() throws IDOException {
+    idoRemoveFrom(Author.class);
+  }
+
+  public void removeFromCategory() throws IDOException {
+    idoRemoveFrom(ICCategory.class);
   }
 
   public Collection findRelatedCategories() throws IDOException {

@@ -179,6 +179,9 @@ public class BookBusiness {
 
       book.store();
 
+      book.removeFromAuthor();
+      book.removeFromCategory();
+
       addAuthorsToBook(book,bookAuthors);
       addCategoriesToBook(book,bookCategories);
     }

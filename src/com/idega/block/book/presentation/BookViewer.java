@@ -44,6 +44,8 @@ public class BookViewer extends CategoryBlock implements IWBlock {
   private String _informationStyle;
   private String _ratingStyle;
   private int _numberOfShown = 2;
+  private boolean _showAuthorList = false;
+  private boolean _showPublisherList = false;
 
   private String _linkStyle;
   private String _linkHoverStyle;
@@ -453,9 +455,10 @@ public class BookViewer extends CategoryBlock implements IWBlock {
   }
 
   private Table getCategoryCollection(IWContext iwc) throws FinderException,RemoteException {
-    Collection collection = getCategories();
+    List collection = new Vector(getCategories());
 
     if ( collection != null && collection.size() > 0 ) {
+      Collections.sort(collection,new BookComparator(BookComparator.CATEGORY_NAME));
       Table table = new Table(3,collection.size()+2);
 	table.setCellpadding(0);
 	table.setCellspacing(2);
@@ -486,11 +489,107 @@ public class BookViewer extends CategoryBlock implements IWBlock {
 	  row++;
       }
 
+      if ( _isAdmin || _showAuthorList ) {
+	table.resize(table.getColumns(),table.getRows()+2);
+	table.setHeight(row++,"16");
+	table.mergeCells(1,row,3,row);
+	table.add(getAuthorList(iwc),1,row++);
+      }
+
+      if ( _isAdmin || _showPublisherList ) {
+	table.resize(table.getColumns(),table.getRows()+2);
+	table.setHeight(row++,"16");
+	table.mergeCells(1,row,3,row);
+	table.add(getPublisherList(iwc),1,row);
+      }
+
       return table;
     }
     else {
       return new Table();
     }
+  }
+
+  private Table getAuthorList(IWContext iwc) throws FinderException,RemoteException {
+    Table table = new Table(1,3);
+      table.setCellpaddingAndCellspacing(0);
+      table.setWidth(Table.HUNDRED_PERCENT);
+      table.setHeight(1,"16");
+      table.setHeight(2,"1");
+
+    table.add(formatText(_iwrb.getLocalizedString("authors","Authors"),_categoryHeadingStyle),1,1);
+    table.setBackgroundImage(1,2,_divider);
+
+    List authors = new Vector(_bookBusiness.getAuthorHome().findAllAuthors());
+    if ( authors != null ) {
+      Table authorTable = new Table();
+	authorTable.setColumns(2);
+	authorTable.setWidth(Table.HUNDRED_PERCENT);
+	authorTable.setWidth(1,"50%");
+	authorTable.setWidth(2,"50%");
+
+      Collections.sort(authors,new BookComparator(BookComparator.AUTHOR_NAME));
+      int row = 1;
+      int column = 1;
+      int size = authors.size();
+      int switchColumn = size / 2;
+      if ( size % 2 > 0 ) switchColumn++;
+
+      Iterator iter = authors.iterator();
+      while (iter.hasNext()) {
+	authorTable.add(getAuthorLink((Author)iter.next()),column,row);
+	if ( column == switchColumn ) {
+	  column++;
+	  row = 1;
+	}
+	else {
+	  row++;
+	}
+      }
+      table.add(authorTable,1,3);
+    }
+    return table;
+  }
+
+  private Table getPublisherList(IWContext iwc) throws FinderException,RemoteException {
+    Table table = new Table(1,3);
+      table.setCellpaddingAndCellspacing(0);
+      table.setWidth(Table.HUNDRED_PERCENT);
+      table.setHeight(1,"16");
+      table.setHeight(2,"1");
+
+    table.add(formatText(_iwrb.getLocalizedString("publishers","Publishers"),_categoryHeadingStyle),1,1);
+    table.setBackgroundImage(1,2,_divider);
+
+    List publishers = new Vector(_bookBusiness.getPublisherHome().findAllPublishers());
+    if ( publishers != null ) {
+      Table publisherTable = new Table();
+	publisherTable.setColumns(2);
+	publisherTable.setWidth(Table.HUNDRED_PERCENT);
+	publisherTable.setWidth(1,"50%");
+	publisherTable.setWidth(2,"50%");
+
+      Collections.sort(publishers,new BookComparator(BookComparator.PUBLISHER_NAME));
+      int row = 1;
+      int column = 1;
+      int size = publishers.size();
+      int switchColumn = size / 2;
+      if ( size % 2 > 0 ) switchColumn++;
+
+      Iterator iter = publishers.iterator();
+      while (iter.hasNext()) {
+	publisherTable.add(getPublisherLink((Publisher)iter.next()),column,row);
+	if ( column == switchColumn ) {
+	  column++;
+	  row = 1;
+	}
+	else {
+	  row++;
+	}
+      }
+      table.add(publisherTable,1,3);
+    }
+    return table;
   }
 
   private String getThreadDate(IWContext iwc,long time) {
@@ -732,6 +831,14 @@ public class BookViewer extends CategoryBlock implements IWBlock {
 
   public void setNumberOfShown(int numberOfShown) {
     _numberOfShown = numberOfShown;
+  }
+
+  public void setShowAuthorList(boolean showList) {
+    _showAuthorList = showList;
+  }
+
+  public void setShowPublisherList(boolean showList) {
+    _showPublisherList = showList;
   }
 
   private void setDefaultValues() {

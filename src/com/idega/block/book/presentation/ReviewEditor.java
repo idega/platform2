@@ -74,9 +74,9 @@ public ReviewEditor(){
   }
 
   private void processForm() throws FinderException,RemoteException {
-    TextInput publisherName = new TextInput(BookBusiness.PARAMETER_NAME);
-      publisherName.setLength(24);
-    TextArea publisherDescription = new TextArea(BookBusiness.PARAMETER_DESCRIPTION,54,8);
+    TextInput reviewerName = new TextInput(BookBusiness.PARAMETER_NAME);
+      reviewerName.setLength(24);
+    TextArea bookReview = new TextArea(BookBusiness.PARAMETER_DESCRIPTION,54,8);
     DropdownMenu menu = new DropdownMenu(BookBusiness.PARAMETER_RATING);
     for ( int a = 1; a <= 10; a++ ) {
       menu.addMenuElement(a,String.valueOf(a));
@@ -86,17 +86,17 @@ public ReviewEditor(){
 
     if ( _update ) {
       if ( _review.getName() != null ) {
-	publisherName.setContent(_review.getName());
+	reviewerName.setContent(_review.getName());
       }
       if ( _review.getReview() != null ) {
-	publisherDescription.setContent(_review.getReview());
+	bookReview.setContent(_review.getReview());
       }
       if ( _review.getRating() != -1 ) {
 	menu.setSelectedElement(String.valueOf(_review.getRating()));
       }
     }
-    addLeft(_iwrb.getLocalizedString("publisher_name","Publisher name")+":",publisherName,true);
-    addLeft(_iwrb.getLocalizedString("book_description","Description")+":",publisherDescription,true);
+    addLeft(_iwrb.getLocalizedString("reviewer_name","Name")+":",reviewerName,true);
+    addLeft(_iwrb.getLocalizedString("review","Review")+":",bookReview,true);
     addLeft(_iwrb.getLocalizedString("rating","Rating")+":"+Text.NON_BREAKING_SPACE,menu,false);
 
     addHiddenInput(new HiddenInput(BookBusiness.PARAMETER_REVIEW_ID,Integer.toString(_reviewID)));

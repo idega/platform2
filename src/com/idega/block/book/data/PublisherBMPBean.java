@@ -69,7 +69,7 @@ public class PublisherBMPBean extends GenericEntity implements Publisher {
 
   public void remove() throws IDORemoveException,RemoveException {
     try {
-      SimpleQuerier.execute("update "+BookBMPBean.getEntityTableName()+" set "+this.getIDColumnName()+" = -1 where "+getIDColumnName()+" = "+String.valueOf(((Integer)this.getPrimaryKey()).intValue()));
+      SimpleQuerier.execute("update "+BookBMPBean.getEntityTableName()+" set "+this.getIDColumnName()+" = null where "+getIDColumnName()+" = "+String.valueOf(((Integer)this.getPrimaryKey()).intValue()));
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
