@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBeanBMPBean.java,v 1.1 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: RequestBMPBean.java,v 1.1 2002/04/15 16:10:09 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,7 +18,7 @@ import java.sql.Timestamp;
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class RequestBeanBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.request.data.RequestBean,is.idega.idegaweb.campus.block.request.data.Request {
+public class RequestBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.request.data.Request {
   protected static final String ENTITY_NAME = "re_request";
   protected static final String USER_ID = "user_id";
   protected static final String DESCRIPTION = "description";
@@ -29,11 +29,11 @@ public class RequestBeanBMPBean extends com.idega.data.GenericEntity implements 
   protected static final String SPECIAL_REPAIR_TIME = "special_time";
   protected static final String STATUS = "status";
 
-  public RequestBeanBMPBean() {
+  public RequestBMPBean() {
     super();
   }
 
-  public RequestBeanBMPBean(int id) throws SQLException {
+  public RequestBMPBean(int id) throws SQLException {
     super(id);
   }
 

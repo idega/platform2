@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopBundleStarter.java,v 1.4 2002/04/09 12:00:28 palli Exp $
+ *  $Id: IShopBundleStarter.java,v 1.5 2002/04/15 16:10:09 palli Exp $
  *
  *  Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,6 +19,7 @@ import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
+import com.strengur.idegaweb.intershop.business.IShopXMLDesc;
 import is.idega.idegaweb.intershop.business.IShopTemplateHome;
 import is.idega.idegaweb.intershop.presentation.IShopToolbarButton;
 import java.io.FileInputStream;
@@ -34,6 +35,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.SQLException;
 import is.idega.idegaweb.intershop.data.IShopTemplate;
 import is.idega.idegaweb.intershop.data.IShopTemplateBean;
 

@@ -411,10 +411,27 @@ public class TenantsProfile extends Block {
       for ( int a = 0; a < requests.size(); a++ ) {
         holder = (RequestHolder) requests.get(a);
         request = holder.getRequest();
-        String type = request.getRequestType();
-        String status = request.getStatus();
+        String type = null;
+        try {
+          type = request.getRequestType();
+        }
+        catch(java.rmi.RemoteException e) {
+
+        }
+        String status = null;
+        try {
+          status = request.getStatus();
+        }
+        catch(java.rmi.RemoteException e) {
+
+        }
         table.add(formatText(_iwrb.getLocalizedString("REQUEST_TYPE_" + type,"Almenn viðgerð")),1,row);
-        table.add(formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
+        try {
+          table.add(formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
+        }
+        catch(java.rmi.RemoteException e) {
+          table.add("",2,row);
+        }
         table.add(formatText(_iwrb.getLocalizedString("REQUEST_STATUS_" + status,"Innsend")),3,row);
         row++;
       }

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBusiness.java,v 1.3 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: RequestBusiness.java,v 1.4 2002/04/15 16:10:09 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,7 +11,6 @@ package is.idega.idegaweb.campus.block.request.business;
 
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.campus.block.request.data.Request;
-import is.idega.idegaweb.campus.block.request.data.RequestBean;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
@@ -20,15 +19,17 @@ import java.sql.Timestamp;
  * @version 1.0
  */
 public class RequestBusiness {
-  public static final String REQUEST_COMPUTER = Request.REQUEST_COMPUTER;
-  public static final String REQUEST_REPAIR = Request.REQUEST_REPAIR;
+/*  public static final String REQUEST_COMPUTER = Request.REQUEST_COMPUTER;
+  public static final String REQUEST_REPAIR = Request.REQUEST_REPAIR;*/
+  public static final String REQUEST_COMPUTER = "C";
+  public static final String REQUEST_REPAIR = "R";
 
   /**
    *
    */
   public static boolean insertRequest(int userId, String comment, Timestamp dateOfFailure, String type, String special) {
     try {
-      RequestBean req = ((is.idega.idegaweb.campus.block.request.data.RequestBeanHome)com.idega.data.IDOLookup.getHomeLegacy(RequestBean.class)).createLegacy();
+      Request req = ((is.idega.idegaweb.campus.block.request.data.RequestHome)com.idega.data.IDOLookup.getHome(Request.class)).create();
       req.setUserId(userId);
       req.setDescription(comment);
       req.setDateFailure(dateOfFailure);
@@ -36,10 +37,14 @@ public class RequestBusiness {
       if (special != null)
         req.setSpecialTime(special);
       req.setDateSent(idegaTimestamp.getTimestampRightNow());
-      req.setStatus(Request.REQUEST_STATUS_SENT);
-      req.insert();
+      req.setStatus(RequestFinder.REQUEST_STATUS_SENT);
+//      ((is.idega.idegaweb.campus.block.request.data.RequestHome)com.idega.data.IDOLookup.getHome(Request.class)).
+      req.store();
     }
-    catch(SQLException e) {
+    catch(java.rmi.RemoteException e) {
+      return(false);
+    }
+    catch(javax.ejb.CreateException e) {
       return(false);
     }
 

@@ -1,112 +1,24 @@
-/*
- * $Id: Request.java,v 1.7 2002/04/06 19:11:14 tryggvil Exp $
- *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
- */
 package is.idega.idegaweb.campus.block.request.data;
 
-import java.sql.Timestamp;
+import javax.ejb.*;
 
-/**
- * @author <a href="mail:palli@idega.is">Pall Helgason</a>
- * @version 1.0
- */
-public interface Request {
-  public static final String REQUEST_COMPUTER = "C";
-  public static final String REQUEST_REPAIR = "R";
-
-  public static final String REQUEST_STATUS_SENT = "S";
-  public static final String REQUEST_STATUS_RECEIVED = "R";
-  public static final String REQUEST_STATUS_IN_PROGRESS = "P";
-  public static final String REQUEST_STATUS_DONE = "D";
-  public static final String REQUEST_STATUS_DENIED = "X";
-
-  /**
-   *
-   */
-  public String getRequestType();
-
-  /**
-   *
-   */
-  public void setRequestType(String type);
-
-  /**
-   *
-   */
-  public int getUserId();
-
-  /**
-   *
-   */
-  public void setUserId(int id);
-
-  /**
-   *
-   */
-  public void setUserId(Integer id);
-
-  /**
-   *
-   */
-  public String getDescription();
-
-  /**
-   *
-   */
-  public void setDescription(String description);
-
-  /**
-   *
-   */
-  public Timestamp getDateSent();
-
-  /**
-   *
-   */
-  public void setDateSent(Timestamp sent);
-
-  /**
-   *
-   */
-  public Timestamp getDateProcessed();
-
-  /**
-   *
-   */
-  public void setDateProcessed(Timestamp processed);
-
-  /**
-   *
-   */
-  public String getStatus();
-
-  /**
-   *
-   */
-  public void setStatus(String status);
-
-  /**
-   *
-   */
-  public Timestamp getDateFailure();
-
-  /**
-   *
-   */
-  public void setDateFailure(Timestamp failure);
-
-  /**
-   *
-   */
-  public String getSpecialTime();
-
-  /**
-   *
-   */
-  public void setSpecialTime(String time);
+public interface Request extends com.idega.data.IDOEntity
+{
+ public java.sql.Timestamp getDateProcessed() throws java.rmi.RemoteException;
+ public int getUserId() throws java.rmi.RemoteException;
+ public void setDateSent(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ public java.lang.String getRequestType() throws java.rmi.RemoteException;
+ public void setSpecialTime(java.lang.String p0) throws java.rmi.RemoteException;
+ public void setDateProcessed(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ public void setStatus(java.lang.String p0) throws java.rmi.RemoteException;
+ public void setDescription(java.lang.String p0) throws java.rmi.RemoteException;
+ public java.sql.Timestamp getDateFailure() throws java.rmi.RemoteException;
+ public java.lang.String getDescription() throws java.rmi.RemoteException;
+ public java.lang.String getStatus() throws java.rmi.RemoteException;
+ public void setRequestType(java.lang.String p0) throws java.rmi.RemoteException;
+ public java.lang.String getSpecialTime() throws java.rmi.RemoteException;
+ public void setUserId(java.lang.Integer p0) throws java.rmi.RemoteException;
+ public java.sql.Timestamp getDateSent() throws java.rmi.RemoteException;
+ public void setDateFailure(java.sql.Timestamp p0) throws java.rmi.RemoteException;
+ public void setUserId(int p0) throws java.rmi.RemoteException;
 }

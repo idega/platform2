@@ -1,5 +1,5 @@
 /*
- * $Id: RequestAdminView.java,v 1.5 2002/04/06 19:11:14 tryggvil Exp $
+ * $Id: RequestAdminView.java,v 1.6 2002/04/15 16:10:09 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -23,9 +23,18 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
 import com.idega.util.idegaTimestamp;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.Floor;
+import com.idega.block.building.data.Building;
+import com.idega.block.application.data.Applicant;
+import is.idega.idegaweb.campus.block.application.data.CampusApplication;
+import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestFinder;
 import is.idega.idegaweb.campus.block.request.business.RequestHolder;
 import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
 import java.util.List;
 
 import is.idega.idegaweb.campus.block.request.data.Request;
@@ -103,16 +112,16 @@ public class RequestAdminView extends Block {
 
 
     RadioGroup grp = new RadioGroup(CAM_REQ_VIEW_SELECTED);
-    grp.addRadioButton(Request.REQUEST_STATUS_SENT,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_S")));
-    grp.addRadioButton(Request.REQUEST_STATUS_RECEIVED,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_R")));
-    grp.addRadioButton(Request.REQUEST_STATUS_IN_PROGRESS,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_P")));
-    grp.addRadioButton(Request.REQUEST_STATUS_DONE,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_D")));
-    grp.addRadioButton(Request.REQUEST_STATUS_DENIED,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_X")));
+    grp.addRadioButton(RequestFinder.REQUEST_STATUS_SENT,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_S")));
+    grp.addRadioButton(RequestFinder.REQUEST_STATUS_RECEIVED,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_R")));
+    grp.addRadioButton(RequestFinder.REQUEST_STATUS_IN_PROGRESS,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_P")));
+    grp.addRadioButton(RequestFinder.REQUEST_STATUS_DONE,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_D")));
+    grp.addRadioButton(RequestFinder.REQUEST_STATUS_DENIED,Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_X")));
     grp.setVertical(false);
     grp.keepStatusOnAction();
 
     if (selected == null) {
-      selected = Request.REQUEST_STATUS_SENT;
+      selected = RequestFinder.REQUEST_STATUS_SENT;
       grp.setSelected(selected);
     }
 
@@ -124,10 +133,68 @@ public class RequestAdminView extends Block {
       for ( int a = 0; a < requests.size(); a++ ) {
         holder = (RequestHolder) requests.get(a);
         request = holder.getRequest();
-        String type = request.getRequestType();
-        String status = request.getStatus();
-        table.add(Edit.formatText(_iwrb.getLocalizedString("REQUEST_TYPE_" + type,"Almenn viðgerð")),1,row);
-        table.add(Edit.formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
+        String type = null;
+        try {
+          type = request.getRequestType();
+        }
+        catch(java.rmi.RemoteException e) {}
+        String status = null;
+        try {
+          status = request.getStatus();
+        }
+        catch(java.rmi.RemoteException e) {}
+        String linkText = _iwrb.getLocalizedString("REQUEST_TYPE_" + type,"Almenn viðgerð");
+        Link details = new Link(linkText);
+        Edit.setStyle(details);
+        details.setWindowToOpen(RequestAdminViewDetails.class);
+        Contract contract = null;
+        Apartment apartment = null;
+        Floor floor = null;
+        Building building = null;
+        Applicant applicant = null;
+        try {
+          contract = ContractFinder.findByUser(request.getUserId());
+        }
+        catch(Exception e) {
+          contract = null;
+        }
+        if (contract != null) {
+          apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
+          floor = BuildingCacher.getFloor(apartment.getFloorId());
+          building = BuildingCacher.getBuilding(floor.getBuildingId());
+          applicant = ContractFinder.getApplicant(contract);
+
+
+        }
+
+        CampusApplication campusApplication = null;
+        try {
+          campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
+        }
+        catch(Exception e) {
+          campusApplication = null;
+        }
+
+        if (building != null)
+          details.addParameter(RequestAdminViewDetails.REQUEST_STREET,building.getName());
+        if (apartment != null)
+          details.addParameter(RequestAdminViewDetails.REQUEST_APRT,apartment.getName());
+        if (applicant != null) {
+          details.addParameter(RequestAdminViewDetails.REQUEST_NAME,applicant.getFullName());
+          details.addParameter(RequestAdminViewDetails.REQUEST_TEL,applicant.getResidencePhone());
+        }
+        if (campusApplication != null)
+          details.addParameter(RequestAdminViewDetails.REQUEST_EMAIL,campusApplication.getEmail());
+
+//        details.addParameter("id",request.getpr);
+
+        table.add(details,1,row);
+        try {
+          table.add(Edit.formatText(new idegaTimestamp(request.getDateSent()).getISLDate(".",true)),2,row);
+        }
+        catch(java.rmi.RemoteException e) {
+          table.add(null,2,row);
+        }
         table.add(Edit.formatText(_iwrb.getLocalizedString("REQUEST_STATUS_" + status,"Innsend")),3,row);
         row++;
       }
@@ -139,27 +206,4 @@ public class RequestAdminView extends Block {
     grp.setToSubmit();
     return(f);
   }
-
-/*  private Text formatText(String text){
-    return formatText(text,"#000000",false);
-  }
-
-  private Text formatText(String text,String color){
-    return formatText(text,color,false);
-  }
-
-  private Text formatText(String text,String color,boolean bold){
-    if ( text == null ) text = "";
-    Text T =new Text(text);
-      _styler.setStyleValue(StyleConstants.ATTRIBUTE_COLOR,color);
-      if ( bold )
-        _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_BOLD);
-      else
-        _styler.setStyleValue(StyleConstants.ATTRIBUTE_FONT_WEIGHT,StyleConstants.FONT_WEIGHT_NORMAL);
-
-      T.setFontStyle(_styler.getStyleString());
-
-    return T;
-  }*/
-
 }
