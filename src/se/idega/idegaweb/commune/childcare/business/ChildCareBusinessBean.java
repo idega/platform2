@@ -1873,16 +1873,25 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public void convertOldQueue(User performer) {
+	public void convertOldQueue() {
 		try {
 			Collection childIDs = getChildCareQueueHome().getDistinctNotExportedChildIds();
+			Map noParents = new HashMap();
 			int size = childIDs.size();
 			int a = 1;
 			Iterator iter = childIDs.iterator();
 			while (iter.hasNext()) {
 				Integer element = (Integer) iter.next();
-				System.out.println("Working on child " + a++ + " of " + size + " (id = " + element+")");
-				convertQueueToApplications(performer, element.intValue());
+				System.out.println("Working on child " + a++ + " of " + size);
+				convertQueueToApplications(noParents, element.intValue());
+			}
+			
+			Iterator iterator = noParents.values().iterator();
+			System.out.println("");
+			System.out.println("Found no parents for the following child IDs (total of " + noParents.size() + " children):");
+			while (iterator.hasNext()) {
+				User child = (User) iterator.next();
+				System.out.println(child.getPrimaryKey() + " - " + child.getPersonalID());
 			}
 		}
 		catch (Exception e) {
@@ -1890,58 +1899,82 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public void convertQueueToApplications(User performer, int childID) {
+	private void convertQueueToApplications(Map noParents, int childID) {
 		try {
-			int length = 0;
-			int[] provider = null;
-			String[] dates = null;
-			Date[] queueDates = null;
-			boolean[] hasPriority = null;
-
-			Collection choices = getQueueChoices(childID);
-			if (choices != null) {
-				Iterator iter = choices.iterator();
-				int a = 0;
+			User performer = null;
+			User child = getUserBusiness().getUser(childID);
+			Collection parents = getUserBusiness().getParentsForChild(child);
+			if (parents != null) {
+				Iterator iter = parents.iterator();
 				while (iter.hasNext()) {
-					ChildCareQueue queue = (ChildCareQueue) iter.next();
-					if (a == 0) {
-						switch (queue.getQueueType()) {
-							case DBV_WITH_PLACE :
-								length = 4;
-								break;
-							case DBV_WITHOUT_PLACE :
-								length = 5;
-								break;
-							case FS_WITH_PLACE :
-								length = 4;
-								break;
-							case FS_WITHOUT_PLACE :
-								length = 5;
-								break;
-						}
-						if (choices.size() < length)
-							length = choices.size();
-
-						provider = new int[length];
-						dates = new String[length];
-						queueDates = new Date[length];
-						hasPriority = new boolean[length];
+					User parent = (User) iter.next();
+					if (getUserBusiness().hasCitizenAccount(parent)) {
+						performer = parent;
+						break;	
 					}
-					if (a < length) {
-						provider[a] = queue.getProviderId();
-						dates[a] = new IWTimestamp(queue.getStartDate()).toString();
-						queueDates[a] = queue.getQueueDate();
-						if (queue.getPriority() != null)
-							hasPriority[a] = true;
-						else
-							hasPriority[a] = false;
+					if (!iter.hasNext()) {
+						performer = parent;
 					}
-					a++;
 				}
+			}
+			else {
+				noParents.put(child.getPrimaryKey().toString(), child);
+			}
+			
+			if (performer != null) {
+				int length = 0;
+				int[] provider = null;
+				String[] dates = null;
+				Date[] queueDates = null;
+				boolean[] hasPriority = null;
 
-				boolean success = insertApplications(performer, provider, dates, null, childID, queueDates, hasPriority);
-				if (success)
-					exportQueue(choices);
+				Collection choices = getQueueChoices(childID);
+				if (choices != null) {
+					Iterator iter = choices.iterator();
+					int a = 0;
+					while (iter.hasNext()) {
+						ChildCareQueue queue = (ChildCareQueue) iter.next();
+						if (a == 0) {
+							switch (queue.getQueueType()) {
+								case DBV_WITH_PLACE :
+									length = 4;
+									break;
+								case DBV_WITHOUT_PLACE :
+									length = 5;
+									break;
+								case FS_WITH_PLACE :
+									length = 4;
+									break;
+								case FS_WITHOUT_PLACE :
+									length = 5;
+									break;
+							}
+							if (choices.size() < length)
+								length = choices.size();
+
+							provider = new int[length];
+							dates = new String[length];
+							queueDates = new Date[length];
+							hasPriority = new boolean[length];
+						}
+						if (a < length) {
+							provider[a] = queue.getProviderId();
+							dates[a] = new IWTimestamp(queue.getStartDate()).toString();
+							queueDates[a] = queue.getQueueDate();
+							if (queue.getPriority() != null)
+								hasPriority[a] = true;
+							else
+								hasPriority[a] = false;
+						}
+						a++;
+					}
+
+					boolean success = insertApplications(performer, provider, dates, null, childID, queueDates, hasPriority);
+					if (success)
+						exportQueue(choices);
+				}
+			}
+			else {
 			}
 		}
 		catch (Exception e) {
