@@ -141,6 +141,7 @@ public class ServiceOverview extends TravelManager {
 
 
       Link delete;
+      Link getLink;
 
 
       Text nameText = (Text) theText.clone();
@@ -224,6 +225,13 @@ public class ServiceOverview extends TravelManager {
             ++row;
             table.mergeCells(2,row,5,row);
             table.setAlignment(2,row,"right");
+
+            getLink = new Link("getLink");
+              getLink.setWindowToOpen(LinkGenerator.class);
+              getLink.addParameter(LinkGenerator.parameterProductId ,service.getID());
+            table.add(getLink,2,row);
+
+            table.add("&nbsp;&nbsp;",2,row);
 
             delete = new Link("delete");
               delete.addParameter(actionParameter,"delete");

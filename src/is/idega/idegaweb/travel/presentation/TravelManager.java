@@ -61,6 +61,17 @@ public class TravelManager extends JModuleObject {
     public void main(ModuleInfo modinfo) throws SQLException{
         initializer(modinfo);
 
+        String action = modinfo.getParameter(this.sAction);
+        if (action == null) {
+          action = (String) modinfo.getSessionAttribute(this.sAction);
+          if (action == null) {
+            action ="";
+          }
+        }else {
+          modinfo.setSessionAttribute(sAction, action);
+        }
+
+
           table.setBorder(0);
           table.setHeight("100%");
           table.setCellpadding(0);
@@ -84,6 +95,19 @@ public class TravelManager extends JModuleObject {
         Image iDailyReport = iwrb.getImage("buttons/daily_report.gif");
         Image iContracts = iwrb.getImage("buttons/contracts.gif");
         Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
+        if (action.equals("lDesign")) {
+          iDesign = iwrb.getImage("buttons/design_trip_on.gif");
+        }else if (action.equals("lMyTrip")) {
+          iMyTrip = iwrb.getImage("buttons/my_trips_on.gif");
+        }else if (action.equals("lOverview")) {
+          iOverview = iwrb.getImage("buttons/booking_overview_on.gif");
+        }else if (action.equals("lBooking")) {
+          iBooking = iwrb.getImage("buttons/booking_on.gif");
+        }else if (action.equals("lStatistics")) {
+          iStatistics = iwrb.getImage("buttons/statistics_on.gif");
+        }else if (action.equals("lDailyReport")) {
+          iDailyReport = iwrb.getImage("buttons/daily_report_on.gif");
+        }
 
         if ( AccessControl.isAdmin(modinfo)){
 
@@ -91,6 +115,8 @@ public class TravelManager extends JModuleObject {
               lInitialData.addParameter(this.sAction,"lInitialData");
             table.add(lInitialData,1,1);
 
+            Link lHome = new Link("heim","/index.jsp");
+            table.add(lHome,2,1);
         }else if (supplier != null) {
 
             Link lDesign = new Link(iDesign,ServiceDesigner.class);
@@ -119,6 +145,8 @@ public class TravelManager extends JModuleObject {
             table.add(lContracts,1,1);
             table.add(lInitialData,1,1);
 
+            Link lHome = new Link("heim","/index.jsp");
+            table.add(lHome,2,1);
         }
         else if (reseller!= null) {
 
@@ -129,9 +157,14 @@ public class TravelManager extends JModuleObject {
               lOverview.addParameter(this.sAction,"lOverview");
             table.add(lOverview,1,1);
 
+            Link lHome = new Link("heim","/index.jsp");
+            table.add(lHome,2,1);
         }
-        Link lHome = new Link("heim","/index.jsp");
-        table.add(lHome,2,1);
+        /*else {
+            Link lBooking = new Link(iBooking,Booking.class);
+              lBooking.addParameter(this.sAction,"lBooking");
+            table.add(lBooking,1,1);
+        }*/
 
         super.add(table);
     }

@@ -142,6 +142,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
       service.setDepartureTime(departure);
       service.setAttivalTime(arrival);
+      service.insert();
 
       if(addressIds != null){
         for (int i = 0; i < addressIds.length; i++) {
@@ -152,12 +153,12 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       if (timeframe != null) {
           service.addTo(timeframe);
       }
-      service.insert();
       //transaction.commit();
 
       return id;
     }catch(SQLException e){
       //transaction.rollback();
+      e.printStackTrace(System.err);
       throw new RuntimeException("IWE226TB89");
     }
   }
@@ -267,6 +268,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         StringBuffer sqlQuery = new StringBuffer();
           sqlQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+tTable);
           sqlQuery.append(" WHERE "+pTable+"."+Product.getStaticInstance(Product.class).getIDColumnName()+" = "+tTable+"."+Timeframe.getStaticInstance(Timeframe.class).getIDColumnName());
+          if (supplierId != -1)
           sqlQuery.append(" AND "+pTable+"."+Product.getColumnNameSupplierId()+" = "+supplierId);
           sqlQuery.append(" ORDER by "+Product.getColumnNameProductName());
 
@@ -576,23 +578,37 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return hash;
   }
 
-  public static boolean getIfDay(ModuleInfo modinfo, Contract contract, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
+  public static boolean getIfExpired(Contract contract, idegaTimestamp stamp) {
+    boolean returner = false;
+      int daysBetween = stamp.getDaysBetween(idegaTimestamp.RightNow(), stamp);
+      if (daysBetween < contract.getExpireDays()) {
+        returner = true;
+      }
+    return returner;
+  }
+
+  public static boolean getIfDay(ModuleInfo modinfo, Contract contract, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
       boolean isDay = false;
       String key1 = Integer.toString(contract.getID());
       String key2 = stamp.toSQLDateString();
 
       int dayOfWeek = stamp.getDayOfWeek();
       boolean isValidWeekDay = false;
+      boolean isValidServiceDay = false;
 
+      isValidServiceDay = TravelStockroomBusiness.getIfDay(modinfo,product,stamp);
 
-      HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(modinfo);
-      Object object = resellerDayOfWeekHash.get(key1, key2);
-      if (object == null) {
-          isValidWeekDay = ResellerDay.getIfDay(contract.getResellerId(),contract.getServiceId() , dayOfWeek);
-          resellerDayOfWeekHash.put(key1, key2, new Boolean(isValidWeekDay));
-      }else {
-        isValidWeekDay = ((Boolean) object).booleanValue();
+      if (isValidServiceDay) {
+        HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(modinfo);
+        Object object = resellerDayOfWeekHash.get(key1, key2);
+        if (object == null) {
+            isValidWeekDay = ResellerDay.getIfDay(contract.getResellerId(),contract.getServiceId() , dayOfWeek);
+            resellerDayOfWeekHash.put(key1, key2, new Boolean(isValidWeekDay));
+        }else {
+          isValidWeekDay = ((Boolean) object).booleanValue();
+        }
       }
+
 
       HashtableDoubleKeyed resellerDayHash = getResellerDayHashtable(modinfo);
       Object obj = resellerDayHash.get(key1, key2);
@@ -724,7 +740,38 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return booking.getID();
   }
 
+
+  public Reseller[] getResellers(int serviceId, idegaTimestamp stamp) {
+    Reseller[] returner = {};
+    try {
+        Reseller reseller = (Reseller) Reseller.getStaticInstance(Reseller.class);
+
+        String[] many = {};
+          StringBuffer sql = new StringBuffer();
+            sql.append("Select r.* from "+Contract.getContractTableName()+" c, "+Reseller.getResellerTableName()+" r");
+            sql.append(" where ");
+            sql.append(" c."+Contract.getColumnNameServiceId()+"="+serviceId);
+            sql.append(" and ");
+            sql.append(" c."+Contract.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
+            sql.append(" and ");
+            sql.append(" c."+Contract.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
+            sql.append(" and ");
+            sql.append(" c."+Contract.getColumnNameResellerId()+" = r."+reseller.getIDColumnName());
+
+        returner = (Reseller[]) reseller.findAll(sql.toString());
+
+    }catch (Exception e) {
+        e.printStackTrace(System.err);
+    }
+
+    return returner;
+
+  }
   public int getNumberOfAssignedSeats(int serviceId, idegaTimestamp stamp) {
+    return getNumberOfAssignedSeats(serviceId, -1, stamp);
+  }
+
+  public int getNumberOfAssignedSeats(int serviceId,int resellerId, idegaTimestamp stamp) {
     int returner = 0;
     try {
         String[] many = {};
@@ -736,9 +783,12 @@ public class TravelStockroomBusiness extends StockroomBusiness {
             sql.append(Contract.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
             sql.append(" and ");
             sql.append(Contract.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
+            if (resellerId != -1) {
+              sql.append(" and ");
+              sql.append(Contract.getColumnNameResellerId()+"="+resellerId);
+            }
 
         many = SimpleQuerier.executeStringQuery(sql.toString());
-
 
         if (many != null) {
           if (many[0] != null)
@@ -759,7 +809,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select count(b."+Booking.getTotalCountColumnName()+") from "+Booking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(Booking.class,Reseller.class)+" br");
+            sql.append("Select sum(b."+Booking.getTotalCountColumnName()+") from "+Booking.getBookingTableName()+" b, "+EntityControl.getManyToManyRelationShipTableName(Booking.class,Reseller.class)+" br");
             sql.append(" where ");
             sql.append(" br."+reseller.getIDColumnName()+" = "+resellerId);
             sql.append(" and ");
@@ -1000,6 +1050,60 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     }
 
     return resellers;
+  }
+
+  public static Inquery[] getInqueries(int serviceId, idegaTimestamp stamp, boolean unansweredOnly, String orderBy) {
+    Inquery[] inqueries = {};
+    if (orderBy == null) orderBy = "";
+    try {
+      StringBuffer sql = new StringBuffer();
+        sql.append("Select * from "+Inquery.getInqueryTableName());
+        sql.append(" WHERE ");
+        sql.append(Inquery.getInqueryDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
+        sql.append(" AND ");
+        sql.append(Inquery.getServiceIDColumnName()+" = "+serviceId);
+        if (unansweredOnly) {
+          sql.append(" AND ");
+          sql.append(Inquery.getAnsweredColumnName()+" = 'N'");
+        }
+        if (!orderBy.equals("")) {
+          sql.append(" ORDER BY "+orderBy);
+        }
+
+      inqueries = (Inquery[]) (Inquery.getStaticInstance(Inquery.class)).findAll(sql.toString());
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+
+    return inqueries;
+  }
+
+  public static int getInqueredSeats(int serviceId, idegaTimestamp stamp, boolean unansweredOnly) {
+    int returner = 0;
+    try {
+      StringBuffer sql = new StringBuffer();
+        sql.append("Select sum("+Inquery.getNumberOfSeatsColumnName()+") from "+Inquery.getInqueryTableName());
+        sql.append(" WHERE ");
+        sql.append(Inquery.getInqueryDateColumnName()+" = '"+stamp.toSQLDateString()+"'");
+        sql.append(" AND ");
+        sql.append(Inquery.getServiceIDColumnName()+" = "+serviceId);
+        if (unansweredOnly) {
+          sql.append(" AND ");
+          sql.append(Inquery.getAnsweredColumnName()+" = 'N'");
+        }
+
+        String[] result = SimpleQuerier.executeStringQuery(sql.toString());
+        if (result != null) {
+          if (result.length > 0) {
+            if (result[0] != null)
+            returner = Integer.parseInt(result[0]);
+          }
+        }
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+
+    return returner;
   }
 
 

@@ -15,11 +15,7 @@ import com.idega.projects.nat.business.NatBusiness;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
 
-import is.idega.travel.data.Service;
-import is.idega.travel.data.Tour;
-import is.idega.travel.data.Contract;
-import is.idega.travel.data.Timeframe;
-import is.idega.travel.data.HotelPickupPlace;
+import is.idega.travel.data.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -212,7 +208,6 @@ public class BookingOverview extends TravelManager {
           }
         }
 
-      //trip.addMenuElementFirst("-10","TEMP - ALLAR FERÐIR");
 
           if (product != null) {
               trip.setSelectedElement(Integer.toString(product.getID()));
@@ -409,7 +404,7 @@ public class BookingOverview extends TravelManager {
                       if (supplier != null) {
                         bContinue =TravelStockroomBusiness.getIfDay(modinfo,products[i],tempStamp);
                       }else if (reseller != null) {
-                        bContinue = TravelStockroomBusiness.getIfDay(modinfo,contract,tempStamp);
+                        bContinue = TravelStockroomBusiness.getIfDay(modinfo,contract,product,tempStamp);
                       }
                       if (bContinue) {
                           iCount = 0;
@@ -425,7 +420,7 @@ public class BookingOverview extends TravelManager {
                               iBooked = tsb.getNumberOfBookings(service.getID(), tempStamp);
                               iAssigned = tsb.getNumberOfAssignedSeats(service.getID(), tempStamp);
 
-                              iInquery = 0;
+                              iInquery = tsb.getInqueredSeats(service.getID() ,tempStamp, true);
                               iAvailable = iCount - iBooked - iAssigned;
                           }else if (reseller != null) {
                               iCount = contract.getAlotment();
@@ -451,15 +446,22 @@ public class BookingOverview extends TravelManager {
                           availableTextBold = (Text) theSmallBoldText.clone();
                               availableTextBold.setText(Integer.toString(iAvailable));
 
-                          SubmitButton btnNanar = new SubmitButton("Nanar",closerLookDateParameter,tempStamp.toSQLDateString());
-                          SubmitButton btnBook = new SubmitButton("Boka",bookParameter,Integer.toString(service.getID()));
+                          Link btnNanar = new Link(iwrb.getImage("/buttons/closer.gif"));
+                              btnNanar.addParameter(closerLookDateParameter,tempStamp.toSQLDateString());
+                          Link btnBook = new Link(iwrb.getImage("/buttons/book.gif"), Booking.class);
+                              btnBook.addParameter(Booking.parameterProductId, this.product.getID());
+                              btnBook.addParameter("year",tempStamp.getYear());
+                              btnBook.addParameter("month",tempStamp.getMonth());
+                              btnBook.addParameter("day",tempStamp.getDay());
 
                           table.add(nameTextBold,2,row);
-                          table.add(countTextBold,3,row);
                           table.add(assignedTextBold,4,row);
                           table.add(inqTextBold,5,row);
                           table.add(bookedTextBold,6,row);
-                          table.add(availableTextBold,7,row);
+                          if (iCount > 0) {
+                            table.add(countTextBold,3,row);
+                            table.add(availableTextBold,7,row);
+                          }
 
                           table.setColor(3,row,NatBusiness.backgroundColor);
                           table.setColor(4,row,NatBusiness.ORANGE);
@@ -468,7 +470,12 @@ public class BookingOverview extends TravelManager {
                           table.setColor(7,row,NatBusiness.LIGHTGREEN);
 
                           table.add(btnNanar,8,row);
-                          table.add(btnBook,8,row);
+                          if (supplier != null) {
+                            table.add(btnBook,8,row);
+                          } else if (reseller != null) {
+                            if (!TravelStockroomBusiness.getIfExpired(contract, tempStamp))
+                              table.add(btnBook,8,row);
+                          }
                           ++row;
                           upALine = true;
                       }
@@ -565,30 +572,45 @@ public class BookingOverview extends TravelManager {
           table.add(hotelPickupText,8,row);
 
           idegaTimestamp currentStamp = new idegaTimestamp(view_date);
-          int seats = tour.getTotalSeats();
+          int seats = 0;
           int assigned = 0;
-          int inqueries = 0;
-          int booked = tsb.getNumberOfBookings(service.getID(), currentStamp);
-          int available = seats - booked;
+          int iInqueries = 0;
+          int booked = 0;
+          int available = 0;
+
+          if (supplier != null) {
+            seats = tour.getTotalSeats();
+            assigned = tsb.getNumberOfAssignedSeats(service.getID(), currentStamp);
+            iInqueries = tsb.getInqueredSeats(service.getID() ,currentStamp, true);
+            booked = tsb.getNumberOfBookings(service.getID(), currentStamp);
+            available = seats - booked;
+          }else if (reseller != null) {
+            seats = contract.getAlotment();
+            assigned = 0;
+            iInqueries = 0;
+            booked = tsb.getNumberOfBookings(reseller.getID(),service.getID(), currentStamp);
+            available = seats - booked;
+          }
 
           dateTextBold.setText(currentStamp.getLocaleDate(modinfo));
           nameTextBold.setText(service.getName());
           countTextBold.setText(Integer.toString(seats));
-          assignedTextBold.setText(Integer.toString(assigned));
-          inqTextBold.setText(Integer.toString(inqueries));
-          bookedTextBold.setText(Integer.toString(booked));
           availableTextBold.setText(Integer.toString(available));
+          assignedTextBold.setText(Integer.toString(assigned));
+          inqTextBold.setText(Integer.toString(iInqueries));
+          bookedTextBold.setText(Integer.toString(booked));
 
           ++row;
           table.add(dateTextBold,1,row);
           table.add(nameTextBold,2,row);
-          table.add(countTextBold,3,row);
           table.setAlignment(3,row,"center");
           table.add(assignedTextBold,4,row);
           table.add(inqTextBold,5,row);
           table.add(bookedTextBold,6,row);
-          table.add(availableTextBold,7,row);
-          //table.add(hotelPickupTextBold,8,row);
+          if (seats > 0) {
+            table.add(countTextBold,3,row);
+            table.add(availableTextBold,7,row);
+          }
 
           table.setColor(3,row,NatBusiness.backgroundColor);
           table.setColor(4,row,NatBusiness.ORANGE);
@@ -603,6 +625,77 @@ public class BookingOverview extends TravelManager {
           Text Thotel = (Text) super.theSmallBoldText.clone();
           Text Tbooked;
 
+          java.util.List emails;
+          // ------------------ ASSIGNED -----------------------
+          if (assigned > 0) {
+            Reseller[] resellers = tsb.getResellers(service.getID(), currentStamp);
+            for (int i = 0; i < resellers.length; i++) {
+              ++row;
+
+              Tname = (Text) super.theSmallBoldText.clone();
+                Tname.setText("&nbsp;&nbsp;"+resellers[i].getName());
+              Temail = (Text) super.theSmallBoldText.clone();
+
+              try {
+                emails = resellers[i].getEmails();
+                if (emails != null) {
+                  for (int j = 0; j < emails.size(); j++) {
+                    if (j > 0) Temail.addToText(", ");
+                    Temail.addToText( ((com.idega.core.data.Email) emails.get(j)).getEmailAddress());
+                  }
+                }
+              }catch (SQLException sql) {sql.printStackTrace(System.err);}
+              //                Temail.setText(reseller[i].getEmail());
+              Tbooked = (Text) super.theSmallBoldText.clone();
+                Tbooked.setText(Integer.toString(tsb.getNumberOfAssignedSeats(service.getID(), resellers[i].getID() ,currentStamp)));
+
+              table.mergeCells(2,row,3, row);
+              table.add(Tname,1,row);
+              table.add(Temail,3,row);
+              table.setAlignment(3,row,"left");
+              table.add(Tbooked,4,row);
+
+
+              table.setColor(1,row,NatBusiness.ORANGE);
+              table.setColor(2,row,NatBusiness.ORANGE);
+              table.setColor(4,row,NatBusiness.ORANGE);
+              table.setColor(5,row,NatBusiness.YELLOW);
+              table.setColor(6,row,NatBusiness.RED);
+              table.setColor(7,row,NatBusiness.LIGHTGREEN);
+              table.setColor(8,row,NatBusiness.backgroundColor);
+            }
+          }
+
+
+          // ------------------ INQUERIES ------------------------
+          Inquery[] inqueries = tsb.getInqueries(service.getID(), currentStamp, true, Inquery.getNameColumnName());
+          for (int i = 0; i < inqueries.length; i++) {
+            ++row;
+            Tname = (Text) super.theSmallBoldText.clone();
+              Tname.setText("&nbsp;&nbsp;"+inqueries[i].getName());
+            Temail = (Text) super.theSmallBoldText.clone();
+              Temail.setText(inqueries[i].getEmail());
+            Tbooked = (Text) super.theSmallBoldText.clone();
+              Tbooked.setText(Integer.toString(inqueries[i].getNumberOfSeats()));
+
+            table.mergeCells(2,row,4, row);
+            table.add(Tname,1,row);
+            table.add(Temail,2,row);
+            table.setAlignment(3,row,"left");
+            table.add(Tbooked,5,row);
+
+
+            table.setColor(1,row,NatBusiness.YELLOW);
+            table.setColor(2,row,NatBusiness.YELLOW);
+            table.setColor(4,row,NatBusiness.YELLOW);
+            table.setColor(5,row,NatBusiness.YELLOW);
+            table.setColor(6,row,NatBusiness.RED);
+            table.setColor(7,row,NatBusiness.LIGHTGREEN);
+            table.setColor(8,row,NatBusiness.backgroundColor);
+          }
+
+
+          // ------------------ BOOKINGS ------------------------
           is.idega.travel.data.Booking[] bookings = tsb.getBookings(this.service.getID(), currentStamp);
           for (int i = 0; i < bookings.length; i++) {
               ++row;
@@ -624,17 +717,16 @@ public class BookingOverview extends TravelManager {
               Tbooked = (Text) super.theSmallBoldText.clone();
                 Tbooked.setText(Integer.toString(bookings[i].getTotalCount()));
 
-              table.mergeCells(1,row,2, row);
-              table.mergeCells(3,row,5, row);
+              table.mergeCells(2,row,5, row);
               table.add(Tname,1,row);
-              table.add(Temail,3,row);
+              table.add(Temail,2,row);
               table.setAlignment(3,row,"left");
               table.add(Tbooked,6,row);
               table.add(Thotel,8,row);
 
 
               table.setColor(1,row,NatBusiness.RED);
-              table.setColor(3,row,NatBusiness.RED);
+              table.setColor(2,row,NatBusiness.RED);
               table.setColor(6,row,NatBusiness.RED);
               table.setColor(7,row,NatBusiness.LIGHTGREEN);
               table.setColor(8,row,NatBusiness.backgroundColor);
@@ -648,14 +740,15 @@ public class BookingOverview extends TravelManager {
         table.setColor(8,row,NatBusiness.backgroundColor);
         Text Tavail = (Text) super.theSmallBoldText.clone();
           Tavail.setText(iwrb.getLocalizedString("travel.available_seats","Available seats"));
-        table.add(Tavail,1,row);
-        table.add(availableTextBold,7,row);
+        if (seats > 0) {
+          table.add(Tavail,1,row);
+          table.add(availableTextBold,7,row);
+        }
 
 
 
     table.setColumnAlignment(1,"left");
     table.setColumnAlignment(2,"left");
-//    table.setColumnAlignment(3,"center");
     table.setColumnAlignment(4,"center");
     table.setColumnAlignment(5,"center");
     table.setColumnAlignment(6,"center");

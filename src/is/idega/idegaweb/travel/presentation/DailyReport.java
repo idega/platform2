@@ -467,6 +467,7 @@ public class DailyReport extends TravelManager {
     String[] attendance  = (String[]) modinfo.getParameterValues("attendance");
 
     is.idega.travel.data.Booking booking;
+    if (booking_ids != null)
     for (int i = 0; i < booking_ids.length; i++) {
       try {
         booking = new is.idega.travel.data.Booking(Integer.parseInt(booking_ids[i]));

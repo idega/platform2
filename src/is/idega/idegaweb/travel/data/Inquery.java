@@ -26,11 +26,12 @@ public class Inquery extends GenericEntity{
     addAttribute(getNameColumnName(), "Name", true, true, String.class, 255);
     addAttribute(getEmailColumnName(), "Tölvupóstur", true, true, String.class, 255);
     addAttribute(getInqueryColumnName(), "Fyrirspurn",true ,true, String.class, 510);
-    addAttribute(getInqueryDateColumnName(), "Dagur sem spurt er um", true ,true, java.sql.Date.class);
-    addAttribute(getInqueryPostDateColumnName(), "Dagur þegar spurt var", true ,true, java.sql.Date.class);
+    addAttribute(getInqueryDateColumnName(), "Dagur sem spurt er um", true ,true, java.sql.Timestamp.class);
+    addAttribute(getInqueryPostDateColumnName(), "Dagur þegar spurt var", true ,true, java.sql.Timestamp.class);
     addAttribute(getAnsweredColumnName(), "Svarað", true,true, Boolean.class);
-    addAttribute(getAnswerDateColumnName(), "Hvenær var svarað", true, true, java.sql.Date.class);
+    addAttribute(getAnswerDateColumnName(), "Hvenær var svarað", true, true, java.sql.Timestamp.class);
     addAttribute(getServiceIDColumnName(), "Vara", true, true, Integer.class, "many-to-one", Service.class);
+    addAttribute(getNumberOfSeatsColumnName(), "sæti", true, true, Integer.class);
   }
 
 
@@ -38,7 +39,7 @@ public class Inquery extends GenericEntity{
     return getInqueryTableName();
   }
   public String getName(){
-    return getNameColumnName();
+    return getStringColumnValue(getNameColumnName());
   }
 
   public void setName(String name){
@@ -113,6 +114,14 @@ public class Inquery extends GenericEntity{
     setColumn(getAnswerDateColumnName(), timestamp);
   }
 
+  public int getNumberOfSeats() {
+    return getIntColumnValue(getNumberOfSeatsColumnName());
+  }
+
+  public void setNumberOfSeats(int numberOfSeats) {
+    setColumn(getNumberOfSeatsColumnName(),numberOfSeats);
+  }
+
   public static String getInqueryTableName(){return "TB_INQUERY";}
   public static String getNameColumnName() {return "NAME";}
   public static String getEmailColumnName() {return "EMAIL";}
@@ -120,13 +129,8 @@ public class Inquery extends GenericEntity{
   public static String getInqueryDateColumnName() {return "INQUERY_DATE";}
   public static String getInqueryPostDateColumnName() {return "INQUERY_POST_DATE";}
   public static String getAnsweredColumnName() {return "ANSWERED";}
-
   public static String getAnswerDateColumnName() {return "ANSWER_DATE";}
-
   public static String getServiceIDColumnName() {return "TB_SERVICE_ID";}
-
-
-
-
+  public static String getNumberOfSeatsColumnName() {return "NUMBER_OF_SEATS";}
 
 }

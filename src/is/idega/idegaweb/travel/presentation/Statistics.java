@@ -315,8 +315,6 @@ public class Statistics extends TravelManager {
       int total = iNetBooking + iInqBooking + iSupBooking + i3rdBooking;
       int numberOfSeats = tour.getTotalSeats() * tsb.getNumberOfTours(service.getID(), fromStamp, toStamp);
 
-      System.err.println(" Total seats ("+tour.getTotalSeats()+") * Tours ("+tsb.getNumberOfTours(service.getID(), fromStamp, toStamp)+") = "+numberOfSeats);
-
       int iAvail = numberOfSeats - total;
 
       float usage = 100 * (float)total / (float)numberOfSeats ;
@@ -327,13 +325,16 @@ public class Statistics extends TravelManager {
           inqNrText.setText(Integer.toString(iInqBooking));
           supplNrText.setText(Integer.toString(iSupBooking));
           travelNrText.setText(Integer.toString(i3rdBooking));
-          availNrText.setText(Integer.toString(iAvail));
           passNrText.setText(Integer.toString(total));
-          seatNrText.setText(Integer.toString(numberOfSeats));
-          usageNrText.setText(sUsage+"%");
-
-
-
+          if (numberOfSeats > 0) {
+            availNrText.setText(Integer.toString(iAvail));
+            seatNrText.setText(Integer.toString(numberOfSeats));
+            usageNrText.setText(sUsage+"%");
+          }else {
+            availNrText.setText("-");
+            seatNrText.setText("-");
+            usageNrText.setText("-");
+          }
 
       table.add(netBookText,1,1);
       table.add(inqText,1,2);
@@ -352,6 +353,7 @@ public class Statistics extends TravelManager {
       table.add(passNrText,2,6);
       table.add(seatNrText,2,7);
       table.add(usageNrText,2,8);
+
 
 
       table.setColumnAlignment(1,"left");

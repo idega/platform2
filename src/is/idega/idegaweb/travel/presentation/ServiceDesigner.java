@@ -159,8 +159,8 @@ public class ServiceDesigner extends TravelManager {
         hotelPickupNo.setOnClick("this.form."+hotelPickupTime.getMinuteName()+".disabled=true");
 
       TextInput numberOfSeats = new TextInput("number_of_seats");
-        numberOfSeats.setAsIntegers("TEMP _ Must be numbers");
-        numberOfSeats.setAsNotEmpty("TEMP _ Must not be empty");
+//        numberOfSeats.setAsIntegers("TEMP _ Must be numbers");
+//        numberOfSeats.setAsNotEmpty("TEMP _ Must not be empty");
 
 
       ++row;
@@ -387,7 +387,13 @@ public class ServiceDesigner extends TravelManager {
 
       Integer iNumberOfSeats = null;
       if (numberOfSeats != null) {
+        try {
         iNumberOfSeats = new Integer(numberOfSeats);
+        }catch (NumberFormatException n) {
+          iNumberOfSeats = new Integer(0);
+        }
+      }else {
+        iNumberOfSeats = new Integer(0);
       }
 
       idegaTimestamp activeFromStamp = null;

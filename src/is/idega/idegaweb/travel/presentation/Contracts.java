@@ -105,6 +105,9 @@ public class Contracts extends TravelManager {
       table.add(resName,1,row);
       table.add(refNum,2,row);
 
+      if (resellers == null) {
+        resellers = tsb.getResellers(supplier.getID(),Reseller.getColumnNameName());
+      }
 
       for (int i = 0; i < resellers.length; i++) {
           ++row;
@@ -310,10 +313,11 @@ public class Contracts extends TravelManager {
                 Reseller reseller = resellerMan.createReseller(name, userName, passOne, description, addressIds, phoneIds, emailIds);
                 reseller.addTo(supplier);
 
-//                  tm.commit();
-                add(iwrb.getLocalizedString("travel.reseller_created","Reseller was created"));
+                //add(iwrb.getLocalizedString("travel.reseller_created","Reseller was created"));
+                resellers = null;
+                this.mainMenu(modinfo);
             }else {
-                add("TEMP - PASSWORD not the same");
+                add("TEMP - PASSWORDS not the same");
 
             }
 
