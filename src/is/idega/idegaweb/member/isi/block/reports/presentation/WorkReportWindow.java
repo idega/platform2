@@ -348,22 +348,17 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		User user = iwc.getCurrentUser();
 
 		try {
-			List union = getWorkReportBusiness(iwc).getUnionListForUserFromTopNodes(user, iwc); //should only be one
-			if (!union.isEmpty()) {
-				userType = WorkReportConstants.WR_USER_TYPE_UNION;
-				return null;
-			}
-
+			
 			List federation = getWorkReportBusiness(iwc).getFederationListForUserFromTopNodes(user, iwc); //should only be one
 			if (!federation.isEmpty()) {
 				userType = WorkReportConstants.WR_USER_TYPE_FEDERATION;
 				return null;
 			}
-
-			List club = getWorkReportBusiness(iwc).getClubListForUserFromTopNodes(user, iwc); //should only be one
-			if (!club.isEmpty()) {
-				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
-				return ((Integer) ((Group)club.iterator().next()).getPrimaryKey());
+			
+			List union = getWorkReportBusiness(iwc).getUnionListForUserFromTopNodes(user, iwc); //should only be one
+			if (!union.isEmpty()) {
+				userType = WorkReportConstants.WR_USER_TYPE_UNION;
+				return null;
 			}
 
 			List regional = getWorkReportBusiness(iwc).getRegionalUnionListForUserFromTopNodes(user, iwc); //should only be one
@@ -376,6 +371,12 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			if (!leagues.isEmpty()) {
 				userType = WorkReportConstants.WR_USER_TYPE_LEAGUE;
 				return ((Integer) ((Group)leagues.iterator().next()).getPrimaryKey());
+			}
+			
+			List club = getWorkReportBusiness(iwc).getClubListForUserFromTopNodes(user, iwc); //should only be one
+			if (!club.isEmpty()) {
+				userType = WorkReportConstants.WR_USER_TYPE_CLUB;
+				return ((Integer) ((Group)club.iterator().next()).getPrimaryKey());
 			}
 
 		}
