@@ -620,7 +620,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {entryDateField, divisionField, groupField, personalIDField };
+		ReportableField[] sortFields = new ReportableField[] {divisionField, entryDateField, groupField, personalIDField };
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
