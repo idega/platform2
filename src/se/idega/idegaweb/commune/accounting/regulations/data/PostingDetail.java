@@ -19,7 +19,7 @@ public class PostingDetail {
 	public PostingDetail(){
 	}
 /*
-	//TODO (JJ) Have to change the regularInvoiceEntry to regularPaymentEntrry
+	//TODO (JJ) Have to change the regularInvoiceEntry to regularPaymentEntry
 	public PostingDetail(RegularInvoiceEntry regularPaymentEntry){
 		setAmount(regularPaymentEntry.getAmount());
 		setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
@@ -30,10 +30,13 @@ public class PostingDetail {
 */
 	public PostingDetail(RegularPaymentEntry regularPaymentEntry){
 		setAmount(regularPaymentEntry.getAmount());
-//		setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
+		if(regularPaymentEntry.getRegSpecType()!=null){
+			setRuleSpecType(regularPaymentEntry.getRegSpecType().getRegSpecType());
+		}
 		setTerm(regularPaymentEntry.getPlacing());
 		setVat(regularPaymentEntry.getVAT());
 		setVatRegulationID(regularPaymentEntry.getVatRuleId());
+		setOrderID(99);	//TODO (JJ) Check with Lotta if she want somethng else here...
 	}
 	
 	public PostingDetail(String t, float a, float v, int vID, String rst){

@@ -1,55 +1,38 @@
-/*
- * Created on 28.10.2003
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
-import java.sql.Date;
 
-import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
-
-import com.idega.block.school.data.School;
-import com.idega.data.IDOEntity;
-import com.idega.user.data.User;
-
-/**
- * @author Roar
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
-public interface RegularPaymentEntry extends IDOEntity {
-	
-	School getSchool(); 
-	int getSchoolId(); 	
-	String getPlacing();	
-	Date getFrom();
-	Date getTo();	
-	float getAmount();
-	float getVAT();	
-	String getNote();	
-	String getOwnPosting();
-	String getDoublePosting();
-	VATRule getVatRule();	
-	int getVatRuleId();	
-	User getUser();	
-	int getUserId();	
-	int getSchoolTypeId();	
-	
-	void setSchoolId(int schoolId);
-	void setPlacing(String plascing);
-	void setFrom(Date from);
-	void setTo(Date to);	
-	void setAmount(float amount);
-	void setVAT(float vat);
-	void setNote(String note);	
-	void setOwnPosting(String ownPosting);
-	void setDoublePosting(String doublePosting);
-	void setVatRuleId(int vatRuleId);	
-	void setUser(User user);
-	void setSchoolTypeId(int id);	
-	
-	void delete()throws java.sql.SQLException;
+public interface RegularPaymentEntry extends com.idega.data.IDOEntity
+{
+ public float getAmount();
+ public java.lang.String getDoublePosting();
+ public java.sql.Date getFrom();
+ public java.lang.String getNote();
+ public java.lang.String getOwnPosting();
+ public java.lang.String getPlacing();
+ public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType getRegSpecType();
+ public int getRegSpecTypeId();
+ public com.idega.block.school.data.School getSchool();
+ public int getSchoolId();
+ public int getSchoolTypeId();
+ public java.sql.Date getTo();
+ public com.idega.user.data.User getUser();
+ public int getUserId();
+ public float getVAT();
+ public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVatRule();
+ public int getVatRuleId();
+ public void setAmount(float p0);
+ public void setDoublePosting(java.lang.String p0);
+ public void setFrom(java.sql.Date p0);
+ public void setNote(java.lang.String p0);
+ public void setOwnPosting(java.lang.String p0);
+ public void setPlacing(java.lang.String p0);
+ public void setRegSpecType(se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType p0);
+ public void setRegSpecTypeId(int p0);
+ public void setSchoolId(int p0);
+ public void setSchoolTypeId(int p0);
+ public void setTo(java.sql.Date p0);
+ public void setUser(com.idega.user.data.User p0);
+ public void setVAT(float p0);
+ public void setVatRule(se.idega.idegaweb.commune.accounting.regulations.data.VATRule p0);
+ public void setVatRuleId(int p0);
 }

@@ -32,7 +32,7 @@ public class RegularPaymentBusinessBean extends IBOServiceBean implements Regula
 	public Collection findRegularPaymentsForPeriodeAndUser(Date from, Date to, int userId) throws IDOLookupException, FinderException{
  
 		RegularPaymentEntryHome home =(RegularPaymentEntryHome) IDOLookup.getHome(RegularPaymentEntry.class);
-		return home.findRegularPaymentsForPeriodeAndUser(from, to, userId);
+		return home.findByPeriodeAndUser(from, to, userId);
 
 	}
 	public Collection findRegularPaymentsForPeriode(Date from, Date to){
@@ -41,13 +41,14 @@ public class RegularPaymentBusinessBean extends IBOServiceBean implements Regula
 	}
 
 	public Collection findRegularPaymentsForPeriodeAndCategory(Date date, SchoolCategory cat) throws IDOLookupException, FinderException{
-/*
-		RegulationSpecTypeHome rstHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
-		int lagPrimary = ((Integer)rstHome.findByRegulationSpecType(RegSpecConstant.LAGINKOMSTSKYDD).getPrimaryKey()).intValue();
+		//Temporary patch, will change during the day hopefully....
+//		RegulationSpecTypeHome rstHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
+//		int lagPrimary = ((Integer)rstHome.findByRegulationSpecType(RegSpecConstant.LAGINKOMSTSKYDD).getPrimaryKey()).intValue();
 		RegularPaymentEntryHome home =(RegularPaymentEntryHome) IDOLookup.getHome(RegularPaymentEntry.class);
-		return home.findRegularPaymentForPeriodeAndCategory(date,cat.getCategory(),lagPrimary);
-*/
-		return new ArrayList();
+		
+		return home.findRegularPaymentForPeriodeCategory(date,cat.getCategory());
+
+//		return new ArrayList();
 	}
 	
 	/* (non-Javadoc)
@@ -55,7 +56,7 @@ public class RegularPaymentBusinessBean extends IBOServiceBean implements Regula
 	 */
 	public Collection findRegularPaymentsForPeriodeAndSchool(Date from, Date to, School provider)  throws IDOLookupException, FinderException{
 		RegularPaymentEntryHome home =(RegularPaymentEntryHome) IDOLookup.getHome(RegularPaymentEntry.class);
-		return home.findRegularPaymentsForPeriodeAndProvider(from, to, provider);
+		return home.findByPeriodeAndProvider(from, to, provider);
 	}
 
 	 /*  (non-Javadoc)
@@ -63,7 +64,7 @@ public class RegularPaymentBusinessBean extends IBOServiceBean implements Regula
 	 */
 	public Collection findOngoingRegularPaymentsForUserAndSchoolByDate(User child, School provider, Date date)  throws IDOLookupException, FinderException{
 		RegularPaymentEntryHome home =(RegularPaymentEntryHome) IDOLookup.getHome(RegularPaymentEntry.class);
-		return home.findOngoingRegularPaymentsForUserAndProviderByDate(child, provider, date);
+		return home.findOngoingByUserAndProviderAndDate(child, provider, date);
 	}
 	
 

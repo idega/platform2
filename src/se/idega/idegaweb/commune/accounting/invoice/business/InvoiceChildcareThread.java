@@ -24,6 +24,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
@@ -72,9 +73,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	private static final String HOURS_PER_WEEK = "hours/week";		//Localize this text in the user interface
 	private ChildCareContract contract;
 	private PostingDetail postingDetail;
-	//private int childcare;
 	private Map siblingOrders = new HashMap();
-//	private String ownPosting, doublePosting;
 
 	public InvoiceChildcareThread(Date month, IWContext iwc){
 		super(month,iwc);
@@ -92,8 +91,10 @@ public class InvoiceChildcareThread extends BillingThread{
 			createBatchRunLogger(category);
 			//Create all the billing info derrived from the contracts
 			contracts();
-			//Create all the billing info derrived from the regular payments
+			//Create all the billing info derrived from the regular invoices
 			regularInvoice();
+			//Create all the billing info derrived from the regular payments
+			regularPayment();
 			//VAT
 			calcVAT();
 			batchRunLoggerDone();
@@ -499,7 +500,6 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * Creates all the invoice headers, invoice records, payment headers and payment records
 	 * for the Regular payments
 	 */
-	/*
 	protected void regularPayment() {
 		PostingDetail postingDetail = null;
 
@@ -509,6 +509,8 @@ public class InvoiceChildcareThread extends BillingThread{
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
 				postingDetail = new PostingDetail(regularPaymentEntry);
+				school = regularPaymentEntry.getSchool();
+				calculateTime(regularPaymentEntry.getFrom(),regularPaymentEntry.getTo());
 				createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
 			}
 		}
@@ -522,7 +524,7 @@ public class InvoiceChildcareThread extends BillingThread{
 			}
 		}
 	}
-*/
+
 	/**
 	 * Code to set all the sibling order used to calculate the sibling discount for each contract.
 	 * At the moment there is no sibling order column in the User object, so this function is not used.

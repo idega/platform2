@@ -17,6 +17,7 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolType;
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 /**
@@ -56,15 +57,15 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_NOTE, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_VAT, "", true, true, java.lang.Float.class);
-		addAttribute(COLUMN_VAT_RULE_ID, "", true, true, java.lang.Integer.class, 1);
+//		addAttribute(COLUMN_VAT_RULE_ID, "", true, true, java.lang.Integer.class, 1);
 		addAttribute(COLUMN_AMOUNT, "", true, true, java.lang.Float.class);
-		addAttribute(COLUMN_SCHOOL_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_USER_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_SCHOOL_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_USER_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PLACING, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_TO, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_FROM, "", true, true, java.sql.Date.class);
-		addAttribute(COLUMN_SCHOOL_TYPE_ID, "", true, true, java.lang.Integer.class);		
+//		addAttribute(COLUMN_SCHOOL_TYPE_ID, "", true, true, java.lang.Integer.class);		
 
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
@@ -375,6 +376,31 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 //		.append(COLUMN_TO)
 //		.appendIsNull()
 		.appendRightParenthesis());
+	}
+
+	public Collection ejbFindRegularPaymentForPeriodeCategoryExcludingRegSpecType(Date date, String category, int regSpecType) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" p, sch_school_type t");
+		sql.appendWhereEquals("p."+COLUMN_SCHOOL_TYPE_ID, "t.SCH_SCHOOL_TYPE_ID");
+		sql.appendAndEqualsQuoted("t.school_category",category);
+		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
+		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
+		sql.appendAnd().append(COLUMN_REG_SPEC_TYPE_ID).appendNOTEqual().append(regSpecType);
+		System.out.println("SQL:"+sql);
+		return idoFindPKsByQuery(sql);
+	}
+
+	public Collection ejbFindRegularPaymentForPeriodeCategory(Date date, String category) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" p, sch_school_type t");
+		sql.appendWhereEquals("p."+COLUMN_SCHOOL_TYPE_ID, "t.SCH_SCHOOL_TYPE_ID");
+		sql.appendAndEqualsQuoted("t.school_category",category);
+		sql.appendAnd().append(COLUMN_FROM).appendLessThanOrEqualsSign().append(date);
+		sql.appendAnd().appendLeftParenthesis().append(COLUMN_TO).appendGreaterThanOrEqualsSign().append(date);
+		sql.appendOr().append(COLUMN_TO).append(" is null").appendRightParenthesis();
+		System.out.println("SQL:"+sql);
+		return idoFindPKsByQuery(sql);
 	}
 
 	/**

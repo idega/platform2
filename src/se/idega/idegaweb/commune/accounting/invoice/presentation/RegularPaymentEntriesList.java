@@ -245,6 +245,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 				ex.printStackTrace(); 
 			}catch(IDOLookupException ex){
 				ex.printStackTrace(); 
+			} catch (RemoteException e) {
+				e.printStackTrace();
 			}
 		}
 		return payments;		
@@ -327,9 +329,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private void handleDeleteAction(IWContext iwc){
 		RegularPaymentEntry entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
 		try{
-			entry.delete();
-		} catch(SQLException ex){
-			ex.printStackTrace();
+			entry.remove();
+		} catch (EJBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -1043,6 +1049,21 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 			public void remove() throws RemoveException, EJBException {}
 			public boolean isIdentical(EJBLocalObject arg0) throws EJBException {return false;}
 			public int compareTo(Object arg0) {return 0;}
+
+			public void setRegSpecType(RegulationSpecType p0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void setRegSpecTypeId(int p0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void setVatRule(VATRule p0) {
+				// TODO Auto-generated method stub
+				
+			}
 		};
 	}
 	
