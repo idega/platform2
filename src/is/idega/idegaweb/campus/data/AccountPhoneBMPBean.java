@@ -3,17 +3,17 @@
 <<<<<<< AccountPhoneBMPBean.java
 <<<<<<< AccountPhoneBMPBean.java
  * 
- * $Id: AccountPhoneBMPBean.java,v 1.8 2004/07/15 15:04:09 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.9 2004/07/15 15:27:17 aron Exp $
  * Copyright (C) 2001 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  *  
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.8 2004/07/15 15:04:09 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.9 2004/07/15 15:27:17 aron Exp $
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.8 2004/07/15 15:04:09 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.9 2004/07/15 15:27:17 aron Exp $
 >>>>>>> 1.3
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.8 2004/07/15 15:04:09 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.9 2004/07/15 15:27:17 aron Exp $
 >>>>>>> 1.4
  * 
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -157,17 +157,17 @@ public class AccountPhoneBMPBean
 	 */
 	public String getCreationSQL() {
 		StringBuffer sql = new StringBuffer();
-		sql.append("create view V_PHONE_ACCOUNTS ( FIN_ACCOUNT_ID,CAM_PHONE_NUMBER ");
+		sql.append(" create view V_PHONE_ACCOUNTS ( FIN_ACCOUNT_ID,CAM_PHONE_NUMBER ");
 		sql.append(" ,VALID_FROM,VALID_TO,DELIVER_DATE,RETURN_DATE) ");
 		sql.append(" as ");
 		sql.append(" select ACC.fin_account_id, PHO.PHONE_NUMBER ,con.valid_from ");
 		sql.append(",con.valid_to, ");
-		sql.append(" cc.deliver_date,cc.return_date ");
+		sql.append(" con.deliver_date,con.return_date ");
 		sql.append(" from cam_phone pho,cam_contract con, fin_account acc ");
 		sql.append(" where pho.bu_apartment_id = con.bu_apartment_id ");
 		sql.append(" and acc.ic_user_id = con.ic_user_id ");
 		sql.append(" and acc.account_type = 'PHONE' ");
-		sql.append(" order by pho.phone_number ");
+		
 		return null;
 	}
 	/*
