@@ -55,17 +55,26 @@ public class ImportFileClassBMPBean extends com.idega.data.GenericEntity impleme
     this.setColumn(getNameColumnName(),name);
   }
 
-  public void setDescription(String description){
-    this.setColumn(getDescriptionColumnName(),description);
-  }
-
   public String getName(){
     return this.getStringColumnValue(getNameColumnName());
   }
 
+  public void setDescription(String description){
+    this.setColumn(getDescriptionColumnName(),description);
+  }
+  
   public String getDescription(){
     return this.getStringColumnValue(getDescriptionColumnName());
   }
+  
+  public void setClassName(String className){
+    this.setColumn(getClassColumnName(),className);
+  }
+  
+  public String getClassName(){
+    return this.getStringColumnValue(getClassColumnName());
+  }
+  
 
 
   /*public Gender ejbHomeGetMaleGender() throws FinderException,RemoteException{
@@ -77,13 +86,41 @@ public class ImportFileClassBMPBean extends com.idega.data.GenericEntity impleme
 
   public void insertStartData() throws SQLException {
     try{
-      ImportFileClass generic = ((ImportFileClassHome)IDOLookup.getHome(ImportFileClass.class)).create();
-     // generic.
-      generic.store();
+		ImportFileClass generic = ((ImportFileClassHome)IDOLookup.getHome(ImportFileClass.class)).create();
+		generic.setName("Generic import file");
+		generic.setDescription("A generic file reader. Reads both column based and row based record files. Adjustible through some properties. The default is reading a column based file where each record is separated with a new line character (\n) and each value is separated by a semi colon (;). ");
+		generic.setClassName(GenericImportFile.class.getName());
+      	generic.store();
     }
     catch (Exception ex) {
       ex.printStackTrace();
     }
+    
+    try{
+		ImportFileClass column = ((ImportFileClassHome)IDOLookup.getHome(ImportFileClass.class)).create();
+		column.setName("Column separated file");
+		column.setDescription("A column separated file reade. By default each record is separated with a new line character (\n) and each value is separated by a semi colon (;) but it can be adjusted by properties.");
+		column.setClassName(GenericImportFile.class.getName());
+      	column.store();
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    
+    //temporary remove
+    try{
+		ImportFileClass nacka = ((ImportFileClassHome)IDOLookup.getHome(ImportFileClass.class)).create();
+		nacka.setName("Nacka citizen file");
+		nacka.setDescription("A rows based file reader. Each record starts with a ");
+		nacka.setClassName("se.idega.idegaweb.commune.block.importer.data.NackaImportFile");
+      	nacka.store();
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    
+    
+    
   }
 
   public Collection ejbFindAllImportFileClasses()throws FinderException{

@@ -65,16 +65,22 @@ public class ImportHandlerBMPBean extends com.idega.data.GenericEntity implement
   public String getDescription(){
     return this.getStringColumnValue(getDescriptionColumnName());
   }
+  
+    public void setClassName(String className){
+    this.setColumn(getClassColumnName(),className);
+  }
+  
+  public String getClassName(){
+    return this.getStringColumnValue(getClassColumnName());
+  }
+  
 
 
   /*public Gender ejbHomeGetMaleGender() throws FinderException,RemoteException{
    return ((GenderHome)this.getEJBHome()).findByGenderName(NAME_MALE);
   }
 
-  public Gender ejbHomeGetFemaleGender() throws FinderException,RemoteException{
-    return ((GenderHome)this.getEJBHome()).findByGenderName(NAME_FEMALE);
-  }
-
+  
   public Integer ejbFindByGenderName(String name) throws FinderException,RemoteException{
    Collection genders = super.idoFindAllIDsByColumnBySQL(getNameColumnName(),name);
    Iterator iter = genders.iterator();

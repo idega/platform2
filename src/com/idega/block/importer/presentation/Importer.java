@@ -1,14 +1,29 @@
 package com.idega.block.importer.presentation;
 
+import java.io.File;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import com.idega.block.importer.business.ImportBusiness;
+import com.idega.block.importer.data.ImportFile;
+import com.idega.block.importer.data.ImportFileClass;
+import com.idega.block.importer.data.ImportHandler;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWResourceBundle;
-import java.io.File;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 import com.idega.user.business.GroupBusiness;
-import com.idega.presentation.text.*;
-import com.idega.block.importer.business.*;
-import com.idega.block.importer.data.*;
 import com.idega.user.data.Group;
 
 /**
@@ -26,14 +41,16 @@ public class Importer extends Window {
   IWResourceBundle iwrb;
       Group group= null;
 
-  private final String ACTION_PARAMETER = "se_im_ac"; //action
-  private final String SELECT_FILES = "se_im_sf"; //select files action
-  private final String IMPORT_FILES = "se_im_if"; //import files action
-  private final String IMPORT_FILE_PATHS = "se_im_fp"; //list of files
-  private final String SELECT_NEW_FOLDER = "se_im_snf"; //new folder overrides builder parameter action
-  private final String NEW_FOLDER_PATH = "se_im_nfp"; //new folder path
+  private static final String ACTION_PARAMETER = "im_ac"; //action
+  private static final String SELECT_FILES = "im_sf"; //select files action
+  private static final String IMPORT_FILES = "im_if"; //import files action
+  private static final String IMPORT_FILE_PATHS = "im_fp"; //list of files
+  private static final String SELECT_NEW_FOLDER = "im_snf"; //new folder overrides builder parameter action
+  private static final String NEW_FOLDER_PATH = "im_nfp"; //new folder path
   
-    public static final String PARAMETERSTRING_GROUP_ID = "ic_group_id";
+  private static final String PARAMETER_GROUP_ID = "ic_group_id";
+  private static final String PARAMETER_IMPORT_HANDLER = "im_imh";
+  private static final String PARAMETER_IMPORT_FILE = "im_imf";
 
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.importer";
 
@@ -69,22 +86,17 @@ public class Importer extends Window {
 
   }
   
-   public GroupBusiness getGroupBusiness(IWContext iwc) throws Exception{
-    return (GroupBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc,GroupBusiness.class);
-  }
+
 
   public void main(IWContext iwc) throws Exception {
     iwrb = this.getResourceBundle(iwc);
 
     parseAction(iwc);
     
-    String groupId = iwc.getParameter(this.PARAMETERSTRING_GROUP_ID);
+    String groupId = iwc.getParameter(this.PARAMETER_GROUP_ID);
 
     if( groupId!=null ){
-
-    	
-    	group =  getGroupBusiness(iwc).getGroupHome().findByPrimaryKey(new Integer(groupId));
-    	    	iwc.setSessionAttribute("gruppan",group);
+    	iwc.setSessionAttribute(this.PARAMETER_GROUP_ID,groupId);
     }
 
     Link selectFolderLink = new Link(iwrb.getLocalizedString("importer.select.folder","Select folder"));
@@ -101,7 +113,8 @@ public class Importer extends Window {
         if( folder.isDirectory() ){
 
           File[] files = folder.listFiles();
-          Table fileTable = new Table(2,files.length+2);
+          Table fileTable = new Table(2,files.length+4);
+          
           Form form = new Form();
           form.add(fileTable);
 
@@ -119,7 +132,16 @@ public class Importer extends Window {
             }
          }
 
-          fileTable.add(new SubmitButton(),2,files.length+2);
+		  fileTable.add(iwrb.getLocalizedString("importer.select.import.handler","Select import handler") ,1,files.length+2);
+		  fileTable.add(this.getImportHandlers(iwc),2,files.length+2);
+
+		  fileTable.add(iwrb.getLocalizedString("importer.select.import.file.type","Select file type") ,1,files.length+3);
+		  fileTable.add(this.getImportHandlers(iwc),2,files.length+3);
+
+
+          fileTable.add(new SubmitButton(),2,files.length+4);
+          
+          
 
           add(form);
 
@@ -149,45 +171,36 @@ public class Importer extends Window {
     }
     else if( importFiles ){
       add(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
-     // NackaImportFile file;
 
       String[] values = iwc.getParameterValues(IMPORT_FILE_PATHS);
-      ImportBusiness biz = (ImportBusiness) IBOLookup.getServiceInstance(iwc,ImportBusiness.class);
-      //ImportBusinessBean biz = new ImportBusinessBean();
-
+      String groupID = (String)iwc.getSessionAttribute(this.PARAMETER_GROUP_ID);
+      String handler = iwc.getParameter(this.PARAMETER_IMPORT_HANDLER);
+      String fileClass = iwc.getParameter(this.PARAMETER_IMPORT_FILE);
+      
+     
+	  // for each file to import
       for (int i = 0; i < values.length; i++) {
-      /** @todo make a dropdown of possible importers and support for uploaded files
-       *
+      /** @todo make support for uploaded files
        */
-        //NackaImportFile importFile = new NackaImportFile(new File(values[i]));
-        /*
-         */
-         
-         boolean success = false;
-         
-         group =     	(Group)iwc.getSessionAttribute("gruppan");
-        ColumnSeparatedImportFile importFile = new ColumnSeparatedImportFile(new File(values[i]));
-        if(group!=null){
-        	
-        	
-        success = biz.importRecords(group,importFile);
-       
-       
+   
+        boolean success = false;
+        
+        if(groupId!=null){
+        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i],new Integer(groupId));       
         }
         else{
-        	success = biz.importRecords(importFile);
+        	success = getImportBusiness(iwc).importRecords(handler,fileClass,values[i]);
         }
-        addBreak();
-
+        
+        
         String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
-
         Text fileStatus = new Text(values[i]+" : "+status);
         fileStatus.setBold();
 
+		addBreak();
         add(fileStatus);
-
-
         addBreak();
+        
       }
 
 
@@ -197,5 +210,38 @@ public class Importer extends Window {
     }
 
   }
+  
+  	public DropdownMenu getImportHandlers(IWContext iwc) throws RemoteException{
+  		DropdownMenu menu = new DropdownMenu(this.PARAMETER_IMPORT_HANDLER);
+	
+    	Collection col = getImportBusiness(iwc).getImportHandlers();
+  		Iterator iter = col.iterator();
+  		// should the business class to this for me?
+  		while (iter.hasNext()) {
+			ImportHandler element = (ImportHandler) iter.next();
+			menu.addMenuElement( element.getClassName(), element.getName() );
+		}
+  		return menu;
+  	}
+  	
+  	public DropdownMenu getImportFileClasses(IWContext iwc) throws RemoteException{
+  		DropdownMenu menu = new DropdownMenu(this.PARAMETER_IMPORT_FILE);
+  		
+  		Collection col = getImportBusiness(iwc).getImportFileTypes();
+  		Iterator iter = col.iterator();
+  		// should the business class to this for me?
+  		while (iter.hasNext()) {
+			ImportFileClass element = (ImportFileClass) iter.next();
+			menu.addMenuElement( element.getClassName() , element.getName() );
+		}
+		
+		return menu;
+  		
+  	}
+  	
+  	public ImportBusiness getImportBusiness(IWContext iwc) throws RemoteException{
+  		return (ImportBusiness) IBOLookup.getServiceInstance(iwc,ImportBusiness.class);	
+  		
+  	}
 
 }

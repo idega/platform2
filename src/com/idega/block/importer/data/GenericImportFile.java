@@ -32,6 +32,7 @@ public class GenericImportFile implements ImportFile{
 	  private BufferedReader br;
 	  private boolean addNewLineAfterRecord = false;
 
+	  public GenericImportFile(){}
 	
 	  public GenericImportFile(File file) {
 	    this.file = file;
