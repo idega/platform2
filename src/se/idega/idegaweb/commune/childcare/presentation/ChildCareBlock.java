@@ -37,6 +37,7 @@ public class ChildCareBlock extends CommuneBlock {
 	private int _childCareID = -1;
 	private boolean checkRequired;
 	private boolean usePredefinedCareTimeValues;
+	private boolean allowChangeGroupFromToday;
 	
 	//public static final String ACCEPTED_COLOR = "#FFEAEA";
 	//public static final String PARENTS_ACCEPTED_COLOR = "#EAFFEE";
@@ -51,6 +52,7 @@ public class ChildCareBlock extends CommuneBlock {
 	
 	private static final String PROPERTY_CHECK_REQUIRED = "check_required";
 	private static final String PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES = "use_predefined_care_time_values";
+	private static final String PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY = "allow_change_group_from_today";
 	
 	private static final String PROPERTY_ACCEPTED_COLOR = "child_care_accepted_color";
 	private static final String PROPERTY_PARENTS_ACCEPTED_COLOR = "child_care_parents_accepted_color";
@@ -64,6 +66,7 @@ public class ChildCareBlock extends CommuneBlock {
 		careBusiness = getCareBusiness(iwc);
 		checkRequired = getBundle(iwc).getBooleanProperty(PROPERTY_CHECK_REQUIRED, true);
 		usePredefinedCareTimeValues = getBundle(iwc).getBooleanProperty(PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, false);
+		allowChangeGroupFromToday = getBundle(iwc).getBooleanProperty(PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY, false);
 		initialize();
 		
 		ACCEPTED_COLOR = getBundle(iwc).getProperty(PROPERTY_ACCEPTED_COLOR, "#FFE0E0");
@@ -386,5 +389,12 @@ public class ChildCareBlock extends CommuneBlock {
 	 */
 	public boolean isUsePredefinedCareTimeValues() {
 		return usePredefinedCareTimeValues;
+	}
+	
+	/**
+	 * @return Returns the allowChangeGroupFromToday.
+	 */
+	public boolean isAllowChangeGroupFromToday() {
+		return allowChangeGroupFromToday;
 	}
 }
