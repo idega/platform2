@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.ejb.RemoveException;
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -40,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.97 2005/04/04 09:24:26 malin Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.98 2005/04/06 07:13:10 laddi Exp $
  * @since 12.2.2003 
  */
 
