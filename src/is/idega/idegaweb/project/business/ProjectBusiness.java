@@ -425,6 +425,95 @@ public class ProjectBusiness {
   }
 
 
+
+//  public void createPageLink(IWContext iwc, int projectId, String name) throws SQLException {
+//
+//    IPProject project = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(projectId);
+//
+//    DPTTriggerBusiness business = DPTTriggerBusiness.getInstance();
+//
+//
+//    List l = EntityFinder.findAll(com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoBMPBean.getStaticInstance(PageTriggerInfo.class));
+//
+//    PageTriggerInfo info = (PageTriggerInfo)l.get(0);
+//
+//    PageLink pageLink = business.createPageLink(iwc,info,Integer.toString(projectId),name,null,null,null,null);
+//
+//    if(pageLink != null){
+//      project.addTo(PageLink.class, pageLink.getID());
+//
+//
+//      // temp - only necessary to add newly created pages into this map
+//      iwc.removeApplicationAttribute(_APPADDRESS_PROJECTPAGES);
+//
+//      // replicate permissions
+//
+//      List participantGroups = DPTTriggerBusiness.getDPTPermissionGroups(info);
+//
+//      if(participantGroups != null && participantGroups.size() > 0 ){
+//
+//        BuilderLogic logic = BuilderLogic.getInstance();
+//
+//        PageTreeNode rootPage = new PageTreeNode(pageLink.getPageId(),iwc);
+//        Vector v = new Vector();
+//        //System.out.println("collecting subpages");
+//        this.collectSubpages(v,rootPage);
+//
+//        Set s = new HashSet();
+//        Set pages = new HashSet();
+//        Iterator setIter = v.iterator();
+//        while (setIter.hasNext()) {
+//          PageTreeNode item = (PageTreeNode)setIter.next();
+//          pages.add(Integer.toString(item.getNodeID()));
+//          //System.out.println("----------------------------------");
+//          //System.out.println("getInstanceIdsOnPage("+item.getNodeID()+")");
+//          //BuilderLogic.getInstance().getIBXMLPage(item.getNodeID())
+//          Set set = logic.getInstanceIdsOnPage(item.getNodeID());
+//
+//          if(set != null){
+//            s.addAll(set);
+//          }
+//        }
+//
+//        Iterator iter = participantGroups.iterator();
+//        while (iter.hasNext()) {
+//          GenericGroup oldGroup = (GenericGroup)iter.next();
+//          GenericGroup newGroup = this.getReplicatedParticipantGroup(oldGroup, project, "System group");
+//
+//          //Pages
+//          List pagePermissions = AccessControl.getGroupsPermissionsForPages(oldGroup,pages);
+//          //System.err.println("pagePermissions: "+pagePermissions);
+//          if(pagePermissions != null){
+//            Iterator permissionIter = pagePermissions.iterator();
+//            while (permissionIter.hasNext()) {
+//              ICPermission item = (ICPermission)permissionIter.next();
+//              AccessControl.replicatePermissionForNewGroup(item, newGroup);
+//            }
+//          }
+//
+//          //Instances
+//          List permissions = AccessControl.getGroupsPermissionsForInstances(oldGroup,s);
+//          if(permissions != null){
+//            Iterator permissionIter = permissions.iterator();
+//            while (permissionIter.hasNext()) {
+//              ICPermission item = (ICPermission)permissionIter.next();
+//              AccessControl.replicatePermissionForNewGroup(item, newGroup);
+//            }
+//          }
+//
+//        }
+//
+//      }
+//
+//      // replicate permissions ends
+//    } else {
+//      // throw Exception;
+//    }
+//  }
+
+
+
+
   private static void collectSubpages( List l, PageTreeNode node){
     if(node != null){
       l.add(node);
