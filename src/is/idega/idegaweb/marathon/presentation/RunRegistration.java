@@ -670,7 +670,7 @@ public class RunRegistration extends Block {
 			try {
 				runGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(run));
 				distanceGroup = getGroupBusiness(iwc).getGroupByGroupID(Integer.parseInt(distance));
-				Object[] args = { name, iwrb.getLocalizedString(runGroup.getName(),runGroup.getName()), tshirt };
+				Object[] args = { name, iwrb.getLocalizedString(runGroup.getName(),runGroup.getName()), iwrb.getLocalizedString(tshirt, tshirt) };
 				message = MessageFormat.format(iwrb.getLocalizedString("registration_received", "Your registration has been received."), args);
 			}
 			catch (RemoteException re) {
@@ -696,6 +696,9 @@ public class RunRegistration extends Block {
 			Link payGreen = getStyleLink(new Link("&gt;&gt;"), STYLENAME_GREEN_TEXT);
 			if (runGroup != null && distanceGroup != null) {
 				String URL = iwrb.getIWBundleParent().getProperty("travelURL_"+runGroup.getName()+"_"+distanceGroup.getName()+"_"+year+"_"+iwc.getCurrentLocale().toString(), "#");
+				if (URL.equals("#")) {
+					showPayment = false;
+				}
 				payBlue.setURL(URL);
 				payGreen.setURL(URL);
 			}

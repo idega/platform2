@@ -33,9 +33,11 @@ public class RunDistanceDropdownDouble extends SelectDropdownDouble{
   public RunDistanceDropdownDouble() {
     super(IWMarathonConstants.GROUP_TYPE_RUN,IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
   }
+  
   public void main(IWContext iwc) throws Exception {
     IWResourceBundle iwrb = getResourceBundle(iwc);
     RunBusiness runBiz = getRunBiz(iwc);
+    String selectedValue = iwrb.getIWBundleParent().getProperty("run_selected", "-1");
     
     Collection runs = runBiz.getRuns();
     
@@ -61,6 +63,7 @@ public class RunDistanceDropdownDouble extends SelectDropdownDouble{
 	  			addMenuElement(run.getPrimaryKey().toString(),iwrb.getLocalizedString(run.getName(),run.getName()),disMap);
 	  		}
     }
+    this.setSelectedValues(selectedValue, "-1");
     super.main(iwc);
   }
   /**

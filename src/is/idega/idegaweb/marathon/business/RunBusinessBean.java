@@ -266,9 +266,9 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			Email email = getUserBiz().getUserMail(user);
 			if (groupRun != null && user != null && email != null && email.getEmailAddress() != null) {
 				IWResourceBundle iwrb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
-				Object[] args = { user.getName(), iwrb.getLocalizedString(groupRun.getName(),groupRun.getName()), tshirt };
-				String subject = iwrb.getLocalizedString("registration_received_subject", "Your registration has been received.");
-				String body = MessageFormat.format(iwrb.getLocalizedString("registration_received", "Your registration has been received."), args);
+				Object[] args = { user.getName(), iwrb.getLocalizedString(groupRun.getName(),groupRun.getName()), iwrb.getLocalizedString(tshirt, tshirt) };
+				String subject = iwrb.getLocalizedString("registration_received_subject_mail", "Your registration has been received.");
+				String body = MessageFormat.format(iwrb.getLocalizedString("registration_received_body_mail", "Your registration has been received."), args);
 				sendMessage(email.getEmailAddress(), subject, body);
 			}
 		}
