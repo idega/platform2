@@ -1333,7 +1333,7 @@ public class ReportQueryBuilder extends Block {
 		row++;
 		table.mergeCells(3, row, 6, row);
 		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("Example", "Example"));
-		buffer.append(": ( Cond1 or Cond2 ) and ( Cond3 or ( not Cond4 ) )");
+		buffer.append(": " + iwrb.getLocalizedString("report_condition_example", "( Cond1 or Cond2 ) and ( Cond3 or ( not Cond4 ) )"));
 		table.add(buffer.toString(), 3, row);
 		return row;
 	}
