@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReportCertifier.java,v 1.3 2004/12/13 14:35:10 anna Exp $
+ * $Id: MeetingReportCertifier.java,v 1.4 2004/12/14 07:18:05 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,6 +18,7 @@ import javax.ejb.FinderException;
 import se.agura.applications.meeting.fee.data.MeetingFee;
 import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 
+import com.idega.core.builder.data.ICPage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -32,10 +33,11 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 25.11.2004 09:13:11 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class MeetingReportCertifier extends MeetingFeeBlock {
 	
+	private ICPage iEditPage;
 	
 	public void present(IWContext iwc) {
 		try {
@@ -70,7 +72,7 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		}
 		form.add(new Break());
 		form.add(getRejectButton());
-		form.add(getEditButton(PARAMETER_MEETING_FEE_ID, fee.getPrimaryKey().toString()));
+		form.add(getEditButton(iEditPage, PARAMETER_MEETING_FEE_ID, fee.getPrimaryKey().toString()));
 		form.add(getNextButton());
 		
 		return form;
@@ -163,4 +165,7 @@ public class MeetingReportCertifier extends MeetingFeeBlock {
 		return table;
 	}
 	
+	public void setEditPage(ICPage editPage) {
+		iEditPage = editPage;
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingFeeBlock.java,v 1.6 2004/12/13 17:12:39 anna Exp $
+ * $Id: MeetingFeeBlock.java,v 1.7 2004/12/14 07:18:05 laddi Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -42,7 +42,7 @@ import com.idega.user.data.User;
  * Last modified: 25.11.2004 09:11:42 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public abstract class MeetingFeeBlock extends Block {
 	
@@ -291,6 +291,7 @@ public abstract class MeetingFeeBlock extends Block {
 	public GenericButton getEditButton(String parameter, String value) {
 		return getEditButton(null, parameter, value);
 	}
+	
 	public GenericButton getEditButton(ICPage page, String parameter, String value) {
 		GenericButton editButton = getButton(new GenericButton("edit", getResourceBundle().getLocalizedString("meeting.fee.edit", "Edit")));
 		if (page != null) {
