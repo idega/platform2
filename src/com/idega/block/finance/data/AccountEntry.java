@@ -13,6 +13,9 @@ import com.idega.data.*;
  */
 
 public class AccountEntry extends GenericEntity implements Entry {
+  public static final String statusCreated = "C";
+  public static final String statusBilled = "B";
+  public static final String statusPayed = "P";
 
   public AccountEntry() {
     super();
@@ -32,6 +35,7 @@ public class AccountEntry extends GenericEntity implements Entry {
     addAttribute(getLastUpdatedColumnName(),"Last updated",true,true,java.sql.Timestamp.class);
     addAttribute(getCashierIdColumnName(),"Cashier",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
     addAttribute(getRoundIdColumnName(),"Round",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.AssessmentRound.class);
+    addAttribute(getColumnNameStatus(),"status",true,true,String.class);
   }
 
   public static String getEntityTableName(){ return "FIN_ACC_ENTRY"; }
@@ -45,6 +49,7 @@ public class AccountEntry extends GenericEntity implements Entry {
   public static String getPriceColumnName(){ return "PRICE"; }
   public static String getPaymentDateColumnName(){ return "PAYMENT_DATE"; }
   public static String getLastUpdatedColumnName(){ return "LAST_UPDATED"; }
+  public static String getColumnNameStatus(){ return "STATUS"; }
 
 
   public String getEntityName() {
@@ -126,6 +131,21 @@ public class AccountEntry extends GenericEntity implements Entry {
     setColumn(getRoundIdColumnName(), round);
   }
 
+  public String getStatus(){
+    return getStringColumnValue( getColumnNameStatus());
+  }
+
+  public void setStatus(String status) throws IllegalStateException {
+    if ((status.equalsIgnoreCase(statusCreated)) ||
+        (status.equalsIgnoreCase(statusCreated)) ||
+        (status.equalsIgnoreCase(statusBilled))){
+      setColumn(getColumnNameStatus(),status);
+      setLastUpdated(com.idega.util.idegaTimestamp.getTimestampRightNow());
+    }
+    else
+      throw new IllegalStateException("Undefined state : " + status);
+  }
+
   // interface specific:
   public String getType(){
     return typeFinancial;
@@ -138,5 +158,8 @@ public class AccountEntry extends GenericEntity implements Entry {
   }
   public String getTableName(){
     return getEntityTableName();
+  }
+  public String getFieldNameStatus(){
+    return getColumnNameStatus();
   }
 }

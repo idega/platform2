@@ -65,29 +65,52 @@ public class AccountManager {
     return A;
   }
 
-  public static List listOfAccountEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
-    return listOfAccEntries(iAccountId,new AccountEntry(), from,to);
+  public static List listOfAccountEntries( int iAssessmentRoundId){
+    try {
+      return EntityFinder.findAllByColumnOrdered(new AccountEntry(),AccountEntry.getRoundIdColumnName(),String.valueOf(iAssessmentRoundId) ,AccountEntry.getAccountIdColumnName());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
   }
 
-  public static List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
-    return listOfAccEntries(iAccountId,new AccountPhoneEntry(), from,to);
+  public static List listOfAccountEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+    return listOfAccEntries(iAccountId,new AccountEntry(), from,to,null);
   }
-  private static List listOfAccEntries(int iAccountId,Entry entry,idegaTimestamp from,idegaTimestamp to){
+  public static List listOfPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+    return listOfAccEntries(iAccountId,new AccountPhoneEntry(), from,to,null);
+  }
+  public static List listOfPhoneEntries(int iAccountId,idegaTimestamp to,String status){
+    return listOfAccEntries(iAccountId,new AccountPhoneEntry(),null,to,status);
+  }
+  private static List listOfAccEntries(int iAccountId,Entry entry,idegaTimestamp from,idegaTimestamp to,String status){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(entry.getTableName());
     sql.append(" where ");
     sql.append(entry.getFieldNameAccountId());
     sql.append(" = ");
     sql.append(iAccountId);
-    sql.append(" and ");
-    sql.append(entry.getFieldNameLastUpdated());
-    sql.append(" >= '");
-    sql.append(from.getSQLDate());
-    sql.append("' and ");
-    sql.append(entry.getFieldNameLastUpdated());
-    sql.append(" <= '");
-    sql.append(to.getSQLDate());
-    sql.append(" 23:59:59'");
+    if(from !=null){
+      sql.append(" and ");
+      sql.append(entry.getFieldNameLastUpdated());
+      sql.append(" >= '");
+      sql.append(from.getSQLDate());
+      sql.append("'");
+    }
+    if(to != null){
+      sql.append(" and ");
+      sql.append(entry.getFieldNameLastUpdated());
+      sql.append(" <= '");
+      sql.append(to.getSQLDate());
+      sql.append(" 23:59:59'");
+      sql.append("'");
+    }
+    if(status!=null){
+      sql.append(" and ");
+      sql.append(entry.getFieldNameStatus());
+      sql.append(status);
+    }
     //System.err.println(sql.toString());
     List A = null;
     try{

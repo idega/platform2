@@ -6,6 +6,15 @@ import com.idega.data.GenericEntity;
 import com.idega.util.idegaTimestamp;
 import java.sql.*;
 
+/**
+ * Title:
+ * Description:
+ * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
+ * Company:      idega
+  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
+ * @version 1.1
+ */
+
 public class AssessmentRound extends GenericEntity{
 
   public AssessmentRound(){
@@ -22,6 +31,7 @@ public class AssessmentRound extends GenericEntity{
     addAttribute(getRoundStampColumnName(),"Round stamp",true,true,java.sql.Timestamp.class);
     addAttribute(getTotalsColumnName(), "Totals", true, true, java.lang.Float.class);
     addAttribute(getStatusColumnName(),"Status",true,true,java.lang.String.class,1);
+    addAttribute(getTypeColumnName(),"Type",true,true,java.lang.String.class,1);
 
   }
 
@@ -34,6 +44,7 @@ public class AssessmentRound extends GenericEntity{
   public static String getRoundStampColumnName(){return "ROUND_STAMP";}
   public static String getTotalsColumnName(){return "TOTALS";}
   public static String getStatusColumnName(){return "STATUS";}
+  public static String getTypeColumnName(){return "ENTRY_TYPE";}
 
   public String getEntityName(){
     return getEntityTableName();
@@ -86,6 +97,14 @@ public class AssessmentRound extends GenericEntity{
   }
   public void setStatusReceived() {
     setStatus(statusReceived);
+  }
+
+  public void setType(String type){
+    setColumn(getTypeColumnName(),type);
+  }
+
+  public String getType(){
+    return getStringColumnValue( getTypeColumnName());
   }
 
 

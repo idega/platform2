@@ -19,5 +19,6 @@ public interface Entry {
   public String getFieldNameLastUpdated();
   public String getFieldNameAccountId();
   public String getTableName();
+  public String getFieldNameStatus();
 
 }

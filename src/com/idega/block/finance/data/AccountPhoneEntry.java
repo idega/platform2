@@ -185,5 +185,8 @@ public class AccountPhoneEntry extends GenericEntity implements Entry{
   public String getTableName(){
     return getEntityTableName();
   }
+   public String getFieldNameStatus(){
+    return getColumnNameStatus();
+  }
 
 }
