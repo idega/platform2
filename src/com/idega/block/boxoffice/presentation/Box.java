@@ -182,7 +182,6 @@ public Box(String attribute){
         Table linksTable = new Table();
           linksTable.setRows(_numberOfDisplayed+1);
           linksTable.setWidth("100%");
-          linksTable.setHeight("100%");
         table.add(linksTable,1,2);
 
         int linkRow = 1;
@@ -276,7 +275,7 @@ public Box(String attribute){
   }
 
   private Link getAdminPart() {
-    Link adminLink = new Link(_iwrb.getImage("boxmanager.gif"));
+    Link adminLink = new Link(_iwb.getImage("shared/add.gif"));
       adminLink.setWindowToOpen(BoxEditorWindow.class);
       adminLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
       adminLink.addParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
