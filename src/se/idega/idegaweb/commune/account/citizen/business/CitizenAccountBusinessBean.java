@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.42 2002/12/31 01:08:04 aron Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.43 2003/01/10 19:18:54 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.account.citizen.business;
 
 import se.idega.idegaweb.commune.message.data.Message;
+import com.idega.core.business.AddressBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.*;
 import com.idega.core.accesscontrol.business.UserHasLoginException;
@@ -34,11 +35,11 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2002/12/31 01:08:04 $ by $Author: aron $
+ * Last modified: $Date: 2003/01/10 19:18:54 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.42 $
+ * @version $Revision: 1.43 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -399,6 +400,24 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                 (firstName, "", lastName, ssn, gender, timestamp);
                  
         try {
+            String streetName = applicant.getStreet ();
+            String postalCode = applicant.getZipCode ();
+            String postalName = applicant.getCity ();
+            Country sweden = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("SE");
+            AddressBusiness addressBiz = (AddressBusiness) getServiceInstance(AddressBusiness.class);
+            PostalCode code = addressBiz.getPostalCodeAndCreateIfDoesNotExist(postalCode,postalName,sweden);
+            AddressHome addressHome = addressBiz.getAddressHome();
+            Address address = addressHome.create();
+            AddressType mainAddressType = addressHome.getAddressType1();
+            address.setAddressType(mainAddressType);
+            address.setCountry(sweden);
+            address.setPostalCode(code);
+            address.setProvince(postalName);
+            address.setCity(postalName);
+            address.setStreetName(streetName);
+            address.store();
+            user.addAddress(address);
+
             Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();
             email.setEmailAddress(applicant.getEmail());
             email.store();
