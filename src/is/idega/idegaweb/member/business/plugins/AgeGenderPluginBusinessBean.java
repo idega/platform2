@@ -53,6 +53,9 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   private static final int MALE = 1;
   private static final int NEUTRAL = 2;
   
+  private Object malePrimaryKeyFromDatastore = null;
+  private Object femalePrimaryKeyFromDatastore = null;
+  
   
   private void setGender(Group group, int gender){
     
@@ -108,14 +111,17 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     
     
   private int getMyGenderIdForGenderId(Integer genderId) throws RemoteException, FinderException {  
-    GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
-    Integer maleId = ((Integer) home.getMaleGender().getPrimaryKey());
-    if (genderId.equals(maleId))
+    
+  	if(malePrimaryKeyFromDatastore == null){
+  		GenderHome home = (GenderHome) this.getIDOHome(Gender.class);
+  	    malePrimaryKeyFromDatastore = ((Integer) home.getMaleGender().getPrimaryKey());
+  	    femalePrimaryKeyFromDatastore = ((Integer) home.getFemaleGender().getPrimaryKey()); 
+  	}
+  	
+    if (genderId.equals(malePrimaryKeyFromDatastore))
       return MALE;
-    else  {
-      Integer femaleId = ((Integer) home.getFemaleGender().getPrimaryKey()); 
-      if (genderId.equals(femaleId))
-        return FEMALE;
+    else if (genderId.equals(femalePrimaryKeyFromDatastore)){
+      return FEMALE;
     }
     throw new FinderException("Id of gender was not found"); 
   }
