@@ -27,7 +27,7 @@ import com.idega.util.database.ConnectionBroker;
  * @version 1.0
  * Created on May 27, 2003
  */
-public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQLBridge {
+public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQLBridge{
 	
   
   public SQLQuery createQuerySQL(QueryHelper queryHelper, IWContext iwc) throws QueryGenerationException  {
@@ -44,18 +44,19 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
    *  Use this method if you do not need to print or show the executed sql statements
    */
   public QueryResult executeQueries(SQLQuery sqlQuery)	{
-  	return executeQueries(sqlQuery, new ArrayList());
+  	// set -1 that is ignore limit of number of rows
+  	return executeQueries(sqlQuery, -1,  new ArrayList());
   }
 
 	/** 
 	 * Use this method for printing or showing the executed sql statements
 	 */
-  public QueryResult executeQueries(SQLQuery sqlQuery, List executedSQLStatements) {
+  public QueryResult executeQueries(SQLQuery sqlQuery, int numberOfRowsLimit, List executedSQLStatements) {
   	QueryResult queryResult = null;
   	List postStatements = new ArrayList();
 		Connection connection = ConnectionBroker.getConnection();
   	try {
-  		queryResult = executeSQL(sqlQuery, connection, postStatements, executedSQLStatements);
+  		queryResult = executeSQL(sqlQuery, numberOfRowsLimit, connection, postStatements, executedSQLStatements);
   	}
   	catch (SQLException ex) {
 			logError("[QueryToSQLBridge] Statements could not be executed");
@@ -92,7 +93,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
 		}
   }
  
-	private QueryResult executeSQL(SQLQuery sqlQuery, Connection connection, List postStatements, List executedSQLStatements) throws SQLException	{
+	private QueryResult executeSQL(SQLQuery sqlQuery, int numberOfRowsLimit, Connection connection, List postStatements, List executedSQLStatements) throws SQLException	{
   	// go back to the very first query
   	SQLQuery currentQuery = sqlQuery;
   	while (currentQuery.hasPreviousQuery())	{
@@ -106,7 +107,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
   			currentQuery = currentQuery.nextQuery();
   		}
   		else {
-  			return executeQuery(connection, currentQuery, executedSQLStatements);
+  			return executeQuery(connection, currentQuery, numberOfRowsLimit, executedSQLStatements);
   		}
   	}
   	while (true);
@@ -162,7 +163,7 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
     return postStatement;
 	}
 
-	private QueryResult executeQuery(Connection connection, SQLQuery sqlQuery, List executedSQLStatements) throws SQLException	{
+	private QueryResult executeQuery(Connection connection, SQLQuery sqlQuery, int numberOfRowsLimit, List executedSQLStatements) throws SQLException	{
 		Statement statement = connection.createStatement();
 		String sqlStatement = sqlQuery.toSQLString();
 		List displayNames = sqlQuery.getDisplayNames();
@@ -190,7 +191,8 @@ public class QueryToSQLBridgeBean extends IBOServiceBean   implements QueryToSQL
         queryResult.addField(field);
       }
       int numberOfRow = 1;
-       while (resultSet.next())  {
+      // if number of rows is less than zero ignore the limit of rows, that is to get all rows choose -1 for example
+       while (resultSet.next() && (numberOfRowsLimit < 0 || numberOfRow <= numberOfRowsLimit))  {
         String id = Integer.toString(numberOfRow++);
         for (i=1 ; i <= numberOfColumns; i++)  {
           Object columnValue = resultSet.getObject(i);
