@@ -82,6 +82,11 @@ public class TournamentStartingtimeList extends GolfBlock {
 			tournament = getTournamentSession(modinfo).getTournament();
 		}
 		int tournamentId = tournament.getID();
+		
+		if (tournament_round_id == null) {
+			tournament_round_id = modinfo.getParameter("tournament_round");
+		}
+		
 		String cacheString = "tournament_startingtime_" + tournamentId + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
 
 		Form cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
