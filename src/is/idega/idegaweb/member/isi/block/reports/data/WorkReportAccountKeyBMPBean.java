@@ -121,7 +121,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(COLUMN_NAME_KEY_TYPE);
 		sql.append(" = '");
 		sql.append(INCOME_SHEET);
-		sql.append(" and '");
+		sql.append("' and ");
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
 		sql.append(DEBET).append('\'');
@@ -136,7 +136,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(COLUMN_NAME_KEY_TYPE);
 		sql.append(" = '");
 		sql.append(INCOME_SHEET);
-		sql.append(" and '");
+		sql.append("' and ");
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
 		sql.append(CREDIT).append('\'');
@@ -151,7 +151,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(COLUMN_NAME_KEY_TYPE);
 		sql.append(" = '");
 		sql.append(BALANCE_SHEET);
-		sql.append(" and '");
+		sql.append("' and ");
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
 		sql.append(DEBET).append('\'');
@@ -166,7 +166,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		sql.append(COLUMN_NAME_KEY_TYPE);
 		sql.append(" = '");
 		sql.append(BALANCE_SHEET);
-		sql.append(" and '");
+		sql.append("' and ");
 		sql.append(COLUMN_NAME_DEBET_OR_CREDIT);
 		sql.append(" = '");
 		sql.append(CREDIT).append('\'');
