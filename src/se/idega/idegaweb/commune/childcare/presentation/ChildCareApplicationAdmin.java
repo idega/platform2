@@ -52,8 +52,9 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private final static String CHECK_NUMBER = "ccaa_check_number";
 	private final static String ACCEPT = "ccaa_accept";
 
-	private final static String PARAM_CONTRACT = "ccaa_contract";
-	private final static String PARAM_ASSIGN = "ccaa_assign";
+	private final static String PARAM_FORM_CONTRACT = "ccaa_contract";
+	private final static String PARAM_FORM_ASSIGN = "ccaa_assign";
+	
 	private final static String PARAM_WANT_FROM_OK = "ccaa_want_from_ok";
 	private final static String PARAM_CARE_TIME = "ccaa_care_time";
 	private final static String PARAM_YES = "ccaa_yes";
@@ -113,7 +114,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		Collection appl = null;
 		
 		try {
-			appl = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(_user);
+			appl = getChildCareBusiness(iwc).getApplicationsByProvider(_user);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -135,8 +136,8 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			data.add(getHeader(localize(WANT_FROM,"Want from")),6,row);
 			data.add(getHeader(localize(PARAM_WANT_FROM_OK,"OK")),7,row);
 			data.add(getHeader(localize(ACCEPT,"Accept")),8,row);
-			data.add(getHeader(localize(PARAM_CONTRACT,"Contract")),9,row);
-			data.add(getHeader(localize(PARAM_ASSIGN,"Assign")),10,row++);
+			data.add(getHeader(localize(PARAM_FORM_CONTRACT,"Contract")),9,row);
+			data.add(getHeader(localize(PARAM_FORM_ASSIGN,"Assign")),10,row++);
 
 			Iterator it = appl.iterator();
 			CaseBusiness caseBiz = getCaseBusiness(iwc);
@@ -168,19 +169,16 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					String status = application.getStatus();
 										
 					if (status.equals(caseBiz.getCaseStatusOpen().toString())) {
-						System.out.println("Status open");
 						ubeh = true;
 						prel = false;
 						kout = false;
 					}
 					else if (status.equals(caseBiz.getCaseStatusPreliminary().toString())) {
-						System.out.println("Status preliminary");
 						ubeh = false;
 						prel = true;
 						kout = false;
 					}
 					else if (status.equals(caseBiz.getCaseStatusContract().toString())) {
-						System.out.println("Status contract");
 						ubeh = false;
 						prel = false;
 						kout = true;
@@ -215,13 +213,37 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 					CheckBox check = new CheckBox();
 					check.setName(PARAM_WANT_FROM_OK);
 					data.add(check,7,row);
-					
-					row++;
 				}
+				else if (prel) {
+					TextInput careTime = new TextInput(PARAM_CARE_TIME);
+					careTime.setAsIntegers(localize(ERROR_MUST_BE_INTEGER,"You must enter an integer here"));
+					careTime.setStyleAttribute(getSmallTextFontStyle());
+					careTime.setLength(3);
+					data.add(careTime,5,row);
+					
+					CheckBox check = new CheckBox();
+					check.setName(PARAM_WANT_FROM_OK);
+					data.add(check,7,row);
+					
+					CheckBox contract = new CheckBox();
+					contract.setName(PARAM_FORM_CONTRACT);
+					data.add(contract,9,row);					
+				}
+				
+				row++;
 			}
 			
 			outer.add(data,1,1);
 			outer.setAlignment(1,2,"RIGHT");
+			
+			SubmitButton contract = new SubmitButton(PARAM_FORM_CONTRACT, localize(PARAM_FORM_CONTRACT, "Create contract"));
+			SubmitButton assign = new SubmitButton(PARAM_FORM_ASSIGN, localize(PARAM_FORM_ASSIGN, "Assign"));
+			contract.setAsImageButton(true);
+			assign.setAsImageButton(true);
+			outer.add(contract,1,2);
+			outer.add(Text.getNonBrakingSpace(),1,2);
+			outer.add(assign,1,2);
+			
 			form.add(outer);
 		}
 		else {

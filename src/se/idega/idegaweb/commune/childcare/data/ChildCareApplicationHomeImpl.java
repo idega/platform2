@@ -27,6 +27,13 @@ public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.scho
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findAllCasesByProviderStatus(int p0,java.lang.String p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ChildCareApplicationBMPBean)entity).ejbFindAllCasesByProviderStatus(p0,p1);

@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.data.IDOLookup;
@@ -29,9 +30,11 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
+import javax.transaction.UserTransaction;
 
 /**
  * This class does something very clever.....
@@ -41,7 +44,7 @@ import javax.transaction.TransactionManager;
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
 	public boolean insertApplications(User user, int type, int provider[], String date[], int checkId, int childId, boolean agree) {
-		TransactionManager t = IdegaTransactionManager.getInstance();
+		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
 			t.begin();
@@ -84,21 +87,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 //			check.setStatus(this.getcases)
 //			check.store();
 
-			SchoolBusiness schoolBiz = (SchoolBusiness)getServiceInstance(SchoolBusiness.class);
-			School prov = schoolBiz.getSchool(new Integer(provider[0]));
-			UserBusiness userBiz = (UserBusiness)getServiceInstance(UserBusiness.class);
-			Collection users = userBiz.getUsersInGroup(prov.getHeadmasterGroupId());
-	
-			if (users != null) {
-				MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
-				Iterator it = users.iterator();
-				while (it.hasNext()) {
-					User providerUser = (User)it.next();
-					messageBiz.createUserMessage(providerUser,"New application","You have new mail");
-				}				
-			}
-			else 
-				System.out.println("Got no users for group " + prov.getHeadmasterGroupId());
+			sendMessageToProvider(new Integer(provider[0]),null,null);
 			
 			t.commit();
 		}
@@ -115,6 +104,24 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 
 		return true;
+	}
+
+	private void sendMessageToProvider(Integer providerId, String subject, String message) throws RemoteException, CreateException {
+		SchoolBusiness schoolBiz = (SchoolBusiness)getServiceInstance(SchoolBusiness.class);
+		School prov = schoolBiz.getSchool(providerId);
+		UserBusiness userBiz = (UserBusiness)getServiceInstance(UserBusiness.class);
+		Collection users = userBiz.getUsersInGroup(prov.getHeadmasterGroupId());
+
+		if (users != null) {
+			MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
+			Iterator it = users.iterator();
+			while (it.hasNext()) {
+				User providerUser = (User)it.next();
+				messageBiz.createUserMessage(providerUser,"New application","You have new mail");
+			}				
+		}
+		else 
+			System.out.println("Got no users for group " + prov.getHeadmasterGroupId());		
 	}
 
 	public Collection getUnhandledApplicationsByProvider(int providerId) {
@@ -191,7 +198,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			SchoolChoiceBusiness schoolBiz = (SchoolChoiceBusiness)getServiceInstance(SchoolChoiceBusiness.class);
 			School school;
-			school = schoolBiz.getFirstManagingSchoolForUser(provider);
+			school = schoolBiz.getFirstProviderForUser(provider);
 
 			return getUnsignedApplicationsByProvider(((Integer)school.getPrimaryKey()).intValue());
 		}
@@ -206,6 +213,37 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public boolean rejectApplication(ChildCareApplication application) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+			application.setCaseStatus(getCaseStatusInactive());
+			application.store();
+			
+			if (application.getChildCount() != 0) {
+				Iterator it = application.getChildren();
+				if (it.hasNext()) {
+					Case proc = (Case)it.next();
+					proc.setCaseStatus(getCaseStatusOpen());
+					proc.store();
+					ChildCareApplication child = ((ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class)).findByPrimaryKey(proc.getPrimaryKey());
+					sendMessageToProvider(new Integer(child.getProviderId()),null,null);
+				}
+			}
+			
+			t.commit();
+			
+			return true;
+		}
+		catch (Exception e) {
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+				
 		return false;	
 	}
 	
@@ -226,6 +264,29 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public boolean acceptApplication(ChildCareApplication application) {
+		TransactionManager t = IdegaTransactionManager.getInstance();
+		try {
+			t.begin();
+			application.setCaseStatus(getCaseStatusPreliminary());
+			application.store();
+			
+			MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
+			messageBiz.createUserMessage(application.getOwner(),"Child care application","Your child care application has been accepted.");
+					
+			t.commit();
+			
+			return true;
+		}
+		catch(Exception e) {
+			try {
+				t.rollback();
+			}
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}	
+			e.printStackTrace();
+		}
+		
 		return false;	
 	}
 	
@@ -265,5 +326,49 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		
 		return false;
+	}	
+	
+	public Collection getApplicationsByProvider(int providerId) {
+		try {			
+			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String caseStatus[] = {getCaseStatusOpen().toString(), getCaseStatusPreliminary().toString(), getCaseStatusContract().toString()};
+			
+			return home.findAllCasesByProviderStatus(providerId,caseStatus);
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public Collection getApplicationsByProvider(School provider) {
+		try {
+			return getApplicationsByProvider(((Integer)provider.getPrimaryKey()).intValue());
+		}
+		catch (RemoteException e) {
+			return null;
+		}
+	}
+
+	public Collection getApplicationsByProvider(User provider) {
+		try {
+			SchoolChoiceBusiness schoolBiz = (SchoolChoiceBusiness)getServiceInstance(SchoolChoiceBusiness.class);
+			School school;
+			school = schoolBiz.getFirstProviderForUser(provider);
+
+			return getApplicationsByProvider(((Integer)school.getPrimaryKey()).intValue());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			return null;
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}	
 }

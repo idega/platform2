@@ -232,8 +232,31 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		}
 		sql.append(")");
 		
-		System.out.println("sql = " + sql.toString());
-		
 		return (Collection)super.idoFindPKsBySQL(sql.toString());
 	}	
+	
+	public Collection ejbFindAllCasesByProviderStatus(int providerId, String caseStatus[]) throws FinderException, RemoteException {
+		Collection ids = super.ejbFindAllCasesByStatusArray(caseStatus);
+		
+		StringBuffer sql = new StringBuffer("select * from ");
+		sql.append(getEntityName());
+		sql.append(" where ");
+		sql.append(PROVIDER_ID);
+		sql.append(" = ");
+		sql.append(providerId);
+		sql.append(" and ");
+		sql.append(getIDColumnName());
+		sql.append(" in (");
+		
+		Iterator it = ids.iterator();
+		while (it.hasNext()) {
+			Integer id = (Integer)it.next();
+			sql.append(id);
+			if (it.hasNext())
+				sql.append(", ");
+		}
+		sql.append(")");
+		
+		return (Collection)super.idoFindPKsBySQL(sql.toString());
+	}		
 }
