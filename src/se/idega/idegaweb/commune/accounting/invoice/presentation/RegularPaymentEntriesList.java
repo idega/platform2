@@ -471,7 +471,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}
 		return home;
 	}
-		
+
+			
 	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry){
 		handleEditAction(iwc, entry, null);
 	}
@@ -493,7 +494,9 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		}	
 		
 		Form form = new Form();
-		form.maintainParameter(PAR_PK);		
+		if (entry.getPrimaryKey() != null){
+			form.maintainParameter(PAR_PK);		
+		}
 		form.maintainParameter(PAR_USER_SSN);			
 		form.maintainParameter(PAR_SEEK_FROM);
 		form.maintainParameter(PAR_SEEK_TO);
@@ -739,7 +742,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 //			table.add(h);			
 //		}
 		
-		regSearchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH, PAR_PK});
+		regSearchPanel.maintainParameter(new String[]{PAR_USER_SSN, PAR_SEEK_FROM, PAR_SEEK_TO, PAR_FROM, PAR_TO, PAR_AMOUNT_PR_MONTH});
 //		if (errorMessages.get(ERROR_PLACING_EMPTY) != null) {
 //			searchPanel.setError((String) errorMessages.get(ERROR_PLACING_EMPTY));			
 //		}		
