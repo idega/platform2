@@ -125,6 +125,9 @@ public class WorkReportWindow extends IWAdminWindow {
 			else if( action.equals(ACTION_STATISTICS) ){
 				table.add(new WorkReportSelector(),2,1);	
 			}
+			else if (action.equals(ACTION_CREATE_REPORTS)) {
+				table.add(new WorkReportExporter(),2,1);	
+			}
 		
 		}
 
