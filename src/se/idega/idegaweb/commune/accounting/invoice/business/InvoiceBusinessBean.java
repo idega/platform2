@@ -108,6 +108,13 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 	
+	public boolean isHighShool(String category) throws IDOLookupException, FinderException{
+		SchoolCategory highSchool = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findHighSchoolCategory();
+		if(((String)highSchool.getPrimaryKey()).equals(category)){
+			return true;
+		}
+		return false;
+	}
 	
 	public BatchRun getBatchRunByCategory(String category) throws IDOLookupException, FinderException{
 		SchoolCategory schoolCategory =((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
