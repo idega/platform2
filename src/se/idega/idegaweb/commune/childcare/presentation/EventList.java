@@ -14,12 +14,9 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.presentation.ColumnList;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.file.data.ICFile;
-import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOHome;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.ExceptionWrapper;
@@ -46,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.21 2004/01/11 03:40:00 jonas Exp $
+ * @version $Id: EventList.java,v 1.22 2004/01/11 15:46:06 laddi Exp $
  * @since 17.3.2003 
  */
 
