@@ -85,10 +85,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/02 10:24:21 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/02 13:14:31 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.103 $
+ * @version $Revision: 1.104 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -155,8 +155,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private static final String INVOICE_RECORD_KEY = PREFIX + "invoice_record";
 	private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden är borttagen";
 	private static final String INVOICE_RECORD_REMOVED_KEY = PREFIX + "invoice_record_removed";
-	private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
-	private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
+	//private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
+	//private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
 	private static final String INVOICE_TEXT2_KEY = PREFIX + "invoice_text2";
 	private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
 	private static final String INVOICE_TEXT_KEY = PREFIX + "invoice_text";
