@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.34 2003/05/26 17:48:52 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.35 2003/05/28 03:25:36 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -458,13 +458,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private void createRequestInfoConfirmPage(Table layoutTbl)
 		throws RemoteException {
 			
-		SubmitButton submitBtn =
-			new SubmitButton(
-				localize(MY_PAGE),
-				CCConstants.ACTION,
+		Link submitBtn = 
+			new Link(localize(MY_PAGE));
+		submitBtn.setParameter(CCConstants.ACTION,
 				new Integer(CCConstants.ACTION_SUBMIT_CONFIRM).toString());
 		//		submitBtn.setName(SUBMIT[0] + PAGE_1);
-		submitBtn.setAsImageButton(true);
 
 		layoutTbl.add(new Text(localize(REQUEST_CONFIRM)), 1, 1);
 		layoutTbl.add(submitBtn, 1, 2);
@@ -492,13 +490,15 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			Table placementInfo =
 				getPlacedAtSchool(iwc, getActiveApplication(applications));
 
+			boolean hasOffer = hasOffer(applications);
+			
 			Table appTable =
 				new ChildCarePlaceOfferTable1(
 					iwc,
 					this,
-					sortApplications(applications, false),
-					hasOffer(applications),
-					getChildCareBusiness(iwc).hasActivePlacement(Integer.parseInt(iwc.getParameter(CHILD_ID)))
+					sortApplications(applications, false), 
+					hasOffer,
+					getChildCareBusiness(iwc).hasActivePlacement(getChildId(iwc))
 			);
 			//sorted by order number
 
@@ -517,9 +517,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			layoutTbl.add(placementInfo, 1, 1);
 			layoutTbl.add(appTable, 1, 3);
-			layoutTbl.add(cancelBtn, 1, 6);
-			layoutTbl.add(submitBtn, 1, 6);
-			layoutTbl.setAlignment(1, 6, "right");
+			if (hasOffer){
+				layoutTbl.add(submitBtn, 1, 6);
+				layoutTbl.add(cancelBtn, 1, 6);
+				layoutTbl.setAlignment(1, 6, "right");
+			}
 			layoutTbl.add(getHelpTextPage1(), 1, 7);
 			layoutTbl.setStyle(1, 7, "padding-top", "15px");
 			return ((ChildCarePlaceOfferTable1) appTable).getOnSubmitHandler();
@@ -678,6 +680,20 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return applications;
 	}
 
+	private int getChildId(IWContext iwc) {
+
+		String childId = iwc.getParameter(CHILD_ID);
+
+		if (childId != null) {
+			iwc.setSessionAttribute(CHILD_ID, childId);
+		} else {
+			childId = (String) iwc.getSessionAttribute(CHILD_ID);
+		}
+		
+		System.out.println("getChildId()eturning:" + childId);
+		return Integer.parseInt(childId);
+	}
+	
 	/**
 	 * Checks if the specifid application has an offer connected to it (status BVJD/B).
 	 * @param applications
