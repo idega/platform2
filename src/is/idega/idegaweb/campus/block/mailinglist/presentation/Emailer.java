@@ -38,7 +38,7 @@ import com.idega.presentation.util.Edit;
 import com.idega.util.text.ContentParsable;
 
 /**
- *  Title: Description: Copyright: Copyright (c) 2001 Company:
+ * 
  *
  * @author     <br>
  *      <a href="mailto:aron@idega.is">Aron Birkir</a> <br>
@@ -116,8 +116,9 @@ public class Emailer extends CampusBlock {
 
 	
 	/**
-	 * @param  iwc  Description of the Parameter
-	 * @todo        Description of the Method
+	 * Controls the layout of this block
+	 * @param  iwc  the idegaweb context
+	 *
 	 */
 	private void control(IWContext iwc) throws RemoteException {
 		//debugParameters(iwc);
@@ -625,9 +626,10 @@ public class Emailer extends CampusBlock {
 	}
 
 	/**
+	 * Parses int primitives from a string array
 	 * @param  array  Description of the Parameter
 	 * @return        Description of the Return Value
-	 * @todo          Description of the Method
+	 *
 	 */
 	private int[] parseArray(String[] array) {
 		int[] intArray = new int[array.length];
@@ -637,10 +639,6 @@ public class Emailer extends CampusBlock {
 		return intArray;
 	}
 
-	/**
-	 * @param  iwc  Description of the Parameter
-	 * @todo        Description of the Method
-	 */
 	public void main(IWContext iwc) {
 		
 		
@@ -665,10 +663,7 @@ public class Emailer extends CampusBlock {
 		return (MailingListService) IBOLookup.getServiceInstance(iwac, MailingListService.class);
 	}
 
-	/**
-	 * @return    Description of the Return Value
-	 * @todo      Description of the Method
-	 */
+	
 	public synchronized Object clone() {
 		Emailer obj = null;
 		try {
