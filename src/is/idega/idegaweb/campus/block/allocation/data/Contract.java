@@ -44,6 +44,7 @@ public interface Contract extends com.idega.data.IDOEntity
  public void setStatusResigned();
  public void setStatusSigned();
  public void setStatusStorage();
+ public void setStatusFinalized();
  public void setStatusTerminated();
  public void setUserId(int p0);
  public void setUserId(java.lang.Integer p0);

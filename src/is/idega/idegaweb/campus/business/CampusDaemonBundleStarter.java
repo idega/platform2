@@ -45,7 +45,9 @@ public class CampusDaemonBundleStarter implements IWBundleStartable, ActionListe
 			if (event.getActionCommand().equalsIgnoreCase(TIMER_THREAD_NAME)) {
 				System.out.println("[Campus 24 hour Daemon - "+IWTimestamp.RightNow().toString()+" ] - Ending expired contracts");
 				getCampusService(bundle.getApplication().getIWApplicationContext()).getContractService().endExpiredContracts();
-				
+				IWTimestamp oneYearBack = IWTimestamp.RightNow();
+				oneYearBack.addYears(-1);
+				campusService.getContractService().finalizeGarbageContracts(oneYearBack.getDate());
 			}
 		}
 		catch (Exception x) {

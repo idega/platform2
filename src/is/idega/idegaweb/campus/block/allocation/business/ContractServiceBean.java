@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.13 2004/06/16 03:15:45 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.14 2004/06/16 03:44:46 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -227,7 +227,7 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public void endExpiredContracts(){
 		Collection contracts;
 		try {
-			contracts = getContractHome().findByStatusAndBeforeDate(ContractBMPBean.statusSigned,IWTimestamp.RightNow().getDate());
+			contracts = getContractHome().findByStatusAndValidBeforeDate(ContractBMPBean.statusSigned,IWTimestamp.RightNow().getDate());
 		
 			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
 				Contract contract = (Contract) iter.next();
@@ -240,6 +240,24 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 			e.printStackTrace();
 		}
 	
+	}
+	
+	public void finalizeGarbageContracts(java.sql.Date lastChangeDate){
+		Collection contracts;
+		try {
+			contracts = getContractHome().findByStatusAndChangeDate(ContractBMPBean.statusFinalized,lastChangeDate);
+		
+			for (Iterator iter = contracts.iterator(); iter.hasNext();) {
+				Contract contract = (Contract) iter.next();
+				contract.setStatusFinalized();
+				contract.store();
+				
+			}
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
 	}
 	public void returnKey(IWApplicationContext iwac, Integer contractID) {
 		try {

@@ -40,5 +40,6 @@ public interface ContractService extends com.idega.business.IBOService
 	 public void returnKey(com.idega.idegaweb.IWApplicationContext p0,java.lang.Integer p1) throws java.rmi.RemoteException;
 	 public java.lang.String signContract(java.lang.Integer p0,java.lang.Integer p1,java.lang.Integer p2,java.lang.Integer p3,java.lang.String p4,boolean p5,boolean p6,boolean p7,boolean p8,boolean p9,com.idega.idegaweb.IWResourceBundle p10,java.lang.String p11,java.lang.String p12) throws java.rmi.RemoteException;
 	 public void deleteFromWaitingList(Applicant applicant);
-	 public void endExpiredContracts();
+	 public void endExpiredContracts()throws java.rmi.RemoteException;
+	 public void finalizeGarbageContracts(java.sql.Date lastChangeDate)throws java.rmi.RemoteException;
 }

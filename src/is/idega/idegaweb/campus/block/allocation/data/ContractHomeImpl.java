@@ -206,10 +206,21 @@ public java.sql.Date getLastValidToForApartment(java.lang.Integer p0)throws java
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#FindByStatusAndBeforeDate(java.lang.String, java.sql.Date)
 	 */
-	public Collection findByStatusAndBeforeDate(String status, Date date)
+	public Collection findByStatusAndValidBeforeDate(String status, Date date)
 			throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByStatusAndBeforeDate(status,date);
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByStatusAndValidBeforeDate(status,date);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.block.allocation.data.ContractHome#findByStatusAndChangeDate(java.lang.String, java.sql.Date)
+	 */
+	public Collection findByStatusAndChangeDate(String status, Date date)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ContractBMPBean)entity).ejbFindByStatusAndChangeDate(status,date);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
