@@ -6,7 +6,10 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.Group;
 
 /**
@@ -45,8 +48,90 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport{
 		
 		//TODO add stats
 	}
+
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
+	
+	public Integer getClubId(){
+		return getIntegerColumnValue(COLUMN_NAME_CLUB_ID);
+	}
+	
+	public void setClubId(int clubId){
+		setColumn(COLUMN_NAME_CLUB_ID,clubId);
+	}
+	
+	public void setClubId(Integer clubId){
+		setColumn(COLUMN_NAME_CLUB_ID,clubId);
+	}
+	
+	public String getClubName(){
+		return getStringColumnValue(COLUMN_NAME_CLUB_NAME);
+	}
+	
+
+	public void setClubName(String name){
+		setColumn(COLUMN_NAME_CLUB_NAME,name);
+	}
+	
+	public String getClubNumber(){
+		return getStringColumnValue(COLUMN_NAME_CLUB_NUMBER);
+	}
+	
+
+	public void setClubNumber(String number){
+		setColumn(COLUMN_NAME_CLUB_NUMBER,number);
+	}
+	
+	public Integer getYearOfReport(){
+		return getIntegerColumnValue(COLUMN_NAME_WORK_REPORT_YEAR);
+	}
+	
+
+	public void setYearOfReport(int year){
+		setColumn(COLUMN_NAME_WORK_REPORT_YEAR,year);
+	}
+	
+	public boolean isBoardPartDone(){
+		return getBooleanColumnValue(COLUMN_NAME_BOARD_DONE,false);
+	}
+	
+
+	public void setBordPartDone(boolean isDone){
+		setColumn(COLUMN_NAME_BOARD_DONE,isDone);
+	}
+	
+	public boolean isMembersPartDone(){
+		return getBooleanColumnValue(COLUMN_NAME_MEMBERS_DONE,false);
+	}
+	
+
+	public void setMembersPartDone(boolean isDone){
+		setColumn(COLUMN_NAME_MEMBERS_DONE,isDone);
+	}
+	
+	public boolean isAccountPartDone(){
+		return getBooleanColumnValue(COLUMN_NAME_ACCOUNT_DONE,false);
+	}
+	
+
+	public void setAccountPartDone(boolean isDone){
+		setColumn(COLUMN_NAME_ACCOUNT_DONE,isDone);
+	}
+	
+	public Integer ejbFindWorkReportByClubIdAndYearOfReport(int clubId, int yearOfReport) throws FinderException{
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_NAME_CLUB_ID,clubId);
+		sql.appendAndEquals(COLUMN_NAME_WORK_REPORT_YEAR,yearOfReport);
+		
+		return (Integer) this.idoFindOnePKByQuery(sql);
+	}
+	
+	
+	
+	
+	
+	
 	
 }
