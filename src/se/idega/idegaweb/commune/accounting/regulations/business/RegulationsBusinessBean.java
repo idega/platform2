@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.37 2003/10/05 12:04:05 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.38 2003/10/07 08:58:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -894,7 +894,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}	
 
 	/**
-	 * Gets all Operations. This is used to get certain data from different 
+	 * Gets all possible Condition selections. This is used to get certain data from different 
 	 * parts of the system. This could be placed in a bean later...
 	 * As of now I just set the values here.
 	 * 
@@ -912,7 +912,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @see se.idega.idegaweb.commune.accounting.regulations.presentation.RegulationListEditor#
 	 * @author Kelly
 	 */
-	public Collection findAllOperations() {
+	public Collection findAllConditionSelections() {
 			// LP = Localization path
 			ArrayList arr = new ArrayList();
 			arr.add(new ConditionHolder(
