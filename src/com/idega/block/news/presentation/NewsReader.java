@@ -5,30 +5,42 @@ import java.util.*;
 import java.io.*;
 import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
-import	com.idega.block.news.data.*;
-import	com.idega.data.*;
+import com.idega.jmodule.object.*;
+import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.block.news.data.*;
+import com.idega.data.*;
 import com.idega.util.text.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 
+
+/*
+**
+** need to look at numberofdisplayed news
+**
+*/
 
 public class NewsReader extends JModuleObject{
 
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private boolean isAdmin=false;
 private boolean showNewsCollectionButton=true;
-private int category_id = 0;
+private int categoryId = 0;
 private String date = null;
-private int numberOfNews = 3;
 private boolean backbutton = false;
 private boolean cutNews = true;// or default true?
 private boolean showAll = false;
 private Table outerTable = new Table(1,1);
-private String newsReaderURL = "/news/newsreader.jsp";
-private String newsCollectionURL = "/news/newsall.jsp";
+private String newsReaderURL;
+private String newsCollectionURL;
 private boolean showImages = true;
 private boolean showOnlyDates = false;
 private boolean headlineAsLink = false;
-
+private String selectFrom = "select news.* from news where ";
+private String orderBy = " order by news_date DESC";
+private String sNewsCategoryId = "news_category_id ='";
+private String sNewsEditorUrl ="/news/editor.jsp";
 
 private Text textProxy = new Text();
 private Text headlineProxy = new Text();
@@ -36,12 +48,19 @@ private Text informationProxy = new Text();
 
 private int numberOfLetters = 273;
 private int numberOfDisplayedNews = 3;
+private int numberOfExpandedNews = 3;
+private int currentColumnPosition = 1;
+private int currentRowPosition = 1;
+private String outerTableWidth = "100%";
+
 private boolean limitNumberOfNews = false;
 
 private Image change;
 private Image delete;
 private Image editor;
 private Image collection;
+private Image more;
+private Image back;
 
 private String language = "IS";
 
@@ -51,34 +70,17 @@ private String attributeName = "union_id";
 //private int attributeId = -1;
 private int attributeId = 3;
 
-private News myNews = new News();
+public static final int SINGLE_FILE_LAYOUT = 1;
+public static final int NEWS_SITE_LAYOUT = 2;
+public static final int NEWS_PAPER_LAYOUT = 3;
+private int LAYOUT = 1;
+
+
 
 public NewsReader(){
   showAll = true;
 }
 
-/**
- * @deprecated replaced with the default constructor
- */
-public NewsReader(boolean isAdmin){
-  this.showAll=true;
-}
-
-/**
- * @deprecated replaced with the category_id constructor
- */
-public NewsReader(boolean isAdmin, int category_id){
-  this.category_id=category_id;
-  this.showAll = false;
-}
-
-/**
- * @deprecated replaced with the date or idegaTimestamp constructor
- */
-public NewsReader(boolean isAdmin, String date){
-  this.date=date;
-  this.showAll=true;
-}
 
 public NewsReader(String date){
   this.date=date;
@@ -90,36 +92,194 @@ public NewsReader(idegaTimestamp timestamp){
   this.date = timestamp.toSQLString();
 }
 
-/**
- * @deprecated replaced with the category_id,date constructor
- */
-public NewsReader(boolean isAdmin, int category_id, String date){
-  this.category_id=category_id;
+
+public NewsReader(int categoryId, String date){
+  this.categoryId=categoryId;
   this.date=date;
   this.showAll = false;
 }
 
-public NewsReader(int category_id, String date){
-  this.category_id=category_id;
-  this.date=date;
+public NewsReader(int categoryId){
+  this.categoryId=categoryId;
   this.showAll = false;
 }
 
-public NewsReader(int category_id){
-  this.category_id=category_id;
-  this.showAll = false;
-}
-
-public NewsReader(int category_id, idegaTimestamp timestamp){
+public NewsReader(int categoryId, idegaTimestamp timestamp){
   this.showAll=false;
-  this.category_id=category_id;
+  this.categoryId=categoryId;
   this.date = timestamp.toSQLString();
 }
 
-public NewsReader(boolean isAdmin, int category_id, idegaTimestamp timestamp){
-  this.category_id=category_id;
-  this.showAll = false;
-  this.date = timestamp.toSQLString();
+public void setNewsEditorUrl(String url){
+  this.sNewsEditorUrl = url;
+}
+
+public void main(ModuleInfo modinfo)throws Exception{
+  this.isAdmin=this.isAdministrator(modinfo);
+  IWBundle iwb = getBundle(modinfo);
+
+  IWResourceBundle iwrb = getResourceBundle(modinfo);
+
+  if( newsReaderURL == null ){
+    newsReaderURL = iwb.getProperty("news_reader_url",modinfo.getRequestURI());//link with "" constructs a link to the calling page
+  }
+  if( newsCollectionURL == null ){
+    newsCollectionURL = iwb.getProperty("news_collection_url",modinfo.getRequestURI());
+  }
+
+  back = iwrb.getImage("back.gif");
+  more  = iwrb.getImage("more.gif");
+  change = iwrb.getImage("change.gif");
+  delete = iwrb.getImage("delete.gif");
+  editor = iwrb.getImage("newseditor.gif");
+  collection = iwrb.getImage("collection.gif");
+
+  boolean byDate=false;
+  News[] news = new News[1];
+
+  String news_id = modinfo.getRequest().getParameter("news_id");
+  String news_category_id = modinfo.getRequest().getParameter("news_category_id");
+//added for multiple newsreader support in one page
+  boolean showSingleNews = false;
+
+
+  try{
+    //debug this is not done yet!
+    if(news_category_id !=null) {
+        categoryId = Integer.parseInt(news_category_id);//overrides the preset category
+        showSingleNews = false;//nope we are showing a collection!
+        showAll = false;
+        //System.out.println("inni í category");
+    }else if( (news_category_id==null) && (news_id != null) ){ //yup only one to see if this. owns the newscategory!
+     // System.out.println("(news_category_id==null) && (news_id =="+news_id);
+      /*if( categoryId != 0 ){
+         System.out.println("categoryId != 0 ");
+        if( news[0].getNewsCategoryId() == categoryId ) {
+          System.out.println("My category! ");
+          showSingleNews = true;
+        }
+      }
+      else{
+       System.out.println("categoryId is 0 ");
+       showSingleNews = true;
+      }
+      */
+      showSingleNews = true;
+    }
+
+    if(isAdmin) {
+      Form newsEditor = new Form(sNewsEditorUrl);
+      newsEditor.add(new SubmitButton(editor));
+      add(newsEditor);
+    }
+
+    if(showSingleNews){//single news
+      news[0] = new News(Integer.parseInt(news_id));
+      showAll=false;
+      //news[0] = new News(Integer.parseInt(news_id)); did this before
+      backbutton=true;
+      cutNews = false;
+      setNumberOfDisplayedNews(1);
+      add(drawNewsTable(news));
+    }
+    else{//view all or category view
+
+      NewsCategoryAttribute[] attribs = null;
+      String categoryString = null;
+
+      if ( categoryId == 0) {//show the whole collection
+        setLayout(SINGLE_FILE_LAYOUT);
+        showAll = true;
+        String attName = NewsCategoryAttribute.getAttributeNameColumnName();
+        String attId = NewsCategoryAttribute.getAttributeIdColumnName();
+        attribs = (NewsCategoryAttribute[]) (new NewsCategoryAttribute()).findAllByColumn(attName,attributeName,attId,String.valueOf(attributeId));
+        categoryString = getColumnString(attribs);
+
+        //gimmi bætti við 14.2.01
+        if (attribs.length > 0) {
+          this.categoryId = attribs[0].getNewsCategoryId();
+        }
+      }
+      else{
+        showAll = false;
+        categoryString = NewsCategoryAttribute.getNewsCategoryIdColumnName()+" = '"+categoryId+"' ";
+
+      }
+
+      if( date == null ){//not by Date
+        if( showAll ) {
+          if( categoryString!=null ) categoryString = " where " + categoryString;
+          else categoryString = "";
+
+          news = (News[]) (new News()).findAll("select * from news "+categoryString+orderBy);
+        }
+        else news = (News[]) (new News()).findAllByColumn(News.getNewsCategoryIdColumnName(),categoryId);
+      }
+      else{// by date
+      //debug
+     // System.err.println(date);
+        String DatastoreType = getDatastoreType( new News() );
+        byDate=true;
+        if( (categoryString!=null) && !(categoryString.equals("")) ) categoryString = " OR " + categoryString;
+        if( (showAll) && !(DatastoreType.equals("oracle"))  ){
+          String statementstring = selectFrom+News.getNewsDateColumnName()+" >= '"+date+"'  "+categoryString+orderBy;
+          //debug eiki
+        //  System.err.println(statementstring);
+          news = (News[]) (new News()).findAll(statementstring);
+         // if (news != null) System.err.println("fann "+ news.length +"fréttir");
+
+        }
+        else if( (showAll) && (DatastoreType.equals("oracle"))  )  news = (News[]) (new News()).findAll(selectFrom+News.getNewsDateColumnName()+" >= "+date+" "+categoryString+orderBy);
+        else {
+          if ( !(DatastoreType.equals("oracle")) ){
+
+          String statementstring = selectFrom+sNewsCategoryId+categoryId+"' and "+News.getNewsDateColumnName()+" >= '"+date+"'"+orderBy;
+//System.err.println(statementstring);
+
+           news = (News[]) (new News()).findAll(statementstring);
+
+          }
+          else news = (News[]) (new News()).findAll(selectFrom+sNewsCategoryId+categoryId+"' and "+News.getNewsDateColumnName()+" >= "+date+orderBy);
+        }
+      }
+
+      if(news.length > 0){	add(drawNewsTable(news));}
+      else {//if out of date range
+        if( byDate ){
+          date=null;
+          categoryString = TextSoap.findAndCut(categoryString,"OR");
+          String statementstring = selectFrom+categoryString+orderBy;
+          //debug eiki 24.dec
+         // System.err.println("OUT OF RANGE "+statementstring);
+          news = (News[]) (new News()).findAll(statementstring);
+
+          if( news.length!=0){
+            setNumberOfDisplayedNews(1);
+            add(drawNewsTable(news));
+          }
+          else add(new Text("<b>No news in database</b><br>"));
+        }
+        else add(new Text("<b>No news in database</b><br>"));
+
+      }
+    }
+
+    if ( news_id == null){
+        Table newsCollection = new Table(1,1);
+        if ( showNewsCollectionButton ) {
+        Link collectionLink = new Link( collection, newsCollectionURL);
+        collectionLink.addParameter("news_category_id",Integer.toString(categoryId));
+        newsCollection.add(collectionLink,1,1);
+        newsCollection.setAlignment("right");
+        add(newsCollection);
+        }
+    }
+  }
+  catch( Exception e ){
+
+    add(new Text(e.getMessage()) );//something went wrong
+    e.printStackTrace( System.err);
+  }
 
 }
 
@@ -141,15 +301,16 @@ public void setNumberOfDays( int daysIn ){
 
 }
 
-public String getDatastoreType(GenericEntity entity){
+private String getDatastoreType(GenericEntity entity){
   return DatastoreInterface.getDatastoreType(entity.getDatasource());
 }
 
 
-private String getColumnString(NewsCategoryAttributes[] attribs){
+
+private String getColumnString(NewsCategoryAttribute[] attribs){
   StringBuffer values = new StringBuffer("");
   for (int i = 0 ; i < attribs.length ; i++) {
-    values.append(" news_category_id = '");
+    values.append(attribs[i].getNewsCategoryIdColumnName()+" = '");
     values.append(attribs[i].getNewsCategoryId());
     values.append("'") ;
     if( i!= (attribs.length)-1 ) values.append(" OR ");
@@ -159,286 +320,102 @@ private String getColumnString(NewsCategoryAttributes[] attribs){
   else return returnString;
 }
 
-private void setSpokenLanguage(ModuleInfo modinfo){
- String language2 = modinfo.getRequest().getParameter("language");
-    if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
-    if ( language2 != null) language = language2;
-}
 
-public void main(ModuleInfo modinfo)throws Exception{
+private Table drawNewsTable(News[] news)throws IOException,SQLException{
+  idegaCalendar funcDate = new idegaCalendar();
+  int news_category_id;
+  NewsCategory newscat;
+  String news_category;
+  String headline;
+  String newstext;
+  String includeImage;
+  String timestamp;
+  String author;
+  String source;
+  int daysshown;
+  Text information;
+  int image_id;
+  int newsLength = news.length;
 
-  this.empty();
-
-  this.isAdmin=this.isAdministrator(modinfo);
-  setSpokenLanguage(modinfo);
-
-
-  change = new Image("/pics/jmodules/news/"+language+"/change.gif");
-  delete = new Image("/pics/jmodules/news/"+language+"/delete.gif");
-  editor = new Image("/pics/jmodules/news/"+language+"/newseditor.gif");
-  collection = new Image("/pics/jmodules/news/"+language+"/collection.gif");
-
-
-  String news_id = modinfo.getRequest().getParameter("news_id");
-  String news_category_id = modinfo.getRequest().getParameter("news_category_id");
-
-
-  if( news_category_id !=null ) {
-      category_id = Integer.parseInt(news_category_id);
-      showAll = false;
+//System.out.println("limitNumberOfNews: "+ limitNumberOfNews+" numberOfDisplayedNews: "+numberOfDisplayedNews+" newsLength: "+newsLength);
+  if( (!limitNumberOfNews) || (numberOfDisplayedNews>newsLength) ){
+     numberOfDisplayedNews = newsLength;
   }
 
+  outerTable = createContainerTable();
 
-  boolean byDate=false;
+  for ( int i=0; i<numberOfDisplayedNews; i++){
+    news_category_id = news[i].getNewsCategoryId();
+    newscat = new NewsCategory(news_category_id);
+    news_category = newscat.getName();
 
-  News[] news = new News[1];
+    headline = news[i].getHeadline();
+    includeImage = news[i].getIncludeImage();
+    timestamp = (news[i].getDate()).toString();
+    author = news[i].getAuthor();
+    source = news[i].getSource();
+    daysshown = news[i].getDaysShown();
 
-  try{
-   // PrintWriter out = modinfo.getResponse().getWriter();
 
-    if(isAdmin) {
-
-      Form newsEditor = new Form("/news/editor.jsp");
-      newsEditor.add(new SubmitButton(editor));
-      add(newsEditor);
-
+    if ( (i-numberOfExpandedNews)>=0 ){
+      includeImage = "N";
+      newstext = "";
+    }
+    else {
+      newstext = news[i].getText();
+      newstext=formatNews(newstext);
     }
 
-    if(news_id != null){//single news
-      showAll=false;
-      news[0] = new News(Integer.parseInt(news_id));
-      backbutton=true;
-      cutNews = false;
-      setNumberOfDisplayedNews(1);
-      add(drawNewsTable(news));
+    information = getInfoText(author, source, news_category, timestamp);
+    if(includeImage.equals("Y")){
+      image_id = news[i].getImageId();
+      addNext(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id));
     }
-    else{//view all or category view
-
-      NewsCategoryAttributes[] attribs = null;
-      String categoryString = null;
-
-      if ( category_id == 0) {//show the whole collection
-        showAll = true;
-        attribs = (NewsCategoryAttributes[]) (new NewsCategoryAttributes()).findAllByColumn("attribute_name",attributeName,"attribute_id",""+attributeId);
-//        System.err.println("categoryString1 = " + categoryString);
-        categoryString = getColumnString(attribs);
-//        System.err.println("categoryString2 = " + categoryString);
-        System.err.println("Inside category_id=0");
-      }
-      else{ // just this category
-        showAll = false;
-        categoryString = "news_category_id = '"+category_id+"' ";
-        System.err.println("Show all false category_id="+category_id);
-      }
-
-
-      if( date == null ){//not by Date
-        if( showAll ) {
-         if( categoryString!=null ) categoryString = " where " + categoryString;
-         else categoryString = "";
-          System.err.println("select * from "+myNews.getEntityName()+categoryString+" order by news_date");
-          news = (News[]) (myNews).findAll("select * from "+myNews.getEntityName()+categoryString+" order by news_date");
-        }
-        else news = (News[]) (myNews).findAllByColumn("news_category_id",category_id);
-
-      }
-      else{// by date
-
-      //debug
-      System.err.println(date);
-        String DatastoreType = getDatastoreType( myNews );
-        byDate=true;
-        if( (categoryString!=null) && !(categoryString.equals("")) ) categoryString = " OR " + categoryString;
-        if( (showAll) && !(DatastoreType.equals("oracle"))  ){
-          String statementstring = "select * from "+myNews.getEntityName()+" where news_date >= '"+date+"'  "+categoryString+" order by news_date";
-          //debug eiki
-          System.err.println(statementstring);
-          news = (News[]) (myNews).findAll(statementstring);
-          if (news != null) System.err.println("fann "+ news.length +"fréttir");
-
-        }
-        else if( (showAll) && (DatastoreType.equals("oracle"))  )  news = (News[]) (myNews).findAll("select * from news where news_date >= "+date+" "+categoryString+" order by news_date");
-        else {
-          if ( !(DatastoreType.equals("oracle")) ){
-
-          String statementstring = "select * from "+myNews.getEntityName()+" where news_category_id ='"+category_id+"' and news_date >= '"+date+"' order by news_date";
-System.err.println(statementstring);
-
-           news = (News[]) (myNews).findAll(statementstring);
-
-          }
-          else news = (News[]) (myNews).findAll("select * from "+myNews.getEntityName()+" where news_category_id ='"+category_id+"' and news_date >= "+date+" order by news_date");
-        }
-      }
-
-      if(news.length > 0){	add(drawNewsTable(news));}
-      else {//if out of date range
-              if( byDate ){
-                      date=null;
-                      categoryString = TextSoap.findAndCut(categoryString,"OR");
-                      String statementstring = "select * from "+myNews.getEntityName()+" where "+categoryString+" order by news_date";
-                      //debug eiki 24.dec
-                      System.err.println("OUT OF RANGE"+statementstring);
-                      news = (News[]) (myNews).findAll(statementstring);
-
-                      if( news.length!=0){
-                              setNumberOfDisplayedNews(1);
-                              add(drawNewsTable(news));
-                      }
-                      else add(new Text("<b>No news in database</b><br>"));
-              }
-              else add(new Text("<b>No news in database</b><br>"));
-
-      }
+    else{
+      image_id=-1;
+      addNext(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id));
     }
-
-    if ( news_id == null){
-      Table newsCollection = new Table(1,1);
-        if ( showNewsCollectionButton ) {
-        newsCollection.add(new Link( collection, getNewsCollectionURL() ),1,1);
-        newsCollection.setAlignment("right");
-        add(newsCollection);
-        }
-    }
-  }
-  catch( Exception e ){
-
-    add(new Text(e.getMessage()) );//something went wrong
-    e.printStackTrace( System.err);
-
 
   }
 
+  return outerTable;
 }
 
 
-public Table drawNewsTable(News[] news)throws IOException,SQLException
+
+private Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int newsId,int image_id) throws SQLException
 {
-
-
-	//outerTable.setWidth(400);
-	outerTable.setAlignment("center");
-
-
-
-	idegaCalendar funcDate = new idegaCalendar();
-	int news_category_id;
-	NewsCategory newscat;
-	String news_category;
-	String headline;
-	String newstext;
-	String includeImage;
-	String timestamp;
-	String author;
-	String source;
-	int daysshown;
-	Text information;
-	int image_id;
-	int i = news.length-1;
-
-
-		if( !limitNumberOfNews ) numberOfDisplayedNews = news.length;
-
-		while ( (i >= 0) && ( numberOfDisplayedNews > (news.length-i))){
-
-
-                  news_category_id = news[i].getNewsCategoryId();
-                  newscat = new NewsCategory(news_category_id);
-                  news_category = newscat.getName();
-
-                  headline = news[i].getHeadline();
-                  includeImage = news[i].getIncludeImage();
-                  timestamp = (news[i].getDate()).toString();
-                  author = news[i].getAuthor();
-                  source = news[i].getSource();
-                  daysshown = news[i].getDaysShown();
-
-
-                  if (i < (news.length-numberOfNews)){
-                          includeImage = "N";
-                          newstext = "";
-                  }
-                  else {
-                          newstext = news[i].getText();
-                          newstext=formatNews(newstext);
-                  }
-
-                  //newstext = formatNews(newstext);
-
-                  information = getInfoText(author, source, news_category, timestamp);
-
-
-                  if(includeImage.equals("Y")){
-                          image_id = news[i].getImageId();
-                          outerTable.add(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id), 1, 1);
-                  }
-                  else{
-                          image_id=-1;
-                          outerTable.add(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id), 1, 1);
-                  }
-
-
-                  if(isAdmin) {
-
-                          Form newsEdit = new Form("/news/editor.jsp?news_id="+news[i].getID());
-                          newsEdit.add(new SubmitButton(change));
-                          Form newsEdit2 = new Form("/news/editor.jsp?news_id="+news[i].getID()+"&mode=delete");
-                          newsEdit2.add(new SubmitButton(delete));
-                          Table editTable = new Table(2,1);
-                          editTable.add(newsEdit,1,1);
-                          editTable.add(newsEdit2,2,1);
-
-                          outerTable.add(editTable, 1, 1);
-
-                  }
-
-
-		 i--;
-		}
-
-	return outerTable;
-}
-
-
-
-public Table insertTable(String TimeStamp, String Headline, String NewsText, Text information,int news_id,int image_id) throws SQLException
-{
-  String btnBackUrl = "/pics/jmodules/news/"+language+"/back.gif";
-  String btnNanarUrl = "/pics/jmodules/news/"+language+"/more.gif";
 
   Text headline = new Text(Headline);
-  boolean more = false;
+  boolean showMore = false;
 
   //cut of news
   if(cutNews){
     if(NewsText.length() >= numberOfLetters){
-            more=true;
+            showMore=true;
             NewsText=NewsText.substring(0,numberOfLetters)+"...";
     }
     else if (NewsText.length()<5) {
-            more=true;
+            showMore=false;
     }
   }
 
-  Text newstext = new Text(NewsText);
 
-  headline.setFontFace("helvetica,arial");
-  headline.setFontSize(3);
+  getHeadlineProxy().setBold();
   headline = setHeadlineAttributes(headline);
-  headline.setBold();
+  if( headline.getAttribute("size") == null ) headline.setFontSize(2);
+  else if( headline.getAttribute("size").equals("") )  headline.setFontSize(2);
 
-  Link headlineLink = new Link(headline,getNewsReaderURL());
-    headlineLink.addParameter("news_id",news_id);
 
-  Image headlineImage = new Image("pics/jmodules/news/nanar2.gif","");
-    headlineImage.setAttribute("align","absmiddle");
-
-  //newstext.setFontFace("helvetica,arial");
+  Text newstext = new Text(NewsText);
   newstext = setTextAttributes( newstext );
+  if( newstext.getAttribute("size") == null ) newstext.setFontSize(2);
+  else if( newstext.getAttribute("size").equals("") )  newstext.setFontSize(2);
 
-  information.setFontColor("#666666");
-  information.setFontFace("helvetica,arial");
-  information.setFontSize(1);
+  getInformationProxy().setFontColor("#666666");
+  information = setInformationAttributes(information);
+  if( information.getAttribute("size") == null ) information.setFontSize(1);
+  else if( information.getAttribute("size").equals("") )  information.setFontSize(1);
 
   Table newsTable = new Table(1, 3);
 
@@ -446,6 +423,11 @@ public Table insertTable(String TimeStamp, String Headline, String NewsText, Tex
   newsTable.add(information, 1, 1);
 
   if ( headlineAsLink ) {
+    Link headlineLink = new Link(headline,getNewsReaderURL());
+    headlineLink.addParameter("news_id",newsId);
+    Image headlineImage = new Image("pics/jmodules/news/nanar2.gif","");
+    headlineImage.setAttribute("align","absmiddle");
+
     newsTable.add(headlineImage, 1, 2);
     newsTable.add(headlineLink, 1, 2);
   }
@@ -456,15 +438,24 @@ public Table insertTable(String TimeStamp, String Headline, String NewsText, Tex
 
 
   if (image_id!=-1){
-  Table imageTable = new Table(1, 2);
-  Image newsImage = new Image(image_id);
-  imageTable.setAlignment("right");
-  imageTable.setVerticalAlignment("top");
-  imageTable.add(newsImage, 1, 1);
+    //debug
+    if ( showImages ) {
 
-  if ( showImages ) {
-    newsTable.add(imageTable, 1, 3);
-  }
+      Table imageTable = new Table(1, 2);
+      Image newsImage = new Image(image_id);
+      imageTable.setAlignment("right");
+      imageTable.setVerticalAlignment("top");
+      imageTable.add(newsImage, 1, 1);
+
+      if( (LAYOUT!=NEWS_SITE_LAYOUT) ){
+        newsTable.add(imageTable, 1, 3);
+      }
+      else{
+       if(currentRowPosition==1){
+        newsTable.add(imageTable, 1, 3);
+       }
+      }
+    }
 
   }
 
@@ -472,22 +463,44 @@ public Table insertTable(String TimeStamp, String Headline, String NewsText, Tex
   newsTable.setRowVerticalAlignment(3, "Top");
 
   if( backbutton ) {
-          newsTable.addText("<br>",1,3);
-          newsTable.add(new BackButton(new Image(btnBackUrl)), 1, 3);
+          newsTable.add(Text.getBreak(),1,3);
+          newsTable.add(new BackButton(back), 1, 3);
   }
   else {
-    if(more && !headlineAsLink) {
-     if ( !NewsText.equals("") ) newsTable.addText("<br>",1,3);
-        newsTable.add(insertHyperlink(btnNanarUrl, "news_id", ""+news_id, getNewsReaderURL() ), 1, 3);
-      }
-    }
+    //if(showMore && !headlineAsLink) {//always show the more button
+      if(!headlineAsLink) {
+        if ( !NewsText.equals("") ) { newsTable.add(Text.getBreak(),1,3); }
 
+        Link moreLink = new Link(more,newsReaderURL);
+        moreLink.addParameter("news_id",newsId);
+        newsTable.add(moreLink, 1, 3);
+      }
+  }
+
+
+  if(isAdmin) {
+    Table links = new Table(2,1);
+    Link newsEdit = new Link(change,sNewsEditorUrl);
+    newsEdit.addParameter("news_id",newsId);
+
+    Link newsDelete = new Link(delete,sNewsEditorUrl);
+    newsDelete.addParameter("news_id",newsId);
+    newsDelete.addParameter("mode","delete");
+
+    links.setAlignment(1,1,"left");
+    links.setAlignment(2,1,"right");
+    links.add(newsEdit,2,1);
+    links.add(newsDelete,1,1);
+
+    newsTable.add(links,1,3);
+
+  }
 
   return newsTable;
 }
 
 
-public String formatDateWithTime(String date ,String DatastoreType)
+private String formatDateWithTime(String date ,String DatastoreType)
 {
   StringBuffer ReturnString = new StringBuffer("");
 
@@ -556,15 +569,23 @@ public String formatDateWithTime(String date ,String DatastoreType)
 private Text getInfoText(String Author, String Source, String Category, String TimeStamp)
 {
   Text information = new Text();
-  String DatastoreType = getDatastoreType(myNews);
+  String DatastoreType = getDatastoreType( new News() );
   TimeStamp = formatDateWithTime(TimeStamp,DatastoreType);
 
   if ( showOnlyDates ) {
 
-      idegaTimestamp timeStamp = new idegaTimestamp(TimeStamp.substring(6,10)+"-"+TimeStamp.substring(3,5)+"-"+TimeStamp.substring(0,2));
-      String timeStamp2 = timeStamp.getISLDate();
+      if ( language.equalsIgnoreCase("is") ) {
+        idegaTimestamp timeStamp = new idegaTimestamp(TimeStamp.substring(6,10)+"-"+TimeStamp.substring(3,5)+"-"+TimeStamp.substring(0,2));
+        String timeStamp2 = timeStamp.getISLDate();
 
-      information = new Text(timeStamp.getDate()+"."+timeStamp2.substring(timeStamp2.indexOf(".")+1,timeStamp2.indexOf(".")+4)+".&nbsp;"+timeStamp.getYear());
+        information = new Text(timeStamp.getDate()+"."+timeStamp2.substring(timeStamp2.indexOf(".")+1,timeStamp2.indexOf(".")+4)+".&nbsp;"+timeStamp.getYear());
+      }
+
+      if ( language.equalsIgnoreCase("en") ) {
+        idegaTimestamp timeStamp = new idegaTimestamp(TimeStamp.substring(6,10)+"-"+TimeStamp.substring(3,5)+"-"+TimeStamp.substring(0,2));
+
+        information = new Text(timeStamp.getENGDate());
+      }
   }
 
   else {
@@ -591,15 +612,83 @@ private Text getInfoText(String Author, String Source, String Category, String T
 }
 
 
-private Link insertHyperlink(String imageUrl, String name, String value, String action)
-{
-  Image linkImage = new Image(imageUrl);
-  linkImage.setBorder(0);
-  Link myLink = new Link(linkImage);
-  myLink.setURL(action);
-  myLink.addParameter(name, value);
-  return myLink;
+private void addNext(Table table){
+ switch (LAYOUT) {
+   case SINGLE_FILE_LAYOUT:
+    outerTable.add(table, 1, 1);
+     break;
+   case  NEWS_SITE_LAYOUT:
+    //debug NEWS_SITE_LAYOUT shows only one image for now...code in insertTable
+    //teljari með staðsetningu
+      if( (currentColumnPosition==1) && (currentRowPosition==1) && (numberOfDisplayedNews>0)) {
+        outerTable.add(table, 1, 1);
+        outerTable.setVerticalAlignment(1, 1,"top");
+        currentRowPosition++;
+      }
+      else{
+        if( (currentColumnPosition==1) && (currentRowPosition!=2) ){
+           outerTable.add(table, 1, currentRowPosition);
+           outerTable.setVerticalAlignment(1,currentRowPosition,"top");
+           currentColumnPosition=2;
+        }
+        else if(currentColumnPosition==2){
+          outerTable.add(table, 2, currentRowPosition);
+          outerTable.setVerticalAlignment(2, currentRowPosition,"top");
+          currentColumnPosition=1;
+          currentRowPosition++;
+        }
+        else {
+          outerTable.add(table, 1, currentRowPosition);
+          outerTable.setVerticalAlignment(1, currentRowPosition,"top");
+          currentColumnPosition=2;
+        }
+      }
+     break;
+   case NEWS_PAPER_LAYOUT:
+       //flowtable
+
+    break;
+ }
+
 }
+
+private Table createContainerTable(){
+  Table temp;
+
+   switch (LAYOUT) {
+   case SINGLE_FILE_LAYOUT:
+    temp = new Table(1,1);
+    outerTable.setAlignment("center");
+     break;
+   case  NEWS_SITE_LAYOUT:
+    int rows = (numberOfDisplayedNews/2) ;
+    int theRest = (numberOfDisplayedNews%2);
+    if( theRest==0) rows++;
+    else rows+=theRest;
+
+    temp = new Table(2,rows);
+    temp.setWidth(1,"50%");
+    temp.setWidth(2,"50%");
+    temp.mergeCells(1,1,2,1);
+     break;
+   case NEWS_PAPER_LAYOUT:
+    temp = new Table(3,1);
+    break;
+   default: temp = new Table(1,1);
+  }
+
+  temp.setWidth(outerTableWidth);
+  return temp;
+}
+
+/*
+** This method uses static layouts from this class
+**
+*/
+public void setLayout(int LAYOUT){
+  this.LAYOUT = LAYOUT;
+}
+
 
 /**
 *
@@ -671,7 +760,7 @@ public void setNumberOfLetters(int numberOfLetters){
 public void setNumberOfDisplayedNews(int numberOfDisplayedNews){
   this.limitNumberOfNews = true;
   if( numberOfDisplayedNews<0 ) numberOfDisplayedNews = (-1)*numberOfDisplayedNews;
-  this.numberOfDisplayedNews = numberOfDisplayedNews+1;
+  this.numberOfDisplayedNews = numberOfDisplayedNews;
 }
 
 
@@ -684,11 +773,11 @@ public void setFromDate(String SQLdate){
 }
 
 public void setWidth(int width){
- this.outerTable.setWidth(width);
+  setWidth(Integer.toString(width));
 }
 
 public void setWidth(String width){
-this.outerTable.setWidth(width);
+this.outerTableWidth = width;
 }
 
 public void setChangeImage(String image_name){
@@ -736,18 +825,9 @@ public void setNewsCollectionURLAsSamePage(ModuleInfo modinfo){
 }
 
 
-
-/**
-* Depricated method use setNumberOfExpandedNews instead.
-*/
-public void setNumberOfNews(int numberOfNews){
-  if( numberOfNews<0 ) numberOfNews = (-1)*numberOfNews;
-  this.numberOfNews=numberOfNews;
-}
-
-public void setNumberOfExpandedNews(int numberOfNews){
-  if( numberOfNews<0 ) numberOfNews = (-1)*numberOfNews;
-  this.numberOfNews=numberOfNews;
+public void setNumberOfExpandedNews(int numberOfExpandedNews){
+  if( numberOfExpandedNews<0 ) numberOfExpandedNews = (-1)*numberOfExpandedNews;
+  this.numberOfExpandedNews=numberOfExpandedNews;
 }
 
 public void setShowImages(boolean showImages) {
@@ -762,7 +842,7 @@ public void setShowOnlyDates(boolean showOnlyDates) {
   this.showOnlyDates=showOnlyDates;
 }
 
-public String formatNews(String newsString)
+private String formatNews(String newsString)
 {
 
   Vector tableVector = createTextTable(newsString);
@@ -820,18 +900,23 @@ public String formatNews(String newsString)
 
 }
 
-public Vector createTextTable(String newsString) {
+private Vector createTextTable(String newsString) {
 
   Vector tableVector = TextSoap.FindAllBetween(newsString,"|","|\r\n");
 
 return tableVector;
 }
 
-public Vector createTextLink(String newsString) {
+private Vector createTextLink(String newsString) {
 
   Vector linkVector = TextSoap.FindAllBetween(newsString,"Link(",")");
 
 return linkVector;
+}
+
+
+public String getBundleIdentifier(){
+  return IW_BUNDLE_IDENTIFIER;
 }
 
 
