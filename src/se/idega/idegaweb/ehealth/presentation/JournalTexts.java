@@ -45,6 +45,8 @@ public class JournalTexts extends EHealthBlock {
 	private String prmFrom = prefix + "from";
 	private String prmTo = prefix + "to";
 	private String prmSearch = prefix + "search";
+	private String prmLoglist = prefix + "loglist";
+	
 	
 	
 	
@@ -74,8 +76,9 @@ public class JournalTexts extends EHealthBlock {
 		T.add(getInfoLayer(), 1, 3);
 		T.add(getTableButtons(), 1, 4);
 		
+		T.add(new Break(), 1, 1);
 		T.add(new Break(), 1, 3);
-		T.setHeight(1, 3, "160");		
+		T.setHeight(1, 3, "235");		
 		T.setHeight(1, 4, "40");
 		myForm.add(T);
 		
@@ -102,7 +105,7 @@ public class JournalTexts extends EHealthBlock {
 		layer.setOverflow("scroll");
 		layer.setPositionType("absolute");
 		layer.setWidth("610");
-		layer.setHeight("75");
+		layer.setHeight("150");
 		layer.setMarkupAttribute("class", "ehealth_div");
 		
 		
@@ -246,12 +249,18 @@ public class JournalTexts extends EHealthBlock {
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(3, 1, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 2, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(3, 2, Table.VERTICAL_ALIGN_BOTTOM);
 		table.setVerticalAlignment(1, 3, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(1, 4, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(1, 5, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setVerticalAlignment(3, 3, Table.VERTICAL_ALIGN_BOTTOM);
+		table.setAlignment(3, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 		
 		table.setHeight(1, 1, "25");
 		table.setHeight(1, 2, "25");
 		table.setHeight(1, 3, "25");
 		table.setHeight(1, 4, "25");
+		table.setHeight(1, 5, "25");
 		table.setWidth(2, 1, "25");
 	
 		IWTimestamp stamp = new IWTimestamp();
@@ -283,10 +292,13 @@ public class JournalTexts extends EHealthBlock {
 			
 		GenericButton search = getButton(new GenericButton("search", localize(prmSearch, "Search")));
 		
+		GenericButton loglist = getButton(new GenericButton("loglist", localize(prmLoglist, "Loglist")));
+		
 		table.add(getSmallHeader(localize(prmFrom, "From")+": "), 1, 1);
 		table.add(from, 1, 2);
 		table.add(getSmallHeader(localize(prmTo, "To")+": "), 3, 1);
 		table.add(to, 3, 2);
+		table.add(loglist, 3, 3);
 		table.add(dropHCentre, 1, 3);
 		table.add(dropCaregiver, 1, 4);
 		table.add(search, 1, 5);

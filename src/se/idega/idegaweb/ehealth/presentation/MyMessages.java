@@ -199,6 +199,7 @@ public class MyMessages extends EHealthBlock {
 		transpImg.setWidth(15);
 		transpImg.setHeight(16);
 		
+		
 		Image greenArrow = getBundle(_iwc).getImage("greenArrow.gif");
 		Image redArrow = getBundle(_iwc).getImage("redArrow.gif");
 		

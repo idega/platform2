@@ -55,6 +55,7 @@ public class AppointmentBooking extends EHealthBlock {
 	private String prmSelect = prefix + "select";
 	private String prmConfirm = prefix + "confirm";
 	private String prmSend = prefix + "send";
+	private String prmReceiver =prefix + "receiver_healthcare";
 	
 	private int userID = -1;
 	private User user;
@@ -123,7 +124,15 @@ public class AppointmentBooking extends EHealthBlock {
 			}
 		}	
 		}
-			
+		
+		DropdownMenu dropReceiver = (DropdownMenu) getStyledInterface(new DropdownMenu(prmReceiver));
+		dropReceiver.addMenuElementFirst("-1", "Välj mottagare");
+		dropReceiver.addMenuElement("1", "Husläkare");
+		dropReceiver.addMenuElement("2", "Distriktssköterska");
+		dropReceiver.addMenuElement("3", "Astmamottagningen");
+		dropReceiver.addMenuElement("4", "Diabetesmottagningen");
+		
+		
 			Text chooseWay = getLocalizedText(prmCooseWay,"Choose way: ");
 			Text email = getLocalizedText(prmEmail,"Email ");
 			Text sms = getLocalizedText(prmSMS,"SMS ");
@@ -137,6 +146,8 @@ public class AppointmentBooking extends EHealthBlock {
 			table.add(sms, 1, row);
 			table.add(cbSMS, 1, row++);
 			
+			table.setHeight(1, row, "40");
+			table.add(dropReceiver,1, row++);
 			table.setHeight(1, row, "20");
 			table.add(getLocalizedText(prmHeadingCase,"Heading/case"), 1, row++);
 			

@@ -103,6 +103,7 @@ public class ComingAppointments extends EHealthBlock {
 		myForm.add(T);
 		return myForm;
 	}
+	
 	private Layer getInfoLayer(){
 		Layer layerInfo = new Layer(Layer.DIV);
 		layerInfo.setOverflow("scroll");
@@ -166,37 +167,6 @@ public class ComingAppointments extends EHealthBlock {
 			
 		}
 		
-		
-		/*tableInfo.add("<div id='lay1_1' onMouseOver='setRowColor(this);'>2004-10-14</div>", 1, row);
-		tableInfo.add("<div id='lay1_2' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 2, row);
-		tableInfo.add("<div id='lay1_3' onMouseOver='setRowColor(this);'>Gimo VC</div>", 3, row);
-		tableInfo.add("<div id='lay1_4' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 4, row);
-		tableInfo.add("<div id='lay1_5' onMouseOver='setRowColor(this);'>Undersökning, provtagning</div>", 5, row);
-		row++;
-		tableInfo.add("<div id='lay2_1' onMouseOver='setRowColor(this);'>2004-10-18</div>", 1, row);
-		tableInfo.add("<div id='lay2_2' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 2, row);
-		tableInfo.add("<div id='lay2_3' onMouseOver='setRowColor(this);'>Gimo VC</div>", 3, row);
-		tableInfo.add("<div id='lay2_4' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 4, row);
-		tableInfo.add("<div id='lay2_5' onMouseOver='setRowColor(this);'>Genomgång av provsvar</div>", 5, row);
-		row++;
-		tableInfo.add("<div id='lay3_1' onMouseOver='setRowColor(this);'>2004-11-15</div>", 1, row);
-		tableInfo.add("<div id='lay3_2' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 2, row);
-		tableInfo.add("<div id='lay3_3' onMouseOver='setRowColor(this);'>Gimo VC</div>", 3, row);
-		tableInfo.add("<div id='lay3_4' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 4, row);
-		tableInfo.add("<div id='lay3_5' onMouseOver='setRowColor(this);'>Undersökning</div>", 5, row);
-		row++;
-		tableInfo.add("<div id='lay4_1' onMouseOver='setRowColor(this);'>2004-12-07</div>", 1, row);
-		tableInfo.add("<div id='lay4_2' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 2, row);
-		tableInfo.add("<div id='lay4_3' onMouseOver='setRowColor(this);'>Gimo VC</div>", 3, row);
-		tableInfo.add("<div id='lay4_4' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 4, row);
-		tableInfo.add("<div id='lay4_5' onMouseOver='setRowColor(this);'>Uppföljning</div>", 5, row);
-		row++;
-		tableInfo.add("<div id='lay5_1' onMouseOver='setRowColor(this);'>2004-12-16</div>", 1, row);
-		tableInfo.add("<div id='lay5_2' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 2, row);
-		tableInfo.add("<div id='lay5_3' onMouseOver='setRowColor(this);'>Gimo VC</div>", 3, row);
-		tableInfo.add("<div id='lay5_4' onMouseOver='setRowColor(this);'>" + transpImg + "</div>", 4, row);
-		tableInfo.add("<div id='lay5_5' onMouseOver='setRowColor(this);'>Undersökning, provtagning</div>", 5, row);
-		*/
 		layerInfo.add(tableInfo);
 		
 		return layerInfo;

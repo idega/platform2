@@ -156,7 +156,7 @@ public class AppointmentHistory extends EHealthBlock {
 		String dates[] = {"2004-10-11", "2004-10-06", "2004-06-15", "2004-02-07", "2003-12-16"};
 		String vcs[] = {"Gimo VC", "Gimo VC", "Gimo VC", "Gimo VC", "Gimo VC"};
 		String visitypes[] = {"Undersökning", "Undersökning", "Undersökning", "Undersökning", "Undersökning", "Undersökning"};
-		String costs[] = {"200:-", "200:-", "200:-", "200:-", "200:-", "200:-"};
+		String costs[] = {"120:-", "120:-", "200:-", "120:-", "200:-", "120:-"};
 		
 				
 		for (theRow = 1; theRow <= 5; theRow++) {
@@ -255,7 +255,8 @@ public class AppointmentHistory extends EHealthBlock {
 		to.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
 			
 		DropdownMenu dropHCentre = (DropdownMenu) getStyledInterface(new DropdownMenu(prmHealthCentre));
-		dropHCentre.addMenuElementFirst("1", "Gimo VC");
+		dropHCentre.addMenuElementFirst("-1", "Alla");
+		dropHCentre.addMenuElement("1", "Gimo VC");
 		dropHCentre.addMenuElement("2", "Östhammar VC");
 		dropHCentre.addMenuElement("3", "Alunda VC");
 		dropHCentre.addMenuElement("4", "Österbybruk VC");
