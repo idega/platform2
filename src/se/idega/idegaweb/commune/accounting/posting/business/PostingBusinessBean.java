@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.30 2003/10/10 00:51:40 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.31 2003/10/10 01:17:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -473,7 +473,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				
 				try {
 					if (pp.getCompanyType() == null) {
-						if (code3 == null) {
+						if (code3.compareTo("0") == 0) {
 							eq++;
 						}
 					} else if (pp.getCompanyType().getPrimaryKey().toString().compareTo(code3) == 0) {
@@ -502,6 +502,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 						eq++;
 					}
 				} else if (Integer.parseInt(pp.getSchoolYear2().getPrimaryKey().toString()) == code6) {
+					System.out.println("\n\nCode6 match\n\n");
 					eq++;				
 				}	
 				if (eq == 10) {
