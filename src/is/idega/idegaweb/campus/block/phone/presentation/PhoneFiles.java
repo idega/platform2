@@ -142,14 +142,15 @@ public class PhoneFiles extends Block {
     DataTable T = new DataTable();
     T.addTitle(iwrb.getLocalizedString("phone_files","Phone files"));
     T.setTitlesHorizontal(true);
-    T.add(Edit.formatText(iwrb.getLocalizedString("files","Files")),1,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),2,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("size","Size")),1,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("updated","Updated")),2,1);
+    int col = 2;
+    T.add(Edit.formatText(iwrb.getLocalizedString("files","Files")),2,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("size","Size")),3,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),4,1);
     T.add(Edit.formatText(iwrb.getLocalizedString("time_read","Read")),5,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("line_count","Count")),6,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("phone_numbers","Numbers")),7,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("amount_read","Amount")),8,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("updated","Updated")),6,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("line_count","Count")),7,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("phone_numbers","Numbers")),8,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("amount_read","Amount")),9,1);
     Map M = mapOfReadFilesByFileName() ;
     try{
       File F = new File(iwc.getApplication().getRealPath("/phone/upload"));
@@ -160,28 +161,36 @@ public class PhoneFiles extends Block {
         PhoneFileInfo info;
         java.text.NumberFormat NF = java.text.NumberFormat.getInstance();
         int row = 2;
+        Link V;
         for (int i = 0; i < Fs.length; i++) {
+          col = 1;
           name = Fs[i].getName();
+           V = new Link("V");
+            Window W = new Window("","/phone/upload/"+name);
+            W.setResizable(true);
+            V.setWindow(W);
+            T.add(V,1,row);
 
           if(M!= null && M.containsKey(name)){
             info = (PhoneFileInfo) M.get(name);
-            T.add(Edit.formatText(name),1,row);
+
+            T.add(Edit.formatText(name),2,row);
             T.add(Edit.formatText(iwrb.getLocalizedString("read","Read")),4,row);
             T.add(Edit.formatText(info.getReadTime().toString()),5,row);
-            T.add(Edit.formatText(info.getLineCount()),6,row);
-            T.add(Edit.formatText(info.getNumberCount()),7,row);
-            T.add(Edit.formatText(NF.format(info.getTotalAmount())),8,row);
+            T.add(Edit.formatText(info.getLineCount()),7,row);
+            T.add(Edit.formatText(info.getNumberCount()),8,row);
+            T.add(Edit.formatText(NF.format(info.getTotalAmount())),9,row);
           }
           else{
             Link L = new Link(name);
             L.addParameter(sAction,ACT1);
             L.addParameter("filename",name);
             L.setFontSize(Edit.textFontSize);
-            T.add(L,1,row);
+            T.add(L,2,row);
             T.add(Edit.formatText(iwrb.getLocalizedString("unread","Unread")),4,row);
           }
-          T.add(Edit.formatText(Long.toString(Fs[i].length()/1000)+" KB"),2,row);
-          T.add(Edit.formatText(new idegaTimestamp(Fs[i].lastModified()).getDateString(true,iwc)),3,row);
+          T.add(Edit.formatText(Long.toString(Fs[i].length()/1000)+" KB"),3,row);
+          T.add(Edit.formatText(new idegaTimestamp(Fs[i].lastModified()).getDateString(true,iwc)),6,row);
           row++;
         }
       }
@@ -201,8 +210,6 @@ public class PhoneFiles extends Block {
 
     return T;
   }
-
-
 
   private Map mapOfReadFilesByFileName(){
     List L = null;
