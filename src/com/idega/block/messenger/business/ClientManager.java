@@ -73,11 +73,11 @@ public class ClientManager implements PacketManager{
           }
           else if( key.equalsIgnoreCase(USER_ID) ){
             memberId = (String) prop.getValue();
-            System.out.println("ClientManager: user id "+sessionId);
+            System.out.println("ClientManager: user id "+memberId);
           }
           else if( key.equalsIgnoreCase(USER_LIST_VERSION) ){
             packetUserListVersion = (String) prop.getValue();
-            System.out.println("ClientManager: user list version "+sessionId);
+            System.out.println("ClientManager: user list version "+packetUserListVersion);
           }
         }
       }

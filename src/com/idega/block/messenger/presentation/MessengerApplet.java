@@ -322,6 +322,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   }
 
   private void addToUserList(String sendToId, String name){
+    System.out.println("MessengerApplet: Adding to userlist!");
       Message msg = new Message();
       msg.setSender(sendToId);
       msg.setSenderName(name);
@@ -339,6 +340,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.setSize(16,100);
 
       add(item);
+      repaint();
   }
 
   private void cycle(){
