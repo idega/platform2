@@ -14,6 +14,7 @@ import is.idega.idegaweb.travel.data.GeneralBookingHome;
 import is.idega.idegaweb.travel.presentation.LinkGenerator;
 import is.idega.idegaweb.travel.presentation.PublicBooking;
 import is.idega.idegaweb.travel.presentation.TravelCurrencyCalculatorWindow;
+import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.presentation.VoucherWindow;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 
@@ -40,6 +41,8 @@ import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.block.trade.stockroom.data.Timeframe;
 import com.idega.block.trade.stockroom.data.TravelAddress;
 import com.idega.business.IBOLookup;
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
@@ -128,6 +131,8 @@ public abstract class AbstractSearchForm extends Block{
 	int row = 1;
 	int tmpPriceID;
 	
+	protected Product definedProduct;
+	
 	private List errorFields = null;
 	
 	public AbstractSearchForm() {
@@ -145,16 +150,24 @@ public abstract class AbstractSearchForm extends Block{
 		return PARAMETER_TYPE_COUNT;
 	}
 
-	public void main(IWContext iwc) throws Exception {
+	private void init(IWContext iwc) throws RemoteException {
 		this.iwc = iwc;
 		iwrb = getSearchBusiness(iwc).getTravelSessionManager(iwc).getIWResourceBundle();
-
 		formTable.setWidth("100%");
 		formTable.setCellpadding(0);
 		formTable.setCellspacing(3);
 		if (backgroundColor != null) {
 			formTable.setColor(backgroundColor);
 		}
+		
+		definedProduct = getProduct();
+	}
+	
+	public void main(IWContext iwc) throws Exception {
+		init(iwc);
+
+		TravelManager tm = new TravelManager();
+		tm.initializer(iwc);
 		
 		Table outTable = new Table();
 		if (width != null) {
@@ -171,12 +184,39 @@ public abstract class AbstractSearchForm extends Block{
 		form.add(getHeader());
 		form.add(getLinks());
 		form.add(getText());
-		setupPresentation(formTable);
+		setupPresentation();
 		form.add(formTable);
 		form.add(getButtons());
 		outTable.add(form);
+		if (tm.isInPermissionGroup(iwc) || tm.isAdministrator(iwc)) {
+			Link link = getDirectBookingLink();
+			outTable.add(link);
+		} 
 		
 		super.add(outTable);
+	}
+	
+	protected Link getDirectBookingLink() {
+		String http = "http";
+		if (LinkGenerator.getIsHttps()) {
+			http = "https";
+		}
+		StringBuffer text = new StringBuffer(http+"://"+iwc.getServerName());
+		if (!http.equals("https")) {
+			text.append(":"+iwc.getServerPort());
+		}
+
+		String url = iwc.getApplication().getBuilderServletURI();//+"&"+PARAMETER_PRODUCT_ID+"="+definedProduct.getPrimaryKey().toString();
+		
+		try {
+			BuilderService bs = BuilderServiceFactory.getBuilderService(iwc);
+			text.append(bs.getPageURI(iwc.getCurrentIBPageID()));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		Link link = new Link(text.toString()+"&"+PARAMETER_PRODUCT_ID+"="+definedProduct.getPrimaryKey().toString(), text.toString());
+		link.addParameter(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString());
+		return link;
 	}
 	
 	public void add(Object object) {
@@ -197,10 +237,27 @@ public abstract class AbstractSearchForm extends Block{
 		table.setWidth("100%");
 		
 		if (STATE == STATE_SHOW_SEARCH_FORM) {
+
+			if (definedProduct == null) {
+				SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search","Search"), ACTION, ACTION_SEARCH);
+				table.add(search);
+			} else {
+				//int addressId = -1;
+				//int timeframeId = -1;
+				//Timeframe timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, stamp, addressId);
+				//if (timeframe != null) {
+				//	timeframeId = timeframe.getID();
+				//}
+				//int productPriceId = -1;
+				//ProductPrice[] prices = getProductPrices(product,addressId, timeframeId);
+				
+				table.add(new HiddenInput(PARAMETER_PRODUCT_ID, definedProduct.getPrimaryKey().toString()));
+				//table.add(new HiddenInput(PARAMETER_ADDRESS_ID, Integer.toString(addressId)));
+				//table.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID), Integer.toString(productPriceId));
+				SubmitButton book = new SubmitButton(iwrb.getLocalizedImageButton("book","Book"), ACTION, ACTION_BOOKING_FORM);
+				table.add(book);
+			}
 			
-			SubmitButton search = new SubmitButton(iwrb.getLocalizedImageButton("search","Search"), ACTION, ACTION_SEARCH);
-			
-			table.add(search);
 			table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 		}
 		
@@ -269,6 +326,7 @@ public abstract class AbstractSearchForm extends Block{
 		table.setCellpaddingAndCellspacing(0);
 		table.add(text, 1, 1);
 		table.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		
 		return table;
 		
 	}
@@ -291,7 +349,7 @@ public abstract class AbstractSearchForm extends Block{
 		}
 	}
 
-	protected void setupPresentation(Table table) throws RemoteException {
+	protected void setupPresentation() throws RemoteException {
 		switch (STATE) {
 			case 0 :
 				setupSearchForm();
@@ -300,7 +358,11 @@ public abstract class AbstractSearchForm extends Block{
 				getResults();
 				break;
 			case STATE_SHOW_BOOKING_FORM :
+				try {
 					setupBookingForm();
+				}catch (Exception e) {
+					e.printStackTrace(System.err);
+				}
 				break;
 			case STATE_CHECK_BOOKING :
 				checkBooking();
@@ -353,28 +415,43 @@ public abstract class AbstractSearchForm extends Block{
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.comment","Comment")}, new PresentationObject[]{comment});
 		formTable.mergeCells(1, (row-1), 3, (row-1));
 
-		formTable.add(new HiddenInput(PARAMETER_ADDRESS_ID, iwc.getParameter(PARAMETER_ADDRESS_ID)));
+		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
+		String sAddressId = "-1";
+		String sTimeframeId = "-1";
+		
+		if (productPriceId == null) {
+			Timeframe timeframe = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, Integer.parseInt(sAddressId));
+			if (timeframe != null) {
+				sTimeframeId = timeframe.getPrimaryKey().toString();
+			}
+			ProductPrice[] prices = getProductPrices(product, Integer.parseInt(sAddressId), Integer.parseInt(sTimeframeId));
+			if (prices != null && prices.length > 0) {
+				productPriceId = prices[prices.length-1].getPrimaryKey().toString();
+			}
+		}
+		
+		formTable.add(new HiddenInput(PARAMETER_ADDRESS_ID, sAddressId));
 		formTable.add(new HiddenInput(PARAMETER_PRODUCT_ID, iwc.getParameter(PARAMETER_PRODUCT_ID)));
 		formTable.add(new HiddenInput(PARAMETER_ONLINE, "true"));
 		formTable.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
 		//formTable.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
 		formTable.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
-		formTable.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID)));
+		formTable.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
 		formTable.add(new HiddenInput(getParameterTypeCountName(), iwc.getParameter(getParameterTypeCountName())));
 		
-		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
+//		String productPriceId = iwc.getParameter(PARAMETER_PRODUCT_PRICE_ID);
 		formTable.add(new HiddenInput("priceCategory"+productPriceId, iwc.getParameter(getParameterTypeCountName())));
 		
 		try {
 			ProductPrice pPrice = ((ProductPriceHome) IDOLookup.getHome(ProductPrice.class)).findByPrimaryKey(new Integer(productPriceId));
 			int addressId = -1;
 			try {
-				addressId = Integer.parseInt(iwc.getParameter(PARAMETER_ADDRESS_ID));
+				addressId = Integer.parseInt(sAddressId);
 			} catch (Exception e) {}
-			Timeframe tFrame = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
+			//Timeframe tFrame = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
 			int tFrameID = -1;
-			if (tFrame != null) {
-				tFrameID = tFrame.getID();
+			if (sTimeframeId != null) {
+				tFrameID = Integer.parseInt(sTimeframeId);
 			}
 			formTable.mergeCells(1, row, 3, row);
 			formTable.add(getHeaderText(getPriceString(getSearchBusiness(iwc).getBusiness(product), product.getID(), tFrameID, pPrice)), 1, row);
@@ -382,139 +459,6 @@ public abstract class AbstractSearchForm extends Block{
 			e.printStackTrace();
 		}
 		
-		/** PriceCategories Begin
-
-		try {
-			//ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
-			//Product product = productHome.findByPrimaryKey( new Integer(iwc.getParameter(PARAMETER_PRODUCT_ID)) );
-	
-			int addressId = -1;
-			try {
-				addressId = Integer.parseInt(iwc.getParameter(PARAMETER_ADDRESS_ID));
-			} catch (Exception e) {}
-
-			Timeframe tFrame = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
-			int timeframeId = -1;
-			ProductPrice[] prices = {};
-			ProductPrice[] misc = {};
-			if (tFrame != null) {
-			  timeframeId = tFrame.getID();
-			  prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), addressId, true, getPriceCategoryKey());
-			  misc = ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), addressId, true);
-			}else {
-			  prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, addressId, true, getPriceCategoryKey());
-			  misc = ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), -1, addressId, true);
-			}
-
-			int pricesLength = prices.length;
-			int miscLength = misc.length;
-			ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
-			for (int i = 0; i < pricesLength; i++) {
-			  pPrices[i] = prices[i];
-			}
-			for (int i = 0; i < miscLength; i++) {
-			  pPrices[i+pricesLength] = misc[i];
-			}
-
-			Table pTable;
-			PriceCategory category;
-			ResultOutput pPriceText;
-		  ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
-			TotalPassTextInput.setSize(5);
-		  ResultOutput TotalTextInput = new ResultOutput("total","0");
-			TotalTextInput.setSize(8);
-			TextInput pPriceMany;
-			int numberOfDays = betw;
-			
-			for (int i = 0; i < pPrices.length; i++) {
-				try {
-					++row;
-					category = pPrices[i].getPriceCategory();
-					int price = (int) getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product).getPrice(pPrices[i].getID(), product.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
-
-					pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
-					  pPriceText.setSize(8);
-
-					pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
-					  pPriceMany.setSize(5);
-
-					if (i == pricesLength) {
-//					  Text tempTexti = (Text) theBoldText.clone();
-//						tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
-//						table.mergeCells(1, row, 2, row);
-					  formTable.add(getText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services")), 1, row);
-					  formTable.mergeCells(1, row, 3, row);
-					  ++row;
-					}else if (i == 0) {
-					  //Text tempTexti = (Text) theBoldText.clone();
-						//tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
-						//tempTexti.setUnderline(true);
-//						table.mergeCells(1, row, 2, row);
-						if (errorFields != null && errorFields.contains(ERROR_NO_BOOKING_COUNT)) {
-							formTable.add(getErrorText("* "), 1, row);
-						}
-					  formTable.add(getText(iwrb.getLocalizedString("travel.basic_prices","Basic prices")), 1, row);
-					  formTable.mergeCells(1, row, 3, row);
-					  ++row;
-					}
-					if (i >= pricesLength) {
-					  pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
-					}
-					pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
-					TotalPassTextInput.add(pPriceMany);
-					TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price+ResultOutput.OPERATOR_MULTIPLY+numberOfDays);
-
-
-					formTable.add(getText(category.getName()), 1,row);
-
-		//                  table.add(Text.NON_BREAKING_SPACE,2,row);
-
-					pTable = new Table(4,1);
-					  pTable.setWidth(1, Integer.toString(60));
-					  pTable.setWidth(2, Integer.toString(90));
-					  pTable.setWidth(3, Integer.toString(75));
-					  pTable.setCellpaddingAndCellspacing(0);
-					  pTable.add(pPriceMany,1,1);
-					  if (numberOfDays > 1) {
-							pTable.add(getText(Integer.toString(price)+" (* "+numberOfDays+" "+iwrb.getLocalizedString("travel.search.days","days")+")"),2,1);
-					  } else {
-						pTable.add(getText(Integer.toString(price)),2,1);
-					  }
-					  pTable.add(pPriceText, 3,1);
-
-
-		//                    pTable.add();
-					formTable.add(pTable, 2, row);
-					formTable.mergeCells(2, row, 3, row);
-
-				}catch (SQLException sql) {
-				  sql.printStackTrace(System.err);
-				}catch (FinderException fe) {
-				  fe.printStackTrace(System.err);
-				}
-			}			
-
-			++row;
-			formTable.mergeCells(1,row,3,row);
-			++row;
-
-			formTable.add(getText(iwrb.getLocalizedString("travel.total","Total")),1,row);
-
-			pTable = new Table(3,1);
-			  pTable.setWidth(1, Integer.toString(60));
-			  pTable.setWidth(2, Integer.toString(90));
-			  pTable.setWidth(3, Integer.toString(75));
-			  pTable.setCellpaddingAndCellspacing(0);
-
-			pTable.add(TotalPassTextInput,1,1);
-			pTable.add(TotalTextInput,3,1);
-			formTable.add(pTable, 2, row);			
-			formTable.mergeCells(2, row, 3, row);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		/** PriceCategories End*/
 		++row;
 		SubmitButton submit = new SubmitButton(iwrb.getLocalizedImageButton("travel.search.confirm","Confirm"), ACTION, ACTION_CONFIRM);
 		formTable.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -725,28 +669,36 @@ public abstract class AbstractSearchForm extends Block{
 		Link link = new Link(iwrb.getLocalizedImageButton("travel.book","Book"));
 //		Link link = new Link(getLinkText(iwrb.getLocalizedString("travel.book","Book")));
 		link.maintainParameter(ServiceSearch.PARAMETER_SERVICE_SEARCH_FORM, iwc);
-		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
-		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
-		link.maintainParameter(getParameterTypeCountName(), iwc);
 		//link.maintainParameter(PARAMETER_TO_DATE, iwc);
 		link.addParameter(ACTION, ACTION_BOOKING_FORM);
-		link.addParameter(PARAMETER_PRODUCT_ID, productId);
-		link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
+		
+		//if (product == null) {
+			link.maintainParameter(PARAMETER_FROM_DATE, iwc);
+			link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
+			link.maintainParameter(getParameterTypeCountName(), iwc);
+			link.addParameter(PARAMETER_PRODUCT_ID, productId);
+			link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
+		//}
 		//link.setHttps(LinkGenerator.getIsHttps());
 		return link;
 	}
 
-	private int getPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product product, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException {
+	private int getPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product usedProduct, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException {
 		ProductPrice[] prices;
 		Currency currency;
-		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
+		prices = getProductPrices(usedProduct, addressId, timeframeId);
+		//prices = ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 		for (int i = 0; i < prices.length; i++) {
 			tmpPriceID = prices[i].getID();
-			table.add(getText(getPriceString(bus, product.getID(), timeframeId, prices[i])), 1, row++);
+			table.add(getText(getPriceString(bus, usedProduct.getID(), timeframeId, prices[i])), 1, row++);
 		}
 		return row;
 	}
 
+	private ProductPrice[] getProductPrices(Product usedProduct, int addressId, int timeframeId) throws RemoteException {
+		return ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
+	}
+	
 	private String getPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice) throws SQLException, RemoteException {
 		String sCount = iwc.getParameter(getParameterTypeCountName());
 		int count = Integer.parseInt(sCount);

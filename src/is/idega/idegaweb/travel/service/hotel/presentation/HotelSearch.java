@@ -161,7 +161,15 @@ public class HotelSearch extends AbstractSearchForm {
 	
 	
 	protected void setupSearchForm() {
-		addAreaCodeInput();
+		if (super.definedProduct == null) {
+			addAreaCodeInput();
+		} else {
+			try {
+				addInputLine(new String[]{definedProduct.getProductName(iwc.getCurrentIBPageID())}, new PresentationObject[]{});
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+		}
 		
 		IWTimestamp now = IWTimestamp.RightNow();
 		
@@ -173,13 +181,20 @@ public class HotelSearch extends AbstractSearchForm {
 		manyDays.setSize(3);
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.check_in","Check in"), iwrb.getLocalizedString("travel.search.number_of_days","Number of days")}, new PresentationObject[]{fromDate, manyDays});
 		
+		Collection coll = new Vector();
 		try {
 			RoomTypeHome trh = (RoomTypeHome) IDOLookup.getHome(RoomType.class);
-			Collection coll = trh.findAll();
-			addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms"), iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{new DropdownMenu(coll, PARAMETER_TYPE), getRoomTypeCountDropdown()});
+			if (super.definedProduct == null) {
+				coll = trh.findAll();
+			} else {
+				HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
+				Hotel hotel = hHome.findByPrimaryKey(definedProduct.getPrimaryKey());
+				coll.add(trh.findByPrimaryKey(new Integer(hotel.getRoomTypeId())));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_rooms","Type of rooms"), iwrb.getLocalizedString("travel.search.number_of_rooms","Number of rooms")}, new PresentationObject[]{new DropdownMenu(coll, PARAMETER_TYPE), getRoomTypeCountDropdown()});
 	}
 
 	protected Link getBookingLink(int productId) {
