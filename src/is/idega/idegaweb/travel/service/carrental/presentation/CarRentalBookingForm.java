@@ -208,7 +208,7 @@ public class CarRentalBookingForm extends BookingForm {
 			Text toText = (Text) theText.clone();
 				toText.setText(iwrb.getLocalizedString("travel.departure_date","Departure date"));
 			Text manyDaysText = (Text) theText.clone();
-				manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_nights","Number of nights"));
+				manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_days","Number of days"));
 	//			  Text toText = (Text) theText.clone();
 	//				  toText.setText(iwrb.getLocalizedString("travel.departure_day","Departure day"));
 			Text commentText = (Text) theText.clone();
@@ -831,7 +831,7 @@ public class CarRentalBookingForm extends BookingForm {
 			  Text fromText = (Text) theText.clone();
 				  fromText.setText(iwrb.getLocalizedString("travel.date_of_arrival","Date of arrival"));
 			  Text manyDaysText = (Text) theText.clone();
-				  manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_nights","Number of days"));
+				  manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_days","Number of days"));
 			  Text commentText = (Text) theText.clone();
 				  commentText.setText(iwrb.getLocalizedString("travel.comment","Comment"));
 	
