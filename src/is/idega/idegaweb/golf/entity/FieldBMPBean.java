@@ -5,6 +5,10 @@
 
 package is.idega.idegaweb.golf.entity;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 
 
@@ -77,6 +81,10 @@ public class FieldBMPBean extends GenericEntity implements Field{
 	}
 	public void setFieldPar(String fieldPar) {
 		setColumn("field_par",Integer.parseInt(fieldPar));
+	}
+	
+	public Collection ejbFindByUnion(Union union) throws FinderException {
+		return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals("union_id",union));
 	}
 
 }

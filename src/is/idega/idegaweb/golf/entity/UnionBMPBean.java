@@ -832,7 +832,7 @@ public List getTournamentGroupsRecursive(){
 		return (com.idega.user.data.Group)getColumnValue(COLUMNNAME_IC_GROUP_ID);
 	}
 	
-	public Object ejbFindUnionByIWMemberSystemGroup(Group union) throws FinderException {
+	public Object ejbFindUnionByIWMemberSystemGroup(com.idega.user.data.Group union) throws FinderException {
 		return idoFindOnePKByQuery(idoQueryGetSelect().appendWhereEquals(COLUMNNAME_IC_GROUP_ID,union));
 	}
 	

@@ -31,7 +31,7 @@ public java.util.Collection findAllUnions()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public Union findUnionByIWMemberSystemGroup(is.idega.idegaweb.golf.entity.Group p0)throws javax.ejb.FinderException{
+public Union findUnionByIWMemberSystemGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	Object pk = ((UnionBMPBean)entity).ejbFindUnionByIWMemberSystemGroup(p0);
 	this.idoCheckInPooledEntity(entity);

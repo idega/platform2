@@ -9,6 +9,6 @@ public interface UnionHome extends com.idega.data.IDOHome
  public Union findByPrimaryKey(int id) throws javax.ejb.FinderException;
  public Union findByPrimaryKeyLegacy(int id) throws java.sql.SQLException;
  public java.util.Collection findAllUnions()throws javax.ejb.FinderException;
- public Union findUnionByIWMemberSystemGroup(is.idega.idegaweb.golf.entity.Group p0)throws javax.ejb.FinderException;
+ public Union findUnionByIWMemberSystemGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException;
 
 }
