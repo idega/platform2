@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.32 2002/11/22 15:00:13 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.33 2002/11/27 10:34:55 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -399,6 +399,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                          cohabitant.getLastName (), cohabitantSsn,
                          cohabitantGender, cohabitantTimestamp);
                 familyLogic.setAsSpouseFor (user, cohabitantUser);
+                final Phone phone
+                        = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+                phone.setNumber (cohabitant.getPhoneWork());
+                phone.setPhoneTypeId (PhoneBMPBean.getWorkNumberID());
+                phone.store ();
+                cohabitantUser.addPhone (phone);
+                //                cohabitantUser.store ();
             }
             if (applicant.getChildrenCount () > 0) {
                 final CitizenApplicantChildrenHome home
