@@ -7,6 +7,7 @@
 package is.idega.idegaweb.member.isi.block.members.presentation;
 
 import is.idega.idegaweb.member.isi.block.clubs.presentation.ClubInfoBar;
+import is.idega.idegaweb.member.isi.block.clubs.presentation.ClubPageIncluder;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.util.Collection;
@@ -38,6 +39,7 @@ public class GroupMemberList extends Block {
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member";
 	public static final String PARAM_NAME_GROUP_ID = "group_id";
+	public static final String PARAM_NAME_SHOW_CLUB_COMMITEE_MAIN = "show_main_commitee";
 	
 	private IWResourceBundle _iwrb = null;
 	
@@ -68,6 +70,8 @@ public class GroupMemberList extends Block {
 		}
 		
 		Table table = new Table();
+		table.setHorizontalZebraColored(_color1, _color2);
+		table.setCellspacing(0);
 		Iterator userIter; //group.getChildren();
 		try {
 			userIter = getGroupBusiness(iwc).getUsers(group).iterator();
@@ -77,7 +81,6 @@ public class GroupMemberList extends Block {
 			return null;
 		}
 		int row = 1;
-		resetColor();
 		int group_id = Integer.parseInt(group.getPrimaryKey().toString());
 		while(userIter.hasNext()) {
 			User user = (User) userIter.next();
@@ -85,11 +88,9 @@ public class GroupMemberList extends Block {
 			try {
 				int user_id = Integer.parseInt(user.getPrimaryKey().toString());
 				int column = 1;
-				String color = getColor();
 				
 				String name = user.getName();
 				table.add(name, column, row);
-				table.setColor(column++, row, color);
 				nameAdded = true;
 				if(showStatus) {
 					String statusKey = null;
@@ -106,13 +107,11 @@ public class GroupMemberList extends Block {
 						String key = "usr_stat_" + statusKey;
 						String status = _iwrb.getLocalizedString(key, statusKey);
 						table.add(status, column, row);
-						table.setColor(column++, row, color);
 					}
 				}
 				if(showGroup) {
 					String groupNames = getGroupNamesForTrainer(user, division);
 					table.add(groupNames, column, row);
-					table.setColor(column++, row, color);
 				}
 			} catch(Exception e) {
 				System.out.println("Exception lising user " + user.getName());
@@ -145,24 +144,41 @@ public class GroupMemberList extends Block {
 	}
 	
 	private Group getGroupToShowMembersFor(IWContext iwc) {
-		String groupId = iwc.getParameter(PARAM_NAME_GROUP_ID);
-		if(groupId == null || groupId.length()==0) {
-			System.out.println("no group to display players for");
-		}
-		Group group = null;
-		try {
-			group = getGroup(iwc, Integer.parseInt(groupId));
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		boolean showClubMainCommitee = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_CLUB_COMMITEE_MAIN));
 		
-		return group;
+		if(showClubMainCommitee) {
+			String clubId = iwc.getParameter(ClubPageIncluder.PARAM_ROOT_CLUB_ID);
+			Group club = null;
+			Group group = null;
+			try {
+				club = getGroup(iwc, Integer.parseInt(clubId));
+				group = (Group) club.getChildGroups(new String[] {IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN}, true).iterator().next();
+			} catch(Exception e) {
+				System.out.println("Exception getting club main commitee");
+				e.printStackTrace();
+			}
+			return group;
+		} else {
+			String groupId = iwc.getParameter(PARAM_NAME_GROUP_ID);
+			if(groupId == null || groupId.length()==0) {
+				System.out.println("no group to display players for");
+			}
+			Group group = null;
+			try {
+				group = getGroup(iwc, Integer.parseInt(groupId));
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			return group;
+		}
 	}
 	
 	private Group getDivision(IWContext iwc) {
 		String groupId = iwc.getParameter(ClubInfoBar.PARAM_NAME_DIVISION_ID);
 		if(groupId == null || groupId.length()==0) {
-			System.out.println("no club found from request");
+			System.out.println("no division found from request");
+			return null;
 		}
 		Group group = null;
 		try {
@@ -209,20 +225,7 @@ public class GroupMemberList extends Block {
 		}
 		return business;
 	}
-	
-	private String getColor() {
-		if(_currentColor == _color1) {
-			_currentColor = _color2;
-		} else {
-			_currentColor = _color1;
-		}
-		return _currentColor;
-	}
-	
-	private void resetColor() {
-		_currentColor = null;
-	}
-	
+		
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}
