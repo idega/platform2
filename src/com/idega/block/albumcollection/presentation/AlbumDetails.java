@@ -59,6 +59,13 @@ public class AlbumDetails extends Block {
   }
 
   public void lineUpElements(IWContext iwc)throws Exception {
+    Table frameTable = new Table(1,1);
+    frameTable.setCellspacing(1);
+    frameTable.setColor(AlbumCollection._COLOR_BRIGHTEST);
+    frameTable.setColor(1,1,AlbumCollection._COLOR_BRIGHT);
+    frameTable.setWidth("550");
+
+
     Table contentTable = new Table(1,2);
     String albumId = iwc.getParameter(this._PRM_ALBUM_ID);
     if(albumId != null && !"".equals(albumId)){
@@ -79,7 +86,10 @@ public class AlbumDetails extends Block {
 
     contentTable.add(getTrackList(iwc),1,2);
 
-    this.add(contentTable);
+    frameTable.add(contentTable);
+    this.add(Text.getBreak());
+    this.add(Text.getBreak());
+    this.add(frameTable);
   }
 
   public Table getTrackList(IWContext iwc)throws Exception {
@@ -89,6 +99,9 @@ public class AlbumDetails extends Block {
       List tracks = AlbumCollectionBusiness.getTracks(Integer.parseInt(albumId));
       if(tracks != null && tracks.size() > 0){
         trackTable = new Table(5,tracks.size()+1);
+        trackTable.setWidth("100%");
+        trackTable.setCellspacing(2);
+        trackTable.setCellpadding(0);
         int index=1;
         trackTable.add(AlbumCollectionBusiness.getMainTextClone("Númer"),1,index);
         trackTable.add(AlbumCollectionBusiness.getMainTextClone("Heiti"),2,index);
@@ -97,6 +110,8 @@ public class AlbumDetails extends Block {
         Iterator iter = tracks.iterator();
         while (iter.hasNext()) {
           Track item = (Track)iter.next();
+
+          trackTable.setRowColor(index,AlbumCollection._COLOR_DARK);
 
           if(item.getNumber() > 0){
             Text trackNumber = (Text)trackNumberTemplate.clone();
