@@ -92,6 +92,7 @@ public class ChildCareQueueRenewer extends ChildCareBlock {
 			placementDate = new IWTimestamp(application.getFromDate());
 			lastReplyDate = new IWTimestamp(application.getLastReplyDate());
 			keep = getRadioButton(PARAMETER_APPLICATION_ID + "_" + application.getPrimaryKey().toString(), Boolean.TRUE.toString());
+			keep.setMustBeSelected(localize("child_care.queue_renew_must_select", "You must select to renew/cancel application for: " + application.getProvider().getSchoolName()));
 			discard = getRadioButton(PARAMETER_APPLICATION_ID + "_" + application.getPrimaryKey().toString(), Boolean.FALSE.toString());
 				
 			if (row % 2 == 0)
