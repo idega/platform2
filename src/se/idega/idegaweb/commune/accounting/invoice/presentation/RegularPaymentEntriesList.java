@@ -165,7 +165,9 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		String parTo = iwc.getParameter(PAR_SEEK_TO);
 		Date toDate = parseDate(parTo);
 		
-		if ((parFrom != null && fromDate == null) || (parTo != null && toDate == null)){
+		int action = parseAction(iwc);
+				
+		if (action != ACTION_OPFIELD_MAINSCREEN && ((parFrom != null && fromDate == null) || (parTo != null && toDate == null))){
 			dateFormatErrorMessage = localize(LOCALIZER_PREFIX + "date_format_yymm_warning", "Wrong date format. use: yymm.");
 			handleDefaultAction(iwc, school, fromDate, toDate, dateFormatErrorMessage);
 			return;
@@ -173,7 +175,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 		
 		try {
-			int action = parseAction(iwc);
+
 			switch (action) {
 				case ACTION_SHOW:
 					handleDefaultAction(iwc, school, fromDate, toDate);
@@ -454,7 +456,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		t1.setCellspacing(getCellspacing());
 		
 		int row = 1;
-		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN), 1, row++); //PAR_CANCEL make it stay on the first screen (list)
+		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN), 1, row++); 
 				
 		addPeriodeForm(iwc, t1, fromDate, toDate, errorMessage, row++);
 			
@@ -466,13 +468,20 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		bp.addLocalizedButton(PAR_CANCEL, KEY_CANCEL, "Cancel");
 		t2.add(bp, 1, 2);
 
-		Form form = new Form();		
-		form.maintainAllParameters();
-		form.add(t2);		
-		form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
-		t1.add(form, 1, row++);	
 
-		return t1;		
+//		form.add(t2);	
+		t1.mergeCells(1, row, 10, row);	
+		t1.add(t2, 1, row);		
+		Form form = new Form();		
+		form.maintainAllParameters();		
+		form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
+		form.add(t1);
+//		t1.add(form, 1, row++);	
+
+		Table t0 = new Table();
+		t0.add(form);
+
+		return t0;		
 	}
 	
 
@@ -517,7 +526,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 	private int addPeriodeForm(IWContext iwc, Table table, Date fromDate, Date toDate, String errorMessage, int row){
 			
-		Form form = new Form();
+//		Form form = new Form();
 
 		Table formTable = new Table();
 		int formTableRow = 1;
@@ -554,13 +563,13 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		formTable.add(to, 2, formTableRow);			
 
 		formTable.add(getLocalizedButton(PAR_SEARCH_PAYMENTS, KEY_SEARCH, "Search"), 10, formTableRow++);
-		form.maintainParameter(PAR_SELECTED_PROVIDER);
+//		form.maintainParameter(PAR_SELECTED_PROVIDER);
 //		if (user != null) {
 //			formTable.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));		
 //		}
 
-		form.add(formTable);
-		table.add(form, 1, row++);
+//		form.add(formTable);
+		table.add(formTable, 1, row++);
 		return row;	
 	}	
 	
@@ -870,7 +879,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	 */
 	private Table addNoEmptyField(Table table, String parameter, String key, String value, int col, int row){
 		TextInput input = getTextInput(parameter, value);
-		input.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: " + key));
+		input.setAsNotEmpty(localize(LOCALIZER_PREFIX + "field_empty_warning", "Field should not be empty: ") + key);
 		return addWidget(table, key, input, col, row);
 	}
 	
