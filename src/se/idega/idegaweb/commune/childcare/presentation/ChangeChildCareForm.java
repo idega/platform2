@@ -63,9 +63,10 @@ public class ChangeChildCareForm extends CommuneBlock {
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		_user = iwc.getCurrentUser();
+		
 
-		if (_user != null) {
+		if (iwc.isLoggedOn()) {
+			_user = iwc.getCurrentUser();
 			setResourceBundle(getResourceBundle(iwc));
 
 			try {
