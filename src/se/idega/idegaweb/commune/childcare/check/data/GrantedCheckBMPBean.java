@@ -26,7 +26,7 @@ import com.idega.user.data.User;
 public class GrantedCheckBMPBean extends GenericEntity implements GrantedCheck {
 	private static final String ENTITY_NAME = "cc_granted_check";
 
-	private static final String COLUMN_CHILD_ID = "child_id";
+	private static final String COLUMN_CHILD_ID = "CHILD_ID";
 //	private static final String COLUMN_SCHOOL_ID = "school_id";
 	private static final String COLUMN_GRANTED = "granted";
 	private static final String COLUMN_LAST_USED = "last_used";
