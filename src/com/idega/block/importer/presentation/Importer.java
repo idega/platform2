@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.block.importer.business.ImportBusiness;
 import com.idega.block.importer.data.ImportFileClass;
 import com.idega.block.importer.data.ImportFileRecord;
@@ -32,8 +33,8 @@ import com.idega.presentation.ui.FileInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.Window;
 import com.idega.user.data.Group;
+import com.idega.user.presentation.StyledIWAdminWindow;
 import com.idega.util.IWColor;
 import com.idega.util.IWTimestamp;
 /**
@@ -44,7 +45,7 @@ import com.idega.util.IWTimestamp;
  * @author <a href="mailto:eiki@idega.is">Eirikur Sveinn Hrafnsson</a>
  * @version 1.0
  */
-public class Importer extends Window {
+public class Importer extends StyledIWAdminWindow {
 	
 	private String folderPath;
 	private ICFile importFolder;
@@ -68,6 +69,8 @@ public class Importer extends Window {
 	public static final String PARAMETER_IMPORT_FILE = "im_imf";
 	
 	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.importer";
+	
+	private final static String HELP_TEXT_KEY = "importer";
 	
 	
 	private String importHandler;
@@ -177,19 +180,21 @@ public class Importer extends Window {
 	}
 	
 	private void showFileUploader(IWContext iwc) {
-		add(iwrb.getLocalizedString("importer.select_file", "Select a file to import"));
 		Form form = new Form();
 		form.setMultiPart();
 		//SimpleFileChooser chooser = new SimpleFileChooser(form, IMPORT_FILE_IDS);
 		FileInput chooser = new FileInput();
+		Help help = getHelp(HELP_TEXT_KEY,iwc);
 		SubmitButton confirm = new SubmitButton("Confirm");
+		form.add(iwrb.getLocalizedString("importer.select_file", "Select a file to import"));
 		form.add(new HiddenInput(ACTION_PARAMETER, IMPORT_FILES));
 		form.add(new HiddenInput(PARAMETER_IMPORT_HANDLER, importHandler));
 		form.add(new HiddenInput(PARAMETER_IMPORT_FILE, importFile));
 		form.add(chooser);
+		form.add(help);
 		form.add(confirm);
 		
-		add(form);
+		add(form,iwc);
 	}
 	/**
 	 * Method importFiles.
