@@ -1,5 +1,5 @@
 /*
- * $Id: BuildingMaker.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: BuildingMaker.java,v 1.2 2001/06/12 14:58:43 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -30,6 +30,7 @@ import is.idegaweb.campus.entity.*;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
+
 public class BuildingMaker extends JModuleObject{
 
   private int iAct;
@@ -47,7 +48,7 @@ public class BuildingMaker extends JModuleObject{
   private int BORDER= 0;
   private Boolean isMulti = new Boolean(false);
   private ImageProperties ip = null;
-
+/*
   private void control(ModuleInfo modinfo){
 
     try{
@@ -539,41 +540,14 @@ public class BuildingMaker extends JModuleObject{
     Frame.add(T,1,4);
   }
 
-/*
-  private Table makeTarifViewTable(){
-      Table T = new Table(1,1);
-      T.setWidth("100%");
-      T.setColor(this.HeaderColor);
-      //T.setBorder(1);
-      //T.setColor(1,1,WhiteColor);
-      T.setCellpadding(1);
-      T.setCellspacing(1);
-      T.setHeight("100%");
-      Table T2 = new Table(1,3);
-      T2.setWidth("100%");
-      T2.setColor(this.WhiteColor);
-      T2.setCellpadding(4);
-      T2.setCellspacing(0);
-      T2.add(this.makeTariffEntriesTable(TariffService.getTariffEntrys(eAccount.getID())),1,1);
-      T2.addBreak(1,2);
-      T2.add(this.makePaymentsTable(TariffService.getMemberPayments(this.mem_id,this.un_id)),1,3);
-      T2.addBreak(1,3);
-      T.add(T2);
-      return T;
-    }
-  */
+
 
    private Table makeLinkTable(){
       Table LinkTable = new Table();
       LinkTable.setBorder(0);
       LinkTable.setCellpadding(0);
       LinkTable.setCellspacing(0);
-      /*
-      Link B1 = new Link("hús  ");
-      Link B2 = new Link("hæð  ");
-      Link B3 = new Link("týpa  ");
-      Link B4 = new Link("rými  ");
-      */
+
 
       SubmitButton B1 = new SubmitButton("button","House");
       SubmitButton B2 = new SubmitButton("button","Floor");
@@ -810,6 +784,6 @@ public class BuildingMaker extends JModuleObject{
     }
     catch(SQLException sql){ isAdmin = false;}
     /** @todo: fixa Admin*/
-    control(modinfo);
-  }
+    /*control(modinfo);
+  }*/
 }// class BuildingMaker
