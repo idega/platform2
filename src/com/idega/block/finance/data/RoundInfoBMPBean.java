@@ -34,7 +34,7 @@ ass.fin_assessment_round_id round_id,
 ass.fin_tariff_group_id group_id,
 ass.name,
 ass.round_stamp,
-ass.fin_cat_id category_id,
+ass.ic_category_id category_id,
 sum(e.netto ) netto,
 sum(e.total ) totals,
 count(distinct e.fin_account_id) accounts,
@@ -46,7 +46,7 @@ ass.fin_assessment_round_id,
 ass.fin_tariff_group_id,
 ass.name,
 ass.round_stamp,
-ass.fin_cat_id,
+ass.ic_category_id,
 ass.status
 */
   public static String getEntityTableName(){return "FIN_ROUND_INFO";}
