@@ -337,6 +337,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 	 * @throws FinderException
 	 */
 	public Collection ejbFindAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(
+			Group club,
 			Date dateFrom,
 			Date dateTo,
 			Collection divisions,
@@ -349,6 +350,8 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		sql.appendSelectAllFrom(tableName);
 		sql.appendWhere().append(COLUMN_TYPE).appendIn("'A','M'");
 		sql.appendAnd().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
+		if (club != null)
+			sql.appendAndEquals(COLUMN_CLUB_ID, club.getPrimaryKey());
 		if  (divisions != null && divisions.size()>0)
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
