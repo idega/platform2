@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.60 2004/01/19 18:18:53 palli Exp $
+ * $Id: PostingBusinessBean.java,v 1.61 2004/01/19 18:53:24 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -134,10 +134,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		String temp;
 		int readPointer = 0;						//Pointer to place where next field is
 		int fieldLength=0;							//Length of next field. Fetched from the definition 
-		
-		System.out.println("postingString = " + postingString);
-		System.out.println("name = " + name);
-
+	
 		try {
 			if (getCreatedFieldsListDate() == null || getCreatedFieldsListDate().getTime()/SECONDS_IN_A_DAY != IWTimestamp.getTimestampRightNow().getTime()/SECONDS_IN_A_DAY)
 				createFieldsList();
@@ -160,9 +157,13 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 			e.printStackTrace();
 		}
 		catch(NullPointerException e) {
+			System.out.println("postingString = " + postingString);
+			System.out.println("name = " + name);
 			e.printStackTrace();
 		}
 		catch(Exception e) {
+			System.out.println("postingString = " + postingString);
+			System.out.println("name = " + name);
 			e.printStackTrace();
 		}
 		

@@ -331,10 +331,8 @@ public class IFSFileCreationThread extends Thread {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("####CHECK!!!!!");
 		if (phInCommune != null && !phInCommune.isEmpty()) {
 			Collection rec = null;
-			System.out.println("####Getting records");
 			try {
 				rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phInCommune);
 			}
@@ -347,7 +345,6 @@ public class IFSFileCreationThread extends Thread {
 			catch(Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println("####Creating excel shit!!");
 			try {		
 				createPaymentFilesExcel(rec, fileName1 + ".xls", "Checkutbetalning "+localizedSchoolCategoryName+", egna kommunala anordnare, "+executionDate.getDateString("yyyy-MM-dd"), true);
 			}
@@ -357,7 +354,6 @@ public class IFSFileCreationThread extends Thread {
 			catch(Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println("####DONE");
 			
 			Iterator it = rec.iterator();
 			FileWriter writer = null;
@@ -1317,90 +1313,51 @@ public class IFSFileCreationThread extends Thread {
 	
 	private void createPaymentFilesExcel(Collection data, String fileName, String headerText, boolean doublePosting) throws IOException {
 		if (data != null && !data.isEmpty()) {
-			System.out.println("####1");
 			int[] columnWidths = { 11, 7, 6, 7, 10, 8, 7, 7, 7, 10, 35 };
-			System.out.println("####2");
 			String[] columnNames = { "Bokf datum", "Ansvar", "Konto", "Resurs", "Verksamhet", "Aktivitet", "Projekt", "Objekt", "Motpart", "Belopp", "Text" };
-			System.out.println("####3");
 			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames, headerText);
-			System.out.println("####4");
 			HSSFSheet sheet = wb.getSheet("Excel");
-			System.out.println("####5");
 			short rowNumber = (short) (sheet.getLastRowNum() + 1);
-			System.out.println("####6");
 			short cellNumber;
-			System.out.println("####7");
 			HSSFRow row = null;
 			//			HSSFHeader header = sheet.getHeader();
 			//		    header.setLeft(headerText);
 			//			header.setRight("Sida "+HSSFHeader.page());
 			//			sheet.getPrintSetup().setLandscape(true);
-			System.out.println("####8");
 			float totalAmount = 0;
-			System.out.println("####9");
 			float amount;
-			System.out.println("####10");
 			HSSFCell cell = null;
-			System.out.println("####11");
 			HSSFCellStyle styleAlignRight = wb.createCellStyle(); 
-			System.out.println("####12");
 			styleAlignRight.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-			System.out.println("####13");
 			PostingBusiness pb = getIFSBusiness().getPostingBusiness();
-			System.out.println("####14");
 			Iterator it = data.iterator();
-			System.out.println("####15");
 			int numberOfRecords = 0;
-			System.out.println("####16");
 			while (it.hasNext()) {
-				System.out.println("####17");
 				cellNumber = 0;
-				System.out.println("####18");
 				PaymentRecord pRec = (PaymentRecord) it.next();
-				System.out.println("####19");
 				if (pRec.getTotalAmount() != 0.0f) {
-					System.out.println("####20");
 					amount = AccountingUtil.roundAmount(pRec.getTotalAmount());
-					System.out.println("####21");
 					totalAmount += amount;
-					System.out.println("####22");
 					numberOfRecords++;
-					System.out.println("####23");
 					row = sheet.createRow(rowNumber++);
-					System.out.println("####24");
 					row.createCell(cellNumber++).setCellValue(_paymentDate.getDateString("yyyy-MM-dd"));
-					System.out.println("####25");
 					short loopTillEndOfPostingFields = (short) (cellNumber + 8);
-					System.out.println("####26");
 					for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
 						row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
-					System.out.println("####27");
 					cell = row.createCell(cellNumber++);
-					System.out.println("####28");
 					cell.setCellValue(getNumberFormat().format(amount));
-					System.out.println("####29");
 					cell.setCellStyle(styleAlignRight);
-					System.out.println("####30");
 					row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
 					if (doublePosting) {
-						System.out.println("####31");
 						cellNumber = 0;
-						System.out.println("####32");
 						numberOfRecords++;
-						System.out.println("####33");
 						row = sheet.createRow(rowNumber++);
-						System.out.println("####34");
 						row.createCell(cellNumber++).setCellValue(_paymentDate.getDateString("yyyy-MM-dd"));				
-						System.out.println("####35");
 						for (short i = cellNumber; i < loopTillEndOfPostingFields; i++)
 							row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getDoublePosting(), columnNames[i]));
-						System.out.println("####36");
 						cell = row.createCell(cellNumber++);
-						System.out.println("####37");
 						cell.setCellValue(getNumberFormat().format(-1*amount));
-						System.out.println("####38");
 						cell.setCellStyle(styleAlignRight);
-						System.out.println("####39");
 						row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
 					}
 				}
