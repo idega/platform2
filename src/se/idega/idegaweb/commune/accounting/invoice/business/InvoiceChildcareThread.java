@@ -220,8 +220,10 @@ public class InvoiceChildcareThread extends BillingThread{
 					RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECK);
 					String[] postings = getPostingBusiness().getPostingStrings(
 						category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,currentDate);
+					String[] checkPost = getPostingBusiness().getPostingStrings(
+						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,currentDate);
 					log.info("About to create payment record check");
-					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1]);			//MUST create payment record first, since it is used in invoice record
+					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], checkPost[0]);			//MUST create payment record first, since it is used in invoice record
 					log.info("created payment record");
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
@@ -274,7 +276,7 @@ public class InvoiceChildcareThread extends BillingThread{
 							System.out.println("InvoiceHeader "+invoiceHeader.getPrimaryKey());
 	//						RegulationSpecType regulationSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 							postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer)regulation.getRegSpecType().getPrimaryKey()).intValue(), provider,currentDate);
-							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], postings[1]);
+							invoiceRecord = createInvoiceRecord(invoiceHeader, postings[0], "");
 	
 							//Need to store the subvention row, so that it can be adjusted later if needed					
 							if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
