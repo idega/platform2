@@ -101,6 +101,7 @@ public class RefundReport extends TravelManager implements AdministratorReport {
     		amount /= 100;
     		totalAmount += amount;
     		//parent.getAuthorizationCode()
+    		table.setNoWrap(1, row);
 	    table.add(getText(entryStamp.getLocaleDate(iwc)), 1, row);
 	    table.add(getText(TextSoap.decimalFormat(amount, 2)+" "+entry.getCurrency()), 3, row);
       table.setRowColor(row, super.GRAY);
