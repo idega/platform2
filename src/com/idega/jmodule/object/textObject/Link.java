@@ -508,9 +508,13 @@ public void print(ModuleInfo modinfo)throws IOException{
 	initVariables(modinfo);
 	//if ( doPrint(modinfo) ){
             String oldURL = getURL();
-            if (oldURL.equals("")){
-                    oldURL=modinfo.getRequestURI();
-                    setURL(oldURL);
+            if(oldURL==null){
+                oldURL=modinfo.getRequestURI();
+                setURL(oldURL);
+            }
+            else if (oldURL.equals("")){
+                oldURL=modinfo.getRequestURI();
+                setURL(oldURL);
             }
 
 
