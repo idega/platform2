@@ -4,13 +4,13 @@
 <query name="workplace">
 <sql>
 <statement>
-create view workplace_view_UNIQUE_IDENTIFIER (ic_user_id, workplace) as select u.ic_user_id,
+create view wo_UNIQUE_IDENTIFIER (ic_user_id, workplace) as select u.ic_user_id,
 m.metadata_value from ic_user u, ic_metadata_ic_user um, ic_metadata m where
 u.ic_user_id = um.ic_user_id and um.ic_metadata_id = m.ic_metadata_id and
 metadata_name = 'workplace'
 </statement>
 <postStatement>
-drop view workplace_view_UNIQUE_IDENTIFIER
+drop view wo_UNIQUE_IDENTIFIER
 </postStatement>
 </sql>
 </query> 
@@ -22,7 +22,7 @@ WORKPLACE_VIEW_A.WORKPLACE
 FROM  IC_USER A_1  LEFT JOIN IC_USER_EMAIL A_10 ON (A_1.IC_USER_ID=A_10.IC_USER_ID)  LEFT JOIN IC_EMAIL A_8 ON (A_10.IC_EMAIL_ID=A_8.IC_EMAIL_ID)  LEFT JOIN IC_USER_PHONE A_11 ON (A_1.IC_USER_ID=A_11.IC_USER_ID)  LEFT JOIN ic_phone A_6 ON (A_11.IC_PHONE_ID=A_6.IC_PHONE_ID)  LEFT JOIN IC_USER_ADDRESS A_12 ON (A_1.IC_USER_ID=A_12.IC_USER_ID)  LEFT JOIN ic_address A_3 ON (A_12.IC_ADDRESS_ID=A_3.IC_ADDRESS_ID)  LEFT JOIN IC_POSTAL_CODE A_5 ON (A_3.POSTAL_CODE_ID=A_5.IC_POSTAL_CODE_ID)  LEFT JOIN IC_PHONE_TYPE A_7 ON (A_6.IC_PHONE_TYPE_ID=A_7.IC_PHONE_TYPE_ID)  LEFT JOIN ic_country A_4 ON (A_3.IC_COUNTRY_ID=A_4.IC_COUNTRY_ID)  LEFT JOIN ic_gender A_2 ON (A_1.IC_GENDER_ID=A_2.IC_GENDER_ID)  LEFT JOIN ic_email_type A_9 ON (A_8.IC_EMAIL_TYPE_ID=A_9.IC_EMAIL_TYPE_ID)
 LEFT JOIN ic_group_relation A_13 ON (A_1.IC_USER_ID=A_13.RELATED_IC_GROUP_ID)
 LEFT JOIN ic_group A_14 ON (A_13.IC_GROUP_ID=A_14.IC_GROUP_ID)
-LEFT JOIN WORKPLACE_view_UNIQUE_IDENTIFIER WORKPLACE_VIEW_A ON (A_1.IC_USER_ID=WORKPLACE_VIEW_A.IC_USER_ID)
+LEFT JOIN wo_UNIQUE_IDENTIFIER WORKPLACE_VIEW_A ON (A_1.IC_USER_ID=WORKPLACE_VIEW_A.IC_USER_ID)
 where A_1.ic_user_id in user_access_variable and A_13.GROUP_RELATION_STATUS = 'ST_ACTIVE'
   </statement>
   <result>
