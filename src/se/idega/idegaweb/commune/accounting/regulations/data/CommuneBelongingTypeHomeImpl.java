@@ -29,8 +29,23 @@ public CommuneBelongingType findCommuneBelongingType(int p0)throws javax.ejb.Fin
 
  public CommuneBelongingType findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (CommuneBelongingType) super.findByPrimaryKeyIDO(pk);
+  
+  
  }
 
-
+ public CommuneBelongingType findHomeCommune() throws javax.ejb.FinderException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((CommuneBelongingTypeBMPBean)entity).ejbFindHomeCommune();
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);		
+ }
+	
+ public CommuneBelongingType findNoHomeCommune() throws javax.ejb.FinderException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((CommuneBelongingTypeBMPBean)entity).ejbFindNoHomeCommune();
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);	
+ }	
+ 
 
 }

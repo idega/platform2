@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.8 2003/09/08 08:10:07 laddi Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.9 2003/11/17 12:11:50 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,15 +22,18 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
  * <p>
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.8 2003/09/08 08:10:07 laddi Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.9 2003/11/17 12:11:50 roar Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
 	
 	private static final String ENTITY_NAME = "cacc_commune_belong_type";
 	private static final String COLUMN_COMMUNE_BELONGING_TYPE = "commune_belong_type";
+	private static final String HOME_COMMUNE = "nacka";
+	private static final String NO_HOME_COMMUNE = "ej_nacka";
+	
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -43,7 +46,7 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 
 		CommuneBelongingTypeHome home
 				= (CommuneBelongingTypeHome) IDOLookup.getHome(CommuneBelongingType.class);
-		final String [] data = { "nacka", "ej_nacka" };
+		final String [] data = { HOME_COMMUNE, NO_HOME_COMMUNE };
 		for (int i = 0; i < data.length; i++) {
 			CommuneBelongingType cbType = home.create();
 			cbType.setCommuneBelongingType(ENTITY_NAME + "." + data[i]);
@@ -84,5 +87,17 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
 		return idoFindOnePKByQuery(sql);
 	}
+	
+	public Object ejbFindHomeCommune() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COMMUNE_BELONGING_TYPE, HOME_COMMUNE);
+		return idoFindOnePKByQuery(sql);		
+	}
+	
+	public Object ejbFindNoHomeCommune() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_COMMUNE_BELONGING_TYPE, NO_HOME_COMMUNE);
+		return idoFindOnePKByQuery(sql);		
+	}	
 
 }
