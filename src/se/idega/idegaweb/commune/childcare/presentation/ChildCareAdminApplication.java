@@ -309,7 +309,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_RETRACT_OFFER);
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-					table.add(offer, 5, 1);
+					table.add(removeFromQueue, 5, 1);
 				}
 			}
 			else if (status == getBusiness().getStatusParentsAccept()) {
