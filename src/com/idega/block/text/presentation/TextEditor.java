@@ -46,6 +46,7 @@ public TextEditor(boolean isAdmin){
 
 		if ( isAdmin ) {
       this.getParentPage().setAllMargins(0);
+      this.getParentPage().setTitle("Text Editor");
 
 			String mode = modinfo.getRequest().getParameter("mode");
 			String action = modinfo.getRequest().getParameter("action");
