@@ -28,9 +28,7 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.SubmitButton;
@@ -50,7 +48,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 	private static final String searchIdentifier = "brtic";
 	public static String PRM_USER_ID = UserSearcher.getUniqueUserParameterName(searchIdentifier);
 	private static String PRM_CREATE = "brtic_create";
-	private static String PRM_CANCEL = "brtic_cancel";
+	//private static String PRM_CANCEL = "brtic_cancel";
 	private static String PRM_SAVE = "brtic_save";
 	private static String PRM_DELETE = "brtic_delete";
 	private static String localizePrefix = "brutto_income.";
@@ -131,16 +129,16 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		appForm.setLocalizedTitle(localizePrefix+"title","Brutto income registration");
 		//mainTable.setWidth(this.getWidth());
 		add(appForm);
-		presentateHeader(iwc);
+		presentateHeader();
 		if(isCreateView(iwc))
-			presentateCreateRecord(iwc);
+			presentateCreateRecord();
 		else
 			presentateList(iwc);
 		presentateButtons(iwc);
 		
 	}
 	
-	private void presentateHeader(IWContext iwc){
+	private void presentateHeader(){
 		// set up user search if no user selected
 		if(user==null){
 			UserSearcher searcher = new UserSearcher();
@@ -149,7 +147,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 			appForm.setSearchPanel(searcher);
 		}
 		else{
-			presentateUserHeader( iwc);
+			presentateUserHeader( );
 		}
 	}
 	
@@ -190,7 +188,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		appForm.setButtonPanel(bPanel);
 	}
 	
-	private void presentateUserHeader(IWContext iwc){
+	private void presentateUserHeader(){
 		Table table = new Table();
 		//table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
@@ -210,7 +208,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		ListTable table = new ListTable(this,5);
 		
 		int row = 1;
-		int firstRow = row;
+		
 		
 		table.setHeader(getHeader(localize("brutto_income","Brutto income")),1);
 		table.setHeader(getHeader(localize("from_date","From date")),2);
@@ -262,7 +260,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		appForm.setMainPanel(table);
 	}
 	
-	private void presentateCreateRecord(IWContext iwc){
+	private void presentateCreateRecord(){
 		Table table = new Table();
 		
 			table.add(getHeader(localize("new_record","New record")),1,1);
@@ -299,10 +297,6 @@ public class BruttoIncomeEditor extends AccountingBlock {
 	}
 		
 	
-	private PresentationObject getCancelButton(){
-		return new CloseButton(localize("cancel","Cancel"));
-	}
-	
 	private CommuneUserBusiness getUserService(IWContext iwc) throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
 	}
@@ -315,7 +309,6 @@ public class BruttoIncomeEditor extends AccountingBlock {
 	 * @see se.idega.idegaweb.commune.presentation.CommuneBlock#localize(java.lang.String, java.lang.String)
 	 */
 	public String localize(String textKey, String defaultText) {
-		// TODO Auto-generated method stub
 		return super.localize(localizePrefix+textKey, defaultText);
 	}
 
