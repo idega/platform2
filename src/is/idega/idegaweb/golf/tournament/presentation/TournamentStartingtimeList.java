@@ -56,7 +56,6 @@ public class TournamentStartingtimeList extends GolfBlock {
 	private Form form;
 	private String[] submitButtonParameter;
 	
-	
 	public TournamentStartingtimeList(Tournament tournament, String tournament_round_id, boolean viewOnly, boolean onlineRegistration, boolean useBorder, boolean forPrinting) {
 		this.tournament = tournament;
 		this.tournament_round_id = tournament_round_id;
@@ -192,6 +191,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 				cepText = getText(tournament.getName());
 				topTable.add(cepText, 1, 1);
 				topTable.add(tepText, 2, 1);
+				topTable.add(new HiddenInput("tournament_round", tournament_round_id), 2, 1);
 				topTable.setAlignment(2, row, "right");
 			}
 			else {
