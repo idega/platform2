@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationBMPBean.java,v 1.30 2004/02/18 17:17:47 aron Exp $
+ * $Id: RegulationBMPBean.java,v 1.31 2004/02/18 19:02:47 aron Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,7 +22,7 @@ import com.idega.util.CalendarMonth;
 /**
  * Entity bean for regulation entries.
  * <p>
- * $Id: RegulationBMPBean.java,v 1.30 2004/02/18 17:17:47 aron Exp $
+ * $Id: RegulationBMPBean.java,v 1.31 2004/02/18 19:02:47 aron Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version$
@@ -391,22 +391,25 @@ public class RegulationBMPBean extends GenericEntity implements Regulation {
 		to = getEndOfMonth(to); 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.appendWhere(COLUMN_PERIOD_FROM);
-		sql.appendGreaterThanOrEqualsSign().append("'" + from + "'");
+		/*sql.appendWhere(COLUMN_PERIOD_FROM);
+		sql.appendGreaterThanOrEqualsSign().append( from );
 		sql.appendAnd().append(COLUMN_PERIOD_TO);
-		sql.appendLessThanOrEqualsSign().append("'" + to + "'");
+		sql.appendLessThanOrEqualsSign().append( to );
+		*/
+		// over lap search added by aron 18.02.2004
+		sql.appendWhere();
+		sql.appendOverlapPeriod(COLUMN_PERIOD_FROM,COLUMN_PERIOD_TO,from,to);
 		if (operationID.compareTo("0") != 0) {
 			sql.appendAndEquals(COLUMN_OPERATION_ID, "'" + operationID + "'");
 			sql.appendAndEquals(COLUMN_PAYMENT_FLOW_TYPE_ID, flowTypeID);
 		}
 		if (sortByID == 2) {
-			sql.appendOrderBy(COLUMN_NAME);
-			sql.appendOrderBy(COLUMN_PERIOD_FROM);
+			sql.appendOrderBy(COLUMN_NAME+","+COLUMN_PERIOD_FROM);
 		}
 		else {
-			sql.appendOrderBy(COLUMN_PERIOD_FROM);
-			sql.appendOrderBy(COLUMN_NAME);
+			sql.appendOrderBy(COLUMN_PERIOD_FROM+","+COLUMN_NAME);
 		}
+		System.out.println(sql.toString());
 		return idoFindPKsBySQL(sql.toString());
 	}
 
