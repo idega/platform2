@@ -20,16 +20,16 @@ public java.util.Collection findAllPostingParameters()throws javax.ejb.FinderExc
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public PostingParameters findPostingParameter(int p0,int p1,int p2,int p3)throws javax.ejb.FinderException{
+public PostingParameters findPostingParameter(int p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0,p1,p2,p3);
+	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
 
-public PostingParameters findPostingParameter(int p0)throws javax.ejb.FinderException{
+public PostingParameters findPostingParameter(int p0,int p1,int p2,int p3)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0);
+	Object pk = ((PostingParametersBMPBean)entity).ejbFindPostingParameter(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }

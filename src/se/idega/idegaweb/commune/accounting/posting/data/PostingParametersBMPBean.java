@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.8 2003/08/27 22:47:57 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.9 2003/08/28 12:54:33 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.8 2003/08/27 22:47:57 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.9 2003/08/28 12:54:33 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -57,6 +57,9 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	private static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type_id";
 	private static final String COLUMN_COMPANY_TYPE_ID = "company_type_id";
 	private static final String COLUMN_COMMUNE_BELONGING_ID = "commune_belonging_id";
+	
+	private static final String COLUMN_OWN_POSTING_STRING = "own_posting_string";
+	private static final String COLUMN_DOUBLE_POSTING_STRING = "double_posting_string";
 	
 	private static final String COLUMN_OWN_ACCOUNT = "own_account";
 	private static final String COLUMN_OWN_LIABILITY = "own_liability";
@@ -99,61 +102,17 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		addAttribute(COLUMN_COMMUNE_BELONGING_ID, "Kommuntillhörighet", true, true, 
 						Integer.class, "many-to-one", CommuneBelongingType.class);
 
-		addAttribute(COLUMN_OWN_ACCOUNT, "Eget konto", true, true, String.class);
-		addAttribute(COLUMN_OWN_LIABILITY, "Eget answer", true, true, String.class);
-		addAttribute(COLUMN_OWN_RESOURCE, "Egen resurs", true, true, String.class);
-		addAttribute(COLUMN_OWN_ACTIVITY_CODE, "Egen Verksamhetskod", true, true, String.class);
-		addAttribute(COLUMN_OWN_DOUBLE_ENTRY, "Egen motpart", true, true, String.class);
-		addAttribute(COLUMN_OWN_ACTIVITY, "Egen aktivitet", true, true, String.class);
-		addAttribute(COLUMN_OWN_PROJECT, "Egen project", true, true, String.class);
-		addAttribute(COLUMN_OWN_OBJECT, "Egen objekt", true, true, String.class);
 
-		addAttribute(COLUMN_DOUBLE_ACCOUNT, "Mot konto", true, true, String.class);
-		addAttribute(COLUMN_DOUBLE_LIABILITY, "Mot answer", true, true, String.class);
-		addAttribute(COLUMN_DOUBLE_RESOURCE, "Mot resurs", true, true, String.class);
-		addAttribute(COLUMN_DOUBLE_ACTIVITY_CODE, "Mot verksamhetskod", true, true, String.class);
-		addAttribute(COLUMN_DOUBLE_DOUBLE_ENTRY, "Motpart", true, true, String.class);
-		addAttribute(COLUMN_DOUBLE_ACTIVITY, "Mot aktivitet", true, true, String.class);
-		addAttribute(COLUMN_DOUBLE_PROJECT, "Mot project", true, true, String.class);
-		addAttribute(COLUMN_DOUBLE_OBJECT, "Mot objekt", true, true, String.class);
+		addAttribute(COLUMN_OWN_POSTING_STRING, "Egen konteringsstring", true, true, String.class);
+		addAttribute(COLUMN_DOUBLE_POSTING_STRING, "Mot konteringsstring", true, true, String.class);
 
 	}
 	
-	public String getPostingAccount() {return (String) getStringColumnValue(COLUMN_OWN_ACCOUNT);}
-	public String getPostingLiability() {return (String) getStringColumnValue(COLUMN_OWN_LIABILITY);}
-	public String getPostingResource() {return (String) getStringColumnValue(COLUMN_OWN_RESOURCE);}
-	public String getPostingActivityCode() {return (String) getStringColumnValue(COLUMN_OWN_ACTIVITY_CODE);}
-	public String getPostingDoubleEntry() {return (String) getStringColumnValue(COLUMN_OWN_DOUBLE_ENTRY);}
-	public String getPostingActivity() {return (String) getStringColumnValue(COLUMN_OWN_ACTIVITY);}
-	public String getPostingProject() {return (String) getStringColumnValue(COLUMN_OWN_PROJECT);}
-	public String getPostingObject() {return (String) getStringColumnValue(COLUMN_OWN_OBJECT);}
+	public String getPostingString() {return (String) getStringColumnValue(COLUMN_OWN_POSTING_STRING);}
+	public void setPostingStriong(String data) {setColumn(COLUMN_OWN_POSTING_STRING, data); }
 
-	public String getDoublePostingAccount() {return (String) getStringColumnValue(COLUMN_DOUBLE_ACCOUNT);}
-	public String getDoublePostingLiability() {return (String) getStringColumnValue(COLUMN_DOUBLE_LIABILITY);}
-	public String getDoublePostingResource() {return (String) getStringColumnValue(COLUMN_DOUBLE_RESOURCE);}
-	public String getDoublePostingActivityCode() {return (String) getStringColumnValue(COLUMN_DOUBLE_ACTIVITY_CODE);}
-	public String getDoublePostingDoubleEntry() {return (String) getStringColumnValue(COLUMN_DOUBLE_DOUBLE_ENTRY);}
-	public String getDoublePostingActivity() {return (String) getStringColumnValue(COLUMN_DOUBLE_ACTIVITY);}
-	public String getDoublePostingProject() {return (String) getStringColumnValue(COLUMN_DOUBLE_PROJECT);}
-	public String getDoublePostingObject() {return (String) getStringColumnValue(COLUMN_DOUBLE_OBJECT);}
-
-	public void setPostingAccount(String data) {setColumn(COLUMN_OWN_ACCOUNT, data); }
-	public void setPostingLiability(String data) {setColumn(COLUMN_OWN_LIABILITY, data); }
-	public void setPostingResource(String data) {setColumn(COLUMN_OWN_RESOURCE, data); }
-	public void setPostingActivityCode(String data) {setColumn(COLUMN_OWN_ACTIVITY_CODE, data); }
-	public void setPostingDoubleEntry(String data) {setColumn(COLUMN_OWN_DOUBLE_ENTRY, data); }
-	public void setPostingActivity(String data) {setColumn(COLUMN_OWN_ACTIVITY, data); }
-	public void setPostingProject(String data) {setColumn(COLUMN_OWN_PROJECT, data); }
-	public void setPostingObject(String data) {setColumn(COLUMN_OWN_OBJECT, data); }
-
-	public void setDoublePostingAccount(String data) {setColumn(COLUMN_DOUBLE_ACCOUNT, data); }
-	public void setDoublePostingLiability(String data) {setColumn(COLUMN_DOUBLE_LIABILITY, data); }
-	public void setDoublePostingResource(String data) {setColumn(COLUMN_DOUBLE_RESOURCE, data); }
-	public void setDoublePostingActivityCode(String data) {setColumn(COLUMN_DOUBLE_ACTIVITY_CODE, data); }
-	public void setDoublePostingDoubleEntry(String data) {setColumn(COLUMN_DOUBLE_DOUBLE_ENTRY, data); }
-	public void setDoublePostingActivity(String data) {setColumn(COLUMN_DOUBLE_ACTIVITY, data); }
-	public void setDoublePostingProject(String data) {setColumn(COLUMN_DOUBLE_PROJECT, data); }
-	public void setDoublePostingObject(String data) {setColumn(COLUMN_DOUBLE_OBJECT, data); }
+	public String getDoublePostingString() {return (String) getStringColumnValue(COLUMN_DOUBLE_POSTING_STRING);}
+	public void setDoublePostingString(String data) {setColumn(COLUMN_DOUBLE_POSTING_STRING, data); }
 
 
 	public Timestamp getChangedDate(){
