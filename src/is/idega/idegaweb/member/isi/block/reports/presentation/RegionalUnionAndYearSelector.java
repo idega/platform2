@@ -170,6 +170,10 @@ public class RegionalUnionAndYearSelector extends Block {
 			dateSelector.addMenuElement(i,Integer.toString(i));
 		}
 		
+		if(year>0){
+			dateSelector.setSelectedElement(year);
+		}
+		
 		Table table = new Table(2,4);
 		table.mergeCells(1,1,2,1);
 		table.mergeCells(1,4,2,4);
@@ -177,6 +181,10 @@ public class RegionalUnionAndYearSelector extends Block {
 		
 			regionalUnions = reportBiz.getAllRegionalUnionGroups();
 			regMenu = new DropdownMenu(regionalUnions,PARAM_REGION_UNION_ID);
+			
+			if(regionalUnionId>0){
+				regMenu.setSelectedElement(regionalUnionId);
+			}
 		
 		table.add(iwrb.getLocalizedString("regselector.select_regional_union","Select the desired union."),1,1);
 		table.add(iwrb.getLocalizedString("regselector.regional_union","Regional union"),1,2);
