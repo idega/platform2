@@ -1,6 +1,6 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.sql.SQLException;
 
@@ -18,7 +18,7 @@ import com.idega.presentation.text.Text;
  * To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class HoleView extends GolfWindowOld {
+public class HoleView extends GolfWindow {
 
 	public HoleView() {
 		setWidth(796);

@@ -3,7 +3,7 @@
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
-import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 
 /**
@@ -14,7 +14,7 @@ import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
  * @author 2004 - idega team - <br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version 1.0
  */
-public class PrintingWindow extends GolfWindowOld {
+public class PrintingWindow extends GolfWindow {
 
 	/**
 	 * 

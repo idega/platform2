@@ -32,7 +32,7 @@ import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.service.AccountViewer;
 import is.idega.idegaweb.golf.service.GroupMemberInsertWindow;
 import is.idega.idegaweb.golf.service.Tariffer;
-import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -80,7 +80,7 @@ import com.idega.util.text.SocialSecurityNumber;
 /**
  * @author laddi
  */
-public class MemberEditor extends GolfWindowOld {
+public class MemberEditor extends GolfWindow {
 
   public MemberEditor() {
     setWidth(690);

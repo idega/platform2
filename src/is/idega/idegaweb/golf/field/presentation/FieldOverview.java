@@ -21,6 +21,8 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.text.business.TextBusiness;
+import com.idega.block.text.data.TxText;
 import com.idega.block.text.presentation.TextReader;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
@@ -62,12 +64,12 @@ public class FieldOverview extends GolfBlock {
 			Field field = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(Integer.parseInt(field_id));
 			Table myTable = getFieldInfo(field, field_id);
 
-			fillContentTable(field, contentTable, myTable, field_id);
+			fillContentTable(modinfo,field, contentTable, myTable, field_id);
 		}
 
 		else if (field_id != null && hole_number != null) {
 			Field field = ((FieldHome) IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKey(Integer.parseInt(field_id));
-			Table myTable = getHoleInfo(field, field_id, hole_number);
+			Table myTable = getHoleInfo(modinfo,field, field_id, hole_number);
 
 			contentTable.add(myTable, 1, 1);
 		}
@@ -77,6 +79,10 @@ public class FieldOverview extends GolfBlock {
 			form.setWindowToOpen(FieldEditor.class);
 			form.add(new HiddenInput("field_id", field_id + ""));
 			form.add(new HiddenInput("union_id", union_id));
+			if(hole_number!=null) {
+				form.addParameter("hole_number",hole_number);
+				form.addParameter("action","view_hole");
+			}
 			form.add(new HiddenInput("redir", getResourceBundle().getLocalizedString("field.field_editor", "Field editor")));
 			form.add(new SubmitButton(getResourceBundle().getLocalizedString("field.field_editor", "Field editor")));
 			add(form);
@@ -253,7 +259,7 @@ public class FieldOverview extends GolfBlock {
 		return myTable;
 	}
 
-	public void fillContentTable(Field field, Table contentTable, Table myTable, String field_id) throws IOException, SQLException {
+	public void fillContentTable(IWContext iwc,Field field, Table contentTable, Table myTable, String field_id) throws IOException, SQLException {
 
 		Text fieldName = new Text(field.getName());
 		fieldName.setFontSize(4);
@@ -271,7 +277,13 @@ public class FieldOverview extends GolfBlock {
 
 		TextReader fieldText = null;
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", "0");
+		
 		if (hole_text.length > 0) {
+			if(hole_text[0].getTextID() < 0) {
+				TxText text = TextBusiness.saveText(-1,-1,iwc.getCurrentLocaleId(),iwc.getCurrentUserId(),this.getICObjectInstanceID(),null,null,"","","",null,null);
+				hole_text[0].setTextID(text.getID());
+				hole_text[0].store();
+			}
 			fieldText = new TextReader(hole_text[0].getTextID());
 			fieldText.displayHeadline(false);
 			fieldText.setEnableDelete(false);
@@ -349,7 +361,7 @@ public class FieldOverview extends GolfBlock {
 
 	}
 
-	public Table getHoleInfo(Field field, String field_id, String hole_number) throws IOException, SQLException {
+	public Table getHoleInfo(IWContext iwc, Field field, String field_id, String hole_number) throws IOException, SQLException {
 
 		Table outerTable = new Table(1, 4);
 		outerTable.setWidth("100%");
@@ -423,6 +435,11 @@ public class FieldOverview extends GolfBlock {
 		TextReader fieldText = null;
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", hole_number);
 		if (hole_text.length > 0) {
+			if(hole_text[0].getTextID() < 0) {
+				TxText text = TextBusiness.saveText(-1,-1,iwc.getCurrentLocaleId(),iwc.getCurrentUserId(),this.getICObjectInstanceID(),null,null,"","","",null,null);
+				hole_text[0].setTextID(text.getID());
+				hole_text[0].store();
+			}
 			fieldText = new TextReader(hole_text[0].getTextID());
 			fieldText.displayHeadline(false);
 			fieldText.setEnableDelete(false);

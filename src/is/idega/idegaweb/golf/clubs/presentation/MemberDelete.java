@@ -18,7 +18,7 @@ import is.idega.idegaweb.golf.entity.Stroke;
 import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.entity.UnionMemberInfo;
-import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -45,7 +45,7 @@ import com.idega.presentation.ui.TextInput;
 /**
  * @author laddi
  */
-public class MemberDelete extends GolfWindowOld {
+public class MemberDelete extends GolfWindow {
 
   public MemberDelete() {
     setWidth(690);

@@ -9,7 +9,7 @@ import is.idega.idegaweb.golf.entity.Tee;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -27,7 +27,7 @@ import com.idega.util.text.TextSoap;
 /**
  * @author laddi
  */
-public class HandicapTable extends GolfWindowOld {
+public class HandicapTable extends GolfWindow {
 
   public HandicapTable() {
     setWidth(800);

@@ -16,7 +16,7 @@ import is.idega.idegaweb.golf.entity.TeeImage;
 import is.idega.idegaweb.golf.entity.TeeImageHome;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
-import is.idega.idegaweb.golf.templates.page.GolfWindowOld;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.sql.SQLException;
 
@@ -24,6 +24,7 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.media.presentation.ImageInserter;
+import com.idega.block.text.business.TextBusiness;
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.presentation.TextReader;
 import com.idega.data.IDOLookup;
@@ -40,11 +41,11 @@ import com.idega.presentation.ui.TextInput;
 /**
  * @author laddi
  */
-public class FieldEditor extends GolfWindowOld {
+public class FieldEditor extends GolfWindow {
 
 	public FieldEditor() {
-		setWidth(1000);
-		setHeight(600);
+		setWidth(850);
+		setHeight(580);
 		setTitle("Field Editor");
 		setScrollbar(true);
 		setResizable(true);
@@ -57,11 +58,11 @@ public class FieldEditor extends GolfWindowOld {
 
 		private int field_id = -1;
 
-		private String table_header_color = "#cedfd0";
-
-		private String table_color = "#cedfd0";
-
-		private String table_border_color = "#336660";
+//		private String table_header_color = "#cedfd0";
+//
+//		private String table_color = "#cedfd0";
+//
+//		private String table_border_color = "#336660";
 
 		public void main(IWContext modinfo) throws Exception {
 			if (isAdmin() || isClubAdmin()) {
@@ -116,7 +117,7 @@ public class FieldEditor extends GolfWindowOld {
 			Form form = new Form();
 
 			Table backTable = new Table(1, 1);
-			backTable.setColor("#336660");
+//			backTable.setColor("#336660");
 			form.add(backTable);
 
 			Table table = new Table();
@@ -124,7 +125,7 @@ public class FieldEditor extends GolfWindowOld {
 			table.setBorder(0);
 			table.setCellpadding(1);
 			table.setCellspacing(0);
-			table.setColor("#CEDFD0");
+//			table.setColor("#CEDFD0");
 
 			table.add("<b>" + field.getName() + "</b>", 1, row);
 			table.mergeCells(1, row, 23, row);
@@ -344,7 +345,7 @@ public class FieldEditor extends GolfWindowOld {
 				int imageID = this.checkForTeeImage(modinfo, hole_number);
 
 				Table contentTable = new Table(2, 1);
-				contentTable.setWidth("100%");
+//				contentTable.setWidth("100%");
 				//            contentTable.setAlignment(2,1,"right");
 				contentTable.setVerticalAlignment(1, 1, "top");
 				contentTable.setVerticalAlignment(2, 1, "top");
@@ -353,7 +354,7 @@ public class FieldEditor extends GolfWindowOld {
 				Form form = new Form();
 
 				Table backTable = new Table(1, 1);
-				backTable.setColor("#336660");
+//				backTable.setColor("#336660");
 				form.add(backTable);
 
 				Table table = new Table();
@@ -361,7 +362,7 @@ public class FieldEditor extends GolfWindowOld {
 				table.setBorder(0);
 				table.setCellpadding(1);
 				table.setCellspacing(0);
-				table.setColor("#CEDFD0");
+//				table.setColor("#CEDFD0");
 
 				table.add(field.getName(), 1, row);
 				table.setAlignment(7, row, "right");
@@ -487,15 +488,15 @@ public class FieldEditor extends GolfWindowOld {
 
 			if (hole_number != -1) {
 				TxText text = (TxText) IDOLookup.createLegacy(TxText.class);
-				text.store();
 
-				returner = text.getID();
+				
 
 				try {
 					HoleText[] hole_texts = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("FIELD_ID", "" + this.field_id, "hole_number", "" + hole_number);
 					if (hole_texts.length > 0) {
 						hole_texts[0].setTextID(returner);
 						hole_texts[0].store();
+						returner = text.getID();
 					}
 					else {
 						HoleText holeText = ((HoleTextHome) IDOLookup.getHomeLegacy(HoleText.class)).create();
@@ -503,11 +504,19 @@ public class FieldEditor extends GolfWindowOld {
 						holeText.setHoleNumber(hole_number);
 						holeText.setFieldId(this.field_id);
 						holeText.store();
+						returner = text.getID();
+						
+						if(holeText.getTextID() < 0) {
+							TxText hText = TextBusiness.saveText(-1,-1,modinfo.getCurrentLocaleId(),modinfo.getCurrentUserId(),this.getICObjectInstanceID(),null,null,"","","",null,null);
+							holeText.setTextID(hText.getID());
+							holeText.store();
+						}
 					}
 				}
 				catch (CreateException ce) {
 					throw new SQLException(ce.getMessage());
 				}
+				
 			}
 
 			return returner;
@@ -523,6 +532,7 @@ public class FieldEditor extends GolfWindowOld {
 				}
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 			}
 
 			if (returner == -1) {
@@ -862,11 +872,11 @@ public class FieldEditor extends GolfWindowOld {
 
 				Table content = new Table(1, 1);
 				form.add(content);
-				content.setColor(this.table_border_color);
+//				content.setColor(this.table_border_color);
 				Table table = new Table(2, 5);
 				content.add(table);
 				table.setBorder(0);
-				table.setColor(this.table_color);
+//				table.setColor(this.table_color);
 
 				DropdownMenu unions = new DropdownMenu((Union[]) ((Union) IDOLookup.instanciateEntity(Union.class)).findAllOrdered("name"), "i_field_union_id");
 				unions.setSelectedElement(union_id);
