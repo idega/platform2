@@ -3,6 +3,7 @@ package is.idega.idegaweb.member.isi.block.reports.data;
 
 public interface WorkReport extends com.idega.data.IDOEntity
 {
+ public void addLeague(is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup p0)throws com.idega.data.IDORelationshipException;
  public java.lang.Integer getAccountFileId();
  public java.lang.Integer getBoardFileId();
  public java.lang.Integer getGroupId();

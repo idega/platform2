@@ -11,6 +11,7 @@ import com.idega.core.data.ICFile;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORelationshipException;
 import com.idega.user.data.Group;
 
 /**
@@ -220,6 +221,10 @@ public class WorkReportBMPBean extends GenericEntity implements WorkReport {
 		return idoGetRelatedEntities(WorkReportGroup.class);
 	}
 	
+  public void addLeague(WorkReportGroup group) throws IDORelationshipException {
+    idoAddTo(group);
+  }
+    
 	
 	
 	
