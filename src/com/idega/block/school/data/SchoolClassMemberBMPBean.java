@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/13 15:27:17 $ by $Author: goranb $
- * @version $Revision: 1.69 $
+ * Last modified: $Date: 2003/11/14 17:32:51 $ by $Author: goranb $
+ * @version $Revision: 1.70 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -440,7 +440,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		.appendAnd()
 		.append("mb." + REMOVED_DATE)
-		.appendGreaterThanSign()
+		.appendGreaterThanOrEqualsSign()
 		.append("mb." + REGISTER_DATE)
 		
 		.appendAnd()
