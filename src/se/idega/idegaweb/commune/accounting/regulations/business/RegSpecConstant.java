@@ -5,6 +5,7 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
  *
  */
 public class RegSpecConstant {
+	// TODO Need to get rid of the 'z_' here...
 //	public static final String CHECK ="regspec.check";
 	public static final String CHECK ="cacc_reg_spec_type.check";
 	public static final String MOTHER_TONGUE ="regspec.modersmal";

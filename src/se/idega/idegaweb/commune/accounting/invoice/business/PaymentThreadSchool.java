@@ -57,11 +57,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/10 14:14:28 $ by $Author: joakim $
+ * Last modified: $Date: 2003/12/10 14:52:23 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.39 $
+ * @version $Revision: 1.40 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -70,7 +70,7 @@ import com.idega.user.data.User;
 public abstract class PaymentThreadSchool extends BillingThread {
 	Logger log = Logger.getLogger(this.getClass().getName());
 	PaymentHeader paymentHeader;
-    
+
 	//This is a horrible solution... This class should not have to know the localization keys!!!	
 	private static final String OPPEN_VERKSAMHET = "sch_type.school_type_oppen_verksamhet";
 	private static final String FRITIDSKLUBB = "sch_type.school_type_fritidsklubb";
