@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.120 2004/02/20 16:36:50 tryggvil Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.121 2004/02/24 14:03:09 staffan Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -1691,52 +1691,30 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (child != null) {
 					try {
 						//get the family
-						Collection adults = getUserInfoService().getCustodiansAndTheirPartnersAtSameAddress (child);
-						
-						/////////// temporary for checking the new algorithm ///////////
-						Collection cust = getMemberFamilyLogic().getCustodiansFor(child);
-						try {
-							Collection onlyInCollection1 = new java.util.HashSet (adults);
-							onlyInCollection1.removeAll (cust);
-							Collection onlyInCollection2 = new java.util.HashSet (cust);
-							onlyInCollection2.removeAll (adults);
-							if (!onlyInCollection1.isEmpty ()
-									|| !onlyInCollection2.isEmpty ()) {
-								final StringBuffer out = new StringBuffer ();
-								out.append ("### ");
-								final UserBusiness userBusiness = getUserBusiness ();
-								out.append ("child=(" + child.getPersonalID () + " " + userBusiness.getUsersMainAddress(child).getPrimaryKey () + ")");
-								out.append (" adults={");
-								for (Iterator i = adults.iterator (); i.hasNext ();) {
-									final User adult = (User) i.next ();
-									out.append (" (" + adult.getPersonalID () + " " + userBusiness.getUsersMainAddress(adult).getPrimaryKey () + ")");
-								}
-								out.append ("} cust={");
-								for (Iterator i = cust.iterator (); i.hasNext ();) {
-									final User adult = (User) i.next ();
-									out.append (" (" + adult.getPersonalID () + " " + userBusiness.getUsersMainAddress(adult).getPrimaryKey () + ")");
-								}
-								System.err.println (out.toString ());
-							}
-						}	catch (Exception e) {
-							System.err.println ("### child=(" + child + "), adults={"
-																	+ adults + "}, cust={" + cust + "} "
-																	+ e.getMessage ());
-							e.printStackTrace ();
-						}
-						////////////////////////////////////////////////////////////////
-						
+						Collection adults = getUserInfoService()
+								.getCustodiansAndTheirPartnersAtSameAddress (child);						
 						if (adults != null && !adults.isEmpty()) {
 							Iterator it = adults.iterator();
 							while (it.hasNext()) {
 								User custodian = (User) it.next();
 								try {
 									BruttoIncome userIncome = getUserInfoService().getBruttoIncomeHome().findLatestByUserAndDate((Integer) custodian.getPrimaryKey(), IWTimestamp.RightNow());
-									if (userIncome != null) {
+
+									/////////////////////// temporary logg ///////////////////////
+									if (userIncome != null
+											&& !(0.0f <= userIncome.getIncome().floatValue())) {
+										System.err.println ("### negative income for "
+																				+ custodian.getPrimaryKey());
+									}
+									//////////////////////////////////////////////////////////////
+
+									if (userIncome != null
+											&& 0.0f <= userIncome.getIncome().floatValue()) {
+										// income set for this person, increase family income
 										income += userIncome.getIncome().floatValue();
 										missingIncome = false;
-									}
-									else {
+									}	else {
+										// no income set, spoiled familys chance to get subvention
 										missingIncome = true;
 										break;
 									}
