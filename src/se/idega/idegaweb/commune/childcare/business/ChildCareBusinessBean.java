@@ -2615,7 +2615,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if(student==null)
 						student = oldStudent;//
 					if(student==null)
-						student = getLatestPlacement(application.getChildId(), application.getProviderId());;
+						student = getLatestPlacement(application.getChildId(), application.getProviderId());
 					archive.setSchoolClassMember(student);
 				}
 				catch (FinderException fe) {
