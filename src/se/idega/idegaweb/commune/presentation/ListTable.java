@@ -1,5 +1,5 @@
 /*
- * $Id: ListTable.java,v 1.2 2003/08/18 14:44:34 anders Exp $
+ * $Id: ListTable.java,v 1.3 2003/08/20 10:59:31 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,25 +9,19 @@
  */
 package se.idega.idegaweb.commune.presentation;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 
 /**
  * This class generates a list that uses the layout 
  * guide rules for Check & Peng.
  * <p>
- * Last modified: $Date: 2003/08/18 14:44:34 $
+ * Last modified: $Date: 2003/08/20 10:59:31 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ListTable extends PresentationObjectContainer {
 
