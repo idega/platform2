@@ -1,6 +1,11 @@
 package is.idega.idegaweb.travel.service.presentation;
 
+import com.idega.block.tpos.business.TPosClient;
+import com.idega.block.tpos.business.TPosException;
+import com.idega.block.tpos.data.TPosMerchant;
 import com.idega.block.trade.data.Currency;
+import com.idega.block.trade.data.CurrencyHome;
+
 import java.text.DecimalFormat;
 import com.idega.business.IBOLookup;
 import java.rmi.*;
@@ -533,43 +538,8 @@ public abstract class BookingForm extends TravelManager{
           table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
           table.add(comment, 2, row);
 
-        // Virkar, vantar HTTPS
-
-        /*  TextInput ccNumber = new TextInput(this.parameterCCNumber);
-            ccNumber.setMaxlength(16);
-            ccNumber.setLength(20);
-            ccNumber.setAsNotEmpty("T - vantar cc númer");
-            ccNumber.setAsIntegers("T - cc númer rangt");
-          TextInput ccMonth = new TextInput(this.parameterCCMonth);
-            ccMonth.setMaxlength(2);
-            ccMonth.setLength(3);
-            ccMonth.setAsNotEmpty("T - vantar cc manuð");
-            ccMonth.setAsIntegers("T - cc manuður rangur");
-          TextInput ccYear = new TextInput(this.parameterCCYear);
-            ccYear.setMaxlength(2);
-            ccYear.setLength(3);
-            ccYear.setAsNotEmpty("T - vantar cc ár");
-            ccYear.setAsIntegers("T - cc ár rangt");
-
-          Text ccText = (Text) theText.clone();
-            ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
-
-          Text ccMY = (Text) theText.clone();
-            ccMY.setText(iwrb.getLocalizedString("travel.month_year","month / year"));
-
-          Text ccSlash = (Text) theText.clone();
-            ccSlash.setText(" / ");
-
-          ++row;
-          table.add(ccText,1,row);
-          table.add(ccNumber,2,row);
-
-          ++row;
-          table.add(ccMY,1,row);
-          table.add(ccMonth,2,row);
-          table.add(ccSlash,2,row);
-          table.add(ccYear,2,row);
-        */
+				row = addCreditcardInputForm(table, row);
+        
 
 
 
@@ -607,6 +577,40 @@ public abstract class BookingForm extends TravelManager{
 
     return form;
   }
+
+	protected int addCreditcardInputForm(Table table, int row) {
+		// Virkar, vantar HTTPS
+		
+		  TextInput ccNumber = new TextInput(this.parameterCCNumber);
+		    ccNumber.setMaxlength(16);
+		    ccNumber.setLength(20);
+		  TextInput ccMonth = new TextInput(this.parameterCCMonth);
+		    ccMonth.setMaxlength(2);
+		    ccMonth.setLength(3);
+		  TextInput ccYear = new TextInput(this.parameterCCYear);
+		    ccYear.setMaxlength(2);
+		    ccYear.setLength(3);
+		
+		  Text ccText = (Text) theText.clone();
+		    ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
+		
+		  Text ccMY = (Text) theText.clone();
+		    ccMY.setText(iwrb.getLocalizedString("travel.month_year","month / year"));
+		
+		  Text ccSlash = (Text) theText.clone();
+		    ccSlash.setText(" / ");
+		
+		  ++row;
+		  table.add(ccText,1,row);
+		  table.add(ccNumber,2,row);
+		
+		  ++row;
+		  table.add(ccMY,1,row);
+		  table.add(ccMonth,2,row);
+		  table.add(ccSlash,2,row);
+		  table.add(ccYear,2,row);
+		return row;
+	}
   
   protected String getLocaleDate(IWTimestamp stamp) {
     return  (new IWCalendar(stamp)).getLocaleDate();
@@ -1473,7 +1477,7 @@ public abstract class BookingForm extends TravelManager{
   }
 
 
-  public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException{
+  public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException, TPosException{
       String surname = iwc.getParameter("surname");
       String lastname = iwc.getParameter("lastname");
       String address = iwc.getParameter("address");
@@ -1766,6 +1770,8 @@ public abstract class BookingForm extends TravelManager{
           }
         }
 
+				handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear);
+
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
       }
@@ -1773,6 +1779,36 @@ public abstract class BookingForm extends TravelManager{
       return returner;
   }
 
+	protected void handleCreditcardForBooking(IWContext iwc, int bookingId,	String ccNumber, String ccMonth,	String ccYear) throws FinderException, RemoteException, TPosException {
+		if (bookingId > 0 && ccNumber != null && ccMonth != null && ccYear != null && !ccNumber.equals("")) {
+			GeneralBooking gBooking = ((GeneralBookingHome) IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
+			gBooking.setIsValid(false);
+			gBooking.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
+			gBooking.store();
+			String heimild;
+			try {
+				System.out.println("Starting TPOS test : "+IWTimestamp.RightNow().toString());
+				float price = this.getOrderPrice(iwc, _product, _stamp);
+				String currency = getCurrencyForBooking(gBooking);
+				System.out.println(" Price = "+price+" "+currency);
+				if (currency == null) {
+					currency = "ISK";	
+				}
+				TPosClient t = getTPosClient(iwc, gBooking);
+				heimild = t.doSale(ccNumber,ccMonth,ccYear,price,currency);
+				System.out.println("Ending TPOS test : "+IWTimestamp.RightNow().toString());
+				gBooking.setIsValid(true);
+				gBooking.setCreditcardAuthorizationNumber(heimild);
+				gBooking.setPaymentTypeId(Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
+				gBooking.store();
+		  
+			}catch(com.idega.block.tpos.business.TPosException e) {
+				throw new TPosException(e.getLocalizedMessage(iwrb));
+			}catch (Exception e) {
+				throw new TPosException(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
+			}
+		}
+	}
 
   public int sendInquery(IWContext iwc) throws Exception {
     return sendInquery(iwc, -1, false);
@@ -2306,7 +2342,7 @@ public abstract class BookingForm extends TravelManager{
 		float price = 0;
 		int total = 0;
 		int current = 0;
-		Currency currency = null;
+		//Currency currency = null;
 		
 		
 		ProductPrice[] pPrices = {};
@@ -2335,6 +2371,44 @@ public abstract class BookingForm extends TravelManager{
 		  }
 		
 		return price;
+	}
+	
+	public com.idega.block.tpos.business.TPosClient getTPosClient(IWContext iwc, GeneralBooking gBooking) throws Exception {
+		TPosMerchant merchant = getTposMerchant(gBooking);
+		com.idega.block.tpos.business.TPosClient t;
+		if (merchant == null) {
+			t = new com.idega.block.tpos.business.TPosClient(iwc);
+		}else {
+			t = new com.idega.block.tpos.business.TPosClient(iwc, merchant);
+		}
+		return t;
+	}
+
+	public TPosMerchant getTposMerchant(GeneralBooking gBooking) {
+		TPosMerchant merchant = null;
+		try {
+			int productSupplierId = gBooking.getService().getProduct().getSupplierId();
+			Supplier suppTemp = ((SupplierHome) IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(productSupplierId);
+			merchant = suppTemp.getTPosMerchant();
+			System.out.println("TPosMerchant found");
+		}catch (Exception e) {
+			System.out.println("TPosMerchant NOT found for supplier, using system default");
+		}
+		return merchant;
+	}
+
+	public String getCurrencyForBooking(GeneralBooking gBooking) throws RemoteException, FinderException {
+		BookingEntry[] entries = gBooking.getBookingEntries();
+		
+		Currency curr;
+		CurrencyHome currHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
+		
+		for (int i = 0; i < entries.length; i++) {
+			curr = currHome.findByPrimaryKey(entries[i].getProductPrice().getCurrencyId());
+			return curr.getCurrencyAbbreviation();
+		}
+		
+		return null;
 	}
 
 	public boolean isFullyBooked(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, CreateException, FinderException {

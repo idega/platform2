@@ -7,6 +7,8 @@ import java.util.*;
 import javax.ejb.*;
 
 import com.idega.block.calendar.business.*;
+import com.idega.block.tpos.business.TPosClient;
+import com.idega.block.tpos.business.TPosException;
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.*;
@@ -489,23 +491,25 @@ public class TourBookingForm extends BookingForm{
           table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
           table.add(comment, 2, row);
 
-          // Virkar, vantar HTTPS
+					row = addCreditcardInputForm(table, row);
 
-          /*  TextInput ccNumber = new TextInput(this.parameterCCNumber);
+          // Virkar, vantar HTTPS
+/*
+            TextInput ccNumber = new TextInput(this.parameterCCNumber);
               ccNumber.setMaxlength(16);
               ccNumber.setLength(20);
-              ccNumber.setAsNotEmpty("T - vantar cc númer");
-              ccNumber.setAsIntegers("T - cc númer rangt");
+              //ccNumber.setAsNotEmpty("T - vantar cc númer");
+              //ccNumber.setAsIntegers("T - cc númer rangt");
             TextInput ccMonth = new TextInput(this.parameterCCMonth);
               ccMonth.setMaxlength(2);
               ccMonth.setLength(3);
-              ccMonth.setAsNotEmpty("T - vantar cc manuð");
-              ccMonth.setAsIntegers("T - cc manuður rangur");
+              //ccMonth.setAsNotEmpty("T - vantar cc manuð");
+              //ccMonth.setAsIntegers("T - cc manuður rangur");
             TextInput ccYear = new TextInput(this.parameterCCYear);
               ccYear.setMaxlength(2);
               ccYear.setLength(3);
-              ccYear.setAsNotEmpty("T - vantar cc ár");
-              ccYear.setAsIntegers("T - cc ár rangt");
+              //ccYear.setAsNotEmpty("T - vantar cc ár");
+              //ccYear.setAsIntegers("T - cc ár rangt");
 
             Text ccText = (Text) theText.clone();
               ccText.setText(iwrb.getLocalizedString("travel.credidcard_number","Creditcard number"));
@@ -525,7 +529,7 @@ public class TourBookingForm extends BookingForm{
             table.add(ccMonth,2,row);
             table.add(ccSlash,2,row);
             table.add(ccYear,2,row);
-          */
+      */    
 
 
 
@@ -1538,7 +1542,7 @@ public class TourBookingForm extends BookingForm{
   }
 
 
-  public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException{
+  public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException, TPosException {
       String surname = iwc.getParameter("surname");
       String lastname = iwc.getParameter("lastname");
       String address = iwc.getParameter("address");
@@ -1818,6 +1822,9 @@ public class TourBookingForm extends BookingForm{
             }
           }
         }
+        
+        
+				handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear);
 
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
@@ -1825,6 +1832,7 @@ public class TourBookingForm extends BookingForm{
 
       return returner;
   }
+
 
 
   public int sendInquery(IWContext iwc) throws Exception {
@@ -2194,7 +2202,6 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.total_passengers","Total passengers")),1,row);
       table.add(getBoldTextWhite(Integer.toString(total)),2,row);
-			System.out.println("[TourBookingForm]  : 3a");
 
       ++row;
       table.setAlignment(1,row,"right");
