@@ -24,6 +24,8 @@ import com.idega.util.idegaTimestamp;
     public SimpleChooserWindow(){
       super();
       setResizable(true);
+      setWidth(726);
+      setHeight(460);
     }
 
     public void  main(ModuleInfo modinfo) throws Exception{

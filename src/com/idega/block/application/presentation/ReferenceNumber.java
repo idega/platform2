@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.2 2001/08/24 10:28:09 laddi Exp $
+ * $Id: ReferenceNumber.java,v 1.3 2001/08/29 17:43:54 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -79,7 +79,7 @@ public class ReferenceNumber extends JModuleObject {
 
 	private void setup() {
 		Table referenceTable = new Table(1,2);
-    referenceTable.setAlignment("center");
+    //referenceTable.setAlignment("center");
     referenceTable.setBorder(0);
     referenceTable.setWidth(referenceWidth_);
     referenceTable.setHeight(referenceHeight_);

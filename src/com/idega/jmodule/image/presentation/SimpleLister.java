@@ -29,15 +29,18 @@ public class SimpleLister extends ModuleObjectContainer {
     public String sessImageParameter = "image_id";
 
     public void  main(ModuleInfo modinfo){
+      getParentPage().setAllMargins(0);
       List L = listOfImages();
 
       checkParameterName(modinfo);
 
       if(L!= null){
         Table Frame = new Table();
+          Frame.setWidth("100%");
         Frame.setCellpadding(0);
         Frame.setCellspacing(0);
         Table T = new Table();
+          T.setWidth("100%");
         int len = L.size();
         int row = 1;
         T.add(formatText("Pictures"),1,row++);

@@ -34,9 +34,9 @@ import com.idega.util.idegaTimestamp;
       IFrame ifList = new IFrame(target1,SimpleLister.class);
       IFrame ifViewer = new IFrame(target2, SimpleViewer.class);
       ifList.setWidth(210);
-      ifList.setHeight(400);
+      ifList.setHeight(410);
       ifViewer.setWidth(500);
-      ifViewer.setHeight(400);
+      ifViewer.setHeight(410);
 
       ifList.setBorder(1);
       ifViewer.setBorder(1);
