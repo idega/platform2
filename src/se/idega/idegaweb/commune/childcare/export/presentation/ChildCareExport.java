@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareExport.java,v 1.4 2005/02/15 10:24:06 anders Exp $
+ * $Id: ChildCareExport.java,v 1.5 2005/02/18 12:48:40 anders Exp $
  *
  * Copyright (C) 2005 Idega. All Rights Reserved.
  *
@@ -32,10 +32,10 @@ import com.idega.util.IWTimestamp;
  * This idegaWeb block exports child care placements to text files
  * for the IST Extens system.
  * <p>
- * Last modified: $Date: 2005/02/15 10:24:06 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/18 12:48:40 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class ChildCareExport extends CommuneBlock {
 
@@ -112,8 +112,14 @@ public class ChildCareExport extends CommuneBlock {
 		
 		DateInput fromInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_FROM_DATE));
 		fromInput.setToDisplayDayLast(true);
+		if (iwc.isParameterSet(PARAMETER_FROM_DATE)) {
+			fromInput.setDate(new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE)).getDate());
+		}
 		DateInput toInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_TO_DATE));
 		toInput.setToDisplayDayLast(true);
+		if (iwc.isParameterSet(PARAMETER_TO_DATE)) {
+			toInput.setDate(new IWTimestamp(iwc.getParameter(PARAMETER_TO_DATE)).getDate());
+		}
 		table.add(getLocalizedHeader(KEY_FROM_DATE,"From"), 1, 1);
 		table.add(fromInput, 2, 1);
 		table.add(getLocalizedHeader(KEY_TO_DATE,"To"), 3, 1);
