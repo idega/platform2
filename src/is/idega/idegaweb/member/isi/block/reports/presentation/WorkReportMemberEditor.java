@@ -278,7 +278,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
       }
     }
-    EntityBrowser browser = getEntityBrowser(members, resourceBundle, form);
+    EntityBrowser browser = getEntityBrowser(members, resourceBundle, form, iwc);
     // put browser into a table
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
@@ -328,7 +328,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     return button;
   }    
  
-  private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form)  {
+  private EntityBrowser getEntityBrowser(Collection entities, IWResourceBundle resourceBundle, Form form, IWContext iwc)  {
     // define converter
     CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
@@ -351,7 +351,9 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     List parameters = getParametersToMaintain();
     Iterator para = parameters.iterator();
     while (para.hasNext())  {
-      Parameter parameter = (Parameter) para.next();
+      String parameterKey = (String) para.next();
+      String parameterValue  = iwc.getParameter(parameterKey);
+      Parameter parameter = new Parameter(parameterKey, parameterValue);
       browser.addMandatoryParameter(parameter);
     }
     if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
