@@ -191,33 +191,7 @@ public class TenantsHabitants extends Block implements Campus{
       if ( list != null ) {
         for ( int a = 0; a < list.size(); a++ ) {
           hab = (Habitant) list.get(a);
-          /*
-          contract = (Contract) list.get(a);
-          applicant = ContractFinder.getApplicant(contract);
-          apartment = BuildingCacher.getApartment(contract.getApartmentId().intValue());
-          floor = BuildingCacher.getFloor(apartment.getFloorId());
-          building = BuildingCacher.getBuilding(floor.getBuildingId());
-          campusApplication = CampusApplicationFinder.getApplicantInfo(applicant).getCampusApplication();
-          Integer ID = new Integer(apartment.getID());
-          if(phoneMap != null && phoneMap.containsKey(ID))
-            phone = (CampusPhone)phoneMap.get(ID);
-          else
-            phone = null;
-          */
-
           collector = new HabitantsCollector();
-          /*collector.setUserID(contract.getUserId().intValue());
-          collector.setApartment(apartment.getName());
-          collector.setEmail(campusApplication.getEmail());
-          collector.setFirstName(applicant.getFirstName());
-          collector.setFloor(floor.getName());
-          collector.setLastName(applicant.getLastName());
-          collector.setMiddleName(applicant.getMiddleName());
-          collector.setAddress(building.getName());
-          if ( phone != null )
-            collector.setPhone(phone.getPhoneNumber());
-
-          */
           collector.setUserID(hab.getUserId());
           collector.setApartment(hab.getApartment());
           /** @todo  fixa email */

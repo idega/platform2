@@ -645,6 +645,8 @@ public class CampusAllocator extends Block implements Campus{
     boolean bcontracts = false;
     if(M!=null)
       bcontracts = true;
+    else
+      System.out.println("M == null");
     DataTable T = new DataTable();
     T.setTitlesHorizontal(true);
     T.addTitle(AT.getName()+" "+CX.getName());

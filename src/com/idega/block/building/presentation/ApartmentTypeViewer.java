@@ -70,7 +70,7 @@ public void setSpecialAttributes(String name,Map attributes){
           apartmenttypeid = 0;
         }
       }
-      this.getParentPage().setTitle("Appartment Viewer");
+      this.getParentPage().setTitle("Apartment Viewer");
       this.getParentPage().setAllMargins(0);
 
       if ( iwrb_ != null && iwb_ != null ) {
