@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.49 2003/10/24 17:25:14 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.50 2003/10/27 13:59:03 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -853,8 +853,18 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 		arr.add(new Object[]{new Integer(1), "1-2"});
 		arr.add(new Object[]{new Integer(2), "3-5"});
-		arr.add(new Object[]{new Integer(3), "7"});
-		arr.add(new Object[]{new Integer(4), ">=7"});
+		arr.add(new Object[]{new Integer(3), "4-5"});
+		arr.add(new Object[]{new Integer(4), "6"});
+		arr.add(new Object[]{new Integer(5), ">=7"});
+		arr.add(new Object[]{new Integer(6), "1-3"});
+		arr.add(new Object[]{new Integer(7), "1-6"});
+		arr.add(new Object[]{new Integer(8), "7-9"});
+		arr.add(new Object[]{new Integer(9), "G1"});
+		arr.add(new Object[]{new Integer(10), "G1-G3"});
+		arr.add(new Object[]{new Integer(11), "G2"});
+		arr.add(new Object[]{new Integer(12), "G3"});
+		arr.add(new Object[]{new Integer(13), "G4"});
+		arr.add(new Object[]{new Integer(14), "G1-G4"});
 
 		return arr; 
 	}	
