@@ -2,18 +2,22 @@ package com.idega.block.dataquery.data.sql;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryEntityPart;
 import com.idega.block.dataquery.business.QueryFieldPart;
 import com.idega.block.dataquery.business.QueryHelper;
+import com.idega.block.dataquery.business.QueryOrderConditionPart;
 import com.idega.block.dataquery.business.QuerySQLPart;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOEntity;
@@ -53,6 +57,14 @@ public class QuerySQL implements DynamicExpression {
   private List fieldOrder = new ArrayList();
   // conditions
   private List conditions = new ArrayList();
+  
+  // order of conditions
+  private SortedSet orderConditions = 
+  	new TreeSet(new Comparator() { 
+  		public int  compare(Object first, Object second) {
+  			return ((QueryOrderConditionPart) first).compare((QueryOrderConditionPart) second);
+  		}
+  	});
   
   private DynamicExpression query = null;
   
@@ -237,6 +249,18 @@ public class QuerySQL implements DynamicExpression {
     }
     conditions.addAll(list);
   }
+  
+  private void setOrderConditions(QueryHelper queryHelper)	{
+  	// do not use order statements in views, they are not allowed in views
+  	if (queryHelper.hasNextQuery())	{
+  		return;
+  	}
+  	List list = queryHelper.getOrderConditions();
+  	if (list == null)	{
+  		return;
+  	}
+  	orderConditions.addAll(list);
+  }
     
       
   private DynamicExpression createQuery(QueryHelper queryHelper) throws IOException {
@@ -256,6 +280,7 @@ public class QuerySQL implements DynamicExpression {
     setRelatedEntities(queryHelper);
     setFields(queryHelper);
     setConditions(queryHelper);
+    setOrderConditions(queryHelper);
 
     // set fields (select clause)
     Iterator fieldIterator = fieldOrder.iterator(); 
@@ -288,6 +313,17 @@ public class QuerySQL implements DynamicExpression {
       	entitiesUsedByCriterion.add(path);
         query.addWhereClause(criterion);
       }
+    }
+    // set order conditions (order by)
+    Iterator orderConditionsIterator = orderConditions.iterator();
+    while(orderConditionsIterator.hasNext())	{
+    	QueryOrderConditionPart orderConditionPart = (QueryOrderConditionPart) orderConditionsIterator.next();
+    	OrderConditionExpression orderCriterion = new OrderConditionExpression(orderConditionPart, this);
+    	if (orderCriterion.isValid()) {
+    		String path = orderCriterion.getPath();
+    		entitiesUsedByCriterion.add(path);
+    		query.addOrderByClause(orderCriterion); 
+    	}
     }
     // set tables (from clause)
     Iterator entityIterator = entityQueryEntity.values().iterator();

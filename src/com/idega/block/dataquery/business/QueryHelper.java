@@ -39,6 +39,7 @@ public class QueryHelper {
 	private List listOfRelatedEntities = null;
 	private List listOfFields = new ArrayList();
 	private List listOfConditions = null;
+	private List orderConditions = null;
 	private int step = 0;
 	private boolean isTemplate = false;
 	private boolean entitiesLock = false, fieldsLock = false;
@@ -139,6 +140,16 @@ public class QueryHelper {
 						listOfConditions.add(new QueryConditionPart(xmlCondition));
 					}
 				}
+				
+				XMLElement xmlOrderConditions = root.getChild(QueryXMLConstants.ORDER_CONDITIONS);
+				if (xmlOrderConditions != null && xmlOrderConditions.hasChildren())	{
+					orderConditions = new ArrayList();
+					Iterator orderConds = xmlOrderConditions.getChildren().iterator();
+					while (orderConds.hasNext())	{
+						XMLElement xmlOrderCondition = (XMLElement) orderConds.next();
+						orderConditions.add(new QueryOrderConditionPart(xmlOrderCondition));
+					}
+				}
 			}
 
 //
@@ -224,6 +235,16 @@ public class QueryHelper {
 				}
 				root.addContent(conditions);
 			}
+			
+			// order conditions
+			if (orderConditions != null && !orderConditions.isEmpty())	{
+				iter = orderConditions.iterator();
+				XMLElement orderConditions = new XMLElement(QueryXMLConstants.ORDER_CONDITIONS);
+				while (iter.hasNext())	{
+					orderConditions.addContent(((QueryPart) iter.next()).getQueryElement());
+				}
+				root.addContent(orderConditions);
+			}				
 		}
 	}
 
@@ -245,6 +266,11 @@ public class QueryHelper {
 	public boolean hasFields() {
 		return listOfFields != null && !listOfFields.isEmpty();
 	}
+	
+	public boolean hasOrderConditions()	{
+		return orderConditions != null && ! orderConditions.isEmpty();
+	}
+	
 	/**
 	 * 
 	 * @return <CODE>true</CODE> if the query has conditions
@@ -431,6 +457,24 @@ public class QueryHelper {
 		addField(field);
 	}
 	
+	public void addOrderCondition(QueryOrderConditionPart orderCondition)	{
+		List orderConditions = getOrderConditions();
+		int orderNumber = orderConditions.size();
+		orderCondition.setOrderPriority(++orderNumber);
+		orderConditions.add(orderCondition);
+	}
+		
+		
+	public List getOrderConditions() {
+		if (orderConditions == null)	{
+			orderConditions = new ArrayList(1);
+		}
+		return orderConditions;
+	}
+		
+		
+	
+	
 	public void addQuery(QueryHelper queryHelper)	{
 		this.previousQuery = queryHelper;
 	}
@@ -485,6 +529,11 @@ public class QueryHelper {
 		checkStep();
 	}
 
+	public void clearOrderConditions()	{
+		orderConditions = null;
+		checkStep();
+	}
+	
 	/**
 	 * Clears the condition part of the query
 	 * and updates the current step.
@@ -504,6 +553,8 @@ public class QueryHelper {
 
 	private void checkStep() {
 		if (hasConditions())
+			step = 5;
+		else if (hasOrderConditions())
 			step = 4;
 		else if (hasFields())
 			step = 3;

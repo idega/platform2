@@ -45,6 +45,12 @@ public final static String LOCK = "lock";
 public final static String HIDDEN = "hidden";
 public final static String DESCRIPTION = "description";
 public final static String DYNAMIC = "dynamic";
+public final static String ORDER_PRIORITY = "orderPriority";
+public final static String ORDER_TYPE = "orderType";
+public final static String ORDER_CONDITION = "orderCondition";
+public final static String ORDER_CONDITIONS = "orderConditions";
+public final static String TYPE_ASCENDANT = "ascendant";
+public final static String TYPE_DESCENDANT = "descendant";
 
 public final static String NEXT_QUERY = "nextQuery";
 

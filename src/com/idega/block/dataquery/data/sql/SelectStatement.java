@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 /**
  * <p>Title: idegaWeb</p>
  * <p>Description: </p>
@@ -22,6 +21,7 @@ public class SelectStatement implements DynamicExpression {
   private final String FROM = "FROM";
   private final String WHERE = "WHERE";
   private final String AND = "AND";
+  private final String ORDER_BY = "ORDER BY";
   private final char WHITE_SPACE = ' ';
   private final char COMMA = ',';
   
@@ -29,6 +29,7 @@ public class SelectStatement implements DynamicExpression {
   private List outerClauses = new ArrayList();
   private List selectClauses = new ArrayList();
   private List whereClauses = new ArrayList();
+  private List orderByClauses = new ArrayList();
   
   private Map identifierValueMap = new HashMap();
   private Map identifierDescriptionMap = new HashMap(); 
@@ -53,6 +54,10 @@ public class SelectStatement implements DynamicExpression {
   		this.identifierDescriptionMap.putAll(identifierDescriptionMap);
   	}
     whereClauses.add(criterion);
+  }
+  
+  public void addOrderByClause(Expression criterion)	{
+  	orderByClauses.add(criterion);
   }
   
   public boolean isDynamic() {
@@ -102,7 +107,7 @@ public class SelectStatement implements DynamicExpression {
       Expression clause = (Expression) outer.next();
       expression.append(clause.toSQLString());
     }
-    
+    // where
     spacing = new StringBuffer().append(WHITE_SPACE).append(WHERE).append(WHITE_SPACE);
     StringBuffer and = new StringBuffer().append(WHITE_SPACE).append(AND).append(WHITE_SPACE);
     Iterator where = whereClauses.iterator();
@@ -113,6 +118,15 @@ public class SelectStatement implements DynamicExpression {
       }
       expression.append(spacing).append(clause.toSQLString());
       spacing = and;
+    }
+    // order by
+    spacing = new StringBuffer().append(WHITE_SPACE).append(ORDER_BY).append(WHITE_SPACE);
+    StringBuffer comma = new StringBuffer().append(WHITE_SPACE).append(COMMA).append(WHITE_SPACE);
+    Iterator orderBy = orderByClauses.iterator();
+    while (orderBy.hasNext()) {
+      Expression criterion = (Expression) orderBy.next();
+      expression.append(spacing).append(criterion.toSQLString());
+      spacing = comma;
     }
     
     return expression.toString();
