@@ -39,7 +39,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.80 2005/01/18 13:44:24 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.81 2005/01/26 16:42:43 malin Exp $
  * @since 12.2.2003 
  */
 
@@ -71,6 +71,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	private boolean _showOnlyChildcare = false;
 	private boolean _showOnlyAfterSchoolCare = false;
+	private boolean _showParentalRadio = true;
 	
 	private String _caseCode = null;
 	private ICPage _renewQueuePage;
@@ -602,6 +603,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, String.valueOf(ChildCareAdminWindow.METHOD_END_CONTRACT));
 				cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 				cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, activeApplication.getNodeID());
+				cancelPopup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_SHOW_PARENTAL, String.valueOf(_showParentalRadio));
 	
 				layoutTbl.setHeight(row++, 12);
 				layoutTbl.add(careTimePopup, 3, row);
@@ -899,5 +901,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 */
 	public void setRenewQueuePage(ICPage renewQueuePage) {
 		this._renewQueuePage = renewQueuePage;
+	}
+	
+	public void setShowParentRadioButton(boolean show){
+		_showParentalRadio = show;
 	}
 }
