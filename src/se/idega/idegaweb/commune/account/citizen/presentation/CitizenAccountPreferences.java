@@ -1,8 +1,6 @@
 package se.idega.idegaweb.commune.account.citizen.presentation;
 
 import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -157,6 +155,9 @@ public class CitizenAccountPreferences extends CommuneBlock {
 
 	private User user = null;
 	private boolean requirePasswordVerification = true;
+	private boolean noVerificationForBankLogins = true;
+
+    private boolean removeEmailWhenEmpty = true;
 		
 	public CitizenAccountPreferences() {
 	}
@@ -513,7 +514,8 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		boolean updateCOAddress = false;
 		
 		try {
-			if (requirePasswordVerification && !LoginDBHandler.verifyPassword(login, currentPassword)) {
+		  
+			if (!authorizedByBankID(iwc) || (requirePasswordVerification && !LoginDBHandler.verifyPassword(login, currentPassword))) {
 				throw new Exception(localize(KEY_PASSWORD_INVALID, DEFAULT_PASSWORD_INVALID));
 			}
 			
@@ -587,8 +589,9 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			if (updatePassword) {
 				LoginDBHandler.updateLogin(((Integer)user.getPrimaryKey()).intValue(), login, newPassword1);
 			}
-			if (updateEmail) {
-				ub.updateUserMail(((Integer)user.getPrimaryKey()).intValue(), sEmail);
+			if (updateEmail ) {
+				//ub.updateUserMail(((Integer)user.getPrimaryKey()).intValue(), sEmail);
+				ub.storeUserEmail(user,sEmail,true);
 			}
 			ub.updateUserHomePhone(user, phoneHome);
 			ub.updateUserWorkPhone(user, phoneWork);
@@ -619,13 +622,23 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 	}
 	
-	private Address getCOAddress(IWContext iwc) {
+	/**
+     * @param user2
+     * @return
+	 * @throws RemoteException
+     */
+    private boolean authorizedByBankID(IWContext iwc) throws RemoteException  {
+        return noVerificationForBankLogins && getUserBusiness(iwc).hasBankLogin(iwc.getCurrentUser());
+    }
+
+    private Address getCOAddress(IWContext iwc) {
 		Address coAddress = null;
 		try {
 			UserBusiness ub = (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);
+			
 			AddressHome ah = ub.getAddressHome();
 			AddressType coType = ah.getAddressType2();
-			Collection addresses = user.getAddresses();
+			/*Collection addresses = user.getAddresses();
 			Iterator iter = addresses.iterator();
 			while (iter.hasNext()) {
 				Address address = (Address) iter.next();
@@ -634,6 +647,10 @@ public class CitizenAccountPreferences extends CommuneBlock {
 					return address;
 				}				
 			}
+			*/
+			Address address =  ub.getUserAddressByAddressType(iwc.getCurrentUserId(),coType);
+			if(address!=null )
+			    return address;
 			// No c/o address found, create one
 			coAddress = ah.create();
 			coAddress.setAddressType(coType);
@@ -664,7 +681,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	private boolean validateEmail(String sEmail)throws Exception{
 		boolean validEmail=false;
 		if (null == sEmail || 0 == sEmail.trim ().length ()) {
-			validEmail = false;
+			return removeEmailWhenEmpty;
 		} else {
 			// Validate e-mail address
 			if (sEmail.equals("")) {
@@ -699,4 +716,17 @@ public class CitizenAccountPreferences extends CommuneBlock {
 	public void setRequirePasswordVerification(boolean requirePasswordVerification) {
 		this.requirePasswordVerification = requirePasswordVerification;
 	}
+
+    public boolean isNoVerificationForBankLogins() {
+        return noVerificationForBankLogins;
+    }
+    
+    public void setNoVerificationForBankLogins(
+            boolean noVerificationForBankLogins) {
+        this.noVerificationForBankLogins = noVerificationForBankLogins;
+    }
+    
+    public void setToRemoveEmailWhenEmpty(boolean flag){
+        this.removeEmailWhenEmpty = flag;
+    }
 }
