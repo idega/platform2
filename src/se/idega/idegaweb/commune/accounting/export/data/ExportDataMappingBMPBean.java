@@ -80,6 +80,7 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		
 		addAttribute(COLUMN_FILE_CREATION_FOLDER,"Folder to create files for this type in", String.class,255);
 		addAttribute(COLUMN_IFS_FILE_FOLDER,"Folder where IFS reads files for this type", String.class,255);
+		addAttribute(COLUMN_LIST_CREATION_FOLDER,"Folder to create lists for this type in", String.class,255);
 	}
 	
 	
