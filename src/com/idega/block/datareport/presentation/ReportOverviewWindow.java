@@ -6,6 +6,7 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -30,6 +31,13 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
   public void main(IWContext iwc) throws Exception {  
     // get resource bundle 
     IWResourceBundle iwrb = getResourceBundle(iwc);
+    if (! iwc.isLoggedOn()) {
+    	String userNotLoggedIn = iwrb.getLocalizedString("ro_user_not_logged_in","Sorry, you are not logged in");
+    	Text userNotLoggedInText = new Text(userNotLoggedIn);
+    	userNotLoggedInText.setBold();
+    	add(userNotLoggedInText, iwc);
+    	return;
+    }
     addTitle(iwrb.getLocalizedString("ro_report", "ReportGenerator"), IWConstants.BUILDER_FONT_STYLE_TITLE);
     if (	iwc.isParameterSet(ReportQueryOverview.EDIT_QUERY_EXPERT_MODE_KEY) ||
 					iwc.isParameterSet(ReportQueryOverview.EDIT_QUERY_SIMPLE_MODE_KEY) ||
