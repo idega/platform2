@@ -24,14 +24,15 @@ public class InnerJoinExpression implements Expression {
   public InnerJoinExpression(QueryEntityPart queryEntityPart, QuerySQL querySQL) {
     this.querySQL = querySQL;
     String entity = queryEntityPart.getBeanClassName();
-    alias = querySQL.getUniqueNameForEntity(entity);
+    String path = queryEntityPart.getPath();
+    alias = querySQL.getUniqueNameForEntity(entity, path);
 		tableName = querySQL.getTableName(entity);
   }
   
-  public InnerJoinExpression(String tableName, QuerySQL querySQL)	{
+  public InnerJoinExpression(String tableName, String path, QuerySQL querySQL)	{
   	this.querySQL = querySQL;
   	this.tableName = tableName;
-  	alias = querySQL.getUniqueNameForEntityByTableName(tableName);
+  	alias = querySQL.getUniqueNameForEntityByTableName(tableName, path);
   }
   
 	/* (non-Javadoc)

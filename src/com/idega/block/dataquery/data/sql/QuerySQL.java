@@ -8,13 +8,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import com.idega.block.dataquery.business.QueryConditionPart;
 import com.idega.block.dataquery.business.QueryEntityPart;
 import com.idega.block.dataquery.business.QueryFieldPart;
 import com.idega.block.dataquery.business.QueryHelper;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOEntity;
+import com.idega.util.datastructures.HashMatrix;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -32,12 +32,17 @@ public class QuerySQL {
   
   private String name;
   
-  // bean class name (String)
+  
+  // tablename : path : number
+  private HashMatrix aliasMatrix = new HashMatrix();
+  private int aliasCounter = 0; 
+  
+  // path (String)
   private Set entitiesUsedByField = new HashSet();
-  // bean class name (String)
+  // path (String)
   private Set entitiesUsedByCriterion = new HashSet();
   
-  // bean class name (String) : (QueryEntityPart)
+  // path (String) : (QueryEntityPart)
   private Map entityQueryEntity= new HashMap();
   
   // field name (String) : (QueryFieldPart)
@@ -108,8 +113,8 @@ public class QuerySQL {
     if (queryEntity == null)  {
       return;
     }
-    String name = queryEntity.getBeanClassName();
-    entityQueryEntity.put(name, queryEntity);
+    String path = queryEntity.getPath();
+    entityQueryEntity.put(path, queryEntity);
   }
     
   private void setRelatedEntities(QueryHelper queryHelper)  {
@@ -120,8 +125,8 @@ public class QuerySQL {
     Iterator iterator = entities.iterator();
     while (iterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) iterator.next();
-      String name = queryEntity.getBeanClassName();
-      entityQueryEntity.put(name, queryEntity);
+      String path = queryEntity.getPath();
+      entityQueryEntity.put(path, queryEntity);
       
     }
   }
@@ -134,9 +139,7 @@ public class QuerySQL {
     Iterator fieldIterator = fields.iterator();
     while (fieldIterator.hasNext())  {
       QueryFieldPart field = (QueryFieldPart) fieldIterator.next();
-      String name = field.getName();
-      //String entity = field.getEntity();
-      fieldNameQueryField.put(name, field);
+      setField(field);
       // mark that this entity is used
       fieldOrder.add(field);
     }
@@ -164,16 +167,16 @@ public class QuerySQL {
     Iterator fieldIterator = fieldOrder.iterator(); 
     while (fieldIterator.hasNext()) {
       QueryFieldPart queryField = (QueryFieldPart) fieldIterator.next();
-      String entity = queryField.getEntity();
+      String path = queryField.getPath();
       // test if entity is supported
-      if (! entityQueryEntity.containsKey(entity))  {
+      if (! entityQueryEntity.containsKey(path))  {
         throw new IOException("[QuerySQL] criteria could not be created, table is unknown");
       }
    		// create expression
    		FunctionExpression functionExpression = FunctionExpression.getInstance(queryField, this);
    		if (functionExpression.isValid()) {
    			// mark used entity
-   			entitiesUsedByField.add(entity);
+   			entitiesUsedByField.add(path);
     		query.addSelectClause(functionExpression);
    		}
     }
@@ -188,7 +191,8 @@ public class QuerySQL {
       if (criterion.isValid()) {
       	// mark used entities
       	String fieldName = condition.getField();
-      	String entityName = getEntityForField(fieldName);
+      	String path = condition.getPath();
+      	String entityName = getEntityForField(path, fieldName);
       	entitiesUsedByCriterion.add(entityName);
         query.addWhereClause(criterion);
       }
@@ -199,9 +203,9 @@ public class QuerySQL {
     List outerJoins = new ArrayList();
     while (entityIterator.hasNext())  {
       QueryEntityPart queryEntity = (QueryEntityPart) entityIterator.next();
-      String entity = queryEntity.getBeanClassName();
+      String path = queryEntity.getPath();
       // add only entities that are actually used
-      if (entitiesUsedByCriterion.contains(entity))	{
+      if (entitiesUsedByCriterion.contains(path))	{
       	// if an entity is used by a criterion use strong conditions, that is do not use left outer join
       	PathCriterionExpression pathCriterionExpression = new PathCriterionExpression(queryEntity, this);
         if (pathCriterionExpression.isValid())	{
@@ -213,7 +217,7 @@ public class QuerySQL {
       		}
         }
       }
-      else if (entitiesUsedByField.contains(entity))	{
+      else if (entitiesUsedByField.contains(path))	{
       	// if an entity is used by a select field use weak conditions, that is use left outer join
       	PathLeftOuterJoinExpression pathLeftOuterJoinExpression = new PathLeftOuterJoinExpression(queryEntity, this);
       	if (pathLeftOuterJoinExpression.isValid())	{
@@ -266,7 +270,8 @@ public class QuerySQL {
   		return result;
   	}
 		String entityName = queryFieldPart.getEntity();
-		String uniqueName = getUniqueNameForEntity(entityName);
+		String entityPath = queryFieldPart.getPath();
+		String uniqueName = getUniqueNameForEntity(entityName, entityPath);
 		String[] columns = queryFieldPart.getColumns();
 		for (int i = 0; i < columns.length; i++) {
 			String columnName = columns[i];
@@ -278,31 +283,50 @@ public class QuerySQL {
 		return result;
   }
 
-  protected List getUniqueNameForField(String fieldName)  {
-    QueryFieldPart field = (QueryFieldPart) fieldNameQueryField.get(fieldName);
+  protected List getUniqueNameForField(String path, String fieldName)  {
+    QueryFieldPart field = getField(path, fieldName);
     return getUniqueNameForField(field);
   }
     
-  protected String getUniqueNameForEntityByTableName(String tableName)	{
-		StringBuffer buffer = new StringBuffer(ALIAS_PREFIX);
+  protected String getUniqueNameForEntityByTableName(String tableName, String entityPath)	{
 		//TODO: thi add something else perhaps the name of that query to handle subqueries
-		// buffer.append....
-		buffer.append(tableName);		
-    return buffer.toString();
+		String alias = (String) aliasMatrix.get(tableName, entityPath);
+		if (alias == null)	{
+			StringBuffer buffer = new StringBuffer(ALIAS_PREFIX);
+			buffer.append(++aliasCounter);
+			alias = buffer.toString();
+			aliasMatrix.put(tableName, entityPath, alias);
+		}
+		return alias;
   }
 
-	protected String getUniqueNameForEntity(String entity)	{
+
+	protected String getUniqueNameForEntity(String entity, String entityPath)	{
 		String tableName = getTableName(entity);
-		return getUniqueNameForEntityByTableName(tableName);
+		return getUniqueNameForEntityByTableName(tableName, entityPath);
 	}		
 	
-	protected String getEntityForField(String fieldName)	{
-		QueryFieldPart field = (QueryFieldPart) fieldNameQueryField.get(fieldName);
+	protected String getEntityForField(String path, String fieldName)	{
+		QueryFieldPart field = (QueryFieldPart) getField(path, fieldName);
 		return field.getEntity();
 	}
 	
-	protected String getTypeClassForField(String fieldName)	{
-		QueryFieldPart field = (QueryFieldPart) fieldNameQueryField.get(fieldName);
+	private QueryFieldPart getField(String entityPath, String fieldName)	{
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(entityPath).append("#").append(fieldName);
+		QueryFieldPart field = (QueryFieldPart) fieldNameQueryField.get(buffer.toString());
+		return field;
+	}	
+	
+	private void setField(QueryFieldPart fieldPart)	{
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(fieldPart.getPath()).append("#").append(fieldPart.getName());
+		fieldNameQueryField.put(buffer.toString(), fieldPart);
+	}
+		 
+	
+	protected String getTypeClassForField(String path, String fieldName)	{
+		QueryFieldPart field = getField(path, fieldName);
 		return field.getTypeClass();
 	}
 }

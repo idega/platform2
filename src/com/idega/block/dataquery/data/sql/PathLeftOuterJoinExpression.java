@@ -30,7 +30,7 @@ public class PathLeftOuterJoinExpression extends PathCriterionExpression {
 		super.initialize();
 	}
 
-	protected void getConditionManyToManyRelation(IDOEntityDefinition sourceDefinition, IDOEntityDefinition targetDefinition, List criteriaList) throws IDOCompositePrimaryKeyException {
+	protected void getConditionManyToManyRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, List criteriaList) throws IDOCompositePrimaryKeyException {
 		// many to many relation
 		String sourcePrimaryKeyColumnName = sourceDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
 		String targetPrimaryKeyColumnName = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
@@ -42,19 +42,17 @@ public class PathLeftOuterJoinExpression extends PathCriterionExpression {
 		Class targetClass = targetDefinition.getInterfaceClass();
 		String middleTableName = EntityControl.getManyToManyRelationShipTableName(sourceClass, targetClass);
 		
-		// retrieve name of middle table
-		// String middleTableName = StringHandler.concatAlphabetically(sourceTableName, targetTableName, "_");
-		
+		// just a decision: middle table gets source path
 		LeftOuterJoinExpression middleTableOuterJoin = 
-			new LeftOuterJoinExpression(sourceTableName, sourcePrimaryKeyColumnName, middleTableName, sourcePrimaryKeyColumnName, querySQL);
+			new LeftOuterJoinExpression(sourceTableName, sourcePrimaryKeyColumnName, sourcePath, middleTableName, sourcePrimaryKeyColumnName, sourcePath, querySQL);
 		LeftOuterJoinExpression  targetTableOuterJoin =
-			new LeftOuterJoinExpression(middleTableName, targetPrimaryKeyColumnName, targetTableName, targetPrimaryKeyColumnName, querySQL);
+			new LeftOuterJoinExpression(middleTableName, targetPrimaryKeyColumnName, sourcePath, targetTableName, targetPrimaryKeyColumnName, targetPath, querySQL);
 		outerJoins.add(middleTableOuterJoin);
 		outerJoins.add(targetTableOuterJoin);
 	}
 
-	protected void getConditionManyToOneRelation(IDOEntityDefinition sourceDefinition, IDOEntityDefinition targetDefinition, String pathElement, List criteriaList) throws IDOCompositePrimaryKeyException {
-		LeftOuterJoinExpression outerJoin = new LeftOuterJoinExpression(sourceDefinition, pathElement, targetDefinition, querySQL);
+	protected void getConditionManyToOneRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, String pathElement, List criteriaList) throws IDOCompositePrimaryKeyException {
+		LeftOuterJoinExpression outerJoin = new LeftOuterJoinExpression(sourceDefinition, pathElement, sourcePath, targetDefinition, targetPath, querySQL);
 		outerJoins.add(outerJoin);
 	}
 	

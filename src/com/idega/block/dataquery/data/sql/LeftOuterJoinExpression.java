@@ -26,38 +26,38 @@ public class LeftOuterJoinExpression implements Expression {
 	private String targetKey;
 	private String targetTableName;
 	
-  public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, IDOEntityDefinition targetDefinition, QuerySQL querySQL) throws IDOCompositePrimaryKeyException {
+  public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, QuerySQL querySQL) throws IDOCompositePrimaryKeyException {
     this.querySQL = querySQL;
     sourceKey = sourceDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
-    initialize(sourceDefinition, targetDefinition);
+    initialize(sourceDefinition, sourcePath, targetDefinition, targetPath);
   }
   
-  public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, String sourceKey, IDOEntityDefinition targetDefinition, QuerySQL querySQL) throws IDOCompositePrimaryKeyException {
+  public LeftOuterJoinExpression(IDOEntityDefinition sourceDefinition, String sourceKey, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, QuerySQL querySQL) throws IDOCompositePrimaryKeyException {
     this.querySQL = querySQL;
     this.sourceKey = sourceKey;
-    initialize(sourceDefinition, targetDefinition);
+    initialize(sourceDefinition, sourcePath, targetDefinition, targetPath);
   }
   
-  public LeftOuterJoinExpression(String sourceTableName, String sourceKey, String targetTableName, String targetKey, QuerySQL querySQL)	{
+  public LeftOuterJoinExpression(String sourceTableName, String sourceKey, String sourcePath, String targetTableName, String targetKey, String targetPath, QuerySQL querySQL)	{
   	this.querySQL = querySQL;
   	this.sourceKey = sourceKey;
   	this.targetKey = targetKey;
   	this.targetTableName = targetTableName;
-		initialize(sourceTableName);
+		initialize(sourceTableName, sourcePath, targetPath);
   }
   	
   	
   
-  private void initialize(IDOEntityDefinition sourceDefinition, IDOEntityDefinition targetDefinition) throws IDOCompositePrimaryKeyException	{
+  private void initialize(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath) throws IDOCompositePrimaryKeyException	{
   	targetKey = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
  	 	String sourceTableName = sourceDefinition.getSQLTableName();
 		targetTableName = targetDefinition.getSQLTableName();
-  	initialize(sourceTableName);
+  	initialize(sourceTableName, sourcePath, targetPath);
   } 
   	
-  private void initialize(String sourceTableName)	{
-  	sourceAlias = querySQL.getUniqueNameForEntityByTableName(sourceTableName);
-  	targetAlias = querySQL.getUniqueNameForEntityByTableName(targetTableName);
+  private void initialize(String sourceTableName, String sourcePath, String targetPath)	{
+  	sourceAlias = querySQL.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+  	targetAlias = querySQL.getUniqueNameForEntityByTableName(targetTableName, targetPath);
   }
 
 	/* (non-Javadoc)

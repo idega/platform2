@@ -54,17 +54,23 @@ public class PathCriterionExpression implements DynamicExpression {
     IDOEntityDefinition definition = entity.getEntityDefinition();
 
     String tableName = definition.getSQLTableName();
-		innerJoins.add(new InnerJoinExpression(tableName, querySQL));			      
+    String targetPath = (String) pathElements.get(0);
+		innerJoins.add(new InnerJoinExpression(tableName, targetPath, querySQL));			      
 
     if (pathElements.size() > 1) {
     	criteriaList = new ArrayList();
-    	getConditions(definition, pathElements, 1, criteriaList);
+    	// start with the first element
+
+    	getConditions(definition, targetPath, pathElements, 1, criteriaList);
     }
   }
     
-	private void getConditions(IDOEntityDefinition sourceDefinition, List pathElements, int listIndex, List criteriaList)	
+	private void getConditions(IDOEntityDefinition sourceDefinition, String targetPath, List pathElements, int listIndex, List criteriaList)	
 			throws ExpressionException, IDOCompositePrimaryKeyException {
 		String pathElement = (String) pathElements.get(listIndex);
+		String sourcePath = targetPath;
+		// new target 
+		targetPath = new StringBuffer(targetPath).append("#").append(pathElement).toString();
 		IDOEntityDefinition targetDefinition =
 			lookForTargetEntityAmongManyToManyRelations(sourceDefinition, pathElement);
 		if (targetDefinition == null)	{
@@ -74,17 +80,17 @@ public class PathCriterionExpression implements DynamicExpression {
 				String message = "[" + this.getClass().getName() + "] Path element could not be resolved.";
 				throw new ExpressionException(message);
 			}
-			getConditionManyToOneRelation(sourceDefinition, targetDefinition, pathElement, criteriaList);
+			getConditionManyToOneRelation(sourceDefinition, sourcePath , targetDefinition, targetPath, pathElement, criteriaList);
 		}
 		else {
-			getConditionManyToManyRelation(sourceDefinition, targetDefinition, criteriaList);
+			getConditionManyToManyRelation(sourceDefinition, sourcePath, targetDefinition, targetPath, criteriaList);
 		}
 		if (pathElements.size() > ++listIndex)	{
-			getConditions(targetDefinition, pathElements, listIndex, criteriaList);
+			getConditions(targetDefinition, targetPath, pathElements, listIndex, criteriaList);
 		}
 	}
 
-	protected void getConditionManyToManyRelation(IDOEntityDefinition sourceDefinition, IDOEntityDefinition targetDefinition, List criteriaList) throws IDOCompositePrimaryKeyException {
+	protected void getConditionManyToManyRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, List criteriaList) throws IDOCompositePrimaryKeyException {
 		// many to many relation
 		String sourcePrimaryKeyColumnName = sourceDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
 		String targetPrimaryKeyColumnName = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
@@ -92,15 +98,16 @@ public class PathCriterionExpression implements DynamicExpression {
 		String targetTableName = targetDefinition.getSQLTableName();
 		
 		// get aliases
-		String aliasSourceTableName = querySQL.getUniqueNameForEntityByTableName(sourceTableName);
-		String aliasTargetTableName = querySQL.getUniqueNameForEntityByTableName(targetTableName);
+		String aliasSourceTableName = querySQL.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+		String aliasTargetTableName = querySQL.getUniqueNameForEntityByTableName(targetTableName, targetPath);
 		
 		// retrieve name of middle table
 		Class sourceClass = sourceDefinition.getInterfaceClass();
 		Class targetClass = targetDefinition.getInterfaceClass();
 		String middleTable = EntityControl.getManyToManyRelationShipTableName(sourceClass, targetClass);
 		//String middleTable = StringHandler.concatAlphabetically(sourceTableName, targetTableName, "_");
-		String aliasMiddleTable = querySQL.getUniqueNameForEntityByTableName(middleTable);
+		// just a decision: middle table gets the source path
+		String aliasMiddleTable = querySQL.getUniqueNameForEntityByTableName(middleTable, sourcePath);
 		
 		// build the condition 
 		StringBuffer buffer = new StringBuffer(" (");
@@ -118,21 +125,21 @@ public class PathCriterionExpression implements DynamicExpression {
 		buffer.append(") ");
 		
 		// add the middle table to the query
-		innerJoins.add(new InnerJoinExpression(middleTable, querySQL));
+		innerJoins.add(new InnerJoinExpression(middleTable, sourcePath, querySQL));
 		// add the target table to the query
-		innerJoins.add(new InnerJoinExpression(targetTableName, querySQL));
+		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, querySQL));
 		
 		criteriaList.add(buffer.toString());
 	}
 
-	protected void getConditionManyToOneRelation(IDOEntityDefinition sourceDefinition, IDOEntityDefinition targetDefinition, String pathElement, List criteriaList) throws IDOCompositePrimaryKeyException {
+	protected void getConditionManyToOneRelation(IDOEntityDefinition sourceDefinition, String sourcePath, IDOEntityDefinition targetDefinition, String targetPath, String pathElement, List criteriaList) throws IDOCompositePrimaryKeyException {
 		String targetPrimaryKeyColumnName = targetDefinition.getPrimaryKeyDefinition().getField().getSQLFieldName();
 		String targetTableName = targetDefinition.getSQLTableName();
 		String sourceTableName = sourceDefinition.getSQLTableName();
 		
 		// get aliases
-		String aliasSourceTableName = querySQL.getUniqueNameForEntityByTableName(sourceTableName);
-		String aliasTargetTableName = querySQL.getUniqueNameForEntityByTableName(targetTableName);
+		String aliasSourceTableName = querySQL.getUniqueNameForEntityByTableName(sourceTableName, sourcePath);
+		String aliasTargetTableName = querySQL.getUniqueNameForEntityByTableName(targetTableName, targetPath);
 					
 		// build the condition
 		StringBuffer buffer = new StringBuffer(aliasSourceTableName);
@@ -142,7 +149,7 @@ public class PathCriterionExpression implements DynamicExpression {
 		buffer.append(targetPrimaryKeyColumnName);
 		
 		// add the target table to the query
-		innerJoins.add(new InnerJoinExpression(targetTableName, querySQL));			
+		innerJoins.add(new InnerJoinExpression(targetTableName, targetPath, querySQL));			
 		
 		criteriaList.add(buffer.toString());
 	}

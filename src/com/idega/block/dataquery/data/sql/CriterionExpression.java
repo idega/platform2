@@ -56,7 +56,8 @@ public class CriterionExpression implements DynamicExpression {
   
   protected void initialize()	{
   	String field = condition.getField();
-  	List fieldValueList = querySQL.getUniqueNameForField(field);
+  	String path = condition.getPath();
+  	List fieldValueList = querySQL.getUniqueNameForField(path,field);
   	if (fieldValueList.size() != 1)	{
   		// something wrong
   		return;
