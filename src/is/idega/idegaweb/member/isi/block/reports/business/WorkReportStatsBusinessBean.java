@@ -281,7 +281,18 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 //					add the data to the correct fields/columns
 					
 					data.addData(clubName, cName);
-					data.addData(regionalUnionAbbreviation, (regUniAbbr != null) ? regUniAbbr : report.getRegionalUnionGroupId().toString());
+					
+					if(regUniAbbr==null){
+						regUniAbbr = report.getRegionalUnionNumber();
+					}
+					if(regUniAbbr==null){
+						regUniAbbr = report.getRegionalUnionName();
+					}
+					if(regUniAbbr==null){
+						regUniAbbr = report.getRegionalUnionGroupId().toString();
+					}
+					
+					data.addData(regionalUnionAbbreviation, regUniAbbr );
 //					get the stats
 					//int playerCount = getWorkReportBusiness().getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(16, report, league);
 								  
