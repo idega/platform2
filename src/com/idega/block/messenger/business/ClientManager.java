@@ -3,7 +3,7 @@ package com.idega.block.messenger.business;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Enumeration;
-import com.idega.data.genericentity.Member;
+import com.idega.core.user.data.User;
 import java.sql.SQLException;
 import com.idega.block.messenger.data.Property;
 import com.idega.block.messenger.data.Packet;
@@ -23,12 +23,12 @@ public class ClientManager implements PacketManager{
 
   public static void clientCheckIn(String clientId, String memberId){
     try{
-      Member member = new Member(Integer.parseInt(memberId));
-      clients.put(clientId,member);
+      User user = new User(Integer.parseInt(memberId));
+      clients.put(clientId,user);
     }
     catch(SQLException e){
       e.printStackTrace(System.err);
-      System.err.println("ClientManager : new Member() failed!");
+      System.err.println("ClientManager : new User() failed!");
     }
   }
 
@@ -37,9 +37,9 @@ public class ClientManager implements PacketManager{
   }
 
   public static String getClientName(String clientId){
-    Member member = (Member) clients.get(clientId);
-    if( member!=null ){
-      return member.getName();
+    User user = (User) clients.get(clientId);
+    if( user!=null ){
+      return user.getName();
     }
     else return null;
   }
@@ -57,7 +57,7 @@ public class ClientManager implements PacketManager{
           String value = prop.getValue();
           System.out.println("ClientManager : Property key: "+key+" ; value: "+value);
 
-          Member clientId = (Member) ClientManager.clients.get(key);
+          User clientId = (User) ClientManager.clients.get(key);
           System.out.println("ClientManager : After clients.get(key)");
           if( clientId == null ) clientCheckIn(key,value);
           else System.out.println("ClientManager : clientId != null "+clientId);
@@ -74,7 +74,7 @@ public class ClientManager implements PacketManager{
     Enumeration enum = ClientManager.clients.keys();
 
     while (enum.hasMoreElements()){
-        connClients.add( (Member) ClientManager.clients.get( (String)enum.nextElement()));
+        connClients.add( (User) ClientManager.clients.get( (String)enum.nextElement()));
     }
 
     return connClients;
