@@ -83,7 +83,6 @@ public class PublicBooking extends TravelBlock  {
 
   public void main(IWContext iwc)throws Exception {
     if (iwc.isParameterSet(LocaleSwitcher.languageParameterString)) {
-  			//String lang = iwc.getParameter(LocaleSwitcher.languageParameterString);
   			LocaleSwitcher ls = new LocaleSwitcher();
   			ls.actionPerformed(iwc);
     }
@@ -628,7 +627,7 @@ public class PublicBooking extends TravelBlock  {
 				}
 	      mailText.append("\n\n").append(iwrb.getLocalizedString("travel.comment",  "Comment   ")).append(" : ").append(gBooking.getComment());
 	      
-	      if (!isRefund) {
+	      if (!isRefund && prod.getRefundable()) {
 	      		mailText.append("\n\n").append(iwrb.getLocalizedString("travel.if_you_want_to_cancel",  "If you for any reason would like to cancel your booking please follow this link ")).append(" : ").append(LinkGenerator.getUrlToRefunderPage(iwc, gBooking.getReferenceNumber()));
 	      		mailText.append("\n").append(iwrb.getLocalizedString("travel.refund_must_happen_before_48_hours",  "Please note that you can not cancel your booking if 48 hours have passed since your booking was made."));
 	      }
