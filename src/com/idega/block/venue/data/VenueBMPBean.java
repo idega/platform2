@@ -22,6 +22,10 @@ public class VenueBMPBean extends GenericEntity implements Venue {
 		return true;
 	}
 	
+	public String getIDColumnName() {
+		return COLUMN_VENUE_ID;
+	}
+
 	public void initializeAttributes() {
 		addAttribute(COLUMN_VENUE_ID);
 		setAsPrimaryKey(COLUMN_VENUE_ID, true);
@@ -32,6 +36,10 @@ public class VenueBMPBean extends GenericEntity implements Venue {
 		addManyToOneRelationship(COLUMN_OWNER, Group.class);
 		addManyToOneRelationship(COLUMN_ADDRESS, Address.class);
 		addManyToOneRelationship(COLUMN_TYPE, VenueType.class);
+	}
+
+	public void setDefaultValues() {
+		setDeleted(false);
 	}
 
 	public String getName() {

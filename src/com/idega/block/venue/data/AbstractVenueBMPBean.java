@@ -70,7 +70,6 @@ public abstract class AbstractVenueBMPBean extends GenericEntity implements Venu
 	public Object ejbCreate() throws CreateException {
 		iVenue = this.getVenueHome().create();
 		this.setPrimaryKey(iVenue.getPrimaryKey());
-		this.setDeleted(false);
 		try {
 			VenueType type = getVenueTypeHome().findByPrimaryKey(getTypeName());
 			this.setVenueType(type);
