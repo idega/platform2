@@ -10,12 +10,17 @@ import java.util.Vector;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.business.MessageComparator;
 import se.idega.idegaweb.commune.message.data.Message;
+import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.presentation.ColumnList;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
+
+import com.idega.business.IBOLookup;
+import com.idega.core.data.Address;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -29,6 +34,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
@@ -46,13 +52,13 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
   private final static int ACTION_VIEW_MESSAGE_OVERVIEW = 0;
   private final static int ACTION_VIEW_MESSAGE_LIST = 1;
-  private final static int ACTION_VIEW_MESSAGE = 2;
+  private final static int ACTION_VIEW_UNPRINTED = 2;
   private final static int ACTION_SHOW_DELETE_INFO = 3;
   private final static int ACTION_DELETE_MESSAGE = 4;
   private final static int ACTION_PRINT_UNPRINTED_MESSAGES = 5;
   private final static int ACTION_PRINT_MESSAGE=6;
 
-  private final static String PARAM_VIEW_MESSAGE = "prv_view_msg";
+  private final static String PARAM_VIEW_UNPRINTED = "prv_view_upr";
   private final static String PARAM_VIEW_MESSAGE_LIST = "prv_view_msg_list";
   private final static String PARAM_MESSAGE_ID = "prv_id";
   private final static String PARAM_SHOW_DELETE_INFO = "prv_s_delete_i";
@@ -112,6 +118,9 @@ public class PrintDocumentsViewer extends CommuneBlock {
           printMessage(iwc);
           viewMessages(iwc);
         	break;
+        case ACTION_VIEW_UNPRINTED:    
+        	addUnPrintedNameList(iwc);
+        break;
         default:
           break;
       }
@@ -139,8 +148,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
   private int parseAction(IWContext iwc)throws Exception{
     int action = ACTION_VIEW_MESSAGE_OVERVIEW;
 
-    if(iwc.isParameterSet(PARAM_VIEW_MESSAGE)){
-      action = ACTION_VIEW_MESSAGE;
+    if(iwc.isParameterSet(PARAM_VIEW_UNPRINTED)){
+      action = ACTION_VIEW_UNPRINTED;
     }
     else if(iwc.isParameterSet(PARAM_SHOW_DELETE_INFO)){
       action = ACTION_SHOW_DELETE_INFO;
@@ -264,8 +273,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
   	Table T = new Table();
   	DateInput from = new DateInput(PRM_STAMP_P_FROM);
   	from =(DateInput) getStyledInterface(from);
+  	from.setYearRange(today.getYear()-5,today.getYear()+2);
   	DateInput to = new DateInput(PRM_STAMP_P_TO);
   	to = (DateInput)getStyledInterface(to);
+  	to.setYearRange(today.getYear()-5,today.getYear()+2);
   	
   	from.setDate(pFrom.getSQLDate());
   	to.setDate(pTo.getSQLDate());
@@ -288,8 +299,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
   	Table T = new Table();
   	DateInput from = new DateInput(PRM_STAMP_U_FROM);
   	from =(DateInput) getStyledInterface(from);
+  	from.setYearRange(today.getYear()-5,today.getYear()+2);
   	DateInput to = new DateInput(PRM_STAMP_U_TO);
   	to = (DateInput)getStyledInterface(to);
+  	to.setYearRange(today.getYear()-5,today.getYear()+2);
   	from.setDate(uFrom.getSQLDate());
   	to.setDate(uTo.getSQLDate());
   	SubmitButton search = new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch","Fetch"));
@@ -339,7 +352,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
   private void addDocumentsList(IWContext iwc)throws Exception{
   	add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"));
   	
-  	ColumnList unPrintedLetterDocs = new ColumnList(3);
+  	ColumnList unPrintedLetterDocs = new ColumnList(4);
 		
 		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
 		unPrintedLetterDocs.setBackroundColor("#e0e0e0");
@@ -351,11 +364,18 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		//messageList.add("-");
 		unPrintedLetterDocs.add(Integer.toString(getDocumentBusiness(iwc).getUnprintedMessagesCountByType(currentType)));
 
+		
 		Link printLink = new Link(localize("printdoc.print","Print"));
 		printLink.addParameter(PARAM_PRINT_UNPRINTED,"true");
 		printLink.addParameter(PARAM_LETTER_TYPE,currentType);
 		addDateParametersToLink(printLink);
 		unPrintedLetterDocs.add(printLink);
+		
+		Link viewUnprintedLink = new Link(localize("printdoc.name_list","Namelist"));
+		viewUnprintedLink.addParameter(PARAM_VIEW_UNPRINTED,"true");
+		viewUnprintedLink.addParameter(PARAM_LETTER_TYPE,currentType);
+		addDateParametersToLink(viewUnprintedLink);
+		unPrintedLetterDocs.add(viewUnprintedLink);
 		
 		add(unPrintedLetterDocs);
 		add(Text.getBreak());
@@ -484,6 +504,43 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		
   	
   }
+  
+  private void addUnPrintedNameList(IWContext iwc)throws Exception{
+  	 ColumnList unPrintedNames = new ColumnList(3);
+  	 unPrintedNames.setWidth(Table.HUNDRED_PERCENT);
+			unPrintedNames.setBackroundColor("#e0e0e0");
+			//messageList.setHeader(localize("printdoc.name","Name"),1);
+			unPrintedNames.setHeader(localize("printdoc.created_date","Message created"),1);
+			unPrintedNames.setHeader(localize("printdoc.receiver","Receiver"),2);
+			unPrintedNames.setHeader(localize("printdoc.address","Address"),3);
+  	 Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType);
+  	 Iterator iter = unprintedLetters.iterator();
+  	 PrintMessage msg;
+  	 User owner;
+  	 UserBusiness ub = getUserBusiness(iwc);
+  	 Address addr;
+  	 String sAddr = "";
+  	 while(iter.hasNext()){
+  	 	msg = (PrintMessage) iter.next();
+  	 	owner = msg.getOwner();
+  	 	unPrintedNames.add(msg.getCreated().toString());
+  	 	unPrintedNames.add(owner.getName());
+  	 	try{
+  	 		addr = ub.getUsersMainAddress(owner);
+  	 		unPrintedNames.add(addr.getStreetAddress());
+  	 	}
+  	 	catch(Exception ex){
+  	 		unPrintedNames.add(getErrorText(localize("printdoc.noaddress","No address")));
+  	 	}
+  	 	
+  	
+  	 }
+  	 
+  	 
+  	 addTypeMenu(iwc);
+  	 add(unPrintedNames);
+  	 
+  }
 
   private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
     return (MessageBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,MessageBusiness.class);
@@ -491,6 +548,10 @@ public class PrintDocumentsViewer extends CommuneBlock {
 
   private DocumentBusiness getDocumentBusiness(IWContext iwc) throws Exception {
     return (DocumentBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,DocumentBusiness.class);
+  }
+  
+  private UserBusiness getUserBusiness(IWApplicationContext iwac)throws Exception{
+  	return (UserBusiness) IBOLookup.getServiceInstance(iwac,UserBusiness.class);
   }
 
   private Message getMessage(String id, IWContext iwc)throws Exception{
