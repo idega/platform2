@@ -1,11 +1,11 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.95 2003/12/13 17:40:31 kjell Exp $
- *
+ * $Id: RegulationsBusinessBean.java,v 1.96 2003/12/15 16:08:27 palli Exp $
+ * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
- *
- * This software is the proprietary information of Agura IT AB.
- * Use is subject to license terms.
- *
+ * 
+ * This software is the proprietary information of Agura IT AB. Use is subject
+ * to license terms.
+ *  
  */
 
 package se.idega.idegaweb.commune.accounting.regulations.business;
@@ -74,11 +74,11 @@ import com.idega.util.IWTimestamp;
 
 /**
  * @author Kelly Lindman
- * 
+ *  
  */
 public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean implements RegulationsBusiness {
 
-	private final static String KP = "regulation_spec_type_error."; // key prefix 
+	private final static String KP = "regulation_spec_type_error."; // key prefix
 	private final static String LP = "cacc_regulation."; // Localization prefex
 	public final static String KEY_CANNOT_DELETE_REG_SPEC_TYPE = KP + "cannot_delete_reg_spec_type_regulation";
 	public final static String DEFAULT_CANNOT_DELETE_REG_SPEC_TYPE = "Kunde inte radera regelspecifikationstypen";
@@ -104,21 +104,27 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Save regulation. Saves the regultion. If non existing, creates it.
-	 *  
-	 * @param regID the regulation id
-	 * @param periodFrom from date
-	 * @param periodTo to date
-	 * @param name name of this regulation
+	 * 
+	 * @param regID
+	 *          the regulation id
+	 * @param periodFrom
+	 *          from date
+	 * @param periodTo
+	 *          to date
+	 * @param name
+	 *          name of this regulation
 	 * @param amount
 	 * @param conditionOrder
 	 * @param operation
-	 * @param paymentFlowType in/out 1/2
-	 * @param vatEligible TAX Eligible Yes/No 1/2
+	 * @param paymentFlowType
+	 *          in/out 1/2
+	 * @param vatEligible
+	 *          TAX Eligible Yes/No 1/2
 	 * @param regSpecType
 	 * @param conditionType
 	 * @param specialCalculation
 	 * @param vatRule
-	 * @param changedBy  
+	 * @param changedBy
 	 * @return int of the PK ID for the created/saved regulation
 	 * 
 	 * @author kelly
@@ -154,12 +160,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		Integer specialCalculationID = null;
 		Integer vatRuleID = null;
 
-		//		verify that 
-		//		"från datum", 
-		//		"tom datum", 
-		//		"villkorstyp", 
-		//		"villkorsordning", 
-		//		"regelspecificeringstyp", 
+		//		verify that
+		//		"från datum",
+		//		"tom datum",
+		//		"villkorstyp",
+		//		"villkorsordning",
+		//		"regelspecificeringstyp",
 		//		"momsersättning" have values when push SAVE-button.
 
 		if (operation.compareTo("0") == 0) {
@@ -320,11 +326,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Save condition. If non existing, creates it.
-	 *  
-	 * @param regulation_id the regulation id
-	 * @param idx the index that this condition has (among the big 5) Can be expanded.
-	 * @param operation_id the operation index in the lists
-	 * @param interval_id the interval index in the lists
+	 * 
+	 * @param regulation_id
+	 *          the regulation id
+	 * @param idx
+	 *          the index that this condition has (among the big 5) Can be
+	 *          expanded.
+	 * @param operation_id
+	 *          the operation index in the lists
+	 * @param interval_id
+	 *          the interval index in the lists
 	 * @author kelly
 	 */
 	public void saveCondition(String regulation_id, String idx, String operation_id, String interval_id) throws RegulationException, RemoteException {
@@ -372,8 +383,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * gets a posting detail
-	 *  
-	 * @param xxx  
+	 * 
+	 * @param xxx
 	 * @return yyy
 	 * 
 	 * @author kelly
@@ -435,11 +446,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return 0;
 		}
 
-		//If there are no conditions on the rule then the rule does satisfies the conditions
+		//If there are no conditions on the rule then the rule does satisfies the
+		// conditions
 		if (cond == null || cond.isEmpty())
 			return 1;
 
-		//Go through each condition sent in and try to see if the rule satisfies the conditions it needs
+		//Go through each condition sent in and try to see if the rule satisfies
+		// the conditions it needs
 		Iterator it = c.iterator();
 		while (it.hasNext()) {
 			ConditionParameter param = (ConditionParameter) it.next();
@@ -482,7 +495,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_RESOURCE)) {
 						int id = regCond.getIntervalID();
 						try {
-							int resourceKey = ((Integer)getResourceHome().findResourceByName(value).getPrimaryKey()).intValue();
+							int resourceKey = ((Integer) getResourceHome().findResourceByName(value).getPrimaryKey()).intValue();
 							if (id != resourceKey)
 								match = false;
 						}
@@ -500,7 +513,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (!match)
 					return 0;
 			}
-			
+
 			else if (condition.equals(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL)) {
 				Integer value = (Integer) param.getInterval();
 				Iterator i = cond.iterator();
@@ -546,7 +559,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_HOURS)) {
 						int id = regCond.getIntervalID();
-						//I'll just use the fact that this is hardcoded.						
+						//I'll just use the fact that this is hardcoded.
 						switch (id) {
 							case 1 :
 								if (1 > value.intValue() || value.intValue() > 25)
@@ -591,7 +604,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_SIBLING_NR)) {
 						int id = regCond.getIntervalID();
-						//I'll just use the fact that this is hardcoded.						
+						//I'll just use the fact that this is hardcoded.
 						switch (id) {
 							case 1 :
 								if (1 != value.intValue())
@@ -624,8 +637,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_EMPLOYMENT)) {
 						int id = regCond.getIntervalID();
-							if (value.intValue() != id)
-								match = false;
+						if (value.intValue() != id)
+							match = false;
 					}
 				}
 
@@ -640,7 +653,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					Condition regCond = (Condition) i.next();
 					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR)) {
 						int id = regCond.getIntervalID();
-						//I'll just use the fact that this is hardcoded.						
+						//I'll just use the fact that this is hardcoded.
 						switch (id) {
 							case 1 :
 								try {
@@ -748,9 +761,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets a Condition by Regulation ID and Index
-	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters# 
-	 * @param regulationID Regulation ID
-	 * @param index the index of the condition
+	 * 
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters#
+	 * @param regulationID
+	 *          Regulation ID
+	 * @param index
+	 *          the index of the condition
 	 * @return Condition
 	 * @author Kelly
 	 */
@@ -769,6 +785,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Activity types
+	 * 
 	 * @return collection of Activity Types = School types
 	 * @see import com.idega.block.school.data.SchoolType#
 	 * @author Kelly
@@ -788,8 +805,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Commune belonging types
+	 * 
 	 * @return collection of Commune belonging types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType
 	 * @author Kelly
 	 */
 	public Collection findAllCommuneBelongingTypes() {
@@ -807,8 +825,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Company Types
+	 * 
 	 * @return collection of Company Types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType
 	 * @author Kelly
 	 */
 	public Collection findAllCompanyTypes() {
@@ -826,8 +845,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Regulation specification types
+	 * 
 	 * @return collection of Regulation specification types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType
 	 * @author Kelly
 	 */
 	public Collection findAllRegulationSpecTypes() throws RegulationException {
@@ -845,10 +865,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Saves a Regulation specification type.
-	 * @param regSpecTypeId The regulation specification id
-	 * @param regSpecTypeKey localized key
-	 * @param mainRuleId the MainTule relational id
-	 * @throws RegulationException if invalid parameters
+	 * 
+	 * @param regSpecTypeId
+	 *          The regulation specification id
+	 * @param regSpecTypeKey
+	 *          localized key
+	 * @param mainRuleId
+	 *          the MainTule relational id
+	 * @throws RegulationException
+	 *           if invalid parameters
 	 * @author Kelly
 	 */
 	public void saveRegulationSpecType(int regSpecTypeId, String regSpecTypeKey, int mainRuleId) throws RegulationException {
@@ -887,8 +912,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Deletes the regulation spec type object with the specified id.
-	 * @param id the RegSpecType id
-	 * @throws RegulationException if the regulation could not be deleted
+	 * 
+	 * @param id
+	 *          the RegSpecType id
+	 * @throws RegulationException
+	 *           if the regulation could not be deleted
 	 */
 	public void deleteRegulationSpecType(int id) throws RegulationException {
 		try {
@@ -909,8 +937,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all payment flow types.
+	 * 
 	 * @return collection of payment flow types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.PaymentFlowType
 	 * @author anders
 	 */
 	public Collection findAllPaymentFlowTypes() {
@@ -928,8 +957,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all provider types.
+	 * 
 	 * @return collection of provider types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ProviderType 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ProviderType
 	 * @author anders
 	 */
 	public Collection findAllProviderTypes() {
@@ -947,8 +977,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Main Rules
+	 * 
 	 * @return collection of provider types
-	 * @see se.idega.idegaweb.commune.accounting.regulations.data.MainRuleBMPBean# 
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.MainRuleBMPBean#
 	 * @author Kelly
 	 */
 	public Collection findAllMainRules() {
@@ -966,6 +997,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets a Regulation Specification
+	 * 
 	 * @return RegulationSpecType
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
 	 * @author Kelly
@@ -985,6 +1017,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Conditions on a certain regulation
+	 * 
 	 * @return collection of conditions
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
 	 * @author Kelly
@@ -1004,6 +1037,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Conditions on a certain regulation
+	 * 
 	 * @return collection of conditions
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType#
 	 * @author Kelly
@@ -1023,6 +1057,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Regulations
+	 * 
 	 * @return collection of Regulations
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
 	 * @author Kelly
@@ -1041,10 +1076,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/*
-	 * Checks if dates are in overlap of stored Regulations
-	 * @return true if there is an overlap
+	 * Checks if dates are in overlap of stored Regulations @return true if there
+	 * is an overlap
+	 * 
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
-	 * @author Kelly
+	 *      @author Kelly
 	 */
 	private boolean isRegulationOverlap(String name, Date from, Date to, Regulation r) {
 
@@ -1067,6 +1103,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all VAT Rules
+	 * 
 	 * @return collection of VAT Rules
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
 	 * @author Kelly
@@ -1094,11 +1131,14 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets regulations for a certain period
-	 * @param from period (Date)
-	 * @param to period (Date)
+	 * 
+	 * @param from
+	 *          period (Date)
+	 * @param to
+	 *          period (Date)
 	 * @return collection of Regulations
 	 * @author Kelly
-	 * 
+	 *  
 	 */
 	public Collection findRegulationsByPeriod(Date from, Date to) {
 		try {
@@ -1114,15 +1154,19 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Gets regulations for a certain period, operationID, FLowTypeID and SortByID
-	 * @param from period (Date)
-	 * @param to period (Date)
+	 * Gets regulations for a certain period, operationID, FLowTypeID and
+	 * SortByID
+	 * 
+	 * @param from
+	 *          period (Date)
+	 * @param to
+	 *          period (Date)
 	 * @param operationID
 	 * @param flowTypeID
 	 * @param sortByID
 	 * @return collection of Regulations
 	 * @author Kelly
-	 * 
+	 *  
 	 */
 	public Collection findRegulationsByPeriod(Date from, Date to, String operationID, int flowTypeID, int sortByID) {
 
@@ -1140,6 +1184,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets a Regulation
+	 * 
 	 * @return Regulations
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.Regulation
 	 * @author Kelly
@@ -1158,9 +1203,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Finds all sibling values
-	 * These are not put in an entity bean since Lotta Ringborg 
-	 * tells me they shall be fixed and never changed.
+	 * Finds all sibling values These are not put in an entity bean since Lotta
+	 * Ringborg tells me they shall be fixed and never changed.
+	 * 
 	 * @return Collection of sibling numbers
 	 * @author Kelly
 	 */
@@ -1176,9 +1221,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Finds all hour values
-	 * These are not put in an entity bean since Lotta Ringborg 
-	 * tells me they shall be fixed and never changed.
+	 * Finds all hour values These are not put in an entity bean since Lotta
+	 * Ringborg tells me they shall be fixed and never changed.
+	 * 
 	 * @return Collection of hour intervals
 	 * @author Kelly
 	 */
@@ -1199,9 +1244,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Finds all age intervals
-	 * These are not put in an entity bean since Lotta Ringborg 
-	 * tells me they shall be fixed and never changed.
+	 * Finds all age intervals These are not put in an entity bean since Lotta
+	 * Ringborg tells me they shall be fixed and never changed.
 	 * 
 	 * If these change please fix the method checkAgeIntervals as well.
 	 * 
@@ -1223,9 +1267,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Finds all school year intervalls hardcoded
-	 * These are not put in an entity bean since Lotta Ringborg 
-	 * tells me they shall be fixed and never changed.
+	 * Finds all school year intervalls hardcoded These are not put in an entity
+	 * bean since Lotta Ringborg tells me they shall be fixed and never changed.
+	 * 
 	 * @return Collection of hour intervals
 	 * @author Kelly
 	 */
@@ -1256,6 +1300,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets a yes/no to use in the regulation framework.
+	 * 
 	 * @return Yes no collection
 	 * @see se.idega.idegaweb.commune.accounting.regulations.presentation.RegulationListEditor#
 	 * @see getAllOperations
@@ -1275,9 +1320,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Finds all Max Amounts
-	 * These are not put in an entity bean since Lotta Ringborg 
-	 * tells me they shall be fixed and never changed.
+	 * Finds all Max Amounts These are not put in an entity bean since Lotta
+	 * Ringborg tells me they shall be fixed and never changed.
+	 * 
 	 * @return Collection of Max Amounts
 	 * @author Kelly
 	 */
@@ -1291,9 +1336,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Finds all discount values
-	 * These are not put in an entity bean since Lotta Ringborg 
-	 * tells me they shall be fixed and never changed.
+	 * Finds all discount values These are not put in an entity bean since Lotta
+	 * Ringborg tells me they shall be fixed and never changed.
+	 * 
 	 * @return Collection of discount values
 	 * @author Kelly
 	 */
@@ -1308,9 +1353,11 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Deletes a regulation
-	 * @param id Regulation ID
-	 * @author Kelly
 	 * 
+	 * @param id
+	 *          Regulation ID
+	 * @author Kelly
+	 *  
 	 */
 	public void deleteRegulation(int id) throws java.rmi.RemoteException {
 		try {
@@ -1325,6 +1372,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all Special Calculation types
+	 * 
 	 * @return collection of Special calculation types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationType#
 	 * @author Kelly
@@ -1352,6 +1400,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	/**
 	 * Gets all ConditionTypes
+	 * 
 	 * @return collection of condition types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionType#
 	 * @author Kelly
@@ -1370,25 +1419,22 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Gets all possible Condition selections. This is used to get certain data from different 
-	 * parts of the system. This could be placed in a bean later...
-	 * As of now I just set the values here.
+	 * Gets all possible Condition selections. This is used to get certain data
+	 * from different parts of the system. This could be placed in a bean
+	 * later... As of now I just set the values here.
 	 * 
 	 * Values are:
 	 * 
-	 * Operation ID
-	 * Real term (initial localized value)
-	 * Localization key
-	 * Class where the collection can be retrieved
-	 * Method to get the collection
-	 * Method to get the data in the bean (If blank it means the data is just a collection of objects []
+	 * Operation ID Real term (initial localized value) Localization key Class
+	 * where the collection can be retrieved Method to get the collection Method
+	 * to get the data in the bean (If blank it means the data is just a
+	 * collection of objects []
 	 * 
 	 * @return collection of ConditionHolders
 	 * @see se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder#
 	 * @see se.idega.idegaweb.commune.accounting.regulations.presentation.RegulationListEditor#
-	 * @author Kelly
-	 * TODO: getSession.getOperationalField() 
-	 * 
+	 * @author Kelly TODO: getSession.getOperationalField()
+	 *  
 	 */
 	public Collection findAllConditionSelections(String operationID) {
 		// LP = Localization path
@@ -1492,18 +1538,27 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Function that will return term (the descriptive text for a charge), the amount, VAT
-	 * and the VAT Type using the return object postingDetail. The regulation is selected
-	 * where all the inputparameters are fulfilled.
+	 * Function that will return term (the descriptive text for a charge), the
+	 * amount, VAT and the VAT Type using the return object postingDetail. The
+	 * regulation is selected where all the inputparameters are fulfilled.
 	 * 
-	 * @param operation (Huvudverksamhet)
-	 * @param flow (Ström)
-	 * @param period (date when the reule is valid)
-	 * @param conditionType (Villkorstyp)
-	 * @param condition (Collection of conditions)
-	 * @param regSpecType (RegelSpec.Typ)
-	 * @param totalSum total sum calculated so far. Sometimes needed for calculation to return
-	 * @param contract The contract archive
+	 * @param operation
+	 *          (Huvudverksamhet)
+	 * @param flow
+	 *          (Ström)
+	 * @param period
+	 *          (date when the reule is valid)
+	 * @param conditionType
+	 *          (Villkorstyp)
+	 * @param condition
+	 *          (Collection of conditions)
+	 * @param regSpecType
+	 *          (RegelSpec.Typ)
+	 * @param totalSum
+	 *          total sum calculated so far. Sometimes needed for calculation to
+	 *          return
+	 * @param contract
+	 *          The contract archive
 	 * @return postingDetail
 	 */
 	public PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
@@ -1515,7 +1570,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		Collection condition,
 		float totalSum,
 		ChildCareContract contract)
-		throws RegulationException {
+		throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
 
 		PostingDetail postingDetail = null;
 
@@ -1532,9 +1587,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					flowID = ((Integer) pfType.getPrimaryKey()).intValue();
 			}
 			catch (Exception e) {
-				System.out.println("WARNING: Could not find flow: "+flow);
-				e.printStackTrace();
-				flowID = -1;
+				throw new MissingFlowTypeException("reg_exp_missing_flow_type","Could not find flow type " + flow);
 			}
 
 			try {
@@ -1543,9 +1596,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					condTypeID = ((Integer) cType.getPrimaryKey()).intValue();
 			}
 			catch (Exception e) {
-				System.out.println("WARNING: Could not find conditionType: "+conditionType);
-				e.printStackTrace();
-				condTypeID = -1;
+				throw new MissingConditionTypeException("reg_exp_missing_condition_type","Could not find condition type " + conditionType);
 			}
 
 			try {
@@ -1554,22 +1605,20 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					regSpecTypeID = ((Integer) sType.getPrimaryKey()).intValue();
 			}
 			catch (Exception e) {
-				System.out.println("WARNING: Could not find regSpecType: "+regSpecType);
-				e.printStackTrace();
-				regSpecTypeID = -1;
+				throw new MissingRegSpecTypeException("reg_exp_missing_regspec_type","Could not find regspec type " + regSpecType);
 			}
 
-			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, regSpecTypeID,-1);
-			System.out.println("Found "+reg.size()+" regulations from initial query");
+			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, regSpecTypeID, -1);
+			logDebug("Found " + reg.size() + " regulations from initial query");
 			if (reg != null && !reg.isEmpty()) {
 				List match = new Vector();
 				Iterator it = reg.iterator();
 				while (it.hasNext()) {
 					Regulation regulation = (Regulation) it.next();
-//					System.out.println("Checking Regulation "+regulation.getName());
+					//					System.out.println("Checking Regulation "+regulation.getName());
 					int i = checkConditions(regulation, condition);
-					if (i == 1){
-						System.out.println("Regulation found "+regulation.getName());
+					if (i == 1) {
+						logDebug("Regulation found " + regulation.getName());
 						match.add(regulation);
 					}
 				}
@@ -1579,23 +1628,27 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					try {
 						postingDetail = getPostingDetailFromRegulation(res, condition, contract, null, period, totalSum);
 					}
-					catch(BruttoIncomeException e) {
+					catch (BruttoIncomeException e) {
 					}
-					catch(LowIncomeException e) {
+					catch (LowIncomeException e) {
 					}
 				}
 				else if (match.size() > 1) {
 					Iterator regIterator = match.iterator();
 					while (regIterator.hasNext()) {
 						Regulation tmpreg = (Regulation) regIterator.next();
-						System.out.println("Too many regulations found: "+tmpreg.getName());
+						logDebug("Too many regulations found: " + tmpreg.getName());
 					}
-					throw new RegulationException("reg_exp_to_many_results", "Too many regulation match conditions");
-				} else{
-					System.out.println("No regulations found");
+					throw new TooManyRegulationsException("reg_exp_to_many_results", "Too many regulation match conditions");
 				}
-			} else{
-				System.out.println("Initial query for regulations did not find anything.");
+				else {
+					logDebug("No regulations found");
+					throw new RegulationException("reg_exp_no_results", "No regulation match conditions");
+				}
+			}
+			else {
+				logDebug("Initial query for regulations did not find anything.");
+				throw new RegulationException("reg_exp_no_regulation", "No regulations found");
 			}
 		}
 		catch (RemoteException e) {
@@ -1610,7 +1663,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		return postingDetail;
 	}
 
-	//	public PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+	//	public PostingDetail
+	// getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
 	//		String operation,
 	//		String flow,
 	//		Date period,
@@ -1620,7 +1674,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	//		float totalSum,
 	//		ChildCareContract contract) {
 
-	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum) throws BruttoIncomeException, LowIncomeException {
+	private PostingDetail getPostingDetailFromRegulation(Regulation reg, Collection conditions, ChildCareContract contract, SchoolClassMember placement, Date period, float total_sum)
+		throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
 		PostingDetail ret = null;
 		if (reg.getSpecialCalculation() != null) {
 			String type = reg.getSpecialCalculation().getSpecialCalculationType();
@@ -1638,15 +1693,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							total_sum,
 							contract);
 				}
-				catch (RegulationException e) {
-					e.printStackTrace();
-				}
 				catch (EJBException e) {
 					e.printStackTrace();
 				}
+
 				if (d != null) {
 					ret = new PostingDetail();
-					ret.setAmount(Math.round(d.getAmount()-total_sum));
+					ret.setAmount(Math.round(d.getAmount() - total_sum));
 					ret.setRuleSpecType(d.getRuleSpecType());
 					ret.setTerm(reg.getName());
 					ret.setOrderID(reg.getConditionOrder().intValue());
@@ -1695,20 +1748,20 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 									}
 								}
 								catch (EJBException e1) {
-//									e1.printStackTrace();
+									//									e1.printStackTrace();
 									missingIncome = true;
 									break;
 								}
 								catch (FinderException e1) {
-//									e1.printStackTrace();
+									//									e1.printStackTrace();
 									missingIncome = true;
 									break;
 								}
 							}
 						}
-					
+
 						float perc = reg.getMaxAmountDiscount();
-						if (!missingIncome && income > 0.0f && perc > 0.0f) {							
+						if (!missingIncome && income > 0.0f && perc > 0.0f) {
 							float amount = income * perc / 100;
 							if (amount < total_sum) {
 								ret = new PostingDetail();
@@ -1721,14 +1774,14 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							}
 						}
 						else {
-							throw new BruttoIncomeException("reg_exp.no_brutto_income","Brutto income not registered");
+							throw new BruttoIncomeException("reg_exp.no_brutto_income", "Brutto income not registered");
 						}
 					}
 					catch (NoCustodianFound e) {
-						throw new BruttoIncomeException("reg_exp.no_brutto_income","Brutto income not registered");
+						throw new BruttoIncomeException("reg_exp.no_brutto_income", "Brutto income not registered");
 					}
 					catch (RemoteException e) {
-						throw new BruttoIncomeException("reg_exp.no_brutto_income","Brutto income not registered");
+						throw new BruttoIncomeException("reg_exp.no_brutto_income", "Brutto income not registered");
 					}
 				}
 			}
@@ -1741,13 +1794,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				else if (placement != null) {
 					child = placement.getStudent();
 				}
-				
+
 				if (child != null) {
 					System.out.println("LOW: CHILD = " + child.getName());
 					System.out.println("LOW: DATE = " + period);
-					System.out.println("LOW: OPERATION = " + (String)reg.getOperation().getPrimaryKey());
+					System.out.println("LOW: OPERATION = " + (String) reg.getOperation().getPrimaryKey());
 					try {
-						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodeAndCategory(period,((Integer)child.getPrimaryKey()).intValue(), reg.getOperation());
+						Collection low = getRegularInvoiceBusiness().findRegularLowIncomeInvoicesForPeriodeAndCategory(period, ((Integer) child.getPrimaryKey()).intValue(), reg.getOperation());
 						if (low != null && !low.isEmpty()) {
 							Iterator lowIt = low.iterator();
 							if (lowIt.hasNext()) {
@@ -1761,23 +1814,23 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 								ret.setOrderID(reg.getConditionOrder().intValue());
 								//			ret.setVat(32.0f);
 								//			ret.setVatRegulationID(1);
-								
+
 							}
 							else {
-								throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+								throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
 							}
 						}
 						else {
-							throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+							throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
 						}
 					}
 					catch (Exception e) {
 						e.printStackTrace();
-						throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+						throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
 					}
 				}
 				else {
-					throw new LowIncomeException("reg_exp.no_low_income_entry","No low income entry for this child");
+					throw new LowIncomeException("reg_exp.no_low_income_entry", "No low income entry for this child");
 				}
 			}
 		}
@@ -1803,7 +1856,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Function to return all the regulations that fit the description/selection 
+	 * Function to return all the regulations that fit the description/selection
 	 * according to the input parameters and sorted by the condition order.
 	 * 
 	 * @param operation
@@ -1811,10 +1864,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * @param period
 	 * @param conditionType
 	 * @param condition
-	 * @return ArrayList containing the regulations 
+	 * @return ArrayList containing the regulations
 	 */
-	public Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
-	String operation, String flow, Date period, String conditionType, String mainRule, Collection condition) {
+	public Collection getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(String operation, String flow, Date period, String conditionType, String mainRule, Collection condition) {
 		Collection match = new ArrayList();
 
 		try {
@@ -1841,13 +1893,13 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			catch (Exception e) {
 				condTypeID = -1;
 			}
-			
+
 			try {
 				MainRule mRule = getMainRuleHome().findMainRuleByName(mainRule);
 				if (mRule != null)
 					mainRuleId = ((Integer) mRule.getPrimaryKey()).intValue();
 			}
-			catch(Exception e) {
+			catch (Exception e) {
 				mainRuleId = -1;
 			}
 
@@ -1873,7 +1925,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * 
 	 * @param regulation
 	 * @return
 	 */
@@ -1915,27 +1966,29 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}
 
 	/**
-	 * Returns PostingDetail (the text, sum, vat and vat type) calculated for the specific regulation
-	 * and contract
+	 * Returns PostingDetail (the text, sum, vat and vat type) calculated for the
+	 * specific regulation and contract
 	 * 
 	 * @param totalSum
 	 * @param contract
 	 * @return PostingDetail
 	 */
-	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException, LowIncomeException {
+	public PostingDetail getPostingDetailForContract(float totalSum, ChildCareContract contract, Regulation regulation, Date period, Collection condition)
+		throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
 		return getPostingDetailFromRegulation(regulation, condition, contract, null, period, totalSum);
 	}
 
 	/**
-	 * Returns PostingDetail (the text, sum, vat and vat type) calculated for the specific regulation
-	 * and School Placement
+	 * Returns PostingDetail (the text, sum, vat and vat type) calculated for the
+	 * specific regulation and School Placement
 	 * 
 	 * @param totalSum
 	 * @param schoolClassMember
 	 * @param regulation
 	 * @return
 	 */
-	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition) throws BruttoIncomeException, LowIncomeException {
+	public PostingDetail getPostingDetailForPlacement(float totalSum, SchoolClassMember schoolClassMember, Regulation regulation, Date period, Collection condition)
+		throws BruttoIncomeException, LowIncomeException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException {
 		return getPostingDetailFromRegulation(regulation, condition, null, schoolClassMember, period, totalSum);
 	}
 
@@ -1957,7 +2010,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	protected RegularInvoiceBusiness getRegularInvoiceBusiness() throws RemoteException {
 		return (RegularInvoiceBusiness) getServiceInstance(RegularInvoiceBusiness.class);
 	}
-	
+
 	protected ActivityTypeHome getActivityTypeHome() throws RemoteException {
 		return (ActivityTypeHome) com.idega.data.IDOLookup.getHome(ActivityType.class);
 	}

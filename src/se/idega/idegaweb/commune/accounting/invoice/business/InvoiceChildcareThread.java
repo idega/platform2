@@ -31,11 +31,15 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.LowIncomeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.MissingConditionTypeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.MissingFlowTypeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.MissingRegSpecTypeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.TooManyRegulationsException;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
@@ -224,16 +228,17 @@ public class InvoiceChildcareThread extends BillingThread{
 						"conditions:"+conditions.size()+"<br>"+
 						"totalSum:"+totalSum+"<br>"+
 						"contract:"+contract.getPrimaryKey()+"<br>");
-					postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
-						category.getCategory(),		//The ID that selects barnomsorg in the regulation
-						PaymentFlowConstant.OUT, 	//The payment flow is out
-						currentDate,					//Current date to select the correct date range
-						RuleTypeConstant.DERIVED,	//The conditiontype
-						RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
-						conditions,						//The conditions that need to fulfilled
-						totalSum,						//Sent in to be used for "Specialutrakning"
-						contract);						//Sent in to be used for "Specialutrakning"
-					if(postingDetail == null){
+						postingDetail = regBus.getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+							category.getCategory(),		//The ID that selects barnomsorg in the regulation
+							PaymentFlowConstant.OUT, 	//The payment flow is out
+							currentDate,					//Current date to select the correct date range
+							RuleTypeConstant.DERIVED,	//The conditiontype
+							RegSpecConstant.CHECK,		//The ruleSpecType shall be Check
+							conditions,						//The conditions that need to fulfilled
+							totalSum,						//Sent in to be used for "Specialutrakning"
+							contract);						//Sent in to be used for "Specialutrakning"
+
+						if(postingDetail == null){
 						throw new RegulationException("reg_exp_no_results","No regulations found.");
 					}
 					System.out.println("RuleSpecType to use: "+postingDetail.getTerm());
@@ -325,6 +330,22 @@ public class InvoiceChildcareThread extends BillingThread{
 							e1.printStackTrace();
 							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingRegulationWhenItWasExpected");
 						}
+						catch(MissingConditionTypeException e) {
+							e.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingConditionType");
+						}
+						catch (MissingFlowTypeException e) {
+							e.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingFlowType");
+						}
+						catch (MissingRegSpecTypeException e) {
+							e.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingRegSpecType");
+						}
+						catch (TooManyRegulationsException e) {
+							e.printStackTrace();
+							createNewErrorMessage(errorRelated.toString(),"invoice.TooManyRegulationsFoundForQuery");
+						}
 					}
 					//Make sure that the sum is not less than 0
 					log.info("Total sum is:"+totalSum);
@@ -393,6 +414,38 @@ public class InvoiceChildcareThread extends BillingThread{
 						createNewErrorMessage(errorRelated.toString(),"invoice.CouldNotGetSiblingOrder");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.CouldNotGetSiblingOrder");
+					}
+				}
+				catch (MissingFlowTypeException e) {
+					e.printStackTrace();
+					if(errorRelated != null){
+						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingFlowType");
+					} else{
+						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingFlowType");
+					}
+				}
+				catch (MissingConditionTypeException e) {
+					e.printStackTrace();
+					if(errorRelated != null){
+						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingConditionType");
+					} else{
+						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingConditionType");
+					}
+				}
+				catch (MissingRegSpecTypeException e) {
+					e.printStackTrace();
+					if(errorRelated != null){
+						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingRegSpecType");
+					} else{
+						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingRegSpecType");
+					}
+				}
+				catch (TooManyRegulationsException e) {
+					e.printStackTrace();
+					if(errorRelated != null){
+						createNewErrorMessage(errorRelated.toString(),"invoice.ErrorFindingTooManyRegulations");
+					} else{
+						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingTooManyRegulations");
 					}
 				}
 			}

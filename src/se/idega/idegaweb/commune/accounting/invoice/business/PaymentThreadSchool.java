@@ -18,11 +18,15 @@ import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.LowIncomeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.MissingConditionTypeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.MissingFlowTypeException;
+import se.idega.idegaweb.commune.accounting.regulations.business.MissingRegSpecTypeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.TooManyRegulationsException;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
@@ -58,11 +62,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/15 14:42:07 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/15 16:08:27 $ by $Author: palli $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.54 $
+ * @version $Revision: 1.55 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -127,6 +131,42 @@ public abstract class PaymentThreadSchool extends BillingThread {
 							} catch(NullPointerException e){
 								e.printStackTrace();
 								createNewErrorMessage("invoice.PaymentSchool","invoice.nullpointer");
+							}
+							catch (MissingFlowTypeException e) {
+								e.printStackTrace();
+								if(errorRelated!=null)
+								{
+									createNewErrorMessage(errorRelated.toString(), "invoice.ErrorFindingFlowType");
+								}else{
+									createNewErrorMessage("invoice.school", "invoice.ErrorFindingFlowType");
+								}
+							}
+							catch (MissingConditionTypeException e) {
+								e.printStackTrace();
+								if(errorRelated!=null)
+								{
+									createNewErrorMessage(errorRelated.toString(), "invoice.ErrorFindingConditionType");
+								}else{
+									createNewErrorMessage("invoice.school", "invoice.ErrorFindingConditionType");
+								}
+							}
+							catch (MissingRegSpecTypeException e) {
+								e.printStackTrace();
+								if(errorRelated!=null)
+								{
+									createNewErrorMessage(errorRelated.toString(), "invoice.ErrorFindingRegSpecType");
+								}else{
+									createNewErrorMessage("invoice.school", "invoice.ErrorFindingRegSpecType");
+								}
+							}
+							catch (TooManyRegulationsException e) {
+								e.printStackTrace();
+								if(errorRelated!=null)
+								{
+									createNewErrorMessage(errorRelated.toString(), "invoice.ErrorFindingTooManyRegulations");
+								}else{
+									createNewErrorMessage("invoice.school", "invoice.ErrorFindingTooManyRegulations");
+								}
 							}
 						}
 					}
@@ -225,7 +265,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	}
 	
 	private void createPaymentForSchoolClassMember(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, boolean schoolIsInDefaultCommuneAndNotPrivate) 
-			throws RemoteException, FinderException, RegulationException, EJBException, PostingException, CreateException, IDOLookupException {
+			throws FinderException, EJBException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		errorRelated.append("Student "+schoolClassMember.getStudent().getName()+"<br>");
         
 		dispTime("Found " + schoolClassMember.getStudent().getName());
@@ -319,7 +359,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	}
 
 	private void createPaymentsForResource(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, ResourceClassMember resource)
-			throws EJBException, RemoteException, FinderException, PostingException, CreateException, IDOLookupException {
+			throws EJBException, FinderException, PostingException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		final Date startDate = resource.getStartDate();
 		final Date endDate = resource.getEndDate ();
 		final PlacementTimes placementTimes = calculateTime (startDate, endDate);
@@ -357,7 +397,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	private void createPaymentsForFritidsklubb(
 			RegulationsBusiness regBus,Provider provider,SchoolClassMember 
 			schoolClassMember,ArrayList conditions, PlacementTimes placementTimes)
-			throws RemoteException, FinderException, PostingException, EJBException, CreateException, IDOLookupException {
+			throws FinderException, PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		School school = schoolClassMember.getSchoolClass().getSchool();
 		ArrayList oppenConditions = new ArrayList();
 		oppenConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, FRITIDSKLUBB));
@@ -391,7 +431,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 	private void createPaymentsForOppenVerksamhet(
 			RegulationsBusiness regBus, Provider provider, SchoolClassMember 
 			schoolClassMember, ArrayList conditions, PlacementTimes placementTimes)
-			throws RemoteException, FinderException, PostingException, EJBException, CreateException, IDOLookupException {
+			throws FinderException, PostingException, EJBException, CreateException, RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
 		ArrayList oppenConditions = new ArrayList();
 		School school = schoolClassMember.getSchoolClass().getSchool();
 		
@@ -401,7 +441,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			PaymentFlowConstant.OUT,		//The payment flow is out
 			currentDate,						//Current date to select the correct date range
 			RuleTypeConstant.DERIVED,		//The conditiontype
-			null, oppenConditions			//The conditions that need to fulfilled
+			null, 
+			oppenConditions			//The conditions that need to fulfilled
 		);
 		for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
 			try {
