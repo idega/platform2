@@ -40,6 +40,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
   private Hashtable dialogs = new Hashtable();
   private ImageLabel faceLabel;
+  private ImageLabel logoLabel;
 
   private Thread t;
 
@@ -81,6 +82,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
       try {
         faceLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"face_in.gif"));
+        logoLabel = new ImageLabel(getImage(new URL(hostURL+resourceURL),"idegalogo.gif"));
       }
       catch (Exception ex) {
         ex.printStackTrace(System.err);
@@ -221,7 +223,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     try{
 
-      if( isfirstRun ){
+     // if( isfirstRun ){
         packetToServlet = new Packet();
 
         packetToServlet.addProperty(new Property("client_id",sessionId));
@@ -231,8 +233,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
 
         packetToServlet.setSender(sessionId);
-        isfirstRun = false;
-      }
+     //   isfirstRun = false;
+     // }
 
       if( packetToServlet != null ){
         System.out.println("sending packets");
@@ -328,7 +330,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       msg.setSender(sendToId);
       msg.setSenderName(name);
 
-      MessageDialog dialog = new MessageDialog(FRAME_NAME,msg);
+      MessageDialog dialog = new MessageDialog(FRAME_NAME,msg,logoLabel);
       dialog.setSize(FRAME_WIDTH,FRAME_HEIGHT);
       dialogs.put(Integer.toString(dialog.hashCode()),dialog);
       dialog.addActionListener(this);
