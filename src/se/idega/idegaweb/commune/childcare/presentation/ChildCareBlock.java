@@ -37,6 +37,8 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	public static final String CONTRACT_COLOR = "#E0E0FD";
 	public static final String PENDING_COLOR = "#FDFFDD";
 	
+	public static final String STATUS_ALL = "status_all";
+	
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
 		business = getChildCareBusiness(iwc);
@@ -220,7 +222,7 @@ public abstract class ChildCareBlock extends CommuneBlock {
 	
 	protected DropdownMenu getRejectedStatuses() throws RemoteException {
 		DropdownMenu menu = new DropdownMenu(getSession().getParameterStatus());
-		menu.addMenuElement("-1", localize("child_care.all_rejected_applications", "Show all rejected"));
+		menu.addMenuElement(STATUS_ALL, localize("child_care.all_rejected_applications", "Show all rejected"));
 		menu.addMenuElement(String.valueOf(getBusiness().getStatusCancelled()), getStatusString(getBusiness().getStatusCancelled()));
 		menu.addMenuElement(String.valueOf(getBusiness().getStatusDenied()), getStatusString(getBusiness().getStatusDenied()));
 		menu.addMenuElement(String.valueOf(getBusiness().getStatusNotAnswered()), getStatusString(getBusiness().getStatusNotAnswered()));
