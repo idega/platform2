@@ -276,10 +276,12 @@ public class ProductViewer extends Block {
   private List getCategoriesFromParameter(IWContext iwc) {
     Vector vector = new Vector();
     String[] categories = iwc.getParameterValues(ProductCatalog.CATEGORY_ID);
-    for ( int a = 0; a < categories.length; a++ ) {
-      ProductCategory category = ProductBusiness.getProductCategory(Integer.parseInt(categories[a]));
-      if ( category != null )
-	vector.add(category);
+    if ( categories != null ) {
+      for ( int a = 0; a < categories.length; a++ ) {
+	ProductCategory category = ProductBusiness.getProductCategory(Integer.parseInt(categories[a]));
+	if ( category != null )
+	  vector.add(category);
+      }
     }
     return vector;
   }
