@@ -247,13 +247,11 @@ public class HandicapScore extends GolfBlock {
 
 		myTable.add(memberText, 2, 1);
 		if (isAdmin) {
-			myTable.add(Text.getNonBrakingSpace(), 2, 1);
-			myTable.add(Text.getNonBrakingSpace(), 2, 1);
+			myTable.add(getSmallText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE), 2, 1);
 			myTable.add(selectMember, 2, 1);
 		}
 		myTable.add(fieldText, 2, 2);
-		myTable.add(Text.getNonBrakingSpace(), 2, 2);
-		myTable.add(Text.getNonBrakingSpace(), 2, 2);
+		myTable.add(getSmallText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE), 2, 2);
 		myTable.add(selectField, 2, 2);
 		myTable.add(select_day, 2, 4);
 		myTable.add(select_month, 2, 4);

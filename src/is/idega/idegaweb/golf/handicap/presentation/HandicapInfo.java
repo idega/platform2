@@ -193,8 +193,7 @@ public class HandicapInfo extends GolfBlock {
 		textTable.addBreak(1, 1);
 		textTable.add(memberText, 1, 1);
 		if (isAdmin) {
-			textTable.add(Text.getNonBrakingSpace(), 1, 1);
-			textTable.add(Text.getNonBrakingSpace(), 1, 1);
+			textTable.add(getSmallText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE), 1, 1);
 			textTable.add(selectMember, 1, 1);
 		}
 		textTable.add(mainUnionText, 1, 2);
