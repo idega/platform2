@@ -50,6 +50,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.transaction.IdegaTransactionManager;
+import com.idega.util.IWColor;
 import com.idega.util.datastructures.HashMatrix;
 
 /**
@@ -156,6 +157,26 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     
     // does th euser want to save a new entry?
     if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
+      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+      Integer newGroupId = null;
+      EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
+        DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(new Integer(-1), LEAGUE_NAME, iwc);
+      if (entityPathValueContainerFromDropDownMenu.isValid()) {
+        String pathShortKey = entityPathValueContainerFromDropDownMenu.getEntityPathShortKey();
+        Object value = entityPathValueContainerFromDropDownMenu.getValue();
+        newGroupId = changeLeagueOfExistingRecords(new Integer(-1), value.toString(), workReportBusiness);
+      }
+      if (newGroupId != null) {
+        Iterator iterator = fieldList.iterator();
+        while (iterator.hasNext())  {
+          String field = (String) iterator.next();
+          EntityPathValueContainer entityPathValueContainerFromTextEditor = 
+            TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(newGroupId, field, iwc);
+          if (entityPathValueContainerFromTextEditor.isValid()) {
+            setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromTextEditor, newGroupId, workReportBusiness);
+          }
+        }
+      }
       return action;
     }
     // does the user want to create a new entry?
@@ -184,6 +205,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
           setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromTextEditor, groupId, workReportBusiness);
         }
       }
+      // important: first save the fields, then change the league
       EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
         DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(groupId, LEAGUE_NAME, iwc);
       if (entityPathValueContainerFromDropDownMenu.isValid()) {
@@ -474,7 +496,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     EntityBrowser browser = new EntityBrowser();
     browser.setLeadingEntity(WorkReportClubAccountRecord.class);
     browser.setShowMirroredView(true);
-    browser.setCellspacing(20);
+    browser.setCellspacing(10);
+    browser.setColorForEvenRows(IWColor.getHexColorString(246, 246, 247));
+    browser.setColorForOddRows("#FFFFFF");
     // no settings button 
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     browser.setEntities("dummy_string", entities);
@@ -714,7 +738,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
   } 
 
-  private void changeLeagueOfExistingRecords(Integer groupId, String newLeagueName, WorkReportBusiness workReportBusiness)  {
+  private Integer changeLeagueOfExistingRecords(Integer groupId, String newLeagueName, WorkReportBusiness workReportBusiness)  {
     WorkReportGroup workReportGroup; 
     Integer newGroupId;
     try {
@@ -735,13 +759,13 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       System.err.println(message + " Message is: " + ex.getMessage());
       ex.printStackTrace(System.err);
       // give up
-      return;
+      return null;
     }
     // does this league already exist?
     Set leaguesIds = leagueKeyMatrix.firstKeySet();
     if (leaguesIds.contains(newGroupId))  {
       // do nothing
-      return;
+      return null;
     }
     // !!!! add league to work report +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     WorkReport workReport;
@@ -764,7 +788,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       System.err.println(message + " Message is: " + ex.getMessage());
       ex.printStackTrace(System.err);
       // give up
-      return;
+      return null;
     }
     TransactionManager tm = IdegaTransactionManager.getInstance();
     try {
@@ -804,6 +828,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         sysEx.printStackTrace(System.err);
       }
     }
+    return newGroupId;
   }
 
     
