@@ -2,9 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 
-import java.awt.Color;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -49,24 +47,19 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
-import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.User;
-import com.lowagie.text.Document;
-import com.lowagie.text.Element;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * Holds most of the logic for the batchjob that creates the information that is
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/27 09:16:47 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/27 10:57:35 $ by $Author: staffan $
  *
- * @author Joakim
- * @version $Revision: 1.54 $
+ * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.55 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -92,93 +85,24 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		}
 	}
 
-	private static float mmToPoints (final float mm) {
-		return mm*72/25.4f;
-	}
-    
-	/**
-	 * @return int id of document
-	 */
-	public int generateInvoiceCompilationPdf
-        (final InvoiceHeader header, final String [] columnNames)
+    public int generatePdf (final MemoryFileBuffer buffer)
         throws RemoteException {
-        final String headerId = header.getPrimaryKey ().toString ();
-		try{
-            final InvoiceRecord [] records
-                    = getInvoiceRecordsByInvoiceHeader (header);
-
-            // create document
-			final MemoryFileBuffer buffer = new MemoryFileBuffer ();
-			final OutputStream outStream = new MemoryOutputStream (buffer);
-			final Document document = new Document
-					(PageSize.A4.rotate (), mmToPoints (30), mmToPoints (30),
-					 mmToPoints (30), mmToPoints (30));
-			final PdfWriter writer
-                    = PdfWriter.getInstance (document, outStream);
-			writer.setViewerPreferences
-					(PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
-                     PdfWriter.PageModeUseNone | PdfWriter.FitWindow
-                     | PdfWriter.CenterWindow);
-            final String title = "Fakturaunderlag " + headerId;
-			document.addTitle (title);
-			document.addCreationDate ();
-			document.open ();
-
-            // add content to document
-			final PdfPTable table = new PdfPTable
-                    (new float [] { 1.0f, 1.0f, 1.2f, 0.8f, 0.8f, 1.2f });
-			table.setWidthPercentage (100f);
-            table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
-            table.getDefaultCell ().setBorder (0);
-            for (int i = 0; i < columnNames.length; i++) {
-                table.addCell (columnNames [i]);
-            }
-            table.setHeaderRows (1);  // this is the end of the table header
-            final Color lightBlue = new Color (0xf4f4f4);
-            for (int i = 0; i < records.length; i++) {
-                final InvoiceRecord record = records [i];
-                final User child = getChildByInvoiceRecord (record);
-                final String ssn = null != child
-                        ? formatSsn (child.getPersonalID ()) : "";
-                final String firstName = null != child
-                        ? child.getFirstName () : "";
-                table.getDefaultCell().setBackgroundColor
-                        (i % 2 == 0 ? Color.white : lightBlue);
-                table.addCell (ssn);
-                table.addCell (firstName);
-                table.addCell (record.getInvoiceText ());
-                table.getDefaultCell ().setHorizontalAlignment
-                        (Element.ALIGN_RIGHT);
-                table.addCell (record.getDays () + "");
-                table.addCell (((long) record.getAmount ()) + "");
-                table.getDefaultCell ().setHorizontalAlignment
-                        (Element.ALIGN_LEFT);
-                table.addCell (record.getNotes ());
-            }
-            document.add (table);
-
-            // close and store document
-			document.close ();
-			final ICFileHome icFileHome
-					= (ICFileHome) getIDOHome (ICFile.class);
-			final ICFile file = icFileHome.create ();
-			final InputStream inStream = new MemoryInputStream (buffer);
-			file.setFileValue (inStream);
-			file.setMimeType ("application/x-pdf");
-			file.setName ("invoice_" + headerId + ".pdf");
-			file.setFileSize (buffer.length ());
-			file.store ();
-			return ((Integer)file.getPrimaryKey()).intValue();
+        try {
+            final InputStream inStream = new MemoryInputStream (buffer);
+            final ICFileHome icFileHome
+                    = (ICFileHome) getIDOHome (ICFile.class);
+            final ICFile file = icFileHome.create ();
+            file.setFileValue (inStream);
+            file.setMimeType ("application/x-pdf");
+            file.setName ("invoice.pdf");
+            file.setFileSize (buffer.length ());
+            file.store ();
+            return ((Integer) file.getPrimaryKey()).intValue();
 		} catch (Exception e) {
 			e.printStackTrace ();
-			throw new RemoteException ("Couldn't generate invoice compilation "
-									   + headerId, e);
+			throw new RemoteException
+                    ("Couldn't generate invoice compilation pdf", e);
 		}
-	}
-
-    private String formatSsn (final String ssn) {
-        return null == ssn || 12 != ssn.length () ? ssn
-                : ssn.substring (2, 8) + '-' + ssn.substring (8, 12);
     }
 
 	/**

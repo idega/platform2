@@ -9,6 +9,8 @@ import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
+import com.idega.io.MemoryFileBuffer;
+import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
@@ -24,8 +26,20 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.presentation.UserSearcher;
+import java.awt.Color;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,10 +80,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/27 09:16:47 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/27 10:57:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.59 $
+ * @version $Revision: 1.60 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -294,7 +308,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	}
 
 	private void generateCompilationPdf (final IWContext context)
-        throws RemoteException, FinderException {
+        throws RemoteException, FinderException, DocumentException {
+
         final String [] columnNames =
                 {localize (SSN_KEY, SSN_DEFAULT),
                  localize (FIRST_NAME_KEY, FIRST_NAME_DEFAULT),
@@ -302,18 +317,83 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                  localize (NUMBER_OF_DAYS_KEY, NUMBER_OF_DAYS_DEFAULT),
                  localize (AMOUNT_KEY, AMOUNT_DEFAULT),
                  localize (REMARK_KEY, REMARK_DEFAULT)};
-        
+
         final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
                 .getServiceInstance (context, InvoiceBusiness.class);
-        final int docId = business.generateInvoiceCompilationPdf
-                (getInvoiceHeader (context), columnNames);
+        final InvoiceHeader header = getInvoiceHeader (context);        
+        final String headerId = header.getPrimaryKey ().toString ();
+        final InvoiceRecord [] records
+                = business.getInvoiceRecordsByInvoiceHeader (header);
+        final Document document = new Document
+                (PageSize.A4, mmToPoints (20), mmToPoints (20),
+                 mmToPoints (20), mmToPoints (20));
+        final MemoryFileBuffer buffer = new MemoryFileBuffer ();
+        final OutputStream outStream = new MemoryOutputStream (buffer);
+        final PdfWriter writer = PdfWriter.getInstance (document, outStream);
+        writer.setViewerPreferences
+                (PdfWriter.HideMenubar | PdfWriter.PageLayoutOneColumn |
+                 PdfWriter.PageModeUseNone | PdfWriter.FitWindow
+                 | PdfWriter.CenterWindow);
+        final String title = "Fakturaunderlag " + headerId;
+        document.addTitle (title);
+        document.addCreationDate ();
+        document.open ();
+        
+        // add content to document
+        final PdfPTable table = new PdfPTable
+                (new float [] { 1.2f, 1.2f, 2.0f, 1.0f, 1.0f, 2.0f });
+        table.setWidthPercentage (100f);
+        table.getDefaultCell ().setBackgroundColor (new Color (0xd0daea));
+        table.getDefaultCell ().setBorder (0);
+        for (int i = 0; i < columnNames.length; i++) {
+            addPhrase (table, columnNames [i]);
+        }
+        table.setHeaderRows (1);  // this is the end of the table header
+        final Color lightBlue = new Color (0xf4f4f4);
+        for (int i = 0; i < records.length; i++) {
+            final InvoiceRecord record = records [i];
+            final User child = business.getChildByInvoiceRecord (record);
+            final String ssn = null != child
+                    ? formatSsn (child.getPersonalID ()) : "";
+            final String firstName = null != child
+                    ? child.getFirstName () : "";
+            table.getDefaultCell().setBackgroundColor
+                    (i % 2 == 0 ? Color.white : lightBlue);
+            addPhrase (table, ssn);
+            addPhrase (table, firstName);
+            addPhrase (table, record.getInvoiceText ());
+            table.getDefaultCell ().setHorizontalAlignment
+                    (Element.ALIGN_RIGHT);
+            addPhrase (table, record.getDays () + "");
+            addPhrase (table, ((long) record.getAmount ()) + "");
+            table.getDefaultCell ().setHorizontalAlignment
+                    (Element.ALIGN_LEFT);
+            addPhrase (table, record.getNotes ());
+        }
+        document.add (table);
+        
+        // close and store document
+        document.close ();
 
-        final Table table = new Table ();
-        add (table);
+        final int docId = business.generatePdf (buffer);
         final Link viewLink = new Link("Öppna fakturaunderlaget i Acrobat Reader");
         viewLink.setFile (docId);
-        viewLink.setTarget ("letter_window");
-        table.add (viewLink, 1, 1);
+        viewLink.setTarget ("letter_window_" + docId);
+        add (createMainTable (INVOICE_COMPILATION_KEY,
+                              INVOICE_COMPILATION_DEFAULT, viewLink));
+    }
+
+	private static float mmToPoints (final float mm) {
+		return mm*72/25.4f;
+	}
+
+	private final static Font SANSSERIF_FONT
+		= FontFactory.getFont (FontFactory.HELVETICA, 9);
+    
+    private void addPhrase (final PdfPTable table, final String string) {
+        if (null != string) {
+            table.addCell (new Phrase (new Chunk (string, SANSSERIF_FONT)));
+        }
     }
 
     private void newRecord (final IWContext context)
