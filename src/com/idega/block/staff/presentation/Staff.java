@@ -186,7 +186,7 @@ private Table _myTable;
 
     Table textTable = new Table();
       textTable.setWidth("100%");
-      textTable.setWidth(1,"110");
+      //textTable.setWidth(1,"110");
 
     int tableRow = 1;
     int column = 1;
