@@ -182,6 +182,7 @@ public Box(String attribute){
         Table linksTable = new Table();
           linksTable.setRows(_numberOfDisplayed+1);
           linksTable.setWidth("100%");
+          linksTable.setHeight("100%");
         table.add(linksTable,1,2);
 
         int linkRow = 1;
@@ -253,6 +254,7 @@ public Box(String attribute){
             addLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
             addLink.addParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
           if ( _isAdmin ) {
+            linksTable.setVerticalAlignment(1,_numberOfDisplayed+1,"bottom");
             linksTable.add(addLink,1,_numberOfDisplayed+1);
           }
         }
@@ -296,6 +298,53 @@ public Box(String attribute){
     _activeStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #D8D8D8; text-decoration: none;";
     _hoverStyle = "font-face: Arial, Helvetica,sans-serif; font-size: 8pt; color: #D8D8D8; text-decoration: underline overline;";
     _target = Link.TARGET_TOP_WINDOW;
+  }
+
+  public void setNumberOfColumns(int columns) {
+    _numberOfColumns = columns;
+  }
+
+  public void setHeaderColor(String color) {
+    _headerColor = color;
+  }
+
+  public void setBorderColor(String color) {
+    _borderColor = color;
+  }
+
+  public void setInlineColor(String color) {
+    _inlineColor = color;
+  }
+
+  public void setBoxWidth(String width) {
+    _boxWidth = width;
+  }
+
+  public void setBoxHeight(String height) {
+    _boxHeight = height;
+  }
+
+  public void setBoxSpacing(int spacing) {
+    _boxSpacing = spacing;
+  }
+
+  public void setNumberOfDisplayed(int number) {
+    _numberOfDisplayed = number;
+  }
+
+  public void setCategoryStyle(String style) {
+    _categoryStyle = style;
+  }
+
+  public void setTarget(String target) {
+    _target = target;
+  }
+
+  public void setLinkStyle(String linkStyle,String activeStyle,String visitedStyle,String hoverStyle) {
+    _linkStyle = linkStyle;
+    _visitedStyle = linkStyle;
+    _activeStyle = visitedStyle;
+    _hoverStyle = hoverStyle;
   }
 
   private void setStyles() {

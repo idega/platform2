@@ -41,6 +41,9 @@ private String _bodyColor = "#000000";
 private String _headlineColor = "#000000";
 private String _dateColor = "#000000";
 
+private String _noActionDay = "#999966";
+private String _actionDay = "#660000";
+
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.calendar";
 protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
@@ -215,11 +218,12 @@ public Calendar(idegaTimestamp timestamp){
 
     SmallCalendar calendar = new SmallCalendar(stamp);
       calendar.setDaysAsLink(true);
+      calendar.setDayTextColor(_noActionDay);
 
     if ( list != null ) {
       Iterator iter = list.iterator();
       while (iter.hasNext()) {
-        calendar.setDayFontColor(new idegaTimestamp(((CalendarEntry) iter.next()).getDate()),"#660000");
+        calendar.setDayFontColor(new idegaTimestamp(((CalendarEntry) iter.next()).getDate()),_actionDay);
       }
     }
 
@@ -322,6 +326,14 @@ public Calendar(idegaTimestamp timestamp){
 
   public void setDateColor(String dateColor) {
     _dateColor = dateColor;
+  }
+
+  public void setInActiveDayColor(String color) {
+    _noActionDay = color;
+  }
+
+  public void setActiveDayColor(String color) {
+    _actionDay = color;
   }
 
   public void setDate(int year,int month,int day) {
