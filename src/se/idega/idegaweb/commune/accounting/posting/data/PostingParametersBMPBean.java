@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.15 2003/09/22 01:29:57 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.16 2003/09/25 23:00:01 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.15 2003/09/22 01:29:57 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.16 2003/09/25 23:00:01 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -133,28 +133,40 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		setColumn(COLUMN_PERIODE_TO, periode); 
 	}
 	
-	public void setActivity(int id) { 
-		setColumn(COLUMN_ACTIVITY_ID, id); 
+	public void setActivity(int id) {
+		if (id != 0) { 
+			setColumn(COLUMN_ACTIVITY_ID, id); 
+		}
 	}
 	
 	public void setRegSpecType(int id) { 
-		setColumn(COLUMN_REG_SPEC_TYPE_ID, id); 
+		if (id != 0) { 
+			setColumn(COLUMN_REG_SPEC_TYPE_ID, id); 
+		}
 	}
 	
 	public void setCompanyType(String id) { 
-		setColumn(COLUMN_COMPANY_TYPE, id); 
+		if (id != "0") {
+			setColumn(COLUMN_COMPANY_TYPE, id); 
+		}
 	}
 	
 	public void setCommuneBelonging(int id) { 
-		setColumn(COLUMN_COMMUNE_BELONGING_ID, id); 
+		if (id != 0) { 
+			setColumn(COLUMN_COMMUNE_BELONGING_ID, id);
+		} 
 	}
 
 	public void setSchoolYear1(int id) { 
-		setColumn(COLUMN_SCHOOL_YEAR1_ID, id); 
+		if (id != 0) { 
+			setColumn(COLUMN_SCHOOL_YEAR1_ID, id);
+		} 
 	}
 
 	public void setSchoolYear2(int id) { 
-		setColumn(COLUMN_SCHOOL_YEAR2_ID, id); 
+		if (id != 0) { 
+			setColumn(COLUMN_SCHOOL_YEAR2_ID, id);
+		} 
 	}
 
 	public Date getPeriodeFrom() {
@@ -165,7 +177,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		return (Date) getColumnValue(COLUMN_PERIODE_TO);
 	}
 
-	public SchoolType getActivity(){
+	public SchoolType getActivity() {
 		return (SchoolType) getColumnValue(COLUMN_ACTIVITY_ID);
 	}
 

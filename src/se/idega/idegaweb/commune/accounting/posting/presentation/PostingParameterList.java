@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.20 2003/09/12 00:16:21 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.21 2003/09/25 22:59:47 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.20 2003/09/12 00:16:21 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.21 2003/09/25 22:59:47 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -199,7 +199,7 @@ public class PostingParameterList extends AccountingBlock {
 		list.setLocalizedHeader(KEY_REG_SPEC, "Regelspec. typ", 3);
 		list.setLocalizedHeader(KEY_COMPANY_TYPE, "Bolagstyp", 4);
 		list.setLocalizedHeader(KEY_COMMUNE_BELONGING, "Kommuntillhörighet", 5);
-		list.setLocalizedHeader(KEY_SCHOOL_YEAR, "SkolŒr", 6);
+		list.setLocalizedHeader(KEY_SCHOOL_YEAR, "Skolår", 6);
 		list.setLocalizedHeader(KEY_OWN_ENTRY, "Egen kontering", 7);
 		list.setLocalizedHeader(KEY_DOUBLE_ENTRY, "Motkontering", 8);
 		list.setLocalizedHeader(KEY_EDIT, "", 9);
@@ -225,30 +225,33 @@ public class PostingParameterList extends AccountingBlock {
 						list.add(p.getActivity().getLocalizationKey(), 
 								p.getActivity().getLocalizationKey());
 					}
+					
 					if (p.getRegSpecType() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
 						list.add(p.getRegSpecType().getLocalizationKey(), 
 								p.getRegSpecType().getLocalizationKey());
 					}
+					
 					if (p.getCompanyType() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
 						list.add(p.getCompanyType().getLocalizedKey(), 
 								p.getCompanyType().getLocalizedKey());
 					}
+					
 					if (p.getCommuneBelonging() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
 						list.add(p.getCommuneBelonging().getLocalizationKey(), 
 								p.getCommuneBelonging().getLocalizationKey());
 					}
+					
 					if (p.getSchoolYear1() != null && p.getSchoolYear2() != null) {
 						list.add(p.getSchoolYear1().getSchoolYearName() + "-" + p.getSchoolYear2().getSchoolYearName()); 
 					} else {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					}
-		
 
 					list.add(p.getPostingString().substring(0, 7));
 					list.add(p.getDoublePostingString().substring(0, 7));

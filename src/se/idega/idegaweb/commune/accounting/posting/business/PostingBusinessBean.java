@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.25 2003/09/25 10:22:07 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.26 2003/09/25 22:59:31 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -404,9 +404,16 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				return false;
 			}
 			PostingParametersHome home = getPostingParametersHome();
-			Collection ppCol = home.findAllPostingParameters();
-			Iterator iter = ppCol.iterator();
+			Iterator iter = null;
 			
+			try {
+				Collection ppCol = home.findAllPostingParameters();
+				iter = ppCol.iterator();
+			} catch (FinderException e) {}
+			
+			if (iter == null) {
+				return false;
+			}
 			while (iter.hasNext())  {
 				PostingParameters pp = (PostingParameters) iter.next();
 				int eq = 0;
@@ -451,14 +458,16 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					eq++;
 				}
 				
-				if (pp.getCompanyType() == null) {
-					if (code3 == null) {
+				try {
+					if (pp.getCompanyType() == null) {
+						if (code3 == null) {
+							eq++;
+						}
+					} else if (pp.getCompanyType().getPrimaryKey().toString() == code3) {
 						eq++;
-					}
-				} else if (pp.getCompanyType().getPrimaryKey().toString() == code3) {
-					eq++;
-				}	
-				
+					}	
+				} catch (FinderException e) {}
+			
 				if (pp.getCommuneBelonging() == null) {
 					if (code4 == 0) {
 						eq++;
@@ -466,7 +475,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				} else if (Integer.parseInt(pp.getCommuneBelonging().getPrimaryKey().toString()) == code4) {
 					eq++;				
 				}
-					
+
 				if (pp.getSchoolYear1() == null) {
 					if (code5 == 0) {
 						eq++;
@@ -482,13 +491,15 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				} else if (Integer.parseInt(pp.getSchoolYear2().getPrimaryKey().toString()) == code4) {
 					eq++;				
 				}	
-				
+					
 				if (eq == 10) {
 					return true;
 				}
 			}
 		} catch (RemoteException e) {
+			return false;
 		} catch (FinderException e) {
+			return false;
 		}
 		return false;
 	}
