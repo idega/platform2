@@ -118,13 +118,13 @@ public class Register extends Block {
 	}
 	
 	private void insertContinueCancelButtons(Table table, int row) {
-		CloseButton cancel =
-			new CloseButton(_iwrb.getLocalizedImageButton("cancel", "Cancel"));
+		//CloseButton cancel =
+		//	new CloseButton(_iwrb.getLocalizedImageButton("cancel", "Cancel"));
 		
 		SubmitButton cont =
 			new SubmitButton(_iwrb.getLocalizedImageButton("send", "Send"), "send");
 		
-		table.add(cancel, 1, row);
+	//	table.add(cancel, 1, row);
 		table.add(cont, 2, row);
 	}
 	
