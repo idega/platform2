@@ -130,7 +130,7 @@ public class TravelManager extends Block {
           iDailyReport = iwrb.getImage("buttons/daily_report_on.gif");
         }
 
-        if ( AccessControl.isAdmin(iwc)){
+        if ( iwc.getAccessControler().isAdmin(iwc)){
 
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,this.parameterInitialData);

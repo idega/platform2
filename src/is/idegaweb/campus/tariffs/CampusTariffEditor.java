@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.12 2001/10/05 08:05:44 tryggvil Exp $
+ * $Id: CampusTariffEditor.java,v 1.13 2001/10/16 16:06:17 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -736,7 +736,7 @@ public class CampusTariffEditor extends PresentationObjectContainer{
     iwb = getBundle(iwc);
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
+    isAdmin = iwc.getAccessControler().isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
     control(iwc);

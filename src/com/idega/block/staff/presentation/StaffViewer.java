@@ -64,7 +64,7 @@ private List usersInNoGroup;
   public void main(IWContext iwc) throws Exception {
     iwb = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
-    isAdmin = AccessControl.hasEditPermission(this,iwc);
+    isAdmin = iwc.getAccessControler().hasEditPermission(this,iwc);
 
     String mode = iwc.getParameter(PARAMETER_MODE);
     if ( mode != null ) {
@@ -74,7 +74,7 @@ private List usersInNoGroup;
         deleteGroup(iwc);
     }
 
-    getGroups();
+    getGroups(iwc);
     getUsersInNoGroups();
 
     if ( isAdmin )
@@ -253,10 +253,10 @@ private List usersInNoGroup;
   }
 
 
-  private void getGroups() throws SQLException  {
-    allGroups = UserGroupBusiness.getAllGroups();
+  private void getGroups(IWContext iwc) throws SQLException  {
+    allGroups = UserGroupBusiness.getAllGroups(iwc);
     if ( !isAdmin && allGroups != null ) {
-      allGroups.remove(AccessControl.getPermissionGroupAdministrator());
+      allGroups.remove(iwc.getAccessControler().getPermissionGroupAdministrator());
     }
   }
 

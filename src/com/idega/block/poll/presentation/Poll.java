@@ -70,7 +70,7 @@ private idegaTimestamp _date;
     _iwrb = getResourceBundle(iwc);
     _iwb = getBundle(iwc);
 
-    _isAdmin = AccessControl.hasEditPermission(this,iwc);
+    _isAdmin = iwc.getAccessControler().hasEditPermission(this,iwc);
     _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
     _parameterString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
     _date = new idegaTimestamp();

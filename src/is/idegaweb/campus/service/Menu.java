@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.18 2001/10/09 22:49:50 aron Exp $
+ * $Id: Menu.java,v 1.19 2001/10/16 16:06:17 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -185,7 +185,7 @@ public class Menu extends Block{
 
   public void main(IWContext iwc)  {
     try{
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
+    isAdmin = iwc.getAccessControler().isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
 

@@ -206,7 +206,7 @@ public class PhoneAssessment extends PresentationObjectContainer {
   public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
+    isAdmin = iwc.getAccessControler().isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
     control(iwc);

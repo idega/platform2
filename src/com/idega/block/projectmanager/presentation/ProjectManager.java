@@ -330,7 +330,7 @@ System.err.print("2");
         this.iwc = iwc;
         URI = iwc.getRequestURI();
         project_id = iwc.getParameter("project_id");
-        isAdmin = AccessControl.isAdmin(iwc);
+        isAdmin = iwc.getAccessControler().isAdmin(iwc);
 
 
         if ( isAdmin) {

@@ -281,7 +281,7 @@ public class TextEditorWindow extends IWAdminWindow{
 
   public void main(IWContext iwc) throws Exception {
     super.main(iwc);
-    isAdmin = AccessControl.hasEditPermission(new TextReader(),iwc);
+    isAdmin = iwc.getAccessControler().hasEditPermission(new TextReader(),iwc);
     User u= com.idega.block.login.business.LoginBusiness.getUser(iwc);
     iUserId = u != null?u.getID():-1;
     isAdmin = true;

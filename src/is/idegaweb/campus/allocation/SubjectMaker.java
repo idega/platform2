@@ -142,7 +142,7 @@ public class SubjectMaker extends PresentationObjectContainer{
 
    public void main(IWContext iwc){
     try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
+      isAdmin = iwc.getAccessControler().isAdmin(iwc);
     }
     catch(SQLException sql){
       isAdmin = false;

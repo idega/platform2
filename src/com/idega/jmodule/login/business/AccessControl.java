@@ -131,18 +131,6 @@ public class AccessControl{
 
 
 
-        public static boolean hasPermission(String permissionType, PresentationObject obj,IWContext info){
-          try {
-            return com.idega.core.accesscontrol.business.AccessControl.hasPermission(permissionType,obj,info);
-          }
-          catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-          }
-
-
-        }
-
 
 
         /*public boolean isAdmin(IWContext iwc) {

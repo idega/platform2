@@ -21,7 +21,7 @@ public class CampusReporterWindow extends IWAdminWindow {
   }
 
   public void main(IWContext iwc) throws Exception{
-    boolean isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
+    boolean isAdmin = iwc.getAccessControler().isAdmin(iwc);
     Reporter R = new Reporter();
     R.setMainCategoryAttribute("tenants");
     R.setSQLEdit(isAdmin);
