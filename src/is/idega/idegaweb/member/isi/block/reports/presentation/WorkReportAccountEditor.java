@@ -156,29 +156,29 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
     
     // does th euser want to save a new entry?
-    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
-      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-      Integer newGroupId = null;
-      EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
-        DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(new Integer(-1), LEAGUE_NAME, iwc);
-      if (entityPathValueContainerFromDropDownMenu.isValid()) {
-        String pathShortKey = entityPathValueContainerFromDropDownMenu.getEntityPathShortKey();
-        Object value = entityPathValueContainerFromDropDownMenu.getValue();
-        newGroupId = changeLeagueOfExistingRecords(new Integer(-1), value.toString(), workReportBusiness);
-      }
-      if (newGroupId != null) {
-        Iterator iterator = fieldList.iterator();
-        while (iterator.hasNext())  {
-          String field = (String) iterator.next();
-          EntityPathValueContainer entityPathValueContainerFromTextEditor = 
-            TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(new Integer(-1), field, iwc);
-          if (entityPathValueContainerFromTextEditor.isValid()) {
-            setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromTextEditor, newGroupId, workReportBusiness);
-          }
-        }
-      }
-      return action;
-    }
+//    if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
+//      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+//      Integer newGroupId = null;
+//      EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
+//        DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(new Integer(-1), LEAGUE_NAME, iwc);
+//      if (entityPathValueContainerFromDropDownMenu.isValid()) {
+//        String pathShortKey = entityPathValueContainerFromDropDownMenu.getEntityPathShortKey();
+//        Object value = entityPathValueContainerFromDropDownMenu.getValue();
+//        newGroupId = changeLeagueOfExistingRecords(new Integer(-1), value.toString(), workReportBusiness);
+//      }
+//      if (newGroupId != null) {
+//        Iterator iterator = fieldList.iterator();
+//        while (iterator.hasNext())  {
+//          String field = (String) iterator.next();
+//          EntityPathValueContainer entityPathValueContainerFromTextEditor = 
+//            TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(new Integer(-1), field, iwc);
+//          if (entityPathValueContainerFromTextEditor.isValid()) {
+//            setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromTextEditor, newGroupId, workReportBusiness);
+//          }
+//        }
+//      }
+//      return action;
+//    }
     // does the user want to create a new entry?
     if (iwc.isParameterSet(SUBMIT_CREATE_NEW_ENTRY_KEY))  {
       return ACTION_SHOW_NEW_ENTRY;
@@ -651,10 +651,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private void setValuesOfWorkReportClubAccountRecord(EntityPathValueContainer valueContainer, Integer groupId, WorkReportBusiness workReportBusiness)  {
     String pathShortKey = valueContainer.getEntityPathShortKey();
     Object value = valueContainer.getValue();
-    if (LEAGUE_NAME.equals(pathShortKey)) {
-      changeLeagueOfExistingRecords(groupId, value.toString(), workReportBusiness);
-      return;
-    }
+//    if (LEAGUE_NAME.equals(pathShortKey)) {
+//      changeLeagueOfExistingRecords(groupId, value.toString(), workReportBusiness);
+//      return;
+//    }
     Float amount;
     try {
       amount = new Float(value.toString());
@@ -741,98 +741,98 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     }
   } 
 
-  private Integer changeLeagueOfExistingRecords(Integer groupId, String newLeagueName, WorkReportBusiness workReportBusiness)  {
-    WorkReportGroup workReportGroup; 
-    Integer newGroupId;
-    try {
-      workReportGroup = 
-        workReportBusiness.getWorkReportGroupHome().findWorkReportGroupByNameAndYear(newLeagueName, getYear());
-      newGroupId = (Integer) workReportGroup.getPrimaryKey();
-    }
-    catch (RemoteException rmEx) {
-      String message =
-        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.";
-      System.err.println(message + " Message is: " + rmEx.getMessage());
-      rmEx.printStackTrace(System.err);
-      throw new RuntimeException(message);
-    }
-    catch (FinderException ex) {
-      String message =
-        "[WorkReportAccountEditor]: Can't retrieve WorkReportGroupHome.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-      // give up
-      return null;
-    }
-    // does this league already exist?
-    Set leaguesIds = leagueKeyMatrix.firstKeySet();
-    if (leaguesIds.contains(newGroupId))  {
-      // do nothing
-      return null;
-    }
-    // !!!! add league to work report +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    WorkReport workReport;
-    try {
-      workReport = workReportBusiness.getWorkReportById(getWorkReportId());
-    }
-    catch (RemoteException ex) {
-      String message =
-        "[WorkReportAccountEditor]: Can't retrieve WorkReport.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException(message);
-    }
-    try {
-      workReport.addLeague(workReportGroup);
-    }
-    catch (IDORelationshipException ex) {
-      String message =
-        "[WorkReportBoardMemberEditor]: Can't add league to work report.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-      // give up
-      return null;
-    }
-    TransactionManager tm = IdegaTransactionManager.getInstance();
-    try {
-      tm.begin();
-      List changedRecords = new ArrayList();
-      Map recordsMap = leagueKeyMatrix.get(groupId);
-      Collection records = recordsMap.values();
-      Iterator iteratorRecords = records.iterator();
-      while (iteratorRecords.hasNext())  {
-        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
-        record.setWorkReportGroupId(newGroupId.intValue());
-        record.store();
-        changedRecords.add(record);
-      } 
-      // change the matrix
-      Iterator iterator = changedRecords.iterator();
-      while (iterator.hasNext())  {
-        WorkReportClubAccountRecord recordItem = (WorkReportClubAccountRecord) iterator.next();
-        Integer accountKeyId = new Integer(recordItem.getAccountKeyId());
-        leagueKeyMatrix.remove(groupId, accountKeyId);
-        leagueKeyMatrix.put(newGroupId, accountKeyId, recordItem);
-      }
-      tm.commit();
-    }
-    catch (Exception ex)  {
-      String message =
-        "[WorkReportAccountEditor]: Can't store records.";
-      System.err.println(message + " Message is: " + ex.getMessage());
-      ex.printStackTrace(System.err);
-      try {
-        tm.rollback();
-      }
-      catch (SystemException sysEx) {
-        String sysMessage =
-        "[WorkReportAccountEditor]: Can't rollback.";
-        System.err.println(sysMessage + " Message is: "+ sysEx.getMessage());
-        sysEx.printStackTrace(System.err);
-      }
-    }
-    return newGroupId;
-  }
+//  private Integer changeLeagueOfExistingRecords(Integer groupId, String newLeagueName, WorkReportBusiness workReportBusiness)  {
+//    WorkReportGroup workReportGroup; 
+//    Integer newGroupId;
+//    try {
+//      workReportGroup = 
+//        workReportBusiness.getWorkReportGroupHome().findWorkReportGroupByNameAndYear(newLeagueName, getYear());
+//      newGroupId = (Integer) workReportGroup.getPrimaryKey();
+//    }
+//    catch (RemoteException rmEx) {
+//      String message =
+//        "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.";
+//      System.err.println(message + " Message is: " + rmEx.getMessage());
+//      rmEx.printStackTrace(System.err);
+//      throw new RuntimeException(message);
+//    }
+//    catch (FinderException ex) {
+//      String message =
+//        "[WorkReportAccountEditor]: Can't retrieve WorkReportGroupHome.";
+//      System.err.println(message + " Message is: " + ex.getMessage());
+//      ex.printStackTrace(System.err);
+//      // give up
+//      return null;
+//    }
+//    // does this league already exist?
+//    Set leaguesIds = leagueKeyMatrix.firstKeySet();
+//    if (leaguesIds.contains(newGroupId))  {
+//      // do nothing
+//      return null;
+//    }
+//    // !!!! add league to work report +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//    WorkReport workReport;
+//    try {
+//      workReport = workReportBusiness.getWorkReportById(getWorkReportId());
+//    }
+//    catch (RemoteException ex) {
+//      String message =
+//        "[WorkReportAccountEditor]: Can't retrieve WorkReport.";
+//      System.err.println(message + " Message is: " + ex.getMessage());
+//      ex.printStackTrace(System.err);
+//      throw new RuntimeException(message);
+//    }
+//    try {
+//      workReport.addLeague(workReportGroup);
+//    }
+//    catch (IDORelationshipException ex) {
+//      String message =
+//        "[WorkReportBoardMemberEditor]: Can't add league to work report.";
+//      System.err.println(message + " Message is: " + ex.getMessage());
+//      ex.printStackTrace(System.err);
+//      // give up
+//      return null;
+//    }
+//    TransactionManager tm = IdegaTransactionManager.getInstance();
+//    try {
+//      tm.begin();
+//      List changedRecords = new ArrayList();
+//      Map recordsMap = leagueKeyMatrix.get(groupId);
+//      Collection records = recordsMap.values();
+//      Iterator iteratorRecords = records.iterator();
+//      while (iteratorRecords.hasNext())  {
+//        WorkReportClubAccountRecord record = (WorkReportClubAccountRecord) iteratorRecords.next();
+//        record.setWorkReportGroupId(newGroupId.intValue());
+//        record.store();
+//        changedRecords.add(record);
+//      } 
+//      // change the matrix
+//      Iterator iterator = changedRecords.iterator();
+//      while (iterator.hasNext())  {
+//        WorkReportClubAccountRecord recordItem = (WorkReportClubAccountRecord) iterator.next();
+//        Integer accountKeyId = new Integer(recordItem.getAccountKeyId());
+//        leagueKeyMatrix.remove(groupId, accountKeyId);
+//        leagueKeyMatrix.put(newGroupId, accountKeyId, recordItem);
+//      }
+//      tm.commit();
+//    }
+//    catch (Exception ex)  {
+//      String message =
+//        "[WorkReportAccountEditor]: Can't store records.";
+//      System.err.println(message + " Message is: " + ex.getMessage());
+//      ex.printStackTrace(System.err);
+//      try {
+//        tm.rollback();
+//      }
+//      catch (SystemException sysEx) {
+//        String sysMessage =
+//        "[WorkReportAccountEditor]: Can't rollback.";
+//        System.err.println(sysMessage + " Message is: "+ sysEx.getMessage());
+//        sysEx.printStackTrace(System.err);
+//      }
+//    }
+//    return newGroupId;
+//  }
 
     
   private void createOrUpdateRecord(WorkReportBusiness workReportBusiness, Integer groupId, Integer accountKeyId, Float amount)  {
@@ -874,7 +874,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     
     
   /** 
-   * WorkReportBoardMemberHelper:
+   * WorkReportAccountGroupHelper:
    *
    */     
   class WorkReportAccountGroupHelper implements EntityRepresentation {
