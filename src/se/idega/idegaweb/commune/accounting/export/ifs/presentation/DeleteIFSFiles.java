@@ -44,11 +44,11 @@ public class DeleteIFSFiles extends AccountingBlock {
 			int action = parseAction(iwc);
 			switch (action) {
 				case ACTION_VIEW :
-					viewForm();
+					viewForm(iwc, false);
 					break;
 				case ACTION_DELETE :
 					deleteFiles(iwc);
-					viewForm();
+					viewForm(iwc, true);
 					break;
 			}
 		}
@@ -83,24 +83,29 @@ public class DeleteIFSFiles extends AccountingBlock {
 		}
 	}
 
-	private void viewForm() {
+	private void viewForm(IWContext iwc, boolean deleted) {
 		ApplicationForm form = new ApplicationForm(this);
 
 		form.setLocalizedTitle(KEY_HEADER, "Delete files");
-		form.setSearchPanel(getTopPanel());
+		form.setSearchPanel(getTopPanel(iwc, deleted));
 		form.setButtonPanel(getButtonPanel());
 		add(form);
 	}
 
-	private Table getTopPanel() {
+	private Table getTopPanel(IWContext iwc, boolean deleted) {
 		Table table = new Table();
 		table.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_LEFT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
+		
+		int row = 1;
+		if (deleted){
+			table.add(getLocalizedString("cacc_delete_files_batch started", "Deleted", iwc), 1, row++);
+		}		
 
-		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "School category"), 1, 1);
-		table.add(new OperationalFieldsMenu(), 2, 1);
+		table.add(getLocalizedLabel(KEY_HEADER_OPERATION, "School category"), 1, row);
+		table.add(new OperationalFieldsMenu(), 2, row);
 
 		return table;
 	}
