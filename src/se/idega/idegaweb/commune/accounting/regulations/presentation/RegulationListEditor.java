@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.7 2003/09/22 01:31:09 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.8 2003/09/25 10:23:10 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.7 2003/09/22 01:31:09 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.8 2003/09/25 10:23:10 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -333,6 +333,8 @@ public class RegulationListEditor extends AccountingBlock {
 	
 		if (r != null) {
 			table.add(getTextInput(PARAM_CONDITION_ORDER, r.getConditionOrder() != null ? ""+r.getConditionOrder().intValue() : "", 40, 4), 4, 7);
+		} else {
+			table.add(getTextInput(PARAM_CONDITION_ORDER, "", 40, 4), 4, 7);
 		}
 
 		if (iwc.isParameterSet(PARAM_MODE_COPY)) {
