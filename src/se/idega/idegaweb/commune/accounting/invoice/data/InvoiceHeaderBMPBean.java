@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Calendar;
 
 import javax.ejb.FinderException;
 
@@ -167,12 +168,16 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 
     /**
      * Retreives a collection of all InvoiceHeaders where the user given is
-     * either custodian or the child. 
+     * either custodian or the child and in the period. If any of the dates
+     * are null, that constraint will be ignored.
      *
      * @param user the user to search for
+     * @param fromDate first month in search span
+     * @param toDate last month in search span
      * @return collection of invoice headers
      */
-    public Collection ejbFindInvoiceHeadersByCustodianOrChild (final User user)
+    public Collection ejbFindByCustodianOrChild
+        (final User user, final java.util.Date fromDate, java.util.Date toDate)
         throws FinderException {
 		final IDOQuery sql = idoQuery ();
         final String H_ = "h."; // sql alias for invoice header
@@ -180,6 +185,8 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
         final String R_ = "r."; // sql alias for invoice record
         final String C_ = "c."; // sql alias for contract
         final String userId = user.getPrimaryKey ().toString ();
+        final Date fromPeriod = getPeriod (fromDate, 0);
+        final Date toPeriod = getPeriod (toDate, 1);
         sql.appendSelectAllFrom (getTableName () + " h")
                 .append (',' + InvoiceRecordBMPBean.ENTITY_NAME + " r")
                 .append (',' + ChildCareContractBMPBean.ENTITY_NAME + " c")
@@ -200,9 +207,41 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
                                   userId)
                 .appendRightParenthesis ()
                 .appendRightParenthesis ()
-                .appendAndEquals (userId, U_ + User.FIELD_USER_ID)
-                .appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
+                .appendAndEquals (userId, U_ + User.FIELD_USER_ID);
+                if (null != fromPeriod) {
+                    sql.appendAnd ()
+                            .append (H_ + COLUMN_PERIOD)
+                            .appendGreaterThanOrEqualsSign ()
+                            .append (fromPeriod);
+                }
+                if (null != toPeriod) {
+                    sql.appendAnd ()
+                            .append (toPeriod)
+                            .appendGreaterThanSign ()
+                            .append (H_ + COLUMN_PERIOD);
+                }
+                sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);
 		return idoFindPKsBySQL(sql.toString());		
     }
+
+    /**
+     * Calculates a new java.sql.Date the 1st of this month and then adds the
+     * given number of moths
+     *
+     * @param date a date any day in amonth
+     * @param monthOffset add this amont of monts to return value
+     * @return date of the 1st day in a month
+     */
+    private static Date getPeriod (final java.util.Date date,
+                                   final int monthOffset) {
+        if (null == date) return null;
+        final Calendar calendar = Calendar.getInstance ();
+        calendar.setTime (date);
+        calendar.set (calendar.get (Calendar.YEAR),
+                      calendar.get (Calendar.MONTH) + monthOffset, 1, 0, 0);
+        return new Date (calendar.getTimeInMillis ());
+
+    }
+
 }
 

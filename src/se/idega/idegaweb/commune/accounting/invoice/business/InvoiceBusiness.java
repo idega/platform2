@@ -12,6 +12,6 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
  public void startPostingBatch(java.sql.Date p0,java.lang.String p1,com.idega.presentation.IWContext p2)throws com.idega.data.IDOLookupException,javax.ejb.FinderException,se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException, java.rmi.RemoteException;
     se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome getInvoiceRecordHome () throws java.rmi.RemoteException;
     se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome getInvoiceHeaderHome () throws java.rmi.RemoteException;
- se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader [] getInvoiceHeadersByCustodianOrChild (com.idega.user.data.User user);
+ se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader [] getInvoiceHeadersByCustodianOrChild (com.idega.user.data.User user, java.util.Date fromPeriod, java.util.Date toPeriod);
  se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord [] getInvoiceRecordsByInvoiceHeader (se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader header);
 }

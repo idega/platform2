@@ -34,10 +34,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/10/29 13:22:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/30 15:53:23 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.25 $
+ * @version $Revision: 1.26 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness{
@@ -147,18 +147,22 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 
     /**
      * Retreives an array of all InvoiceHeaders where the user given is either
-     * custodian or the child. An empty list is returned if no invoice header
-     * was found.
+     * custodian or the child and in the period. If any of the dates
+     * are null, that constraint will be ignored. An empty list is returned if
+     * no invoice header was found.
      *
      * @param user the user to search for
+     * @param fromDate first month in search span
+     * @param toDate last month in search span
      * @return array of invoice headers
      */
     public InvoiceHeader [] getInvoiceHeadersByCustodianOrChild
-        (final User user) {
+        (final User user, final java.util.Date fromPeriod,
+         java.util.Date toPeriod) {
         Collection collection = null;
         try {
-            collection = getInvoiceHeaderHome ()
-                    .findInvoiceHeadersByCustodianOrChild (user);
+            collection = getInvoiceHeaderHome ().findByCustodianOrChild
+                    (user, fromPeriod, toPeriod);
         } catch (RemoteException exception) {
             exception.printStackTrace ();
         } catch (FinderException exception) {

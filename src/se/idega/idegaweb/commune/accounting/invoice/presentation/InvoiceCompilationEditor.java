@@ -8,11 +8,12 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.*;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.*;
 import se.idega.idegaweb.commune.accounting.presentation.*;
-import java.text.SimpleDateFormat;
 
 /**
  * InvoiceCompilationEditor is an IdegaWeb block were the user can search, view
@@ -27,10 +28,10 @@ import java.text.SimpleDateFormat;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/10/29 16:19:44 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/30 15:53:23 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -41,6 +42,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private static final String FIRST_NAME_DEFAULT = "Förnamn";
     private static final String FIRST_NAME_KEY = PREFIX + "first_name";
+    private static final String FROM_PERIOD_KEY = PREFIX + "from_period";
     private static final String INVOICE_COMPILATION_DEFAULT = "Faktureringsunderlag";
     private static final String INVOICE_COMPILATION_KEY = PREFIX + "invoice_compilation";
     private static final String INVOICE_COMPILATION_LIST_DEFAULT = "Faktureringsunderlagslista";
@@ -61,6 +63,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String STATUS_KEY = PREFIX + "status";
     private static final String TOTAL_AMOUNT_DEFAULT = "Tot.belopp";
     private static final String TOTAL_AMOUNT_KEY = PREFIX + "total_amount";
+    private static final String TO_PERIOD_KEY = PREFIX + "to_period";
     private static final String USERSEARCHER_ACTION_KEY = "mbe_act_search" + PREFIX;
     private static final String USERSEARCHER_FIRSTNAME_KEY = "usrch_search_fname" + PREFIX;
     private static final String USERSEARCHER_LASTNAME_KEY = "usrch_search_lname" + PREFIX;
@@ -92,6 +95,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		} catch (Exception exception) {
             logUnexpectedException (context, exception);
 		}
+
+        add ("\n\nDenna funktion är inte färdig. Bland annat så återstår 'klicka på underlag i listan och gå till visa underlag', 'skapa manuell faktura ifrån 'visa underlagslista'', 'ta bort en faktura från listan - bara manuella', 'klicka på faktureringsrad och se detaljer', 'skapa justeringsrad till en faktura', 'se faktureringsunderlag i pdf', 'tillåt inte negativt taxbelopp mm', 'uppdatera totalbelopp och momsersättning vid justering'\n\n");
 	}
 	
 	private int parseAction () {
@@ -121,17 +126,23 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final UserSearcher searcher = createSearcher ();
         final Table table = createTable (1);
         int row = 1;
-        table.add (getUserSearcherTable (context, searcher), 1, row++);
+        table.add (getUserSearcherFormTable (context, searcher), 1, row++);
+        table.add (getPeriodFormTable (context), 1, row++);
         table.add (getSubmitButton (ACTION_SHOW_COMPILATION_LIST + "",
                                     SEARCH_KEY, SEARCH_DEFAULT), 1, row++);
         if (null != searcher.getUser ()) {
             // exactly one user found - display users invoice compilation list
             final User userFound = searcher.getUser ();
+            final Date fromPeriod = getPeriodFromString
+                    (context.getParameter (FROM_PERIOD_KEY));
+            final Date toPeriod = getPeriodFromString
+                    (context.getParameter (TO_PERIOD_KEY));
             final InvoiceBusiness business = (InvoiceBusiness)
                     IBOLookup.getServiceInstance (context,
                                                   InvoiceBusiness.class);
-            final InvoiceHeader [] headers
-                    = business.getInvoiceHeadersByCustodianOrChild (userFound);
+            final InvoiceHeader [] headers = business
+                    .getInvoiceHeadersByCustodianOrChild (userFound, fromPeriod,
+                                                          toPeriod);
             
             if (0 < headers.length) {
                 table.add (getInvoiceCompilationListTable (context, headers), 1,
@@ -180,29 +191,36 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         // show each invoice header in a row
         for (int i = 0; i < headers.length; i++) {
             final InvoiceHeader header = headers [i];
-            int col = 1;
-            table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
-                               : getZebraColor2 ());
-            final char status = header.getStatus ();
-            final java.sql.Date period = header.getPeriod ();
-            final User custodian = userHome.findByPrimaryKey
-                    (new Integer (header.getCustodianId ())) ;
-            final InvoiceRecord [] records
-                    = invoiceBusiness.getInvoiceRecordsByInvoiceHeader (header);
-            float totalAmount = 0;
-            for (int j = 0; j < records.length; j++) {
-                totalAmount += records[j].getAmount ();
-            }
-            table.add (status + "", col++, row);
-            table.add (null != period ? periodFormatter.format (period) : "",
-                       col++, row);
-            table.add (custodian.getName (), col++, row);
-            table.add (totalAmount + "", col++, row);
-            row++;
+			showInvoiceHeaderOnARow (table, row++, invoiceBusiness, userHome,
+                                    header);
         }
         
        return table;
     }
+
+	private void showInvoiceHeaderOnARow
+        (final Table table, final int row,
+         final InvoiceBusiness invoiceBusiness,	final UserHome userHome,
+         final InvoiceHeader header) throws FinderException {
+		int col = 1;
+		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
+		                   : getZebraColor2 ());
+		final char status = header.getStatus ();
+		final java.sql.Date period = header.getPeriod ();
+		final User custodian = userHome.findByPrimaryKey
+		        (new Integer (header.getCustodianId ())) ;
+		final InvoiceRecord [] records
+		        = invoiceBusiness.getInvoiceRecordsByInvoiceHeader (header);
+		float totalAmount = 0;
+		for (int j = 0; j < records.length; j++) {
+		    totalAmount += records[j].getAmount ();
+		}
+		table.add (status + "", col++, row);
+		table.add (null != period ? periodFormatter.format (period) : "",
+		           col++, row);
+		table.add (custodian.getName (), col++, row);
+		table.add (totalAmount + "", col++, row);
+	}
 
 	/**
 	 * Returns a styled table with content placed properly
@@ -236,7 +254,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return mainTable;
     }
 
-    Table getUserSearcherTable
+    Table getUserSearcherFormTable
         (final IWContext context, final UserSearcher searcher)
         throws RemoteException {
         final Table table = createTable (6);
@@ -265,6 +283,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return table;
     }
 
+    Table getPeriodFormTable (final IWContext context) {
+        final Table table = createTable (3);
+        int col = 1;
+        table.add (getSmallHeader (localize (PERIOD_KEY, PERIOD_DEFAULT) + ':'),
+                   col++, 1);
+        table.add (getUserSearcherInput (context, FROM_PERIOD_KEY), col++, 1);
+        table.add (getUserSearcherInput (context, TO_PERIOD_KEY), col++, 1);
+        return table;
+    }
+
     private TextInput getUserSearcherInput (final IWContext context,
                                             final String key) {
         final TextInput input = (TextInput) getStyledInterface
@@ -283,6 +311,29 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.setWidth (Table.HUNDRED_PERCENT);
         table.setColumns (columnCount);
         return table;
+    }
+
+    /**
+     * Returns a date from a string of type "YYMM". The date represents the
+     * first day of that month. If the input string is unparsable for this
+     * format then null is returned.
+     *
+     * @param rawString input string of type "YYMM"
+     * @return date from the first of this particular month or null on failure
+     */
+    private static Date getPeriodFromString (final String rawString) {
+        if (null == rawString || rawString.length () != 4) return null;
+        try {
+            final int year = Integer.parseInt (rawString.substring (0, 2))
+                    + 2000;
+            final int month = Integer.parseInt (rawString.substring (2, 4))
+                    + Calendar.JANUARY - 1;
+            final Calendar calendar = Calendar.getInstance ();
+            calendar.set (year, month, 1, 0, 0);
+            return new Date (calendar.getTimeInMillis ());
+        } catch (final NumberFormatException exception) {
+            return null;
+        }
     }
 
     private SubmitButton getSubmitButton (final String action, final String key,
