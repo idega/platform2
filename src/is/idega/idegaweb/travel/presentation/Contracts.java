@@ -115,7 +115,7 @@ public class Contracts extends TravelManager {
       resellers = getResellers();
 
       if (reseller != null) {
-        suppliers = ResellerManager.getSuppliersWithContracts(reseller.getID(), Supplier.getColumnNameName() );
+        suppliers = ResellerManager.getSuppliersWithContracts(reseller.getID(), com.idega.block.trade.stockroom.data.SupplierBMPBean.getColumnNameName() );
       }
 
   }
@@ -123,9 +123,9 @@ public class Contracts extends TravelManager {
   private Iterator getResellers() {
     Iterator returner = com.idega.util.ListUtil.getEmptyList().iterator();
     if (supplier != null) {
-     returner = ResellerManager.getResellers(supplier,Reseller.getColumnNameName());
+     returner = ResellerManager.getResellers(supplier,com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
     } else if (reseller != null) {
-     returner = ResellerManager.getResellerChilds(reseller,Reseller.getColumnNameName());
+     returner = ResellerManager.getResellerChilds(reseller,com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
     }
     return returner;
   }
@@ -350,7 +350,7 @@ public class Contracts extends TravelManager {
       if (resellerId != -1) {
         table.add(new HiddenInput(this.parameterResellerId,Integer.toString(resellerId)));
 
-        Reseller reseller = new Reseller(resellerId);
+        Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
           name.setContent(reseller.getName());
           description.setContent(reseller.getDescription());
 
@@ -483,10 +483,10 @@ public class Contracts extends TravelManager {
 
           if (isUpdate) {
               Vector phoneIDS = new Vector();
-              Reseller reseller = new Reseller(resellerId);
+              Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
 
               Phone ph;
-              List phones = reseller.getPhones(Phone.getHomeNumberID());
+              List phones = reseller.getPhones(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
               if (phones != null) {
                 if (phones.size() > 0) {
                   for (int i = 0; i < phones.size(); i++) {
@@ -496,15 +496,15 @@ public class Contracts extends TravelManager {
                     phoneIDS.add(new Integer(ph.getID()));
                   }
                 }else {
-                  ph = new Phone();
+                  ph = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     ph.setNumber(phone);
-                    ph.setPhoneTypeId(Phone.getHomeNumberID());
+                    ph.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
                   ph.insert();
                   phoneIDS.add(new Integer(ph.getID()));
                 }
               }
 
-              phones = reseller.getPhones(Phone.getFaxNumberID());
+              phones = reseller.getPhones(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
               if (phones != null) {
                 if (phones.size() > 0 ) {
                   for (int i = 0; i < phones.size(); i++) {
@@ -514,9 +514,9 @@ public class Contracts extends TravelManager {
                     phoneIDS.add(new Integer(ph.getID()));
                   }
                 }else {
-                  ph = new Phone();
+                  ph = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     ph.setNumber(fax);
-                    ph.setPhoneTypeId(Phone.getFaxNumberID());
+                    ph.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
                   ph.insert();
                   phoneIDS.add(new Integer(ph.getID()));
                 }
@@ -555,16 +555,16 @@ public class Contracts extends TravelManager {
 
                 Vector phoneIDS = new Vector();
                 if (phone.length() > 0) {
-                  Phone phonePhone = new Phone();
+                  Phone phonePhone = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     phonePhone.setNumber(phone);
-                    phonePhone.setPhoneTypeId(Phone.getHomeNumberID());
+                    phonePhone.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
                   phonePhone.insert();
                   phoneIDS.add(new Integer(phonePhone.getID()));
                 }
                 if (fax.length() > 0) {
-                  Phone faxPhone = new Phone();
+                  Phone faxPhone = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     faxPhone.setNumber(fax);
-                    faxPhone.setPhoneTypeId(Phone.getFaxNumberID());
+                    faxPhone.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
                   faxPhone.insert();
                   phoneIDS.add(new Integer(faxPhone.getID()));
                 }
@@ -576,13 +576,13 @@ public class Contracts extends TravelManager {
                 }
 
                 int[] addressIds = new int[1];
-                Address addressAddress = new Address();
+                Address addressAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
                     addressAddress.setStreetName(address);
                     addressAddress.insert();
                 addressIds[0] = addressAddress.getID();
 
                 int[] emailIds = new int[1];
-                Email eEmail = new Email();
+                Email eEmail = ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
                   eEmail.setEmailAddress(email);
                   eEmail.insert();
                 emailIds[0] = eEmail.getID();
@@ -634,14 +634,14 @@ public class Contracts extends TravelManager {
     Reseller tReseller = null;
     if (supplier != null) {
       if (sResellerId != null) resellerId = Integer.parseInt(sResellerId);
-      tReseller = new Reseller(Integer.parseInt(sResellerId));
+      tReseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(Integer.parseInt(sResellerId));
     }else if (reseller != null) {
       if (sResellerId != null) {
         resellerId = Integer.parseInt(sResellerId);
       }else {
         resellerId = reseller.getID();
       }
-      tReseller = new Reseller(resellerId);
+      tReseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
     }
 
 //    if (reseller != null) tReseller = reseller;
@@ -668,11 +668,11 @@ public class Contracts extends TravelManager {
       }/*
       Reseller res = (Reseller) reseller.getParent();
       if (res == null) {
-        products = ResellerManager.getProductsWithContracts(reseller.getID(), Integer.parseInt(supplier_id), Product.getColumnNameProductName());
+        products = ResellerManager.getProductsWithContracts(reseller.getID(), Integer.parseInt(supplier_id), com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
       }else {
-        products = ResellerManager.getProductsWithContracts(res, reseller.getID(), Product.getColumnNameProductName());
+        products = ResellerManager.getProductsWithContracts(res, reseller.getID(), com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
       }*/
-      products = ResellerManager.getProductsWithContracts(reseller, Product.getColumnNameProductName());
+      products = ResellerManager.getProductsWithContracts(reseller, com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameProductName());
       //products = tsb.getProducts(Integer.parseInt(supplier_id));
     }
 //    System.err.println("products.length = "+products.length);
@@ -806,8 +806,8 @@ public class Contracts extends TravelManager {
         if (sContractId != null) contractId = Integer.parseInt(sContractId);
 
 
-        Service service = new Service(productId);
-        Reseller reseller = new Reseller(resellerId);
+        Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(productId);
+        Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
 
         idegaTimestamp from = new idegaTimestamp(activeFrom);
         idegaTimestamp to = new idegaTimestamp(activeTo);
@@ -815,9 +815,9 @@ public class Contracts extends TravelManager {
 
         Contract contract;
         if (contractId != -1) {
-          contract = new Contract(contractId);
+          contract = ((is.idega.idegaweb.travel.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(contractId);
         }else {
-          contract = new Contract();
+          contract = ((is.idega.idegaweb.travel.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
         }
 
           contract.setAlotment(Integer.parseInt(alotment));
@@ -839,7 +839,7 @@ public class Contracts extends TravelManager {
         int[] tempDays = new int[7];
         int counter = 0;
           if (allDays != null) {
-            tempDays = ServiceDay.getDaysOfWeek(productId);
+            tempDays = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
             counter = tempDays.length;
           }else {
             if (sundays != null) tempDays[counter++] = java.util.GregorianCalendar.SUNDAY;
@@ -851,9 +851,9 @@ public class Contracts extends TravelManager {
             if (saturdays != null) tempDays[counter++] = java.util.GregorianCalendar.SATURDAY;
           }
 
-        ResellerDay resDay = (ResellerDay) ResellerDay.getStaticInstance(ResellerDay.class);
+        ResellerDay resDay = (ResellerDay) is.idega.idegaweb.travel.data.ResellerDayBMPBean.getStaticInstance(ResellerDay.class);
 
-        ResellerDay[] oldToDelete = (ResellerDay[]) resDay.findAllByColumn(ResellerDay.getColumnNameResellerId() , Integer.toString(resellerId), ResellerDay.getColumnNameServiceId(), Integer.toString(productId));
+        ResellerDay[] oldToDelete = (ResellerDay[]) resDay.findAllByColumn(is.idega.idegaweb.travel.data.ResellerDayBMPBean.getColumnNameResellerId() , Integer.toString(resellerId), is.idega.idegaweb.travel.data.ResellerDayBMPBean.getColumnNameServiceId(), Integer.toString(productId));
         for (int i = 0; i < oldToDelete.length; i++) {
           oldToDelete[i].delete();
         }
@@ -861,7 +861,7 @@ public class Contracts extends TravelManager {
         int[] activeDays = new int[counter];
         System.arraycopy(tempDays,0,activeDays,0,counter);
         for (int i = 0; i < activeDays.length; i++) {
-          resDay = new ResellerDay();
+          resDay = ((is.idega.idegaweb.travel.data.ResellerDayHome)com.idega.data.IDOLookup.getHomeLegacy(ResellerDay.class)).createLegacy();
             resDay.setDayOfWeek(resellerId, productId, activeDays[i]);
           resDay.insert();
         }
@@ -895,10 +895,10 @@ public class Contracts extends TravelManager {
       addTxt.setFontColor(super.WHITE);
 
     try {
-//      Reseller[] tResellers = (Reseller[]) (Reseller.getStaticInstance(Reseller.class)).findAllOrdered(Reseller.getColumnNameName());
+//      Reseller[] tResellers = (Reseller[]) (com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class)).findAllOrdered(com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
       List tResellers = null;
-      if (reseller != null) tResellers = ResellerManager.getResellersAvailable(reseller, Reseller.getColumnNameName());
-      if (supplier != null) tResellers = EntityFinder.findAllOrdered(Reseller.getStaticInstance(Reseller.class),Reseller.getColumnNameName());
+      if (reseller != null) tResellers = ResellerManager.getResellersAvailable(reseller, com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
+      if (supplier != null) tResellers = EntityFinder.findAllOrdered(com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class),com.idega.block.trade.stockroom.data.ResellerBMPBean.getColumnNameName());
 
       if (tResellers == null) tResellers = com.idega.util.ListUtil.getEmptyList();
       Iterator itResellers = this.getResellers();
@@ -1016,11 +1016,11 @@ public class Contracts extends TravelManager {
             supplier.addTo(Reseller.class, Integer.parseInt(ids[i]));
           }
           if (reseller != null) {
-            tReseller = new Reseller(Integer.parseInt(ids[i]));
+            tReseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(Integer.parseInt(ids[i]));
             reseller.addChild(tReseller);
           }
         }else {
-          tReseller = new Reseller(Integer.parseInt(ids[i]));
+          tReseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(Integer.parseInt(ids[i]));
           if (supplier != null) {
             supplier.removeFrom(tReseller);
           }
@@ -1044,11 +1044,11 @@ public class Contracts extends TravelManager {
     if (supplier != null) {
       if (sResellerId != null) resellerId = Integer.parseInt(sResellerId);
       //resellerId = Integer.parseInt(sResellerId);
-      tReseller = new Reseller(resellerId);
+      tReseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
     }else if (reseller != null) {
       if (sResellerId != null) {
         resellerId = Integer.parseInt(sResellerId);
-        tReseller = new Reseller(resellerId);
+        tReseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
       }else {
         resellerId = reseller.getID();
         tReseller = reseller;
@@ -1057,7 +1057,7 @@ public class Contracts extends TravelManager {
 
     Contract contract = null;
     if (product != null) {
-      Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(resellerId), Contract.getColumnNameServiceId(), Integer.toString(productId));
+      Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(resellerId), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(productId));
       if (contracts.length > 0) {
         contract = contracts[0];
       }
@@ -1107,7 +1107,7 @@ public class Contracts extends TravelManager {
             pDiscount = new TextInput("discount");
               pDiscount.setSize(3);
 
-            int[] serviceDays  = ServiceDay.getDaysOfWeek(productId);
+            int[] serviceDays  = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
 
           CheckBox allDays = new CheckBox("all_days");
           CheckBox mondays = new CheckBox("mondays");
@@ -1161,19 +1161,19 @@ public class Contracts extends TravelManager {
 
             weekdayFixTable.add(allDays,1,2);
 
-            if (ServiceDay.getIfDay(productId,ServiceDay.MONDAY))
+            if (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY))
               weekdayFixTable.add(mondays,3,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.TUESDAY))
+            if (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY))
             weekdayFixTable.add(tuesdays,4,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.WEDNESDAY))
+            if (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY))
             weekdayFixTable.add(wednesdays,5,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.THURSDAY))
+            if (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY))
             weekdayFixTable.add(thursdays,6,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.FRIDAY))
+            if (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY))
             weekdayFixTable.add(fridays,7,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.SATURDAY))
+            if (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY))
             weekdayFixTable.add(saturdays,8,2);
-            if (ServiceDay.getIfDay(productId,ServiceDay.SUNDAY))
+            if (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getIfDay(productId,is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY))
             weekdayFixTable.add(sundays,9,2);
 
             pFrom = new DateInput("from");
@@ -1192,15 +1192,15 @@ public class Contracts extends TravelManager {
                 pAlot.setContent(Integer.toString(contract.getAlotment()));
                 pDays.setContent(Integer.toString(contract.getExpireDays()) );
                 pDiscount.setContent(contract.getDiscount());
-                int[] days = ResellerDay.getDaysOfWeek(resellerId, productId);
+                int[] days = is.idega.idegaweb.travel.data.ResellerDayBMPBean.getDaysOfWeek(resellerId, productId);
                 for (int j = 0; j < days.length; j++) {
-                  if (days[j] == ResellerDay.MONDAY) mondays.setChecked(true);
-                  if (days[j] == ResellerDay.TUESDAY) tuesdays.setChecked(true);
-                  if (days[j] == ResellerDay.WEDNESDAY) wednesdays.setChecked(true);
-                  if (days[j] == ResellerDay.THURSDAY) thursdays.setChecked(true);
-                  if (days[j] == ResellerDay.FRIDAY) fridays.setChecked(true);
-                  if (days[j] == ResellerDay.SATURDAY) saturdays.setChecked(true);
-                  if (days[j] == ResellerDay.SUNDAY) sundays.setChecked(true);
+                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.MONDAY) mondays.setChecked(true);
+                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.TUESDAY) tuesdays.setChecked(true);
+                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.WEDNESDAY) wednesdays.setChecked(true);
+                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.THURSDAY) thursdays.setChecked(true);
+                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.FRIDAY) fridays.setChecked(true);
+                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.SATURDAY) saturdays.setChecked(true);
+                  if (days[j] == is.idega.idegaweb.travel.data.ResellerDayBMPBean.SUNDAY) sundays.setChecked(true);
                 }
 
                 infoTable.add(new HiddenInput(this.parameterContractId,Integer.toString(contract.getID())));
@@ -1230,11 +1230,11 @@ public class Contracts extends TravelManager {
             infoTable.add(pDiscount,3,infoRow);
             if (product != null) {
               Text what = (Text) theText.clone();
-              if (product.getDiscountTypeId() == Product.DISCOUNT_TYPE_ID_PERCENT) {
+              if (product.getDiscountTypeId() == com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT) {
                 what.setText(" %");
-              }else if (product.getDiscountTypeId() == Product.DISCOUNT_TYPE_ID_AMOUNT) {
+              }else if (product.getDiscountTypeId() == com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT) {
                 pDiscount.setSize(10);
-                what.setText(" "+new Currency(tsb.getCurrencyIdForIceland()).getCurrencyAbbreviation());
+                what.setText(" "+((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(tsb.getCurrencyIdForIceland()).getCurrencyAbbreviation());
               }
               infoTable.add(what,3,infoRow);
             }
@@ -1293,7 +1293,7 @@ public class Contracts extends TravelManager {
     String contractId = iwc.getParameter(this.parameterContractId);
     try {
       if (contractId != null) {
-        Contract con = new Contract(Integer.parseInt(contractId));
+        Contract con = ((is.idega.idegaweb.travel.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(Integer.parseInt(contractId));
           con.delete();
       }
     }catch (SQLException sql) {

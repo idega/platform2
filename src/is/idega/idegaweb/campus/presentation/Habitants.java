@@ -1,5 +1,5 @@
 /*
- * $Id: Habitants.java,v 1.1 2002/02/15 11:05:19 palli Exp $
+ * $Id: Habitants.java,v 1.2 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *

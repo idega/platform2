@@ -44,10 +44,10 @@ public class TourBooker extends Booker {
       boolean update = false;
       TourBooking booking = null;
       try {
-        booking = new TourBooking(bookingId);
+        booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(bookingId);
         update = true;
       }catch (Exception sql) {
-        booking = new TourBooking();
+        booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).createLegacy();
         booking.setColumn(booking.getIDColumnName(), bookingId);
       }
 
@@ -92,7 +92,7 @@ public class TourBooker extends Booker {
       List bings = new Vector();
       TourBooking tb;
       for (int i = 0; i < bookings.length; i++) {
-        tb = new TourBooking(bookings[i].getID());
+        tb = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(bookings[i].getID());
         if (tb.getHotelPickupPlaceID() != -1) {
           bings.add(bookings[i]);
         }

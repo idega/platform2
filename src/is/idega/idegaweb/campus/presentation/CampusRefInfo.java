@@ -1,5 +1,5 @@
 /*
- * $Id: CampusRefInfo.java,v 1.2 2001/12/07 12:22:33 palli Exp $
+ * $Id: CampusRefInfo.java,v 1.3 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

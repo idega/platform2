@@ -139,7 +139,7 @@ public class HotelPickupReporter extends TravelManager {
 
               ++row;
               table.setRowColor(row, super.GRAY);
-              tBooking = new TourBooking(booking.getID());
+              tBooking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(booking.getID());
               ++bookingCounter;
               hpp = tBooking.getHotelPickupPlace();
               if (hpp.getID() != oldHppNumber) {

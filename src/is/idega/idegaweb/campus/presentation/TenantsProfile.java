@@ -505,7 +505,7 @@ public class TenantsProfile extends Block {
         if(spouseName.length()>0){
           boolean update = true;
           if(spouse == null){
-            spouse = new Applicant();
+            spouse = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
             spouse.setStatus("P");
             update = false;
           }
@@ -547,7 +547,7 @@ public class TenantsProfile extends Block {
               Applicant child = (Applicant) chi.get(new Integer(childId));
               boolean update = true;
               if(child == null){
-                child = new Applicant();
+                child = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
                 child.setStatus("C");
                 update = false;
               }

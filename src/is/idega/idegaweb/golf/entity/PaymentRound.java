@@ -1,71 +1,17 @@
-//idega 2000 - aron
-
 package is.idega.idegaweb.golf.entity;
 
-//import java.util.*;
-import java.sql.*;
+import javax.ejb.*;
 
-public class PaymentRound extends GolfEntity{
-
-	public PaymentRound(){
-		super();
-	}
-
-	public PaymentRound(int id)throws SQLException{
-		super(id);
-	}
-
-	public void initializeAttributes(){
-		addAttribute(getIDColumnName());
-                addAttribute("name","Forði",true,true,"java.lang.String");
-		addAttribute("round_date","Álagningardagur",true,true,"java.sql.Timestamp");
-                addAttribute("union_id", "Álagningar klúbbur", true, true, "java.lang.Integer","many-to-one","is.idega.idegaweb.golf.entity.Union");
-                addAttribute("totals", "Upphæð", true, true, "java.lang.Integer");
-
-	}
-
-        public String getName(){
-		return getStringColumnValue("name");
-	}
-
-	public void setName(String name){
-		setColumn("name", name);
-	}
-
-	public String getEntityName(){
-		return "payment_round";
-	}
-
-	public Timestamp getRoundDate(){
-		return (Timestamp) getColumnValue("round_date");
-	}
-
-	public void setRoundDate(Timestamp round_date){
-		setColumn("round_date", round_date);
-	}
-
-        public int getUnionId(){
-		return getIntColumnValue("union_id");
-	}
-
-        public void setUnionId(Integer union_id){
-		setColumn("union_id", union_id);
-	}
-
-        public void setUnionId(int union_id){
-		setColumn("union_id", union_id);
-	}
-
-        public int getTotals(){
-		return getIntColumnValue("totals");
-	}
-
-	public void setTotals(Integer totals){
-		setColumn("totals", totals);
-	}
-
-        public void setTotals(int totals){
-		setColumn("totals", totals);
-	}
-
+public interface PaymentRound extends is.idega.idegaweb.golf.entity.GolfEntity
+{
+ public java.lang.String getName();
+ public java.sql.Timestamp getRoundDate();
+ public int getTotals();
+ public int getUnionId();
+ public void setName(java.lang.String p0);
+ public void setRoundDate(java.sql.Timestamp p0);
+ public void setTotals(int p0);
+ public void setTotals(java.lang.Integer p0);
+ public void setUnionId(int p0);
+ public void setUnionId(java.lang.Integer p0);
 }

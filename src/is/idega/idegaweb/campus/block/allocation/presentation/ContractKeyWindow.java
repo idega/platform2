@@ -76,8 +76,8 @@ public class ContractKeyWindow extends Window{
     iwb = getBundle(iwc);
     if(iwc.isLoggedOn()){
       //add(iwrb.getLocalizedString("manual","Instructions"));
-      if(iwc.getApplicationAttribute(SystemProperties.getEntityTableName())!=null){
-      SysProps = (SystemProperties)iwc.getApplicationAttribute(SystemProperties.getEntityTableName());
+      if(iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName());
       }
 
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
@@ -105,12 +105,12 @@ public class ContractKeyWindow extends Window{
   private PresentationObject getSignatureTable(IWContext iwc){
     int iContractId = Integer.parseInt( iwc.getParameter(prmContractId));
     try {
-      Contract eContract = new Contract(iContractId);
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
       List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(),true);
-      User eUser = new User(eContract.getUserId().intValue());
+      User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
       idegaTimestamp from = new idegaTimestamp(eContract.getValidFrom());
       idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
-      Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
+      Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       boolean apartmentReturn = eContract.getIsRented();
       DataTable T = new DataTable();
       T.setWidth("100%");
@@ -120,13 +120,13 @@ public class ContractKeyWindow extends Window{
       if(apartmentReturn){
         T.addTitle(iwrb.getLocalizedString("apartment_return","Apartment return"));
         val = "return";
-        if(eContract.getStatus().equals(Contract.statusEnded) || eContract.getStatus().equals(Contract.statusResigned) )
+        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusEnded) || eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusResigned) )
           T.addButton(save);
       }
       else{
         T.addTitle(iwrb.getLocalizedString("apartment_deliver","Apartment deliver"));
         val = "deliver";
-        if(eContract.getStatus().equals(Contract.statusSigned) )
+        if(eContract.getStatus().equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned) )
           T.addButton(save);
       }
       T.add(new HiddenInput("val",val),1,1);
@@ -142,7 +142,7 @@ public class ContractKeyWindow extends Window{
       T.add(Edit.formatText(eApplicant.getSSN()),2,row);
       row++;
       T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
-      T.add(Edit.formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,row);
+      T.add(Edit.formatText(getApartmentString(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(eContract.getApartmentId().intValue()))),2,row);
       row++;
       T.add(Edit.formatText(iwrb.getLocalizedString("valid_from","Valid from")),1,row);
       T.add(Edit.formatText(from.getLocaleDate(iwc)),2,row);

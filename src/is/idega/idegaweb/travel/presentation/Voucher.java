@@ -51,7 +51,7 @@ public class Voucher extends TravelManager {
   private DecimalFormat df = new DecimalFormat("0.00");
 
   public Voucher(IWContext iwc, int bookingId) throws Exception{
-    this(iwc, new GeneralBooking(bookingId));
+    this(iwc, ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId));
   }
 
   public Voucher(IWContext iwc, Booking booking) throws Exception{
@@ -62,16 +62,16 @@ public class Voucher extends TravelManager {
     _localeId = iwc.getCurrentLocaleId();
     try {
       _booking = booking;
-      GeneralBooking gBooking = new GeneralBooking(_booking.getID());
+      GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(_booking.getID());
       _bookings = Booker.getMultibleBookings(gBooking);
       _service = _booking.getService();
       _product = _service.getProduct();
       _entries = _booking.getBookingEntries();
-      _supplier = new Supplier(_product.getSupplierId());
-      _user = new User(_booking.getUserId());
+      _supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(_product.getSupplierId());
+      _user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(_booking.getUserId());
       _reseller = ResellerManager.getReseller(_user);
       _timeframe = ProductBusiness.getTimeframe(_product, new idegaTimestamp(_booking.getBookingDate()));
-      TravelAddress[] addresses = (TravelAddress[]) gBooking.findRelated(TravelAddress.getStaticInstance(TravelAddress.class));
+      TravelAddress[] addresses = (TravelAddress[]) gBooking.findRelated(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
       _address = addresses[addresses.length - 1];
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);

@@ -25,7 +25,7 @@ public class UnionCreator {
 
 
   public static Union createUnion(String name,String type,String abbrevation,String loginName,String passwd,Union parent,int CountryID,String city,String zipCode)throws Exception{
-    Member member = new Member();
+    Member member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).createLegacy();
     String fullName = name+" - Admin";
     member.setFirstName(fullName);
     member.setLastName("");
@@ -33,10 +33,10 @@ public class UnionCreator {
     member.insert();
 
     //HardCoded clubAdmin ID (14)
-    Group clubAdmin = new Group(14);
+    Group clubAdmin = ((is.idega.idegaweb.golf.entity.GroupHome)com.idega.data.IDOLookup.getHomeLegacy(Group.class)).findByPrimaryKeyLegacy(14);
     member.addTo(clubAdmin);
 
-    LoginTable lt = new LoginTable();
+    LoginTable lt = ((is.idega.idegaweb.golf.entity.LoginTableHome)com.idega.data.IDOLookup.getHomeLegacy(LoginTable.class)).createLegacy();
     lt.setMemberId(member.getID());
     lt.setUserLogin(loginName);
     lt.setUserPassword(passwd);
@@ -48,7 +48,7 @@ public class UnionCreator {
 
   public static Union createUnion(String name,String type,String abbrevation,Union parent,int CountryID,String city,String zipCode)throws Exception{
     ZipCode zip = getZipCode(zipCode,city,CountryID);
-    Address addr = new Address();
+    Address addr = ((is.idega.idegaweb.golf.entity.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
     addr.setCountryId(CountryID);
     addr.setZipcode(zip);
     addr.insert();
@@ -58,7 +58,7 @@ public class UnionCreator {
   public static Union createUnion(String name,String type,String abbrevation,Union parent,Address address)throws Exception{
 
 
-    Union union = new Union();
+    Union union = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).createLegacy();
     union.setName(name);
     union.setUnionType(type);
     union.setAbbrevation(abbrevation);
@@ -66,7 +66,7 @@ public class UnionCreator {
 
 
     String fieldName = union.getName()+" field";
-    Field field = new Field();
+    Field field = ((is.idega.idegaweb.golf.entity.FieldHome)com.idega.data.IDOLookup.getHomeLegacy(Field.class)).createLegacy();
     field.setFieldPar(72);
     field.setName(fieldName);
     field.setUnionID(union.getID());
@@ -130,7 +130,7 @@ public class UnionCreator {
   }
 
   public static ZipCode getZipCode(String code,String city,int CountryID)throws Exception{
-    ZipCode zip = new ZipCode();
+    ZipCode zip = ((is.idega.idegaweb.golf.entity.ZipCodeHome)com.idega.data.IDOLookup.getHomeLegacy(ZipCode.class)).createLegacy();
     //HardCoded ColumnNames
     java.util.List list = EntityFinder.findAllByColumn(zip,"code",code,"country_id",Integer.toString(CountryID));
     if(list!=null){

@@ -329,7 +329,7 @@ public class IPProjectCreator extends IWAdminWindow {
     } else {
       IPProject project = null;
       if(iwc.getParameter(_PRM_UPDATE) != null && !iwc.getParameter(_PRM_UPDATE).equalsIgnoreCase("false")){
-        project = new IPProject(Integer.parseInt(iwc.getParameter(_PRM_INSTANCE_ID)));
+        project = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(Integer.parseInt(iwc.getParameter(_PRM_INSTANCE_ID)));
       }
 
       myForm.add(lineUpElements(iwc,project));

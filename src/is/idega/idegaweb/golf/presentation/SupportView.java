@@ -53,7 +53,7 @@ public class SupportView extends GolferBlock implements LinkParameters{
     interviewsTable.setVerticalAlignment(3,1,"top");
     interviewsTable.setAlignment( 3, 1, "center");
     interviewsTable.add(supportText,3,1);
-    Member member = new Member(member_id);
+    Member member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(member_id);
 
     String fullName = member.getFirstName()+" "+member.getMiddleName()+" "+member.getLastName();
 

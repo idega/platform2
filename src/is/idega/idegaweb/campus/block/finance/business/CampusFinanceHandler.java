@@ -35,7 +35,7 @@ public class CampusFinanceHandler implements FinanceHandler{
   }
 
   public String getAccountType(){
-    return Account.typeFinancial;
+    return com.idega.block.finance.data.AccountBMPBean.typeFinancial;
   }
 
   public boolean rollbackAssessment(int iAssessmentRoundId){
@@ -44,9 +44,9 @@ public class CampusFinanceHandler implements FinanceHandler{
     Hashtable H = new Hashtable();
     Vector V = new Vector();
     if(iAssessmentRoundId > 0){
-      AssessmentRound AR = new AssessmentRound();
+      AssessmentRound AR = ((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy();
       try{
-        AR = new AssessmentRound(iAssessmentRoundId);
+        AR = ((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).findByPrimaryKeyLegacy(iAssessmentRoundId);
 
       List L = AccountManager.listOfAccountEntries(AR.getID());
 
@@ -76,8 +76,8 @@ public class CampusFinanceHandler implements FinanceHandler{
     return false;
     */
     StringBuffer sql = new StringBuffer("delete from ");
-    sql.append(AccountEntry.getEntityTableName());
-    sql.append(" where ").append(AccountEntry.getRoundIdColumnName());
+    sql.append(com.idega.block.finance.data.AccountEntryBMPBean.getEntityTableName());
+    sql.append(" where ").append(com.idega.block.finance.data.AccountEntryBMPBean.getRoundIdColumnName());
     sql.append(" = ").append(iAssessmentRoundId);
     System.err.println(sql.toString());
 
@@ -85,7 +85,7 @@ public class CampusFinanceHandler implements FinanceHandler{
 
     try{
       t.begin();
-      AssessmentRound AR = new AssessmentRound(iAssessmentRoundId);
+      AssessmentRound AR = ((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).findByPrimaryKeyLegacy(iAssessmentRoundId);
       com.idega.data.SimpleQuerier.execute(sql.toString());
       AR.delete();
       t.commit();
@@ -122,12 +122,12 @@ public class CampusFinanceHandler implements FinanceHandler{
         int iRoundId  = -1;
         AssessmentRound AR = null;
         try {
-          AR = new AssessmentRound();
+          AR = ((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy();
           AR.setAsNew(roundName);
           AR.setCategoryId(iCategoryId);
           //AR.setCategoryId(iCategoryId);
           AR.setTariffGroupId(iTariffGroupId);
-          AR.setType(Account.typeFinancial);
+          AR.setType(com.idega.block.finance.data.AccountBMPBean.typeFinancial);
           AR.insert();
           iRoundId = AR.getID();
         }
@@ -154,7 +154,7 @@ public class CampusFinanceHandler implements FinanceHandler{
           for(int o = 0; o < rlen ; o++){
             user = (ContractAccountApartment)listOfUsers.get(o);
             factor = getFactor(user,start,end);
-            ///Account eAccount = new Account(user.getAccountId());
+            ///Account eAccount = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(user.getAccountId());
             if(factor >0){
             totalAmount = 0;
             float Amount = 0;
@@ -388,7 +388,7 @@ public class CampusFinanceHandler implements FinanceHandler{
   throws SQLException{
 
     if(factor > 0){
-    AccountEntry AE = new AccountEntry();
+    AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(T.getAccountKeyId());
     AE.setCashierId(iCashierId);
@@ -401,7 +401,7 @@ public class CampusFinanceHandler implements FinanceHandler{
       AE.setInfo(T.getInfo()+" "+nf.format(factor));
     else
       AE.setInfo(nf.format(factor));
-    AE.setStatus(AccountEntry.statusCreated);
+    AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.statusCreated);
     AE.setCashierId(1);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();

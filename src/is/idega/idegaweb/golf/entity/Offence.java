@@ -1,60 +1,13 @@
 package is.idega.idegaweb.golf.entity;
 
-import java.sql.*;
-/**
- * Title:        Offence
- * Description:
- * Copyright:    Copyright (c) Idega margmiðlun hf. 2001
- * Company:
- * @author        Ægir
- * @version 1.0
- */
+import javax.ejb.*;
 
-public class Offence extends GolfEntity {
-
-  public Offence() {
-      super();
-  }
-
-  public Offence(int id)throws SQLException {
-      super(id);
-  }
-
-  public void initializeAttributes(){
-      addAttribute(getIDColumnName());
-      addAttribute("offence_name","Brot",true,true,"java.lang.String");
-      addAttribute("offence_act","aðgerð",true,true,"java.lang.String");
-      addAttribute("extra_info","auka upplýsingar",true,true,"java.lang.String");
-
-  }
-
-  public String getEntityName(){
-      return "offence";
-  }
-
-  public String getName(){
-      return getStringColumnValue("offence_name");
-  }
-
-  public void setName(String name){
-      setColumn("offence_name", name);
-  }
-
-  public String getAct() {
-      return getStringColumnValue("offence_act");
-  }
-
-  public void setAct(String act) {
-      setColumn("offence_act", act);
-  }
-
-  public String getExtraInfo() {
-      return getStringColumnValue("extra_info");
-  }
-
-  public void setExtraInfo(String extraInfo) {
-      setColumn("extra_info", extraInfo);
-  }
-
+public interface Offence extends is.idega.idegaweb.golf.entity.GolfEntity
+{
+ public java.lang.String getAct();
+ public java.lang.String getExtraInfo();
+ public java.lang.String getName();
+ public void setAct(java.lang.String p0);
+ public void setExtraInfo(java.lang.String p0);
+ public void setName(java.lang.String p0);
 }
-

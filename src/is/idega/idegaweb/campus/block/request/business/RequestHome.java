@@ -1,5 +1,5 @@
 /*
- * $Id: RequestHome.java,v 1.2 2002/03/18 15:50:44 palli Exp $
+ * $Id: RequestHome.java,v 1.3 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,6 +30,6 @@ public class RequestHome {
   }
 
   public Request getNewRequest() {
-    return(new RequestBean());
+    return(((is.idega.idegaweb.campus.block.request.data.RequestBeanHome)com.idega.data.IDOLookup.getHomeLegacy(RequestBean.class)).createLegacy());
   }
 }

@@ -128,12 +128,12 @@ public class BookingComparator implements Comparator {
     boolean err1 = false;
     boolean err2 = false;
     try {
-      tp1 = new TourBooking(p1.getID());
+      tp1 = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(p1.getID());
     }catch (SQLException sql) {
       err1 = true;
     }
     try {
-      tp2 = new TourBooking(p2.getID());
+      tp2 = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(p2.getID());
     }catch (SQLException sql) {
       err2 = true;
     }
@@ -164,8 +164,8 @@ public class BookingComparator implements Comparator {
     Booking p1 = (Booking) o1;
     Booking p2 = (Booking) o2;
     try {
-      User user1 = new User(p1.getUserId());
-      User user2 = new User(p2.getUserId());
+      User user1 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(p1.getUserId());
+      User user2 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(p2.getUserId());
 
       String one = user1.getName()!=null?user1.getName():"";
       String two = user2.getName()!=null?user2.getName():"";
@@ -182,8 +182,8 @@ public class BookingComparator implements Comparator {
     Booking p2 = (Booking) o2;
 
     try {
-      User user1 = new User(p1.getOwnerId());
-      User user2 = new User(p2.getOwnerId());
+      User user1 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(p1.getOwnerId());
+      User user2 = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(p2.getOwnerId());
 
       String one = user1.getName()!=null?user1.getName():"";
       String two = user2.getName()!=null?user2.getName():"";

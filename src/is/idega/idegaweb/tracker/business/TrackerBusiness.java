@@ -4,7 +4,7 @@ import is.idega.idegaweb.tracker.data.*;
 
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWCacheManager;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityBulkUpdater;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBDomain;
@@ -101,7 +101,7 @@ public class TrackerBusiness {
 
 
     if(pageId!=-1){
-      PageStatistics page = new PageStatistics();/**@todo clone this?**/
+      PageStatistics page = ((is.idega.idegaweb.tracker.data.PageStatisticsHome)com.idega.data.IDOLookup.getHomeLegacy(PageStatistics.class)).createLegacy();/**@todo clone this?**/
       page.setPageId(pageId);
       page.setPreviousPageId(pageId);/**@todo this shit here**/
       page.setLocale(iwc.getCurrentLocaleId());
@@ -137,7 +137,7 @@ public class TrackerBusiness {
     if( (referer!=null) && (referer.indexOf(domainName)==-1) ){
       ReferrerStatistics stats = (ReferrerStatistics) referers.get(referer);
       if( stats == null ){
-       stats = new ReferrerStatistics();
+       stats = ((is.idega.idegaweb.tracker.data.ReferrerStatisticsHome)com.idega.data.IDOLookup.getHomeLegacy(ReferrerStatistics.class)).createLegacy();
        stats.setReferrerUrl(referer);
        stats.setSessions(1);
        stats.setModificationDate(idegaTimestamp.getTimestampRightNow());
@@ -157,7 +157,7 @@ public class TrackerBusiness {
     if(userAgent!=null){
       UserAgentStatistics stats = (UserAgentStatistics) agents.get(userAgent);
       if( stats == null ){
-        stats = new UserAgentStatistics();
+        stats = ((is.idega.idegaweb.tracker.data.UserAgentStatisticsHome)com.idega.data.IDOLookup.getHomeLegacy(UserAgentStatistics.class)).createLegacy();
         stats.setUserAgent(userAgent);
         stats.setSessions(1);
         stats.setModificationDate(idegaTimestamp.getTimestampRightNow());
@@ -262,7 +262,7 @@ public class TrackerBusiness {
       try {
         Iterator iter = stats.keySet().iterator();
         while (iter.hasNext()) {
-          GenericEntity item = (GenericEntity) iter.next();
+          IDOLegacyEntity item = (IDOLegacyEntity) iter.next();
           bulk.add(item,EntityBulkUpdater.insert);
         }
         bulk.execute();
@@ -287,8 +287,8 @@ public class TrackerBusiness {
     while (iter.hasNext()) {
       Locale item = (Locale)iter.next();
       int localeId = ICLocaleBusiness.getLocaleId(item);
-      PageTotalStatistics stats = new PageTotalStatistics();//virkar ekki svona
-      DomainStatistics stats2 = new DomainStatistics();
+      PageTotalStatistics stats = ((is.idega.idegaweb.tracker.data.PageTotalStatisticsHome)com.idega.data.IDOLookup.getHomeLegacy(PageTotalStatistics.class)).createLegacy();//virkar ekki svona
+      DomainStatistics stats2 = ((is.idega.idegaweb.tracker.data.DomainStatisticsHome)com.idega.data.IDOLookup.getHomeLegacy(DomainStatistics.class)).createLegacy();
 
       totalPage.put(new Integer(localeId),stats);
       totalDomain.put(new Integer(localeId),stats2);

@@ -82,7 +82,7 @@ public class AdditionalBooking extends TravelWindow {
         if (sCorrection.equals("true"))
         this.isCorrection = true;
       }
-        service = new Service(Integer.parseInt(iwc.getParameter(this.parameterServiceId)));
+        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(Integer.parseInt(iwc.getParameter(this.parameterServiceId)));
         product = ProductBusiness.getProduct(service.getID());
         stamp = new idegaTimestamp(iwc.getParameter(this.parameterDate));
         timeframe = ProductBusiness.getTimeframe(product, stamp);
@@ -109,7 +109,7 @@ public class AdditionalBooking extends TravelWindow {
       if (tfrId != null) iTimeframeId = Integer.parseInt(tfrId);
 
 
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), iTimeframeId, iAddressId, false);
+      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), iTimeframeId, iAddressId, false);
       PriceCategory category;
 
       Text header = (Text) text.clone();
@@ -233,7 +233,7 @@ public class AdditionalBooking extends TravelWindow {
       int iMany = 0;
       int iHotelId;
 
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), timeframe.getID(), Integer.parseInt(addressId), false);
+      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), timeframe.getID(), Integer.parseInt(addressId), false);
       int bookingId;
 
       try {
@@ -268,7 +268,7 @@ public class AdditionalBooking extends TravelWindow {
         BookingEntry bEntry;
         for (int i = 0; i < pPrices.length; i++) {
           if (manys[i] != 0) {
-            bEntry = new BookingEntry();
+            bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHomeLegacy(BookingEntry.class)).createLegacy();
               bEntry.setProductPriceId(pPrices[i].getID());
               bEntry.setBookingId(bookingId);
               bEntry.setCount(manys[i]);

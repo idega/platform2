@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.14 2002/02/22 10:23:41 aron Exp $
+ * $Id: CampusFactory.java,v 1.15 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

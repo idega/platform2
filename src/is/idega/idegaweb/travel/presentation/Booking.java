@@ -60,7 +60,7 @@ public class Booking extends TravelManager {
   private Timeframe timeframe;
   private Tour tour;
 
-  public static String parameterProductId = Product.getProductEntityName();
+  public static String parameterProductId = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
   private static String parameterInqueryId = "bookInqueryId";
   private static String parameterRespondInquery = "bookingRespondInquery";
   private static String parameterRespondYes = "bookingYes";
@@ -135,7 +135,7 @@ public class Booking extends TravelManager {
 
       if ((reseller != null) && (product != null)){
         try {
-            Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(reseller.getID()), Contract.getColumnNameServiceId(), Integer.toString(product.getID()) );
+            Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
             if (contracts.length > 0) {
               contract = contracts[0];
               contractId = contract.getID();
@@ -309,7 +309,7 @@ public class Booking extends TravelManager {
 
           table.mergeCells(1,row,5,row);
           if (supplier != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -320,7 +320,7 @@ public class Booking extends TravelManager {
             }
           }
           else if (reseller != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, Inquery.getInqueryPostDateColumnName());
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -364,7 +364,7 @@ public class Booking extends TravelManager {
       }else {
         if (isExpired) {
           if (supplier != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -375,7 +375,7 @@ public class Booking extends TravelManager {
             }
           }
           else if (reseller != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, Inquery.getInqueryPostDateColumnName());
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -388,7 +388,7 @@ public class Booking extends TravelManager {
           table.add(iwrb.getLocalizedString("travel.time_for_booking_has_passed","Time for booking has passed"),1,row+2);
         }else {
           if (supplier != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -399,7 +399,7 @@ public class Booking extends TravelManager {
             }
           }
           else if (reseller != null) {
-            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, Inquery.getInqueryPostDateColumnName());
+            Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
               table.add(getInqueries(iwc, inqueries),1,row);
@@ -814,7 +814,7 @@ public class Booking extends TravelManager {
 
   private Table bookingInformation(IWContext iwc, int bookingId) {
     try {
-      GeneralBooking booking = new GeneralBooking(bookingId);
+      GeneralBooking booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
       int voucherNumber = Voucher.getVoucherNumber(bookingId);
       String referenceNumber = booking.getReferenceNumber();
 
@@ -922,7 +922,7 @@ public class Booking extends TravelManager {
     String sBookingId = iwc.getParameter(this.parameterBookingId);
     if (sBookingId != null) {
         this.bookingId = Integer.parseInt(sBookingId);
-        booking = new GeneralBooking(bookingId);
+        booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
         this.stamp = new idegaTimestamp(booking.getBookingDate());
         displayForm(iwc);
     }else {

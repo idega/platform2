@@ -47,15 +47,15 @@ public class PhoneFinanceHandler implements FinanceHandler{
   }
 
   public String getAccountType(){
-    return Account.typePhone;
+    return com.idega.block.finance.data.AccountBMPBean.typePhone;
   }
 
   public boolean rollbackAssessment(int iAssessmentRoundId){
-    StringBuffer sql = new StringBuffer("update ").append(AccountPhoneEntry.getEntityTableName());
-    sql.append(" set ").append(AccountPhoneEntry.getColumnNameAccountEntryId()).append(" = null ");
-    sql.append(" , ").append(AccountPhoneEntry.getRoundIdColumnName()).append(" = null ");
-    sql.append(" , ").append(AccountPhoneEntry.getColumnNameStatus()).append(" = '").append(AccountPhoneEntry.statusRead).append("'");
-    sql.append(" where ").append(AccountPhoneEntry.getRoundIdColumnName()).append(" = ").append(iAssessmentRoundId);
+    StringBuffer sql = new StringBuffer("update ").append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getEntityTableName());
+    sql.append(" set ").append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNameAccountEntryId()).append(" = null ");
+    sql.append(" , ").append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getRoundIdColumnName()).append(" = null ");
+    sql.append(" , ").append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getColumnNameStatus()).append(" = '").append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusRead).append("'");
+    sql.append(" where ").append(com.idega.block.finance.data.AccountPhoneEntryBMPBean.getRoundIdColumnName()).append(" = ").append(iAssessmentRoundId);
     System.err.println(sql.toString());
     TransactionManager t = IdegaTransactionManager.getInstance();
 
@@ -87,9 +87,9 @@ public class PhoneFinanceHandler implements FinanceHandler{
     Hashtable H = new Hashtable();
     Vector V = new Vector();
     if(iAssessmentRoundId > 0){
-      AssessmentRound AR = new AssessmentRound();
+      AssessmentRound AR = ((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy();
       try{
-        AR = new AssessmentRound(iAssessmentRoundId);
+        AR = ((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).findByPrimaryKeyLegacy(iAssessmentRoundId);
 
       List L = AccountManager.listOfAccountEntries(AR.getID());
 
@@ -108,7 +108,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
               a = (Account) H.get(Aid);
             }
             else{
-              a = new Account(ae.getAccountId());
+              a = ((com.idega.block.finance.data.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(ae.getAccountId());
               H.put(new Integer(a.getID()),a);
             }
             bulk.add(ae,bulk.delete);
@@ -137,7 +137,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
 
   public static List listOfContractAccounts(){
    try {
-     return com.idega.data.EntityFinder.findAll(new ContractAccounts());
+     return com.idega.data.EntityFinder.findAll(((is.idega.idegaweb.campus.data.ContractAccountsHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccounts.class)).createLegacy());
    }
    catch (SQLException ex) {
     ex.printStackTrace();
@@ -178,7 +178,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
         int iRoundId = -1;
         int iAccountCount = 0;
         try {
-            AR = new AssessmentRound();
+            AR = ((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy();
             AR.setAsNew(roundName);
             AR.setCategoryId(iCategoryId);
             AR.setTariffGroupId(iTariffGroupId);
@@ -202,8 +202,8 @@ public class PhoneFinanceHandler implements FinanceHandler{
 
         try{
           t.begin();
-            AccountKey AK = new AccountKey(iAccountKeyId);
-            TariffKey TK = new TariffKey(AK.getTariffKeyId());
+            AccountKey AK = ((com.idega.block.finance.data.AccountKeyHome)com.idega.data.IDOLookup.getHomeLegacy(AccountKey.class)).findByPrimaryKeyLegacy(iAccountKeyId);
+            TariffKey TK = ((com.idega.block.finance.data.TariffKeyHome)com.idega.data.IDOLookup.getHomeLegacy(TariffKey.class)).findByPrimaryKeyLegacy(AK.getTariffKeyId());
             Integer phAccId;
             Iterator iter = entries.iterator();
             AccountEntry AE;
@@ -225,7 +225,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
                 }
                 ape.setAccountEntryId(AE.getID());
                 ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
-                ape.setStatus(AccountPhoneEntry.statusBilled);
+                ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusBilled);
                 ape.setRoundId(iRoundId);
                 ape.update();
               }
@@ -243,12 +243,12 @@ public class PhoneFinanceHandler implements FinanceHandler{
                 entry = (AccountEntry) me.getValue();
                 AccountId = (Integer) me.getKey();
                 entry.setTotal(entry.getNetto()*tax);
-                phoneEntry = new AccountPhoneEntry();
+                phoneEntry = ((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
                 phoneEntry.setAccountId(AccountId.intValue());
                 phoneEntry.setPrice(-1*entry.getNetto());
                 phoneEntry.setRoundId(iRoundId);
                 phoneEntry.setAccountEntryId(entry.getID());
-                phoneEntry.setStatus(AccountPhoneEntry.statusBilled);
+                phoneEntry.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusBilled);
                 //phoneEntry.setPhonedStamp(new idegaTimestamp(maxstamp).getTimestamp());
                 phoneEntry.insert();
                 entry.update();
@@ -293,7 +293,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
       int iRoundId = -1;
       int iAccountCount = 0;
       try {
-          AR = new AssessmentRound();
+          AR = ((com.idega.block.finance.data.AssessmentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(AssessmentRound.class)).createLegacy();
           AR.setAsNew(roundName);
           AR.setCategoryId(iCategoryId);
           AR.setTariffGroupId(iTariffGroupId);
@@ -321,8 +321,8 @@ public class PhoneFinanceHandler implements FinanceHandler{
             int totalAmount = 0;
             // All tenants accounts (Outer loop)
             AccountPhoneEntry ape;
-            AccountKey AK = new AccountKey(iAccountKeyId);
-            TariffKey TK = new TariffKey(AK.getTariffKeyId());
+            AccountKey AK = ((com.idega.block.finance.data.AccountKeyHome)com.idega.data.IDOLookup.getHomeLegacy(AccountKey.class)).findByPrimaryKeyLegacy(iAccountKeyId);
+            TariffKey TK = ((com.idega.block.finance.data.TariffKeyHome)com.idega.data.IDOLookup.getHomeLegacy(TariffKey.class)).findByPrimaryKeyLegacy(AK.getTariffKeyId());
             while (I.hasNext()) {
               accounts = (ContractAccounts)I.next();
               totalAmount = 0;
@@ -402,7 +402,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
 
   private static float insertEntry(Vector V,Tariff T,int iAccountId,int iRoundId,idegaTimestamp itPaydate,int iCashierId)
   throws SQLException{
-    AccountEntry AE = new AccountEntry();
+    AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(T.getAccountKeyId());
     AE.setCashierId(iCashierId);
@@ -411,7 +411,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
     AE.setRoundId(iRoundId);
     AE.setName(T.getName());
     AE.setInfo(T.getInfo());
-    AE.setStatus(AccountEntry.statusCreated);
+    AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.statusCreated);
     AE.setCashierId(1);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();
@@ -427,7 +427,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
   }
 
   private static AccountEntry insertEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float nettoamount,AccountKey key,TariffKey tkey,int iCashierId) throws SQLException{
-    AccountEntry AE = new AccountEntry();
+    AccountEntry AE = ((com.idega.block.finance.data.AccountEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountEntry.class)).createLegacy();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(key.getID());
     AE.setCashierId(iCashierId);
@@ -436,7 +436,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
     AE.setRoundId(iRoundId);
     AE.setName(tkey.getName());
     AE.setInfo(tkey.getInfo());
-    AE.setStatus(AccountEntry.statusCreated);
+    AE.setStatus(com.idega.block.finance.data.AccountEntryBMPBean.statusCreated);
     AE.setPaymentDate(itPaydate.getTimestamp());
     AE.insert();
     return AE;

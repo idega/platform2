@@ -73,8 +73,8 @@ public class ContractSignWindow extends Window{
     iwb = getBundle(iwc);
     // permissons !!
     if(true){
-      if(iwc.getApplicationAttribute(SystemProperties.getEntityTableName())!=null){
-      SysProps = (SystemProperties)iwc.getApplicationAttribute(SystemProperties.getEntityTableName());
+      if(iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName());
       }
 
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
@@ -100,20 +100,20 @@ public class ContractSignWindow extends Window{
   private PresentationObject getSignatureTable(IWContext iwc){
     int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
     try {
-      Contract eContract = new Contract(iContractId);
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
       List listOfContracts = ContractFinder.listOfApartmentContracts(eContract.getApartmentId().intValue(),true);
-      User eUser = new User(eContract.getUserId().intValue());
+      User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
       idegaTimestamp from = new idegaTimestamp(eContract.getValidFrom());
       idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
-      Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
+      Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
-      List lFinanceAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),Account.typeFinancial);
-      List lPhoneAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),Account.typePhone);
+      List lFinanceAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
+      List lPhoneAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
 
       if(SysProps != null){
         int groupId = SysProps.getDefaultGroup();
         try {
-          eGroup = new GenericGroup(groupId);
+          eGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId);
         }
         catch (SQLException ex) {
           eGroup = null;
@@ -153,7 +153,7 @@ public class ContractSignWindow extends Window{
       T.add(Edit.formatText(eApplicant.getSSN()),2,row);
       row++;
       T.add(Edit.formatText(iwrb.getLocalizedString("apartment","Apartment")),1,row);
-      T.add(Edit.formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,row);
+      T.add(Edit.formatText(getApartmentString(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(eContract.getApartmentId().intValue()))),2,row);
       row++;
       T.add(Edit.formatText(iwrb.getLocalizedString("valid_from","Valid from")),1,row);
       T.add(Edit.formatText(from.getLocaleDate(iwc)),2,row);

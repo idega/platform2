@@ -10,7 +10,7 @@ import com.idega.presentation.PresentationObject;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.business.ProjectNavigatorState;
 import is.idega.idegaweb.project.data.IPProject;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.builder.dynamicpagetrigger.data.PageLink;
 import com.idega.presentation.ui.IFrame;
 import com.idega.idegaweb.IWMainApplication;
@@ -325,14 +325,14 @@ public class ProjectNavigator extends Block implements IFrameContainer{
 
 
     public void initColumns(IWContext iwc) throws Exception{
-      super.addLinkEntityColumn(PageLink._COLUMNNAME_DEFAULT_LINK_TEXT);
+      super.addLinkEntityColumn(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean._COLUMNNAME_DEFAULT_LINK_TEXT);
     }
 
     public void setListeners(String listenerString){
       this.listenerString = listenerString;
     }
 
-    protected void addParameters(IWContext iwc, GenericEntity item, Link link){
+    protected void addParameters(IWContext iwc, IDOLegacyEntity item, Link link){
       super.addParameters(iwc,item,link);
       if(item != null){
         link.addParameter(ProjectNavigator._PRM_PROJECT_ID,((PageLink)item).getReferencedDataId());
@@ -602,10 +602,10 @@ public class ProjectNavigator extends Block implements IFrameContainer{
     }
 
     public void initColumns(IWContext iwc) throws Exception{
-      super.addLinkEntityColumn(PageLink._COLUMNNAME_DEFAULT_LINK_TEXT);
+      super.addLinkEntityColumn(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean._COLUMNNAME_DEFAULT_LINK_TEXT);
     }
 
-    protected void addParameters(IWContext iwc, GenericEntity item, Link link){
+    protected void addParameters(IWContext iwc, IDOLegacyEntity item, Link link){
       link.addParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER,((PageLink)item).getPageId());
       link.setTarget(Link.TARGET_PARENT_WINDOW);
     }
@@ -660,10 +660,10 @@ public class ProjectNavigator extends EntityNavigationList {
   }
 
   public void initColumns(IWContext iwc) throws Exception{
-    super.addLinkEntityColumn(PageLink._COLUMNNAME_DEFAULT_LINK_TEXT);
+    super.addLinkEntityColumn(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean._COLUMNNAME_DEFAULT_LINK_TEXT);
   }
 
-  protected void addParameters(IWContext iwc, GenericEntity item, Link link){
+  protected void addParameters(IWContext iwc, IDOLegacyEntity item, Link link){
     link.addParameter(com.idega.builder.business.BuilderLogic.IB_PAGE_PARAMETER,((PageLink)item).getPageId());
     link.setTarget(Link.TARGET_PARENT_WINDOW);
   }

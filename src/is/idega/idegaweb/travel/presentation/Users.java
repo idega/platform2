@@ -214,7 +214,7 @@ public class Users extends TravelManager {
 
     User user = null;
     if (userId != -1) {
-      user = new User(userId);
+      user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(userId);
     }
 
     Table table = new Table();
@@ -340,7 +340,7 @@ public class Users extends TravelManager {
           user = ub.insertUser(name, "", "", name, "staff", null, null, null);
           LoginDBHandler.createLogin(user.getID(), login, passOne);
         }else {
-          user = new User(Integer.parseInt(userId));
+          user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(userId));
           ub.updateUser(user.getID(), name, "", "", name, "staff", null, null, null);
           if (passwordUpdate) {
             LoginTable lt = LoginDBHandler.getUserLogin(Integer.parseInt(userId));
@@ -422,7 +422,7 @@ public class Users extends TravelManager {
   private Form deleteUser(IWContext iwc) {
     String userId = iwc.getParameter(this.paramaterUserID);
     try {
-      User user = new User(Integer.parseInt(userId));
+      User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(userId));
       com.idega.core.accesscontrol.business.LoginDBHandler.deleteUserLogin(user.getID());
       removeUserFromAllGroups(user);
       add(getText(_iwrb.getLocalizedString("travel.operation_successful","Operation successful")));

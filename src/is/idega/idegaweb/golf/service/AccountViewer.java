@@ -135,7 +135,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
       if( member_id != null){
         mem_id = Integer.parseInt(member_id);
-        eMember = new Member(mem_id);
+        eMember = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(mem_id);
       }
       else
         mem_id = -1;
@@ -187,7 +187,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     public UnionMemberInfo getUmi(int union_id,int member_id){
       try {
         String sql = "select * from union_member_info where union_id = "+union_id+" and member_id = "+member_id;
-        List L = EntityFinder.findAll(new UnionMemberInfo(),sql);
+        List L = EntityFinder.findAll(((is.idega.idegaweb.golf.entity.UnionMemberInfoHome)com.idega.data.IDOLookup.getHomeLegacy(UnionMemberInfo.class)).createLegacy(),sql);
         if(L!=null)
           return (UnionMemberInfo) L.get(0);
       }
@@ -199,7 +199,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
     public AccountYear getActiveAccountYear(int iUnionId){
       try {
-        AccountYear[] AY = (AccountYear[]) new AccountYear().findAllByColumn("union_id",String.valueOf(iUnionId),"active_year","Y");
+        AccountYear[] AY = (AccountYear[]) ((is.idega.idegaweb.golf.entity.AccountYearHome)com.idega.data.IDOLookup.getHomeLegacy(AccountYear.class)).createLegacy().findAllByColumn("union_id",String.valueOf(iUnionId),"active_year","Y");
         if(AY.length > 0)
           return AY[0];
       }
@@ -287,7 +287,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       Payment P = null;
       if(sPaymId!=null)
       try{
-        P = new Payment(Integer.parseInt(sPaymId));
+        P = ((is.idega.idegaweb.golf.entity.PaymentHome)com.idega.data.IDOLookup.getHomeLegacy(Payment.class)).findByPrimaryKeyLegacy(Integer.parseInt(sPaymId));
       }
       catch(SQLException sql){}
 
@@ -322,7 +322,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         price = Integer.parseInt(strPrice);
         pt_id = Integer.parseInt(strPaytype);
 
-        Payment P = new Payment(pm_id);
+        Payment P = ((is.idega.idegaweb.golf.entity.PaymentHome)com.idega.data.IDOLookup.getHomeLegacy(Payment.class)).findByPrimaryKeyLegacy(pm_id);
         if(strChkDel != null && strChkDel.equalsIgnoreCase("true")){
         try{
           P.delete();
@@ -369,7 +369,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       int iPaymentId = Integer.parseInt(sPaymentId);
       Payment ePayment;
       try{
-        ePayment = new Payment(iPaymentId);
+        ePayment = ((is.idega.idegaweb.golf.entity.PaymentHome)com.idega.data.IDOLookup.getHomeLegacy(Payment.class)).findByPrimaryKeyLegacy(iPaymentId);
       }
       catch(SQLException sql){ePayment = null;}
 
@@ -456,7 +456,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           stemp = iwc.getParameter(this.getChkPrm()+itemp);
           if(stemp != null && stemp.equalsIgnoreCase("true")){
             try{
-              PriceCatalogue P = new PriceCatalogue(itemp);
+              PriceCatalogue P = ((is.idega.idegaweb.golf.entity.PriceCatalogueHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCatalogue.class)).findByPrimaryKeyLegacy(itemp);
               TariffService.makeAccountEntry(this.eAccount.getID() ,-P.getPrice(),P.getName(),"Álagning","","","",0,idegaTimestamp.getTimestampRightNow(),idegaTimestamp.getTimestampRightNow());
               if(!isCorrection)
                 totalprice += P.getPrice();
@@ -502,7 +502,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         }
         if(iInst > 0){
           try{
-            PaymentRound payround = new PaymentRound();
+            PaymentRound payround = ((is.idega.idegaweb.golf.entity.PaymentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(PaymentRound.class)).createLegacy();
             payround.setName("Auka");
             payround.setRoundDate(idegaTimestamp.getTimestampRightNow());
             payround.setTotals(totalprice);
@@ -567,14 +567,14 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         if(strIfRoundRel != null && strIfRoundRel.equalsIgnoreCase("true")){
           if(strIfRoundRel != null && strIfRoundRel.equalsIgnoreCase("true")){
             payRoundId = Integer.parseInt(strRoundId);
-            PaymentRound pr = new PaymentRound(payRoundId);
+            PaymentRound pr = ((is.idega.idegaweb.golf.entity.PaymentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(PaymentRound.class)).findByPrimaryKeyLegacy(payRoundId);
             int prTotals = pr.getTotals();
             pr.setTotals(prTotals+price);
             pr.update();
           }
         }
         else{
-          PaymentRound payround = new PaymentRound();
+          PaymentRound payround = ((is.idega.idegaweb.golf.entity.PaymentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(PaymentRound.class)).createLegacy();
           payround.setName("Auka");
           payround.setRoundDate(idegaTimestamp.getTimestampRightNow());
           payround.setTotals(price);
@@ -585,7 +585,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
         if(payRoundId != -1){
           pt_id = Integer.parseInt(strPaytype);
           for(int i = 0; i < inst ; i++){
-          Payment P = new Payment();
+          Payment P = ((is.idega.idegaweb.golf.entity.PaymentHome)com.idega.data.IDOLookup.getHomeLegacy(Payment.class)).createLegacy();
             P.setAccountId(eAccount.getID());
             P.setMemberId(this.mem_id);
             P.setPriceCatalogueId(0);
@@ -674,7 +674,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           int id = Integer.parseInt(iwc.getParameter("payment_delchk"+i));
            Payment ePayment = null;
           try{
-            ePayment = new Payment(id);
+            ePayment = ((is.idega.idegaweb.golf.entity.PaymentHome)com.idega.data.IDOLookup.getHomeLegacy(Payment.class)).findByPrimaryKeyLegacy(id);
           }
           catch(SQLException sql){ePayment = null;}
           if(ePayment !=null){
@@ -712,7 +712,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           int id = Integer.parseInt(iwc.getParameter("payment_delchk"+i));
            Payment ePayment = null;
           try{
-            ePayment = new Payment(id);
+            ePayment = ((is.idega.idegaweb.golf.entity.PaymentHome)com.idega.data.IDOLookup.getHomeLegacy(Payment.class)).findByPrimaryKeyLegacy(id);
           }
           catch(SQLException sql){ePayment = null;}
           if(ePayment !=null){
@@ -1347,7 +1347,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       Account account = null;
       int balance = 0;
       try{
-        account = new Account(this.eAccount.getID());
+        account = ((is.idega.idegaweb.golf.entity.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(this.eAccount.getID());
         balance = account.getBalance()  ;
       }
       catch(SQLException e){balance =  this.eAccount.getBalance();}
@@ -1568,7 +1568,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     Account account = null;
       int balance = 0;
     try{
-      account = new Account(this.eAccount.getID());
+      account = ((is.idega.idegaweb.golf.entity.AccountHome)com.idega.data.IDOLookup.getHomeLegacy(Account.class)).findByPrimaryKeyLegacy(this.eAccount.getID());
       balance = account.getBalance()  ;
     }
     catch(SQLException e){balance =  this.eAccount.getBalance();}
@@ -1738,7 +1738,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     DropdownMenu drp = new DropdownMenu(name);
     try {
       int activeid = -1;
-      AccountYear[] AY = (AccountYear[]) new AccountYear().findAllByColumn("union_id",this.un_id);
+      AccountYear[] AY = (AccountYear[]) ((is.idega.idegaweb.golf.entity.AccountYearHome)com.idega.data.IDOLookup.getHomeLegacy(AccountYear.class)).createLegacy().findAllByColumn("union_id",this.un_id);
       for (int i = 0; i < AY.length; i++) {
         drp.addMenuElement(AY[i].getID(),String.valueOf(AY[i].getMainYear()));
         if(AY[i].getActive())

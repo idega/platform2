@@ -1,52 +1,11 @@
 package is.idega.idegaweb.campus.block.mailinglist.data;
 
-import com.idega.data.CategoryEntity;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import javax.ejb.*;
 
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * @version 1.0
- */
-
-public class MailingList extends CategoryEntity {
-
-  private final static String TABLE_NAME = "cam_mail_list";
-  private final static String NAME = "name";
-  private final static String CREATED = "created_date";
-
-  public MailingList() {
-    super();
-  }
-
-  public MailingList(int id) throws SQLException{
-    super(id);
-  }
-
-  public void initializeAttributes() {
-    addAttribute(this.getIDColumnName());
-    addAttribute(NAME , "Name", true, true, String.class);
-    addAttribute(CREATED , "Created", true, true, Timestamp.class);
-    addManyToManyRelationShip(com.idega.core.data.Email.class);
-
-  }
-  public String getEntityName() {
-    return TABLE_NAME;
-  }
-  public String getName(){
-    return getStringColumnValue(NAME);
-  }
-  public void setName(String name){
-    setColumn(NAME,name);
-  }
-  public Timestamp getCreated(){
-    return (Timestamp) getColumnValue(CREATED);
-  }
-  public void setCreated(Timestamp created){
-    setColumn(CREATED,created);
-  }
+public interface MailingList extends com.idega.data.CategoryEntity
+{
+ public java.sql.Timestamp getCreated();
+ public java.lang.String getName();
+ public void setCreated(java.sql.Timestamp p0);
+ public void setName(java.lang.String p0);
 }

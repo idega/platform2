@@ -12,7 +12,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.block.finance.presentation.*;
 import com.idega.core.user.data.User;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationSubject;
 
@@ -132,11 +132,11 @@ public class CampusContracts extends Block{
   private Form statusForm(){
     Form myForm = new Form();
     DropdownMenu status = statusDrop(conPrm,sGlobalStatus);
-    DropdownMenu complex = drpLodgings(new Complex(),prmArray[0],"--",sValues[0]);
-    DropdownMenu building = drpLodgings(new Building(),prmArray[1],"--",sValues[1]);
+    DropdownMenu complex = drpLodgings(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy(),prmArray[0],"--",sValues[0]);
+    DropdownMenu building = drpLodgings(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy(),prmArray[1],"--",sValues[1]);
     DropdownMenu floor = drpFloors(prmArray[2],"--",sValues[2],true);
-    //DropdownMenu cat = drpLodgings(new ApartmentCategory(),prmArray[3],"--",sValues[3]);
-    //DropdownMenu type = drpLodgings(new ApartmentType(),prmArray[4],"--",sValues[4]);
+    //DropdownMenu cat = drpLodgings(((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy(),prmArray[3],"--",sValues[3]);
+    //DropdownMenu type = drpLodgings(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy(),prmArray[4],"--",sValues[4]);
     DropdownMenu order = orderDrop(prmArray[5],"--",sValues[5]);
     Edit.setStyle(status);
     Edit.setStyle(complex);
@@ -172,8 +172,8 @@ public class CampusContracts extends Block{
     return myForm;
   }
 
-  private DropdownMenu drpLodgings(GenericEntity lodgings,String name,String display,String selected) {
-    GenericEntity[] lods = new GenericEntity[0];
+  private DropdownMenu drpLodgings(IDOLegacyEntity lodgings,String name,String display,String selected) {
+    IDOLegacyEntity[] lods = new IDOLegacyEntity[0];
     try{
       lods =  (lodgings).findAll();
     }
@@ -196,7 +196,7 @@ public class CampusContracts extends Block{
   private DropdownMenu drpFloors(String name,String display,String selected,boolean withBuildingName) {
     Floor[] lods = new Floor[1];
     try{
-      lods =  (Floor[])(new Floor()).findAll();
+      lods =  (Floor[])(((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy()).findAll();
     }
     catch(SQLException e){}
     DropdownMenu drp = new DropdownMenu(name);
@@ -245,7 +245,7 @@ public class CampusContracts extends Block{
       for (int i = 0; i < len; i++) {
         try{
         C = (Contract) L.get(i);
-        Applicant A = new Applicant(C.getApplicantId().intValue());
+        Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(C.getApplicantId().intValue());
         drp.addMenuElement(C.getID(),A.getName());
         }
         catch(SQLException ex){
@@ -283,7 +283,7 @@ public class CampusContracts extends Block{
     T.setTitlesHorizontal(true);
     T.setWidth("100%");
     T.add(Edit.formatText("#"),col++,1);
-    if(sGlobalStatus.equals(Contract.statusEnded) || sGlobalStatus.equals(Contract.statusResigned) || sGlobalStatus.equals(Contract.statusRejected)){
+    if(sGlobalStatus.equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusEnded) || sGlobalStatus.equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusResigned) || sGlobalStatus.equals(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusRejected)){
       T.add((garbageImage),col++,1);
       garbage = true;
     }
@@ -316,19 +316,19 @@ public class CampusContracts extends Block{
           C = (Contract) L.get(i);
           sbIDs.append(C.getID());
           sbIDs.append(ContractFiler.prmSeperator);
-          U = new User(C.getUserId().intValue());
-          Ap = new Applicant(C.getApplicantId().intValue());
-          A = new Apartment(C.getApartmentId().intValue());
+          U = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(C.getUserId().intValue());
+          Ap = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(C.getApplicantId().intValue());
+          A = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(C.getApartmentId().intValue());
           T.add(getEditLink(Edit.formatText(i+1),C.getID()),col++,row);
-          //if(C.getStatus().equalsIgnoreCase(Contract.statusCreated) || C.getStatus().equalsIgnoreCase(Contract.statusPrinted) )
+          //if(C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusCreated) || C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusPrinted) )
           if(garbage)
             T.add(getGarbageLink(garbageImage,C.getID()),col++,row);
           else
             T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),col++,row);
-          if(C.getStatus().equalsIgnoreCase(Contract.statusSigned))
+          if(C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned))
             T.add(getReSignLink(resignImage,C.getID()),col,row);
           col++;
-          if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted) || C.getStatus().equalsIgnoreCase(Contract.statusSigned)  )
+          if(C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusPrinted) || C.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned)  )
             T.add(getSignedLink(registerImage,C.getID(),isAdmin),col,row);
           col++;
           T.add(Edit.formatText(Ap.getFullName()),col++,row);
@@ -368,8 +368,8 @@ public class CampusContracts extends Block{
   private PresentationObject getSignatureTable(IWContext iwc){
     int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
     try {
-      Contract eContract = new Contract(iContractId);
-      Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+      Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
       Table T = new Table();
       T.add(eApplicant.getFullName(),1,1);
       SubmitButton save = new SubmitButton("sign","Save");
@@ -388,7 +388,7 @@ public class CampusContracts extends Block{
   private void doGarbageContract(IWContext iwc){
     int id = Integer.parseInt(iwc.getParameter("garbage"));
     try {
-      Contract eContract = new Contract(id);
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
       eContract.setStatusGarbage();
       eContract.update();
     }

@@ -76,7 +76,7 @@ public class ClubNewsBox extends Block {
 
         if (newsAttribute.length > 0) {
           union_id = newsAttribute[0].getAttributeId();
-          Union union = new Union(union_id);
+          Union union = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(union_id);
           unionText.addToText(union.getAbbrevation()+" - ");
         }
 

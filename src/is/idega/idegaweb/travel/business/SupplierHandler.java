@@ -42,7 +42,7 @@ public class SupplierHandler implements PropertyHandler {
 
     Supplier[] supp = null;
     try{
-      supp = Supplier.getValidSuppliers();
+      supp = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
     }
     catch(Exception e){
      e.printStackTrace(System.err);//don't really need to do this

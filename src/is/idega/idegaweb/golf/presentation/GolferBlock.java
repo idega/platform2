@@ -6,7 +6,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.data.EntityFinder;
 import java.util.LinkedList;
 import java.util.List;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.lang.Integer;
@@ -40,8 +40,8 @@ public class GolferBlock extends Block {
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     this.member_id = 3152;
-    golferPageData = new GolferPageData();
-    List list = EntityFinder.findAllByColumn( (GenericEntity) golferPageData, GolferPageData.MEMBER_ID, 3152);
+    golferPageData = ((is.idega.idegaweb.golf.entity.GolferPageDataHome)com.idega.data.IDOLookup.getHomeLegacy(GolferPageData.class)).createLegacy();
+    List list = EntityFinder.findAllByColumn( (IDOLegacyEntity) golferPageData, is.idega.idegaweb.golf.entity.GolferPageDataBMPBean.MEMBER_ID, 3152);
     golferPageData = (GolferPageData) list.get(0);
   }
 }

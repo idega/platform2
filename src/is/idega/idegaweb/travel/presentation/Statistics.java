@@ -76,7 +76,7 @@ public class Statistics extends TravelManager {
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
 
-      String productId = iwc.getParameter(Product.getProductEntityName());
+      String productId = iwc.getParameter(com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName());
       try {
         if (productId == null) {
           productId = (String) iwc.getSessionAttribute("TB_BOOKING_PRODUCT_ID");

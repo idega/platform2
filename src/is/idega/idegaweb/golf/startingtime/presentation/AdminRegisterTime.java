@@ -14,7 +14,7 @@ import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.Image;
 import is.idega.idegaweb.golf.GolfField;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Tournament;
@@ -99,7 +99,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
     int interval = fieldInfo.getMinutesBetweenStart();
     Vector tournamentGroups = new Vector(0);
     int tournamentGroupsIndex = 0;
-    List TournamentRounds = EntityFinder.findAll(new TournamentRound(),"select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '"+currentDay.toSQLDateString()+" 00:00' and tournament_round.round_date <= '"+currentDay.toSQLDateString()+" 23:59' and tournament.field_id = " + this.currentField );
+    List TournamentRounds = EntityFinder.findAll(((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).createLegacy(),"select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '"+currentDay.toSQLDateString()+" 00:00' and tournament_round.round_date <= '"+currentDay.toSQLDateString()+" 23:59' and tournament.field_id = " + this.currentField );
 
     if(TournamentRounds != null){
       for (int i = 0; i < TournamentRounds.size(); i++) {
@@ -602,7 +602,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
         for (int i = 0; i < sentTimes.length; i++) {
           if(!sentTimes[i].equals(sentLastGroups[i]) || sentTimes[i].equals("-") ){
             try{
-              TeeTime tempSt = new TeeTime(Integer.parseInt(sentStartIDs[i]));
+              TeeTime tempSt = ((is.idega.idegaweb.golf.startingtime.data.TeeTimeHome)com.idega.data.IDOLookup.getHomeLegacy(TeeTime.class)).findByPrimaryKeyLegacy(Integer.parseInt(sentStartIDs[i]));
               tempSt.setGroupNum(Integer.parseInt(sentTimes[i]));
               tempSt.update();
             }catch(Exception e){
@@ -615,7 +615,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
       if(sentDeletes != null){
         for (int i = 0; i < sentDeletes.length; i++) {
           try{
-            new TeeTime(Integer.parseInt(sentDeletes[i])).delete();
+            ((is.idega.idegaweb.golf.startingtime.data.TeeTimeHome)com.idega.data.IDOLookup.getHomeLegacy(TeeTime.class)).findByPrimaryKeyLegacy(Integer.parseInt(sentDeletes[i])).delete();
           }catch(Exception e){
   //          System.err.println("tókst ekki að eyða tíma með id: " + sentDeletes[i] );
             // continue
@@ -653,8 +653,8 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
             }
   */
             if(ssn){
-              //List lMember = EntityFinder.findAllByColumn((is.idega.idegaweb.golf.entity.Member)Member.getStaticInstance(),Member.getSocialSecurityNumberColumnName(),sentNames[i]);
-              Member tempMemb = (is.idega.idegaweb.golf.entity.Member)Member.getMember(sentNames[i]);
+              //List lMember = EntityFinder.findAllByColumn((is.idega.idegaweb.golf.entity.Member)is.idega.idegaweb.golf.entity.MemberBMPBean.getStaticInstance(),is.idega.idegaweb.golf.entity.MemberBMPBean.getSocialSecurityNumberColumnName(),sentNames[i]);
+              Member tempMemb = (is.idega.idegaweb.golf.entity.Member)is.idega.idegaweb.golf.entity.MemberBMPBean.getMember(sentNames[i]);
               if(tempMemb != null){
   //              Member tempMemb = (Member)lMember.get(0);
                 business.setStartingtime(Integer.parseInt(sentGroupNums[i]), this.currentDay, this.currentField, Integer.toString(tempMemb.getID()), MemberID, tempMemb.getName(), Float.toString(tempMemb.getHandicap()), GolfCacher.getCachedUnion(tempMemb.getMainUnionID()).getAbbrevation(), null, null);
@@ -760,7 +760,7 @@ public class AdminRegisterTime extends is.idega.idegaweb.golf.templates.page.Jmo
     if(MemberID == null){
       Object tempObj = is.idega.idegaweb.golf.login.business.LoginBusiness.getMember(iwc);
       if(tempObj != null){
-        MemberID = Integer.toString(((GenericEntity)tempObj).getID());
+        MemberID = Integer.toString(((IDOLegacyEntity)tempObj).getID());
         myForm.add(new HiddenInput("member_id",MemberID));
       }
     }else{

@@ -64,12 +64,12 @@ public class HotelPickupPlaceDesigner extends TravelManager {
       for (int i = 0; i < hppNames.length; i++) {
         if (hppIds[i].equals("-1")) {
           if  ( (hppNames[i] != null) && (!hppNames[i].equals("")) ) {
-            Address hotelPickupAddress = new Address();
-              hotelPickupAddress.setAddressTypeID(AddressType.getId(ProductBusiness.uniqueHotelPickupAddressType));
+            Address hotelPickupAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
+              hotelPickupAddress.setAddressTypeID(com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueHotelPickupAddressType));
               hotelPickupAddress.setStreetName(hppNames[i]);
               hotelPickupAddress.insert();
 
-            HotelPickupPlace hpp = new HotelPickupPlace();
+            HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHomeLegacy(HotelPickupPlace.class)).createLegacy();
               hpp.setName(hppNames[i]);
               hpp.setAddress(hotelPickupAddress);
               hpp.insert();
@@ -80,7 +80,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
           del = iwc.getParameter("hotel_pickup_place_to_delete_"+hppIds[i]);
           add = iwc.getParameter("hotel_pickup_place_add_to_all_"+hppIds[i]);
 
-          HotelPickupPlace hpp = new HotelPickupPlace(Integer.parseInt(hppIds[i]));
+          HotelPickupPlace hpp = ((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHomeLegacy(HotelPickupPlace.class)).findByPrimaryKeyLegacy(Integer.parseInt(hppIds[i]));
           Address address = hpp.getAddress();
 
           if (del == null) {
@@ -121,7 +121,7 @@ public class HotelPickupPlaceDesigner extends TravelManager {
     int extraFields = 3;
     int textInputWidth = 60;
 
-    Supplier supplier = new Supplier(supplierId);
+    Supplier supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
 
     Form form = new Form();
     Table table = new Table();

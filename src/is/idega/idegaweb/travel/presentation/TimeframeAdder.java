@@ -249,7 +249,7 @@ public class TimeframeAdder extends TravelWindow {
             from = new idegaTimestamp(tfFrom);
             to = new idegaTimestamp(tfTo);
 
-            tFrame = new Timeframe();
+            tFrame = ((com.idega.block.trade.stockroom.data.TimeframeHome)com.idega.data.IDOLookup.getHomeLegacy(Timeframe.class)).createLegacy();
             tFrame.setFrom(from.getTimestamp());
             tFrame.setTo(to.getTimestamp());
             if (tfYearly.equals("Y")) {
@@ -264,7 +264,7 @@ public class TimeframeAdder extends TravelWindow {
           if (tfId != null && !tfId.equals("-1")) {
             String del = iwc.getParameter(this._parameterTimeframeDelete+tfId);
 
-            tFrame = new Timeframe(Integer.parseInt(tfId));
+            tFrame = ((com.idega.block.trade.stockroom.data.TimeframeHome)com.idega.data.IDOLookup.getHomeLegacy(Timeframe.class)).findByPrimaryKeyLegacy(Integer.parseInt(tfId));
 
             if (del == null) {
               from = new idegaTimestamp(tfFrom);

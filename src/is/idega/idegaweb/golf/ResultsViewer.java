@@ -58,7 +58,7 @@ private Table resultTable;
   public void main(IWContext iwc) {
     try {
       iwrb = getResourceBundle(iwc);
-      tournament = new Tournament(tournamentID);
+      tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKeyLegacy(tournamentID);
       if ( tournament.getNumberOfRounds() >= 4 ) {
         championship = true;
       }
@@ -106,7 +106,7 @@ private Table resultTable;
             String[] query = null;
 
             try {
-              TournamentRound round = new TournamentRound(Integer.parseInt(tournamentRounds_));
+              TournamentRound round = ((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKeyLegacy(Integer.parseInt(tournamentRounds_));
               String queryString = "select tournament_round_id from tournament_round where tournament_id = "+Integer.toString(tournamentID)+" and round_number <= "+Integer.toString(round.getRoundNumber())+" order by round_number";
               query = SimpleQuerier.executeStringQuery(queryString);
             }
@@ -289,7 +289,7 @@ private Table resultTable;
             genderString = "and gender = '"+gender.toUpperCase()+"'";
           }
 
-          TournamentGroup[] groups = (TournamentGroup[]) TournamentGroup.getStaticInstance("is.idega.idegaweb.golf.entity.TournamentGroup").findAll("select tournament_group.* from tournament_group tg, tournament_tournament_group ttg where tg.tournament_group_id = ttg.tournament_group_id "+genderString+" and tournament_id = "+Integer.toString(tournamentID)+" order by handicap_max");
+          TournamentGroup[] groups = (TournamentGroup[]) is.idega.idegaweb.golf.entity.TournamentGroupBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.TournamentGroup").findAll("select tournament_group.* from tournament_group tg, tournament_tournament_group ttg where tg.tournament_group_id = ttg.tournament_group_id "+genderString+" and tournament_id = "+Integer.toString(tournamentID)+" order by handicap_max");
 
           Table groupResultsTable = new Table();
             groupResultsTable.setWidth("100%");
@@ -442,7 +442,7 @@ private Table resultTable;
             idegaTimestamp date2 = new idegaTimestamp();
               date2.addDays(1);
 
-            TournamentRound[] rounds = (TournamentRound[]) TournamentRound.getStaticInstance("is.idega.idegaweb.golf.entity.TournamentRound").findAll("select * from tournament_round where tournament_id = "+Integer.toString(tournamentID)+" and round_date >= '"+date.getSQLDate()+"' and round_date <= '"+date2.getSQLDate()+"'");
+            TournamentRound[] rounds = (TournamentRound[]) is.idega.idegaweb.golf.entity.TournamentRoundBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.TournamentRound").findAll("select * from tournament_round where tournament_id = "+Integer.toString(tournamentID)+" and round_date >= '"+date.getSQLDate()+"' and round_date <= '"+date2.getSQLDate()+"'");
             if ( rounds.length > 0 ) {
               tournamentRoundID = rounds[0].getID();
             }

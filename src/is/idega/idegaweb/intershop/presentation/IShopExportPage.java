@@ -1,5 +1,5 @@
 /*
- * $Id: IShopExportPage.java,v 1.3 2002/04/03 12:42:07 palli Exp $
+ * $Id: IShopExportPage.java,v 1.4 2002/04/06 19:11:21 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ public class IShopExportPage extends IWAdminWindow {
     int page_id = -1;
     try {
       page_id = Integer.parseInt(ib_page_id);
-      ibpage = new IBPage(page_id);
+      ibpage = ((com.idega.builder.data.IBPageHome)com.idega.data.IDOLookup.getHomeLegacy(IBPage.class)).findByPrimaryKeyLegacy(page_id);
     }
     catch(Exception e) {
       return(false);

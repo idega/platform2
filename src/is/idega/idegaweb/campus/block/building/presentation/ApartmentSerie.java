@@ -112,8 +112,8 @@ public class ApartmentSerie extends Block {
       for (int i = 0; i < len; i++) {
         try{
         Apartment A = (Apartment) L.get(i);
-        Floor F = new Floor(A.getFloorId());
-        Building B = new Building(F.getBuildingId());
+        Floor F = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(A.getFloorId());
+        Building B = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(F.getBuildingId());
         //Floor F = BuildingCacher.getFloor(A.getFloorId());
         //Building B = BuildingCacher.getBuilding(F.getBuildingId());
         T.add(B.getName(),1,i+1);

@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.11 2002/03/18 15:50:44 palli Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.12 2002/04/06 19:11:13 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -175,11 +175,11 @@ public class ReferenceNumberInfo extends PresentationObjectContainer {
 
       String status = app.getStatus();
 
-      if (status.equalsIgnoreCase(Application.STATUS_SUBMITTED))
+      if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_SUBMITTED))
         status = _iwrb.getLocalizedString("appSubmitted","Waiting to be processed");
-      else if (status.equalsIgnoreCase(Application.STATUS_APPROVED))
+      else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_APPROVED))
         status = _iwrb.getLocalizedString("appApproved","Approved / On waiting list");
-      else if (status.equalsIgnoreCase(Application.STATUS_REJECTED))
+      else if (status.equalsIgnoreCase(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED))
         status = _iwrb.getLocalizedString("appRejected","Rejected");
       else
         status = _iwrb.getLocalizedString("appUnknownStatus","Lost in limbo somewhere");

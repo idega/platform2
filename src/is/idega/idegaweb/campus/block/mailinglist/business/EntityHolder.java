@@ -38,7 +38,7 @@ public class EntityHolder {
   }
   public EntityHolder(int iContractId){
     try {
-      eContract  = new Contract(iContractId);
+      eContract  = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
       init();
     }
     catch (Exception ex) {
@@ -49,8 +49,8 @@ public class EntityHolder {
 
   private void init(){
     try {
-      eApplicant = new Applicant(eContract.getApplicantId().intValue());
-      eUser = new User(eContract.getUserId().intValue());
+      eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
+      eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
       emails = UserBusiness.listOfUserEmails(eUser.getID());
       apartmentHolder = new ApartmentHolder(eContract.getApartmentId().intValue());
       if(emails==null){

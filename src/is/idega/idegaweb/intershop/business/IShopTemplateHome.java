@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopTemplateHome.java,v 1.2 2002/04/03 12:41:52 palli Exp $
+ *  $Id: IShopTemplateHome.java,v 1.3 2002/04/06 19:11:21 tryggvil Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idega.idegaweb.intershop.business;
 
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityFinder;
 import com.idega.data.SimpleQuerier;
 import com.idega.data.IDOFinderException;
@@ -35,7 +35,7 @@ public class IShopTemplateHome {
   }
 
   public IShopTemplate getNewElement() {
-    IShopTemplateBean bean = new IShopTemplateBean();
+    IShopTemplateBean bean = ((is.idega.idegaweb.intershop.data.IShopTemplateBeanHome)com.idega.data.IDOLookup.getHomeLegacy(IShopTemplateBean.class)).createLegacy();
 
     return bean;
   }
@@ -43,7 +43,7 @@ public class IShopTemplateHome {
   public IShopTemplate getElement(int id) {
     IShopTemplateBean bean = null;
     try {
-      bean = new IShopTemplateBean(id);
+      bean = ((is.idega.idegaweb.intershop.data.IShopTemplateBeanHome)com.idega.data.IDOLookup.getHomeLegacy(IShopTemplateBean.class)).findByPrimaryKeyLegacy(id);
     }
     catch(Exception e) {
       return null;
@@ -102,7 +102,7 @@ public class IShopTemplateHome {
 
   public int count() {
     StringBuffer sql = new StringBuffer("select count(*) from ");
-    sql.append(IShopTemplateBean.getEntityTableName());
+    sql.append(is.idega.idegaweb.intershop.data.IShopTemplateBeanBMPBean.getEntityTableName());
     String res[] = null;
     try {
       res = SimpleQuerier.executeStringQuery(sql.toString());
@@ -134,7 +134,7 @@ public class IShopTemplateHome {
   public IShopTemplate findByPageId(int pageId) {
     List l = null;
     try {
-      l = EntityFinder.getInstance().findAllByColumn(IShopTemplateBean.class,IShopTemplateBean.getPageIdColumnName(),pageId);
+      l = EntityFinder.getInstance().findAllByColumn(IShopTemplateBean.class,is.idega.idegaweb.intershop.data.IShopTemplateBeanBMPBean.getPageIdColumnName(),pageId);
     }
     catch(IDOFinderException e) {
 

@@ -53,7 +53,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public void setSupplyStatus(int productId, float status, int period) throws SQLException {
-    Supplies supplies = new Supplies();
+    Supplies supplies = ((com.idega.block.trade.stockroom.data.SuppliesHome)com.idega.data.IDOLookup.getHomeLegacy(Supplies.class)).createLegacy();
 
     supplies.setProductId(productId);
     supplies.setCurrentSupplies(status);
@@ -67,8 +67,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public float getSupplyStatus(int productId) throws SQLException {
-    Supplies supplies = (Supplies)Supplies.getStaticInstance(Supplies.class);
-    List lSupplies = EntityFinder.findAllByColumnOrdered(supplies,Supplies.getColumnNameProductId(),Integer.toString(productId),Supplies.getColumnNameRecordTime());
+    Supplies supplies = (Supplies)com.idega.block.trade.stockroom.data.SuppliesBMPBean.getStaticInstance(Supplies.class);
+    List lSupplies = EntityFinder.findAllByColumnOrdered(supplies,com.idega.block.trade.stockroom.data.SuppliesBMPBean.getColumnNameProductId(),Integer.toString(productId),com.idega.block.trade.stockroom.data.SuppliesBMPBean.getColumnNameRecordTime());
     if(lSupplies != null && lSupplies.size() > 0){
       return ((Supplies)lSupplies.get(0)).getCurrentSupplies();
     }else{
@@ -77,8 +77,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   }
 
   public float getSupplyStatus(int productId, Date date) throws SQLException {
-    Supplies supplies = (Supplies)Supplies.getStaticInstance(Supplies.class);
-    List lSupplies = EntityFinder.findAll(supplies,"SELECT * FROM  "+supplies.getEntityName()+" WHERE "+Supplies.getColumnNameProductId()+" = "+Integer.toString(productId)+" AND "+Supplies.getColumnNameRecordTime()+" <= '"+date.toString()+"' ORDER BY "+ Supplies.getColumnNameRecordTime(),1);
+    Supplies supplies = (Supplies)com.idega.block.trade.stockroom.data.SuppliesBMPBean.getStaticInstance(Supplies.class);
+    List lSupplies = EntityFinder.findAll(supplies,"SELECT * FROM  "+supplies.getEntityName()+" WHERE "+com.idega.block.trade.stockroom.data.SuppliesBMPBean.getColumnNameProductId()+" = "+Integer.toString(productId)+" AND "+com.idega.block.trade.stockroom.data.SuppliesBMPBean.getColumnNameRecordTime()+" <= '"+date.toString()+"' ORDER BY "+ com.idega.block.trade.stockroom.data.SuppliesBMPBean.getColumnNameRecordTime(),1);
     if(lSupplies != null && lSupplies.size() > 0){
       return ((Supplies)lSupplies.get(0)).getCurrentSupplies();
     }else{
@@ -92,7 +92,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
   public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo, boolean isNetbooking, int parentId) throws Exception {
 
-    PriceCategory cat = new PriceCategory();
+    PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).createLegacy();
 
     cat.setName(name);
 
@@ -142,7 +142,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         id = StockroomBusiness.updateProduct(serviceId, supplierId,fileId,serviceName,number,serviceDescription,isValid, addressIds, discountTypeId);
       }
 
-        Service service = new Service();
+        Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).createLegacy();
         service.setID(id);
 
         service.setDepartureTime(departure);
@@ -184,7 +184,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public void setTimeframe(int timeframeId, idegaTimestamp from, idegaTimestamp to, boolean yearly) throws SQLException {
     if (timeframeId != -1) {
       if ((from != null) && (to != null)) {
-        timeframe = new Timeframe(timeframeId);
+        timeframe = ((com.idega.block.trade.stockroom.data.TimeframeHome)com.idega.data.IDOLookup.getHomeLegacy(Timeframe.class)).findByPrimaryKeyLegacy(timeframeId);
           timeframe.setTo(to.getTimestamp());
           timeframe.setFrom(from.getTimestamp());
           timeframe.setYearly(yearly);
@@ -192,7 +192,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       }
     }else {
       if ((from != null) && (to != null)) {
-        timeframe = new Timeframe();
+        timeframe = ((com.idega.block.trade.stockroom.data.TimeframeHome)com.idega.data.IDOLookup.getHomeLegacy(Timeframe.class)).createLegacy();
           timeframe.setTo(to.getTimestamp());
           timeframe.setFrom(from.getTimestamp());
           timeframe.setYearly(yearly);
@@ -258,7 +258,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public static Service getService(Product product) throws ServiceNotFoundException {
     Service service = null;
     try {
-      service = new Service(product.getID());
+      service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(product.getID());
     }
     catch (SQLException sql) {
       throw new ServiceNotFoundException();
@@ -285,13 +285,13 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public static HotelPickupPlace[] getHotelPickupPlaces(Service service) {
     HotelPickupPlace[] returner = null;
     try {
-        HotelPickupPlace hp = (HotelPickupPlace) HotelPickupPlace.getStaticInstance(HotelPickupPlace.class);
+        HotelPickupPlace hp = (HotelPickupPlace) is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getStaticInstance(HotelPickupPlace.class);
 
         StringBuffer buffer = new StringBuffer();
           buffer.append("select h.* from ");
-          buffer.append(Service.getServiceTableName()+" s,");
+          buffer.append(is.idega.idegaweb.travel.data.ServiceBMPBean.getServiceTableName()+" s,");
           buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Service.class,HotelPickupPlace.class)+" smh, ");
-          buffer.append(HotelPickupPlace.getHotelPickupPlaceTableName() +" h ");
+          buffer.append(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName() +" h ");
           buffer.append(" WHERE ");
           buffer.append("s."+service.getIDColumnName()+" = "+service.getID());
           buffer.append(" AND ");
@@ -299,8 +299,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           buffer.append(" AND ");
           buffer.append(" smh."+hp.getIDColumnName()+" = h."+hp.getIDColumnName());
           buffer.append(" AND ");
-          buffer.append(HotelPickupPlace.getDeletedColumnName() +" = 'N'");
-          buffer.append(" ORDER BY "+HotelPickupPlace.getNameColumnName());
+          buffer.append(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
+          buffer.append(" ORDER BY "+is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getNameColumnName());
 
 
         returner = (HotelPickupPlace[]) hp.findAll(buffer.toString());
@@ -313,13 +313,13 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public static HotelPickupPlace[] getHotelPickupPlaces(Supplier supplier) {
     HotelPickupPlace[] returner = {};
     try {
-        HotelPickupPlace hp = (HotelPickupPlace) HotelPickupPlace.getStaticInstance(HotelPickupPlace.class);
+        HotelPickupPlace hp = (HotelPickupPlace) is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getStaticInstance(HotelPickupPlace.class);
 
         StringBuffer buffer = new StringBuffer();
           buffer.append("select h.* from ");
-          buffer.append(Supplier.getSupplierTableName()+" s,");
+          buffer.append(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()+" s,");
           buffer.append(com.idega.data.EntityControl.getManyToManyRelationShipTableName(Supplier.class,HotelPickupPlace.class)+" smh, ");
-          buffer.append(HotelPickupPlace.getHotelPickupPlaceTableName() +" h ");
+          buffer.append(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName() +" h ");
           buffer.append(" WHERE ");
           buffer.append("s."+supplier.getIDColumnName()+" = "+supplier.getID());
           buffer.append(" AND ");
@@ -327,8 +327,8 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           buffer.append(" AND ");
           buffer.append(" smh."+hp.getIDColumnName()+" = h."+hp.getIDColumnName());
           buffer.append(" AND ");
-          buffer.append(HotelPickupPlace.getDeletedColumnName() +" = 'N'");
-          buffer.append(" ORDER BY "+HotelPickupPlace.getNameColumnName());
+          buffer.append(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getDeletedColumnName() +" = 'N'");
+          buffer.append(" ORDER BY "+is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getNameColumnName());
 
 
         returner = (HotelPickupPlace[]) hp.findAll(buffer.toString());
@@ -341,7 +341,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public static PriceCategory[] getPriceCategories(int supplierId) {
     PriceCategory[] returner = {};
     try {
-      returner = (PriceCategory[]) PriceCategory.getStaticInstance(PriceCategory.class).findAllByColumn(PriceCategory.getColumnNameSupplierId(),Integer.toString(supplierId), PriceCategory.getColumnNameIsValid(), "Y");
+      returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAllByColumn(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameSupplierId(),Integer.toString(supplierId), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid(), "Y");
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
@@ -365,7 +365,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       HashtableDoubleKeyed hash = getServiceDayHashtable(iwc);
       Object obj = hash.get(productId+"_"+dayOfWeek,"");
       if (obj == null) {
-        returner = ServiceDay.getIfDay(productId, dayOfWeek);
+        returner = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getIfDay(productId, dayOfWeek);
         hash.put(productId+"_"+dayOfWeek,"",new Boolean(returner));
       }else {
         returner = ((Boolean)obj).booleanValue();
@@ -524,7 +524,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(iwc);
         Object object = resellerDayOfWeekHash.get(key1, key2);
         if (object == null) {
-            isValidWeekDay = ResellerDay.getIfDay(contract.getResellerId(),contract.getServiceId() , dayOfWeek);
+            isValidWeekDay = is.idega.idegaweb.travel.data.ResellerDayBMPBean.getIfDay(contract.getResellerId(),contract.getServiceId() , dayOfWeek);
             resellerDayOfWeekHash.put(key1, key2, new Boolean(isValidWeekDay));
         }else {
           isValidWeekDay = ((Boolean) object).booleanValue();
@@ -573,13 +573,13 @@ public class TravelStockroomBusiness extends StockroomBusiness {
    * @todo skoða betur
    */
   public static int getCurrencyIdForIceland(){
-      Currency curr = new Currency();
+      Currency curr = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).createLegacy();
       int returner = -1;
       try {
         String iceKr = "Íslenskar Krónur";
-        String[] id = com.idega.data.SimpleQuerier.executeStringQuery("Select "+curr.getIDColumnName()+" from "+curr.getEntityName()+" where "+Currency.getColumnNameCurrencyName() +" = '"+iceKr+"'");
+        String[] id = com.idega.data.SimpleQuerier.executeStringQuery("Select "+curr.getIDColumnName()+" from "+curr.getEntityName()+" where "+com.idega.block.trade.data.CurrencyBMPBean.getColumnNameCurrencyName() +" = '"+iceKr+"'");
         if (id == null || id.length == 0) {
-            curr = new Currency();
+            curr = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).createLegacy();
             curr.setCurrencyName(iceKr);
             curr.setCurrencyAbbreviation("ISK");
             curr.insert();
@@ -611,7 +611,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
   public static List getDepartureDays(IWContext iwc, Product product, idegaTimestamp fromStamp, idegaTimestamp toStamp, boolean showPast) {
     List returner = new Vector();
     try {
-//      Service service = new Service(product.getID());
+//      Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(product.getID());
       Timeframe[] frames = product.getTimeframes();
 
       for (int j = 0; j < frames.length; j++) {
@@ -681,7 +681,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
         }
 
 
-        int[] weekDays = ServiceDay.getDaysOfWeek(product.getID());
+        int[] weekDays = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
 
         while (to.isLaterThan(stamp)) {
           for (int i = 0; i < weekDays.length; i++) {

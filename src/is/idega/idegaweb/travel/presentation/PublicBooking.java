@@ -96,9 +96,9 @@ public class PublicBooking extends Block  {
         if (!product.getIsValid()) {
           throw new SQLException("Product not valid");
         }
-        service = new Service(productId);
+        service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(productId);
         timeframes = product.getTimeframes();
-        supplier = new Supplier(product.getSupplierId());
+        supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(product.getSupplierId());
 
       }catch (SQLException s) {
         s.printStackTrace(System.err);
@@ -302,14 +302,14 @@ public class PublicBooking extends Block  {
 
       String[] dayOfWeekName = new String[8];
       idegaCalendar cal = new idegaCalendar();
-        dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.TUESDAY] = cal.getNameOfDay(ServiceDay.TUESDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.WEDNESDAY] = cal.getNameOfDay(ServiceDay.WEDNESDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,iwc).substring(0,3);
-        dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,iwc).substring(0,3);
-      int[] days = ServiceDay.getDaysOfWeek(product.getID());
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,iwc).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,iwc).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,iwc).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY ,iwc).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,iwc).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,iwc).substring(0,3);
+        dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,iwc).substring(0,3);
+      int[] days = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
       if (days.length == 7) {
         daysTextBold.setText(iwrb.getLocalizedString("travel.daily","daily"));
       }else {
@@ -350,7 +350,7 @@ public class PublicBooking extends Block  {
           departureFromTextBold.addToText(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
         pTable.add(departureFromTextBold, 1, pRow);
         for (int i = 0; i < timeframes.length; i++) {
-          prices = ProductPrice.getProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true);
+          prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true);
           stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
           stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
           if (timeframes[i].getIfYearly()) {
@@ -367,7 +367,7 @@ public class PublicBooking extends Block  {
             ++pRow;
           }
           for (int j = 0; j < prices.length; j++) {
-            currency = new Currency(prices[j].getCurrencyId());
+            currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
             nameOfCategory = getText(prices[j].getPriceCategory().getName());
               nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
             try {
@@ -509,7 +509,7 @@ public class PublicBooking extends Block  {
     String telephoneNumber = iwc.getParameter("telephone_number");
     String city = iwc.getParameter("city");
     String country = iwc.getParameter("country");
-    String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+    String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
     String room_number = iwc.getParameter("room_number");
     String depAddressId = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
 
@@ -526,11 +526,11 @@ public class PublicBooking extends Block  {
       star.setFontColor(errorColor);
 
 
-//    ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
+//    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this.product.getID(), true);
     ProductPrice[] pPrices = {};
     Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
     if (tFrame != null && depAddressId != null) {
-      pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
+      pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddressId), true);
     }
 
     Table table = new Table();
@@ -571,7 +571,7 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.departure_place","Departure place")),1,row);
-      table.add(getBoldTextWhite(new TravelAddress(Integer.parseInt(depAddressId)).getName()),2,row);
+      table.add(getBoldTextWhite(((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(Integer.parseInt(depAddressId)).getName()),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");
@@ -656,7 +656,7 @@ public class PublicBooking extends Block  {
         total += current;
         try {
           if (i == 0)
-          currency = new Currency(pPrices[i].getCurrencyId());
+          currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());
           price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
         }catch (SQLException sql) {
         }catch (NumberFormatException n) {}
@@ -781,7 +781,7 @@ public class PublicBooking extends Block  {
         ProductPrice[] pPrices = {};
         Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
         if (tFrame != null) {
-          pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
+          pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
         }
 
         for (int j = 0; j < days; j++) {
@@ -865,7 +865,7 @@ public class PublicBooking extends Block  {
           throw new Exception(e.getErrorMessage());
         }
 
-        gBooking = new GeneralBooking(bookingId);
+        gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
         gBooking.setCreditcardAuthorizationNumber(heimild);
         gBooking.update();
 

@@ -111,7 +111,7 @@ public class TourBookingForm extends TravelManager {
       table.setColumnAlignment(3,"right");
       table.setColumnAlignment(4,"left");
 
-//      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
+//      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       List addresses;
       try {
         addresses = ProductBusiness.getDepartureAddresses(_product, false);
@@ -132,7 +132,7 @@ public class TourBookingForm extends TravelManager {
       ProductPrice[] pPrices = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
       if (tFrame != null) {
-        pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
+        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, false);
       }
 
       if (pPrices.length > 0) {
@@ -264,7 +264,7 @@ public class TourBookingForm extends TravelManager {
 
               Text hotelText = (Text) theText.clone();
                 hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
-              pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
+              pickupMenu = new DropdownMenu(hotelPickup, is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
                 pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_hotel_pickup","No hotel pickup"));
                 pickupMenu.keepStatusOnAction();
 
@@ -586,7 +586,7 @@ public class TourBookingForm extends TravelManager {
       ProductPrice[] pPrices = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, stamp);
       if (tFrame != null) {
-        pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), addressId, true);
+        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), addressId, true);
       }
 
       Text availSeats = (Text) theText.clone();
@@ -931,7 +931,7 @@ public class TourBookingForm extends TravelManager {
 
               Text hotelText = (Text) theText.clone();
                 hotelText.setText(iwrb.getLocalizedString("travel.hotel_pickup_sm","hotel pickup"));
-              pickupMenu = new DropdownMenu(hotelPickup, HotelPickupPlace.getHotelPickupPlaceTableName());
+              pickupMenu = new DropdownMenu(hotelPickup, is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
                 pickupMenu.addMenuElementFirst("-1",iwrb.getLocalizedString("travel.no_hotel_pickup","No hotel pickup"));
 
               Text roomNumberText = (Text) theText.clone();
@@ -1128,7 +1128,7 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter("telephone_number");
       form.maintainParameter("city");
       form.maintainParameter("country");
-      form.maintainParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+      form.maintainParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
       form.maintainParameter("room_number");
 //      form.maintainParameter("reference_number");
       form.maintainParameter(CalendarBusiness.PARAMETER_YEAR);
@@ -1143,7 +1143,7 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter(this.sAction);
       if (withBookingAction)
       form.maintainParameter(this.BookingAction);
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(this._productId, false);
+      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, false);
       for (int i = 0; i < pPrices.length; i++) {
         form.maintainParameter("priceCategory"+i);
       }
@@ -1174,14 +1174,14 @@ public class TourBookingForm extends TravelManager {
     if (sBookingId != null){
       iBookingId = Integer.parseInt(sBookingId);
       try {
-        GeneralBooking gBook = new GeneralBooking(iBookingId);
+        GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(iBookingId);
         previousBookings = gBook.getTotalCount();
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
       }
     }
 
-    ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, false);
+    ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, false);
     int current = 0;
     for (int i = 0; i < pPrices.length; i++) {
       try {
@@ -1341,7 +1341,7 @@ public class TourBookingForm extends TravelManager {
 
       String city = iwc.getParameter("city");
       String country = iwc.getParameter("country");
-      String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+      String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
       String roomNumber = iwc.getParameter("room_number");
       String sPaymentType = iwc.getParameter("payment_type");
 
@@ -1386,11 +1386,11 @@ public class TourBookingForm extends TravelManager {
       int iMany = 0;
       int iHotelId;
 
-//      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), false);
+//      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
       if (tFrame != null) {
-        pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, true);
+        pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, true);
       }
       int lbookingId = -1;
 
@@ -1461,7 +1461,7 @@ public class TourBookingForm extends TravelManager {
             lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
           }else {
             //handle multiple...
-            List tempBookings = Booker.getMultibleBookings(new GeneralBooking(iBookingId));
+            List tempBookings = Booker.getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(iBookingId));
             if (tempBookings == null || tempBookings.size() < 2) {
               lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
             }else {
@@ -1484,7 +1484,7 @@ public class TourBookingForm extends TravelManager {
          */
         for (int o = 0; o < bookingIds.length; o++) {
           try {
-            GeneralBooking gBook = new GeneralBooking(bookingIds[o]);
+            GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingIds[o]);
             gBook.removeFrom(Reseller.class);
           }catch (SQLException sql) {debug(sql.getMessage());}
         }
@@ -1495,7 +1495,7 @@ public class TourBookingForm extends TravelManager {
         int resId = -7;
         try {
           if (!sUserId.equals("-1")) {
-            User user = new User(Integer.parseInt(sUserId));
+            User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(sUserId));
             Reseller res = ResellerManager.getReseller(user);
             if (res != null) {
               resId = res.getID();
@@ -1528,7 +1528,7 @@ public class TourBookingForm extends TravelManager {
               BookingEntry bEntry;
               for (int i = 0; i < pPrices.length; i++) {
                 if (manys[i] != 0) {
-                  bEntry = new BookingEntry();
+                  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHomeLegacy(BookingEntry.class)).createLegacy();
                     bEntry.setProductPriceId(pPrices[i].getID());
                     bEntry.setBookingId(bookingIds[k]);
                     bEntry.setCount(manys[i]);
@@ -1539,7 +1539,7 @@ public class TourBookingForm extends TravelManager {
               BookingEntry bEntry;
               ProductPrice price;
               boolean done = false;
-              BookingEntry[] entries = TourBooker.getBookingEntries(new TourBooking(iBookingId));
+              BookingEntry[] entries = TourBooker.getBookingEntries(((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(iBookingId));
               for (int i = 0; i < entries.length; i++) {
                 entries[i].delete();
               }
@@ -1556,7 +1556,7 @@ public class TourBookingForm extends TravelManager {
                   }
                 }
                 if (!done && manys[i] != 0) {
-                  bEntry = new BookingEntry();
+                  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHomeLegacy(BookingEntry.class)).createLegacy();
                     bEntry.setProductPriceId(pPrices[i].getID());
                     bEntry.setBookingId(bookingIds[k]);
                     bEntry.setCount(manys[i]);
@@ -1586,7 +1586,7 @@ public class TourBookingForm extends TravelManager {
 
     String city = iwc.getParameter("city");
     String country = iwc.getParameter("country");
-    String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+    String hotelPickupPlaceId = iwc.getParameter(is.idega.idegaweb.travel.data.HotelPickupPlaceBMPBean.getHotelPickupPlaceTableName());
 
 //    String referenceNumber = iwc.getParameter("reference_number");
     String fromDate = iwc.getParameter(parameterFromDate);
@@ -1604,7 +1604,7 @@ public class TourBookingForm extends TravelManager {
 
       int bookingId = saveBooking(iwc);
 
-      GeneralBooking gBooking = new GeneralBooking(bookingId);
+      GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
       List bookings = Booker.getMultibleBookings(gBooking);
       Booking booking = null;
 
@@ -1645,7 +1645,7 @@ public class TourBookingForm extends TravelManager {
     try {
       _service = TravelStockroomBusiness.getService(product);
       try {
-        _tour = new Tour(product.getID());
+        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(product.getID());
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
       }
@@ -1660,7 +1660,7 @@ public class TourBookingForm extends TravelManager {
   }
 
   public void setBooking(Booking booking) throws SQLException {
-    this._booking = new TourBooking(booking.getID());
+    this._booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHomeLegacy(TourBooking.class)).findByPrimaryKeyLegacy(booking.getID());
   }
 
   public void setTimestamp(idegaTimestamp stamp) {

@@ -14,7 +14,7 @@ import com.idega.presentation.ui.FloatInput;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.Image;
 import is.idega.idegaweb.golf.GolfField;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.util.idegaTimestamp;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Tournament;
@@ -357,7 +357,7 @@ public boolean storeConfig(IWContext iwc)throws SQLException, IOException
 
 	try
 	{
-		StartingtimeFieldConfig conf = new StartingtimeFieldConfig();
+		StartingtimeFieldConfig conf = ((is.idega.idegaweb.golf.entity.StartingtimeFieldConfigHome)com.idega.data.IDOLookup.getHomeLegacy(StartingtimeFieldConfig.class)).createLegacy();
 		String FieldID = iwc.getParameter("fieldID");
 		String DaysShown = iwc.getParameter("daysShown");
                 String pubReg = iwc.getParameter("public_reg");
@@ -506,7 +506,7 @@ public boolean isAdmin(int memberId, boolean clubadmin, boolean clubworker)throw
 
 	Member member = null;
 	try{
-		member = new Member(memberId);
+		member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(memberId);
 	}
 	catch(SQLException e)
 	{

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestBusiness.java,v 1.2 2002/02/21 00:22:21 palli Exp $
+ * $Id: RequestBusiness.java,v 1.3 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ public class RequestBusiness {
    */
   public static boolean insertRequest(int userId, String comment, Timestamp dateOfFailure, String type, String special) {
     try {
-      RequestBean req = new RequestBean();
+      RequestBean req = ((is.idega.idegaweb.campus.block.request.data.RequestBeanHome)com.idega.data.IDOLookup.getHomeLegacy(RequestBean.class)).createLegacy();
       req.setUserId(userId);
       req.setDescription(comment);
       req.setDateFailure(dateOfFailure);

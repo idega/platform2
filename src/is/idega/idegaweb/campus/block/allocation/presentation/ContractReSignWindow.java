@@ -79,8 +79,8 @@ public class ContractReSignWindow extends Window{
     iwb = getBundle(iwc);
 
     if( isAdmin || isLoggedOn){
-      if(iwc.getApplicationAttribute(SystemProperties.getEntityTableName())!=null){
-        SysProps = (SystemProperties)iwc.getApplicationAttribute(SystemProperties.getEntityTableName());
+      if(iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName())!=null){
+        SysProps = (SystemProperties)iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName());
       }
 
       if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
@@ -118,9 +118,9 @@ public class ContractReSignWindow extends Window{
 
     try{
       if(iContractId > 0){
-        Contract eContract = new Contract(iContractId);
-        Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
-        User user = new User(eContract.getUserId().intValue());
+        Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+        Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
+        User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
         boolean isContractUser = user.getID() == eUser.getID();
         if(user !=null){
           T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())),1,row);

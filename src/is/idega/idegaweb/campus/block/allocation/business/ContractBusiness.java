@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBusiness.java,v 1.9 2002/03/18 15:50:43 palli Exp $
+ * $Id: ContractBusiness.java,v 1.10 2002/04/06 19:11:13 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -63,7 +63,7 @@ public  class ContractBusiness {
     try{
      t.begin();
 
-      eContract = new Contract(iContractId );
+      eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       if(eContract != null ){
         int iUserId = eContract.getUserId().intValue();
 				System.err.println("Signing user "+iUserId +" contract id : "+iContractId);
@@ -129,9 +129,9 @@ public  class ContractBusiness {
 
   public static void createLogin(int iUserId,int iGroupId,String login,String pass,boolean generatePasswd) throws Exception{
 
-    User eUser = new User(iUserId);
-    //GenericGroup gg = new GenericGroup(iGroupId);
-    PermissionGroup pg = new PermissionGroup(iGroupId);
+    User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(iUserId);
+    //GenericGroup gg = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(iGroupId);
+    PermissionGroup pg = ((com.idega.core.accesscontrol.data.PermissionGroupHome)com.idega.data.IDOLookup.getHomeLegacy(PermissionGroup.class)).findByPrimaryKeyLegacy(iGroupId);
     AccessControl.addUserToPermissionGroup(pg,eUser.getID());
     //gg.addTo(eUser);
     login = LoginCreator.createLogin(eUser.getName());
@@ -150,9 +150,9 @@ public  class ContractBusiness {
   }
 
   public static void changeApplicationStatus(Contract eContract)throws SQLException{
-    String status = Application.STATUS_SIGNED;
+    String status = com.idega.block.application.data.ApplicationBMPBean.STATUS_SIGNED;
     List L = null;
-    L = EntityFinder.findAllByColumn(new Application(),Application.getApplicantIdColumnName(),eContract.getApplicantId().intValue());
+    L = EntityFinder.findAllByColumn(((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy(),com.idega.block.application.data.ApplicationBMPBean.getApplicantIdColumnName(),eContract.getApplicantId().intValue());
     if(L!=null){
 			Iterator I = L.iterator();
       while(I.hasNext()){
@@ -216,7 +216,7 @@ public  class ContractBusiness {
 
   public static void endContract(int iContractId,idegaTimestamp movingDate,String info,boolean datesync){
     try {
-      Contract C = new Contract(iContractId );
+      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setMovingDate(movingDate.getSQLDate());
       if(datesync)
         C.setValidTo(movingDate.getSQLDate());
@@ -231,7 +231,7 @@ public  class ContractBusiness {
 
   public static void returnKey(int iContractId){
     try {
-      Contract C = new Contract(iContractId );
+      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setEnded();
       C.update();
       MailingListBusiness.processMailEvent(iContractId,LetterParser.RETURN);
@@ -243,7 +243,7 @@ public  class ContractBusiness {
 
   public static void deliverKey(int iContractId){
      try {
-      Contract C = new Contract(iContractId );
+      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setStarted();
       C.update();
        MailingListBusiness.processMailEvent(iContractId,LetterParser.DELIVER);
@@ -255,7 +255,7 @@ public  class ContractBusiness {
 
   public static void resignContract(int iContractId,idegaTimestamp movingDate,String info,boolean datesync){
     try {
-      Contract C = new Contract(iContractId );
+      Contract C = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId );
       C.setMovingDate(movingDate.getSQLDate());
       if(datesync)
         C.setValidTo(movingDate.getSQLDate());

@@ -97,7 +97,7 @@ public class BookingOverview extends TravelManager {
       supplier = super.getSupplier();
       reseller = super.getReseller();
 
-      String productId = iwc.getParameter(Product.getProductEntityName());
+      String productId = iwc.getParameter(com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName());
       try {
         if (productId == null) {
           productId = (String) iwc.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
@@ -121,7 +121,7 @@ public class BookingOverview extends TravelManager {
 
       if ((reseller != null) && (product != null)){
         try {
-            Contract[] contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameResellerId(), Integer.toString(reseller.getID()), Contract.getColumnNameServiceId(), Integer.toString(product.getID()) );
+            Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
             if (contracts.length > 0) {
               contract = contracts[0];
             }
@@ -687,8 +687,8 @@ public class BookingOverview extends TravelManager {
 
           // ------------------ INQUERIES ------------------------
           Inquery[] inqueries = null;
-          if (supplier != null) inqueries = Inquirer.getInqueries(service.getID(), currentStamp, true, Inquery.getNameColumnName());
-          if (reseller != null) inqueries = Inquirer.getInqueries(service.getID(), currentStamp, reseller.getID(),true, Inquery.getNameColumnName());
+          if (supplier != null) inqueries = Inquirer.getInqueries(service.getID(), currentStamp, true, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
+          if (reseller != null) inqueries = Inquirer.getInqueries(service.getID(), currentStamp, reseller.getID(),true, is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName());
           for (int i = 0; i < inqueries.length; i++) {
             ++row;
             Tname = (Text) super.theSmallBoldText.clone();
@@ -735,7 +735,7 @@ public class BookingOverview extends TravelManager {
           Reseller bReseller;
           for (int i = 0; i < bookings.length; i++) {
               ++row;
-              booking = new GeneralBooking(bookings[i].getID());
+              booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookings[i].getID());
               serviceType = Booker.getServiceType(this.service.getID());
 
               Tname = (Text) super.theSmallBoldText.clone();
@@ -756,7 +756,7 @@ public class BookingOverview extends TravelManager {
               TbookedBy = (Text) super.theSmallBoldText.clone();
                 TbookedBy.setFontColor(super.BLACK);
               if (bookings[i].getUserId() != -1) {
-                bUser = new User(bookings[i].getUserId());
+                bUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
                 bReseller = ResellerManager.getReseller(bUser);
                   TbookedBy.setText(bUser.getName());
                   if (bReseller != null) {

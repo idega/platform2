@@ -161,7 +161,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
             {
               Member member = null;
               if(memberId != -1)
-                member = new Member(memberId);
+                member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(memberId);
               String FieldID = currentField;
               String Date = iwc.getSession().getAttribute("date").toString();
               String MemberId = iwc.getSession().getAttribute("member_id").toString();
@@ -284,7 +284,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
                   }
 
                   if(ssn){
-                    Member tempMemb = (is.idega.idegaweb.golf.entity.Member)Member.getMember(sentSecureNums[j]);
+                    Member tempMemb = (is.idega.idegaweb.golf.entity.Member)is.idega.idegaweb.golf.entity.MemberBMPBean.getMember(sentSecureNums[j]);
                     if(tempMemb != null){
 
                       if( business.countEntriesInGroup(Integer.parseInt(lines[j]),this.currentField,this.currentDay) >= maxCountInGroups){

@@ -24,7 +24,7 @@ public class ProjectName extends Text {
     int prId = ProjectBusiness.getCurrentProjectId(iwc);
     if(prId != -1){
       try {
-        IPProject pr = new IPProject(prId);
+        IPProject pr = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(prId);
         this.setText(pr.getName());
       }
       catch (Exception ex) {

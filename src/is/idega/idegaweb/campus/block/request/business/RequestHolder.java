@@ -1,5 +1,5 @@
 /*
- * $Id: RequestHolder.java,v 1.2 2002/01/14 11:37:19 palli Exp $
+ * $Id: RequestHolder.java,v 1.3 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

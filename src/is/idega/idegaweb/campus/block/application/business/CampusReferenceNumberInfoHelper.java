@@ -1,5 +1,5 @@
 /*
- * $Id: CampusReferenceNumberInfoHelper.java,v 1.8 2002/04/03 16:31:07 tryggvil Exp $
+ * $Id: CampusReferenceNumberInfoHelper.java,v 1.9 2002/04/06 19:11:13 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.List;
 import java.util.Iterator;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityFinder;
 
 /**
@@ -58,13 +58,13 @@ public class CampusReferenceNumberInfoHelper {
 
   public static boolean stayOnWaitingList(int waitingListId, boolean stayOnList) {
     try {
-      WaitingList li = new WaitingList(waitingListId);
+      WaitingList li = ((is.idega.idegaweb.campus.block.application.data.WaitingListHome)com.idega.data.IDOLookup.getHomeLegacy(WaitingList.class)).findByPrimaryKeyLegacy(waitingListId);
       if (stayOnList) {
-        li.setRemovedFromList(WaitingList.NO);
+        li.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.NO);
         li.setLastConfirmationDate(idegaTimestamp.getTimestampRightNow());
       }
       else
-        li.setRemovedFromList(WaitingList.YES);
+        li.setRemovedFromList(is.idega.idegaweb.campus.block.application.data.WaitingListBMPBean.YES);
       li.update();
       return(true);
     }
@@ -80,8 +80,8 @@ public class CampusReferenceNumberInfoHelper {
 
 
     try {
-      Applicant applicant = new Applicant();
-      List li = EntityFinder.findAllByColumn(applicant,Applicant.getSSNColumnName(),ref);
+      Applicant applicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
+      List li = EntityFinder.findAllByColumn(applicant,com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(),ref);
       if (li != null && !li.isEmpty()) {
         Iterator it = li.iterator();
         Contract contract = null;
@@ -100,7 +100,7 @@ public class CampusReferenceNumberInfoHelper {
           return(null);
 
 
-        User user = new User(contract.getUserId().intValue());
+        User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(contract.getUserId().intValue());
         l.add(new Integer(user.getID()));
         LoginTable login = LoginDBHandler.getUserLogin(user.getID());
 

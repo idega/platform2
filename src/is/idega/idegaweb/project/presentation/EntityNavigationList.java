@@ -9,7 +9,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.data.IPProject;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityAttribute;
 import com.idega.util.datastructures.HashtableMultivalued;
 import com.idega.business.GenericState;
@@ -128,7 +128,7 @@ public abstract class EntityNavigationList extends Block {
     linkColumns[linkColumns.length-1] = columnName;
   }
 
-  protected void addParameters(IWContext iwc, GenericEntity item, Link link){
+  protected void addParameters(IWContext iwc, IDOLegacyEntity item, Link link){
     if( item != null){
       link.addParameter(_SELECTED_ENTITY_ID,item.getID());
     }else{
@@ -136,7 +136,7 @@ public abstract class EntityNavigationList extends Block {
     }
   }
 
-  private Object getDisplayedText(GenericEntity item){
+  private Object getDisplayedText(IDOLegacyEntity item){
     if(item != null){
       if(linkColumns != null){
         if(linkColumns.length == 1){
@@ -252,7 +252,7 @@ public abstract class EntityNavigationList extends Block {
       }
       while (lIter.hasNext()) {
         int index = (lIter.nextIndex()+1)+toAddToIndex;
-        GenericEntity lItem = (GenericEntity)lIter.next();
+        IDOLegacyEntity lItem = (IDOLegacyEntity)lIter.next();
         if(selectedItem == lItem.getID()){
           selectedElement = index;
         }

@@ -124,7 +124,7 @@ public class SubjectMaker extends Block{
   public void doDelete(IWContext iwc){
     try {
       int id = Integer.parseInt(iwc.getParameter("delete"));
-      ApplicationSubject AS = new ApplicationSubject(id);
+      ApplicationSubject AS = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).findByPrimaryKeyLegacy(id);
       AS.delete();
     }
     catch (Exception ex) {
@@ -137,7 +137,7 @@ public class SubjectMaker extends Block{
     String sDesc= iwc.getParameter("app_subj_desc").trim();
     String sDate = iwc.getParameter("app_subj_xdate");
     if(sDesc.length() > 0){
-      ApplicationSubject AS = new ApplicationSubject();
+      ApplicationSubject AS = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
       AS.setDescription(sDesc);
       AS.setExpires(new idegaTimestamp(sDate).getSQLDate());
       try {

@@ -45,9 +45,9 @@ public class TourBusiness extends TravelStockroomBusiness {
       if (super.timeframe == null) isError = true;
       if (activeDays.length == 0) isError = true;
 
-      int departureAddressTypeId = AddressType.getId(ProductBusiness.uniqueDepartureAddressType);
-      int arrivalAddressTypeId = AddressType.getId(ProductBusiness.uniqueArrivalAddressType);
-      int hotelPickupAddressTypeId = AddressType.getId(ProductBusiness.uniqueHotelPickupAddressType);
+      int departureAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueDepartureAddressType);
+      int arrivalAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueArrivalAddressType);
+      int hotelPickupAddressTypeId = com.idega.core.data.AddressTypeBMPBean.getId(ProductBusiness.uniqueHotelPickupAddressType);
 
       TravelAddress departureAddress = null;
       Address arrivalAddress = null;
@@ -55,55 +55,55 @@ public class TourBusiness extends TravelStockroomBusiness {
 
       if (tourId == -1) {
 
-        address = new Address();
+        address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
         address.setAddressTypeID(departureAddressTypeId);
         address.setStreetName(departureFrom);
         address.insert();
 
-        departureAddress = new TravelAddress();
+        departureAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).createLegacy();
         departureAddress.setAddressId(address.getID());
-        departureAddress.setAddressTypeId(TravelAddress.ADDRESS_TYPE_DEPARTURE);
+        departureAddress.setAddressTypeId(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE);
         departureAddress.setTime(departureTime.getTimestamp());
         departureAddress.insert();
 
-        arrivalAddress = new Address();
+        arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
         arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
         arrivalAddress.setStreetName(arrivalAt);
         arrivalAddress.insert();
 
       }else {
-          //Service service = new Service(tourId);
-          Product product = ProductBusiness.getProduct(tourId);//new Product(tourId);
-          Address[] tempAddresses = ProductBusiness.getArrivalAddresses(product);// (Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
+          //Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(tourId);
+          Product product = ProductBusiness.getProduct(tourId);//((com.idega.block.trade.stockroom.data.ProductHome)com.idega.data.IDOLookup.getHomeLegacy(Product.class)).findByPrimaryKeyLegacy(tourId);
+          Address[] tempAddresses = ProductBusiness.getArrivalAddresses(product);// (Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(arrivalAddressTypeId)));
           if (tempAddresses.length > 0) {
-            arrivalAddress = new Address(tempAddresses[0].getID());
+            arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(tempAddresses[0].getID());
             arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
             arrivalAddress.setStreetName(arrivalAt);
             arrivalAddress.update();
           }else {
-            arrivalAddress = new Address();
+            arrivalAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
             arrivalAddress.setAddressTypeID(arrivalAddressTypeId);
             arrivalAddress.setStreetName(arrivalAt);
             arrivalAddress.insert();
           }
 
-          TravelAddress[] tAddresses = ProductBusiness.getDepartureAddresses(product); ///Address[]) (product.findRelated( (Address) Address.getStaticInstance(Address.class), Address.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
+          TravelAddress[] tAddresses = ProductBusiness.getDepartureAddresses(product); ///Address[]) (product.findRelated( (Address) com.idega.core.data.AddressBMPBean.getStaticInstance(Address.class), com.idega.core.data.AddressBMPBean.getColumnNameAddressTypeId(), Integer.toString(departureAddressTypeId)));
           if (tempAddresses.length > 0) {
-            departureAddress = new TravelAddress(tAddresses[0].getID());
+            departureAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).findByPrimaryKeyLegacy(tAddresses[0].getID());
             departureAddress.setTime(departureTime);
             departureAddress.update();
 
-            address = new Address(departureAddress.getAddressId());
+            address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).findByPrimaryKeyLegacy(departureAddress.getAddressId());
             address.setStreetName(departureFrom);
             address.update();
           }else {
-            address = new Address();
+            address = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
             address.setAddressTypeID(departureAddressTypeId);
             address.setStreetName(departureFrom);
             address.insert();
 
-            departureAddress = new TravelAddress();
-            departureAddress.setAddressTypeId(TravelAddress.ADDRESS_TYPE_DEPARTURE);
+            departureAddress = ((com.idega.block.trade.stockroom.data.TravelAddressHome)com.idega.data.IDOLookup.getHomeLegacy(TravelAddress.class)).createLegacy();
+            departureAddress.setAddressTypeId(com.idega.block.trade.stockroom.data.TravelAddressBMPBean.ADDRESS_TYPE_DEPARTURE);
             departureAddress.setTime(departureTime);
             departureAddress.setAddressId(address.getID());
             departureAddress.insert();
@@ -135,15 +135,15 @@ public class TourBusiness extends TravelStockroomBusiness {
       if (serviceId != -1)
       try {
           //tm.begin();
-          Service service = new Service(serviceId);
+          Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(serviceId);
           Product product = ProductBusiness.getProduct(serviceId);// Product(serviceId);
           Tour tour;
 
           if (tourId == -1) {
-            tour = new Tour();
+            tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).createLegacy();
             tour.setID(serviceId);
           }else {
-            tour = new Tour(tourId);
+            tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(tourId);
           }
 
           if (numberOfSeats != null)
@@ -172,7 +172,7 @@ public class TourBusiness extends TravelStockroomBusiness {
             for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
               if (hotelPickupPlaceIds[i] != -1)
               try{
-                service.addTo(new HotelPickupPlace(hotelPickupPlaceIds[i]));
+                service.addTo(((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHomeLegacy(HotelPickupPlace.class)).findByPrimaryKeyLegacy(hotelPickupPlaceIds[i]));
               }catch (SQLException sql) {}
             }
             tour.setHotelPickup(true);
@@ -192,12 +192,12 @@ public class TourBusiness extends TravelStockroomBusiness {
            */
           this.removeDepartureDaysApplication(IWContext.getInstance(), tour);
 
-          ServiceDay.deleteService(serviceId);
+          is.idega.idegaweb.travel.data.ServiceDayBMPBean.deleteService(serviceId);
 
           if (activeDays.length > 0) {
             ServiceDay sDay;
             for (int i = 0; i < activeDays.length; i++) {
-              sDay = new ServiceDay();
+              sDay = ((is.idega.idegaweb.travel.data.ServiceDayHome)com.idega.data.IDOLookup.getHomeLegacy(ServiceDay.class)).createLegacy();
                 sDay.setServiceId(serviceId);
                 sDay.setDayOfWeek(activeDays[i]);
               sDay.insert();
@@ -222,7 +222,7 @@ public class TourBusiness extends TravelStockroomBusiness {
 
       int counter = 0;
 
-      int[] daysOfWeek = ServiceDay.getDaysOfWeek(serviceId);
+      int[] daysOfWeek = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(serviceId);
       int fromDayOfWeek = fromStamp.getDayOfWeek();
       int toDayOfWeek = toStamp.getDayOfWeek();
 
@@ -263,7 +263,7 @@ public class TourBusiness extends TravelStockroomBusiness {
   public static Tour getTour(Product product) throws TourNotFoundException{
     Tour tour = null;
     try {
-      tour = new Tour(product.getID());
+      tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(product.getID());
     }
     catch (SQLException sql) {
       throw new TourNotFoundException();
@@ -403,7 +403,7 @@ public class TourBusiness extends TravelStockroomBusiness {
 
     try {
       Product product = ProductBusiness.getProduct(tour.getID());
-      Service service = new Service(tour.getID());
+      Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(tour.getID());
       Timeframe[] frames = product.getTimeframes();
 
       String applicationString = "tourDepDays"+tour.getID()+"_"+fromStamp+"_"+toStamp+"_"+showPast;
@@ -523,7 +523,7 @@ public class TourBusiness extends TravelStockroomBusiness {
    */
   public static idegaTimestamp getNextAvailableDay(IWContext iwc, Service service, idegaTimestamp from) {
     try {
-      return getNextAvailableDay(iwc, new Tour(service.getID()), ProductBusiness.getProduct(service.getID()),from);
+      return getNextAvailableDay(iwc, ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(service.getID()), ProductBusiness.getProduct(service.getID()),from);
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
       return null;

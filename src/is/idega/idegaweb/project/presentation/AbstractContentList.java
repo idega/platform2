@@ -9,7 +9,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import is.idega.idegaweb.project.business.ProjectBusiness;
 import is.idega.idegaweb.project.data.IPProject;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityAttribute;
 import com.idega.util.datastructures.HashtableMultivalued;
 import com.idega.business.GenericState;

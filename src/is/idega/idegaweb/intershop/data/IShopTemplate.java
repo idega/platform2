@@ -1,5 +1,5 @@
 /*
- * $Id: IShopTemplate.java,v 1.3 2002/04/03 12:41:59 palli Exp $
+ * $Id: IShopTemplate.java,v 1.4 2002/04/06 19:11:21 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *

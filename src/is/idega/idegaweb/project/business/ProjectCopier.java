@@ -1,7 +1,7 @@
 package is.idega.idegaweb.project.business;
 
 import com.idega.data.IDOCopier;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 
 /**
  * Title:        idegaclasses
@@ -22,17 +22,17 @@ public class ProjectCopier extends IDOCopier {
 
   public ProjectCopier(String fromDatasource) {
     super();
-    GenericEntity instance1 = new com.idega.builder.data.IBDomain();
+    IDOLegacyEntity instance1 = ((com.idega.builder.data.IBDomainHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.builder.data.IBDomain.class)).createLegacy();
     instance1.setDatasource(fromDatasource);
-    GenericEntity instance2 = new com.idega.core.accesscontrol.data.LoginTable();
+    IDOLegacyEntity instance2 = ((com.idega.core.accesscontrol.data.LoginTableHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.LoginTable.class)).createLegacy();
     instance2.setDatasource(fromDatasource);
-    GenericEntity instance2b = new com.idega.core.accesscontrol.data.LoginInfo();
+    IDOLegacyEntity instance2b = ((com.idega.core.accesscontrol.data.LoginInfoHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.LoginInfo.class)).createLegacy();
     instance2b.setDatasource(fromDatasource);
-    GenericEntity instance3 = new com.idega.core.data.ICObjectInstance();
+    IDOLegacyEntity instance3 = ((com.idega.core.data.ICObjectInstanceHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.data.ICObjectInstance.class)).createLegacy();
     instance3.setDatasource(fromDatasource);
-    GenericEntity instance4 = new com.idega.core.accesscontrol.data.ICPermission();
+    IDOLegacyEntity instance4 = ((com.idega.core.accesscontrol.data.ICPermissionHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.core.accesscontrol.data.ICPermission.class)).createLegacy();
     instance4.setDatasource(fromDatasource);
-    GenericEntity instance5 = new com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo();
+    IDOLegacyEntity instance5 = ((com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoHome)com.idega.data.IDOLookup.getHomeLegacy(com.idega.builder.dynamicpagetrigger.data.PageTriggerInfo.class)).createLegacy();
     instance5.setDatasource(fromDatasource);
     super.addEntityToCopy(instance1);
     super.addEntityToCopy(instance2);

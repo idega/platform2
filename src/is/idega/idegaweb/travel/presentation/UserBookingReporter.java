@@ -110,7 +110,7 @@ public class UserBookingReporter extends TravelManager {
 
     try {
       Product prod;
-      User user = new User(userId);
+      User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(userId);
       User owner;
       Link ownerLink;
 
@@ -119,7 +119,7 @@ public class UserBookingReporter extends TravelManager {
       int count;
       int totalCount = 0;
 
-      Booking[] bookings = Booker.getBookings(products, fromStamp, toStamp, GeneralBooking.getUserIdColumnName(), Integer.toString(userId));
+      Booking[] bookings = Booker.getBookings(products, fromStamp, toStamp, is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getUserIdColumnName(), Integer.toString(userId));
       BookingComparator bComp = new BookingComparator(iwc, orderBy);
       bookings = bComp.sortedArray(bookings);
 
@@ -155,7 +155,7 @@ public class UserBookingReporter extends TravelManager {
 
       for (int i = 0; i < bookings.length; i++) {
         ++row;
-        owner = new User(bookings[i].getOwnerId());
+        owner = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getOwnerId());
         prod = ProductBusiness.getProduct(bookings[i].getServiceID());
         price = Booker.getBookingPrice(iwc, bookings[i]);
         count = bookings[i].getTotalCount();
@@ -198,14 +198,14 @@ public class UserBookingReporter extends TravelManager {
     try {
       Product prod;
       User user;
-      User owner = new User(ownerId);
+      User owner = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(ownerId);
       Link userLink;
       float price;
       float totalPrice = 0;
       int count;
       int totalCount = 0;
 
-      Booking[] bookings = Booker.getBookings(products, fromStamp, toStamp, GeneralBooking.getOwnerIdColumnName(), Integer.toString(ownerId));
+      Booking[] bookings = Booker.getBookings(products, fromStamp, toStamp, is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getOwnerIdColumnName(), Integer.toString(ownerId));
       BookingComparator bComp = new BookingComparator(iwc, orderBy);
       bookings = bComp.sortedArray(bookings);
 
@@ -241,7 +241,7 @@ public class UserBookingReporter extends TravelManager {
 
       for (int i = 0; i < bookings.length; i++) {
         ++row;
-        user = new User(bookings[i].getUserId());
+        user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
         prod = ProductBusiness.getProduct(bookings[i].getServiceID());
         price = Booker.getBookingPrice(iwc, bookings[i]);
         count = bookings[i].getTotalCount();
@@ -318,8 +318,8 @@ public class UserBookingReporter extends TravelManager {
     for (int i = 0; i < bookings.length; i++) {
       try {
         ++row;
-        user = new User(bookings[i].getUserId());
-        owner = new User(bookings[i].getOwnerId());
+        user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getUserId());
+        owner = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(bookings[i].getOwnerId());
         prod = ProductBusiness.getProduct(bookings[i].getServiceID());
 
         userLink = new Link(getText(user.getName()));

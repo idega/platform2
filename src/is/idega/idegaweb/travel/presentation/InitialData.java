@@ -242,13 +242,13 @@ public class InitialData extends TravelManager {
               add(getSupplierCreation(-1));
             }
             else if (action.equals(this.parameterEdit)) {
-              add(getSupplierCreation(Integer.parseInt(iwc.getParameter(Supplier.getSupplierTableName()))));
+              add(getSupplierCreation(Integer.parseInt(iwc.getParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName()))));
             }
             else if (action.equals(this.parameterInvalidate)) {
-              String supplier_id = iwc.getParameter(Supplier.getSupplierTableName());
+              String supplier_id = iwc.getParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName());
               if (supplier_id != null)
               try {
-                SupplierManager.invalidateSupplier(new Supplier(Integer.parseInt(supplier_id)));
+                SupplierManager.invalidateSupplier(((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(Integer.parseInt(supplier_id)));
               }catch (Exception e) {
                 e.printStackTrace(System.err);
                 add(iwrb.getLocalizedString("travel.supplier_was_not_deleted","Supplier was not deleted"));
@@ -306,7 +306,7 @@ public class InitialData extends TravelManager {
       table.add(Text.NON_BREAKING_SPACE, 4, row);
       table.setRowColor(row, super.backgroundColor);
 
-      Supplier[] supps = Supplier.getValidSuppliers();
+      Supplier[] supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
 
       String theColor = super.GRAY;
 
@@ -315,15 +315,15 @@ public class InitialData extends TravelManager {
 //        theColor = super.getNextZebraColor(super.GRAY, super.WHITE, theColor);
 
         link = (Link) editLink.clone();
-          link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
+          link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supps[i].getID());
         table.add(link,4,row);
         table.add(Text.NON_BREAKING_SPACE,4,row);
         link = (Link) chooseLink.clone();
-          link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
+          link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supps[i].getID());
         table.add(link,4,row);
         table.add(Text.NON_BREAKING_SPACE,4,row);
         link = (Link) deleteLink.clone();
-          link.addParameter(Supplier.getSupplierTableName(),supps[i].getID());
+          link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supps[i].getID());
         table.add(link,4,row);
         table.setAlignment(4,row,"right");
 
@@ -455,7 +455,7 @@ public class InitialData extends TravelManager {
       if (supplier_id != -1) {
         table.add(new HiddenInput(this.parameterSupplierId,Integer.toString(supplier_id)));
 
-        lSupplier = new Supplier(supplier_id);
+        lSupplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplier_id);
           name.setContent(lSupplier.getName());
           description.setContent(lSupplier.getDescription());
 
@@ -627,10 +627,10 @@ public class InitialData extends TravelManager {
 
               if (isUpdate) {
                   Vector phoneIDS = new Vector();
-                  Supplier supplier = new Supplier(supplierId);
+                  Supplier supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
 
                   Phone ph;
-                  List phones = supplier.getPhones(Phone.getHomeNumberID());
+                  List phones = supplier.getPhones(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
                   if (phones != null) {
                     if (phones.size() > 0) {
                       for (int i = 0; i < phones.size(); i++) {
@@ -640,14 +640,14 @@ public class InitialData extends TravelManager {
                         phoneIDS.add(new Integer(ph.getID()));
                       }
                     }else {
-                      ph = new Phone();
+                      ph = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                         ph.setNumber(phone);
-                        ph.setPhoneTypeId(Phone.getHomeNumberID());
+                        ph.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
                       ph.insert();
                       phoneIDS.add(new Integer(ph.getID()));
                     }
                   }
-                  phones = supplier.getPhones(Phone.getFaxNumberID());
+                  phones = supplier.getPhones(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
                   if (phones != null) {
                     if (phones.size() > 0) {
                       for (int i = 0; i < phones.size(); i++) {
@@ -657,9 +657,9 @@ public class InitialData extends TravelManager {
                         phoneIDS.add(new Integer(ph.getID()));
                       }
                     }else {
-                      ph = new Phone();
+                      ph = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                         ph.setNumber(fax);
-                        ph.setPhoneTypeId(Phone.getFaxNumberID());
+                        ph.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
                       ph.insert();
                       phoneIDS.add(new Integer(ph.getID()));
                     }
@@ -699,16 +699,16 @@ public class InitialData extends TravelManager {
 
                       Vector phoneIDS = new Vector();
                       if (phone.length() > 0) {
-                        Phone phonePhone = new Phone();
+                        Phone phonePhone = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                           phonePhone.setNumber(phone);
-                          phonePhone.setPhoneTypeId(Phone.getHomeNumberID());
+                          phonePhone.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
                         phonePhone.insert();
                         phoneIDS.add(new Integer(phonePhone.getID()));
                       }
                       if (fax.length() > 0) {
-                        Phone faxPhone = new Phone();
+                        Phone faxPhone = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                           faxPhone.setNumber(fax);
-                          faxPhone.setPhoneTypeId(Phone.getFaxNumberID());
+                          faxPhone.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
                         faxPhone.insert();
                         phoneIDS.add(new Integer(faxPhone.getID()));
                       }
@@ -719,13 +719,13 @@ public class InitialData extends TravelManager {
                       }
 
                       int[] addressIds = new int[1];
-                      Address addressAddress = new Address();
+                      Address addressAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
                           addressAddress.setStreetName(address);
                           addressAddress.insert();
                       addressIds[0] = addressAddress.getID();
 
                       int[] emailIds = new int[1];
-                      Email eEmail = new Email();
+                      Email eEmail = ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
                         eEmail.setEmailAddress(email);
                         eEmail.insert();
                       emailIds[0] = eEmail.getID();
@@ -851,7 +851,7 @@ public class InitialData extends TravelManager {
       if (resellerId != -1) {
         table.add(new HiddenInput(this.parameterResellerId,Integer.toString(resellerId)));
 
-        Reseller reseller = new Reseller(resellerId);
+        Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
           name.setContent(reseller.getName());
           description.setContent(reseller.getDescription());
 
@@ -979,10 +979,10 @@ public class InitialData extends TravelManager {
 
           if (isUpdate) {
               Vector phoneIDS = new Vector();
-              Reseller reseller = new Reseller(resellerId);
+              Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
 
               Phone ph;
-              List phones = reseller.getPhones(Phone.getHomeNumberID());
+              List phones = reseller.getPhones(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
               if (phones != null) {
                 if (phones.size() > 0) {
                   for (int i = 0; i < phones.size(); i++) {
@@ -992,15 +992,15 @@ public class InitialData extends TravelManager {
                     phoneIDS.add(new Integer(ph.getID()));
                   }
                 }else {
-                  ph = new Phone();
+                  ph = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     ph.setNumber(phone);
-                    ph.setPhoneTypeId(Phone.getHomeNumberID());
+                    ph.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
                   ph.insert();
                   phoneIDS.add(new Integer(ph.getID()));
                 }
               }
 
-              phones = reseller.getPhones(Phone.getFaxNumberID());
+              phones = reseller.getPhones(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
               if (phones != null) {
                 if (phones.size() > 0 ) {
                   for (int i = 0; i < phones.size(); i++) {
@@ -1010,9 +1010,9 @@ public class InitialData extends TravelManager {
                     phoneIDS.add(new Integer(ph.getID()));
                   }
                 }else {
-                  ph = new Phone();
+                  ph = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     ph.setNumber(fax);
-                    ph.setPhoneTypeId(Phone.getFaxNumberID());
+                    ph.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
                   ph.insert();
                   phoneIDS.add(new Integer(ph.getID()));
                 }
@@ -1050,16 +1050,16 @@ public class InitialData extends TravelManager {
 
                 Vector phoneIDS = new Vector();
                 if (phone.length() > 0) {
-                  Phone phonePhone = new Phone();
+                  Phone phonePhone = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     phonePhone.setNumber(phone);
-                    phonePhone.setPhoneTypeId(Phone.getHomeNumberID());
+                    phonePhone.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getHomeNumberID());
                   phonePhone.insert();
                   phoneIDS.add(new Integer(phonePhone.getID()));
                 }
                 if (fax.length() > 0) {
-                  Phone faxPhone = new Phone();
+                  Phone faxPhone = ((com.idega.core.data.PhoneHome)com.idega.data.IDOLookup.getHomeLegacy(Phone.class)).createLegacy();
                     faxPhone.setNumber(fax);
-                    faxPhone.setPhoneTypeId(Phone.getFaxNumberID());
+                    faxPhone.setPhoneTypeId(com.idega.core.data.PhoneBMPBean.getFaxNumberID());
                   faxPhone.insert();
                   phoneIDS.add(new Integer(faxPhone.getID()));
                 }
@@ -1071,13 +1071,13 @@ public class InitialData extends TravelManager {
                 }
 
                 int[] addressIds = new int[1];
-                Address addressAddress = new Address();
+                Address addressAddress = ((com.idega.core.data.AddressHome)com.idega.data.IDOLookup.getHomeLegacy(Address.class)).createLegacy();
                     addressAddress.setStreetName(address);
                     addressAddress.insert();
                 addressIds[0] = addressAddress.getID();
 
                 int[] emailIds = new int[1];
-                Email eEmail = new Email();
+                Email eEmail = ((com.idega.core.data.EmailHome)com.idega.data.IDOLookup.getHomeLegacy(Email.class)).createLegacy();
                   eEmail.setEmailAddress(email);
                   eEmail.insert();
                 emailIds[0] = eEmail.getID();

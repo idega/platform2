@@ -111,7 +111,7 @@ public class DailyReport extends TravelManager {
         }
       }
 
-      String productId = iwc.getParameter(Product.getProductEntityName());
+      String productId = iwc.getParameter(com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName());
       try {
         if (productId == null) {
           productId = (String) iwc.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
@@ -433,7 +433,7 @@ public class DailyReport extends TravelManager {
 
 
       if (tframe != null) {
-        prices = ProductPrice.getProductPrices(service.getID(), tframe.getID(), false);
+        prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), tframe.getID(), false);
       }
 
       ProductPrice price;
@@ -508,7 +508,7 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)TravelAddress.getStaticInstance(TravelAddress.class));
+            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
               addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
@@ -627,7 +627,7 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)TravelAddress.getStaticInstance(TravelAddress.class));
+            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
               addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
@@ -737,7 +737,7 @@ public class DailyReport extends TravelManager {
           if (closerLook)
           try {
             entries = bookings[i].getBookingEntries();
-            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)TravelAddress.getStaticInstance(TravelAddress.class));
+            bookingAddresses = (TravelAddress[]) bookings[i].findRelated((TravelAddress)com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class));
             if (bookingAddresses.length > 0) {
               addressText = (Text) smallText.clone();
               addressText.setText(bookingAddresses[0].getName()+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
@@ -829,7 +829,7 @@ public class DailyReport extends TravelManager {
 
           if (closerLook)
           for (int k = 0; k < addresses.length; k++) {
-              prices = ProductPrice.getProductPrices(product.getID(), tframe.getID(), addresses[k].getID(), false);
+              prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tframe.getID(), addresses[k].getID(), false);
               addressText = (Text) smallText.clone();
                 addressText.setText(addresses[k].getName()+Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE);
                 addressText.setFontColor(super.BLACK);
@@ -915,7 +915,7 @@ public class DailyReport extends TravelManager {
     if (booking_ids != null)
     for (int i = 0; i < booking_ids.length; i++) {
       try {
-        booking = new GeneralBooking(Integer.parseInt(booking_ids[i]));
+        booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(Integer.parseInt(booking_ids[i]));
         try {
           booking.setAttendance(Integer.parseInt(attendance[i]));
         }catch (NumberFormatException n) {

@@ -3,7 +3,7 @@ package is.idega.idegaweb.project.presentation;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.business.StaffHolder;
 import com.idega.block.staff.presentation.StaffPropertyWindow;
-import com.idega.business.GenericEntityComparator;
+import com.idega.business.IDOLegacyEntityComparator;
 import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.data.GenericGroup;
 import com.idega.core.user.business.UserBusiness;
@@ -68,7 +68,7 @@ public class ParticipantList extends AbstractContentList {
   public String getGroupName(){
     if(groupId != -1){
       try {
-        GenericGroup gr = new GenericGroup(groupId);
+        GenericGroup gr = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId);
         return gr.getName();
       }
       catch (Exception ex) {
@@ -200,10 +200,10 @@ public class ParticipantList extends AbstractContentList {
 
     if(l != null){
       String[] names = new String[3];
-      names[0] = User.getColumnNameFirstName();
-      names[1] = User.getColumnNameMiddleName();
-      names[2] = User.getColumnNameLastName();
-      GenericEntityComparator c = new GenericEntityComparator(names);
+      names[0] = com.idega.core.user.data.UserBMPBean.getColumnNameFirstName();
+      names[1] = com.idega.core.user.data.UserBMPBean.getColumnNameMiddleName();
+      names[2] = com.idega.core.user.data.UserBMPBean.getColumnNameLastName();
+      IDOLegacyEntityComparator c = new IDOLegacyEntityComparator(names);
       Collections.sort(l,c);
 
       l = StaffFinder.getStaffHolders(l,iwc);
@@ -398,7 +398,7 @@ public class ParticipantList extends AbstractContentList {
 
         String[] related = iwc.getParameterValues(GroupGroupSetter.FIELDNAME_SELECTION_DOUBLE_BOX);
 
-        GenericGroup group = new GenericGroup(groupId);
+        GenericGroup group = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId);
         List currentRelationShip = group.getListOfAllGroupsContainingThis();
 
 
@@ -407,7 +407,7 @@ public class ParticipantList extends AbstractContentList {
           if(currentRelationShip != null){
             for (int i = 0; i < related.length; i++) {
               int id = Integer.parseInt(related[i]);
-              GenericGroup gr = new GenericGroup(id);
+              GenericGroup gr = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(id);
               if(!currentRelationShip.remove(gr)){
                 gr.addGroup(group);
               }
@@ -421,7 +421,7 @@ public class ParticipantList extends AbstractContentList {
 
           } else{
             for (int i = 0; i < related.length; i++) {
-              new GenericGroup(Integer.parseInt(related[i])).addGroup(group);
+              ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(Integer.parseInt(related[i])).addGroup(group);
             }
           }
 
@@ -577,10 +577,10 @@ public class ParticipantList extends AbstractContentList {
 
       if(l != null){
         String[] names = new String[3];
-        names[0] = User.getColumnNameFirstName();
-        names[1] = User.getColumnNameMiddleName();
-        names[2] = User.getColumnNameLastName();
-        GenericEntityComparator c = new GenericEntityComparator(names);
+        names[0] = com.idega.core.user.data.UserBMPBean.getColumnNameFirstName();
+        names[1] = com.idega.core.user.data.UserBMPBean.getColumnNameMiddleName();
+        names[2] = com.idega.core.user.data.UserBMPBean.getColumnNameLastName();
+        IDOLegacyEntityComparator c = new IDOLegacyEntityComparator(names);
         Collections.sort(l,c);
 
         l = StaffFinder.getStaffHolders(l,iwc);

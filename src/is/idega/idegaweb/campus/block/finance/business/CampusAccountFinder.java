@@ -48,7 +48,7 @@ public class CampusAccountFinder  {
 
    try {
 
-     return EntityFinder.findAll(new ContractAccountApartment());
+     return EntityFinder.findAll(((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy());
 
    }
 
@@ -86,7 +86,7 @@ public class CampusAccountFinder  {
 
     try {
 
-      return EntityFinder.findAll(new ContractAccountApartment(),sql.toString());
+      return EntityFinder.findAll(((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy(),sql.toString());
 
     }
 
@@ -116,9 +116,9 @@ public class CampusAccountFinder  {
 
   public static List listOfContractAccountApartment(String type,idegaTimestamp startDate,idegaTimestamp endDate){
 
-    StringBuffer sql = new StringBuffer("select * from ").append(ContractAccountApartment.getEntityTableName());
+    StringBuffer sql = new StringBuffer("select * from ").append(is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getEntityTableName());
 
-    sql.append(" where ").append(ContractAccountApartment.getAccountTypeColumnName());
+    sql.append(" where ").append(is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getAccountTypeColumnName());
 
     sql.append(" = '").append(type).append("'");
 
@@ -126,9 +126,9 @@ public class CampusAccountFinder  {
 
     String end = "'"+endDate.toSQLString()+"'";
 
-    String validto = ContractAccountApartment.getColumnValidTo();
+    String validto = is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getColumnValidTo();
 
-    String validfrom = ContractAccountApartment.getColumnValidFrom();
+    String validfrom = is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getColumnValidFrom();
 
     String less = " <= ";
 
@@ -236,7 +236,7 @@ public class CampusAccountFinder  {
 
   public static List listOfContractAccounts(idegaTimestamp startDate,idegaTimestamp endDate){
 
-    StringBuffer sql = new StringBuffer("select * from ").append(ContractAccounts.getEntityTableName());
+    StringBuffer sql = new StringBuffer("select * from ").append(is.idega.idegaweb.campus.data.ContractAccountsBMPBean.getEntityTableName());
 
     sql.append(" where ");
 
@@ -244,9 +244,9 @@ public class CampusAccountFinder  {
 
     String end = "'"+endDate.toSQLString()+"'";
 
-    String validto = ContractAccounts.getColumnValidTo();
+    String validto = is.idega.idegaweb.campus.data.ContractAccountsBMPBean.getColumnValidTo();
 
-    String validfrom = ContractAccounts.getColumnValidFrom();
+    String validfrom = is.idega.idegaweb.campus.data.ContractAccountsBMPBean.getColumnValidFrom();
 
     String less = " <= ";
 
@@ -312,7 +312,7 @@ public class CampusAccountFinder  {
 
    try {
 
-     return EntityFinder.findAll(new ContractAccountApartment(),sql);
+     return EntityFinder.findAll(((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy(),sql);
 
    }
 
@@ -330,9 +330,9 @@ public class CampusAccountFinder  {
 
     try {
 
-      ContractAccountApartment CAA = new ContractAccountApartment();
+      ContractAccountApartment CAA = ((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy();
 
-      return EntityFinder.findAllByColumn(new ContractAccountApartment(),ContractAccountApartment.getApartmentTypeIdColumnName(),typeId);
+      return EntityFinder.findAllByColumn(((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy(),is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getApartmentTypeIdColumnName(),typeId);
 
     }
 
@@ -348,9 +348,9 @@ public class CampusAccountFinder  {
 
     try {
 
-      ContractAccountApartment CAA = new ContractAccountApartment();
+      ContractAccountApartment CAA = ((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy();
 
-      return EntityFinder.findAllByColumn(new ContractAccountApartment(),ContractAccountApartment.getApartmentIdColumnName(),aprtId);
+      return EntityFinder.findAllByColumn(((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy(),is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getApartmentIdColumnName(),aprtId);
 
     }
 
@@ -368,7 +368,7 @@ public class CampusAccountFinder  {
 
    try {
 
-     return EntityFinder.findAll(new ContractAccounts());
+     return EntityFinder.findAll(((is.idega.idegaweb.campus.data.ContractAccountsHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccounts.class)).createLegacy());
 
    }
 
@@ -386,7 +386,7 @@ public class CampusAccountFinder  {
 
   public static int countAccounts(String accType){
 
-    String sql = "select count(*) from "+ContractAccountApartment.getEntityTableName() +" where "+ContractAccountApartment.getAccountTypeColumnName()+" = '"+accType+"'";
+    String sql = "select count(*) from "+is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getEntityTableName() +" where "+is.idega.idegaweb.campus.data.ContractAccountApartmentBMPBean.getAccountTypeColumnName()+" = '"+accType+"'";
 
     int count = 0;
 
@@ -394,7 +394,7 @@ public class CampusAccountFinder  {
 
     try{
 
-      count = new ContractAccountApartment().getNumberOfRecords(sql.toString());
+      count = ((is.idega.idegaweb.campus.data.ContractAccountApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(ContractAccountApartment.class)).createLegacy().getNumberOfRecords(sql.toString());
 
 
 
@@ -414,11 +414,11 @@ public class CampusAccountFinder  {
 
   public static TariffIndex getTariffIndex(String type){
 
-    TariffIndex ti = new TariffIndex();
+    TariffIndex ti = ((com.idega.block.finance.data.TariffIndexHome)com.idega.data.IDOLookup.getHomeLegacy(TariffIndex.class)).createLegacy();
 
     try {
 
-      List L = EntityFinder.findAllByColumnDescendingOrdered(ti,TariffIndex.getColumnNameType(),type,ti.getIDColumnName());
+      List L = EntityFinder.findAllByColumnDescendingOrdered(ti,com.idega.block.finance.data.TariffIndexBMPBean.getColumnNameType(),type,ti.getIDColumnName());
 
       if(L!= null)
 

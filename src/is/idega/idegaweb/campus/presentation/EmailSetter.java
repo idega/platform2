@@ -31,7 +31,7 @@ public class EmailSetter extends Block{
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.emails";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String propParameter = SystemProperties.getEntityTableName();
+  private String propParameter = is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName();
   private String localesParameter="iw_locales";
   private boolean isAdmin = false;
 

@@ -89,13 +89,13 @@ public class ServiceOverview extends TravelManager {
   private void init(IWContext iwc) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
-      dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
-      dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,iwc).substring(0,3);
-      dayOfWeekName[ServiceDay.TUESDAY] = cal.getNameOfDay(ServiceDay.TUESDAY ,iwc).substring(0,3);
-      dayOfWeekName[ServiceDay.WEDNESDAY] = cal.getNameOfDay(ServiceDay.WEDNESDAY ,iwc).substring(0,3);
-      dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,iwc).substring(0,3);
-      dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,iwc).substring(0,3);
-      dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,iwc).substring(0,3);
+      dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY ,iwc).substring(0,3);
+      dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY ,iwc).substring(0,3);
+      dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY ,iwc).substring(0,3);
+      dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY ,iwc).substring(0,3);
+      dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,iwc).substring(0,3);
+      dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,iwc).substring(0,3);
+      dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,iwc).substring(0,3);
   }
 
   public Table getTopTable(IWContext iwc) {
@@ -142,7 +142,7 @@ public class ServiceOverview extends TravelManager {
     String[] serviceIds = (String[]) iwc.getParameterValues(deleteParameter);
     Service serviceToDelete;
     for (int i = 0; i < serviceIds.length; i++) {
-        serviceToDelete = new Service(Integer.parseInt(serviceIds[i]));
+        serviceToDelete = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(Integer.parseInt(serviceIds[i]));
         serviceToDelete.delete();
     }
 
@@ -239,7 +239,7 @@ public class ServiceOverview extends TravelManager {
             contentTable = getProductInfoTable(iwc,iwrb,product);
 
             /*ServiceViewer sv = new ServiceViewer();
-              sv.setService(new Service(product.getID()));
+              sv.setService(((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(product.getID()));
             table.add(sv);*/
 
 
@@ -517,7 +517,7 @@ public class ServiceOverview extends TravelManager {
         contentTable.add(prodName,3,contRow);
         contentTable.setRowColor(contRow, super.GRAY);
 
-        dayOfWeek = ServiceDay.getDaysOfWeek(service.getID());
+        dayOfWeek = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(service.getID());
         if (dayOfWeek.length == 7) {
           actDays.setText(iwrb.getLocalizedString("travel.daily","daily"));
         }else {
@@ -559,7 +559,7 @@ public class ServiceOverview extends TravelManager {
           contentTable.setRowColor(contRow, super.GRAY);
           ++contRow;
           for (int k = 0; k < timeframes.length; k++) {
-            prices = ProductPrice.getProductPrices(product.getID(), timeframes[k].getID(), depAddress.getID(), false);
+            prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[k].getID(), depAddress.getID(), false);
             if (prices.length > 0) {
               timeframeTxt = (Text) theBoldText.clone();
                 timeframeTxt.setFontColor(super.BLACK);
@@ -592,7 +592,7 @@ public class ServiceOverview extends TravelManager {
 //              ++contRow;
             }
             for (int j = 0; j < prices.length; j++) {
-              currency = new Currency(prices[j].getCurrencyId());
+              currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
               nameOfCategory = (Text) theText.clone();
                 nameOfCategory.setFontColor(super.BLACK);
                 nameOfCategory.setText(prices[j].getPriceCategory().getName());
@@ -607,7 +607,7 @@ public class ServiceOverview extends TravelManager {
                 priceText.setText("Rangt upp sett");
               }
 
-              if (prices[j].getPriceType() == ProductPrice.PRICETYPE_DISCOUNT) {
+              if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT) {
                 priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
               }
 

@@ -11,7 +11,7 @@ public class UpdateHandicap {
 
     public static void update(int member_id) {
         try {
-            Member member = new Member(member_id);
+            Member member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(member_id);
             idegaTimestamp stampur = new idegaTimestamp(1,1,2000);
             UpdateHandicap.update(member,stampur);
         }
@@ -22,7 +22,7 @@ public class UpdateHandicap {
 
     public static void update(int member_id,idegaTimestamp stampur) {
         try {
-            Member member = new Member(member_id);
+            Member member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(member_id);
             stampur.addDays(-1);
             UpdateHandicap.update(member,stampur);
         }
@@ -37,7 +37,7 @@ public class UpdateHandicap {
             int member_id = member.getID();
             //System.out.println("MemberID: "+member_id);
 
-            MemberInfo memberInfo = new MemberInfo(member_id);
+            MemberInfo memberInfo = ((is.idega.idegaweb.golf.entity.MemberInfoHome)com.idega.data.IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKeyLegacy(member_id);
             TournamentRound round = null;
             Field field = null;
             Handicap leikForgjof = null;
@@ -62,9 +62,9 @@ public class UpdateHandicap {
             int tee_id = 0;
             double tournamentHandicap = 0;
 
-            Scorecard[] scorecard = (Scorecard[]) (Scorecard[]) Scorecard.getStaticInstance("is.idega.idegaweb.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and ( scorecard_date > '"+stampur.toSQLDateString()+"' or scorecard_date is null ) order by scorecard_date");
+            Scorecard[] scorecard = (Scorecard[]) (Scorecard[]) is.idega.idegaweb.golf.entity.ScorecardBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and ( scorecard_date > '"+stampur.toSQLDateString()+"' or scorecard_date is null ) order by scorecard_date");
             if ( scorecard.length > 0 ) {
-              Scorecard[] scorecardsBefore = (Scorecard[]) Scorecard.getStaticInstance("is.idega.idegaweb.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+stampur.toSQLDateString()+"' order by scorecard_date desc");
+              Scorecard[] scorecardsBefore = (Scorecard[]) is.idega.idegaweb.golf.entity.ScorecardBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+stampur.toSQLDateString()+"' order by scorecard_date desc");
               if ( scorecardsBefore.length > 0 ) {
                 grunn = (double) scorecardsBefore[0].getHandicapAfter();
               }
@@ -77,7 +77,7 @@ public class UpdateHandicap {
 
                 //System.out.println("Handicap: "+grunn);
                 int scorecardID = scorecard[m].getID();
-                round = new TournamentRound(scorecard[m].getTournamentRoundId());
+                round = ((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKeyLegacy(scorecard[m].getTournamentRoundId());
 
                 if ( scorecard[m].getHandicapCorrection().equalsIgnoreCase("N") ) {
                     slope = scorecard[m].getSlope();
@@ -90,7 +90,7 @@ public class UpdateHandicap {
                       isTournament = true;
                     }
 
-                    field = new Field(field_id);
+                    field = ((is.idega.idegaweb.golf.entity.FieldHome)com.idega.data.IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKeyLegacy(field_id);
                       field_par = field.getFieldPar();
 
                     leikForgjof = new Handicap(grunn);
@@ -135,7 +135,7 @@ public class UpdateHandicap {
                     heildarpunktar = 0;
                     realTotalPoints = 0;
 
-                    stroke2 = (Stroke[]) (new Stroke()).findAll("select stroke.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = "+scorecardID+" order by hole_number");
+                    stroke2 = (Stroke[]) (((is.idega.idegaweb.golf.entity.StrokeHome)com.idega.data.IDOLookup.getHomeLegacy(Stroke.class)).createLegacy()).findAll("select stroke.* from stroke s,tee t where s.tee_id = t.tee_id and scorecard_id = "+scorecardID+" order by hole_number");
 
                     strokeVector = new Vector(stroke2.length);
                     for (int i = 0; i < stroke2.length; i++)

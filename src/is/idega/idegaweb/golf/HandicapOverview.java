@@ -139,13 +139,13 @@ private Link textLink = new Link();
 
 	private void fillTable(IWContext iwc) throws IOException,SQLException {
 
-		Member member = new Member(Integer.parseInt(this.member_id));
+		Member member = ((is.idega.idegaweb.golf.entity.MemberHome)com.idega.data.IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKeyLegacy(Integer.parseInt(this.member_id));
     MemberInfo memberInfo = member.getMemberInfo();
 
     String[] dates = getDates(iwc);
 
-    Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' and scorecard_date is not null order by scorecard_date");
-    Scorecard[] scoreCardsBefore = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+dates[0]+"' order by scorecard_date desc");
+    Scorecard[] scoreCards = (Scorecard[]) (((is.idega.idegaweb.golf.entity.ScorecardHome)com.idega.data.IDOLookup.getHomeLegacy(Scorecard.class)).createLegacy()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' and scorecard_date is not null order by scorecard_date");
+    Scorecard[] scoreCardsBefore = (Scorecard[]) (((is.idega.idegaweb.golf.entity.ScorecardHome)com.idega.data.IDOLookup.getHomeLegacy(Scorecard.class)).createLegacy()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+dates[0]+"' order by scorecard_date desc");
 
     myTable = new Table();
 			myTable.setWidth("100%");
@@ -248,15 +248,15 @@ private Link textLink = new Link();
               eyda.addParameter("scorecard_id",String.valueOf(scoreCards[a].getID()));
 
       if ( scoreCards[a].getHandicapCorrection().equals("N") ) {
-        Field field = new Field(scoreCards[a].getFieldID());
-        TeeColor teeColor = new TeeColor(scoreCards[a].getTeeColorID());
-        TournamentRound tournamentRound = new TournamentRound();
+        Field field = ((is.idega.idegaweb.golf.entity.FieldHome)com.idega.data.IDOLookup.getHomeLegacy(Field.class)).findByPrimaryKeyLegacy(scoreCards[a].getFieldID());
+        TeeColor teeColor = ((is.idega.idegaweb.golf.entity.TeeColorHome)com.idega.data.IDOLookup.getHomeLegacy(TeeColor.class)).findByPrimaryKeyLegacy(scoreCards[a].getTeeColorID());
+        TournamentRound tournamentRound = ((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).createLegacy();
         String tournament_name = "";
-        Tournament tournament = new Tournament();
+        Tournament tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).createLegacy();
 
 			if ( scoreCards[a].getTournamentRoundId() != 1 && scoreCards[a].getTournamentRoundId() != -1 ) {
-				tournamentRound = new TournamentRound(scoreCards[a].getTournamentRoundId());
-				tournament = new Tournament(tournamentRound.getTournamentID());
+				tournamentRound = ((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKeyLegacy(scoreCards[a].getTournamentRoundId());
+				tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKeyLegacy(tournamentRound.getTournamentID());
 				tournament_name = tournament.getName();
 		 	}
 

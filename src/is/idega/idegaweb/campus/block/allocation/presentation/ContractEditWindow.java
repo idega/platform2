@@ -108,9 +108,9 @@ public class ContractEditWindow extends Window{
 
     try{
       if(iContractId > 0){
-        Contract eContract = new Contract(iContractId);
-        Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
-        User user = new User(eContract.getUserId().intValue());
+        Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+        Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
+        User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
         boolean isContractUser = user.getID() == eUser.getID();
         if(user !=null){
           T.add(new HiddenInput("contract_id",String.valueOf(eContract.getID())),1,row);
@@ -204,7 +204,7 @@ public class ContractEditWindow extends Window{
     try{
 
       int id = Integer.parseInt(iwc.getParameter("contract_id"));
-      Contract eContract = new Contract(id);
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
 
       idegaTimestamp from = null,to = null,moving = null,deliver = null, retur = null;
       String sfrom = iwc.getParameter("from_date");

@@ -142,9 +142,9 @@ public class ContractSigner extends PresentationObjectContainer{
 
     if(isAdmin){
 
-      if(iwc.getApplicationAttribute(SystemProperties.getEntityTableName())!=null){
+      if(iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName())!=null){
 
-      SysProps = (SystemProperties)iwc.getApplicationAttribute(SystemProperties.getEntityTableName());
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName());
 
       }
 
@@ -198,21 +198,21 @@ public class ContractSigner extends PresentationObjectContainer{
 
     try {
 
-      Contract eContract = new Contract(iContractId);
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
 
-      User eUser = new User(eContract.getUserId().intValue());
+      User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
 
       idegaTimestamp from = new idegaTimestamp(eContract.getValidFrom());
 
       idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
 
-      Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
+      Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
 
       List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
 
-      List lFinanceAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),Account.typeFinancial);
+      List lFinanceAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typeFinancial);
 
-      List lPhoneAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),Account.typePhone);
+      List lPhoneAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),com.idega.block.finance.data.AccountBMPBean.typePhone);
 
 
 
@@ -222,7 +222,7 @@ public class ContractSigner extends PresentationObjectContainer{
 
         try {
 
-          eGroup = new GenericGroup(groupId);
+          eGroup = ((com.idega.core.data.GenericGroupHome)com.idega.data.IDOLookup.getHomeLegacy(GenericGroup.class)).findByPrimaryKeyLegacy(groupId);
 
         }
 
@@ -280,7 +280,7 @@ public class ContractSigner extends PresentationObjectContainer{
 
       T.add(Edit.titleText(iwrb.getLocalizedString("apartment","Apartment")+" : "),1,row);
 
-      T.add(Edit.formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,row);
+      T.add(Edit.formatText(getApartmentString(((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(eContract.getApartmentId().intValue()))),2,row);
 
       row++;
 
@@ -390,7 +390,7 @@ public class ContractSigner extends PresentationObjectContainer{
 
         HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
 
-        if(eContract.getStatus().equalsIgnoreCase(Contract.statusSigned))
+        if(eContract.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned))
 
           T.add(save,2,row);
 

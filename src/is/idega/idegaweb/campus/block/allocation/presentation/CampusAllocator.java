@@ -133,8 +133,8 @@ public class CampusAllocator extends Block implements Campus{
       this.iComplexId = ((Integer)iwc.getSessionAttribute("sess_cplx_id")).intValue();
     }
 
-    if(iwc.getApplicationAttribute(SystemProperties.getEntityTableName())!=null){
-      SysProps = (SystemProperties)iwc.getApplicationAttribute(SystemProperties.getEntityTableName());
+    if(iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName());
     }
 
     Table Frame = new Table();
@@ -231,7 +231,7 @@ public class CampusAllocator extends Block implements Campus{
             type = eAprtType.getKeyOne();
             cmpx = eAprtType.getKeyTwo();
             listCount = BuildingFinder.countApartmentsInTypeAndComplex(type,cmpx);
-            contractCount = ContractFinder.countApartmentsInTypeAndComplex(type,cmpx,Contract.statusSigned);
+            contractCount = ContractFinder.countApartmentsInTypeAndComplex(type,cmpx,is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusSigned);
 
             appliedCount = CampusApplicationFinder.countWaitingWithTypeAndComplex(type,cmpx,0);
             appCnt1 = CampusApplicationFinder.countWaitingWithTypeAndComplex(type,cmpx,1);
@@ -381,7 +381,7 @@ public class CampusAllocator extends Block implements Campus{
         WaitingList WL = (WaitingList)L.get(i);
         try{
 
-          Applicant A = new Applicant(WL.getApplicantId().intValue());
+          Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(WL.getApplicantId().intValue());
 
           Frame.add(formatText(WL.getOrder().intValue()),col++,row);
 
@@ -841,7 +841,7 @@ public class CampusAllocator extends Block implements Campus{
     Form myForm = new Form();
     Contract eContract = null;
     try {
-      eContract = new Contract(iContractId);
+      eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
       Apartment A = BuildingCacher.getApartment(eContract.getApartmentId().intValue());
       Floor F = BuildingCacher.getFloor(A.getFloorId());
       Building B = BuildingCacher.getBuilding(F.getBuildingId());
@@ -904,7 +904,7 @@ public class CampusAllocator extends Block implements Campus{
 
         Applicant eApplicant = null;
         try{
-          eApplicant = new Applicant(iApplicantId);
+          eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(iApplicantId);
         }
         catch(SQLException ex){ex.printStackTrace();}
 
@@ -926,7 +926,7 @@ public class CampusAllocator extends Block implements Campus{
         int iContractId = Integer.parseInt(sContractId);
         Contract eContract = null;
         try{
-          eContract = new Contract(iContractId);
+          eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
           eContract.setValidFrom(from.getSQLDate());
           eContract.setValidTo(to.getSQLDate());
           if(sApartmentId!=null){
@@ -949,8 +949,8 @@ public class CampusAllocator extends Block implements Campus{
     String sContractId = iwc.getParameter("contract_id");
     int iContractId = Integer.parseInt(sContractId);
     try {
-      Contract eContract = new Contract(iContractId);
-      User eUser = new User(eContract.getUserId().intValue());
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+      User eUser = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
       eContract.delete();
       eUser.delete();
 
@@ -980,7 +980,7 @@ public class CampusAllocator extends Block implements Campus{
 
   private boolean makeNewContract(User eUser,Applicant eApplicant,int iApartmentId,idegaTimestamp from,idegaTimestamp to){
 
-      Contract eContract = new Contract();
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy();
       eContract.setApartmentId(iApartmentId);
       eContract.setApplicantId(eApplicant.getID());
       eContract.setUserId(eUser.getID());
@@ -1043,8 +1043,8 @@ public class CampusAllocator extends Block implements Campus{
 
   private ApartmentTypePeriods getPeriod(int aprt_type_id){
     try {
-      ApartmentTypePeriods A = new ApartmentTypePeriods();
-      List L = EntityFinder.findAllByColumn(A,ApartmentTypePeriods.getApartmentTypeIdColumnName(),aprt_type_id);
+      ApartmentTypePeriods A = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).createLegacy();
+      List L = EntityFinder.findAllByColumn(A,is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsBMPBean.getApartmentTypeIdColumnName(),aprt_type_id);
       if(L!=null)
         return (ApartmentTypePeriods) L.get(0);
       else

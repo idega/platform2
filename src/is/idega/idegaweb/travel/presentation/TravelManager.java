@@ -308,7 +308,7 @@ public class TravelManager extends Block {
 
         try {
             int supplierId = TravelStockroomBusiness.getUserSupplierId(iwc);
-            supplier = new Supplier(supplierId);
+            supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
             if (!supplier.getIsValid()) {
               supplier = null;
               oldLogin = true;
@@ -319,7 +319,7 @@ public class TravelManager extends Block {
 
         try {
             int resellerId = TravelStockroomBusiness.getUserResellerId(iwc);
-            reseller = new Reseller(resellerId);
+            reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
             if (!reseller.getIsValid()) {
               reseller = null;
               oldLogin = true;

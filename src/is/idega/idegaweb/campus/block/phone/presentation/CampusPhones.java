@@ -13,7 +13,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.*;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.EntityFinder;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWBundle;
@@ -108,11 +108,11 @@ public class CampusPhones extends Block implements IWEventListener{
 
   private Form statusForm(){
     Form myForm = new Form();
-    DropdownMenu complex = drpLodgings(new Complex(),prmArray[0],"--",sValues[0]);
-    DropdownMenu building = drpLodgings(new Building(),prmArray[1],"--",sValues[1]);
+    DropdownMenu complex = drpLodgings(((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).createLegacy(),prmArray[0],"--",sValues[0]);
+    DropdownMenu building = drpLodgings(((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).createLegacy(),prmArray[1],"--",sValues[1]);
     DropdownMenu floor = drpFloors(prmArray[2],"--",sValues[2],true);
-    DropdownMenu cat = drpLodgings(new ApartmentCategory(),prmArray[3],"--",sValues[3]);
-    DropdownMenu type = drpLodgings(new ApartmentType(),prmArray[4],"--",sValues[4]);
+    DropdownMenu cat = drpLodgings(((com.idega.block.building.data.ApartmentCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentCategory.class)).createLegacy(),prmArray[3],"--",sValues[3]);
+    DropdownMenu type = drpLodgings(((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).createLegacy(),prmArray[4],"--",sValues[4]);
     DropdownMenu order = orderDrop(prmArray[5],"--",sValues[5]);
     //Edit.setStyle(status);
     Edit.setStyle(complex);
@@ -145,7 +145,7 @@ public class CampusPhones extends Block implements IWEventListener{
     return myForm;
   }
 
-  private DropdownMenu drpLodgings(GenericEntity lodgings,String name,String display,String selected) {
+  private DropdownMenu drpLodgings(IDOLegacyEntity lodgings,String name,String display,String selected) {
     List L = null;
     try{
       L = EntityFinder.findAll(lodgings);
@@ -158,7 +158,7 @@ public class CampusPhones extends Block implements IWEventListener{
       int len = L.size();
       if(len > 0){
         for(int i = 0; i < len ; i++){
-          GenericEntity ge = (GenericEntity) L.get(i);
+          IDOLegacyEntity ge = (IDOLegacyEntity) L.get(i);
           drp.addMenuElement(ge.getID(),ge.getName());
         }
         if(!"".equalsIgnoreCase(selected)){
@@ -172,7 +172,7 @@ public class CampusPhones extends Block implements IWEventListener{
   private DropdownMenu drpFloors(String name,String display,String selected,boolean withBuildingName) {
     List L = null;
     try{
-      L = EntityFinder.findAll(new Floor());
+      L = EntityFinder.findAll(((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).createLegacy());
     }
     catch(SQLException e){}
     DropdownMenu drp = new DropdownMenu(name);
@@ -309,7 +309,7 @@ public class CampusPhones extends Block implements IWEventListener{
               }
               // if new entity
               else{
-                CampusPhone P = new CampusPhone();
+                CampusPhone P = ((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(CampusPhone.class)).createLegacy();
                 P.setPhoneNumber(sNumber);
                 P.setApartmentId(iAPId.intValue());
                 P.setDateInstalled(idegaTimestamp.RightNow().getSQLDate());

@@ -1,5 +1,5 @@
 /*
- * $Id: Request.java,v 1.6 2002/02/21 00:22:02 palli Exp $
+ * $Id: Request.java,v 1.7 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

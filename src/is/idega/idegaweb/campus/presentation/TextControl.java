@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.5 2002/02/05 13:46:20 aron Exp $
+ * $Id: TextControl.java,v 1.6 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -99,10 +99,10 @@ public class TextControl extends Block {
     try {
       for ( int a = 5; a < numberOfTexts; a++ ) {
         try {
-          TxText text = new TxText(a);
+          TxText text = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(a);
         }
         catch (SQLException e) {
-          TxText text = new TxText();
+          TxText text = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy();
             text.setID(a);
             text.setDefaultValues();
             text.insert();
@@ -144,10 +144,10 @@ public class TextControl extends Block {
         textImage.setVerticalSpacing(12);
 
       try {
-        TxText text = new TxText(action);
+        TxText text = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(action);
       }
       catch (SQLException e) {
-        TxText text = new TxText();
+        TxText text = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).createLegacy();
           text.setID(action);
           //text.setDefaultValues();
           text.insert();

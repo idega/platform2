@@ -60,8 +60,8 @@ public class TourDesigner extends TravelManager {
   private boolean setupData(int tourId) {
     try {
       product = ProductBusiness.getProduct(tourId);
-      service = new Service(tourId);
-      tour = new Tour(tourId);
+      service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(tourId);
+      tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(tourId);
       timeframe = product.getTimeframe();
 
       arrAddress = ProductBusiness.getArrivalAddress(product);
@@ -195,8 +195,8 @@ public class TourDesigner extends TravelManager {
         kilometers.keepStatusOnAction();
 
       DropdownMenu discountType = new DropdownMenu("discountType");
-        discountType.addMenuElement(Product.DISCOUNT_TYPE_ID_AMOUNT,iwrb.getLocalizedString("travel.amount","Amount"));
-        discountType.addMenuElement(Product.DISCOUNT_TYPE_ID_PERCENT,iwrb.getLocalizedString("travel.percent","Percent"));
+        discountType.addMenuElement(com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT,iwrb.getLocalizedString("travel.amount","Amount"));
+        discountType.addMenuElement(com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT,iwrb.getLocalizedString("travel.percent","Percent"));
 
 
 
@@ -446,28 +446,28 @@ public class TourDesigner extends TravelManager {
           number.setContent(product.getNumber());
           description.setContent(ProductBusiness.getProductDescription(product, iwc));
 
-          int[] days = ServiceDay.getDaysOfWeek(service.getID());
+          int[] days = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(service.getID());
           for (int i = 0; i < days.length; i++) {
             switch (days[i]) {
-              case ServiceDay.SUNDAY:
+              case is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY:
                 sundays.setChecked(true);
                 break;
-              case ServiceDay.MONDAY:
+              case is.idega.idegaweb.travel.data.ServiceDayBMPBean.MONDAY:
                 mondays.setChecked(true);
                 break;
-              case ServiceDay.TUESDAY:
+              case is.idega.idegaweb.travel.data.ServiceDayBMPBean.TUESDAY:
                 tuesdays.setChecked(true);
                 break;
-              case ServiceDay.WEDNESDAY:
+              case is.idega.idegaweb.travel.data.ServiceDayBMPBean.WEDNESDAY:
                 wednesdays.setChecked(true);
                 break;
-              case ServiceDay.THURSDAY:
+              case is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY:
                 thursdays.setChecked(true);
                 break;
-              case ServiceDay.FRIDAY:
+              case is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY:
                 fridays.setChecked(true);
                 break;
-              case ServiceDay.SATURDAY:
+              case is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY:
                 saturdays.setChecked(true);
                 break;
             }
@@ -505,7 +505,7 @@ public class TourDesigner extends TravelManager {
           discountType.setSelectedElement(Integer.toString(this.product.getDiscountTypeId()));
           kilometers.setContent(Float.toString(tour.getLength()));
       }else {
-        discountType.setSelectedElement(Integer.toString(Product.DISCOUNT_TYPE_ID_PERCENT));
+        discountType.setSelectedElement(Integer.toString(com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT));
       }
     }else {
       table.add(iwrb.getLocalizedString("travel.data_is_invalid","Data is invalid"));
@@ -571,7 +571,7 @@ public class TourDesigner extends TravelManager {
         }catch(NumberFormatException n){}
       }
 
-      int iDiscountType = Product.DISCOUNT_TYPE_ID_PERCENT;
+      int iDiscountType = com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT;
       if (discountType != null) {
         iDiscountType = Integer.parseInt(discountType);
       }

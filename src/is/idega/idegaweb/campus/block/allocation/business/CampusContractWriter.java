@@ -302,9 +302,9 @@ public class CampusContractWriter{
 
 						//System.err.println("instanciating Contract "+ids[0]);
 
-            eContract = new Contract(ids[0]);
+            eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(ids[0]);
 
-						Applicant A = new Applicant(eContract.getApplicantId().intValue());
+						Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
 
 						fileName = A.getSSN();
 
@@ -326,7 +326,7 @@ public class CampusContractWriter{
 
 				try {
 
-					pdfFile = new ICFile();
+					pdfFile = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
 
 					//System.err.println("available "+mis.available());
 
@@ -360,7 +360,7 @@ public class CampusContractWriter{
 
 						boolean update = false;
 
-            if(eContract.getStatus().equalsIgnoreCase(Contract.statusCreated)){
+            if(eContract.getStatus().equalsIgnoreCase(is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean.statusCreated)){
 
 							eContract.setStatusPrinted();
 
@@ -444,9 +444,9 @@ public class CampusContractWriter{
 
     try {
 
-      ContractText CT = new ContractText();
+      ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
 
-      L = EntityFinder.findAllByColumnOrdered(CT,ContractText.getLanguageColumnName(),IS,ContractText.getOrdinalColumnName());
+      L = EntityFinder.findAllByColumnOrdered(CT,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getLanguageColumnName(),IS,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getOrdinalColumnName());
 
     }
 
@@ -466,9 +466,9 @@ public class CampusContractWriter{
 
     try {
 
-      ContractText CT = new ContractText();
+      ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
 
-      List L = EntityFinder.findAllByColumn(CT,ContractText.getLanguageColumnName(),TIIS);
+      List L = EntityFinder.findAllByColumn(CT,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getLanguageColumnName(),TIIS);
 
       if(L!= null){
 
@@ -496,11 +496,11 @@ public class CampusContractWriter{
 
   private static float getTariffIndex(){
 
-    TariffIndex ti = new TariffIndex();
+    TariffIndex ti = ((com.idega.block.finance.data.TariffIndexHome)com.idega.data.IDOLookup.getHomeLegacy(TariffIndex.class)).createLegacy();
 
     try {
 
-      List L = EntityFinder.findAllDescendingOrdered(ti,TariffIndex.getColumnNameDate());
+      List L = EntityFinder.findAllDescendingOrdered(ti,com.idega.block.finance.data.TariffIndexBMPBean.getColumnNameDate());
 
       if(L!= null){
 
@@ -562,19 +562,19 @@ public class CampusContractWriter{
 
     try{
 
-      Contract eContract = new Contract(contractId);
+      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(contractId);
 
-      Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
+      Applicant eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
 
-      Apartment eApartment = new Apartment(eContract.getApartmentId().intValue());
+      Apartment eApartment = ((com.idega.block.building.data.ApartmentHome)com.idega.data.IDOLookup.getHomeLegacy(Apartment.class)).findByPrimaryKeyLegacy(eContract.getApartmentId().intValue());
 
-      ApartmentType eApartmentType = new ApartmentType(eApartment.getApartmentTypeId());
+      ApartmentType eApartmentType = ((com.idega.block.building.data.ApartmentTypeHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentType.class)).findByPrimaryKeyLegacy(eApartment.getApartmentTypeId());
 
-      Floor eFloor = new Floor(eApartment.getFloorId());
+      Floor eFloor = ((com.idega.block.building.data.FloorHome)com.idega.data.IDOLookup.getHomeLegacy(Floor.class)).findByPrimaryKeyLegacy(eApartment.getFloorId());
 
-      Building eBuilding = new Building(eFloor.getBuildingId());
+      Building eBuilding = ((com.idega.block.building.data.BuildingHome)com.idega.data.IDOLookup.getHomeLegacy(Building.class)).findByPrimaryKeyLegacy(eFloor.getBuildingId());
 
-      Complex eComplex = new Complex(eBuilding.getComplexId());
+      Complex eComplex = ((com.idega.block.building.data.ComplexHome)com.idega.data.IDOLookup.getHomeLegacy(Complex.class)).findByPrimaryKeyLegacy(eBuilding.getComplexId());
 
       Hashtable H = new Hashtable(TAGS.length);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: RequestFinder.java,v 1.6 2002/02/21 00:22:21 palli Exp $
+ * $Id: RequestFinder.java,v 1.7 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,7 +32,7 @@ public class RequestFinder {
 
   public static List getRequests(int userId) {
     try {
-      List l = EntityFinder.findAllByColumn(RequestBean.getStaticInstance(RequestBean.class),RequestBean.getColumnUserId(),userId);
+      List l = EntityFinder.findAllByColumn(is.idega.idegaweb.campus.block.request.data.RequestBeanBMPBean.getStaticInstance(RequestBean.class),is.idega.idegaweb.campus.block.request.data.RequestBeanBMPBean.getColumnUserId(),userId);
       if (l == null)
         return(null);
 
@@ -53,7 +53,7 @@ public class RequestFinder {
 
   public static List getAllRequests() {
     try {
-      List l = EntityFinder.findAll(RequestBean.getStaticInstance(RequestBean.class));
+      List l = EntityFinder.findAll(is.idega.idegaweb.campus.block.request.data.RequestBeanBMPBean.getStaticInstance(RequestBean.class));
 
       if (l == null)
         return(null);
@@ -75,7 +75,7 @@ public class RequestFinder {
 
   public static List getAllRequestsByType(String type) {
     try {
-      List l = EntityFinder.findAllByColumn(RequestBean.getStaticInstance(RequestBean.class),RequestBean.getColumnStatus(),type);
+      List l = EntityFinder.findAllByColumn(is.idega.idegaweb.campus.block.request.data.RequestBeanBMPBean.getStaticInstance(RequestBean.class),is.idega.idegaweb.campus.block.request.data.RequestBeanBMPBean.getColumnStatus(),type);
 
       if (l == null)
         return(null);

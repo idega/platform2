@@ -1,171 +1,34 @@
-
-/**
- * Title:        Golf<p>
- * Description:  <p>
- * Copyright:    Copyright (c) idega 2000 - idega team - gummi<p>
- * Company:      idega margmiðlun<p>
- * @author idega 2000 - idega team
- * @version 1.0
- */
 package is.idega.idegaweb.golf.startingtime.data;
 
+import javax.ejb.*;
 
-import is.idega.idegaweb.golf.entity.GolfEntity;
-import is.idega.idegaweb.golf.entity.Member;
-import java.sql.*;
-
-public class TeeTime extends GolfEntity{
-
-  public TeeTime() {
-  }
-
-  public TeeTime(int id) throws SQLException{
-    super(id);
-  }
-
-  public void initializeAttributes(){
-    addAttribute(getIDColumnName());
-    addAttribute("field_id","Numer vallar",true,true,"java.lang.Integer");
-    addAttribute("member_id","Numer meðlims",true,true,"java.lang.Integer");
-    addAttribute("startingtime_date","Dagsetning",true,true,"java.sql.Date");
-    addAttribute("player_name","Nafn",true,true,"java.lang.String");
-    addAttribute("handicap","Forgjöf",true,true,"java.lang.Float");
-    addAttribute("club_name","Nafn klubbs",true,true,"java.lang.String");
-    addAttribute("card_name","Nafn korts",true,true,"java.lang.String");
-    addAttribute("card_num","Kortanumer",true,true,"java.lang.String");
-    addAttribute("grup_num","Hopnumer",true,true,"java.lang.Integer");
-    addAttribute("owner_id","Numer eiganda",true,true,"java.lang.Integer");
-  }
-
-  public String getEntityName(){
-    return "tee_time";
-  }
-
-  public void setDefaultValues(){
-    this.setHandicap(Float.parseFloat("-1.0"));
-    this.setMemberID(1);
-    this.setOwnerID(1);
-  }
-
-
-  // ### get- & set-Föll ###
-
-
-
-  public int getFieldID(){
-    return getIntColumnValue("field_id");
-  }
-
-  public void setFieldID( Integer field_id){
-    setColumn("field_id",field_id);
-  }
-  public void setFieldID( int field_id){
-    setColumn("field_id",field_id);
-  }
-
-  public int getMemberID(){
-    return getIntColumnValue("member_id");
-  }
-
-  public void setMemberID( Integer member_id){
-    setColumn("member_id",member_id);
-  }
-  public void setMemberID( int member_id){
-    setColumn("member_id",member_id);
-  }
-
-  public Date getStartingtimeDate(){
-    return (Date)getColumnValue("startingtime_date");
-  }
-
-  public void setStartingtimeDate( Date startingtime_date ){
-    setColumn("startingtime_date",startingtime_date);
-  }
-
-
-  public String getPlayerName(){
-    return getStringColumnValue("player_name");
-  }
-
-  public void setPlayerName( String player_name){
-    setColumn("player_name",player_name);
-  }
-
-
-  public float getHandicap(){
-    return getFloatColumnValue("handicap");
-  }
-
-  public void setHandicap( Float handicap){
-    setColumn("handicap",handicap);
-  }
-  public void setHandicap( float handicap){
-    setColumn("handicap",handicap);
-  }
-
-
-  public String getClubName(){
-    return getStringColumnValue("club_name");
-  }
-
-  public void setClubName( String club_name){
-    setColumn("club_name",club_name);
-  }
-
-
-  public String getCardName(){
-    return getStringColumnValue("card_name");
-  }
-
-  public void setCardName( String card_name){
-    setColumn("card_name",card_name);
-  }
-
-
-  public String getCardNum(){
-    return getStringColumnValue("card_num");
-  }
-
-  public void setCardNum( String card_num){
-    setColumn("card_num",card_num);
-  }
-
-
-  public int getGroupNum(){
-    return getIntColumnValue("grup_num");
-  }
-
-  public void setGroupNum( Integer group_num){
-    setColumn("grup_num",group_num);
-  }
-  public void setGroupNum( int group_num){
-    setColumn("grup_num",group_num);
-  }
-
-
-  public int getOwnerID(){
-    return getIntColumnValue("owner_id");
-  }
-
-  public void setOwnerID( Integer group_num){
-    setColumn("owner_id",group_num);
-  }
-  public void setOwnerID( int owner_id){
-    setColumn("owner_id",owner_id);
-  }
-
-
-  public Member getMember()throws SQLException{
-  	Member member = null;
-	try{
-          member = new Member(getMemberID());
-	}
-	catch(SQLException e){
-        }
-	return member;
-  }
-
-
-
-
-}   // class Startingtime
+public interface TeeTime extends is.idega.idegaweb.golf.entity.GolfEntity
+{
+ public java.lang.String getCardName();
+ public java.lang.String getCardNum();
+ public java.lang.String getClubName();
+ public int getFieldID();
+ public int getGroupNum();
+ public float getHandicap();
+ public is.idega.idegaweb.golf.entity.Member getMember()throws java.sql.SQLException;
+ public int getMemberID();
+ public int getOwnerID();
+ public java.lang.String getPlayerName();
+ public java.sql.Date getStartingtimeDate();
+ public void setCardName(java.lang.String p0);
+ public void setCardNum(java.lang.String p0);
+ public void setClubName(java.lang.String p0);
+ public void setDefaultValues();
+ public void setFieldID(java.lang.Integer p0);
+ public void setFieldID(int p0);
+ public void setGroupNum(int p0);
+ public void setGroupNum(java.lang.Integer p0);
+ public void setHandicap(java.lang.Float p0);
+ public void setHandicap(float p0);
+ public void setMemberID(int p0);
+ public void setMemberID(java.lang.Integer p0);
+ public void setOwnerID(int p0);
+ public void setOwnerID(java.lang.Integer p0);
+ public void setPlayerName(java.lang.String p0);
+ public void setStartingtimeDate(java.sql.Date p0);
+}

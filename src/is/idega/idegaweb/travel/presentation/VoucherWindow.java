@@ -60,7 +60,7 @@ public class VoucherWindow extends Window {
       if (searchAction.equals(searchMethodReferenceNumber)) {
         String refMethod = iwc.getParameter(this.parameterReferenceNumber);
         if (refMethod != null && !refMethod.equals("")) {
-          GeneralBooking[] gBooking = (GeneralBooking[]) (GeneralBooking.getStaticInstance(GeneralBooking.class)).findAllByColumn(GeneralBooking.getReferenceNumberColumnName(), refMethod);
+          GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getReferenceNumberColumnName(), refMethod);
           if (gBooking.length > 0) {
             Voucher voucher = new Voucher(iwc, gBooking[0].getID());
             add(voucher.getVoucher(iwc));
@@ -73,7 +73,7 @@ public class VoucherWindow extends Window {
       }else if (searchAction.equals(this.searchMethodNumber)) {
         String numMethod = iwc.getParameter(this.parameterNumber);
         if (numMethod != null && !numMethod.equals("")) {
-          GeneralBooking[] gBooking = (GeneralBooking[]) (GeneralBooking.getStaticInstance(GeneralBooking.class)).findAllByColumn(GeneralBooking.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
+          GeneralBooking[] gBooking = (GeneralBooking[]) (is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class)).findAllByColumn(is.idega.idegaweb.travel.data.GeneralBookingBMPBean.getStaticInstance(GeneralBooking.class).getIDColumnName(), (Integer.parseInt(numMethod) - Voucher.voucherNumberChanger));
           if (gBooking.length > 0) {
             Voucher voucher = new Voucher(iwc, gBooking[0].getID());
             add(voucher.getVoucher(iwc));

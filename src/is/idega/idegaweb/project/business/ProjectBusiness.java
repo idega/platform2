@@ -57,32 +57,32 @@ public class ProjectBusiness {
   }
 
   public List getCategoryTypes()throws SQLException{
-    return EntityFinder.findAll(IPCategoryType.getStaticInstance(IPCategoryType.class));
+    return EntityFinder.findAll(is.idega.idegaweb.project.data.IPCategoryTypeBMPBean.getStaticInstance(IPCategoryType.class));
   }
 
   public List getCategories(int catTypeId) throws SQLException {
-    return EntityFinder.findAllByColumn(IPCategory.getStaticInstance(IPCategory.class),IPCategory._COLUMN_TYPE_ID,catTypeId);
+    return EntityFinder.findAllByColumn(is.idega.idegaweb.project.data.IPCategoryBMPBean.getStaticInstance(IPCategory.class),is.idega.idegaweb.project.data.IPCategoryBMPBean._COLUMN_TYPE_ID,catTypeId);
   }
 
   public List getProjects() throws SQLException {
-    return EntityFinder.findAll(IPProject.getStaticInstance(IPProject.class));
+    return EntityFinder.findAll(is.idega.idegaweb.project.data.IPProjectBMPBean.getStaticInstance(IPProject.class));
   }
 /*
   public List getProjectDPTPageLinks(int[] catTypes) throws Exception{
-    PageLink staticPLink = PageLink.getStaticInstance(PageLink.class);
+    PageLink staticPLink = com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class);
     if(catTypes != null){
       return EntityFinder.findAll(staticPLink);
     }else{
       return EntityFinder.findAll(staticPLink,"select * from "+staticPLink.getEntityName()+" where ");
     }
-    // wrong dpt_??ID not objectID return EntityFinder.findAllByColumn(PageLink.getStaticInstance(PageLink.class),PageLink._COLUMNNAME_REFERENCED_DATA_ID,ICObject.getICObject(IPProject.class.getName()).getID());
+    // wrong dpt_??ID not objectID return EntityFinder.findAllByColumn(com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class),com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean._COLUMNNAME_REFERENCED_DATA_ID,com.idega.core.data.ICObjectBMPBean.getICObject(IPProject.class.getName()).getID());
   }
 */
 
   public List getProjectDPTPageLinks(int[] catTypes)throws SQLException{
-    PageLink staticPLink = (PageLink)PageLink.getStaticInstance(PageLink.class);
-    IPProject staticIPProject = (IPProject)IPProject.getStaticInstance(IPProject.class);
-    IPCategory staticIPCategory = (IPCategory)IPCategory.getStaticInstance(IPCategory.class);
+    PageLink staticPLink = (PageLink)com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class);
+    IPProject staticIPProject = (IPProject)is.idega.idegaweb.project.data.IPProjectBMPBean.getStaticInstance(IPProject.class);
+    IPCategory staticIPCategory = (IPCategory)is.idega.idegaweb.project.data.IPCategoryBMPBean.getStaticInstance(IPCategory.class);
 
     String tableToSelectFrom = staticIPProject.getNameOfMiddleTable(staticPLink,staticIPProject);
     String projectCategoryMiddleTable = staticIPProject.getNameOfMiddleTable(staticIPCategory,staticIPProject);
@@ -113,9 +113,9 @@ public class ProjectBusiness {
       buffer.append(staticIPProject.getEntityName());
       buffer.append(" p ");
       buffer.append("where p.");
-      buffer.append(IPProject._COLUMN_DELETED);
+      buffer.append(is.idega.idegaweb.project.data.IPProjectBMPBean._COLUMN_DELETED);
       buffer.append(" != 'Y' or p.");
-      buffer.append(IPProject._COLUMN_DELETED);
+      buffer.append(is.idega.idegaweb.project.data.IPProjectBMPBean._COLUMN_DELETED);
       buffer.append(" is null");
       if(catTypes != null){
         for (int i = 0; i < catTypes.length; i++) {
@@ -149,8 +149,8 @@ public class ProjectBusiness {
 
 
   public IPCategory getProjectCategory(int catTypeId, int projectId )throws SQLException{
-    IPProject staticIPProject = (IPProject)IPProject.getStaticInstance(IPProject.class);
-    IPCategory staticIPCategory = (IPCategory)IPCategory.getStaticInstance(IPCategory.class);
+    IPProject staticIPProject = (IPProject)is.idega.idegaweb.project.data.IPProjectBMPBean.getStaticInstance(IPProject.class);
+    IPCategory staticIPCategory = (IPCategory)is.idega.idegaweb.project.data.IPCategoryBMPBean.getStaticInstance(IPCategory.class);
 
     String projectCategoryMiddleTable = staticIPProject.getNameOfMiddleTable(staticIPCategory,staticIPProject);
     StringBuffer buffer=new StringBuffer();
@@ -169,7 +169,7 @@ public class ProjectBusiness {
     buffer.append(" = ");
     buffer.append(projectId);
     buffer.append(" and c.");
-    buffer.append(IPCategory._COLUMN_TYPE_ID);
+    buffer.append(is.idega.idegaweb.project.data.IPCategoryBMPBean._COLUMN_TYPE_ID);
     buffer.append(" = ");
     buffer.append(catTypeId);
 
@@ -197,7 +197,7 @@ public class ProjectBusiness {
 
 
   public int createIPCategoryType(String name, String description) throws SQLException {
-    IPCategoryType ipct = new IPCategoryType();
+    IPCategoryType ipct = ((is.idega.idegaweb.project.data.IPCategoryTypeHome)com.idega.data.IDOLookup.getHomeLegacy(IPCategoryType.class)).createLegacy();
 
     ipct.setName(name);
 
@@ -212,7 +212,7 @@ public class ProjectBusiness {
 
 
   public int createIPCategory(int catTypeId, String name, String description) throws SQLException {
-    IPCategory ipc = new IPCategory();
+    IPCategory ipc = ((is.idega.idegaweb.project.data.IPCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(IPCategory.class)).createLegacy();
 
     ipc.setCategoryTypeId(catTypeId);
 
@@ -229,7 +229,7 @@ public class ProjectBusiness {
 
 
   public void updateIPCategory(int catId, String name, String description) throws SQLException {
-    IPCategory ipc = new IPCategory(catId);
+    IPCategory ipc = ((is.idega.idegaweb.project.data.IPCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(IPCategory.class)).findByPrimaryKeyLegacy(catId);
 
     if(name != null){
       ipc.setName(name);
@@ -244,7 +244,7 @@ public class ProjectBusiness {
 
 
   public void deleteIPCategory(int catId) throws SQLException {
-    IPCategory cat = new IPCategory(catId);
+    IPCategory cat = ((is.idega.idegaweb.project.data.IPCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(IPCategory.class)).findByPrimaryKeyLegacy(catId);
     cat.removeFrom(IPProject.class);
     cat.delete();
   }
@@ -253,7 +253,7 @@ public class ProjectBusiness {
 
 
   public int createIPProject(String name, String projectNumber, String description, Integer parentId, int[] categoryIds) throws SQLException {
-    IPProject pr = new IPProject();
+    IPProject pr = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).createLegacy();
 
     pr.setName(name);
 
@@ -284,29 +284,29 @@ public class ProjectBusiness {
   }
 
   public void updateIPProject(int ProjectId, String name, String projectNumber, String description, Integer parentId, int[] categoryIds) throws SQLException {
-    IPProject pr = new IPProject(ProjectId);
+    IPProject pr = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(ProjectId);
 
     pr.setName(name);
 
     if(projectNumber != null){
       pr.setProjectNumber(projectNumber);
     } else {
-      //pr.setColumnAsNull(IPProject._COLUMN_PROJECT_NUMBER);
-      pr.removeFromColumn(IPProject._COLUMN_PROJECT_NUMBER);
+      //pr.setColumnAsNull(is.idega.idegaweb.project.data.IPProjectBMPBean._COLUMN_PROJECT_NUMBER);
+      pr.removeFromColumn(is.idega.idegaweb.project.data.IPProjectBMPBean._COLUMN_PROJECT_NUMBER);
     }
 
     if(description != null){
       pr.setDescription(description);
     } else {
-      //pr.setColumnAsNull(IPProject._COLUMN_DESCRIPTION);
-      pr.removeFromColumn(IPProject._COLUMN_DESCRIPTION);
+      //pr.setColumnAsNull(is.idega.idegaweb.project.data.IPProjectBMPBean._COLUMN_DESCRIPTION);
+      pr.removeFromColumn(is.idega.idegaweb.project.data.IPProjectBMPBean._COLUMN_DESCRIPTION);
     }
 
     if(parentId != null){
       pr.setParentId(parentId.intValue());
     } else {
-      //pr.setColumnAsNull(IPProject._COLUMN_PARENT_ID);
-      pr.removeFromColumn(IPProject._COLUMN_PARENT_ID);
+      //pr.setColumnAsNull(is.idega.idegaweb.project.data.IPProjectBMPBean._COLUMN_PARENT_ID);
+      pr.removeFromColumn(is.idega.idegaweb.project.data.IPProjectBMPBean._COLUMN_PARENT_ID);
     }
 
     pr.update();
@@ -326,7 +326,7 @@ public class ProjectBusiness {
 
 
   public boolean changeNameOfPageLink(int projectId, String newName) throws SQLException {
-    List l = EntityFinder.findRelated(new IPProject(projectId),PageLink.getStaticInstance(PageLink.class));
+    List l = EntityFinder.findRelated(((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(projectId),com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class));
     if(l != null && l.size() > 0){
       PageLink pl = (PageLink)l.get(0);
       pl.setDefaultLinkText(newName);
@@ -341,12 +341,12 @@ public class ProjectBusiness {
 
   public void createPageLink(IWContext iwc, int projectId, String name) throws SQLException {
 
-    IPProject project = new IPProject(projectId);
+    IPProject project = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(projectId);
 
     DPTTriggerBusiness business = DPTTriggerBusiness.getInstance();
 
 
-    List l = EntityFinder.findAll(PageTriggerInfo.getStaticInstance(PageTriggerInfo.class));
+    List l = EntityFinder.findAll(com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoBMPBean.getStaticInstance(PageTriggerInfo.class));
 
     PageTriggerInfo info = (PageTriggerInfo)l.get(0);
 
@@ -439,7 +439,7 @@ public class ProjectBusiness {
 
 
   private GenericGroup getReplicatedParticipantGroup(GenericGroup group, IPProject project, String newGroupName) throws SQLException{
-    IPParticipantGroup newGroup = new IPParticipantGroup();
+    IPParticipantGroup newGroup = ((is.idega.idegaweb.project.data.IPParticipantGroupHome)com.idega.data.IDOLookup.getHomeLegacy(IPParticipantGroup.class)).createLegacy();
 
     if(newGroupName != null){
       newGroup.setName(newGroupName);
@@ -472,8 +472,8 @@ public class ProjectBusiness {
 
 
   public static GenericGroup getProjectParticipantGroup(int dptPermissionGroupId, int projectId) throws SQLException {
-    GenericGroup staticGenericGroup = (GenericGroup)GenericGroup.getStaticInstance(GenericGroup.class);
-    IPProject staticIPProject = (IPProject)IPProject.getStaticInstance(IPProject.class);
+    GenericGroup staticGenericGroup = (GenericGroup)com.idega.core.data.GenericGroupBMPBean.getStaticInstance(GenericGroup.class);
+    IPProject staticIPProject = (IPProject)is.idega.idegaweb.project.data.IPProjectBMPBean.getStaticInstance(IPProject.class);
 
     String ipProjectICGroup = staticIPProject.getNameOfMiddleTable(staticIPProject,staticGenericGroup);
     String groupTreeTable = staticIPProject.getNameOfMiddleTable(staticGenericGroup,staticGenericGroup);
@@ -629,9 +629,9 @@ public class ProjectBusiness {
 
   public boolean invalidateProject(IWContext iwc,int projectId, int userId){
     try {
-      IPProject p = new IPProject(projectId);
+      IPProject p = ((is.idega.idegaweb.project.data.IPProjectHome)com.idega.data.IDOLookup.getHomeLegacy(IPProject.class)).findByPrimaryKeyLegacy(projectId);
 
-      List l = EntityFinder.findRelated(p,PageLink.getStaticInstance(PageLink.class));
+      List l = EntityFinder.findRelated(p,com.idega.builder.dynamicpagetrigger.data.PageLinkBMPBean.getStaticInstance(PageLink.class));
       if(l != null && l.size() > 0){
         boolean b = DPTTriggerBusiness.getInstance().invalidatePageLink( iwc, (PageLink)l.get(0),userId);
         if(!b){

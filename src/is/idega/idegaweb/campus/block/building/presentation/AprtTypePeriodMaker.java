@@ -147,11 +147,11 @@ public class AprtTypePeriodMaker extends Block{
             int monthTwo = Integer.parseInt(iwc.getParameter("monthtwo"+i));
             int typeid = Integer.parseInt(iwc.getParameter("typeid"+i));
             if(id == -1){
-              ATP = new ApartmentTypePeriods();
+              ATP = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).createLegacy();
               update = false;
             }
             else{
-              ATP = new ApartmentTypePeriods(id);
+              ATP = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).findByPrimaryKeyLegacy(id);
               update = true;
             }
             ATP.setApartmentTypeId(typeid);
@@ -188,7 +188,7 @@ public class AprtTypePeriodMaker extends Block{
 
   public List listOfStuff(){
     List L = null;
-    ApartmentTypePeriods ATP = new ApartmentTypePeriods();
+    ApartmentTypePeriods ATP = ((is.idega.idegaweb.campus.block.building.data.ApartmentTypePeriodsHome)com.idega.data.IDOLookup.getHomeLegacy(ApartmentTypePeriods.class)).createLegacy();
     try {
      L = EntityFinder.findAll(ATP);
     }

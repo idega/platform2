@@ -5,7 +5,7 @@ import is.idega.idegaweb.project.business.ProjectBusiness;
 import com.idega.presentation.IWContext;
 import is.idega.idegaweb.project.data.IPCategory;
 import com.idega.presentation.text.Link;
-import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.presentation.ui.IFrame;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.builder.business.BuilderLogic;
@@ -282,7 +282,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
     }
 
     public void initColumns(IWContext iwc) throws Exception {
-      super.addLinkEntityColumn(IPCategory._COLUMN_NAME);
+      super.addLinkEntityColumn(is.idega.idegaweb.project.data.IPCategoryBMPBean._COLUMN_NAME);
     }
 /*
     public String getURl(IWContext iwc){
@@ -311,7 +311,7 @@ public class ProjectFilter extends Block implements IFrameContainer{
       this.listenerString = listenerString;
     }
 
-    protected void addParameters(IWContext iwc, GenericEntity item, Link link){
+    protected void addParameters(IWContext iwc, IDOLegacyEntity item, Link link){
       super.addParameters(iwc,item,link);
       link.addParameter(_PRM_CAT_TYPE_ID, this.categoryTypeId);
 

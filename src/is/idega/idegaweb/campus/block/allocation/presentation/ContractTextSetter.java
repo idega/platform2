@@ -36,7 +36,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
   private final static String TEN ="TEN";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private String propParameter = SystemProperties.getEntityTableName();
+  private String propParameter = is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName();
   private String localesParameter="iw_locales";
   private String bottomThickness = "8";
   private boolean isAdmin;
@@ -176,7 +176,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     String sId = iwc.getParameter("title_id");
     if(sId!=null){
      try {
-        ContractText CT = new ContractText(Integer.parseInt(sId));
+        ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(Integer.parseInt(sId));
         text = new TextInput("tname",CT.getText());
         HiddenInput HI = new HiddenInput("title_id",sId);
         T.add(HI);
@@ -212,7 +212,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     String sId = iwc.getParameter("text_id");
     if(sId!=null){
       try {
-        ContractText CT = new ContractText(Integer.parseInt(sId));
+        ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(Integer.parseInt(sId));
         name = new TextInput("name",CT.getName());
         text = getTextArea("texti",CT.getText());
 
@@ -229,7 +229,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
       try {
         name = new TextInput("name");
         text = getTextArea("texti","");
-        int max = new ContractText().getMaxColumnValue(ContractText.getOrdinalColumnName())+1;
+        int max = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy().getMaxColumnValue(is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getOrdinalColumnName())+1;
         intDrop.setSelectedElement(String.valueOf(max));
        }
       catch (SQLException ex) {
@@ -299,7 +299,7 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     if(sTextId !=null){
       try {
         int id = Integer.parseInt(sTextId);
-        ContractText CT = new ContractText(id);
+        ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(id);
         CT.delete();
       }
       catch (SQLException ex) {
@@ -319,14 +319,14 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     if(sTextId != null){
       try{
 
-        CT = new ContractText(Integer.parseInt(sTextId));
+        CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(Integer.parseInt(sTextId));
         bInsert = false;
       }
       catch(SQLException ex){ex.printStackTrace();}
     }
     else{
 
-      CT = new ContractText();
+      CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
       bInsert = true;
     }
     if(CT !=null){
@@ -359,14 +359,14 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     boolean bInsert = true;
     if(sTextId != null){
       try{
-        CT = new ContractText(Integer.parseInt(sTextId));
+        CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).findByPrimaryKeyLegacy(Integer.parseInt(sTextId));
         bInsert = false;
       }
       catch(SQLException ex){ex.printStackTrace();}
     }
     else{
 
-      CT = new ContractText();
+      CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
       bInsert = true;
     }
     if(CT !=null){
@@ -392,8 +392,8 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     List L = null;
 
     try {
-      ContractText CT = new ContractText();
-      L = EntityFinder.findAllByColumnOrdered(CT,ContractText.getLanguageColumnName(),IS,ContractText.getOrdinalColumnName());
+      ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
+      L = EntityFinder.findAllByColumnOrdered(CT,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getLanguageColumnName(),IS,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getOrdinalColumnName());
     }
     catch (SQLException ex) {
 
@@ -405,8 +405,8 @@ public class ContractTextSetter extends com.idega.presentation.Block{
     List L = null;
 
     try {
-      ContractText CT = new ContractText();
-      L = EntityFinder.findAllByColumnOrdered(CT,ContractText.getLanguageColumnName(),TIS,ContractText.getOrdinalColumnName());
+      ContractText CT = ((is.idega.idegaweb.campus.block.allocation.data.ContractTextHome)com.idega.data.IDOLookup.getHomeLegacy(ContractText.class)).createLegacy();
+      L = EntityFinder.findAllByColumnOrdered(CT,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getLanguageColumnName(),TIS,is.idega.idegaweb.campus.block.allocation.data.ContractTextBMPBean.getOrdinalColumnName());
       if(L!= null)
         return (ContractText) L.get(0);
       else

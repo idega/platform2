@@ -143,7 +143,7 @@ public class IPProjectParticipantGroupCreator extends IWAdminWindow {
 
 
       for (int i = 0; i < groupType.size(); i++){
-        String value = ((GenericGroup)GenericGroup.getStaticInstance((Class)groupType.get(i))).getGroupTypeValue();
+        String value = ((GenericGroup)com.idega.core.data.GenericGroupBMPBean.getStaticInstance((Class)groupType.get(i))).getGroupTypeValue();
         String text = value.substring(1);
         text = value.substring(0,1).toUpperCase() + text;
 
@@ -159,9 +159,9 @@ public class IPProjectParticipantGroupCreator extends IWAdminWindow {
       propertyTable.add(frPane,1,1);
       frameTable.add(propertyTable,1,2);
     }else if (size == 1){
-      frameTable.add(new HiddenInput(((GenericGroup)GenericGroup.getStaticInstance((Class)groupType.get(0))).getGroupTypeValue()));
+      frameTable.add(new HiddenInput(((GenericGroup)com.idega.core.data.GenericGroupBMPBean.getStaticInstance((Class)groupType.get(0))).getGroupTypeValue()));
     }else{
-      frameTable.add(new HiddenInput(groupTypeFieldParameterName,GenericGroup.getStaticInstance().getGroupTypeValue()));
+      frameTable.add(new HiddenInput(groupTypeFieldParameterName,com.idega.core.data.GenericGroupBMPBean.getStaticInstance().getGroupTypeValue()));
     }
     // Property end
 
@@ -198,7 +198,7 @@ public class IPProjectParticipantGroupCreator extends IWAdminWindow {
     String name = iwc.getParameter(this.groupNameFieldParameterName);
     String description = iwc.getParameter(this.descriptionFieldParameterName);
 //    String type = iwc.getParameter(this.groupTypeFieldParameterName);
-    String type = IPParticipantGroup.getStaticGroupInstance().getGroupTypeValue();
+    String type = is.idega.idegaweb.project.data.IPParticipantGroupBMPBean.getStaticGroupInstance().getGroupTypeValue();
  /*
    if(type == null){
       throw new Exception("no group_type selected");
@@ -207,7 +207,7 @@ public class IPProjectParticipantGroupCreator extends IWAdminWindow {
     /**
      * @todo implement connection between Project instnces and participantgroups ()
      */
-    business.createParticipantGroup(new PageTriggerInfo(1),name,description);
+    business.createParticipantGroup(((com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PageTriggerInfo.class)).findByPrimaryKeyLegacy(1),name,description);
 
   }
 

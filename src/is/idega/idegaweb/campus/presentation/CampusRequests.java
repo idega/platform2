@@ -1,5 +1,5 @@
 /*
- * $Id: CampusRequests.java,v 1.5 2002/02/11 10:46:31 palli Exp $
+ * $Id: CampusRequests.java,v 1.6 2002/04/06 19:11:14 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

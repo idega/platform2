@@ -126,7 +126,7 @@ public class FamilyFix {
         ssn = RS.getString(3);
         childs = RS.getString(4);
 
-        Applicant superApplicant = new Applicant(applicantId);
+        Applicant superApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(applicantId);
         superApplicant.setStatus("S");
         superApplicant.addChild(superApplicant);
         boolean spouse = name!=null && name.length()>0;
@@ -167,7 +167,7 @@ public class FamilyFix {
   }
 
   public static void createApplicant(String name, String ssn, Applicant superApplicant,String status)throws SQLException{
-    Applicant spouse = new Applicant();
+    Applicant spouse = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
     spouse.setStatus(status);
     spouse.setFullName(name);
     spouse.setSSN(ssn);

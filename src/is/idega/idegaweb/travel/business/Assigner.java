@@ -97,16 +97,16 @@ public class Assigner {
     try {
         String[] many = {};
           StringBuffer sql = new StringBuffer();
-            sql.append("Select sum("+Contract.getColumnNameAlotment()+") from "+Contract.getContractTableName());
+            sql.append("Select sum("+is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameAlotment()+") from "+is.idega.idegaweb.travel.data.ContractBMPBean.getContractTableName());
             sql.append(" where ");
-            sql.append(Contract.getColumnNameServiceId()+"="+serviceId);
+            sql.append(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId()+"="+serviceId);
             sql.append(" and ");
-            sql.append(Contract.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
+            sql.append(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameFrom()+" <= '"+stamp.toSQLDateString()+"'");
             sql.append(" and ");
-            sql.append(Contract.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
+            sql.append(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameTo()+" >= '"+stamp.toSQLDateString()+"'");
             if (resellerId != -1) {
               sql.append(" and ");
-              sql.append(Contract.getColumnNameResellerId()+"="+resellerId);
+              sql.append(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId()+"="+resellerId);
             }
 
         if (conn != null) {
@@ -130,7 +130,7 @@ public class Assigner {
   public static Contract[] getContracts(Product product) {
     Contract[] contracts = {};
     try {
-      contracts = (Contract[]) (Contract.getStaticInstance(Contract.class)).findAllByColumn(Contract.getColumnNameServiceId(), Integer.toString(product.getID()) );
+      contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }

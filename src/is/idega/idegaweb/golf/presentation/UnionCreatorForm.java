@@ -101,7 +101,7 @@ public class UnionCreatorForm extends Block {
     table.add(parentText,1,7);
     DropdownMenu parents = new DropdownMenu(PARAMETER_PARENT);
     parents.addMenuElement("",noneString);
-    java.util.List unions = com.idega.data.EntityFinder.findAllByColumn(new Union(),"union_type","golf_union");
+    java.util.List unions = com.idega.data.EntityFinder.findAllByColumn(((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).createLegacy(),"union_type","golf_union");
     parents.addMenuElements(unions);
     table.add(parents,2,7);
 
@@ -109,7 +109,7 @@ public class UnionCreatorForm extends Block {
     Text countryText = new Text(countryString);
     table.add(countryText,1,8);
     DropdownMenu counts = new DropdownMenu(PARAMETER_COUNTRY);
-    java.util.List countries = com.idega.data.EntityFinder.findAll(new Country());
+    java.util.List countries = com.idega.data.EntityFinder.findAll(((is.idega.idegaweb.golf.entity.CountryHome)com.idega.data.IDOLookup.getHomeLegacy(Country.class)).createLegacy());
     counts.addMenuElements(countries);
     table.add(counts,2,8);
 
@@ -155,7 +155,7 @@ public class UnionCreatorForm extends Block {
       }
       Union parent = null;
       if(unionID!=-1){
-        parent = new Union(unionID);
+        parent = ((is.idega.idegaweb.golf.entity.UnionHome)com.idega.data.IDOLookup.getHomeLegacy(Union.class)).findByPrimaryKeyLegacy(unionID);
       }
       UnionCreator.createUnion(name,type,abbreviation,loginName,passwd,parent,CountryID,city,zipcode);
   }

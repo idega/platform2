@@ -43,7 +43,7 @@ public class ParticipantGroupHandler implements PropertyHandler {
       /**
        * @todo link to project app (hardcoded dpt_id 1)
        */
-      List list = DPTTriggerBusiness.getInstance().getDPTPermissionGroups(new PageTriggerInfo(ProjectBusiness.tmpHardcodedPageTriggerInfoId));
+      List list = DPTTriggerBusiness.getInstance().getDPTPermissionGroups(((com.idega.builder.dynamicpagetrigger.data.PageTriggerInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PageTriggerInfo.class)).findByPrimaryKeyLegacy(ProjectBusiness.tmpHardcodedPageTriggerInfoId));
       if (list != null) {
         Iterator iter = list.iterator();
         while (iter.hasNext()) {

@@ -30,7 +30,7 @@ public class GolfCacher {
 
   private static void initializeUnions(){
     try{
-    Union union = Union.getStaticInstance();
+    Union union = is.idega.idegaweb.golf.entity.UnionBMPBean.getStaticInstance();
     Unions = EntityFinder.findAll(union,"Select * from " +union.getEntityName() + " order by abbrevation");
     }catch(SQLException e){
       e.printStackTrace();

@@ -39,7 +39,7 @@ public class SysPropsSetter extends Block{
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
-  private static String propParameter = SystemProperties.getEntityTableName();
+  private static String propParameter = is.idega.idegaweb.campus.data.SystemPropertiesBMPBean.getEntityTableName();
   private boolean isAdmin = false;
   private static long day = 1;
   private static long month = day*30;
@@ -112,7 +112,7 @@ public class SysPropsSetter extends Block{
   public static SystemProperties seekProperties(){
     SystemProperties SysProps = null;
     try {
-      List L = EntityFinder.findAll(new SystemProperties());
+      List L = EntityFinder.findAll(((is.idega.idegaweb.campus.data.SystemPropertiesHome)com.idega.data.IDOLookup.getHomeLegacy(SystemProperties.class)).createLegacy());
       if(L!=null){
        SysProps = (SystemProperties) L.get(0);
       }
@@ -136,12 +136,12 @@ public class SysPropsSetter extends Block{
     termOfNotice.setLength(4);
     TextInput adminEmail = new TextInput("admin_email");
     TextInput emailHost = new TextInput("email_host");
-    String[] filter2 = {com.idega.core.accesscontrol.data.PermissionGroup.getStaticPermissionGroupInstance().getGroupTypeValue()};
+    String[] filter2 = {com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticPermissionGroupInstance().getGroupTypeValue()};
     DropdownMenu groups = null;
     try {
       String[] filter = new String[1];
-      filter[0] = com.idega.core.accesscontrol.data.PermissionGroup.getStaticPermissionGroupInstance().getGroupTypeValue();
-      groups = new DropdownMenu(com.idega.core.data.GenericGroup.getAllGroups(filter,true),"def_group");
+      filter[0] = com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticPermissionGroupInstance().getGroupTypeValue();
+      groups = new DropdownMenu(com.idega.core.data.GenericGroupBMPBean.getAllGroups(filter,true),"def_group");
     }
     catch (SQLException ex) {
       groups = new DropdownMenu("def_group");

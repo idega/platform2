@@ -38,14 +38,14 @@ public class Inquirer {
   public static int getInqueredSeats(int serviceId, idegaTimestamp stamp, int resellerId, boolean unansweredOnly) {
     int returner = 0;
     try {
-      Inquery inq = (Inquery) Inquery.getStaticInstance(Inquery.class);
-      Reseller res = (Reseller)Reseller.getStaticInstance(Reseller.class);
+      Inquery inq = (Inquery) is.idega.idegaweb.travel.data.InqueryBMPBean.getStaticInstance(Inquery.class);
+      Reseller res = (Reseller)com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Inquery.class, Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT sum(i."+Inquery.getNumberOfSeatsColumnName()+") FROM "+Inquery.getInqueryTableName()+" i");
+        buffer.append("SELECT sum(i."+is.idega.idegaweb.travel.data.InqueryBMPBean.getNumberOfSeatsColumnName()+") FROM "+is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryTableName()+" i");
         if (resellerId != -1) {
-          buffer.append(", "+Reseller.getResellerTableName()+" r, "+middleTable+" mi");
+          buffer.append(", "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" r, "+middleTable+" mi");
         }
         buffer.append(" WHERE ");
         if (resellerId != -1) {
@@ -56,13 +56,13 @@ public class Inquirer {
         }
 
         if (unansweredOnly) {
-        buffer.append("i."+Inquery.getAnsweredColumnName() +" = 'N'");
+        buffer.append("i."+is.idega.idegaweb.travel.data.InqueryBMPBean.getAnsweredColumnName() +" = 'N'");
         }
 
         buffer.append(" AND ");
-        buffer.append("i."+Inquery.getServiceIDColumnName()+" = "+serviceId);
+        buffer.append("i."+is.idega.idegaweb.travel.data.InqueryBMPBean.getServiceIDColumnName()+" = "+serviceId);
         buffer.append(" AND ");
-        buffer.append("i."+Inquery.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
+        buffer.append("i."+is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
         if (resellerId != -1) {
           buffer.append(" AND ");
           buffer.append("r."+res.getIDColumnName()+" = "+resellerId);
@@ -82,7 +82,7 @@ public class Inquirer {
 
 
   public static Inquery[] getInqueries(int serviceId, idegaTimestamp stamp, boolean unansweredOnly) {
-    return Inquirer.getInqueries(serviceId, stamp, -1, unansweredOnly, Inquery.getInqueryDateColumnName());
+    return Inquirer.getInqueries(serviceId, stamp, -1, unansweredOnly, is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName());
   }
 
 
@@ -95,14 +95,14 @@ public class Inquirer {
     Inquery[] inqueries = {};
     if (orderBy == null) orderBy = "";
     try {
-      Inquery inq = (Inquery) Inquery.getStaticInstance(Inquery.class);
-      Reseller res = (Reseller)Reseller.getStaticInstance(Reseller.class);
+      Inquery inq = (Inquery) is.idega.idegaweb.travel.data.InqueryBMPBean.getStaticInstance(Inquery.class);
+      Reseller res = (Reseller)com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class);
       String middleTable = EntityControl.getManyToManyRelationShipTableName(Inquery.class, Reseller.class);
 
       StringBuffer buffer = new StringBuffer();
-        buffer.append("SELECT i.* FROM "+Inquery.getInqueryTableName()+" i");
+        buffer.append("SELECT i.* FROM "+is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryTableName()+" i");
         if (resellerId != -1) {
-          buffer.append(" , "+Reseller.getResellerTableName()+" r, "+middleTable+" mi");
+          buffer.append(" , "+com.idega.block.trade.stockroom.data.ResellerBMPBean.getResellerTableName()+" r, "+middleTable+" mi");
         }
         buffer.append(" WHERE ");
         if (resellerId != -1) {
@@ -113,13 +113,13 @@ public class Inquirer {
         }
 
         if (unansweredOnly) {
-        buffer.append("i."+Inquery.getAnsweredColumnName() +" = 'N'");
+        buffer.append("i."+is.idega.idegaweb.travel.data.InqueryBMPBean.getAnsweredColumnName() +" = 'N'");
         }
 
         buffer.append(" AND ");
-        buffer.append("i."+Inquery.getServiceIDColumnName()+" = "+serviceId);
+        buffer.append("i."+is.idega.idegaweb.travel.data.InqueryBMPBean.getServiceIDColumnName()+" = "+serviceId);
         buffer.append(" AND ");
-        buffer.append("i."+Inquery.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
+        buffer.append("i."+is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName() +" like '"+stamp.toSQLDateString()+"%'");
         if (resellerId != -1) {
           buffer.append(" AND ");
           buffer.append("r."+res.getIDColumnName()+" = "+resellerId);
@@ -129,7 +129,7 @@ public class Inquirer {
           buffer.append(" ORDER BY "+orderBy);
         }
 
-      inqueries = (Inquery[]) (Inquery.getStaticInstance(Inquery.class)).findAll(buffer.toString());
+      inqueries = (Inquery[]) (is.idega.idegaweb.travel.data.InqueryBMPBean.getStaticInstance(Inquery.class)).findAll(buffer.toString());
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
@@ -142,7 +142,7 @@ public class Inquirer {
 
 
     int returner = -1;
-        Inquery inq = new Inquery();
+        Inquery inq = ((is.idega.idegaweb.travel.data.InqueryHome)com.idega.data.IDOLookup.getHomeLegacy(Inquery.class)).createLegacy();
           inq.setAnswered(false);
           inq.setEmail(email);
           inq.setInqueryDate(inqueryDate.getTimestamp());
@@ -183,7 +183,7 @@ public class Inquirer {
     try {
         tm.begin();
         com.idega.util.SendMail sm = new com.idega.util.SendMail();
-        Inquery inquery = new Inquery(inquiryId);
+        Inquery inquery = ((is.idega.idegaweb.travel.data.InqueryHome)com.idega.data.IDOLookup.getHomeLegacy(Inquery.class)).findByPrimaryKeyLegacy(inquiryId);
         Booking booking = inquery.getBooking();
         Service tempService = booking.getService();
         List inquiries = getMultibleInquiries(inquery);
@@ -228,7 +228,7 @@ public class Inquirer {
         }
 
 
-        Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) Reseller.getStaticInstance(Reseller.class));
+        Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) com.idega.block.trade.stockroom.data.ResellerBMPBean.getStaticInstance(Reseller.class));
         try {
           if (supplier != null) {
             if (sendMail) {
@@ -307,32 +307,32 @@ public class Inquirer {
     try {
 
       StringBuffer buff = new StringBuffer();
-        buff.append("SELECT * FROM "+Inquery.getInqueryTableName());
+        buff.append("SELECT * FROM "+is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryTableName());
         buff.append(" WHERE ");
         if (inquiry.getAnswerDate() != null) {
-          buff.append(Inquery.getAnswerDateColumnName()+" = '"+inquiry.getAnswerDate()+"'");
+          buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getAnswerDateColumnName()+" = '"+inquiry.getAnswerDate()+"'");
         }else {
-          buff.append(Inquery.getAnswerDateColumnName()+" is null");
+          buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getAnswerDateColumnName()+" is null");
         }
         buff.append(" AND ");
         if (inquiry.getAnswered()) {
-          buff.append(Inquery.getAnsweredColumnName()+" = 'Y'");
+          buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getAnsweredColumnName()+" = 'Y'");
         }else {
-          buff.append(Inquery.getAnsweredColumnName()+" = 'N'");
+          buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getAnsweredColumnName()+" = 'N'");
         }
         buff.append(" AND ");
-        buff.append(Inquery.getEmailColumnName()+" = '"+inquiry.getEmail()+"'");
+        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getEmailColumnName()+" = '"+inquiry.getEmail()+"'");
         buff.append(" AND ");
-        buff.append(Inquery.getInqueryColumnName()+" = '"+inquiry.getInquery()+"'");
+        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryColumnName()+" = '"+inquiry.getInquery()+"'");
         buff.append(" AND ");
-        buff.append(Inquery.getInqueryPostDateColumnName()+" = '"+inquiry.getInqueryPostDate()+"'");
+        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryPostDateColumnName()+" = '"+inquiry.getInqueryPostDate()+"'");
         buff.append(" AND ");
-        buff.append(Inquery.getNameColumnName()+" = '"+inquiry.getName()+"'");
+        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getNameColumnName()+" = '"+inquiry.getName()+"'");
         buff.append(" AND ");
-        buff.append(Inquery.getNumberOfSeatsColumnName()+" = "+inquiry.getNumberOfSeats());
+        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getNumberOfSeatsColumnName()+" = "+inquiry.getNumberOfSeats());
         buff.append(" AND ");
-        buff.append(Inquery.getServiceIDColumnName()+" = "+inquiry.getServiceID());
-        buff.append(" ORDER BY "+Inquery.getInqueryDateColumnName());
+        buff.append(is.idega.idegaweb.travel.data.InqueryBMPBean.getServiceIDColumnName()+" = "+inquiry.getServiceID());
+        buff.append(" ORDER BY "+is.idega.idegaweb.travel.data.InqueryBMPBean.getInqueryDateColumnName());
 
         //System.err.println(buff.toString());
       list = EntityFinder.findAll(inquiry, buff.toString());

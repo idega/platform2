@@ -59,8 +59,8 @@ public class TournamentResultsDetailed extends Block {
     try {
       iwrb = getResourceBundle(iwc);
       iwb = getBundle(iwc);
-      tournament = new Tournament(tournamentId_);
-      tournamentRound = new TournamentRound(tournamentRound_);
+      tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKeyLegacy(tournamentId_);
+      tournamentRound = ((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKeyLegacy(tournamentRound_);
       getMemberVector();
       setMemberVectorPastRounds();
       setMemberVectorAllRounds();
@@ -298,7 +298,7 @@ public class TournamentResultsDetailed extends Block {
     try {
       int parValue = 0;
       int column = 2;
-      Tee[] tee = (Tee[]) Tee.getStaticInstance("is.idega.idegaweb.golf.entity.Tee").findAll("select distinct hole_number,par from tee where field_id = "+tournament.getFieldId()+" order by hole_number");
+      Tee[] tee = (Tee[]) is.idega.idegaweb.golf.entity.TeeBMPBean.getStaticInstance("is.idega.idegaweb.golf.entity.Tee").findAll("select distinct hole_number,par from tee where field_id = "+tournament.getFieldId()+" order by hole_number");
 
       Text holeText = (Text) whiteText.clone();
         holeText.setText(iwrb.getLocalizedString("tournament.hole","Hole")+"&nbsp;");
@@ -381,7 +381,7 @@ public class TournamentResultsDetailed extends Block {
         tournamentText.setFontFace(Text.FONT_FACE_VERDANA);
         tournamentText.setFontColor("FFFFFF");
 
-      Text groupAndRound = new Text(new TournamentGroup(this.tournamentGroupId_).getName()+" - "+iwrb.getLocalizedString("tournament.round","Round")+" "+new TournamentRound(this.tournamentRound_).getRoundNumber()+"&nbsp;&nbsp;");
+      Text groupAndRound = new Text(((is.idega.idegaweb.golf.entity.TournamentGroupHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentGroup.class)).findByPrimaryKeyLegacy(this.tournamentGroupId_).getName()+" - "+iwrb.getLocalizedString("tournament.round","Round")+" "+((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKeyLegacy(this.tournamentRound_).getRoundNumber()+"&nbsp;&nbsp;");
         groupAndRound.setBold();
         groupAndRound.setFontSize(Text.FONT_SIZE_10_HTML_2);
         groupAndRound.setFontFace(Text.FONT_FACE_VERDANA);
@@ -405,7 +405,7 @@ public class TournamentResultsDetailed extends Block {
 
   private void setMemberVectorPastRounds() throws SQLException{
       TournamentRound[] rounds = tournament.getTournamentRounds();
-      TournamentRound tRound = new TournamentRound(tournamentRound_);
+      TournamentRound tRound = ((is.idega.idegaweb.golf.entity.TournamentRoundHome)com.idega.data.IDOLookup.getHomeLegacy(TournamentRound.class)).findByPrimaryKeyLegacy(tournamentRound_);
       Vector ids = new Vector();
       for (int i = 0; i < rounds.length; i++) {
         if (rounds[i].getRoundNumber() < tRound.getRoundNumber()) {

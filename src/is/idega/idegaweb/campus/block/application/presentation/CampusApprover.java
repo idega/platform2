@@ -163,10 +163,10 @@ public class CampusApprover extends Block{
 
     String status = iwc.getParameter("status_drop");
     try{
-      Application A = new Application(id);
+      Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
       A.setStatus(status);
       A.update();
-      Applicant Appli = new Applicant(A.getApplicantId());
+      Applicant Appli = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(A.getApplicantId());
       if(status.equals("A"))
         MailingListBusiness.processMailEvent(new EntityHolder(Appli),LetterParser.APPROVAL);
       if(status.equals("R"))
@@ -182,8 +182,8 @@ public class CampusApprover extends Block{
     //int id = Integer.parseInt(iwc.getParameter("application_id"));
 
     try{
-      Application A = new Application(id);
-      A.setStatus(Application.STATUS_GARBAGE);
+      Application A = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
+      A.setStatus(com.idega.block.application.data.ApplicationBMPBean.STATUS_GARBAGE);
       A.update();
     }
     catch(Exception e){
@@ -205,8 +205,8 @@ public class CampusApprover extends Block{
         Applicant spouse = null;
         Vector children = null;
         if(id > 0){
-        eApplication = new Application(id);
-          eApplicant = new Applicant(eApplication.getApplicantId());
+        eApplication = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
+          eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eApplication.getApplicantId());
           java.util.Iterator iter = eApplicant.getChildren();
           if(iter !=null){
             Applicant a;
@@ -222,19 +222,19 @@ public class CampusApprover extends Block{
               }
             }
           }
-          CampusApplication A = new CampusApplication();
+          CampusApplication A = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
           eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
         }
         else{
-          eApplicant = new Applicant();
+          eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
           eApplicant.insert();
-          eApplication = new Application();
+          eApplication = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).createLegacy();
           eApplication.setApplicantId(eApplicant.getID());
           eApplication.setSubmitted(idegaTimestamp.getTimestampRightNow());
           eApplication.setStatusSubmitted();
           eApplication.setSubjectId(iSubjectId);
           eApplication.insert();
-          eCampusApplication = new CampusApplication();
+          eCampusApplication = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
           eCampusApplication.setAppApplicationId(new Integer(eApplication.getID()));
           eCampusApplication.insert();
           returnid = eApplication.getID();
@@ -311,7 +311,7 @@ public class CampusApprover extends Block{
       int len = L.size();
 
       boolean showcan = false;
-      if(sGlobalStatus.equals(Application.STATUS_REJECTED)){
+      if(sGlobalStatus.equals(com.idega.block.application.data.ApplicationBMPBean.STATUS_REJECTED)){
         T.add(headerText(iwrb.getLocalizedString("g","g")),col++,row);
         showcan = true;
       }
@@ -377,8 +377,8 @@ public class CampusApprover extends Block{
         }
       }
       else{
-        eApplication = new Application(id);
-        eApplicant = new Applicant(eApplication.getApplicantId());
+        eApplication = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
+        eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eApplication.getApplicantId());
       }
 
       if( eApplication !=null && eApplicant != null){
@@ -401,7 +401,7 @@ public class CampusApprover extends Block{
             }
           }
         }
-        CampusApplication A = new CampusApplication();
+        CampusApplication A = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
         CampusApplication eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
         List L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
 
@@ -467,8 +467,8 @@ public class CampusApprover extends Block{
       }
       else{
       if(id > 0){
-        eApplication = new Application(id);
-        eApplicant = new Applicant(eApplication.getApplicantId());
+        eApplication = ((com.idega.block.application.data.ApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(Application.class)).findByPrimaryKeyLegacy(id);
+        eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eApplication.getApplicantId());
         }
       }
 
@@ -492,7 +492,7 @@ public class CampusApprover extends Block{
           }
         }
 
-        A = new CampusApplication();
+        A = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
         eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
         L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
       }
@@ -889,7 +889,7 @@ public class CampusApprover extends Block{
     if(sSpName !=null && sSpName.length()>0){
       boolean update = true;
       if(spouse == null){
-        spouse = new Applicant();
+        spouse = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
         spouse.setStatus("P");
         update = false;
       }
@@ -979,7 +979,7 @@ public class CampusApprover extends Block{
             Applicant child = (Applicant) chi.get(new Integer(childId));
             boolean update = true;
             if(child == null){
-              child = new Applicant();
+              child = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
               child.setStatus("C");
               update = false;
             }
@@ -1136,7 +1136,7 @@ public class CampusApprover extends Block{
     String sWait = iwc.getParameter("ap_wait");
     Vector V = new Vector();
     if(eCampusApplication == null)
-      eCampusApplication = new CampusApplication();
+      eCampusApplication = ((is.idega.idegaweb.campus.block.application.data.CampusApplicationHome)com.idega.data.IDOLookup.getHomeLegacy(CampusApplication.class)).createLegacy();
     if(sRentFrom!= null)
       eCampusApplication.setHousingFrom(new idegaTimestamp(sRentFrom).getSQLDate());
     if("true".equals(sFurni)){
@@ -1161,7 +1161,7 @@ public class CampusApprover extends Block{
         applied1 = (Applied) lApplied.get(0);
       }
       else{
-        applied1 = new Applied();
+        applied1 = ((is.idega.idegaweb.campus.block.application.data.AppliedHome)com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy();
         lApplied = (List)new Vector();
         lApplied.add(applied1);
       }
@@ -1178,7 +1178,7 @@ public class CampusApprover extends Block{
           applied2 = (Applied) lApplied.get(1);
         }
         else{
-          applied2 = new Applied();
+          applied2 = ((is.idega.idegaweb.campus.block.application.data.AppliedHome)com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy();
         }
         type = ApartmentTypeComplexHelper.getPartKey(key2,1);
         complex = ApartmentTypeComplexHelper.getPartKey(key2,2);
@@ -1194,7 +1194,7 @@ public class CampusApprover extends Block{
           applied3 = (Applied) lApplied.get(2);
         }
         else{
-          applied3 = new Applied();
+          applied3 = ((is.idega.idegaweb.campus.block.application.data.AppliedHome)com.idega.data.IDOLookup.getHomeLegacy(Applied.class)).createLegacy();
         }
         type = ApartmentTypeComplexHelper.getPartKey(key3,1);
         complex = ApartmentTypeComplexHelper.getPartKey(key3,2);
@@ -1324,7 +1324,7 @@ public class CampusApprover extends Block{
     String sDesc= iwc.getParameter("app_subj_desc").trim();
     String sDate = iwc.getParameter("app_subj_xdate");
     if(sDesc.length() > 0){
-      ApplicationSubject AS = new ApplicationSubject();
+      ApplicationSubject AS = ((com.idega.block.application.data.ApplicationSubjectHome)com.idega.data.IDOLookup.getHomeLegacy(ApplicationSubject.class)).createLegacy();
       AS.setDescription(sDesc);
       AS.setExpires(new idegaTimestamp(sDate).getSQLDate());
       try {
@@ -1421,13 +1421,13 @@ public class CampusApprover extends Block{
 
    private DropdownMenu orderDrop(String name,String selected){
     DropdownMenu drp = new DropdownMenu(name);
-    Applicant A = new Applicant();
+    Applicant A = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).createLegacy();
 
-    drp.addMenuElement(Applicant.getFullnameOrderValue(),iwrb.getLocalizedString("name","Name"));
-    drp.addMenuElement(Applicant.getSSNColumnName(),iwrb.getLocalizedString("ssn","Socialnumber"));
-    drp.addMenuElement(Applicant.getLegalResidenceColumnName(),iwrb.getLocalizedString("legal_residence","Legal Residence"));
-    drp.addMenuElement(Applicant.getResidenceColumnName(),iwrb.getLocalizedString("residence","Residence"));
-    drp.addMenuElement(Applicant.getResidenceColumnName(),iwrb.getLocalizedString("phone","Residence phone"));
+    drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getFullnameOrderValue(),iwrb.getLocalizedString("name","Name"));
+    drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getSSNColumnName(),iwrb.getLocalizedString("ssn","Socialnumber"));
+    drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getLegalResidenceColumnName(),iwrb.getLocalizedString("legal_residence","Legal Residence"));
+    drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getResidenceColumnName(),iwrb.getLocalizedString("residence","Residence"));
+    drp.addMenuElement(com.idega.block.application.data.ApplicantBMPBean.getResidenceColumnName(),iwrb.getLocalizedString("phone","Residence phone"));
     drp.setSelectedElement(selected);
     return drp;
   }

@@ -94,8 +94,8 @@ public class PriceCategoryDesigner extends TravelManager {
       TextInput nameInp;
       BooleanInput online;
       DropdownMenu ddType = new DropdownMenu("priceCategoryType");
-        ddType.addMenuElement(PriceCategory.PRICETYPE_PRICE, iwrb.getLocalizedString("travel.price","Price"));
-        ddType.addMenuElement(PriceCategory.PRICETYPE_DISCOUNT, iwrb.getLocalizedString("travel.discount","Discount"));
+        ddType.addMenuElement(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE, iwrb.getLocalizedString("travel.price","Price"));
+        ddType.addMenuElement(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT, iwrb.getLocalizedString("travel.discount","Discount"));
       DropdownMenu ddDisc = new DropdownMenu(categories,"priceCategoryParent");
         ddDisc.addMenuElementFirst("-1",Text.NON_BREAKING_SPACE);
 
@@ -193,16 +193,16 @@ public class PriceCategoryDesigner extends TravelManager {
               bOnline = false;
             }
 
-            if (type[i].equals(PriceCategory.PRICETYPE_DISCOUNT)) {
+            if (type[i].equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
               parentId = Integer.parseInt(parent[i]);
               priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", bOnline, parentId);
-            }else if (type[i].equals(PriceCategory.PRICETYPE_PRICE)) {
+            }else if (type[i].equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
               priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", bOnline);
             }
           }
         }else {   //UPDATE
           String del = iwc.getParameter("priceCategoryToDelete_"+catIds[i]);
-          PriceCategory pCat = new PriceCategory(Integer.parseInt(catIds[i]));
+          PriceCategory pCat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(catIds[i]));
           if (del != null) {
             pCat.delete();
           }else {
@@ -216,7 +216,7 @@ public class PriceCategoryDesigner extends TravelManager {
               pCat.setName(names[i]);
               pCat.setDescription("");
               pCat.setType(type[i]);
-              if (type[i].equals(PriceCategory.PRICETYPE_DISCOUNT)) {
+              if (type[i].equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
                 pCat.setParentId(Integer.parseInt(parent[i]));
               }
               pCat.setSupplierId(supplier.getID());

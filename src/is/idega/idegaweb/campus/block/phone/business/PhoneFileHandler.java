@@ -126,7 +126,7 @@ public class PhoneFileHandler {
 
 
 
-            ape = new AccountPhoneEntry();
+            ape = ((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
 
             ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
 
@@ -146,7 +146,7 @@ public class PhoneFileHandler {
 
             ape.setSubNumber(snumber);
 
-            ape.setStatus(AccountPhoneEntry.statusUnread);
+            ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusUnread);
 
             V.add(ape);
 
@@ -300,7 +300,7 @@ public class PhoneFileHandler {
 
             if(st.countTokens() == 8){
 
-              ape = new AccountPhoneEntry();
+              ape = ((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
 
               try{
 
@@ -340,7 +340,7 @@ public class PhoneFileHandler {
 
                 ape.setSubNumber(snumber);
 
-                ape.setStatus(AccountPhoneEntry.statusUnread);
+                ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusUnread);
 
                 cont = true;
 
@@ -388,7 +388,7 @@ public class PhoneFileHandler {
 
                   ape.setAccountId(eAccount.getID());
 
-                  ape.setStatus(AccountPhoneEntry.statusRead);
+                  ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusRead);
 
                   eAccount.addAmount(new Float(ape.getPrice()));
 
@@ -452,7 +452,7 @@ public class PhoneFileHandler {
 
           }// while
 
-          PhoneFileInfo pfi = new PhoneFileInfo();
+          PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();
 
           pfi.setDateRead(idegaTimestamp.getTimestampRightNow());
 
@@ -630,7 +630,7 @@ public class PhoneFileHandler {
 
             if(st.countTokens() == 8){
 
-              ape = new AccountPhoneEntry();
+              ape = ((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
 
               try{
 
@@ -670,7 +670,7 @@ public class PhoneFileHandler {
 
                 ape.setSubNumber(snumber);
 
-                ape.setStatus(AccountPhoneEntry.statusUnread);
+                ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusUnread);
 
                 cont = true;
 
@@ -762,7 +762,7 @@ public class PhoneFileHandler {
 
                         ape.setAccountId(ap.getAccountId());
 
-                        ape.setStatus(AccountPhoneEntry.statusRead);
+                        ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusRead);
 
                         if(M2.containsKey(ap.getAccountId())){
 
@@ -850,7 +850,7 @@ public class PhoneFileHandler {
 
 
 
-          PhoneFileInfo pfi = new PhoneFileInfo();
+          PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();
 
           pfi.setDateRead(idegaTimestamp.getTimestampRightNow());
 
@@ -1054,7 +1054,7 @@ public class PhoneFileHandler {
 
           if(st.countTokens() == 8){
 
-            ape = new AccountPhoneEntry();
+            ape = ((com.idega.block.finance.data.AccountPhoneEntryHome)com.idega.data.IDOLookup.getHomeLegacy(AccountPhoneEntry.class)).createLegacy();
 
             try{
 
@@ -1094,7 +1094,7 @@ public class PhoneFileHandler {
 
               ape.setSubNumber(snumber);
 
-              ape.setStatus(AccountPhoneEntry.statusUnread);
+              ape.setStatus(com.idega.block.finance.data.AccountPhoneEntryBMPBean.statusUnread);
 
               vEntries.add(ape);
 
@@ -1246,7 +1246,7 @@ public class PhoneFileHandler {
 
 
 
-        PhoneFileInfo pfi = new PhoneFileInfo();
+        PhoneFileInfo pfi = ((is.idega.idegaweb.campus.block.phone.data.PhoneFileInfoHome)com.idega.data.IDOLookup.getHomeLegacy(PhoneFileInfo.class)).createLegacy();
 
         pfi.setDateRead(idegaTimestamp.getTimestampRightNow());
 

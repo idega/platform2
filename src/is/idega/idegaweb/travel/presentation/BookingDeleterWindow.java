@@ -63,7 +63,7 @@ public class BookingDeleterWindow extends TravelWindow {
     if (sBookingId != null) {
       try {
         _bookingId = Integer.parseInt(sBookingId);
-        _booking = new GeneralBooking(_bookingId);
+        _booking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(_bookingId);
         _bookings = Booker.getMultibleBookings(_booking);
         _service = _booking.getService();
       }catch (NumberFormatException n) {

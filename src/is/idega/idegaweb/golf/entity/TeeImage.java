@@ -1,54 +1,13 @@
-//idega 2000 - Laddi
-
 package is.idega.idegaweb.golf.entity;
 
-//import java.util.*;
-import java.sql.*;
+import javax.ejb.*;
 
-public class TeeImage extends GolfEntity{
-
-	public TeeImage(){
-		super();
-	}
-
-	public TeeImage(int id)throws SQLException{
-		super(id);
-	}
-
-	public void initializeAttributes(){
-		addAttribute(getIDColumnName());
-		addAttribute("field_id", "Völlur", true, true, "java.lang.Integer");
-		addAttribute("hole_number", "Holunúmer", true, true, "java.lang.Integer");
-                      addAttribute("image_id","Image",false,false,"java.lang.Integer","one-to-many","com.idega.jmodule.image.data.ImageEntity");
-		//addAttribute("image_id", "Mynd", true, true, "java.lang.Integer");
-	}
-
-	public String getEntityName(){
-		return "tee_image";
-	}
-
-	public int getFieldId(){
-		return getIntColumnValue("field_id");
-	}
-
-	public void setFieldId(int field_id){
-		setColumn("field_id", field_id);
-	}
-
-	public int getHoleNumber(){
-		return getIntColumnValue("hole_number");
-	}
-
-	public void setHoleNumber(int hole_number){
-		setColumn("hole_number", hole_number);
-	}
-
-	public int getImageId(){
-		return getIntColumnValue("image_id");
-	}
-
-	public void setImageId(int image_id){
-		setColumn("image_id", image_id);
-	}
-
+public interface TeeImage extends is.idega.idegaweb.golf.entity.GolfEntity
+{
+ public int getFieldId();
+ public int getHoleNumber();
+ public int getImageId();
+ public void setFieldId(int p0);
+ public void setHoleNumber(int p0);
+ public void setImageId(int p0);
 }

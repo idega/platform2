@@ -1,5 +1,5 @@
 /*
- * $Id: CategoryTypeHandler.java,v 1.2 2001/12/13 09:45:20 palli Exp $
+ * $Id: CategoryTypeHandler.java,v 1.3 2002/04/06 19:11:21 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *

@@ -1,5 +1,5 @@
 /*
- *  $Id: IShopExportBusiness.java,v 1.4 2002/04/03 12:41:53 palli Exp $
+ *  $Id: IShopExportBusiness.java,v 1.5 2002/04/06 19:11:21 tryggvil Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -66,15 +66,15 @@ public class IShopExportBusiness {
       sql.append(", ");
       sql.append("bytecode");
       sql.append(" = null where ");
-      sql.append(IShopTemplateBean.getIShopClassColumnName());
+      sql.append(is.idega.idegaweb.intershop.data.IShopTemplateBeanBMPBean.getIShopClassColumnName());
       sql.append(" = '");
       sql.append(page.getIShopClass());
       sql.append("' and ");
-      sql.append(IShopTemplateBean.getIShopIDColumnName());
+      sql.append(is.idega.idegaweb.intershop.data.IShopTemplateBeanBMPBean.getIShopIDColumnName());
       sql.append(" = '");
       sql.append(page.getIShopID());
       sql.append("' and ");
-      sql.append(IShopTemplateBean.getIShopLanguageNrColumnName());
+      sql.append(is.idega.idegaweb.intershop.data.IShopTemplateBeanBMPBean.getIShopLanguageNrColumnName());
       sql.append(" = ");
       sql.append(page.getIShopLanguageNr());
 

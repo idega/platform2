@@ -23,7 +23,7 @@ public class StartingtimeToTeeTimeCopy {
   }
 
   public static void putListsInSession(IWContext iwc) throws SQLException{
-    Startingtime stTime = new Startingtime();
+    Startingtime stTime = ((is.idega.idegaweb.golf.entity.StartingtimeHome)com.idega.data.IDOLookup.getHomeLegacy(Startingtime.class)).createLegacy();
     List from = EntityFinder.findAll(stTime,"select * from "+stTime.getEntityName());
     List notFrom = EntityFinder.findAll(stTime,"select * from tournament_round_startingtime trs, startingtime st where trs.startingtime_id = st.startingtime_id");
 
@@ -51,7 +51,7 @@ public class StartingtimeToTeeTimeCopy {
 
   public static void copy(IWContext iwc)throws SQLException{
     List toCopy = (List)iwc.getSessionAttribute("vector");
-    TeeTime t = new TeeTime();
+    TeeTime t = ((is.idega.idegaweb.golf.startingtime.data.TeeTimeHome)com.idega.data.IDOLookup.getHomeLegacy(TeeTime.class)).createLegacy();
     Startingtime s = null;
     System.err.println(toCopy.size());
     for (int i = 0; i < toCopy.size(); i++) {

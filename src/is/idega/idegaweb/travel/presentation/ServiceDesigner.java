@@ -158,7 +158,7 @@ public class ServiceDesigner extends TravelManager {
   }
 
   private void setService(IWContext iwc,int serviceId) throws SQLException{
-    service = new Service(serviceId);
+    service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHomeLegacy(Service.class)).findByPrimaryKeyLegacy(serviceId);
     iwc.setSessionAttribute(this.ServiceSessionAttribute, service);
   }
 
@@ -252,7 +252,7 @@ public class ServiceDesigner extends TravelManager {
             ++row;
 
             for (int k = 0; k < tFrames.length; k++) {
-              ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), tFrames[k].getID(), addresses[l].getID(), false);
+              ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(service.getID(), tFrames[k].getID(), addresses[l].getID(), false);
               PriceCategory[] cats = tsb.getPriceCategories(this.supplier.getID());
 
               Text catName = (Text) theText.clone();
@@ -287,16 +287,16 @@ public class ServiceDesigner extends TravelManager {
 
                   priceDiscount = new TextInput("price_discount");
 
-                  if (cats[i].getType().equals(PriceCategory.PRICETYPE_PRICE)) {
+                  if (cats[i].getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
                     infoText.setText("");
-                  }else if (cats[i].getType().equals(PriceCategory.PRICETYPE_DISCOUNT)){
+                  }else if (cats[i].getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)){
                     try {
                       priceDiscount.setSize(6);
                       infoText.setText("%");
                       infoText.addToText(Text.NON_BREAKING_SPACE);
                       infoText.addToText(iwrb.getLocalizedString("travel.of","of"));
                       infoText.addToText(Text.NON_BREAKING_SPACE);
-                      infoText.addToText(new PriceCategory(cats[i].getParentId()).getName());
+                      infoText.addToText(((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(cats[i].getParentId()).getName());
                     }catch (SQLException sql) {
                       sql.printStackTrace(System.err);
                     }
@@ -308,7 +308,7 @@ public class ServiceDesigner extends TravelManager {
                   for (int j = 0; j < prices.length; j++) {
                     if (cats[i].getID() == prices[j].getPriceCategoryID()) {
                       try {
-                        if (prices[j].getPriceType() == ProductPrice.PRICETYPE_PRICE) {
+                        if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
                           //priceDiscount.setContent(df.format(prices[j].getPrice()));
                           priceDiscount.setContent(Integer.toString((int)prices[j].getPrice()));
                         }else {
@@ -372,12 +372,12 @@ public class ServiceDesigner extends TravelManager {
           if (text_id != null && !text_id.equals("")) {
             TxText pText = product.getText();
             if (pText == null) {
-              TxText text = new TxText(Integer.parseInt(text_id));
+              TxText text = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(Integer.parseInt(text_id));
               text.addTo(product);
             }
           }
 
-          ProductPrice.clearPrices(service.getID());
+          com.idega.block.trade.stockroom.data.ProductPriceBMPBean.clearPrices(service.getID());
 
           float price;
           PriceCategory pCategory;
@@ -385,12 +385,12 @@ public class ServiceDesigner extends TravelManager {
             if (!priceDiscount[i].equals("")) {
               productPriceId = Integer.parseInt(productPriceIds[i]);
               priceCategoryId = Integer.parseInt(priceCategoryIds[i]);
-              pCategory = new PriceCategory(priceCategoryId);
+              pCategory = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
 
-              if (pCategory.getType().equals(PriceCategory.PRICETYPE_DISCOUNT)) {
+              if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
                 priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
-                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), ProductPrice.PRICETYPE_DISCOUNT, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
-              }else if (pCategory.getType().equals(PriceCategory.PRICETYPE_PRICE)) {
+                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
+              }else if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
                 priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
                 if (priceDiscount[i].indexOf(",") > 0) {
                   priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],",");
@@ -400,7 +400,7 @@ public class ServiceDesigner extends TravelManager {
                   price = (float) Float.parseFloat(priceDiscount[i]);
                 }
 
-                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), price, ProductPrice.PRICETYPE_PRICE, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
+                tsb.setPrice(productPriceId,service.getID() , priceCategoryId, TravelStockroomBusiness.getCurrencyIdForIceland(),idegaTimestamp.getTimestampRightNow(), price, com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
               }
             }
           }

@@ -488,12 +488,12 @@ public class CalendarHandler extends TravelManager {
     _product = product;
     _productId = product.getID();
     try {
-      _supplier = new Supplier(product.getSupplierId());
+      _supplier = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(product.getSupplierId());
       _service = TravelStockroomBusiness.getService(product);
       _timeframes = _product.getTimeframes();
 //      _timeframe = product.getTimeframe();
       try {
-        _tour = new Tour(_productId);
+        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHomeLegacy(Tour.class)).findByPrimaryKeyLegacy(_productId);
       }catch (SQLException sql) {}
     }catch (Exception e) {
       e.printStackTrace();

@@ -110,7 +110,7 @@ public class TournamentResults extends Block {
     try {
       iwrb = getResourceBundle(iwc);
       iwb = getBundle(iwc);
-      tournament = new Tournament(tournamentId_);
+      tournament = ((is.idega.idegaweb.golf.entity.TournamentHome)com.idega.data.IDOLookup.getHomeLegacy(Tournament.class)).findByPrimaryKeyLegacy(tournamentId_);
       numberOfRounds = tournament.getNumberOfRounds();
       getMemberVector();
       if ( result != null ) {
@@ -369,7 +369,7 @@ public class TournamentResults extends Block {
         myTable.setHeight(a+3,"20");
 
         if ( collector.getDismissal() > 0 ) {
-          Dismissal dismissal = new Dismissal(collector.getDismissal());
+          Dismissal dismissal = ((is.idega.idegaweb.golf.entity.DismissalHome)com.idega.data.IDOLookup.getHomeLegacy(Dismissal.class)).findByPrimaryKeyLegacy(collector.getDismissal());
 
           Image dismissImage = iwb.getImage("shared/red.gif");
             dismissImage.setHorizontalSpacing(4);
