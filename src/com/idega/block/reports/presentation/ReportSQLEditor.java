@@ -24,6 +24,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
@@ -102,7 +103,7 @@ public class ReportSQLEditor extends Block implements Reports{
         try{
           int iAction = Integer.parseInt(sActPrm);
           switch(iAction){
-            case ACT1: doSaveEdit(iwc);  T.add(getEditTable(iwc,iReportId),1,2); break;
+            case ACT1: doSaveEdit(iwc);  /*T.add(getEditTable(iwc,iReportId),1,2); */ break;
             case ACT2: T.add(getEditTable(iwc,iReportId),1,2);  break;
             case ACT3: doChange(iwc); break;
             case ACT4: doUpdate(iwc); break;
@@ -594,15 +595,21 @@ public class ReportSQLEditor extends Block implements Reports{
           int iSaveCat = iCategoryId;
           if(id < 1 && catid != iSaveCat ){
             saved = ReportEntityHandler.saveReport(sName ,sInfo ,sColInfo,he,sSql,iSaveCat);
-            if(saved!=null)
+            if(saved!=null){
               msg = iwrb.getLocalizedString("report_saved","Report was saved");
+			  iReportId = ((Integer) saved.getPrimaryKey()).intValue();
+			 
+            }
             else
               msg = iwrb.getLocalizedString("report_not_saved","Report was not saved");
           }
           else{
             saved = ReportEntityHandler.updateReport(id,sName ,sInfo ,sColInfo,he,sSql,iSaveCat);
-            if(saved!=null)
+            if(saved!=null){
               msg = iwrb.getLocalizedString("report_updated","Report was updated");
+			  iReportId = ((Integer) saved.getPrimaryKey()).intValue();
+			 
+            }
             else
               msg = iwrb.getLocalizedString("report_not_updated","Report was not updated");
           }
@@ -616,8 +623,30 @@ public class ReportSQLEditor extends Block implements Reports{
       msg = iwrb.getLocalizedString("no_name","No name entered");
 
     if(saved!=null){
-      add(Edit.formatText(msg));
+    	Link savedLink =getReportLink(Edit.formatText(msg));
+    	add(savedLink);
     }
+    else{
+    	add(Edit.formatText(msg));
+    }
+  }
+  
+  private Link getReportLink(PresentationObject object){
+  	 Link L = new Link(object);
+  	 L.addParameter(PRM_REPORTID,iReportId);
+  	 L.addParameter(PRM_CATEGORYID,iCategoryId);
+  	 return L;
+  }
+  
+  private ReportViewer getInstanceOfReportViewer(){
+  	PresentationObject obj = this;
+	PresentationObject parent ;
+  	while( (parent = obj.getParentObject()) != null){
+  		if(parent instanceof ReportViewer)
+  			return (ReportViewer)parent;
+  		obj = parent;
+  	}
+  	return null;
   }
 
   private String[] str2array(String s,String delim){
