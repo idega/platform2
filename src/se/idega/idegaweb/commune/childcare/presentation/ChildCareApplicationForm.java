@@ -44,6 +44,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * This class does something very clever.....
@@ -252,7 +253,8 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(PID, "Personal ID")+":"), 1, 2);
 		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(ADDRESS, "Address")+":"), 1, 3);
 
-		nameTable.add(getSmallText(child.getNameLastFirst(true)), 3, 1);
+		Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+		nameTable.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, 1);
 		String personalID = PersonalIDFormatter.format(child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 		nameTable.add(getSmallText(personalID), 3, 2);
 

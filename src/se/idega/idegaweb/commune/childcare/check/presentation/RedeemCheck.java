@@ -31,6 +31,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.util.text.Name;
 
 /**
  * This class does something very clever.....
@@ -177,7 +178,8 @@ public class RedeemCheck extends CommuneBlock {
 						Iterator iter2 = custodians.iterator();
 						while (iter2.hasNext()) {
 							User parent = (User) iter2.next();
-							checkInfoTable.add(getSmallText(parent.getNameLastFirst(false)), 2, row++);
+							Name name = new Name(parent.getFirstName(), parent.getMiddleName(), parent.getLastName());
+							checkInfoTable.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), false)), 2, row++);
 						}
 					}
 					

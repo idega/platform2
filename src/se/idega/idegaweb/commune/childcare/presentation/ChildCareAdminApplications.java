@@ -21,6 +21,7 @@ import com.idega.presentation.text.Link;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.Name;
 
 /**
  * @author laddi
@@ -99,7 +100,8 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 						applicationTable.setRowColor(row, getZebraColor2());
 				}
 				
-				link = getSmallLink(child.getNameLastFirst(true));
+				Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+				link = getSmallLink(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true));
 				link.setEventListener(ChildCareEventListener.class);
 				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
 				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
