@@ -165,7 +165,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       }
   }
 
-  public synchronized void getMessagesFromDialog(MessageDialog dialog){
+  public void getMessagesFromDialog(MessageDialog dialog){
     if( packetToServlet == null ){
       packetToServlet = new Packet();
       packetToServlet.setSender(sessionId);
@@ -338,14 +338,19 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       dialog.addActionListener(this);
 
       SingleLineItem item = new SingleLineItem(this);
-      item.setId(sessionId);
+      item.setId(sendToId);
       item.setWindowToOpen(dialog);
       if( faceLabel!= null ) item.add(faceLabel);
       item.add(new Label(name));
       item.setSize(16,100);
 
       userPanel.add(item);
-      userPanel.repaint();
+
+      Component[] comps = getComponents();
+      for (int i = 0; i < comps.length; i++) {
+        comps[i].repaint();
+      }
+
       repaint();
   }
 
