@@ -112,14 +112,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       //message checking is done in another thread
       repaint();
 
-      if(isfirstRun){
-        if(cycler==null){
-          cycler = new MessageListener(checkTimer);
-          cycler.addActionListener(this);
-        }
-        isfirstRun=false;
-      }
-
       try {
         //getToolkit().sync();
         t.sleep(threadSleep);
@@ -127,6 +119,15 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       catch (InterruptedException e) {
         e.printStackTrace(System.err);
         System.out.println("MessageApplet : Problem in the main thread");
+      }
+
+      if(isfirstRun){
+        if(cycler==null){
+          cycler = new MessageListener(checkTimer);
+          cycler.addActionListener(this);
+        }
+        cycler.start();
+        isfirstRun=false;
       }
     }
   }
@@ -469,6 +470,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     if ( t == null ){
       t = new Thread(this);
+      t.setPriority(t.NORM_PRIORITY);
       t.start();
     }
   }
