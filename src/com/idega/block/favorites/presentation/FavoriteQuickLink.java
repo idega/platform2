@@ -83,7 +83,7 @@ public class FavoriteQuickLink extends FavoriteBlock {
 					log(re);
 				}
 			}
-			quickLinks.addMenuElement(URI, element.getName());
+			quickLinks.addMenuElement(URI, name);
 		}
 
 		table.add(quickLinks, column++, 1);
@@ -96,12 +96,12 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	}
 
 	public String getScriptCaller(String dropDownName) {
-		return "navHandler(findObj('" + dropDownName + "'))";
+		return "navQuickLink(findObj('" + dropDownName + "'))";
 	}
 
 	public String getScriptSource() {
 		StringBuffer s = new StringBuffer();
-		s.append("\n function navHandler(input){");
+		s.append("\n function navQuickLink(input){");
 		s.append("\n\t var URL = input.options[input.selectedIndex].value;");
 		s.append("\n\t window.location.href = URL;");
 		s.append("\n }");

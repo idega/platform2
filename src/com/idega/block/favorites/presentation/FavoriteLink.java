@@ -48,6 +48,11 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 		catch (RemoteException re) {
 			log(re);
 		}
+
+		if (iwc.isParameterSet(PARAMETER_ADD_PAGE)) {
+			Object[] arguments = { currentName };
+			getParentPage().setAlertOnLoad(MessageFormat.format(getResourceBundle().getLocalizedString("added_page_to_favorites", "Added page {0}Êto your intranet favorites"), arguments));
+		}
 	}
 	
 	private void parse(IWContext iwc) {
@@ -61,11 +66,6 @@ public class FavoriteLink extends FavoriteBlock implements IWPageEventListener {
 		}
 		currentName = currentPage.getName();
 		currentUser = iwc.getCurrentUser();
-		
-		if (iwc.isParameterSet(PARAMETER_ADD_PAGE)) {
-			Object[] arguments = { currentName };
-			getParentPage().setAlertOnLoad(MessageFormat.format(getResourceBundle().getLocalizedString("added_page_to_favorites", "Added page {0}Êto your intranet favorites"), arguments));
-		}
 	}
 
 	private Image getImage() {
