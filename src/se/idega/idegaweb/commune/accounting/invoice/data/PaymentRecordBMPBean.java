@@ -214,6 +214,7 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 	public Collection ejbFindByPaymentHeader(PaymentHeader paymentHeader) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_PAYMENT_HEADER, paymentHeader.getPrimaryKey());
+		sql.appendOrderBy(COLUMN_ORDER_ID);
 		return idoFindPKsByQuery(sql);
 	}
 	
