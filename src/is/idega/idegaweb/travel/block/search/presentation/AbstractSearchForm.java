@@ -726,7 +726,6 @@ public abstract class AbstractSearchForm extends Block{
 		ProductPrice[] prices;
 		Currency currency;
 		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
-		System.out.println("[AbstrackSearchForm] prices.length = "+prices.length);
 		for (int i = 0; i < prices.length; i++) {
 			tmpPriceID = prices[i].getID();
 			table.add(getText(getPriceString(bus, product.getID(), timeframeId, prices[i])), 1, row++);
@@ -749,11 +748,13 @@ public abstract class AbstractSearchForm extends Block{
 		float total = -1;
 		String returner = "";
 		price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
-		price *= days;
-		total = price * count;
-		returner += iwrb.getLocalizedString("travel.price","Price")+":"+Text.NON_BREAKING_SPACE+price+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
-		returner += Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_nigth","per night")+Text.BREAK;
-		returner += iwrb.getLocalizedString("travel.search.total","Total")+":"+Text.NON_BREAKING_SPACE+total+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
+		total = price * days * count;
+		returner += iwrb.getLocalizedString("travel.price","Price")+":"+Text.NON_BREAKING_SPACE+(price*count)+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
+		returner += Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_nigth","per night");
+		if (count > 1) {
+			returner += " ("+price+" per room)";
+		}
+		returner += Text.BREAK+iwrb.getLocalizedString("travel.search.total","Total")+":"+Text.NON_BREAKING_SPACE+total+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();
 		return returner;
 	}
 
