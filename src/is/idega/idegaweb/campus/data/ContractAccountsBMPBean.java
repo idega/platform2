@@ -1,13 +1,13 @@
 /*
 <<<<<<< ContractAccountsBMPBean.java
  * 
- * $Id: ContractAccountsBMPBean.java,v 1.4 2004/06/05 07:35:42 aron Exp $
+ * $Id: ContractAccountsBMPBean.java,v 1.5 2004/11/08 16:23:34 aron Exp $
  * 
  * 
  * 
 =======
 
- * $Id: ContractAccountsBMPBean.java,v 1.4 2004/06/05 07:35:42 aron Exp $
+ * $Id: ContractAccountsBMPBean.java,v 1.5 2004/11/08 16:23:34 aron Exp $
 
  *
 
@@ -116,6 +116,9 @@ public class ContractAccountsBMPBean
 	public static String getColumnNameContractId() {
 		return "CAM_CONTRACT_ID";
 	}
+	public String getIDColumnName(){
+	    return getColumnNameContractId();
+	}
 	public static String getColumnNameUserId() {
 		return "IC_USER_ID";
 	}
@@ -144,7 +147,7 @@ public class ContractAccountsBMPBean
 		return "RETURN_DATE";
 	}
 	public static String getColumnDeliverdate() {
-		return "DELIVERDATE";
+		return "DELIVER_DATE";
 	}
 	public static String getColumnStatus() {
 		return "STATUS";
@@ -333,6 +336,6 @@ public class ContractAccountsBMPBean
 	}
 	
 	public java.util.Collection ejbFindByPeriodOverLap(Date from ,Date to)throws FinderException{
-			return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendOverlapPeriod(getColumnValidFrom(),getColumnValidTo(),from,to));
+			return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhere().appendOverlapPeriod(getColumnValidFrom(),getColumnValidTo(),from,to));
 	}
 }
