@@ -524,15 +524,15 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public Collection ejbFindUnPrintedLettersByType(String letterType,int resultSize,int startingIndex) throws FinderException {
-		return super.idoFindPKsByQuery(idoSelectQueryGetUnPrintedLettersByType(letterType));
+		return super.idoFindPKsByQuery(idoSelectQueryGetUnPrintedLettersByType(letterType), resultSize, startingIndex);
 	}
 	
 	public Collection ejbFindUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
-		return super.idoFindPKsByQuery(idoSelectQueryGetUnPrintedLettersByType(letterType,from,to));
+		return super.idoFindPKsByQuery(idoSelectQueryGetUnPrintedLettersByType(letterType,from,to), resultSize, startingIndex);
 	}
 	
 	public Collection ejbFindSingleUnPrintedLettersByType(String letterType,IWTimestamp from, IWTimestamp to,int resultSize,int startingIndex) throws FinderException {
-		return super.idoFindPKsByQuery(idoSelectQueryGetSingleUnPrintedLettersByType(letterType,from,to));
+		return super.idoFindPKsByQuery(idoSelectQueryGetSingleUnPrintedLettersByType(letterType,from,to), resultSize, startingIndex);
 	}
 	
 
