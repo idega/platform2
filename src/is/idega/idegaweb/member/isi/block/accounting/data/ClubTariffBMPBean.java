@@ -212,7 +212,7 @@ public class ClubTariffBMPBean extends GenericEntity implements ClubTariff {
 		sql.appendRightParenthesis();
 		sql.appendAnd();
 		sql.append(COLUMN_PERIOD_FROM);
-		sql.appendGreaterThanOrEqualsSign();
+		sql.appendLessThanOrEqualsSign();
 		sql.append(date.getDate());
 		sql.appendAnd();
 		sql.append(date.getDate());
