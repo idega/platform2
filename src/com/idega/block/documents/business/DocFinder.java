@@ -525,9 +525,9 @@ public class DocFinder {
 
 	try {
 
-	    DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
+	    DocLink staticLink = (DocLink) DocLinkBMPBean.getStaticInstance(DocLink.class);
 
-	    DocLink[] links = (DocLink[]) staticLink.findAllByColumnOrdered(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFolderID(), Integer.toString(folder.getID()), com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCatID(), Integer.toString(infoCat.getID()), com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCreationDate() + " desc", "=", "=");
+	    DocLink[] links = (DocLink[]) staticLink.findAllByColumnOrdered(DocLinkBMPBean.getColumnNameFolderID(), Integer.toString(folder.getID()), DocLinkBMPBean.getColumnNameCatID(), Integer.toString(infoCat.getID()), DocLinkBMPBean.getColumnNameCreationDate() + " desc", "=", "=");
 
 	    if (links != null) {
 
@@ -547,8 +547,8 @@ public class DocFinder {
 
     public static DocLink[] getLinksInFolder(InformationFolder folder) {
 	try {
-	    DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
-	    DocLink[] links = (DocLink[]) staticLink.findAllByColumnOrdered(com.idega.block.documents.data.DocLinkBMPBean.getColumnNameFolderID(), Integer.toString(folder.getID()), com.idega.block.documents.data.DocLinkBMPBean.getColumnNameCreationDate() + " desc");
+	    DocLink staticLink = (DocLink) DocLinkBMPBean.getStaticInstance(DocLink.class);
+	    DocLink[] links = (DocLink[]) staticLink.findAll("select * from "+DocLinkBMPBean.getEntityTableName()+" where "+DocLinkBMPBean.getColumnNameFolderID()+" = "+Integer.toString(folder.getID())+" order by "+DocLinkBMPBean.getColumnNameCreationDate()+" desc");
 	    if (links != null) {
 		return links;
 	    }
@@ -560,7 +560,7 @@ public class DocFinder {
 
     public static int getNumberOfLinksInFolderCategory(InformationFolder folder, InformationCategory infoCat) {
       try {
-	DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
+	DocLink staticLink = (DocLink) DocLinkBMPBean.getStaticInstance(DocLink.class);
 	int returnInt = staticLink.getNumberOfRecords("select count(*) from "+DocLinkBMPBean.getEntityTableName()+" where "+DocLinkBMPBean.getColumnNameFolderID()+" = "+Integer.toString(folder.getID())+" and "+DocLinkBMPBean.getColumnNameCatID()+" = "+Integer.toString(infoCat.getID()));
 	return returnInt;
       }
@@ -571,7 +571,7 @@ public class DocFinder {
 
     public static int getNumberOfLinksInFolder(InformationFolder folder) {
       try {
-	DocLink staticLink = (DocLink) com.idega.block.documents.data.DocLinkBMPBean.getStaticInstance(DocLink.class);
+	DocLink staticLink = (DocLink) DocLinkBMPBean.getStaticInstance(DocLink.class);
 	int returnInt = staticLink.getNumberOfRecords("select count(*) from "+DocLinkBMPBean.getEntityTableName()+" where "+DocLinkBMPBean.getColumnNameFolderID()+" = "+Integer.toString(folder.getID()));
 	return returnInt;
       }
