@@ -1,4 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
+import com.idega.block.trade.business.CurrencyHolder;
+import java.util.*;
+import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.Text;
 import com.idega.block.trade.stockroom.data.*;
@@ -26,8 +29,13 @@ public class SettingsEditor extends TravelManager {
 
   private String PARAMETER_DOUBLE_CONFIRMATION = "stEd_par_dbl_con";
   private String PARAMETER_RECEIVE_EMAIL_AFTER_ONLINE_BOOKING = "stEd_par_rcv_eml_onl_b";
+  private String PARAMETER_DEFAULT_CURRENCY = "stEd_par_def_cur";
   private String PARAMETER_PERFORM_ACTION = "stEd_par_prf_act";
+  private String BOOLEAN_TRUE = "Y";
+  private String BOOLEAN_FALSE = "N";
   private String ACTION = "stEd_par_act";
+
+  private boolean supplierSettings = false;
 
   public SettingsEditor(IWContext iwc) throws Exception{
     init(iwc);
@@ -44,6 +52,7 @@ public class SettingsEditor extends TravelManager {
 
       if ( supplier != null ) {
         _settings = supplier.getSettings();
+        supplierSettings = true;
       } else if ( reseller != null ) {
         _settings = reseller.getSettings();
       }
@@ -55,37 +64,58 @@ public class SettingsEditor extends TravelManager {
     }
   }
 
-  public Form getSettingsFrom() throws RemoteException {
+  public Form getSettingsFrom(IWContext iwc) throws RemoteException {
     Form form = new Form();
     Table table = new Table();
     form.add( table );
     table.setCellpadding(1);
     table.setCellspacing(1);
     table.setColor(super.WHITE);
+    int row = 0;
 
     BooleanInput doubleConfirm = new BooleanInput(PARAMETER_DOUBLE_CONFIRMATION);
-      doubleConfirm.setSelected(_settings.getIfDoubleConfirmation());
+    doubleConfirm.setSelected(_settings.getIfDoubleConfirmation());
+
     BooleanInput receiveEmail = new BooleanInput(PARAMETER_RECEIVE_EMAIL_AFTER_ONLINE_BOOKING);
-      receiveEmail.setSelected(_settings.getIfEmailAfterOnlineBooking());
+    receiveEmail.setSelected(_settings.getIfEmailAfterOnlineBooking());
+
     SubmitButton save = new SubmitButton(_iwrb.getImage("buttons/save.gif"), ACTION, PARAMETER_PERFORM_ACTION);
 
 
-    table.add(getHeaderText(_iwrb.getLocalizedString("travel.settings","Settings")), 1, 1);
-    table.mergeCells(1, 1, 2, 1);
-    table.setRowColor(1, super.backgroundColor);
+    ++row;
+    table.add(getHeaderText(_iwrb.getLocalizedString("travel.settings","Settings")), 1, row);
+    table.mergeCells(1, row, 2, row);
+    table.setRowColor(row, super.backgroundColor);
 
-    table.add(getText(_iwrb.getLocalizedString("travel.double_confirmation","Double confirmation")), 1, 2);
-    table.add(doubleConfirm, 2, 2);
-    table.setRowColor(2, super.GRAY);
+    ++row;
+    table.add(getText(_iwrb.getLocalizedString("travel.double_confirmation","Double confirmation")), 1, row);
+    table.add(doubleConfirm, 2, row);
+    table.setRowColor(row, super.GRAY);
 
-    table.add(getText(_iwrb.getLocalizedString("travel.receive_email_after_online_booking","Receive email after online booking")), 1, 3);
-    table.add(receiveEmail, 2, 3);
-    table.setRowColor(3, super.GRAY);
+    ++row;
+    table.add(getText(_iwrb.getLocalizedString("travel.receive_email_after_online_booking","Receive email after online booking")), 1, row);
+    table.add(receiveEmail, 2, row);
+    table.setRowColor(row, super.GRAY);
 
-    table.add(save, 1, 4);
-    table.mergeCells(1, 4, 2, 4);
-    table.setAlignment(1, 4, Table.HORIZONTAL_ALIGN_RIGHT);
-    table.setRowColor(4, super.GRAY);
+    if (this.supplierSettings) {
+      DropdownMenu defaultCurrency = super.getTravelStockroomBusiness(iwc).getCurrencyDropdownMenu(PARAMETER_DEFAULT_CURRENCY);//new DropdownMenu(PARAMETER_DEFAULT_CURRENCY);
+      int settingsCurrencyId = _settings.getCurrencyId();
+      if (settingsCurrencyId > 0) {
+        defaultCurrency.setSelectedElement(Integer.toString(settingsCurrencyId));
+      } else {
+        defaultCurrency.setSelectedElement(Integer.toString(CurrencyBusiness.getCurrencyHolder(CurrencyBusiness.defaultCurrency).getCurrencyID()));
+      }
+      ++row;
+      table.add(getText(_iwrb.getLocalizedString("travel.default_currency","Default currency")), 1, row);
+      table.add(defaultCurrency, 2, row);
+      table.setRowColor(row, super.GRAY);
+    }
+
+    ++row;
+    table.add(save, 1, row);
+    table.mergeCells(1, row, 2, row);
+    table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
+    table.setRowColor(row, super.GRAY);
 
 
     return form;
@@ -94,21 +124,27 @@ public class SettingsEditor extends TravelManager {
   public void handleInsert(IWContext iwc) {
     String doubleConfirmation = iwc.getParameter(PARAMETER_DOUBLE_CONFIRMATION);
     String reveiveEmail = iwc.getParameter(PARAMETER_RECEIVE_EMAIL_AFTER_ONLINE_BOOKING);
+    String defaultCurrency = iwc.getParameter(PARAMETER_DEFAULT_CURRENCY);
+
     String action = iwc.getParameter(ACTION);
 
     if (action != null && action.equals(PARAMETER_PERFORM_ACTION)) {
       try {
-        if (doubleConfirmation != null && doubleConfirmation.equals("Y")) {
+        if (doubleConfirmation != null && doubleConfirmation.equals(BOOLEAN_TRUE)) {
           _settings.setIfDoubleConfirmation(true);
-        }else if (doubleConfirmation != null && doubleConfirmation.equals("N")) {
+        }else if (doubleConfirmation != null && doubleConfirmation.equals(BOOLEAN_FALSE)) {
           _settings.setIfDoubleConfirmation(false);
         }
 
-        if (reveiveEmail != null && reveiveEmail.equals("Y")) {
+        if (reveiveEmail != null && reveiveEmail.equals(BOOLEAN_TRUE)) {
           _settings.setIfEmailAfterOnlineBooking(true);
-        }else if (reveiveEmail != null && reveiveEmail.equals("N")) {
+        }else if (reveiveEmail != null && reveiveEmail.equals(BOOLEAN_FALSE)) {
           _settings.setIfEmailAfterOnlineBooking(false);
         }
+
+        try {
+          _settings.setCurrencyId(Integer.parseInt(defaultCurrency));
+        }catch (NumberFormatException n) {}
 
         _settings.store();
       }catch (RemoteException re) {
@@ -117,19 +153,6 @@ public class SettingsEditor extends TravelManager {
     }
 
   }
-/*
-  private Text getText(String content) {
-    Text text = (Text) super.theText.clone();
-      text.setText(content);
-      text.setFontColor(super.BLACK);
-    return text;
-  }
 
-  private Text getHeaderText(String content) {
-    Text text = getText(content);
-      text.setBold(true);
-      text.setFontColor(super.WHITE);
-    return text;
-  }
-*/
+
 }

@@ -1,5 +1,10 @@
 package com.idega.block.trade.stockroom.data;
 
+import com.idega.util.text.TextSoap;
+import com.idega.block.trade.business.CurrencyHolder;
+import javax.ejb.FinderException;
+import com.idega.block.trade.data.CurrencyHome;
+import com.idega.block.trade.business.CurrencyBusiness;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.core.data.*;
@@ -91,7 +96,20 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   }
 
   public int getCurrencyId(){
-    return getIntColumnValue(getColumnNameCurrencyId());
+    int currId = getIntColumnValue(getColumnNameCurrencyId());
+    if (currId == 1) {
+      try {
+        CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
+        Currency currency = cHome.findByPrimaryKey(currId);
+        CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(currency.getCurrencyAbbreviation());
+        this.setCurrencyId(holder.getCurrencyID());
+        this.store();
+        System.out.println("[ProductPriceBMPBean] Backwards compatability : changing currencyId from 1 to "+holder.getCurrencyID());
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+    }
+    return currId;
   }
 
   public void setCurrencyId(int id){
@@ -142,8 +160,8 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
     return getBooleanColumnValue(getColumnNameIsValid());
   }
 
-  public static void clearPrices(int productId) throws SQLException {
-    ProductPrice[] prices = getProductPrices(productId, -1, false);
+  public static void clearPrices(int productId, int currencyId) throws SQLException {
+    ProductPrice[] prices = getProductPrices(productId, -1, -1, false, -1, currencyId);
     for (int i = 0; i < prices.length; i++) {
       prices[i].invalidate();
       prices[i].update();
@@ -159,82 +177,128 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, boolean netBookingOnly) {
     return getProductPrices(productId, timeframeId, -1, netBookingOnly);
   }
+
   public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
     return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 0);
   }
   public static ProductPrice[] getMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly) {
-    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 1);
+    return getMiscellaneousPrices(productId, timeframeId, addressId, netBookingOnly, -1);
   }
-  //                           -1 = both
-  // Count as person status ... 0 = selects when COUNT_AS_PERSON = 'Y' or NULL
-  //                            1 = selects when COUNT_AS_PERSON = 'N'
-  private static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus) {
+
+  public static ProductPrice[] getMiscellaneousPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int currencyId) {
+    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, 1, currencyId);
+  }
+
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus) {
+    return getProductPrices(productId, timeframeId, addressId, netBookingOnly, countAsPersonStatus, -1);
+  }
+
+  /**
+   *
+   * @param productId Product id
+   * @param timeframeId Timeframe id
+   * @param addressId TravelAddress id
+   * @param netBookingOnly View netBookings only
+   * @param countAsPersonStatus 0 = selects when COUNT_AS_PERSON = 'Y' or NULL, 1 = selects where COUNT_AS_PERSON = 'N', -1 both 0 and 1
+   * @param currencyId Currency id
+   * @return ProductPrice array
+   */
+  public static ProductPrice[] getProductPrices(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) {
       ProductPrice[] prices = {};
       try {
-        ProductPrice price = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
-        PriceCategory category = (PriceCategory) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class);
-        Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
-        TravelAddress tAddress = (TravelAddress) com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class);
-        Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
-
-        String ptmTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Timeframe.class);
-        String pamTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, TravelAddress.class);
-        String pTable = getProductPriceTableName();
-        String cTable = category.getEntityName();
-
-        StringBuffer SQLQuery = new StringBuffer();
-          SQLQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+cTable);
-          if (timeframeId != -1) {
-            SQLQuery.append(" , "+ptmTable);
-          }
-          if (addressId != -1) {
-            SQLQuery.append(" , "+pamTable);
-          }
-          SQLQuery.append(" WHERE ");
-          if (timeframeId != -1) {
-            SQLQuery.append(ptmTable+"."+timeframe.getIDColumnName()+" = "+timeframeId);
-            SQLQuery.append(" AND ");
-            SQLQuery.append(ptmTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
-            SQLQuery.append(" AND ");
-          }
-          if (countAsPersonStatus == 0) {
-            SQLQuery.append("(");
-            SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" = 'Y'");
-            SQLQuery.append(" OR ");
-            SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" is null");
-            SQLQuery.append(")");
-            SQLQuery.append(" AND ");
-          }else if (countAsPersonStatus == 1) {
-            SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" = 'N'");
-            SQLQuery.append(" AND ");
-          }
-          if (addressId != -1) {
-            SQLQuery.append(pamTable+"."+tAddress.getIDColumnName()+" = "+addressId);
-            SQLQuery.append(" AND ");
-            SQLQuery.append(pamTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
-            SQLQuery.append(" AND ");
-          }
-          SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId() + " = "+cTable+"."+category.getIDColumnName());
-          SQLQuery.append(" AND ");
-          SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameProductId() +" = " + productId);
-          SQLQuery.append(" AND ");
-          SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameIsValid() +"='Y'");
-          SQLQuery.append(" AND ");
-          SQLQuery.append(cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid() +"='Y'");
-          if (netBookingOnly) {
-            SQLQuery.append(" AND ");
-            SQLQuery.append(cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameNetbookingCategory()+" = 'Y'");
-          }
-          SQLQuery.append(" ORDER BY "+pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceType()+","+cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameName());
-
-        prices = (ProductPrice[]) (com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class)).findAll(SQLQuery.toString());
+        String sql = getSQLQuery(productId, timeframeId, addressId, netBookingOnly, countAsPersonStatus, currencyId);
+        prices = (ProductPrice[]) (com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class)).findAll(sql);
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
       }
       return prices;
   }
 
-  /** added 22.04.2002 by gimmi */
+  public static int[] getCurrenciesInUse(int productId) {
+    String sql = getSQLQuery(productId, -1, -1, false, -1, -1);
+    sql = TextSoap.findAndReplace(sql, getProductPriceTableName()+".*", "distinct "+getColumnNameCurrencyId());
+    try {
+      String[] sIds = SimpleQuerier.executeStringQuery(sql);
+      if (sIds != null && sIds.length > 0) {
+        int[] ids = new int[sIds.length];
+        for (int i = 0; i < sIds.length; i++) {
+          ids[i] = Integer.parseInt(sIds[i]);
+        }
+        return ids;
+      }
+
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+    return new int[]{};
+  }
+
+  private static String getSQLQuery(int productId, int timeframeId, int addressId, boolean netBookingOnly, int countAsPersonStatus, int currencyId) {
+    ProductPrice price = (ProductPrice) com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class);
+    PriceCategory category = (PriceCategory) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class);
+    Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
+    TravelAddress tAddress = (TravelAddress) com.idega.block.trade.stockroom.data.TravelAddressBMPBean.getStaticInstance(TravelAddress.class);
+    Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
+
+    String ptmTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, Timeframe.class);
+    String pamTable = EntityControl.getManyToManyRelationShipTableName(ProductPrice.class, TravelAddress.class);
+    String pTable = getProductPriceTableName();
+    String cTable = category.getEntityName();
+
+    StringBuffer SQLQuery = new StringBuffer();
+    SQLQuery.append("SELECT "+pTable+".* FROM "+pTable+", "+cTable);
+    if (timeframeId != -1) {
+      SQLQuery.append(" , "+ptmTable);
+    }
+    if (addressId != -1) {
+      SQLQuery.append(" , "+pamTable);
+    }
+    SQLQuery.append(" WHERE ");
+    if (timeframeId != -1) {
+      SQLQuery.append(ptmTable+"."+timeframe.getIDColumnName()+" = "+timeframeId);
+      SQLQuery.append(" AND ");
+      SQLQuery.append(ptmTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
+      SQLQuery.append(" AND ");
+    }
+    if (currencyId > 0) {
+      SQLQuery.append(getColumnNameCurrencyId())
+          .append(" = ")
+          .append(currencyId)
+          .append(" AND ");
+    }
+    if (countAsPersonStatus == 0) {
+      SQLQuery.append("(");
+      SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" = 'Y'");
+      SQLQuery.append(" OR ");
+      SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" is null");
+      SQLQuery.append(")");
+      SQLQuery.append(" AND ");
+    }else if (countAsPersonStatus == 1) {
+      SQLQuery.append(cTable+"."+PriceCategoryBMPBean.getColumnNameCountAsPerson()+" = 'N'");
+      SQLQuery.append(" AND ");
+    }
+    if (addressId != -1) {
+      SQLQuery.append(pamTable+"."+tAddress.getIDColumnName()+" = "+addressId);
+      SQLQuery.append(" AND ");
+      SQLQuery.append(pamTable+"."+price.getIDColumnName()+" = "+pTable+"."+price.getIDColumnName());
+      SQLQuery.append(" AND ");
+    }
+    SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId() + " = "+cTable+"."+category.getIDColumnName());
+    SQLQuery.append(" AND ");
+    SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameProductId() +" = " + productId);
+    SQLQuery.append(" AND ");
+    SQLQuery.append(pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameIsValid() +"='Y'");
+    SQLQuery.append(" AND ");
+    SQLQuery.append(cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid() +"='Y'");
+    if (netBookingOnly) {
+      SQLQuery.append(" AND ");
+      SQLQuery.append(cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameNetbookingCategory()+" = 'Y'");
+    }
+    SQLQuery.append(" ORDER BY "+pTable+"."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceType()+","+cTable+"."+com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameName());
+
+    return SQLQuery.toString();
+  }
+
   public int getMaxUsage() {
     return getIntColumnValue(getColumnNameMaxUsage());
   }
@@ -253,7 +317,6 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
   public static String getColumnNameCurrencyId() {return "TR_CURRENCY_ID"; }
   public static String getColumnNamePriceType() {return "PRICE_TYPE"; }
   public static String getColumnNameIsValid() {return "IS_VALID";}
-  /** added 22.04.2002 by gimmi */
   public static String getColumnNameMaxUsage() {return "MAX_USAGE";}
 
 

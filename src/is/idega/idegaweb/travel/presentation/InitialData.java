@@ -219,7 +219,7 @@ public class InitialData extends TravelManager {
               try {
                 SettingsEditor se = new SettingsEditor(iwc);
                   se.handleInsert(iwc);
-                form = se.getSettingsFrom();
+                form = se.getSettingsFrom(iwc);
               }catch (Exception e) {
                 e.printStackTrace(System.err);
               }
@@ -629,7 +629,7 @@ public class InitialData extends TravelManager {
         table.setAlignment(1,row,"left");
         table.add(lBack,1,row);
       }
-      if (super.isTravelAdministrator(iwc) ) {
+      if (super.getTravelSessionManager(iwc).getSupplier() != null ) {
         table.setAlignment(2,row,"right");
         table.add(submit,2,row);
       }

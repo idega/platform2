@@ -1,30 +1,23 @@
 package is.idega.idegaweb.travel.presentation;
 
-import javax.ejb.FinderException;
-import java.rmi.RemoteException;
-import com.idega.data.*;
+import java.rmi.*;
+import java.sql.*;
 import java.util.*;
-import com.idega.presentation.Block;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.presentation.text.*;
-import com.idega.presentation.*;
-import com.idega.presentation.ui.*;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.text.data.TxText;
-import com.idega.util.IWTimestamp;
-import com.idega.block.trade.stockroom.business.*;
-import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
-import com.idega.util.IWCalendar;
-import com.idega.util.text.TextSoap;
-import com.idega.core.accesscontrol.business.AccessControl;
-import java.sql.SQLException;
-import java.text.DecimalFormat;
 
-import is.idega.idegaweb.travel.data.Service;
+import javax.ejb.*;
+
+import com.idega.block.text.data.*;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.data.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.util.*;
+import is.idega.idegaweb.travel.business.*;
+import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.business.*;
 import is.idega.idegaweb.travel.service.presentation.*;
-import com.idega.core.data.*;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -51,18 +44,12 @@ public class ServiceDesigner extends TravelManager {
   private String ServiceSessionAttribute = "service_designer_service_id";
   public static String parameterUpdateAction = "seviceDesignerUpdate";
   public static String parameterUpdateServiceId = "serviceDesignerUpdateServiceId";
-  public static String parameterProductPriceId = "serviceDesignerProductPriceId";
-  public static String parameterProductCategoryId = "parameterProductCategoryId";
-  public static String parameterTimeframeId = "parameterTimeframeId";
-  public static String parameterAddressId = "parameterAddressId";
   public static String parameterCreate = "create";
 
   private String PARAMETER_PRODUCT_CATEGORY_TYPE = "pCat_type";
 
   public static String NAME_OF_FORM = "service_designer_form";
-  public static String NAME_OF_PRICE_CATEGORY_FORM = "service_price_category_form";
 
-//  private Boolean priceCategoryCreation;
   private String sessionNameServiceId = "tourDesignerSessionTourId";
   private String PRODUCT_CATEGORY_TYPE = ProductCategoryFactoryBean.CATEGORY_TYPE_DEFAULT;
 
@@ -245,11 +232,8 @@ public class ServiceDesigner extends TravelManager {
       setCategoryCreation(iwc, true);
       if (this.getService(iwc) != null) {
 
-          Form form = new Form();
-            form.setName(this.NAME_OF_PRICE_CATEGORY_FORM);
 
           Table table = new Table();
-            form.add(table);
             table.setAlignment("center");
             table.setWidth("90%");
             table.setColor(super.WHITE);
@@ -275,6 +259,9 @@ public class ServiceDesigner extends TravelManager {
           Link servDaySetter = new Link(iwrb.getLocalizedImageButton("travel.active_dats","Active days"));
             servDaySetter.addParameter(ServiceDaySetter.PARAMETER_SERVICE_ID,  product.getID());
             servDaySetter.setWindowToOpen(ServiceDaySetter.class);
+
+          Link productPriceDesigner = ProductPriceDesigner.getLink(product.getID());// = new Link(iwrb.getLocalizedImageButton("travel.active_dats","Active days"));
+          productPriceDesigner.setImage(iwrb.getLocalizedImageButton("travel.product_price_designer","Price designer"));
 
           Timeframe[] tFrames = product.getTimeframes();
           List addresses = com.idega.util.ListUtil.getEmptyList();
@@ -309,260 +296,49 @@ public class ServiceDesigner extends TravelManager {
           table.setRowColor(row, super.GRAY);
           table.mergeCells(1,row,3,row);
           ++row;
+          table.add(productPriceDesigner,1,row);
+          table.setRowColor(row, super.GRAY);
+          table.mergeCells(1,row,3,row);
+          ++row;
 
+        ProductPriceDesigner ppd = new ProductPriceDesigner(iwc);
+        add(table);
+        add(ppd.getPriceCategoryForm(iwc, product, ServiceAction, PriceCategorySave));
 
-          Text addrText;
-          TextInput priceDiscount;
-          Text categoryName;
-          Text infoText;
-          Text counter;
-          IWTimestamp timestamp;
-
-//          TextInput maxUsage;
-
-
-          for (int l = 0; l < addressesSize; l++) {
-            address = (TravelAddress) addresses.get(l);
-            table.mergeCells(1,row,3,row);
-            table.setRowColor(row, super.backgroundColor);
-            addrText = (Text) super.theBoldText.clone();
-              addrText.setText(address.getName());
-            table.add(addrText, 1, row);
-            ++row;
-
-            PriceCategory[] cats = tsb.getPriceCategories(this.supplier.getID());
-            PriceCategory[] misc = tsb.getMiscellaneousServices(this.supplier.getID());
-
-            for (int k = 0; k < tFrames.length; k++) {
-
-              Text catName = (Text) theText.clone();
-                catName.setText(iwrb.getLocalizedString("travel.price","Price"));
-                catName.setFontColor(super.WHITE);
-              Text priceDiscountText = (Text) theText.clone();
-                priceDiscountText.setText(iwrb.getLocalizedString("travel.price_discount","Price / Discount"));
-                priceDiscountText.setFontColor(super.WHITE);
-              Text timeframeText = getTimeframeText(tFrames[k], iwc);
-                timeframeText.setFontColor(super.WHITE);
-
-
-              table.add(catName,1,row);
-              table.add(priceDiscountText,2,row);
-              table.add(timeframeText,3,row);
-              table.setAlignment(3, row, "right");
-              table.setRowColor(row,super.backgroundColor);
-
-              DecimalFormat df = new DecimalFormat("0.00");
-
-              ProductPrice[] prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(((Integer)service.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(), false);
-              for (int i = 0; i < cats.length; i++) {
-                  table.add(new HiddenInput(parameterTimeframeId, Integer.toString(tFrames[k].getID())),1,row);
-                  table.add(new HiddenInput(parameterAddressId, Integer.toString(address.getID())),1,row);
-                  categoryName = (Text) theText.clone();
-                    categoryName.setFontColor(super.BLACK);
-                    categoryName.setText(cats[i].getName());
-                  infoText = (Text) theText.clone();
-                    infoText.setFontColor(super.BLACK);
-                    infoText.setText(cats[i].getName());
-
-
-                  priceDiscount = new TextInput("price_discount");
-
-                  if (cats[i].getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
-                    infoText.setText("");
-                  }else if (cats[i].getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)){
-                    try {
-                      priceDiscount.setSize(6);
-                      infoText.setText("%");
-                      infoText.addToText(Text.NON_BREAKING_SPACE);
-                      infoText.addToText(iwrb.getLocalizedString("travel.discount_of","discount of"));
-                      infoText.addToText(Text.NON_BREAKING_SPACE);
-                      infoText.addToText(((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(cats[i].getParentId()).getName());
-                    }catch (SQLException sql) {
-                      sql.printStackTrace(System.err);
-                    }
-                  }
-
-                  HiddenInput hi = new HiddenInput(this.parameterProductPriceId, "-1");
-
-                  int iMaxUsage = 0;
-
-                  for (int j = 0; j < prices.length; j++) {
-                    iMaxUsage = prices[j].getMaxUsage();
-                    if (cats[i].getID() == prices[j].getPriceCategoryID()) {
-                      if (prices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
-                        priceDiscount.setContent(Integer.toString((int)prices[j].getPrice()));
-                      }else {
-                        priceDiscount.setContent(Float.toString(prices[j].getPrice()));
-                      }
-                      hi.setValue(prices[j].getID());
-                      break;
-                    }
-
-                  }
-                  table.add(hi, 1, row);
-
-
-                  ++row;
-                  table.add(new HiddenInput(this.parameterProductCategoryId,Integer.toString(cats[i].getID())),1,row);
-                  table.add(categoryName,1,row);
-                  table.add(priceDiscount,2,row);
-                  table.setAlignment(2,row,"right");
-                  table.setWidth(2,"150");
-                  table.add(infoText,3,row);
-
-                   table.setAlignment(3, row, "left");
-                  table.setRowColor(row,super.GRAY);
-              }
-
-              if (misc.length > 0) {
-                ++row;
-                catName = (Text) theText.clone();
-                catName.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
-                catName.setFontColor(super.WHITE);
-                table.add(catName, 1, row);
-                table.setRowColor(row, super.backgroundColor);
-              }
-
-              ProductPrice[] miscPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(((Integer)service.getPrimaryKey()).intValue(), tFrames[k].getID(), address.getID(), false);
-
-              for (int i = 0; i < misc.length; i++) {
-                  table.add(new HiddenInput(parameterTimeframeId, Integer.toString(tFrames[k].getID())),1,row);
-                  table.add(new HiddenInput(parameterAddressId, Integer.toString(address.getID())),1,row);
-                  categoryName = (Text) theText.clone();
-                    categoryName.setFontColor(super.BLACK);
-                    categoryName.setText(misc[i].getName());
-                  infoText = (Text) theText.clone();
-                    infoText.setFontColor(super.BLACK);
-                    infoText.setText(misc[i].getName());
-
-
-                  priceDiscount = new TextInput("price_discount");
-
-                  if (misc[i].getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
-                    infoText.setText("");
-                  }
-
-                  HiddenInput hi = new HiddenInput(this.parameterProductPriceId, "-1");
-                  int iMaxUsage = 0;
-
-
-                  for (int j = 0; j < miscPrices.length; j++) {
-                    iMaxUsage = miscPrices[j].getMaxUsage();
-                    if (misc[i].getID() == miscPrices[j].getPriceCategoryID()) {
-                      if (miscPrices[j].getPriceType() == com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE) {
-                        priceDiscount.setContent(Integer.toString((int)miscPrices[j].getPrice()));
-                      }else {
-                        priceDiscount.setContent(Float.toString(miscPrices[j].getPrice()));
-                      }
-                      hi.setValue(miscPrices[j].getID());
-                      break;
-                    }
-                  }
-                  table.add(hi, 1, row);
-
-
-                  ++row;
-                  table.add(new HiddenInput(this.parameterProductCategoryId,Integer.toString(misc[i].getID())),1,row);
-                  table.add(categoryName,1,row);
-                  table.add(priceDiscount,2,row);
-                  table.setAlignment(2,row,"right");
-                  table.setWidth(2,"150");
-                  table.add(infoText,3,row);
-
-                   table.setAlignment(3, row, "left");
-                  table.setRowColor(row,super.GRAY);
-              }
-
-              ++row;
-            }
-          }
-
-          table.setRowColor(row,super.GRAY);
-          table.setAlignment(3,row,"right");
-          table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.ServiceAction, this.PriceCategorySave),3,row);
-
-          add(Text.BREAK);
-          add(form);
       }else {
-        add("SERVICE ER NULL");
+        add(iwrb.getLocalizedString("travel.service_not_found","Service not found."));
         setCategoryCreation(iwc, false);
       }
 
   }
 
   private void priceCategorySave(IWContext iwc) {
-      String[] timeframeIds = (String[]) iwc.getParameterValues(parameterTimeframeId);
-      String[] addressIds = (String[]) iwc.getParameterValues(parameterAddressId);
-      String[] priceDiscount = (String[]) iwc.getParameterValues("price_discount");
-      String[] maxUsage = (String[]) iwc.getParameterValues("max_usage");
-      String[] priceCategoryIds = (String[]) iwc.getParameterValues(this.parameterProductCategoryId);
-
-      String[] productPriceIds = (String[]) iwc.getParameterValues(this.parameterProductPriceId);
       String text_id = iwc.getParameter("le_text_id");
-
 
       Service service = this.getService(iwc);
 
       try {
-        if (priceDiscount != null) {
-          int priceCategoryId = 0;
-          int productPriceId = -1;
-
-          Product product = getProductBusiness(iwc).getProduct((Integer)service.getPrimaryKey());
-          if (text_id != null && !text_id.equals("")) {
-            TxText pText = product.getText();
-            if (pText == null) {
-              TxText text = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(Integer.parseInt(text_id));
-              product.addText(text);
-//              text.addTo(product);
-            }
-          }
-
-          com.idega.block.trade.stockroom.data.ProductPriceBMPBean.clearPrices(((Integer)service.getPrimaryKey()).intValue());
-
-          float price;
-          int iMaxUsage;
-          PriceCategory pCategory;
-          ProductPrice pPrice;
-          for (int i = 0; i < priceDiscount.length; i++) {
-            pPrice = null;
-            if (!priceDiscount[i].equals("")) {
-              productPriceId = Integer.parseInt(productPriceIds[i]);
-              priceCategoryId = Integer.parseInt(priceCategoryIds[i]);
-
-              pCategory = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
-
-              if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_DISCOUNT)) {
-                priceDiscount[i] = TextSoap.findAndReplace(priceDiscount[i],',','.');
-                pPrice = tsb.setPrice(productPriceId,((Integer)service.getPrimaryKey()).intValue() , priceCategoryId, tsb.getCurrencyIdForIceland(),IWTimestamp.getTimestampRightNow(), Float.parseFloat(priceDiscount[i]), com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_DISCOUNT, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
-              }else if (pCategory.getType().equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
-                priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],".");
-                if (priceDiscount[i].indexOf(",") > 0) {
-                  priceDiscount[i] = TextSoap.findAndCut(priceDiscount[i],",");
-                  price = (float) Float.parseFloat(priceDiscount[i]);
-                  price = price / 100;
-                }else {
-                  price = (float) Float.parseFloat(priceDiscount[i]);
-                }
-                pPrice = tsb.setPrice(productPriceId,((Integer)service.getPrimaryKey()).intValue() , priceCategoryId, tsb.getCurrencyIdForIceland(),IWTimestamp.getTimestampRightNow(), price, com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE, Integer.parseInt(timeframeIds[i]), Integer.parseInt(addressIds[i]));
-              }
-
-              if (pPrice != null) {
-                try {
-                  iMaxUsage = Integer.parseInt(maxUsage[i]);
-                  pPrice.setMaxUsage(iMaxUsage);
-                  pPrice.update();
-                }catch (Exception e) {
-                  debug(e.getMessage());
-                }
-              }
-            }
+        Product product = getProductBusiness(iwc).getProduct((Integer)service.getPrimaryKey());
+        if (text_id != null && !text_id.equals("")) {
+          TxText pText = product.getText();
+          if (pText == null) {
+            TxText text = ((com.idega.block.text.data.TxTextHome)com.idega.data.IDOLookup.getHomeLegacy(TxText.class)).findByPrimaryKeyLegacy(Integer.parseInt(text_id));
+            product.addText(text);
           }
         }
+
+        ProductPriceDesigner ppd = new ProductPriceDesigner(iwc);
+        boolean success = ppd.handleInsert(iwc, product);
+
+
         this.removeService(iwc);
         this.setCategoryCreation(iwc, false);
 
-        saveSuccessful();
+        if (success ) {
+          saveSuccessful();
+        }else {
+          saveUnsuccessful();
+        }
 
       }catch (Exception e) {
         e.printStackTrace(System.err);
@@ -575,6 +351,15 @@ public class ServiceDesigner extends TravelManager {
     Text text = (Text) theText.clone();
       text.setFontColor(WHITE);
       text.setText(iwrb.getLocalizedString("travel.service_was_created","Service was created"));
+
+    add(Text.BREAK);
+    add(text);
+  }
+
+  private void saveUnsuccessful() {
+    Text text = (Text) theText.clone();
+      text.setFontColor(WHITE);
+      text.setText(iwrb.getLocalizedString("travel.service_was_created_but_price_failed","Service was created, but there was an error while trying to save the Prices"));
 
     add(Text.BREAK);
     add(text);

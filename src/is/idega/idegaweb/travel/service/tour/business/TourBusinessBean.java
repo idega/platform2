@@ -60,7 +60,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 
       int[] hotelPickupPlaceIds ={};
       if (pickupPlaceIds != null && pickupPlaceIds.length > 0 && !pickupPlaceIds[0].equals("") ) hotelPickupPlaceIds = new int[pickupPlaceIds.length];
-      for (int i = 0; i < hotelPickupPlaceIds.length; i++) {
+      for (int i = 0; i < pickupPlaceIds.length; i++) {
         hotelPickupPlaceIds[i] = Integer.parseInt(pickupPlaceIds[i]);
       }
 

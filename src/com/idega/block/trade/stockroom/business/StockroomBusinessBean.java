@@ -1,21 +1,20 @@
 package com.idega.block.trade.stockroom.business;
 
-import com.idega.business.IBOLookup;
-import java.rmi.RemoteException;
-import com.idega.business.IBOServiceBean;
-import java.sql.Timestamp;
+import java.rmi.*;
+import java.sql.*;
+import java.util.*;
+
+
+import com.idega.block.login.business.*;
+import com.idega.block.trade.business.*;
 import com.idega.block.trade.stockroom.data.*;
-import java.sql.SQLException;
+import com.idega.business.*;
+import com.idega.core.accesscontrol.business.*;
 import com.idega.core.data.*;
-import com.idega.util.IWTimestamp;
-import com.idega.data.EntityFinder;
-import com.idega.core.user.data.User;
+import com.idega.core.user.data.*;
 import com.idega.data.*;
-import com.idega.block.login.business.LoginBusiness;
-import com.idega.presentation.IWContext;
-import com.idega.core.accesscontrol.business.NotLoggedOnException;
-import java.util.List;
-import java.util.Iterator;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 
 /**
  * Title:        IW Trade
@@ -389,6 +388,16 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
   }
 
+  public DropdownMenu getCurrencyDropdownMenu(String menuName) {
+    DropdownMenu menu = new DropdownMenu(menuName);
+    List currencyList = CurrencyBusiness.getCurrencyList();
+    Iterator iter = currencyList.iterator();
+    while (iter.hasNext()) {
+      CurrencyHolder holder = (CurrencyHolder) iter.next();
+      menu.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
+    }
 
+    return menu;
+  }
 
 }

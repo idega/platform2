@@ -885,7 +885,7 @@ public class PublicBooking extends Block  {
               merchant = suppTemp.getTPosMerchant();
               System.out.println("TPosMerchant found");
             }catch (Exception e) {
-              System.out.println("TPosMerchant NOT found");
+              System.out.println("TPosMerchant NOT found for supplier, using system default");
             }
             if (merchant == null) {
               t = new com.idega.block.tpos.business.TPosClient(iwc);

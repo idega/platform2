@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.data;
 
+import com.idega.block.trade.business.CurrencyBusiness;
+import com.idega.block.trade.data.Currency;
 import javax.ejb.FinderException;
 import javax.ejb.CreateException;
 import java.rmi.RemoteException;
@@ -22,6 +24,7 @@ public class SettingsBMPBean extends GenericEntity implements Settings{
 
   private static final String COLUMN_NAME_DOUBLE_CONFIRMATION = "DOUBLE_CONFIRMATION";
   private static final String COLUMN_NAME_EMAIL_AFTER_ONLINE = "EMAIL_ONLINE";
+  private static final String COLUMN_NAME_CURRENCY_ID = "CURRENCY_ID";
   private static final String ENTITY_NAME = "TR_SETTINGS";
 
 
@@ -36,6 +39,7 @@ public class SettingsBMPBean extends GenericEntity implements Settings{
     this.addAttribute(getIDColumnName());
     this.addAttribute(COLUMN_NAME_DOUBLE_CONFIRMATION, "double confirmation", true, true, Boolean.class);
     this.addAttribute(COLUMN_NAME_EMAIL_AFTER_ONLINE, "receive email after online booking", true, true, Boolean.class);
+    this.addAttribute(COLUMN_NAME_CURRENCY_ID, "currency id", true, true, Integer.class);
 
     this.addManyToManyRelationShip(Supplier.class);
     this.addManyToManyRelationShip(Reseller.class);
@@ -67,6 +71,7 @@ public class SettingsBMPBean extends GenericEntity implements Settings{
       sql.printStackTrace(System.err);
     }
     return null;
+
   }
 
   /** Getters */
@@ -76,6 +81,22 @@ public class SettingsBMPBean extends GenericEntity implements Settings{
 
   public boolean getIfEmailAfterOnlineBooking() {
     return getBooleanColumnValue(COLUMN_NAME_EMAIL_AFTER_ONLINE);
+  }
+
+  public int getCurrencyId() {
+    int currId = getIntColumnValue(COLUMN_NAME_CURRENCY_ID);
+    if (currId < 1) {
+      currId = CurrencyBusiness.getCurrencyHolder("ISK").getCurrencyID();
+      this.setCurrencyId(currId);
+      this.store();
+      System.out.println("[SettingBMPBean] Backwards compatability : setting currencyId = "+currId);
+    }else if (currId == 1) {
+      currId = CurrencyBusiness.getCurrencyHolder(CurrencyBusiness.defaultCurrency).getCurrencyID();
+      this.setCurrencyId(currId);
+      this.store();
+      System.out.println("[SettingBMPBean] Backwards compatability : changing currencyId from 1 to "+currId);
+    }
+    return currId;
   }
 
 
@@ -88,6 +109,9 @@ public class SettingsBMPBean extends GenericEntity implements Settings{
     setColumn(COLUMN_NAME_EMAIL_AFTER_ONLINE, emailAfterOnlineBooking);
   }
 
+  public void setCurrencyId(int currencyId) {
+    setColumn(COLUMN_NAME_CURRENCY_ID, currencyId);
+  }
 
   /** Finders */
 }

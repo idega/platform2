@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.data.IDOLookup;
 import java.rmi.*;
 
 import com.idega.block.login.business.*;
@@ -54,8 +56,8 @@ public class TravelWindow extends Window {
 
 
   public void main(IWContext iwc) throws Exception{
-    setTemplate(iwc);
     initialize(iwc);
+    setTemplate(iwc);
     super.add(table);
   }
 
@@ -66,17 +68,49 @@ public class TravelWindow extends Window {
 
   }
 
-  private void initialize(IWContext iwc) throws RemoteException{
+  protected void initialize(IWContext iwc) throws RemoteException{
     user = LoginBusiness.getUser(iwc);
+    iwb = getBundle(iwc);
+    iwrb = iwb.getResourceBundle(iwc);
     if (user != null) {
       userId = user.getID();
       isSuperAdmin = iwc.isSuperAdmin();
     }
+
+    try {
+        int supplierId = getTravelStockroomBusiness(iwc).getUserSupplierId(iwc);
+        SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+        Supplier supplier = suppHome.findByPrimaryKey(supplierId);
+        if (!supplier.getIsValid()) {
+//          oldLogin = true;
+        }else {
+          getTravelSessionManager(iwc).setSupplier(supplier);
+        }
+    }
+    catch (Exception e) {
+      //e.printStackTrace(System.err);
+      debug(e.getMessage());
+    }
+
+    try {
+        int resellerId = getTravelStockroomBusiness(iwc).getUserResellerId(iwc);
+        Reseller reseller = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
+        if (!reseller.getIsValid()) {
+          //reseller = null;
+//          oldLogin = true;
+        } else {
+          getTravelSessionManager(iwc).setReseller(reseller);
+        }
+    }
+    catch (Exception e) {
+      debug(e.getMessage());
+    }
+
+
   }
   private void setTemplate(IWContext iwc) {
     //iwrb = super.getResourceBundle(iwc);
-    iwb = getBundle(iwc);
-    iwrb = iwb.getResourceBundle(iwc);
+
 
     table.setWidth("100%");
     table.setBorder(0);
@@ -112,6 +146,13 @@ public class TravelWindow extends Window {
       text.setFontColor(TravelManager.WHITE);
     return text;
   }
+
+  protected Text getTextBold(String content) {
+    Text text = new Text(content);
+    text.setStyle(TravelManager.theBoldTextStyle);
+    return text;
+  }
+
 
   protected Booker getBooker(IWApplicationContext iwac) throws RemoteException{
     return (Booker) IBOLookup.getServiceInstance(iwac, Booker.class);

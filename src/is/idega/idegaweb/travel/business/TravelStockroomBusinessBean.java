@@ -1,5 +1,7 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.block.trade.business.CurrencyBusiness;
+import com.idega.block.trade.business.CurrencyHolder;
 import javax.ejb.*;
 import java.rmi.RemoteException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -640,13 +642,14 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
 
   /**
-   * @todo skoða betur
+   * @deprecated
    */
   public int getCurrencyIdForIceland(){
-      Currency curr = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).createLegacy();
       int returner = -1;
       try {
-        String iceKr = "Íslenskar Krónur";
+        CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder("ISK");
+        returner = holder.getCurrencyID();
+/*        String iceKr = "Íslenskar Krónur";
         String[] id = com.idega.data.SimpleQuerier.executeStringQuery("Select "+curr.getIDColumnName()+" from "+curr.getEntityName()+" where "+com.idega.block.trade.data.CurrencyBMPBean.getColumnNameCurrencyName() +" = '"+iceKr+"'");
         if (id == null || id.length == 0) {
             curr = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).createLegacy();
@@ -656,7 +659,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
             returner = curr.getID();
         } else if (id.length > 0) {
           returner = Integer.parseInt(id[id.length -1]);
-        }
+        }*/
 
       }
       catch (Exception e) {
