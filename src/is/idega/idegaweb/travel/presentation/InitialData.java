@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import is.idega.idegaweb.travel.business.TravelSessionManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.service.presentation.ServiceSelector;
 import java.rmi.RemoteException;
@@ -9,9 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import javax.ejb.FinderException;
+import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.trade.stockroom.data.Reseller;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
+import com.idega.business.IBOLookup;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.data.PermissionGroup;
@@ -20,7 +23,6 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
-import com.idega.core.user.data.User;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -37,6 +39,9 @@ import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.data.User;
+import com.idega.user.data.UserHome;
+import com.idega.util.Timer;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -78,6 +83,7 @@ public class InitialData extends TravelManager {
 	private static String parameterTPosProperties = "parTPosProp";
 	private static String parameterUsers = "parameterUsers";
 	private static String PARAMETER_SUPPLY_POOL= "pSupPool";
+	private static String PARAMETER_USER_ID = "uid";;
 	private static String  parameterVoucher = "paraneterVoucher";
 	private String parameterResellerId = "contractResellerId";
 	private String parameterSettings = "parameterSettings";
@@ -93,6 +99,22 @@ public class InitialData extends TravelManager {
 	
 	public String getBundleIdentifier(){
 		return super.IW_BUNDLE_IDENTIFIER;
+	}
+	
+	public void _main(IWContext iwc) throws Exception {
+		if (parameterChoose.equals(iwc.getParameter(this.sAction))) {
+			try {
+				UserHome uhome = (UserHome) IDOLookup.getHome(User.class);
+				User user = uhome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_USER_ID)));
+		    TravelSessionManager tsm = (TravelSessionManager) IBOLookup.getSessionInstance(iwc, TravelSessionManager.class);
+		    tsm.clearAll();
+				LoginBusiness lBiz = new LoginBusiness();
+				lBiz.logInAsAnotherUser(iwc, user);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		super._main(iwc);
 	}
 	
 	public void main(IWContext iwc) throws Exception{
@@ -348,6 +370,7 @@ public class InitialData extends TravelManager {
 					
 					add(selectSupplier(iwc));
 			}
+			
 		}
 		
 		
@@ -380,8 +403,7 @@ public class InitialData extends TravelManager {
 		suppLogin.setText(iwrb.getLocalizedString("travel.user_name","User name"));
 		Text suppPass = (Text) theBoldText.clone();
 		suppPass.setText(iwrb.getLocalizedString("travel.password","Password"));
-		
-		
+				
 		Text suppNameText;
 		Text suppLoginText;
 		Text suppPassText;
@@ -398,6 +420,8 @@ public class InitialData extends TravelManager {
 		table.add(Text.NON_BREAKING_SPACE, 4, row);
 		table.setRowColor(row, super.backgroundColor);
 		
+		Timer t = new Timer();
+		t.start();
 		SupplierHome suppHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 		Collection coll = null;
 		try {
@@ -406,10 +430,13 @@ public class InitialData extends TravelManager {
 		catch (FinderException e1) {
 			e1.printStackTrace();
 		} 
+		t.stop();
+		System.out.println("Time to getSupplier = "+t.getTimeString());
 		
 //		Supplier[] supps = com.idega.block.trade.stockroom.data.SupplierBMPBean.getValidSuppliers();
 		
 		String theColor = super.GRAY;
+		Link useLink;
 		
 		if (coll != null ) {
 			Iterator iter = coll.iterator();
@@ -424,9 +451,9 @@ public class InitialData extends TravelManager {
 				link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
 				table.add(link,4,row);
 				table.add(Text.NON_BREAKING_SPACE,4,row);
-				link = (Link) chooseLink.clone();
-				link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
-				table.add(link,4,row);
+				useLink = (Link) chooseLink.clone();
+				useLink.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
+				table.add(useLink,4,row);
 				table.add(Text.NON_BREAKING_SPACE,4,row);
 				link = (Link) deleteLink.clone();
 				link.addParameter(com.idega.block.trade.stockroom.data.SupplierBMPBean.getSupplierTableName(),supp.getID());
@@ -447,6 +474,7 @@ public class InitialData extends TravelManager {
 					//users = UserGroupBusiness.getUsersContained(pGroup);
 					user = getSupplierManagerBusiness(iwc).getMainUser(supp);
 					if (user != null) {
+						useLink.addParameter(PARAMETER_USER_ID, user.getPrimaryKey().toString());
 						//for (int j = 0; j < users.size(); j++) {
 						//if (j > 0) ++row;
 						
