@@ -26,6 +26,7 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusi
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
@@ -71,7 +72,7 @@ public class InvoiceBusinessBean implements Runnable{
 	private ExportDataMapping categoryPosting;
 	private int childcare = 0;
 	private int check = 0;
-	private School provider;
+	private School school;
 	/**
 	 * Does the acctual work on the batch process
 	 * @see java.lang.Runnable#run()
@@ -84,11 +85,11 @@ public class InvoiceBusinessBean implements Runnable{
 		float months;
 		int hours;
 		float totalSum;
+		InvoiceRecord invoiceRecord, subvention;
 
 
 		try {
 			//TODO (JJ) Probably need to remove the ref to KeyMappingBMPBean. But to what???
-//			iwc.g
 /*
 			int childcare = getKeyMappingHome().findValueByCategoryAndKey(
 				KeyMappingBMPBean.CAT_ACTIVITY,KeyMappingBMPBean.KEY_CHILDCARE).getValue();
@@ -96,6 +97,8 @@ public class InvoiceBusinessBean implements Runnable{
 				KeyMappingBMPBean.CAT_REG_SPEC,KeyMappingBMPBean.KEY_CHECK).getValue();
 */	
 			// **Flag all contracts as 'not processed'
+			
+			setSiblingOrder();
 
 			SchoolCategory childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategoryHome.class)).findChildcareCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(childcareCategory.getPrimaryKey());
@@ -113,7 +116,7 @@ public class InvoiceBusinessBean implements Runnable{
 				// **Fetch invoice receiver
 				custodian = contract.getApplication().getOwner();
 				//**Fetch the reference at the provider
-				provider = contract.getApplication().getProvider();
+				school = contract.getApplication().getProvider();
 				// **Create the invoice header
 				//TODO (JJ) This should not always be done! Sometimes the header might already be created...
 				InvoiceHeader invoiceHeader;
@@ -151,6 +154,7 @@ public class InvoiceBusinessBean implements Runnable{
 				days = IWTimestamp.getDaysBetween(startTime, endTime);
 
 				totalSum = 0;
+				subvention = null;
 				//
 				//Get the check for the contract
 				//
@@ -179,7 +183,7 @@ public class InvoiceBusinessBean implements Runnable{
 					contract);						//Sent in to be used for "Specialutrakning
 			
 				// **Create the invoice record
-				createInvoiceRecord(invoiceHeader, HOURS_PER_WEEK);
+				createInvoiceRecord(invoiceHeader, school.getName()+", "+contract.getCareTime()+" "+HOURS_PER_WEEK);
 				
 				totalSum = postingDetail.getAmount();
 
@@ -202,8 +206,11 @@ public class InvoiceBusinessBean implements Runnable{
 						contract);
 
 					// **Create the invoice record
-					createInvoiceRecord(invoiceHeader, null);
+					invoiceRecord = createInvoiceRecord(invoiceHeader, null);
 					
+					if(postingDetail.getRuleSpecType()== RegSpecConstant.SUBVENTION){
+						subvention = invoiceRecord;
+					}
 					//TODO (JJ) Have to set the status of the invoiceHeader as well
 
 					totalSum += postingDetail.getAmount();
@@ -211,11 +218,13 @@ public class InvoiceBusinessBean implements Runnable{
 				}
 				//Make sure that the sum is not less than 0
 				if(totalSum<0){
-//					subvention += totalSum;
-					//TODO (JJ) have to create some sort of record reference to the subvention row.
+					if(subvention!=null){
+						subvention.setAmount(subvention.getAmount()+totalSum);
+						subvention.store();
+					} else {
+						createNewErrorMessage();
+					}
 				}
-
-		
 			}
 				
 		} catch (RemoteException e1) {
@@ -231,16 +240,22 @@ public class InvoiceBusinessBean implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 	
-	private float createInvoiceRecord(InvoiceHeader invoiceHeader, String header) throws CreateException, PostingParametersException, RemoteException{
+	private void setSiblingOrder(){
+		
+	}
+	
+	private void createNewErrorMessage(){
+	}
+	
+	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String header) throws CreateException, PostingParametersException, RemoteException{
 		String ownPosting, doublePosting, providerOwnPosting, providerDoublePosting;
 
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		//TODO (JJ) set the reference to utbetalningsposten
-		invoiceRecord.setProviderId(provider);
+		invoiceRecord.setProviderId(school);
 		invoiceRecord.setContractId(contract.getContractID());
 		if(header != null){
 			invoiceRecord.setInvoiceText(header);
@@ -266,21 +281,18 @@ public class InvoiceBusinessBean implements Runnable{
 			new Date(new java.util.Date().getTime()), childcare, check, 0, 0);
 
 		ownPosting = parameters.getPostingString();
-		//TODO (JJ) providerOwnPosting = contract.getApplication().getProvider().getPrimaryKey();
-		providerOwnPosting = "";
-		ownPosting = postingBusiness.generateString(ownPosting,providerOwnPosting,currentDate);
+		Provider provider = new Provider(((Integer)contract.getApplication().getProvider().getPrimaryKey()).intValue());
+		ownPosting = postingBusiness.generateString(ownPosting,provider.getOwnPosting(),currentDate);
 		ownPosting = postingBusiness.generateString(ownPosting,categoryPosting.getAccount(),currentDate);
 				
 		invoiceRecord.setOwnPosting(ownPosting);
 		doublePosting = parameters.getDoublePostingString();
-		//TODO (JJ) providerDoublePosting = contract.getApplication().getProvider().getPrimaryKey();
-		providerDoublePosting = "";
-		doublePosting = postingBusiness.generateString(doublePosting,providerDoublePosting,currentDate);
+		doublePosting = postingBusiness.generateString(doublePosting,provider.getDoublePosting(),currentDate);
 		doublePosting = postingBusiness.generateString(doublePosting,categoryPosting.getCounterAccount(),currentDate);
 		invoiceRecord.setOwnPosting(doublePosting);
 		invoiceRecord.store();
 		
-		return postingDetail.getAmount();
+		return invoiceRecord;
 	}
 	
 	private float percentOfMonthDone(IWTimestamp date){
