@@ -366,7 +366,7 @@ public class BookerBean extends IBOServiceBean implements Booker{
 		  		while (iter.hasNext()) {
 		  			ids.add(((Product) iter.next()).getPrimaryKey());
 		  		}
-		  		getGeneralBookingHome().getBookingsTotalCount(ids, stamp, null, -1, new int[] {}, null, false, true, null);
+		  		return getGeneralBookingHome().getBookingsTotalCount(ids, stamp, null, -1, new int[] {}, null, false, true, null);
 	  		}
 	  	} 
   	} catch (FinderException f) {
