@@ -428,7 +428,7 @@ public class Importer extends Block {
 		  headline.setBold();
 		  		  
           fileTable.add(headline,1,1);
-          fileTable.add(new HiddenInput(ACTION_PARAMETER,IMPORT_FILES),2,1);
+          fileTable.add(new HiddenInput(ACTION_PARAMETER,IMPORT_FILES),1,1);
 
           for (int i = 0; i < files.length; i++) {
             if( !files[i].isDirectory() ){
