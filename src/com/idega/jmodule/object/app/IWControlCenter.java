@@ -91,9 +91,11 @@ public class IWControlCenter extends ModuleObjectContainer {
         if(x==1){
           x=2;
         }
+/* Uncomment for three line application suite
         else if(x==2){
           x=3;
         }
+*/
         else{
           x=1;
           y++;
