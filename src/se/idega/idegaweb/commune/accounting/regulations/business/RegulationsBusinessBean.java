@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.22 2003/09/11 17:15:27 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.23 2003/09/11 20:24:35 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,6 +21,8 @@ import javax.ejb.CreateException;
 
 import com.idega.util.IWTimestamp;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolManagementTypeHome;
 import com.idega.block.school.data.SchoolTypeHome;
@@ -73,7 +75,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 
 
-
+	public String getBundleIdentifier() {
+		return se.idega.idegaweb.commune.accounting.presentation.AccountingBlock.IW_ACCOUNTING_BUNDLE_IDENTIFER;
+	}
 
  
 	/**
@@ -292,6 +296,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			ChildCareContract contract) {
 
 		PostingDetail postingDetail = new PostingDetail();
+		IWBundle bundle = getIWApplicationContext().getApplication().getBundle(getBundleIdentifier());
+		IWResourceBundle iwrb = 
+				bundle.getResourceBundle(getIWApplicationContext().getApplication().getSettings().getDefaultLocale());
 
 		Collection items = findRegulationsByPeriod(period, period);
 		if (items != null) {
@@ -309,8 +316,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				if (match == (2 + condition.size())) {
 					// match
 					postingDetail.setAmount(r.getAmount().intValue());
-					postingDetail.setTerm(r.getLocalizationKey());
+					postingDetail.setTerm(iwrb.getLocalizedString(r.getLocalizationKey()));
+					break;
 				}	
+				match = 0;
 			}
 		}
 		return postingDetail;
@@ -318,6 +327,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 
 	private int checkConditions(Regulation r, Collection c) {
+		// something must be done here
+		// I dont know what the collection c contains
+		// The conditions are located in the Bean ConditionBMPBean
+		// There are always 5 conditions for each regulation.
+		// A condition is just a record with a pointer to the PK of Condition and the PK of the Interval
+		
 		return 0;	
 	}
 		 
