@@ -59,6 +59,14 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
     }
   }
 
+  public Collection findAllSchoolTypesForChildCare(){
+    return findAllSchoolTypesInCategory("CHILDCARE");
+  }
+
+  public Collection findAllSchoolTypesForSchool(){
+    return findAllSchoolTypesInCategory("SCHOOL");
+  }
+
   public void storeSchoolType(int id,String name,String info,String category,String locKey) throws java.rmi.RemoteException{
 
       SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
