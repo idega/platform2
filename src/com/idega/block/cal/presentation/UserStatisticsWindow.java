@@ -296,12 +296,17 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		NumberFormat nfi = NumberFormat.getIntegerInstance();
 		float i = numberOfMarks.size();
 		float j = i/totalPractices;
-		t.add(nfp.format(j),1,1);
+		if(j != 0) {
+			t.add(nfp.format(j),1,1);
+		}
+		else {
+			t.add("0",1,1);
+		}
+		
 		t.setStyleClass(1,1,borderRight);
 		t.setHeight(1,1,"100%");
 		t.add(nfi.format(i),2,1);
-		
-		
+				
 		return t;
 	}
 	
