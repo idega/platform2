@@ -30,6 +30,7 @@ public class Converter {
       return getOldUserHome().findByPrimaryKey(id);
     }
     catch(Exception e){
+    	e.printStackTrace();
       throw new EJBException(e.getMessage());
     }
   }
@@ -40,6 +41,7 @@ public class Converter {
       return getNewUserHome().findByPrimaryKey(id);
     }
     catch(Exception e){
+    	e.printStackTrace();
       throw new EJBException(e.getMessage());
     }
   }
