@@ -325,7 +325,7 @@ public class ServiceOverview extends TravelManager {
             table.mergeCells(1,row,5,row);
             table.setAlignment(1,row,"right");
 
-            getLink = new Link("getLink");
+            getLink = new Link(iwrb.getImage("buttons/link.gif"));
               getLink.setWindowToOpen(LinkGenerator.class);
               getLink.addParameter(LinkGenerator.parameterProductId ,service.getID());
 

@@ -92,14 +92,24 @@ public class TravelManager extends Block {
         initializer(iwc);
 
         if (!iwc.hasEditPermission(this) && supplier == null && reseller == null) {
-            /**
-             * @todo Login expires....
-             */
+            if (!isLoginPage(iwc)) {
+              //addBreak();
+              //add(this.getLogin(iwc));
+            }
             draw(iwc);
         }else {
           draw(iwc);
         }
 
+    }
+
+    private boolean isLoginPage(IWContext iwc) {
+        String action = iwc.getParameter(this.sAction);
+        if (action != null)
+        if (action.equals(this.parameterHome)) {
+          return true;
+        }
+        return false;
     }
 
     protected boolean hasLoginExpired(IWContext iwc) {
@@ -127,6 +137,21 @@ public class TravelManager extends Block {
     }
 
     public void draw(IWContext iwc) {
+        table.setBorder(0);
+        table.setHeight("100%");
+        table.setCellpadding(0);
+        table.setCellspacing(0);
+        table.setColor(1,2,this.backgroundColor);
+        table.setVerticalAlignment(1,1,"top");
+        table.setVerticalAlignment(1,2,"top");
+        table.setAlignment(1,1,"left");
+        table.setAlignment(1,2,"center");
+        table.setAlignment("center");
+        table.mergeCells(1,2,2,2);
+        table.setAlignment(2,1,"right");
+        table.setHeight(1,2,"100%");
+        table.setWidth("849");
+
         String action = iwc.getParameter(this.sAction);
         if (action == null) {
           action = (String) iwc.getSessionAttribute(this.sAction);
@@ -136,22 +161,6 @@ public class TravelManager extends Block {
         }else {
           iwc.setSessionAttribute(sAction, action);
         }
-
-
-          table.setBorder(0);
-          table.setHeight("100%");
-          table.setCellpadding(0);
-          table.setCellspacing(0);
-          table.setColor(1,2,this.backgroundColor);
-          table.setVerticalAlignment(1,1,"top");
-          table.setVerticalAlignment(1,2,"top");
-          table.setAlignment(1,1,"left");
-          table.setAlignment(1,2,"center");
-          table.setAlignment("center");
-          table.mergeCells(1,2,2,2);
-          table.setAlignment(2,1,"right");
-          table.setHeight(1,2,"100%");
-          table.setWidth("849");
 
         Image iDesign = iwrb.getImage("buttons/design_trip.gif");
         Image iMyTrip = iwrb.getImage("buttons/my_trips.gif");
@@ -292,7 +301,6 @@ public class TravelManager extends Block {
         theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
         theSmallBoldText.setBold();
         theSmallBoldText.setFontColor(this.textColor);
-
     }
 
     public void add(PresentationObject mo) {

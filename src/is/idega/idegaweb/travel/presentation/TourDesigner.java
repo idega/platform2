@@ -334,8 +334,8 @@ public class TourDesigner extends TravelManager {
         hotels.setName("hotelPickupId");
         hotels.keepStatusOnAction();
 
-      Link alink = new Link();
-        alink.setText("T-pickupPlaceDesigner");
+      Link alink = new Link(iwrb.getImage("buttons/changeresource.gif"));
+        //alink.setText("T-pickupPlaceDesigner");
         alink.setWindowToOpen(HotelPickupPlaceDesigner.class);
 
       table.add(hotelPickupText,1,row);

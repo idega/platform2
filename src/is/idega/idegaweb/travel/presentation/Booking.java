@@ -76,7 +76,7 @@ public class Booking extends TravelManager {
       super.main(iwc);
       initialize(iwc);
 
-      if (super.isLoggedOn(iwc)) {
+      //if (super.isLoggedOn(iwc)) {
         if (reseller != null && contract == null) {
           product = null;
         }
@@ -100,9 +100,9 @@ public class Booking extends TravelManager {
         }
 
         super.addBreak();
-      }else {
-        add(super.getLoggedOffTable(iwc));
-      }
+      //}else {
+      //  add(super.getLoggedOffTable(iwc));
+      //}
   }
 
   public void initialize(IWContext iwc) {
@@ -1208,12 +1208,12 @@ public class Booking extends TravelManager {
 
       if (supplier != null) {
         table.add(iwrb.getLocalizedString("travel.too_many_book_anyway","Too many, book anyway ?"));
-        table.add(new SubmitButton(iwrb.getLocalizedString("travel.yes","Yes"),this.BookingAction, this.parameterBookAnyway));
-        table.add(new BackButton(iwrb.getLocalizedString("travel.no","No")));
+        table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterBookAnyway));
+        table.add(new BackButton(iwrb.getImage("buttons/no.gif")));
       }else if (reseller != null) {
         table.add(iwrb.getLocalizedString("travel.too_many_send_inquiry","Too many, send inquiry ?"));
-        table.add(new SubmitButton(iwrb.getLocalizedString("travel.yes","Yes"),this.BookingAction, this.parameterSendInquery));
-        table.add(new BackButton(iwrb.getLocalizedString("travel.no","No")));
+        table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterSendInquery));
+        table.add(new BackButton(iwrb.getImage("buttons/no.gif")));
       }
 
       add(form);

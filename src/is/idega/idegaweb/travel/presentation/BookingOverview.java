@@ -70,15 +70,15 @@ public class BookingOverview extends TravelManager {
       initialize(iwc);
       supplier = super.getSupplier();
 
-      if (super.isLoggedOn(iwc)) {
+      //if (super.isLoggedOn(iwc)) {
         if (reseller != null && contract == null) {
           product = null;
         }
         displayForm(iwc);
         super.addBreak();
-      }else {
-        add(super.getLoggedOffTable(iwc));
-      }
+      //}else {
+      //  add(super.getLoggedOffTable(iwc));
+      //}
   }
 
   public void initialize(IWContext iwc) {
@@ -450,7 +450,8 @@ public class BookingOverview extends TravelManager {
                           if (supplier != null) {
                               iCount = tour.getTotalSeats();
                               iBooked = Booker.getNumberOfBookings(service.getID(), tempStamp);
-                              iAssigned = Assigner.getNumberOfAssignedSeats(service.getID(), tempStamp);
+                              iAssigned = Assigner.getNumberOfAssignedSeats(product, tempStamp);
+                              //iAssigned = Assigner.getNumberOfAssignedSeats(service.getID(), tempStamp);
 
                               iInquery = Inquirer.getInqueredSeats(service.getID(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
                               //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
@@ -463,6 +464,7 @@ public class BookingOverview extends TravelManager {
                               iInquery = Inquirer.getInqueredSeats(service.getID(),tempStamp,reseller.getID(), true);
                               iAvailable = iCount - iBooked - iAssigned -iInquery;
                           }
+                          System.err.println(i +" : "+iAssigned);
                           countTextBold.setText(Integer.toString(iCount));
 
 
