@@ -239,10 +239,12 @@ public class LayoutUploader extends Block {
 		Collection existingNames = null;
 		if(designFolder!=null){
 			existingNames = new ArrayList();
-			Iterator iterator = designFolder.getChildren();
-			while (iterator.hasNext())	{
-				ICTreeNode node = (ICTreeNode) iterator.next();
-				existingNames.add(node.getNodeName());
+			Iterator iterator = designFolder.getChildren();	
+			if (iterator != null) {
+				while (iterator.hasNext())	{
+					ICTreeNode node = (ICTreeNode) iterator.next();
+					existingNames.add(node.getNodeName());
+				}
 			}
 		}
 		return StringHandler.addOrIncreaseCounterIfNecessary(name, COUNTER_TOKEN, existingNames);
