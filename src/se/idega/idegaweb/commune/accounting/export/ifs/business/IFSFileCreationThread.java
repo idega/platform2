@@ -81,7 +81,12 @@ public class IFSFileCreationThread extends Thread {
 	private HSSFWorkbook wb = null;
 	private HSSFRow row = null;
 	private HSSFCell cell = null;
-	private HSSFCellStyle style = null;
+	private HSSFCellStyle styleAlignRight = null;
+	private HSSFCellStyle styleBold = null;
+	private HSSFCellStyle styleBoldAlignRight = null;
+	private HSSFCellStyle styleBoldUnderline = null;
+	private HSSFCellStyle styleBoldUnderlineAlignRight = null;
+	private HSSFCellStyle styleItalicUnderlineAlignRight = null;
 	private float inCommuneSum = 0;
 	private NumberFormat numberFormat = null;
 	private String deviationString = "";
@@ -1576,6 +1581,9 @@ public class IFSFileCreationThread extends Thread {
 			float totalAmount = 0;
 			float recordAmount;
 			Iterator it = data.iterator();
+			createStyleAlignRight();
+			createStyleBold();
+			createStyleBoldAlignRight();
 			while (it.hasNext()) {
 
 				InvoiceHeader iHead = (InvoiceHeader) it.next();
@@ -1672,6 +1680,7 @@ public class IFSFileCreationThread extends Thread {
 			PostingBusiness pb = getIFSBusiness().getPostingBusiness();
 			Iterator it = data.iterator();
 			int numberOfRecords = 0;
+			createStyleAlignRight();
 			while (it.hasNext()) {
 				cellNumber = 0;
 				PaymentRecord pRec = (PaymentRecord) it.next();
@@ -1770,6 +1779,10 @@ public class IFSFileCreationThread extends Thread {
 			int totalHeaderStudents = 0;
 			int totalStudents = 0;
 			School school = null;
+			createStyleAlignRight();
+			createStyleBold();
+			createStyleBoldAlignRight();
+			createStyleItalicUnderlineAlignRight();
 			while (it.hasNext()) {
 				PaymentHeader pHead = (PaymentHeader) it.next();
 				Collection pRecs = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead);
@@ -1811,7 +1824,7 @@ public class IFSFileCreationThread extends Thread {
 					totalStudents += totalHeaderStudents;
 					totalHeaderStudents = 0;
 					for (short i = row.getFirstCellNum(); i <= row.getLastCellNum(); i++) {
-						row.getCell(i).setCellStyle(getStyleItalicAlignRightUnderline());
+						row.getCell(i).setCellStyle(getStyleItalicUnderlineAlignRight());
 					}
 				}
 			}
@@ -1857,6 +1870,7 @@ public class IFSFileCreationThread extends Thread {
 
 	private void createSigningFooter(HSSFSheet sheet, short rowNumber) {
 		short cellNumber = 1;
+		createStyleBold();
 		row = sheet.createRow(rowNumber += 4);
 		cell = row.createCell(cellNumber--);
 		cell.setCellValue("Attestering");
@@ -1882,6 +1896,8 @@ public class IFSFileCreationThread extends Thread {
 
 	private void createExcelWorkBook(int[] columnWidths, String[] columnNames, String headerText) {
 		wb = new HSSFWorkbook();
+		createStyleBoldUnderlineAlignRight();
+		createStyleBoldUnderline();
 		HSSFSheet sheet = wb.createSheet("Excel");
 		for (short i = 0; i < columnWidths.length; i++)
 			sheet.setColumnWidth(i, (short) (columnWidths[i] * 256));
@@ -1946,56 +1962,80 @@ public class IFSFileCreationThread extends Thread {
 		deviationString = _deviationString;
 	}
 
-	private HSSFCellStyle getStyleBold() {
+	public HSSFCellStyle getStyleAlignRight() {
+		return styleAlignRight;
+	}
+
+	public HSSFCellStyle getStyleBold() {
+		return styleBold;
+	}
+
+	public HSSFCellStyle getStyleBoldAlignRight() {
+		return styleBoldAlignRight;
+	}
+
+	public HSSFCellStyle getStyleBoldUnderline() {
+		return styleBoldUnderline;
+	}
+
+	public HSSFCellStyle getStyleBoldUnderlineAlignRight() {
+		return styleBoldUnderlineAlignRight;
+	}
+
+	public HSSFCellStyle getStyleItalicUnderlineAlignRight() {
+		return styleItalicUnderlineAlignRight;
+	}
+	
+	private HSSFCellStyle createStyleAlignRight() {
+		styleAlignRight = wb.createCellStyle();
+		styleAlignRight.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+		return styleAlignRight;
+	}
+	
+	private HSSFCellStyle createStyleBold() {
 		HSSFFont font = wb.createFont();
 		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-		HSSFCellStyle style = wb.createCellStyle();
-		style.setFont(font);
-		return style;
+		styleBold = wb.createCellStyle();
+		styleBold.setFont(font);
+		return styleBold;
 	}
 
-	private HSSFCellStyle getStyleAlignRight() {
-		style = wb.createCellStyle();
-		style.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-		return style;
+	private HSSFCellStyle createStyleBoldAlignRight() {
+		HSSFFont font = wb.createFont();
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		styleBoldAlignRight = wb.createCellStyle();
+		styleBoldAlignRight.setFont(font);
+		styleBoldAlignRight.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+		return styleBoldAlignRight;
 	}
 
-	private HSSFCellStyle getStyleBoldUnderline() {
-		style = getStyleBold();
-		style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-		return style;
+	private HSSFCellStyle createStyleBoldUnderline() {
+		HSSFFont font = wb.createFont();
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		styleBoldUnderline = wb.createCellStyle();
+		styleBoldUnderline.setFont(font);
+		styleBoldUnderline.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		return styleBoldUnderline;
+	}
+	
+	private HSSFCellStyle createStyleBoldUnderlineAlignRight() {
+		HSSFFont font = wb.createFont();
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		styleBoldUnderlineAlignRight = wb.createCellStyle();
+		styleBoldUnderlineAlignRight.setFont(font);
+		styleBoldUnderlineAlignRight.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		styleBoldUnderlineAlignRight.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+		return styleBoldUnderlineAlignRight;
 	}
 
-	private HSSFCellStyle getStyleBoldAlignRight() {
-		style = getStyleBold();
-		style.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-		return style;
-	}
-
-	private HSSFCellStyle getStyleBoldUnderlineAlignRight() {
-		style = getStyleBoldUnderline();
-		style.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-		return style;
-	}
-
-	private HSSFCellStyle getStyleItalic() {
+	private HSSFCellStyle createStyleItalicUnderlineAlignRight() {
 		HSSFFont italicFont = wb.createFont();
 		italicFont.setItalic(true);
-		style = wb.createCellStyle();
-		style.setFont(italicFont);
-		return style;
-	}
-
-	private HSSFCellStyle getStyleItalicAlignRight() {
-		style = getStyleItalic();
-		style.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-		return style;
-	}
-
-	private HSSFCellStyle getStyleItalicAlignRightUnderline() {
-		style = getStyleItalicAlignRight();
-		style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-		return style;
+		styleItalicUnderlineAlignRight = wb.createCellStyle();
+		styleItalicUnderlineAlignRight.setFont(italicFont);
+		styleItalicUnderlineAlignRight.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+		styleItalicUnderlineAlignRight.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		return styleItalicUnderlineAlignRight;
 	}
 
 	public float getInCommuneSum() {
