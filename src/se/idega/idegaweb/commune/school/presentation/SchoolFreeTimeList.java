@@ -57,7 +57,7 @@ public class SchoolFreeTimeList extends SchoolCommuneBlock {
 
 		List ordered = new Vector(choices);
 		
-		Collections.sort(ordered,new SchoolChoiceComparator(SchoolChoiceComparator.NAME_SORT,iwc.getCurrentLocale(),null,students));
+		Collections.sort(ordered,new SchoolChoiceComparator(SchoolChoiceComparator.NAME_SORT,iwc.getCurrentLocale(),null,students,null));
 		
 		Table table = new Table();
 		table.setColumns(4);
