@@ -22,7 +22,6 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.util.text.Name;
 
 /**
  * Title:
@@ -142,7 +141,7 @@ public class Accounts extends Finance {
 			lastname.setContent(last);
 		*/
 		
-		int len = 20;
+		//int len = 20;
 		accountid.setLength(6);
 		nameinput.setLength(40);
 		pidinput.setLength(14);
@@ -254,7 +253,7 @@ public class Accounts extends Finance {
 			}*/
 			if (hasSomething) {
 				try {
-					Name nm = new Name(name);
+					//Name nm = new Name(name);
 					//accounts = getFinanceService().getAccountHome().findBySearch(id,first,middle,last,type,getFinanceCategoryId().intValue());
 					//accountUsers = getFinanceService().getAccountUserHome().findBySearch(first,middle,last);
 					accounts = getFinanceService().getAccountHome().findBySearch(id,name,pid,type,getFinanceCategoryId().intValue());
