@@ -43,7 +43,7 @@ public class ProjectInvalidationLink extends Block {
   }
 
 
-  public synchronized Object _clone(IWUserContext iwc, boolean askForPermission){
+  public synchronized Object clonePermissionChecked(IWUserContext iwc, boolean askForPermission){
     if(askForPermission){
       if(iwc.hasViewPermission(this) || this.isOwnerOfProject(iwc)){
         return this.clone();
