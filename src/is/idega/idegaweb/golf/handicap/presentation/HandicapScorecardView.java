@@ -381,11 +381,11 @@ public class HandicapScorecardView extends GolfWindow {
 			String medalgreens = "";
 			String medalputts = "";
 
-			if (total_fairway != 0) {
+			if (total_fairway != 0 || total_greens != 0) {
 				medalfairway = scaleDecimals(String.valueOf((double) total_fairway / (statistic.length - parThrees) * 100), 2);
 			}
 
-			if (total_greens != 0) {
+			if (total_fairway != 0 || total_greens != 0) {
 				medalgreens = scaleDecimals(String.valueOf((double) total_greens / statistic.length * 100), 2);
 			}
 
