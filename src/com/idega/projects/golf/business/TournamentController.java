@@ -21,6 +21,7 @@ import com.idega.data.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.util.*;
 import com.idega.jmodule.login.business.AccessControl;
+import com.idega.data.SimpleQuerier;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>,<a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
@@ -271,41 +272,48 @@ public class TournamentController{
 
     /**
      * Returns int error message.
-     *    0: No error, member er allowed to register
-     *    1: UnionMemberInfo entry not correct.
-     *    2: Member does not fit critera for TournamentGroup.
-     *    3: Tournament not set up correctly, no TournamentGroups specified.
+     *    int[0]: Many members with the same social security number
+     *    int[1]: UnionMemberInfo entry not correct.
+     *    int[2]: Member does not fit critera for TournamentGroup.
+     *    int[3]: Tournament not set up correctly, no TournamentGroups specified.
      */
-    public static int isMemberAllowedToRegister(com.idega.projects.golf.entity.Member member,Tournament tournament)throws SQLException{
+    public static int[] isMemberAllowedToRegister(com.idega.projects.golf.entity.Member member,Tournament tournament)throws SQLException{
 
-        int error = 0;
-        boolean theReturn = true;
+        int[] errors = new int[4];
 
-        UnionMemberInfo[] umi = (UnionMemberInfo[]) (new UnionMemberInfo()).findAll("Select * from union_member_info where member_id = "+member.getID()+" and MEMBER_STATUS = 'A' and MEMBERSHIP_TYPE = 'main'");
-        if (umi.length != 1 ) {
-            theReturn = false;
-            error = 1;
+        try {
+            String[] socials = SimpleQuerier.executeStringQuery("SELECT MEMBER_ID FROM MEMBER WHERE SOCIAL_SECURITY_NUMBER = '"+member.getSocialSecurityNumber()+"' ");
+            if (socials.length > 1) {
+                errors[0] = 1;
+            }
+        }catch (Exception ex) {
+            ex.printStackTrace(System.err);
         }
 
-        if (error == 0) {
-            if (tournament.getIfGroupTournament()){
-                TournamentGroup[] groups = tournament.getTournamentGroups();
-                error = 2;
-                for (int i = 0 ; i < groups.length; i++){
-                    if (TournamentController.isMemberInTournamentGroup(member, groups[i])) {
-                        theReturn = true;
-                        error = 0;
-                        break;
-                    }
+        try {
+            String[] umi = SimpleQuerier.executeStringQuery("Select union_member_info_id from union_member_info where member_id = "+member.getID()+" and MEMBER_STATUS = 'A' and MEMBERSHIP_TYPE = 'main'" );
+            if (umi.length != 1 ) {
+                errors[1] = 1;
+            }
+        }catch (Exception ex) {
+            ex.printStackTrace(System.err);
+        }
+
+        if (tournament.getIfGroupTournament()){
+            TournamentGroup[] groups = tournament.getTournamentGroups();
+            errors[2] = 1;
+            for (int i = 0 ; i < groups.length; i++){
+                if (TournamentController.isMemberInTournamentGroup(member, groups[i])) {
+                    errors[2] = 0;
+                    break;
                 }
             }
-            else{
-                theReturn=true;
-                error = 3;
-            }
+        }
+        else{
+            errors[3] = 1;
         }
 
-        return error;
+        return errors;
     }
 
 
@@ -348,12 +356,16 @@ public class TournamentController{
         boolean returner = false;
         com.idega.util.idegaTimestamp startStamp = new  com.idega.util.idegaTimestamp(tourRound.getRoundDate());
         Startingtime[] startingtimes = (Startingtime[]) (new Startingtime()).findAll("SELECT startingtime.* FROM STARTINGTIME, tournament_STARTINGTIME, tournament WHERE tournament.tournament_id = "+tournament.getID()+" AND tournament.tournament_id = tournament_startingtime.tournament_id AND tournament_startingtime.startingtime_id = startingtime.startingtime_id AND STARTINGTIME_DATE = '"+startStamp.toSQLDateString()+"' AND field_id="+tournament.getFieldId()+" AND member_id = "+member.getID());
+
         if (startingtimes.length > 0 ) {
             returner = true;
         }
 
-
-
+        /*
+        if (!returner) {
+            returner = TournamentController.isMemberRegisteredInTournament(tournament,member);
+        }
+        */
 
         return returner;
     }
