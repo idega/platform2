@@ -7,6 +7,7 @@
  */
 package se.idega.idegaweb.commune.accounting.export.ifs.business;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
@@ -15,6 +16,8 @@ import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeaderHome;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckRecord;
@@ -23,6 +26,7 @@ import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLog;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.JournalLogHome;
 
 import com.idega.block.school.data.SchoolCategory;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -204,6 +208,10 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			header.setEventDate(now.getTimestamp());
 			header.store();
 
+			//Create files in folder A. Must get folder info from ExportMappingBean!!!
+			ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+
+
 			trans.commit();
 		}
 		catch (Exception e) {
@@ -251,6 +259,9 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 					}
 				}
 			}
+
+			//Delete files in folder A. Must get folder info from ExportMappingBean!!!
+			ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
 			
 			trans.commit();
 		}
@@ -288,6 +299,9 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			log.setUser(user);
 			log.store();
 			
+			//copy files from folder A to folder B. Must get folder info from ExportMappingBean!!!
+			ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			
 			trans.commit();
 		}
 		catch (Exception e) {
@@ -302,4 +316,15 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		}
 
 	}
+	
+	public ExportBusiness getExportBusiness() {
+		try {
+			return (ExportBusiness) getServiceInstance(ExportBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+			
+	
 }
