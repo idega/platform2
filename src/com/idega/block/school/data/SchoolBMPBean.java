@@ -75,6 +75,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 	public final static String TERMINATION_DATE = "termination_date";
 	public final static String COUNTRY = "country"; // Not connected to commune
 	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";
+	public final static String COMPENSATION_BY_INVOICE = "comp_by_invoice";
 
 	public void initializeAttributes() {
 		this.addAttribute(getIDColumnName());
@@ -95,31 +96,28 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addAttribute(WEB_PAGE, "web_page", true, true, String.class, 500);
 		/** Laddi 3 Sep 2003 */
 		//this.addAttribute(MANAGEMENT_TYPE_ID, "management_type", true, true, Integer.class);
-		addManyToOneRelationship(MANAGEMENT_TYPE, SchoolManagementType.class);
-		
+		addManyToOneRelationship(MANAGEMENT_TYPE, SchoolManagementType.class);		
 		this.addAttribute(HEADMASTER_USER_ID, "headmaster user id", true, true, Integer.class, MANY_TO_ONE, User.class);
 		this.addAttribute(ASSISTANT_HEADMASTER_GROUP_ID, "assistant headmaster group id", true, true, Integer.class, MANY_TO_ONE, Group.class);
 		this.addAttribute(MAP_URL, "url to map", true, true, String.class,500);
 		/** Kelly 13-14 May 2003 */
 		this.addAttribute(ACTIVITY, "The schools activity", true, true, String.class, 256);
 		this.addAttribute(OPEN_HOURS, "The school open hours", true, true, String.class, 256);
-
 		this.addManyToManyRelationShip(SchoolType.class);
 		this.addManyToManyRelationShip(SchoolYear.class);
 		// Grimur 16.10.2002
 		this.addManyToManyRelationShip(LocalizedText.class); // in for backwards compatability
 		this.addManyToManyRelationShip(ICFile.class);
 		// Gimmi 27.12.2002
-		this.addManyToManyRelationShip(TxText.class);
-		
-		addManyToOneRelationship(COMMUNE, Commune.class);
-		
+		this.addManyToManyRelationShip(TxText.class);		
+		addManyToOneRelationship(COMMUNE, Commune.class);		
 		// Anders 15 Sep 2003
 		this.addAttribute(ORGANIZATION_NUMBER, "organisationsnummer", true, true, String.class, 20);
 		this.addAttribute(EXTRA_PROVIDER_ID, "user supplied provider id", true, true, String.class, 20);
 		this.addAttribute(TERMINATION_DATE, "termination date", true, true, Date.class);
 		addManyToOneRelationship(COUNTRY, Country.class);
 		this.addAttribute(CENTRALIZED_ADMINISTRATION, "has provider centralized administration", true, true, Boolean.class);		
+		this.addAttribute(COMPENSATION_BY_INVOICE, "Compensation by invoice", true, true, Boolean.class);
 	}
 	public String getEntityName() {
 		return SCHOOL;
@@ -653,6 +651,14 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 
 	public void setSchoolManagementType(String managementType) {
 		setColumn(MANAGEMENT_TYPE, managementType);
+	}
+	
+	public boolean getHasCompensationByInvoice() {
+		return getBooleanColumnValue(COMPENSATION_BY_INVOICE,false);
+	}
+	
+	public void setHasCompensationByInvoice(boolean hasCompensation) {
+		setColumn(COMPENSATION_BY_INVOICE,hasCompensation);
 	}
 
 	public Collection getImages() throws IDORelationshipException {
