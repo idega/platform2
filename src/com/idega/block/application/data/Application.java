@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.5 2001/06/27 23:37:23 aron Exp $
+ * $Id: Application.java,v 1.6 2001/07/10 09:54:32 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import com.idega.data.GenericEntity;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.lang.IllegalStateException;
+import com.idega.util.idegaTimestamp;
 
 /**
  *
@@ -108,8 +109,10 @@ public class Application extends GenericEntity {
   public void setStatus(String status) throws IllegalStateException {
     if ((status.equalsIgnoreCase(statusSubmitted)) ||
         (status.equalsIgnoreCase(statusApproved)) ||
-        (status.equalsIgnoreCase(statusRejected)))
+        (status.equalsIgnoreCase(statusRejected))){
       setColumn(status_,status);
+      setStatusChanged(idegaTimestamp.getTimestampRightNow());
+    }
     else
       throw new IllegalStateException("Undefined state : " + status);
   }
