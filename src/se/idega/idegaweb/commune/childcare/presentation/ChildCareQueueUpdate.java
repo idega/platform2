@@ -546,15 +546,11 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.setHeight(2, 12);
 			
 			if (success) {
-				Iterator iterator = choices.iterator();
-				while (iter.hasNext()) {
-					ChildCareQueue queue = (ChildCareQueue) iterator.next();
-					try {
-						getBusiness().setChildCareQueueExported(queue);
-					}
-					catch (RemoteException e2) {
-						e2.printStackTrace();
-					}
+				try {
+					getBusiness().exportQueue(choices);
+				}
+				catch (RemoteException e2) {
+					e2.printStackTrace();
 				}
 
 				table.add(getSmallHeader(localize("child_care.queue_update_completed","Queue update completed.")), 1, 1);

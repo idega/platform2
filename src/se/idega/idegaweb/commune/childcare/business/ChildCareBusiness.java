@@ -95,4 +95,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean insertApplications(com.idega.user.data.User user, int provider[], String[] dates, String message, int childID, java.sql.Date[] queueDates, boolean[] hasPriority) throws java.rmi.RemoteException;
  public void setChildCareQueueExported(se.idega.idegaweb.commune.childcare.data.ChildCareQueue queue) throws java.rmi.RemoteException;
  public boolean getHasUnexportedChoices(int childID);
+ public void exportQueue(java.util.Collection choices) throws java.rmi.RemoteException;
 }

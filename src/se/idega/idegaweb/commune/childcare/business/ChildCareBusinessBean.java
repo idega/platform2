@@ -182,6 +182,32 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		queue.store();
 	}
 	
+	public void exportQueue(Collection choices) {
+		if (choices != null) {
+			UserTransaction t = getSessionContext().getUserTransaction();
+
+			try {
+				t.begin();
+				Iterator iter = choices.iterator();
+				while (iter.hasNext()) {
+					ChildCareQueue element = (ChildCareQueue) iter.next();
+					element.setExported(true);
+					element.store();
+				}
+				t.commit();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				try {
+					t.rollback();
+				}
+				catch (SystemException ex) {
+					ex.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	public boolean getHasUnexportedChoices(int childID) {
 		try {
 			int choices = getChildCareQueueHome().getNumberOfNotExported(childID);
