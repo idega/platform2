@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.31 2001/08/09 18:03:17 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.32 2001/08/09 18:50:37 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -75,8 +75,8 @@ public class GolfMainJSPModulePage extends MainPage {
     topTable.add(getLogin(),1,1);
     topTable.add(getHBanner(modinfo),2,1);
 
-
-    topTable.add(iwrb.getImage("/banners/small_ad.gif"),3,1);
+    topTable.add(getHoleView(),3,1);//debug landsmot
+    //topTable.add(iwrb.getImage("/banners/small_ad.gif"),3,1);
 
     topTable.setAlignment(2,1,"center");
     topTable.setAlignment(3,1,"center");
@@ -146,11 +146,11 @@ public class GolfMainJSPModulePage extends MainPage {
   }
 
   protected Link getHoleView() {
-      Window window = new Window("Hola fyrir holu",796,600,"/tournament/holeview.jsp?&tournamentID=100&tournamentGroupID=3&tournamentRoundID=232");
+      Window window = new Window("Hola fyrir holu",820,600,"/landsmot.jsp");
           window.setMenubar(true);
           window.setResizable(true);
 
-      Link link = new Link(iwb.getImage("shared/canon_holufholu.jpg"),window);
+      Link link = new Link(iwb.getImage("shared/landsmot.gif",111,76),window);
       return link;
   }
 
@@ -469,7 +469,7 @@ public class GolfMainJSPModulePage extends MainPage {
       table.setHeadlineColor("#FFFFFF");
       table.setHeadlineLeft();
       table.setWidth(148);
-      table.setHeaderText(iwrb.getLocalizedString("golferpage.header_table_name","Pro golfers"));
+      table.setHeaderText(iwrb.getLocalizedString("golferpage.header_table_name","Afreks kylfingar"));
       //this should be automated
       Table golfers = new Table(1,1);
 
@@ -500,12 +500,18 @@ public class GolfMainJSPModulePage extends MainPage {
           rightTable.setVerticalAlignment(1,10,"top");
 
           rightTable.setColumnAlignment(1, "center");
-          //rightTable.add(getProGolfers(),1,1);
+          rightTable.add(getProGolfers(),1,1);
           //rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
           rightTable.add(getPollVoter(),1,3);//1,5
 
-          rightTable.add(getGSIAssociates(),1,5);//1,7
-          rightTable.add(getGolfLinks(),1,7);//1,9
+          HeaderTable asses = getGSIAssociates();
+          asses.setCacheable("asses",86400000);//24 hour
+          rightTable.add(asses,1,5);//1,7
+
+          HeaderTable gLinks = getGolfLinks();
+          gLinks.setCacheable("gLinks",86400000);//24 hour
+
+          rightTable.add(gLinks,1,7);//1,9
           rightTable.add(getYellowLine(),1,9);//1,11
 
 
