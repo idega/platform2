@@ -180,6 +180,9 @@ public class MemberOverview extends Block {
 		} else {
 			System.out.println("No image found for user " + user.getName());
 		}
+		if(image != null) {
+			image.setMaxImageWidth(107);
+		}
 		
 		Table table = new Table();
 		table.setWidth("100%");
