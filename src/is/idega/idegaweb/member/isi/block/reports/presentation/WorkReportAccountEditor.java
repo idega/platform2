@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -34,6 +35,7 @@ import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.ConverterConstants;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
+import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.data.EntityRepresentation;
 import com.idega.data.IDOException;
@@ -174,14 +176,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         String field = (String) iterator.next();
         EntityPathValueContainer entityPathValueContainerFromTextEditor = 
           TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(groupId, field, iwc);
-        EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
-          DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(groupId, field, iwc);
         if (entityPathValueContainerFromTextEditor.isValid()) {
           setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromTextEditor, groupId, workReportBusiness);
         }
-        if (entityPathValueContainerFromDropDownMenu.isValid()) {
-          setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromDropDownMenu, groupId, workReportBusiness);
-        }
+      }
+      EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
+        DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(groupId, LEAGUE_NAME, iwc);
+      if (entityPathValueContainerFromDropDownMenu.isValid()) {
+        setValuesOfWorkReportClubAccountRecord(entityPathValueContainerFromDropDownMenu, groupId, workReportBusiness);
       }
       return action;
     }  
@@ -476,6 +478,9 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       browser.setMandatoryColumn(i++, fieldName);
       EntityToPresentationObjectConverter converter =
         (specialFieldList.contains(fieldName)) ? textConverter : textEditorConverter;
+      if (fieldName.equals(LEAGUE_NAME))  {
+        converter = getConverterForLeague(resourceBundle, form);
+      }
       browser.setEntityToPresentationConverter(fieldName, converter);
     }
     browser.setMandatoryColumn(i++, CHECK_BOX);
@@ -485,57 +490,57 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     return browser;
   }
   
-//  /**
-//   * Converter for league column 
-//   */
-//  private EntityToPresentationObjectConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
-//    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
-//      protected Object getValue(
-//        Object entity,
-//        EntityPath path,
-//        EntityBrowser browser,
-//        IWContext iwc)  {
-//          return ((EntityRepresentation) entity).getColumnValue(LEAGUE);
-//        }
-//      };        
-//
-//        
-//    OptionProvider optionProvider = new OptionProvider() {
-//      
-//    Map optionMap = null;
-//      
-//    public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
-//      if (optionMap == null)  {
-//        optionMap = new TreeMap();
-//        WorkReportBusiness business = getWorkReportBusiness(iwc);
-//        Collection coll = null;
-//        try {
-//          coll = business.getAllLeagueWorkReportGroupsForYear(getYear());
-//        }
-//        catch (RemoteException ex) {
-//          System.err.println(
-//            "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
-//              + ex.getMessage());
-//          ex.printStackTrace(System.err);
-//          throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
-//        }
-//        Iterator collIterator = coll.iterator();
-//        while (collIterator.hasNext())  {
-//          WorkReportGroup league = (WorkReportGroup) collIterator.next();
-//          String name = league.getName(); 
-//          String display = resourceBundle.getLocalizedString(name, name);
-//          optionMap.put(name, display);
-//          }
-//        }
-//        // add default value: no league (because main board members are not assigned to a league)
-//        optionMap.put(NO_LEAGUE_VALUE, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
-//        return optionMap;
-//      }
-//    };     
-//    converter.setOptionProvider(optionProvider); 
-//    converter.maintainParameters(getParametersToMaintain());
-//    return converter;
-//  }   
+  /**
+   * Converter for league column 
+   */
+  private EntityToPresentationObjectConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
+    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
+      protected Object getValue(
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc)  {
+          return ((EntityRepresentation) entity).getColumnValue(LEAGUE_NAME);
+        }
+      };        
+
+        
+    OptionProvider optionProvider = new OptionProvider() {
+      
+    Map optionMap = null;
+      
+    public Map getOptions(Object entity, EntityPath path, EntityBrowser browser, IWContext iwc) {
+      if (optionMap == null)  {
+        optionMap = new TreeMap();
+        WorkReportBusiness business = getWorkReportBusiness(iwc);
+        Collection coll = null;
+        try {
+          coll = business.getAllLeagueWorkReportGroupsForYear(getYear());
+        }
+        catch (RemoteException ex) {
+          System.err.println(
+            "[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness. Message is: "
+              + ex.getMessage());
+          ex.printStackTrace(System.err);
+          throw new RuntimeException("[WorkReportBoardMemberEditor]: Can't retrieve WorkReportBusiness.");
+        }
+        Iterator collIterator = coll.iterator();
+        while (collIterator.hasNext())  {
+          WorkReportGroup league = (WorkReportGroup) collIterator.next();
+          String name = league.getName(); 
+          String display = resourceBundle.getLocalizedString(name, name);
+          optionMap.put(name, display);
+          }
+        }
+        // add default value: no league (because main board members are not assigned to a league)
+        optionMap.put(IWMemberConstants.MAIN_BOARD, resourceBundle.getLocalizedString("wr_board_member_editor_no_league","no league"));
+        return optionMap;
+      }
+    };     
+    converter.setOptionProvider(optionProvider); 
+    converter.maintainParameters(getParametersToMaintain());
+    return converter;
+  }   
    
   /** business method: delete WorkReportAccountGroupHelper.
    * @param ids - List of primaryKeys (Integer)
