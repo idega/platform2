@@ -318,6 +318,14 @@ public SmallCalendar(int year,int month) {
       this._highlight = highlight;
   }
 
+  public void setSelectedHighlighted(boolean highlight) {
+      this._highlight = highlight;
+  }
+
+  public void setSelectedHighlightColor(String color) {
+      this.selectedColor = color;
+  }
+
   public void setHighlightedTextColor(String color) {
       this.highlightedText = color;
   }
