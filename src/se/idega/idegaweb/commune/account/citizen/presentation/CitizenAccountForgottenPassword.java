@@ -25,6 +25,8 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
+import com.idega.util.LocaleUtil;
+import com.idega.util.text.SocialSecurityNumber;
 
 
 /**
@@ -379,25 +381,34 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
         digitOnlyInput.append(rawInput.charAt(i));
       }
     }
-    final Calendar rightNow = Calendar.getInstance();
-    final int currentYear = rightNow.get(Calendar.YEAR);
-    if (digitOnlyInput.length() == 10) {
-      final int inputYear = new Integer(digitOnlyInput.substring(0, 2)).intValue();
-      final int century = inputYear + 2000 > currentYear ? 19 : 20;
-      digitOnlyInput.insert(0, century);
+    
+    if (iwc.getApplicationSettings().getDefaultLocale().equals(LocaleUtil.getSwedishLocale())) {
+	    final Calendar rightNow = Calendar.getInstance();
+	    final int currentYear = rightNow.get(Calendar.YEAR);
+	    if (digitOnlyInput.length() == 10) {
+	      final int inputYear = new Integer(digitOnlyInput.substring(0, 2)).intValue();
+	      final int century = inputYear + 2000 > currentYear ? 19 : 20;
+	      digitOnlyInput.insert(0, century);
+	    }
+	        final PIDChecker pidChecker = PIDChecker.getInstance ();
+	    if (digitOnlyInput.length() != 12
+	            || !pidChecker.isValid (digitOnlyInput.toString ())) {
+	      return null;
+	    }
+	    final int year = new Integer(digitOnlyInput.substring(0, 4)).intValue();
+	    final int month = new Integer(digitOnlyInput.substring(4, 6)).intValue();
+	    final int day = new Integer(digitOnlyInput.substring(6, 8)).intValue();
+	    if (year < 1880 || year > currentYear || month < 1 || month > 12 || day < 1 || day > 31) {
+	      return null;
+	    }
+	    return digitOnlyInput.toString();
     }
-        final PIDChecker pidChecker = PIDChecker.getInstance ();
-    if (digitOnlyInput.length() != 12
-            || !pidChecker.isValid (digitOnlyInput.toString ())) {
-      return null;
-    }
-    final int year = new Integer(digitOnlyInput.substring(0, 4)).intValue();
-    final int month = new Integer(digitOnlyInput.substring(4, 6)).intValue();
-    final int day = new Integer(digitOnlyInput.substring(6, 8)).intValue();
-    if (year < 1880 || year > currentYear || month < 1 || month > 12 || day < 1 || day > 31) {
-      return null;
-    }
-    return digitOnlyInput.toString();
+    else if (iwc.getApplicationSettings().getDefaultLocale().equals(LocaleUtil.getSwedishLocale())) {
+    		if (SocialSecurityNumber.isValidIcelandicSocialSecurityNumber(digitOnlyInput.toString())) {
+    			return digitOnlyInput.toString();
+    		}
+    	}
+    return null;
   }
   
 
