@@ -1,39 +1,13 @@
 package com.idega.block.importer.business;
 
-import java.util.Collection;
 
 public interface ImportBusiness extends com.idega.business.IBOService
 {
-/**
- * Method getImportHandlers used to get a list of all import handlers registered in the database.
- * @return A Collection of ImportHandler Beans or null if none was found.
- * @throws RemoteException
- */
- public Collection getImportHandlers() throws java.rmi.RemoteException;
-/**
- * Method getImportFileTypes used to get a list of all import file types registered in the database.
- * @return A Collection of ImportFileClass Beans or null if none was found.
- * @throws RemoteException
- */
- public Collection getImportFileTypes() throws java.rmi.RemoteException;
-
-	/**
-	 * Method importRecords.
-	 * @param handlerClass
-	 * @param fileClass
-	 * @param filePath
-	 * @param groupId
-	 * @return boolean
-	 */
-	boolean importRecords(String handlerClass,String fileClass,String filePath,Integer groupId) throws java.rmi.RemoteException;
-	
-	/**
-	 * Method importRecords.
-	 * @param handlerClass
-	 * @param fileClass
-	 * @param filePath
-	 * @return boolean
-	 */
-	boolean importRecords(String handlerClass,String fileClass,String filePath) throws java.rmi.RemoteException;
-
+ public com.idega.user.business.GroupBusiness getGroupBusiness()throws java.lang.Exception, java.rmi.RemoteException;
+ public com.idega.block.importer.data.ImportFile getImportFile(java.lang.String p0)throws java.lang.Exception, java.rmi.RemoteException;
+ public com.idega.block.importer.business.ImportFileHandler getImportFileHandler(java.lang.String p0,com.idega.idegaweb.IWUserContext p1)throws java.lang.Exception, java.rmi.RemoteException;
+ public java.util.Collection getImportFileTypes()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public java.util.Collection getImportHandlers()throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean importRecords(java.lang.String p0,java.lang.String p1,java.lang.String p2,com.idega.idegaweb.IWUserContext p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public boolean importRecords(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.Integer p3,com.idega.idegaweb.IWUserContext p4)throws java.rmi.RemoteException, java.rmi.RemoteException;
 }

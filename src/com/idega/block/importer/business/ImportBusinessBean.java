@@ -12,6 +12,8 @@ import com.idega.block.importer.data.ImportFileClassHome;
 import com.idega.block.importer.data.ImportHandler;
 import com.idega.block.importer.data.ImportHandlerHome;
 import com.idega.business.IBOServiceBean;
+import com.idega.business.IBOSession;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.user.business.GroupBusiness;
 
 
@@ -64,12 +66,11 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	/**
 	 * @see com.idega.block.importer.business.ImportBusiness#importRecords(String, String, String, Integer)
 	 */
-	public boolean importRecords(String handlerClass,String fileClass,String filePath,Integer groupId)throws RemoteException {
+	public boolean importRecords(String handlerClass,String fileClass,String filePath,Integer groupId, IWUserContext iwuc)throws RemoteException {
 	    try{
 	      boolean status = false;
-	      
 	      	
-	      ImportFileHandler handler = this.getImportFileHandler(handlerClass);
+	      ImportFileHandler handler = this.getImportFileHandler(handlerClass,iwuc);
 	      ImportFile file = this.getImportFile(fileClass);
 	      
 	      file.setFile(new File(filePath));
@@ -94,10 +95,10 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
 	/**
 	 * @see com.idega.block.importer.business.ImportBusiness#importRecords(String, String, String)
 	 */
-	public boolean importRecords(String handlerClass,String fileClass,String filePath)throws RemoteException {
+	public boolean importRecords(String handlerClass,String fileClass,String filePath, IWUserContext iwuc)throws RemoteException {
 		try{
 	      boolean status = false;
-	      ImportFileHandler handler = this.getImportFileHandler(handlerClass);
+	      ImportFileHandler handler = this.getImportFileHandler(handlerClass,iwuc);
 	      ImportFile file = this.getImportFile(fileClass);
 	      
 	      file.setFile(new File(filePath));
@@ -122,8 +123,27 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
     	return (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
   	}
   	
-  	public ImportFileHandler getImportFileHandler(String handlerClass) throws Exception{
-    	ImportFileHandler handler = (ImportFileHandler)  this.getServiceInstance(Class.forName(handlerClass));
+  	public ImportFileHandler getImportFileHandler(String handlerClass, IWUserContext iwuc) throws Exception{
+  		Class importHandlerInterfaceClass = Class.forName(handlerClass);
+			Class[] interfaces = importHandlerInterfaceClass.getInterfaces();
+			boolean isSessionBean = false;
+			for (int i = 0; i < interfaces.length; i++) {
+				Class class1 = interfaces[i];
+				if( class1.equals(IBOSession.class)){
+					isSessionBean = true;
+					break;
+				}				
+			}
+			
+			ImportFileHandler handler;
+			
+  		if( isSessionBean ){
+				handler = (ImportFileHandler)  this.getSessionInstance(iwuc,importHandlerInterfaceClass);
+  		}
+  		else{
+				handler = (ImportFileHandler)  this.getServiceInstance(importHandlerInterfaceClass);
+  		}
+ 
 	    return handler;
   	}
  
