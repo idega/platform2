@@ -44,12 +44,15 @@ public class RunBMPBean extends GenericEntity implements Run {
 		addAttribute(getColumnNameChipTime(), "Chip Time", true, true, Integer.class);
 		addAttribute(getColumnNameUserID(), "User ID", true, true, Integer.class);
 		addAttribute(getColumnNameChipNumber(), "Chip Number", true, true, String.class);
+		addAttribute(getColumnNameChipOwnershipStatus(), "Chip ownership status", true, true, String.class);
 		addAttribute(getColumnNameUserNationality(), "User Nationality", true, true, String.class);
 		addAttribute(getColumnNameTShirtSize(), "TShirt Size", true, true, String.class);
 		addAttribute(getColumnNameRunGroupName(), "Run Group Name", true, true, String.class);
 		addAttribute(getColumnNameBestTime(), "Best Time", true, true, String.class);
 		addAttribute(getColumnNameGoalTime(), "Goal Time", true, true, String.class);
 		addAttribute(getColumnNameParticipantNumber(), "Participant number", true, true, Integer.class);
+		addAttribute(getColumnNamePayMethod(), "Pay method", true, true, String.class);
+		addAttribute(getColumnNameAmountPayed(), "Amount payed", true, true, String.class);
 	}
 
 	public static String getEntityTableName() {
@@ -87,6 +90,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 	public static String getColumnNameChipNumber() {
 		return "run_chip_number";
 	}
+	
+	public static String getColumnNameChipOwnershipStatus() {
+		return "run_chip_ownership_status";
+	}
 
 	public static String getColumnNameUserNationality() {
 		return "user_nationality";
@@ -114,6 +121,14 @@ public class RunBMPBean extends GenericEntity implements Run {
 
 	public static String getColumnNameParticipantNumber() {
 		return "participant_number";
+	}
+	
+	public static String getColumnNamePayMethod() {
+		return "pay_method";
+	}
+	
+	public static String getColumnNameAmountPayed() {
+		return "payed_amount";
 	}
 
 	public String getIDColumnName() {
@@ -156,6 +171,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 	public int getChipTime() {
 		return getIntColumnValue(getColumnNameChipTime());
 	}
+	
+	public String getChipOwnershipStatus() {
+		return getStringColumnValue(getColumnNameChipOwnershipStatus());
+	}
 
 	public int getUserID() {
 		return getIntColumnValue(getColumnNameUserID());
@@ -188,6 +207,14 @@ public class RunBMPBean extends GenericEntity implements Run {
 	public int getParticipantNumber() {
 		return getIntColumnValue(getColumnNameParticipantNumber());
 	}
+	
+	public String getPayMethod() {
+		return getStringColumnValue(getColumnNamePayMethod());
+	}
+	
+	public String getPayedAmount() {
+		return getStringColumnValue(getColumnNameAmountPayed());
+	}
 
 	//SET
 	public void setRunTypeGroupID(int runTypeGroupID) {
@@ -212,6 +239,10 @@ public class RunBMPBean extends GenericEntity implements Run {
 
 	public void setChipTime(double chipTime) {
 		setColumn(getColumnNameChipTime(), chipTime);
+	}
+	
+	public void setChipOwnershipStatus(String ownershipStatus) {
+		setColumn(getColumnNameChipOwnershipStatus(), ownershipStatus);
 	}
 
 	public void setUserID(int userID) {
@@ -244,6 +275,14 @@ public class RunBMPBean extends GenericEntity implements Run {
 	
 	public void setParticipantNumber(int participantNumber) {
 		setColumn(getColumnNameParticipantNumber(), participantNumber);
+	}
+	
+	public void setPayMethod(String payMethod) {
+		setColumn(getColumnNamePayMethod(), payMethod);
+	}
+	
+	public void setPayedAmount(String amount) {
+		setColumn(getColumnNameAmountPayed(),amount);
 	}
 	
 	public Collection ejbFindAll() throws FinderException {

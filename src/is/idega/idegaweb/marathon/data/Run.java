@@ -63,6 +63,11 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipNumber
 	 */
 	public String getChipNumber();
+	
+	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getChipOwnershipStatus
+	 */
+	public String getChipOwnershipStatus();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getUserNationality
@@ -93,6 +98,16 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getParticipantNumber
 	 */
 	public int getParticipantNumber();
+	
+	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getPayMethod
+	 */
+	public String getPayMethod();
+	
+	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#getPayedAmount
+	 */
+	public String getPayedAmount();
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setRunTypeGroupID
@@ -135,6 +150,10 @@ public interface Run extends IDOEntity {
 	public void setChipNumber(String chipNumber);
 
 	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setChipOwnershipStatus
+	 */
+	public void setChipOwnershipStatus(String ownershipStatus);
+	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setUserNationality
 	 */
 	public void setUserNationality(String nationality);
@@ -163,5 +182,15 @@ public interface Run extends IDOEntity {
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setParticipantNumber
 	 */
 	public void setParticipantNumber(int participantNumber);
+	
+	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setPayMethod
+	 */
+	public void setPayMethod(String payMethod);
+	
+	/**
+	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#setPayedAmount
+	 */
+	public void setPayedAmount(String amount);
 
 }
