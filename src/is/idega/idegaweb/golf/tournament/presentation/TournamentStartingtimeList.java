@@ -80,15 +80,21 @@ public class TournamentStartingtimeList extends GolfBlock {
 		if (tournament == null) {
 			tournament = getTournamentSession(modinfo).getTournament();
 		}
-		int tournamentId = tournament.getID();
-		
-		if (tournament_round_id == null) {
-			tournament_round_id = modinfo.getParameter("tournament_round");
-		}
-		
-		String cacheString = "tournament_startingtime_" + tournamentId + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
+		Form cachedForm = null;
+		String cacheString = null;
+		int tournamentId = -1;
 
-		Form cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
+		if (tournament != null) {
+			tournamentId = tournament.getID();
+			
+			if (tournament_round_id == null) {
+				tournament_round_id = modinfo.getParameter("tournament_round");
+			}
+			
+			cacheString = "tournament_startingtime_" + tournamentId + "_" + tournament_round_id + "_" + viewOnly + "_" + onlineRegistration + "_" + useBorder;
+			cachedForm = (Form) modinfo.getApplicationAttribute(cacheString);
+		}
+
 		if (cachedForm != null && !onlineRegistration) {
 			//EIKI: TODO ENABLE CACHING FOR ONLINE ALSO
 			//THE PROBLEM IS THAT THE form.maintainParameter("action") is causing a
@@ -102,8 +108,7 @@ public class TournamentStartingtimeList extends GolfBlock {
 			//System.out.println("Getting startingtime table from cache:
 			// "+cacheString);
 			add(cachedForm);
-		}
-		else {
+		}	else if (tournament != null ){
 			form = new Form();
 			form.add(new HiddenInput("viewOnly", "" + viewOnly));
 			
@@ -449,6 +454,9 @@ public class TournamentStartingtimeList extends GolfBlock {
 			if (!onlineRegistration) modinfo.setApplicationAttribute(cacheString, form);
 
 			add(form);
+		} else {
+			logError("Tournament not found in session, or in parameter");
+			
 		}
 	}
 	
