@@ -62,14 +62,22 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
   public int getRegistratorId(){
     return this.getIntColumnValue(REGISTRATOR);
   }
-  
+
   public Integer ejbFindByUserAndSchoolClass(User user, SchoolClass schoolClass) throws FinderException, RemoteException{
   	IDOQuery sql = new IDOQuery();
   	sql.appendSelectAllFrom(this).appendWhere().append(MEMBER).appendEqualSign().append(((Integer)user.getPrimaryKey()).intValue())
   	.appendAnd().append(SCHOOLCLASS).appendEqualSign().append(((Integer)schoolClass.getPrimaryKey()).intValue());
-  		
+
   	return (Integer)this.idoFindOnePKBySQL(sql.toString());
   }
-  
-  
+
+  public Integer ejbFindByUserAndSeason(User user, SchoolSeason season) throws FinderException, RemoteException{
+    IDOQuery sql = new IDOQuery();
+    sql.appendSelectAllFrom(this).appendWhere().append(MEMBER).appendEqualSign().append(((Integer)user.getPrimaryKey()).intValue())
+    .appendAnd().append(SchoolClassBMPBean.SCHOOLYEAR).appendEqualSign().append(((Integer)season.getPrimaryKey()).intValue())
+    .appendAnd().append(SCHOOLCLASS).appendEqualSign().append(SchoolClassBMPBean.SCHOOLCLASS);
+    return (Integer)this.idoFindOnePKBySQL(sql.toString());
+  }
+
+
 }

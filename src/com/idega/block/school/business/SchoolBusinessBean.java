@@ -9,14 +9,14 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolClass; 
+import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
-import com.idega.block.school.data.SchoolYear;
+import com.idega.block.school.data.*;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOLookup;
@@ -41,6 +41,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	{
 		return (SchoolHome) IDOLookup.getHome(School.class);
 	}
+
+  public SchoolClassMemberHome getSchoolClassMemberHome()throws java.rmi.RemoteException{
+    return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+  }
+   public SchoolClassHome getSchoolClassHome()throws java.rmi.RemoteException{
+    return (SchoolClassHome) IDOLookup.getHome(SchoolClass.class);
+  }
+   public SchoolYearHome getSchoolYearHome()throws java.rmi.RemoteException{
+    return (SchoolYearHome) IDOLookup.getHome(SchoolYear.class);
+  }
 	public School getSchool(Object primaryKey)
 	{
 		try
@@ -121,7 +131,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	{
 		return createSchool(name, null, address, zipcode, ziparea, phone, null, null, null, area_id, sch_types);
 	}
-	
+
 	public School createSchool(
 		String name,
 		String info,
@@ -216,9 +226,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 				newSchool = shome.create();
 			}
 			if(newSchool.getHeadmasterGroupId() < 0){
-			
+
 				newSchool.setHeadmasterGroupId( ( (Integer) getNewSchoolGroup(name,name).getPrimaryKey()).intValue() );
-		
+
 			}
 		}
 		catch (javax.ejb.FinderException fe)
@@ -229,7 +239,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		{
 			throw new java.rmi.RemoteException(ce.getMessage());
 		}
-		
+
 		if(area_id > 0)
 			newSchool.setSchoolAreaId(area_id);
 		if(address!=null)
@@ -250,7 +260,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			newSchool.setSchoolZipArea(ziparea);
 		if(zipcode!=null)
 			newSchool.setSchoolZipCode(zipcode);
-		
+
 		newSchool.store();
 		if (type_ids != null)
 			newSchool.addSchoolTypesRemoveOther(type_ids);
@@ -330,17 +340,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 		return null;
 	}
-	
+
 	public Group getNewSchoolGroup(String name, String info)throws CreateException,FinderException,RemoteException{
 		GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
 		GroupType type = typeHome.create();
-		
+
 		Group rootGroup = this.getRootSchoolGroup();
 		Group schoolGroup = getUserBusiness().getGroupBusiness().createGroup(name,info,type.getGeneralGroupTypeString());
 		rootGroup.addGroup(schoolGroup);
 		return schoolGroup;
 	}
-	
+
 	public Group getRootSchoolGroup()throws CreateException,FinderException,RemoteException{
 		String ROOT_SCHOOL_GROUP_ID_PARAMETER = "root_school_group_id";
 	    Group rootGroup = null;
@@ -350,39 +360,39 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	    //String groupId = (String) this.getIWApplicationContext().getApplicationSettings().getProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME);
 	    if( groupId!=null ){
 	      rootGroup = getUserBusiness().getGroupHome().findByPrimaryKey(new Integer(groupId));
-	      
+
 	    }
 	    else{
 	      System.err.println("trying to store School Root group");
 	      /**@todo this seems a wrong way to do things**/
 	      GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
 	      GroupType type = typeHome.create();
-	
-	
+
+
 	      rootGroup = getUserBusiness().getGroupBusiness().createGroup("School Root Group","The School Root Group.",type.getGeneralGroupTypeString());
 		  bundle.setProperty(ROOT_SCHOOL_GROUP_ID_PARAMETER, rootGroup.getPrimaryKey().toString());
-	     
+
 	    }
 
     return rootGroup;
   }
-  
+
   protected UserBusiness getUserBusiness()throws RemoteException{
     return (UserBusiness)this.getServiceInstance(UserBusiness.class);
   }
-  
+
   public SchoolClass createSchoolClass(String schoolClassName,School school, SchoolYear year,SchoolSeason season) throws CreateException, RemoteException{
   	SchoolClassHome sClassHome = (SchoolClassHome) this.getIDOHome(SchoolClass.class);
   	SchoolClass sClass = sClassHome.create();
-  	
+
   	sClass.setSchoolClassName(schoolClassName);
   	sClass.setSchoolId( ((Integer)school.getPrimaryKey()).intValue() );
   	sClass.setSchoolSeasonId( ((Integer)season.getPrimaryKey()).intValue() );
   	sClass.setSchoolYearId( ((Integer)year.getPrimaryKey()).intValue() );
- 	 	
+
  	return sClass;
-  }  
-  
+  }
+
   public SchoolClassMember createSchoolClassMember(SchoolClass sClass, User user) throws CreateException,java.rmi.RemoteException{
 	SchoolClassMemberHome sClassMemberHome = (SchoolClassMemberHome) this.getIDOHome(SchoolClassMember.class);
   	SchoolClassMember sClassMember = sClassMemberHome.create();
@@ -390,11 +400,11 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
   	sClassMember.setClassMemberId(((Integer)user.getPrimaryKey()).intValue());
   	sClassMember.setRegisterDate(IWTimestamp.getTimestampRightNow());
   	//NEEDS THE CURRENT USER ID FOR REGISTERING USER
-  	  	
+
   	return sClassMember;
-  
+
   }
-  
+
 
 	public Collection findAllSchoolsByType(int type)
 	{

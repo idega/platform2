@@ -38,7 +38,11 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public String getEntityName() {
     return SCHOOLCLASS;
   }
-  
+
+  public String getName(){
+    return getSchoolClassName(NAME);
+  }
+
   public int getSchoolId(){
     return getIntColumnValue(SCHOOL);
   }
@@ -69,10 +73,10 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public String getSchoolClassName(String name){
     return getStringColumnValue(NAME);
   }
-  
+
   public Integer ejbFindBySchoolClassNameSchoolSchoolYearSchoolSeason(String className, School school, SchoolYear schoolYear, SchoolSeason schoolSeason)throws FinderException ,RemoteException{
   	IDOQuery sql = new IDOQuery();
-  	
+
   	sql.appendSelectAllFrom(this).appendWhere().append(NAME).appendEqualSign().appendWithinSingleQuotes(className)
   	.appendAnd().append(SCHOOL).appendEqualSign().append(((Integer)school.getPrimaryKey()).intValue())
   	.appendAnd().append(SCHOOLYEAR).appendEqualSign().append(((Integer)schoolYear.getPrimaryKey()).intValue())
