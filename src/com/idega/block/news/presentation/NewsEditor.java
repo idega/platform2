@@ -361,12 +361,15 @@ private int attributeId = 3;
       news.setDaysShown(new Integer(daysShown));
 
     String includeImage = modinfo.getParameter("insertImage");
+    System.out.println("includeImage: "+includeImage);
     if( includeImage!=null )
       news.setIncludeImage(includeImage);
     else
       news.setIncludeImage("N");
 
     String image_id = modinfo.getParameter("image_id");
+    System.out.println("imageID: "+image_id);
+
     if(image_id == null)
       image_id="-1";
 
