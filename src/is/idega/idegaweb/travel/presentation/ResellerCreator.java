@@ -1,16 +1,16 @@
 package is.idega.idegaweb.travel.presentation;
+import java.util.*;
+import com.idega.block.trade.stockroom.business.SupplierManager;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.text.Link;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
-import java.util.Vector;
 import com.idega.block.trade.stockroom.business.ResellerManager;
 import java.sql.SQLException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.*;
-import java.util.List;
 import com.idega.core.data.*;
 import com.idega.presentation.IWContext;
 
@@ -35,9 +35,12 @@ public class ResellerCreator extends TravelManager {
   private String parameterSelectReseller = "contractSelectReseller";
   private String parameterResellerId = "contractResellerId";
   private String parameterCheckBox = "parameterCheckBox_";
+  private String parameterSupplierCheckBox = "par_supp_checkBox_";
   private String parameterUpdateSuppliers = "par_upd_sup";
   private String parameterAddSuppliers = "par_add_sup";
   private String sAction = "res_cr_action";
+
+  private String tableWidth = "75%";
 
   public ResellerCreator() {
   }
@@ -49,7 +52,8 @@ public class ResellerCreator extends TravelManager {
     String action = iwc.getParameter(this.sAction);
     if (super.isSuperAdmin) {
       if (action == null) {
-        mainMenu(iwc);
+        selectReseller(iwc);
+//        mainMenu(iwc);
       }else if (action.equals(this.parameterNewReseller)) {
         resellerCreation(-1);
       }else if (action.equals(this.parameterSelectReseller)) {
@@ -75,12 +79,11 @@ public class ResellerCreator extends TravelManager {
         selectReseller(iwc);
       }else if (action.equals(this.parameterUpdateSuppliers)) {
         String sResellerId = iwc.getParameter(this.parameterResellerId);
-        if (sResellerId != null) {
-          updateSuppliers(iwc);
-          resellerCreation(Integer.parseInt(sResellerId));
-        }
+        updateSuppliers(iwc);
+        addSuppliers(iwc, Integer.parseInt(sResellerId));
       }else if (action.equals(this.parameterAddSuppliers)) {
-        addSuppliers(iwc);
+        String sResellerId = iwc.getParameter(this.parameterResellerId);
+        addSuppliers(iwc, Integer.parseInt(sResellerId));
       }
     }else {
       iwrb.getLocalizedString("travel.log_in","Please log in.");
@@ -90,7 +93,7 @@ public class ResellerCreator extends TravelManager {
   private void init(IWContext iwc) {
     iwrb = super.getResourceBundle();
   }
-
+/*
   private void mainMenu(IWContext iwc) {
     Table table = new Table();
 
@@ -108,7 +111,7 @@ public class ResellerCreator extends TravelManager {
     add(table);
 
 //      table.add(iwrb.getLocalizedImageButton("travel.new_reseller","New Reseller"),1, 1);
-  }
+  }*/
 
   private void resellerCreation(int resellerId) throws SQLException{
       Form form = new Form();
@@ -119,12 +122,12 @@ public class ResellerCreator extends TravelManager {
         table.setAlignment("center");
         table.setColumnAlignment(1,"right");
         table.setBorder(0);
+        table.setWidth(this.tableWidth);
 
       boolean isUpdate = false;
       if (resellerId != -1) {
         isUpdate = true;
       }
-
       int row = 0;
 
       Text newSupplierText = (Text) theBoldText.clone();
@@ -218,6 +221,7 @@ public class ResellerCreator extends TravelManager {
           if (phones != null) {
             if (phones.size() > 0) {
               Phone phone1 = (Phone) phones.get(0);
+              if (phone1 != null && phone1.getNumber() != null )
               phone.setContent(phone1.getNumber());
             }
           }
@@ -226,6 +230,7 @@ public class ResellerCreator extends TravelManager {
           if (phones != null) {
             if (phones.size() > 0) {
               Phone phone2 = (Phone) phones.get(0);
+              if (phone2 != null && phone2.getNumber() != null )
               fax.setContent(phone2.getNumber());
             }
           }
@@ -501,6 +506,7 @@ public class ResellerCreator extends TravelManager {
 
       Form form = new Form();
       Table table = getTable();
+      table.setWidth(this.tableWidth);
       form.add(table);
       table.add(areSure, 1, 1);
       table.add(getHeaderText(res.getName()+" ? "), 1, 1);
@@ -545,9 +551,11 @@ public class ResellerCreator extends TravelManager {
     Reseller[] resellers = (Reseller[]) rHome.createLegacy().findAll("select * from "+ResellerBMPBean.getResellerTableName()+" where "+ResellerBMPBean.getColumnNameIsValid()+" = 'Y' order by "+ResellerBMPBean.getColumnNameName());
 
     Table table = super.getTable();
+    table.setWidth(this.tableWidth);
     int row = 1;
-    table.setRowColor(row, super.backgroundColor);
     table.add(super.getHeaderText(iwrb.getLocalizedString("travel.name","Name")), 1, row);
+    table.add(Text.NON_BREAKING_SPACE, 2, row);
+    table.setRowColor(row, super.backgroundColor);
 
 
     Link editLink;
@@ -556,12 +564,19 @@ public class ResellerCreator extends TravelManager {
       table.setRowColor(row, super.GRAY);
       table.add(super.getText(resellers[i].getName()), 1, row);
 
-      editLink = new Link(iwrb.getImage("buttons/edit.gif"));
+      editLink = new Link(iwrb.getLocalizedImageButton("travel.more","More"));
         editLink.addParameter(this.sAction, this.parameterEditReseller);
         editLink.addParameter(this.parameterResellerId, resellers[i].getID());
 
       table.add(editLink, 2, row);
     }
+
+    Link newReseller = new Link(iwrb.getLocalizedImageButton("travel.new_reseller","New Reseller"));
+      newReseller.addParameter(this.sAction, this.parameterNewReseller);
+    ++row;
+    table.add(newReseller, 1, row);
+    table.setRowColor(row, super.backgroundColor);
+    table.setWidth(2, "2");
 
     add(Text.BREAK);
     add(table);
@@ -573,52 +588,126 @@ public class ResellerCreator extends TravelManager {
     ResellerHome rHome = (ResellerHome) IDOLookup.getHomeLegacy(Reseller.class);
     Reseller reseller = rHome.findByPrimaryKeyLegacy(Integer.parseInt(sResellerId));
 
-    Supplier[] suppliers = ResellerManager.getSuppliers(reseller.getID());
-    String checkBox;
-    for (int i = 0; i < suppliers.length; i++) {
-      checkBox = iwc.getParameter(this.parameterCheckBox+suppliers[i].getID());
-      if (checkBox != null) {
-        reseller.removeFrom(suppliers[i]);
+    String[] suppIds = iwc.getParameterValues(this.parameterSupplierCheckBox);
+
+    reseller.removeFrom(Supplier.class);
+
+    if (suppIds != null) {
+      for (int i = 0; i < suppIds.length; i++) {
+        reseller.addTo(Supplier.class, Integer.parseInt(suppIds[i]));
       }
     }
-
   }
 
-  private void addSuppliers(IWContext iwc) {
-    add("adding ton");
+  private void addSuppliers(IWContext iwc, int resellerId) throws SQLException {
+    SupplierHome sHome = (SupplierHome) IDOLookup.getHomeLegacy(Supplier.class);
+    Supplier[] allSuppsArr = (Supplier[]) sHome.createLegacy().findAll("select * from "+SupplierBMPBean.getSupplierTableName()+" where "+SupplierBMPBean.getColumnNameIsValid()+" = 'Y' order by "+SupplierBMPBean.getColumnNameName());
+    Supplier[] resSuppsArr = ResellerManager.getSuppliers(resellerId, SupplierBMPBean.getColumnNameName());
+    Supplier supp;
+
+    List allSupps = getList(allSuppsArr);
+    List resSupps = getList(resSuppsArr);
+    allSupps.removeAll(resSupps);
+
+    Form form = getForm(true);
+    Table table = getTable();
+    table.setWidth(this.tableWidth);
+    form.add(table);
+    int row = 1;
+    table.add(getHeaderText(iwrb.getLocalizedString("travel.supplier","Supplier")), 1, row);
+    table.add(getHeaderText(iwrb.getLocalizedString("travel.use","Use")), 2, row);
+    table.setRowColor(row, super.backgroundColor);
+
+    CheckBox checkBox;
+
+    Iterator iter = resSupps.iterator();
+    while (iter.hasNext()) {
+      ++row;
+      supp = (Supplier) iter.next();
+      checkBox = new CheckBox(this.parameterSupplierCheckBox, Integer.toString(supp.getID()));
+      checkBox.setChecked(true);
+      table.add(getText(supp.getName()), 1, row);
+      table.add(checkBox, 2, row);
+      table.setRowColor(row, super.GRAY);
+    }
+
+    ++row;
+    table.setRowColor(row, super.backgroundColor);
+
+    iter = allSupps.iterator();
+    while (iter.hasNext()) {
+      ++row;
+      supp = (Supplier) iter.next();
+      checkBox = new CheckBox(this.parameterSupplierCheckBox, Integer.toString(supp.getID()));
+      checkBox.setChecked(false);
+      table.add(getText(supp.getName()), 1, row);
+      table.add(checkBox, 2, row);
+      table.setRowColor(row, super.GRAY);
+    }
+    table.setColumnAlignment(2, "center");
+
+    ++row;
+    table.setAlignment(2, row, "right");
+    table.add(new SubmitButton(iwrb.getImage("buttons/back.gif"), this.sAction, this.parameterEditReseller), 1, row);
+    table.add(new SubmitButton(iwrb.getImage("buttons/update.gif"), this.sAction, this.parameterUpdateSuppliers), 2, row);
+    table.setRowColor(row, super.GRAY);
+    table.setWidth(2, "2");
+
+    add(form);
+//    add("adding ton");
   }
+
+  private List getList(Object[] objects) {
+    List list = new Vector();
+    for (int i = 0; i < objects.length; i++) {
+      list.add(objects[i]);
+    }
+    return list;
+  }
+
 
   private Form getSupplierList(int resellerId) throws SQLException{
     Supplier[] supps = ResellerManager.getSuppliers(resellerId);
 
     Form form = new Form();
+      form.addParameter(this.parameterResellerId, resellerId);
     Table table = getTable();
+    table.setWidth(this.tableWidth);
     int row = 1;
     form.add(table);
 
 
     table.add(getHeaderText(iwrb.getLocalizedString("travel.suppliers","Suppliers")), 1, row);
-    table.add(getHeaderText(iwrb.getLocalizedString("travel.remove","Remove")), 2, row);
+//    table.add(getHeaderText(iwrb.getLocalizedString("travel.remove","Remove")), 2, row);
     table.setRowColor(row, super.backgroundColor);
     CheckBox cBox;
     for (int i = 0; i < supps.length; i++) {
       ++row;
       table.add(supps[i].getName(),1, row);
       table.setRowColor(row, super.GRAY);
-      cBox = new CheckBox(this.parameterCheckBox+supps[i].getID());
-        cBox.setChecked(false);
-      table.add(cBox, 2, row);
+      //cBox = new CheckBox(this.parameterCheckBox+supps[i].getID());
+        //cBox.setChecked(false);
+      //table.add(cBox, 2, row);
     }
-    table.setColumnAlignment(2, "center");
+    //table.setColumnAlignment(2, "center");
     ++row;
     SubmitButton addNew = new SubmitButton(iwrb.getImage("buttons/add.gif"), sAction, parameterAddSuppliers);
-    SubmitButton update = new SubmitButton(iwrb.getImage("buttons/update.gif"), sAction, parameterUpdateSuppliers);
+//    SubmitButton update = new SubmitButton(iwrb.getImage("buttons/update.gif"), sAction, parameterUpdateSuppliers);
     table.setAlignment(1, row, "left");
     table.add(addNew, 1, row);
-    table.setAlignment(2, row, "right");
-    table.add(update, 2, row);
+    table.setRowColor(row, super.GRAY);
+//    table.setAlignment(2, row, "right");
+//   table.add(update, 2, row);
 
     return form;
   }
 
+
+  private Form getForm(boolean maintainResellerId) {
+    Form form = new Form();
+    if (maintainResellerId) {
+      form.maintainParameter(this.parameterResellerId);
+    }
+    return form;
+  }
 }
