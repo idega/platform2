@@ -504,8 +504,8 @@ public class TournamentController{
 //            rounds.addMenuElement(tourRounds[i].getID(),"Hringur "+tourRounds[i].getRoundNumber()+" "+tourDay.getISLDate(".",true) );
 //        }
 
-            if (!tournament_round_id.equals("-1")) {
-            tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
+            if (tournamentRoundId != -1) {
+              tourDay = new idegaTimestamp(tournamentRound.getRoundDate());
                 rounds.addMenuElement(tournamentRound.getID() ,"Hringur "+tournamentRound.getRoundNumber()+ " "+tourDay.getISLDate(".",true) );
                 table.add(rounds,1,row);
             }
@@ -807,6 +807,73 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
       }
 
       return returner;
+  }
+
+  public static void removeMemberFromTournament(Tournament tournament, com.idega.projects.golf.entity.Member member) {
+      removeMemberFromTournament(tournament, member, -10);
+  }
+
+  public static void removeMemberFromTournament(Tournament tournament, com.idega.projects.golf.entity.Member member, int startingGroupNumber) {
+
+      try {
+          String member_id = ""+member.getID();
+
+          idegaTimestamp stamp;
+          String SQLString;
+          List startingTimes;
+          Startingtime sTime;
+          Scorecard[] scorecards;
+          Scorecard scorecard;
+
+          TournamentRound[] tRounds = tournament.getTournamentRounds();
+          for (int j = 0; j < tRounds.length; j++) {
+              stamp = new idegaTimestamp(tRounds[j].getRoundDate());
+
+              if ( startingGroupNumber != -10) {
+                  SQLString = "SELECT * FROM STARTINGTIME WHERE FIELD_ID ="+tournament.getFieldId()+" AND MEMBER_ID = "+member_id+" AND GRUP_NUM = "+startingGroupNumber+" AND STARTINGTIME_DATE = '"+stamp.toSQLDateString()+"'";
+              }
+              else {
+                  SQLString = "SELECT * FROM TOURNAMENT_STARTINGTIME, STARTINGTIME WHERE TOURNAMENT_STARTINGTIME.TOURNAMENT_ID = "+tournament.getID()+" AND STARTINGTIME.STARTINGTIME_ID = TOURNAMENT_STARTINGTIME.STARTINGTIME_ID AND FIELD_ID ="+tournament.getFieldId()+" AND MEMBER_ID = "+member_id+" AND STARTINGTIME_DATE = '"+stamp.toSQLDateString()+"'";
+              }
+              startingTimes = EntityFinder.findAll(new Startingtime(),SQLString);
+              if (startingTimes != null) {
+                  try {
+                      for (int i = 0; i < startingTimes.size(); i++) {
+                        sTime = (Startingtime) startingTimes.get(i);
+                        sTime.removeFrom(tournament);
+                        sTime.delete();
+                      }
+                  }
+                  catch (Exception ex) {
+                      System.err.println("Tournament Controller : removeMemberFromTournament, startingTime  -  (VILLA)");
+                      ex.printStackTrace(System.err);
+                  }
+              }
+
+              scorecards = (Scorecard[]) (new Scorecard()).findAllByColumn("MEMBER_ID",member_id,"TOURNAMENT_ROUND_ID",tRounds[j].getID()+"");
+              if (scorecards != null) {
+                  for (int i = 0; i < scorecards.length; i++) {
+                      try {
+                          scorecard = scorecards[i];
+                          scorecard.delete();
+                      }
+                      catch (Exception ex) {
+                          System.err.println("Tournament Controller : removeMemberFromTournament, scorecards  -  (VILLA)");
+                          ex.printStackTrace(System.err);
+                      }
+                  }
+
+              }
+
+          }
+
+          member.removeFrom(tournament);
+
+      }
+      catch (Exception e) {
+          e.printStackTrace(System.err);
+      }
+
   }
 
 
