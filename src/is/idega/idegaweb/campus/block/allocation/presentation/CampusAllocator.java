@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.68 2004/06/28 18:17:00 aron Exp $
+ * $Id: CampusAllocator.java,v 1.69 2004/06/29 14:58:22 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -582,6 +582,7 @@ public class CampusAllocator extends CampusBlock implements Campus {
 						T.add(getListLink(name.toString(), complexType.getApartmentTypeID().intValue(), complexType.getComplexID().intValue()), 2, row);
 						row++;
 					}
+					row++;
 					
 				}
 				T.add(getHeader(localize("apartment_category", "Apartment category")), 1, 1);
