@@ -19,7 +19,7 @@ import java.util.Vector;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.text.Edit;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 
 
 /**
@@ -31,7 +31,7 @@ import com.idega.presentation.PresentationObjectContainer;
  * @version 1.0
  */
 
-public class TariffIndexEditor extends PresentationObjectContainer {
+public class TariffIndexEditor extends Block {
 
 
   public static String strAction = "ti_action";
@@ -45,8 +45,12 @@ public class TariffIndexEditor extends PresentationObjectContainer {
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public TariffIndexEditor(){
+   public String getLocalizedNameKey(){
+    return "indices";
+  }
 
+  public String getLocalizedNameValue(){
+    return "Indices";
   }
   protected void control(IWContext iwc){
     if(isAdmin){

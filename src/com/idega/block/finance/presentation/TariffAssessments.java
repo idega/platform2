@@ -50,8 +50,12 @@ public class TariffAssessments extends Block {
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public TariffAssessments() {
+  public String getLocalizedNameKey(){
+    return "assessment";
+  }
 
+  public String getLocalizedNameValue(){
+    return "Assessment";
   }
 
   protected void control(IWContext iwc){

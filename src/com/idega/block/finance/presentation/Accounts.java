@@ -60,6 +60,15 @@ public class Accounts extends Block {
 
   }
 
+  public String getLocalizedNameKey(){
+    return "accounts";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Accounts";
+  }
+
+
   protected void control(IWContext iwc){
     /*
     java.util.Enumeration E = iwc.getParameterNames();
@@ -83,12 +92,12 @@ public class Accounts extends Block {
       }
       else if(iwc.isParameterSet("sf_search")){
         performSearch(iwc,iCategoryId);
-        T.add(getSearchForm(iCategoryId),1,1);
+        T.add(getSearchForm(iwc,iCategoryId),1,1);
         T.add(new HorizontalRule(),1,2);
         T.add(getAccountListTable(iCategoryId),1,3);
       }
       else{
-        T.add(getSearchForm(iCategoryId),1,1);
+        T.add(getSearchForm(iwc,iCategoryId),1,1);
         T.add(new HorizontalRule(),1,2);
       }
       add(T);
@@ -98,7 +107,7 @@ public class Accounts extends Block {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  private PresentationObject getSearchForm(int iCategoryId){
+  private PresentationObject getSearchForm(IWContext iwc,int iCategoryId){
     Form F = new Form();
     Table T = new Table(3,4);
     T.add(Edit.formatText(iwrb.getLocalizedString("account_id","Account id")),1,1);
@@ -106,10 +115,31 @@ public class Accounts extends Block {
     T.add(Edit.formatText(iwrb.getLocalizedString("middle_name","Middle name")),2,3);
     T.add(Edit.formatText(iwrb.getLocalizedString("last_name","Last name")),3,3);
 
+    String id = iwc.getParameter("sf_id");
+    String first = iwc.getParameter("sf_firstname");
+    String middle = iwc.getParameter("sf_middlename");
+    String last = iwc.getParameter("sf_lastname");
+
     TextInput accountid = new TextInput("sf_id");
     TextInput firstname = new TextInput("sf_firstname");
     TextInput middlename = new TextInput("sf_middlename");
     TextInput lastname = new TextInput("sf_lastname");
+    String drpsel = iwc.isParameterSet("sf_type")?iwc.getParameter("sf_type"):"";
+    DropdownMenu drpTypes = getAccountTypes("sf_type",drpsel,null);
+
+
+    if(id!=null)
+       accountid.setContent(id);
+
+    if(first !=null)
+      firstname.setContent(first);
+
+    if(middle!=null)
+      middlename.setContent(middle);
+
+    if(last!=null)
+      lastname.setContent(last);
+
 
     int len = 30;
     accountid.setLength(len);
@@ -123,7 +153,7 @@ public class Accounts extends Block {
     Edit.setStyle(lastname);
 
     T.add(accountid,1,2);
-    T.add(getAccountTypes("sf_type","",null),2,2);
+    T.add(drpTypes,2,2);
     T.add(firstname,1,4);
     T.add(middlename,2,4);
     T.add(lastname,3,4);

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFactory.java,v 1.4 2001/12/17 00:40:05 aron Exp $
+ * $Id: CampusFactory.java,v 1.5 2001/12/19 13:17:06 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Block;
 import com.idega.block.finance.presentation.AccountViewer;
 import com.idega.block.finance.presentation.Finance;
+import com.idega.block.finance.presentation.FinanceIndex;
 import com.idega.block.building.presentation.BuildingViewer;
 import is.idega.idegaweb.campus.templates.CampusPage;
 import is.idega.idegaweb.campus.presentation.Title;
@@ -100,8 +101,7 @@ public class CampusFactory extends Block implements Campus {
         obj = new CampusHome();
         break;
       case ADM_FINANCE :
-        Finance fin = new Finance(1);
-        fin.setAdministrative(false);
+        FinanceIndex fin = new FinanceIndex(1);
         fin.addFinanceObject(new PhoneFiles());
         obj = fin;
         break;

@@ -21,12 +21,10 @@ public class CampusAnnounceMents extends PresentationObjectContainer {
   }
 
   public void main(IWContext iwc){
-    idegaTimestamp stamp= idegaTimestamp.RightNow();
-    int daysIn = -50;
-    stamp.addDays(daysIn);//dagar inni
 
     NewsReader news = new NewsReader(2);
       //news.setLayout(news.NEWS_SITE_LAYOUT);
+      news.setLayout(news.NEWS_SITE_LAYOUT);
       news.setNumberOfLetters(500);
       news.getHeadlineProxy().setFontSize(2);
       news.getHeadlineProxy().setFontColor("#232D44");

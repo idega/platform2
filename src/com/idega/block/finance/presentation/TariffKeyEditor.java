@@ -10,7 +10,7 @@ import com.idega.presentation.ui.*;
 import com.idega.util.text.Edit;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.text.*;
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -28,7 +28,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class TariffKeyEditor extends PresentationObjectContainer {
+public class TariffKeyEditor extends Block {
 
 
   public String strAction = "tke_action";
@@ -38,8 +38,12 @@ public class TariffKeyEditor extends PresentationObjectContainer {
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public TariffKeyEditor(){
+  public String getLocalizedNameKey(){
+    return "tariffkey";
+  }
 
+  public String getLocalizedNameValue(){
+    return "Tariffkey";
   }
 
   protected void control(IWContext iwc){

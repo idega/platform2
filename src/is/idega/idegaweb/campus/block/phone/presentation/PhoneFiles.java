@@ -10,7 +10,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -32,7 +32,7 @@ import java.util.Iterator;
  * @version 1.1
  */
 
-public class PhoneFiles extends PresentationObjectContainer implements FinanceObject{
+public class PhoneFiles extends Block {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String sAction = "cam.ph.file.action";
@@ -44,10 +44,11 @@ public class PhoneFiles extends PresentationObjectContainer implements FinanceOb
 
   private String sessConPrm = "sess_con_status";
 
-  public String getKey(){
-    return "phone_files";
+  public String getLocalizedNameKey(){
+    return "phonefiles";
   }
-  public String getValue(){
+
+  public String getLocalizedNameValue(){
     return "Phonefiles";
   }
   protected void control(IWContext iwc){

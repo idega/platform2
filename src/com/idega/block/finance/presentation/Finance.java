@@ -40,7 +40,7 @@ public class Finance extends Block implements IWBlock{
   boolean administrative = true;
   private List FinanceObjects = null;
   public final static String FRAME_NAME = "fin_frame";
-  private static String prmFinanceClass = "fin_clss";
+  public static String prmFinanceClass = "fin_clss";
 
   private static final String prmCategoryId = "fin_cat";
 
@@ -59,7 +59,7 @@ public class Finance extends Block implements IWBlock{
 
     Table T = new Table();
     T.setWidth("100%");
-    T.setHeight("100%");
+   // T.setHeight("100%");
     T.setCellpadding(0);
     T.setCellspacing(0);
 
@@ -74,41 +74,45 @@ public class Finance extends Block implements IWBlock{
         }
       }
     }
-    if(isAdmin && administrative){
+    if(isAdmin && administrative && getICObjectInstanceID() > 0){
       T.add(getAdminPart(iCategoryId,false,newobjinst,info,iwc),1,1);
     }
+    String className = null;
     if(iwc.isParameterSet(prmFinanceClass)){
+      className = iwc.getParameter(prmFinanceClass);
+      iwc.setSessionAttribute(prmFinanceClass,className);
+    }
+    else if(iwc.getSessionAttribute(prmFinanceClass)!=null){
+      className = (String) iwc.getSessionAttribute(prmFinanceClass);
+    }
+    if(className !=null){
       try{
-      Object obj =  Class.forName(iwc.getParameter(prmFinanceClass)).newInstance();
+       T.add(getLinkTable(1),1,1);
+
+      Object obj =  Class.forName(className).newInstance();
       if(obj instanceof PresentationObject)
-        T.add((PresentationObject)obj,1,1);
+        T.add((PresentationObject)obj,1,2);
+
       }
       catch(Exception e){}
     }
+
     else{
 
+     T.add(getBoxedLinks(),1,1);
+
+/*
     FinanceIndex index = new FinanceIndex(iCategoryId);
     if(FinanceObjects !=null)
       index.addFinanceObjectAll(FinanceObjects);
     //index.addBreak();
 
     T.add(index,1,1);
+    */
     }
 
     add(T);
-    //  add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
-    //add(String.valueOf(iSubjectId));
-  }
-  public PresentationObject getFrame(){
-    IFrame iFrame2 = new IFrame(FRAME_NAME);
-      iFrame2.setSrc(FinanceIndex.class);
-      iFrame2.setWidth("100%");
-      iFrame2.setHeight("100%");
-      iFrame2.setBorder(IFrame.FRAMEBORDER_OFF);
-      iFrame2.setScrolling(IFrame.SCROLLING_YES);
-      iFrame2.setAlignment(IFrame.ALIGN_LEFT);
-      iFrame2.setStyle("border: 1 solid #000000");
-      return iFrame2;
+
   }
 
   public String getBundleIdentifier(){
@@ -156,7 +160,7 @@ public class Finance extends Block implements IWBlock{
     return T;
   }
 
-   public PresentationObject getBoxLinks(){
+  public PresentationObject getBoxedLinks(){
     Table frame = new Table(3,3);
     frame.setWidth("100%");
     frame.setHeight("100%");
@@ -168,10 +172,9 @@ public class Finance extends Block implements IWBlock{
       box.add(getLink(TariffIndexEditor.class,iwrb.getLocalizedString("indexes","Indexes")),1,row++);
       box.add(getLink(TariffEditor.class,iwrb.getLocalizedString("tariff","Tariffs")),1,row++);
       box.add(getLink(TariffAssessments.class,iwrb.getLocalizedString("assessment","Assessment")),1,row++);
-      //FL.add(getLink(PhoneFiles.class,iwrb.getLocalizedString("phonefiles","Phone files"),CampusFinance.FRAME_NAME),1,6);
       box.add(getLink(EntryGroups.class,iwrb.getLocalizedString("bunks","Bunks")),1,row++);
       box.add(getLink(Accounts.class,iwrb.getLocalizedString("accounts","Accounts")),1,row++);
-       if(FinanceObjects != null){
+      if(FinanceObjects != null){
         java.util.Iterator I = FinanceObjects.iterator();
         FinanceObject obj;
         while(I.hasNext()){
@@ -179,13 +182,38 @@ public class Finance extends Block implements IWBlock{
           box.add(getLink(obj.getClass(),iwrb.getLocalizedString(obj.getKey(),obj.getValue())),1,row++);
         }
       }
+      box.setColor(Edit.colorLight);
     frame.add(box,2,2);
     return frame;
   }
 
-  public PresentationObject makeLinkTable(int menuNr){
-    Table LinkTable = new Table(6,1);
-    return LinkTable;
+  public PresentationObject getLinkTable(int menuNr){
+     Table frame = new Table();
+      frame.setWidth("100%");
+      frame.setCellpadding(2);
+      frame.setCellspacing(2);
+
+        int row = 1;
+        int col = 1;
+        frame.add(getLink(PaymentTypeEditor.class,iwrb.getLocalizedString("payment_types","Payment types")),col,row);
+        frame.add(getLink(TariffKeyEditor.class,iwrb.getLocalizedString("tariff_keys","Tariff keys")),col,row);
+        frame.add(getLink(AccountKeyEditor.class,iwrb.getLocalizedString("account_keys","Account keys")),col,row);
+        frame.add(getLink(TariffIndexEditor.class,iwrb.getLocalizedString("indexes","Indexes")),col,row);
+        frame.add(getLink(TariffEditor.class,iwrb.getLocalizedString("tariff","Tariffs")),col,row);
+        frame.add(getLink(TariffAssessments.class,iwrb.getLocalizedString("assessment","Assessment")),col,row);
+        frame.add(getLink(EntryGroups.class,iwrb.getLocalizedString("bunks","Bunks")),col,row);
+        frame.add(getLink(Accounts.class,iwrb.getLocalizedString("accounts","Accounts")),col,row);
+         if(FinanceObjects != null){
+          java.util.Iterator I = FinanceObjects.iterator();
+          FinanceObject obj;
+          while(I.hasNext()){
+            obj = (FinanceObject) I.next();
+            frame.add(getLink(obj.getClass(),iwrb.getLocalizedString(obj.getKey(),obj.getValue())),1,row++);
+          }
+        }
+
+
+      return frame;
   }
 
   public boolean deleteBlock(int iObjectInstanceId){
@@ -207,7 +235,8 @@ public class Finance extends Block implements IWBlock{
     Link L = new Link(name);
     L.addParameter(Finance.getCategoryParameter(iCategoryId));
     L.addParameter(getFinanceObjectParameter(cl));
-    L.setFontSize(2);
+    L.setFontSize(1);
+    L.setFontColor(Edit.colorDark);
     return L;
   }
 

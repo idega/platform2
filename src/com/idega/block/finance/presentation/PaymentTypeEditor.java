@@ -9,6 +9,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.*;
 import com.idega.util.text.Edit;
 import com.idega.presentation.Table;
+import com.idega.presentation.Block;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.text.*;
@@ -28,7 +29,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class PaymentTypeEditor extends PresentationObjectContainer {
+public class PaymentTypeEditor extends Block {
 
 
   public String strAction = "tke_action";
@@ -38,8 +39,12 @@ public class PaymentTypeEditor extends PresentationObjectContainer {
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-  public PaymentTypeEditor(){
+   public String getLocalizedNameKey(){
+    return "paymenttype";
+  }
 
+  public String getLocalizedNameValue(){
+    return "Paymenttype";
   }
 
   protected void control(IWContext iwc){

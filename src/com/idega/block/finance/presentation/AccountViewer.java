@@ -18,6 +18,8 @@ import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.util.List;
+import java.util.Vector;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import com.idega.block.login.business.LoginBusiness;
 
@@ -48,6 +50,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   private User eUser = null;
   protected String styleAttribute = "font-size: 8pt";
   private int iUserId = -1,iAccountId = -1;
+  private boolean specialview = false;
 
   public AccountViewer(){
     this(-1);
@@ -74,6 +77,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     checkIds(iwc);
     idegaTimestamp itFromDate = getFromDate(iwc);
     idegaTimestamp itToDate = getToDate(iwc);
+    specialview = iwc.isParameterSet("specview");
     boolean clean = iwc.isParameterSet(prmClean);
     if(isAdmin || isLoggedOn){
       if(listAccount != null){
@@ -114,7 +118,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
   }
 
   public PresentationObject getEntrySearchTable(int iAccountId,List listAccount,idegaTimestamp from,idegaTimestamp to){
-    Table T = new Table();
+    Table T = new Table(6,2);
     T.setWidth("100%");
     String sFromDate = getDateString(from);
     String sToDate =  getDateString(to);
@@ -133,6 +137,11 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     SubmitButton fetch = new SubmitButton("fetch",iwrb.getLocalizedString("fetch","Fetch"));
     fetch.setAttribute("style",styleAttribute);
 
+
+    CheckBox specialCheck = new CheckBox("specview");
+    if(specialview)
+      specialCheck.setChecked(true);
+
     Link printable = new Link(formatText("printable",1,null));
     printable.setURL(IWMainApplication.getObjectInstanciatorURL(AccountViewer.class));
     printable.addParameter(prmFromDate,getDateString(from));
@@ -141,13 +150,23 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     printable.addParameter(prmClean,"true");
     printable.setWindowToOpen(AccountWindow.class);
 
+
+
     int row = 1;
+
+    T.add(formatText(iwrb.getLocalizedString("account","Account")),1,row);
+    T.add(formatText(iwrb.getLocalizedString("from","From")),2,row);
+    T.add(formatText(iwrb.getLocalizedString("to","To")),3,row);
+    T.add(formatText(iwrb.getLocalizedString("special","Special")),4,row);
+
+    row++;
     T.add(drpAccounts,1,row);
-    T.add(tiFromDate,1,row);
-    T.add(tiToDate,1,row);
-    T.add(fetch,1,row);
-    T.add(printable,1,row);
-    T.mergeCells(1,row,4,row);
+    T.add(tiFromDate,2,row);
+    T.add(tiToDate,3,row);
+    T.add(specialCheck,4,row);
+    T.add(fetch,5,row);
+    T.setWidth(6,row,"100%");
+
 
     myForm.add(new HiddenInput(IWMainApplication.classToInstanciateParameter,"com.idega.block.finance.presentation.AccountViewer"));
     myForm.add(T);
@@ -289,7 +308,10 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     }
     else if(eAccount.getType().equals(Account.typePhone)){
       listEntries = AccountManager.listOfPhoneEntries(eAccount.getID(),from,to);
-      return getPhoneEntryTable(listEntries);
+      if(specialview)
+        return getPhoneEntryReportTable(listEntries);
+      else
+        return getPhoneEntryTable(listEntries);
     }
     else return new Text();
   }
@@ -407,6 +429,105 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       T.add(txTotDay,7,tableDepth);
       T.add(txTotDur,8,tableDepth);
       T.add(txTotPrice,9,tableDepth);
+    }
+    return T;
+  }
+
+  private PresentationObject getPhoneEntryReportTable(List listEntries){
+    int tableDepth = 3;
+    Vector other = new Vector();
+    Vector mobile = new Vector();
+    Vector foreign = new Vector();
+
+    String sMob1 = "8";
+    String sMob2 = "6";
+    String sFor = "00";
+    float tax = 0.245f;
+
+    Table T = new Table(5,9);
+    T.setWidth("100%");
+    T.setCellpadding(0);
+    T.setCellspacing(0);
+
+
+    T.setHorizontalZebraColored(sLightColor,sWhiteColor);
+    T.setRowColor(1,sWhiteColor);
+    T.setRowColor(2,sHeaderColor);
+    T.setColumnAlignment(3,"right");
+    T.setColumnAlignment(4,"right");
+    T.setColumnAlignment(5,"right");
+
+    String fontColor = sWhiteColor;
+    int fontSize = 1;
+
+    Text Title = new Text(iwrb.getLocalizedString("entries","Entries"),true,false,false);
+    Title.setFontColor(sHeaderColor);
+    T.add(Title,1,1);
+
+    T.add(formatText(iwrb.getLocalizedString("type","Type"),fontSize,fontColor),2,2);
+    T.add(formatText(iwrb.getLocalizedString("count","Count"),fontSize,fontColor),3,2);
+    T.add(formatText(iwrb.getLocalizedString("duration","Duration"),fontSize,fontColor),4,2);
+    T.add(formatText(iwrb.getLocalizedString("amount","amount"),fontSize,fontColor),5,2);
+
+    if(listEntries != null){
+      Iterator IT = listEntries.iterator();
+      String phonedNumber;
+      long otherTime = 0,forTime = 0,mobTime = 0,totalTime = 0;
+      float otherPrice= 0,forPrice= 0,mobPrice= 0,totalPrice = 0;
+      int otherCount = 0, forCount =0,mobCount = 0,totalCount = 0;
+      AccountPhoneEntry entry;
+      while(IT.hasNext()){
+        entry = (AccountPhoneEntry) IT.next();
+        phonedNumber = entry.getPhonedNumber();
+        if(phonedNumber.startsWith(sFor)){
+          forTime += entry.getDuration();
+          forPrice += entry.getPrice();
+          forCount++;
+        }
+        //mobile
+        else if(phonedNumber.startsWith(sMob1) || phonedNumber.startsWith(sMob2)){
+          mobTime += entry.getDuration();
+          mobPrice += entry.getPrice();
+          mobCount++;
+        }
+        else{
+          otherTime += entry.getDuration();
+          otherPrice += entry.getPrice();
+          otherCount++;
+        }
+      }
+      totalCount = otherCount + mobCount + forCount;
+      totalPrice = otherPrice + mobPrice + forPrice;
+      totalTime = otherTime + mobTime + forTime;
+      float taxprice = totalPrice * tax;
+      T.add(formatText(iwrb.getLocalizedString("other","Other")),2,3);
+      T.add(formatText(iwrb.getLocalizedString("mobile","Mobile")),2,4);
+      T.add(formatText(iwrb.getLocalizedString("foreign","Foreign")),2,5);
+      T.add(formatText(iwrb.getLocalizedString("total","Total")),2,6);
+      //new java.sql.Time(entry.getDuration()*1000).toString()
+      T.add(formatText(String.valueOf(otherCount)),3,3);
+      T.add(formatText(String.valueOf(mobCount)),3,4);
+      T.add(formatText(String.valueOf(forCount)),3,5);
+      T.add(formatText(String.valueOf(totalCount)),3,6);
+
+      T.add(formatText(new java.sql.Time(otherTime*1000).toString()),4,3);
+      T.add(formatText(new java.sql.Time(mobTime*1000).toString()),4,4);
+      T.add(formatText(new java.sql.Time(forTime*1000).toString()),4,5);
+      T.add(formatText(new java.sql.Time(totalTime*1000).toString()),4,6);
+
+      T.add(formatText(NF.format(otherPrice)),5,3);
+      T.add(formatText(NF.format(mobPrice)),5,4);
+      T.add(formatText(NF.format(forPrice)),5,5);
+      T.add(formatText(NF.format(totalPrice)),5,6);
+      T.add(Text.getNonBrakingSpace(),4,7);
+      T.add(formatText(iwrb.getLocalizedString("tax","Tax")),4,8);
+      T.add(formatText(NF.format(taxprice)),5,8);
+      T.add(formatText(iwrb.getLocalizedString("amount","Amount")),4,9);
+      T.add(formatText(NF.format(totalPrice+taxprice)),5,9);
+
+
+      T.setLineAfterRow(5);
+
     }
     return T;
   }

@@ -47,8 +47,12 @@ public class TariffEditor extends Block{
   protected IWResourceBundle iwrb;
   protected IWBundle iwb,core;
 
-  public TariffEditor() {
+  public String getLocalizedNameKey(){
+    return "tariffs";
+  }
 
+  public String getLocalizedNameValue(){
+    return "Tariffs";
   }
   public void setRoundAmounts(boolean round){
     bRoundAmounts = round;

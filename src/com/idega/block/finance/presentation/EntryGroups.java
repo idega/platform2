@@ -13,7 +13,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
@@ -36,7 +36,7 @@ import com.idega.util.idegaTimestamp;
  * @version 1.1
  */
 
-public class EntryGroups extends PresentationObjectContainer {
+public class EntryGroups extends Block {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   public  String strAction = "tt_action";
@@ -46,6 +46,14 @@ public class EntryGroups extends PresentationObjectContainer {
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
+
+  public String getLocalizedNameKey(){
+    return "entrygroups";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Entrygroups";
+  }
 
    protected void control(IWContext iwc){
 
