@@ -83,7 +83,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	public QueryHelper getQueryHelperByNameAndPathToQuerySequence(String name, String path, IWContext iwc) throws NumberFormatException, RemoteException, FinderException {
 		String id = StringHandler.substringEnclosedBy(path, "(",")");
 		QuerySequence querySequence;
-		if (id == null) {
+		if (id != null && id.length() > 0) {
 			querySequence = getQuerySequenceHome().findByPrimaryKey(new Integer(id));
 		}
 		else {
