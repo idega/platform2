@@ -69,7 +69,7 @@ public class LinkGenerator extends TravelWindow {
       parName = Booking.parameterProductId;
     }
 
-    String url = iwc.getApplication().getObjectInstanciatorURL(classToInstanciate)+"&"+parName+"="+serviceId;
+    String url = iwc.getApplication().getObjectInstanciatorURI(classToInstanciate)+"&"+parName+"="+serviceId;
     text.append(url);
 //    text.append("/servlet/ObjectInstanciator?idegaweb_instance_class="+className+"&"+parName+"="+serviceId);
     return text.toString();

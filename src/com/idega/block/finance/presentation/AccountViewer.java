@@ -171,7 +171,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
       specialCheck.setChecked(true);
 
     Link printable = new Link(formatText("printable",1,null));
-    printable.setURL(IWMainApplication.getObjectInstanciatorURL(AccountViewer.class));
+    printable.setClassToInstanciate(AccountViewer.class);
     printable.addParameter(prmFromDate,getDateString(from));
     printable.addParameter(prmToDate,getDateString(to));
     printable.addParameter(prmAccountId,iAccountId);
