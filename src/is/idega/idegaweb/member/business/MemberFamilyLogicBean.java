@@ -69,7 +69,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
       return getUserBusiness().castUserGroupToUser(group);
     }
     catch(Exception e){
-      throw new EJBException("Group "+group+" is not a UserGroup");
+      throw new EJBException("Group "+group+" ("+group.getPrimaryKey().toString()+")  is not a UserGroup");
     }
   }
 
@@ -93,7 +93,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
     try{
       userName = user.getName();
       
-      Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_PARENT);
+      Collection coll = user.getRelatedBy(RELATION_TYPE_GROUP_PARENT);
 			
       if(coll==null || coll.isEmpty()){
 				throw new NoChildrenFound(userName);
@@ -116,7 +116,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 		 try{
 			 userName = user.getName();
       
-			 Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_CUSTODIAN);
+			 Collection coll = user.getRelatedBy(RELATION_TYPE_GROUP_CUSTODIAN);
 			
 			 if(coll==null || coll.isEmpty()){
 				 throw new NoChildrenFound(userName);
@@ -137,7 +137,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
     String userName = null;
     try{
       userName = user.getName();
-      Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_SIBLING);
+      Collection coll = user.getRelatedBy(RELATION_TYPE_GROUP_SIBLING);
       if(coll==null || coll.isEmpty()){
 				throw new NoSiblingFound(userName);
       }
@@ -157,7 +157,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
     String userName = null;
     try{
       userName = user.getName();
-      Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_SPOUSE);
+      Collection coll = user.getRelatedBy(RELATION_TYPE_GROUP_SPOUSE);
       Group group = (Group)coll.iterator().next();
       return convertGroupToUser(group);
     }
@@ -174,7 +174,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 	 String userName = null;
 	 try{
 	   userName = user.getName();
-	   Collection coll = user.getRelatedBy(this.RELATION_TYPE_GROUP_COHABITANT);
+	   Collection coll = user.getRelatedBy(RELATION_TYPE_GROUP_COHABITANT);
 	   Group group = (Group)coll.iterator().next();
 	   return convertGroupToUser(group);
 	 }
@@ -193,7 +193,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
     String userName = null;
     try{
       userName = user.getName();
-      Collection coll = user.getReverseRelatedBy(this.RELATION_TYPE_GROUP_CUSTODIAN);
+      Collection coll = user.getReverseRelatedBy(RELATION_TYPE_GROUP_CUSTODIAN);
       if(coll==null || coll.isEmpty()){
       	if(returnParentsIfNotFound){
       		try{
@@ -228,7 +228,7 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 		String userName = null;
 		try{
 			userName = user.getName();
-			Collection coll = user.getReverseRelatedBy(this.RELATION_TYPE_GROUP_PARENT);
+			Collection coll = user.getReverseRelatedBy(RELATION_TYPE_GROUP_PARENT);
 			if(coll==null || coll.isEmpty()){
 				throw new NoParentFound(userName);
 			}
@@ -395,43 +395,43 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
 
   public void setAsChildFor(User personToSet,User parent)throws CreateException,RemoteException{
     if(!this.isChildOf(personToSet,parent)){
-      personToSet.addUniqueRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
-      parent.addUniqueRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_PARENT);
+      personToSet.addUniqueRelation(convertUserToGroup(parent),RELATION_TYPE_GROUP_CHILD);
+      parent.addUniqueRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_PARENT);
     }
   }
 
   public void setAsParentFor(User parent,User child)throws CreateException,RemoteException{
     if(!this.isParentOf(parent,child)){
-      child.addUniqueRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
-      parent.addUniqueRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_PARENT);
+      child.addUniqueRelation(convertUserToGroup(parent),RELATION_TYPE_GROUP_CHILD);
+      parent.addUniqueRelation(convertUserToGroup(child),RELATION_TYPE_GROUP_PARENT);
     }
   }
   
 	public void setAsCustodianFor(User custodian,User child)throws CreateException,RemoteException{
 		if(!this.isCustodianOf(custodian,child)){
-			child.addUniqueRelation(convertUserToGroup(custodian),this.RELATION_TYPE_GROUP_CHILD);
-			custodian.addUniqueRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_CUSTODIAN);
+			child.addUniqueRelation(convertUserToGroup(custodian),RELATION_TYPE_GROUP_CHILD);
+			custodian.addUniqueRelation(convertUserToGroup(child),RELATION_TYPE_GROUP_CUSTODIAN);
 		}
 	}
 
   public void setAsSpouseFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
     if(!this.isSpouseOf(personToSet,relatedPerson)){
-      personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SPOUSE);
-      relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SPOUSE);
+      personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_SPOUSE);
+      relatedPerson.addRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_SPOUSE);
     }
   }
   
   public void setAsCohabitantFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
 	  if(!this.isCohabitantOf(personToSet,relatedPerson)){
-		personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_COHABITANT);
-		relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_COHABITANT);
+		personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_COHABITANT);
+		relatedPerson.addRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_COHABITANT);
 	  }
 	}
 
   public void setAsSiblingFor(User personToSet,User relatedPerson)throws CreateException,RemoteException{
     if(!this.isSiblingOf(personToSet,relatedPerson)){
-      personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SIBLING);
-      relatedPerson.addRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
+      personToSet.addUniqueRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_SIBLING);
+      relatedPerson.addRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_SIBLING);
       /* Changed from addUnique 2 addRelation so that relation would be created
        * relatedPerson.addUniqueRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
        */
@@ -439,33 +439,33 @@ public class MemberFamilyLogicBean extends IBOServiceBean implements MemberFamil
   }
 
   public void removeAsChildFor(User personToSet,User parent)throws RemoveException,RemoteException{
-    personToSet.removeRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
-    parent.removeRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_PARENT);
+    personToSet.removeRelation(convertUserToGroup(parent),RELATION_TYPE_GROUP_CHILD);
+    parent.removeRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_PARENT);
   }
 
   public void removeAsParentFor(User parent,User child)throws RemoveException,RemoteException{
-    child.removeRelation(convertUserToGroup(parent),this.RELATION_TYPE_GROUP_CHILD);
-    parent.removeRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_PARENT);
+    child.removeRelation(convertUserToGroup(parent),RELATION_TYPE_GROUP_CHILD);
+    parent.removeRelation(convertUserToGroup(child),RELATION_TYPE_GROUP_PARENT);
   }
   
 	public void removeAsCustodianFor(User custodian,User child)throws RemoveException,RemoteException{
-		child.removeRelation(convertUserToGroup(custodian),this.RELATION_TYPE_GROUP_CHILD);
-		custodian.removeRelation(convertUserToGroup(child),this.RELATION_TYPE_GROUP_CUSTODIAN);
+		child.removeRelation(convertUserToGroup(custodian),RELATION_TYPE_GROUP_CHILD);
+		custodian.removeRelation(convertUserToGroup(child),RELATION_TYPE_GROUP_CUSTODIAN);
 	}
 
   public void removeAsSpouseFor(User personToSet,User relatedPerson)throws RemoveException,RemoteException{
-    personToSet.removeRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SPOUSE);
-    relatedPerson.removeRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SPOUSE);
+    personToSet.removeRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_SPOUSE);
+    relatedPerson.removeRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_SPOUSE);
   }
   
   public void removeAsCohabitantFor(User personToSet,User relatedPerson)throws RemoveException,RemoteException{
-	 personToSet.removeRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_COHABITANT);
-	 relatedPerson.removeRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_COHABITANT);
+	 personToSet.removeRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_COHABITANT);
+	 relatedPerson.removeRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_COHABITANT);
    }
 
   public void removeAsSiblingFor(User personToSet,User relatedPerson)throws RemoveException,RemoteException{
-    personToSet.removeRelation(convertUserToGroup(relatedPerson),this.RELATION_TYPE_GROUP_SIBLING);
-    relatedPerson.removeRelation(convertUserToGroup(personToSet),this.RELATION_TYPE_GROUP_SIBLING);
+    personToSet.removeRelation(convertUserToGroup(relatedPerson),RELATION_TYPE_GROUP_SIBLING);
+    relatedPerson.removeRelation(convertUserToGroup(personToSet),RELATION_TYPE_GROUP_SIBLING);
   }
 
 
