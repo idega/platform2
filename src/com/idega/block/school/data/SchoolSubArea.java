@@ -16,5 +16,7 @@ public interface SchoolSubArea extends com.idega.data.IDOEntity {
 	public void initializeAttributes();
 	public void setSchoolSubAreaName(java.lang.String p0);	
 	public void setSchoolAreaId(int p0);
+	public int getSchoolAreaId();	
+	public String getSchoolAreaName();	
 
 }

@@ -18,6 +18,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public java.util.Collection findAllPreviousSchoolSeasons(com.idega.block.school.data.SchoolSeason p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllSchClMemberInvoiceIntervalTypes() throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolAreas() throws java.rmi.RemoteException;
+ public java.util.Collection findAllSchoolSubAreas() throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolAreasByType(int p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolAreasByTypes(java.util.Collection p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllSchoolSubAreasByArea(String p0) throws java.rmi.RemoteException;
@@ -105,6 +106,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.School getSchool(java.lang.Object p0) throws java.rmi.RemoteException;
  public java.util.Map getSchoolAndSchoolTypeRelatedSchoolCourses(com.idega.block.school.data.School p0,java.lang.Object p1) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolArea getSchoolArea(java.lang.Object p0) throws java.rmi.RemoteException;
+ public com.idega.block.school.data.SchoolSubArea getSchoolSubArea(java.lang.Object p0) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolAreaHome getSchoolAreaHome() throws java.rmi.RemoteException;
  public java.util.Collection getSchoolCategories() throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolCategoryHome getSchoolCategoryHome() throws java.rmi.RemoteException;
@@ -139,6 +141,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public void removeProvider(int p0)throws javax.ejb.RemoveException, java.rmi.RemoteException;
  public void removeSchool(int p0) throws java.rmi.RemoteException;
  public void removeSchoolArea(int p0) throws java.rmi.RemoteException;
+ public void removeSchoolSubArea(int p0) throws java.rmi.RemoteException;
  public void removeSchoolClass(int p0) throws java.rmi.RemoteException;
  public void removeSchoolClassMember(int p0) throws java.rmi.RemoteException;
  public void removeSchoolClassMemberFromClass(int p0,int p1) throws java.rmi.RemoteException;
@@ -153,6 +156,7 @@ public interface SchoolBusiness extends com.idega.business.IBOService
  public com.idega.block.school.data.School storeSchool(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,java.lang.String p9,int p10,int p11,int[] p12,int[] p13,java.lang.String p14,java.lang.String p15,java.lang.String p16,java.sql.Date p17,java.lang.Object p18,int p19,java.lang.Boolean p20,java.lang.Boolean p21)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.School storeSchool(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,java.lang.String p6,java.lang.String p7,java.lang.String p8,java.lang.String p9,int p10,int[] p11,int[] p12,java.lang.Object p13)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void storeSchoolArea(int p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public void storeSchoolSubArea(int p0,java.lang.String p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClass storeSchoolClass(int p0,java.lang.String p1,int p2,int p3,int p4,int p5) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClass storeSchoolClass(int p0,java.lang.String p1,int p2,int p3,int p4,java.lang.String[] p5,java.lang.String[] p6) throws java.rmi.RemoteException;
  public com.idega.block.school.data.SchoolClass storeSchoolClass(int p0,java.lang.String p1,int p2,int p3,int p4,java.lang.String[] p5,java.lang.String[] p6,java.lang.String[] p7) throws java.rmi.RemoteException;

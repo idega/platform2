@@ -1,9 +1,12 @@
 package com.idega.block.school.data;
 
-import com.idega.data.GenericEntity;
-import com.idega.data.IDOQuery;
-
 import java.util.Collection;
+
+import com.idega.business.IBORuntimeException;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDOQuery;
 
 /**
  * @author Roar
@@ -51,7 +54,33 @@ public class SchoolSubAreaBMPBean extends GenericEntity implements SchoolSubArea
 	public void setSchoolAreaId(int id) {
 		this.setColumn(SCHOOLAREA, id);
 	}
+
+		
+	public int getSchoolAreaId() {
+		return this.getIntColumnValue(SCHOOLAREA);
+	}	
 	
+	public String getSchoolAreaName() {
+		SchoolArea schoolArea = null;
+		try {
+			schoolArea = getSchoolAreaHome().findByPrimaryKey(""+getSchoolAreaId());
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return schoolArea.getName();
+	}
+		
+	
+	public SchoolAreaHome getSchoolAreaHome() {
+		try {
+			return (SchoolAreaHome) IDOLookup.getHome(SchoolArea.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+		
 	public Collection ejbFindAllByArea(SchoolArea area) throws javax.ejb.FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getEntityName())

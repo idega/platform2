@@ -2161,6 +2161,16 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return null;
 		}
 	}
+	
+	public SchoolSubArea getSchoolSubArea(Object primaryKey) {
+		try {
+			SchoolSubAreaHome shome = (SchoolSubAreaHome) IDOLookup.getHome(SchoolSubArea.class);
+			return shome.findByPrimaryKey(primaryKey);
+		}
+		catch (Exception ex) {
+			return null;
+		}
+	}	
 
 	public void removeSchoolArea(int id) {
 		try {
@@ -2172,6 +2182,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 
 		}
 	}
+	
+	public void removeSchoolSubArea(int id) {
+		try {
+			SchoolSubArea subarea = getSchoolSubArea(new Integer(id));
+			subarea.remove();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+
+		}
+	}	
 
 	public Collection findAllSchoolAreas() {
 		try {
@@ -2183,6 +2204,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new java.util.Vector();
 		}
 	}
+	
+	public Collection findAllSchoolSubAreas() {
+		try {
+			SchoolSubAreaHome shome = (SchoolSubAreaHome) IDOLookup.getHome(SchoolSubArea.class);
+			return shome.findAllSchoolSubAreas();
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return new java.util.Vector();
+		}
+	}	
 
 	public Collection findAllSchoolAreasByType(int type_id) {
 		try {
@@ -2229,6 +2261,30 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		newArea.setSchoolAreaName(name);
 		newArea.store();
 	}
+	 
+	public void storeSchoolSubArea(int id, String name, int areaid) throws java.rmi.RemoteException {
+
+		SchoolSubAreaHome shome = getSchoolSubAreaHome();
+		SchoolSubArea newSubArea;
+		try {
+			if (id > 0) {
+				newSubArea = shome.findByPrimaryKey(new Integer(id));
+			}
+			else {
+				newSubArea = shome.create();
+			}
+		}
+		catch (javax.ejb.FinderException fe) {
+			throw new java.rmi.RemoteException(fe.getMessage());
+		}
+		catch (javax.ejb.CreateException ce) {
+			throw new java.rmi.RemoteException(ce.getMessage());
+		}
+		newSubArea.setSchoolAreaId(areaid);
+		newSubArea.setSchoolSubAreaName(name);
+		newSubArea.store();
+	}
+		
 
 	public void storeSchoolDepartment(String description, String phone, int schoolID, int schDepID) throws RemoteException {
 		/**
@@ -2400,7 +2456,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 		return result;
 	}
-	
+
+
+			
 	public SchoolSubAreaHome getSchoolSubAreaHome() {
 		try {
 			return (SchoolSubAreaHome) IDOLookup.getHome(SchoolSubArea.class);

@@ -26,6 +26,12 @@ public Collection findAllByArea(SchoolArea p0)throws javax.ejb.FinderException{
   return (SchoolSubArea) super.findByPrimaryKeyIDO(pk);
  }
 
+ public java.util.Collection findAllSchoolSubAreas()throws javax.ejb.FinderException{
+	 com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	 java.util.Collection ids = ((SchoolSubAreaBMPBean)entity).ejbFindAllSchoolSubAreas();
+	 this.idoCheckInPooledEntity(entity);
+	 return this.getEntityCollectionForPrimaryKeys(ids);
+ }
 
 
 }
