@@ -482,7 +482,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		String tableName = this.getEntityName();		
 		sql.appendSelectAllFrom(tableName);
 		sql.appendWhere().appendWithinDates(COLUMN_DATE_OF_ENTRY, dateFrom, dateTo);
-		if (!containsTypePayment(types))
+		if (types!= null || !containsTypePayment(types))
 			sql.appendAndEqualsQuoted(COLUMN_OPEN, ENTRY_OPEN_YES);
 		if  (types != null && types.length>0)
 			sql.appendAnd().append(COLUMN_TYPE).appendIn(util.convertArrayToCommaseparatedString(types, true));
@@ -492,6 +492,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 			sql.appendAnd().append(COLUMN_DIVISION_ID).appendIn(util.convertListToCommaseparatedString(divisions));
 		if  (groups != null && groups.size()>0)
 			sql.appendAnd().append(COLUMN_GROUP_ID).appendIn(util.convertListToCommaseparatedString(groups));
+		System.out.println(sql.toString());
 		return idoFindIDsBySQL(sql.toString());
 	}
 	
