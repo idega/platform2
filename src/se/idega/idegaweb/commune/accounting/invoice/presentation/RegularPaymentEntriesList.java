@@ -144,6 +144,8 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 	private static final int MIN_LEFT_COLUMN_WIDTH = 150;	
 	
+	private boolean newPayment = false; //prevents the posting strings to be generated from old data, when new payment is created
+	
 
 	private UserSearcher searcher = null;
 
@@ -207,6 +209,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 					handleDefaultAction(iwc, school, fromDate, toDate);
 					break;
 				case ACTION_NEW:
+					newPayment = true;
 					handleEditAction(iwc, getEmptyEntry());
 					break;
 				case ACTION_DELETE:
@@ -897,17 +900,24 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		
 		table.mergeCells(1, row, 10, row);
+		
 		PostingBlock postingBlock = null;
 		if (entry.getOwnPosting() != null && entry.getOwnPosting().trim().length() != 0){
 			postingBlock = new PostingBlock(entry.getOwnPosting(), entry.getDoublePosting());
 		} else {
+			//When searching for user, the posting info is lost
 			postingBlock = new PostingBlock(); 
-			try{
-				postingBlock.generateStrings(iwc);
-			}catch(NullPointerException ex){
-				postingBlock = new PostingBlock("", "");
-			} catch (PostingParametersException e) {
-				e.printStackTrace();
+			
+			if (newPayment){
+				postingBlock.setToEmpty();
+			}else{
+				try{
+					postingBlock.generateStrings(iwc);
+				}catch(NullPointerException ex){
+					postingBlock = new PostingBlock("", "");
+				} catch (PostingParametersException e) {
+					e.printStackTrace();
+				}
 			}			
 		}
 		table.add(postingBlock, 1, row++);

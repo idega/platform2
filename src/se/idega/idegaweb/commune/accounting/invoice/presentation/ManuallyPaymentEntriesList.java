@@ -136,6 +136,8 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 	private static final int MIN_LEFT_COLUMN_WIDTH = 150;	
 		 
 	private UserSearcher searcher = null;
+	
+	private boolean newPayment = false; //prevents the posting strings to be generated from old data, when new payment is created	
 
 	private static final int 
 		ACTION_SHOW = 0, 
@@ -175,6 +177,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 					handleCancelAction();
 				
 				default:
+					newPayment = true;
 					handleEditAction(iwc);			
 			}
 		}
@@ -314,6 +317,7 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			}
 	
 			//Creating paymentHeader if not found
+			
 			if (payhdr == null){
 				try{
 					payhdr = getPaymentHeaderHome().create();
@@ -723,12 +727,17 @@ public class ManuallyPaymentEntriesList extends AccountingBlock {
 			if (reg != null){
 				postingBlock = new PostingBlock(posting[0], posting[1]);
 			} else {
-//				Need to separate construction of object from generation of Strings, so that the object exists even if errors in generation
+				//When searching for user, the posting info is lost
 				postingBlock = new PostingBlock(); 
-				try{
-					postingBlock.generateStrings(iwc);
-				}catch(NullPointerException ex){
-					postingBlock = new PostingBlock("", "");
+				if (newPayment){
+//					Need to separate construction of object from generation of Strings, so that the object exists even if errors in generation
+					postingBlock.setToEmpty();
+				}else{					
+					try{
+						postingBlock.generateStrings(iwc);
+					}catch(NullPointerException ex){
+						postingBlock = new PostingBlock("", "");
+					}
 				}
 			}
 		}catch(PostingParametersException ex){
