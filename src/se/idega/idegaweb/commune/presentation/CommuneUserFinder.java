@@ -92,10 +92,10 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 		table.setCellspacing(0);
 		table.setHeight(3, 6);
 		form.add(table);
-
+		int column = 1;
+		
 
 		if (this.multipleInputs) {
-			int column = 1;
 			table.add(getSmallHeader(localize(SEARCH_PERSONAL_ID, "Personal ID")), column, 1);
 			TextInput pidInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_PERSONAL_ID));
 			pidInput.setLength(15);
@@ -130,8 +130,13 @@ public abstract class CommuneUserFinder extends CommuneBlock {
 			table.add(searchInput, 1, 2);
 		}
 		
+		if (column > 1) {
+			table.mergeCells(1, 3, column, 3);
+			table.add(getSmallHeader(localize("commune.search_instructions", "Instructions: When searching for a name make sure you use Capital letters when needed. Ex. <i>john</i> might not work while <i>John</i> would. <br>When searching for a personal id, you must use the whole year. Ex. <i>97</i> will not work, but <i>1997</i> will.")), 1, 3);
+		}
+		
 		SubmitButton searchButton = (SubmitButton) this.getButton(new SubmitButton(getSearchSubmitDisplay()));
-		table.add(searchButton, 1, 4);
+		table.add(searchButton, 1, 5);
 				
 		return form;
 	}
