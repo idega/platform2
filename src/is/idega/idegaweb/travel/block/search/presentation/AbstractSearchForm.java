@@ -482,12 +482,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	protected void setupBookingForm() throws RemoteException {
 		
 		IWTimestamp from = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
-		int	betw = 0;
-		try {
-			betw = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
-		} catch (NumberFormatException n) {
-			logDebug("SearchForm : days set to 0");
-		}
+		int betw = getNumberOfDays(from);
 
 		Product product = getProduct();
 		Supplier supplier = null;
@@ -625,7 +620,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		formTable.add(new HiddenInput(PARAMETER_PRODUCT_ID, iwc.getParameter(PARAMETER_PRODUCT_ID)));
 		formTable.add(new HiddenInput(PARAMETER_ONLINE, "true"));
 		formTable.add(new HiddenInput(PARAMETER_FROM_DATE, iwc.getParameter(PARAMETER_FROM_DATE)));
-		//formTable.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
+		formTable.add(new HiddenInput(PARAMETER_TO_DATE, iwc.getParameter(PARAMETER_TO_DATE)));
 		formTable.add(new HiddenInput(PARAMETER_MANY_DAYS, iwc.getParameter(PARAMETER_MANY_DAYS)));
 		formTable.add(new HiddenInput(PARAMETER_PRODUCT_PRICE_ID, productPriceId));
 		formTable.add(new HiddenInput(getParameterTypeCountName(), iwc.getParameter(getParameterTypeCountName())));
@@ -645,7 +640,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				tFrameID = Integer.parseInt(sTimeframeId);
 			}
 			formTable.mergeCells(1, row, 3, row);
-			formTable.add(getHeaderText(getPriceString(getSearchBusiness(iwc).getBusiness(product), product.getID(), tFrameID, pPrice)), 1, row);
+			formTable.add(getHeaderText(getPriceString(getSearchBusiness(iwc).getBusiness(product), product.getID(), tFrameID, pPrice, betw)), 1, row);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -676,6 +671,27 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		
 	}
 	
+	/**
+	 * @return
+	 */
+	protected int getNumberOfDays(IWTimestamp fromDate) {
+		int	betw = 0;
+		try {
+			betw = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
+		} catch (NumberFormatException n) {
+			String toParameter = iwc.getParameter(PARAMETER_TO_DATE);
+			if (toParameter != null) {
+				try {
+					IWTimestamp toStamp = new IWTimestamp(toParameter);
+					return IWTimestamp.getDaysBetween(fromDate, toStamp);
+				} catch (Exception e) {
+				}
+			}
+			logDebug("SearchForm : days set to 0");
+		}
+		return betw;
+	}
+
 	protected void checkBooking() throws RemoteException {
 		ProductHome productHome = (ProductHome) IDOLookup.getHome(Product.class);
 		try {
@@ -756,7 +772,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
 			// TODO move to a better location
 			IWTimestamp stamp = new IWTimestamp(iwc.getParameter(PARAMETER_FROM_DATE));
-
+			int days = getNumberOfDays(stamp);
 			TravelStockroomBusiness bus;
 			Product product;
 			Supplier supplier;
@@ -828,7 +844,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 							if (timeframe != null) {
 								timeframeId = timeframe.getID();
 							}
-							row = getPrices(iwc, stamp, bus, product, table, row, addressId, timeframeId);
+							row = getPrices(iwc, stamp, bus, product, days, table, row, addressId, timeframeId);
 							link = getBookingLink(product.getID());
 							link.addParameter(PARAMETER_ADDRESS_ID, -1);
 							//link.addParameter(PARAMETER_TIMEFRAME_ID, timeframeId);
@@ -851,7 +867,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 								++row;
 								table.add(getText(address.getName()), 1, row);
 								++row;
-								row =getPrices(iwc, stamp, bus, product, table, row, address.getID(), timeframeId);
+								row =getPrices(iwc, stamp, bus, product, days, table, row, address.getID(), timeframeId);
 								link = getBookingLink(product.getID());
 								link.addParameter(PARAMETER_ADDRESS_ID, address.getAddressId());
 								if (available) {
@@ -880,6 +896,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		link.addParameter(ACTION, ACTION_BOOKING_FORM);
 		link.maintainParameter(PARAMETER_FROM_DATE, iwc);
 		link.maintainParameter(PARAMETER_MANY_DAYS, iwc);
+		link.maintainParameter(PARAMETER_TO_DATE, iwc);
 		link.addParameter(getParameterTypeCountName(), getCount());
 		link.addParameter(PARAMETER_PRODUCT_ID, productId);
 		link.addParameter(PARAMETER_PRODUCT_PRICE_ID, tmpPriceID);
@@ -887,14 +904,14 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return link;
 	}
 
-	private int getPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product usedProduct, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException {
+	private int getPrices(IWContext iwc, IWTimestamp stamp, TravelStockroomBusiness bus, Product usedProduct, int days, Table table, int row, int addressId, int timeframeId) throws RemoteException, SQLException {
 		ProductPrice[] prices;
 		Currency currency;
 		prices = getProductPrices(usedProduct, addressId, timeframeId);
 		//prices = ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 		for (int i = 0; i < prices.length; i++) {
 			tmpPriceID = prices[i].getID();
-			table.add(getText(getPriceString(bus, usedProduct.getID(), timeframeId, prices[i])), 1, row++);
+			table.add(getText(getPriceString(bus, usedProduct.getID(), timeframeId, prices[i], days)), 1, row++);
 		}
 		return row;
 	}
@@ -903,7 +920,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		return ProductPriceBMPBean.getProductPrices(usedProduct.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, getPriceCategoryKey());
 	}
 	
-	private String getPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice) throws SQLException, RemoteException {
+	private String getPriceString(TravelStockroomBusiness bus, int productId, int timeframeId, ProductPrice pPrice, int days) throws SQLException, RemoteException {
 		float price = bus.getPrice(pPrice.getID(), productId ,pPrice.getPriceCategoryID() , pPrice.getCurrencyId(), IWTimestamp.getTimestampRightNow(), timeframeId, -1 );
 
 		Currency currency;
@@ -916,12 +933,13 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		String returner = "";
 
 		int count = getCount();
+		/*
 		int days = 1;
 		try {
 			days = Integer.parseInt(iwc.getParameter(PARAMETER_MANY_DAYS));
 		} catch (NumberFormatException n) {
 			logDebug("SearchForm : days set to 1");
-		}
+		}*/
 		
 		total = price * days * count;
 		returner += iwrb.getLocalizedString("travel.price","Price")+":"+Text.NON_BREAKING_SPACE+(price*count)+Text.NON_BREAKING_SPACE+currency.getCurrencyAbbreviation();

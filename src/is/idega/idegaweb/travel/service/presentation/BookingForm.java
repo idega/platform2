@@ -1786,7 +1786,14 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
         try {
           betw = Integer.parseInt(manyDays);
         }catch (NumberFormatException e) {
-          //e.printStackTrace(System.err);
+	    			String toParameter = iwc.getParameter(this.parameterToDate);
+	    			if (toParameter != null) {
+	    				try {
+	    					IWTimestamp toStamp = new IWTimestamp(toParameter);
+	    					betw = IWTimestamp.getDaysBetween(_fromDate, toStamp);
+	    				} catch (Exception ex) {
+	    				}
+	    			}
         }
 
         int[] bookingIds = new int[betw];
