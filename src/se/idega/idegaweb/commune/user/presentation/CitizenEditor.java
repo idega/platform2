@@ -42,7 +42,7 @@ public class CitizenEditor extends UserEditor {
 		setShowMiddleNameInSearch(false);
 		setLastNameLength(14);
 		setFirstNameLength(14);
-		setPersonalIDLength(12);
+		setPersonalIDLength(14);
 		setBundleIdentifer(CommuneBlock.IW_BUNDLE_IDENTIFIER);
 		// TODO Auto-generated constructor stub
 	}
@@ -166,7 +166,7 @@ public class CitizenEditor extends UserEditor {
 				}
 			}
 			catch (NoChildrenFound e3) {
-				e3.printStackTrace();
+				//e3.printStackTrace();
 			}
 			catch (RemoteException e3) {
 				e3.printStackTrace();
