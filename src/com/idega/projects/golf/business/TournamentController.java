@@ -903,7 +903,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 public static int registerMember(com.idega.projects.golf.entity.Member member, Tournament theTournament, String tournament_group_id) throws SQLException {
     int returner = 0;
             try {
-                member.addTo(theTournament,"TOURNAMENT_GROUP_ID",tournament_group_id,"UNION_ID",""+member.getMainUnionID() );
+                member.addTo(theTournament,"TOURNAMENT_GROUP_ID",tournament_group_id,"UNION_ID",""+member.getMainUnionID(),"DISMISSAL_ID","0" );
                 theTournament.setPosition(member,-1);
                 TournamentController.createScorecardForMember(member,theTournament,tournament_group_id);
                 returner = 0;
