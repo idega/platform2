@@ -1,5 +1,10 @@
 package se.idega.idegaweb.commune.childcare.data;
 
+import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public class ChildCareContractHomeImpl extends com.idega.data.IDOFactory implements ChildCareContractHome
 {
@@ -201,4 +206,24 @@ public int getNumberOfTerminatedLaterNotWithProvider(int p0,int p1,java.sql.Date
 }
 
 
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractHome#findByInvoiceReceiver(java.lang.Integer)
+	 */
+	public Collection findByInvoiceReceiver(Integer invoiceReceiverID)
+			throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindByInvoiceReceiver(invoiceReceiverID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+
+	}
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractHome#findByInvoiceReceiverActiveOrFuture(java.lang.Integer, java.sql.Date)
+	 */
+	public Collection findByInvoiceReceiverActiveOrFuture(	Integer invoiceReceiverID, Date fromDate) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((ChildCareContractBMPBean)entity).ejbFindByInvoiceReceiverActiveOrFuture(invoiceReceiverID,fromDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

@@ -208,6 +208,10 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		setColumn(COLUMN_INVOICE_RECEIVER, invoiceReciverID);
 	}
 	
+	public void setInvoiceReceiverID(Integer invoiceReciverID) {
+		setColumn(COLUMN_INVOICE_RECEIVER, invoiceReciverID);
+	}
+	
 	public void setInvoiceReceiver(User invoiceReciver) {
 		setColumn(COLUMN_INVOICE_RECEIVER, invoiceReciver);
 	}
@@ -482,5 +486,26 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public Collection ejbFindAll() throws FinderException {
 		IDOQuery sql = idoQueryGetSelect();
 		return idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindByInvoiceReceiver(Integer invoiceReceiverID)throws FinderException{
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(COLUMN_INVOICE_RECEIVER,invoiceReceiverID);
+		return super.idoFindPKsByQuery(query);
+	}
+
+	public Collection ejbFindByInvoiceReceiverActiveOrFuture(Integer invoiceReceiverID,Date fromDate)throws FinderException{
+		/*
+		 	select * from comm_childcare_archive a
+		 	where  terminated_date >= '2004-06-01' or terminated_date is null
+		 */
+		// Added by aron@idega.is
+		// Future or active contracts are those not yet terminated or terminated after given date
+		IDOQuery query = idoQueryGetSelect();
+		query.appendWhereEquals(COLUMN_INVOICE_RECEIVER,invoiceReceiverID);
+		query.appendAnd().appendLeftParenthesis().append(COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(fromDate);
+		query.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
+		
+		return super.idoFindPKsByQuery(query);
 	}
 }

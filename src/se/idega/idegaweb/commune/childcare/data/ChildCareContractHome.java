@@ -1,5 +1,10 @@
 package se.idega.idegaweb.commune.childcare.data;
 
+import java.sql.Date;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 
 public interface ChildCareContractHome extends com.idega.data.IDOHome
 {
@@ -31,5 +36,7 @@ public interface ChildCareContractHome extends com.idega.data.IDOHome
  public int getNumberOfActiveForApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
  public int getNumberOfActiveNotWithProvider(int p0,int p1)throws com.idega.data.IDOException;
  public int getNumberOfTerminatedLaterNotWithProvider(int p0,int p1,java.sql.Date p2)throws com.idega.data.IDOException;
+ public Collection findByInvoiceReceiver(Integer invoiceReceiverID)throws FinderException;
+ public Collection findByInvoiceReceiverActiveOrFuture(Integer invoiceReceiverID,Date fromDate)throws FinderException;
 
 }

@@ -15,6 +15,8 @@ import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
 import se.idega.block.pki.business.NBSLoginBusinessBean;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.user.data.Citizen;
 import se.idega.idegaweb.commune.user.data.CitizenHome;
@@ -38,6 +40,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOFinderException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplicationSettings;
@@ -1131,7 +1134,22 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			catch (FinderException e5) {
 				e5.printStackTrace();
 			}
-
+			
+			// Remove the deceased user as invoice receiver for 
+			try {
+				ChildCareContractHome ccch = (ChildCareContractHome)getIDOHome(ChildCareContract.class);
+				Collection activeOrFutureContracts = ccch.findByInvoiceReceiverActiveOrFuture(userID,new java.sql.Date(deceasedDate.getTime()));
+				for (Iterator iter = activeOrFutureContracts.iterator(); iter
+						.hasNext();) {
+					ChildCareContract contract = (ChildCareContract) iter.next();
+					contract.setInvoiceReceiverID(null);
+					contract.store();
+				}
+			} catch (IDOStoreException e1) {
+				logError("Invoice reciver could not be set as null for deceased user "+userID);
+			} catch (FinderException e1) {
+				
+			}
 			
 			return true;
 		}
