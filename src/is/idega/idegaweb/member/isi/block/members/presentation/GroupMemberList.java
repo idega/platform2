@@ -70,8 +70,6 @@ public class GroupMemberList extends Block {
 		}
 		
 		Table table = new Table();
-		table.setHorizontalZebraColored(_color1, _color2);
-		table.setCellspacing(0);
 		Iterator userIter; //group.getChildren();
 		try {
 			userIter = getGroupBusiness(iwc).getUsers(group).iterator();
@@ -121,6 +119,8 @@ public class GroupMemberList extends Block {
 				row++;
 			}
 		}
+		table.setHorizontalZebraColored(_color1, _color2);
+		table.setCellpadding(0);
 		
 		return table;
 	}
@@ -147,14 +147,16 @@ public class GroupMemberList extends Block {
 		boolean showClubMainCommitee = "true".equals(iwc.getParameter(PARAM_NAME_SHOW_CLUB_COMMITEE_MAIN));
 		
 		if(showClubMainCommitee) {
+			System.out.println("showing members of club's main commitee");
 			String clubId = iwc.getParameter(ClubPageIncluder.PARAM_ROOT_CLUB_ID);
 			Group club = null;
 			Group group = null;
 			try {
 				club = getGroup(iwc, Integer.parseInt(clubId));
 				group = (Group) club.getChildGroups(new String[] {IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN}, true).iterator().next();
+				System.out.println("Got group to show members for; " + group.getName());
 			} catch(Exception e) {
-				System.out.println("Exception getting club main commitee");
+				System.out.println("Exception getting club's main commitee");
 				e.printStackTrace();
 			}
 			return group;
