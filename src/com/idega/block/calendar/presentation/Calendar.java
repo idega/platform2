@@ -62,9 +62,13 @@ public Calendar(idegaTimestamp timestamp){
   _stamp = timestamp;
 }
 
-public String getCategoryType(){
-  return new CalendarCategory().getCategoryType();
-}
+  public String getCategoryType(){
+    return new CalendarCategory().getCategoryType();
+  }
+
+  public boolean getMultible(){
+    return true;
+  }
 
   public void main(IWContext iwc) throws Exception{
     _iwrb = getResourceBundle(iwc);
