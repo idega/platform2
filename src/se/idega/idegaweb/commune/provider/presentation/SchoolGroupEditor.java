@@ -360,7 +360,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		
 		table.add(getSmallHeader(localize("school_season", "Season") + ":"), 1, row);
 		table.setNoWrap(1, row);
-		Collection providerSeasons = null;
+		Collection providerSeasons = null; 
 		try {
 			providerSeasons = getSchoolBusiness().findAllSchoolSeasons();
 		}
@@ -528,8 +528,10 @@ public class SchoolGroupEditor extends ProviderBlock {
 	}
 
 	protected void setSelectedSeason(DropdownMenu seasons) {
-		if (_group != null && _group.getSchoolSeasonId() != -1)
+		if (_group != null && _group.getSchoolSeasonId() != -1){
 			seasons.setSelectedElement(_group.getSchoolSeasonId());
+			seasons.setDisabled(true);
+		}
 	}
 	
 	private void deleteGroup() {
