@@ -138,6 +138,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     fieldList.add(STREET_NAME);
     fieldList.add(POSTAL_CODE_ID);
     Iterator iterator = leagues.iterator();
+    leagueCountMap = new HashMap();
     while (iterator.hasNext())  {
       WorkReportGroup group = (WorkReportGroup) iterator.next();
       String groupName = group.getName();
