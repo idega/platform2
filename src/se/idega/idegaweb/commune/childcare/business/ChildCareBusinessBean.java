@@ -2664,7 +2664,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Collection contracts = getContractsByApplication(applicationID);
 			Iterator iter = contracts.iterator();
 			while (iter.hasNext()) {
-				removeContract((ChildCareContract) iter.next(), performer);
+				ChildCareContract archive = (ChildCareContract) iter.next();
+				Contract contract = archive.getContract();				
+				archive.remove();				
+				if (contract != null) {
+					contract.setStatus("T");
+					contract.store();
+				}
 			}
 			application.store();
 			t.commit();
