@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/04 18:06:39 $ by $Author: laddi $
- * @version $Revision: 1.61 $
+ * Last modified: $Date: 2003/11/05 10:22:36 $ by $Author: goranb $
+ * @version $Revision: 1.62 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -37,7 +37,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String NOTES = "notes";
 	public final static String SCHOOLCLASS = "sch_school_class_id";
 	public final static String SCHOOL_YEAR = "sch_school_year_id";
-	//public final static String SCHOOL_TYPE = "sch_school_type_id";
+	public final static String SCHOOL_TYPE = "sch_school_type_id";
 	public final static String REGISTER_DATE = "register_date";
 	public final static String REGISTRATION_CREATED_DATE = "registration_created_date";
 	public final static String REMOVED_DATE = "removed_date";
@@ -60,7 +60,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.addAttribute(getIDColumnName());
 		this.addAttribute(MEMBER, "classmember", true, true, Integer.class, MANY_TO_ONE, com.idega.core.user.data.User.class);
 		this.addAttribute(SCHOOLCLASS, "class", true, true, Integer.class, MANY_TO_ONE, SchoolClass.class);
-		//this.addAttribute(SCHOOL_TYPE, "school type", true, true, Integer.class, MANY_TO_ONE, SchoolType.class);
+		this.addAttribute(SCHOOL_TYPE, "school type", true, true, Integer.class, MANY_TO_ONE, SchoolType.class);
 		this.addAttribute(SCHOOL_YEAR, "school year", true, true, Integer.class, MANY_TO_ONE, SchoolYear.class);
 		this.addAttribute(NOTES, "notes", true, true, String.class, 255);
 		this.addAttribute(REGISTER_DATE, "registerdate", true, true, Timestamp.class);
@@ -98,7 +98,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public SchoolClass getSchoolClass() {
 		return (SchoolClass)this.getColumnValue(SCHOOLCLASS);
 	}
-/*	public void setSchoolTypeId(int id) {
+	public void setSchoolTypeId(int id) {
 		setColumn(SCHOOL_TYPE, id);
 	}
 	public int getSchoolTypeId() {
@@ -107,7 +107,6 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public SchoolType getSchoolType() {
 		return (SchoolType) getColumnValue(SCHOOL_TYPE);
 	}
-*/
 	public void setSchoolYear(int id) {
 		setColumn(SCHOOL_YEAR, id);
 	}

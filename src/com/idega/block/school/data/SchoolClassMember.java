@@ -3,6 +3,7 @@ package com.idega.block.school.data;
 
 public interface SchoolClassMember extends com.idega.data.IDOEntity
 {
+	
 	public final static String FIELD_SCHOOLCLASSMEMBERID = "sch_class_member_id";
 	public final static String FIELD_SCHOOLCLASSMEMBER = "sch_class_member";
 	public final static String FIELD_MEMBER = "ic_user_id";
@@ -33,6 +34,8 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public java.sql.Timestamp getRemovedDate();
  public com.idega.block.school.data.SchoolClass getSchoolClass();
  public int getSchoolClassId();
+ public com.idega.block.school.data.SchoolType getSchoolType();
+ public int getSchoolTypeId();
  public com.idega.block.school.data.SchoolYear getSchoolYear();
  public int getSchoolYearId();
  public boolean getSpeciallyPlaced();
@@ -52,6 +55,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public void setRegistratorId(int p0);
  public void setRemovedDate(java.sql.Timestamp p0);
  public void setSchoolClassId(int p0);
+ public void setSchoolTypeId(int p0);
  public void setSchoolYear(int p0);
  public void setSpeciallyPlaced(boolean p0);
  public void setStudyPathId(int p0);

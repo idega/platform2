@@ -12,9 +12,9 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public java.util.Collection findAllLastYearStudentsBySeasonAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndYear(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllLastYearStudentsBySeasonAndYearAndMaximumAge(com.idega.block.school.data.SchoolSeason p0,com.idega.block.school.data.SchoolYear p1,int p2)throws javax.ejb.FinderException;
+ public java.util.Collection findBySchool(int p0,int p1,java.sql.Date p2,boolean p3)throws javax.ejb.FinderException;
  public java.util.Collection findBySchool(int p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findBySchool(int p0,int p1,java.sql.Date p2)throws javax.ejb.FinderException;
- public java.util.Collection findBySchool(int p0,int p1,java.sql.Date p2,boolean p3)throws javax.ejb.FinderException;
  public java.util.Collection findBySchoolAndSeason(int p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findBySchoolAndSeasonAndYear(int p0,int p1,int p2)throws javax.ejb.FinderException;
  public java.util.Collection findBySchoolClass(com.idega.block.school.data.SchoolClass p0)throws javax.ejb.FinderException;
@@ -26,10 +26,10 @@ public interface SchoolClassMemberHome extends com.idega.data.IDOHome
  public java.util.Collection findByStudentAndTypes(int p0,java.util.Collection p1)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSchool(int p0,int p1)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSchoolAndSeason(int p0,int p1,int p2)throws javax.ejb.FinderException;
- public SchoolClassMember findByUserAndSchoolClass(int p0,int p1)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSchoolClass(com.idega.user.data.User p0,com.idega.block.school.data.SchoolClass p1)throws javax.ejb.FinderException;
- public SchoolClassMember findByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException;
+ public SchoolClassMember findByUserAndSchoolClass(int p0,int p1)throws javax.ejb.FinderException;
  public SchoolClassMember findByUserAndSeason(int p0,int p1)throws javax.ejb.FinderException;
+ public SchoolClassMember findByUserAndSeason(com.idega.user.data.User p0,com.idega.block.school.data.SchoolSeason p1)throws javax.ejb.FinderException;
  public SchoolClassMember findLatestByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException;
  public SchoolClassMember findLatestByUserAndSchCategory(com.idega.user.data.User p0,com.idega.block.school.data.SchoolCategory p1)throws javax.ejb.FinderException;
  public SchoolClassMember findLatestByUserAndSchool(int p0,int p1)throws javax.ejb.FinderException;
