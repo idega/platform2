@@ -113,6 +113,8 @@ public class UpdateHandicap {
                             System.out.println("TournamentHandicap: "+tournamentHandicap);
                           }
                         }
+                        leikForgjof = new Handicap((double) tournamentHandicap);
+                        System.out.println("TournamentHandicap: "+leikForgjof);
                         if ( modifier != -1 ) {
                           System.out.println("Has modifier");
                           int modified = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
@@ -120,8 +122,6 @@ public class UpdateHandicap {
                           tournamentHandicap = leikForgjof.getHandicapForScorecard(tournament.getID(),teeColorID,modifiedHandicap);
                           System.out.println("TournamentHandicap: "+tournamentHandicap);
                         }
-                        leikForgjof = new Handicap((double) tournamentHandicap);
-                        System.out.println("TournamentHandicap: "+leikForgjof);
                       }
 
                     leik = leikForgjof.getLeikHandicap((double) slope,(double) course_rating,(double) field_par);
