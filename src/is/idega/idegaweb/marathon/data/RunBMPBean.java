@@ -333,7 +333,7 @@ public class RunBMPBean extends GenericEntity implements Run {
 	
 	public Collection ejbFindAllWithoutChipNumber() throws FinderException {
 		IDOQuery query = idoQueryGetSelect();
-		query.appendWhere().append(getColumnNameChipNumber()).appendIsNull().appendOr().append(getColumnNameChipNumber()).appendNOTLike().append("");
+		query.appendWhere().append(getColumnNameChipNumber()).appendIsNull().appendOr().append(getColumnNameChipNumber()).appendNOTEqual().append("");
 		return super.idoFindPKsByQuery(query);		
 	}
 }
