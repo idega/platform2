@@ -4875,6 +4875,9 @@ public abstract class BookingForm extends TravelManager{
 			if (settings.getIfEmailAfterOnlineBooking()) {
 				try {
 					String subject = "Booking";
+					if (isRefund) {
+						subject = "Cancellation";
+					}
 					
 					StringBuffer mailText = new StringBuffer();
 					if ( isRefund ) {
