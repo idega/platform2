@@ -1130,15 +1130,15 @@ public class UserEditor extends Block {
 					|| isNewValue(iwc, prm_middle_name)
 					|| isNewValue(iwc, prm_last_name)
 					|| isNewValue(iwc, prm_primary_group_id)) {
-					String pid = null, first = null, middle = null, last = null;
+					String pid = user.getPersonalID(), first = user.getFirstName(), middle = user.getMiddleName(), last = user.getLastName();
 					Integer groupID = null;
 					boolean legalState = false;
 					if (isNewValue(iwc, prm_personal_id) ){
 						if(isValidPersonalID(iwc.getParameter(prm_personal_id))) {
 							pid = iwc.getParameter(prm_personal_id);
+							legalState = true;
 						}
-						else {
-							legalState = false;
+						else 
 							if(warnIfPersonalIDIsIllegal){
 							
 							String mainPostalExists =
@@ -1147,23 +1147,27 @@ public class UserEditor extends Block {
 									"Personal ID is illegally formatted");
 							this.getParentPage().setOnLoad("alert('" + mainPostalExists + "');");
 						}
-						}
+						
 					}
 					if (isNewValue(iwc, prm_first_name)) {
 						first = iwc.getParameter(prm_first_name);
+						legalState = true;
 					}
 					if (isNewValue(iwc, prm_middle_name)) {
 						middle = iwc.getParameter(prm_middle_name);
+						legalState = true;
 					}
 					if (isNewValue(iwc, prm_last_name)) {
 						last = iwc.getParameter(prm_last_name);
+						legalState = true;
 					}
 					if (isNewValue(iwc, prm_primary_group_id)) {
 						groupID = Integer.valueOf(iwc.getParameter(prm_primary_group_id));
 						if (groupID.intValue() <= 0)
 							groupID = null;
+						legalState = true;
 					}
-					if(legalState)
+					if(legalState )
 						userService.updateUser(user, first, middle, last, null, null, null, pid, null, groupID);
 				}
 			}
