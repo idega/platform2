@@ -284,7 +284,8 @@ public class InvoiceChildcareThread extends BillingThread{
 					age = new Age(contract.getChild().getDateOfBirth());
 					ArrayList conditions = new ArrayList();
 					errorRelated.append("Hours "+contract.getCareTime());
-					errorRelated.append("Age "+contract.getChild().getDateOfBirth());
+					errorRelated.append("Age "+age.getYears()+" years");
+					errorRelated.append("Date of birth "+contract.getChild().getDateOfBirth());
 					
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
