@@ -30,6 +30,7 @@ import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
+import com.idega.block.entity.presentation.converters.DropDownPostalCodeConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.business.IBOLookup;
@@ -265,7 +266,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter statusDropDownMenuConverter = getConverterForStatus(resourceBundle, form);
     EntityToPresentationObjectConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
-    
+    EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     // define path short keys and map corresponding converters
     Object[] columns = {
       CHECK_BOX, checkBoxConverter,
@@ -274,7 +275,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       NAME, textEditorConverter,
       PERSONAL_ID, textEditorConverter,
       STREET_NAME, textEditorConverter,
-      POSTAL_CODE_ID, textEditorConverter,
+      POSTAL_CODE_ID, dropDownPostalCodeConverter,
       HOME_PHONE, textEditorConverter,
       WORK_PHONE, textEditorConverter,
       FAX, textEditorConverter,
@@ -294,7 +295,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     browser.setEntities("dummy_string", entities);
     return browser;
   }
-  
+ 
   /**
    * Converter for status column
    */
@@ -373,7 +374,18 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     converter.setOptionProvider(optionProvider); 
     converter.maintainParameters(getParametersToMaintain());
     return converter;
+  }   
+   
+  /**
+   * converter for postal code column
+   */
+  private EntityToPresentationObjectConverter getConverterForPostalCode(Form form) {
+    DropDownPostalCodeConverter dropDownPostalCodeConverter = new DropDownPostalCodeConverter(form);
+    dropDownPostalCodeConverter.setCountry("Iceland");
+    dropDownPostalCodeConverter.maintainParameters(getParametersToMaintain());
+    return dropDownPostalCodeConverter;
   }    
+  
   
   /** business method: delete WorkReportBoardMembers.
    * @param ids - List of primaryKeys (Integer)
