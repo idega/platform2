@@ -77,16 +77,21 @@ public BuildingViewer(int building_id){
   private void getAllBuildings(ModuleInfo modinfo) throws SQLException {
 
     Complex[] complex = (Complex[]) (new Complex()).findAllOrdered(Complex.getNameColumnName());
-
     Table campusTable = new Table(1,complex.length);
 
     for ( int a = 0; a < complex.length; a++ ) {
       int iComplexId = complex[a].getID();
+      String[] types = BuildingFinder.findDistinctApartmentTypesInComplex(iComplexId);
+
       Table complexTable = new Table(3,4);
         complexTable.mergeCells(2,1,2,4);
-        complexTable.mergeCells(3,2,3,3);
+        complexTable.mergeCells(1,2,1,3);
+        complexTable.mergeCells(3,3,3,4);
+        complexTable.setAlignment(3,3,"center");
         complexTable.setVerticalAlignment(3,2,"top");
-        complexTable.setVerticalAlignment(1,2,"bottom");
+        complexTable.setVerticalAlignment(3,3,"top");
+        complexTable.setVerticalAlignment(1,2,"top");
+        complexTable.setVerticalAlignment(1,4,"bottom");
         complexTable.setWidth("100%");
         complexTable.setWidth(2,1,"20");
         complexTable.setBorder(0);
@@ -94,21 +99,40 @@ public BuildingViewer(int building_id){
       String infoText = complex[a].getInfo();
         infoText = TextSoap.findAndReplace(infoText,"\n","<br>");
 
-
       List L = BuildingFinder.listOfBuildingsInComplex(iComplexId);
       if(L!=null){
        Image buildingImage = new Image(((Building)L.get(0)).getImageId());
        complexTable.add(buildingImage,3,2);
       }
 
+      if ( types != null ) {
+        for ( int b = 0; b < types.length; b++ ) {
+          ApartmentCategory cat = new ApartmentCategory(Integer.parseInt(types[b]));
+          Image image = new Image(cat.getImageId());
+            image.setName("");
+            image.setHorizontalSpacing(4);
+            image.setVerticalSpacing(2);
+          if ( cat.getImageId() != -1 )
+            complexTable.add(image,3,3);
+        }
+      }
+
+
       Image moreImage = iwrb_.getImage("/building/more.gif");
+      Image mapImage = iwrb_.getImage("/building/map.gif");
 
       Link complexLink = new Link(moreImage,modinfo.getRequestURI());
         complexLink.addParameter(PARAMETER_STRING,iComplexId);
 
+      Link locationLink = new Link(mapImage);
+        locationLink.setWindowToOpen(BuildingLocation.class);
+        locationLink.addParameter(PARAMETER_STRING,iComplexId);
+
       complexTable.add(getNameText(complex[a].getName()),1,1);
       complexTable.add(getInfoText(infoText),1,2);
-      complexTable.add(complexLink,1,3);
+      complexTable.add(complexLink,1,4);
+      complexTable.add("&nbsp;&nbsp;&nbsp;",1,4);
+      complexTable.add(locationLink,1,4);
 
       String divideText = "<br>.........<br><br>";
 
