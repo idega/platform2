@@ -409,7 +409,11 @@ public class ServiceViewer extends Window {
 
   private String getServicePrice(Service service, int timeframeId){
     StringBuffer price = new StringBuffer();
-    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), timeframeId, false);
+    /**
+     * @todo replace...
+     */
+    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
+//    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), timeframeId, false);
     Currency currency;
 
     for (int j = 0; j < prices.length; j++) {
