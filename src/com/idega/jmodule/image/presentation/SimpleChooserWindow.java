@@ -23,6 +23,7 @@ import com.idega.util.idegaTimestamp;
 
     public SimpleChooserWindow(){
       super();
+      setResizable(true);
     }
 
     public void  main(ModuleInfo modinfo) throws Exception{
@@ -32,6 +33,7 @@ import com.idega.util.idegaTimestamp;
       add(SC);
       addHeaderObject(SC.getLinkTable());
       setTitle("Image Chooser");
+
       setParentToReload();
     }
 }
