@@ -1,6 +1,7 @@
 package com.idega.block.school.data;
 
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -35,6 +36,8 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   public final static String COLUMN_READY = "ready";
   public final static String COLUMN_LOCKED = "locked";
   public final static String SCHOOL = "school_id";
+	public final static String COLUMN_LOCKED_DATE = "locked_date";
+	public final static String COLUMN_READY_DATE = "ready_date";
 
 	public final static String SCHOOL_CLASS_YEAR = "sch_school_class_year";
 	public final static String SCHOOL_CLASS_TEACHER = "sch_school_class_teacher";
@@ -53,6 +56,8 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
     addAttribute(COLUMN_VALID,"Valid",true,true,String.class,1);
     addAttribute(COLUMN_READY,"Ready",true,true,String.class,1);
     addAttribute(COLUMN_LOCKED,"Ready",true,true,String.class,1);
+		addAttribute(COLUMN_READY_DATE,"Ready date",true,true,Timestamp.class);
+		addAttribute(COLUMN_LOCKED_DATE,"Ready date",true,true,Timestamp.class,1);
     
     addManyToManyRelationShip(SchoolYear.class, SCHOOL_CLASS_YEAR);
 		addManyToManyRelationShip(User.class, SCHOOL_CLASS_TEACHER);
@@ -172,6 +177,22 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 			setColumn(COLUMN_LOCKED, VALID);
 		else
 			setColumn(COLUMN_LOCKED, INVALID);
+	}
+	
+	public void setReadyDate(Timestamp timestamp) {
+		setColumn(COLUMN_READY_DATE, timestamp);
+	}
+	
+	public Timestamp getReadyDate() {
+		return (Timestamp) getColumnValue(COLUMN_READY_DATE);
+	}
+
+	public void setLockedDate(Timestamp timestamp) {
+		setColumn(COLUMN_LOCKED_DATE, timestamp);
+	}
+	
+	public Timestamp getLockedDate() {
+		return (Timestamp) getColumnValue(COLUMN_LOCKED_DATE);
 	}
 
   public Collection ejbFindBySchool(School school)throws FinderException ,RemoteException{
