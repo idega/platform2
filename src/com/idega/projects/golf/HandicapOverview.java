@@ -98,8 +98,6 @@ private String headerTextColor = "#FFFFFF";
 
                 String[] dates = getDates(modinfo);
 
-		System.out.println("------------");
-		System.out.println("Starting: "+new idegaTimestamp().getTimestampRightNow().toString());
                 Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' and scorecard_date is not null order by scorecard_date");
                 Scorecard[] scoreCardsBefore = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+dates[0]+"' order by scorecard_date desc");
 
@@ -391,9 +389,9 @@ private String headerTextColor = "#FFFFFF";
 
                       Text updateText = new Text("- Leiğrétting á forgjöf -");
                         updateText.setFontSize(1);
-                      Text handicapBefore = new Text(scoreCards[a].getHandicapBefore()+"");
+                      Text handicapBefore = new Text(TextSoap.singleDecimalFormat((double)scoreCards[a].getHandicapBefore()));;
                         handicapBefore.setFontSize(1);
-                      Text handicapAfter = new Text(scoreCards[a].getHandicapAfter()+"");
+                      Text handicapAfter = new Text(TextSoap.singleDecimalFormat((double)scoreCards[a].getHandicapAfter()));
                         handicapAfter.setFontSize(1);
 
                       myTable.add(date2,1,a+3);
