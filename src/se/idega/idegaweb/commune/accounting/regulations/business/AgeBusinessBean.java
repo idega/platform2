@@ -1,5 +1,5 @@
 /*
- * $Id: AgeBusinessBean.java,v 1.10 2003/10/10 09:26:07 anders Exp $
+ * $Id: AgeBusinessBean.java,v 1.11 2003/10/10 09:48:34 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,10 +26,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/10 09:26:07 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/10 09:48:34 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class AgeBusinessBean extends com.idega.business.IBOServiceBean implements AgeBusiness  {
 
@@ -425,7 +425,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 					childAgeAccordingToRegulations--;
 				}
 			} else if (rule.equals(RULE_MONTH_AFTER_BIRTH_DAY)) {
-				if (childDate.getMonth() < calendarDate.getMonth()) {
+				if (childDate.getMonth() >= calendarDate.getMonth()) {
 					childAgeAccordingToRegulations--;
 				}
 			}
