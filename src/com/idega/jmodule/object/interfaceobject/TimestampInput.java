@@ -1,5 +1,5 @@
 /*
- * $Id: TimestampInput.java,v 1.2 2001/04/30 16:40:41 palli Exp $
+ * $Id: TimestampInput.java,v 1.3 2001/06/26 23:27:08 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,9 @@ import java.util.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.util.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import java.text.DateFormatSymbols;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -36,7 +39,9 @@ private boolean setCheck=false;
 private int fromYear;
 private int toYear;
 private int selectedYear=-1;
+Text textInFront=new Text();
 
+final static String THETIME_KEY = "timestampinput.thetime";
 
 
 
@@ -45,7 +50,6 @@ public TimestampInput(){
 }
 
 public TimestampInput(String name){
-	super();
 
 	theDay = new DropdownMenu(name+"_day");
 	theMonth = new DropdownMenu(name+"_month");
@@ -55,15 +59,15 @@ public TimestampInput(String name){
 	theMinute = new DropdownMenu(name+"_minute");
 	//theSecond = new DropdownMenu(name+"_second");
 	theWholeTimestamp = new Parameter(name,"");
-	script = new Script();
+
+        script = new Script();
 
 	super.add(theDay);
 	super.add(theMonth);
 	super.add(theYear);
 
 
-
-	super.add(new Text("klukkan"));
+	//super.add(new Text("klukkan"));
 
 	super.add(theHour);
 	super.add(theMinute);
@@ -91,7 +95,7 @@ public TimestampInput(String name){
 	//theSecond.setParentObject(this.getParentObject());
 
 
-	theYear.addMenuElement("","Ár");
+	//theYear.addMenuElement("","Ár");
 
         idegaTimestamp stamp = idegaTimestamp.RightNow();
         int currentYear = stamp.getYear();
@@ -101,7 +105,9 @@ public TimestampInput(String name){
 	//theYear.addMenuElement("2001","2001");
 	//theYear.addMenuElement("2002","2002");
 
-	theMonth.addMenuElement("","Mánuður");
+	//theMonth.addMenuElement("","Mánuður");
+
+        /*
 	theMonth.addMenuElement("01","janúar");
 	theMonth.addMenuElement("02","febrúar");
 	theMonth.addMenuElement("03","mars");
@@ -114,8 +120,23 @@ public TimestampInput(String name){
 	theMonth.addMenuElement("10","október");
 	theMonth.addMenuElement("11","nóvember");
 	theMonth.addMenuElement("12","desember");
+        */
 
-	theDay.addMenuElement("","Dagur");
+	theMonth.addMenuElement("01");
+	theMonth.addMenuElement("02");
+	theMonth.addMenuElement("03");
+	theMonth.addMenuElement("04");
+	theMonth.addMenuElement("05");
+	theMonth.addMenuElement("06");
+	theMonth.addMenuElement("07");
+	theMonth.addMenuElement("08");
+	theMonth.addMenuElement("09");
+	theMonth.addMenuElement("10");
+	theMonth.addMenuElement("11");
+	theMonth.addMenuElement("12");
+
+	//theDay.addMenuElement("","Dagur");
+
 	theDay.addMenuElement("01","1");
 	theDay.addMenuElement("02","2");
 	theDay.addMenuElement("03","3");
@@ -152,7 +173,7 @@ public TimestampInput(String name){
 	theDay.addMenuElement("31","31");
 
 
-	theHour.addMenuElement("","Klst");
+	//theHour.addMenuElement("","Klst");
 
 	theHour.addMenuElement("00","00");
 	theHour.addMenuElement("01","01");
@@ -181,7 +202,7 @@ public TimestampInput(String name){
 	theHour.addMenuElement("23","23");
 
 
-	theMinute.addMenuElement("","Mínútur");
+	//theMinute.addMenuElement("","Mínútur");
 
 	theMinute.addMenuElement("00","00");
 	theMinute.addMenuElement("01","01");
@@ -327,6 +348,33 @@ public TimestampInput(String name){
 }
 
 
+
+
+    private void addLocalized(ModuleInfo modinfo){
+        Locale locale = modinfo.getCurrentLocale();
+        DateFormatSymbols symbols = new DateFormatSymbols(locale);
+        IWResourceBundle iwrb = getBundle(modinfo).getResourceBundle(modinfo);
+
+        textInFront.setText(iwrb.getLocalizedString(THETIME_KEY));
+
+        String emptyString = "";
+        theDay.addMenuElementFirst(emptyString,iwrb.getLocalizedString(DateInput.YEAR_KEY));
+        theMonth.addMenuElementFirst(emptyString,iwrb.getLocalizedString(DateInput.MONTH_KEY));
+        theYear.addMenuElementFirst(emptyString,iwrb.getLocalizedString(DateInput.YEAR_KEY));
+        theHour.addMenuElementFirst(emptyString,iwrb.getLocalizedString(TimeInput.HOUR_KEY));
+        theMinute.addMenuElementFirst(emptyString,iwrb.getLocalizedString(TimeInput.MINUTE_KEY));
+
+        String[] monthStrings = symbols.getMonths();
+
+        for(int i=1;i<=12;i++){
+          String value=Integer.toString(i);
+          if(i<10){
+            value="0"+value;
+          }
+          theMonth.setMenuElementDisplayString(value,monthStrings[i-1]);
+        }
+
+    }
 
 public void setYear(int year){
 	setCheck=true;
@@ -478,6 +526,10 @@ public void keepStatusOnAction(){
 **/
 public void add(ModuleObject mo){
 	//does nothing
+}
+
+public void main(ModuleInfo modinfo){
+  addLocalized(modinfo);
 }
 
 

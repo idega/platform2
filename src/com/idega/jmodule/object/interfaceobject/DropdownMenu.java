@@ -102,10 +102,13 @@ public DropdownMenu(List entityList, String Name){
 }
 
 
+public void addMenuElementFirst(String value,String DisplayString){
+	theElements.add(0,new MenuElement(DisplayString,value));
+}
 
 //Here is a possible bug, if there are many elements with the same value
-public void addMenuElement(String Value, String DisplayString){
-	theElements.addElement( new MenuElement(DisplayString,Value));
+public void addMenuElement(String value, String DisplayString){
+	theElements.addElement( new MenuElement(DisplayString,value));
 }
 
 public void addMenuElement(int value,String DisplayString){
@@ -116,9 +119,14 @@ public void addMenuElement(String value){
 	theElements.addElement(new MenuElement(value,value));
 }
 
+public void setMenuElementDisplayString(String elementValue,String displayString){
+  MenuElement element = getMenuElement(elementValue);
+  element.setName(displayString);
+}
+
 /**
- * Add menu elements from an List of GenericEntity Objects
- */
+* Add menu elements from an List of GenericEntity Objects
+*/
 public void addMenuElements(List entityList){
 	if(entityList != null){
           int length = entityList.size();

@@ -1,5 +1,5 @@
 /*
- * $Id: TimeInput.java,v 1.2 2001/04/30 16:40:41 palli Exp $
+ * $Id: TimeInput.java,v 1.3 2001/06/26 23:26:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,8 @@ package com.idega.jmodule.object.interfaceobject;
 import java.io.*;
 import java.util.*;
 import com.idega.jmodule.object.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -26,6 +28,9 @@ private DropdownMenu theMinute;
 //private DropdownMenu theSecond;
 private Parameter theWholeTime;
 private boolean setCheck = false;
+
+final static String HOUR_KEY = "timeinput.hour";
+final static String MINUTE_KEY = "timeinput.minute";
 
 
 public TimeInput(){
@@ -55,7 +60,7 @@ public TimeInput(String name){
 	theMinute.setParentObject(this.getParentObject());
 	//theSecond.setParentObject(this.getParentObject());
 
-	theHour.addMenuElement("","Klst");
+	//theHour.addMenuElement("","Klst");
 
 	theHour.addMenuElement("00","00");
 	theHour.addMenuElement("01","01");
@@ -84,7 +89,7 @@ public TimeInput(String name){
 	theHour.addMenuElement("23","23");
 
 
-	theMinute.addMenuElement("","Mínútur");
+	//theMinute.addMenuElement("","Mínútur");
 
 	theMinute.addMenuElement("00","00");
 	theMinute.addMenuElement("01","01");
@@ -260,7 +265,12 @@ public void setHour(String hour){
 
 
 
-
+public void main(ModuleInfo modinfo){
+      IWResourceBundle iwrb = getBundle(modinfo).getResourceBundle(modinfo);
+      String emptyString = "";
+      theHour.addMenuElementFirst(emptyString,iwrb.getLocalizedString(TimeInput.HOUR_KEY));
+      theMinute.addMenuElementFirst(emptyString,iwrb.getLocalizedString(TimeInput.MINUTE_KEY));
+}
 
 
 

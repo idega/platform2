@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.5 2001/06/26 20:52:06 tryggvil Exp $
+ * $Id: DateInput.java,v 1.6 2001/06/26 23:27:15 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,13 +36,13 @@ private String styleAttribute = "font-size: 8pt";
 private boolean inShort=false;
 
 
-private final static String DAY_KEY = "dateinput.day_long";
-private final static String MONTH_KEY = "dateinput.month_long";
-private final static String YEAR_KEY = "dateinput.year_long";
+final static String DAY_KEY = "dateinput.day_long";
+final static String MONTH_KEY = "dateinput.month_long";
+final static String YEAR_KEY = "dateinput.year_long";
 
-private final static String DAY_KEY_S = "dateinput.day_short";
-private final static String MONTH_KEY_S = "dateinput.month_short";
-private final static String YEAR_KEY_S = "dateinput.year_short";
+final static String DAY_KEY_S = "dateinput.day_short";
+final static String MONTH_KEY_S = "dateinput.month_short";
+final static String YEAR_KEY_S = "dateinput.year_short";
 
 public DateInput(){
 	this("dateinput");
