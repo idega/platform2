@@ -721,7 +721,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	  		table.add(input, 2, i++);
   		}
   	}
-  	String okayText = resourceBundle.getLocalizedString("ro_okay", "Okay");
+  	String okayText = resourceBundle.getLocalizedString("ro_okay", "ok");
   	SubmitButton okayButton = new SubmitButton(okayText, VALUES_COMMITTED_KEY, "default_value");
   	okayButton.setAsImageButton(true);
   	PresentationObject goBack = getGoBackButton(resourceBundle);
