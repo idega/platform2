@@ -64,6 +64,9 @@ public class ServiceViewer extends Window {
   private int windowHeight = 480;
   private Link link;
   private Text text;
+  private Text boldText;
+  private boolean showBuyButton = true;
+  private boolean showMoreButton = true;
 
   private void init(IWContext iwc) {
     iwb = this.getBundle(iwc);
@@ -74,11 +77,13 @@ public class ServiceViewer extends Window {
     tsb = TravelStockroomBusiness.getNewInstance();
     cal = new idegaCalendar();
     dayOfWeekName = new String[8];
-    if(link==null){
-      link = new Link();
-      link.setAsImageButton(true);/**@todo localize check if this gets cloned*/
-    }
-    if(text==null) text = new Text();
+
+    link = new Link();
+    link.setAsImageButton(true);/**@todo localize check if this gets cloned*/
+
+    text = new Text();
+    boldText = new Text();
+    boldText.setBold(true);
 
     dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
     dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,iwc).substring(0,3);
@@ -200,7 +205,7 @@ public class ServiceViewer extends Window {
           number.setText(prod.getNumber());
           number.setBold(true);
           content.add(number,x,y);
-        //description
+        //name
           Text desc = (Text) text.clone();
           desc.setText(ProductBusiness.getProductName(prod));
           content.add(desc,++x,y);
@@ -218,18 +223,20 @@ public class ServiceViewer extends Window {
           price.setText(getServicePrice(serv));
           content.add(price,++x,y);
         //Info and buy buttons
-          Link more = new Link("more");
-          more.setWindowToOpen(ServiceViewer.class);
-          more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
-          //more.setText("more");/**@todo localize **/
-          more.setAsImageButton(true);
-          content.add(more,++x,y);
+          if( showMoreButton){
+            Link more = new Link(iwrb.getLocalizedString("more.button","more"));
+            more.setWindowToOpen(ServiceViewer.class);
+            more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
+            more.setAsImageButton(true);
+            content.add(more,++x,y);
+          }
 
-          Link buy = LinkGenerator.getLink(iwc,prod.getID());
-          buy.setText("buy");
-          buy.setAsImageButton(true);
-          content.add(buy,++x,y);
-
+          if( showBuyButton){
+            Link buy = LinkGenerator.getLink(iwc,prod.getID());
+            buy.setText(iwrb.getLocalizedString("buy.button","buy"));
+            buy.setAsImageButton(true);
+            content.add(buy,++x,y);
+          }
 
         }
         catch(Exception ex){
@@ -249,29 +256,56 @@ public class ServiceViewer extends Window {
   }
 
   private Table getServiceInfoTable(IWContext iwc){
-    Table content = new Table(1,4);
+    Table content = new Table(2,4);
+    content.mergeCells(1,1,2,1);
+    content.mergeCells(1,2,2,2);
+
     content.setCellspacing(0);
     content.setCellpadding(2);
 
     try {
-      int i = 1;
+      int y = 1;
       Product product = new Product(service.getID());
       //number
       Text numberAndName = (Text) text.clone();
       numberAndName.setText(product.getNumber()+" - "+ProductBusiness.getProductName(product));
       numberAndName.setBold(true);
-      content.add(numberAndName,1,i);
+      content.add(numberAndName,1,y);
       //description
       TxText descriptionText = product.getText();
       if (descriptionText != null) {
-        content.add(new TextReader(product.getText().getID()),1,2);//insert a textreader
+        content.add(new TextReader(product.getText().getID()),1,++y);//insert a textreader
       }
-      //content.add(ProductBusiness.getProductDescription(product),1,++i);/** @todo insert a textreader**/
-      content.add("META DATA",1,++i);
 
-      Link buy = LinkGenerator.getLink(iwc,service.getID());
-      buy.setAsImageButton(true);
-      content.add(buy,1,++i);
+      //active days
+        Text day = (Text) boldText.clone();
+        day.setText(iwrb.getLocalizedString("service.info.departures","Departures: "));
+        Text days = new Text(getServiceDepartures(service));
+        content.add(day,1,++y);
+        content.add(days,2,y);
+
+      //timeframe - trip length
+        Text dur = (Text) boldText.clone();
+        dur.setText(iwrb.getLocalizedString("service.info.departures","Departures: "));
+        Text duration = new Text(getServiceDurationString(service));
+        content.add(dur,1,++y);
+        content.add(duration,2,y);
+      //Price
+        Text price = (Text) boldText.clone();
+        price.setText(iwrb.getLocalizedString("service.info.price","Price: "));
+        Text prices = new Text(getServicePrice(service));
+        content.add(price,1,++y);
+        content.add(prices,2,y);
+
+
+
+      if( showBuyButton){
+        Link buy = LinkGenerator.getLink(iwc,service.getID());
+        buy.setText(iwrb.getLocalizedString("buy.button","buy"));
+        buy.setAsImageButton(true);
+        content.add(buy,2,++y);
+        content.setAlignment(2,y,"right");
+      }
     }
     catch (Exception ex) {
       ex.printStackTrace(System.err);
@@ -329,6 +363,14 @@ public class ServiceViewer extends Window {
   public void setZebraColors(String color1, String color2){
    this.color1 = color1;
    this.color2 = color2;
+  }
+
+  public void showBuyButton(boolean showBuyButton){
+   this.showBuyButton = showBuyButton;
+  }
+
+  public void showMoreButton(boolean showBMoreButton){
+   this.showMoreButton = showMoreButton;
   }
 
 
