@@ -21,6 +21,7 @@ import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.accesscontrol.data.LoginInfo;
 import com.idega.core.accesscontrol.data.LoginInfoHome;
 import com.idega.core.accesscontrol.data.LoginTable;
@@ -277,6 +278,15 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		//rootSchoolAdminGroup.addGroup(newUser);
 		schoolGroup.addGroup(newUser);
 		return newUser;
+	}
+	
+	public Commune getDefaultCommune() {
+		try {
+			return getCommuneBusiness().getDefaultCommune();
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
 	}
 	/**
 	 * Generates a user login for the user with login derived from the users name and a random password
