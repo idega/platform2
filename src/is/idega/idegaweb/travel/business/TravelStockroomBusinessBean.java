@@ -1348,7 +1348,6 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 	 * override me please
 	 */
 	public boolean supportsSupplyPool() {
-		System.out.println("DOES NOT Support Supply Pool");
 		return false;
 	}
 	
