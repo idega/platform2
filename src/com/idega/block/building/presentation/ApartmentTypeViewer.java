@@ -329,8 +329,7 @@ public void setSpecialAttributes(String name,Map attributes){
 
      private Form getCategoryApartmentTypes(ApartmentType type) throws SQLException {
 
-      int id = BuildingFinder.getComplexIdFromTypeId(type.getID());
-      ApartmentType[] types = BuildingFinder.findApartmentTypesForCategory(id);
+      ApartmentType[] types = BuildingFinder.findApartmentTypesForCategory(type.getApartmentCategoryId());
 
       Form roomForm = new Form();
 
