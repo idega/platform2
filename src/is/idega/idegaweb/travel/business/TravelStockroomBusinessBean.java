@@ -328,9 +328,9 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 			   .append(PriceCategoryBMPBean.getColumnNameKey())
 			   .append(" = '")
 			   .append(key)
-			   .append(" and ")
+			   .append("' and ")
 			   .append(PriceCategoryBMPBean.getColumnNameIsValid())
-			   .append("' = 'Y'");
+			   .append(" = 'Y'");
 
 		  returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAll(sql.toString());
 
