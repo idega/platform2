@@ -70,11 +70,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/29 15:43:22 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/30 12:33:40 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.47 $
+ * @version $Revision: 1.48 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -92,6 +92,8 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String AMOUNT_KEY = PREFIX + "amount";
 	private static final String BANKGIRO_DEFAULT = "Bankgiro";
 	private static final String BANKGIRO_KEY = PREFIX + "bankgiro";
+	private static final String CANCEL_DEFAULT = "Avbryt";
+	private static final String CANCEL_KEY = PREFIX + "cancel";
 	private static final String CHECK_AMOUNT_DEFAULT = "Checkbelopp";
 	private static final String CHECK_AMOUNT_KEY = PREFIX + "check_amount";
 	private static final String CHECK_AMOUNT_LIST_DEFAULT = "Checkbeloppslista";
@@ -150,6 +152,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private static final String PROVIDER_CONFIRM_KEY = PREFIX + "provider_confirm";
 	private static final String PROVIDER_DEFAULT = "Anordnare";
 	private static final String PROVIDER_KEY = PREFIX + "provider";
+	private static final String LAST_PROVIDER_KEY = PREFIX + "last_provider";
 	private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
 	private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
 	//private static final String REMOVE_DEFAULT = "Ta bort";
@@ -649,6 +652,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		try {
 			final PaymentHeader header = getPaymentHeader (context);
 			final School school = header.getSchool ();
+			map.put (LAST_PROVIDER_KEY, school.getPrimaryKey ());
 			final SchoolManagementType managementType
 					= school.getManagementType ();
 			//--verksamhet
@@ -712,6 +716,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		try {
 			final PaymentHeader header = getPaymentHeader (context);
 			final School school = header.getSchool ();
+			map.put (LAST_PROVIDER_KEY, school.getPrimaryKey ());
 			final SchoolManagementType managementType
 					= school.getManagementType ();
 			//--verksamhet
@@ -789,7 +794,12 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		table.mergeCells (1, row, table.getColumns (), row);
 		table.add (getDetailedPaymentRecordSummaryTable
 							 (context, invoiceRecords), 1, row++);
-		
+		table.setHeight (row++, 6);
+		table.mergeCells (1, row, table.getColumns (), row);
+		table.add (new HiddenInput (PROVIDER_KEY, school.getPrimaryKey () + ""), 1,
+							 row);
+		addCancelButton (table, 1, row++, ACTION_SHOW_PAYMENT);
+
 		// add to form
 		final Form form = new Form ();
 		form.setOnSubmit("return checkInfoForm()");
@@ -1176,7 +1186,6 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	private void renderRecordDetailsOrForm
 		(final IWContext context, final java.util.Map presentationObjects)
 		throws RemoteException, FinderException  {
-		//final PaymentRecord record = getPaymentRecord (context);
 		final PaymentHeader header = getPaymentHeader (context);
 		
 		// render form/details
@@ -1302,7 +1311,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		col = 1; row++;
 		table.setHeight (row++, 12);
 		table.mergeCells (col, row, table.getColumns (), row);
-		addPresentation (table, presentationObjects, ACTION_KEY, 1, row++);
+		addPresentation (table, presentationObjects, ACTION_KEY, 1, row);
+		table.add (new HiddenInput (PROVIDER_KEY, "" + presentationObjects.get
+																(LAST_PROVIDER_KEY)), 1, row);
+		addCancelButton (table, 1, row++, ACTION_SHOW_PAYMENT);
 		final Form form = new Form ();
 		form.maintainParameter (PAYMENT_HEADER_KEY);
 		form.maintainParameter (PAYMENT_RECORD_KEY);
@@ -1778,6 +1790,13 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 			input.setValue (value);
 		}
 		return input;
+	}
+	
+	private void addCancelButton (final Table table, final int col,
+																final int row, final int actionId) {
+		table.add (Text.getNonBrakingSpace(), col, row);
+		table.add (getSubmitButton (actionId,	CANCEL_KEY, CANCEL_DEFAULT), col,
+							 row);
 	}
 	
 	private void addSmallHeader
