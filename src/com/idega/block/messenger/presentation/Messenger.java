@@ -24,6 +24,8 @@ public class Messenger extends Block {
   private static String USER_ID = "user_id";
   private static String SERVLET_URL = "servlet_url";
   private static String SERVER_ROOT_URL = "server_root_url";
+  private static String RESOURCE_URL = "resource_url";
+
   private String width="0";
   private String height="0";
 
@@ -40,7 +42,6 @@ public class Messenger extends Block {
         messenger = new Applet();
         messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
         messenger.setAppletClass(com.idega.block.messenger.servlet.ClientServer.MESSENGER_APPLET_CLASS);
-       // messenger.setCodebase(iwb.getResourcesVirtualPath()+"/");
 
         messenger.setCodebase(".");
 
@@ -48,6 +49,7 @@ public class Messenger extends Block {
         messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(iwc).getID()));
         messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
         messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName());
+        messenger.setParam(RESOURCE_URL,iwb.getResourcesVirtualPath()+"/");
 
         messenger.setWidth(width);
         messenger.setHeight(height);

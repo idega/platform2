@@ -34,6 +34,8 @@ public class MessengerApplet extends Applet implements Runnable{
   private static String USER_ID = "user_id";
   private static String SERVLET_URL = "servlet_url";
   private static String SERVER_ROOT_URL = "server_root_url";
+  private static String RESOURCE_URL = "resource_url";
+
 
   private Thread t;
 
@@ -48,6 +50,7 @@ public class MessengerApplet extends Applet implements Runnable{
   private String userId;
   private String servletURL;
   private URL hostURL;
+  private String resourceURL;
 
   private Packet packetToServlet;
   private Packet packetFromServlet;
@@ -74,17 +77,18 @@ public class MessengerApplet extends Applet implements Runnable{
       userId = this.getParameter(USER_ID, "-1");
       servletURL = this.getParameter(SERVLET_URL, "servlet/ClientServer");
       hostURL = new URL(this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is"));
+      resourceURL = this.getParameter(SERVER_ROOT_URL, "http://iw.idega.is");
 
-        java.net.URL url;
-  Image img;
+    java.net.URL url;
+    Image img;
 
     try {
       url = SingleLineItem.class.getResource("face_in.gif");
       img=Toolkit.getDefaultToolkit().getImage(url);
     }
     catch (Exception ex) {
-      img = getImage(getDocumentBase(),"face_in.gif");
-      System.out.println("AAAAARRGG:"+getDocumentBase());
+      img = getImage(new URL(hostURL+resourceURL),"face_in.gif");
+      System.out.println("AAAAARRGG:"+hostURL+resourceURL);
     }
 
 
