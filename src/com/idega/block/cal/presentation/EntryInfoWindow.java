@@ -5,9 +5,10 @@ package com.idega.block.cal.presentation;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.idega.block.cal.business.CalBusiness;
+import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
+import com.idega.block.cal.business.LedgerVariationsHandler;
 import com.idega.block.cal.data.CalendarEntry;
 import com.idega.block.cal.data.CalendarLedger;
 import com.idega.idegaweb.IWApplicationContext;
@@ -30,6 +31,8 @@ import com.idega.util.IWTimestamp;
 public class EntryInfoWindow extends StyledIWAdminWindow{
 
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
+	public static final String BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS = "ledger_variations_class";
+
 	
 	//parameter names
 	public static String headlineFieldParameterName = "headline";
@@ -53,7 +56,7 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 	
 	//fields
 	private Text groupNameField;
-	private Text clubNameField;
+	private String clubNameField;
 	private String headlineField;
 	private String typeField;
 	private String dayFromField;
@@ -100,6 +103,8 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		String entryIDString = iwc.getParameter(CalendarEntryCreator.entryIDParameterName);
 		
+		LedgerVariationsHandler ledgerVariationsHandler = getLedgerVariationsHandler(iwc);
+		
 		Integer entryID = new Integer(entryIDString);
 		CalendarEntry entry = getCalBusiness(iwc).getEntry(entryID.intValue());
 		
@@ -107,10 +112,12 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		int ledgerID = entry.getLedgerID();
 		Collection parentGroups = null;
 		try {
+			if(groupID == -1 && ledgerID != -1) {
+				groupID = getCalBusiness(iwc).getLedger(ledgerID).getGroupID();
+			}
 			if(groupID != -1) {
 				groupNameField = new Text(getGroupBusiness(iwc).getGroupByGroupID(groupID).getName());
-				parentGroups = new ArrayList(getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID)));
-				
+				parentGroups = new ArrayList(getGroupBusiness(iwc).getParentGroupsRecursive(getGroupBusiness(iwc).getGroupByGroupID(groupID)));				
 			}
 			else if(ledgerID != -1) {
 				CalendarLedger ledger = getCalBusiness(iwc).getLedger(ledgerID);
@@ -127,19 +134,8 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 			e.printStackTrace();
 		}
 		if(parentGroups != null) {
-			Iterator pgIter = parentGroups.iterator();
-			while(pgIter.hasNext()) {
-				Group g = (Group) pgIter.next();
-				String type = g.getGroupType();
-				if("iwme_club".equals(type)) {
-					clubNameField = new Text(g.getName());
-					clubNameField.setStyleClass(boldText);
-				}
-			}
-		}
-		if(clubNameField == null) {
-			clubNameField = new Text(iwrb.getLocalizedString("ledgerwindow.no_club_text","No club"));
-			clubNameField.setStyleClass(boldText);
+			clubNameField = ledgerVariationsHandler.getParentOfParentGroupName(parentGroups);
+
 		}
 		
 		headlineField = entry.getName();
@@ -226,6 +222,32 @@ public class EntryInfoWindow extends StyledIWAdminWindow{
 		}
 		return groupBiz;
 	}
+	public static LedgerVariationsHandler getLedgerVariationsHandler(IWContext iwc) {
+		// the class used to handle ledgerVariations is an applicationProperty... 
+		String bClass = null;
+		try {
+			bClass = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS);
+		} catch(Exception e) {
+			// just user default LedgerVariationHandler class
+		}
+		LedgerVariationsHandler ledgerVariationsHandler;
+		if(bClass!=null && bClass.trim().length()>0) {
+			Class classDef;
+			try {
+				classDef = Class.forName(bClass);
+				ledgerVariationsHandler = (LedgerVariationsHandler) classDef.newInstance();
+			} catch (Exception e) {
+				System.out.println("Couldn't instantiate class for ledgerVariationsHandler, using default: " + bClass);
+				e.printStackTrace();
+				ledgerVariationsHandler = new DefaultLedgerVariationsHandler();
+			}
+		} else {
+			ledgerVariationsHandler = new DefaultLedgerVariationsHandler();
+		}
+		return ledgerVariationsHandler;
+		
+	}
+
 	
 	
 
