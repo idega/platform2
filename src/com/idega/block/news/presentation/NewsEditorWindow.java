@@ -140,9 +140,9 @@ private IWResourceBundle iwrb;
     init();
     //debugParameters(iwc);
     boolean doView = true;
-    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
-
-
+    Locale currentLocale = iwc.getCurrentLocale();
+    Locale chosenLocale;
+    
     if(iwc.isParameterSet(actClose) || iwc.isParameterSet(actClose+".x")){
       setParentToReload();
       close();
