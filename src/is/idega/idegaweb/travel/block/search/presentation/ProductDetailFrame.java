@@ -91,7 +91,7 @@ public class ProductDetailFrame extends TravelBlock {
 				if (descriptionText != null) {
 					ch = ContentFinder.getContentHelper(descriptionText.getContentId(), localeID);
 				}
-				getServiceHandler(iwc).getBookingForm(iwc, product);
+				bookingForm = getServiceHandler(iwc).getBookingForm(iwc, product);
 				
 			} catch (Exception e ) {
 				e.printStackTrace();
@@ -338,6 +338,11 @@ public class ProductDetailFrame extends TravelBlock {
 				}
 			}
 			
+			String orgID = supplier.getOrganizationID();
+			table.add(getText(iwrb.getLocalizedString("travel.organization_id", "Organization ID")), 1, row++);
+			if (orgID != null) {
+				table.add(getSmallText(orgID), 1, row++);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -471,6 +476,7 @@ public class ProductDetailFrame extends TravelBlock {
 		if (days > 1) {
 			table.add(getOrangeText(Text.NON_BREAKING_SPACE+iwrb.getLocalizedString("travel.search.per_night","per night")), column, row);
 		}
+		
 		if (count > 1) {
 			table.add(getOrangeText(" ("+currencyFormat.format(price)+Text.NON_BREAKING_SPACE+currAbbr+" per "+bookingForm.getUnitName()+")"), column, row);
 		}
