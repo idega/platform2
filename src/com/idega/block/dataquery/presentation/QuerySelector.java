@@ -69,12 +69,16 @@ public class QuerySelector extends Block {
 	
 	public PresentationObject presentFolderQueries(ICFile folder){
 		
+		
 		TreeViewerSelection tree = new TreeViewerSelection();
 		tree.setSelectionKey(PRM_QUERY_ID);
 		tree.setSelectedNode(queryID);
+		if(folder!=null){
 		tree.setRootNode(folder);
 		tree.setDefaultOpenLevel(1);
+		
 		tree.setSelectionKey("fo_"+folder.getPrimaryKey().toString());
+		}
 	
 		return tree;
 		
@@ -110,6 +114,7 @@ public class QuerySelector extends Block {
 	
 	public void presentate(IWContext iwc){
 		add(presentFolders(iwc));
+	
 	}
 	
 	public void proccess(IWContext iwc){
