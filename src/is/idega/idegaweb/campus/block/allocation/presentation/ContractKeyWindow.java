@@ -44,7 +44,7 @@ import com.idega.util.SendMail;
 public class ContractKeyWindow extends Window{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private boolean isAdmin;
@@ -117,13 +117,13 @@ public class ContractKeyWindow extends Window{
       String val = "";
       SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),"save");
       if(apartmentReturn){
-        T.addTitle(iwrb.getLocalizedString("apartment_return","Aparment return"));
+        T.addTitle(iwrb.getLocalizedString("apartment_return","Apartment return"));
         val = "return";
         if(eContract.getStatus().equals(eContract.statusEnded) || eContract.getStatus().equals(eContract.statusResigned) )
           T.addButton(save);
       }
       else{
-        T.addTitle(iwrb.getLocalizedString("apartment_deliver","Aparment deliver"));
+        T.addTitle(iwrb.getLocalizedString("apartment_deliver","Apartment deliver"));
         val = "deliver";
         if(eContract.getStatus().equals(eContract.statusSigned) )
           T.addButton(save);

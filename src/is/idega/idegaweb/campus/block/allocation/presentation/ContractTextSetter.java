@@ -17,12 +17,13 @@ import com.idega.util.LocaleUtil;
 import java.util.List;
 import java.sql.SQLException;
 import com.idega.data.EntityFinder;
+
 /**
- * Title:
+ * Title:   idegaclasses
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
 

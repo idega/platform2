@@ -32,14 +32,15 @@ import java.util.StringTokenizer;
 import java.util.ListIterator;
 import java.util.LinkedList;
 import java.util.List;
+
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.0
- */
+* Title:   idegaclasses
+* Description:
+* Copyright:    Copyright (c) 2001
+* Company:
+* @author  <a href="mailto:aron@idega.is">aron@idega.is
+* @version 1.0
+*/
 
 public class CampusContracts extends Block{
 

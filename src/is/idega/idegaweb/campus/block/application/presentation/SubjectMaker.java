@@ -45,6 +45,10 @@ public class SubjectMaker extends Block{
     return "Subjects";
   }
 
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
+
   protected void control(IWContext iwc){
 
 
