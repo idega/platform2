@@ -27,8 +27,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
+import javax.mail.MessagingException;
+
 import com.idega.block.text.data.TxText;
 import com.idega.block.text.presentation.TextReader;
+import com.idega.block.tpos.business.TPosException;
 import com.idega.block.tpos.presentation.ReceiptWindow;
 import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.data.PriceCategoryBMPBean;
@@ -46,6 +50,7 @@ import com.idega.core.builder.business.BuilderService;
 import com.idega.core.builder.business.BuilderServiceFactory;
 import com.idega.data.IDOLookup;
 import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -64,6 +69,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
+import com.idega.util.SendMail;
 
 /**
  * @author gimmi
@@ -125,6 +131,7 @@ public abstract class AbstractSearchForm extends Block{
 	protected Image windowHeaderImage;
 	
 	protected IWResourceBundle iwrb;
+	protected IWBundle bundle;
 	protected ServiceSearchEngine engine = null;
 	
 	protected Image headerImage;
@@ -154,6 +161,7 @@ public abstract class AbstractSearchForm extends Block{
 	private void init(IWContext iwc) throws RemoteException {
 		this.iwc = iwc;
 		iwrb = getSearchBusiness(iwc).getTravelSessionManager(iwc).getIWResourceBundle();
+		bundle = getSearchBusiness(iwc).getTravelSessionManager(iwc).getIWBundle();
 		formTable.setWidth("100%");
 		formTable.setCellpadding(0);
 		formTable.setCellspacing(3);
@@ -639,7 +647,8 @@ public abstract class AbstractSearchForm extends Block{
 						  table.add(textReader,1,row);
 						  table.mergeCells(1, row, 2, row);
 						} else {
-							System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search");
+							sendErrorEmail(product);
+							System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail sent)");
 						}
 						
 						if (addresses == null || addresses.isEmpty()) {
@@ -913,5 +922,44 @@ public abstract class AbstractSearchForm extends Block{
 		return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);
 	}
 	
+	protected void sendErrorEmail(Product product) throws TPosException {
+		String error_notify_email = this.bundle.getProperty(BookingForm.PARAMETER_EMAIL_FOR_ERROR_NOTIFICATION);
+		if (error_notify_email != null) {
+			try {
+				String cc_error_notify_email = this.bundle.getProperty(BookingForm.PARAMETER_CC_EMAIL_FOR_ERROR_NOTIFICATION);
+				if (cc_error_notify_email == null) {
+					cc_error_notify_email = "";	
+				}
 
+				Supplier supp = null;
+				try {
+					SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+					supp = sHome.findByPrimaryKey(product.getSupplierId());
+				} catch (FinderException e) {
+					e.printStackTrace();
+				} 
+				
+				String subject = iwrb.getLocalizedString("travel.product_description_text_not_found", "Text for Search not found for product = "+product.getProductName(iwc.getCurrentLocaleId()));
+				
+				SendMail mail = new SendMail();
+
+				product.getSupplierId();
+				StringBuffer msg = new StringBuffer();
+				msg.append(subject+"\n\n ")
+				.append(product.getProductName(iwc.getCurrentLocaleId()))
+				.append(" "+iwrb.getLocalizedString("travel.belongs_to_supplier", "belongs to supplier")+ " : ");
+				if (supp != null) {
+					msg.append(supp.getName());
+				}
+
+				mail.send("gimmi@idega.is", error_notify_email, cc_error_notify_email, "", "mail.idega.is", subject, msg.toString());
+			} catch (MessagingException e1) {
+				e1.printStackTrace(System.err);
+				throw new TPosException(iwrb.getLocalizedString("travel.unknown_error","Unknown error"));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 }
