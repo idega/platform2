@@ -21,6 +21,7 @@ public class BasicPollVoter extends JModuleObject{
         private boolean showPollCollection = true;
 
         private Image separatorImage = null;
+        private Image otherPollsImage = null;
 
         private int number_of_shown_polls = 7;
 
@@ -112,6 +113,11 @@ private String color_2 = null;
         public void setSeparatorImage(Image separatorImage) {
                 this.separatorImage = separatorImage;
         }
+
+        public void setOtherPollsImage(Image otherPollsImage) {
+                this.otherPollsImage = otherPollsImage;
+        }
+
 
         public void showVotes(boolean show) {
                 this.showVotes = show;
@@ -609,6 +615,7 @@ private String color_2 = null;
 
 			//....hingað....
 
+
 			if (thisObjectSubmitted(modinfo)){
 				handleInsert(modinfo);
 			}
@@ -627,11 +634,16 @@ private String color_2 = null;
 
 				PollOption[] optionArray;
 				optionArray = poll.findOptions();
+
                                 windowHeight += (optionArray.length * answerHeight) + questionHeight;
 
                                 if (showPollCollection) {
-                                      Text otherText = new Text("Fyrri kannanir");
-                                          otherText.setFontSize(1);
+                                    Text otherText = null;
+                                      if (this.otherPollsImage == null) {
+                                          otherText = new Text("Fyrri kannanir");
+                                              otherText.setFontSize(1);
+                                      }
+
                                       Window collectionWindow = new Window("Fyrri kannanir",280,windowHeightForCollection,this.resultPageUrl);
                                           collectionWindow.setResizable(false);
                                           collectionWindow.setToolbar(false);
@@ -641,37 +653,57 @@ private String color_2 = null;
                                           collectionWindow.setScrollbar(false);
                                           collectionWindow.setMenubar(false);
                                           collectionWindow.setTitlebar(false);
-                                      Link collection = new Link(otherText,collectionWindow);
+
+                                      Link collection;
+                                      if (otherPollsImage == null) {
+                                        collection = new Link(otherText,collectionWindow);
+                                      }else  {
+                                        collection = new Link(otherPollsImage,collectionWindow);
+                                      }
                                           collection.addParameter("i_poll_action","view_collection");
                                           collection.addParameter("i_poll_attribute_id",""+this.attributeId);
                                           collection.addParameter("i_poll_attribute_name",this.attributeName);
 
+                                      //table.setVerticalAlignment(1,3,"bottom");
                                       table.add(collection,1,3);
                                 }
 
+
+
+                                gluggi = new Window("Nidurstodur",280,windowHeight,this.resultPageUrl);
+                                        gluggi.setResizable(false);
+                                        gluggi.setToolbar(false);
+                                        gluggi.setLocation(false);
+                                        gluggi.setDirectories(false);
+                                        gluggi.setStatus(false);
+                                        gluggi.setScrollbar(false);
+                                        gluggi.setMenubar(false);
+                                        gluggi.setTitlebar(false);
+
+                                form = new Form(gluggi);
+
+                                form.maintainAllParameters();
+                                form.setMethod("post");
+                                form.add(table);
+
+
 				if ( submitButtonURL != null ) {
-					table.add(new SubmitButton(new Image(submitButtonURL,""),"Kjósa"),2,3);
+                                    /*
+                                    Link theLink = new Link(new Image(submitButtonURL,""),gluggi);
+                                        theLink.setToFormSubmit(form);
+                                    table.add(theLink,2,3);
+                                    */
+
+                                    table.add(new SubmitButton(new Image(submitButtonURL,""),"Kjósa"),2,3);
 				}
 				else {
 					table.add(new SubmitButton(submitButtonText),2,3);
 				}
+                                //table.setVerticalAlignment(2,3,"middle");
 				table.add(new Parameter("idega_poll_voter","true"));
 				table.add(new Parameter("result_poll_id",""+poll.getID()));
 			}
 
-			gluggi = new Window("Nidurstodur",280,windowHeight,this.resultPageUrl);
-				gluggi.setResizable(false);
-                                gluggi.setToolbar(false);
-                                gluggi.setLocation(false);
-                                gluggi.setDirectories(false);
-                                gluggi.setStatus(false);
-                                gluggi.setScrollbar(false);
-                                gluggi.setMenubar(false);
-                                gluggi.setTitlebar(false);
-			form = new Form(gluggi);
-			form.maintainAllParameters();
-			form.setMethod("post");
-			form.add(table);
 
 
 		}
