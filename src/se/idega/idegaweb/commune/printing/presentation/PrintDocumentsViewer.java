@@ -387,7 +387,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 			add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
 			addPrintedDatesForm(iwc);
 			add(printedLetterDocs);
-			//addCursorLinks(iwc,printDocs.size(),cursor_p,PRM_CURSOR_P);
+			addCursorLinks(iwc,printDocs.size(),cursor_p,PRM_CURSOR_P);
 			
 			printedLetterDocs.setHeader(localize("printdoc.printed_date","Printing date"),1);
 			printedLetterDocs.setHeader(localize("printdoc.n_o_docs","Number of documents"),2);
@@ -425,7 +425,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
   	add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"));
   	addUnPrintedDatesForm(iwc);
   	add(unPrintedLetterDocs);
-  	//addCursorLinks(iwc,unprintedLetters.size(),cursor_u,PRM_CURSOR_U);
+  	addCursorLinks(iwc,unprintedLetters.size(),cursor_u,PRM_CURSOR_U);
   	
   
 		unPrintedLetterDocs.setWidth(Table.HUNDRED_PERCENT);
@@ -476,14 +476,14 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		add(getLocalizedHeader("printdoc.printed_letters", "Printed letters"));
 		addPrintedDatesForm(iwc);
 		add(printedLetterDocs);
-		//addCursorLinks(iwc,printedLetters.size(),cursor_p,PRM_CURSOR_P);
+		addCursorLinks(iwc,printedLetters.size(),cursor_p,PRM_CURSOR_P);
 		
 			iter = printedLetters.iterator();
 			count = 0;
-			if(cursor_u >0){
-				while(iter.hasNext() && cursor_u>0){
+			if(cursor_p >0){
+				while(iter.hasNext() && cursor_p>0){
 					iter.next();
-					cursor_u--;
+					cursor_p--;
 				}
 			}
 			while (iter.hasNext()&& count < defaultShown) {
