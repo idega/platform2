@@ -1681,12 +1681,14 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private void createContract(IWContext iwc) throws RemoteException {
 		getBusiness().assignContractToApplication(_applicationID, -1,-1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		close();
 	}
 	
 	private void createContractForBankID(IWContext iwc) throws RemoteException {
 		getBusiness().assignContractToApplication(_applicationID, -1,-1, null, -1, iwc.getCurrentUser(), iwc.getCurrentLocale(), true);
 
+		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		close();
 	}
 	
