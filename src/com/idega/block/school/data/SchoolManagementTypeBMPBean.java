@@ -34,6 +34,20 @@ public class SchoolManagementTypeBMPBean extends GenericEntity implements School
 	}
 
 	/* (non-Javadoc)
+	 * @see com.idega.data.IDOEntityBean#getPrimaryKeyClass()
+	 */
+	public Class getPrimaryKeyClass() {
+		return String.class;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.data.GenericEntity#getIDColumnName()
+	 */
+	public String getIDColumnName() {
+		return COLUMN_MANAGEMENT_TYPE;
+	}
+
+	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#insertStartData()
 	 */
 	public void insertStartData() throws Exception {
