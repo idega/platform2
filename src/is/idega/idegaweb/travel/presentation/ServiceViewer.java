@@ -255,7 +255,8 @@ public class ServiceViewer extends Window {
             ServiceViewer viewer = new ServiceViewer();
             viewer.showBuyButton(showBuyButton);
             viewer.showMoreButton(showMoreButton);
-            Link more = new Link(viewer,iwrb.getLocalizedString("travel.more.button","more"));
+            Link more = new Link(viewer);
+            more.setText(iwrb.getLocalizedString("travel.more.button","more"));
             //more.setWindowToOpen(ServiceViewer.class);
             more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
             more.setAsImageButton(true);
