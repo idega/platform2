@@ -122,6 +122,10 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return getIntColumnValue(COLUMN_SCH_CLASS_MEMBER);
 	}
 	
+	public int getEmploymentTypeId(){
+		return getIntColumnValue(COLUMN_WORK_SITUATION);
+	}
+	
 	public EmploymentType getEmploymentType() {
 		return (EmploymentType) getColumnValue(COLUMN_WORK_SITUATION);
 	}

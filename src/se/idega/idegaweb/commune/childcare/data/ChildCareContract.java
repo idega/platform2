@@ -14,6 +14,7 @@ public interface ChildCareContract extends com.idega.data.IDOEntity
  public int getContractID();
  public java.sql.Date getCreatedDate();
  public se.idega.idegaweb.commune.childcare.data.EmploymentType getEmploymentType();
+ public int getEmploymentTypeId();
  public com.idega.user.data.User getInvoiceReceiver();
  public int getInvoiceReceiverID();
  public com.idega.block.school.data.SchoolClassMember getSchoolClassMember();
