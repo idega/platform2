@@ -257,8 +257,8 @@ public class Poll extends Block implements Builderaware {
 				LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a], _iLocaleID);
 				if (locAnswerText != null) {
 					hasAnswers = true;
-					radioTable.add(getStyleText(locAnswerText.getHeadline(), ANSWER_STYLE), 1, row);
 					radioTable.add(getStyleObject(new RadioButton(PollBusiness._PARAMETER_POLL_ANSWER, String.valueOf(answers[a].getID())), ANSWER_STYLE), 1, row);
+					radioTable.add(getStyleText(locAnswerText.getHeadline(), ANSWER_STYLE), 2, row++);
 				}
 			}
 		}
@@ -488,11 +488,11 @@ public class Poll extends Block implements Builderaware {
 	}
 
 	private void setDefaultValues() {
-		_pollWidth = "150";
+		_pollWidth = "100%";
 		_numberOfShownPolls = 3;
 		_showVotes = true;
 		_showCollection = true;
-		_questionAlignment = "center";
+		_questionAlignment = "left";
 		_pollID = -1;
 		_votedColor = "#104584";
 		_whiteColor = "#FFFFFF";
