@@ -173,8 +173,8 @@ public class QueryToSQLBridgeBean extends IBOServiceBean    implements QueryToSQ
     try {
       // get default connection
       statement = connection.createStatement();
-      resultSet = statement.executeQuery(sqlStatement);
       executedSQLStatements.add(sqlStatement);
+      resultSet = statement.executeQuery(sqlStatement);
       metadata = resultSet.getMetaData();
       
       int numberOfColumns = metadata.getColumnCount();
