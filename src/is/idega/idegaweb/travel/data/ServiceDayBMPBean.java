@@ -131,20 +131,21 @@ public class ServiceDayBMPBean extends com.idega.data.GenericEntity implements i
 */
     int[] returner = {};
     try {
-				Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(),Integer.toString(serviceId));
+    		IDOQuery query = this.idoQuery();
+    		query.appendSelect().append(getColumnNameDayOfWeek()).appendFrom().append(getEntityName())
+    		.appendWhereEquals(getColumnNameServiceId(), new Integer(serviceId));
+				String[] days = SimpleQuerier.executeStringQuery(query.toString());
+    		//Collection coll = this.find
+    		//Collection coll = this.idoFindAllIDsByColumnBySQL(getColumnNameServiceId(),Integer.toString(serviceId));
     //    ServiceDay[] days = (ServiceDay[]) (is.idega.idegaweb.travel.data.ServiceDayBMPBean.getStaticInstance(ServiceDay.class)).findAllByColumnOrdered(getColumnNameServiceId(), Integer.toString(serviceId),getColumnNameDayOfWeek());
-    		if (coll != null && !coll.isEmpty()) {
-	        returner = new int[coll.size()];
+    		if (days != null && days.length > 0) {
+	        returner = new int[days.length];
 					ServiceDayHome serviceDayHome = (ServiceDayHome)IDOLookup.getHome(ServiceDay.class);
-					Iterator iter = coll.iterator();
-					ServiceDay sd;
-					int counter = 0;
-	        while (iter.hasNext()) {
-	        	sd = (ServiceDay) serviceDayHome.findByPrimaryKey(iter.next());
-	          returner[counter++] = sd.getDayOfWeek();
+	        for (int i = 0; i < days.length; i++) {
+	          returner[i] = Integer.parseInt(days[i]);
 	        }
     		}
-    }catch (FinderException sql) {
+    }catch (Exception sql) {
       sql.printStackTrace(System.err);
     }
     return returner;
