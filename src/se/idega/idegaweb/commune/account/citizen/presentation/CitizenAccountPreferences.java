@@ -554,7 +554,7 @@ public class CitizenAccountPreferences extends CommuneBlock {
 			for (int i = 0; i < testEmail.length(); i++) {
 				char c = testEmail.charAt(i);
 				if ((c < 'a') || (c > 'z')) {
-					if ((c != '.') && (c != '@') && ((c < '0') || (c > '9'))) {
+					if ((c != '.') && (c != '@') && (c != '_') && ((c < '0') || (c > '9'))) {
 						throw new Exception(localize(KEY_EMAIL_INVALID, DEFAULT_EMAIL_INVALID));
 					}
 				}
