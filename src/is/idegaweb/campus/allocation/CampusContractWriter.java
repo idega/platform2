@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.10 2001/08/17 13:55:04 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.11 2001/08/17 17:00:57 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -71,10 +71,10 @@ public class CampusContractWriter{
   public final static String IS ="IS";
   public final static String EN ="EN";
   public final static String TIIS = "TIS";
-  public final static String TIEN = "T EN";
+  public final static String TIEN = "TEN";
 
   public static boolean writePDF(int id,IWResourceBundle iwrb,String realpath,
-  Font titleFont,Font nameFont, Font tagFont,Font textFont){
+  Font nameFont ,Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
     boolean returner = false;
     boolean bEntity = false;
     if(id > 0){
@@ -104,12 +104,12 @@ public class CampusContractWriter{
         chapter.setNumberDepth(0);
         Paragraph P;
         List L = listOfTexts();
-        Hashtable H = getHashTags(id,iwrb,tagFont,textFont);
+        Hashtable H = getHashTags(id,iwrb,nameFont,tagFont,textFont);
         if(L!=null){
           int len = L.size();
           for (int i = 0; i < len; i++) {
             ContractText CT = (ContractText) L.get(i);
-            P = new Paragraph(new Phrase(CT.getName()+"\n",nameFont));
+            P = new Paragraph(new Phrase(CT.getName()+"\n",paragraphFont));
             String sText = CT.getText();
             if(bEntity &&CT.getUseTags()){
               Phrase phrase = detagParagraph(H,sText);
@@ -151,8 +151,9 @@ public class CampusContractWriter{
     return returner;
   }
 
-  public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath, Font titleFont,Font nameFont, Font tagFont,Font textFont){
-    return writePDF(-1,iwrb,realpath, titleFont, nameFont, tagFont, textFont);
+  public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath,
+    Font nameFont, Font titleFont,Font paragraphFont, Font tagFont,Font textFont){
+    return writePDF(-1,iwrb,realpath,nameFont, titleFont, paragraphFont, tagFont, textFont);
   }
   private static List listOfTexts(){
     List L = null;
@@ -215,7 +216,7 @@ public class CampusContractWriter{
     return phrase;
   }
 
-  private static Hashtable getHashTags(int contractId,IWResourceBundle iwrb,Font tagFont,Font textFont){
+  private static Hashtable getHashTags(int contractId,IWResourceBundle iwrb,Font nameFont,Font tagFont,Font textFont){
     try{
       Contract eContract = new Contract(contractId);
       Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
@@ -231,15 +232,15 @@ public class CampusContractWriter{
       H.put(renter_address,new Chunk("v/Hringbraut",tagFont));
       H.put(renter_id,new Chunk("540169-6249",tagFont));
       H.put(today,new Chunk(dfLong.format(new java.util.Date()),tagFont));
-      H.put(tenant_name,new Chunk(eApplicant.getFullName(),tagFont));
-      H.put(tenant_address,new Chunk(eApplicant.getLegalResidence(),tagFont));
-      H.put(tenant_id,new Chunk(eApplicant.getSSN(),tagFont));
+      H.put(tenant_name,new Chunk(eApplicant.getFullName(),nameFont));
+      H.put(tenant_address,new Chunk(eApplicant.getLegalResidence(),nameFont));
+      H.put(tenant_id,new Chunk(eApplicant.getSSN(),nameFont));
       String aname = iwrb.getLocalizedString("apartment","Apartment")+" "+ eApartment.getName();
 
-      H.put(apartment_name,new Chunk(aname,tagFont));
-      H.put(apartment_floor, new Chunk(eFloor.getName(),tagFont));
-      H.put(apartment_address,new Chunk(eBuilding.getStreet(),tagFont));
-      H.put(apartment_campus, new Chunk(eComplex.getName(),tagFont));
+      H.put(apartment_name,new Chunk(aname,nameFont));
+      H.put(apartment_floor, new Chunk(eFloor.getName(),nameFont));
+      H.put(apartment_address,new Chunk(eBuilding.getStreet(),nameFont));
+      H.put(apartment_campus, new Chunk(eComplex.getName(),nameFont));
       H.put(apartment_area, new Chunk(String.valueOf(eApartmentType.getArea()),tagFont));
       H.put(apartment_roomcount,new Chunk(String.valueOf(eApartmentType.getRoomCount()),tagFont));
       H.put(apartment_info,new Chunk(eApartmentType.getExtraInfo()!= null?eApartmentType.getExtraInfo():"",textFont));
