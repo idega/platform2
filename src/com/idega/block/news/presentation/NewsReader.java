@@ -23,7 +23,7 @@ import com.idega.idegaweb.IWMainApplication;
 **
 */
 
-public class NewsReader extends ModuleObjectContainer{
+public class NewsReader extends JModuleObject{
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private boolean isAdmin=false;
@@ -811,7 +811,5 @@ public void setNewsEditorUrl(String url){
 
   public void add(ModuleObject obj) {
     outerTable.addAtBeginning(obj);
-
   }
-
 }
