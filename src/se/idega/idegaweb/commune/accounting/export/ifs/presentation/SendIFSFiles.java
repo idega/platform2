@@ -16,7 +16,9 @@ import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import java.rmi.RemoteException;
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.invoice.business.CheckAmountBusiness;
@@ -36,14 +38,18 @@ public class SendIFSFiles extends AccountingBlock {
 	private final static String PREFIX = "cacc_send_files_";
 	protected final static String KEY_HEADER = PREFIX + "header";
 
+	protected final static String KEY_EMAILED_PROVIDERS = PREFIX + "emailed_providers";
 	protected final static String KEY_ENDED = PREFIX + "ended";
-	protected final static String KEY_HEADER_OPERATION = PREFIX + "operation";
-	protected final static String KEY_LAST_BROADCAST_FOR = PREFIX + "last_broadcast_for";
 	protected final static String KEY_HANDLED_PROVIDER_COUNT = PREFIX + "handled_provider_count";
+	protected final static String KEY_HEADER_OPERATION = PREFIX + "operation";
+	protected final static String KEY_IGNORED_PROVIDERS = PREFIX + "ignored_providers";
+	protected final static String KEY_LAST_BROADCAST_FOR = PREFIX + "last_broadcast_for";
+	protected final static String KEY_NAME = PREFIX + "name";
+	protected final static String KEY_NO_BROADCAST_EXCUTED = PREFIX + "no_broadcast_excuted";
 	protected final static String KEY_OF = PREFIX + "of";
+	protected final static String KEY_PAPER_MAILED_PROVIDERS = PREFIX + "paper_mailed_providers";
 	protected final static String KEY_SEND = PREFIX + "save";
 	protected final static String KEY_STARTED = PREFIX + "started";
-	protected final static String KEY_NO_BROADCAST_EXCUTED = PREFIX + "no_broadcast_excuted";
 	protected final static String KEY_UPDATE_INFORMATION_BELOW = PREFIX + "update_information_below";
 
 	protected final static String PARAM_SEND_FILE = "ifs_file_send";
@@ -106,19 +112,70 @@ public class SendIFSFiles extends AccountingBlock {
 			final Table table = createTable (2);
 			int row = 1;
 			table.mergeCells (1, row, table.getColumns (), row);
+			table.setRowColor (row, getHeaderColor ());
+			table.setRowAlignment (row, Table.HORIZONTAL_ALIGN_CENTER) ;
 			table.add (getSmallHeader (localize (KEY_LAST_BROADCAST_FOR, KEY_LAST_BROADCAST_FOR) + ' ' + getSchoolCategoryName (_currentOperation)), 1, row++);
+ 			table.setColumnWidth (1, "33%");
 			table.add (getSmallHeader (localize (KEY_STARTED, KEY_STARTED) + ':'), 1, row);
 			table.add (getSmallText (broadcastInfo.getStartTime () + ""), 2, row++);
-			final java.sql.Timestamp endTime = broadcastInfo.getEndTime ();
+			final Timestamp endTime = broadcastInfo.getEndTime ();
 			table.add (getSmallHeader (localize (KEY_ENDED, KEY_ENDED) + ':'), 1, row);
 			table.add (getSmallText (null != endTime ? endTime + "" : ""), 2, row++);
 			table.add (getSmallHeader (localize (KEY_HANDLED_PROVIDER_COUNT, KEY_HANDLED_PROVIDER_COUNT) + ':'), 1, row);
 			table.add (getSmallText (handledSchoolsCount + " " + localize (KEY_OF, KEY_OF) + " " +  broadcastInfo.getSchoolCount ()), 2, row++);
+			table.mergeCells (1, row, table.getColumns (), row);
+			table.add (getProviderTable (emailedProviders, paperMailedProviders, ignoredProviders), 1, row++);
 			add (table);
 		} catch (FinderException e) {
 			add (localize (KEY_NO_BROADCAST_EXCUTED, KEY_NO_BROADCAST_EXCUTED));
 		} catch (Exception e) {
 			e.printStackTrace ();
+		}
+	}
+
+	private Table getProviderTable
+		(final Collection emailedProviders, final Collection paperMailedProviders,
+		 final Collection ignoredProviders) throws RemoteException {
+		final Table table = createTable (4);
+ 		for (int i = 2; i <= 4; i++) {
+ 			table.setColumnWidth (i, "25%");
+ 		}
+		int col = 1;
+		int row = 1;
+		table.setRowColor (row, getHeaderColor ());
+		table.add (getSmallHeader ("#"), col++, row);
+		table.add (getSmallHeader (localize (KEY_EMAILED_PROVIDERS, KEY_EMAILED_PROVIDERS)), col++, row);
+		table.add (getSmallHeader (localize (KEY_PAPER_MAILED_PROVIDERS, KEY_PAPER_MAILED_PROVIDERS)), col++, row);
+		table.add (getSmallHeader (localize (KEY_IGNORED_PROVIDERS, KEY_IGNORED_PROVIDERS)), col++, row);
+		final int maxRow = Math.max (Math.max (emailedProviders.size (), paperMailedProviders.size ()), ignoredProviders.size ()) + row;
+		final Iterator emailedProvidersIterator = emailedProviders.iterator ();
+		final Iterator paperMailedProvidersIterator = paperMailedProviders.iterator ();
+		final Iterator ignoredProvidersIterator = ignoredProviders.iterator ();
+
+		int numberedRowsCount = 0;
+		while (row < maxRow) {
+			numberedRowsCount++;
+			row++;
+			col = 1;
+			table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
+												 : getZebraColor2 ());
+			table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+			table.add(getSmallHeader (numberedRowsCount + ""), col++, row);
+			addProviderName(table, col++, row, emailedProvidersIterator);
+			addProviderName(table, col++, row, paperMailedProvidersIterator);
+			addProviderName(table, col++, row, ignoredProvidersIterator);
+		}
+		return table;
+	}
+
+	private void addProviderName
+		(final Table table, final int col, final int row,	final Iterator iterator)
+		throws RemoteException {
+		if (iterator.hasNext ()) {
+			final CheckAmountReceivingSchool schoolInfo
+					= (CheckAmountReceivingSchool) iterator.next ();
+			table.add (getSmallText (schoolInfo.getSchool ().getSchoolName ()), col,
+								 row);
 		}
 	}
 
