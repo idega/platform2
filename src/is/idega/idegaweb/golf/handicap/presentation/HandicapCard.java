@@ -17,6 +17,7 @@ import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.MemberInfoHome;
 import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.handicap.business.Handicap;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
@@ -304,7 +305,17 @@ public class HandicapCard extends GolfBlock {
 			realHandicap = previousScorecard.getHandicapAfter();
 		}
 		else {
-			MemberInfo memberInfo = member.getMemberInfo();
+			MemberInfo memberInfo = null;
+			try {
+				memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(member.getID());
+			}
+			catch (FinderException fe) {
+				memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).createLegacy();
+				memberInfo.setID(member.getID());
+				memberInfo.setFirstHandicap(100f);
+				memberInfo.setHandicap(100f);
+				memberInfo.store();
+			}
 			realHandicap = memberInfo.getFirstHandicap();
 		}
 

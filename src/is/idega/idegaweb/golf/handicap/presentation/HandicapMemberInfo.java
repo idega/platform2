@@ -125,7 +125,11 @@ public class HandicapMemberInfo extends GolfBlock {
 			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
 		}
 		catch (FinderException fe) {
-			throw new FinderException("No handicap found for user with id = " + iMemberID);
+			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).createLegacy();
+			memberInfo.setID(member.getID());
+			memberInfo.setFirstHandicap(100f);
+			memberInfo.setHandicap(100f);
+			memberInfo.store();
 		}
 		int order = memberInfo.getNumberOfRecords("handicap", "<", "" + member.getHandicap()) + 1;
 

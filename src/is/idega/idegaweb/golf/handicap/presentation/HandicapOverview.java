@@ -14,6 +14,7 @@ import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.MemberInfo;
+import is.idega.idegaweb.golf.entity.MemberInfoHome;
 import is.idega.idegaweb.golf.entity.Scorecard;
 import is.idega.idegaweb.golf.entity.TeeColor;
 import is.idega.idegaweb.golf.entity.TeeColorHome;
@@ -163,7 +164,17 @@ public class HandicapOverview extends GolfBlock {
 
 	private void fillTable(IWContext modinfo) throws IOException, SQLException, FinderException {
 		Member member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(Integer.parseInt(this.iMemberID));
-		MemberInfo memberInfo = member.getMemberInfo();
+		MemberInfo memberInfo = null;
+		try {
+			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).findByPrimaryKey(Integer.parseInt(iMemberID));
+		}
+		catch (FinderException fe) {
+			memberInfo = ((MemberInfoHome) IDOLookup.getHomeLegacy(MemberInfo.class)).createLegacy();
+			memberInfo.setID(member.getID());
+			memberInfo.setFirstHandicap(100f);
+			memberInfo.setHandicap(100f);
+			memberInfo.store();
+		}
 
 		String[] dates = getDates(modinfo);
 
