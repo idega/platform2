@@ -333,6 +333,7 @@ public class MessengerApplet extends Applet implements ActionListener{
 
     System.out.println("DONE! processing the packet");
 
+  paint(g);
 
   }
 
@@ -451,7 +452,7 @@ public class MessengerApplet extends Applet implements ActionListener{
     System.out.println("IN UPDATE");
   }*/
 
-  public void paint(Graphics g){
+  public void paint(Graphics g) {
   //use the update method
   //    super.paint(g);
     g.drawString("test",150,150);
@@ -473,7 +474,7 @@ public class MessengerApplet extends Applet implements ActionListener{
      cycler = new MessageListener(this,checkTimer);
     }
 
-    cycler.start();
+   // cycler.start();
 
    // run();
 
