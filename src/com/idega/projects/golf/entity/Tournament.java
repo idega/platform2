@@ -421,6 +421,15 @@ public class Tournament extends GolfEntity{
             }
             catch (Exception e) {e.printStackTrace(System.err);}
 
+
+            try {
+                TeeColor[] teeColors = this.getTeeColors();
+                for (int i = 0; i < teeColors.length; i++) {
+                    this.removeFrom(teeColors[i]);
+                }
+            } catch (SQLException sql) {sql.printStackTrace(System.err);}
+
+
             try {
                 TournamentRound[] rounds = getTournamentRounds();
                 if(rounds!=null){
