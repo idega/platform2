@@ -505,6 +505,34 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		return idoFindPKsByQuery(sql);
 	}
 
+	public Collection ejbFindChangedBetween(Date from, Date to) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelect().append(" distinct a.* from ").append(getEntityName()).append(" a ");
+		sql.append("left join sch_class_member m ");
+		sql.append("on m.sch_class_member_id = a.sch_class_member_id ");
+		sql.append("left join sch_class_member_log l ");
+		sql.append("on l.sch_class_member_id = m.sch_class_member_id");
+		sql.appendWhere();
+		sql.appendLeftParenthesis();		
+		sql.append("a." + COLUMN_VALID_FROM_DATE).appendGreaterThanOrEqualsSign().append(from);
+		sql.appendOr().append("a." + COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(from);
+		sql.appendOr().append("l.start_date").appendGreaterThanOrEqualsSign().append(from);
+		sql.appendOr().appendLeftParenthesis().append("l.start_date is null").appendAnd().append("a." + COLUMN_VALID_FROM_DATE).appendGreaterThanOrEqualsSign().append(from).appendRightParenthesis();
+		sql.appendOr().append("l.end_date").appendGreaterThanOrEqualsSign().append(from);
+		sql.appendOr().appendLeftParenthesis().append("l.end_date is null").appendAnd().append("a." + COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(from).appendRightParenthesis();
+		sql.appendRightParenthesis();
+		sql.appendAnd();
+		sql.appendLeftParenthesis();		
+		sql.append("a." + COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(to);
+		sql.appendOr().append("a." + COLUMN_TERMINATED_DATE).appendLessThanOrEqualsSign().append(to);
+		sql.appendOr().append("l.start_date").appendLessThanOrEqualsSign().append(to);
+		sql.appendOr().appendLeftParenthesis().append("l.start_date is null").appendAnd().append("a." + COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(to).appendRightParenthesis();
+		sql.appendOr().append("l.end_date").appendLessThanOrEqualsSign().append(to);
+		sql.appendOr().appendLeftParenthesis().append("l.end_date is null").appendAnd().append("a." + COLUMN_TERMINATED_DATE).appendGreaterThanOrEqualsSign().append(from).appendRightParenthesis();
+		sql.appendRightParenthesis();
+		return idoFindPKsByQuery(sql);
+	}
+
 	public Collection ejbFindByDateRangeAndProviderWhereStatusActive(Date startDate, Date endDate,School school) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelect().append(" distinct a.COMM_CHILDCARE_ARCHIVE_ID from "+getEntityName()).append(" a, ")
