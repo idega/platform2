@@ -111,6 +111,13 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear{
   public Collection ejbFindAllByAge(SchoolType schoolType, int age) throws javax.ejb.FinderException{
     return super.idoFindPKsBySQL("select * from "+getEntityName()+" where "+AGE+" like '"+age+"' AND "+SCHOOL_TYPE+" = '"+schoolType.getPrimaryKey().toString()+"'");
   }
+  
+  public Collection ejbFindAllByIDs(String[] schoolYearIDs) throws FinderException {
+  	IDOQuery query = idoQuery();
+  	query.appendSelectAllFrom(this).appendWhere().append(getIDColumnName()).appendInArray(schoolYearIDs);
+  	query.appendOrderBy(AGE);
+  	return idoFindPKsByQuery(query);
+  }
 
   /**
    * @deprecated
