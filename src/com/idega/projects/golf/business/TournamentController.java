@@ -918,15 +918,15 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     " s.scorecard_date, tr.tournament_round_id, tr.round_number, count(str.stroke_count) holes_played,"+
     " cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0))round_handicap,"+
     " sum(str.stroke_count) strokes_without_handicap, sum(str.stroke_count) - cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par ))as numeric (4,0)) strokes_with_handicap,"+
-    " s.total_points, sum(str.hole_par) total_par, sum(str.stroke_count) - sum(str.hole_par) difference, tg.group_name"+
+    " s.total_points, sum(str.hole_par) total_par, sum(str.stroke_count) - sum(str.hole_par) difference, tg.name as group_name"+
     " from tournament_round tr,"+
-    " member_info mi, member m, field f, union_ u, tournament_member tm, tournament t, tournament_group tg"+
-    " scorecard s left join stroke str on str.scorecard_id = s.scorecard_id,"+
+    " member_info mi, member m, field f, union_ u, tournament_member tm, tournament t, tournament_group tg,"+
+    " scorecard s left join stroke str on str.scorecard_id = s.scorecard_id"+
     " where s.tournament_round_id = tr.tournament_round_id and tr.tournament_id = t.tournament_id"+
     " and tm.union_id = u.union_id and t.tournament_id = tm.tournament_id and tm.tournament_group_id = tg.tournament_group_id and tm.member_id = mi.member_id"+
     " and mi.member_id = s.member_id and s.member_id = m.member_id and s.field_id = f.field_id"+
     " and "+column_name+" = "+column_value+
-    " group by m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, tm.tournament_id, tm.tournament_group_id,s.scorecard_id, s.scorecard_date, f.field_par,tr.tournament_round_id, tr.round_number, s.total_points, s.handicap_before, s.slope, s.course_rating"+
+    " group by m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, tm.tournament_id, tm.tournament_group_id,s.scorecard_id, s.scorecard_date, f.field_par,tr.tournament_round_id, tr.round_number, s.total_points, s.handicap_before, s.slope, s.course_rating, tg.name"+
     " order by "+order;
 
     TournamentParticipants[] tournParticipants = (TournamentParticipants[]) (new TournamentParticipants()).findAll(queryString);
