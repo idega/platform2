@@ -287,11 +287,11 @@ public class HealthCareOverview extends EHealthBlock {
 	
 	private Layer getLayer1(int i){
 		Layer layerInfo = new Layer(Layer.DIV);
-		layerInfo.setOverflow("hidden");
-		layerInfo.setVisibility("visible");
+		//layerInfo.setOverflow("hidden");
+		//layerInfo.setVisibility("visible");
 		layerInfo.setPositionType("relative");
-		layerInfo.setHeight("16");
-		layerInfo.setWidth("250");
+		//layerInfo.setHeight("16");
+		layerInfo.setWidth("240");
 		
 		layerInfo.setID("lay" + i + "_1");
 		//layerInfo.setMarkupAttribute("class", "ehealth_div_top");
@@ -387,7 +387,7 @@ public class HealthCareOverview extends EHealthBlock {
 	
 	private Layer getInfoLayer(int theCase){
 		Layer layerInfo = new Layer(Layer.DIV);
-		layerInfo.setOverflow("hidden");
+		//layerInfo.setOverflow("hidden");
 		//layerInfo.setVisibility("hidden");
 		layerInfo.setPositionType("relative");
 		
