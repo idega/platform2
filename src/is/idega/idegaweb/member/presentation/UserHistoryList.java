@@ -8,6 +8,8 @@
  */
 package is.idega.idegaweb.member.presentation;
 
+import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -15,6 +17,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
 import com.idega.presentation.Table;
+import com.idega.user.data.Group;
 import com.idega.user.data.GroupRelation;
 import com.idega.user.data.UserStatus;
 import com.idega.util.IWTimestamp;
@@ -25,7 +28,6 @@ import com.idega.util.IWTimestamp;
  * To change this generated comment go to 
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-
 public class UserHistoryList extends Page {
 
 	private Collection groups = null;
@@ -68,7 +70,7 @@ public class UserHistoryList extends Page {
 							if (rel.getTerminationDate() != null)
 								to = new IWTimestamp(rel.getTerminationDate());
 
-							table.add(rel.getGroup().getName(), 1, row);
+							table.add(getGroupName(rel.getGroup()), 1, row);
 							table.add(from.getDateString("dd-MM-yyyy"), 3, row);
 							if (to != null)
 								table.add(to.getDateString("dd-MM-yyyy"), 4, row);
@@ -89,7 +91,7 @@ public class UserHistoryList extends Page {
 							if (stat.getDateTo() != null)
 								to = new IWTimestamp(stat.getDateTo());
 
-							table.add(stat.getGroup().getName(), 1, row);
+							table.add(getGroupName(stat.getGroup()), 1, row);
 							String statusStr = comUserBundle.getLocalizedString(stat.getStatus().getStatusKey());
 							table.add(statusStr, 2, row);
 							table.add(from.getDateString("dd-MM-yyyy"), 3, row);
@@ -120,5 +122,26 @@ public class UserHistoryList extends Page {
 		if (tb != null) {
 			this.add(tb);
 		}
+	}
+	
+	/**
+	 * Gets a group name, includes division name if group is flock
+	 * @param group The group
+	 * @return the groups name
+	 */ 
+	private String getGroupName(Group group) {
+		String name = group.getName();
+		if(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(group.getGroupType())) {
+			Collection parents = group.getParentGroups();
+			Iterator iter = parents.iterator();
+			while(iter.hasNext()) {
+				Group parent = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(parent.getGroupType())) {
+					name = parent.getName() + " - " + name;
+					break;
+				}
+			}
+		}
+		return name;
 	}
 }
