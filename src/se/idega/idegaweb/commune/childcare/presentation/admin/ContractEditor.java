@@ -429,7 +429,7 @@ public class ContractEditor extends ChildCareBlock {
 //				contract = getBusiness().getValidContract(((Integer)application.getPrimaryKey()).intValue());
 				contract = (ChildCareContract) iter.next();
 				placement =  contract.getSchoolClassMember();
-				child = application.getChild();
+				child = contract.getChild();
 				hasComment = true;
 				column = 1;
 	
@@ -484,7 +484,7 @@ public class ContractEditor extends ChildCareBlock {
 						showNotActiveComment = true;
 						table.add(getSmallErrorText("*"), column, row);
 					}
-					if (application.getRejectionDate() != null) {
+					if (contract.getTerminatedDate() != null) {
 						showComment = true;
 						hasComment = true;
 						showRemovedComment = true;
@@ -497,8 +497,8 @@ public class ContractEditor extends ChildCareBlock {
 						Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
 						archive = getSmallLink(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true));
 						archive.setEventListener(ChildCareEventListener.class);
-						archive.addParameter(getSession().getParameterUserID(), application.getChildId());
-						archive.addParameter(getSession().getParameterApplicationID(), ((Integer)application.getPrimaryKey()).intValue());
+						archive.addParameter(getSession().getParameterUserID(), contract.getChildID());
+						archive.addParameter(getSession().getParameterApplicationID(), contract.getApplicationID());
 						archive.setPage(getResponsePage());
 						table.add(archive, column++, row);
 					}
