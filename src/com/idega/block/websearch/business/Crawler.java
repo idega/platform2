@@ -110,19 +110,21 @@ public final class Crawler {
             
             if (!file.exists()) {
 				//create directory structure                
-                System.out.print("Websearch: creating index folders...");
-                System.out.print("Websearch: "+indexPath);
+                System.out.println("Websearch: creating index folders...");
+                System.out.println("Websearch: "+indexPath);
              	FileUtil.createFileAndFolder(indexPath,"segments");
              
                 if (reporting > 0) System.out.println("create new index");
-                IndexWriter writer = new IndexWriter(indexPath, new StopAnalyzer(), true);
-                writer.close();
-            } else {
+                //IndexWriter writer = new IndexWriter(indexPath, new StopAnalyzer(), true);
+                //writer.close();
+            }
+            /*else {
                 // delete all files for now and build new index.
                 // implement incremental index later.
+				if (reporting > 0) System.out.println("index exists, delete all files");
+                //FileUtil.delete(indexPath);
                 
                 //delete all
-                if (reporting > 0) System.out.println("index exists, delete all files");
                 IndexReader reader = IndexReader.open(indexPath);
                 int count = reader.numDocs();
                 if (reporting > 0) {
@@ -134,15 +136,15 @@ public final class Crawler {
                 }
                 reader.close();
                 
-                System.out.print("Websearch: creating index folders...");
-                System.out.print("Websearch: "+indexPath);
+                System.out.println("Websearch: creating index folders...");
+                System.out.println("Websearch: "+indexPath);
              	FileUtil.createFileAndFolder(indexPath,"segments");
-            }
+            }*/
             
             
             
             // create new IndexWriter
-            writer = new IndexWriter(indexPath, new StopAnalyzer(), false);
+            writer = new IndexWriter(indexPath, new StopAnalyzer(), true);
             
             String url;
             //System.out.println(linkQueue.toString());
@@ -201,7 +203,7 @@ public final class Crawler {
                 }
                 System.out.println();
             }
-            writer.optimize();
+            //writer.optimize();
             writer.close();
             
         } catch (Exception e) {
