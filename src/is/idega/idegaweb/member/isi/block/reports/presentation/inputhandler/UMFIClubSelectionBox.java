@@ -6,10 +6,14 @@
  */
 package is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler;
 
+import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
-
+import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Map;
+import com.idega.presentation.IWContext;
+import com.idega.util.ListUtil;
 
 /**
  * @author jonas
@@ -40,4 +44,17 @@ public class UMFIClubSelectionBox extends GroupSelectionBox {
 		metaDataMap.put(IWMemberConstants.META_DATA_CLUB_IN_UMFI, "true");
 		return metaDataMap;
 	}
+	
+	//only allow this regionalunion to select itself
+	protected Collection getGroups(IWContext iwc) throws RemoteException {
+		Integer groupID = setUserTypeAndReturnGroupId(iwc);
+		//don't show these groups for users
+		if(groupID!=null && WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
+			return ListUtil.getEmptyList();
+		}
+		else{
+			return super.getGroups(iwc);
+		}
+	}
+
 }

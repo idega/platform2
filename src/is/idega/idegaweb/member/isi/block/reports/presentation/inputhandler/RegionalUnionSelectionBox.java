@@ -77,11 +77,19 @@ public class RegionalUnionSelectionBox extends GroupSelectionBox {
 			return groups;
 			
 		}
-		else{
-			return super.getGroups(iwc);
+		else if(groupID!=null && WorkReportConstants.WR_USER_TYPE_CLUB.equals(getUserType())){
+			try {
+				//the regionalunion should be the parent of the club
+				Group group = getGroupBusiness(iwc).getGroupByGroupID(groupID.intValue());
+				List regionalUnion = group.getParentGroups();
+				return regionalUnion;
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
 		}
 		
-		
+		return super.getGroups(iwc);
 	}
 
 	
