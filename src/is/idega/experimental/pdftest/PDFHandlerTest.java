@@ -94,23 +94,23 @@ public class PDFHandlerTest {
 		StringBuffer xml = new StringBuffer();
 		String newline = "\n";
 		xml.append("<template> ").append(newline);
-		xml.append("<name/> <newline/>").append(newline);;
-		xml.append("<name1/>: How do you do my friend <newline /><newline /><newline />").append(newline);;
-		xml.append("<name2/>: Im fine, and you ? <newline />").append(newline);;
-		xml.append("<name1/>: Yeah I'm hanging inthere         ! <newline />").append(newline);;
-		xml.append("<paragraph leading=\"18.0\" font=\"unknown\" align=\"Default\">").append(newline);;
+		xml.append("<name/> <newline/>").append(newline);
+		xml.append("<name1/>: How do you do my friend <newline /><newline /><newline />").append(newline);
+		xml.append("<name2/>: Im fine, and you ? <newline />").append(newline);
+		xml.append("<name1/>: Yeah I'm hanging inthere         ! <newline />").append(newline);
+		xml.append("<paragraph leading=\"18.0\" font=\"unknown\" align=\"Default\">").append(newline);
 		xml.append("<list>");
 		xml.append("<listitem>Punkt 1</listitem>");
 		xml.append("<listitem>Punkt 2</listitem>");
 		xml.append("<listitem>Punkt 3</listitem>");
 		xml.append("</list>");		
-		xml.append("<name2/>: This is funky shit funking down town").append(newline);;
-		xml.append("Care time: <caretime/><newline/><newline/>").append(newline);;
-		xml.append("</paragraph>").append(newline);;
-		xml.append("<chunk font=\"Helvetica\" size=\"18.0\" fontstyle=\"normal\" red=\"0\" green=\"64\" blue=\"64\">").append(newline);;
-		xml.append("<name1/>: Heavy chunk of funk").append(newline);;
-		xml.append("</chunk>").append(newline);;
-		xml.append("</template>").append(newline);;
+		xml.append("<name2/>: This is funky shit funking down town").append(newline);
+		xml.append("Care time: <caretime/><newline/><newline/>").append(newline);
+		xml.append("</paragraph>").append(newline);
+		xml.append("<chunk font=\"Helvetica\" size=\"18.0\" fontstyle=\"normal\" red=\"0\" green=\"64\" blue=\"64\">").append(newline);
+		xml.append("<name1/>: Heavy chunk of funk").append(newline);
+		xml.append("</chunk>").append(newline);
+		xml.append("</template>").append(newline);
 		return xml.toString();
 	}
 	public String getXMLTemplate2() {
