@@ -95,7 +95,7 @@ public class BuildingBMPBean extends com.idega.block.text.data.TextEntityBMPBean
 	}
 	
 	public Collection ejbFindAll() throws FinderException{
-		return idoFindAllIDsBySQL();
+		return idoFindPKsByQuery(idoQueryGetSelect().appendOrderBy(NAME));
 	}
 	
 	public Collection ejbFindByComplex(Integer complexID)throws FinderException{
