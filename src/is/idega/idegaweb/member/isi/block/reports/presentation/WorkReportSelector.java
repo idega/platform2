@@ -8,8 +8,6 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
-import org.apache.tools.ant.types.selectors.DateSelector;
-
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DateInput;
