@@ -410,7 +410,7 @@ public class ReportGenerator extends Block {
 
 								if (iHandler != null) {
 									obj = iHandler.getResultingObject(prmValues, iwc);
-									String displayNameOfValue = iHandler.getDisplayNameOfValue(obj, iwc);
+									String displayNameOfValue = iHandler.getDisplayStringForResultingObject(obj, iwc);
 									if (displayNameOfValue != null) {
 										_parameterMap.put(clDesc.getName(), displayNameOfValue);
 									}

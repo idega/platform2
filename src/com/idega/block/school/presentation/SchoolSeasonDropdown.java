@@ -90,7 +90,7 @@ public class SchoolSeasonDropdown extends DropdownMenu implements InputHandler{
 	/* (non-Javadoc)
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.String, com.idega.presentation.IWContext)
 	 */
-	public String getDisplayNameOfValue(Object value, IWContext iwc) {
+	public String getDisplayStringForResultingObject(Object value, IWContext iwc) {
 		if(value != null){
 				return ((SchoolSeason)value).getSchoolSeasonName();
 		}		
