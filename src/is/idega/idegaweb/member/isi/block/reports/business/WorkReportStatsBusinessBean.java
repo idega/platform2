@@ -4928,8 +4928,7 @@ private String getLeagueIdentifier(WorkReportGroup league) {
 	}
 	leagueBuf.append(number).append(shortName);
 	
-	//.append( (league.getName()!=null)? league.getName() : "");
-	String leagueText=league.toString();
+	String leagueText=leagueBuf.toString();
 	
 	if("".equals(leagueText)){
 		String name = league.getName();
