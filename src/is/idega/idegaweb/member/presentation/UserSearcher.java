@@ -146,7 +146,7 @@ public class UserSearcher extends Block {
 	}
 
 	public void main(IWContext iwc) throws Exception {
-		debugParameters(iwc);
+		//debugParameters(iwc);
 		initStyleNames();
 		iwb = getBundle(iwc);
 		iwrb = getResourceBundle(iwc);
