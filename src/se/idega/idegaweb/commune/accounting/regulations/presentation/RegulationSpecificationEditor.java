@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecificationEditor.java,v 1.3 2003/08/29 14:51:12 kjell Exp $
+ * $Id: RegulationSpecificationEditor.java,v 1.4 2003/08/29 15:36:07 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -31,10 +31,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /** 
  * RegulationSpecificationEditor is an idegaWeb block that handles RegSpec types
  * <p>
- * $Date: 2003/08/29 14:51:12 $
+ * $Date: 2003/08/29 15:36:07 $
  *
  * @author Kjell Lindman
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class RegulationSpecificationEditor extends AccountingBlock {
 
@@ -225,6 +225,15 @@ public class RegulationSpecificationEditor extends AccountingBlock {
 
 	private String getLocalizedKey(IWContext iwc, String param) {
 		String ret = getParameter(iwc, param);
+		ret = ret.toLowerCase().replace(' ', '_');
+		ret = ret.replace(' ', '_');
+		ret = ret.replace('å', 'a');
+		ret = ret.replace('ä', 'a');
+		ret = ret.replace('ö', 'o');
+		ret = ret.replace('Å', 'a');
+		ret = ret.replace('Ä', 'a');
+		ret = ret.replace('Ö', 'o');
+		
 /*
 		ret = ret.toLowerCase().replaceAll(" ", "_").replaceAll("å","aa").replaceAll("ä","ae").replaceAll("ö", "oe");
 		ret = ret.replaceAll("Å","aa").replaceAll("Ä","ae").replaceAll("Ö", "oe");

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.8 2003/08/29 14:58:03 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.9 2003/08/29 15:36:24 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -77,8 +77,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				ActivityType ah = (ActivityType) iter.next();
+				ret += replaceToDot(ah.getTextKey());
 //				ret += ah.getTextKey().replaceAll("^.*\\.", "");
-				ret += ah.getTextKey();
+//				ret += ah.getTextKey();
 				if(iter.hasNext()) {
 					ret += ", ";
 				}
@@ -123,8 +124,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				CommuneBelongingType cbt = (CommuneBelongingType) iter.next();
+				ret += replaceToDot(cbt.getTextKey());
 //				ret += cbt.getTextKey().replaceAll("^.*\\.", "");
-				ret += cbt.getTextKey();
+//				ret += cbt.getTextKey();
 				if(iter.hasNext()) {
 					ret += ", ";
 				}
@@ -168,8 +170,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				CompanyType ct = (CompanyType) iter.next();
+				ret += replaceToDot(ct.getTextKey());
 //				ret += ct.getTextKey().replaceAll("^.*\\.", "");
-				ret += ct.getTextKey();
+//				ret += ct.getTextKey();
 				if(iter.hasNext()) {
 					ret += ", ";
 				}
@@ -273,8 +276,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			Iterator iter = col.iterator();
 			while(iter.hasNext())  {
 				RegulationSpecType rst = (RegulationSpecType) iter.next();
+				ret += replaceToDot(rst.getTextKey());
 //				ret += rst.getTextKey().replaceAll("^.*\\.", "");
-				ret += rst.getTextKey();
+//				ret += rst.getTextKey();
 				if(iter.hasNext()) {
 					ret += ", ";
 				}
@@ -356,6 +360,20 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		}
 	}	
 
+	/**
+	 * I Need this before we can use replaceAll with regular expressions in 1.4
+	 * 
+	 * @author Kelly
+	 */
+	public String replaceToDot(String s) {
+		
+		String replace = "";
+		int dot = s.indexOf(".");
+		if (dot > 0) {
+			replace = s.substring(dot+1);
+		}
+		return replace;
+	}
  
 	protected ActivityTypeHome getActivityTypeHome() throws RemoteException {
 		return (ActivityTypeHome) com.idega.data.IDOLookup.getHome(ActivityType.class);
