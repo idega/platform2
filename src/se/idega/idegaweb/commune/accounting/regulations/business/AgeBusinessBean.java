@@ -1,5 +1,5 @@
 /*
- * $Id: AgeBusinessBean.java,v 1.7 2003/10/02 16:28:43 anders Exp $
+ * $Id: AgeBusinessBean.java,v 1.8 2003/10/03 09:30:53 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,16 +18,18 @@ import javax.ejb.FinderException;
 import javax.ejb.CreateException;
 import javax.ejb.RemoveException;
 
+import com.idega.util.IWTimestamp;
+
 import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.AgeRegulation;
 
 /** 
  * Business logic for age values and regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/02 16:28:43 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/03 09:30:53 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class AgeBusinessBean extends com.idega.business.IBOServiceBean implements AgeBusiness  {
 
@@ -44,6 +46,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String KEY_AGE_TO_VALUE = KP + "age_to_value";
 	public final static String KEY_AGE_VALUES = KP + "age_values";
 	public final static String KEY_AGE_OVERLAP = KP + "age_overlap";
+	public final static String KEY_NOT_ONE_YEAR_AGE_INTERVAL = KP + "not_one_year_age_interval";
 	public final static String KEY_DESCRIPTION_MISSING = KP + "description_missing";
 	public final static String KEY_CUT_DATE_FORMAT = KP + "cut_date_format";
 	public final static String KEY_NO_CUT_DATE_TYPE = KP + "no_cut_date_type";
@@ -63,6 +66,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 	public final static String DEFAULT_AGE_TO_VALUE = "Ålder till måste vara mellan 0 och 18.";
 	public final static String DEFAULT_AGE_VALUES = "Ålder till måste vara mindre än ålder från.";
 	public final static String DEFAULT_AGE_OVERLAP = "Åldersintervall får ej överlappa. Det finns redan en regel inom detta intervall.";
+	public final static String DEFAULT_NOT_ONE_YEAR_AGE_INTERVAL = "Åldersintervallet m?ste vara ett ?r mellan ?lder fr?n och ?lder till.";
 	public final static String DEFAULT_DESCRIPTION_MISSING = "Regeltyp måste väljas.";
 	public final static String DEFAULT_CUT_DATE_FORMAT = "Brytdatum måste anges p? formen MMDD.";
 	public final static String DEFAULT_NO_CUT_DATE_TYPE = "Brytdatum kan endast anges n?r regeltyp brytdatum, aktuellt ?r har valts.";
@@ -253,6 +257,9 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 				throw new AgeException(KEY_AGE_OVERLAP, DEFAULT_AGE_OVERLAP);
 			}
 		}
+		if (ageTo - ageFrom != 1) {
+			throw new AgeException(KEY_NOT_ONE_YEAR_AGE_INTERVAL, DEFAULT_NOT_ONE_YEAR_AGE_INTERVAL);
+		}
 
 		// Rule type
 		s = ruleType.trim();
@@ -265,7 +272,7 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 		// Cut date
 		s = cutDateString.trim();
 		if (!s.equals("") && (cutDate == null)) {
-			throw new AgeException(KEY_DATE_FORMAT, DEFAULT_DATE_FORMAT);
+			throw new AgeException(KEY_CUT_DATE_FORMAT, DEFAULT_CUT_DATE_FORMAT);
 		} else if (!s.equals("") && (cutDate != null) && (s.length() != 8)) {
 			throw new AgeException(KEY_CUT_DATE_FORMAT, DEFAULT_CUT_DATE_FORMAT);
 		}
@@ -344,5 +351,65 @@ public class AgeBusinessBean extends com.idega.business.IBOServiceBean implement
 		l.add(RULE_MONTH_AFTER_BIRTH_DAY);
 		l.add(RULE_CUT_DATE);
 		return l;
+	}
+	
+	/**
+	 * Returns the age of the child with the specified personal id according
+	 * to the age rules/regulations.
+	 * 
+	 * @param childPersonalId the child's personal id (format: 'yyyyMMddnnnn')
+	 * @param date the calendar date to use for calculating the child's age
+	 * @return the age of the child according to the age rules, -1 if no matching rule found
+	 */
+	int getChildAge(String childPersonalId, Date date) {
+		int childAgeAccordingToRegulations = -1;
+		
+		try {
+			IWTimestamp calendarDate = new IWTimestamp(date);
+			calendarDate.setAsDate();
+			String s = childPersonalId;
+			String sqlDateFormat = s.substring(0, 4) + "-" + s.substring(4, 6) + "-" + s.substring(6, 8);
+			IWTimestamp childDate = new IWTimestamp(sqlDateFormat);
+			childDate.setAsDate();
+			int childMaxAge = calendarDate.getYear() - childDate.getYear();
+			
+			Collection ageRegulations = findAllAgeRegulations();
+			Iterator iter = ageRegulations.iterator();
+			AgeRegulation regulationToUse = null; 
+			while (iter.hasNext()) {
+				AgeRegulation ar = (AgeRegulation) iter.next();
+				if (ar.getAgeTo() == childMaxAge) {
+					regulationToUse = ar;
+					break;
+				}
+			}
+			childAgeAccordingToRegulations = childMaxAge;
+			String rule = regulationToUse.getDescription(); 
+			if (rule.equals(RULE_CUT_DATE)) {
+				IWTimestamp cutDate = new IWTimestamp(regulationToUse.getCutDate());
+				cutDate.setAsDate();
+				cutDate.setYear(calendarDate.getYear());
+				if (calendarDate.isEarlierThan(cutDate)) {
+					childAgeAccordingToRegulations--;
+				}
+			} else if (rule.equals(RULE_MONTH_AFTER_BIRTH_DAY)) {
+				if (childDate.getMonth() < calendarDate.getMonth()) {
+					childAgeAccordingToRegulations--;
+				}
+			}
+		} catch (Exception e) {}
+		
+		return childAgeAccordingToRegulations;		
+	}
+	
+	/**
+	 * Returns the age of the child with the specified personal id according
+	 * to the age rules/regulations. The current date is used for comparing.
+	 * 
+	 * @param childPersonalId the child's personal id (format: 'yyyyMMddnnnn')
+	 * @return the age of the child according to the age rules, -1 if no matching rule found
+	 */
+	int getChildAge(String childPersonalId) {
+		return getChildAge(childPersonalId, new Date(System.currentTimeMillis()));
 	}
 }
