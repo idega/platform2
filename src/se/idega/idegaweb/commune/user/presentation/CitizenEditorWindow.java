@@ -18,8 +18,8 @@ import com.idega.presentation.ui.Window;
 public class CitizenEditorWindow extends Window {
 
 	public CitizenEditorWindow() {
-		this.setWidth(500);
-		this.setHeight(500);
+		this.setWidth(600);
+		this.setHeight(600);
 		this.setScrollbar(true);
 		this.setResizable(true);
 		this.setAllMargins(0);
