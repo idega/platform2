@@ -1,5 +1,5 @@
 /*
- * $Id: CareTimeBMPBean.java,v 1.2 2004/12/02 13:18:22 laddi Exp $
+ * $Id: CareTimeBMPBean.java,v 1.3 2004/12/28 14:47:01 malin Exp $
  * Created on 11.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,7 +24,7 @@ import com.idega.data.query.WildCardColumn;
  * Last modified: 11.11.2004 08:54:09 by laddi
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CareTimeBMPBean extends GenericEntity implements CareTime {
 
@@ -55,8 +55,8 @@ public class CareTimeBMPBean extends GenericEntity implements CareTime {
 	public void insertStartData() throws Exception {
 		CareTimeHome home = (CareTimeHome) IDOLookup.getHome(CareTime.class);
 		
-		String[] codes = { "FSKHEL", "FSKHEL4-5", "FSKDEL", "FSKDEL4-5A", "FSKDEL4-5" };
-		String[] localizedKeys = { "care_time.FSKHEL", "care_time.FSKHEL4-5", "care_time.FSKDEL", "care_time.FSKDEL4-5A", "care_time.FSKDEL4-5" };
+		String[] codes = { "FSKHEL", "FSKHEL4-5", "FSKDEL", "FSKDEL4-5A"};
+		String[] localizedKeys = { "care_time.FSKHEL", "care_time.FSKHEL4-5", "care_time.FSKDEL", "care_time.FSKDEL4-5A"};
 		
 		for (int a = 0; a < codes.length; a++) {
 			CareTime time = home.create();
