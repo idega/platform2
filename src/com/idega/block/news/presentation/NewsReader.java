@@ -93,6 +93,7 @@ public class NewsReader extends Block implements IWBlock{
   private static String prmNew = "nwr_new";
   private static String prmMore = "nwr_more";
 	private static String prmCollection = "nwr_collection";
+	private static String prmObjIns = "nwr_instance_id";
 
   public static String prmListCategory = "nwr_newscategoryid";
   public static String prmNewsCategoryId = "nwr_listcategory";
@@ -160,10 +161,17 @@ public class NewsReader extends Block implements IWBlock{
     Locale locale = iwc.getCurrentLocale();
 		 String sNewsId = null;
 		if(viewNews)
-      sNewsId = iwc.getParameter(prmMore);
+      sNewsId = iwc.getParameter(prmMore+getICObjectInstanceID());
     NewsCategory newsCategory = null;
-    boolean listCategory = iwc.getParameter(prmListCategory)!= null?true:false;
-    boolean info = listCategory?true:false;
+		String prm = prmListCategory+getICObjectInstanceID();
+		boolean info = false;
+		if(iwc.isParameterSet(prm)){
+		  if(iwc.getParameter(prm).equalsIgnoreCase("true"))
+				info = true;
+			else
+				info = false;
+		}
+
     if(iCategoryId <= 0){
       String sCategoryId = iwc.getParameter(prmNewsCategoryId );
       if(sCategoryId != null)
@@ -190,12 +198,11 @@ public class NewsReader extends Block implements IWBlock{
           NewsHelper nh = NewsFinder.getNewsHelper(id);
           T.add(getNewsTable(nh,newsCategory,locale,true,false,iwc),1,1);
         }
-        else if(listCategory){
-
+        else if(info){
           T.add(getCategoryList(newsCategory,locale,iwc),1,1);
         }
         else
-          T.add(publishNews(iwc,newsCategory,locale,iwc.isParameterSet(prmCollection)),1,1);
+          T.add(publishNews(iwc,newsCategory,locale,iwc.isParameterSet(prmCollection+getICObjectInstanceID())),1,1);
       }
     }
     else{
@@ -218,8 +225,11 @@ public class NewsReader extends Block implements IWBlock{
       T.add(ne,1,1);
 		  T.add(T.getTransparentCell(iwc),1,1);
       Link list = new Link(iwb.getImage("/shared/info.gif"));
+			list.addParameter(prmObjIns,getICObjectInstanceID());
       if(!info)
-        list.addParameter(prmListCategory,"true");
+        list.addParameter(prmListCategory+getICObjectInstanceID(),"true");
+			else
+				list.addParameter(prmListCategory+getICObjectInstanceID(),"false");
       T.add(list,1,1);
 		  T.add(T.getTransparentCell(iwc),1,1);
       Link change = new Link(core.getImage("/shared/edit.gif"));
@@ -310,20 +320,22 @@ public class NewsReader extends Block implements IWBlock{
 
     Text tFrom = formatText(df.format((java.util.Date)from.getTimestamp()),false);
     Text tTo = formatText(df.format((java.util.Date)to.getTimestamp()),false);
+		tFrom.setBold();
+		tTo.setBold();
 		// Unpublished
     if(from.isLaterThan(now)){
-      tFrom.setFontColor("#FF0000");
-      tTo.setFontColor("#FF0000");
+      tFrom.setFontColor("#FFDE00");
+      tTo.setFontColor("#FFDE00");
     }
 		// Published
     else if(now.isLaterThan(to)){
-      tFrom.setFontColor("#0000FF");
-      tTo.setFontColor("#0000FF");
+      tFrom.setFontColor("#CC3300");
+      tTo.setFontColor("#CC3300");
     }
 		// Publishing
     else if(now.isLaterThan(from) && to.isLaterThan(now)){
-      tFrom.setFontColor("#00FF00");
-      tTo.setFontColor("#00FF00");
+      tFrom.setFontColor("#333399");
+      tTo.setFontColor("#333399");
     }
 
     Text headLine = new Text(sHeadline);
@@ -347,7 +359,7 @@ public class NewsReader extends Block implements IWBlock{
     T.add(infoTable,1,3);
 
     Link moreLink = new Link(iwrb.getImage("more.gif"));
-    moreLink.addParameter(prmMore,news.getID());
+    moreLink.addParameter(prmMore+getICObjectInstanceID(),news.getID());
     T.add(moreLink, 1, 4);
     if(isAdmin){
       T.add(getNewsAdminPart(news,iwc),1,4);
@@ -396,7 +408,7 @@ public class NewsReader extends Block implements IWBlock{
 			  if(len < count && !collection){
 				  Link collectionLink = new Link(iwrb.getImage("collection.gif"));
 				  collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
-				  collectionLink.addParameter(prmCollection,"true");
+				  collectionLink.addParameter(prmCollection+getICObjectInstanceID(),"true");
 				  T.add(collectionLink);
 			  }
 			  else if(collection){
@@ -502,7 +514,7 @@ public class NewsReader extends Block implements IWBlock{
 			//  add news
 			if(!showAll && showMoreButton){
 				Link moreLink = new Link(iwrb.getImage("more.gif"));
-				moreLink.addParameter(prmMore,news.getID());
+				moreLink.addParameter(prmMore+getICObjectInstanceID(),news.getID());
 				if(viewPageId > 0)
 					moreLink.setPage(viewPageId);
 				T.add(moreLink, 1, 4);
@@ -515,7 +527,7 @@ public class NewsReader extends Block implements IWBlock{
 
 			if ( headlineAsLink ) {
 				Link headlineLink = new Link(headLine);
-				headlineLink.addParameter(prmMore,news.getID());
+				headlineLink.addParameter(prmMore+getICObjectInstanceID(),news.getID());
 				if(viewPageId > 0)
 					headlineLink.setPage(viewPageId);
 				T.add(headlineLink, 1, 2);
@@ -544,7 +556,7 @@ public class NewsReader extends Block implements IWBlock{
 			T.add("&nbsp;&nbsp",2,1);
 		  if ( headlineAsLink ) {
 				Link headlineLink = new Link(headLine);
-				headlineLink.addParameter(prmMore,news.getID());
+				headlineLink.addParameter(prmMore+getICObjectInstanceID(),news.getID());
 				if(viewPageId > 0)
 					headlineLink.setPage(viewPageId);
 				T.add(headlineLink, headlineCol, 1);
