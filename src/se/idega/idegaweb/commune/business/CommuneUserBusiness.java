@@ -64,5 +64,7 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 			throws CreateException, RemoteException;
 			
 			
-			
+	public boolean moveCitizenFromCommune(User user) throws RemoteException;
+	
+		public boolean moveCitizenToCommune(User user) throws RemoteException;
 }

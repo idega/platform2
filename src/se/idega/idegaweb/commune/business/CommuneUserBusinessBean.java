@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 
 import javax.ejb.*;
+
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 /**
  * Title:        se.idega.idegaweb.commune.business.CommuneUserBusinessBean
@@ -32,8 +33,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * @version 1.0
  */
 public class CommuneUserBusinessBean extends UserBusinessBean implements CommuneUserBusiness {
+	
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
 	private final String ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
+	
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
 	 * Also adds the citizen to the Commune Root Group.
@@ -48,6 +51,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	   * can be null.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */
+	
 	public User createCitizen(
 		final String firstname,
 		final String middlename,
@@ -307,20 +311,22 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			rootGroup = groupHome.findByPrimaryKey(new Integer(groupId));
 		}
 		else {
-			System.err.println("trying to store Non Commune Citizen Root group");
+			System.err.println("trying to store Commune Special Citizen Root group");
 			/**@todo this seems a wrong way to do things**/
 			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
 			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
 			rootGroup =
 				groupBusiness.createGroup(
-					"Commune Citizens",
-					"The Non Commune Commune Root Group.",
+					"Commune Special Citizens",
+					"The Commune Special Citizen Root Group.",
 					type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootGroup.getPrimaryKey());
+			settings.setProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME, (Integer) rootGroup.getPrimaryKey());
 		}
 		return rootGroup;
 	}
+	
+
 	/**
 	* Returns or creates (if not available) the default usergroup all provider(childcare) administors have as their primary group.
 	* @throws CreateException if it failed to create the group.
@@ -480,6 +486,44 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
 	}
+
+	public boolean moveCitizenFromCommune(User user) throws RemoteException {
+		try {
+			getRootCitizenGroup().removeUser(user);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Could not remove user from root citizen group");
+			return false;
+		}
+		
+		try {
+			getRootSpecialCitizenGroup().addGroup(user);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			System.out.println("Could not add user to root special citizen group");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public boolean moveCitizenToCommune(User user) throws RemoteException {
+		try {
+			getRootCitizenGroup().addGroup(user);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("Could not add user to root citizen group");
+			return false;
+		}
+		
+		return false;
+	}
+	
+	
+
 	
 	public Phone getChildHomePhone(User child) throws RemoteException {
 		Address childAddress = getUsersMainAddress(child);
@@ -544,4 +588,5 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
 		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
 	}
+
 }
