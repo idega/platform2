@@ -50,11 +50,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/01 14:27:44 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 20:49:58 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.26 $
+ * @version $Revision: 1.27 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1282,16 +1282,18 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                                          final Exception exception) {
         final StringBuffer message = new StringBuffer ();
         message.append ("Exception caught in " + getClass ().getName ()
-                        + " " + (new java.util.Date ()));
-        message.append ("Parameters:");
+                        + " " + (new java.util.Date ()) + '\n');
+        message.append ("Parameters:\n");
         final java.util.Enumeration enum = context.getParameterNames ();
         while (enum.hasMoreElements ()) {
             final String key = (String) enum.nextElement ();
             message.append ('\t' + key + "='"
-                            + context.getParameter (key) + "'");
+                            + context.getParameter (key) + "'\n");
         }
         logWarning (message.toString ());
-        log (exception);
+        final java.io.StringWriter sw = new java.io.StringWriter ();
+        exception.printStackTrace (new java.io.PrintWriter (sw, true));
+        logWarning (sw.toString ());
         add ("Det inträffade ett fel. Försök igen senare.");
     }
 
@@ -1409,8 +1411,15 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
     private Integer getSchoolId (final IWContext context)
         throws RemoteException {
-        final int schoolId = getSchoolCommuneSession (context).getSchoolID ();
-        return 0 < schoolId ? new Integer (schoolId) : null;
+        try {
+            final SchoolCommuneSession session
+                    = getSchoolCommuneSession (context);
+            final int schoolId
+                    = getSchoolCommuneSession (context).getSchoolID ();
+            return 0 < schoolId ? new Integer (schoolId) : null;
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
 	private SchoolCommuneSession getSchoolCommuneSession
