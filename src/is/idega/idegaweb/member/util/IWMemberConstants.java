@@ -1,13 +1,19 @@
 package is.idega.idegaweb.member.util;
 
+import com.idega.user.data.GroupTypeConstants;
 import com.idega.user.util.ICUserConstants;
 
 /**
  * A collection of the static variables used in the member system like group type names.
+ * 
  * @author <a href="mailto:eiki@idega.is">Eirikur Hrafnsson</a>
  *
  */
-public class IWMemberConstants extends ICUserConstants{
+
+// uses the constants in GroupTypeConstants and ICUserConstants to declare the constants in this class
+public class IWMemberConstants {
+	
+	public static final String REQUEST_PARAMETER_SELECTED_GROUP_ID = "r_sel_gr_id";
 
 	public static final String APPLICATION_PARAMETER_ADMINISTRATOR_MAIN_EMAIL = "IW_MEMBER_ADMINISTRATOR_MAIN_EMAIL";
 	public static final String APPLICATION_PARAMETER_MAIL_SERVER = "IW_MEMBER_MAIL_SERVER_ADDRESS";
@@ -44,7 +50,9 @@ public class IWMemberConstants extends ICUserConstants{
 	
 	public static final String META_DATA_USER_CLUB_MEMBER_NUMBER_PREFIX = "CLUB_MEMB_NR_";//suffix with club id (group)
 	
+	public static final String GROUP_TYPE_ALIAS = "alias";
 	
+	public static final String GROUP_TYPE_GENERAL = GroupTypeConstants.GROUP_TYPE_GENERAL;
 	public static final String GROUP_TYPE_FEDERATION = "iwme_federation";
 	public static final String GROUP_TYPE_FEDERATION_STAFF = "iwme_federation_staff";
 	public static final String GROUP_TYPE_FEDERATION_COMMITTEE = "iwme_federation_committee";
@@ -55,12 +63,12 @@ public class IWMemberConstants extends ICUserConstants{
 	public static final String GROUP_TYPE_REGIONAL_UNION_STAFF = "iwme_regional_union_staff";
 	public static final String GROUP_TYPE_REGIONAL_UNION_COMMITTEE = "iwme_regional_union_committee";
 	public static final String GROUP_TYPE_REGIONAL_UNION_COLLECTION = "iwme_regional_union_collection";
-	public static final String GROUP_TYPE_LEAGUE= "iwme_league";
+	public static final String GROUP_TYPE_LEAGUE = GroupTypeConstants.GROUP_TYPE_LEAGUE;
 	public static final String GROUP_TYPE_LEAGUE_STAFF = "iwme_league_staff";
 	public static final String GROUP_TYPE_LEAGUE_COMMITTEE = "iwme_league_committee";
 	public static final String GROUP_TYPE_LEAGUE_COLLECTION = "iwme_league_collection";
 	public static final String GROUP_TYPE_LEAGUE_CLUB_DIVISION = "iwme_league_club_division";
-	public static final String GROUP_TYPE_CLUB = "iwme_club";
+	public static final String GROUP_TYPE_CLUB = GroupTypeConstants.GROUP_TYPE_CLUB;
 	public static final String GROUP_TYPE_CLUB_MEMBER = "iwme_club_member";
 	public static final String GROUP_TYPE_CLUB_PLAYER = "iwme_club_player";
 	public static final String GROUP_TYPE_CLUB_PLAYER_TEMPLATE = "iwme_club_player_template";
