@@ -6,15 +6,39 @@ import is.idega.idegaweb.member.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeSet;
 
-import javax.ejb.*;
+import javax.ejb.CreateException;
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
-import se.idega.idegaweb.commune.accounting.invoice.data.*;
-import se.idega.idegaweb.commune.accounting.posting.business.*;
+import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunError;
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.SortableSibling;
+import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
-import se.idega.idegaweb.commune.accounting.regulations.business.*;
+import se.idega.idegaweb.commune.accounting.regulations.business.IntervalConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
@@ -24,9 +48,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolCategoryHome;
+import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.Age;
@@ -58,14 +84,16 @@ public class InvoiceThread extends Thread{
 	private float months;
 	private Map siblingOrders = new HashMap();
 	private String ownPosting, doublePosting;
+	private IWContext iwc;
 
-	public InvoiceThread(Date month){
+	public InvoiceThread(Date month, IWContext iwc){
 		startPeriod = new IWTimestamp(month);
 		startPeriod.setAsDate();
 		startPeriod.setDay(1);
 		endPeriod = new IWTimestamp(startPeriod);
 		endPeriod.setAsDate();
 		endPeriod.addMonths(1);
+		this.iwc = iwc;
 	}
 
 	/**
@@ -83,7 +111,7 @@ public class InvoiceThread extends Thread{
 
 
 		try {
-			childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategoryHome.class)).findChildcareCategory();
+			childcareCategory = ((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findChildcareCategory();
 			categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(childcareCategory.getPrimaryKey());
 		
 			contractArray = getChildCareContractHome().findByDateRange(startPeriod.getDate(), endPeriod.getDate());
@@ -144,7 +172,7 @@ public class InvoiceThread extends Thread{
 				//
 				//Get the check for the contract
 				//
-				RegulationsBusiness regBus = getRegulationsBusinessHome().create();
+				RegulationsBusiness regBus = getRegulationsBusiness();
 			
 				//Get all the parameters needed to select the correct contract
 				String childcareType = contract.getSchoolClassMmeber().getSchoolClass().getSchoolType().getName();
@@ -164,8 +192,8 @@ public class InvoiceThread extends Thread{
 					RegSpecConstant.CHECK,			//The ruleSpecType shall be Check
 					RuleTypeConstant.DERIVED,		//The conditiontype
 					conditions,						//The conditions that need to fulfilled
-					totalSum,						//Sent in to be used for "Specialutrakning
-					contract);						//Sent in to be used for "Specialutrakning
+					totalSum,						//Sent in to be used for "Specialutrakning"
+					contract);						//Sent in to be used for "Specialutrakning"
 		
 				try{
 					compilePostingStrings();
@@ -219,8 +247,12 @@ public class InvoiceThread extends Thread{
 			}
 		} catch (Exception e) {
 			System.out.println(e.toString());
-			createNewErrorMessage(postingDetail.getTerm(),"invoice.DBSetupProblem");
 			e.printStackTrace();
+			if(postingDetail != null){
+				createNewErrorMessage(postingDetail.getTerm(),"invoice.DBSetupProblem");
+			}else{
+				createNewErrorMessage("invoice.severeError","invoice.DBSetupProblem");
+			}
 		}
 	}
 
@@ -583,7 +615,7 @@ public class InvoiceThread extends Thread{
 		return (float)(date.getDay()-1)/(float)daysInMonth;
 	}
 
-	//Getters to different home objects
+	//Getters to different commonly used objects
 	private ChildCareContractHome getChildCareContractHome() throws RemoteException {
 		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 	}
@@ -596,7 +628,7 @@ public class InvoiceThread extends Thread{
 		return (InvoiceRecordHome) IDOLookup.getHome(InvoiceRecord.class);
 	}
 
-	private RegulationsBusinessHome getRegulationsBusinessHome() throws RemoteException {
-		return (RegulationsBusinessHome) IDOLookup.getHome(RegulationsBusiness.class);
+	private RegulationsBusiness getRegulationsBusiness() throws RemoteException {
+		return (RegulationsBusiness) IBOLookup.getServiceInstance(iwc, RegulationsBusiness.class);
 	}
 }
