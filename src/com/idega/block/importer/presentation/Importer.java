@@ -11,12 +11,15 @@ import com.idega.block.importer.data.ImportFileRecord;
 import com.idega.block.importer.data.ImportFileRecordHome;
 import com.idega.block.importer.data.ImportHandler;
 import com.idega.block.media.business.MediaBusiness;
+import com.idega.block.media.business.MediaConstants;
+import com.idega.block.media.presentation.MediaChooserWindow;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CheckBox;
@@ -26,6 +29,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.user.data.Group;
 import com.idega.util.IWColor;
+import com.idega.util.IWTimestamp;
 
 /**
  * <p>Title: Importer</p>
@@ -222,10 +226,15 @@ public class Importer extends Block {
 		        Text fileStatus = new Text(path+" : "+status);
 		        fileStatus.setBold();
 		        
-		        /*if(status){
-		        	getImportBusiness(iwc).updateImportRecord(getImportBusiness(iwc));
-		        	
-		        }*/
+		        if(success){
+		        	//@todo move to a business method
+		        	Integer id = new Integer(values[i]);
+		        	ImportFileRecord record = (ImportFileRecord) ((ImportFileRecordHome)com.idega.data.IDOLookup.getHome(ImportFileRecord.class)).findByPrimaryKey(id);
+		        	record.setModificationDate(IWTimestamp.getTimestampRightNow());
+		        	record.setAsImported();
+		        	record.store();
+		        	//getImportBusiness(iwc).updateImportRecord(getImportBusiness(iwc));
+		        }
 		
 		        table.addBreak(1,2);
 		        table.add(fileStatus,1,2);
@@ -250,6 +259,8 @@ public class Importer extends Block {
 	private void showIWFileSystemSelection(IWContext iwc) throws Exception{
 		Table fileTable = getFrameTable();
         if( MediaBusiness.isFolder(importFolder) ){
+        	
+        	MediaBusiness.removeMediaIdFromSession(iwc);
         	
         	//do I have to do this?
         	ImportFileRecord folder = changeICFileToImportFileRecord(importFolder);
@@ -307,7 +318,18 @@ public class Importer extends Block {
 	            fileTable.add(fileType, 3, fileCount+3);
 	            fileTable.add(this.getImportFileClasses(iwc), 4, fileCount+3);
 	            
-	            fileTable.add(new SubmitButton(iwrb.getLocalizedString("importer.import","Import")), 7, fileCount+3);
+	            Link upload = new Link(iwrb.getLocalizedString("importer.upload","Upload"));
+	            upload.setWindowToOpen(MediaChooserWindow.class);
+	            upload.setAsImageButton(true);
+	            upload.addParameter(MediaConstants.MEDIA_ACTION_RELOAD,"TRUE");
+	            upload.addParameter(MediaBusiness.getMediaParameterNameInSession(iwc),((Integer)folder.getPrimaryKey()).intValue());
+	            
+	            
+	            SubmitButton importIt = new SubmitButton(iwrb.getLocalizedString("importer.import","Import"));
+	            importIt.setAsImageButton(true);
+	            
+	            fileTable.add(upload, 6, fileCount+3);
+	            fileTable.add(importIt, 7, fileCount+3);
 	            
 	            
 	            
