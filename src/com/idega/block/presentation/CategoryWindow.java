@@ -13,10 +13,12 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import java.util.Vector;
 import java.util.List;
+import java.util.Collection;
 import java.util.TreeMap;
 import java.util.StringTokenizer;
 import com.idega.core.data.ICCategory;
 import com.idega.block.category.business.*;
+import com.idega.io.ObjectSerializer;
 
 /**
  * Title:
@@ -125,7 +127,17 @@ public class CategoryWindow extends IWAdminWindow {
 		newLink.addParameter(prmObjInstId,iObjectInstanceId);
 		newLink.addParameter(actForm,"true");
 
+    /** @todo  permission handling */
 		List L = CategoryFinder.listOfCategories(sType);
+    Collection C = CategoryFinder.collectCategoryIntegerIds(iObjectInstanceId);
+    try{
+    String collString = ObjectSerializer.serialize(C);
+    System.err.println("collString");
+    System.err.println(collString);
+    }catch(Exception ex){
+
+    }
+
 		DropdownMenu catDrop = new DropdownMenu(L,prmCategoryId);
 		catDrop.addMenuElementFirst("-1",sCategory);
 		catDrop.setToSubmit();

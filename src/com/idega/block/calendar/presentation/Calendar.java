@@ -79,7 +79,10 @@ public String getCategoryType(){
     }
 
     if ( _stamp == null ) {
-      _stamp = CalendarBusiness.getTimestamp(iwc);
+      String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+      String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+      String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+      _stamp = CalendarBusiness.getTimestamp(day,month,year);
     }
 
     _isSelectedDay = CalendarBusiness.getIsSelectedDay(iwc);
@@ -229,6 +232,7 @@ public String getCategoryType(){
 
   private void drawMonth(IWContext iwc) {
     SmallCalendar cal = getCalendar(_stamp);
+    cal.setICObjectInstanceID(this.getICObjectInstanceID());
     if ( _width != null ) {
       try {
         cal.setWidth(Integer.parseInt(_width));
@@ -291,6 +295,7 @@ public String getCategoryType(){
     for ( int a = 1; a <= 12; a++ ) {
       yearStamp = new idegaTimestamp(_stamp.getDay(),a,_stamp.getYear());
       calendar = getCalendar(yearStamp);
+      calendar.setICObjectInstanceID(this.getICObjectInstanceID());
       calendar.setOnlySelectedHighlighted(true);
       calendar.useNextAndPreviousLinks(false);
 

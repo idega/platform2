@@ -56,12 +56,8 @@ public static final String PARAMETER_TRUE = "true";
 
 public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
-  public static idegaTimestamp getTimestamp(IWContext iwc) {
+  public static idegaTimestamp getTimestamp(String day,String month,String year) {
     idegaTimestamp stamp = null;
-
-    String day = iwc.getParameter(PARAMETER_DAY);
-    String month = iwc.getParameter(PARAMETER_MONTH);
-    String year = iwc.getParameter(PARAMETER_YEAR);
 
     if(month != null && year != null){
       try {

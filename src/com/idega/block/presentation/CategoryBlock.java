@@ -27,6 +27,10 @@ public abstract class CategoryBlock extends Block{
     return icCategoryId;
   }
 
+  public void setCategoryId(int iCategoryId){
+     icCategoryId = iCategoryId;
+  }
+
   public void setAutoCreate(boolean autocreate){
     autocreate = autocreate;
   }

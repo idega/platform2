@@ -58,22 +58,32 @@ public SmallCalendar() {
   initialize();
 }
 
-public SmallCalendar(idegaTimestamp timestamp) {
-    initialize();
-    stamp = timestamp;
-}
+  public SmallCalendar(idegaTimestamp timestamp) {
+      initialize();
+      stamp = timestamp;
+  }
 
-public SmallCalendar(int year,int month) {
-  initialize();
-  stamp = new idegaTimestamp();
-  stamp.setMonth(month);
-  stamp.setYear(year);
-}
+  public SmallCalendar(int year,int month) {
+    initialize();
+    stamp = new idegaTimestamp();
+    stamp.setMonth(month);
+    stamp.setYear(year);
+  }
 
   public void main(IWContext iwc){
-    if (stamp == null) {
-      stamp = CalendarBusiness.getTimestamp(iwc);
-    }
+    //if (stamp == null) {
+      if(isTarget()){
+        String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
+        String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
+        String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
+        stamp = CalendarBusiness.getTimestamp(day,month,year);
+      }
+      else if(iwc.getSessionAttribute("smcal"+getICObjectInstanceID())!=null){
+        stamp = (idegaTimestamp) iwc.getSessionAttribute("smcal"+getICObjectInstanceID());
+      }
+      else
+        stamp = idegaTimestamp.RightNow();
+    //}
     make(iwc);
   }
 
@@ -99,6 +109,7 @@ public SmallCalendar(int year,int month) {
     tMonth.setBold();
     tMonth.setFontStyle("font-face: Arial, Helvetica, sans-serif; font-weight: bold; color: "+headerTextColor+"; font-size: 8pt; text-decoration: none;");
     Link right = new Link(">");
+
       right.setFontColor(headerTextColor);
       right.setFontSize(2);
       right.setBold();
@@ -108,6 +119,8 @@ public SmallCalendar(int year,int month) {
       }
 
     this.addNextMonthPrm(right,stamp);
+    right.setTargetObjectInstance(this.getTargetObjectInstance());
+
     Link left = new Link("<");
       left.setFontColor(headerTextColor);
       left.setFontSize(2);
@@ -116,7 +129,9 @@ public SmallCalendar(int year,int month) {
       for (int i = 0; i < parameterName.size(); i++) {
         left.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
       }
+
     this.addLastMonthPrm(left,stamp);
+    setAsObjectInstanceTarget(left);
 
     Table T2 = new Table(1,2);
     T2.setCellpadding(1);
@@ -243,6 +258,7 @@ public SmallCalendar(int year,int month) {
 
     T2.add(T,1,2);
     add(T2);
+    iwc.setSessionAttribute("smcal"+getICObjectInstanceID(),stamp);
   }
 
   public void initialize() {
@@ -519,6 +535,7 @@ public SmallCalendar(int year,int month) {
       if(getTarget()!=null){
         _link.setTarget(getTarget());
       }
+      setAsObjectInstanceTarget(_link);
     }
 
     return (Link) _link.clone();
