@@ -51,6 +51,11 @@ public abstract class GolfBlock extends Block {
 	protected static String LOCALIZATION_SUBMIT_KEY="submit";
 	protected static String PARAM_SUBMIT="go_submit";	
 	protected static String LOCALIZATION_RESET_KEY="reset";
+	
+	private static final String LIGHT_ROW_STYLE = "lightRow";
+	private static final String DARK_ROW_STYLE = "darkRow";
+	private static final String HEADER_ROW_STYLE = "headerRow";
+	private static final String BIG_ROW_STYLE = "bigRow";
 
 	public final static String STYLENAME_TEXT = "Text";
 	public final static String STYLENAME_BIG_TEXT = "BigText";
@@ -458,6 +463,22 @@ public abstract class GolfBlock extends Block {
 	
 	public String getLineSeperatorColor() {
 		return getProperty(LINE_COLOR_PROPERTY,DEFAULT_LINE_COLOR);
+	}
+	
+	public String getLightRowClass() {
+		return getStyleName(LIGHT_ROW_STYLE);
+	}
+	
+	public String getDarkRowClass() {
+		return getStyleName(DARK_ROW_STYLE);
+	}
+	
+	public String getHeaderRowClass() {
+		return getStyleName(HEADER_ROW_STYLE);
+	}
+	
+	public String getBigRowClass() {
+		return getStyleName(BIG_ROW_STYLE);
 	}
 	
 	public String getZebraColor1() {
