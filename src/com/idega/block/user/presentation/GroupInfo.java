@@ -66,7 +66,6 @@ public class GroupInfo extends Block {
 					Phone phoneObj = (Phone) phoneIter.next();
 					if(phoneObj.getPhoneTypeId() == PhoneType.WORK_PHONE_ID) {
 						phone = emptyIfNull(phoneObj.getNumber());
-						break;
 					} else if(phoneObj.getPhoneTypeId() == PhoneType.FAX_NUMBER_ID) {
 						fax = emptyIfNull(phoneObj.getNumber());
 					}
