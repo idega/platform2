@@ -37,6 +37,8 @@ public class EditTariffType extends CashierSubWindowTemplate {
 	protected static final String LABEL_NAME = "isi_acc_ett_name";
 	protected static final String LABEL_DELETE = "isi_acc_ett_delete";
 	
+	protected static final String ERROR_COULD_NOT_SAVE = "isi_acc_ett_could_not_save";
+	
 	/**
 	 *  
 	 */
@@ -44,15 +46,21 @@ public class EditTariffType extends CashierSubWindowTemplate {
 		super();
 	}
 
-	private void saveTariffType(IWContext iwc) {
+	private boolean saveTariffType(IWContext iwc) {
 		String name = iwc.getParameter(LABEL_NAME);
 
-		try {
-			getAccountingBusiness(iwc).insertTariffType(null,name,null,getClub());
+		if (name != null && !"".equals(name)) {
+			try {
+				getAccountingBusiness(iwc).insertTariffType(null,name,null,getClub());
+			
+				return true;
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
 		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
+		
+		return false;
 	}
 
 	private void deleteTariffType(IWContext iwc) {
@@ -67,16 +75,23 @@ public class EditTariffType extends CashierSubWindowTemplate {
 	}
 	
 	public void main(IWContext iwc) {
+		Form f = new Form();
+		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
 		if (iwc.isParameterSet(ACTION_SUBMIT)) {
-			saveTariffType(iwc);
+			if (!saveTariffType(iwc)) {
+				Text error = new Text(iwrb.getLocalizedString(ERROR_COULD_NOT_SAVE, "Could not save tariff type"));
+				error.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE_RED);
+				
+				f.add(error);
+			}
+			
 		}
 		else if (iwc.isParameterSet(ACTION_DELETE)) {
 			deleteTariffType(iwc);
 		}
 
-		IWResourceBundle iwrb = getResourceBundle(iwc);
 
-		Form f = new Form();
 		Table t = new Table();
 		Table inputTable = new Table();
 		t.setCellpadding(5);

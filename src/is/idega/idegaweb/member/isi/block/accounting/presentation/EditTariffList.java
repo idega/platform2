@@ -80,6 +80,10 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		}
 		catch (IllegalArgumentException e) {
 			fromTimestamp = new IWTimestamp(Long.parseLong(from));
+			fromTimestamp.setHour(0);
+			fromTimestamp.setMinute(0);
+			fromTimestamp.setSecond(0);
+			fromTimestamp.setMilliSecond(0);
 		}
 		
 		try {
@@ -87,6 +91,10 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		}
 		catch (IllegalArgumentException e) {
 			toTimestamp = new IWTimestamp(Long.parseLong(to));
+			toTimestamp.setHour(0);
+			toTimestamp.setMinute(0);
+			toTimestamp.setSecond(0);
+			toTimestamp.setMilliSecond(0);
 		}
 		
 		boolean applChildren = false;

@@ -296,8 +296,20 @@ public class CashierWindow extends StyledIWAdminWindow {
 		return menu;
 	}
 
+	protected boolean getHasPermissionToViewWindow(IWContext iwc) {
+		
+		return false;
+	}
+	
+	
 	public void main(IWContext iwc) throws Exception {
 		super.main(iwc);
+		
+		boolean hasPermission = getHasPermissionToViewWindow(iwc);
+		if (!hasPermission) {
+			
+		}
+		
 		init(iwc);
 
 		setTitle("Cashier window");

@@ -328,8 +328,13 @@ public class IFSFileCreationThread extends Thread {
 		catch (FinderException e3) {
 			e3.printStackTrace();
 		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("####CHECK!!!!!");
 		if (phInCommune != null && !phInCommune.isEmpty()) {
 			Collection rec = null;
+			System.out.println("####Getting records");
 			try {
 				rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phInCommune);
 			}
@@ -338,13 +343,22 @@ public class IFSFileCreationThread extends Thread {
 			}
 			catch (FinderException e2) {
 				e2.printStackTrace();
-			}						
+			}				
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println("####Creating excel shit!!");
 			try {		
 				createPaymentFilesExcel(rec, fileName1 + ".xls", "Checkutbetalning "+localizedSchoolCategoryName+", egna kommunala anordnare, "+executionDate.getDateString("yyyy-MM-dd"), true);
 			}
 			catch (IOException e3) {
 				e3.printStackTrace();
 			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println("####DONE");
+			
 			Iterator it = rec.iterator();
 			FileWriter writer = null;
 			try {
