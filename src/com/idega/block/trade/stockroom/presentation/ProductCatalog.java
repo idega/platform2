@@ -70,11 +70,13 @@ public class ProductCatalog extends CategoryBlock{
   boolean _useAnchor = false;
   int _orderProductsBy = -1;
   boolean _addCategoryID = false;
+  int _spaceBetween = 0;
 
   Locale _currentLocale = null;
   int _currentLocaleId = -1;
   boolean _hasEditPermission = false;
   boolean _allowMulitpleCategories = true;
+  Image _iconImage;
 
   private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
   private AbstractProductCatalogLayout layout = null;
@@ -447,6 +449,20 @@ public class ProductCatalog extends CategoryBlock{
     }
   }
 
+  Link getCategoryLink(ICCategory category, String nameText) {
+    Link categoryLink = new Link(getCategoryText(nameText));
+
+    if (_productLinkPage != null) {
+      categoryLink.setPage(_productLinkPage);
+    }
+
+    if ( _addCategoryID ) {
+      categoryLink.addParameter(CATEGORY_ID,category.getID());
+    }
+
+    return categoryLink;
+  }
+
   Link getProductEditorLink(Product product) {
     Link link =  ProductEditorWindow.getEditorLink(product.getID());
       link.setImage(this.iEdit);
@@ -512,5 +528,13 @@ public class ProductCatalog extends CategoryBlock{
 
   public void setAddCategoryID(boolean addID) {
     _addCategoryID = addID;
+  }
+
+  public void setIconImage(Image iconImage) {
+    _iconImage = iconImage;
+  }
+
+  public void setSpaceBetween(int spaceBetween) {
+    _spaceBetween = spaceBetween;
   }
 }

@@ -110,6 +110,10 @@ public class ProductViewer extends Block {
       e.printStackTrace(System.err);
     }
 
+    if ( categoryList == null ) {
+      categoryList = getCategoriesFromParameter(iwc);
+    }
+
     if ( _product == null ) {
       if ( _showRandom ) {
 	if ( categoryList != null ) {
@@ -267,6 +271,17 @@ public class ProductViewer extends Block {
 
   public void setAddCategoryID(boolean addID) {
     _addCategoryID = addID;
+  }
+
+  private List getCategoriesFromParameter(IWContext iwc) {
+    Vector vector = new Vector();
+    String[] categories = iwc.getParameterValues(ProductCatalog.CATEGORY_ID);
+    for ( int a = 0; a < categories.length; a++ ) {
+      ProductCategory category = ProductBusiness.getProductCategory(Integer.parseInt(categories[a]));
+      if ( category != null )
+	vector.add(category);
+    }
+    return vector;
   }
 }
 
