@@ -196,9 +196,9 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       while (iterator.hasNext())  {
         String field = (String) iterator.next();
         EntityPathValueContainer entityPathValueContainerFromTextEditor = 
-          TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
+          TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(primaryKey, field, iwc);
         EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
-          DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(NEW_ENTRY_ID_VALUE, field, iwc);
+          DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(primaryKey, field, iwc);
         if (entityPathValueContainerFromTextEditor.isValid()) {
           setValuesOfWorkReportBoardMember(entityPathValueContainerFromTextEditor, member, workReportBusiness);
         }
