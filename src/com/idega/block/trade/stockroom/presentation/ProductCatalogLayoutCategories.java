@@ -51,7 +51,7 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 	  table.add(configCategory, column,row);
 	}
 
-	row++;
+	table.setRowVerticalAlignment(row++,Table.VERTICAL_ALIGN_TOP);
 	column = 1;
 
 	if ( productCatalog._spaceBetween > 0 ) {
