@@ -1,5 +1,5 @@
 /*
- * $Id: ControlListBusinessBean.java,v 1.16 2004/02/20 15:35:14 staffan Exp $
+ * $Id: ControlListBusinessBean.java,v 1.17 2004/02/21 09:55:31 laddi Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,11 +37,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * from the payment records.
  * It does this for the "compare month" and "with month".
  * <p>
- * Last modified: $Date: 2004/02/20 15:35:14 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/21 09:55:31 $ by $Author: laddi $
  *
  * @author <a href="mailto:kjell@lindman.se">Kjell Lindman</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  *
  */
 public class ControlListBusinessBean extends IBOServiceBean implements ControlListBusiness {
@@ -113,17 +113,12 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 			long currentMonthTotalAmount = 0;
 			long compareMonthTotalAmount = 0;
 
-			try {				
-				final PaymentSummary currentSummary = getPaymentSummary (invoiceBusiness, opField, school, withMonth);
-				currentMonthIndividualsCount = currentSummary.getIndividualsCount ();
-				currentMonthTotalAmount = currentSummary.getTotalAmountVatExcluded ();
-				final PaymentSummary compareSummary = getPaymentSummary (invoiceBusiness, opField, school, compareMonth);
-				compareMonthIndividualsCount = compareSummary.getIndividualsCount ();
-				compareMonthTotalAmount = compareSummary.getTotalAmountVatExcluded ();
-			} catch (FinderException e) {
-				// continue with initial values, but logg error
-				e.printStackTrace ();
-			}
+			final PaymentSummary currentSummary = getPaymentSummary (invoiceBusiness, opField, school, withMonth);
+			currentMonthIndividualsCount = currentSummary.getIndividualsCount ();
+			currentMonthTotalAmount = currentSummary.getTotalAmountVatExcluded ();
+			final PaymentSummary compareSummary = getPaymentSummary (invoiceBusiness, opField, school, compareMonth);
+			compareMonthIndividualsCount = compareSummary.getIndividualsCount ();
+			compareMonthTotalAmount = compareSummary.getTotalAmountVatExcluded ();
 			
 			arr.add(new Object[] {
 				new Integer(cnt++), 
@@ -140,8 +135,7 @@ public class ControlListBusinessBean extends IBOServiceBean implements ControlLi
 
 	private PaymentSummary getPaymentSummary
 		(final InvoiceBusiness invoiceBusiness, final String schoolCategory,
-		 final School school, final Date period) throws RemoteException,
-																										FinderException {
+		 final School school, final Date period) throws RemoteException {
 		final PaymentRecord [] records
 				= invoiceBusiness.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
 				(schoolCategory, (Integer) school.getPrimaryKey (), period, period);

@@ -74,11 +74,11 @@ import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeH
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/02/20 15:35:14 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/21 09:56:09 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.103 $
+ * @version $Revision: 1.104 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -687,7 +687,7 @@ public class PaymentRecordMaintenance extends AccountingBlock
 	}
 
 	private Table getPaymentSummaryTable (final PaymentRecord [] records)
-		throws RemoteException, FinderException {
+		throws RemoteException {
 		final PaymentSummary summary = new PaymentSummary (records);
 
 		// render

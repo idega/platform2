@@ -64,11 +64,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/02/20 16:36:50 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/02/21 09:54:43 $ by $Author: laddi $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -263,7 +263,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 				+ IWTimestamp.RightNow ().getDate ();
 	}
 
-	private PdfPTable getExternalContentTable(SchoolCategory schoolCategory, PaymentRecord[] records) throws RemoteException, FinderException {
+	private PdfPTable getExternalContentTable(SchoolCategory schoolCategory, PaymentRecord[] records) throws RemoteException {
 		// add content to document
 		final PdfPTable outerTable = new PdfPTable (1);
 		outerTable.setWidthPercentage (100f);
@@ -503,7 +503,7 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 	
 	private PdfPTable getSummaryTable
 		(final PaymentRecord [] records, final boolean isInternal)
-		throws RemoteException, FinderException {
+		throws RemoteException {
 		final float [] externalColWidth	= new float [] { 6.0f, 3.6f, 0.0f };
 		final float [] internalColWidth	= new float [] { 7.0f, 3.6f, 3.0f };
 		final PdfPTable summaryTable
