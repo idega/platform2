@@ -77,7 +77,9 @@ public class JournalTexts extends EHealthBlock {
 	private User user;
 	IWContext _iwc = null;
 	Age age = null;
-
+	
+	private boolean showOpenButton = true;
+	
 	public void main(IWContext iwc) throws Exception {
 		_iwc = iwc;
 		
@@ -460,14 +462,18 @@ public class JournalTexts extends EHealthBlock {
 		table.add(printIcon, 1, 1);
 		
 		GenericButton print = getButton(new GenericButton("print", localize(prmPrint, "Print")));
-		GenericButton openinWindow = getButton(new GenericButton("open", localize(keyOpenNewWindow, "Open in new window")));
-		
+		if (showOpenButton){
+			GenericButton openinWindow = getButton(new GenericButton("open", localize(keyOpenNewWindow, "Open in new window")));
+			table.add(openinWindow, 5, 1);
+		}
 		table.add(print, 3, 1);
-		table.add(openinWindow, 5, 1);
+		
 			
 		return table;
 		
 	}
 	
-	
+	public void setShowOpenButton(boolean showOpenButton){
+		this.showOpenButton = showOpenButton;
+	}
 }
