@@ -4,12 +4,8 @@
  */
 package se.idega.idegaweb.commune.user.presentation;
 
-import java.rmi.RemoteException;
-
-import is.idega.idegaweb.member.business.MemberFamilyLogic;
 import is.idega.idegaweb.member.presentation.UserEditor;
 
-import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
 
