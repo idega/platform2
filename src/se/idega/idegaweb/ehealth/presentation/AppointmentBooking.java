@@ -7,6 +7,8 @@
 package se.idega.idegaweb.ehealth.presentation;
 
 
+import javax.faces.component.UIComponent;
+
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
@@ -14,7 +16,6 @@ import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
@@ -76,7 +77,7 @@ public class AppointmentBooking extends EHealthBlock {
 	
 	
 	//public PresentationObject getVisitForm(IWContext iwc, User userVK) throws java.rmi.RemoteException {
-	public PresentationObject getBookingForm() {
+	public UIComponent getBookingForm() {
 		Form myForm = new Form();
 		myForm.setName(prmForm);
 		

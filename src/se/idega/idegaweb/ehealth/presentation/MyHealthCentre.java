@@ -7,6 +7,8 @@
 package se.idega.idegaweb.ehealth.presentation;
 
 
+import javax.faces.component.UIComponent;
+
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
@@ -61,7 +63,7 @@ public class MyHealthCentre extends EHealthBlock {
 	
 	
 	//public PresentationObject getVisitForm(IWContext iwc, User userVK) throws java.rmi.RemoteException {
-	public PresentationObject getDoctorForm() {
+	public UIComponent getDoctorForm() {
 		IWResourceBundle iwrb = this.getResourceBundle(_iwc);
 		Form myForm = new Form();
 		myForm.setName(prmForm);

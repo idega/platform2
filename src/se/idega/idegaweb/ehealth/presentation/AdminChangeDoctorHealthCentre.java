@@ -8,13 +8,13 @@ package se.idega.idegaweb.ehealth.presentation;
 
 
 
+import javax.faces.component.UIComponent;
+
 import com.idega.business.IBOLookup;
-import com.idega.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -24,6 +24,7 @@ import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 
 
 /**
@@ -81,7 +82,7 @@ public class AdminChangeDoctorHealthCentre extends EHealthBlock {
 	
 	
 	
-	public PresentationObject getAdminForm(){
+	public UIComponent getAdminForm(){
 		Form myForm = new Form();
 		myForm.setName(prmForm);
 		Table T = new Table();

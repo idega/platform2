@@ -11,11 +11,12 @@ package se.idega.idegaweb.ehealth.presentation;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.faces.component.UIComponent;
+
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Layer;
 import com.idega.presentation.Page;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -45,7 +46,7 @@ public class FAQ extends EHealthBlock {
 	
 	
 	
-	public PresentationObject getAppointmentHistoryForm(){
+	public UIComponent getAppointmentHistoryForm(){
 		Form myForm = new Form();
 		myForm.setName(prmForm);
 		Table T = new Table(1, 3);

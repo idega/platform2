@@ -9,8 +9,9 @@ package se.idega.idegaweb.ehealth.presentation;
 
 //import se.idega.util.PIDChecker;
 
+import javax.faces.component.UIComponent;
+
 import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -60,7 +61,7 @@ public class SendMessage extends EHealthBlock {
 	
 	
 	//public PresentationObject getVisitForm(IWContext iwc, User userVK) throws java.rmi.RemoteException {
-	public PresentationObject getSendMessageForm() {
+	public UIComponent getSendMessageForm() {
 		Form myForm = new Form();
 		myForm.setName(prmForm);
 		

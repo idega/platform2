@@ -8,6 +8,8 @@
 package se.idega.idegaweb.ehealth.presentation;
 
 
+import javax.faces.component.UIComponent;
+
 import se.idega.util.PIDChecker;
 
 import com.idega.business.IBOLookup;
@@ -66,7 +68,7 @@ public class ChangeHealthCentre extends EHealthBlock {
 	
 	
 	
-	public PresentationObject getDoctorForm()  {
+	public UIComponent getDoctorForm()  {
 		
 		Form myForm = new Form();
 		myForm.setName(prmForm);
