@@ -154,6 +154,14 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	}
 
 	/**
+	 * Sets the provider.
+	 * @param provider The provider to set
+	 */
+	public void setProvider(School provider) {
+		_provider = provider;
+	}
+
+	/**
 	 * Sets the userID.
 	 * @param userID The userID to set
 	 */

@@ -3,12 +3,13 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
-import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
-
 import com.idega.block.school.data.School;
+import com.idega.business.IBORuntimeException;
+import com.idega.event.IWPageEventListener;
+import com.idega.idegaweb.IWException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
@@ -17,14 +18,14 @@ import com.idega.presentation.ui.Form;
 /**
  * @author laddi
  */
-public class ChildCareProviderSelect extends ChildCareBlock {
+public class ChildCareProviderSelect extends ChildCareBlock implements IWPageEventListener {
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
 		Form form = new Form();
-		form.setEventListener(ChildCareEventListener.class);
+		form.setEventListener(ChildCareProviderSelect.class);
 		
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(getSession().getParameterChildCareID()));
 		menu.addMenuElementFirst("-1", localize("child_care.select_provider","Select provider"));
@@ -45,4 +46,19 @@ public class ChildCareProviderSelect extends ChildCareBlock {
 		add(form);
 	}
 
+	public boolean actionPerformed(IWContext iwc) throws IWException {
+		try {
+			if (iwc.isParameterSet(getSession().getParameterChildCareID())) {
+				School provider = getBusiness().getSchoolBusiness().getSchool(new Integer(iwc.getParameter(getSession().getParameterChildCareID())));
+				if (provider != null) {
+					getSession().setProvider(provider);
+					getSession().setChildCareID(((Integer) provider.getPrimaryKey()).intValue());
+				}
+			}
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		return false;
+	}
 }
