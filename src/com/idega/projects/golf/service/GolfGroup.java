@@ -26,7 +26,7 @@ private int member_id = 1;
 		boolean canWrite = true;
 
 		if ( gender.equalsIgnoreCase("M") ) {
-			if (grunn <= 9.4) {
+			if (grunn <= 4.4) {
 				canWrite = false;
 			}
 			else {
@@ -35,7 +35,7 @@ private int member_id = 1;
 		}
 
 		else if ( gender.equalsIgnoreCase("F") ) {
-			if (grunn <= 17.4) {
+			if (grunn <= 10.4) {
 				canWrite = false;
 			}
 			else {
