@@ -6,7 +6,7 @@
  */
 package se.idega.block.pki.data;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * @author Roar
