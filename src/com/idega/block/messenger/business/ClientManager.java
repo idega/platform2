@@ -74,7 +74,7 @@ public class ClientManager implements PacketManager{
       Vector props = packet.getProperties();
       if( props!=null ){
         int length = props.size();
-        System.out.println("ClientManager : PropSize is: "+length);
+        //System.out.println("ClientManager : PropSize is: "+length);
 
         for (int i = 0; i < length; i++) {
           Property prop = (Property) props.elementAt(i);
