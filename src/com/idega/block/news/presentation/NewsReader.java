@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.106 2002/12/10 11:34:01 aron Exp $
+ * $Id: NewsReader.java,v 1.107 2002/12/10 12:05:21 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -627,8 +627,7 @@ public class NewsReader extends CategoryBlock implements IWBlock {
       /////////// BODY PART //////////
       if(showTeaserText && sTeaser.length()> 0 && !showAll){
 	      T.add(teaser,1,row);
-	      if(sNewsBody.length() > 0)
-	      	needMoreButton = true;
+	      needMoreButton = true;
       }
       else if(locText!=null && !collection){
         // counting news
