@@ -49,8 +49,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		table.setCellpadding(0);
 		table.setCellspacing(0);
 		table.setWidth(getWidth());
-		
-		
+
 		GenericButton back = null;
 		if(insideWindow){
 			CloseButton close = new CloseButton(localize("close","Close"));
@@ -63,7 +62,6 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		}
 
 		if (getChildID(iwc) != -1) {
-		// if(getSession().getUserID != -1) {
 			parse(iwc);
 			
 			int row = 1;
@@ -134,7 +132,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		School provider;
 		SchoolClass group;
 		SchoolClassMember member;
-		SchoolClassMemberLog log;
+		Collection logs = null;
 		IWTimestamp created;
 		IWTimestamp validFrom;
 		IWTimestamp terminated = null;
@@ -148,11 +146,12 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		if(iwc.isParameterSet(ChildCareConstants.PARAMETER_CHILD_ID)){
 			contracts = getBusiness().getContractsByChild(getChildID(iwc));
 		}
-		else if (getSession().getApplicationID() != -1)
+		else if (getSession().getApplicationID() != -1) {
 			contracts = getBusiness().getContractsByApplication(getSession().getApplicationID());
-		else
+		}
+		else {
 			contracts = getBusiness().getContractsByChild(getChildID(iwc));
-			//contracts = getBusiness().getContractsByChild(getSession().getUserID());
+		}
 
 		int contractCount = 0;
 		Iterator iter = contracts.iterator();
@@ -164,11 +163,21 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			provider = contract.getApplication().getProvider();
 			created = new IWTimestamp(contract.getCreatedDate());
 			member = contract.getSchoolClassMember();
+			group = member.getSchoolClass();
+			if (contract.getTerminatedDate() != null) {
+				terminated = new IWTimestamp(contract.getTerminatedDate());
+			}
+			else {
+				terminated = null;
+			}
 			if (contract.getValidFromDate() != null) {
 				validFrom = new IWTimestamp(contract.getValidFromDate());
 				try {
-					log = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, validFrom.getDate());
-					group = log.getSchoolClass();
+					logs = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDates(member, validFrom.getDate(), terminated != null ? terminated.getDate() : null);
+					if (logs.isEmpty()) {
+						SchoolClassMemberLog log = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, validFrom.getDate());
+						logs.add(log);
+					}
 				}
 				catch (FinderException fe) {
 					group = member.getSchoolClass();
@@ -176,27 +185,21 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			}
 			else {
 				validFrom = null;
-				group = member.getSchoolClass();
 			}
-			if (contract.getTerminatedDate() != null)
-				terminated = new IWTimestamp(contract.getTerminatedDate());
-			else
-				terminated = null;
 			careTime = getCareTime(contract.getCareTime());
 				
 			if (stampNow.isLaterThanOrEquals(validFrom)) {
 				isActive = true;
 				if (contract.getTerminatedDate() != null) {
-					if (terminated.isLaterThanOrEquals(stampNow))
+					if (terminated.isLaterThanOrEquals(stampNow)) {
 						isActive = true;
-					else
+					}
+					else {
 						isActive = false;
+					}
 				}
 			}
-					
-			//viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
-			//viewContract.setFile(contract.getContractFileID());
-			//viewContract.setTarget(Link.TARGET_NEW_WINDOW);
+
 			viewContract = getPDFLink(contract.getContractFileID(),localize("child_care.view_contract","View contract"));
 
 			if (contractCount == 1) {
@@ -205,43 +208,17 @@ public class ChildCareChildContracts extends ChildCareBlock {
 					viewCancelFile = getPDFLink(fileId, localize("child_care.view_cancel_file", "View cancel contract document"));
 				}
 			}
-					
-			if (useStyleNames()) {
-				if (row % 2 == 0) {
-					table.setRowStyleClass(row, getDarkRowClass());
+			
+			if (logs != null && !logs.isEmpty()) {
+				Iterator iterator = logs.iterator();
+				while (iterator.hasNext()) {
+					SchoolClassMemberLog log = (SchoolClassMemberLog) iterator.next();
+					row = addToTable(iwc, table, row, isActive, provider, log.getSchoolClass(), created, new IWTimestamp(log.getStartDate()), log.getEndDate() != null ? new IWTimestamp(log.getEndDate()) : null, careTime, viewContract, viewCancelFile);
 				}
-				else {
-					table.setRowStyleClass(row, getLightRowClass());
-				}
-				table.setCellpaddingLeft(1, row, 12);
-				table.setCellpaddingRight(table.getColumns(), row, 12);
 			}
 			else {
-				if (row % 2 == 0)
-					table.setRowColor(row, getZebraColor1());
-				else
-					table.setRowColor(row, getZebraColor2());
+				row = addToTable(iwc, table, row, isActive, provider, group, created, validFrom, terminated, careTime, viewContract, viewCancelFile);
 			}
-	
-			table.add(getText(provider.getSchoolName(), isActive), column++, row);
-			table.add(getText(group.getName(), isActive), column++, row);
-			table.add(getText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
-			if (validFrom != null)
-				table.add(getText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
-			else
-				table.add(getText("-", isActive), column++, row);
-			if (terminated != null)
-				table.add(getText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
-			else
-				table.add(getText("-", isActive), column++, row);
-			table.add(getText(careTime, isActive), column++, row);
-					
-			table.setWidth(column, row, 12);
-			table.add(viewContract, column++, row);
-			if (viewCancelFile != null) {
-				table.add(viewCancelFile, column++, row);
-			}
-			row++;
 		}
 		table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
@@ -249,6 +226,53 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 
 		return table;
+	}
+	
+	private int addToTable(IWContext iwc, Table table, int row, boolean isActive, School provider, SchoolClass group, IWTimestamp created, IWTimestamp validFrom, IWTimestamp terminated, String careTime, Link viewContract, Link viewCancelFile) {
+		int column = 1;
+		
+		table.add(getText(provider.getSchoolName(), isActive), column++, row);
+		table.add(getText(group.getName(), isActive), column++, row);
+		table.add(getText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
+		if (validFrom != null) {
+			table.add(getText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
+		}
+		else {
+			table.add(getText("-", isActive), column++, row);
+		}
+		if (terminated != null) {
+			table.add(getText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
+		}
+		else {
+			table.add(getText("-", isActive), column++, row);
+		}
+		table.add(getText(careTime, isActive), column++, row);
+				
+		table.setWidth(column, row, 12);
+		table.add(viewContract, column++, row);
+		if (viewCancelFile != null) {
+			table.add(viewCancelFile, column++, row);
+		}
+
+		if (useStyleNames()) {
+			if (row % 2 == 0) {
+				table.setRowStyleClass(row, getDarkRowClass());
+			}
+			else {
+				table.setRowStyleClass(row, getLightRowClass());
+			}
+			table.setCellpaddingLeft(1, row, 12);
+			table.setCellpaddingRight(table.getColumns(), row, 12);
+		}
+		else {
+			if (row % 2 == 0)
+				table.setRowColor(row, getZebraColor1());
+			else
+				table.setRowColor(row, getZebraColor2());
+		}
+
+		row++;
+		return row;
 	}
 
 	protected Table getInformationTable(IWContext iwc) throws RemoteException {
@@ -261,7 +285,6 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		table.setWidth(2, "6");
 		int row = 1;
 		
-		//User child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
 		User child = getBusiness().getUserBusiness().getUser(getChildID(iwc));
 		if (child != null) {
 			Address address = getBusiness().getUserBusiness().getUsersMainAddress(child);
@@ -276,8 +299,9 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			if (address != null) {
 				table.add(getLocalizedSmallHeader("child_care.address","Address"), 1, row);
 				table.add(getSmallText(address.getStreetAddress()), 3, row);
-				if (address.getPostalAddress() != null)
+				if (address.getPostalAddress() != null) {
 					table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+				}
 				row++;
 			}
 			
@@ -336,17 +360,21 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	}
 
 	protected Text getText(String text, boolean isActive) {
-		if (isActive)
+		if (isActive) {
 			return getSmallHeader(text);
-		else
+		}
+		else {
 			return getSmallText(text);
+		}
 	}
 	
 	protected Link getLink(String text, boolean isActive) {
-		if (isActive)
-			return this.getSmallHeaderLink(text);
-		else
+		if (isActive) {
+			return getSmallHeaderLink(text);
+		}
+		else {
 			return getSmallLink(text);
+		}
 	}
 	
 	private void parse(IWContext iwc) {
@@ -362,11 +390,14 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	}
 	
 	private int getChildID(IWContext iwc) throws RemoteException {
-		if(iwc.isParameterSet(ChildCareConstants.PARAMETER_CHILD_ID))
+		if(iwc.isParameterSet(ChildCareConstants.PARAMETER_CHILD_ID)) {
 			return Integer.parseInt(iwc.getParameter(ChildCareConstants.PARAMETER_CHILD_ID));
-		else
+		}
+		else {
 			return getSession().getChildID();
+		}
 	}
+	
 	/**
 	 * @return
 	 */
@@ -380,5 +411,4 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	public void setInsideWindow(boolean insideWindow) {
 		this.insideWindow = insideWindow;
 	}
-
 }

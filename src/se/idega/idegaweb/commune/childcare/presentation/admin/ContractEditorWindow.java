@@ -1,5 +1,5 @@
 /*
- * $Id: ContractEditorWindow.java,v 1.1 2004/11/26 14:06:05 aron Exp $
+ * $Id: ContractEditorWindow.java,v 1.2 2005/02/16 11:12:05 laddi Exp $
  * Created on 24.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,16 +15,16 @@ import com.idega.presentation.IWContext;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 14:06:05 $ by $Author: aron $
+ *  Last modified: $Date: 2005/02/16 11:12:05 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ContractEditorWindow extends ChildCareWindow{
     
     public ContractEditorWindow() {
-		this.setWidth(400);
-		this.setHeight(350);
+		this.setWidth(450);
+		this.setHeight(400);
 		this.setScrollbar(true);
 		this.setResizable(true);	
 		this.setAllMargins(0);

@@ -6,9 +6,12 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
+import com.idega.business.IBORuntimeException;
 import com.idega.core.location.data.Address;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
@@ -23,6 +26,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
+import com.idega.user.business.UserSession;
 import com.idega.user.data.User;
 import com.idega.user.presentation.UserSearcher;
 import com.idega.util.CalendarMonth;
@@ -90,10 +94,10 @@ import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/12/02 12:55:02 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/16 11:12:05 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.137 $
+ * @version $Revision: 1.138 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -266,6 +270,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		= new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 	private static final NumberFormat integerFormatter
 		= NumberFormat.getIntegerInstance (LocaleUtil.getSwedishLocale ());
+	
+	private boolean iShowHistory = false;
 
 	/**
 	 * Init is the event handler of InvoiceCompilationEditor
@@ -323,7 +329,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 					break;
 					
 				default:
-					showCompilationList (context);
+					if (iShowHistory) {
+						showCompilationHistory(context);
+					}
+					else {
+						showCompilationList (context);
+					}
 					break;					
 			}
 		} catch (Exception exception) {
@@ -901,6 +912,50 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 																NEW_KEY, NEW_DEFAULT), 1, row);
 		createForm (context, table, INVOICE_COMPILATION_LIST_KEY,
 								INVOICE_COMPILATION_LIST_DEFAULT);
+	}
+	
+	protected UserSession getUserSession(IWUserContext iwuc) {
+		try {
+			return (UserSession) IBOLookup.getSessionInstance(iwuc, UserSession.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException(e);
+		}
+	}
+
+	/**
+	 * Shows a list of invoice compilations and a search form.
+	 *
+	 * @param context session data like user info etc.
+	 */
+	private void showCompilationHistory(IWContext context)
+		throws RemoteException {
+		final Table table = createTable (6);
+		setColumnWidthsEqual (table);
+		int row = 2; // first row is reserved for setting column widths
+
+		if (null != getUserSession(context).getUser ()) {
+			// exactly one user found - display users invoice compilation list
+			final String operationalField
+					= null;
+			final User userFound = getUserSession(context).getUser ();
+			IWTimestamp now = new IWTimestamp();
+			IWTimestamp threeMonths = new IWTimestamp();
+			threeMonths.addMonths(-32);
+			
+			CalendarMonth fromPeriod = new CalendarMonth(now.getDate());
+			CalendarMonth toPeriod = new CalendarMonth(threeMonths.getDate());
+			final InvoiceBusiness business = getInvoiceBusiness (context);
+			final InvoiceHeader [] headers
+					= business.getInvoiceHeadersByCustodianOrChild
+					(operationalField, userFound, fromPeriod, toPeriod);
+			table.mergeCells (1, row, table.getColumns (), row);            
+			table.add (getInvoiceCompilationListTable (context, headers), 1,
+								 row++);
+		}
+		table.setHeight (row++, 12);
+		table.mergeCells (1, row, table.getColumns (), row);
+		add(table);
 	}
 	
 	/**
@@ -2611,5 +2666,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		(final IWContext context) throws RemoteException {
 		return (RegulationsBusiness) IBOLookup.getServiceInstance
 				(context, RegulationsBusiness.class);	
+	}
+	
+	public void setShowHistory(boolean showHistory) {
+		iShowHistory = showHistory;
 	}
 }

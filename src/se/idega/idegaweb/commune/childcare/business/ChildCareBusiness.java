@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 23.1.2005 laddi Exp $
- * Created on 23.1.2005
+ * $Id: ChildCareBusiness.java 1.1 4.2.2005 laddi Exp $
+ * Created on 4.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -617,7 +617,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getApplicationForChildAndProviderinStatus
 	 */
 	public ChildCareApplication getApplicationForChildAndProviderinStatus(int childID, int providerID, String[] statuses) throws java.rmi.RemoteException;
-	
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#findAllGrantedApplications
 	 */
@@ -1156,7 +1156,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#deleteApplication
 	 */
-	public void deleteApplication(int applicationID, User user) throws java.rmi.RemoteException;
+	public void deleteApplication(int applicationID, User user, Locale locale) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#rejectApplication
@@ -1227,14 +1227,35 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getCareTime
 	 */
 	public CareTime getCareTime(String careTime) throws FinderException, java.rmi.RemoteException;
-	
+
 	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getVacancies
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUseVacancies
 	 */
-	public boolean getUseVacancies();
-	
-	public boolean getUseEmployment();
-	public boolean getUseParental();
-	public boolean getUsePreschoolLine();
+	public boolean getUseVacancies() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUseEmployment
+	 */
+	public boolean getUseEmployment() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUseParental
+	 */
+	public boolean getUseParental() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getUsePreschoolLine
+	 */
+	public boolean getUsePreschoolLine() throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getCaseParameters
+	 */
+	public Map getCaseParameters(Case theCase) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getEventListener
+	 */
+	public Class getEventListener() throws java.rmi.RemoteException;
 
 }

@@ -107,7 +107,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_DELETE_APPLICATION)) {
 			try {
 				int applicationID = Integer.parseInt(iwc.getParameter(PARAMETER_DELETE_APPLICATION));
-				getBusiness().deleteApplication(applicationID, iwc.getCurrentUser());
+				getBusiness().deleteApplication(applicationID, iwc.getCurrentUser(), iwc.getCurrentLocale());
 			}
 			catch (RemoteException re) {
 				log(re);

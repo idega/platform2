@@ -119,12 +119,11 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 			}
 		}
 		else {
-			return -1;	
+			return _childcareID;	
 		}
 	}
 	
 	private int getChildCareIDFromUser(User user) throws RemoteException {
-		_childcareID = -1;
 		if (user != null) {
 			try {
 				School school = getCareBusiness().getProviderForUser(user);
@@ -134,7 +133,6 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 				}
 			}
 			catch (FinderException fe) {
-				_childcareID = -1;
 			}
 		}
 		return _childcareID;

@@ -1352,7 +1352,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	
 	
-	private Table getCancelFormButton(ChildCareApplication application){
+	/*private Table getCancelFormButton(ChildCareApplication application){
 		Table table = new Table();
 		table.setCellpadding(5);
 		table.setWidth(Table.HUNDRED_PERCENT);
@@ -1366,7 +1366,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		
 		return table;
-	}
+	}*/
 
 	private Table getCreateGroupForm() throws RemoteException {
 		Table table = new Table();
@@ -2015,19 +2015,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_PAGE_ID))
 			_pageID = Integer.parseInt(iwc.getParameter(PARAMETER_PAGE_ID));
 
-		_showVacancies = getBusiness().getUseVacancies();
-		_showParental = getBusiness().getUseParental();
-		_showEmploymentDrop = getBusiness().getUseEmployment();
-		_showPreSchool = getBusiness().getUsePreschoolLine();
-		
-		/*if (iwc.isParameterSet(PARAMETER_SHOW_EMPLOYMENT_DROP))
-			_showEmploymentDrop = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_EMPLOYMENT_DROP)).booleanValue();
-		if (iwc.isParameterSet(PARAMETER_SHOW_PRE_SCHOOL))
-			_showPreSchool = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PRE_SCHOOL)).booleanValue();
-		if (iwc.isParameterSet(PARAMETER_SHOW_PARENTAL))
-			_showParental = Boolean.valueOf(iwc.getParameter(PARAMETER_SHOW_PARENTAL)).booleanValue();
-		*/
-		
+		try {
+			_showVacancies = getBusiness().getUseVacancies();
+			_showParental = getBusiness().getUseParental();
+			_showEmploymentDrop = getBusiness().getUseEmployment();
+			_showPreSchool = getBusiness().getUsePreschoolLine();
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
 	}
 
 	private void alterCareTime(IWContext iwc) throws RemoteException {
@@ -2046,25 +2042,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int oldArchiveId = -1;
 		if (iwc.isParameterSet("ccc_old_archive_id"))
 			oldArchiveId = Integer.parseInt(iwc.getParameter("ccc_old_archive_id"));
-		/*
-		 * ChildCareApplication application =
-		 * getBusiness().getApplication(_applicationID); ChildCareContract archive =
-		 * getBusiness().getContractFile(application.getContractFileId());
-		 * SchoolClassMember classMember = null; /* included in business
-		 * assignContractToApplication if(archive!=null){ classMember =
-		 * archive.getSchoolClassMember(); if(schoolTypeId !=
-		 * classMember.getSchoolTypeId() || schoolClassId!=
-		 * classMember.getSchoolClassId()){ // end old placement with the chosen
-		 * date -1 and create new placement classMember =
-		 * getBusiness().createNewPlacement(_applicationID,schoolTypeId,schoolClassId,validFrom,iwc.getCurrentUser()); } }
-		 */
 
-		// Add a control that says IF schooltypeid !=oldschooltypeid &&
-		// schoolclassid == oldschoolclassid message: "You are trying to change the
-		// school type but keep the child in the same group"
-		// +
-		// Add control that they in the future only can place in groups with correct
-		// school type
 		if (!getBusiness().isTryingToChangeSchoolTypeButNotSchoolClass(oldArchiveId, schoolTypeId, schoolClassId)) {
 			if (getBusiness().isSchoolClassBelongingToSchooltype(schoolClassId, schoolTypeId)) {
 				getBusiness().assignContractToApplication(_applicationID, oldArchiveId, childCareTime, validFrom, employmentType, iwc.getCurrentUser(), iwc.getCurrentLocale(), false, true, schoolTypeId, schoolClassId);
