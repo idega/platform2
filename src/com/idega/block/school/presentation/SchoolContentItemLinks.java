@@ -30,6 +30,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 	String _headerColor;
 	String _headerFontClass;
 	int _spaceBetween = 5;
+	boolean _showManagementType = true;
 
 	/**
 	 * @see com.idega.block.school.presentation.SchoolContentItem#getObject()
@@ -186,7 +187,7 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 				manType = _iwrb.getLocalizedString(type.getLocalizedKey(), type.getName());
 		}
 		
-		if (manType != null) {
+		if (_showManagementType && manType != null) {
 			table.add(getHeader(_iwrb.getLocalizedString("school.management_type","Management Type")+":"), 1, row);
 			++row;
 			table.add(getText(manType), 1, row);
@@ -397,4 +398,10 @@ public class SchoolContentItemLinks extends SchoolContentItem {
 	private SchoolUserBusiness getSchoolUserBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (SchoolUserBusiness) IDOLookup.getServiceInstance(iwac, SchoolUserBusiness.class);	
 	}	
+	/**
+	 * @param managementType The _showManagementType to set.
+	 */
+	public void setShowManagementType(boolean managementType) {
+		_showManagementType = managementType;
+	}
 }
