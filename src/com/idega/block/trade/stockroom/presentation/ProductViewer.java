@@ -174,9 +174,14 @@ public class ProductViewer extends Block {
   }
 
   Text getText(String content) {
+    return getText(content,true);
+  }
+
+  Text getText(String content, boolean useAlignment) {
     Text text = new Text(content);
     if (this._fontStyle != null) text.setFontStyle(_fontStyle);
-    text.setHorizontalAlignment(_textAlignment);
+    if ( useAlignment )
+      text.setHorizontalAlignment(_textAlignment);
     return text;
   }
 

@@ -87,7 +87,7 @@ public class ProductViewerLayoutIdega extends AbstractProductViewerLayout {
 
     table.add(header, 1, row);
     if ( productViewer._showPrice && _price != null ) {
-      table.add(productViewer.getText(" - "),1,row);
+      table.add(productViewer.getText(" - ",false),1,row);
       table.add(_price,1,row++);
     }
     else {
