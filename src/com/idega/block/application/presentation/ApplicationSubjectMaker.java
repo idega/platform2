@@ -166,7 +166,9 @@ public class ApplicationSubjectMaker extends Block{
     if(attributeHandlerClass!=null){
 		try {
 			ICPropertyHandler handler =(ICPropertyHandler) attributeHandlerClass.newInstance();
-			String attribute = subject!=null?subject.getExtraAttribute():"";
+			String attribute = "";
+			if(subject!=null)
+				attribute = subject.getExtraAttribute()!=null?subject.getExtraAttribute():"";
 			PresentationObject handlerObject = handler.getHandlerObject("app_subj_extra",attribute,iwc);
 			dTable.add(handlerObject,3,2);
 		} catch (InstantiationException e) {
