@@ -176,9 +176,9 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 				productTable.setAlignment(2, pRow, Table.HORIZONTAL_ALIGN_RIGHT);
 			}
 
-			if (metadata.containsKey(METADATA + "awards")) {
+			if (metadata.containsKey(METADATA + "awards_" + iwc.getCurrentLocale().toString())) {
 				productTable.add(new Break(2), 1, pRow);
-				productTable.add((String) metadata.get(METADATA + "awards"), 1, pRow);
+				productTable.add((String) metadata.get(METADATA + "awards_" + iwc.getCurrentLocale().toString()), 1, pRow);
 			}
 			pRow++;
 
