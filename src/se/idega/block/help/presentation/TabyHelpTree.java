@@ -1,5 +1,5 @@
 /*
- * $Id: TabyHelpTree.java,v 1.3 2004/01/10 12:59:23 malin Exp $
+ * $Id: TabyHelpTree.java,v 1.4 2004/01/10 13:08:05 malin Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -144,13 +144,18 @@ public class TabyHelpTree extends Block {
 			schoolChoice = new HelpNode(16,"se.idega.idegaweb.commune","School selection");
 			other = new HelpNode(17,"se.idega.idegaweb.commune","Other");
 			*/
-			/*citizen.addChild(child1);
-			citizen.addChild(child2);
-			citizen.addChild(child3);
-			citizen.addChild(child4);
-			citizen.addChild(child14);
-			citizen.addChild(child15);
-			*/
+			top.addChild(child1);
+			top.addChild(child2);
+			top.addChild(child3);
+			top.addChild(child4);
+			top.addChild(child5);			
+			top.addChild(child6);
+			top.addChild(child7);
+			top.addChild(child8);
+			top.addChild(child9);
+			top.addChild(child10);
+			top.addChild(child11);
+			
 			child3.addChild(child12);
 			child3.addChild(child13);
 
