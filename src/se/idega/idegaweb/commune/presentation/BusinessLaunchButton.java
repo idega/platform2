@@ -1,5 +1,5 @@
 /*
- * $Id: BusinessLaunchButton.java,v 1.4 2003/06/02 23:11:55 palli Exp $
+ * $Id: BusinessLaunchButton.java,v 1.5 2003/11/05 14:14:32 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,6 +9,8 @@
  */
 package se.idega.idegaweb.commune.presentation;
 
+
+import java.rmi.RemoteException;
 
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
 
@@ -27,7 +29,7 @@ public class BusinessLaunchButton extends ChildCareBlock {
 	protected static final String SUBMIT = "detonate";
 	protected static final String SUBMIT2 = "checks";
 	
-	protected void control(IWContext iwc) {
+	protected void control(IWContext iwc) throws RemoteException {
 		if (iwc.isParameterSet(SUBMIT)) {
 			getBusiness().convertOldQueue();
 		}
@@ -48,7 +50,7 @@ public class BusinessLaunchButton extends ChildCareBlock {
 		add(form);	
 	}
 
-	public void init(IWContext iwc) {
+	public void init(IWContext iwc) throws RemoteException {
 		control(iwc);
 	}
 }
