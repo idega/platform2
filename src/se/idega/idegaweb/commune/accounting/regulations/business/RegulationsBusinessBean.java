@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.28 2003/09/22 01:30:33 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.29 2003/09/25 10:22:42 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -72,7 +72,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public final static String KEY_ERROR_REGULATION_CREATE = KP + "cannot_create";
 	public final static String KEY_GENERAL_ERROR  = KP + "general_error";
 	public final static String DEFAULT_GENERAL_ERROR = "Systemfel";
-
+	public final static String KEY_ERROR_PARAM_MAIN_OPERATION = "main_op_error";
 
 
 	public String getBundleIdentifier() {
@@ -129,6 +129,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		Integer specialCalculationID = null;  
 		Integer vatRuleID = null;
 
+		if (operation.compareTo("0") == 0) {
+			throw new RegulationException(KEY_ERROR_PARAM_MAIN_OPERATION, "Huvudverksamhet måste väljas");			
+		}
 		if (periodeFrom.after(periodeTo)) {
 			throw new RegulationException(KEY_ERROR_PARAM_DATE_ORDER, "Från datum kan ej vara senare än tom datum!");			
 		}
@@ -695,7 +698,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public Collection findAllHourIntervals() {
 		ArrayList arr = new ArrayList();
 
-		arr.add(new Object[]{new Integer(1), "<10"});
+		arr.add(new Object[]{new Integer(1), "<=10"});
 		arr.add(new Object[]{new Integer(2), "11-25"});
 		arr.add(new Object[]{new Integer(3), "0-25"});
 		arr.add(new Object[]{new Integer(4), ">25"});
