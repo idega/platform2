@@ -138,11 +138,11 @@ public class HotelBMPBean extends GenericEntity implements Hotel {
   /**
    * Used only for the wait period, will be removed later
    */
-	public Collection ejbHomeFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId, Object[] supplierId) throws FinderException {
-		return ejbHomeFind(fromStamp, toStamp, roomTypeId, new Object[]{}, postalCodeId, supplierId, -1, -1);
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] postalCodeId, Object[] supplierId) throws FinderException {
+		return ejbFind(fromStamp, toStamp, roomTypeId, new Object[]{}, postalCodeId, supplierId, -1, -1);
 	}  
   
-	public Collection ejbHomeFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] hotelTypeId, Object[] postalCodeId, Object[] supplierId, float minRating, float maxRating) throws FinderException {
+	public Collection ejbFind(IWTimestamp fromStamp, IWTimestamp toStamp, Object[] roomTypeId, Object[] hotelTypeId, Object[] postalCodeId, Object[] supplierId, float minRating, float maxRating) throws FinderException {
 		
 		boolean postalCode = (postalCodeId != null && postalCodeId.length > 0); 
 		boolean timeframe = (fromStamp != null && toStamp != null);
