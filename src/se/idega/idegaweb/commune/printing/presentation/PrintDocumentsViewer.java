@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
-import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
+//import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
@@ -16,7 +16,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 import se.idega.idegaweb.commune.printing.data.PrintDocuments;
 
-import com.idega.block.process.data.CaseCode;
+//import com.idega.block.process.data.CaseCode;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.location.data.Address;
@@ -111,6 +111,7 @@ public class PrintDocumentsViewer extends CommuneBlock {
 	private String statusPrinted, statusUnprinted, statusDeleted;
 
 	private Table mainTable = null;
+	private java.util.List hiddenNonUserCaseCodes =null;
 
 	public PrintDocumentsViewer() {
 	}
@@ -928,7 +929,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		}
 		while (iter.hasNext() && count <= ccp) {
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
-			if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+			//if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+			if (hideMessage(iwc, msg)) {
 				continue;
 			}
 			printedLetterDocs.add(String.valueOf(count));
@@ -1102,7 +1104,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		Address addr;
 		while (iter.hasNext() && count <= ccu) {
 			PrintedLetterMessage msg = (PrintedLetterMessage) iter.next();
-			if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+			//if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+			if (hideMessage(iwc, msg)) {
 				continue;
 			}
 			letterList.add(String.valueOf(count));
@@ -1196,7 +1199,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		//String sAddr = "";
 		while (iter.hasNext()) {
 			msg = (PrintMessage) iter.next();
-			if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+			//if (!displayMessageToCommuneAdministrator(iwc, msg)) {
+			if (hideMessage(iwc, msg)) {
 				continue;
 			}
 			owner = msg.getOwner();
@@ -1258,12 +1262,11 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		this.UserIDPreferenceParameterName = prm;
 	}
 	
+	/*
 	private boolean displayMessageToCommuneAdministrator(IWContext iwc, Message message) {
 		boolean canDisplay = true;
 		try {
-			if (message.getParentCase() == null) {
-				return true;
-			}
+			
 			CaseCode caseCode = message.getParentCase().getCaseCode();
 			CommuneCaseBusiness ccBus = (CommuneCaseBusiness) IBOLookup.getServiceInstance(iwc, CommuneCaseBusiness.class);
 			CaseCode[] codes = ccBus.getProviderCaseCodes();
@@ -1275,6 +1278,41 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		}
 		return canDisplay;
 	}
+	*/
+	
+	private boolean hideMessage(IWContext iwc, Message message){
+		// dont hide current user cases
+		if(iwc.getCurrentUser().getPrimaryKey().equals(message.getOwner().getPrimaryKey()))
+			return false;
+		if(hiddenNonUserCaseCodes!=null){
+			// dont hide if there is no parent case
+			if (message.getParentCase() == null) {
+				return false;
+			}
+			
+			String caseCode = message.getParentCase().getCaseCode().toString();
+			// hide if we find hidefilter match
+			for (Iterator iter = hiddenNonUserCaseCodes.iterator(); iter.hasNext();) {
+				String hidecode = (String) iter.next();
+				if(hidecode.equalsIgnoreCase(caseCode)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	// http://localhost:8080/nacka/index.jsp?prv_let_tp=PASS&prv_pfrm=2003-02-14+08%3A41%3A08&prv_ufrm=2003-02-14+08%3A41%3A08&prv_pto=2003-02-21+08%3A41%3A08&prv_uto=2003-02-21+08%3A41%3A08&iw_language=sv_SE&ib_page=299&idega_session_id=8BEE24A6C87C5C9514E48C3D31503DCA
+	/**
+	 * Adds a hide filter to this viewer, the viewer then hides the letter
+	 * if its parent case code equals the filter, unless the current user is the letter owner
+	 * @param filter
+	 */
+	public void setHideCaseCodeFilter(String filter){
+		if(hiddenNonUserCaseCodes==null){
+			hiddenNonUserCaseCodes =new java.util.ArrayList();
+		}
+		hiddenNonUserCaseCodes.add(filter);
+	}
+	
 }
