@@ -1,70 +1,91 @@
+/*
+ * $Id: MemberHomeImpl.java,v 1.7 2005/02/07 11:20:28 laddi Exp $
+ * Created on 7.2.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.golf.entity;
 
 
-public class MemberHomeImpl extends com.idega.data.IDOFactory implements MemberHome
-{
- protected Class getEntityInterfaceClass(){
-  return Member.class;
- }
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOFactory;
+import com.idega.user.data.User;
 
 
- public Member create() throws javax.ejb.CreateException{
-  return (Member) super.createIDO();
- }
+/**
+ * Last modified: $Date: 2005/02/07 11:20:28 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.7 $
+ */
+public class MemberHomeImpl extends IDOFactory implements MemberHome {
 
-
- public Member createLegacy(){
-	try{
-		return create();
-	}
-	catch(javax.ejb.CreateException ce){
-		throw new RuntimeException("CreateException:"+ce.getMessage());
-	}
-
- }
-
-
-public java.util.Collection findAll()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((MemberBMPBean)entity).ejbFindAll();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
-
-public Member findBySSN(java.lang.String p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((MemberBMPBean)entity).ejbFindBySSN(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
-public Member findMemberByIWMemberSystemUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	Object pk = ((MemberBMPBean)entity).ejbFindMemberByIWMemberSystemUser(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.findByPrimaryKey(pk);
-}
-
- public Member findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Member) super.findByPrimaryKeyIDO(pk);
- }
-
-
- public Member findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Member) super.findByPrimaryKeyIDO(id);
- }
-
-
- public Member findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
-	try{
-		return findByPrimaryKey(id);
-	}
-	catch(javax.ejb.FinderException fe){
-		throw new java.sql.SQLException(fe.getMessage());
+	protected Class getEntityInterfaceClass() {
+		return Member.class;
 	}
 
- }
+	public Member create() throws javax.ejb.CreateException {
+		return (Member) super.createIDO();
+	}
 
+	public Member findByPrimaryKey(Object pk) throws javax.ejb.FinderException {
+		return (Member) super.findByPrimaryKeyIDO(pk);
+	}
 
+	public Member createLegacy() {
+		try {
+			return create();
+		}
+		catch (javax.ejb.CreateException ce) {
+			throw new RuntimeException("CreateException:" + ce.getMessage());
+		}
+	}
+
+	public Member findByPrimaryKey(int id) throws javax.ejb.FinderException {
+		return (Member) super.findByPrimaryKeyIDO(id);
+	}
+
+	public Member findByPrimaryKeyLegacy(int id) throws java.sql.SQLException {
+		try {
+			return findByPrimaryKey(id);
+		}
+		catch (javax.ejb.FinderException fe) {
+			throw new java.sql.SQLException("FinderException:" + fe.getMessage());
+		}
+	}
+
+	public Member findMemberByIWMemberSystemUser(User user) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((MemberBMPBean) entity).ejbFindMemberByIWMemberSystemUser(user);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public Member findBySSN(String ssn) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		Object pk = ((MemberBMPBean) entity).ejbFindBySSN(ssn);
+		this.idoCheckInPooledEntity(entity);
+		return this.findByPrimaryKey(pk);
+	}
+
+	public Collection findAll() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((MemberBMPBean) entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+
+	public Collection findAllByUnion(Union union, String gender) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((MemberBMPBean) entity).ejbFindAllByUnion(union, gender);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
 }

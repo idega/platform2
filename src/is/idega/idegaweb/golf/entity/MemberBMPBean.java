@@ -5,14 +5,21 @@ package is.idega.idegaweb.golf.entity;
 //import java.util.*;
 import is.idega.idegaweb.golf.access.LoginTable;
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLookup;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 import com.idega.user.data.User;
 
 public class MemberBMPBean extends GenericEntity implements Member {
@@ -607,5 +614,28 @@ public class MemberBMPBean extends GenericEntity implements Member {
 	
 	public Collection ejbFindAll() throws FinderException {
 		return idoFindAllIDsBySQL();
+	}
+	
+	public Collection ejbFindAllByUnion(Union union, String gender) throws FinderException {
+		Table table = new Table(this);
+		Table unionMemberInfo = new Table(UnionMemberInfo.class);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addJoin(table, getIDColumnName(), unionMemberInfo, "member_id");
+		query.addCriteria(new MatchCriteria(unionMemberInfo, "membership_type", MatchCriteria.EQUALS, "main"));
+		query.addCriteria(new MatchCriteria(unionMemberInfo, "member_status", MatchCriteria.EQUALS, "A"));
+		if (union != null) {
+			query.addCriteria(new MatchCriteria(unionMemberInfo, "union_id", MatchCriteria.EQUALS, union));
+		}
+		if (gender != null && !gender.equalsIgnoreCase("b")) {
+			query.addCriteria(new MatchCriteria(table, "gender", MatchCriteria.EQUALS, gender));
+		}
+		query.addOrder(unionMemberInfo, "union_id", true);
+		query.addOrder(table, "first_name", true);
+		query.addOrder(table, "middle_name", true);
+		query.addOrder(table, "last_name", true);
+		
+		return idoFindPKsByQuery(query);
 	}
 }

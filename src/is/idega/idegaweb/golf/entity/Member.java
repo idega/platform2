@@ -1,56 +1,281 @@
+/*
+ * $Id: Member.java,v 1.12 2005/02/07 11:20:28 laddi Exp $
+ * Created on 7.2.2005
+ *
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package is.idega.idegaweb.golf.entity;
 
+import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 
-public interface Member extends com.idega.data.IDOLegacyEntity
-{
- public is.idega.idegaweb.golf.entity.Address[] getAddress()throws java.sql.SQLException;
- public int getAge();
- public is.idega.idegaweb.golf.entity.Card[] getCards()throws java.sql.SQLException;
- public java.sql.Date getDateOfBirth();
- public java.lang.String getEmail();
- public is.idega.idegaweb.golf.entity.Member[] getFamilyMembers(int p0)throws java.sql.SQLException;
- public java.lang.String getFirstName();
- public java.lang.String getGender();
- public is.idega.idegaweb.golf.entity.Group[] getGroups()throws java.sql.SQLException;
- public float getHandicap()throws java.sql.SQLException;
- public com.idega.user.data.User getICUser();
- public is.idega.idegaweb.golf.block.image.data.ImageEntity getImage();
- public int getImageId();
- public java.lang.String getJob();
- public java.lang.String getLastName();
- public is.idega.idegaweb.golf.entity.Union getMainUnion()throws javax.ejb.FinderException,java.sql.SQLException;
- public int getMainUnionID()throws java.sql.SQLException;
- public is.idega.idegaweb.golf.entity.MemberInfo getMemberInfo();
- public java.lang.String getMiddleName();
- public java.lang.String getName();
- public is.idega.idegaweb.golf.entity.Phone[] getPhone()throws java.sql.SQLException;
- public java.lang.String getSSN();
- public is.idega.idegaweb.golf.entity.Scorecard[] getScorecards()throws java.sql.SQLException;
- public java.lang.String getSocialSecurityNumber();
- public is.idega.idegaweb.golf.entity.UnionMemberInfo getUnionMemberInfo(java.lang.String p0)throws java.sql.SQLException;
- public is.idega.idegaweb.golf.entity.UnionMemberInfo getUnionMemberInfo(int p0)throws java.sql.SQLException;
- public is.idega.idegaweb.golf.entity.UnionMemberInfo getUnionMemberInfo(java.lang.String p0,java.lang.String p1)throws java.sql.SQLException;
- public is.idega.idegaweb.golf.entity.Union[] getUnions()throws java.sql.SQLException;
- public java.lang.String getWorkPlace();
- public boolean isMemberIn(is.idega.idegaweb.golf.entity.Union p0)throws java.sql.SQLException;
- public boolean isMemberInUnion(is.idega.idegaweb.golf.entity.Union p0)throws java.sql.SQLException;
- public boolean isMemberInUnion()throws java.sql.SQLException;
- public void setAddress(is.idega.idegaweb.golf.entity.Address p0);
- public void setDateOfBirth(java.sql.Date p0);
- public void setEmail(java.lang.String p0);
- public void setFirstName(java.lang.String p0);
- public void setFullName();
- public void setGender(java.lang.String p0);
- public void setICUser(com.idega.user.data.User p0);
- public void setImageId(int p0);
- public void setImageId(java.lang.Integer p0);
- public void setJob(java.lang.String p0);
- public void setLastName(java.lang.String p0);
- public void setMainUnion(int p0)throws java.sql.SQLException;
- public void setMainUnion(is.idega.idegaweb.golf.entity.Union p0)throws java.sql.SQLException;
- public void setMiddleName(java.lang.String p0);
- public void setSocialSecurityNumber(java.lang.String p0);
- public void setWorkPlace(java.lang.String p0);
- public void setimage_id(java.lang.Integer p0);
- public void setimage_id(int p0);
+import java.sql.Date;
+import java.sql.SQLException;
+
+import javax.ejb.FinderException;
+
+import com.idega.data.IDOLegacyEntity;
+import com.idega.user.data.User;
+
+
+/**
+ * Last modified: $Date: 2005/02/07 11:20:28 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.12 $
+ */
+public interface Member extends IDOLegacyEntity {
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getEmail
+	 */
+	public String getEmail();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setEmail
+	 */
+	public void setEmail(String email);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getName
+	 */
+	public String getName();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getFirstName
+	 */
+	public String getFirstName();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setFirstName
+	 */
+	public void setFirstName(String first_name);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getMiddleName
+	 */
+	public String getMiddleName();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setMiddleName
+	 */
+	public void setMiddleName(String middle_name);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getLastName
+	 */
+	public String getLastName();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setLastName
+	 */
+	public void setLastName(String last_name);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setFullName
+	 */
+	public void setFullName();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getDateOfBirth
+	 */
+	public Date getDateOfBirth();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setDateOfBirth
+	 */
+	public void setDateOfBirth(Date dateOfBirth);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getGender
+	 */
+	public String getGender();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setGender
+	 */
+	public void setGender(String gender);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getSocialSecurityNumber
+	 */
+	public String getSocialSecurityNumber();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getSSN
+	 */
+	public String getSSN();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setSocialSecurityNumber
+	 */
+	public void setSocialSecurityNumber(String social_security_number);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getImageId
+	 */
+	public int getImageId();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setimage_id
+	 */
+	public void setimage_id(int image_id);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setimage_id
+	 */
+	public void setimage_id(Integer image_id);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setImageId
+	 */
+	public void setImageId(int image_id);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setImageId
+	 */
+	public void setImageId(Integer image_id);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getImage
+	 */
+	public ImageEntity getImage();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getJob
+	 */
+	public String getJob();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setJob
+	 */
+	public void setJob(String job);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getWorkPlace
+	 */
+	public String getWorkPlace();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setWorkPlace
+	 */
+	public void setWorkPlace(String workPlace);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getMemberInfo
+	 */
+	public MemberInfo getMemberInfo();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getUnionMemberInfo
+	 */
+	public UnionMemberInfo getUnionMemberInfo(String union_id) throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getUnionMemberInfo
+	 */
+	public UnionMemberInfo getUnionMemberInfo(String union_id, String member_id) throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getUnionMemberInfo
+	 */
+	public UnionMemberInfo getUnionMemberInfo(int unionId) throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getMainUnionID
+	 */
+	public int getMainUnionID() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setMainUnion
+	 */
+	public void setMainUnion(Union union) throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setMainUnion
+	 */
+	public void setMainUnion(int iUnionId) throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getMainUnion
+	 */
+	public Union getMainUnion() throws FinderException, SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setAddress
+	 */
+	public void setAddress(Address type);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getAddress
+	 */
+	public Address[] getAddress() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getCards
+	 */
+	public Card[] getCards() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getScorecards
+	 */
+	public Scorecard[] getScorecards() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getHandicap
+	 */
+	public float getHandicap() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getUnions
+	 */
+	public Union[] getUnions() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#isMemberIn
+	 */
+	public boolean isMemberIn(Union union) throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#isMemberInUnion
+	 */
+	public boolean isMemberInUnion(Union union) throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#isMemberInUnion
+	 */
+	public boolean isMemberInUnion() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getPhone
+	 */
+	public Phone[] getPhone() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getFamilyMembers
+	 */
+	public Member[] getFamilyMembers(int FamilyId) throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getGroups
+	 */
+	public Group[] getGroups() throws SQLException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getAge
+	 */
+	public int getAge();
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#setICUser
+	 */
+	public void setICUser(com.idega.user.data.User user);
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getICUser
+	 */
+	public User getICUser();
+
 }

@@ -5,6 +5,7 @@ package is.idega.idegaweb.golf.entity;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
@@ -250,5 +251,22 @@ public class ScorecardBMPBean extends GenericEntity implements Scorecard {
 		query.addCriteria(new MatchCriteria(column, true));
 		query.addOrder(new Order(column, false));
 		return (Integer) this.idoFindOnePKBySQL(query.toString());
+	}
+	
+	public Collection ejbFindAllByGolfer(int memberID, Date dateFrom, Date dateTo) throws FinderException {
+		Table table = new Table(this);
+
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(table, getIDColumnName());
+		query.addCriteria(new MatchCriteria(table, COLUMN_MEMBER, MatchCriteria.EQUALS, memberID));
+		if (dateFrom != null) {
+			query.addCriteria(new MatchCriteria(table, COLUMN_SCORECARD_DATE, MatchCriteria.GREATEREQUAL, dateFrom));
+		}
+		if (dateTo != null) {
+			query.addCriteria(new MatchCriteria(table, COLUMN_SCORECARD_DATE, MatchCriteria.LESSEQUAL, dateTo));
+		}
+		query.addCriteria(new MatchCriteria(table.getColumn(COLUMN_SCORECARD_DATE), true));
+		query.addOrder(table, COLUMN_SCORECARD_DATE, false);
+		return idoFindPKsBySQL(query.toString());
 	}
 }
