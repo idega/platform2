@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersTester.java,v 1.7 2003/09/09 14:09:44 laddi Exp $
+ * $Id: PostingParametersTester.java,v 1.8 2003/11/17 12:17:56 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -26,7 +26,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * PostingParametersTest is an idegaWeb block that is used to test the Posting parameters retrieval 
  *  
  * <p>
- * $Id: PostingParametersTester.java,v 1.7 2003/09/09 14:09:44 laddi Exp $
+ * $Id: PostingParametersTester.java,v 1.8 2003/11/17 12:17:56 roar Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version $Version$
@@ -142,7 +142,7 @@ public class PostingParametersTester extends AccountingBlock {
 		try {
 			pBiz = getPostingBusiness(iwc);
 
-			pp = pBiz.getPostingParameter(parseDate(iwc.getParameter(PARAM_FIELD_DATE)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_ACTIVITY)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_REGSPEC)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_COMPANY_TYPE)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_COM_BELONGING)));
+			pp = pBiz.getPostingParameter(parseDate(iwc.getParameter(PARAM_FIELD_DATE)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_ACTIVITY)), Integer.parseInt(iwc.getParameter(PARAM_FIELD_REGSPEC)), iwc.getParameter(PARAM_FIELD_COMPANY_TYPE), Integer.parseInt(iwc.getParameter(PARAM_FIELD_COM_BELONGING)));
 		}
 		catch (PostingParametersException e) {
 			_errorMessage = localize(e.getTextKey(), e.getDefaultText());
