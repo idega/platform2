@@ -173,7 +173,7 @@ public School findBySchoolName(java.lang.String p0)throws javax.ejb.FinderExcept
  }
 
  public Collection findAllByPrimaryKeys(Collection p0) throws javax.ejb.FinderException{
-  return getIDOEntityListForPrimaryKeys (p0);
+  return getEntityCollectionForPrimaryKeys(p0);
  }
 
 
