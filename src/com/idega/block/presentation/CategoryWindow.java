@@ -1,4 +1,5 @@
 package com.idega.block.presentation;
+import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICObjectInstanceHome;
 import com.idega.data.IDOLookup;
 import com.idega.core.data.ICObjectInstance;
@@ -52,7 +53,7 @@ public class CategoryWindow extends IWAdminWindow {
 	private static final String actSave = "iccat_save";
 	private static final String actClose = "iccat_close";
 	private static final String actForm = "iccat_form";
-	private Image M,L,T;
+	private Image tree_image_M,tree_image_L,tree_image_T;
 	protected IWResourceBundle iwrb;
 	protected IWBundle iwb, core;
 	private int iObjInsId = -1;
@@ -190,10 +191,6 @@ public class CategoryWindow extends IWAdminWindow {
 	private void getCategoryFields(IWContext iwc, Category eCategory) {
 		int parent = iwc.isParameterSet(prmParentID)?Integer.parseInt(iwc.getParameter(prmParentID)):-1;
 		
-		String sCategory = iwrb.getLocalizedString("category", "Category");
-		String sName = iwrb.getLocalizedString("name", "Name");
-		String sDesc = iwrb.getLocalizedString("description", "Description");
-		//String sFields = iwrb.getLocalizedString("fields","Fields");
 		Link newLink = new Link(core.getImage("/shared/create.gif"));
 		newLink.addParameter(prmCategoryId, -1);
 		newLink.addParameter(prmObjInstId, iObjectInstanceId);
@@ -218,13 +215,14 @@ public class CategoryWindow extends IWAdminWindow {
 		T.setCellspacing(0);
 		row = 1;
 		int col = 1;
+		T.add(formatText(iwrb.getLocalizedString("use", "Use")), 1, row);
 		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 2, row);
 		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 3, row);
-		T.add(formatText(iwrb.getLocalizedString("use", "Use")), 1, row);
 		if (allowOrdering) {
-			T.add(formatText(iwrb.getLocalizedString("order", "Order")), 4, row);
+			T.add(formatText("  "+iwrb.getLocalizedString("order", "Order")), 4, row);
 		}
-		row++;
+		T.add(formatText("  "+iwrb.getLocalizedString("add_child", "Add child")+"  "),5,row);
+		T.add(formatText("  "+iwrb.getLocalizedString("delete", "Delete")+"  "),6,row);
 		row++;
 		TextInput name = new TextInput("name");
 		TextInput info = new TextInput("info");
@@ -237,6 +235,17 @@ public class CategoryWindow extends IWAdminWindow {
 		if(L!=null)
 			fillTable(L.iterator(),T,chosenId,coll,name,info,order,0);
 		if (!formAdded) {
+			T.add(Text.getBreak(),1,row++);
+			T.mergeCells(2,row,6,row);
+			if(parent>0){
+				ICCategory cat = CategoryFinder.getInstance().getCategory(parent);
+				T.add(formatText(iwrb.getLocalizedString("create_child_category_under","Create child under")+" "+cat.getName()),2,row);;
+				
+			}
+			else{
+				T.add(formatText(iwrb.getLocalizedString("create_root_category","Create new root category")),2,row);
+			}
+			row++;
 			T.add(name, 2, row);
 			T.add(info, 3, row);
 		}
@@ -245,7 +254,8 @@ public class CategoryWindow extends IWAdminWindow {
 			addParametersToLink(li);
 			T.add(li, 2, row);
 		}
-		addLeft(sCategory, T, true, false);
+		addLeft(iwrb.getLocalizedString("categories", "Categories"), T, true, false);
+		addBreak();
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), actSave);
 		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close", "Close"), actClose);
 		addSubmitButton(save);
@@ -261,10 +271,14 @@ public class CategoryWindow extends IWAdminWindow {
 			addHiddenInput(new HiddenInput(prmMulti, "true"));
 		}
 		this.maintainClearCacheKeyInForm(iwc);
-		/*
-		if (this.sCacheKey != null) {
-		  addHiddenInput( new HiddenInput(this.prmCacheClearKey, this.sCacheKey));
-		}*/
+		
+		T.setColumnAlignment(4,T.HORIZONTAL_ALIGN_CENTER);
+		T.setAlignment(4,1,T.HORIZONTAL_ALIGN_LEFT);
+		T.setColumnAlignment(5,T.HORIZONTAL_ALIGN_CENTER);
+		T.setAlignment(5,1,T.HORIZONTAL_ALIGN_LEFT);
+		T.setColumnAlignment(6,T.HORIZONTAL_ALIGN_CENTER);
+		T.setAlignment(6,1,T.HORIZONTAL_ALIGN_LEFT);
+		
 	}
 	
 	private void fillTable(Iterator iter,Table T,int chosenId,Collection coll,TextInput name,TextInput info,TextInput order,int level){
@@ -290,9 +304,12 @@ public class CategoryWindow extends IWAdminWindow {
 				}
 				if(level > 0){
 					for (int i = 0; i < level; i++) {
-						T.add(L,2,row);
+						T.add(tree_image_T,2,row);
 					}
-					T.add(M,2,row);
+					if(iter.hasNext())
+					T.add(tree_image_M,2,row);
+					else
+					T.add(tree_image_L,2,row);
 				}
 				if (id == chosenId ) {
 					name.setContent(cat.getName());
@@ -323,14 +340,11 @@ public class CategoryWindow extends IWAdminWindow {
 					addParametersToLink(deleteLink);
 					addParametersToLink(Li);
 					if (allowOrdering) {
-						T.add(formatText(Integer.toString(iOrder)), 4, row);
-						T.add(childLink,5,row);
-						T.add(deleteLink, 6, row);
-					}
-					else {
-						T.add(childLink,4,row);
-						T.add(deleteLink, 5, row);
-					}
+						T.add(formatText(Integer.toString(iOrder)), 4, row);					
+					}				
+					T.add(childLink,5,row);
+					T.add(deleteLink, 6, row);
+					
 				}
 				if (multi) {
 					box = new CheckBox("id_box", String.valueOf(cat.getID()));
@@ -414,9 +428,9 @@ public class CategoryWindow extends IWAdminWindow {
 		iwrb = getResourceBundle(iwc);
 		core = iwc.getApplication().getCoreBundle();
 		String title = iwrb.getLocalizedString("ic_category_editor", "Category Editor");
-		M = core.getImage("/treeviewer/ui/win/treeviewer_M_line.gif");
-		L = core.getImage("/treeviewer/ui/win/treeviewer_R_line.gif");
-		T = core.getImage("treeviewer/ui/win/treeviewer_trancparent.gif");
+		tree_image_M = core.getImage("/treeviewer/ui/win/treeviewer_M_line.gif");
+		tree_image_L = core.getImage("/treeviewer/ui/win/treeviewer_L_line.gif");
+		tree_image_T = core.getImage("treeviewer/ui/win/treeviewer_trancparent.gif");
 		setTitle(title);
 		addTitle(title);
 		control(iwc);
