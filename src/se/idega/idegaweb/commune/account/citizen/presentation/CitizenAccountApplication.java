@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.16 2002/11/07 14:50:09 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.17 2002/11/07 16:02:44 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,9 +32,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_SUBMIT_SIMPLE_FORM = 1;
 	private final static int ACTION_SUBMIT_UNKNOWN_CITIZEN_FORM = 2;
 
-	private final static String BIRTH_DAY_KEY = "caa_birth_day";
-	private final static String BIRTH_MONTH_KEY = "caa_birth_month";
-	private final static String BIRTH_YEAR_KEY = "caa_birth_year";
 	private final static String EMAIL_KEY = "caa_email";
 	private final static String FIRST_NAME_KEY = "caa_first_name";
 	private final static String GENDER_KEY = "caa_gender";
@@ -117,23 +114,23 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		Table table = createTable ();
         addSimpleInputs (table, iwc);
-        int row = 9;
-        addHeader (table, row++, false, FIRST_NAME_KEY, FIRST_NAME_DEFAULT);
-        addSingleInput (table, row++, iwc, FIRST_NAME_KEY, 40);
-        addHeader (table, row++, false, LAST_NAME_KEY, LAST_NAME_DEFAULT);
-        addSingleInput (table, row++, iwc, LAST_NAME_KEY, 40);
-        addHeader (table, row++, false, STREET_KEY, STREET_DEFAULT);
-        addSingleInput (table, row++, iwc, STREET_KEY, 40);
-        addHeader (table, row++, false, ZIP_CODE_KEY, ZIP_CODE_DEFAULT);
-        addSingleInput (table, row++, iwc, ZIP_CODE_KEY, 40);
-        addHeader (table, row++, false, CITY_KEY, CITY_DEFAULT);
-        addSingleInput (table, row++, iwc, CITY_KEY, 40);
+        int row = 5;
+        addHeader (table, 1, row, false, FIRST_NAME_KEY, FIRST_NAME_DEFAULT);
+        addHeader (table, 2, row++, false, LAST_NAME_KEY, LAST_NAME_DEFAULT);
+        addSingleInput (table, 1, row, iwc, FIRST_NAME_KEY, 40);
+        addSingleInput (table, 2, row++, iwc, LAST_NAME_KEY, 40);
+        addHeader (table, 1, row++, false, STREET_KEY, STREET_DEFAULT);
+        addSingleInput (table, 1, row++, iwc, STREET_KEY, 40);
+        addHeader (table, 1, row, false, ZIP_CODE_KEY, ZIP_CODE_DEFAULT);
+        addHeader (table, 2, row++, false, CITY_KEY, CITY_DEFAULT);
+        addSingleInput (table, 1, row, iwc, ZIP_CODE_KEY, 40);
+        addSingleInput (table, 2, row++, iwc, CITY_KEY, 40);
         addGenderDropdownInput (table, row++, iwc);
         row++;
         addCustodianInput (table, row++, iwc, 1);
-        row += 4;
+        row += 2;
         addCustodianInput (table, row++, iwc, 2);
-        row += 4;
+        row += 2;
         addSubmitButton (table, row, iwc, UNKNOWN_CITIZEN_FORM_SUBMIT_KEY,
                          UNKNOWN_CITIZEN_FORM_SUBMIT_DEAFULT );
 
@@ -268,7 +265,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		_errorMsg = null;
 
-		if (ssn == null || ssn.equals("")) {
+		if (ssn == null) {
 			_isSsnError = true;
 			_isError = true;
 			addErrorString (localize (ERROR_SSN_KEY, ERROR_SSN_DEFAULT));
@@ -305,7 +302,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             }
             final Calendar birth = Calendar.getInstance ();
             birth.set (new Integer (ssn.substring (0, 4)).intValue (),
-                       new Integer (ssn.substring (4, 6)).intValue (),
+                       new Integer (ssn.substring (4, 6)).intValue () - 1,
                        new Integer (ssn.substring (6, 8)).intValue ());
 			isInserted = business.insertApplication
                     (name, genderId, ssn, birth.getTime (), email,
@@ -333,6 +330,18 @@ public class CitizenAccountApplication extends CommuneBlock {
                                   TEXT_APPLICATION_SUBMITTED_DEFAULT)));
     }
 
+    private void addSimpleInputs (final Table table, final IWContext iwc) {
+        addHeader (table, 1, 1, _isSsnError, SSN_KEY, SSN_DEFAULT);
+        addSingleInput (table, 1, 2, iwc, SSN_KEY, 12);
+        addHeader (table, 2, 1, _isEmailError, EMAIL_KEY, EMAIL_DEFAULT);
+        addSingleInput (table, 2, 2, iwc, EMAIL_KEY, 40);
+        addHeader (table, 1, 3, _isPhoneHomeError, PHONE_HOME_KEY,
+                   PHONE_HOME_DEFAULT);
+        addSingleInput (table, 1, 4, iwc, PHONE_HOME_KEY, 20);
+        addHeader (table, 2, 3, false, PHONE_WORK_KEY, PHONE_WORK_DEFAULT);
+        addSingleInput (table, 2, 4, iwc, PHONE_WORK_KEY, 20);
+    }
+
     private void addCustodianInput (final Table table, final int row,
                                     final IWContext iwc,
                                     final int custodianId) {
@@ -341,26 +350,14 @@ public class CitizenAccountApplication extends CommuneBlock {
                 (custodianKey, CUSTODIAN_DEFAULT + " " + custodianId);
         table.add (custodianHeader, 1, row);
 
-        addHeader (table, row + 1, false, SSN_KEY, SSN_DEFAULT);
+        addHeader (table, 1, row + 1, false, SSN_KEY, SSN_DEFAULT);
         final String ssnKey = getCustodianKey (SSN_KEY, custodianId);
-        addSingleInput (table, row + 2, iwc, ssnKey, 12);
-        addHeader (table, row + 3, false, CIVIL_STATUS_KEY,
+        addSingleInput (table, 1, row + 2, iwc, ssnKey, 12);
+        addHeader (table, 2, row + 1, false, CIVIL_STATUS_KEY,
                    CIVIL_STATUS_DEFAULT);
         final String civilStatusKey
                 = getCustodianKey (CIVIL_STATUS_KEY, custodianId);
-        addSingleInput (table, row + 4, iwc, civilStatusKey, 40);
-    }
-
-    private void addSimpleInputs (final Table table, final IWContext iwc) {
-        addHeader (table, 1, _isSsnError, SSN_KEY, SSN_DEFAULT);
-        addSingleInput (table, 2, iwc, SSN_KEY, 12);
-        addHeader (table, 3, _isEmailError, EMAIL_KEY, EMAIL_DEFAULT);
-        addSingleInput (table, 4, iwc, EMAIL_KEY, 40);
-        addHeader (table, 5, _isPhoneHomeError, PHONE_HOME_KEY,
-                   PHONE_HOME_DEFAULT);
-        addSingleInput (table, 6, iwc, PHONE_HOME_KEY, 20);
-        addHeader (table, 7, false, PHONE_WORK_KEY, PHONE_WORK_DEFAULT);
-        addSingleInput (table, 8, iwc, PHONE_WORK_KEY, 20);
+        addSingleInput (table, 2, row + 2, iwc, civilStatusKey, 40);
     }
 
     private Table createTable () {
@@ -369,23 +366,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.setCellpadding (4);
 		table.setColor (getBackgroundColor ());
         return table;
-    }
-
-    private void addDropdownInput
-        (final Table table, final int row, final IWContext iwc,
-         final String paramId, final int startId, final int stopId) {
-        final boolean forward = startId < stopId;
-        final DropdownMenu dropdown = new DropdownMenu (paramId);
-        int i = startId;
-        while (forward ? i <= stopId : i >= stopId) {
-            final String iAsString = new Integer (i).toString ();
-            dropdown.addMenuElementFirst (iAsString, iAsString);
-            i += (forward ? 1 : -1);
-        }
-		if (iwc.isParameterSet (paramId)) {
-		   dropdown.setSelectedElement (iwc.getParameter (paramId));
-        }
-        table.add (dropdown, 1, row);
     }
                                    
     private void addGenderDropdownInput
@@ -415,7 +395,7 @@ public class CitizenAccountApplication extends CommuneBlock {
     }
                                    
     private void addSingleInput
-        (final Table table, final int row ,final IWContext iwc,
+        (final Table table, final int col, final int row ,final IWContext iwc,
          final String paramId, final int maxLength) {
         final TextInput textInput = new TextInput (paramId);
 		textInput.setMaxlength (maxLength);
@@ -424,27 +404,27 @@ public class CitizenAccountApplication extends CommuneBlock {
 		if (param != null) {
 			textInput.setContent (param);
         }
-        table.add (textInput, 1, row);
+        table.add (textInput, col, row);
     }
     
     private void addHeader
-        (final Table table, final int row, final boolean isError,
+        (final Table table, final int col, final int row, final boolean isError,
          final String paramId, final String defaultText) {
         final String header = localize (paramId, defaultText);
         final Text text = isError ? getSmallErrorText (header)
                 : getSmallText (header);
-        table.add (text, 1, row);
+        table.add (text, col, row);
     }
 
     private void addSubmitButton (final Table table, final int row,
                                   final IWContext iwc, final String submitId,
                                   final String defaultText) {
-		table.setAlignment (1, row, "right");
+		table.setAlignment (2, row, "right");
         final String text = localize (submitId, defaultText);
 		final SubmitButton submitButton = new SubmitButton
                 (getBundle(iwc).getImageButton (text), submitId);
 		submitButton.setStyleClass (getLinkFontStyle());
-		table.add (submitButton, 1, row);
+		table.add (submitButton, 2, row);
     }
 
     private static String getSsn (final IWContext iwc) {

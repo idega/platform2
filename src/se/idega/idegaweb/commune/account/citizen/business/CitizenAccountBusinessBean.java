@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.20 2002/11/06 13:01:29 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.21 2002/11/07 16:02:44 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -317,14 +317,6 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
                 (firstName, "", lastName, applicant.getPID (), gender,
                  timestamp);
         return user;        
-        /*
-          String firstName = theCase.getApplicantName().substring(0, theCase.getApplicantName().indexOf(" "));
-          String lastName = theCase.getApplicantName().substring(theCase.getApplicantName().lastIndexOf(" ") + 1, theCase.getApplicantName().length());
-          User user = null;
-          user = getUserBusiness().createCitizen(firstName, null, lastName, null);
-          theCase.setOwner(user);
-          return user;
-        */
 	}
 	
 	public String getAcceptMessageSubject()
