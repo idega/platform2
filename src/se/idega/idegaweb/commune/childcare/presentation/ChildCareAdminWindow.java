@@ -2409,7 +2409,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\n\t\t var childYears = dateYear - childYear;");
 		buffer.append("\n\t\t if (dateMonth > 8) {");
 		buffer.append("\n\t\t\t childYears++;");
-		buffer.append("\n\t\t } else if (dateMonth == 8 && dateDay >= 14) {");
+		buffer.append("\n\t\t } else if (dateMonth == 8 && dateDay >= 15) {");
 		buffer.append("\n\t\t\t childYears++;");
 		buffer.append("\n\t\t }");
 		buffer.append("\n\t\t if (childYears >= 4) {");
