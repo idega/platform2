@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/14 12:21:16 $ by $Author: goranb $
- * @version $Revision: 1.42 $
+ * Last modified: $Date: 2003/10/14 14:07:03 $ by $Author: goranb $
+ * @version $Revision: 1.43 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -46,6 +46,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String LATEST_INVOICE_DATE = "latest_invoice_date";
 	public final static String PLACEMENT_PARAGRAPH = "placement_paragraph";
 	public final static String COMPENSATION_BY_AGREEMENT = "comp_by_agreement";
+	public static final String STUDY_PATH = "study_path";
 	private final static String PK = "school_class_member.invoice_interval.";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_TERM = PK + "month";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_MONTH = PK + "term";
@@ -66,6 +67,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		this.addAttribute(LATEST_INVOICE_DATE, "Latest invoice date", true, true, Timestamp.class);
 		this.addAttribute(PLACEMENT_PARAGRAPH, "placement paragraph", true, true, String.class, 100);
 		this.addAttribute(COMPENSATION_BY_AGREEMENT, "Compensation by agreement", true, true, Boolean.class);
+		this.addAttribute(STUDY_PATH, "study_path", true, true, Integer.class, MANY_TO_ONE, SchoolStudyPath.class);
+
 	}
 	public String getEntityName() {
 		return SCHOOLCLASSMEMBER;
@@ -165,6 +168,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	
 	public void setHasCompensationByAgreement(boolean hasCompensation) {
 		setColumn(COMPENSATION_BY_AGREEMENT,hasCompensation);
+	}
+	
+	public void setStudyPathId(int id) {
+		this.setColumn(STUDY_PATH, id);
+	}
+	
+	public int getStudyPathId() {
+		return this.getIntColumnValue(STUDY_PATH);
 	}
 
 	public Collection ejbFindBySchoolClass(SchoolClass schoolClass) throws FinderException, RemoteException {

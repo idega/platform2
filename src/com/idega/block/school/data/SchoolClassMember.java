@@ -19,7 +19,6 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
 	public final static String FIELD_COMPENSATION_BY_INVOICE = "comp_by_invoice";
 	public final static String FIELD_INVOICE_INTERVAL = "invoice_int";
 	public final static String FIELD_LATEST_INVOICE_DATE = "latest_invoice_date";
-
 	
  public int getClassMemberId();
  public boolean getHasCompensationByAgreement();
@@ -36,6 +35,7 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public int getSchoolClassId();
  public boolean getSpeciallyPlaced();
  public com.idega.user.data.User getStudent();
+ public int getStudyPathId();
  public void initializeAttributes();
  public void setClassMemberId(int p0);
  public void setHasCompensationByAgreement(boolean p0);
@@ -50,4 +50,5 @@ public interface SchoolClassMember extends com.idega.data.IDOEntity
  public void setRemovedDate(java.sql.Timestamp p0);
  public void setSchoolClassId(int p0);
  public void setSpeciallyPlaced(boolean p0);
+ public void setStudyPathId(int p0);
 }
