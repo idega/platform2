@@ -230,6 +230,13 @@ public class CategoryWindow extends IWAdminWindow {
 		T.setCellspacing(0);
 		row = 1;
 		int col = 1;
+		DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
+	    LocaleDrop.setToSubmit();
+	    LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
+	    T.add(LocaleDrop,1,row);
+	    T.mergeCells(1,row,3,row);
+	    row++;
+	    T.add(Text.getBreak(),1,row);
 		T.add(formatText(iwrb.getLocalizedString("use", "Use")), 1, row);
 		T.add(formatText(iwrb.getLocalizedString("name", "Name")), 2, row);
 		T.add(formatText(iwrb.getLocalizedString("info", "Info")), 3, row);
@@ -267,14 +274,12 @@ public class CategoryWindow extends IWAdminWindow {
 		else {
 			Link li = new Link(iwrb.getLocalizedImageButton("new", "New"));
 			addParametersToLink(li);
+			T.add(Text.getBreak(),2,row);
 			T.add(li, 2, row);
 		}
 		addLeft(iwrb.getLocalizedString("categories", "Categories"), T, true, false);
 		addBreak();
-		DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
-	    LocaleDrop.setToSubmit();
-	    LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
-	    addLeft(LocaleDrop);
+		
 		SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save", "Save"), actSave);
 		SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close", "Close"), actClose);
 		addSubmitButton(save);
