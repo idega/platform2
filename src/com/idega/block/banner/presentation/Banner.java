@@ -51,9 +51,11 @@ public class Banner extends Block implements Builderaware {
 	
 	private int _maxWidth = -1;
 	
+	public static String CACHE_KEY = "banner_cache";
+	
 
 	public Banner() {
-
+		super.setCacheable(getCacheKey(), 0);
 	}
 
 	public Banner(int bannerID) {
@@ -72,6 +74,13 @@ public class Banner extends Block implements Builderaware {
 
 	}
 
+	public String getCacheKey() {
+		return CACHE_KEY;
+	}
+	
+	protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
+    return  cacheStatePrefix+_attribute+_bannerID;
+	}
 	public void main(IWContext iwc) throws Exception {
 
 		_iwrb = getResourceBundle(iwc);

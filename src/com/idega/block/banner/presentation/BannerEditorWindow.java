@@ -117,8 +117,10 @@ public BannerEditorWindow(){
         closeEditor(iwc);
       }
       else if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_SAVE) ) {
-        if ( _adID > -2 )
+        if ( _adID > -2 ) {
           saveAd(iwc);
+        		clearCache(iwc);
+        }
       }
       else if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_NEW) ) {
         newAd(iwc);
@@ -128,18 +130,21 @@ public BannerEditorWindow(){
     if ( iwc.getParameter(BannerBusiness.PARAMETER_DELETE_FILE) != null ) {
       if ( iwc.getParameter(BannerBusiness.PARAMETER_DELETE_FILE).equalsIgnoreCase(BannerBusiness.PARAMETER_TRUE) ) {
         removeFile(iwc);
+        clearCache(iwc);
       }
     }
 
     if ( iwc.getParameter(BannerBusiness.PARAMETER_DETACH_AD) != null ) {
       if ( iwc.getParameter(BannerBusiness.PARAMETER_DETACH_AD).equalsIgnoreCase(BannerBusiness.PARAMETER_TRUE) ) {
         detachAd();
+        clearCache(iwc);
       }
     }
 
     if ( _adID != -1 ) {
       if ( iwc.getParameter(BannerBusiness.PARAMETER_DELETE) != null ) {
         deleteAd(iwc);
+        clearCache(iwc);
       }
       else {
         _update = true;
@@ -298,6 +303,10 @@ public BannerEditorWindow(){
     }
 
     _adID = BannerBusiness.saveAd(_userID,_bannerID,_adID,name,maxHits,maxImpressions,beginDate,endDate,url,fileID);
+  }
+  
+  private void clearCache(IWContext iwc) {
+    iwc.getIWMainApplication().getIWCacheManager().invalidateCache(Banner.CACHE_KEY);
   }
 
   private void newAd(IWContext iwc) {
