@@ -46,12 +46,12 @@ import com.idega.util.text.SocialSecurityNumber;
  * {@link se.idega.idegaweb.commune.account.citizen.business}and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2005/03/31 13:34:56 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/31 19:48:50 $ by $Author: laddi $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg </a>
  * @author <a href="mail:malin.anulf@agurait.com">Malin Anulf </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class SimpleCitizenAccountApplication extends CommuneBlock {
 
@@ -137,25 +137,7 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 		add(accountForm);
 	}
 
-	private Table getSimpleApplicationForm(final IWContext iwc) {
-		final Table table = createTable();
-		addSimpleInputs(table, iwc);
-		table.setHeight(table.getRows() + 1, 12);
-
-		table.add(getSubmitButton(SIMPLE_FORM_SUBMIT_KEY, SIMPLE_FORM_SUBMIT_DEFAULT), 3, table.getRows() + 1);
-		table.add(Text.getNonBrakingSpace(), 3, table.getRows() + 1);
-		table.add(getHelpButton("registration_help_key"), 3, table.getRows() + 1);
-		final Form accountForm = new Form();
-		accountForm.add(table);
-		accountForm.addParameter(SIMPLE_FORM_SUBMIT_KEY, Boolean.TRUE.toString());
-		add(accountForm);
-
-		return table;
-	}
-
 	private void submitSimpleForm(final IWContext iwc) {
-		Table table = createTable();
-		int row = 1;
 		try {
 			String ssn = iwc.getParameter(SSN_KEY);
 			if (!isOver18(ssn)) { throw new Exception(localize(YOU_MUST_BE_18_KEY, YOU_MUST_BE_18_DEFAULT)); }
@@ -177,9 +159,9 @@ public class SimpleCitizenAccountApplication extends CommuneBlock {
 				// unknown or user not in system applies
 				final Text text = new Text(localize(UNKNOWN_CITIZEN_KEY, UNKNOWN_CITIZEN_DEFAULT));
 				text.setFontColor(COLOR_RED);
-				table.add(text, 1, row++);
-				table.add(new Break(2), 1, row++);
-				table.add(getSimpleApplicationForm(iwc), 1, row++);
+				add(text);
+				add(new Break(2));
+				viewSimpleApplicationForm(iwc);
 			}
 			if (email != null && email.length() > 0) {
 				if (emailRepeat == null || !email.equals(emailRepeat)) {
