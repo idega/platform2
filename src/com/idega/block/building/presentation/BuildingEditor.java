@@ -329,7 +329,7 @@ public class BuildingEditor extends com.idega.presentation.Block{
     //System.err.println("id is "+id);
 
     String slname = sName;
-    /*
+    
     StringTokenizer st2 = new StringTokenizer(slname,",");
     StringTokenizer st = new StringTokenizer(sName,":");
     int count = st.countTokens();
@@ -348,17 +348,17 @@ public class BuildingEditor extends com.idega.presentation.Block{
 
         for (int i = iLower; i <= iUpper; i++) {
           BuildingBusiness.saveApartment(-1,String.valueOf(i),sInfo,floorid,
-            typeid,bRentable,imageid,sSerie);
+            typeid,bRentable,-1,"");
         }
       }
     }
     else if(count2 > 0  ){
       for (int i = 0; i < count2; i++) {
         BuildingBusiness.saveApartment(-1,st2.nextToken(),sInfo,floorid,
-            typeid,bRentable,imageid,sSerie);
+            typeid,bRentable,-1,"");
       }
     }
-    else*/{
+    else{
       BuildingBusiness.saveApartment(id,sName,sInfo,floorid,
             typeid,bRentable,imageid,sSerie);
     }

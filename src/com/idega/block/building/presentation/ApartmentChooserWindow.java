@@ -19,6 +19,7 @@ public class ApartmentChooserWindow extends IWAdminWindow {
 		setResizable(true);
 		setWidth(500);
 		setHeight(600);
+		setScrollbar(true);
 		keepFocus();
   }
 
