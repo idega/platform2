@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.5 2003/09/11 14:34:39 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.6 2003/09/11 21:09:46 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -44,10 +44,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.5 2003/09/11 14:34:39 kjell Exp $
+ * $Id: RegulationListEditor.java,v 1.6 2003/09/11 21:09:46 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -305,6 +305,7 @@ public class RegulationListEditor extends AccountingBlock {
 		table.add(getTextInput(PARAM_AMOUNT, r != null ? 
 				formatCash(r.getAmount()) : "", 60, 10), 2, 3);
 		table.add(getTextInput(PARAM_DISCOUNT, r != null ? ""+r.getDiscount() : "", 40, 5), 2, 4);
+		table.add(getSmallText("%"), 2, 4);
 		table.add(getTextInput(PARAM_PERIOD_FROM, (formatDate(r != null ? 
 				r.getPeriodFrom() : dd, 4)), 40, 4), 2, 5);
 		table.add(getText(formatDate(r != null ? r.getChangedDate(): rightNow, 6)), 2, 6);

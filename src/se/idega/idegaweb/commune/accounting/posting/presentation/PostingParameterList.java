@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.18 2003/09/09 14:09:43 laddi Exp $
+ * $Id: PostingParameterList.java,v 1.19 2003/09/11 21:14:05 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.18 2003/09/09 14:09:43 laddi Exp $
+ * $Id: PostingParameterList.java,v 1.19 2003/09/11 21:14:05 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -153,7 +153,7 @@ public class PostingParameterList extends AccountingBlock {
 	 */
 	private void deletePost(IWContext iwc) {
 		String id = iwc.getParameter(PARAM_DELETE_ID);
-		if(id != null) {
+		if (id != null) {
 			try {
 				getPostingBusiness(iwc).deletePostingParameter(Integer.parseInt(id));
 			} catch ( Exception e) {
@@ -217,7 +217,7 @@ public class PostingParameterList extends AccountingBlock {
 		try {
 			pBiz = getPostingBusiness(iwc);
 			Collection items = pBiz.findPostingParametersByPeriode(_currentFromDate, _currentToDate);
-			if(items != null) {
+			if (items != null) {
 				Iterator iter = items.iterator();
 				while (iter.hasNext()) {
 					PostingParameters p = (PostingParameters) iter.next();
@@ -227,25 +227,25 @@ public class PostingParameterList extends AccountingBlock {
 					link.setPage(_editPage);
 					list.add(link);
 
-					if(p.getActivity() == null) {
+					if (p.getActivity() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
 						list.add(p.getActivity().getLocalizationKey(), 
 								p.getActivity().getLocalizationKey());
 					}
-					if(p.getRegSpecType() == null) {
+					if (p.getRegSpecType() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
 						list.add(p.getRegSpecType().getLocalizationKey(), 
 								p.getRegSpecType().getLocalizationKey());
 					}
-					if(p.getCompanyType() == null) {
+					if (p.getCompanyType() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
 						list.add(p.getCompanyType().getLocalizedKey(), 
 								p.getCompanyType().getLocalizedKey());
 					}
-					if(p.getCommuneBelonging() == null) {
+					if (p.getCommuneBelonging() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
 						list.add(p.getCommuneBelonging().getLocalizationKey(), 

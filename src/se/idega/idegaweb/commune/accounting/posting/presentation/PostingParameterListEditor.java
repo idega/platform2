@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.19 2003/09/09 14:09:44 laddi Exp $
+ * $Id: PostingParameterListEditor.java,v 1.20 2003/09/11 21:16:22 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.19 2003/09/09 14:09:44 laddi Exp $
+ * $Id: PostingParameterListEditor.java,v 1.20 2003/09/11 21:16:22 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -144,7 +144,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 					viewMainForm(iwc, "");
 					break;
 				case ACTION_SAVE :
-					if(!saveData(iwc)) {
+					if (!saveData(iwc)) {
 						viewMainForm(iwc, _errorText);
 					}
 					break;
@@ -164,10 +164,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 		
 			try {
 				String id = null;
-				if(iwc.isParameterSet(PARAM_EDIT_ID)) {
+				if (iwc.isParameterSet(PARAM_EDIT_ID)) {
 					id = iwc.getParameter(PARAM_EDIT_ID);
 				}
-				if(iwc.isParameterSet(PARAM_MODE_COPY)) {
+				if (iwc.isParameterSet(PARAM_MODE_COPY)) {
 					id = null;
 				}
 				getPostingBusiness(iwc).savePostingParameter(id,
@@ -253,7 +253,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		app.setMainPanel(postingForm);
 		app.setButtonPanel(buttonPanel);
 		add(app);		
-		if(error.length() != 0) {
+		if (error.length() != 0) {
 			add(getSmallErrorText(error));
 		}
 	}
@@ -271,7 +271,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		table.setWidth("75%");
 		User user = iwc.getCurrentUser();
 		String userName = "";
-		if(user != null) {
+		if (user != null) {
 			userName = user.getFirstName();
 		}
 		Timestamp rightNow = IWTimestamp.getTimestampRightNow();
@@ -289,10 +289,10 @@ public class PostingParameterListEditor extends AccountingBlock {
 		table.add(getLocalizedLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
 		table.add(getText(userName), 4, 2);
 		table.add(new HiddenInput(PARAM_SIGNED, ""+userName));
-		if(iwc.isParameterSet(PARAM_MODE_COPY)) {
+		if (iwc.isParameterSet(PARAM_MODE_COPY)) {
 			table.add(new HiddenInput(PARAM_MODE_COPY, ""+iwc.getParameter(PARAM_MODE_COPY)));
 		}
-		if(iwc.isParameterSet(PARAM_EDIT_ID)) {
+		if (iwc.isParameterSet(PARAM_EDIT_ID)) {
 			table.add(new HiddenInput(PARAM_EDIT_ID, ""+iwc.getParameter(PARAM_EDIT_ID)));
 		}
 		return table;	
@@ -358,7 +358,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 			int regPK = 0;
 			int comPK = 0;
 			int comBelPK = 0;
-			if(pp != null) {
+			if (pp != null) {
 				actPK = Integer.parseInt(pp.getActivity() != null ? 
 						pp.getActivity().getPrimaryKey().toString() : "0");	
 				regPK = Integer.parseInt(pp.getRegSpecType() != null ? 
@@ -411,7 +411,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 		try {
 			int postingID = 0;
 			
-			if(iwc.isParameterSet(PARAM_EDIT_ID)) {
+			if (iwc.isParameterSet(PARAM_EDIT_ID)) {
 				postingID = Integer.parseInt(iwc.getParameter(PARAM_EDIT_ID));
 			}
 			
