@@ -74,10 +74,11 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		addAttribute(COLUMN_VAT_TYPE, "", true, true, java.lang.Integer.class);
 
 		addManyToOneRelationship(COLUMN_INVOICE_HEADER, InvoiceHeader.class);
+		addManyToOneRelationship(COLUMN_PAYMENT_RECORD_ID, PaymentRecord.class);
 		addManyToOneRelationship(COLUMN_CONTRACT_ID, ChildCareContract.class);
 		addManyToOneRelationship(COLUMN_PROVIDER_ID, School.class);
 	}
-	public int getInvoiceheader() {
+	public int getInvoiceHeader() {
 		return getIntColumnValue(COLUMN_INVOICE_HEADER);
 	}
 	public int getPaymentRecordId() {
@@ -156,6 +157,9 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 	}
 	public void setPaymentRecordId(int i) {
 		setColumn(COLUMN_PAYMENT_RECORD_ID, i);
+	}
+	public void setPaymentRecordId(PaymentRecord p) {
+		setColumn(COLUMN_PAYMENT_RECORD_ID, p);
 	}
 	public void setProviderId(int i) {
 		setColumn(COLUMN_PROVIDER_ID, i);
