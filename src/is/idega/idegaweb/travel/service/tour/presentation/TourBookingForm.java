@@ -1331,6 +1331,7 @@ public class TourBookingForm extends TravelManager {
       }
     }
 
+    debug("Tranus 0");
     String sOnline = iwc.getParameter(this.parameterOnlineBooking);
     boolean onlineOnly = false;
     if (sOnline != null && sOnline.equals("true")) {
@@ -1338,9 +1339,11 @@ public class TourBookingForm extends TravelManager {
     }else if (sOnline != null && sOnline.equals("false")) {
       onlineOnly = false;
     }
+    debug("Tranus 1, onlineOnly = "+onlineOnly);
 
 
     ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
+    debug("Tranus 2");
     int current = 0;
     for (int i = 0; i < pPrices.length; i++) {
       try {
@@ -1350,6 +1353,7 @@ public class TourBookingForm extends TravelManager {
       }
       iMany += current;
     }
+    debug("Tranus 3, many ="+iMany);
 
     int serviceId = _service.getID();
     String fromDate = iwc.getParameter(this.parameterFromDate);
@@ -1364,11 +1368,15 @@ public class TourBookingForm extends TravelManager {
       int iManyDays = Integer.parseInt(manyDays);
       if (iManyDays < 1) betw = 1;
       else betw = iManyDays;
-    }catch (Exception e) {}
+    }catch (Exception e) {
+      debug(e.getMessage());
+    }
 
+    debug("Tranus 4");
     ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
     ServiceDay sDay = sDayHome.create();
 
+    debug("Tranus 5");
     sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
     if (sDay != null) {
       totalSeats = sDay.getMax();
@@ -1378,6 +1386,7 @@ public class TourBookingForm extends TravelManager {
     }else {
       totalSeats = _tour.getTotalSeats();
     }
+    debug("Tranus 6, totalSeats "+totalSeats);
 
     iMany -= previousBookings;
 
@@ -1408,8 +1417,8 @@ public class TourBookingForm extends TravelManager {
       }
     }
 
-//    debug("saveBookingIfValid = "+saveBookingIfValid);
-//    debug("tooMany            = "+tooMany);
+    debug("saveBookingIfValid = "+saveBookingIfValid);
+    debug("tooMany            = "+tooMany);
 
     if (tooMany && !bookIfTooMany) {
       return this.errorTooMany;
@@ -1604,6 +1613,8 @@ public class TourBookingForm extends TravelManager {
       }else if (sOnline != null && sOnline.equals("false")) {
         onlineOnly = false;
       }
+
+      debug("SaveSan 0");
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
       Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp, iAddressId);
