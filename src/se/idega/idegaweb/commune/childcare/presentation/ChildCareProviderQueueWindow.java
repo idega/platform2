@@ -57,7 +57,6 @@ public class ChildCareProviderQueueWindow extends Window {
 		
 		ChildCarePrognosis prognosis = getChildCareBusiness(iwc).getPrognosis(Integer.parseInt(providerId));
 						
-		//todo: (Roar) localize
 		String prognosisText = prognosis == null ? style.localize("ccpqw_no_prognosis", "No prognosis available") :
 			style.localize("ccpqw_three_months", "Three months:") +" " + prognosis.getThreeMonthsPrognosis()+ "  " +
 			style.localize("ccpqw_one_year", "One year:") + " " + prognosis.getOneYearPrognosis() + "  " +
