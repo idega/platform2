@@ -89,7 +89,7 @@ public class FavoriteQuickLink extends Block {
 
 		table.add(quickLinks, column++, 1);
 		if (iSpaceBetween > 0) {
-			table.setWidth(column, iSpaceBetween);
+			table.setWidth(column++, iSpaceBetween);
 		}
 		table.add(go, column, 1);
 
