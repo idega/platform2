@@ -209,19 +209,17 @@ public class MyMessages extends EHealthBlock {
 		
 		
 		
-		int theRow;
+		int theRow=1;
 		Iterator iter = info.iterator();
-		
-		for (theRow = 1; theRow <= 10; theRow++) {
+		while (iter.hasNext()){
 			Layer layers = (Layer) layer.clone();
 			layers.setID("lay" + theRow + "_");	
 			String text = (String) iter.next();
 			layers.add(text);
 						
 			T.add(layers, 1, 3);
+			theRow++;
 		}
-		
-		
 		
 		return myForm;		
 		
@@ -332,8 +330,7 @@ public class MyMessages extends EHealthBlock {
 			careunits.add("Gimo VC");
 			careunits.add("Gimo VC");
 			careunits.add("Gimo VC");
-			careunits.add("Gimo VC");
-			
+			careunits.add("Gimo VC");			
 		}
 		else if (age != null && age.getYears() >= 70){
 			cases.add("Ont i foten");
@@ -358,34 +355,35 @@ public class MyMessages extends EHealthBlock {
 			dates.add("2003-12-19");
 			receivers.add("Dr Magne Syhl");
 			receivers.add(name);
-			receivers.add("Dr Inga Pren");
-			receivers.add(name);
 			receivers.add("Dr Alve Don");
+			receivers.add(name);
+			receivers.add("Dr Magne Syhl");
 			receivers.add(name);
 			receivers.add("Dr Inga Pren");
 			receivers.add(name);
 			receivers.add("Dr Magne Syhl");
 			receivers.add(name);
 			senders.add(name);
+			senders.add("Dr Magne Syhl");
+			senders.add(name);
 			senders.add("Dr Alve Don");
+			senders.add(name);
+			senders.add("Dr Magne Syhl");
+			senders.add(name);
 			senders.add("Dr Inga Pren");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Inga Pren");
+			senders.add(name);
 			senders.add("Dr Magne Syhl");
 			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
 			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
 			careunits.add("Flogsta VC");
-			careunits.add("Östberga VC");
-			careunits.add("Östberga VC");
-			careunits.add("Östberga VC");
-			careunits.add("Östberga VC");
-			careunits.add("Östberga VC");
 			careunits.add("Flogsta VC");
 			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			
 			
 		}
 		else{
@@ -411,34 +409,35 @@ public class MyMessages extends EHealthBlock {
 			dates.add("2003-12-19");
 			receivers.add("Dr Magne Syhl");
 			receivers.add(name);
-			receivers.add("Dr Inga Pren");
-			receivers.add(name);
 			receivers.add("Dr Alve Don");
+			receivers.add(name);
+			receivers.add("Dr Magne Syhl");
 			receivers.add(name);
 			receivers.add("Dr Inga Pren");
 			receivers.add(name);
 			receivers.add("Dr Magne Syhl");
 			receivers.add(name);
 			senders.add(name);
+			senders.add("Dr Magne Syhl");
+			senders.add(name);
 			senders.add("Dr Alve Don");
+			senders.add(name);
+			senders.add("Dr Magne Syhl");
+			senders.add(name);
 			senders.add("Dr Inga Pren");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Alve Don");
-			senders.add("Dr Inga Pren");
+			senders.add(name);
 			senders.add("Dr Magne Syhl");
 			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
 			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
 			careunits.add("Flogsta VC");
-			careunits.add("Östberga VC");
-			careunits.add("Östberga VC");
-			careunits.add("Östberga VC");
-			careunits.add("Östberga VC");
-			careunits.add("Östberga VC");
 			careunits.add("Flogsta VC");
 			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			
 		}
 		
 		Iterator icases = cases.iterator();

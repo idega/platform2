@@ -8,6 +8,9 @@ package se.idega.idegaweb.ehealth.presentation;
 
 
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -22,6 +25,7 @@ import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.util.Age;
 
 
 /**
@@ -46,11 +50,28 @@ public class MyInbox extends EHealthBlock {
 	private String prmDelete = prefix + "delete";
 	private String prmSend = prefix + "send";
 	
+	private String keyMessage1U1 = prefix + "mess1U1";
+	private String keyMessage2U1 = prefix + "mess2U1";
+	private String keyMessage3U1 = prefix + "mess3U1";
+	private String keyMessage4U1 = prefix + "mess4U1";
+	private String keyMessage5U1 = prefix + "mess5U1";
+	
+	private String keyMessage1U2 = prefix + "mess1U2";
+	private String keyMessage2U2 = prefix + "mess2U2";
+	private String keyMessage3U2 = prefix + "mess3U2";
+	private String keyMessage4U2 = prefix + "mess4U2";
+	private String keyMessage5U2 = prefix + "mess5U2";
+	
+	private String keyMessage1A1 = prefix + "mess1A1";
+	private String keyMessage2A1 = prefix + "mess2A1";
+	private String keyMessage3A1 = prefix + "mess3A1";
+	private String keyMessage4A1 = prefix + "mess4A1";
+	private String keyMessage5A1 = prefix + "mess5A1";
 	
 	private int userID = -1;
 	private User user;
 	IWContext _iwc = null;
-	
+	Age age = null;
 	public String name = null;
 
 	public void main(IWContext iwc) throws Exception {
@@ -106,17 +127,31 @@ public class MyInbox extends EHealthBlock {
 		}
 		
 		
-		String message = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message1 = "Lorem ium dolor, consectetuer adi cing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message2 = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message3 = "Lorem dolor ipsum sit amet, consr acing elit, sed diaummy nibh euiod tindut ut lareetlore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		String message4 = "Lorem ipsum dolort kai amet, tetuer adipiscing elit, sed diam nonum nibh eu tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam.";
-		
-		String infoDiv[] = {"<b>Ärende</b><br>Ont i foten<br><br><b>Meddelande</b><br>" + message,
-				"<b>Ärende</b><br>Halsont<br><br><b>Meddelande</b><br>" + message1,
-				"<b>Ärende</b><br>Böld på smalbenet<br><br><b>Meddelande</b><br>" + message2,
-				"<b>Ärende</b><br>Feber och huvudvärk<br><br><b>Meddelande</b><br>" + message3,
-				"<b>Ärende</b><br>Feber<br><br><b>Meddelande</b><br>" + message4};
+		ArrayList info = new ArrayList();
+		if (user !=null && user.getGroupID() == 142 ) {
+			info.add(localize(keyMessage1A1, "Message"));
+			info.add(localize(keyMessage2A1, "Message"));
+			info.add(localize(keyMessage3A1, "Message"));
+			info.add(localize(keyMessage4A1, "Message"));
+			info.add(localize(keyMessage5A1, "Message"));
+			
+		}
+		else if (age != null && age.getYears() >= 70){
+			info.add(localize(keyMessage1U1, "Message"));
+			info.add(localize(keyMessage2U1, "Message"));
+			info.add(localize(keyMessage3U1, "Message"));
+			info.add(localize(keyMessage4U1, "Message"));
+			info.add(localize(keyMessage5U1, "Message"));
+			
+		}
+		else {
+			info.add(localize(keyMessage1U2, "Message"));
+			info.add(localize(keyMessage2U2, "Message"));
+			info.add(localize(keyMessage3U2, "Message"));
+			info.add(localize(keyMessage4U2, "Message"));
+			info.add(localize(keyMessage5U2, "Message"));
+			
+		}
 		
 		Layer layer = new Layer(Layer.DIV);
 		layer.setVisibility("hidden");
@@ -128,13 +163,16 @@ public class MyInbox extends EHealthBlock {
 		
 		
 		
-		int theRow;
-		for (theRow = 1; theRow <= 5; theRow++) {
+		int theRow=1;
+		Iterator iter = info.iterator();
+		while (iter.hasNext()){
 			Layer layers = (Layer) layer.clone();
 			layers.setID("lay" + theRow + "_");	
-			layers.add(infoDiv[theRow-1]);
+			String text = (String) iter.next();
+			layers.add(text);
 						
 			T.add(layers, 1, 3);
+			theRow++;
 		}
 		
 		
@@ -183,17 +221,103 @@ public class MyInbox extends EHealthBlock {
 		int theRow = 1;
 		int theColumn = 1;
 		
+		ArrayList cases = new ArrayList();
+		ArrayList dates = new ArrayList();		
+		ArrayList receivers = new ArrayList();
+		ArrayList senders = new ArrayList();
+		ArrayList careunits = new ArrayList();
 		
-		
-		String cases[] = {"Ont i foten", "Halsont", "Böld på smalb..", "Feber och huv..", "Feber"};
-		String dates[] = {"2004-10-11", "2004-10-06", "2004-06-15", "2004-02-07", "2003-12-16"};
-		String receivers[] = {name, name, name, name, name};
-		String senders[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Alve Don"};
-		String careunits[] = {"Gimo VC", "Östberga VC", "Flogsta VC", "Östberga VC", "Östberga VC"};
-		
+		if (user !=null && user.getGroupID() == 142 ) {
+			cases.add("Ont i foten");
+			cases.add("Halsont");
+			cases.add("Böld på smalb..");
+			cases.add("Feber och huv..");
+			cases.add("Feber");
+			dates.add("2004-10-11");
+			dates.add("2004-10-06");
+			dates.add("2004-06-15");
+			dates.add("2004-02-07");
+			dates.add("2003-12-16");
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			senders.add("Lasse Aronsson");
+			senders.add("Astrid Axelsson");
+			senders.add("Lasse Aronsson");
+			senders.add("Astrid Axelsson");
+			senders.add("Lasse Aronsson");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
 			
-				
-		for (theRow = 1; theRow <= 5; theRow++) {
+		}
+		else if (age != null && age.getYears() >= 70){
+			cases.add("Sv:Ont i foten");
+			cases.add("Sv:Halsont");
+			cases.add("Sv:Böld på sm..");
+			cases.add("Sv:Feber och..");
+			cases.add("Sv:Feber");
+			dates.add("2004-10-12");
+			dates.add("2004-10-07");
+			dates.add("2004-06-17");
+			dates.add("2004-02-08");
+			dates.add("2003-12-19");			
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			senders.add("Dr Magne Syhl");
+			senders.add("Dr Inga Pren");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Inga Pren");
+			senders.add("Dr Magne Syhl");
+			careunits.add("Gimo VC");
+			careunits.add("Östberga VC");
+			careunits.add("Flogsta VC");
+			careunits.add("Östberga VC");
+			careunits.add("Gimo VC");			
+		}
+		else{
+			cases.add("Sv:Ont i foten");
+			cases.add("Sv:Halsont");
+			cases.add("Sv:Böld på sm..");
+			cases.add("Sv:Feber och..");
+			cases.add("Sv:Feber");
+			dates.add("2004-10-12");
+			dates.add("2004-10-07");
+			dates.add("2004-06-17");
+			dates.add("2004-02-08");
+			dates.add("2003-12-19");			
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			receivers.add(name);
+			senders.add("Dr Magne Syhl");
+			senders.add("Dr Inga Pren");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Inga Pren");
+			senders.add("Dr Magne Syhl");
+			careunits.add("Gimo VC");
+			careunits.add("Östberga VC");
+			careunits.add("Flogsta VC");
+			careunits.add("Östberga VC");
+			careunits.add("Gimo VC");	
+		}
+		
+		Iterator icases = cases.iterator();
+		Iterator idates = dates.iterator();
+		Iterator ireceivers = receivers.iterator();
+		Iterator isenders = senders.iterator();
+		Iterator icareunits = careunits.iterator();
+		
+						
+		while (idates.hasNext()) {
 			
 			for (theColumn = 1; theColumn <= 9; theColumn++) {
 				Layer layers = (Layer) layer.clone();
@@ -203,24 +327,29 @@ public class MyInbox extends EHealthBlock {
 					layers.setWidth("15");
 				}
 				else if (theColumn == 1){
-					layers.add(cases[theRow-1]);
+					String theCase = (String) icases.next();
+					layers.add(theCase);
 				}
 				else if (theColumn == 3){
-					layers.add(dates[theRow-1]);
+					String theDate = (String) idates.next();
+					layers.add(theDate);
 				}
 				else if (theColumn == 5){
-					layers.add(receivers[theRow-1]);
+					String theReceiver = (String) ireceivers.next();
+					layers.add(theReceiver);
 				}
 				else if (theColumn == 7){
-					layers.add(senders[theRow-1]);
+					String theSender = (String) isenders.next();
+					layers.add(theSender);
 				}
 				else if (theColumn == 9){
-					layers.add(careunits[theRow-1]);
+					String theCU = (String) icareunits.next();
+					layers.add(theCU);
 				}
 				
 				tableInfo.add(layers, theColumn, theRow);
 			}
-			
+			theRow++;
 		}
 	
 		layerInfo.add(tableInfo);
