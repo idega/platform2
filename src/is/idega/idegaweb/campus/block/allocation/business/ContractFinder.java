@@ -305,6 +305,32 @@ public abstract class ContractFinder {
     }
   }
 
+  public static List listOfContracts(String sComplexId, String sBuildingId, String sAprtName) {
+
+    StringBuffer sql = new StringBuffer("select con.* ");
+    sql.append(" from bu_apartment a, bu_floor f, bu_building b, cam_contract con ");
+    sql.append(" where a.bu_floor_id = f.bu_floor_id ");
+    sql.append(" and f.bu_building_id = b.bu_building_id ");
+    sql.append(" and a.bu_apartment_id = con.bu_apartment_id");
+    sql.append(" and b.bu_complex_id  = ");
+    sql.append(sComplexId);
+    sql.append(" and b.bu_building_id = ");
+    sql.append(sBuildingId);
+    sql.append(" and a.name = '");
+		sql.append(sAprtName);    
+		sql.append("'");
+/*    sql.append(" order by ");
+    sql.append(order);*/
+    String sSQL = sql.toString();
+    System.err.println(sSQL);
+    try {
+      return EntityFinder.findAll(((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).createLegacy(),sql.toString());
+    }
+    catch(SQLException ex){
+      return null;
+    }
+  }
+
   public static List listOfContractsInComplex(int complexID){
 
     StringBuffer sql = new StringBuffer("select con.* ");
