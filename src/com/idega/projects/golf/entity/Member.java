@@ -469,6 +469,13 @@ public class Member extends com.idega.data.genericentity.Member {
 		return (Phone[]) this.findReverseRelated(new Phone());
 	}
 
+
+      public Member[] getFamilyMembers(int FamilyId)throws SQLException{
+        String sql = "select member.* from member m,union_member_info u where m.member_id = u.member_id and u.family_id = "+FamilyId;
+        Member[] mbs = (Member[])this.findAll(sql);
+        return mbs;
+      }
+
 //debug needs to be updated
 
 	public void delete()throws SQLException{

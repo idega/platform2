@@ -53,7 +53,6 @@ public abstract class Editor extends com.idega.jmodule.object.ModuleObjectContai
   }
 
   protected abstract void control(ModuleInfo modinfo);
-  protected abstract ModuleObject makeLinkTable(int menuNr);
 
   public void setColors(String LightColor,String MainColor,String DarkColor){
     if(LightColor.startsWith("#"))
