@@ -63,6 +63,9 @@ public class CancelChildCareBMPBean extends AbstractCaseBMPBean implements Cance
 		addManyToOneRelationship(CHECK_ID,Check.class);		
 	}
 
+	/**
+	 * A method to get the reason for the cancellation.
+	 */
 	public String getReason() {
 		return getStringColumnValue(REASON);	
 	}

@@ -18,5 +18,5 @@ public interface ChangeChildCare extends com.idega.data.IDOEntity,com.idega.bloc
  public java.lang.String getCaseCodeKey() throws java.rmi.RemoteException;
  public void setChildId(int p0) throws java.rmi.RemoteException;
  public int getCareTime() throws java.rmi.RemoteException;
- public int getProviderId() throws java.rmi.RemoteException;
+ public int getProviderId() throws java.rmi.RemoteException; 
 }

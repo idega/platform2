@@ -16,7 +16,4 @@ public class CancelChildCareHomeImpl extends com.idega.data.IDOFactory implement
  public CancelChildCare findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (CancelChildCare) super.findByPrimaryKeyIDO(pk);
  }
-
-
-
 }

@@ -65,6 +65,9 @@ public class ChangeChildCareBMPBean extends AbstractCaseBMPBean implements Chang
 		addManyToOneRelationship(CHILD_ID,User.class);		
 	}
 	
+	/**
+	 * Gets the id of the child care provider.
+	 */
 	public int getProviderId() {
 		return getIntColumnValue(PROVIDER_ID);
 	}
