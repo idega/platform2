@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.7 2002/02/04 10:39:16 aron Exp $
+ * $Id: CampusAllocation.java,v 1.8 2002/04/30 11:25:14 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -75,7 +75,6 @@ public class CampusAllocation extends Block{
     objects.add(0,new Emailer(new LetterParser()));
     objects.add(0,new ContractTextSetter());
     objects.add(0,new CampusAllocator());
-    objects.add(0,new RoughOrderForm());
     objects.add(0,new CampusContracts());
     objects.add(0,new CampusApprover());
   }
