@@ -70,7 +70,7 @@ public class InsertLyric extends IWAdminWindow {
     if(lyrId != null){
       //update
       if(lyrId != null && !lyrId.equals("")){
-        _fieldLyricId = new HiddenInput(this._fieldNameLyricId,lyrId);
+        _fieldLyricId = new HiddenInput(_fieldNameLyricId,lyrId);
         if(iwc.getParameter(AlbumCollectionBusiness._PRM_UPDATE) != null){
           lyric = new Lyric(Integer.parseInt(lyrId));
         }
@@ -186,7 +186,7 @@ public class InsertLyric extends IWAdminWindow {
     return contentTable;
   }
 
-  public void saveTrack(IWContext iwc) throws Exception {
+  public void saveLyric(IWContext iwc) throws Exception {
 
     String acLyricId = iwc.getParameter(_fieldNameLyricId);
     int lyricId = -1;
@@ -230,13 +230,13 @@ public class InsertLyric extends IWAdminWindow {
   public void main(IWContext iwc) throws Exception {
 
     if(iwc.getParameter("save") == null){
+      myForm.empty();
       initFields(iwc);
       this.add(myForm);
-      myForm.empty();
       //updateFieldStatus(iwc);
       myForm.add(getElementsOredered(iwc));
     } else {
-      this.saveTrack(iwc);
+      this.saveLyric(iwc);
       this.close();
       this.setParentToReload();
     }

@@ -13,6 +13,8 @@ import com.idega.block.albumcollection.data.Album;
 import com.idega.block.albumcollection.data.Track;
 import com.idega.block.albumcollection.data.Author;
 import com.idega.block.albumcollection.data.Performer;
+import com.idega.block.albumcollection.data.Lyric;
+import com.idega.data.EntityFinder;
 import com.idega.util.text.TextSoap;
 
 import java.util.List;
@@ -38,8 +40,8 @@ public class AlbumDetails extends Block {
   private Link deleteTrackLinkTemplate;
 
   public AlbumDetails() {
-    trackNameTemplate = AlbumCollectionBusiness.getMainTextClone();
-    trackNumberTemplate= AlbumCollectionBusiness.getMainTextClone();
+    trackNameTemplate = AlbumCollectionBusiness.getMainTextBoldClone();
+    trackNumberTemplate= AlbumCollectionBusiness.getMainTextBoldClone();
 
     setLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
     setLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
@@ -47,11 +49,11 @@ public class AlbumDetails extends Block {
     lyricViewerLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
     lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
 
-    updateTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Breyta");
+    updateTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("U");
     updateTrackLinkTemplate.setWindowToOpen(AddTrack.class);
     updateTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
 
-    deleteTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Eyða");
+    deleteTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("D");
     deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
     deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_TRACK);
 
@@ -61,12 +63,17 @@ public class AlbumDetails extends Block {
   public void lineUpElements(IWContext iwc)throws Exception {
     Table frameTable = new Table(1,1);
     frameTable.setCellspacing(1);
+    frameTable.setCellpadding(0);
     frameTable.setColor(AlbumCollection._COLOR_BRIGHTEST);
     frameTable.setColor(1,1,AlbumCollection._COLOR_BRIGHT);
     frameTable.setWidth("550");
+    frameTable.setAlignment("center");
 
 
     Table contentTable = new Table(1,2);
+    contentTable.setCellpadding(0);
+    contentTable.setCellspacing(0);
+    contentTable.setWidth("550");
     String albumId = iwc.getParameter(this._PRM_ALBUM_ID);
     if(albumId != null && !"".equals(albumId)){
       Album album = AlbumCollectionBusiness.getAlbum(Integer.parseInt(albumId));
@@ -98,14 +105,46 @@ public class AlbumDetails extends Block {
     if(albumId != null && !"".equals(albumId)){
       List tracks = AlbumCollectionBusiness.getTracks(Integer.parseInt(albumId));
       if(tracks != null && tracks.size() > 0){
-        trackTable = new Table(5,tracks.size()+1);
-        trackTable.setWidth("100%");
+
+        trackTable = new Table(1,tracks.size()+1);
+        trackTable.setWidth("550");
         trackTable.setCellspacing(2);
         trackTable.setCellpadding(0);
         int index=1;
-        trackTable.add(AlbumCollectionBusiness.getMainTextClone("Númer"),1,index);
-        trackTable.add(AlbumCollectionBusiness.getMainTextClone("Heiti"),2,index);
-        trackTable.add(AlbumCollectionBusiness.getMainTextClone("Texti"),5,index);
+
+        Table trackInfo = new Table(9,1);
+        trackInfo.setCellpadding(1);
+        trackInfo.setCellspacing(0);
+        trackInfo.setWidth(1,"20");
+        trackInfo.setWidth(2,"200");
+        trackInfo.setWidth(3,"50");
+        trackInfo.setWidth(4,"108");
+        trackInfo.setWidth(5,"108");
+        trackInfo.setWidth(6,"16");
+        trackInfo.setWidth(7,"16");
+        trackInfo.setWidth(8,"16");
+        trackInfo.setWidth(9,"16");
+
+        trackInfo.setColumnAlignment(1,"center");
+        trackInfo.setColumnAlignment(2,"left");
+        trackInfo.setColumnAlignment(3,"center");
+        trackInfo.setColumnAlignment(4,"left");
+        trackInfo.setColumnAlignment(5,"left");
+        trackInfo.setColumnAlignment(6,"center");
+        trackInfo.setColumnAlignment(7,"center");
+        trackInfo.setColumnAlignment(8,"center");
+        trackInfo.setColumnAlignment(9,"center");
+
+        trackInfo.setRowVerticalAlignment(1,"top");
+
+
+        Table info = (Table)trackInfo.clone();
+        //info.add(AlbumCollectionBusiness.getMainTextClone("nr."),1,1);
+        info.add(AlbumCollectionBusiness.getMainTextClone("heiti"),2,1);
+        info.add(AlbumCollectionBusiness.getMainTextClone("lengd"),3,1);
+        info.add(AlbumCollectionBusiness.getMainTextClone("lag"),4,1);
+        info.add(AlbumCollectionBusiness.getMainTextClone("texti"),5,1);
+        trackTable.add(info,1,index);
         index++;
         Iterator iter = tracks.iterator();
         while (iter.hasNext()) {
@@ -113,43 +152,92 @@ public class AlbumDetails extends Block {
 
           trackTable.setRowColor(index,AlbumCollection._COLOR_DARK);
 
+          info = (Table)trackInfo.clone();
+
           if(item.getNumber() > 0){
             Text trackNumber = (Text)trackNumberTemplate.clone();
             trackNumber.setText(Integer.toString(item.getNumber()));
-            trackTable.add(trackNumber,1,index);
+            info.add(trackNumber,1,1);
           }
 
           Text trackName = (Text)trackNameTemplate.clone();
           trackName.setText(item.getName());
-          trackTable.add(trackName,2,index);
+          info.add(trackName,2,1);
+
+          int length = item.getLength();
+          if(length > 0){
+            int m = length/60;
+            int s = length%60;
+            info.add(AlbumCollectionBusiness.getMainTextBoldClone(((m < 10)?TextSoap.addZero(m):Integer.toString(m))+":"+((s<10)?TextSoap.addZero(s):Integer.toString(s))),3,1);
+          }
+
+
+
+          List authors = EntityFinder.findRelated(item,Author.getStaticInstance(Author.class));
+          if(authors != null){
+            Iterator iter2 = authors.iterator();
+            boolean f = false;
+            String name = "";
+            while (iter2.hasNext()) {
+              Author author = (Author)iter2.next();
+              if(f){
+                name += ", ";
+              }
+              name += author.getDisplayName();
+              f=true;
+            }
+            info.add(AlbumCollectionBusiness.getMainTextBoldClone(name),4,1);
+          }
+
+
+
+
 
           if(hasEditPermission()){
+            info.resize(info.getColumns(),2);
             Link update = (Link)updateTrackLinkTemplate.clone();
             update.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
-            trackTable.add(update,3,index);
+            info.add(update,7,2);
 
             Link delete = (Link)deleteTrackLinkTemplate.clone();
             delete.addParameter(DeleteConfirmWindow._PRM_ID,item.getID());
-            trackTable.add(delete,4,index);
+            info.add(delete,9,2);
           }
 
 
           if(item.getLyricId() < 0){
             if(hasEditPermission()){
               Link setLyric = (Link)setLyricLinkTemplate.clone();
-              setLyric.setText("setja texta");
+              setLyric.setText("A");
               setLyric.addParameter(AlbumCollectionBusiness._PRM_TRACK_ID,item.getID());
 
-              trackTable.add(setLyric,5,index);
+              info.add(setLyric,8,1);
             }
           } else {
             Link setLyric = (Link)lyricViewerLinkTemplate.clone();
-            setLyric.setText("Texti");
+            setLyric.setText("T");
             setLyric.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,item.getLyricId());
+            info.add(setLyric,8,1);
 
-            trackTable.add(setLyric,5,index);
+
+            List T_authors = EntityFinder.findRelated(new Lyric(item.getLyricId()),Author.getStaticInstance(Author.class));
+            if(T_authors != null){
+              Iterator iter2 = T_authors.iterator();
+              boolean f = false;
+              String name2 = "";
+              while (iter2.hasNext()) {
+                Author T_author = (Author)iter2.next();
+                if(f){
+                  name2 += ", ";
+                }
+                name2 += T_author.getDisplayName();
+                f=true;
+              }
+              info.add(AlbumCollectionBusiness.getMainTextBoldClone(name2),5,1);
+            }
           }
 
+          trackTable.add(info,1,index);
           index++;
         }
       }
