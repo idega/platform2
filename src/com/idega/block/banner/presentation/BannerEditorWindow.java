@@ -8,7 +8,7 @@ import com.idega.util.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
-import com.idega.block.media.presentation.ImageInserter;
+import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.block.banner.data.*;
 import com.idega.block.banner.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -40,8 +40,8 @@ private IWBundle _iwb;
 private IWResourceBundle _iwrb;
 
 public BannerEditorWindow(){
-  setWidth(420);
-  setHeight(340);
+  setWidth(440);
+  setHeight(420);
   setUnMerged();
   setMethod("get");
 }
@@ -50,7 +50,7 @@ public BannerEditorWindow(){
     /**
      * @todo permission
      */
-    _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    _isAdmin = true;
     _superAdmin = AccessControl.isAdmin(iwc);
     _iwb = getBundle(iwc);
     _iwrb = getResourceBundle(iwc);
@@ -99,6 +99,14 @@ public BannerEditorWindow(){
         _adID = -1;
       }
     }
+    if ( _adID == -1 ) {
+      try {
+        _adID = ((Integer) iwc.getApplicationAttribute(BannerBusiness.PARAMETER_AD_ID)).intValue();
+      }
+      catch (Exception e) {
+        _adID = -1;
+      }
+    }
 
     if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE) != null ) {
       if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_CLOSE) ) {
@@ -107,6 +115,9 @@ public BannerEditorWindow(){
       else if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_SAVE) ) {
         if ( _adID > -2 )
           saveAd(iwc);
+      }
+      else if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_NEW) ) {
+        newAd(iwc);
       }
     }
 
@@ -134,7 +145,7 @@ public BannerEditorWindow(){
       adTable.setCellspacing(0);
 
     DropdownMenu adDrop = BannerBusiness.getAdsDrop(BannerBusiness.PARAMETER_AD_ID,banner,_userID);
-      adDrop.addMenuElementFirst("-1977","");
+      adDrop.addMenuElementFirst("-1","");
       adDrop.setToSubmit();
       adDrop.setAttribute("style",STYLE);
       if ( _adID != -1 ) {
@@ -143,19 +154,31 @@ public BannerEditorWindow(){
     adTable.add(adDrop,1,1);
 
     Image deleteAdImage = _iwrb.getImage("delete.gif");
+      deleteAdImage.setVerticalSpacing(3);
       deleteAdImage.setHorizontalSpacing(3);
 
     Link deleteAdLink = new Link(deleteAdImage);
       deleteAdLink.addParameter(BannerBusiness.PARAMETER_AD_ID,_adID);
       deleteAdLink.addParameter(BannerBusiness.PARAMETER_DELETE,BannerBusiness.PARAMETER_TRUE);
     if ( _update ) {
-      adTable.add(deleteAdLink,2,1);
+      adTable.add(deleteAdLink,1,2);
+    }
+
+    Image newAdImage = _iwrb.getImage("new.gif");
+      newAdImage.setVerticalSpacing(3);
+      newAdImage.setHorizontalSpacing(3);
+
+    Link newAdLink = new Link(newAdImage);
+      newAdLink.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
+      newAdLink.addParameter(BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_NEW);
+    if ( _update ) {
+      adTable.add(newAdLink,1,2);
     }
 
     addLeft(_iwrb.getLocalizedString("ad","Ad")+":",adTable,true,false);
 
     TextInput adName = new TextInput(BannerBusiness.PARAMETER_AD_NAME);
-      adName.setLength(24);
+      adName.setLength(32);
       if ( ad != null && ad.getAdName() != null ) {
         adName.setContent(ad.getAdName());
       }
@@ -185,29 +208,59 @@ public BannerEditorWindow(){
       }
     addLeft(_iwrb.getLocalizedString("url","URL")+":",adURL,true);
 
-    /*ImageInserter image = new ImageInserter(BannerBusiness.PARAMETER_FILE_ID);
-      image.setWindowClassToOpen(com.idega.block.media.presentation.SimpleChooserWindow.class);
-      image.setHasUseBox(false);
-    addRight(_iwrb.getLocalizedString("banner","Banner")+":",image,true,false);*/
+    DateInput beginDate = new DateInput(BannerBusiness.PARAMETER_BEGIN_DATE);
+      beginDate.setStyleAttribute("style",STYLE);
+      if ( ad != null && ad.getBeginDate() != null ) {
+        beginDate.setDate(new idegaTimestamp(ad.getBeginDate()).getSQLDate());
+      }
+    addLeft(_iwrb.getLocalizedString("valid_from","Valid from")+": ",beginDate,true);
 
+    DateInput endDate = new DateInput(BannerBusiness.PARAMETER_END_DATE);
+      endDate.setStyleAttribute("style",STYLE);
+      if ( ad != null && ad.getEndDate() != null ) {
+        endDate.setDate(new idegaTimestamp(ad.getEndDate()).getSQLDate());
+      }
+    addLeft(_iwrb.getLocalizedString("valid_to","Valid to")+": ",endDate,true);
+
+    /** @todo image
+     *  add new banners
+     *  display/delete current
+     **/
+    ImageInserter image = new ImageInserter(BannerBusiness.PARAMETER_FILE_ID);
+      image.setWindowClassToOpen(com.idega.jmodule.image.presentation.SimpleChooserWindow.class);
+      image.setHasUseBox(false);
+    if ( _update )
+      addRight(_iwrb.getLocalizedString("banner","Banner")+":",image,true,false);
+
+    addHiddenInput(new HiddenInput(BannerBusiness.PARAMETER_BANNER_ID,Integer.toString(_bannerID)));
     addSubmitButton(new SubmitButton(_iwrb.getImage("close.gif"),BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_CLOSE));
     addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_SAVE));
   }
 
   private void saveAd(IWContext iwc) {
-    setParentToReload();
-    close();
+    String name = iwc.getParameter(BannerBusiness.PARAMETER_AD_NAME);
+    String maxHits = iwc.getParameter(BannerBusiness.PARAMETER_MAX_HITS);
+    String maxImpressions = iwc.getParameter(BannerBusiness.PARAMETER_MAX_IMPRESSIONS);
+    String url = iwc.getParameter(BannerBusiness.PARAMETER_URL);
+    String beginDate = iwc.getParameter(BannerBusiness.PARAMETER_BEGIN_DATE);
+    String endDate = iwc.getParameter(BannerBusiness.PARAMETER_END_DATE);
+    String fileID = "-1";
+
+    _adID = BannerBusiness.saveAd(_userID,_bannerID,_adID,name,maxHits,maxImpressions,beginDate,endDate,url,fileID);
+    iwc.setApplicationAttribute(BannerBusiness.PARAMETER_AD_ID,new Integer(_adID));
+  }
+
+  private void newAd(IWContext iwc) {
+    iwc.removeApplicationAttribute(BannerBusiness.PARAMETER_AD_ID);
     _adID = -1;
   }
 
   private void deleteAd(IWContext iwc) {
     BannerBusiness.deleteAd(_adID);
-    setParentToReload();
-    close();
   }
 
   private void closeEditor(IWContext iwc) {
-    setParentToReload();
+    iwc.removeApplicationAttribute(BannerBusiness.PARAMETER_AD_ID);
     close();
   }
 
@@ -219,5 +272,4 @@ public BannerEditorWindow(){
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
-
 }

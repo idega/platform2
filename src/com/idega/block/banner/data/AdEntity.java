@@ -97,6 +97,10 @@ public class AdEntity extends GenericEntity{
 
 
   //Set
+  public void setUserID(int userID) {
+    setColumn(getColumnNameUserID(),userID);
+  }
+
 	public void setAdName(String adName) {
 		setColumn(getColumnNameAdName(),adName);
 	}

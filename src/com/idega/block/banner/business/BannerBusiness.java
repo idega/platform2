@@ -28,15 +28,18 @@ public class BannerBusiness {
 public static final String PARAMETER_AD_ID = "ad_id";
 public static final String PARAMETER_AD_NAME = "ad_name";
 public static final String PARAMETER_BANNER_ID = "banner_id";
+public static final String PARAMETER_BEGIN_DATE = "begin_date";
 public static final String PARAMETER_CLICKED = "clicked";
 public static final String PARAMETER_CLOSE = "close";
 public static final String PARAMETER_DELETE = "delete";
+public static final String PARAMETER_END_DATE = "end_date";
 public static final String PARAMETER_FALSE = "false";
 public static final String PARAMETER_FILE_ID = "file_id";
 public static final String PARAMETER_LINK_URL = "link_url";
 public static final String PARAMETER_MAX_HITS = "max_hits";
 public static final String PARAMETER_MAX_IMPRESSIONS = "max_impressions";
 public static final String PARAMETER_MODE = "mode";
+public static final String PARAMETER_NEW = "new";
 public static final String PARAMETER_NEW_ATTRIBUTE = "new_attribute";
 public static final String PARAMETER_NEW_OBJECT_INSTANCE = "new_obj_inst";
 public static final String PARAMETER_SAVE = "save";
@@ -90,8 +93,17 @@ public static final String PARAMETER_URL = "url";
   public static void addToBanner(BannerEntity banner, int adID) {
     try {
       AdEntity ad = BannerFinder.getAd(adID);
-      if ( ad != null ) {
-        AdEntity[] ads = BannerFinder.getAdsInBanner(banner);
+      addToBanner(banner,ad);
+    }
+    catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+  }
+
+  public static void addToBanner(BannerEntity banner, AdEntity ad) {
+    try {
+      if ( ad != null && banner != null ) {
+        AdEntity[] ads = (AdEntity[]) ad.findRelated(banner);
         if ( ads == null || ads.length == 0 ) {
           banner.addTo(ad);
         }
@@ -115,12 +127,88 @@ public static final String PARAMETER_URL = "url";
     }
   }
 
-  public static void saveCategory(int userID,int adID,String adName,int hits,int maxHits,int impressions,int maxImpressions,idegaTimestamp beginDate,idegaTimestamp endDate,String URL) {
+  public static int saveAd(int userID,int bannerID,int adID,String adName,String maxHits,String maxImpressions,String beginDate,String endDate,String URL,String fileID) {
     boolean update = false;
+    BannerEntity banner = BannerFinder.getBanner(bannerID);
 
+    AdEntity ad = new AdEntity();
     if ( adID != -1 ) {
       update = true;
+      ad = BannerFinder.getAd(adID);
+      if ( ad == null ) {
+        ad = new AdEntity();
+        update = false;
+      }
     }
+
+    int _maxHits = 0;
+    int _maxImpressions = 0;
+    int _fileID = -1;
+
+    try {
+      _maxHits = Integer.parseInt(maxHits);
+    }
+    catch (NumberFormatException e) {
+      _maxHits = 0;
+    }
+
+    try {
+      _maxImpressions = Integer.parseInt(maxImpressions);
+    }
+    catch (NumberFormatException e) {
+      _maxImpressions = 0;
+    }
+
+    try {
+      _fileID = Integer.parseInt(fileID);
+    }
+    catch (NumberFormatException ex) {
+      _fileID = -1;
+    }
+
+    ad.setMaxHits(_maxHits);
+    ad.setMaxImpressions(_maxImpressions);
+
+    if ( beginDate != null && beginDate.length() > 0 ) {
+      ad.setBeginDate(new idegaTimestamp(beginDate).getTimestamp());
+    }
+    if ( endDate != null && endDate.length() > 0 ) {
+      ad.setEndDate(new idegaTimestamp(endDate).getTimestamp());
+    }
+    if ( adName != null && adName.length() > 0 ) {
+      ad.setAdName(adName);
+    }
+    if ( URL != null && URL.length() > 0 ) {
+      ad.setURL(URL);
+    }
+
+    if ( update ) {
+      try {
+        ad.update();
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace(System.err);
+      }
+    }
+    else {
+      ad.setUserID(userID);
+      ad.setHits(0);
+      ad.setImpressions(0);
+      try {
+        ad.insert();
+      }
+      catch (SQLException ex) {
+        ex.printStackTrace(System.err);
+      }
+    }
+
+    addToBanner(banner,ad);
+
+    if ( _fileID != -1 ) {
+      addFileToBanner(ad,_fileID);
+    }
+
+    return ad.getID();
   }
 
   public static void deleteAd(AdEntity ad) {
@@ -155,7 +243,7 @@ public static final String PARAMETER_URL = "url";
     try {
       ICFile file = BannerFinder.getFile(ICFileID);
       if ( ad != null ) {
-        ICFile[] files = BannerFinder.getFilesInAd(ad);
+        ICFile[] files = (ICFile[]) file.findRelated(ad);
         if ( files == null || files.length == 0 ) {
           ad.addTo(file);
         }
@@ -289,7 +377,7 @@ public static final String PARAMETER_URL = "url";
     List list = BannerFinder.getAdsInBanner(banner,userID);
     if( list != null ) {
       for ( int a = 0; a < list.size(); a++) {
-        String adName = ((AdEntity)list.get(a)).getURL();
+        String adName = ((AdEntity)list.get(a)).getAdName();
         if ( adName == null ) {
           adName = Integer.toString(((AdEntity)list.get(a)).getID());
         }
