@@ -1,13 +1,9 @@
 package com.idega.block.category.business;
 
-import java.rmi.RemoteException;
-import com.idega.business.IBOLookup;
-import com.idega.core.data.ICCategory;
-import com.idega.idegaweb.IWApplicationContext;
-import com.idega.util.IsCollator;
-import java.util.*;
 import java.util.Comparator;
-import java.sql.SQLException;
+
+import com.idega.core.data.ICCategory;
+import com.idega.util.IsCollator;
 
 /**
  * Title:

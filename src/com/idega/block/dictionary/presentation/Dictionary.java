@@ -1,22 +1,28 @@
 package com.idega.block.dictionary.presentation;
 
-import com.idega.block.dictionary.data.Word;
-import com.idega.data.IDOException;
-import com.idega.presentation.text.*;
-import com.idega.block.dictionary.business.DictionaryComparator;
-import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.ICCategory;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
 import javax.ejb.FinderException;
 
-import com.idega.block.text.business.TextFormatter;
-import com.idega.presentation.*;
 import com.idega.block.IWBlock;
 import com.idega.block.dictionary.business.DictionaryBusiness;
+import com.idega.block.dictionary.business.DictionaryComparator;
+import com.idega.block.dictionary.data.Word;
 import com.idega.block.presentation.CategoryBlock;
+import com.idega.block.text.business.TextFormatter;
+import com.idega.core.data.ICCategory;
+import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 
 public class Dictionary extends CategoryBlock implements IWBlock {
 

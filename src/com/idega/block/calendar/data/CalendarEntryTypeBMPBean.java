@@ -6,19 +6,12 @@ package com.idega.block.calendar.data;
 
 
 
-import java.sql.*;
-
+import java.sql.SQLException;
 import java.util.Locale;
 
-import com.idega.data.*;
-
-import com.idega.core.user.data.User;
-
-import com.idega.core.data.GenericGroup;
-
-import com.idega.block.text.data.LocalizedText;
-
 import com.idega.block.text.business.TextFinder;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.data.EntityBulkUpdater;
 
 
 

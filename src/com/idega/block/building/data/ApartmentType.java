@@ -1,6 +1,5 @@
 package com.idega.block.building.data;
 
-import javax.ejb.*;
 
 public interface ApartmentType extends com.idega.data.TextEntity
 {

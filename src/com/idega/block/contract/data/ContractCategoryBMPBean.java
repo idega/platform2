@@ -3,20 +3,8 @@
 package com.idega.block.contract.data;
 
 //import java.util.*;
-import java.sql.*;
-//import com.idega.data.*;
-import com.idega.data.*;
-
-/**
- * Title:        idegaclasses
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:      idega
- * @author <a href="aron@idega.is">Aron Birkir</a>
- * @version 1.0
- */
-
-import com.idega.util.IWTimestamp;
+import java.sql.Date;
+import java.sql.SQLException;
 
 
 public class ContractCategoryBMPBean extends com.idega.data.GenericEntity implements com.idega.block.contract.data.ContractCategory {

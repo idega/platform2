@@ -1,22 +1,36 @@
 package com.idega.block.building.presentation;
 
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.*;
-import com.idega.block.building.data.*;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.business.BuildingBusiness;
 import java.sql.SQLException;
-import java.io.IOException;
 import java.util.StringTokenizer;
-import com.oreilly.servlet.*;
-import com.idega.data.IDOLegacyEntity;
-import com.idega.presentation.Editor;
+
+import com.idega.block.building.business.BuildingBusiness;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.text.presentation.TextChooser;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Window;
 
 /**
  * Title:

@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractTextBMPBean.java,v 1.1 2002/04/06 19:07:29 tryggvil Exp $
+ * $Id: ContractTextBMPBean.java,v 1.2 2003/04/03 07:24:44 laddi Exp $
 
  *
 
@@ -21,12 +21,6 @@ package com.idega.block.contract.data;
 
 
 
-
-import com.idega.data.IDOLegacyEntity;
-
-import java.sql.Date;
-
-import java.lang.IllegalStateException;
 
 import java.sql.SQLException;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentCategoryBMPBean.java,v 1.3 2002/11/29 12:45:32 aron Exp $
+ * $Id: ApartmentCategoryBMPBean.java,v 1.4 2003/04/03 07:21:44 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -8,8 +8,6 @@
  *
  */
 package com.idega.block.building.data;
-import com.idega.data.IDOLegacyEntity;
-import java.sql.SQLException;
 /**
  * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0

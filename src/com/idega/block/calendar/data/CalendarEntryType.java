@@ -1,6 +1,5 @@
 package com.idega.block.calendar.data;
 
-import javax.ejb.*;
 
 public interface CalendarEntryType extends com.idega.data.IDOLegacyEntity
 {

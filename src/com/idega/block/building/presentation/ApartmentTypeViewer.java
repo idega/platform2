@@ -1,24 +1,25 @@
 package com.idega.block.building.presentation;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
-import java.sql.*;
-import java.util.*;
-import java.io.*;
-import java.text.*;
-import com.idega.util.*;
-import com.idega.util.text.TextSoap;
-import com.idega.data.*;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
+
 import com.idega.block.building.business.BuildingBusiness;
 import com.idega.block.building.business.BuildingFinder;
-//import com.idega.data.genericentity.Address;
-import com.idega.block.building.data.*;
-import com.idega.presentation.*;
-import com.idega.presentation.text.*;
-import com.idega.presentation.ui.*;
-import com.idega.idegaweb.IWResourceBundle;
+import com.idega.block.building.data.ApartmentType;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.PrintButton;
+import com.idega.util.Property;
+import com.idega.util.text.TextSoap;
 
 /**
  * Title: BuildingViewer

@@ -1,19 +1,19 @@
 package com.idega.block.calendar.presentation;
 
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
-import java.util.*;
-import java.text.DateFormatSymbols;
-import java.util.Hashtable;
 import java.util.Enumeration;
-import com.idega.presentation.text.*;
-import com.idega.presentation.Image;
-import com.idega.presentation.Table;
+import java.util.Hashtable;
+import java.util.Vector;
+
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.builder.data.IBPage;
-import com.idega.util.text.*;
-import com.idega.util.*;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
 
 public class SmallCalendar extends Block{
 

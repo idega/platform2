@@ -1,6 +1,4 @@
 package com.idega.block.building.data;
-import com.idega.data.IDOLegacyEntity;
-import java.sql.SQLException;
 /**
  * Title:
  * Description:

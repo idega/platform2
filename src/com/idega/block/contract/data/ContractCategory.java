@@ -1,6 +1,5 @@
 package com.idega.block.contract.data;
 
-import javax.ejb.*;
 
 public interface ContractCategory extends com.idega.data.IDOLegacyEntity
 {

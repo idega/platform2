@@ -1,16 +1,18 @@
 package com.idega.block.building.business;
 
 
-import com.idega.data.EntityFinder;
-import com.idega.block.building.business.BuildingFinder;
-import com.idega.block.building.data.*;
-
-import java.util.List;
-import java.util.Vector;
-import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+
+import com.idega.block.building.data.Apartment;
+import com.idega.block.building.data.ApartmentCategory;
+import com.idega.block.building.data.ApartmentType;
+import com.idega.block.building.data.Building;
+import com.idega.block.building.data.Complex;
+import com.idega.block.building.data.Floor;
 import com.idega.util.IWTimestamp;
 
 

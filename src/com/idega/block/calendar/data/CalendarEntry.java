@@ -1,6 +1,5 @@
 package com.idega.block.calendar.data;
 
-import javax.ejb.*;
 
 public interface CalendarEntry extends com.idega.data.CategoryEntity
 {

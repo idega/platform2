@@ -1,6 +1,5 @@
 package com.idega.block.dictionary.data;
 
-import javax.ejb.*;
 
 public interface Word extends com.idega.data.IDOEntity
 {

@@ -1,12 +1,11 @@
 package com.idega.block.building.presentation;
 
-import java.sql.SQLException;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
-import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.text.Edit;
-import com.idega.block.building.business.BuildingCacher;
 
 
 /**

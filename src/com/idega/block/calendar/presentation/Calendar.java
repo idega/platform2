@@ -9,26 +9,30 @@ package com.idega.block.calendar.presentation;
  * @version 1.0
  */
 
-import java.util.*;
 import java.text.DateFormat;
-import com.idega.presentation.Block;
-import com.idega.presentation.IWContext;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import com.idega.block.IWBlock;
-import com.idega.block.calendar.data.*;
-import com.idega.block.calendar.business.*;
+import com.idega.block.calendar.business.CalendarBusiness;
+import com.idega.block.calendar.business.CalendarFinder;
+import com.idega.block.calendar.data.CalendarCategory;
+import com.idega.block.calendar.data.CalendarEntry;
+import com.idega.block.presentation.CategoryBlock;
+import com.idega.builder.data.IBPage;
 import com.idega.core.business.CategoryFinder;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-import com.idega.util.IWTimestamp;
-import com.idega.util.IWCalendar;
-import com.idega.util.text.TextSoap;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.Table;
-import com.idega.presentation.Image;
-import com.idega.builder.data.IBPage;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.idegaweb.IWBundle;
-import com.idega.block.presentation.CategoryBlock;
+import com.idega.util.IWTimestamp;
 
 public class Calendar extends CategoryBlock implements IWBlock {
 

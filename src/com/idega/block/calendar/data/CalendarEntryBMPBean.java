@@ -2,16 +2,11 @@
 
 package com.idega.block.calendar.data;
 
-import com.idega.block.calendar.business.CalendarBusiness;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Locale;
-import com.idega.data.CategoryEntity;
-import com.idega.data.EntityBulkUpdater;
-import com.idega.core.user.data.User;
-import com.idega.core.data.GenericGroup;
+
+import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.block.text.business.TextFinder;
 
 public class CalendarEntryBMPBean extends com.idega.data.CategoryEntityBMPBean implements com.idega.block.calendar.data.CalendarEntry {
 

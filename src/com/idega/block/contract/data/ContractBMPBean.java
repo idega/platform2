@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.3 2002/08/12 12:59:30 palli Exp $
+ * $Id: ContractBMPBean.java,v 1.4 2003/04/03 07:24:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,10 +10,9 @@
 package com.idega.block.contract.data;
 
 
-import com.idega.data.IDOLegacyEntity;
 import java.sql.Date;
-import java.lang.IllegalStateException;
 import java.sql.SQLException;
+
 import com.idega.util.IWTimestamp;
 
 /**

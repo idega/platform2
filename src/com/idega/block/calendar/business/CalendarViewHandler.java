@@ -1,5 +1,5 @@
 /*
- * $Id: CalendarViewHandler.java,v 1.5 2003/02/27 21:36:02 laddi Exp $
+ * $Id: CalendarViewHandler.java,v 1.6 2003/04/03 07:21:44 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,11 +10,11 @@
 package com.idega.block.calendar.business;
 
 import java.util.List;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.text.Text;
+
 import com.idega.builder.handler.PropertyHandler;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.ui.DropdownMenu;
 
 /**
  * @author <a href="tryggvi@idega.is">Tryggvi Larusson</a>

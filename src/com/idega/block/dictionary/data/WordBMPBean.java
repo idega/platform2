@@ -1,13 +1,12 @@
 package com.idega.block.dictionary.data;
 
-import com.idega.data.*;
-import javax.ejb.RemoveException;
-import java.rmi.RemoteException;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICFile;
-import javax.ejb.FinderException;
-import java.util.Collection;
-import java.sql.Timestamp;
+import com.idega.data.GenericEntity;
 
 /**
  * Title:        Book bean

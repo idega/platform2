@@ -1,8 +1,7 @@
 package com.idega.block.building.presentation;
 
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.presentation.ui.Window;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.Window;
 
 
 /**
