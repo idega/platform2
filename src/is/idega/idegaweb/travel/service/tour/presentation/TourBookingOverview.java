@@ -532,7 +532,7 @@ public class TourBookingOverview extends AbstractBookingOverview {
       if (this._supplier != null) {
         bookings = getBooker(iwc).getBookings(((Integer) product.getPrimaryKey()).intValue(), stamp, trAddress);
       }else if (this._reseller != null) {
-        Collection coll = getBooker(iwc).getGeneralBookingHome().findBookings(_reseller.getID(), product.getID(), stamp);
+        Collection coll = getBooker(iwc).getGeneralBookingHome().findBookings(_reseller.getID(), product.getID(), stamp, trAddress);
         bookings = getBooker(iwc).collectionToBookingsArray(coll);
       }
 

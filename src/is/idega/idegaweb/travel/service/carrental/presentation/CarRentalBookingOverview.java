@@ -511,7 +511,7 @@ public class CarRentalBookingOverview extends AbstractBookingOverview {
 			if (this._supplier != null) {
 				bookings = getBooker(iwc).getBookings(((Integer) product.getPrimaryKey()).intValue(), stamp);
 			}else if (this._reseller != null) {
-				Collection coll = getBooker(iwc).getGeneralBookingHome().findBookings(_reseller.getID(), product.getID(), stamp);
+				Collection coll = getBooker(iwc).getGeneralBookingHome().findBookings(_reseller.getID(), product.getID(), stamp, null);
 				bookings = getBooker(iwc).collectionToBookingsArray(coll);
 			}
 
