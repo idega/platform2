@@ -361,11 +361,12 @@ private Table _myTable;
     if ( image != null ) {
       userTable.add(textTable,2,1);
       userTable.setWidth(2,"100%");
-      userTable.add(linkTable,2,2);
+      userTable.mergeCells(1,5,2,5);
+      userTable.add(linkTable,2,5);
     }
     else {
       userTable.add(textTable,1,1);
-      userTable.add(linkTable,1,2);
+      userTable.add(linkTable,1,5);
     }
 
     textTable.setColumnVerticalAlignment(1,"top");
