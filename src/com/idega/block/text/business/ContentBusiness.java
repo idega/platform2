@@ -99,9 +99,9 @@ public class ContentBusiness{
                                   String sTitle,
                                   List listOfFiles){
 
-//    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+    javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
-//      t.begin();
+      t.begin();
       boolean ctUpdate = false;
       boolean locUpdate = false;
       Content eContent = null;
@@ -125,8 +125,6 @@ public class ContentBusiness{
         eContent.setCreated(IWTimestamp.getTimestampRightNow());
         locText = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       }
-			System.out.println("[ContentBusiness] : locUpdate = "+locUpdate);
-			System.out.println("[ContentBusiness] : ctUpdate  = "+ctUpdate);
 
       locText.setHeadline(sHeadline);
       locText.setBody(sBody);
@@ -159,9 +157,8 @@ public class ContentBusiness{
         locText.insert();
       }
 
-//      t.commit();
+      t.commit();
       
-			System.out.println("[ContentBusiness] : contentbusiness begins 6");
 			/*try {
 				locText.addTo(eContent);
 			}catch (Exception sql) {
@@ -169,11 +166,9 @@ public class ContentBusiness{
 			}*/
       if (ctUpdate) {
       	if (!locUpdate){
-      		System.out.println("[ContentBusiness] : adding locText to content 0");
 					locText.addTo(eContent);
       	}
       }else if(!ctUpdate){
-				System.out.println("[ContentBusiness] : adding locText to content 1");
 				locText.addTo(eContent);
       }
 
@@ -194,13 +189,13 @@ public class ContentBusiness{
       return eContent;
     }
     catch(Exception e) {
-/*      try {
+      try {
         t.rollback();
       }
       catch(javax.transaction.SystemException ex) {
         ex.printStackTrace();
       }
-*/
+
       e.     printStackTrace();
     }
 

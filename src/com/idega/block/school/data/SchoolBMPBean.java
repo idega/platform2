@@ -335,11 +335,6 @@ public class SchoolBMPBean extends GenericEntity implements School {
 				return null;
 			}
 			LocalizedText lText = TextFinder.getContentHelper(text.getID(), localeId).getLocalizedText();
-			if (lText == null) {
-				System.out.println("[SchoolBMPBean] : lText == NULL");
-			}else {
-				System.out.println("[SchoolBMPBean] : lText.getID() = "+lText.getID());
-			}
 			return lText;
 		}else {
 			/** trying backwards compatability */
@@ -386,7 +381,6 @@ public class SchoolBMPBean extends GenericEntity implements School {
 				}
 //				boolean added = com.idega.block.text.business.TextBusiness.addLocalizedTextToTxText(text, txText);
 				TextBusiness.saveText(txText.getID(), lTextId, localeId, -1, -1, null, null, null, null, text, null, null);
-				System.out.println("[SchoolBMPBean] trying to set txText_id = "+txText.getID()+", locTxtId = "+lTextId+", localeID = "+localeId);//+", added to content = "+added);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
