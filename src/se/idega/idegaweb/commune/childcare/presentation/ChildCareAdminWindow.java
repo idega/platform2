@@ -809,7 +809,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		schoolClasses.setSpaceBetween(15);
 		schoolClasses.setNoDataListEntry(localize("child_care.no_school_classes","No school classes"));
 		schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);	
-		int classID = archive.getSchoolClassMember().getSchoolClassId();
+		//int classID = archive.getSchoolClassMember().getSchoolClassId();
 
 		
 		if (getChildcareID() != -1) {
