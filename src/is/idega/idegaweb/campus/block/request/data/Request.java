@@ -1,5 +1,5 @@
 /*
- * $Id: Request.java,v 1.4 2002/01/14 11:37:19 palli Exp $
+ * $Id: Request.java,v 1.5 2002/02/06 10:21:17 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -24,8 +24,13 @@ public class Request extends GenericEntity {
   private static final String DESCRIPTION = "description";
   private static final String DATE_SENT = "date_sent";
   private static final String DATE_PROCESSED = "date_processed";
-  private static final String REQUEST_TYPE = "re_request_type";
+  private static final String REQUEST_TYPE = "request_type";
+  private static final String DATE_FAILURE = "date_failure";
+  private static final String SPECIAL_REPAIR_TIME = "special_time";
   private static final String STATUS = "status";
+
+  public static final String REQUEST_COMPUTER = "C";
+  public static final String REQUEST_REPAIR = "R";
 
   public Request() {
     super();
@@ -43,6 +48,8 @@ public class Request extends GenericEntity {
     addAttribute(getColumnDateProcessed(),"Date processed",true,true,Timestamp.class);
     addAttribute(getColumnRequestType(),"Request type",true,true,String.class);
     addAttribute(getColumnStatus(),"Status",true,true,String.class);
+    addAttribute(getColumnDateFailure(),"Date of failure",true,true,Timestamp.class);
+    addAttribute(getColumnSpecialTime(),"Request special time",true,true,String.class);
     setMaxLength(getColumnRequestType(),1);
     setMaxLength(getColumnStatus(),1);
     setMaxLength(getColumnDescription(),4000);
@@ -74,6 +81,14 @@ public class Request extends GenericEntity {
 
   public static String getColumnStatus() {
     return(STATUS);
+  }
+
+  public static String getColumnDateFailure() {
+    return(DATE_FAILURE);
+  }
+
+  public static String getColumnSpecialTime() {
+    return(SPECIAL_REPAIR_TIME);
   }
 
   public int getRequestType() {
@@ -126,5 +141,21 @@ public class Request extends GenericEntity {
 
   public void setStatus(String status) {
     setColumn(getColumnStatus(),status);
+  }
+
+  public Timestamp getDateFailure() {
+    return((Timestamp)getColumnValue(getColumnDateFailure()));
+  }
+
+  public void setDateFailure(Timestamp failure) {
+    setColumn(getColumnDateFailure(),failure);
+  }
+
+  public String getSpecialTime() {
+    return(getStringColumnValue(getColumnSpecialTime()));
+  }
+
+  public void setSpecialTime(String time) {
+    setColumn(getColumnSpecialTime(),time);
   }
 }

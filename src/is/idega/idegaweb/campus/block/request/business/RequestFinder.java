@@ -1,5 +1,5 @@
 /*
- * $Id: RequestFinder.java,v 1.2 2002/01/14 11:37:19 palli Exp $
+ * $Id: RequestFinder.java,v 1.3 2002/02/06 10:21:17 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,7 +26,9 @@ public class RequestFinder {
 
   public static List getRequests(int userId) {
     try {
+      System.out.println("finding all requests for user = " + userId);
       List l = EntityFinder.findAllByColumn(Request.getStaticInstance(Request.class),Request.getColumnUserId(),userId);
+      System.out.println("found " + l.size() + " request(s)");
       if (l == null)
         return(null);
 
