@@ -188,4 +188,12 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
 	  query.addCriteria(new MatchCriteria(table,IS_FREETIME_TYPE,MatchCriteria.EQUALS,true));
   	  return idoFindPKsByQuery(query);
   }
+  public Collection ejbFindAllFreetimeTypes(String category) throws FinderException {
+  	Table table = new Table(this);
+  	SelectQuery query = new SelectQuery(table);
+  	query.addColumn(new WildCardColumn());
+  	query.addCriteria(new MatchCriteria(table,IS_FREETIME_TYPE,MatchCriteria.EQUALS,true));
+  	query.addCriteria(new MatchCriteria(table,SCHOOLCATEGORY,MatchCriteria.EQUALS,category));
+  	return idoFindPKsByQuery(query);
+  }
 }

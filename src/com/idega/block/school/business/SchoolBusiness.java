@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolBusiness.java,v 1.85 2005/01/04 13:52:25 laddi Exp $
+ * $Id: SchoolBusiness.java,v 1.86 2005/01/04 19:57:31 malin Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/04 13:52:25 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/04 19:57:31 $ by $Author: malin $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.85 $
+ * @version $Revision: 1.86 $
  */
 public interface SchoolBusiness extends IBOService {
 
@@ -464,6 +464,12 @@ public interface SchoolBusiness extends IBOService {
 	 */
 	public Collection findAllSchoolTypesInCategory(String Category) throws java.rmi.RemoteException;
 
+	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#findAllSchoolTypesInCategoryFreeTime
+	 */
+	public Collection findAllSchoolTypesInCategoryFreeTime(String Category) throws java.rmi.RemoteException;
+	
+	
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#findAllSchoolTypesInCategory
 	 */

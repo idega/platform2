@@ -1230,6 +1230,17 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 
+	public Collection findAllSchoolTypesInCategoryFreeTime(String Category) {
+		try {
+			SchoolTypeHome shome = (SchoolTypeHome) IDOLookup.getHome(SchoolType.class);
+			return shome.findAllFreetimeTypes(Category);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return com.idega.util.ListUtil.getEmptyList();
+		}
+	}
+	
 	/**
 	 * @return The School type key registered for Childcare school types.
 	 */
