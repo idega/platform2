@@ -214,10 +214,6 @@ public class Reporter extends ReportPresentation{
 
     }
     Table T = new Table();
-    List L = ReportEntityHandler.listOfReports(iCategoryId);
-    if(L!=null){
-
-      int len = L.size();
 
       T.setCellpadding(2);
       T.setCellspacing(1);
@@ -241,45 +237,53 @@ public class Reporter extends ReportPresentation{
       String prm = prefix+"chk";
       if(bEdit){
         T.setWidth(4,"40");
-         T.setColumnAlignment(4,"center");
+        T.setColumnAlignment(4,"center");
         T.add(formatText("Delete"),4,2);
-        HiddenInput countHidden = new HiddenInput(prefix+"count",String.valueOf(len));
-        T.add(countHidden);
+
       }
       TextFontColor = "#000000";
-      for (int i = 0; i < len; i++) {
-        Report R = (Report) L.get(i);
-        int col = 1;
-        int row = i+3;
-        if(sqlEditAdmin){
-          T.add(getAdminLink(R.getID(),iCategoryId),col,row);
-        }
-        T.add(getLink(R.getID()),col,row);
+      List L = ReportEntityHandler.listOfReports(iCategoryId);
+      if(L!=null){
 
-        col++;
-        T.add(formatText(R.getName()),col++,row);
-        T.add(formatText(R.getInfo()),col++,row);
-        if(bEdit)
-          T.add(getCheckBox(prm+i,R.getID()),col++,row);
-      }
-      T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
-      if(bEdit){
-        SubmitButton deleteButtton = new SubmitButton(new Image("/reports/pics/delete.gif"));
+        int len = L.size();
+
+        for (int i = 0; i < len; i++) {
+          Report R = (Report) L.get(i);
+          int col = 1;
+          int row = i+3;
+          if(sqlEditAdmin){
+            T.add(getAdminLink(R.getID(),iCategoryId),col,row);
+          }
+          T.add(getLink(R.getID()),col,row);
+
+          col++;
+          T.add(formatText(R.getName()),col++,row);
+          T.add(formatText(R.getInfo()),col++,row);
+          if(bEdit)
+            T.add(getCheckBox(prm+i,R.getID()),col++,row);
+        }
         T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
-        T.add(deleteButtton,4,len+3);
+        if(bEdit){
+          SubmitButton deleteButtton = new SubmitButton(new Image("/reports/pics/delete.gif"));
+          T.add(new HiddenInput(this.sAction,String.valueOf(this.ACT4)));
+          T.add(deleteButtton,4,len+3);
+          HiddenInput countHidden = new HiddenInput(prefix+"count",String.valueOf(len));
+          T.add(countHidden);
+        }
+        T.setRowColor(len+3,WhiteColor);
       }
 
       T.setHorizontalZebraColored(this.LightColor,this.MiddleColor);
       T.setRowColor(1,WhiteColor);
       T.setRowColor(2,DarkColor);
-      T.setRowColor(len+3,WhiteColor);
+
       T.setColumnColor(1,WhiteColor);
       T.setWidth("100%");
       T.setWidth(1,"40");
       T.setWidth(2,"150");
       //T.setWidth(3,"50%");
       T.setColumnAlignment(1,"center");
-    }
+
     return T;
   }
 
