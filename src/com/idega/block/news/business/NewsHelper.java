@@ -20,6 +20,7 @@ import java.util.Locale;
 public class NewsHelper{
   private NwNews eNews;
   private List lLocalizedText;
+  private List icFiles;
 
   public NwNews getNwNews(){
     return eNews;
@@ -28,6 +29,14 @@ public class NewsHelper{
   public LocalizedText getLocalizedText(Locale locale){
     return getLocalizedText(TextFinder.getLocaleId(locale));
   }
+
+  /**
+   * Returns a List of ICFile
+   */
+  public List getFiles(){
+    return icFiles ;
+  }
+
 
   public LocalizedText getLocalizedText(int iLocaleId){
     LocalizedText LT= null,lt = null;
@@ -66,6 +75,11 @@ public class NewsHelper{
         lLocalizedText.add(text);
       }
     }
+  }
+
+  public void setFiles(List listOfFiles){
+    if(listOfFiles != null)
+      icFiles = listOfFiles ;
   }
 
   public void setLocalizedText(List text ){

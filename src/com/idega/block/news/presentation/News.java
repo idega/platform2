@@ -31,7 +31,7 @@ import com.idega.idegaweb.IWMainApplication;
  * @version 1.1
  */
 
-public class News extends PresentationObjectContainer implements IWBlock{
+public class News extends NewsReader implements IWBlock{
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
   private boolean isAdmin=false;
@@ -96,16 +96,21 @@ public class News extends PresentationObjectContainer implements IWBlock{
   private int iLayout =1;
 
   public News(){
+    super();/*
     init();
     showAll = true;
+    */
   }
 
   public News(int iCategoryId){
+    super(iCategoryId );
+    /*
     this();
     this.iCategoryId=iCategoryId;
     this.showAll = false;
+    */
   }
-
+/*
   private void init(){
     headlineProxy.setBold();
     informationProxy.setFontColor("#666666");
@@ -350,7 +355,7 @@ public class News extends PresentationObjectContainer implements IWBlock{
   public void main(IWContext iwc)throws Exception{
     try {
       //isAdmin = AccessControl.isAdmin(iwc);
-      /** @todo  */
+      /** @todo  *//*
       isAdmin = iwc.getAccessController().hasEditPermission(this,iwc);
     }
     catch (SQLException ex) {
@@ -385,7 +390,7 @@ public class News extends PresentationObjectContainer implements IWBlock{
   /*
   ** This method uses static layouts from this class
   **
-  */
+  *//*
   public void setLayout(int LAYOUT){
     this.iLayout = LAYOUT;
   }
@@ -395,7 +400,7 @@ public class News extends PresentationObjectContainer implements IWBlock{
   * return a proxy for the main text. Use the standard
   * set methods on this object such as .setFontSize(1) etc.
   * and it will set the property for all texts.
-  */
+  *//*
   public Text getTextProxy(){
     return textProxy;
   }
@@ -519,5 +524,5 @@ public class News extends PresentationObjectContainer implements IWBlock{
     }
     else
       iSpaceBetween++;
-  }
+  }*/
 }

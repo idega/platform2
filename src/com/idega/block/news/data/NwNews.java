@@ -17,7 +17,7 @@ public class NwNews extends GenericEntity{
   }
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-     addAttribute(getColumnNameUserId(),"User",true,true, java.lang.Integer.class,"many-to-one",com.idega.core.user.data.User.class);
+    addAttribute(getColumnNameUserId(),"User",true,true, java.lang.Integer.class,"many-to-one",com.idega.core.user.data.User.class);
     addAttribute(getColumnNameNewsCategoryId(), "Category", true, true, Integer.class, "many-to-one",NewsCategory.class);
     addAttribute(getColumnNameHeadLine(), "Headline", true, true, String.class);
     addAttribute(getColumnNameNewsText(), "Text", true, true, String.class,4000);
@@ -28,7 +28,8 @@ public class NwNews extends GenericEntity{
     addAttribute(getColumnNameSource(), "Source", true, true, String.class);
     addAttribute(getColumnNameDaysShown(), "Days shown", true, true, Integer.class);
     addAttribute(getColumnNameUpdated(), "Updated", true, true, java.sql.Timestamp.class);
-    addManyToManyRelationShip(com.idega.block.text.data.LocalizedText.class,"NW_NEWS_TX_LOCALIZED_TEXT");
+    addManyToManyRelationShip(com.idega.block.text.data.LocalizedText.class);//,"NW_NEWS_TX_LOCALIZED_TEXT");
+    addManyToManyRelationShip(com.idega.core.data.ICFile.class);
   }
   public String getEntityName(){
     return getEntityTableName();
@@ -153,4 +154,5 @@ public class NwNews extends GenericEntity{
   public void setUpdated(java.sql.Timestamp stamp){
     setColumn(getColumnNameUpdated(), stamp);
   }
+
 }

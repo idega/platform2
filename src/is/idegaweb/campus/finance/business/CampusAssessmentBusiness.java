@@ -411,8 +411,8 @@ public class CampusAssessmentBusiness  {
         String sMaxSql = "select max("+ae.getIDColumnName()+") from "+ae.getEntityTableName()+where;
         //System.err.println(sql.toString());
         //System.err.println(sMinSql);
-        //System.err.println(sMaxSql);
-        //SimpleQuerier.execute(sql.toString());
+        System.err.println(sMaxSql);
+        SimpleQuerier.execute(sql.toString());
         String[] mi = SimpleQuerier.executeStringQuery(sMinSql);
         String[] ma = SimpleQuerier.executeStringQuery(sMaxSql);
         if(mi!=null && mi.length > 0){

@@ -137,9 +137,14 @@ public class Finder  {
 
   public static List listOfEntriesInGroup(int id){
      try {
-      return EntityFinder.findAll(new AccountEntry(),AccountEntry.getEntryTypeColumnName(),id);
+
+      EntityFinder.debug = true;
+      List L =  EntityFinder.findAllByColumn(new AccountEntry(),AccountEntry.getEntryGroupIdColumnName(),id);
+      EntityFinder.debug = false;
+      return L;
     }
     catch (SQLException ex) {
+      ex.printStackTrace();
       return null;
     }
   }

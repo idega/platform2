@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Locale;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICObjectInstance;
+import com.idega.core.data.ICFile;
 /**
  * Title:
  * Description:
@@ -93,6 +94,7 @@ public class NewsFinder {
     if(N!=null){
       NH.setNews(N);
       NH.setLocalizedText( listOfLocalizedText(N.getID()));
+      NH.setFiles( listOfNewsFiles(N.getID()));
       return NH;
     }
     else
@@ -112,13 +114,11 @@ public class NewsFinder {
   }
 
   public static NewsHelper getNewsHelper(int iNwNewsId){
-    NewsHelper NH = new NewsHelper();
     NwNews N = getNews(iNwNewsId);
     return getNewsHelper(N);
   }
 
    public static NewsHelper getNewsHelper(int iNwNewsId,int iLocaleId){
-    NewsHelper NH = new NewsHelper();
     NwNews N = getNews(iNwNewsId);
     return getNewsHelper(N,iLocaleId );
   }
@@ -130,10 +130,32 @@ public class NewsFinder {
     if(N!=null){
       NH.setNews(N);
       NH.setLocalizedText(getLocalizedText(iNwNewsId,locale));
+      NH.setFiles(listOfNewsFiles(N));
       return NH;
     }
     else
       return null;
+  }
+
+  public static List listOfNewsFiles(int id){
+    try {
+      return listOfNewsFiles(new NwNews(id));
+    }
+    catch (SQLException ex) {
+
+    }
+    return null;
+  }
+
+
+  public static List listOfNewsFiles(NwNews nwNews){
+    try {
+      return EntityFinder.findRelated(nwNews,new ICFile());
+    }
+    catch (SQLException ex) {
+
+    }
+    return null;
   }
 
 

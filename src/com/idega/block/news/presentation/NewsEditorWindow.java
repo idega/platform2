@@ -26,6 +26,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.presentation.IWAdminWindow;
+import com.idega.core.data.ICFile;
 
 /**
  * Title:
@@ -67,6 +68,7 @@ private static String prmNewCategory = "nwep.newcategory";
 private static String prmEditCategory = "nwep.editcategory";
 private static String prmCatName= "nwep.categoryname";
 private static String prmCatDesc = "nwep.categorydesc";
+public static final  String imageAttributeKey = "newsimage";
 
 
 
@@ -211,11 +213,8 @@ private IWResourceBundle iwrb;
     }
     LocalizedText LocTx = null;
     NwNews news = null;
-    if(newsHelper != null){
-      LocTx = newsHelper.getLocalizedText();
-      news = newsHelper.getNwNews();
-    }
-    addNewsFields(LocTx,news,iLocaleId,iObjInsId,iCategoryId);
+    addNewsFields(newsHelper,iLocaleId,iObjInsId,iCategoryId);
+
   }
 
   private void saveNews(IWContext iwc,String sNwNewsId,String sLocalizedTextId,String sCategoryId){
@@ -304,7 +303,13 @@ private IWResourceBundle iwrb;
 
   }
 
-  private void addNewsFields(LocalizedText locText,NwNews nwNews, int iLocaleId,int iObjInsId,int iCategoryId){
+  private void addNewsFields(NewsHelper newsHelper, int iLocaleId,int iObjInsId,int iCategoryId){
+    LocalizedText locText = null;
+    NwNews nwNews = null;
+    if(newsHelper !=null){
+      locText = newsHelper.getLocalizedText();
+      nwNews = newsHelper.getNwNews();
+    }
     boolean hasNwNews = ( nwNews != null ) ? true: false;
     boolean hasLocalizedText = ( locText != null ) ? true: false;
 
@@ -318,9 +323,6 @@ private IWResourceBundle iwrb;
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
 
     TextArea taBody = new TextArea(prmBody,65,18);
-
-    //DropdownMenu drpCategories = drpNewsCategories(prmCategory,"-2",iwrb.getLocalizedString("no_categories","No Categories"));
-    //drpCategories.addMenuElementFirst("-1", iwrb.getLocalizedString("choose_category","Choose Category") );
 
     TextInput tiAuthor = new TextInput(prmAuthor);
     tiAuthor.setLength(22);
@@ -336,6 +338,7 @@ private IWResourceBundle iwrb;
     ImageInserter imageInsert = new ImageInserter();
     imageInsert.setImSessionImageName(prmImageId);
     imageInsert.setWindowClassToOpen(SimpleChooserWindow.class);
+    Link propslink = null;
 
     SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
 
@@ -368,9 +371,13 @@ private IWResourceBundle iwrb;
       tiSource.setContent(nwNews.getSource());
       //drpCategories.setSelectedElement(String.valueOf(nwNews.getNewsCategoryId()));
       drpDaysShown.setSelectedElement(String.valueOf(nwNews.getDaysShown()));
-       imageInsert.setSelected(nwNews.getIncludeImage());
-      if(nwNews.getImageId() != -1){
-        imageInsert.setImageId(nwNews.getImageId());
+      imageInsert.setSelected(nwNews.getIncludeImage());
+      List files = newsHelper.getFiles();
+      if(files != null){
+        ICFile file1 = (ICFile) files.get(0);
+        imageInsert.setImageId(file1.getID());
+        Text properties = new Text("properties");
+        propslink = com.idega.block.media.presentation.ImageAttributeSetter.getLink(properties,file1.getID(),imageAttributeKey);
       }
       addHiddenInput(new HiddenInput(prmNwNewsId,Integer.toString(nwNews.getID())));
       addHiddenInput(new HiddenInput(prmCategory ,String.valueOf(nwNews.getNewsCategoryId())));
@@ -388,6 +395,8 @@ private IWResourceBundle iwrb;
     addRight(sSource,tiSource,true);
     addRight(sDaysShown,drpDaysShown,true);
     addRight(sImage,imageInsert,true);
+    if(propslink != null)
+      addRight("props",propslink,true);
 
     addSubmitButton(save);
 

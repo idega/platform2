@@ -20,6 +20,7 @@ import com.idega.util.text.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.core.data.ICFile;
 
 
 /**
@@ -302,11 +303,19 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     T.add(newsInfo,1,1);
 
 
-    if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
+    //if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
+    List files = newsHelper.getFiles();
+    if(files!=null){
       try{
       Table imageTable = new Table(1, 2);
-      Image newsImage = new Image(news.getImageId());
-      newsImage.setAlignment("right");
+      ICFile imagefile = (ICFile)files.get(0);
+      int imid = imagefile.getID();
+      String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
+
+      Image newsImage = new Image(imid);
+      if(att != null)
+        newsImage.setAttributes(getAttributeMap(att));
+      //newsImage.setAlignment("right");
       //imageTable.setAlignment("right");
       //imageTable.setVerticalAlignment("top");
       //imageTable.add(newsImage, 1, 1);
@@ -316,6 +325,8 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
         ex.printStackTrace();
       }
     }
+    else
+      System.err.println(" no news files");
 
     T.add(newsBody,1,3);
 
@@ -378,7 +389,7 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
       /** @todo  */
       isAdmin = iwc.getAccessController().hasEditPermission(this,iwc);
     }
-    catch (SQLException ex) {
+    catch (Exception ex) {
       isAdmin = false;
     }
 

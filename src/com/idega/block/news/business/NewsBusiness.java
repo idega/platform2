@@ -6,7 +6,9 @@ import com.idega.block.news.data.*;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.util.idegaTimestamp;
+import com.idega.core.data.ICFile;
 import java.util.List;
+import java.util.Vector;
 import java.util.Iterator;
 
 public class NewsBusiness{
@@ -177,10 +179,12 @@ public class NewsBusiness{
       boolean nwUpdate = false;
       boolean locUpdate = false;
       NwNews nwNews = null;
+      List files = null;
       LocalizedText locText = null;
       if(iNwNewsId > 0){
         nwUpdate = true;
         nwNews = new NwNews(iNwNewsId);
+        files = NewsFinder.listOfNewsFiles(nwNews);
         if(iLocalizedTextId > 0){
           locUpdate = true;
           locText = new LocalizedText(iLocalizedTextId);
@@ -195,6 +199,7 @@ public class NewsBusiness{
         locUpdate = false;
         nwNews = new NwNews();
         locText = new LocalizedText();
+        files = (List)new Vector();
       }
 
       locText.setHeadline(sHeadline);
@@ -203,13 +208,17 @@ public class NewsBusiness{
       locText.setTitle( sTitle);
       locText.setUpdated(idegaTimestamp.getTimestampRightNow());
 
+      ICFile file = new ICFile(iImageId);
+      ICFile[] nwfile = (ICFile[]) nwNews.findRelated(file);
+      if(nwfile == null)
+        file.addTo(nwNews );
+
       nwNews.setImageId(iImageId);
       nwNews.setIncludeImage(useImage);
       nwNews.setUpdated(idegaTimestamp.getTimestampRightNow());
       nwNews.setNewsCategoryId(iCategoryId );
       nwNews.setAuthor(sAuthor);
       nwNews.setSource(sSource);
-
 
       if(nwUpdate ){
         nwNews.update();
