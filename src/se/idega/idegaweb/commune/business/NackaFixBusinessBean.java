@@ -1,5 +1,5 @@
 /*
- * $Id: NackaFixBusinessBean.java,v 1.5 2004/12/08 13:10:44 tryggvil Exp $
+ * $Id: NackaFixBusinessBean.java,v 1.6 2004/12/08 14:24:55 laddi Exp $
  * Created on 7.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,34 +9,14 @@
  */
 package se.idega.idegaweb.commune.business;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.FinderException;
-
-//import se.idega.idegaweb.commune.care.data.ChildCareContract;
-//import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
-
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolClassMemberHome;
-import com.idega.block.school.data.SchoolSeason;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
-import com.idega.data.IDOLookup;
-import com.idega.data.IDOLookupException;
-import com.idega.util.IWTimestamp;
 
 
 /**
- * Last modified: $Date: 2004/12/08 13:10:44 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/12/08 14:24:55 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class NackaFixBusinessBean extends IBOServiceBean  implements NackaFixBusiness{
 /*
