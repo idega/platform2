@@ -177,4 +177,13 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		return super.idoFindPKsBySQL(select);
 	}
 
+	public Collection ejbFindBySchoolType(int schoolTypeId) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhereEquals(COLUMN_SCHOOL_TYPE, schoolTypeId);
+		query.append(" AND (").append(COLUMN_IS_VALID).append(" is null");
+		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y')");
+		return idoFindPKsByQuery(query);
+	}
+
 }
