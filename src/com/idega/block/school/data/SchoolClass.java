@@ -1,7 +1,5 @@
 package com.idega.block.school.data;
 
-import com.idega.data.IDORelationshipException;
-
 
 public interface SchoolClass extends com.idega.data.IDOEntity
 {
@@ -22,6 +20,7 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public int getSchoolSeasonId();
  public com.idega.block.school.data.SchoolType getSchoolType();
  public int getSchoolTypeId();
+ public java.util.Collection getSubGroupPlacements()throws com.idega.data.IDORelationshipException;
  public boolean getValid();
  public boolean hasRelationToSchoolYear(com.idega.block.school.data.SchoolYear p0);
  public boolean hasRelationToTeacher(com.idega.user.data.User p0);
@@ -39,5 +38,4 @@ public interface SchoolClass extends com.idega.data.IDOEntity
  public void setSchoolSeasonId(int p0);
  public void setSchoolTypeId(int p0);
  public void setValid(boolean p0);
-	public java.util.Collection getSubGroupPlacements() throws IDORelationshipException;
 }

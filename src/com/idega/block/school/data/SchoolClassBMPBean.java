@@ -261,6 +261,10 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	}
 
 	public Collection ejbFindBySchoolAndSeasonAndYears(int schoolID, int schoolSeasonID, String[] schoolYearIDs)throws FinderException {
+		return ejbFindBySchoolAndSeasonAndYears(schoolID, schoolSeasonID, schoolYearIDs, true);
+	}
+	
+	public Collection ejbFindBySchoolAndSeasonAndYears(int schoolID, int schoolSeasonID, String[] schoolYearIDs, boolean showSubGroups)throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelect().append("distinct s.*").appendFrom().append(this.getEntityName() + " s, ").append("sch_school_year y, ").append(SCHOOL_CLASS_YEAR + " sy");
 		query.appendWhereEquals(SCHOOL, schoolID).appendAndEquals("s."+getIDColumnName(), "sy."+getIDColumnName()).appendAndEquals("sy.sch_school_year_id", "y.sch_school_year_id");
@@ -269,6 +273,9 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 			query.appendAndEquals(SEASON, schoolSeasonID);
 		}
 		query.appendAnd().appendLeftParenthesis().appendEqualsQuoted(COLUMN_VALID, "Y").appendOr().append(COLUMN_VALID).appendIsNull().appendRightParenthesis();
+		if (!showSubGroups) {
+			query.appendAnd().appendLeftParenthesis().appendEqualsQuoted(COLUMN_SUB_GROUP, "N").appendOr().append(COLUMN_SUB_GROUP).appendIsNull().appendRightParenthesis();
+		}
 		query.appendOrderBy(NAME);
 		return idoFindPKsByQuery(query);
 	}
