@@ -133,16 +133,20 @@ public class ServiceViewer extends Window {
     try {
       int[] dagur = ServiceDay.getDaysOfWeek(serv.getID());
 
-      for (int i = 0; i < dagur.length; i++) {
-        depart.append(dayOfWeekName[dagur[i]]);
-        depart.append(Text.NON_BREAKING_SPACE);
+      if( dagur.length == 7 ){
+        depart.append("Every day at ");/**localize**/
+      }
+      else{
+        for (int i = 0; i < dagur.length; i++) {
+          depart.append(dayOfWeekName[dagur[i]]);
+          depart.append(Text.NON_BREAKING_SPACE);
+        }
       }
 
       idegaTimestamp stamp = new idegaTimestamp(serv.getDepartureTime());
       depart.append(stamp.getHour());
       depart.append(":");
       depart.append(TextSoap.addZero(stamp.getMinute()));
-
     }
     catch (Exception ex) {
       ex.printStackTrace(System.err);
