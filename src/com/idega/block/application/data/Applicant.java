@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.13 2002/03/18 19:59:37 aron Exp $
+ * $Id: Applicant.java,v 1.14 2002/03/20 10:04:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,7 @@ package com.idega.block.application.data;
 
 import com.idega.data.TreeableEntity;
 import java.sql.SQLException;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -268,11 +269,44 @@ public class Applicant extends TreeableEntity {
       setColumn(getSendSMSColumnName(),"N");
   }
 
+  public void setStatus(String status){
+    setColumn(getStatusColumnName(),status);
+  }
+
+  public String getStatus(){
+    return getStringColumnValue(getStatusColumnName());
+  }
+
+  public String getName(){
+    return getFullName();
+  }
+
   public String getFullName() {
     return (getFirstName()!= null?getFirstName():"")+
     " "+(getMiddleName()!= null?getMiddleName():"")+
     " "+(getLastName()!= null?getLastName():"");
 
+  }
+
+  public void setFullName(String fullName){
+    StringTokenizer tok = new StringTokenizer(fullName);
+    String temp = "";
+    if(tok.hasMoreTokens()){
+      temp = tok.nextToken();
+      setFirstName(temp);
+    }
+    if(tok.hasMoreTokens()){
+      temp = tok.nextToken();
+      setMiddleName(temp);
+    }
+    if(tok.hasMoreTokens()){
+      temp = tok.nextToken();
+      setLastName(temp);
+    }
+    else{
+      setMiddleName("");
+      setLastName(temp);
+    }
   }
 
   public void insert() throws SQLException{

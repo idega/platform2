@@ -493,11 +493,11 @@ public class CampusAllocator extends Block implements Campus{
         String sChildren = AH.getCampusApplication().getChildren();
         boolean bSpouse = false,bChildren = false;
         if(sSpouse !=null && sSpouse.length() > 0){
-          Frame.add(CA.getViewSpouse(AH.getCampusApplication(),iwrb),2,1);
+          Frame.add(CA.getViewSpouse(AH.getApplicant() ,AH.getCampusApplication(),iwrb),2,1);
           bSpouse = true;
         }
         if(sChildren !=null && sChildren.length() > 0){
-          Frame.add(CA.getViewChildren(AH.getCampusApplication(),iwrb),2,1);
+          Frame.add(CA.getViewChildren(null,AH.getCampusApplication(),iwrb),2,1);
           bChildren = true;
         }
         if(bChildren && bSpouse){

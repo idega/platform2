@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.4 2002/03/18 19:59:37 aron Exp $
+ * $Id: ApplicationFormHelper.java,v 1.5 2002/03/20 10:04:39 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -41,6 +41,7 @@ public class ApplicationFormHelper {
     applicant.setResidence(residence);
     applicant.setResidencePhone(residencePhone);
     applicant.setPO(po);
+    applicant.setStatus("S");
 
     iwc.setSessionAttribute("applicant",applicant);
   }
