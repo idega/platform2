@@ -85,6 +85,8 @@ public class IWMemberConstants extends ICUserConstants{
 	public static final String ORDER_BY_NAME = "name_order";
 	public static final String ORDER_BY_ADDRESS = "address_order";
 	public static final String ORDER_BY_POSTAL_CODE = "postal_code_order";
+	public static final String ORDER_BY_GROUP_NAME = "group_name_order";
+	public static final String ORDER_BY_ENTRY_DATE = "entry_date_order";
 	
   public static final String[] STATUS = {"chairman","vice_chairman","cashier","secretary","board_member","extra_board","stand_in","co-chief"};
 }
