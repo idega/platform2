@@ -1,0 +1,9 @@
+package is.idega.idegaweb.campus.data;
+
+
+public interface ApplicationSubjectInfoHome extends com.idega.data.IDOHome
+{
+ public ApplicationSubjectInfo create() throws javax.ejb.CreateException, java.rmi.RemoteException;
+ public ApplicationSubjectInfo findByPrimaryKey(Object pk) throws javax.ejb.FinderException, java.rmi.RemoteException;
+
+}

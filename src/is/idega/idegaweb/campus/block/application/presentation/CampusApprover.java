@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.30 2002/06/12 16:35:34 aron Exp $
+ * $Id: CampusApprover.java,v 1.31 2002/06/13 14:31:19 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -44,12 +44,15 @@ import is.idega.idegaweb.campus.block.mailinglist.business.EntityHolder;
 import is.idega.idegaweb.campus.block.mailinglist.business.LetterParser;
 import is.idega.idegaweb.campus.block.mailinglist.business.MailingListBusiness;
 import is.idega.idegaweb.campus.presentation.Edit;
+import is.idega.idegaweb.campus.data.*;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.Vector;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Hashtable;
 
 /**
@@ -68,6 +71,7 @@ public class CampusApprover extends Block {
   private LinkedList linkedlist = null;
   private final String sView = "app_view",sEdit = "app_edit";
   protected boolean isAdmin = false;
+  private List listOfSubjects = null;
 
   /*
   Blár litur í topp # 27324B
@@ -85,13 +89,16 @@ public class CampusApprover extends Block {
   }
 
   protected void control(IWContext iwc){
+    //debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
-
+    boolean infoCheck = true;
+    listOfSubjects = ApplicationFinder.listOfSubject();
     if(iwc.getSessionAttribute("iterator")!=null){
       iterator = (ListIterator)iwc.getSessionAttribute("iterator");
     }
     if(iwc.getParameter("app_subject_id")!=null){
+      infoCheck = false;
       this.iSubjectId = Integer.parseInt(iwc.getParameter("app_subject_id"));
       iwc.setSessionAttribute("subject_id",new Integer(iSubjectId));
     }
@@ -99,6 +106,7 @@ public class CampusApprover extends Block {
       this.iSubjectId = ((Integer)iwc.getSessionAttribute("subject_id")).intValue();
     }
     if(iwc.getParameter("global_status")!=null){
+      infoCheck = false;
       this.sGlobalStatus= (iwc.getParameter("global_status"));
       iwc.setSessionAttribute("gl_status",sGlobalStatus);
     }
@@ -106,6 +114,7 @@ public class CampusApprover extends Block {
       this.sGlobalStatus = ((String)iwc.getSessionAttribute("gl_status"));
     }
     if(iwc.getParameter("global_order")!=null){
+      infoCheck = false;
       this.sGlobalOrder= (iwc.getParameter("global_order"));
       if(sGlobalOrder !=null)
       iwc.setSessionAttribute("gl_order",sGlobalOrder);
@@ -113,6 +122,9 @@ public class CampusApprover extends Block {
     else if(iwc.getSessionAttribute("gl_order")!=null){
       this.sGlobalOrder = ((String)iwc.getSessionAttribute("gl_order"));
     }
+
+    if(iwc.isParameterSet("subj_info") && iwc.getParameter("subj_info").equals("true"))
+      infoCheck = true;
 
     if(isAdmin){
       if(iwc.getParameter("cam_app_trash")!=null){
@@ -135,6 +147,7 @@ public class CampusApprover extends Block {
 	}
 
 	if(iwc.getParameter("save")!= null){
+          bEdit = false;
 	  id = updateWholeApplication(iwc,id);
 	  if (iwc.isParameterSet("priority_drop")) {
 	    updatePriorityLevel(iwc,id);
@@ -142,11 +155,11 @@ public class CampusApprover extends Block {
 	  if(iwc.isParameterSet("status_drop"))
 	    updateApplication(iwc,id);
 	}
-
+/*
 	else{
 	  updateApplication(iwc,id);
 	}
-
+*/
 	if(bEdit){
 	  add(makeApplicationForm(id,bEdit,iwc,iwrb));
 	}
@@ -154,11 +167,15 @@ public class CampusApprover extends Block {
 	  add(makeApplicationTable(id,bEdit,iwc,iwrb));
 	}
       }
-      else if(iwc.getParameter("new")!=null){
+      else if(iwc.getParameter("new_app")!=null && iwc.getParameter("new_app").equals("true")){
 	add(makeApplicationForm(-1,true,iwc,iwrb));
       }
       else if(iwc.getParameter("new2")!=null){
 	add(makeApplicationForm(-1,true,iwc,iwrb));
+      }
+      else if(infoCheck){
+        add(subjectForm());
+        add(makeSubjectStatisticsTable());
       }
       else{
 	add(subjectForm());
@@ -497,6 +514,58 @@ public class CampusApprover extends Block {
     return T;
   }
 
+  public PresentationObject makeSubjectStatisticsTable(){
+
+    DataTable DT = new DataTable();
+    DT.addTitle(iwrb.getLocalizedString("subject_info","Subject Info"));
+    DT.setTitlesHorizontal(true);
+    int row = 1,col = 1;
+    DT.add(Edit.formatText(iwrb.getLocalizedString("subject","Subject")),col++,row);
+    DT.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),col++,row);
+    DT.add(Edit.formatText(iwrb.getLocalizedString("count","Count")),col++,row);
+    DT.add(Edit.formatText(iwrb.getLocalizedString("last_submission","Last in")),col++,row);
+    DT.add(Edit.formatText(iwrb.getLocalizedString("first_submission","First in")),col++,row);
+    DT.add(Edit.formatText(iwrb.getLocalizedString("last_changed","Last change")),col++,row);
+    DT.add(Edit.formatText(iwrb.getLocalizedString("first_change","First Change")),col++,row);
+
+    col = 1;
+    row++;
+    try{
+      List infos =  com.idega.data.EntityFinder.getInstance().findAll(ApplicationSubjectInfo.class);
+      DateFormat df = DateFormat.getDateTimeInstance();
+      if(infos!=null){
+        java.util.Iterator iter = infos.iterator();
+        ApplicationSubjectInfo info;
+        while(iter.hasNext()){
+
+          info = (ApplicationSubjectInfo) iter.next();
+          Link subjLink = new Link(Edit.formatText(info.getSubjectName()));
+          subjLink.addParameter("app_subject_id",info.getSubjectId());
+          subjLink.addParameter("global_status",info.getStatus());
+          DT.add(subjLink,col++,row);
+          DT.add(Edit.formatText(info.getNumber()),col++,row);
+          DT.add(Edit.formatText(getStatus(info.getStatus())),col++,row);
+          DT.add(Edit.formatText(df.format((Date)info.getLastSubmission())),col++,row);
+          DT.add(Edit.formatText(df.format((Date)info.getFirstSubmission())),col++,row);
+          DT.add(Edit.formatText(df.format((Date)info.getLastChange())),col++,row);
+          DT.add(Edit.formatText(df.format((Date)info.getFirstChange())),col++,row);
+          row++;
+          col = 1;
+
+        }
+
+      }
+    }
+    catch(Exception fex){
+      fex.printStackTrace();
+    }
+    DT.getContentTable().setColumnAlignment(4,"right");
+    DT.getContentTable().setColumnAlignment(5,"right");
+    DT.getContentTable().setColumnAlignment(6,"right");
+    DT.getContentTable().setColumnAlignment(7,"right");
+    return DT;
+  }
+
   public PresentationObject makeApplicationTable(int id,boolean bEdit,IWContext iwc,IWResourceBundle iwrb){
      Form theForm = new Form();
      theForm.add(new HiddenInput("application_id",String.valueOf(id)));
@@ -566,7 +635,8 @@ public class CampusApprover extends Block {
 	  Middle.add(getViewApartmentExtra(eCampusApplication,iwc,iwrb),1,3);
 
 	Table Right =new Table(1,3);
-	  Right.add(getRemoteControl(iwrb),1,1);
+	  //Right.add(getRemoteControl(iwrb),1,1);
+          Right.add(getSubjectControl(iwrb,eApplication),1,1);
 	  Right.add(getKnobs(iwrb),1,2);
 	  Right.add(getButtons(eApplication,eApplication.getStatus(),eCampusApplication.getPriorityLevel(),bEdit,iwrb),1,3);
 
@@ -658,7 +728,8 @@ public class CampusApprover extends Block {
 	  Middle.add(getFieldsApartmentExtra(eCampusApplication,iwc,iwrb),1,3);
 
 	Table Right =new Table(1,3);
-	  Right.add(getRemoteControl(iwrb),1,1);
+	  //Right.add(getRemoteControl(iwrb),1,1);
+          Right.add(getSubjectControl(iwrb,eApplication),1,1);
 	  Right.add(getKnobs(iwrb),1,2);
 	  String status = eApplication!=null ? eApplication.getStatus():"";
 	  String pStatus = eCampusApplication!=null ? eCampusApplication.getPriorityLevel():"";
@@ -917,7 +988,7 @@ public class CampusApprover extends Block {
       return T;
   }
 
-  public void updateApplicant(IWContext iwc,Applicant eApplicant,CampusApplication eCampusApplication){
+  private void updateApplicant(IWContext iwc,Applicant eApplicant,CampusApplication eCampusApplication){
     String sFullName =iwc.getParameter("ti_full");
     String sSsn = iwc.getParameter("ti_ssn");
     String sLegRes = iwc.getParameter("ti_legres");
@@ -1087,7 +1158,7 @@ public class CampusApprover extends Block {
       return T;
   }
 
-  public void updateSpouse(IWContext iwc,CampusApplication eCampusApplication,Applicant superApplicant,Applicant spouse)throws SQLException {
+  private void updateSpouse(IWContext iwc,CampusApplication eCampusApplication,Applicant superApplicant,Applicant spouse)throws SQLException {
     String sSpId = iwc.getParameter("ti_sp_id");
     String sSpName = iwc.getParameter("ti_sp_name");
     String sSpSsn = iwc.getParameter("ti_sp_ssn");
@@ -1192,7 +1263,7 @@ public class CampusApprover extends Block {
       return T;
   }
 
-  public void updateChildren(IWContext iwc,CampusApplication eCampusApplication,Applicant superApplicant,Vector children)throws SQLException{
+  private void updateChildren(IWContext iwc,CampusApplication eCampusApplication,Applicant superApplicant,Vector children)throws SQLException{
     if(iwc.isParameterSet("ti_child_count")){
       int count = Integer.parseInt(iwc.getParameter("ti_child_count"));
       if(count > 0){
@@ -1363,7 +1434,7 @@ public class CampusApprover extends Block {
       return T;
   }
 
-  public List updateApartment(IWContext iwc,CampusApplication eCampusApplication,List lApplied){
+  private List updateApartment(IWContext iwc,CampusApplication eCampusApplication,List lApplied){
     String sRentFrom = iwc.getParameter("ap_rentfrom");
     String sFurni = iwc.getParameter("ap_furni");
     String sWait = iwc.getParameter("ap_wait");
@@ -1504,6 +1575,27 @@ public class CampusApprover extends Block {
     return T;
   }
 
+   private PresentationObject getSubjectControl(IWResourceBundle iwrb,Application app){
+      DataTable T = new DataTable();
+      T.setWidth("100%");
+      T.addTitle(iwrb.getLocalizedString("subject","Subject"));
+      int col = 1;
+      int row = 1;
+      T.add(Edit.formatText(iwrb.getLocalizedString("current_subject","Current Subject")),col,row++);
+
+      col++;
+      row = 1;
+
+      DropdownMenu drp = subjectDrop("-1");
+      if(app!=null){
+      drp.setSelectedElement(String.valueOf(app.getSubjectId()));
+      }
+      drp.setName("app_subject_id");
+      T.add(drp,col,row);
+
+    return T;
+  }
+
   private PresentationObject getButtons(Application eApplication,String sStatus,String sPriority,boolean bEdit,IWResourceBundle iwrb){
     DataTable T = new DataTable();
     T.setWidth("100%");
@@ -1578,7 +1670,9 @@ public class CampusApprover extends Block {
     DropdownMenu drp = subjectDrop(String.valueOf(this.iSubjectId));
     DropdownMenu status = statusDrop("global_status",sGlobalStatus);
     DropdownMenu order = orderDrop("global_order",sGlobalOrder);
-    SubmitButton New = new SubmitButton("new","New");
+    SubmitButton New = new SubmitButton(iwrb.getLocalizedImageButton("new","New"), "new_app","true");
+    SubmitButton Info = new SubmitButton(iwrb.getLocalizedImageButton("info","Info"), "subj_info","true");
+   //SubmitButton New = new SubmitButton("new","New");
 //    SubmitButton New2 = new SubmitButton("new2","New transfer");
     drp.setToSubmit();
     status.setToSubmit();
@@ -1600,6 +1694,7 @@ public class CampusApprover extends Block {
     T.add(drp,col++,row);
     T.add(status,col++,row);
     T.add(order,col++,row);
+    T.add(Info,col++,row);
     if(iSubjectId > 0) {
       T.add(New,col++,row);
 //      T.add(New2,col++,row);
@@ -1610,7 +1705,7 @@ public class CampusApprover extends Block {
   }
 
   private DropdownMenu subjectDrop(String selected){
-    List L = ApplicationFinder.listOfSubject();
+    List L = listOfSubjects;
     DropdownMenu drp = new DropdownMenu("app_subject_id");
     drp.addMenuElement(-1,iwrb.getLocalizedString("subject","Subject"));
     if(L!=null){
@@ -1638,6 +1733,8 @@ public class CampusApprover extends Block {
       case 'S': r = iwrb.getLocalizedString("submitted","Submitted"); break;
       case 'A': r = iwrb.getLocalizedString("approved","Approved");   break;
       case 'R': r = iwrb.getLocalizedString("rejected","Rejected");  break;
+      case 'C': r = iwrb.getLocalizedString("contracted","Contract");   break;
+      case 'G': r = iwrb.getLocalizedString("garbage","Garbage");  break;
     }
     return r;
   }
