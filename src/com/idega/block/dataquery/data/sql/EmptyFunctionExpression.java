@@ -3,7 +3,6 @@ package com.idega.block.dataquery.data.sql;
 import java.util.Iterator;
 import java.util.List;
 
-import com.idega.block.dataquery.data.sql.*;
 import com.idega.util.StringHandler;
 
 /**

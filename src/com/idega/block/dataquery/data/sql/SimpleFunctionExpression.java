@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.idega.block.dataquery.business.QueryXMLConstants;
-import com.idega.block.dataquery.data.sql.*;
 import com.idega.util.StringHandler;
 
 /**
