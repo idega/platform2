@@ -161,12 +161,7 @@ public class Booking extends TravelManager {
         form.add(topTable);
         form.add(Text.BREAK);
       }
-/*
-      ShadowBox sb = new ShadowBox();
-        form.add(sb);
-        sb.setWidth("90%");
-        sb.setAlignment("center");
-*/
+
         if (product != null) {
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
@@ -495,12 +490,10 @@ public class Booking extends TravelManager {
       table.add(lNov,3,3);
       table.add(lDec,4,3);
 
-//        table.add(new SmallCalendar(),1,5);
 
       SmallCalendar sm = new SmallCalendar(stamp);
           sm.T.setBorder(1);
           sm.T.setCellpadding(2);
-//          sm.T.setCellspacing(2);
           sm.T.setBorderColor(super.backgroundColor);
           sm.useNextAndPreviousLinks(true);
           sm.setBackgroundColor(super.backgroundColor);
