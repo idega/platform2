@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.ejb.FinderException;
@@ -100,13 +101,15 @@ public class ReportGenerator extends Block {
 	private JRDataSource _dataSource = null;
 	private Table _fieldTable = null;
 	private JasperDesign _design = null;
-	HashMap _parameterMap = new HashMap();
+	private HashMap _parameterMap = new HashMap();
 	private BusyBar _busy = null;
 	
 	private String _prmLablePrefix = "label_";
 	
 	private String _reportName = "Report";
 	private String PRM_REPORT_NAME = "report_name";
+	
+	private Map _extraHeaderParameters = null;
 	
 	/**
 	 *	
@@ -200,6 +203,26 @@ public class ReportGenerator extends Block {
 					int tmpPrmValueWidth = (tmpPrmValue != null)?calculateTextFieldWidthForString(tmpPrmValue):prmValueWidth;
 					designTemplate.addHeaderParameter(_prmLablePrefix+prmName,tmpPrmLabelWidth,prmName,String.class,tmpPrmValueWidth);
 				}
+			}
+		}
+		
+		if(_extraHeaderParameters != null){
+			Iterator keyIter = _extraHeaderParameters.keySet().iterator();
+			Iterator valueIter = _extraHeaderParameters.values().iterator();
+			while (keyIter.hasNext()) {
+				String keyLabel = (String)keyIter.next();
+				String valueLabel = (String)valueIter.next();
+				if(keyIter.hasNext()){
+					String keyValue = (String)keyIter.next();
+					String valueValue = (String)valueIter.next();
+					
+					String tmpPrmLabel = valueLabel;
+					String tmpPrmValue = valueValue;
+					int tmpPrmLabelWidth = (tmpPrmLabel != null)?calculateTextFieldWidthForString(tmpPrmLabel):prmLableWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null)?calculateTextFieldWidthForString(tmpPrmValue):prmValueWidth;
+					designTemplate.addHeaderParameter(keyLabel,tmpPrmLabelWidth,keyValue,String.class,tmpPrmValueWidth);
+				}
+				
 			}
 		}
 		
@@ -329,6 +352,13 @@ public class ReportGenerator extends Block {
 						
 					Method method = mf.getMethodWithNameAndParameters(mainClass,methodName,paramTypes);
 					_dataSource = (JRDataSource)method.invoke(forInvocationOfMethod,prmVal);
+					
+					if(_dataSource!= null && _dataSource instanceof ReportableCollection){
+						_extraHeaderParameters = ((ReportableCollection)_dataSource).getExtraHeaderParameters();
+						if(_extraHeaderParameters != null){
+							_parameterMap.putAll(_extraHeaderParameters);
+						}
+					}
 				}
 			}
 			

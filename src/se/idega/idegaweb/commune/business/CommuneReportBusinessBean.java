@@ -38,6 +38,7 @@ import com.idega.user.data.GroupRelation;
 import com.idega.user.data.GroupRelationHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
+import com.idega.util.IWTimestamp;
 
 /**
  * Title:		CommuneReportBusinessBean
@@ -74,7 +75,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 	public ReportableCollection getChildAndItsParentsRegisteredInCommune(Date firstBirthDateInPeriode, Date lastBirthDateInPeriode, Timestamp firstRegistrationDateInPeriode, Timestamp lastRegistrationDateInPeriode) throws RemoteException, CreateException, FinderException{
 		initializeMemberFamilyLogicIfNeeded();
 		initializeCommuneUserBusinessIfNeeded();
-		
+				
 		ReportableCollection reportData = new ReportableCollection();
 		
 		//find the main nacka group
@@ -90,6 +91,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 		IDOEntityDefinition grRelDef = IDOLookup.getEntityDefinitionForClass(GroupRelation.class);
 		IDOEntityDefinition addrDef = IDOLookup.getEntityDefinitionForClass(Address.class);
 		Locale currentLocale = this.getUserContext().getCurrentLocale();
+		DateFormat dataFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale);
 		
 		
 		//Child - Fields
@@ -223,7 +225,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 				GroupRelation rel = (GroupRelation)iterator.next();
 				Timestamp time = rel.getInitiationDate();
 				if(time != null){
-					data.addData(childGroupInvitationDate,SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale).format(time));
+					data.addData(childGroupInvitationDate,dataFormat.format(time));
 				} else {
 					//TODO localize
 					data.addData(childGroupInvitationDate,"No time specified");
@@ -256,7 +258,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						GroupRelation rel = (GroupRelation)iterator.next();
 						Timestamp time = rel.getInitiationDate();
 						if(time != null){
-							data.addData(parent1GroupInvitationDate,SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale).format(time));
+							data.addData(parent1GroupInvitationDate,dataFormat.format(time));
 						} else {
 							//TODO localize
 							data.addData(parent1GroupInvitationDate,"No time specified");
@@ -287,7 +289,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						GroupRelation rel = (GroupRelation)iterator.next();
 						Timestamp time = rel.getInitiationDate();
 						if(time != null){
-							data.addData(parent2GroupInvitationDate,SimpleDateFormat.getDateTimeInstance(DateFormat.DEFAULT,DateFormat.DEFAULT,currentLocale).format(time));
+							data.addData(parent2GroupInvitationDate,dataFormat.format(time));
 						} else {
 							//TODO localize
 							data.addData(parent2GroupInvitationDate,"No time specified");
@@ -302,6 +304,9 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 			
 			
 		}
+		
+		//TODO Localize  //TMP
+		reportData.addExtraHeaderParameter("label_current_date","Current date","current_date",dataFormat.format(IWTimestamp.getTimestampRightNow()));
 		
 		return reportData;
 	}

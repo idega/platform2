@@ -8,8 +8,11 @@ package com.idega.block.datareport.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import com.idega.data.IDOReportableEntity;
@@ -35,6 +38,9 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	private IDOReportableEntity _currentJRDataSource = null;
 	private List _fields = new ArrayList();
 	private Object _defaultFieldValue = null;
+	
+	private Map _extraHeaderParameters = new TreeMap();
+	
 	
 	/**
 	 * @param initialCapacity
@@ -109,6 +115,15 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	
 	public void addField(IDOReportableField field){
 		_fields.add(field);
+	}
+	
+	public Map getExtraHeaderParameters(){
+		return _extraHeaderParameters;
+	}
+	
+	public void addExtraHeaderParameter(String labelKey, String LabelValue, String valueKey, String valueValue){
+		_extraHeaderParameters.put(valueKey,valueValue);
+		_extraHeaderParameters.put(labelKey,LabelValue);
 	}
 
 }
