@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import se.nexus.nbs.sdk.NBSMessageHttp;
 
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 
