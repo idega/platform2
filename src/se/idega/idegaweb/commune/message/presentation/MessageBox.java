@@ -39,8 +39,17 @@ public class MessageBox extends CommuneBlock {
   private final static String PARAM_VIEW_MESSAGE = "msg_view_msg";
   private final static String PARAM_VIEW_MESSAGE_LIST = "msg_view_msg_list";
   private final static String PARAM_MESSAGE_ID = "msg_id";
+  private final static String PARAM_SAVE_SETTINGS = "msg_save_settings";
   private final static String PARAM_SHOW_DELETE_INFO = "msg_s_delete_i";
   private final static String PARAM_DELETE_MESSAGE = "msg_delete_message";
+  
+  private final static String PARAM_TO_MSG_BOX = "msg_to_msg_box";
+  private final static String PARAM_TO_EMAIL = "msg_to_email";
+  
+  public static final String SEND_TO_MESSAGE_BOX = "msg_send_box";
+  public static final String SEND_TO_EMAIL = "msg_send_email";
+  
+  private IWPropertyList userProperties;
 
   private Table mainTable = null;
 
@@ -53,7 +62,8 @@ public class MessageBox extends CommuneBlock {
 
   public void main(IWContext iwc){
     this.setResourceBundle(getResourceBundle(iwc));
-
+    userProperties = getUserProperties(iwc);
+    
     try{
       int action = parseAction(iwc);
       switch(action){
@@ -69,7 +79,7 @@ public class MessageBox extends CommuneBlock {
         case ACTION_DELETE_MESSAGE:
           deleteMessage(iwc);
           viewMessageList(iwc);
-          break;
+        	break;
         default:
           break;
       }
@@ -102,6 +112,9 @@ public class MessageBox extends CommuneBlock {
     if(iwc.isParameterSet(PARAM_DELETE_MESSAGE)){
       action = ACTION_DELETE_MESSAGE;
     }
+    if (iwc.isParameterSet(PARAM_SAVE_SETTINGS)){
+    	saveSettings(iwc);
+    }
 
     return action;
   }
@@ -111,8 +124,11 @@ public class MessageBox extends CommuneBlock {
     add(new Break(2));
 
     Form f = new Form();
+    Table table = new Table(1,3);
+    f.add(table);
+    
     ColumnList messageList = new ColumnList(3);
-    f.add(messageList);
+    table.add(messageList,1,1);
     messageList.setBackroundColor("#e0e0e0");
     messageList.setHeader(localize("message.subject","Subject"),1);
     messageList.setHeader(localize("message.date","Date"),2);
@@ -150,17 +166,39 @@ public class MessageBox extends CommuneBlock {
 		    }
 	    }
 	
-	    SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("message.delete", "Delete", iwc));
-	    deleteButton.setAsImageButton(true);
-	
-	    messageList.skip(2);
-	    PresentationObject[] bottomRow = new PresentationObject[3];
+	  	Table settingsTable = new Table(2,2);
+	  	table.add(settingsTable,1,2);
+	  	
+	  	CheckBox msgBox = new CheckBox(PARAM_TO_MSG_BOX);
+	  		msgBox.setChecked(true);
+	  	CheckBox email = new CheckBox(PARAM_TO_EMAIL);
+	  		email.setChecked(true);
+	  	
+	  	if ( userProperties.getProperty(SEND_TO_MESSAGE_BOX) != null )
+	  		msgBox.setChecked(new Boolean(userProperties.getProperty(SEND_TO_MESSAGE_BOX)).booleanValue());
+	  	if ( userProperties.getProperty(SEND_TO_EMAIL) != null )
+	  		email.setChecked(new Boolean(userProperties.getProperty(SEND_TO_EMAIL)).booleanValue());
+	  		
+	  	settingsTable.add(msgBox,1,1);
+	  	settingsTable.add(email,1,2);
+	  	settingsTable.add(getText(getLocalizedString("message.send_to_message_box", "Send to message box", iwc)),2,1);
+	  	settingsTable.add(getText(getLocalizedString("message.send_to_email", "Send to email", iwc)),2,2);
 	    
-	    bottomRow[2] = deleteButton;
-	    messageList.addBottomRow(bottomRow);
+	    Table submitTable = new Table(2,1);
+	    submitTable.setCellpaddingAndCellspacing(0);
+	    submitTable.setWidth(Table.HUNDRED_PERCENT);
+	    submitTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+	    table.add(submitTable,1,3);
+	    
+	    SubmitButton deleteButton = new SubmitButton(this.getLocalizedString("message.delete", "Delete", iwc),PARAM_SHOW_DELETE_INFO,"true");
+	    deleteButton.setAsImageButton(true);
+	    submitTable.add(deleteButton,2,1);
+	    
+	    SubmitButton settings = new SubmitButton(this.getLocalizedString("message.settings", "Settings", iwc),PARAM_SAVE_SETTINGS,"true");
+	    settings.setAsImageButton(true);
+			submitTable.add(settings,1,1);	
     }
 
-    f.addParameter(PARAM_SHOW_DELETE_INFO,"true");
     add(f);
   }
 
@@ -253,6 +291,20 @@ public class MessageBox extends CommuneBlock {
     }
   }
 
+  private void saveSettings(IWContext iwc) {
+  	String toMsgBox = iwc.getParameter(PARAM_TO_MSG_BOX);
+  	if ( toMsgBox == null )
+  		userProperties.setProperty(SEND_TO_MESSAGE_BOX, new Boolean(false));
+  	else
+  		userProperties.setProperty(SEND_TO_MESSAGE_BOX, new Boolean(true));
+  		
+  	String toEmail = iwc.getParameter(PARAM_TO_EMAIL);
+  	if ( toEmail == null )
+  		userProperties.setProperty(SEND_TO_EMAIL, new Boolean(false));
+  	else
+  		userProperties.setProperty(SEND_TO_EMAIL, new Boolean(true));
+  }
+  
   private MessageBusiness getMessageBusiness(IWContext iwc) throws Exception {
     return (MessageBusiness)com.idega.business.IBOLookup.getServiceInstance(iwc,MessageBusiness.class);
   }
