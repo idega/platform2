@@ -1,7 +1,7 @@
 package is.idega.idegaweb.golf.entity;
 
 
-public interface Tee extends is.idega.idegaweb.golf.entity.GolfEntity
+public interface Tee extends com.idega.data.IDOLegacyEntity
 {
  public float getCourseRating();
  public int getFieldID();
@@ -20,8 +20,8 @@ public interface Tee extends is.idega.idegaweb.golf.entity.GolfEntity
  public void setHoleName(java.lang.String p0);
  public void setHoleNumber(int p0);
  public void setPar(int p0);
- public void setSlope(java.lang.String p0);
  public void setSlope(int p0);
+ public void setSlope(java.lang.String p0);
  public void setTeeColorID(int p0);
  public void setTeeLength(int p0);
 }

@@ -3,7 +3,16 @@
 package is.idega.idegaweb.golf.entity;
 
 //import java.util.*;
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
+import com.idega.data.query.Column;
+import com.idega.data.query.MatchCriteria;
+import com.idega.data.query.SelectQuery;
+import com.idega.data.query.Table;
+import com.idega.data.query.WildCardColumn;
 
 public class TeeBMPBean extends GenericEntity implements Tee{
 
@@ -19,6 +28,7 @@ public class TeeBMPBean extends GenericEntity implements Tee{
 		addAttribute("tee_color_id","Teigur", true, true, "java.lang.Integer","one-to-many","is.idega.idegaweb.golf.entity.TeeColor");
 		addAttribute("tee_length","Lengd teigar",true,true,"java.lang.Integer");
 	}
+	
 
 	public int getTeeLength() {
 		return getIntColumnValue("tee_length");
@@ -106,6 +116,16 @@ public class TeeBMPBean extends GenericEntity implements Tee{
 		return "tee";
 	}
 
-
+	public Collection ejbFindByFieldAndHoleNumber(int fieldID, int holeNumber) throws FinderException{
+		Table table = new Table(this);
+		Column colFieldID = new Column(table, "field_id");
+		Column colHoleNumber = new Column(table, "hole_number");
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(colFieldID, MatchCriteria.EQUALS, fieldID));
+		query.addCriteria(new MatchCriteria(colHoleNumber, MatchCriteria.EQUALS, holeNumber));
+		
+		return this.idoFindIDsBySQL(query.toString());		
+	}
 
 }
