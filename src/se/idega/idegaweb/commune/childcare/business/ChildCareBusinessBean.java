@@ -37,6 +37,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -3357,7 +3358,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				System.out.println("Handling entry " + ++a + " of " + size);
 				ChildCareApplication app = (ChildCareApplication) it.next();
 				User child = app.getChild();
-				if (!getCheckBusiness().hasGrantedCheck(child)) getCheckBusiness().createGrantedCheck(child);
+				if (!getCareBusiness().hasGrantedCheck(child)) getCheckBusiness().createGrantedCheck(child);
 			}
 		}
 		catch (Exception e) {
@@ -4144,4 +4145,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		}
 
+		private CareBusiness getCareBusiness() {
+			try {
+				return (CareBusiness) this.getServiceInstance(CareBusiness.class);
+			}
+			catch (RemoteException e) {
+				throw new IBORuntimeException(e.getMessage());
+			}
+		}
 }
