@@ -9,14 +9,18 @@ import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
 
+import com.idega.core.builder.data.ICPage;
+import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Script;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.PasswordInput;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
 /**
@@ -33,6 +37,8 @@ public class GolfLogin extends GolfBlock {
 	private boolean _enterSubmit = false;
 	private int _inputLength = 8;
 	private int _indent = 8;
+	private int _logOnPage = -1;
+	private boolean lockedAsWapLayout = false;
 
 	public GolfLogin() {
 		super();
@@ -40,7 +46,7 @@ public class GolfLogin extends GolfBlock {
 	}
 
 
-	private void startState() {
+	private void startState(IWContext iwc) {
 		if (showForm(false)) {
 			String userText = getResourceBundle().getLocalizedString("user", "User");
 			String passwordText = getResourceBundle().getLocalizedString("password", "Password");
@@ -91,6 +97,86 @@ public class GolfLogin extends GolfBlock {
 		}
 	}
 	
+	protected void startStateWML(IWContext iwc) {
+
+		
+		String userText = getResourceBundle().getLocalizedString("user", "User");
+		String passwordText = getResourceBundle().getLocalizedString("password", "Password");
+
+		Form myForm = new Form();
+		myForm.setEventListener(GolfLoginBusiness.class);
+		
+		if (_logOnPage > 0) {
+			myForm.setPageToSubmitTo(_logOnPage);
+		}
+
+		myForm.setMethod("post");
+		myForm.maintainAllParameters();
+
+		Table myTable = new Table();
+		int row = 1;
+
+		TextInput login = (TextInput) getStyledSmallInterface(new TextInput("login"));
+		login.setSize(_inputLength);
+		if (_enterSubmit) {
+			login.setOnKeyPress("return enterSubmit(this,event)");
+		}
+
+		PasswordInput passw = (PasswordInput) getStyledSmallInterface(new PasswordInput("password"));
+		passw.setSize(_inputLength);
+		if (_enterSubmit) {
+			passw.setOnKeyPress("return enterSubmit(this,event)");
+		}
+
+		
+		Label loginTexti = new Label(userText, login);
+		Label passwordTexti = new Label(passwordText, passw);
+
+		SubmitButton loginButton = new SubmitButton(localize("login.login","Login"));
+		
+		myTable.add(loginTexti,1,row++);
+		myTable.add(login,1,row++);
+		myTable.add(passwordTexti,1,row++);
+		myTable.add(passw,1,row++);
+		myTable.add(loginButton,1,row++);
+		
+		myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "login"));
+		myForm.add(myTable);
+		add(myForm);
+
+//		
+//		if (_logOnPage > 0) {
+//			getMainForm().setPageToSubmitTo(_logOnPage);
+//		}
+//
+//		Table myTable = new Table(1,5);
+//		
+//		TextInput login = new TextInput(LOGIN_PARAMETER_NAME);
+//		login.setMarkupAttribute("style", styleAttribute);
+//		login.setSize(inputLength);
+//		
+//		PasswordInput passw = new PasswordInput(PASSWORD_PARAMETER_NAME);
+//		passw.setMarkupAttribute("style", styleAttribute);
+//		passw.setSize(inputLength);
+//		
+//		Label loginTexti = new Label(userText,login);
+//		Label passwordTexti = new Label(passwordText,passw);
+//		
+//		SubmitButton button = new SubmitButton(iwrb.getLocalizedString("login_text", "login"), "tengja");
+//
+//		int row = 1;
+//		myTable.add(loginTexti,1,row++);
+//		myTable.add(login,1,row++);
+//		myTable.add(passwordTexti,1,row++);
+//		myTable.add(passw,1,row++);
+//		
+//		myTable.add(new Parameter(LoginBusinessBean.LoginStateParameter, ACTION_LOG_IN));
+//		myTable.add(button,1,row++);
+//		
+//		getMainForm().add(myTable);
+	}
+
+	
 	private boolean showForm(boolean loggedOn) {
 		if (_showFormWhenLoggedOn != null) {
 			if (loggedOn && _showFormWhenLoggedOn.booleanValue()) {
@@ -121,9 +207,17 @@ public class GolfLogin extends GolfBlock {
 		String state = internalGetState(modinfo);
 		if (state != null) {
 			if (state.equals("loggedon")) {
-				isLoggedOn(modinfo);
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+					isLoggedOnWML(modinfo);
+				} else {
+					isLoggedOn(modinfo);
+				}
 			} else if (state.equals("loggedoff")) {
-				startState();
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+					startStateWML(modinfo);
+				} else {
+					startState(modinfo);
+				}
 			} else if (state.equals("newlogin")) {
 				String temp = modinfo.getParameter("login");
 				if (temp != null) {
@@ -140,11 +234,19 @@ public class GolfLogin extends GolfBlock {
 			} else if (state.equals("loginfailed")) {
 				loginFailed("");
 			} else {
-				startState();
+				if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+					startStateWML(modinfo);
+				} else {
+					startState(modinfo);
+				}
 			}
 
 		} else {
-			startState();
+			if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())) {
+				startStateWML(modinfo);
+			} else {
+				startState(modinfo);
+			}
 		}
 	}
 
@@ -187,6 +289,39 @@ public class GolfLogin extends GolfBlock {
 			myForm.add(myTable);
 			add(myForm);
 		}
+	}
+
+	private void isLoggedOnWML(IWContext modinfo) {
+			Form myForm = new Form();
+			myForm.setEventListener(GolfLoginBusiness.class);
+	
+			myForm.setMethod("post");
+			myForm.maintainAllParameters();
+	
+			Table myTable = new Table();
+	
+			Member member = (Member) modinfo.getSession().getAttribute("member_login");
+			Text userName = new Text(member.getName());
+
+			
+
+			SubmitButton logout = new SubmitButton(localize("login.logout","Log out"));
+			
+			int row = 1;
+			
+			myTable.add(userName, 1, row++);
+			
+			if(_logOnPage>0){
+				Link go = new Link(getResourceBundle().getLocalizedString("login.forward","forward >"));
+				go.setPage(_logOnPage);
+				myTable.add(go, 1, row++);
+			}
+			
+			myTable.add(logout, 1,row++);
+
+			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "logoff"));
+			myForm.add(myTable);
+			add(myForm);
 	}
 
 
@@ -261,5 +396,20 @@ public class GolfLogin extends GolfBlock {
 	 */
 	public void setIndent(int indent) {
 		this._indent = indent;
+	}
+	
+	/**
+	 * @param lockedAsWapLayout The lockedAsWapLayout to set.
+	 */
+	public void setLockedAsWapLayout(boolean lockedAsWapLayout) {
+		this.lockedAsWapLayout = lockedAsWapLayout;
+	}
+	
+	public void setLogOnPage(ICPage page) {
+		_logOnPage = page.getID();
+	}
+
+	public void setLogOnPage(int page) {
+		_logOnPage = page;
 	}
 }

@@ -265,7 +265,7 @@ public class TeeTimeTable extends GolfBlock {
 				RTTop.add(adminTable, 1, 1);
 			} else if ((isUser(iwc) && myField.nonMemberRegistration()) || (isMemberOfUnion(iwc, iwc.getSessionAttribute("union_id").toString()) && myField.publicRegistration())&&((iwc.getSessionAttribute("union_id").equals("100")&&now.isLaterThan(opent)) || !iwc.getSessionAttribute("union_id").equals("100") )) {
 				Form mainForm = new Form();
-				mainForm.setWindowToOpen(RegisterTime.class);
+				mainForm.setWindowToOpen(RegisterTimeWindow.class);
 				mainForm.setMethod("get");
 				insertHiddenInput("mode", "1", mainForm);
 				mainForm.add(new HiddenInput("daytime", (String) iwc.getSessionAttribute("when")));
@@ -790,12 +790,11 @@ public class TeeTimeTable extends GolfBlock {
 			return mainForm;
 		} else {
 			mainForm = new Form();
-			mainForm.setWindowToOpen(RegisterTime.class);
+			mainForm.setWindowToOpen(RegisterTimeWindow.class);
 			mainForm.setMethod("get");
 			plainUser = true;
 			insertHiddenInput("mode", "1", mainForm);
-			mainForm.add(new HiddenInput("daytime", (String) iwc.getSessionAttribute("when")));
-			
+			mainForm.add(new HiddenInput("daytime", (String) iwc.getSessionAttribute("when")));			
 
 			Table entry = new Table(5, 1);
 			entry.setBorder(1);

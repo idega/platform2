@@ -24,7 +24,9 @@ import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -141,6 +143,7 @@ public class TeeTimeSearch extends GolfBlock {
 							}
 														
 						} catch (Exception E) {
+							E.printStackTrace();
 							if (E.getMessage().equals("Error1")) {
 								Table Error1 = new Table(1, 1);
 								Error1.setWidth(_blockWidth);
@@ -230,7 +233,15 @@ public class TeeTimeSearch extends GolfBlock {
 		Table table = new Table();
 		
 		InterfaceObject fieldDropdownMenu = getFieldDropdownMenu(modinfo);
-		InterfaceObject playerCountInputBox = insertEditBox("fjoldi", 2);
+		
+		DropdownMenu countOfPlayers = new DropdownMenu("fjoldi");
+		countOfPlayers.addMenuElement(1,"1");
+		countOfPlayers.addMenuElement(2,"2");
+		countOfPlayers.addMenuElement(3,"3");
+		countOfPlayers.addMenuElement(4,"4");
+		countOfPlayers.setSelectedElement(1);
+		
+		InterfaceObject playerCountInputBox = countOfPlayers;//insertEditBox("fjoldi", 2);
 		InterfaceObject firstTimeDropdownMenu = insertTimeDrowdown("ftime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30);
 		InterfaceObject lastTimeDropdownMenu = insertTimeDrowdown("ltime", "22:00", getHours(getFirstOpentime()), getHours(getLastClosetime()), 30);
 		InterfaceObject dateDropdownMenu = insertDropdown("date", dateFunc, getMaxDaysShown(), modinfo);
@@ -506,7 +517,7 @@ public class TeeTimeSearch extends GolfBlock {
 	}
 	
 	public void addWapResults(IWContext modinfo, Vector Groups, GolfField info, String date1, int resultCol) throws SQLException, IOException, FinderException {
-
+		
 		Vector myVector = new Vector();
 		Vector boolVector = new Vector();
 
@@ -519,21 +530,23 @@ public class TeeTimeSearch extends GolfBlock {
 			if (((Boolean) boolVector.elementAt(i)).booleanValue()) count++;
 		}
 
-		Text fieldName = new Text(getFieldName(info.get_field_id()));
-		fieldName.setBold();
-		add(fieldName);
-		Text smallText = getSmallHeader("");
+		
+		String headerString = getFieldName(info.get_field_id());
+		
+
 
 		if ((count % 10 == 1 || (count % 100) % 10 == 1) && count % 100 != 11) {
-			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_time", "Available tee time") + ")");
-			add(smallText);
+			headerString += (" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_time", "Available tee time") + ")");
 		} else if (count != 0) {
-			smallText.setText(" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_times", "Available tee_times") + ")");
-			add(smallText);
+			headerString += (" (" + count + " " + getResourceBundle().getLocalizedString("start.search.available_tee_times", "Available tee_times") + ")");
 		} else {
-			smallText.setText(" (" +getResourceBundle().getLocalizedString("start.search.no_tee_times", "_")+")");
-			add(smallText);
+			headerString += (" (" +getResourceBundle().getLocalizedString("start.search.no_tee_times", "_")+")");
 		}
+		
+		Text headerText = new Text(headerString);
+		Paragraph p = new Paragraph();
+		p.add(headerText);
+		add(p);
 		
 
 		boolean first = true;
@@ -562,19 +575,24 @@ public class TeeTimeSearch extends GolfBlock {
 					if(_teeTimeTablePage != null) {
 						Times[links].setPage(_teeTimeTablePage);
 					}
-					Times[links].addParameter("hvar", "" + info.get_field_id());
-					Times[links].addParameter("search", "1");
-					Times[links].addParameter("club", "" + getFieldUnion(info.get_field_id()));
-					Times[links].addParameter("day", date1);
+
+					Times[links].addParameter("search", "1");					
+					Times[links].addParameter("field_id",info.get_field_id());
+					Times[links].addParameter("date", date1);
+					Times[links].addParameter("union_id", getFieldUnion(info.get_field_id()));
+					Times[links].addParameter("line",myVector.elementAt(i).toString());
+					Times[links].addParameter("skraMarga",modinfo.getParameter("fjoldi"));
+					
+					Times[links].addParameter(RegisterTime.PRM_LOCKED_AS_WML_LAYOUT, "y");
 					Times[links].setClassToInstanciate(RegisterTime.class);
 					
-					add(Text.getBreak());
+					add(new Break());
 					add(Times[links]);
 					links++;
 				}
 			}
 			
-			add(Text.getBreak());
+			add(new Break());
 
 		}
 	}

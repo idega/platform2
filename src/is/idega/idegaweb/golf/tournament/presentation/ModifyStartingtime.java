@@ -376,6 +376,7 @@ public class ModifyStartingtime extends GolfBlock {
 						}
 					}
 					catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
 			}

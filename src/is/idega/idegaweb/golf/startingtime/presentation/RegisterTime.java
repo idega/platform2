@@ -1,14 +1,15 @@
 package is.idega.idegaweb.golf.startingtime.presentation;
 
 import is.idega.idegaweb.golf.GolfField;
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.business.GolfCacher;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
-import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.entity.Union;
+import is.idega.idegaweb.golf.presentation.GolfBlock;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusinessBean;
-import is.idega.idegaweb.golf.templates.page.GolfWindow;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ import java.util.Vector;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWConstants;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
@@ -24,8 +26,11 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.FieldSet;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
@@ -39,7 +44,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.0
  */
 
-public class RegisterTime extends GolfWindow {
+public class RegisterTime extends GolfBlock {
 
   private TeeTimeBusinessBean business;
   private DropdownMenu unionDropdown;
@@ -57,10 +62,10 @@ public class RegisterTime extends GolfWindow {
   private Text templText;
   private static String closeParameterString = "window_close";
 
+  private boolean lockedAsWapLayout = false;
+  public static final String PRM_LOCKED_AS_WML_LAYOUT = "iw_lock_as_wml_layout";
 
   public RegisterTime() {
-  	super("Register Tee Time",400,340);
-    this.setScrollbar(true);
     myForm = new Form();
     frameTable = new Table();
     frameTable.setAlignment("center");
@@ -189,10 +194,10 @@ public class RegisterTime extends GolfWindow {
               myTable.setHeight(1,"30");
 
 
-              myTable.add(getSmallText(this._iwrb.getLocalizedString("start.time", "Time")), 2, 1);
-              myTable.add(getSmallText(this._iwrb.getLocalizedString("start.social_nr","Social nr.")), 3, 1);
-              myTable.add(getSmallText(this._iwrb.getLocalizedString("start.vip_card","VIP card")), 5, 1);
-              myTable.add(getSmallText(this._iwrb.getLocalizedString("start.card_number","Card number")), 6, 1);
+              myTable.add(getSmallText(localize("start.time", "Time")), 2, 1);
+              myTable.add(getSmallText(localize("start.social_nr","Social nr.")), 3, 1);
+              myTable.add(getSmallText(localize("start.vip_card","VIP card")), 5, 1);
+              myTable.add(getSmallText(localize("start.card_number","Card number")), 6, 1);
 
               myTable.setColumnAlignment(1,"center");
               myTable.setColumnAlignment(5,"center");
@@ -254,6 +259,99 @@ public class RegisterTime extends GolfWindow {
             		E.printStackTrace();
             }
     }
+    
+    public void lineUpWMLTable(int skraMarga, IWContext modinfo)throws IOException
+    {
+
+
+            int memberId = -1;
+            boolean memberAvailable = false;
+            //get member_id for member to find him and put his SSN into the textinput
+            if(modinfo.getSession().getAttribute("member_id") != null){
+              memberId = Integer.parseInt((String)modinfo.getSession().getAttribute("member_id"));
+              memberAvailable = true;
+            }
+
+            String lines[] = new String[skraMarga];
+            int groupNums[] = new int[skraMarga];
+
+            try
+            {
+              Member member = null;
+              if(memberId != -1)
+                member = ((MemberHome) IDOLookup.getHomeLegacy(Member.class)).findByPrimaryKey(memberId);
+              String FieldID = currentField;
+              String Date = modinfo.getSession().getAttribute("date").toString();
+              String MemberId = String.valueOf(GolfLoginBusiness.getMember(modinfo).getID());
+              GolfField myGolfField = getFieldInfo( Integer.parseInt(FieldID), Date);
+              int Line = Integer.parseInt( modinfo.getParameter("line"));
+              int max =business.countEntriesInGroup(Line,this.currentField,this.currentDay);
+
+              for(int j = 0; j < skraMarga ; j++){
+                if(max > 3){
+                  while(max > 3){
+                    Line++;
+                    max = business.countEntriesInGroup(Line,this.currentField,this.currentDay);
+                  }
+                }
+                max++;
+                lines[j] = getTime(Line, myGolfField);
+                groupNums[j] = Line;
+
+              }
+
+
+
+              Text timeText = new Text(localize("start.time", "Time"));
+              //new Label(this.localize("start.social_nr","Social nr."),);
+
+
+
+              String unionAbbrevation = null;
+              
+              if(memberAvailable){
+                unionAbbrevation = member.getMainUnion().getAbbrevation();
+              }
+              
+              Table myTable = new Table();
+              int topRows = 0;
+              
+              int i = 1;
+              for ( ;i < skraMarga+1 ; i++)
+              {
+              	FieldSet set = new FieldSet(lines[i-1]+" - " +i);
+              	set.add(new HiddenInput("group_num",Integer.toString(groupNums[i-1])));
+              	set.add(Text.getBreak());
+              	InterfaceObject ob;
+                  if(i == 1 && memberAvailable){
+                  	ob = insertEditBox("secure_num", member.getSocialSecurityNumber());
+                  }else{
+                  	ob = insertEditBox("secure_num", myForm);
+                  }
+                  Label label = new Label(localize("start.social_nr","Social nr."),ob);
+                  set.add(label);
+                  set.add(Text.getBreak());
+                  set.add(ob);
+                  
+                  myTable.add(set,1,i+topRows);
+              }
+
+              myTable.add(new SubmitButton(localize("teetime.book","Book")),1, i+topRows);
+              frameTable.empty();
+              frameTable.add(myTable);
+
+            }
+            catch (SQLException E) {
+                    E.printStackTrace();
+            }
+            catch (IOException E) {
+                    E.printStackTrace();
+            }
+            catch (FinderException E) {
+            		E.printStackTrace();
+            }
+    }
+
 
     public void handleFormInfo(IWContext modinfo)throws SQLException, IOException {
 
@@ -301,7 +399,22 @@ public class RegisterTime extends GolfWindow {
                         illegal.add(k++,new Integer(j));
                         fullMemberQuota = true;
                       }else{
-                        business.setStartingtime(Integer.parseInt(lines[j]), this.currentDay, this.currentField, Integer.toString(tempMemb.getID()),this.currentMember, tempMemb.getName(), Float.toString(tempMemb.getHandicap()), GolfCacher.getCachedUnion(tempMemb.getMainUnionID()).getAbbrevation(), playerCard[j], playerCardNo[j]);
+						String unionAbbr = "-";
+						Union union = GolfCacher.getCachedUnion(tempMemb.getMainUnionID());
+						if(union !=null){
+							unionAbbr = union.getAbbrevation();
+						}
+
+						
+
+                        business.setStartingtime(
+                        			Integer.parseInt(lines[j]),
+								this.currentDay, this.currentField, 
+								Integer.toString(tempMemb.getID()),
+								this.currentMember, tempMemb.getName(), 
+								Float.toString(tempMemb.getHandicap()), 
+								unionAbbr, playerCard[j], 
+								playerCardNo[j]);
                         ones = true;
                       }
                     }else{
@@ -389,11 +502,11 @@ public class RegisterTime extends GolfWindow {
                   //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
                   frameTable.add(Text.getBreak());
                   frameTable.add(Text.getBreak());
-                  frameTable.add(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window")));
+                  frameTable.add(new CloseButton(localize("start.close_window","Close Window")));
 
               }else{
-                this.setParentToReload();
-                this.close();
+                this.getParentPage().setParentToReload();
+                this.getParentPage().close();
               }
 
           }else{
@@ -405,7 +518,7 @@ public class RegisterTime extends GolfWindow {
             //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
             frameTable.add(Text.getBreak());
             frameTable.add(Text.getBreak());
-            frameTable.add(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window")));
+            frameTable.add(new CloseButton(localize("start.close_window","Close Window")));
           }
         }else{
           Text comment = (Text)templText.clone();
@@ -416,7 +529,7 @@ public class RegisterTime extends GolfWindow {
           //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
           frameTable.add(Text.getBreak());
           frameTable.add(Text.getBreak());
-          frameTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window"))));
+          frameTable.add(getButton(new CloseButton(localize("start.close_window","Close Window"))));
         }
     }
 
@@ -429,7 +542,7 @@ public class RegisterTime extends GolfWindow {
             }
             else{
                     myTable.add(getErrorText(localize("start.group_is_full","This group is full. Choose another time.")),2,1);//"Þetta holl er ßv’ miÝur fullt. GjšrÝu svo vel aÝ velja ßŽr nàjan t’ma"), 2, 1);
-                    myTable.add(getButton(new CloseButton(_iwrb.getLocalizedString("start.close_window","Close Window"))), 2, 3);
+                    myTable.add(getButton(new CloseButton(localize("start.close_window","Close Window"))), 2, 3);
             }
 
             myTable.setAlignment(2, 3, "center");
@@ -475,7 +588,7 @@ public class RegisterTime extends GolfWindow {
 
 
  public void noPermission(){
-    Text satyOut = getErrorText(this._iwrb.getLocalizedString("start.no_permission","No permission"));
+    Text satyOut = getErrorText(this.localize("start.no_permission","No permission"));
     satyOut.setFontSize(4);
     Table AlignmentTable = new Table();
     AlignmentTable.setBorder(0);
@@ -492,20 +605,31 @@ public class RegisterTime extends GolfWindow {
 
 
    public void main(IWContext modinfo) throws Exception {
-  	  super.main(modinfo);
-      this.setTitle(this._iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
+    this.getParentPage().setTitle(this.localize("start.register_tee_time","Register tee time"));
 
 	  boolean keepOn = true;
 	  try{
-	    String date = modinfo.getSession().getAttribute("date").toString();
+	  	
+	    String date = modinfo.getParameter("date");
 	    //String field_id = modinfo.getSession().getAttribute("field_id").toString();
-	    currentField = modinfo.getSession().getAttribute("field_id").toString();
-	    currentUnion = modinfo.getSession().getAttribute("union_id").toString();
+	    currentField = modinfo.getParameter("field_id");
+	    currentUnion = modinfo.getParameter("union_id");
+	    
+	    if(date==null){
+	    		date = (String)modinfo.getSession().getAttribute("date");
+		    //String field_id = modinfo.getSession().getAttribute("field_id").toString();
+		    currentField = (String)modinfo.getSession().getAttribute("field_id");
+		    currentUnion = (String)modinfo.getSession().getAttribute("union_id");
+	    }
+	    
+	    String wmlLock = modinfo.getParameter(PRM_LOCKED_AS_WML_LAYOUT);
+	    lockedAsWapLayout = (wmlLock != null && !"".equals(wmlLock));
 	
 	
         currentMember = Integer.toString(GolfLoginBusiness.getMember(modinfo).getID());
         currentDay = new IWTimestamp(date);
       }catch(Exception e){
+      	e.printStackTrace();
         keepOn = false;
         this.noPermission();
       }
@@ -519,6 +643,11 @@ public class RegisterTime extends GolfWindow {
 	  if(keepOn){
 	      myForm.maintainParameter("secure_num");
 	      myForm.maintainParameter("line");
+	      myForm.maintainParameter("date");
+	      myForm.maintainParameter("field_id");
+	      myForm.maintainParameter("union_id");
+	      myForm.maintainParameter(PRM_LOCKED_AS_WML_LAYOUT);
+	      
 	      int skraMargaInt = 0;
 	      String skraMarga = modinfo.getParameter("skraMarga");
 	
@@ -534,7 +663,11 @@ public class RegisterTime extends GolfWindow {
 	        }else{
 	          fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
 	          skraMargaInt = Integer.parseInt(skraMarga);
-	          lineUpTable(skraMargaInt, modinfo);
+	          if(lockedAsWapLayout || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getLanguage())){
+	          	lineUpWMLTable(skraMargaInt, modinfo);
+	          } else {
+	          	lineUpTable(skraMargaInt, modinfo);
+	          }
 	        }
 	      }
 	
