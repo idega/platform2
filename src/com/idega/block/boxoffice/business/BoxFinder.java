@@ -207,4 +207,17 @@ public class BoxFinder {
       return null;
     }
   }
+
+  public static BoxLink[] getLinksInCategory(BoxCategory boxCategory) {
+    try {
+      BoxLink[] links = (BoxLink[]) BoxLink.getStaticInstance(BoxLink.class).findAllByColumnOrdered(boxCategory.getColumnNameBoxCategoryID(),Integer.toString(boxCategory.getID()),BoxLink.getColumnNameCreationDate()+" desc");
+      if ( links != null ) {
+        return links;
+      }
+      return null;
+    }
+    catch (Exception e) {
+      return null;
+    }
+  }
 }

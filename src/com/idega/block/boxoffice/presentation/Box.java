@@ -19,9 +19,11 @@ import com.idega.block.boxoffice.business.*;
 public class Box extends Block implements IWBlock {
 
 private int _boxID = -1;
+private int _boxCategoryID = -1;
 private boolean _isAdmin = false;
 private String _attribute;
 private int _iLocaleID;
+private int _layout = -1;
 
 public final static int BOX_VIEW = 1;
 public final static int CATEGORY_VIEW = 2;
@@ -86,11 +88,6 @@ public Box(String attribute){
     iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
     iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
 
-    String mode = iwc.getParameter(BoxBusiness.PARAMETER_MODE);
-    if ( mode != null ) {
-      doMode(mode,iwc);
-    }
-
     BoxEntity box = null;
 
     _myTable = new Table(1,2);
@@ -133,6 +130,15 @@ public Box(String attribute){
       _boxID = BoxFinder.getBox(_attribute).getID();
     }
 
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
+      try {
+        _boxCategoryID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
+      }
+      catch (NumberFormatException e) {
+        _boxCategoryID = -1;
+      }
+    }
+
     int row = 1;
     if(_isAdmin){
       _myTable.add(getAdminPart(),1,row);
@@ -141,7 +147,7 @@ public Box(String attribute){
 
     _myTable.add(getBox(box),1,row);
     add(_myTable);
-	}
+  }
 
   private Table getBox(BoxEntity box) {
     setStyles();
@@ -150,129 +156,100 @@ public Box(String attribute){
       boxTable.setCellpadding(0);
       boxTable.setCellspacing(_boxSpacing);
 
-    int row = 1;
-    int column = 1;
-
     BoxCategory[] categories = BoxFinder.getCategoriesInBox(box);
     if ( categories != null ) {
-      for ( int a = 0; a < categories.length; a++ ) {
-        Table table = new Table();
-          table.setCellpadding(3);
-          table.setCellspacing(1);
-          table.setWidth(_boxWidth);
-          table.setHeight(_boxHeight);
-          table.setHeight(2,"100%");
-          table.setColor(_borderColor);
-          table.setColor(1,1,_headerColor);
-          table.setColor(1,2,_inlineColor);
-          table.setAlignment(1,1,"center");
-          table.setVerticalAlignment(1,1,"middle");
-          table.setVerticalAlignment(1,2,"top");
-
-        String categoryString = BoxBusiness.getLocalizedString(categories[a],_iLocaleID);
-        if ( categoryString == null ) {
-          categoryString = "$language$";
-        }
-
-        Text categoryText = new Text(categoryString);
-          categoryText.setFontStyle(_categoryStyle);
-        table.add(categoryText,1,1);
-
-        Table linksTable = new Table();
-          linksTable.setRows(_numberOfDisplayed+1);
-          linksTable.setWidth("100%");
-          if ( _isAdmin )
-            linksTable.setHeight("100%");
-        table.add(linksTable,1,2);
-
-        int linkRow = 1;
-
-        BoxLink[] links = BoxFinder.getLinksInBox(box,categories[a]);
-        int linksLength = _numberOfDisplayed;
-        if ( links != null ) {
-          if ( links.length < linksLength ) {
-            linksLength = links.length;
-          }
-
-          for ( int b = 0; b < linksLength; b++ ) {
-            String linkString = BoxBusiness.getLocalizedString(links[b],_iLocaleID);
-            if ( linkString != null ) {
-              Link link = new Link(linkString);
-                if ( _styles ) {
-                  link.setStyle(_name);
-                }
-                else {
-                  link.setFontSize(1);
-                }
-                link.setOnMouseOver("window.status='"+linkString+"'; return true;");
-                link.setOnMouseOut("window.status=''; return true;");
-              linksTable.add(link,1,linkRow);
-              linksTable.setWidth(1,linkRow,"100%");
-
-              String URL = links[b].getURL();
-              int fileID = links[b].getFileID();
-              int pageID = links[b].getPageID();
-              String target = links[b].getTarget();
-
-              if ( URL != null ) {
-                if ( URL.indexOf("http://") == -1 ) {
-                  URL = "http://"+URL;
-                }
-                link.setURL(URL);
-              }
-              else if ( fileID != -1 ) {
-                link.setFile(fileID);
-              }
-              else if ( pageID != -1 ) {
-                link.setPage(pageID);
-              }
-              if ( target != null ) {
-                link.setTarget(target);
-              }
-
-              Link editLink = new Link(_editImage);
-                editLink.setWindowToOpen(BoxEditorWindow.class);
-                editLink.addParameter(BoxBusiness.PARAMETER_LINK_ID,links[b].getID());
-                editLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
-              Link deleteLink = new Link(_deleteImage);
-                deleteLink.setWindowToOpen(BoxEditorWindow.class);
-                deleteLink.addParameter(BoxBusiness.PARAMETER_LINK_ID,links[b].getID());
-                deleteLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
-                deleteLink.addParameter(BoxBusiness.PARAMETER_DELETE,BoxBusiness.PARAMETER_TRUE);
-
-              if ( _isAdmin ) {
-                linksTable.add(editLink,2,linkRow);
-                linksTable.add(deleteLink,2,linkRow);
-              }
-              linkRow++;
-            }
-          }
-
-          Link addLink = new Link(_createImage);
-            addLink.setWindowToOpen(BoxEditorWindow.class);
-            addLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
-            addLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
-            addLink.addParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
-          if ( _isAdmin ) {
-            linksTable.add(addLink,1,_numberOfDisplayed+1);
-            linksTable.setHeight(1,_numberOfDisplayed+1,"100%");
-            linksTable.setVerticalAlignment(1,_numberOfDisplayed+1,"bottom");
-          }
-        }
-
-        if ( column % _numberOfColumns == 0 ) {
-          boxTable.add(table,column,row);
-          row++;
-          column = 1;
-        }
-        else {
-          boxTable.add(table,column,row);
-          column++;
-        }
+      switch (_layout) {
+        case BOX_VIEW:
+          getBoxView(box,categories,boxTable);
+          break;
+        case CATEGORY_VIEW:
+          getCategoryView(categories,boxTable);
+          break;
       }
     }
 
     return boxTable;
+  }
+
+  private void getBoxView(BoxEntity box,BoxCategory[] categories,Table boxTable) {
+    int row = 1;
+    int column = 1;
+
+    for ( int a = 0; a < categories.length; a++ ) {
+      String categoryString = BoxBusiness.getLocalizedString(categories[a],_iLocaleID);
+      if ( categoryString == null ) {
+        categoryString = "$language$";
+      }
+
+      Text categoryText = new Text(categoryString);
+        categoryText.setFontStyle(_categoryStyle);
+
+      Table table = new Table();
+        table.setCellpadding(3);
+        table.setCellspacing(1);
+        table.setWidth(_boxWidth);
+        table.setHeight(_boxHeight);
+        table.setHeight(2,"100%");
+        table.setColor(_borderColor);
+        table.setColor(1,1,_headerColor);
+        table.setColor(1,2,_inlineColor);
+        table.setAlignment(1,1,"center");
+        table.setVerticalAlignment(1,1,"middle");
+        table.setVerticalAlignment(1,2,"top");
+
+      table.add(categoryText,1,1);
+
+      Table linksTable = new Table();
+        linksTable.setRows(_numberOfDisplayed+1);
+        linksTable.setWidth("100%");
+        if ( _isAdmin )
+          linksTable.setHeight("100%");
+      table.add(linksTable,1,2);
+
+      int linkRow = 1;
+
+      BoxLink[] links = BoxFinder.getLinksInBox(box,categories[a]);
+      int linksLength = _numberOfDisplayed;
+      if ( links != null ) {
+        if ( links.length < linksLength ) {
+          linksLength = links.length;
+        }
+
+        for ( int b = 0; b < linksLength; b++ ) {
+          Link link = getLink(links[b]);
+          if ( link != null ) {
+            linksTable.add(link,1,linkRow);
+            linksTable.setWidth(1,linkRow,"100%");
+
+            if ( _isAdmin ) {
+              linksTable.add(getEditLink(links[b].getID()),2,linkRow);
+              linksTable.add(getDeleteLink(links[b].getID()),2,linkRow);
+            }
+            linkRow++;
+          }
+        }
+
+        if ( _isAdmin ) {
+          linksTable.add(getAddLink(categories[a].getID()),1,_numberOfDisplayed+1);
+          linksTable.setHeight(1,_numberOfDisplayed+1,"100%");
+          linksTable.setVerticalAlignment(1,_numberOfDisplayed+1,"bottom");
+        }
+      }
+
+      if ( column % _numberOfColumns == 0 ) {
+        boxTable.add(table,column,row);
+        row++;
+        column = 1;
+      }
+      else {
+        boxTable.add(table,column,row);
+        column++;
+      }
+    }
+  }
+
+  private void getCategoryView(BoxCategory[] categories,Table boxTable) {
+    boxTable.add("Category!!!");
   }
 
   private Table getAdminPart() {
@@ -299,7 +276,72 @@ public Box(String attribute){
     return adminTable;
   }
 
+  private Link getLink(BoxLink boxLink) {
+    String linkString = BoxBusiness.getLocalizedString(boxLink,_iLocaleID);
+    if ( linkString != null ) {
+      Link link = new Link(linkString);
+        if ( _styles ) {
+          link.setStyle(_name);
+        }
+        else {
+          link.setFontSize(1);
+        }
+        link.setOnMouseOver("window.status='"+linkString+"'; return true;");
+        link.setOnMouseOut("window.status=''; return true;");
+
+      String URL = boxLink.getURL();
+      int fileID = boxLink.getFileID();
+      int pageID = boxLink.getPageID();
+      String target = boxLink.getTarget();
+
+      if ( URL != null ) {
+        if ( URL.indexOf("http://") == -1 ) {
+          URL = "http://"+URL;
+        }
+        link.setURL(URL);
+      }
+      else if ( fileID != -1 ) {
+        link.setFile(fileID);
+      }
+      else if ( pageID != -1 ) {
+        link.setPage(pageID);
+      }
+      if ( target != null ) {
+        link.setTarget(target);
+      }
+      return link;
+    }
+    return null;
+  }
+
+  private Link getAddLink(int categoryID) {
+    Link addLink = new Link(_createImage);
+      addLink.setWindowToOpen(BoxEditorWindow.class);
+      addLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
+      addLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categoryID);
+      addLink.addParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
+    return addLink;
+  }
+
+  private Link getEditLink(int linkID) {
+    Link editLink = new Link(_editImage);
+      editLink.setWindowToOpen(BoxEditorWindow.class);
+      editLink.addParameter(BoxBusiness.PARAMETER_LINK_ID,linkID);
+      editLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
+    return editLink;
+  }
+
+  private Link getDeleteLink(int linkID) {
+    Link deleteLink = new Link(_deleteImage);
+      deleteLink.setWindowToOpen(BoxEditorWindow.class);
+      deleteLink.addParameter(BoxBusiness.PARAMETER_LINK_ID,linkID);
+      deleteLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
+      deleteLink.addParameter(BoxBusiness.PARAMETER_DELETE,BoxBusiness.PARAMETER_TRUE);
+    return deleteLink;
+  }
+
   private void setDefaultValues() {
+    _layout = BOX_VIEW;
     _numberOfColumns = 3;
     _headerColor = "#D8D8D8";
     _borderColor = "#6E6E6E";
@@ -332,12 +374,38 @@ public Box(String attribute){
     _inlineColor = color;
   }
 
+  /**
+   * @deprecated
+   */
   public void setBoxWidth(String width) {
     _boxWidth = width;
   }
 
+  /**
+   * @deprecated
+   */
   public void setBoxHeight(String height) {
     _boxHeight = height;
+  }
+
+  public void setWidth(String width) {
+    _boxWidth = width;
+  }
+
+  public void setWidth(int width) {
+    setWidth(Integer.toString(width));
+  }
+
+  public void setHeight(String height) {
+    _boxHeight = height;
+  }
+
+  public void setHeight(int height) {
+    setHeight(Integer.toString(height));
+  }
+
+  public void setLayout(int layout) {
+   _layout = layout;
   }
 
   public void setBoxSpacing(int spacing) {
@@ -381,21 +449,6 @@ public Box(String attribute){
     }
     else {
       _styles = false;
-    }
-  }
-
-  private void doMode(String mode, IWContext iwc) {
-    if ( mode.equalsIgnoreCase(BoxBusiness.PARAMETER_DETACH) ) {
-      String boxID = iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID);
-      String boxCategoryID = iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID);
-      if ( boxID != null && boxCategoryID != null ) {
-        try {
-          BoxBusiness.detachCategory(Integer.parseInt(boxID),Integer.parseInt(boxCategoryID));
-        }
-        catch (Exception e) {
-          e.printStackTrace(System.err);
-        }
-      }
     }
   }
 

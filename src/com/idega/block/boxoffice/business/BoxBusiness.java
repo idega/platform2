@@ -399,6 +399,7 @@ public static final int PAGE = 3;
     try {
       BoxCategory category = BoxFinder.getCategory(boxCategoryID);
       if ( category != null ) {
+        deleteLinks(category);
         category.delete();
       }
     }
@@ -432,7 +433,6 @@ public static final int PAGE = 3;
 
       if ( boxEntity != null && boxCategory != null ) {
         boxEntity.removeFrom(boxCategory);
-        deleteLinks(boxEntity,boxCategory);
       }
     }
     catch (Exception e) {
@@ -440,9 +440,9 @@ public static final int PAGE = 3;
     }
   }
 
-  public static void deleteLinks(BoxEntity boxEntity, BoxCategory boxCategory) {
+  public static void deleteLinks(BoxCategory boxCategory) {
     try {
-      BoxLink[] links = BoxFinder.getLinksInBox(boxEntity,boxCategory);
+      BoxLink[] links = BoxFinder.getLinksInCategory(boxCategory);
       if ( links != null ) {
         for ( int a = 0; a < links.length; a++ ) {
           deleteLink(links[a]);
