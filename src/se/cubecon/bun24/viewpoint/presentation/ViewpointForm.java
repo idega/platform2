@@ -24,10 +24,10 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2002/12/11 10:13:28 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/13 11:09:33 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.23 $
+ * @version $Revision: 1.24 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -163,7 +163,7 @@ public class ViewpointForm extends CommuneBlock {
 					break;
 
 				case REGISTERVIEWPOINT_ACTION :
-					registerViewPoint (iwc);
+					registerViewpoint (iwc);
 					break;
 
 				case SHOWVIEWPOINT_ACTION :
@@ -342,8 +342,7 @@ public class ViewpointForm extends CommuneBlock {
                 table.add (new Text (viewpoint.getAnswer ()), 1, row++);
             }              
             table.add(getUserHomePageLink(iwc), 1, row++);
-            add (createViewpointTable (viewpoint, iwc));
-            
+            add (table);
         } else {
             add (getLocalizedHeader (NOTAUTHORIZEDTOSHOWVIEWPOINT_KEY,
                                      NOTAUTHORIZEDTOSHOWVIEWPOINT_DEFAULT));
@@ -442,7 +441,7 @@ public class ViewpointForm extends CommuneBlock {
 		add(table);
 	}
 
-	private void registerViewPoint(final IWContext iwc)
+	private void registerViewpoint(final IWContext iwc)
         throws RemoteException, CreateException, FinderException {
 		final ViewpointBusiness viewpointBusiness = getViewpointBusiness (iwc);
 		final int subCategoryId
