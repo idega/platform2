@@ -243,7 +243,7 @@ public class PublicBooking extends Block  {
       String stampTxt2 = new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc);
       idegaTimestamp depTimeStamp = new idegaTimestamp(service.getDepartureTime());
       Address depAddress = TravelStockroomBusiness.getDepartureAddress(service);
-      ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
+      ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), true);
       Currency currency;
 
       Text nameText = getText(iwrb.getLocalizedString("travel.name","Name"));
@@ -431,13 +431,16 @@ public class PublicBooking extends Block  {
       String ccYear   = iwc.getParameter(TourBookingForm.parameterCCYear);
 
       Text display = getBoldTextWhite("");
+      boolean success = false;
+      String heimild;
 
       try {
         System.out.println("Starting TPOS test");
         com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
-        String heimild = t.doSale(ccNumber,ccMonth,ccYear,20000,"ISK");
+        heimild = t.doSale(ccNumber,ccMonth,ccYear,20000,"ISK");
         System.out.println("heimild = " + heimild);
         System.out.println("Ending TPOS test");
+        success = true;
       }
       catch(com.idega.block.tpos.business.TPosException e) {
         System.out.println("message = " + e.getErrorMessage());
@@ -449,6 +452,12 @@ public class PublicBooking extends Block  {
         e.printStackTrace(System.err);
       }
       table.add(display);
+
+      if (success) {
+
+      }else {
+
+      }
 
     return table;
   }
