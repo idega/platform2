@@ -167,6 +167,7 @@ public class HandicapScore extends GolfBlock {
 		DropdownMenu select_stats = (DropdownMenu) getStyledInterface(new DropdownMenu("statistics"));
 		select_stats.addMenuElement("0", iwrb.getLocalizedString("handicap.no_statistics", "No statistics"));
 		select_stats.addMenuElement("1", iwrb.getLocalizedString("handicap.register_statistics", "Register statistics"));
+		select_stats.setSelectedElement("1");
 		select_stats.keepStatusOnAction();
 
 		DropdownMenu select_month = (DropdownMenu) getStyledInterface(new DropdownMenu("month"));
@@ -210,20 +211,19 @@ public class HandicapScore extends GolfBlock {
 
 		SubmitButton writeScore = (SubmitButton) getButton(new SubmitButton(iwrb.getLocalizedString("handicap.register_score", "Register score")));
 
-		Text member = getHeader(iwrb.getLocalizedString("handicap.member", "Member") + ":");
+		Text member = getHeader(iwrb.getLocalizedString("handicap.member", "Member") + ":" + Text.NON_BREAKING_SPACE);
 		Text memberText = getText(memberInfo.getName());
-		Text field = getHeader(iwrb.getLocalizedString("handicap.course", "Course") + ":");
+		Text field = getHeader(iwrb.getLocalizedString("handicap.course", "Course") + ":" + Text.NON_BREAKING_SPACE);
 		Text fieldText = getText(fieldName.getName());
-		Text tees = getHeader(iwrb.getLocalizedString("handicap.tees", "Tees") + ":");
-		Text date = getHeader(iwrb.getLocalizedString("handicap.day", "Day") + ":");
-		Text numberOfHoles = getHeader(iwrb.getLocalizedString("handicap.number_of_holes", "Number of holes") + ":");
-		Text statistics = getHeader(iwrb.getLocalizedString("handicap.statistics", "Statistics") + ":");
+		Text tees = getHeader(iwrb.getLocalizedString("handicap.tees", "Tees") + ":" + Text.NON_BREAKING_SPACE);
+		Text date = getHeader(iwrb.getLocalizedString("handicap.day", "Day") + ":" + Text.NON_BREAKING_SPACE);
+		Text numberOfHoles = getHeader(iwrb.getLocalizedString("handicap.number_of_holes", "Number of holes") + ":" + Text.NON_BREAKING_SPACE);
+		Text statistics = getHeader(iwrb.getLocalizedString("handicap.statistics", "Statistics") + ":" + Text.NON_BREAKING_SPACE);
 
 		myTable = new Table();
 		myTable.setBorder(0);
 		myTable.setCellpadding(0);
 		myTable.setCellspacing(0);
-		myTable.setColumnAlignment(1, "right");
 		int row = 1;
 
 		myTable.add(member, 1, row++);
@@ -268,7 +268,7 @@ public class HandicapScore extends GolfBlock {
 		myTable.setHeight(2, row++, 12);
 
 		myTable.mergeCells(1, row, 2, row);
-		myTable.setAlignment(1, row, "right");
+		myTable.setColumnAlignment(1, "right");
 		myTable.setVerticalAlignment(1, row, "top");
 
 		GenericButton foreignRound = getButton(new GenericButton("foreign_round", iwrb.getLocalizedString("handicap.foreign_round", "Foreign round")));

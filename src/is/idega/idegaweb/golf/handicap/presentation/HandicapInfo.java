@@ -166,34 +166,40 @@ public class HandicapInfo extends GolfBlock {
 		selectMember.setWindowToOpen(HandicapFindMember.class);
 		
 		Table textTable = new Table();
-		textTable.setCellpadding(4);
-		textTable.setCellspacing(4);
+		textTable.setCellpadding(0);
+		textTable.setCellspacing(0);
+		int row = 1;
 
-		textTable.add(name, 1, 1);
-		textTable.addBreak(1, 1);
-		textTable.add(memberText, 1, 1);
+		textTable.add(name, 1, row++);
+		textTable.add(memberText, 1, row);
 		if (isAdmin) {
-			textTable.add(getSmallText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE), 1, 1);
-			textTable.add(selectMember, 1, 1);
+			textTable.add(getSmallText(Text.NON_BREAKING_SPACE + Text.NON_BREAKING_SPACE), 1, row);
+			textTable.add(selectMember, 1, row);
 		}
-		textTable.add(mainUnionText, 1, 2);
-		textTable.addBreak(1, 2);
-		textTable.add(unionText, 1, 2);
-		textTable.add(cardTotal, 1, 3);
-		textTable.addBreak(1, 3);
-		textTable.add(cardTotalText, 1, 3);
-		textTable.add(scoreText, 1, 4);
-		textTable.addBreak(1, 4);
-		textTable.add(scoreCardsText, 1, 4);
-		textTable.add(points, 1, 5);
-		textTable.addBreak(1, 5);
-		textTable.add(pointsText, 1, 5);
-		textTable.add(averagepoints, 1, 6);
-		textTable.addBreak(1, 6);
-		textTable.add(averageText, 1, 6);
-		textTable.add(clubOrderText, 1, 7);
-		textTable.addBreak(1, 7);
-		textTable.add(clubText, 1, 7);
+		row++;
+		textTable.setHeight(row++, 12);
+		
+		textTable.add(mainUnionText, 1, row++);
+		textTable.add(unionText, 1, row++);
+		
+		textTable.add(cardTotal, 1, row++);
+		textTable.add(cardTotalText, 1, row++);
+		textTable.setHeight(row++, 12);
+		
+		textTable.add(scoreText, 1, row++);
+		textTable.add(scoreCardsText, 1, row++);
+		textTable.setHeight(row++, 12);
+		
+		textTable.add(points, 1, row++);
+		textTable.add(pointsText, 1, row++);
+		textTable.setHeight(row++, 12);
+		
+		textTable.add(averagepoints, 1, row++);
+		textTable.add(averageText, 1, row++);
+		textTable.setHeight(row++, 12);
+		
+		textTable.add(clubOrderText, 1, row++);
+		textTable.add(clubText, 1, row);
 		
 		add(textTable);
 	}
