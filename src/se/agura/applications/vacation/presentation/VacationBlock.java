@@ -124,10 +124,16 @@ public abstract class VacationBlock extends Block {
 		String name = user.getName();
 		String personalID = PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale());
 		String parish = "";
-		Group group = user.getPrimaryGroup();
-		if (group != null) {
-			parish = group.getName();
+		try {
+			Group group = getBusiness(iwc).getUserParish(user);
+			if (group != null) {
+				parish = group.getName();
+			}
 		}
+		catch (RemoteException re) {
+			log(re);
+		}
+		
 		personInfo.add(getHeader(getResourceBundle().getLocalizedString("vacation.user_name", "Name")), 1, row);
 		personInfo.add(getText(name), 2, row++);
 		personInfo.add(getHeader(getResourceBundle().getLocalizedString("vacation.user_personal_id", "PersonalID")), 1, row);
