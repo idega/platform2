@@ -37,6 +37,8 @@ public class ReportableField implements IDOReportableField, JRField {
 	private String _customMadeFiledName = null;
 	private Class _customMadeValueClass = null;
 	
+	private int _fieldsMaxNumberOfCharacters = 15;
+	
 	/**
 	 * @param field
 	 */
@@ -55,6 +57,7 @@ public class ReportableField implements IDOReportableField, JRField {
 	public ReportableField(IDOEntityField field){
 		_idoField = field;
 		_typeOfContainedField=CONTAINED_FIELD_TYPE_IDOFIELD;
+		_fieldsMaxNumberOfCharacters=_idoField.getMaxLength();
 		if(_idoField instanceof EntityAttribute){
 			_localizedNames = ((EntityAttribute)_idoField).getMapOfLocalizedNames();
 		}
@@ -143,7 +146,11 @@ public class ReportableField implements IDOReportableField, JRField {
 	 * @see com.idega.data.IDOReportableField#getLocalizedName(java.util.Locale)
 	 */
 	public String getLocalizedName(Locale locale) {
-		return (String)_localizedNames.get(locale);
+		String s = (String)_localizedNames.get(locale);
+		if(s == null){
+			s = getName();
+		}
+		return s;
 	}
 
 	/* (non-Javadoc)
@@ -151,6 +158,14 @@ public class ReportableField implements IDOReportableField, JRField {
 	 */
 	public void setLocalizedName(String name, Locale locale) {
 		_localizedNames.put(locale, name);
+	}
+	
+	public int getMaxNumberOfCharacters(){
+		return _fieldsMaxNumberOfCharacters;
+	}
+	
+	public void setMaxNumberOfCharacters(int number){
+		_fieldsMaxNumberOfCharacters = number;
 	}
 
 }

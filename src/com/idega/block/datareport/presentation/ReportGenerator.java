@@ -26,14 +26,11 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
-
 import javax.ejb.FinderException;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.design.JasperDesign;
-
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.data.Query;
 import com.idega.block.dataquery.data.QueryHome;
@@ -44,6 +41,7 @@ import com.idega.block.datareport.business.DynamicReportDesign;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.block.datareport.data.MethodInvocationXMLFile;
 import com.idega.block.datareport.data.MethodInvocationXMLFileHome;
+import com.idega.block.datareport.util.ReportDescription;
 import com.idega.block.datareport.util.ReportableCollection;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.block.datareport.xml.methodinvocation.ClassDescription;
@@ -77,12 +75,12 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 import com.idega.util.reflect.MethodFinder;
 import com.idega.xml.XMLException;
+
 /**
  * Title: ReportGenerator Description: Copyright: Copyright (c) 2003 Company:
  * idega Software
  * 
- * @author 2003 - idega team -<br><a href="mailto:gummi@idega.is">Gudmundur
- *         Agust Saemundsson</a><br>
+ * @author 2003 - idega team -<br><a href="mailto:gummi@idega.is">Gudmundur Agust Saemundsson</a><br>
  * @version 1.0
  */
 public class ReportGenerator extends Block {
@@ -90,6 +88,7 @@ public class ReportGenerator extends Block {
 	private static final String HTML_FORMAT = "html";
 	private static final String PDF_FORMAT = "pdf";
 	private static final String EXCEL_FORMAT = "excel";
+	private static final String SIMPLE_EXCEL_FORMAT = "simple_excel";
 	public final static String STYLE = "font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000;";
 	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
 	public final static String PRIFIX_PRM = "dr_";
@@ -107,13 +106,12 @@ public class ReportGenerator extends Block {
 	
 	private MethodInvocationDocument _methodInvokeDoc = null;
 	private Vector _dynamicFields = new Vector();
-	private Collection _allFields = null;
 	private Map _reportFilePathsMap = null;
 	private QueryHelper _queryParser = null;
 	private JRDataSource _dataSource = null;
 	private Table _fieldTable = null;
 	private JasperDesign _design = null;
-	private Map _parameterMap = new HashMap();
+	private ReportDescription _reportDescription = null;//new ReportDescription();
 	private BusyBar _busy = null;
 	
 	private List maintainParameterList = new Vector();
@@ -125,7 +123,10 @@ public class ReportGenerator extends Block {
 	private boolean _showReportNameInputIfCannotChangeIt = false;
 	private String PRM_REPORT_NAME = "report_name";
 
-	private Map _extraHeaderParameters = null;
+	private boolean _generateExcelReport=false;
+	private boolean _generateHTMLReport=true;
+	private boolean _generatePDFReport=true;
+	private boolean _generateSimpleExcelReport=true;
 
 	/**
 	 *  
@@ -134,6 +135,7 @@ public class ReportGenerator extends Block {
 		super();
 		_busy = new BusyBar("busy_generating_report");
 	}
+
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -145,12 +147,13 @@ public class ReportGenerator extends Block {
 			_queryParser = new QueryHelper(query, iwc);
 		}
 
-		_allFields = _queryParser.getListOfFields();
-		if (_allFields != null) {
-			System.out.println("ReportGenerator#parseQuery() - _queryParser.getListOfFields().size() = " + _allFields.size());
+		List allFields = _queryParser.getListOfFields();
+		if (allFields != null) {
+			_reportDescription.addFields(allFields);
+			//System.out.println("ReportGenerator#parseQuery() - _queryParser.getListOfFields().size() = " + allFields.size());
 		}
 		else {
-			System.out.println("ReportGenerator#parseQuery() - _queryParser.getListOfFields() == null");
+			//System.out.println("ReportGenerator#parseQuery() - _queryParser.getListOfFields() == null");
 		}
 
 		Collection conditionsCollection = _queryParser.getListOfConditions();
@@ -189,9 +192,8 @@ public class ReportGenerator extends Block {
 		if (_queryPK == null && (_methodInvocationPK!= null || _methodInvocationFileName!= null) ) {
 			isMethodInvocation = true;
 			if (_dataSource != null && _dataSource instanceof ReportableCollection) {
-				_allFields = ((ReportableCollection) _dataSource).getListOfFields();
+				_reportDescription = ((ReportableCollection) _dataSource).getReportDescription();
 			}
-
 		}
 
 		//Fetch or generate the layout
@@ -206,12 +208,11 @@ public class ReportGenerator extends Block {
 
 	}
 
-	private void generateLayoutAndAddParameters(IWContext iwc, boolean isMethodInvocation) throws IOException, JRException {
-		int columnWidth = 120;
+	private void prepareForLayoutGeneration(IWContext iwc, boolean isMethodInvocation) throws IOException, JRException {
 		int prmLableWidth = 95;
 		int prmValueWidth = 55;
-
-		DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
+		
+		_reportDescription.setLocale(iwc.getCurrentLocale());
 
 		if (_dynamicFields != null && _dynamicFields.size() > 0) {
 			if (_queryPK != null) {
@@ -219,12 +220,14 @@ public class ReportGenerator extends Block {
 				while (iter.hasNext()) {
 					ReportableField element = (ReportableField) iter.next();
 					String prmName = element.getName();
-
-					String tmpPrmLabel = (String) _parameterMap.get(_prmLablePrefix + prmName);
-					String tmpPrmValue = (String) _parameterMap.get(prmName);
-					int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
-					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
-					designTemplate.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName, String.class, tmpPrmValueWidth);
+					String tmpPrmLabel = (String) _reportDescription.get(_prmLablePrefix + prmName);
+					String tmpPrmValue = (String) _reportDescription.get(prmName);
+					int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel)
+							: prmLableWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue)
+							: prmValueWidth;
+					_reportDescription.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName,
+							String.class, tmpPrmValueWidth);
 				}
 			}
 			else {
@@ -232,77 +235,78 @@ public class ReportGenerator extends Block {
 				while (iter.hasNext()) {
 					ClassDescription element = (ClassDescription) iter.next();
 					String prmName = element.getName();
-
-					String tmpPrmLabel = (String) _parameterMap.get(_prmLablePrefix + prmName);
-					String tmpPrmValue = (String) _parameterMap.get(prmName);
+					String tmpPrmLabel = (String) _reportDescription.get(_prmLablePrefix + prmName);
+					String tmpPrmValue = (String) _reportDescription.get(prmName);
 					if (tmpPrmLabel != null && tmpPrmValue != null) {
-						int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
-						int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
-						designTemplate.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName, String.class, tmpPrmValueWidth);
+						int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel)
+								: prmLableWidth;
+						int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue)
+								: prmValueWidth;
+						_reportDescription.addHeaderParameter(_prmLablePrefix + prmName, tmpPrmLabelWidth, prmName,
+								String.class, tmpPrmValueWidth);
 					}
 				}
 			}
 		}
+	}
 
-		if (_extraHeaderParameters != null) {
-			Iterator keyIter = _extraHeaderParameters.keySet().iterator();
-			Iterator valueIter = _extraHeaderParameters.values().iterator();
-			while (keyIter.hasNext()) {
-				String keyLabel = (String) keyIter.next();
-				String valueLabel = (String) valueIter.next();
-				if (keyIter.hasNext()) {
-					String keyValue = (String) keyIter.next();
-					String valueValue = (String) valueIter.next();
-
-					String tmpPrmLabel = valueLabel;
-					String tmpPrmValue = valueValue;
-					int tmpPrmLabelWidth = (tmpPrmLabel != null) ? calculateTextFieldWidthForString(tmpPrmLabel) : prmLableWidth;
-					int tmpPrmValueWidth = (tmpPrmValue != null) ? calculateTextFieldWidthForString(tmpPrmValue) : prmValueWidth;
-					designTemplate.addHeaderParameter(keyLabel, tmpPrmLabelWidth, keyValue, String.class, tmpPrmValueWidth);
-				}
-
-			}
+	
+	private void generateLayoutAndAddParameters(IWContext iwc, boolean isMethodInvocation) throws IOException,
+			JRException {
+		
+		prepareForLayoutGeneration( iwc, isMethodInvocation);
+		
+		int columnWidth = 120;
+		
+		DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
+		
+		
+		List keys = _reportDescription.getListOfHeaderParameterKeys();
+		List labels = _reportDescription.getListOfHeaderParameterLabelKeys();
+		Iterator keyIter = keys.iterator();
+		Iterator labelIter = labels.iterator();
+		while (keyIter.hasNext() && labelIter.hasNext()) {
+			String key = (String) keyIter.next();
+			String label = (String) labelIter.next();
+			designTemplate.addHeaderParameter(label,_reportDescription.getWithOfParameterOrLabel(label),key,_reportDescription.getParameterClassType(key),_reportDescription.getWithOfParameterOrLabel(key));
 		}
-
-		if (_allFields != null && _allFields.size() > 0) {
-			//System.out.println("ReportGenerator.");
-	  	  	//TODO thi: solve problem with the width of columns avoiding merging of vertical cells in excel outputs
-	  		// stretch with overflow merges two vertical cells, excel file can't be sorted
+		
+		List allFields = _reportDescription.getListOfFields();
+		if (allFields != null && allFields.size() > 0) {
+			////System.out.println("ReportGenerator.");
+			//TODO thi: solve problem with the width of columns avoiding
+			// merging of vertical cells in excel outputs
+			// stretch with overflow merges two vertical cells, excel file can't
+			// be sorted
 			// see also and fix also JasperReportBusiness
-	  		// this is a hack ---------------------------------------------------------------------------------------------------------------------------------------------------------------
-	  		int numberOfFields = _allFields.size();
-	  		columnWidth = DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_PORTRAIT_A4 / numberOfFields;
-	  		columnWidth -= 15;
-	  		// end of hack ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			
+			// ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 			//TMP
 			//TODO get columnspacing (15) and it to columnsWidth;
-			int columnsWidth = columnWidth * _allFields.size() + 15 * (_allFields.size() - 1);
+			int numberOfFields = _reportDescription.getNumberOfFields();
+			int columnsWidth = columnWidth * numberOfFields + 15 * (numberOfFields - 1);
 			//TMP
 			//TODO get page Margins (20) and add them to pageWidth;
-	  	// does the width fit the page width?
+			// does the width fit the page width?
 			if (columnsWidth > DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_PORTRAIT_A4) {
-  		// change to landscape!
-  		designTemplate.setOrientationLandscape();
-  		// does the the width now fit the page width?
-  		int landscapeWidth = (columnsWidth > DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_LANDSCAPE_A4) ?
-					columnsWidth + DynamicReportDesign.PAGE_LEFT_MARGIN + DynamicReportDesign.PAGE_RIGHT_MARGIN :
-					DynamicReportDesign.PAGE_WIDTH_LANDSCAPE_A4;
-  		designTemplate.setPageWidth(landscapeWidth);
-  		designTemplate.setPageHeight(DynamicReportDesign.PAGE_HEIGHT_LANDSCAPE_A4);
-  	}
-			
-			// do not change the width of the page!! prior: designTemplate.setPageWidth(columnsWidth + 20 + 20);
+				// change to landscape!
+				designTemplate.setOrientationLandscape();
+				// does the the width now fit the page width?
+				int landscapeWidth = (columnsWidth > DynamicReportDesign.PAGE_WIDTH_WITHOUT_MARGINS_LANDSCAPE_A4) ? columnsWidth
+						+ DynamicReportDesign.PAGE_LEFT_MARGIN + DynamicReportDesign.PAGE_RIGHT_MARGIN
+						: DynamicReportDesign.PAGE_WIDTH_LANDSCAPE_A4;
+				designTemplate.setPageWidth(landscapeWidth);
+				designTemplate.setPageHeight(DynamicReportDesign.PAGE_HEIGHT_LANDSCAPE_A4);
+			}
+			// do not change the width of the page!! prior:
+			// designTemplate.setPageWidth(columnsWidth + 20 + 20);
 			designTemplate.setColumnWidth(columnsWidth);
-
 			//
-			Locale currentLocale = iwc.getCurrentLocale();
-			Iterator iter = _allFields.iterator();
-
+			Iterator iter = allFields.iterator();
 			if (isMethodInvocation) {
 				while (iter.hasNext()) {
 					ReportableField field = (ReportableField) iter.next();
 					String name = field.getName();
-					_parameterMap.put(name, field.getLocalizedName(currentLocale));
 					designTemplate.addField(name, field.getValueClass(), columnWidth);
 				}
 			}
@@ -312,7 +316,6 @@ public class ReportGenerator extends Block {
 						QueryFieldPart element = (QueryFieldPart) iter.next();
 						ReportableField field = new ReportableField(element.getIDOEntityField());
 						String name = field.getName();
-						_parameterMap.put(name, field.getLocalizedName(currentLocale));
 						designTemplate.addField(name, field.getValueClass(), columnWidth);
 					}
 					catch (IDOLookupException e) {
@@ -324,7 +327,6 @@ public class ReportGenerator extends Block {
 				}
 			}
 		}
-
 		designTemplate.close();
 		_design = designTemplate.getJasperDesign(iwc);
 	}
@@ -344,23 +346,6 @@ public class ReportGenerator extends Block {
 			}
 		}
 		//add parameters and fields
-		
-		
-		//MOSTLY COPY AND PASTE
-		if (_allFields != null && !_allFields.isEmpty()) {
-			Locale currentLocale = iwc.getCurrentLocale();
-			Iterator iter = _allFields.iterator();
-			
-			while (iter.hasNext()) {
-				ReportableField field = (ReportableField) iter.next();
-				String name = field.getName();
-				_parameterMap.put(name, field.getLocalizedName(currentLocale));
-			}
-		}
-		
-		if (_extraHeaderParameters != null) {
-			_parameterMap.putAll(_extraHeaderParameters);
-		}
 	}
 
 	private void generateDataSource(IWContext iwc) throws XMLException, Exception {
@@ -370,6 +355,7 @@ public class ReportGenerator extends Block {
 			_dataSource = service.generateQueryResult(_queryPK, iwc);
 		}
 		else if (_methodInvokeDoc != null) {
+				ReportDescription tmpReportDescriptionForCollectingData = new ReportDescription();
 				List mDescs = _methodInvokeDoc.getMethodDescriptions();
 				if (mDescs != null) {
 					Iterator it = mDescs.iterator();
@@ -419,48 +405,31 @@ public class ReportGenerator extends Block {
 									obj = iHandler.getResultingObject(prmValues, iwc);
 									String displayNameOfValue = iHandler.getDisplayForResultingObject(obj, iwc);
 									if (displayNameOfValue != null) {
-										_parameterMap.put(clDesc.getName(), displayNameOfValue);
+										tmpReportDescriptionForCollectingData.put(clDesc.getName(), displayNameOfValue);
 									}
 									if (isHidden) {
-										_parameterMap.remove(clDesc.getName());
+										tmpReportDescriptionForCollectingData.remove(clDesc.getName());
 									}
 								}
 								else {
 									//ONLY HANDLES ONE VALUE!
 									obj = getParameterObject(iwc, prm, prmClassType);
 									if (!isHidden) {
-										_parameterMap.put(clDesc.getName(), prm);
+										tmpReportDescriptionForCollectingData.put(clDesc.getName(), prm);
 									}
 								}
 
 								if (!isHidden) {
-									_parameterMap.put(_prmLablePrefix + clDesc.getName(), clDesc.getLocalizedName(currentLocale) + ":");
+									tmpReportDescriptionForCollectingData.put(_prmLablePrefix + clDesc.getName(), clDesc.getLocalizedName(currentLocale) + ":");
 								}
 								else {
-									_parameterMap.remove(_prmLablePrefix + clDesc.getName());
+									tmpReportDescriptionForCollectingData.remove(_prmLablePrefix + clDesc.getName());
 								}
-								//							switch (index) {
-								//								case 0:
-								//									obj = new IWTimestamp(23,12,1898).getDate();
-								//									break;
-								//								case 1:
-								//									obj = new IWTimestamp(23,12,1920).getDate();
-								//									break;
-								//								case 2:
-								//									obj = new
-								// IWTimestamp(2002,7,10,15,17,39).getTimestamp();
-								//									break;
-								//								case 3:
-								//									obj = new
-								// IWTimestamp(2002,7,12,15,17,40).getTimestamp();
-								//									break;
-								//							}
+
 								prmVal[index] = obj;
 							}
 						}
-						else {
-							// prmVal = String[0];
-						}
+						
 						Object forInvocationOfMethod = null;
 						if (ClassDescription.VALUE_TYPE_IDO_SESSION_BEAN.equals(type)) {
 							forInvocationOfMethod = IBOLookup.getSessionInstance(iwc, mainClass);
@@ -472,9 +441,7 @@ public class ReportGenerator extends Block {
 							else
 								if (ClassDescription.VALUE_TYPE_IDO_ENTITY_HOME.equals(type)) {
 									forInvocationOfMethod = IDOLookup.getHome(mainClass);
-									//System.out.println("["+this.getClassName()+"]:
-									// not implemented yet for this classType:
-									// "+type);
+
 								}
 								else { //ClassDescription.VALUE_TYPE_CLASS.equals(type))
 									forInvocationOfMethod = mainClass.newInstance();
@@ -499,10 +466,10 @@ public class ReportGenerator extends Block {
 						}
 
 						if (_dataSource != null && _dataSource instanceof ReportableCollection) {
-							_extraHeaderParameters = ((ReportableCollection) _dataSource).getExtraHeaderParameters();
-							if (_extraHeaderParameters != null) {
-								_parameterMap.putAll(_extraHeaderParameters);
-							}
+							_reportDescription = ((ReportableCollection) _dataSource).getReportDescription();
+							_reportDescription.merge(tmpReportDescriptionForCollectingData);
+						} else {
+							_reportDescription = tmpReportDescriptionForCollectingData;
 						}
 					}
 				}
@@ -512,22 +479,44 @@ public class ReportGenerator extends Block {
 	}
 
 	private void generateReport() throws RemoteException, JRException {
-		if (_dataSource != null && _design != null) {
-			JasperReportBusiness business = getReportBusiness();
+		JasperReportBusiness business = getReportBusiness();
+		if(_dataSource != null){
+			if (doGenerateSomeJasperReport() && (_dataSource != null && _design != null)) {				
+				_reportDescription.put(DynamicReportDesign.PRM_REPORT_NAME, _reportName);
+				JasperPrint print = business.getReport(_dataSource, _reportDescription.getDisplayValueMap(), _design);
+	
+				if (_reportFilePathsMap == null) {
+					_reportFilePathsMap = new HashMap();
+				}
 				
-			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME, _reportName);
-			JasperPrint print = business.getReport(_dataSource, _parameterMap, _design);
-
-			if (_reportFilePathsMap == null) {
-				_reportFilePathsMap = new HashMap();
+				if(_generatePDFReport){
+					_reportFilePathsMap.put(PDF_FORMAT, business.getPdfReport(print, "report"));
+				}
+				
+				if(_generateExcelReport){
+					_reportFilePathsMap.put(EXCEL_FORMAT, business.getExcelReport(print, "report"));
+				}
+				
+				if(_generateHTMLReport){
+					_reportFilePathsMap.put(HTML_FORMAT, business.getHtmlReport(print, "report"));
+				}
+	
 			}
-
-			_reportFilePathsMap.put(PDF_FORMAT, business.getPdfReport(print, "report"));
-			_reportFilePathsMap.put(EXCEL_FORMAT, business.getExcelReport(print, "report"));
 			
-			_reportFilePathsMap.put(HTML_FORMAT, business.getHtmlReport(print, "report"));
-
+			if(_generateSimpleExcelReport && (_dataSource instanceof ReportableCollection)){
+				if (_reportFilePathsMap == null) {
+					_reportFilePathsMap = new HashMap();
+				}
+				_reportFilePathsMap.put(SIMPLE_EXCEL_FORMAT, business.getSimpleExcelReport(((ReportableCollection) _dataSource), _reportName,_reportDescription));
+			}
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean doGenerateSomeJasperReport() {
+		return (_generateExcelReport || _generateHTMLReport || _generatePDFReport);
 	}
 
 	public JasperReportBusiness getReportBusiness() {
@@ -621,29 +610,42 @@ public class ReportGenerator extends Block {
 						this.add(submForm);
 					}
 					else {
-						System.out.println("\n[ReportGenerator]: starts generating...");
-						System.out.println("[ReportGenerator]: parsing xml...");
-						long time1 = System.currentTimeMillis();
+						//System.out.println("\n[ReportGenerator]: starts generating...");
+						//System.out.println("[ReportGenerator]: parsing xml...");
+						//long time1 = System.currentTimeMillis();
+						//long lastTime = time1;
 						parseMethodInvocationXML(iwc,iwrb);
-						long time2 = System.currentTimeMillis();
-						System.out.println("[ReportGenerator]: took " + (time2 - time1) + "ms, total of " + (time2 - time1) + "ms");
-						System.out.println("[ReportGenerator]: generating datasource...");
+						//long time2 = System.currentTimeMillis();
+						//System.out.println("[ReportGenerator]: took " + (time2 - lastTime) + "ms, total of " + (time2 - time1) + "ms");
+						//lastTime = time2;
+						//System.out.println("[ReportGenerator]: generating datasource...");
 						generateDataSource(iwc);
-						long time3 = System.currentTimeMillis();
-						System.out.println("[ReportGenerator]: took " + (time3 - time2) + "ms, total of " + (time3 - time1) + "ms");
-						System.out.println("[ReportGenerator]: generating layout...");
-						getLayoutFromICFileOrGenerate(iwc);
-						long time4 = System.currentTimeMillis();
-						System.out.println("[ReportGenerator]: took " + (time4 - time3) + "ms, total of " + (time4 - time1) + "ms");
-						System.out.println("[ReportGenerator]: generating report...");
+						//long time3 = System.currentTimeMillis();
+						//System.out.println("[ReportGenerator]: took " + (time3 - lastTime) + "ms, total of " + (time3 - time1) + "ms");
+						//lastTime = time3;
+						if(doGenerateSomeJasperReport()){
+							//System.out.println("[ReportGenerator]: generating layout...");
+							getLayoutFromICFileOrGenerate(iwc);
+							//long time4 = System.currentTimeMillis();
+							//System.out.println("[ReportGenerator]: took " + (time4 - lastTime) + "ms, total of " + (time4 - time1) + "ms");
+							//lastTime = time4;
+						} else {
+							//System.out.println("[ReportGenerator]: prepareForLayoutGeneration()...");
+							prepareForLayoutGeneration(iwc,true);
+							//long time4 = System.currentTimeMillis();
+							//System.out.println("[ReportGenerator]: took " + (time4 - lastTime) + "ms, total of " + (time4 - time1) + "ms");
+							//lastTime = time4;
+						}
+						//System.out.println("[ReportGenerator]: generating report...");
 						generateReport();
-						long time5 = System.currentTimeMillis();
-						System.out.println("[ReportGenerator]: took " + (time5 - time4) + "ms, total of " + (time5 - time1) + "ms");
-						System.out.println("[ReportGenerator]: getting link to the report");
+						//long time5 = System.currentTimeMillis();
+						//System.out.println("[ReportGenerator]: took " + (time5 - lastTime) + "ms, total of " + (time5 - time1) + "ms");
+						//lastTime = time5;
+						//System.out.println("[ReportGenerator]: getting link to the report");
 						this.add(getReportLink(iwc));
-						long time6 = System.currentTimeMillis();
-						System.out.println("[ReportGenerator]: took " + (time6 - time5) + "ms, total of " + (time6 - time1) + "ms");
-						System.out.println("[ReportGenerator]: ...finished\n");
+						//long time6 = System.currentTimeMillis();
+						//System.out.println("[ReportGenerator]: took " + (time6 - lastTime) + "ms, total of " + (time6 - time1) + "ms");
+						//System.out.println("[ReportGenerator]: ...finished\n");
 
 					}
 				}
@@ -776,28 +778,29 @@ public class ReportGenerator extends Block {
 	 * @return
 	 */
 	private PresentationObject getReportLink(IWContext iwc) {
-		Table reports = new Table(2, 4);
+		Table reports = new Table();
 		reports.mergeCells(1, 1, 2, 1);
-		Link excel = new Link(_reportName, (String) _reportFilePathsMap.get(EXCEL_FORMAT));
-		excel.setTarget(Link.TARGET_NEW_WINDOW);
-		Link pdf = new Link(_reportName, (String) _reportFilePathsMap.get(PDF_FORMAT));
-		pdf.setTarget(Link.TARGET_NEW_WINDOW);
-		Link html = new Link(_reportName, (String) _reportFilePathsMap.get(HTML_FORMAT));
-		html.setTarget(Link.TARGET_NEW_WINDOW);
-		
 		reports.add(
-			getResourceBundle(iwc).getLocalizedString("ReportGenerator.click_on_format", "Select a link for the desired output format."),
-			1,
-			1);
-		reports.add("Excel : ", 1, 2);
-		reports.add(excel, 2, 2);
-		reports.add("PDF : ", 1, 3);
-		reports.add(pdf, 2, 3);
-		reports.add("HTML : ", 1, 4);
-		reports.add(html, 2, 4);
-
+				getResourceBundle(iwc).getLocalizedString("ReportGenerator.click_on_format", "Select a link for the desired output format."),
+				1,
+				1);
+		
+		String formats[] = new String[] {EXCEL_FORMAT,SIMPLE_EXCEL_FORMAT,PDF_FORMAT,HTML_FORMAT};
+		String formatNames[] = new String[] {"Excel : ","Excel : ","PDF : ","HTML : "};
+		
+		int j = 1;
+		for (int i = 0; i < formats.length; i++) {
+			String filePath = (String) _reportFilePathsMap.get(formats[i]);
+			if(filePath != null){
+				j++;
+				Link link = new Link(_reportName, filePath);
+				link.setTarget(Link.TARGET_NEW_WINDOW);
+				
+				reports.add(formatNames[i], 1, j);
+				reports.add(link, 2, j);
+			}
+		}
 		return reports;
-
 	}
 
 	/**
@@ -1032,13 +1035,13 @@ public class ReportGenerator extends Block {
 	public synchronized Object clone() {
 		ReportGenerator clone = (ReportGenerator) super.clone();
 
-		clone._allFields = null;
 		clone._dynamicFields = new Vector();
 		clone._dataSource = null;
 		clone._design = null;
 		clone._reportFilePathsMap = null;
 		clone._queryParser = null;
 		clone._fieldTable = null;
+		clone._reportDescription = null;//new ReportDescription();
 
 		return clone;
 	}
@@ -1049,6 +1052,25 @@ public class ReportGenerator extends Block {
 			_reportName = name;
 		}
 	}
+	
+	
+	public void setGenerateExcelReport(boolean value){
+		_generateExcelReport = value;
+	}
+	
+	public void setGenerateHTMLReport(boolean value){
+		_generateHTMLReport = value;
+	}
+	
+	public void setGeneratePDFReport(boolean value){
+		_generatePDFReport = value;
+	}
+	
+	public void setGenerateSimpleExcelReport(boolean value){
+		_generateSimpleExcelReport = value;
+	}
+	
+	
 
 	private class ReportGeneratorException extends Exception {
 

@@ -6,17 +6,14 @@
  */
 package com.idega.block.datareport.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
-
+import com.idega.data.IDOEntityField;
 import com.idega.data.IDOReportableEntity;
 import com.idega.data.IDOReportableField;
 import com.idega.util.datastructures.QueueMap;
@@ -35,10 +32,10 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	
 	private Iterator _reportIterator = null;
 	private IDOReportableEntity _currentJRDataSource = null;
-	private List _fields = new ArrayList();
 	private Object _defaultFieldValue = null;
 	
 	private QueueMap _extraHeaderParameters = new QueueMap();
+	private ReportDescription _description = null;
 	
 	
 	/**
@@ -71,7 +68,7 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	}
 
 	/* (non-Javadoc)
-	 * @see dori.jasper.engine.JRDataSource#next()
+	 * @see net.sf.jasperreports.engine.JRDataSource#next()
 	 */
 	public boolean next() throws JRException {
 		if(_reportIterator == null){
@@ -94,13 +91,17 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	}
 
 	/* (non-Javadoc)
-	 * @see dori.jasper.engine.JRDataSource#getFieldValue(dori.jasper.engine.JRField)
+	 * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
 	 */
 	public Object getFieldValue(JRField field) throws JRException {
+		return getFieldValue(new ReportableField(field));
+	}
+	
+	public Object getFieldValue(ReportableField field) throws JRException {
 		if(_reportIterator == null){
 			next();
 		}
-		Object returner = _currentJRDataSource.getFieldValue(new ReportableField(field));
+		Object returner = _currentJRDataSource.getFieldValue(field);
 		if(returner == null){
 			return _defaultFieldValue;
 		} else {
@@ -108,41 +109,59 @@ public class ReportableCollection extends Vector implements JRDataSource {
 		}
 	}
 	
-	public List getListOfFields(){
-		return _fields;
+	
+	public void addField(ReportableField field){
+		if(_description == null){
+			_description = new ReportDescription();
+		}
+		_description.addField(field);
 	}
 	
 	public void addField(IDOReportableField field){
-		_fields.add(field);
+		if(field instanceof ReportableField){
+			addField((ReportableField)field);
+		}else{
+			addField(new ReportableField((IDOEntityField)field));
+		}
 	}
 	
-	public Map getExtraHeaderParameters(){
-		return _extraHeaderParameters;
-	}
 	
 	//TODO Gummi generate keys!
 	public void addExtraHeaderParameter(String labelKey, String LabelValue, String valueKey, String valueValue){
-		_extraHeaderParameters.put(labelKey,LabelValue);
-		_extraHeaderParameters.put(valueKey,valueValue);
+		if(_description == null){
+			_description = new ReportDescription();
+		}
+		_description.addHeaderParameter(labelKey,LabelValue,valueKey,valueValue);
 	}
 	
 	public void addExtraHeaderParameterAtBeginning(String labelKey, String LabelValue, String valueKey, String valueValue){
-		_extraHeaderParameters.putAtBeginning(valueKey,valueValue);
-		_extraHeaderParameters.putAtBeginning(labelKey,LabelValue);
+		if(_description == null){
+			_description = new ReportDescription();
+		}
+		_description.addHeaderParameterAtBeginning(labelKey,LabelValue,valueKey,valueValue);
 	}
 
-	/**
-	 * @param l
-	 */
-	public void setListOfFields(List l) {
-		_fields = l;
-	}
 
 	/**
 	 * @param prm
 	 */
 	public void addExtraHeaderParameter(Map prm) {
+		if(_description == null){
+			_description = new ReportDescription();
+		}
 		_extraHeaderParameters.putAll(prm);
 	}
 
+	/**
+	 * @return Returns the description.
+	 */
+	public ReportDescription getReportDescription() {
+		return _description;
+	}
+	/**
+	 * @param description The description to set.
+	 */
+	public void setReportDescription(ReportDescription description) {
+		this._description = description;
+	}
 }
