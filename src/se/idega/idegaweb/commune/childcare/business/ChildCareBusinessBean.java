@@ -82,6 +82,7 @@ import com.idega.data.IDORuntimeException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.user.data.User;
 import com.idega.util.FileUtil;
@@ -786,7 +787,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public boolean cleanQueue(int providerID, User performer) throws FinderException {
+	public boolean cleanQueue(int providerID, User performer, IWUserContext iwuc) throws FinderException {
+		iwuc.setSessionAttribute(CLEAN_QUEUE_RUNNING, "TRUE");
 		IWPropertyList properties = getIWApplicationContext().getSystemProperties().getProperties(PROPERTIES_CHILD_CARE);
 		int monthsInQueue = Integer.parseInt(properties.getProperty(PROPERTY_MAX_MONTHS_IN_QUEUE, "6"));
 		int daysToReply = Integer.parseInt(properties.getProperty(PROPERTY_DAYS_TO_REPLY, "30"));
@@ -811,7 +813,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				ChildCareApplication application = (ChildCareApplication) iter.next();
-				if (hasActiveApplications(application.getChildId(), application.getCaseCode().getCode(), stamp.getDate())) {
+				if (!hasOutstandingOffers(application.getChildId(), application.getCode()) && hasActiveApplications(application.getChildId(), application.getCaseCode().getCode(), stamp.getDate())) {
 					application.setLastReplyDate(lastReplyDate.getDate());
 					changeCaseStatus(application, getCaseStatusPending().getStatus(), performer);
 					
@@ -820,6 +822,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			
 			transaction.commit();
+			iwuc.removeSessionAttribute(CLEAN_QUEUE_RUNNING);
 			return true;
 		}
 		catch (Exception e) {
@@ -832,6 +835,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		}
 		
+		iwuc.removeSessionAttribute(CLEAN_QUEUE_RUNNING);
 		return false;
 	}
 	

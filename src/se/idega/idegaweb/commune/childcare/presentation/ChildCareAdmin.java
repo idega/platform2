@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
@@ -79,7 +80,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 	private void parseAction(IWContext iwc) throws RemoteException {
 		if (iwc.isParameterSet(PARAMETER_CLEAN_QUEUE)) {
 			try {
-				_queueCleaned = new Boolean(getBusiness().cleanQueue(getSession().getChildCareID(), iwc.getCurrentUser()));
+				_queueCleaned = new Boolean(getBusiness().cleanQueue(getSession().getChildCareID(), iwc.getCurrentUser(), iwc));
 			}
 			catch (FinderException fe) {
 				//Nothing found and everyone is happy about that :D
@@ -280,6 +281,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 			form.add(new HiddenInput(PARAMETER_CLEAN_QUEUE, Boolean.TRUE.toString()));
 			
 			SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.clean_queue", "Clean queue")));
+			if (iwc.getSessionAttribute(ChildCareBusiness.CLEAN_QUEUE_RUNNING) != null) {
+				form.setDisabled(true);
+			}
 			form.setToDisableOnSubmit(button, true);
 			form.add(button);
 			

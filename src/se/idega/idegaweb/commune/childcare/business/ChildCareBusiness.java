@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.childcare.business;
 import java.util.Collection;
 
 import com.idega.block.process.business.CaseBusiness;
+import com.idega.idegaweb.IWUserContext;
 
 public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBusiness {
 
@@ -21,6 +22,8 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
 	public final static char STATUS_SENT_IN = 'A';
 	public final static char STATUS_TIMED_OUT = 'S';
 	
+	public final static String CLEAN_QUEUE_RUNNING = "clean_queue_running";
+	
  public boolean acceptApplication(int p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public boolean acceptApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public void addMissingGrantedChecks() throws java.rmi.RemoteException;
@@ -37,7 +40,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean changeApplicationStatus(int p0,char p1,com.idega.user.data.User p2)throws java.lang.IllegalArgumentException, java.rmi.RemoteException;
  public boolean changeApplicationStatus(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,char p1,com.idega.user.data.User p2)throws java.lang.IllegalArgumentException, java.rmi.RemoteException;
  public void changePlacingDate(int p0,java.sql.Date p1,java.lang.String p2) throws java.rmi.RemoteException;
- public boolean cleanQueue(int providerID, com.idega.user.data.User performer) throws javax.ejb.FinderException, java.rmi.RemoteException;
+ public boolean cleanQueue(int providerID, com.idega.user.data.User performer, IWUserContext iwuc) throws javax.ejb.FinderException, java.rmi.RemoteException;
  public void convertOldQueue() throws java.rmi.RemoteException;
  public void exportQueue(java.util.Collection p0) throws java.rmi.RemoteException;
  public java.util.Collection findAllApplicationsWithChecksToRedeem() throws java.rmi.RemoteException;
