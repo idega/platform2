@@ -28,7 +28,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.12 2003/04/07 13:44:15 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.13 2003/04/07 17:03:20 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -86,7 +86,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				/**@todo: How do i 'connect' to the message editor block? */ 
 			    ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID));
 			    getChildCareBusiness(iwc).sendMessageToProvider(application, "Requst for information", "Requesting information...", application.getOwner());
-			    createRequestInfoConfirmPage(iwc, layoutTbl); 
+			    createRequestInfoConfirmPage(layoutTbl); 
 
 				
 			/*	layoutTbl.add(new Text("[Requesting info from " + 
@@ -365,7 +365,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return CCConstants.NO_ACTION;	
 	}
 		
-	private void createRequestInfoConfirmPage(IWContext iwc, Table layoutTbl) throws RemoteException{
+	private void createRequestInfoConfirmPage(Table layoutTbl) throws RemoteException{
 		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_CONFIRM).toString());
 //		submitBtn.setName(SUBMIT[0] + PAGE_1);
 		submitBtn.setAsImageButton(true);		
