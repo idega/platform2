@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.21 2002/10/15 11:32:48 laddi Exp $
+ * $Id: ApplicationForm.java,v 1.22 2002/10/21 21:07:18 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -121,7 +121,7 @@ public class ApplicationForm extends PresentationObjectContainer {
     text1.setBold();
 
     DropdownMenu subject = new DropdownMenu(subjects,"subject");
-    subject.setStyle("formstyle");
+    subject.setStyleClass("formstyle");
     BackButton back = new BackButton(_iwrb.getImage("back.gif"));
     SubmitButton ok = new SubmitButton(_iwrb.getImage("next.gif",_iwrb.getLocalizedString("ok","áfram")));
 
