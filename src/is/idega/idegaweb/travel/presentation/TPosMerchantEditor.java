@@ -40,6 +40,8 @@ public class TPosMerchantEditor extends TravelManager {
   private String _parameterKeyReceivedPassword = "prm_keyrcvpass";
   private String _actionContinue = "act_con";
   private String _actionSave = "act_sav";
+  private String _actionDelete = "act_del";
+  private String _actionDeleteVerified = "act_del_ver";
   private String tempPass = "svana";
 
   private IWResourceBundle _iwrb;
@@ -108,6 +110,11 @@ public class TPosMerchantEditor extends TravelManager {
           form.add(getHeaderText(_iwrb.getLocalizedString("travel.password invalid","Password invalid")));
         }
 
+      }else if (action.equals(_actionDelete)) {
+      	form = verifyDelete(iwc);
+      } else if (action.equals(_actionDeleteVerified)) {
+      	delete(iwc);
+      	form = getMerchantForm();
       }
 
       return form;
@@ -161,7 +168,51 @@ public class TPosMerchantEditor extends TravelManager {
     return form;
   }
 
-
+  private Form verifyDelete(IWContext iwc) throws RemoteException {
+  	Form form = new Form();
+  	Table table = getTable();
+  	form.add(table);
+  	table.setWidth("400");
+  	Text verifyText = null;
+  	if (_supplier != null) {
+  		verifyText =getText(_iwrb.getLocalizedString("travel.confirm_delete_tpos_merchant", "Are you sure you want to delete the TPOS Merchant for supplier : "));
+  		verifyText.addToText(_supplier.getName());
+  		form.maintainParameter(this._parameterSupplierId);
+  	} else if (_reseller != null) {
+  		verifyText =getText(_iwrb.getLocalizedString("travel.confirm_delete_tpos_merchant", "Are you sure you want to delete the TPOS Merchant for reseller : "));  		
+  		verifyText.addToText(_reseller.getName());
+  		form.maintainParameter(this._parameterResellerId);
+  	}
+  	form.maintainParameter(this._parameterSupplierId);
+  	int row = 1;
+  	table.add(getHeaderText(_iwrb.getLocalizedString("travel.delete_tpos_merchant", "Delete TPOS Merchant")), 1, row);
+  	table.mergeCells(1, row, 2, row);
+  	table.setRowColor(row, backgroundColor);
+  	
+  	++row;
+  	table.mergeCells(1, row, 2, row);
+  	table.add(verifyText, 1, row);
+  	table.setRowColor(row, GRAY);
+  	
+  	++row;
+  	table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
+  	table.add(getBackLink(1), 1, row);
+  	table.add(new SubmitButton(_iwrb.getImage("/buttons/delete.gif"), _parameterAction, _actionDeleteVerified), 2, row);
+  	table.setRowColor(row, GRAY);
+  	
+  	return form;
+  }
+  
+  private void delete(IWContext iwc) {
+		if (_supplier != null) {
+		  _supplier.setTPosMerchantId(null);
+		  _supplier.store();
+		}else if (_reseller != null) {
+		  _reseller.setTPosMerchantId(null);
+		  _reseller.store();
+		}  
+  }
+  
   private Form getMerchantForm() throws RemoteException{
     Form form = new Form();
     Table table = getTable();
@@ -236,6 +287,10 @@ public class TPosMerchantEditor extends TravelManager {
 
     ++row;
     table.add(getBackLink(1), 1, row);
+    if (_merchant != null) {
+    	table.add(new SubmitButton(_iwrb.getImage("buttons/delete.gif"), _parameterAction, _actionDelete), 2, row);
+    	table.add(Text.NON_BREAKING_SPACE, 2, row);
+    }
     table.add(new SubmitButton(_iwrb.getImage("buttons/save.gif"), _parameterAction, _actionSave), 2 ,row);
     table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
     table.setRowColor(row, super.GRAY);
