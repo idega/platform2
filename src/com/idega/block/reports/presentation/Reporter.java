@@ -51,8 +51,11 @@ public class Reporter extends Editor{
   }
 
   protected void control(ModuleInfo modinfo){
-    if(modinfo.getSession().getAttribute(prefix+"content")!=null){
-      modinfo.removeSessionAttribute(prefix+"content");
+    if(modinfo.getSession().getAttribute("content")!=null){
+      modinfo.removeSessionAttribute("content");
+    }
+    if(modinfo.getSessionAttribute("headers") != null){
+        modinfo.removeSessionAttribute("headers");
     }
     checkCategory(modinfo);
     if(modinfo.getParameter(sAction) != null){

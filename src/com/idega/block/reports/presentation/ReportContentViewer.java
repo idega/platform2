@@ -110,8 +110,8 @@ public class ReportContentViewer extends Editor{
       String sql = eReport.getSQL();
       String[] headers = eReport.getHeaders();
       Vector v = new ReportMaker().makeReport(sql);
-      modinfo.setSessionAttribute(prefix+"content",v);
-      modinfo.setSessionAttribute(prefix+"headers",headers);
+      modinfo.setSessionAttribute("content",v);
+      modinfo.setSessionAttribute("headers",headers);
       makeView();
       if(v != null){
         addMain(this.doView(headers,v,listStart));
@@ -137,13 +137,13 @@ public class ReportContentViewer extends Editor{
   }
 
   private void doTable(ModuleInfo modinfo){
-    if(modinfo.getSession().getAttribute(prefix+"content")!=null){
-      Vector v= (Vector) modinfo.getSession().getAttribute(prefix+"content");
+    if(modinfo.getSession().getAttribute("content")!=null){
+      Vector v= (Vector) modinfo.getSession().getAttribute("content");
       eReport = ReportService.getSessionReport(modinfo);
       listStart = ((Integer)modinfo.getSessionAttribute("liststart")).intValue();
       String[] headers = null;
-      if(modinfo.getSessionAttribute(prefix+"headers") != null){
-        headers = (String[]) modinfo.getSessionAttribute(prefix+"headers");
+      if(modinfo.getSessionAttribute("headers") != null){
+        headers = (String[]) modinfo.getSessionAttribute("headers");
       }
 
       if(modinfo.getSession().getAttribute(prefix+"lastorder")!=null)
