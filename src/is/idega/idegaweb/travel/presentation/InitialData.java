@@ -95,14 +95,6 @@ public class InitialData extends TravelManager {
         if (action == null) action = "";
 
       Form form = new Form();
-      /*
-      ShadowBox sb = new ShadowBox();
-        form.add(sb);
-        sb.setWidth("90%");
-        sb.setAlignment("center");
-      */
-
-
         if (supplier != null) {
             form.add(getSupplierCreation(supplier.getID()));
         }
@@ -131,7 +123,7 @@ public class InitialData extends TravelManager {
                 SupplierManager.invalidateSupplier(new Supplier(Integer.parseInt(supplier_id)));
               }catch (Exception e) {
                 e.printStackTrace(System.err);
-                form.add("TEMP - henti ekki");
+                form.add(iwrb.getLocalizedString("travel.supplier_was_not_deleted","Supplier was not deleted"));
               }
 
               form.add(selectSupplier(iwc));
@@ -414,6 +406,8 @@ public class InitialData extends TravelManager {
         table.add(passTwo,2,row);
       }
 
+      ++row;
+        table.add(Text.NON_BREAKING_SPACE,1,row);
       ++row;
       if (supplier == null ) {
         table.setAlignment(1,row,"left");

@@ -156,6 +156,7 @@ public class Contracts extends TravelManager {
           table.add(resName,1,row);
           table.add(refNum,2,row);
           table.add(edit,3,row);
+          table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,3,row);
           table.add(assign,3,row);
           table.setRowColor(row,theColor);
           table.setAlignment(3,row,"right");

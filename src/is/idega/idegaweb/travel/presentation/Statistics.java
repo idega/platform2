@@ -104,17 +104,10 @@ public class Statistics extends TravelManager {
       Table topTable = getTopTable(iwc);
         form.add(topTable);
       if (service != null) {
+          form.add(Text.BREAK);
+          form.add(Text.BREAK);
           Table table = getContentTable(iwc);
-          /*
-          ShadowBox sb = new ShadowBox();
-            form.add(sb);
-            sb.setWidth("90%");
-            sb.setAlignment("center");
-            sb.add(getContentHeader(iwc));
-            sb.add(table);
-          */
           form.add(table);
-
           form.add(Text.BREAK);
           Table par = new Table();
             par.setAlignment(1,1,"right");
@@ -275,9 +268,10 @@ public class Statistics extends TravelManager {
   public Table getContentTable(IWContext iwc) {
       Table table = new Table();
         table.setWidth("90%");
-        table.setBorder(1);
-        table.setCellspacing(0);
+        table.setBorder(0);
+        table.setCellspacing(1);
         table.setCellpadding(2);
+        table.setColor(super.WHITE);
 
       int row = 0;
 
@@ -286,28 +280,35 @@ public class Statistics extends TravelManager {
 
       Text netBookText = (Text) smallText.clone();
           netBookText.setText(iwrb.getLocalizedString("travel.bookings_on_the_net","Bookings on the net"));
+          netBookText.setFontColor(super.BLACK);
 
       Text inqText = (Text) smallText.clone();
           inqText.setText(iwrb.getLocalizedString("travel.bookings_from_inqueries","Bookings from inqueries"));
+          inqText.setFontColor(super.BLACK);
 
       Text supplText = (Text) smallText.clone();
           supplText.setText(iwrb.getLocalizedString("travel.bookings_from_supplier","Booked by supplier"));
+          supplText.setFontColor(super.BLACK);
 
       Text travelText = (Text) smallText.clone();
           travelText.setText(iwrb.getLocalizedString("travel.bookings_from_travel_agencies","Booked by travel agencies"));
+          travelText.setFontColor(super.BLACK);
 
       Text availText = (Text) smallText.clone();
           availText.setText(iwrb.getLocalizedString("travel.available","Available"));
+          availText.setFontColor(super.BLACK);
 
       Text passText = (Text) smallText.clone();
           passText.setText(iwrb.getLocalizedString("travel.number_of_passengers","Number of passengers"));
+          passText.setFontColor(super.BLACK);
 
       Text seatText = (Text) smallText.clone();
           seatText.setText(iwrb.getLocalizedString("travel.number_of_seats","Number of seats"));
+          seatText.setFontColor(super.BLACK);
 
       Text usageText = (Text) smallText.clone();
           usageText.setText(iwrb.getLocalizedString("travel.seat_usage","Seat usage"));
-
+          usageText.setFontColor(super.BLACK);
 
 
       Text netBookNrText = (Text) smallText.clone();
@@ -318,6 +319,14 @@ public class Statistics extends TravelManager {
       Text passNrText = (Text) smallText.clone();
       Text seatNrText = (Text) smallText.clone();
       Text usageNrText = (Text) smallText.clone();
+          netBookNrText.setFontColor(super.BLACK);
+          inqNrText.setFontColor(super.BLACK);
+          supplNrText.setFontColor(super.BLACK);
+          travelNrText.setFontColor(super.BLACK);
+          availNrText.setFontColor(super.BLACK);
+          passNrText.setFontColor(super.BLACK);
+          seatNrText.setFontColor(super.BLACK);
+          usageNrText.setFontColor(super.BLACK);
 
       int iNetBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_ONLINE_BOOKING);
       int iInqBooking = Booker.getNumberOfBookings(service.getID() ,fromStamp, toStamp, is.idega.travel.data.Booking.BOOKING_TYPE_ID_INQUERY_BOOKING);
@@ -373,7 +382,7 @@ public class Statistics extends TravelManager {
       table.setColumnAlignment(2,"center");
       table.setWidth(2,"100");
 
-      table.setBorderColor(super.backgroundColor);
+      /*table.setBorderColor(super.backgroundColor);
       table.setRowColor(1,super.LIGHTBLUE);
       table.setRowColor(2,super.YELLOW);
       table.setRowColor(3,super.ORANGE);
@@ -382,6 +391,15 @@ public class Statistics extends TravelManager {
       table.setRowColor(6,super.LIGHTORANGE);
       table.setRowColor(7,super.RED);
       table.setRowColor(8,super.LIGHTGREEN);
+      */
+      table.setRowColor(1,super.GRAY);
+      table.setRowColor(2,super.GRAY);
+      table.setRowColor(3,super.GRAY);
+      table.setRowColor(4,super.GRAY);
+      table.setRowColor(5,super.GRAY);
+      table.setRowColor(6,super.GRAY);
+      table.setRowColor(7,super.GRAY);
+      table.setRowColor(8,super.GRAY);
 
 
       return table;

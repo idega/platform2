@@ -729,13 +729,13 @@ public class DailyReport extends TravelManager {
 
       theTable.add(table);
       theTable.add(additionHText,1,2);
-      theTable.add(link,1,2);
+      theTable.add(link,1,4);
       theTable.setAlignment(1,2,"left");
       theTable.add(addTable,1,3);
-      theTable.add(correctionHText,1,4);
-      theTable.add(correctionLink,1,4);
-      theTable.add(correctionTable,1,5);
-      theTable.add(totalTable,1,7);
+      theTable.add(correctionHText,1,5);
+      theTable.add(correctionLink,1,7);
+      theTable.add(correctionTable,1,6);
+      theTable.add(totalTable,1,8);
 
       SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction, this.parameterUpdate);
 

@@ -91,7 +91,7 @@ public class TravelWindow extends Window {
     table.mergeCells(1,1,2,1);
     table.add(logo,1,1);
 
-    text.setFontColor(TravelManager.backgroundColor);
+    text.setFontColor(TravelManager.BLACK);
     text.setFontSize(Text.FONT_SIZE_10_HTML_2);
 
 

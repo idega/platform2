@@ -17,6 +17,7 @@ public class LoginChanger extends TravelWindow {
     super.setTitle("idegaWeb Travel");
     setWidth(200 );
     setHeight(300 );
+    super.setScrollbar(false);
   }
 
   public void main(IWContext iwc) {
@@ -25,6 +26,7 @@ public class LoginChanger extends TravelWindow {
     LoginEditor LE = new LoginEditor();
     Table T = new Table(1,1);
     T.setAlignment(1,1,"center");
+    T.setAlignment("center");
     T.add(LE,1,1);
     add(T);
   }

@@ -39,6 +39,7 @@ public class AdditionalBooking extends TravelWindow {
     super.setHeight(300);
     super.setWidth(400);
     super.setTitle("idegaWeb Travel");
+    super.setScrollbar(false);
   }
 
   public void main(IWContext iwc) {
@@ -76,6 +77,7 @@ public class AdditionalBooking extends TravelWindow {
       Form form = new Form();
       Table table = new Table();
         form.add(table);
+        table.setAlignment("center");
       int row = 1;
 
       ProductPrice[] pPrices = ProductPrice.getProductPrices(service.getID(), false);
