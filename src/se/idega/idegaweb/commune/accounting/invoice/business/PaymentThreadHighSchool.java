@@ -1,21 +1,16 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
-import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.regulations.business.MissingConditionTypeException;
-import se.idega.idegaweb.commune.accounting.regulations.business.MissingFlowTypeException;
-import se.idega.idegaweb.commune.accounting.regulations.business.MissingRegSpecTypeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.PaymentFlowConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.RuleTypeConstant;
-import se.idega.idegaweb.commune.accounting.regulations.business.TooManyRegulationsException;
 import se.idega.idegaweb.commune.accounting.regulations.data.ConditionParameter;
 import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 
@@ -77,7 +72,7 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		batchRunLoggerDone();
 	}
 
-	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions) throws RegulationException, MissingFlowTypeException, MissingConditionTypeException, MissingRegSpecTypeException, TooManyRegulationsException, RemoteException {
+	protected PostingDetail getCheck(RegulationsBusiness regBus, Collection conditions) throws RegulationException {
 		PostingDetail detail = null;
 		
 		try {

@@ -25,9 +25,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.InvoiceRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
-import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
 import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.LowIncomeException;
@@ -424,10 +422,6 @@ public class InvoiceChildcareThread extends BillingThread{
 							e1.printStackTrace();
 							createNewErrorMessage(errorRelated,"invoice.ErrorFindingRegulationWhenItWasExpected");
 						}
-						catch (PostingParametersException e1) {
-							e1.printStackTrace();
-							createNewErrorMessage(errorRelated,"invoice.PostingParametersException");
-						}
 						catch (PostingException e1) {
 							e1.printStackTrace();
 							createNewErrorMessage(errorRelated,"invoice.PostingException");
@@ -435,10 +429,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						catch (RemoteException e1) {
 							e1.printStackTrace();
 							createNewErrorMessage(errorRelated,"invoice.RemoteException");
-						}
-						catch (MissingMandatoryFieldException e1) {
-							e1.printStackTrace();
-							createNewErrorMessage(errorRelated,"invoice.MissingMandatoryFieldException");
 						}
 						catch(MissingConditionTypeException e) {
 							e.printStackTrace();
@@ -491,20 +481,6 @@ public class InvoiceChildcareThread extends BillingThread{
 						createNewErrorMessage(errorRelated,"invoice.ErrorFindingCheckRegulation");
 					} else{
 						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorFindingCheckRegulation");
-					}
-				} catch(MissingMandatoryFieldException e){
-					e.printStackTrace();
-					if(errorRelated != null){
-						createNewErrorMessage(errorRelated,"invoice.MissingMandatoryFieldInPostingParameter");
-					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.MissingMandatoryFieldInPostingParameter");
-					}
-				} catch (PostingParametersException e) {
-					e.printStackTrace();
-					if(errorRelated != null){
-						createNewErrorMessage(errorRelated,"invoice.ErrorInPostingParameter");
-					} else{
-						createNewErrorMessage(contract.getChild().getName(),"invoice.ErrorInPostingParameter");
 					}
 				} catch (PostingException e) {
 					e.printStackTrace();
@@ -890,7 +866,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @return the sibling order for the child connected to the contract
 	 */
 
-	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, CreateException, RemoteException, SiblingOrderException{
+	private int getSiblingOrder(ChildCareContract contract, Map siblingOrders) throws EJBException, RemoteException, SiblingOrderException{
 			User contractChild = contract.getChild ();	
 			UserInfoService userInfo = (UserInfoService) IBOLookup.getServiceInstance(iwc, UserInfoService.class);
 			return userInfo.getSiblingOrder(contractChild, siblingOrders, new CalendarMonth (startPeriod));
@@ -1011,7 +987,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 */
 	private InvoiceRecord createInvoiceRecordForCheck(InvoiceHeader invoiceHeader, String header, String text2,
 			PaymentRecord paymentRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
-			throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
+			throws RemoteException, CreateException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(header);
@@ -1033,7 +1009,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws MissingMandatoryFieldException
 	 */
 	private InvoiceRecord createInvoiceRecord(InvoiceHeader invoiceHeader, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
-			throws PostingParametersException, PostingException, RemoteException, CreateException, MissingMandatoryFieldException{
+			throws RemoteException, CreateException{
 		InvoiceRecord invoiceRecord = getInvoiceRecordHome().create();
 		invoiceRecord.setInvoiceHeader(invoiceHeader);
 		invoiceRecord.setInvoiceText(postingDetail.getTerm());
@@ -1053,7 +1029,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * @throws MissingMandatoryFieldException
 	 */
 	private InvoiceRecord createInvoiceRecordSub(InvoiceRecord invoiceRecord, String ownPosting, String doublePosting, PlacementTimes placementTimes, School school, ChildCareContract contract) 
-			throws CreateException, PostingParametersException, PostingException, RemoteException, MissingMandatoryFieldException{
+			throws RemoteException{
 		invoiceRecord.setProvider(school);
 		invoiceRecord.setSchoolClassMember(contract.getSchoolClassMember());
 		invoiceRecord.setRuleText(postingDetail.getTerm());
@@ -1087,7 +1063,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		return invoiceRecord;
 	}
 	
-	protected boolean hasInvoices() throws FinderException, IDOException, RemoteException, EJBException {
+	protected boolean hasInvoices() throws IDOException, RemoteException, EJBException {
 		return getInvoiceRecordHome().getPlacementCountForSchoolCategoryAndPeriod((String) category.getPrimaryKey(), calculationDate) > 0;
 	}
 

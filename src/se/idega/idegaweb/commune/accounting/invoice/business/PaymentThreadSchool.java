@@ -66,11 +66,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/08 11:19:38 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/08 12:38:36 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.93 $
+ * @version $Revision: 1.94 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -245,15 +245,6 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			}
 		}
 		catch (EJBException e) {
-			e.printStackTrace();
-			if (errorRelated != null) {
-				createNewErrorMessage(errorRelated, "invoice.Severe_CouldNotFindHomeCommune");
-			}
-			else {
-				createNewErrorMessage("invoice.PaymentSchool", "invoice.Severe_CouldNotFindHomeCommune");
-			}
-		}
-		catch (CreateException e) {
 			e.printStackTrace();
 			if (errorRelated != null) {
 				createNewErrorMessage(errorRelated, "invoice.Severe_CouldNotFindHomeCommune");
@@ -699,7 +690,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		return (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(category.getPrimaryKey());
 	}
 
-	private Collection getSchools() throws IDOLookupException, EJBException, FinderException, CreateException, RemoteException {
+	private Collection getSchools() throws IDOLookupException, EJBException, FinderException, RemoteException {
 		return getSchoolHome().findAllByCategory(category);
 	}
 

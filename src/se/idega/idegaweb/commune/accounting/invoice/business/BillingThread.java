@@ -490,7 +490,7 @@ public abstract class BillingThread extends Thread{
 		batchRunLogger.store();
 	}
 	
-	protected boolean hasPlacements() throws FinderException, IDOException, RemoteException, EJBException {
+	protected boolean hasPlacements() throws IDOException, RemoteException, EJBException {
 		return getPaymentRecordHome().getPlacementCountForSchoolCategoryAndMonth((String) category.getPrimaryKey(), month) > 0;
 	}
 

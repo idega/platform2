@@ -84,10 +84,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/06 14:03:12 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/08 12:38:36 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.106 $
+ * @version $Revision: 1.107 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -154,8 +154,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private static final String INVOICE_RECORD_KEY = PREFIX + "invoice_record";
 	private static final String INVOICE_RECORD_REMOVED_DEFAULT = "Fakturaraden är borttagen";
 	private static final String INVOICE_RECORD_REMOVED_KEY = PREFIX + "invoice_record_removed";
-	//private static final String INVOICE_RECORD_UPDATED_DEFAULT = "Fakturaraden är nu uppdaterad";
-	//private static final String INVOICE_RECORD_UPDATED_KEY = PREFIX + "invoice_record_updated";
 	private static final String INVOICE_TEXT2_KEY = PREFIX + "invoice_text2";
 	private static final String INVOICE_TEXT_DEFAULT  = "Fakturatext";
 	private static final String INVOICE_TEXT_KEY = PREFIX + "invoice_text";
@@ -173,6 +171,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 	private static final String NO_COMPILATION_FOUND_KEY = PREFIX + "no_compilation_found";
 	private static final String NO_RELATED_PLACEMENT_FOUND_FOR_DEFAULT = "Ingen relaterad placering hittades för";
 	private static final String NO_RELATED_PLACEMENT_FOUND_FOR_KEY = PREFIX + "no_related_placement_found_for";
+	private static final String NO_RULE_FOUND_STARTING_WITH_DEFAULT = "Ingen regel börjar med";
+	private static final String NO_RULE_FOUND_STARTING_WITH_KEY = PREFIX + "no_rule_found_starting_with";
 	private static final String NUMBER_OF_DAYS_DEFAULT = "Antal dagar";
 	private static final String NUMBER_OF_DAYS_KEY = PREFIX + "number_of_days";
 	private static final String ORDER_ID_KEY = PREFIX + "order_id";
@@ -588,7 +588,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		final String searchString = context.getParameter (RULE_TEXT_KEY);
 		final java.sql.Date period = header.getPeriod ();
 		final String categoryId =  header.getSchoolCategoryID ();
-		final Collection regulations = new ArrayList ();
 		inputs.put (PLACEMENT_KEY, getPlacementsDropdown (context, header));
 		final SchoolClassMember placement = (SchoolClassMember)
 				context.getSessionAttribute (PLACEMENT_KEY);
@@ -600,55 +599,12 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 				&& null != provider && getActionId (context)
 				== ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT) {
 			// the form is correctly filled - do search for regulation
-			final RegulationHome home = getRegulationHome ();
-			try {
-				regulations.addAll
-						(home.findRegulationsByNameNoCaseDateAndCategory
-						 (searchString + '%', period, categoryId));
-				if (1 == regulations.size ()) {
-					matchedRegulation = (Regulation) regulations.iterator ().next ();
-				} else {
-					for (Iterator i = regulations.iterator ();
-							 i.hasNext () && null == matchedRegulation;) {
-						final Regulation regulation = (Regulation) i.next ();
-						if (regulation.getName ().trim ().equalsIgnoreCase
-								(searchString.trim ())) {
-							matchedRegulation = regulation;
-						}
-					}
-				}
-			} catch (FinderException e) {
-				// no problem, no regulation found
-			}
+			matchedRegulation = findRegulation
+					(context, inputs, header, business, searchString, period, categoryId,
+					 placement, provider);
 		} 
-		if (null != matchedRegulation) {
-			// found exactly one regulation, display it
-			addPresentationObjectsForNewRecordForm
-					(context, inputs, header, business, provider, matchedRegulation,
-					 placement);
-		} else {
-			// found 0 or more than 1 regulation, present search form
-			if (!regulations.isEmpty ()) {
-				// regulations.size > 1
-				addRegulationLinkListForNewRecordForm (context, inputs,
-																							 regulations);
-			}
-			inputs.put (RULE_TEXT_KEY, getStyledWideInput (RULE_TEXT_KEY,
-																										 searchString));
-			inputs.put (INVOICE_TEXT_KEY, getStyledWideInput
-									(INVOICE_TEXT_KEY));
-			inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput
-									(INVOICE_TEXT2_KEY));
-			inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
-			inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
-			inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
-									(business.getAllRegulationSpecTypes ()));
-			inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
-									(business.getAllVATRuleRegulations()));
-			inputs.put (OWN_POSTING_KEY, getPostingParameterForm
-									(context, OWN_POSTING_KEY));
-			inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
-									(context, DOUBLE_POSTING_KEY));
+		if (null == matchedRegulation) {
+			addSearchRegulationForm(context, inputs, business, searchString);
 		}
 		inputs.put (INVOICE_RECEIVER_KEY, getSmallText (getUserInfo
 																										(custodian)));
@@ -672,6 +628,81 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 									 SEARCH_RULE_TEXT_KEY, SEARCH_RULE_TEXT_DEFAULT));
 		}
 		renderRecordDetailsOrForm (context, inputs);
+	}
+
+	private void addSearchRegulationForm(final IWContext context, final java.util.Map inputs, final InvoiceBusiness business, final String searchString) throws RemoteException {
+		// found 0 or more than 1 regulation, present search form
+		inputs.put (RULE_TEXT_KEY, getStyledWideInput (RULE_TEXT_KEY,
+																									 searchString));
+		inputs.put (INVOICE_TEXT_KEY, getStyledWideInput
+								(INVOICE_TEXT_KEY));
+		inputs.put (INVOICE_TEXT2_KEY, getStyledWideInput
+								(INVOICE_TEXT2_KEY));
+		inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
+		inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
+		inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
+								(business.getAllRegulationSpecTypes ()));
+		inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
+								(business.getAllVATRuleRegulations()));
+		inputs.put (OWN_POSTING_KEY, getPostingParameterForm
+								(context, OWN_POSTING_KEY));
+		inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
+								(context, DOUBLE_POSTING_KEY));
+	}
+
+	private Regulation findRegulation
+		(final IWContext context, final java.util.Map inputs,
+		 final InvoiceHeader header, final InvoiceBusiness business,
+		 final String searchString, final java.sql.Date period,
+		 final String categoryId, final SchoolClassMember placement,
+		 final Provider provider) throws IDOLookupException, RemoteException {
+		final Collection regulations = new ArrayList ();
+		Regulation matchedRegulation  = null;
+		final RegulationHome home = getRegulationHome ();
+		try {
+			regulations.addAll
+					(home.findRegulationsByNameNoCaseDateAndCategory
+					 (searchString + '%', period, categoryId));
+			if (1 == regulations.size ()) {
+				matchedRegulation = (Regulation) regulations.iterator ().next ();
+			} else {
+				for (Iterator i = regulations.iterator ();
+						 i.hasNext () && null == matchedRegulation;) {
+					final Regulation regulation = (Regulation) i.next ();
+					if (regulation.getName ().trim ().equalsIgnoreCase
+							(searchString.trim ())) {
+						matchedRegulation = regulation;
+					}
+				}
+			}
+			if (null != matchedRegulation) {
+				// found exactly one regulation, display it
+				addPresentationObjectsForNewRecordForm
+						(context, inputs, header, business, provider, matchedRegulation,
+						 placement);
+			} else {
+				// regulations.size > 1
+				addRegulationLinkListForNewRecordForm (context, inputs,
+																							 regulations);
+			}
+		} catch (FinderException e) {
+			// take care of 'regulations.isEmpty' below since FinderException isn't
+			// allways thrown
+		}
+		if (regulations.isEmpty ()) {
+			// no regulations found from search
+			final String message = localize
+					(NO_RULE_FOUND_STARTING_WITH_KEY,
+					 NO_RULE_FOUND_STARTING_WITH_DEFAULT) + " '" + searchString + "'.";
+			inputs.put (RULE_TEXT_LINK_LIST_KEY, getRedText (message));
+		}
+		return matchedRegulation;
+	}
+
+	private Text getRedText (final String string) {
+		final Text text = new Text (string);
+		text.setFontColor ("#ff0000");
+		return text;
 	}
 	
 	private void showEditRecordForm (final IWContext context)

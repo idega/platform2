@@ -1,4 +1,4 @@
-/* $Id: ControlList.java,v 1.7 2003/12/19 01:35:46 kjell Exp $
+/* $Id: ControlList.java,v 1.8 2004/01/08 12:38:36 staffan Exp $
 *
 * Copyright (C) 2003 Agura IT. All Rights Reserved.
 *
@@ -43,7 +43,7 @@ import se.idega.idegaweb.commune.accounting.invoice.business.ControlListExceptio
  * Amount paid this period
  * The list can also be presented as an Excel sheet
  * 
- * $Id: ControlList.java,v 1.7 2003/12/19 01:35:46 kjell Exp $ 
+ * $Id: ControlList.java,v 1.8 2004/01/08 12:38:36 staffan Exp $ 
  * <p>
  *
  * @author <a href="http://www.lindman.se">Kelly Lindman</a>
@@ -210,7 +210,7 @@ public class ControlList extends AccountingBlock {
 		return bp;
 	}
 	
-	private Link getXLSLink(Class classToUse, Image image, Date compareDate, Date withDate, String opField) throws RemoteException {
+	private Link getXLSLink(Class classToUse, Image image, Date compareDate, Date withDate, String opField) {
 		Link link = new Link(image);
 		link.setWindow(getFileWindow());
 		link.addParameter(ControlListWriter.prmPrintType, ControlListWriter.XLS);
