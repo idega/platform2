@@ -67,6 +67,8 @@ public class NBSSigningBlock extends Block implements Builderaware{
 			}
 			NBSSignedEntity signedEntity = getNBSSignedEntity(iwc);
 			String toBeSigned = signedEntity.getText();
+			//TODO: (roar) TBD:
+			System.out.println("### ToBeSigned: " + toBeSigned);
 			
 			switch(signedEntity.getAction()){
 				case NBSSignedEntity.ACTION_INIT:
