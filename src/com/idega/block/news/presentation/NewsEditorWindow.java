@@ -646,7 +646,7 @@ private IWResourceBundle iwrb;
 
     if ( hasContent ) {
       List files = contentHelper.getFiles();
-      if(files != null){
+      if(files != null && !files.isEmpty()){
       imageTable.mergeCells(1,row,3,row);
       imageTable.add( formatText(iwrb.getLocalizedString("newsimages","News images :")),1,row++);
       ICFile file1 = (ICFile) files.get(0);
