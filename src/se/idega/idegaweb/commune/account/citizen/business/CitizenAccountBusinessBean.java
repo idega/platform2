@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.60 2003/12/19 12:15:42 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.61 2004/01/21 11:51:19 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -72,11 +72,11 @@ import com.idega.util.Encrypter;
 import com.idega.util.IWTimestamp;
 
 /**
- * Last modified: $Date: 2003/12/19 12:15:42 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/21 11:51:19 $ by $Author: tryggvil $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.60 $
+ * @version $Revision: 1.61 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 	private boolean acceptApplicationOnCreation = true;
@@ -477,24 +477,30 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 
 			final MemberFamilyLogic familyLogic = (MemberFamilyLogic) getServiceInstance(MemberFamilyLogic.class);
 			if (applicant.hasCohabitant()) {
-				final CitizenApplicantCohabitantHome home = (CitizenApplicantCohabitantHome) IDOLookup.getHome(CitizenApplicantCohabitant.class);
-				final CitizenApplicantCohabitant cohabitant = home.findByApplicationId(applicationID);
-				final String cohabitantSsn = cohabitant.getSsn();
-				if (cohabitantSsn != null && cohabitantSsn.trim().length() > 0) {
-					final Gender cohabitantGender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
-					final Date cohabitantBirth = pidChecker.getDateFromPersonalID(ssn);
-					final IWTimestamp cohabitantTimestamp = cohabitantBirth != null ? new IWTimestamp(cohabitantBirth.getTime()) : null;
-					final User cohabitantUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp);
-					familyLogic.setAsSpouseFor(user, cohabitantUser);
-					if (null != address) cohabitantUser.addAddress (address);
-					final Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
-					phone.setNumber(cohabitant.getPhoneWork());
-					phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
-					phone.store();
-					cohabitantUser.addPhone(phone);
-					if (homePhone != null) {
-						cohabitantUser.addPhone(homePhone);
+				try{
+					final CitizenApplicantCohabitantHome home = (CitizenApplicantCohabitantHome) IDOLookup.getHome(CitizenApplicantCohabitant.class);
+					final CitizenApplicantCohabitant cohabitant = home.findByApplicationId(applicationID);
+					final String cohabitantSsn = cohabitant.getSsn();
+					if (cohabitantSsn != null && cohabitantSsn.trim().length() > 0) {
+						final Gender cohabitantGender = pidChecker.isFemale(ssn) ? genderHome.getFemaleGender() : genderHome.getMaleGender();
+						final Date cohabitantBirth = pidChecker.getDateFromPersonalID(ssn);
+						final IWTimestamp cohabitantTimestamp = cohabitantBirth != null ? new IWTimestamp(cohabitantBirth.getTime()) : null;
+						final User cohabitantUser = notNackaResident ? userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp) : userBusiness.createOrUpdateCitizenByPersonalID(cohabitant.getFirstName(), "", cohabitant.getLastName(), cohabitantSsn, cohabitantGender, cohabitantTimestamp);
+						familyLogic.setAsSpouseFor(user, cohabitantUser);
+						if (null != address) cohabitantUser.addAddress (address);
+						final Phone phone = ((PhoneHome) IDOLookup.getHome(Phone.class)).create();
+						phone.setNumber(cohabitant.getPhoneWork());
+						phone.setPhoneTypeId(PhoneBMPBean.getWorkNumberID());
+						phone.store();
+						cohabitantUser.addPhone(phone);
+						if (homePhone != null) {
+							cohabitantUser.addPhone(homePhone);
+						}
 					}
+				}
+				catch(FinderException fe){
+					//This is if no cohabitant record is found
+					fe.printStackTrace();
 				}
 			}
 			if (applicant.getChildrenCount() > 0) {
