@@ -533,7 +533,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
               sql.append(dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");
               sql.append(" and ");
 //              sql.append(dateColumn+" >= '"+TextSoap.findAndCut(toStamp.toSQLDateString(),"-")+"'");
-              sql.append(dateColumn+" <= '"+toStamp.toSQLDateString()+"')");
+              sql.append(dateColumn+" <= '"+toStamp.toSQLDateString()+"'"); // Gimmi fixar ... +"')");
 	            sql.append(" )");
             }
             sql.append(" )");
