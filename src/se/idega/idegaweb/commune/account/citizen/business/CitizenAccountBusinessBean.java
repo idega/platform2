@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.80 2005/01/07 17:06:41 malin Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.81 2005/01/07 17:17:54 malin Exp $
  * Copyright (C) 2002 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  */
@@ -73,11 +73,11 @@ import com.idega.util.LocaleUtil;
 import com.idega.util.text.Name;
 
 /**
- * Last modified: $Date: 2005/01/07 17:06:41 $ by $Author: malin $
+ * Last modified: $Date: 2005/01/07 17:17:54 $ by $Author: malin $
  * 
  * @author <a href="mail:palli@idega.is">Pall Helgason </a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg </a>
- * @version $Revision: 1.80 $
+ * @version $Revision: 1.81 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean implements CitizenAccountBusiness, AccountBusiness {
 
@@ -116,13 +116,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 		UserTransaction transaction = null;
 		NBSLoginBusinessBean loginBusiness = new NBSLoginBusinessBean();
 		NBSLoggedOnInfo info = loginBusiness.getBankIDLoggedOnInfo(iwc);
-		MessageSession messageSession = null;
+		/*MessageSession messageSession = null;
 		try {
 			messageSession = getMessageSession(iwc);	
 		}catch (Exception e){
 			log(e);
 		}
-		
+		*/
 		try {
 			transaction = getSessionContext().getUserTransaction();
 			transaction.begin();
@@ -137,7 +137,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			application.setPhoneHome(phoneHome);
 			if (!"".equals(email)){
 				application.setEmail(email);
-				messageSession.setIfUserPreferesMessageByEmail(true);				
+				//messageSession.setIfUserPreferesMessageByEmail(true);				
 			}
 			if (phoneWork != null)
 				application.setPhoneWork(phoneWork);
@@ -199,7 +199,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			application.setApplicantName(name != null ? name : "");
 			application.setSsn(ssn != null ? ssn : "");
 			application.setEmail(email != null ? email : "");
-			MessageSession messageSession = null;
+		/*	MessageSession messageSession = null;
 			try {
 				messageSession = getMessageSession(iwc);	
 			}catch (Exception e){
@@ -208,6 +208,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
 			if (!"".equals(email)){
 				messageSession.setIfUserPreferesMessageByEmail(true);				
 			}
+			*/
 			application.setPhoneHome(phoneHome != null ? phoneHome : "");
 			application.setPhoneWork(phoneWork != null ? phoneWork : "");
 			application.setCareOf (careOf == null ? "" : careOf);
