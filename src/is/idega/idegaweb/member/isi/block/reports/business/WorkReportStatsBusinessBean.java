@@ -2860,7 +2860,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						}
 						
 						
-						if(comparingReportId>0 && comparingMainBoardWRGroupId>0){	
+						if(comparingLeagueReportId>0 && comparingMainBoardWRGroupId>0){	
 							//Amounts for comparingYear
 							
 							//income is account key collection
