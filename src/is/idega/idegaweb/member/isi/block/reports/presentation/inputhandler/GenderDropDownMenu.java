@@ -18,6 +18,7 @@ public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
 	private static final String FEMALE = "f"; //same as in workreportmember
 	private static final String BOTH = "b";
 
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	private WorkReportBusiness workBiz = null;
 
 	public GenderDropDownMenu() {
@@ -88,5 +89,10 @@ public class GenderDropDownMenu extends DropdownMenu implements InputHandler {
 		else
 			return iwrb.getLocalizedString("GenderDropdownmenu.both", "Both");
 	}
-
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 }

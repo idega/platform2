@@ -17,9 +17,9 @@ public class AgeDropDownMenu extends DropdownMenu implements InputHandler {
 	private static final int youngest = 1;
 
 	private static final int oldest = 123;
-	
-	private WorkReportBusiness workBiz = null;
 
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	
 	public AgeDropDownMenu() {
 		super();
 	}
@@ -78,5 +78,10 @@ public class AgeDropDownMenu extends DropdownMenu implements InputHandler {
 		else
 			return iwrb.getLocalizedString("AgeDropdownmenu.all_ages", "All ages");
 	}
-
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 }

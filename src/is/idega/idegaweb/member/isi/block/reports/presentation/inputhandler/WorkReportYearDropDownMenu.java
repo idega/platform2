@@ -34,6 +34,7 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 	private String displayNameSeperator = ",";
 	private int year = IWTimestamp.getTimestampRightNow().getYear();
 
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	
 	private WorkReportBusiness workBiz = null;
 	
@@ -97,5 +98,10 @@ public class WorkReportYearDropDownMenu extends Block implements InputHandler {
 
 		return workBiz;
 	}
-
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 }

@@ -22,7 +22,8 @@ public class YesNoDropDownMenu extends DropdownMenu implements InputHandler {
 
 	private final static String LOCALIZED_YES = "YesNoDropDownMenu.yes";
 	private final static String LOCALIZED_NO = "YesNoDropDownMenu.no";
-	
+
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 	public final static String YES = "y";
 	public final static String NO = "n";
 
@@ -74,4 +75,10 @@ public class YesNoDropDownMenu extends DropdownMenu implements InputHandler {
 		return displayName;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 }

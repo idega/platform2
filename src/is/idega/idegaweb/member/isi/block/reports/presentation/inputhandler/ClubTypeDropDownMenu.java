@@ -27,8 +27,8 @@ public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
 	public static final String TYPE_UMFI_CLUB = "umfi";
 	public static final String TYPE_INACTIVE_CLUB = "inactive";
 
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
-	private WorkReportBusiness workBiz = null;
 
 	public ClubTypeDropDownMenu() {
 		super();
@@ -94,5 +94,10 @@ public class ClubTypeDropDownMenu extends DropdownMenu implements InputHandler {
 		}
 		return displayName;
 	}
-
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
 }

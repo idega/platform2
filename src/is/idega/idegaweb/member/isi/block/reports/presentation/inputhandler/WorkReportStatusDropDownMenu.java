@@ -32,6 +32,8 @@ public class WorkReportStatusDropDownMenu extends DropdownMenu implements InputH
 	public static final String STATUS_NO_REPORT = "4";
 	public static final String STATUS_SOME_DONE = "5";
 
+	protected static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle rb = this.getResourceBundle(iwc);
 	
@@ -86,5 +88,12 @@ public class WorkReportStatusDropDownMenu extends DropdownMenu implements InputH
 			}
 		}
 		return displayName;
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
 	}
 }
