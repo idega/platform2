@@ -649,7 +649,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 				return comp;
 			}
 			
-			private List monthList = Arrays.asList(new String[] {"jan", "feb", "mar", "apr", "maí", "jún", "júl", "ágú", "sep", "okt", "nóv", "des"});
+			private List monthList = Arrays.asList(new String[] {"jan", "feb", "mar", "apr", "ma\u00ED", "j\u00FAn", "j\u00FAl", "\u00E1g\u00FA", "sep", 
+																 "okt", "n\u00F3v", "des"});
 		};
 		
 		ReportableField[] sortFields = new ReportableField[] {divisionField, entryDateField, groupField, personalIDField };
