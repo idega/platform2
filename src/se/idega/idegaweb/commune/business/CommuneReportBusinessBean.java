@@ -550,7 +550,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						firstFulfilledCondition=false;
 					}
 					reasonString += (String)parent1Conditions[i][0];  //Reason
-					if(childConditions[i][1] instanceof java.util.Date){
+					if(parent1Conditions[i][1] instanceof java.util.Date){
 						actionDateString += dataFormat.format((java.util.Date)parent1Conditions[i][1]); //Time
 					} else {
 						actionDateString += parent1Conditions[i][1].toString();
@@ -567,7 +567,7 @@ public class CommuneReportBusinessBean extends IBOSessionBean implements Commune
 						firstFulfilledCondition=false;
 					}
 					reasonString += (String)parent2Conditions[i][0];  //Reason
-					if(childConditions[i][1] instanceof java.util.Date){
+					if(parent2Conditions[i][1] instanceof java.util.Date){
 						actionDateString += dataFormat.format((java.util.Date)parent2Conditions[i][1]); //Time
 					} else {
 						actionDateString += parent2Conditions[i][1].toString();
