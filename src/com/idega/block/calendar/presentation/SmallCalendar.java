@@ -193,22 +193,19 @@ public SmallCalendar(idegaTimestamp timestamp) {
         T.add(t,xpos,ypos);
       }
 
-      if (T.getColor(xpos,ypos) == null) {
-        setDayColor(year,month,n,bodyColor);
-      }
-
-      if ( xpos == 7 ) {
-        for ( int a = 1; a < 8; a++ ) {
-          if ( T.getColor(a,ypos) == null )
-            T.setColor(a,ypos,inactiveCellColor);
-        }
-      }
-
       xpos = xpos % 7 + 1;
       if(xpos == 1)
         ypos++;
       n++;
     }
+
+    for ( int a = 1; a <= T.getRows(); a++ ) {
+      for ( int b = 1; b <= T.getColumns(); b++ ) {
+        if ( T.getColor(b,a) == null )
+          T.setColor(b,a,inactiveCellColor);
+      }
+    }
+
     T2.add(T,1,2);
     add(T2);
   }
