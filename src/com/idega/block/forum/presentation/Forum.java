@@ -57,7 +57,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private boolean _hasDeletePermission = false;
 	private String _attribute;
 	private int _iLocaleID;
-
+	private int _bodyIndent = 2;
+	
 	private int _firstThread = 1;
 	private int _lastThread = 10;
 	private int _numberOfThreads = 10;
@@ -262,10 +263,10 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 						table.add(lastUpdatedText, 3, row);
 					
 					if (row % 2 == 0) {
-						table.setRowStyleClass(row, LIGHT_ROW_STYLE);
+						table.setRowStyleClass(row, getStyleName(LIGHT_ROW_STYLE));
 					}
 					else {
-						table.setRowStyleClass(row, DARK_ROW_STYLE);
+						table.setRowStyleClass(row, getStyleName(DARK_ROW_STYLE));
 					}
 
 					row++;
@@ -311,7 +312,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 				table.add(getThreadHeaderTable(thread, iwc), 1, row++);
 				table.setHeight(row++, 3);
 				//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
-				table.add(getThreadBodyTable(thread), 1, row++);
+				table.add(getThreadBodyTable(thread), 1, row);
+				table.setCellpaddingLeft(1, row, _bodyIndent);
+				table.setCellpaddingRight(1, row++, _bodyIndent);
 				table.setHeight(row++, 3);
 				table.add(getThreadLinks(iwc, thread), 1, row++);
 			}
@@ -998,5 +1001,12 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			ex.printStackTrace(System.err);
 		}
 		return obj;
+	}
+	
+	/**
+	 * @param indent The _bodyIndent to set.
+	 */
+	public void setBodyIndent(int indent) {
+		this._bodyIndent = indent;
 	}
 } // Class Forum
