@@ -115,8 +115,10 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
 		String action = parseAction(iwc);
 		if (ACTION_VIEW_FORM.equals(action))
 			viewForm(iwc);
-		else if (ACTION_FORM_SUBMIT.equals(action))
+		else if (ACTION_FORM_SUBMIT.equals(action)) {
 			submitForm(iwc);
+			viewForm(iwc);
+		}
 	}
 
 	/**
@@ -269,8 +271,8 @@ public class CitizenAccountForgottenPassword extends CommuneBlock {
     table.setHeight(table.getRows() + 1, 12);
     SubmitButton button = getSubmitButton(FORM_SUBMIT_KEY + "_button", FORM_SUBMIT_DEFAULT);
     table.add(button, 1, table.getRows() + 1);
-		table.add(Text.getNonBrakingSpace(), 1, table.getRows() + 1);
-		table.add(getHelpButton("registration_help_key"), 1, table.getRows() + 1);
+		table.add(Text.getNonBrakingSpace(), 1, table.getRows());
+		table.add(getHelpButton("registration_help_key"), 1, table.getRows());
     final Form accountForm = new Form();
 		accountForm.addParameter(FORM_SUBMIT_KEY, Boolean.TRUE.toString());
     accountForm.add(table);
