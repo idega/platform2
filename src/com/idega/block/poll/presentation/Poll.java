@@ -404,10 +404,10 @@ private int _layout = RADIO_BUTTON_VIEW;
 
               Image transImage = answerTable.getTransparentCell(iwc);
                 transImage.setHeight(10);
-                transImage.setWidth(Integer.toString((int) percent)+"%");
+                transImage.setWidth("100%");
               Image transImage2 = answerTable.getTransparentCell(iwc);
                 transImage2.setHeight(10);
-                transImage2.setWidth(Integer.toString(100 - (int) percent)+"%");
+                transImage2.setWidth("100%");
               if ( percent > 0 ) {
                 table.setColor(1,1,_votedColor);
                 table.add(transImage,1,1);
