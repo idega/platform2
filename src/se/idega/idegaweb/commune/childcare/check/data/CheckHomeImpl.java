@@ -20,6 +20,13 @@ public java.util.Collection findChecks()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findAllCasesByStatus(com.idega.block.process.data.CaseStatus p0)throws javax.ejb.FinderException,java.rmi.RemoteException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((CheckBMPBean)entity).ejbFindAllCasesByStatus(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
  public Check findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Check) super.findByPrimaryKeyIDO(pk);
  }

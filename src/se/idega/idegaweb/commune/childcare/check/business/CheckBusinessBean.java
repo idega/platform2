@@ -13,6 +13,7 @@ import se.idega.idegaweb.commune.childcare.check.data.CheckHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
+import java.rmi.RemoteException;
 import java.util.Collection;
 import javax.ejb.EJBException;
 
@@ -28,14 +29,6 @@ import javax.ejb.EJBException;
 
 public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness {
 
-	private Check currentCheck = null;
-	private boolean rule1Verified = false;
-	private boolean rule2Verified = false;
-	private boolean rule3Verified = false;
-	private boolean rule4Verified = false;
-	private boolean rule5Verified = false;
-	private boolean allRulesVerified = false;
-
 	public CheckBusinessBean() {}
 
 	private CheckHome getCheckHome() throws java.rmi.RemoteException {
@@ -46,36 +39,21 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		return getCheckHome().findByPrimaryKey(new Integer(checkId));
 	}
 
-	public Check getCurrentCheck() throws Exception {
-		return this.currentCheck;
-	}
-
 	public Collection findChecks() throws Exception {
 		return getCheckHome().findChecks();
 	}
 
-	public boolean isRule1Verified() {
-		return this.rule1Verified;
+	public Collection findUnhandledChecks() throws Exception {
+		return getCheckHome().findAllCasesByStatus(getCaseStatusOpen());
 	}
 
-	public boolean isRule2Verified() {
-		return this.rule2Verified;
-	}
-
-	public boolean isRule3Verified() {
-		return this.rule3Verified;
-	}
-
-	public boolean isRule4Verified() {
-		return this.rule4Verified;
-	}
-
-	public boolean isRule5Verified() {
-		return this.rule5Verified;
-	}
-
-	public boolean allRulesVerified() {
-		return this.allRulesVerified;
+	public boolean allRulesVerified(Check check) throws RemoteException {
+		boolean rule1 = check.getRule1();
+		boolean rule2 = check.getRule2();
+		boolean rule3 = check.getRule3();
+		boolean rule4 = check.getRule4();
+		boolean rule5 = check.getRule5();
+		return ( rule1 && rule2 && rule3 && rule4 ) || rule5;
 	}
 
 	public void createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, User user, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws Exception {
@@ -103,61 +81,78 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.store();
 	}
 
-	public void sendMessageToCitizen(IWContext iwc, String subject, String body) throws Exception {
+	public void sendMessageToCitizen(IWContext iwc,Check check, int userID, String subject, String body) throws Exception {
 		try {
-			User user = getCurrentCheck().getOwner();
-			int userID = -1;
-			if (user != null)
-				userID = ((Integer) user.getPrimaryKey()).intValue();
-
 			Message message = getMessageBusiness(iwc).createUserMessage(userID, subject, body);
-			message.setParentCase(getCurrentCheck());
+			message.setParentCase(check);
 			message.store();
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
 	}
 
-	public void verifyCheckRules(int checkId, String[] selectedRules, String notes, int managerId) throws Exception {
-		this.currentCheck = getCheck(checkId);
-		this.currentCheck.setManagerId(managerId);
-		this.rule1Verified = false;
-		this.rule2Verified = false;
-		this.rule3Verified = false;
-		this.rule4Verified = false;
-		this.rule5Verified = false;
-		if (selectedRules == null) {
-			this.allRulesVerified = false;
-		} else {
+	public void sendMessageToArchive(IWContext iwc,Check check, int userID, String subject, String body) throws Exception {
+		try {
+			Message message = getMessageBusiness(iwc).createPrintArchivationMessage(userID, subject, body);
+			message.setParentCase(check);
+			message.store();
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public void sendMessageToPrinter(IWContext iwc,Check check, int userID, String subject, String body) throws Exception {
+		try {
+			Message message = getMessageBusiness(iwc).createPrintedLetterMessage(userID, subject, body);
+			message.setParentCase(check);
+			message.store();
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+	}
+
+	public int getUserID(Check check) throws RemoteException {
+		User user = check.getOwner();
+		int userID = -1;
+		if (user != null)
+			userID = ((Integer) user.getPrimaryKey()).intValue();
+		return userID;
+	}
+	
+	public Check saveCheckRules(int checkId, String[] selectedRules, String notes, int managerId) throws Exception {
+		Check check = getCheck(checkId);
+		boolean rule1 = false,rule2 = false,rule3 = false,rule4 = false,rule5 = false;
+		check.setManagerId(managerId);
+		if ( selectedRules != null ) {
 			for (int i = 0; i < selectedRules.length; i++) {
 				int rule = Integer.parseInt(selectedRules[i]);
 				switch (rule) {
 					case 1 :
-						this.rule1Verified = true;
+						rule1 = true;
 						break;
 					case 2 :
-						this.rule2Verified = true;
+						rule2 = true;
 						break;
 					case 3 :
-						this.rule3Verified = true;
+						rule3 = true;
 						break;
 					case 4 :
-						this.rule4Verified = true;
+						rule4 = true;
 						break;
 					case 5 :
-						this.rule5Verified = true;
+						rule5 = true;
 						break;
 				}
 			}
-			// Rule 5 overrides all other rules
-			this.allRulesVerified = ((selectedRules.length == 4) && !rule5Verified) || rule5Verified;
 		}
-		this.currentCheck.setNotes(notes);
-		this.currentCheck.setRule1(this.rule1Verified);
-		this.currentCheck.setRule2(this.rule2Verified);
-		this.currentCheck.setRule3(this.rule3Verified);
-		this.currentCheck.setRule4(this.rule4Verified);
-		this.currentCheck.setRule5(this.rule5Verified);
+
+		check.setNotes(notes);
+		check.setRule1(rule1);
+		check.setRule2(rule2);
+		check.setRule3(rule3);
+		check.setRule4(rule4);
+		check.setRule5(rule5);
+		return check;
 	}
 
 	public SchoolType getSchoolType(IWContext iwc, int schoolTypeId) throws Exception {
@@ -197,20 +192,23 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		}
 	}
 
-	public void commit() throws Exception {
-		this.currentCheck.store();
+	public void commit(Check check) throws Exception {
+		check.store();
 	}
 
-	public void approveCheck() throws Exception {
-		this.currentCheck.setCaseStatus(this.getCaseStatusGranted());
+	public void approveCheck(Check check) throws Exception {
+		check.setCaseStatus(this.getCaseStatusGranted());
+		commit(check);
 	}
 
-	public void retrialCheck() throws Exception {
-		this.currentCheck.setCaseStatus(this.getCaseStatusReview());
+	public void retrialCheck(Check check) throws Exception {
+		check.setCaseStatus(this.getCaseStatusReview());
+		commit(check);
 	}
 
-	public void saveCheck() throws Exception {
-		this.currentCheck.setCaseStatus(this.getCaseStatusOpen());
+	public void saveCheck(Check check) throws Exception {
+		check.setCaseStatus(this.getCaseStatusOpen());
+		commit(check);
 	}
 
 	private UserBusiness getUserBusiness(IWContext iwc) throws Exception {

@@ -107,7 +107,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 		checkList.setHeader(localize("check.manager", "Manager"), 4);
 		checkList.setHeader(localize("check.status", "Status"), 5);
 
-		Collection checks = getCheckBusiness(iwc).findChecks();
+		Collection checks = getCheckBusiness(iwc).findUnhandledChecks();
 		Iterator iter = checks.iterator();
 		while (iter.hasNext()) {
 			Check check = (Check) iter.next();
@@ -313,49 +313,49 @@ public class CheckRequestAdmin extends CommuneBlock {
 		return submitTable;
 	}
 
-	private CheckBusiness verifyCheckRules(IWContext iwc) throws Exception {
+	private Check verifyCheckRules(IWContext iwc) throws Exception {
 		int checkId = Integer.parseInt(iwc.getParameter(PARAM_CHECK_ID));
 		String[] selectedRules = iwc.getParameterValues(PARAM_RULE);
 		String notes = iwc.getParameter(PARAM_NOTES);
 		//    int managerId = iwc.getUser().getID();
 		int managerId = iwc.getUserId();
-		CheckBusiness cb = getCheckBusiness(iwc);
-		cb.verifyCheckRules(checkId, selectedRules, notes, managerId);
-		return cb;
+		return getCheckBusiness(iwc).saveCheckRules(checkId, selectedRules, notes, managerId);
 	}
 
 	private void grantCheck(IWContext iwc) throws Exception {
-		CheckBusiness cb = verifyCheckRules(iwc);
-		if (!cb.allRulesVerified()) {
-			cb.commit();
+		Check check = verifyCheckRules(iwc);
+		if (!getCheckBusiness(iwc).allRulesVerified(check)) {
+			getCheckBusiness(iwc).commit(check);
 			//      this.errorMessage = localize("check.must_check_all_rules","All rules must be checked.");
 			//      this.isError = true;
-			viewCheck(iwc, cb.getCurrentCheck(), true);
+			viewCheck(iwc, check, true);
 			return;
 		}
-		cb.approveCheck();
-		cb.commit();
+		getCheckBusiness(iwc).approveCheck(check);
 
 		//Create message for archive
 		//Create post message to citizen
 
 		String subject = "...";
 		String body = "...";
-		cb.sendMessageToCitizen(iwc,subject,body);
+		int userID = getCheckBusiness(iwc).getUserID(check);
+		getCheckBusiness(iwc).sendMessageToCitizen(iwc,check,userID,subject,body);
+		getCheckBusiness(iwc).sendMessageToArchive(iwc,check,userID,subject,body);
+		getCheckBusiness(iwc).sendMessageToPrinter(iwc,check,userID,subject,body);
 
 		add(getText("Check granted:"));
 		viewCheckList(iwc);
 	}
 
 	private void retrialCheck(IWContext iwc) throws Exception {
-		CheckBusiness cb = verifyCheckRules(iwc);
-		cb.retrialCheck();
-		cb.commit();
+		Check check = verifyCheckRules(iwc);
+		getCheckBusiness(iwc).retrialCheck(check);
 
 		//Create message to user
 		String subject = "...";
 		String body = "...";
-		cb.sendMessageToCitizen(iwc,subject,body);
+		int userID = getCheckBusiness(iwc).getUserID(check);
+		getCheckBusiness(iwc).sendMessageToCitizen(iwc,check,userID,subject,body);
 
 		viewCheckList(iwc);
 	}
@@ -366,9 +366,8 @@ public class CheckRequestAdmin extends CommuneBlock {
 	 * @throws Exception
 	 */
 	private void saveCheck(IWContext iwc) throws Exception {
-		CheckBusiness cb = verifyCheckRules(iwc);
-		cb.saveCheck();
-		cb.commit();
+		Check check = verifyCheckRules(iwc);
+		getCheckBusiness(iwc).saveCheck(check);
 		viewCheckList(iwc);
 	}
 
