@@ -135,18 +135,21 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 	  setSpokenLanguage(modinfo);
 
+          Image boxeditor = new Image("/pics/jmodules/boxoffice/"+language+"/boxeditor.gif");
+
+
         HttpSession Session = modinfo.getSession();
 			if ( !boxOnly ) {
 				Session.removeAttribute("file_id");
 			}
 
 		if ( issue_id == null ) {
-			issues = (Issues[]) (new Issues()).findAll();
+			issues = (Issues[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.Issues")).findAll();
 
 			if ( isAdmin ) {
 
 				Form editForm = new Form(adminURL,"get");
-					editForm.add(new SubmitButton(new Image("/pics/jmodules/boxoffice/"+language+"/boxeditor.gif")));
+                                editForm.add(new SubmitButton(boxeditor));
 
 				add(editForm);
 
@@ -154,7 +157,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			if ( issues.length > 0 ) {
 				// Ná í fjölda flokka undir þessum málaflokki;
-				categories = (IssuesIssuesCategory[]) (new IssuesIssuesCategory()).findAllByColumnOrdered("issue_id",String.valueOf(issues[0].getID()),"issue_category_id");
+				categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.IssuesCategory")).findAllByColumnOrdered("issue_id",String.valueOf(issues[0].getID()),"issue_category_id");
 
 				// Búa til töflu
 				createBoxTable(numberOfColumns);
@@ -179,7 +182,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			if ( isAdmin ) {
 
 				Form editForm = new Form(adminURL);
-					editForm.add(new SubmitButton(new Image("/pics/jmodules/boxoffice/"+language+"/boxeditor.gif")));
+					editForm.add(new SubmitButton(boxeditor));
 					editForm.add(new HiddenInput("issue_id",issue_id));
 
 				add(editForm);
@@ -188,7 +191,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			if ( boxOnly ) {
 
-				categories = (IssuesIssuesCategory[]) (new IssuesIssuesCategory()).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
+				categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.IssuesIssuesCategory")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
 
 				// Búa til töflu
 				createBoxTable(numberOfColumns);
@@ -200,11 +203,11 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 			else {
 
-				if ( issue_category_id != null && subject_id == null) {
+				if ( (issue_category_id != null) && (subject_id == null) ) {
 
 					issues_category = new IssuesCategory(Integer.parseInt(issue_category_id));
 
-					subject = (Subject[]) (new Subject()).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id",issue_category_id,"subject_date desc");
+					subject = (Subject[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.Subject")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id",issue_category_id,"subject_date desc");
 
 					createCategoryTable(issue_category_id);
 
@@ -212,7 +215,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 				}
 
-				else if ( subject_id != null && issue_category_id == null) {
+				else if ( (subject_id != null) && (issue_category_id == null) ) {
 
 					subject2 = new Subject(Integer.parseInt(subject_id));
 
@@ -224,7 +227,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 				else if ( subject_id == null && issue_category_id == null ) {
 					// Ná í fjölda flokka undir þessum málaflokki;
-					categories = (IssuesIssuesCategory[]) (new IssuesIssuesCategory()).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
+					categories = (IssuesIssuesCategory[]) (GenericEntity.getStaticInstance("com.idega.jmodule.boxoffice.data.IssuesIssuesCategory")).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id");
 
 					// Búa til töflu
 					createBoxTable(numberOfColumns);
@@ -294,15 +297,17 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			innerTable.setColor(issueColor);
 			innerTable.setAlignment(1,1,"center");
 
+                String issueName = getIssueName();
+                if( issueName!=null){
+                  Text issueHeadline = new Text(issueName);
+                  issueHeadline.setFontSize(issueTextSize);
+                  issueHeadline.setFontColor(issueTextColor);
+                  issueHeadline.setBold();
 
-		Text issueHeadline = new Text(getIssueName());
-			issueHeadline.setFontSize(issueTextSize);
-			issueHeadline.setFontColor(issueTextColor);
-			issueHeadline.setBold();
+                  innerTable.add(issueHeadline,1,1);
+                  }
 
-			innerTable.add(issueHeadline,1,1);
-			headlineTable.add(innerTable,1,1);
-
+                  headlineTable.add(innerTable,1,1);
 		return headlineTable;
 
 	}
@@ -310,7 +315,8 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 	public Image getIssueImage() throws IOException,SQLException {
 
 		String iconURL = "/pics/jmodules/boxoffice/"+language+"/";
-		switch (getIssueID())  {
+                int issueID = getIssueID();
+		switch (issueID)  {
 			case 1 : iconURL += "iconUmhverfismal.jpg";
 			break;
 
@@ -343,16 +349,15 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 	}
 
 	public int getIssueID() throws IOException {
-
-		return Integer.parseInt(issue_id);
-
+          if( (issue_id!=null) && (!issue_id.equalsIgnoreCase("")) ) return Integer.parseInt(issue_id);
+          else return -1;
 	}
 
 	public String getIssueName() throws IOException,SQLException {
-
-		Issues issues = new Issues(Integer.parseInt(issue_id));
-
-		return issues.getIssueName();
+           if( (issue_id!=null) && (!issue_id.equalsIgnoreCase("")) ){
+            Issues issues = new Issues(Integer.parseInt(issue_id));
+            return issues.getIssueName();
+           }else return "";
 
 	}
 
@@ -423,7 +428,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			myTable.setColor(1,1,subjectHeadlineBgColor);
 			myTable.setColor(1,2,subjectHeadlineBgColor);
 
-		getCategories(issue_category_id);
+		if( (issue_category_id!=null) && (!issue_category_id.equalsIgnoreCase(""))  ) getCategories(issue_category_id);
 	}
 
 	private void createSubjectTable() throws IOException,SQLException {
@@ -589,19 +594,23 @@ private void setSpokenLanguage(ModuleInfo modinfo){
                     myTable2.setWidth("100%");
                     myTable2.setColor(subjectTextBgColor);
 
-                String subject_name = subject2.getSubjectName();
-		String subject_value = formatSubject(subject2.getSubjectValue());
+                if ( (subject2!=null) && ( subject2.getID()!=-1 )){
 
-		Text subject_headline = new Text(subject_name);
-			subject_headline.setFontSize(subjectHeadlineSize);
-			subject_headline.setFontColor(subjectHeadlineColor);
-			subject_headline.setBold();
+                  String subject_name = subject2.getSubjectName();
+                  String subject_value = formatSubject(subject2.getSubjectValue());
 
-		Text subject_text = new Text(subject_value);
-			subject_text.setFontSize(subjectTextSize);
-			subject_text.setFontColor(subjectTextColor);
+                  Text subject_headline = new Text(subject_name);
+                          subject_headline.setFontSize(subjectHeadlineSize);
+                          subject_headline.setFontColor(subjectHeadlineColor);
+                          subject_headline.setBold();
 
-		myTable2.add(subject_text,1,1);
+                  Text subject_text = new Text(subject_value);
+                          subject_text.setFontSize(subjectTextSize);
+                          subject_text.setFontColor(subjectTextColor);
+
+                  myTable2.add(subject_text,1,1);
+
+
 
 		if ( isAdmin == true ) {
 
@@ -624,9 +633,12 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 		}
 
-		Image back_image = new Image("/pics/jmodules/boxoffice/"+language+"/back.gif");
+
 
 		myTable.add(subject_headline,1,1);
+
+              }//end if
+              Image back_image = new Image("/pics/jmodules/boxoffice/"+language+"/back.gif");
                 myTable.add(myTable2,1,2);
 		myTable.add(new BackButton(back_image),1,3);
 
@@ -662,8 +674,10 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 				categoryTable.setHeight(String.valueOf(boxHeight));
                                 //debug eiki
 				int categoryImageId = categories[a].getIssueCategoryImage();
-                                Image back = new Image(categoryImageId);
-                                if( back!= null ) categoryTable.setBackgroundImage(back);
+                                if( (categoryImageId!=-1) && (categoryImageId!=0) ){
+                                  Image back = new Image(categoryImageId);
+                                  if( back!= null ) categoryTable.setBackgroundImage(back);
+                                }
 			}
 
 			if ( showCategoryHeadline ) {
@@ -683,13 +697,15 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 					headlineTable.setHeight(String.valueOf(headerSize));
 					headlineTable.setHeight(String.valueOf(topBoxHeight));
 					headlineTable.setColor(outlineColor);
-
-				Text categoryHeadlineText = new Text(categories[a].getIssueCategoryName());
+                                String iscatname = categories[a].getIssueCategoryName();
+                                 Text categoryHeadlineText = null;
+				if( iscatname!=null ){
+                                categoryHeadlineText = new Text(iscatname);
 					categoryHeadlineText.setFontColor(boxCategoryHeadlineColor);
 					categoryHeadlineText.setFontSize(boxCategoryHeadlineSize);
 					categoryHeadlineText.setFontFace(boxCategoryHeadlineFont);
 					categoryHeadlineText.setBold();
-
+				}
 				if ( leftHeader ) {
 					headlineTable.add(new Image("/pics/jmodules/boxoffice/leftcorner.gif","",17,17),1,1);
 				}
@@ -703,7 +719,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 					headlineTable.setWidth(1,"100%");
 					headlineTable.setVerticalAlignment(1,1,"middle");
 					headlineTable.add(spacer,1,1);
-					headlineTable.add(categoryHeadlineText,1,1);
+				 if( categoryHeadlineText!=null) headlineTable.add(categoryHeadlineText,1,1);
 				}
 
 				else {
@@ -723,10 +739,10 @@ private void setSpokenLanguage(ModuleInfo modinfo){
                           categoryTable.setCellspacing(0);
                           categoryTable.setWidth(boxWidth);
 
-                          categoryTable.add(getSubject(issue_category_id),1,1);
+                          if( (issue_category_id!= null) && (!issue_category_id.equalsIgnoreCase("") )) categoryTable.add(getSubject(issue_category_id),1,1);
 			}
                         else {
-                          categoryTable.add(getSubject(issue_category_id),1,2);
+                          if( (issue_category_id!= null) && (!issue_category_id.equalsIgnoreCase("") )) categoryTable.add(getSubject(issue_category_id),1,2);
                         }
 
 			myTable.add(categoryTable,width,height);
@@ -759,12 +775,17 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			innerTable.setWidth(3,2,"100%");
 			innerTable.add(new Image("/pics/jmodules/boxoffice/"+language+"/spot.gif","",leftBoxWidth,1),1,2);
 			innerTable.add(new Image("/pics/jmodules/boxoffice/"+language+"/spot.gif","",rightBoxWidth,1),5,2);
+		String issueName = "";
+
+                if( (issue_category_id!= null) && (!issue_category_id.equalsIgnoreCase("") )) {
 
 		Subject[] subject = (Subject[]) (new Subject()).findAllByColumnOrdered("issue_id",issue_id,"issue_category_id",issue_category_id,"subject_date desc");
 		IssuesCategory issueCategory = new IssuesCategory(Integer.parseInt(issue_category_id));
-		String issueName = issueCategory.getName();
+
+                if ( issueCategory!=null  ) issueName = issueCategory.getName();
 
 		int b = 0;
+
 
 		for ( int a = 0; a < subject.length; a++ ) {
 
@@ -882,13 +903,14 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 			}
 
 		}
+                }//end if
 
 		Text more_text = new Text(Lang[6]);
 			more_text.setFontSize(1);
 
 		Link more = new Link(more_text,boxURL);
-			more.addParameter("issue_id",issue_id);
-			more.addParameter("issue_category_id",issue_category_id);
+		if( (issue_id!= null) && (!issue_id.equalsIgnoreCase("") )) 	more.addParameter("issue_id",issue_id);
+		if( (issue_category_id!= null) && (!issue_category_id.equalsIgnoreCase("") )) 	more.addParameter("issue_category_id",issue_category_id);
 
 		if ( issueName.toLowerCase().equals("fréttir") || issueName.toLowerCase().equals("news") ) {
 
@@ -1006,7 +1028,7 @@ private void setSpokenLanguage(ModuleInfo modinfo){
 
 		}
 
-		if ( subject.length > 0 ) {
+		if ( (subject!=null) && (subject.length > 0 ) ) {
 			innerTable.add(more,2,numberOfDisplayed+1);
 		}
 
