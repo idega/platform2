@@ -94,22 +94,37 @@ public Quote(int quoteID){
       }
 
       Text quoteOrigin = new Text(originString+":");
-				quoteOrigin.setBold();
-				quoteOrigin.setFontSize(originTextSize);
-				quoteOrigin.setFontColor(originTextColor);
-        quoteOrigin.setFontFace(originTextFace);
+				if ( originStyle != null ) {
+          quoteOrigin.setFontStyle(originStyle);
+				}
+        else {
+          quoteOrigin.setBold();
+          quoteOrigin.setFontSize(originTextSize);
+          quoteOrigin.setFontColor(originTextColor);
+          quoteOrigin.setFontFace(originTextFace);
+        }
 
 			Text quoteText = new Text("\""+textString+"\"");
-				quoteText.setItalic();
-				quoteText.setFontColor(quoteTextColor);
-				quoteText.setFontSize(quoteTextSize);
-        quoteText.setFontFace(quoteTextFace);
+				if ( quoteStyle != null ) {
+          quoteText.setFontStyle(quoteStyle);
+				}
+        else {
+          quoteText.setItalic();
+          quoteText.setFontColor(quoteTextColor);
+          quoteText.setFontSize(quoteTextSize);
+          quoteText.setFontFace(quoteTextFace);
+        }
 
 			Text quoteAuthor = new Text("-"+Text.getNonBrakingSpace().getText()+authorString);
-				quoteAuthor.setBold();
-				quoteAuthor.setFontSize(authorTextSize);
-				quoteAuthor.setFontColor(authorTextColor);
-        quoteAuthor.setFontFace(authorTextFace);
+				if ( authorStyle != null ) {
+          quoteAuthor.setFontStyle(authorStyle);
+				}
+        else {
+          quoteAuthor.setBold();
+          quoteAuthor.setFontSize(authorTextSize);
+          quoteAuthor.setFontColor(authorTextColor);
+          quoteAuthor.setFontFace(authorTextFace);
+        }
 
 			if ( originString != null && originString.length() > 0 ) {
 				_myTable.add(quoteOrigin,1,1);
@@ -177,6 +192,82 @@ public Quote(int quoteID){
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
+  }
+
+  public void setQuoteWidth(String width) {
+    quoteWidth = width;
+  }
+
+  public void setQuoteWidth(int width) {
+    setQuoteWidth(Integer.toString(width));
+  }
+
+  public void setQuoteHeight(String height) {
+    quoteHeight = height;
+  }
+
+  public void setQuoteHeight(int height) {
+    setQuoteHeight(Integer.toString(height));
+  }
+
+  public void setQuoteOriginSize(String size) {
+    originTextSize = size;
+  }
+
+  public void setQuoteOriginSize(int size) {
+    setQuoteOriginSize(Integer.toString(size));
+  }
+
+  public void setQuoteOriginColor(String color) {
+    originTextColor = color;
+  }
+
+  public void setQuoteOriginFace(String face) {
+    originTextFace = face;
+  }
+
+  public void setQuoteOriginStyle(String style) {
+    originStyle = style;
+  }
+
+  public void setQuoteTextSize(String size) {
+    quoteTextSize = size;
+  }
+
+  public void setQuoteTextSize(int size) {
+    setQuoteTextSize(Integer.toString(size));
+  }
+
+  public void setQuoteTextColor(String color) {
+    quoteTextColor = color;
+  }
+
+  public void setQuoteTextFace(String face) {
+    quoteTextFace = face;
+  }
+
+  public void setQuoteTextStyle(String style) {
+    quoteStyle = style;
+  }
+
+  public void setQuoteAuthorSize(String size) {
+    authorTextSize = size;
+  }
+
+  public void setQuoteAuthorSize(int size) {
+    setQuoteAuthorSize(Integer.toString(size));
+  }
+
+  public void setQuoteAuthorColor(String color) {
+    authorTextColor = color;
+  }
+
+  public void setQuoteAuthorFace(String face) {
+    authorTextFace = face;
+  }
+
+  public void setQuoteAuthorStyle(String style) {
+    authorStyle = style;
   }
 
 }
