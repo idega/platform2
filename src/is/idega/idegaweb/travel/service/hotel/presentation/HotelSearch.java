@@ -92,6 +92,10 @@ public class HotelSearch extends AbstractSearchForm {
 			if (sHotelType != null && sHotelType.length > 0) {
 				hotelTypeIds = new Object[sHotelType.length];
 				for (int i = 0; i < hotelTypeIds.length; i++) {
+					if ("-1".equals(sHotelType[i])) {
+						hotelTypeIds = null;
+						break;
+					}
 					hotelTypeIds[i] = sHotelType[i];
 				}
 			}
@@ -109,24 +113,7 @@ public class HotelSearch extends AbstractSearchForm {
 			Object[] postalCodeIds = getSearchBusiness(iwc).getPostalCodeIds(iwc);
 			
 			Object[] suppIds = getSupplierIDs();
-			/*
-			Object[] suppIds = new Object[]{};
-			String sPostalCode[] = iwc.getParameterValues(PARAMETER_POSTAL_CODE_NAME);
-			try {
-				Collection supps = engine.getSuppliers();
-				if (supps != null && !supps.isEmpty()) {
-					Iterator iter =supps.iterator();
-					int i = 0;
-					suppIds = new Object[supps.size()];
-					while (iter.hasNext()) {
-						suppIds[i] = ((Supplier) iter.next()).getPrimaryKey();
-						i++;
-					}
-				}
-			}catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
-			*/
+
 
 			HotelHome hHome = (HotelHome) IDOLookup.getHome(Hotel.class);
 
@@ -202,6 +189,7 @@ public class HotelSearch extends AbstractSearchForm {
 		DropdownMenu spHotelTypes = new DropdownMenu(PARAMETER_HOTEL_TYPE );
 		SelectorUtility su = new SelectorUtility();
 		spHotelTypes = (DropdownMenu) su.getSelectorFromIDOEntities(spHotelTypes, hotelTypes, "getLocalizationKey", iwrb);
+		spHotelTypes.addMenuElementFirst("-1", iwrb.getLocalizedString("travel.any_types", "Any type"));
 		addInputLine(new String[]{iwrb.getLocalizedString("travel.search.type_of_accomodation","Type of accomodation")}, new PresentationObject[]{spHotelTypes});
 
 		Collection roomTypes = new Vector();
