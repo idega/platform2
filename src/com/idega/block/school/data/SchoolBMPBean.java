@@ -502,7 +502,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 			"WHERE s.sch_school_id = m.sch_school_id " +
 			"AND m.sch_school_type_id = t.sch_school_type_id " +
 			"AND t.school_category LIKE c.category " +
-			"AND c.category LIKE '" + schoolCategory.getPrimaryKey() + "'");
+			"AND c.category LIKE '" + schoolCategory.getPrimaryKey() + "' order by s.school_name");
 	}
 
 	public Collection ejbFindAllInHomeCommuneByCategory(SchoolCategory schoolCategory) throws IDOLookupException, EJBException, FinderException, CreateException {
