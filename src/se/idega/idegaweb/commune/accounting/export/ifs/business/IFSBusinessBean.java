@@ -15,7 +15,9 @@ import java.rmi.RemoteException;
 //import java.sql.Date;
 import java.text.NumberFormat;
 //import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Vector;
@@ -33,6 +35,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
+import se.idega.idegaweb.commune.accounting.business.PaymentComparator;
 import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.export.ifs.data.IFSCheckHeader;
@@ -56,6 +59,7 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
@@ -72,6 +76,9 @@ import com.idega.util.IWTimestamp;
  * @author palli
  */
 public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
+	
+	private double EXTRA_PAYMENT_PERCENTAGE =0.06;
+	
 	/**
 	 * Returns all <code>JournalLog</code> data beans from the database.
 	 */
@@ -333,7 +340,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 		throws FinderException, IOException, StudyPathException, RemoteException {
 		Collection phInCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusInCommuneWithCommunalManagement(schoolCategory, 'P');
 		Collection phOutsideCommune = ((PaymentHeaderHome) IDOLookup.getHome(PaymentHeader.class)).findBySchoolCategoryStatusOutsideCommuneOrWithoutCommunalManagement(schoolCategory, 'P');
-
+		createPaymentSchoolFilesExcel(phInCommune, fileName2+".xls");
 		if (phInCommune != null && !phInCommune.isEmpty()) {
 			Collection rec = ((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeaders(phInCommune);
 			Iterator it = rec.iterator();
@@ -687,64 +694,155 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 	}
 	
 	public void createPaymentFilesExcel(Collection data, String fileName) throws IOException {					
-		if (!data.isEmpty()) {											
+		if (data != null && !data.isEmpty()) {											
 			int[] columnWidths = {11,7,6,7,10,8,7,7,7,10,35};
 			String[] columnNames = {"Bokf datum","Ansvar","Konto","Resurs","Verksamhet","Aktivitet","Projekt","Objekt","Motpart","Belopp","Text"};			
-			HSSFWorkbook wb = new HSSFWorkbook();		
-			HSSFSheet sheet = wb.createSheet("Excel");					
+			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames);
+			HSSFSheet sheet = wb.getSheet("Excel");
+			short rowNumber = (short)(sheet.getLastRowNum()+1);	
+			short cellNumber;
+			HSSFRow row = null;
 //			HSSFHeader header = sheet.getHeader();										
 //			Calendar now = Calendar.getInstance();
 //			Date date = new Date(now.getTimeInMillis());										
 //			String[] MONTH_NAMES = {"januari","februari","mars", "april","maj","juni","juli","augusti","september","oktober","november", "december"};
-//		  header.setLeft("Bokföringsorder framställd "+date.toString()+".  Skolor checkutbetalning "+MONTH_NAMES[now.get(Calendar.MONTH)]+" "+now.get(Calendar.YEAR));
+//		    header.setLeft("Bokföringsorder framställd "+date.toString()+".  Skolor checkutbetalning "+MONTH_NAMES[now.get(Calendar.MONTH)]+" "+now.get(Calendar.YEAR));
 //			header.setRight("Sida "+HSSFHeader.page());
-//			sheet.getPrintSetup().setLandscape(true);					
-			for (short i = 0; i<columnWidths.length; i++)
-				sheet.setColumnWidth(i, (short)(columnWidths[i] * 256));											
-			HSSFFont font = wb.createFont();
-			font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-			HSSFCellStyle style = wb.createCellStyle();
-			style.setFont(font);	
-			style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-			short rowNumber = 0;
-			HSSFRow row = sheet.createRow(rowNumber++);
+//			sheet.getPrintSetup().setLandscape(true);
+			float totalAmount = 0;
+			float amount;
 			HSSFCell cell = null;
-			for (short i = 0; i<columnNames.length; i++) {				
-				cell = row.createCell(i);
-				cell.setCellValue(columnNames[i]);
-				cell.setCellStyle(style);			
-			}
-			//style = wb.createCellStyle();
-			//style.setFont(font);	
-			//style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-			//style.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
-			//row.getCell((short)9).setCellStyle(style);
-			Iterator it = data.iterator();								
-			while (it.hasNext()) {							
+			HSSFCellStyle style = null;
+			PostingBusiness pb = getPostingBusiness();		
+			Iterator it = data.iterator();
+			int numberOfRecords = 0;
+			while (it.hasNext()) {
+				cellNumber = 0;
 				PaymentRecord pRec = (PaymentRecord) it.next();
 				row = sheet.createRow(rowNumber++);
-				short cellNumber = 0;						
 				row.createCell(cellNumber++).setCellValue(pRec.getDateCreated().toString());
-				//style = wb.createCellStyle();							
-				//style.setDataFormat(HSSFDataFormat.getBuiltinFormat("m/d/yy"));
-				//cell = row.createCell(cellNumber++);
-				//cell.setCellValue(pRec.getDateCreated());
-				//cell.setCellStyle(style);												
-				short loopTillEndOfPostingFields = (short)(cellNumber+8);
-				PostingBusiness pb = getPostingBusiness();		
+				short loopTillEndOfPostingFields = (short)(cellNumber+8);				
 				for (short i=cellNumber;i<loopTillEndOfPostingFields;i++)						
 					row.createCell(cellNumber++).setCellValue(pb.findFieldInStringByName(pRec.getOwnPosting(), columnNames[i]));
 				style = wb.createCellStyle();
 //				style.setDataFormat(wb.createDataFormat().getFormat("#,##0.00"));
 				cell = row.createCell(cellNumber++);
 				cell.setCellStyle(style);
-				cell.setCellValue(pRec.getTotalAmount());
-				row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());						
+				amount = pRec.getTotalAmount();
+				totalAmount = totalAmount + amount;
+				cell.setCellValue(amount);
+				row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
+				numberOfRecords++;
 			}
-			FileOutputStream out = new FileOutputStream(fileName);
-			wb.write(out);
-			out.close();				
+			sheet.createRow(rowNumber++).createCell((short)(row.getLastCellNum()-1)).setCellValue(totalAmount);
+			sheet.createRow((short)(rowNumber+1)).createCell(row.getFirstCellNum()).setCellValue(numberOfRecords+" bokföringsposter.  Bökfört belop: 0,00   Kreditbelopp:  - "+totalAmount+"   Debetbelopp: "+totalAmount);
+			saveExcelWorkBook(fileName, wb);
 		}						
+	}
+	
+	private void createPaymentSchoolFilesExcel(Collection data, String fileName) throws IOException, FinderException {							
+		if (data != null && !data.isEmpty()) {											
+			int[] columnWidths = {30,35,20};
+			String[] columnNames = {"Anordnare","Barnomsorgscheck","Belopp"};
+			HSSFWorkbook wb = createExcelWorkBook(columnWidths, columnNames);
+			HSSFSheet sheet = wb.getSheet("Excel");
+			short rowNumber = (short)(sheet.getLastRowNum()+1);	
+			short cellNumber;
+			HSSFRow row;
+			ArrayList paymentHeaders = new ArrayList(data); 
+			Collections.sort(paymentHeaders, new PaymentComparator());
+			Iterator it = paymentHeaders.iterator();			
+			boolean firstRecord;
+			float recordAmount;	
+			double totalHeaderAmount = 0;
+			double totalAmount = 0;
+			HSSFCellStyle styleUnderline = wb.createCellStyle();
+			styleUnderline.setBorderBottom(HSSFCellStyle.BORDER_THIN);;
+			
+			while (it.hasNext()) {
+				PaymentHeader pHead = (PaymentHeader) it.next();				
+				ArrayList pRecs = new ArrayList(((PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class)).findByPaymentHeader(pHead)); 
+				Collections.sort(pRecs, new PaymentComparator());
+				if (!pRecs.isEmpty()) {
+					School school = pHead.getSchool();
+					row = sheet.createRow(rowNumber++);
+					cellNumber = 0;
+					row.createCell(cellNumber++).setCellValue(school.getSchoolName());
+					Iterator prIt = pRecs.iterator();
+					firstRecord = true;
+					while (prIt.hasNext()) {
+						PaymentRecord pRec = (PaymentRecord) prIt.next();
+						if (firstRecord == false)
+							row = sheet.createRow(rowNumber++);
+						row.createCell(cellNumber++).setCellValue(pRec.getPaymentText());
+						recordAmount = pRec.getTotalAmount();
+						row.createCell(cellNumber--).setCellValue(recordAmount);
+						row = sheet.createRow(rowNumber++);
+						row.createCell(cellNumber++).setCellValue("Extraersättning 6% på totalt utbetalt checkbelopp");
+						row.createCell(cellNumber--).setCellValue(recordAmount*EXTRA_PAYMENT_PERCENTAGE);
+						totalHeaderAmount = totalHeaderAmount + (recordAmount*(1+EXTRA_PAYMENT_PERCENTAGE));
+						if (!prIt.hasNext())  {
+							row = sheet.createRow(rowNumber++);
+							cellNumber--;
+							row.createCell(cellNumber++).setCellValue("");
+							row.createCell(cellNumber++).setCellValue("Summa att utbetala");
+							row.createCell(cellNumber--).setCellValue(totalHeaderAmount);
+						}
+						firstRecord = false;
+					}					
+					totalAmount = totalAmount + totalHeaderAmount;
+					totalHeaderAmount = 0;				
+					for (short i=row.getFirstCellNum();i<=row.getLastCellNum();i++)
+						row.getCell(i).setCellStyle(styleUnderline);
+				}
+			}
+			row = sheet.createRow(rowNumber++);
+			HSSFFont font = wb.createFont();
+			font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+			HSSFCellStyle styleBold = wb.createCellStyle();
+			styleBold.setFont(font);			
+			HSSFCell cell = row.createCell((short)0);
+			double divide = 100;
+			double roundedTotalAmount = ((double)(Math.round(totalAmount*100)))/divide;
+			//double difference = totalAmount-roundedTotalAmount; 
+			cell.setCellValue("Totalt barnomsorgscheck att utbetala "+roundedTotalAmount);
+			cell.setCellStyle(styleBold);
+			saveExcelWorkBook(fileName, wb);
+		}
+	}
+
+	private HSSFWorkbook createExcelWorkBook (int[] columnWidths, String [] columnNames) {
+		HSSFWorkbook wb = new HSSFWorkbook();		
+		HSSFSheet sheet = wb.createSheet("Excel");					
+		for (short i = 0; i<columnWidths.length; i++)
+			sheet.setColumnWidth(i, (short)(columnWidths[i] * 256));
+		HSSFFont font = wb.createFont();
+		font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		HSSFCellStyle style = wb.createCellStyle();
+		style.setFont(font);	
+		style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		HSSFCellStyle styleRightAlign = wb.createCellStyle();
+		styleRightAlign.setFont(font);	
+		styleRightAlign.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		styleRightAlign.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
+		short rowNumber = 0;
+		HSSFRow row = sheet.createRow(rowNumber++);
+		HSSFCell cell = null;
+		for (short i = 0; i<columnNames.length; i++) {				
+			cell = row.createCell(i);
+			cell.setCellValue(columnNames[i]);
+			if (columnNames[i].equals("Belopp"))
+				cell.setCellStyle(styleRightAlign);
+			else			
+				cell.setCellStyle(style);
+		}
+		return wb;
+	}				
+
+	private void saveExcelWorkBook (String fileName, HSSFWorkbook wb) throws IOException {
+		FileOutputStream out = new FileOutputStream(fileName);
+		wb.write(out);
+		out.close();
 	}
 
 	private void createInvoiceFiles(String fileName, String schoolCategory, IWTimestamp executionDate, Locale currentLocale, String periodText, IFSCheckHeader checkHeader)
