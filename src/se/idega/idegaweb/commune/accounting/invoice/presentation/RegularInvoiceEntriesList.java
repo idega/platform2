@@ -445,7 +445,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		
 		addSearchForm(t1, user, row++);
 		if (user != null){
-				
+	
 			addPeriodeForm(t1, user, fromDate, toDate, errorMessage, row);
 				
 			Table t2 = new Table();				
@@ -488,6 +488,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		searcher.setShowMiddleNameInSearch(false);
 		searcher.setOwnFormContainer(true);
 		searcher.setUniqueIdentifier("");
+		searcher.setConstrainToUniqueSearch(false);
 	
 		if (user != null){
 			searcher.setUser(user);
