@@ -12,7 +12,8 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class SupplierStaffGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.block.trade.stockroom.data.SupplierStaffGroup {
+public class SupplierStaffGroupBMPBean extends com.idega.core.data.GenericGroupBMPBean implements com.idega.block.trade.stockroom.data.SupplierStaffGroup {
+//public class SupplierStaffGroupBMPBean extends com.idega.user.data.GroupBMPBean implements com.idega.block.trade.stockroom.data.SupplierStaffGroup {
   public static final String GROUP_TYPE_VALUE = "sr_supplier_staff";
 
   /*
@@ -22,8 +23,8 @@ public class SupplierStaffGroupBMPBean extends com.idega.user.data.GroupBMPBean 
 
   public SupplierStaffGroupBMPBean(int id) throws SQLException {
     super(id);
-  }*/
-
+  }
+  */
 
   public String getGroupTypeValue() {
     return GROUP_TYPE_VALUE;
