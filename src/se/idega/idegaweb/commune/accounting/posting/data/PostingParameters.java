@@ -3,14 +3,14 @@ package se.idega.idegaweb.commune.accounting.posting.data;
 
 public interface PostingParameters extends com.idega.data.IDOEntity,com.idega.data.IDOLegacyEntity
 {
- public java.lang.Integer getActivity();
- public java.lang.Integer getCommuneBelonging();
- public java.lang.Integer getCompanyType();
+ public se.idega.idegaweb.commune.accounting.regulations.data.ActivityType getActivity();
+ public se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType getCommuneBelonging();
+ public se.idega.idegaweb.commune.accounting.regulations.data.CompanyType getCompanyType();
  public java.lang.String getDoubleEntry();
  public java.lang.String getOwnEntry();
  public java.lang.String getPeriodeFrom();
  public java.lang.String getPeriodeTo();
- public java.lang.Integer getRegSpecType();
+ public se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType getRegSpecType();
  public void initializeAttributes();
  public void setActivity(int p0);
  public void setCommuneBelonging(int p0);

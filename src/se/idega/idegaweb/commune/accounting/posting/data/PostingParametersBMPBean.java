@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.1 2003/08/18 12:36:25 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.2 2003/08/18 12:51:41 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -113,20 +113,20 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		return (String) getStringColumnValue(COLUMN_PERIODE_TO);
 	}
 
-	public Integer getActivity() {
-		return (Integer) getIntegerColumnValue(COLUMN_ACTIVITY);
+	public ActivityType getActivity() {
+		return (ActivityType) getColumnValue(COLUMN_ACTIVITY);
 	}
 
-	public Integer getRegSpecType() {
-		return (Integer) getIntegerColumnValue(COLUMN_REG_SPEC_TYPE);
+	public RegulationSpecType getRegSpecType() {
+		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE);
 	}
 	
-	public Integer getCompanyType() {
-		return (Integer) getIntegerColumnValue(COLUMN_COMPANY_TYPE);
+	public CompanyType getCompanyType() {
+		return (CompanyType) getColumnValue(COLUMN_COMPANY_TYPE);
 	}
 	
-	public Integer getCommuneBelonging() {
-			return (Integer) getIntegerColumnValue(COLUMN_COMMUNE_BELONGING);
+	public CommuneBelongingType getCommuneBelonging() {
+			return (CommuneBelongingType) getColumnValue(COLUMN_COMMUNE_BELONGING);
 	}
 
 	public String getOwnEntry() {
