@@ -49,7 +49,7 @@ import com.idega.util.IWTimestamp;
 public class Forum extends CategoryBlock implements Builderaware, StatefullPresentation {
 	protected int _objectID = -1;
 	private int _selectedObjectID = -1;
-	private int _topicID = -1;
+	protected int _topicID = -1;
 	private int _threadID = -1;
 	private boolean _isAdmin = false;
 	private boolean _hasAddPermission = true;
@@ -67,7 +67,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private boolean _showTopicName = true;
 	private boolean _showResponses = true;
 
-	private int _state = ForumBusiness.FORUM_TOPICS;
+	protected int _state = ForumBusiness.FORUM_TOPICS;
 	private int _initialState = ForumBusiness.FORUM_TOPICS;
 	private int _openLevel = 0;
 	private Table _myTable;
@@ -124,9 +124,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	 */
 	private StatefullPresentationImplHandler stateHandler = new ForumTree().getStateHandler();
 
-	private String _authorWidth = "160";
-	private String _replyWidth = "60";
-	private String _dateWidth = "100";
+	protected String _authorWidth = "160";
+	protected String _replyWidth = "60";
+	protected String _dateWidth = "100";
 
 	public Forum() {
 		setDefaultValues();
@@ -315,16 +315,9 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			row = addBelowTopic(iwc, topic, table, row);
 
 			if (thread != null && thread.isValid()) {
-				table.add(getThreadHeaderTable(thread, iwc), 1, row++);
-				table.setHeight(row++, 3);
-				//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
-				table.add(getThreadBodyTable(thread), 1, row);
-				table.setCellpaddingLeft(1, row, _bodyIndent);
-				table.setCellpaddingRight(1, row++, _bodyIndent);
-				table.setHeight(row++, 3);
-				table.add(getThreadLinks(iwc, thread), 1, row++);
+				row = displaySelectedForum(iwc, table, row, thread);
 			}
-
+			
 			table.setHeight(1, row++, "20");
 			table.add(getForumLinks(), 1, row++);
 
@@ -335,11 +328,23 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			boolean hasNextThreads = forumBusiness.hasNextThreads(threads, _lastThread);
 			boolean hasPreviousThreads = forumBusiness.hasPreviousThreads(_firstThread);
 
-			table.add(getForumTree(someThreads), 1, row);
+			table.add(getForumTree(iwc, someThreads), 1, row);
 
 			if (hasNextThreads || hasPreviousThreads)
 				table.add(getNextPreviousTable(hasNextThreads, hasPreviousThreads), 1, ++row);
 		}
+	}
+
+	protected int displaySelectedForum(IWContext iwc, Table table, int row, ForumData thread) {
+		table.add(getThreadHeaderTable(thread, iwc), 1, row++);
+		table.setHeight(row++, 3);
+		//table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
+		table.add(getThreadBodyTable(thread), 1, row);
+		table.setCellpaddingLeft(1, row, _bodyIndent);
+		table.setCellpaddingRight(1, row++, _bodyIndent);
+		table.setHeight(row++, 3);
+		table.add(getThreadLinks(iwc, thread), 1, row++);
+		return row;
 	}
 
 	private void getForumCollection(IWContext iwc, Table table) {
@@ -454,7 +459,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		return formatText("(" + String.valueOf(thread.getNumberOfResponses()) + Text.NON_BREAKING_SPACE + _iwrb.getLocalizedString("replies_lc", "replies") + ")", INFORMATION_STYLE);
 	}
 
-	private PresentationObject getUser(ForumData thread) {
+	protected PresentationObject getUser(ForumData thread) {
 		Text text = formatText(_iwrb.getLocalizedString("unknown", "Unknown"));
 		if (thread.getUserID() != -1) {
 			User user = UserBusiness.getUser(thread.getUserID());
@@ -496,7 +501,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		return formatText(format.format(date), style);
 	}
 
-	private ForumTree getForumTree(ForumData[] threads) {
+	protected PresentationObject getForumTree(IWContext iwc, ForumData[] threads) {
 		ForumTree tree = new ForumTree();
 		/**
 		 * @todo chage later: legacy-fix
@@ -557,6 +562,12 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		if (headlineString == null)
 			headlineString = "";
 		Text headline = formatText(headlineString, HEADING_STYLE);
+		
+		Link nameLink = new Link(headline);
+		nameLink.addParameter(ForumBusiness.PARAMETER_THREAD_ID, thread.getPrimaryKey().toString());
+		nameLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, _topicID);
+		nameLink.addParameter(ForumBusiness.PARAMETER_STATE, _state);
+		
 
 		IWTimestamp stamp = new IWTimestamp(thread.getThreadDate());
 		DateFormat format = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, iwc.getCurrentLocale());
@@ -564,7 +575,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		Text dateText = formatText(format.format(date), INFORMATION_STYLE);
 
 		table.add(image, 1, 1);
-		table.add(headline, 1, 1);
+		table.add(nameLink, 1, 1);
+//		table.add(headline, 1, 1);
 		table.add(getUser(thread), 2, 1);
 		table.add(formatText("," + Text.NON_BREAKING_SPACE), 2, 1);
 		table.add(dateText, 2, 1);
