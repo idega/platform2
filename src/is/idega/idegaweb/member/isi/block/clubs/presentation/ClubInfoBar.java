@@ -49,6 +49,8 @@ public class ClubInfoBar extends Block {
 			return;
 		}
 		
+		Group mainBoard = getMainBoard(club);
+		
 		_biz = getBusiness(iwc);
 		Collection divisions = _biz.getDivisionsForClub(club);
 		Iterator divIter = divisions.iterator();
@@ -57,13 +59,18 @@ public class ClubInfoBar extends Block {
 		while(divIter.hasNext()) {
 			Group division = (Group) divIter.next();
 			
-			addDivisionToMenuBar(menuBar, division);
+			addDivisionToMenuBar(menuBar, division, mainBoard);
 		}
 		add(menuBar);
 	}
 	
-	private void addDivisionToMenuBar(CSSMultiLevelMenu menuBar, Group division) {
+	private void addDivisionToMenuBar(CSSMultiLevelMenu menuBar, Group division, Group clubMainBoard) {
 		List playerGroups = new ArrayList(division.getChildGroups());
+
+		Group mainBoard = getMainBoard(division);
+		if(mainBoard==null && clubMainBoard!=null) {
+			playerGroups.add(clubMainBoard);
+		}
 		
 		Collections.sort(playerGroups, new Comparator() {
 			
@@ -100,6 +107,9 @@ public class ClubInfoBar extends Block {
 		boolean flockInserted = false;
 		while(playerGroupIter.hasNext()) {
 			Group playerGroup = (Group) playerGroupIter.next();
+			if(playerGroup==null) {
+				continue;
+			}
 			boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(playerGroup.getGroupType());
 			if(isFlock && !flockInserted) {
 				topLevelMenu.add(new HorizontalRule());
@@ -118,12 +128,31 @@ public class ClubInfoBar extends Block {
 
 	}
 	
+	private Group getMainBoard(Group group) {
+		Collection mainBoardCol = group.getChildGroups(new String[] {IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_COMMITTEE, IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE}, true);
+		Group boardsGroup = null;
+		if(mainBoardCol!=null && mainBoardCol.size()>0) {
+			boardsGroup = (Group) mainBoardCol.iterator().next();
+		}
+		Group mainBoard = null;
+		if(boardsGroup!=null) {
+			Iterator iter = boardsGroup.getChildren();
+			while(iter.hasNext()) {
+				Group child = (Group) iter.next();
+				if(IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(child.getGroupType())) {
+					mainBoard = child;
+				}
+			}
+		}
+		return mainBoard;
+	}
+	
 	private boolean showGroup(Group group) {
 		String type = group.getGroupType();
-		boolean show = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(type) || 
-		               IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(type) || 
-		               IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_COMMITTEE.equals(type);
-		return show;
+		boolean isFlock = IWMemberConstants.GROUP_TYPE_CLUB_PLAYER.equals(type);
+		boolean isTrainerGroup = IWMemberConstants.GROUP_TYPE_CLUB_DIVISION_TRAINER.equals(type);
+		boolean isMainBoard = IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(type);
+		return isFlock || isTrainerGroup || isMainBoard;
 	}
 		
 	public String getBundleIdentifier() {
