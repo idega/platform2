@@ -1,12 +1,13 @@
 package is.idega.idegaweb.golf.block.image.presentation;
 
 
+import is.idega.idegaweb.golf.block.image.business.ImageBusiness;
+import is.idega.idegaweb.golf.block.image.business.ImageProperties;
+import is.idega.idegaweb.golf.block.image.business.SimpleImage;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.idega.jmodule.image.business.ImageBusiness;
-import com.idega.jmodule.image.business.ImageProperties;
-import com.idega.jmodule.image.business.SimpleImage;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.PresentationObject;
