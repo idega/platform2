@@ -23,6 +23,7 @@ import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Paragraph;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.CloseButton;
@@ -466,11 +467,13 @@ public class RegisterTime extends GolfBlock {
     	                  tempTable.add(tempIllegal3,3,i+1);
                   }
                 }
-
-                frameTable.add(Text.getBreak());
-                frameTable.add(myText);
-                frameTable.add(Text.getBreak());
-                frameTable.add(tempTable);
+                	
+                Paragraph p = new Paragraph();
+                p.add(Text.getBreak());
+                p.add(myText);
+                p.add(Text.getBreak());
+                p.add(tempTable);
+                frameTable.add(p);
 
 //                frameTable.add(Text.getBreak());
 //                frameTable.add(Text.getBreak());
@@ -502,56 +505,62 @@ public class RegisterTime extends GolfBlock {
 	                  tempTable.add(tempIllegal3,3,i+1);
                   }
                 }
-
-                frameTable.add(Text.getBreak());
-                frameTable.add(myText);
-                frameTable.add(Text.getBreak());
-                frameTable.add(tempTable);
+                
+                Paragraph p2 = new Paragraph();
+                p2.add(myText);
+                p2.add(Text.getBreak());
+                p2.add(tempTable);
+                frameTable.add(p2);
 
                 if(ones){
+                	Paragraph p = new Paragraph();
                   Text noError = (Text)templText.clone();
                   noError.setText(localize("start.all_others_where_registered","All others where registered"));
-                  frameTable.add(Text.getBreak());
-                  frameTable.add(noError);
+                  p.add(noError);
+                  frameTable.add(p);
                 }
 
                 if(fullGroup){
+                	Paragraph p = new Paragraph();
                   Text Error = (Text)templText.clone();
                   Error.setText(localize("start.group_is_full","Group is full"));//"Holl sem reynt var a› skrá í er fullt ");
-                  frameTable.add(Text.getBreak());
-                  frameTable.add(Error);
+                  p.add(Error);
+                  frameTable.add(p);
                 }
 
                 if(fullOwnerQuota){
+                	Paragraph p = new Paragraph();
                   Text ownerQuota = (Text)templText.clone();
                   ownerQuota.setText(localize("start.ownerquota","Not allowed to register more golfers to day"));//"Hefur ekki réttindi til a› skrá fleiri á ﬂessum velli í dag");
-                  frameTable.add(Text.getBreak());
-                  frameTable.add(ownerQuota);
+                  p.add(ownerQuota);
 
                   Text comment = (Text)templText.clone();
                   comment.setText(localize("start.contact_club_to_register","Contact the club to register"));//"Hafi› samband vi› klúbbinn ef skrá á fleiri");
-                  frameTable.add(Text.getBreak());
-                  frameTable.add(comment);
+                  p.add(comment);
+                  frameTable.add(p);
                 } else if(fullMemberQuota){
+                	Paragraph p = new Paragraph();
                   Text memberQuota = (Text)templText.clone();
                   memberQuota.setText(localize("start.memberquota","Not allowed to register golfer again in public registration to day"));//"Ekki má skrá sama mann oftar en einu sinni á dag í netskráningu");
-                  frameTable.add(Text.getBreak());
-                  frameTable.add(memberQuota);
+                  p.add(memberQuota);
 
                   Text comment = (Text)templText.clone();
                   comment.setText(localize("start.contact_club_to_register","Contact the club to register"));//"Hafi› samband vi› klúbbinn ef skrá á fleiri");
-                  frameTable.add(Text.getBreak());
-                  frameTable.add(comment);
+                  p.add(Text.getBreak());
+                  p.add(comment);
+                  frameTable.add(p);
                 }else{
+                	Paragraph p = new Paragraph();
                   Text comment = (Text)templText.clone();
                   comment.setText(localize("start.try_again_or_contact_the_club","Try again or contact the club"));//"Reyni› aftur e›a hafi› samband vi› klúbbinn");
-                  frameTable.add(Text.getBreak());
-                  frameTable.add(comment);
+                  p.add(Text.getBreak());
+                  p.add(comment);
+                  frameTable.add(p);
                 }
                 
                 if(lockedAsWapLayout || modinfo.isClientHandheld()){
                 		if(backPage!=-1){
-                			frameTable.add(new Break());
+                			frameTable.add(new Paragraph());
                 			Link link = new Link(localize("start.wml_back_link","Back to overview"));
                 			link.setPage(backPage);
                           frameTable.add(link);
@@ -565,7 +574,7 @@ public class RegisterTime extends GolfBlock {
               }else{
               	if(lockedAsWapLayout || modinfo.isClientHandheld()){    
                     if(backPage!=-1){
-            			frameTable.add(new Break());
+                    	frameTable.add(new Paragraph());
             			Link link = new Link(localize("start.wml_back_link","Back to overview"));
             			link.setPage(backPage);
                       frameTable.add(link);
@@ -577,26 +586,56 @@ public class RegisterTime extends GolfBlock {
               }
 
           }else{
+          	
+            Paragraph p = new Paragraph();
+          	
             Text comment = (Text)templText.clone();
             comment.setText(localize("start.no_one_was_registered","No one was registered"));//"Enginn skrá›ist");
-            frameTable.add(Text.getBreak());
-            frameTable.add(comment);
+            p.add(Text.getBreak());
+            p.add(comment);
 
             //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
-            frameTable.add(Text.getBreak());
-            frameTable.add(Text.getBreak());
-            frameTable.add(new CloseButton(localize("start.close_window","Close Window")));
+            p.add(new Break());
+            p.add(new Break());
+            
+            if(lockedAsWapLayout || modinfo.isClientHandheld()){    
+                if(backPage!=-1){
+        			p.add(new Break());
+        			Link link = new Link(localize("start.wml_back_link","Back to overview"));
+        			link.setPage(backPage);
+                  frameTable.add(link);
+            	   }
+          	}else{
+          		p.add(new CloseButton(localize("start.close_window","Close Window")));
+          	}
+            
+            
+            
+            frameTable.add(p);
           }
         }else{
+        	
+        		Paragraph p = new Paragraph();
           Text comment = (Text)templText.clone();
           comment.setText(localize("start.no_one_was_registered","No one was registered"));//"Enginn skrá›ist");
-          frameTable.add(Text.getBreak());
-          frameTable.add(comment);
+          p.add(Text.getBreak());
+          p.add(comment);
 
           //this.add(new BackButton(new Image("/pics/rastimask/Takkar/Ttilbaka1.gif")));
-          frameTable.add(Text.getBreak());
-          frameTable.add(Text.getBreak());
-          frameTable.add(getButton(new CloseButton(localize("start.close_window","Close Window"))));
+          p.add(new Break());
+          p.add(new Break());
+          
+          if(lockedAsWapLayout || modinfo.isClientHandheld()){    
+            if(backPage!=-1){
+    			p.add(new Break());
+    			Link link = new Link(localize("start.wml_back_link","Back to overview"));
+    			link.setPage(backPage);
+              p.add(link);
+        	   }
+      	}else{
+      		p.add(getButton(new CloseButton(localize("start.close_window","Close Window"))));
+      	}
+          frameTable.add(p);
         }
     }
 
@@ -616,8 +655,9 @@ public class RegisterTime extends GolfBlock {
             myTable.setCellpadding(0);
             myTable.setCellspacing(0);
             frameTable.empty();
-            frameTable.add(myTable);
-
+            Paragraph p = new Paragraph();
+            p.add(myTable);
+            frameTable.add(p);
     }
 
     public GolfField getFieldInfo( int field, String date) throws SQLException,IOException{
