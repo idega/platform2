@@ -10,6 +10,8 @@ import java.util.Map;
 
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultField;
+import com.idega.block.datareport.util.ReportableCollection;
+import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOServiceBean;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileHome;
@@ -252,5 +254,76 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
       throw new RuntimeException("[JasperReportBusiness]: Message was: " + ex.getMessage());
     }
   }     
+    
+    
+    
+    
+	public JasperDesign generateLayout(JRDataSource _dataSource, Map parameters) throws IOException, JRException{
+		int columnWidth = 120;
+		int prmLableWidth = 95;
+		int prmValueWidth = 55;
+			
+		DynamicReportDesign designTemplate = new DynamicReportDesign("GeneratedReport");
+		
+		Collection _allFields = null;
+		if(_dataSource != null && _dataSource instanceof ReportableCollection){
+			ReportableCollection rcSource = ((ReportableCollection)_dataSource);
+			_allFields = rcSource.getListOfFields();
+		}
+		
+
+	
+		if(parameters != null ){
+			Iterator keyIter = parameters.keySet().iterator();
+			Iterator valueIter = parameters.values().iterator();
+			while (keyIter.hasNext()) {
+				String keyLabel = (String)keyIter.next();
+				String valueLabel = (String)valueIter.next();
+				if(keyIter.hasNext()){
+					String keyValue = (String)keyIter.next();
+					String valueValue = (String)valueIter.next();
+				
+					String tmpPrmLabel = valueLabel;
+					String tmpPrmValue = valueValue;
+					int tmpPrmLabelWidth = (tmpPrmLabel != null)?calculateTextFieldWidthForString(tmpPrmLabel):prmLableWidth;
+					int tmpPrmValueWidth = (tmpPrmValue != null)?calculateTextFieldWidthForString(tmpPrmValue):prmValueWidth;
+					designTemplate.addHeaderParameter(keyLabel,tmpPrmLabelWidth,keyValue,String.class,tmpPrmValueWidth);
+				}
+			}
+
+		}
+	
+	
+	
+		if(_allFields != null && _allFields.size() > 0){
+			//System.out.println("ReportGenerator.");
+		
+			//TMP
+			//TODO get columnspacing (15) and it to columnsWidth;
+			int columnsWidth = columnWidth*_allFields.size()+15*(_allFields.size()-1);
+			//TMP
+			//TODO get page Margins (20) and add them to pageWidth;
+			designTemplate.setPageWidth(columnsWidth+20+20);
+			designTemplate.setColumnWidth(columnsWidth);
+		
+			//
+			Iterator iter = _allFields.iterator();
+			while (iter.hasNext()) {
+				ReportableField field = (ReportableField)iter.next();
+				String name = field.getName();
+				designTemplate.addField(name,field.getValueClass(),columnWidth);
+			} 	
+		}
+	
+		designTemplate.close();
+		return designTemplate.getJasperDesign(this.getIWApplicationContext());
+	}
+
+    
+	private int calculateTextFieldWidthForString(String str){
+		int fontSize = 9;
+		return (int)( 5+(str.length()*fontSize*0.58));
+	}
+    
     
 }

@@ -408,9 +408,6 @@ public class ReportGenerator extends Block {
 		if(_dataSource != null && _design != null){
 			JasperReportBusiness business = (JasperReportBusiness)IBOLookup.getServiceInstance(iwc,JasperReportBusiness.class);
 			
-			
-			
-			
 			_parameterMap.put(DynamicReportDesign.PRM_REPORT_NAME,_reportName);
 			JasperPrint print = business.getReport(_dataSource,_parameterMap,_design);
 			_reportFilePath = business.getExcelReport(print,_reportName);

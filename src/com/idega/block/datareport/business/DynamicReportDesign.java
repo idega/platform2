@@ -24,6 +24,7 @@ import com.idega.block.datareport.business.jasperdesignxml.TextElement;
 import com.idega.block.datareport.business.jasperdesignxml.TextField;
 import com.idega.block.datareport.business.jasperdesignxml.TextFieldExpression;
 import com.idega.block.datareport.business.jasperdesignxml.Title;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.util.FileUtil;
@@ -402,7 +403,7 @@ public class DynamicReportDesign {
 		return _tempFileNumber;
 	}
 	
-	public JasperDesign getJasperDesign(IWContext iwc) throws IOException, JRException{
+	public JasperDesign getJasperDesign(IWApplicationContext iwc) throws IOException, JRException{
 		if(_designDoc != null){
 			InputStream inputStream = _designDoc.getInputstream(getRealPathToDesignFile(iwc,TEMP_DESIGN_NAME,XML_FILE_EXTENSION));
 			JasperDesign designToReturn = JasperManager.loadXmlDesign(inputStream);
@@ -433,7 +434,7 @@ public class DynamicReportDesign {
 	}
 	
 	
-	private String getRealPathToDesignFile(IWContext iwc, String fileName, String extension) {
+	private String getRealPathToDesignFile(IWApplicationContext iwc, String fileName, String extension) {
 		IWMainApplication mainApp = iwc.getApplication();
 		String separator = FileUtil.getFileSeparator();
 		StringBuffer path = new StringBuffer(mainApp.getApplicationRealPath());
