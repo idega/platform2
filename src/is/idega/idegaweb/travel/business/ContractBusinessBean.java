@@ -234,6 +234,22 @@ public class ContractBusinessBean extends IBOServiceBean implements ContractBusi
       return new DropdownMenu(com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName());
     }
   }
+  
+	public Contract getContract(Reseller reseller, Product product) throws RemoteException{
+		if ((reseller != null) && (product != null)){
+			try {
+					Contract[] contracts = (Contract[]) (is.idega.idegaweb.travel.data.ContractBMPBean.getStaticInstance(Contract.class)).findAllByColumn(is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameResellerId(), Integer.toString(reseller.getID()), is.idega.idegaweb.travel.data.ContractBMPBean.getColumnNameServiceId(), Integer.toString(product.getID()) );
+					if (contracts.length > 0) {
+						return contracts[0];
+					}
+
+			}catch (SQLException sql) {
+					sql.printStackTrace(System.err);
+			}
+
+		}
+		return null;
+	}  
 
   private ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
