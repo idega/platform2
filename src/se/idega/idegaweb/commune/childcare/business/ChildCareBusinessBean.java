@@ -856,7 +856,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if (element instanceof ChildCareApplication) {
 						application = (ChildCareApplication) element;
 						application.setApplicationStatus(getStatusSentIn());
-						caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+						caseBiz.changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
 					}
 				}
 			}
