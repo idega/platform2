@@ -12,19 +12,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.school.business.SchoolCommuneSessionBean;
-
-
 import com.idega.block.navigation.presentation.UserHomeLink;
+import com.idega.block.school.business.SchoolUserBusiness;
+import com.idega.block.school.business.SchoolUserBusinessBean;
 import com.idega.block.school.business.SchoolYearComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolStudyPath;
 import com.idega.block.school.data.SchoolYear;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.data.IDORelationshipException;
 import com.idega.presentation.IWContext;
@@ -89,7 +89,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 					add(getOverview());
 					break;
 				case ACTION_EDIT :
-					add(getEditForm());
+					add(getEditForm(iwc));
 					break;
 				case ACTION_DELETE :
 					deleteGroup();
@@ -313,7 +313,7 @@ public class SchoolGroupEditor extends ProviderBlock {
 		return new Parameter("", "");
 	}
 	
-	protected Form getEditForm() {
+	protected Form getEditForm(IWContext iwc) {
 		Form form = new Form();
 		form.addParameter(PARAMETER_GROUP_ID, _groupID);
 		form.addParameter(PARAMETER_ACTION, -1);
@@ -494,6 +494,22 @@ public class SchoolGroupEditor extends ProviderBlock {
 			}
 			
 			chooser = new UserChooser(PARAMETER_TEACHERS+"_"+(a+1));
+			try{
+				SchoolUserBusiness biz = getSchoolUserBusiness(iwc);
+				Collection c = biz.getUserIds(_provider, SchoolUserBusinessBean.USER_TYPE_HEADMASTER);
+				c.addAll(biz.getUserIds(_provider, SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER));
+				c.addAll(biz.getUserIds(_provider, SchoolUserBusinessBean.USER_TYPE_IB_COORDINATOR));
+				c.addAll(biz.getUserIds(_provider, SchoolUserBusinessBean.USER_TYPE_STUDY_AND_WORK_COUNCEL));
+				c.addAll(biz.getUserIds(_provider, SchoolUserBusinessBean.USER_TYPE_TEACHER));
+				c.addAll(biz.getUserIds(_provider, SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN));
+				chooser.setValidUserPks(c);
+			}catch(FinderException ex){
+				ex.printStackTrace();
+			}catch(RemoteException ex){
+				ex.printStackTrace();
+			}
+			
+
 			if (a < size) {
 				User teacher = (User) groupTeachers.get(a);
 				chooser.setSelected(teacher);
@@ -522,6 +538,15 @@ public class SchoolGroupEditor extends ProviderBlock {
 		return form;
 	}
 
+	private SchoolUserBusiness getSchoolUserBusiness(IWContext iwc){
+		try{
+			return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
+		}catch (IBOLookupException ex){
+			ex.printStackTrace();
+		}	
+		return null;
+	}
+	
 	protected void setSelectedSchoolType(DropdownMenu types) {
 		if (_group != null && _group.getSchoolTypeId() != -1)
 			types.setSelectedElement(_group.getSchoolTypeId());
