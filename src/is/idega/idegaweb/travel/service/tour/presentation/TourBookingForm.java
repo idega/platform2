@@ -1033,7 +1033,7 @@ public class TourBookingForm extends TravelManager {
               }else if ( _reseller != null) {
                 users = ResellerManager.getUsersIncludingSubResellers(_reseller);
               }
-              if (users == null) users = com.idega.util.ListUtil.getEmptyList();
+              if (users == null) users = new Vector();
 //              DropdownMenu usersDrop = new DropdownMenu(users, "ic_user");
               DropdownMenu usersDrop = this.getDropdownMenuWithUsers(users, "ic_user");
               usersDrop.setSelectedElement(Integer.toString(super.userId));
