@@ -39,6 +39,7 @@ import com.idega.presentation.text.Text;
 public class TextReader extends Block implements Builderaware {
 
 	private boolean isAdmin = false;
+	private boolean createInstance = true;
 
 	private String sLocaleId;
 	private String sAttribute = null;
@@ -90,6 +91,7 @@ public class TextReader extends Block implements Builderaware {
 	public TextReader(int iTextId) {
 		this();
 		this.iTextId = iTextId;
+		this.createInstance = false;
 	}
 
 	public void main(IWContext iwc) throws Exception {
@@ -260,7 +262,7 @@ public class TextReader extends Block implements Builderaware {
 				T.add(delete, column++, 1);
 			}
 		}
-		if (newObjInst && !hasId) {
+		if (createInstance && newObjInst && !hasId) {
 			Link newLink = new Link(iwcb.getImage("/shared/create.gif"));
 			newLink.setWindowToOpen(TextEditorWindow.class);
 			if (newObjInst)
