@@ -88,16 +88,15 @@ public class TariffAssessments extends Finance {
 			initAccounts(iwc);
 			initDates(iwc);
 			initGroups(iwc);
-			initCollections(iwc);
+			
 		
-			setTabPanel(getGroupLinks(iwc));
-			setNavigationPanel(collectionNavigator);
-			setSearchPanel(getActionButtonsTable(iwc));
+			
 			//setButtonPanel(makeLinkTable(1));
 			
 			try {
 				
 				if (iwc.getParameter(PRM_ACTION) == null) {
+					initCollections(iwc);
 					setMainPanel(getTableOfAssessments(iwc));
 				}
 				if (iwc.getParameter(PRM_ACTION) != null) {
@@ -105,27 +104,35 @@ public class TariffAssessments extends Finance {
 					int iAct = Integer.parseInt(sAct);
 					switch (iAct) {
 						case ACT1 :
+							initCollections(iwc);
 							setMainPanel(  getTableOfAssessments(iwc));
 							break;
 						case ACT2 :
+							initCollections(iwc);
 							setMainPanel( doMainTable(iwc));
 							break;
 						case ACT3 :
-							setMainPanel( doAssess(iwc));
+							doAssess(iwc);
+							initCollections(iwc);
+							setMainPanel(getTableOfAssessments(iwc));
 							break;
 						case ACT4 :
+							initCollections(iwc);
 							setInfoPanel(getAssessmentInfoTable(iwc));
 							setMainPanel( getTableOfAssessmentAccounts(iwc));
 							break;
 						case ACT5 :
 							doRollback(iwc);
+							initCollections(iwc);
 							setMainPanel(  getTableOfAssessments(iwc));
 							
 							break;
 						case ACT6 :
+							initCollections(iwc);
 							setMainPanel(  getPreviewTable(iwc));
 							break;
 						case ACT7 :
+							initCollections(iwc);
 							setInfoPanel(getAssessmentInfoTable(iwc));
 							setInfoPanel(Text.getBreak());
 							setInfoPanel(getAccountInfoTable(iwc));
@@ -133,6 +140,7 @@ public class TariffAssessments extends Finance {
 							
 							break;
 						default :
+							initCollections(iwc);
 							setMainPanel( getTableOfAssessments(iwc));
 							
 							break;
@@ -149,6 +157,10 @@ public class TariffAssessments extends Finance {
 			} catch (Exception S) {
 				S.printStackTrace();
 			}
+			
+			setTabPanel(getGroupLinks(iwc));
+			setNavigationPanel(collectionNavigator);
+			setSearchPanel(getActionButtonsTable(iwc));
 		} else
 			add(localize("access_denied", "Access denies"));
 	}
@@ -363,9 +375,9 @@ public class TariffAssessments extends Finance {
 			}
 		}
 	}
-	private PresentationObject doAssess(IWContext iwc)throws RemoteException {
+	private void doAssess(IWContext iwc)throws RemoteException {
 		//add(handler.getClass().getName());
-		PresentationObject MO = new Text("failed");
+		//PresentationObject MO = new Text("failed");
 		if (iwc.getParameter("pay_date") != null) {
 			String date = iwc.getParameter("pay_date");
 			String start = iwc.getParameter("start_date");
@@ -391,17 +403,17 @@ public class TariffAssessments extends Finance {
 					} else {
 						status.setMessage(localize("assessment_failure", "Assessment failed"));
 					}*/
-					MO = getTableOfAssessments(iwc);
+					//MO = getTableOfAssessments(iwc);
 				} else {
 					add(localize("no_name_error", "No name entered"));
-					MO = doMainTable(iwc);
+					//MO = doMainTable(iwc);
 				}
 			} else {
-				MO = doMainTable(iwc);
+				//MO = doMainTable(iwc);
 			}
 		} else
 			System.err.println("did not have pay_date");
-		return MO;
+		//return MO;
 	}
 	protected PresentationObject getActionButtonsTable(IWContext iwc) {
 		Table LinkTable = new Table(4, 1);
@@ -846,7 +858,12 @@ public class TariffAssessments extends Finance {
 			DateFormat df = getShortDateFormat(iwc.getCurrentLocale());
 			for (Iterator iter = rounds.iterator(); iter.hasNext();) {
 				AssessmentRound round = (AssessmentRound) iter.next();
-				excessRounds.addMenuElement(round.getPrimaryKey().toString(),round.getName()+" ( "+df.format(round.getPeriodFromDate())+" - "+df.format(round.getPeriodToDate())+" )");
+				Date from = round.getPeriodFromDate();
+				Date to = round.getPeriodToDate();
+				String period = "";
+				if(from!=null && to!=null)
+					period = " ( "+df.format(round.getPeriodFromDate())+" - "+df.format(round.getPeriodToDate())+")";
+				excessRounds.addMenuElement(round.getPrimaryKey().toString(),round.getName()+period);
 			}
 			T.add(excessRounds,2,row++);
 		} catch (RemoteException e1) {
