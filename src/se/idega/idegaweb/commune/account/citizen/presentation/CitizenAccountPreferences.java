@@ -514,8 +514,12 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		boolean updateCOAddress = false;
 		
 		try {
-		  
-			if (!authorizedByBankID(iwc) || (requirePasswordVerification && !LoginDBHandler.verifyPassword(login, currentPassword))) {
+		    
+		    // if authorized by bank id we allow the user change his preferences
+		    if(authorizedByBankID(iwc)){
+		        
+		    }
+		    else if (requirePasswordVerification && !LoginDBHandler.verifyPassword(login, currentPassword)) {
 				throw new Exception(localize(KEY_PASSWORD_INVALID, DEFAULT_PASSWORD_INVALID));
 			}
 			
