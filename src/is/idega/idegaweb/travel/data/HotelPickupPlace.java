@@ -33,14 +33,14 @@ public class HotelPickupPlace extends GenericEntity{
   public void insertStartData()throws Exception{
   }
 
-  public static String getServiceTableName(){return "TB_HOTEL_PICKUP_PLACE";}
+  public static String getHotelPickupPlaceTableName(){return "TB_HOTEL_PICKUP_PLACE";}
   public static String getNameColumnName() {return "NAME";}
   public static String getAddressIDColumnName() {return "IC_ADDRESS_ID";}
 
 
 
   public String getEntityName(){
-    return getServiceTableName();
+    return getHotelPickupPlaceTableName();
   }
   public String getName(){
     return getNameColumnName();
