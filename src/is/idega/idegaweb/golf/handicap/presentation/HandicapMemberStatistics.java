@@ -141,7 +141,12 @@ public class HandicapMemberStatistics extends GolfBlock {
 		table.setRowStyleClass(row++, getLightRowClass());
 
 		table.add(getSmallText(localize("handicap.putts", "Putts")), 1, row);
-		table.add(getSmallText(String.valueOf(putts)), 2, row);
+		if (putts > 0) {
+			table.add(getSmallText(String.valueOf(putts)), 2, row);
+		}
+		else {
+			table.add(getSmallText("-"), 2, row);
+		}
 		table.setRowStyleClass(row++, getDarkRowClass());
 
 		table.add(getSmallText(localize("handicap.holes_played_total", "Holes played")), 1, row);

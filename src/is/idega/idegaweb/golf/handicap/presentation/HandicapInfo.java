@@ -181,6 +181,7 @@ public class HandicapInfo extends GolfBlock {
 		
 		textTable.add(mainUnionText, 1, row++);
 		textTable.add(unionText, 1, row++);
+		textTable.setHeight(row++, 12);
 		
 		textTable.add(cardTotal, 1, row++);
 		textTable.add(cardTotalText, 1, row++);
