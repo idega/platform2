@@ -149,7 +149,7 @@ public class CommuneUserLogin extends CommuneBlock {
 				while (iter.hasNext()) {
 					user = (User) iter.next();
 					radio = getRadioButton(PARAMETER_PERSONAL_ID, user.getPersonalID());
-					if (row == 2)
+					if (row == 3)
 						radio.setSelected();
 					
 					table.add(radio, 1, row);
