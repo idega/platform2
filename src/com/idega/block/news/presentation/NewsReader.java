@@ -370,7 +370,7 @@ private Table drawNewsTable(News[] news)throws IOException,SQLException{
     }
 
     information = getInfoText(author, source, news_category, timestamp);
-    if(includeImage.equals("Y")){
+    if("Y".equals(includeImage)){
       image_id = news[i].getImageId();
       addNext(insertTable(timestamp, headline, newstext,information,news[i].getID(),image_id));
     }
