@@ -111,24 +111,11 @@ public class TeeTimeTable extends GolfBlock {
 
 				modinfo.setSessionAttribute("golf_union_id", (String) modinfo.getSessionAttribute("union_id"));
 
-				modinfo.setDefaultFontSize("2");
 
 				IWTimestamp currentDay = new IWTimestamp((String) modinfo.getSessionAttribute("date"));
 
 				if (isAdmin() || (isClubAdmin() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (isClubWorker() && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id")))) {
 					add(getConfigLinks(modinfo, "admin"));
-					add(User(modinfo, funcDate));
-				} else if (isUser(modinfo)) {//|| isDeveloper() // isUser er
-											 // overwrita› fall
-					// sem kannar hvort getMember() skili null ﬂ.e. ef
-					// skrá›ur inn, fellur ekki a› skilyri›i eitt, ﬂá
-					// User
-					add(getConfigLinks(modinfo, "others")); // ﬂanga› til a›
-															// klúbbar vilja
-															// leifa
-					// almenna skráningu ﬂá ﬂarf
-					// væntanlega n‡tt tékk og n‡jan dálk
-					// í töflu
 					add(User(modinfo, funcDate));
 				} else {
 					add(getConfigLinks(modinfo, "others"));
@@ -149,8 +136,6 @@ public class TeeTimeTable extends GolfBlock {
 	}
 
 	public Table getConfigLinks(IWContext modinfo, String AccessType) {
-		Table temp;
-		String When = ((String) modinfo.getSessionAttribute("when"));
 		/*
 		 * if (getServletContext().getAttribute(AccessType+"-" + When ) != null)
 		 * temp = (Table)getServletContext().getAttribute(AccessType+"-" + When );
