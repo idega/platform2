@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderTypeBMPBean.java,v 1.7 2003/08/25 15:08:43 anders Exp $
+ * $Id: ProviderTypeBMPBean.java,v 1.8 2003/09/02 10:39:24 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -20,10 +20,10 @@ import com.idega.data.IDOLookup;
 /**
  * Entity bean for the provider type (childcare, school, e t c).
  * <p>
- * Last modified: $Date: 2003/08/25 15:08:43 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 10:39:24 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType {
 
@@ -58,8 +58,8 @@ public class ProviderTypeBMPBean  extends GenericEntity implements ProviderType 
 
 		ProviderTypeHome home = (ProviderTypeHome) IDOLookup.getHome(ProviderType.class);
 		final String [] data = {
-				KEY_PREFIX + "preschool", 
-				KEY_PREFIX + "school"
+				KEY_PREFIX + "commune", 
+				KEY_PREFIX + "private"
 		};
 		
 		for (int i = 0; i < data.length; i++) {
