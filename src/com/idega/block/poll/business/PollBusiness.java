@@ -128,8 +128,10 @@ public static final String COOKIE_NAME = "idegaPOLL_";
       }
     }
 
-    if ( locString.length() == 0 )
-      locString = null;
+    if ( locString != null ) {
+      if ( locString.length() == 0 )
+        locString = null;
+    }
 
     return locString;
   }
@@ -264,17 +266,17 @@ public static final String COOKIE_NAME = "idegaPOLL_";
     return returner;
   }
 
-	public static boolean thisObjectSubmitted(String parameterString){
+  public static boolean thisObjectSubmitted(String parameterString){
     boolean returner = false;
 
-		if (parameterString != null){
-			if (parameterString.equals(_PARAMETER_TRUE)){
-				returner = true;
-			}
-		}
+    if (parameterString != null){
+      if (parameterString.equals(_PARAMETER_TRUE)){
+        returner = true;
+      }
+    }
 
     return returner;
-	}
+  }
 
   public static DropdownMenu getQuestions(String name, int iLocaleId) {
     DropdownMenu drp = new DropdownMenu(name);
@@ -373,6 +375,7 @@ public static final String COOKIE_NAME = "idegaPOLL_";
     if ( pollEndDate != null && pollEndDate.length() > 0 ) {
       pollQuestion.setEndTime(new idegaTimestamp(pollEndDate).getTimestamp());
     }
+    System.out.println("Update: "+update);
 
     if ( !update ) {
       try {

@@ -36,6 +36,7 @@ protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
 protected IWBundle _iwbPoll;
 
+private boolean _styles = true;
 private Table _myTable;
 public static String _prmPollID = "po.poll_id";
 public static String _prmPollCollection = "po.poll_collection";
@@ -45,6 +46,7 @@ private boolean _newObjInst = false;
 private boolean _newWithAttribute = false;
 private String _parameterString;
 private String _styleAttribute;
+private String _hoverStyle;
 private String _questionStyleAttribute;
 
 private String _pollWidth;
@@ -53,9 +55,11 @@ private boolean _showVotes;
 private boolean _showCollection;
 private idegaTimestamp _date;
 private Image _linkImage;
+private Image _linkOverImage;
 private Image _questionImage;
 private boolean _showInformation = false;
 private String _questionAlignment;
+private String _name;
 
 public static final int RADIO_BUTTON_VIEW = 1;
 public static final int LINK_VIEW = 2;
@@ -263,8 +267,9 @@ private int _layout = RADIO_BUTTON_VIEW;
   }
 
   private Table getLinkView(IWContext iwc,LocalizedText locText,PollQuestion pollQuestion) {
+    setStyles();
     Image olderPollsImage = _iwrb.getImage("older_polls.gif");
-    System.out.println(_questionAlignment);
+
     Table pollTable = new Table();
       pollTable.setCellpadding(3);
       pollTable.setCellspacing(0);
@@ -299,7 +304,13 @@ private int _layout = RADIO_BUTTON_VIEW;
       answerTable.setWidth("100%");
     PollAnswer[] answers = PollBusiness.getAnswers(pollQuestion.getID());
 
-    if ( PollBusiness.canVote(iwc,pollQuestion.getID()) ) {
+    boolean canVote = true;
+    if ( iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER) != null )
+      canVote = false;
+    if ( canVote )
+      canVote = PollBusiness.canVote(iwc,pollQuestion.getID());
+
+    if ( canVote ) {
       boolean hasAnswers = false;
 
       if ( answers != null ) {
@@ -309,25 +320,35 @@ private int _layout = RADIO_BUTTON_VIEW;
           LocalizedText locAnswerText = TextFinder.getLocalizedText(answers[a],_iLocaleID);
           if ( locAnswerText != null ) {
             hasAnswers = true;
-            Text answerText = new Text(locAnswerText.getHeadline());
-              answerText.setFontStyle(_styleAttribute);
 
-            Link answerLink = new Link(answerText);
+            Link answerLink = new Link(locAnswerText.getHeadline());
               answerLink.addParameter(PollBusiness._PARAMETER_POLL_QUESTION,pollQuestion.getID());
               answerLink.addParameter(PollBusiness._PARAMETER_POLL_ANSWER,answers[a].getID());
               answerLink.addParameter(PollBusiness._PARAMETER_POLL_VOTER,PollBusiness._PARAMETER_TRUE);
               answerLink.addParameter(PollBusiness._PARAMETER_CLOSE,PollBusiness._PARAMETER_TRUE);
-              answerLink.setWindowToOpen(PollResult.class);
+              answerLink.setEventListener(PollListener.class);
+              if ( _name != null )
+                answerLink.setStyle(_name);
 
             if ( _linkImage != null ) {
               Table imageTable = new Table(3,1);
                 imageTable.setCellspacing(0);
                 imageTable.setCellpadding(0);
 
-              _linkImage.setVerticalSpacing(3);
-              imageTable.add(_linkImage,1,1);
+              Image image = new Image(_linkImage.getMediaServletString());
+
+              image.setVerticalSpacing(3);
+              if ( _linkOverImage != null ) {
+                  image.setOverImage(_linkOverImage);
+                  _linkOverImage.setVerticalSpacing(3);
+
+                answerLink.setAttribute("onMouseOver","swapImage('"+image.getName()+"','','"+_linkOverImage.getMediaServletString()+"',1)");
+                answerLink.setAttribute("onMouseOut","swapImgRestore()");
+              }
+
+              imageTable.add(image,1,1);
               imageTable.setVerticalAlignment(1,1,"top");
-              imageTable.setWidth(2,"3");
+              imageTable.setWidth(2,"8");
               imageTable.add(answerLink,3,1);
               answerTable.add(imageTable,1,row);
             }
@@ -372,21 +393,7 @@ private int _layout = RADIO_BUTTON_VIEW;
                 percentText.setFontSize(1);
 
               answerTable.mergeCells(1,row,2,row);
-              if ( _linkImage != null ) {
-                Table imageTable = new Table(3,1);
-                  imageTable.setCellspacing(0);
-                  imageTable.setCellpadding(0);
-
-                _linkImage.setVerticalSpacing(3);
-                imageTable.add(_linkImage,1,1);
-                imageTable.setVerticalAlignment(1,1,"top");
-                imageTable.setWidth(2,"3");
-                imageTable.add(answerText,3,1);
-                answerTable.add(imageTable,1,row);
-              }
-              else {
-                answerTable.add(answerText,1,row);
-              }
+              answerTable.add(answerText,1,row);
               row++;
 
               Image graph = _iwbPoll.getImage("shared/graph.gif");
@@ -437,12 +444,34 @@ private int _layout = RADIO_BUTTON_VIEW;
   private void setDefaultValues() {
     _pollWidth = "150";
     _styleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;";
+    _hoverStyle = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 8pt; text-decoration: none;";
     _questionStyleAttribute = "font-face: Verdana, Arial, Helvetica, sans-serif; font-size: 11pt; font-weight: bold";
     _numberOfShownPolls = 3;
     _showVotes = true;
     _showCollection = true;
     _questionAlignment = "center";
     _pollID = -1;
+  }
+
+  private void setStyles() {
+    if ( _name == null )
+      _name = this.getName();
+    if ( _name == null ) {
+      if ( _sAttribute == null )
+        _name = "poll_"+Integer.toString(_pollID);
+      else
+        _name = "poll_"+_sAttribute;
+    }
+
+    if ( getParentPage() != null ) {
+      getParentPage().setStyleDefinition("A."+_name+":link",_styleAttribute);
+      getParentPage().setStyleDefinition("A."+_name+":visited",_styleAttribute);
+      getParentPage().setStyleDefinition("A."+_name+":active",_styleAttribute);
+      getParentPage().setStyleDefinition("A."+_name+":hover",_hoverStyle);
+    }
+    else {
+      _styles = false;
+    }
   }
 
   public boolean deleteBlock(int ICObjectInstanceId) {
@@ -464,6 +493,10 @@ private int _layout = RADIO_BUTTON_VIEW;
 
   public void setStyle(String style) {
     _styleAttribute = style;
+  }
+
+  public void setHoverStyle(String hoverStyle) {
+    _hoverStyle = hoverStyle;
   }
 
   public void setQuestionStyle(String style) {
@@ -490,6 +523,10 @@ private int _layout = RADIO_BUTTON_VIEW;
     _linkImage = image;
   }
 
+  public void setLinkOverImage(Image image) {
+    _linkOverImage = image;
+  }
+
   public void setLayout(int layout) {
    _layout = layout;
   }
@@ -500,5 +537,29 @@ private int _layout = RADIO_BUTTON_VIEW;
 
   public void setQuestionAlignment(String alignment) {
     _questionAlignment = alignment;
+  }
+
+  public Object clone() {
+    Poll obj = null;
+    try {
+      obj = (Poll) super.clone();
+
+      if ( this._myTable != null ) {
+        obj._myTable = (Table) this._myTable.clone();
+      }
+      if ( this._linkImage != null ) {
+        obj._linkImage = (Image) this._linkImage.clone();
+      }
+      if ( this._linkOverImage != null ) {
+        obj._linkOverImage = (Image) this._linkOverImage.clone();
+      }
+      if ( this._questionImage != null ) {
+        obj._questionImage = (Image) this._questionImage.clone();
+      }
+    }
+    catch (Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
   }
 }
