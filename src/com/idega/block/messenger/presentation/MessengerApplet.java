@@ -79,7 +79,6 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   public void init() {
 
     setBackground(Color.red);
-    setForeground(Color.blue);
 
     try {
       sessionId = this.getParameter(SESSION_ID, "noId");
@@ -110,6 +109,8 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
     userPanel = new Panel();
     userPanel.setSize(400,400);
+    userPanel.setLayout(new BorderLayout());
+    userPanel.repaint();
     add(userPanel);
 
   }
@@ -376,12 +377,13 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
       item.setWindowToOpen(dialog);
       item.addActionListener(this);
 
-      if( faceLabel!= null ) item.add(faceLabel);
+      //if( faceLabel!= null )
+      item.add(faceLabel);
 
       item.add(new Label(name));
       item.setSize(18,150);
 
-      userPanel.add(item);
+      userPanel.add(item,BorderLayout.NORTH);
 //      item.repaint();
 userPanel.repaint();
       repaint();
