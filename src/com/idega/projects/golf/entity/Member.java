@@ -450,21 +450,26 @@ public class Member extends com.idega.data.genericentity.Member {
           Stmt = conn.createStatement();
           Stmt.executeUpdate("delete from tournament_startingtime where STARTINGTIME_ID ='"+id+"'");
           times[i].delete();
-
         }
       }
       catch(SQLException ex){   if(debug) ex.printStackTrace();   }
 
       try{
-        Account.getStaticInstance("com.idega.projects.golf.entity.Account").deleteMultiple("member_id",Integer.toString(this.getID()));
+        Payment.getStaticInstance("com.idega.projects.golf.entity.Payment").deleteMultiple("member_id",Integer.toString(this.getID()));
       }
       catch(SQLException ex){   if(debug) ex.printStackTrace();   }
 
       try{
-        LoginTable[] login = (LoginTable[]) LoginTable.getStaticInstance("com.idega.projects.golf.entity.LoginTable").findAllByColumn("member_id",this.getID());
-        for (int i = 0; i < login.length; i++){
-          login[i].delete();
+        Account[] account = (Account[]) Account.getStaticInstance("com.idega.projects.golf.entity.Account").findAllByColumn("member_id",this.getID());
+        for ( int a = 0; a < account.length; a++ ) {
+          AccountEntry.getStaticInstance("com.idega.projects.golf.entity.AccountEntry").deleteMultiple("account_id",Integer.toString(account[a].getID()));
+          account[a].delete();
         }
+      }
+      catch(SQLException ex){   if(debug) ex.printStackTrace();   }
+
+      try{
+        LoginTable.getStaticInstance("com.idega.projects.golf.entity.LoginTable").deleteMultiple("member_id",Integer.toString(this.getID()));
       }
       catch(SQLException ex){   if(debug) ex.printStackTrace();   }
 
