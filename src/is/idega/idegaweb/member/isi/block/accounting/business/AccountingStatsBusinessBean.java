@@ -315,6 +315,10 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		paymentTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
 		reportCollection.addField(paymentTypeField);
 		
+		ReportableField sentField = new ReportableField(FIELD_NAME_SENT, String.class);
+		sentField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_SENT, "Sent"), currentLocale);
+		reportCollection.addField(sentField);
+		
 		//Gathering data	 
 		//then for each division get its financeRecords and
 		//create a row and insert into an ordered map
@@ -365,6 +369,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(amountField, new Double(financeEntry.getAmount()) );
 			data.addData(entryDateField, new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy") );
 			data.addData(paymentTypeField, paymentTypeString );
+			data.addData(sentField, financeEntry.getSent()?"Já":"Nei" );
 			
 			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
 			if (statsForDivision == null)
@@ -381,7 +386,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			reportCollection.addAll(datas);
 		}
 		
-		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, nameField, personalIDField, entryDateField};
+		ReportableField[] sortFields = new ReportableField[] {divisionField, groupField, nameField, personalIDField, paymentTypeField, entryDateField};
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 		
@@ -925,6 +930,10 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		amountField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_AMOUNT, "Amount"), currentLocale);
 		reportCollection.addField(amountField);
 		
+		ReportableField entryDateField = new ReportableField(FIELD_NAME_DATE_OF_ENTRY, String.class);
+		entryDateField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_DATE_OF_ENTRY, "Date of entry"), currentLocale);
+		reportCollection.addField(entryDateField);
+		
 		ReportableField paymentTypeField = new ReportableField(FIELD_NAME_PAYMENT_TYPE, String.class);
 		paymentTypeField.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PAYMENT_TYPE, "Payment type"), currentLocale);
 		reportCollection.addField(paymentTypeField);
@@ -961,6 +970,7 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			String personalID = null;
 			String paymentTypeString = null;
 			String tariffTypeString = null;
+			String dateOfEntryString = new IWTimestamp(financeEntry.getDateOfEntry()).getDateString("dd.MM.yy");
 
 			division = financeEntry.getDivision();
 			if (division != null)
@@ -994,12 +1004,13 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 			data.addData(paymentTypeField, paymentTypeString );
 			data.addData(infoField, financeEntry.getInfo() );
 			data.addData(tariffTypeField, tariffTypeString );
+			data.addData(entryDateField, dateOfEntryString );
 			
-			List statsForDivision = (List) financeEntriesByDivisions.get(division.getPrimaryKey());
-			if (statsForDivision == null)
-				statsForDivision = new Vector();
-			statsForDivision.add(data);
-			financeEntriesByDivisions.put(division.getPrimaryKey(), statsForDivision);
+			List statsForDay = (List) financeEntriesByDivisions.get(dateOfEntryString);
+			if (statsForDay == null)
+				statsForDay = new Vector();
+			statsForDay.add(data);
+			financeEntriesByDivisions.put(dateOfEntryString, statsForDay);
 		} 
 		// iterate through the ordered map and ordered lists and add to the final collection
 		Iterator statsDataIter = financeEntriesByDivisions.keySet().iterator();
