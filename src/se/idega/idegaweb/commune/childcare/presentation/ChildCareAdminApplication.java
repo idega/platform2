@@ -328,8 +328,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	}
 	
 	private void parse(IWContext iwc) throws RemoteException {
-		if (iwc.isParameterSet(PARAMETER_COMMENTS))
-			getBusiness().saveComments(getSession().getApplicationID(), iwc.getParameter(PARAMETER_COMMENTS));
+		getBusiness().saveComments(getSession().getApplicationID(), iwc.getParameter(PARAMETER_COMMENTS));
 	}
 	/**
 	 * @param page

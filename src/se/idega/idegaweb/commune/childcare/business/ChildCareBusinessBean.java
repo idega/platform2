@@ -193,6 +193,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						appl.setFromDate(fromDate.getDate());
 						if (message != null)
 							appl.setMessage(message);
+						else
+							appl.setMessage("");
+						appl.setPresentation("");
 						appl.setChildId(childId);
 						appl.setQueueDate(now.getDate());
 						appl.setMethod(1);
@@ -936,13 +939,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public void saveComments(int applicationID, String comment) throws RemoteException {
-		try {
-			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
-			application.setPresentation(comment);
-			application.store();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
+		if (comment != null) {
+			try {
+				ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+				application.setPresentation(comment);
+				application.store();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
