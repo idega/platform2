@@ -99,7 +99,7 @@ public class MemberGroupData {
 	private void processGroupRelation(GroupRelation groupRel) {
 		Group group = groupRel.getGroup();
 		String groupTypeName = getGroupTypeLocalizedName(group.getGroupType());
-		if(groupTypeName.equals("Unknown")) {
+		if(groupTypeName==null || groupTypeName.equals("Unknown")) {
 			groupTypeName="";
 			System.out.println("Name for group type not defined, skipping group (key=\"" + LOCALIZE_KEY_PREFIX_GROUP_CATEGORY + group.getGroupType() + "\")");
 			return;
