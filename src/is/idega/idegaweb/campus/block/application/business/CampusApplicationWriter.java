@@ -1,6 +1,6 @@
 /*
 
- * $Id: CampusApplicationWriter.java,v 1.4 2002/08/06 20:29:31 tryggvil Exp $
+ * $Id: CampusApplicationWriter.java,v 1.5 2002/08/06 21:02:26 aron Exp $
 
  *
 
@@ -65,8 +65,8 @@ public class CampusApplicationWriter
 					//System.err.println("name "+CAH.getApplicant().getFirstName());
 					//System.err.println("email "+CAH.getCampusApplication().getEmail());
 					Table datatable = new Table(4);
-					datatable.setSpaceBetweenCells((float) 0);
-					datatable.setSpaceInsideCell((float) 3);
+					datatable.setSpaceBetweenCells( 0f);
+					datatable.setSpaceInsideCell( 3f);
 					datatable.setBorder(Rectangle.NO_BORDER);
 					int headerwidths[] = { 18, 32, 18, 32 };
 					datatable.setWidths(headerwidths);

@@ -594,9 +594,9 @@ public class ReportWriter implements MediaWritable {
 
 
 
-    datatable.setPadding(0);
-
-    datatable.setSpacing(0);
+    datatable.setPadding(0.0f);
+	
+    datatable.setSpacing(0.0f);
 
     datatable.setBorder(Rectangle.NO_BORDER);
 
