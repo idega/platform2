@@ -12,7 +12,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class EntryGroupBMPBean extends com.idega.data.GenericEntity implements com.idega.block.finance.data.EntryGroup {
+public class EntryGroupBMPBean extends CategoryEntityBMPBean implements com.idega.block.finance.data.EntryGroup {
 
   public EntryGroupBMPBean() {
     super();

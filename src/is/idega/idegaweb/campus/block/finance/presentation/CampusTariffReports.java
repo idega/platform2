@@ -14,6 +14,7 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.Building;
 import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.data.AccountKey;
+import com.idega.block.finance.presentation.Finance;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -25,7 +26,7 @@ import com.idega.util.IWTimestamp;
  * @version 1.1
  */
 
-public class CampusTariffReports extends Block implements Campus{
+public class CampusTariffReports extends Finance implements Campus{
 
   private IWBundle iwb;
   private IWResourceBundle iwrb;

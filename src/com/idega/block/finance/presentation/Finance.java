@@ -37,6 +37,9 @@ public class Finance extends CategoryBlock implements IWBlock{
 
   //public static final String prmCategoryId = "fin_cat_id";
 
+ public Finance(){
+ 	setAutoCreate(false);
+ }
 
   public boolean getMultible(){
     return false;
@@ -52,6 +55,9 @@ public class Finance extends CategoryBlock implements IWBlock{
   public void initializeInMain(IWContext iwc){
     super.initializeInMain(iwc);
     init(iwc);
+    if(isAdmin && administrative && getICObjectInstanceID() > 0){
+      add(getAdminPart(getCategoryId(),false,newobjinst,false,iwc));
+    }
 
   }
 
@@ -61,22 +67,16 @@ public class Finance extends CategoryBlock implements IWBlock{
     core = iwc.getApplication().getCoreBundle();
     isAdmin = this.hasEditPermission();
     textFormat = TextFormat.getInstance();
-    iCategoryId = getCategoryId();
+    initCategoryId(iwc);
   }
   protected void control(IWContext iwc)throws java.rmi.RemoteException{
-
-    boolean info = false;
 
     Table T = new Table();
     T.setWidth("100%");
    // T.setHeight("100%");
     T.setCellpadding(0);
     T.setCellspacing(0);
-
-
-    if(isAdmin && administrative && getICObjectInstanceID() > 0){
-      T.add(getAdminPart(getCategoryId(),false,newobjinst,info,iwc),1,1);
-    }
+    
     FinanceIndex index = new FinanceIndex(getCategoryId());
     if(FinanceObjects !=null)
       index.addFinanceObjectAll(FinanceObjects);
@@ -94,7 +94,8 @@ public class Finance extends CategoryBlock implements IWBlock{
     T.setCellspacing(2);
 
     IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
-    if(iCategoryId > 0){
+    //if(iCategoryId > 0)
+    {
       /*
       Link ne = new Link(core.getImage("/shared/create.gif","create"));
       ne.setWindowToOpen(FinanceEditorWindow.class);
@@ -126,7 +127,7 @@ public class Finance extends CategoryBlock implements IWBlock{
       return -1;
   }
 
-  private  void initCategoryId(IWContext iwc){
+  private void initCategoryId(IWContext iwc){
     iCategoryId = getCategoryId();
     if(iCategoryId <= 0){
       if(iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(CATEGORY_PROPERTY)!=null)

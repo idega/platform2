@@ -43,7 +43,7 @@ import java.util.Map;
  * @version 1.1
  */
 
-public class TariffAssessments extends Block {
+public class TariffAssessments extends Finance {
 
   protected static final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6 = 6,ACT7 = 7;
   public  String strAction = "tt_action";
@@ -53,9 +53,6 @@ public class TariffAssessments extends Block {
   private static String prmGroup = "tass_grp";
   private int iCategoryId = -1;
 
-  private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
-  protected IWResourceBundle iwrb;
-  protected IWBundle iwb;
   private StatusBar status ;
 
   public TariffAssessments(){
@@ -570,9 +567,6 @@ public class TariffAssessments extends Block {
   }
 
 
-
-
-
   private Link getRoundLink(String name,int id,int iGroupId){
     Link L = new Link(name);
     L.addParameter(strAction,ACT4);
@@ -582,13 +576,8 @@ public class TariffAssessments extends Block {
     return L;
   }
 
-  public String getBundleIdentifier(){
-    return IW_BUNDLE_IDENTIFIER;
-  }
 
   public void main(IWContext iwc){
-    iwrb = getResourceBundle(iwc);
-    iwb = getBundle(iwc);
     if(status==null)
       status = new StatusBar("ass_status");
     status.setStyle("color: #ff0000;  font-style: normal; font-family: verdana; font-weight: normal; font-size:14px;");

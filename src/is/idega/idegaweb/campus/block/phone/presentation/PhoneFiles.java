@@ -16,6 +16,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.finance.data.AccountPhoneEntry;
 import com.idega.block.finance.business.FinanceObject;
+import com.idega.block.finance.presentation.Finance;
 import com.idega.util.IWTimestamp;
 import com.idega.idegaweb.presentation.BusyBar;
 import java.io.File;
@@ -36,7 +37,7 @@ import java.util.Vector;
  * @version 1.1
  */
 
-public class PhoneFiles extends Block {
+public class PhoneFiles extends Finance {
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String sAction = "cam.ph.file.action";
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
