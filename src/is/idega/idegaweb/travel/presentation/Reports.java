@@ -174,7 +174,7 @@ public class Reports extends TravelManager {
       table.setRowColor(row, super.GRAY);
 
       ++row;
-      Link drLink = new Link(dr.getReportName());
+      Link drLink = new Link(getText(dr.getReportName()));
         drLink.addParameter(ACTION, PARAMETER_DAILY_REPORT);
       table.add(drLink, 1, row);
       table.add(getText(dr.getReportDescription()), 2, row);
@@ -182,7 +182,7 @@ public class Reports extends TravelManager {
 //    }
 
     ++row;
-    Link obrLink = new Link(obr.getReportName());
+    Link obrLink = new Link(getText(obr.getReportName()));
       obrLink.addParameter(ACTION, PARAMETER_ONLINE_REPORT);
     table.add(obrLink, 1, row);
     table.add(getText(obr.getReportDescription()), 2, row);
