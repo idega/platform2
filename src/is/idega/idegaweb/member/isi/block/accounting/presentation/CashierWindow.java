@@ -12,14 +12,11 @@ import is.idega.idegaweb.member.isi.block.accounting.business.AccountingBusiness
 import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.presentation.GetFiles;
 import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.presentation.SendFiles;
 import is.idega.idegaweb.member.isi.block.accounting.export.creditcard.presentation.Setup;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.FinderException;
-
 import com.idega.block.datareport.presentation.ReportGenerator;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
@@ -75,6 +72,8 @@ public static final String ROLE_KEY_CASHIER = "Gjaldkeri";
     private static final String ACTION_AUTOMATIC_ASSESSMENT = "isi_acc_cw_act_ass_auto";
 
     private static final String ACTION_CREDITCARD_COMPANY_CONTRACT = "isi_acc_cw_act_cc_contract";
+    
+    private static final String ACTION_BANK_CONTRACT = "isi_acc_cw_act_b_contract";
 
     public static final String ACTION_CASHIER_LEDGER = "isi_acc_cw_act_cash_ledger";
 
@@ -285,6 +284,14 @@ public static final String ROLE_KEY_CASHIER = "Gjaldkeri";
                     "Edit creditcard company contract (A.24)")));
             addParametersToMenuItems(ccContract,
                     ACTION_CREDITCARD_COMPANY_CONTRACT);
+            
+            LinkContainer bContract = new LinkContainer();
+            bContract.setStyleClass(styledLink);
+            bContract.add(formatText(iwrb.getLocalizedString(
+            		"isi_acc_cashierwindow.b_contract",
+								"Edit bank contract")));
+            addParametersToMenuItems(bContract,
+            		ACTION_BANK_CONTRACT);
 
             LinkContainer manAss = new LinkContainer();
             manAss.setStyleClass(styledLink);
@@ -408,6 +415,7 @@ public static final String ROLE_KEY_CASHIER = "Gjaldkeri";
             menu.add(editTariff, 1, 3);
             menu.add(autoAss, 1, 4);
             menu.add(ccContract, 1, 5);
+            menu.add(bContract, 1, 6);
 
             menu.add(memberOperations, 1, 7);
             menu.add(getHelpWithGrayImage(
@@ -680,8 +688,8 @@ public static final String ROLE_KEY_CASHIER = "Gjaldkeri";
         table.mergeCells(1, 1, 1, 2);
         table.setStyleClass(1, 1, rightBorderTable);
         table.setStyleClass(borderTable);
-
-        //add left menu of links
+        
+       //add left menu of links
         Table menuTable = getMenuTable(iwc);
 
         table.add(menuTable, 1, 1);
@@ -715,6 +723,12 @@ public static final String ROLE_KEY_CASHIER = "Gjaldkeri";
                         "Club/division credit cardcontract"));
                 subWindow = new ClubCreditCardContract();
                 helpTextKey = ACTION_CREDITCARD_COMPANY_CONTRACT + "_help";
+            } else if(action.equals(ACTION_BANK_CONTRACT)) {
+            		actionTitle.append(iwrb.getLocalizedString(
+            						ACTION_BANK_CONTRACT,
+												"Club/division bank contract"));
+            		subWindow = new ClubBankContract();
+            		helpTextKey = ACTION_BANK_CONTRACT + "_help";
             } else if (action.equals(ACTION_PAYMENT_HISTORY)) {
                 actionTitle.append(iwrb.getLocalizedString(
                         ACTION_PAYMENT_HISTORY, "View user payment history"));
