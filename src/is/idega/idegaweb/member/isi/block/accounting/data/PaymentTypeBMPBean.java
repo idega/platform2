@@ -122,4 +122,14 @@ public class PaymentTypeBMPBean extends GenericEntity implements PaymentType {
 
         return idoFindPKsByQuery(sql);
     }
+    
+    public Object ejbFindPaymentTypeCreditcard() throws FinderException {
+        IDOQuery sql = idoQuery();
+        sql.appendSelectAllFrom(this);
+        sql.appendWhereEquals(COLUMN_DELETED, false);
+        sql.appendAnd();
+        sql.appendEqualsQuoted(COLUMN_LOCALIZATION_KEY, LOC_KEY_CREDITCARD);
+
+        return idoFindOnePKByQuery(sql);        
+    }
 }

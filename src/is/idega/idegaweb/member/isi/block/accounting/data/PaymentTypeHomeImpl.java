@@ -1,29 +1,50 @@
+/*
+ * Copyright (C) 2004 Idega software. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega software.
+ * Use is subject to license terms.
+ *
+ */
+
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
+import java.util.Collection;
 
-public class PaymentTypeHomeImpl extends com.idega.data.IDOFactory implements PaymentTypeHome
-{
- protected Class getEntityInterfaceClass(){
-  return PaymentType.class;
- }
+import javax.ejb.FinderException;
 
+import com.idega.data.IDOFactory;
 
- public PaymentType create() throws javax.ejb.CreateException{
-  return (PaymentType) super.createIDO();
- }
+/**
+ * @author palli
+ */
+public class PaymentTypeHomeImpl extends IDOFactory implements PaymentTypeHome {
+    protected Class getEntityInterfaceClass() {
+        return PaymentType.class;
+    }
 
+    public PaymentType create() throws javax.ejb.CreateException {
+        return (PaymentType) super.createIDO();
+    }
 
-public java.util.Collection findAllPaymentTypes()throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((PaymentTypeBMPBean)entity).ejbFindAllPaymentTypes();
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public PaymentType findByPrimaryKey(Object pk)
+            throws javax.ejb.FinderException {
+        return (PaymentType) super.findByPrimaryKeyIDO(pk);
+    }
 
- public PaymentType findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (PaymentType) super.findByPrimaryKeyIDO(pk);
- }
+    public Collection findAllPaymentTypes() throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PaymentTypeBMPBean) entity)
+                .ejbFindAllPaymentTypes();
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-
+    public PaymentType findPaymentTypeCreditcard() throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        Object pk = ((PaymentTypeBMPBean) entity)
+                .ejbFindPaymentTypeCreditcard();
+        this.idoCheckInPooledEntity(entity);
+        return this.findByPrimaryKey(pk);
+    }
 
 }

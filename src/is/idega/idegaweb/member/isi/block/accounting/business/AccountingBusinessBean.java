@@ -19,6 +19,8 @@ import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType;
 import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardTypeHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntry;
 import is.idega.idegaweb.member.isi.block.accounting.data.FinanceEntryHome;
+import is.idega.idegaweb.member.isi.block.accounting.data.PaymentContract;
+import is.idega.idegaweb.member.isi.block.accounting.data.PaymentContractHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentType;
 import is.idega.idegaweb.member.isi.block.accounting.data.PaymentTypeHome;
 import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCard;
@@ -26,6 +28,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.UserCreditCardHome;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.plugin.CashierWindowPlugin;
 import is.idega.idegaweb.member.isi.block.accounting.presentation.plugin.CreditCardExtraInfo;
 import is.idega.idegaweb.member.util.IWMemberConstants;
+
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -39,12 +42,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
 import com.idega.block.basket.business.BasketBusiness;
 import com.idega.block.basket.data.BasketEntry;
 import com.idega.business.IBOLookupException;
@@ -787,17 +792,14 @@ public class AccountingBusinessBean extends IBOServiceBean implements
             trans = getSessionContext().getUserTransaction();
             trans.begin();
 
-            CreditCardContract contract = getCreditCardContractHome().create();
+            PaymentContract contract = getPaymentContractHome().create();
             contract.setCardExpires(expires.getDate());
             contract.setCardNumber(cardNumber);
             contract.setCardType(cardType);
-            contract.setClub(club);
-            contract.setDivision(division);
             contract.setFirstPayment(firstPayment.getDate());
             contract.setNumberOfPayments(nop);
             contract.setUser(contractUser);
             contract.store();
-         
             
             int totalAmount = 0;
             for (int i = 0; i < nop; i++) {
@@ -817,9 +819,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 
             Iterator it = users.values().iterator();
             while (it.hasNext()) {
-                Map divisions = (HashMap) it.next();
+                Map groups = (HashMap) it.next();
 
-                Iterator it2 = divisions.values().iterator();
+                Iterator it2 = groups.values().iterator();
                 while (it2.hasNext()) {
                     PaymentInfo info = (PaymentInfo) it2.next();
 
@@ -827,6 +829,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
                     entry.setUser(info.getUser());
                     entry.setClub(info.getClub());
                     entry.setDivision(info.getDivision());
+                    entry.setGroup(info.getGroup());
                     entry.setAmount(info.getAmount());
                     entry.setDateOfEntry(firstPayment.getTimestamp());
                     entry.setStatusCreated();
@@ -834,7 +837,7 @@ public class AccountingBusinessBean extends IBOServiceBean implements
                     entry.setPaymentType(type);
                     entry.setEntryOpen(false);
                     entry.setInsertedByUser(currentUser);
-                    entry.setContract(contract);
+                    entry.setPaymentContract(contract);
                     entry.setSent(false);
                     entry.store();
                 }
@@ -861,7 +864,8 @@ public class AccountingBusinessBean extends IBOServiceBean implements
     
     private Map equalizeBasket(Map basket, double amount, IWUserContext iwuc) {
         Map users = new HashMap();
-        Map divisions = null;
+//        Map divisions = null;
+        Map groups = null;
 
         if (basket != null && !basket.isEmpty()) {
             List toRemove = new ArrayList();
@@ -915,14 +919,14 @@ public class AccountingBusinessBean extends IBOServiceBean implements
                     }
 
                     if (users.containsKey(entry.getUser())) {
-                        divisions = (Map) users.get(entry.getUser());
+                        groups = (Map) users.get(entry.getUser());
                     } else {
-                        divisions = new HashMap();
-                        users.put(entry.getUser(), divisions);
+                        groups = new HashMap();
+                        users.put(entry.getUser(), groups);
                     }
 
-                    if (divisions.containsKey(entry.getDivision())) {
-                        PaymentInfo paymentInfo = (PaymentInfo) divisions
+                    if (groups.containsKey(entry.getGroup())) {
+                        PaymentInfo paymentInfo = (PaymentInfo) groups
                                 .get(entry.getDivision());
                         int am = paymentInfo.getAmount();
                         paymentInfo.setAmount(am
@@ -930,9 +934,9 @@ public class AccountingBusinessBean extends IBOServiceBean implements
                     } else {
                         PaymentInfo paymentInfo = new PaymentInfo(entry
                                 .getUser(), entry.getClub(), entry
-                                .getDivision(), (int) entry.getItemPrice()
+                                .getDivision(), entry.getGroup(), (int) entry.getItemPrice()
                                 .doubleValue());
-                        divisions.put(entry.getDivision(), paymentInfo);
+                        groups.put(entry.getDivision(), paymentInfo);
                     }
 
                     amount -= entry.getItemPrice().doubleValue();
@@ -950,22 +954,22 @@ public class AccountingBusinessBean extends IBOServiceBean implements
                     }
 
                     if (users.containsKey(entry.getUser())) {
-                        divisions = (Map) users.get(entry.getUser());
+                        groups = (Map) users.get(entry.getUser());
                     } else {
-                        divisions = new HashMap();
-                        users.put(entry.getUser(), divisions);
+                        groups = new HashMap();
+                        users.put(entry.getUser(), groups);
                     }
 
-                    if (divisions.containsKey(entry.getDivision())) {
-                        PaymentInfo paymentInfo = (PaymentInfo) divisions
+                    if (groups.containsKey(entry.getGroup())) {
+                        PaymentInfo paymentInfo = (PaymentInfo) groups
                                 .get(entry.getDivision());
                         int am = paymentInfo.getAmount();
                         paymentInfo.setAmount(am + (int) amount);
                     } else {
                         PaymentInfo paymentInfo = new PaymentInfo(entry
                                 .getUser(), entry.getClub(), entry
-                                .getDivision(), (int) amount);
-                        divisions.put(entry.getDivision(), paymentInfo);
+                                .getDivision(), entry.getGroup(), (int) amount);
+                        groups.put(entry.getDivision(), paymentInfo);
                     }
 
                     entry.setAmountEqualized(entry.getAmountEqualized()
@@ -1105,7 +1109,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
                 }
             }
         } catch (FinderException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -1185,6 +1188,17 @@ public class AccountingBusinessBean extends IBOServiceBean implements
         return null;
     }
 
+    private PaymentContractHome getPaymentContractHome() {
+        try {
+            return (PaymentContractHome) IDOLookup
+                    .getHome(PaymentContract.class);
+        } catch (IDOLookupException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     private CreditCardTypeHome getCreditCardTypeHome() {
         try {
             return (CreditCardTypeHome) IDOLookup.getHome(CreditCardType.class);
@@ -1256,40 +1270,31 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeUserRemove(com.idega.user.data.User)
 	 */
-	public void beforeUserRemove(User user) throws RemoveException, RemoteException {
-		// TODO Auto-generated method stub
-		
+	public void beforeUserRemove(User user) throws RemoveException, RemoteException {		
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterUserCreate(com.idega.user.data.User)
 	 */
 	public void afterUserCreate(User user) throws CreateException, RemoteException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#beforeGroupRemove(com.idega.user.data.Group)
 	 */
 	public void beforeGroupRemove(Group group) throws RemoveException, RemoteException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)
 	 */
 	public void afterGroupCreate(Group group) throws CreateException, RemoteException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getPresentationObjectClass()
 	 */
 	public Class getPresentationObjectClass() throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1297,7 +1302,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateEditor(com.idega.user.data.Group)
 	 */
 	public PresentationObject instanciateEditor(Group group) throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1305,7 +1309,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#instanciateViewer(com.idega.user.data.Group)
 	 */
 	public PresentationObject instanciateViewer(Group group) throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1313,7 +1316,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getUserPropertiesTabs(com.idega.user.data.User)
 	 */
 	public List getUserPropertiesTabs(User user) throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1321,7 +1323,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getGroupPropertiesTabs(com.idega.user.data.Group)
 	 */
 	public List getGroupPropertiesTabs(Group group) throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1329,7 +1330,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getMainToolbarElements()
 	 */
 	public List getMainToolbarElements() throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1346,7 +1346,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#getListViewerFields()
 	 */
 	public Collection getListViewerFields() throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1354,7 +1353,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#findGroupsByFields(java.util.Collection, java.util.Collection, java.util.Collection)
 	 */
 	public Collection findGroupsByFields(Collection listViewerFields, Collection finderOperators, Collection listViewerFieldValues) throws RemoteException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1362,7 +1360,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
 	 */
 	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -1370,7 +1367,6 @@ public class AccountingBusinessBean extends IBOServiceBean implements
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
 	 */
 	public String isUserSuitedForGroup(User user, Group targetGroup) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

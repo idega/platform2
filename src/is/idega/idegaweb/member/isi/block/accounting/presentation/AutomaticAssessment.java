@@ -141,7 +141,9 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
             errorList.add(ERROR_NO_RUN_ON_DATE_SELECTED);
         }
 
-        if (!errorList.isEmpty()) { return false; }
+        if (!errorList.isEmpty()) {
+            return false;
+        }
 
         boolean execute = false;
 
@@ -242,8 +244,10 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
         groupInput.setInputLength(10);
         CheckBox includeChildrenInput = new CheckBox(LABEL_INCLUDE_CHILDREN,
                 "true");
-        DatePicker paymentDateInput = new DatePicker(LABEL_PAYMENT_DATE, iwc.getCurrentLocale());
-        DatePicker runOnDateInput = new DatePicker(LABEL_RUN_ON_DATE, iwc.getCurrentLocale());
+        DatePicker paymentDateInput = new DatePicker(LABEL_PAYMENT_DATE, iwc
+                .getCurrentLocale());
+        DatePicker runOnDateInput = new DatePicker(LABEL_RUN_ON_DATE, iwc
+                .getCurrentLocale());
 
         SubmitButton submit = new SubmitButton(iwrb.getLocalizedString(
                 ACTION_SUBMIT, "Submit"), ACTION_SUBMIT, "submit");
@@ -333,9 +337,9 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
                     t.add(nameLink, 2, row);
                 }
                 if (round.getDivision() != null)
-                        t.add(round.getDivision().getName(), 3, row);
+                    t.add(round.getDivision().getName(), 3, row);
                 if (round.getGroup() != null)
-                        t.add(round.getGroup().getName(), 4, row);
+                    t.add(round.getGroup().getName(), 4, row);
                 IWTimestamp startTime = new IWTimestamp(round.getStartTime());
                 t.add(startTime.getDateString("dd.MM.yyyy HH:mm:ss"), 5, row);
                 if (round.getEndTime() != null) {
@@ -344,7 +348,8 @@ public class AutomaticAssessment extends CashierSubWindowTemplate {
                 }
                 t.add(round.getExecutedBy().getName(), 7, row);
                 CheckBox children = (CheckBox) show.clone();
-                if (round.getIncludeChildren()) children.setChecked(true);
+                if (round.getIncludeChildren())
+                    children.setChecked(true);
                 t.add(children, 8, row);
                 if (round.getPaymentDate() != null) {
                     IWTimestamp paymentDate = new IWTimestamp(round

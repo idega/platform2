@@ -1,50 +1,98 @@
+/*
+ * Copyright (C) 2004 Idega software. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega software.
+ * Use is subject to license terms.
+ *
+ */
+
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
+import java.util.Collection;
 
-public class CreditCardContractHomeImpl extends com.idega.data.IDOFactory implements CreditCardContractHome
-{
- protected Class getEntityInterfaceClass(){
-  return CreditCardContract.class;
- }
+import javax.ejb.FinderException;
 
+import com.idega.data.IDOFactory;
+import com.idega.user.data.Group;
 
- public CreditCardContract create() throws javax.ejb.CreateException{
-  return (CreditCardContract) super.createIDO();
- }
+/**
+ * @author palli
+ */
+public class CreditCardContractHomeImpl extends IDOFactory implements
+        CreditCardContractHome {
+    protected Class getEntityInterfaceClass() {
+        return CreditCardContract.class;
+    }
 
+    public CreditCardContract create() throws javax.ejb.CreateException {
+        return (CreditCardContract) super.createIDO();
+    }
 
-public java.util.Collection findAllByClub(com.idega.user.data.Group p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CreditCardContractBMPBean)entity).ejbFindAllByClub(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public CreditCardContract findByPrimaryKey(Object pk)
+            throws javax.ejb.FinderException {
+        return (CreditCardContract) super.findByPrimaryKeyIDO(pk);
+    }
 
-public java.util.Collection findAllByClubAndType(com.idega.user.data.Group p0,is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType p1)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CreditCardContractBMPBean)entity).ejbFindAllByClubAndType(p0,p1);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAll() throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((CreditCardContractBMPBean) entity)
+                .ejbFindAll();
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-public java.util.Collection findAllByClubDivisionAndType(com.idega.user.data.Group p0,com.idega.user.data.Group p1,is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CreditCardContractBMPBean)entity).ejbFindAllByClubDivisionAndType(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllByClub(Group club) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((CreditCardContractBMPBean) entity)
+                .ejbFindAllByClub(club);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-public java.util.Collection findAllByClubDivisionGroupAndType(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.Group p2,is.idega.idegaweb.member.isi.block.accounting.data.CreditCardType p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((CreditCardContractBMPBean)entity).ejbFindAllByClubDivisionGroupAndType(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllByClubAndType(Group club, CreditCardType type)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((CreditCardContractBMPBean) entity)
+                .ejbFindAllByClubAndType(club, type);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
- public CreditCardContract findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (CreditCardContract) super.findByPrimaryKeyIDO(pk);
- }
+    public Collection findAllByClubDivisionAndType(Group club, Group division,
+            CreditCardType type) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((CreditCardContractBMPBean) entity)
+                .ejbFindAllByClubDivisionAndType(club, division, type);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
+    public Collection findAllByClubDivisionGroupAndType(Group club,
+            Group division, Group group, CreditCardType type)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((CreditCardContractBMPBean) entity)
+                .ejbFindAllByClubDivisionGroupAndType(club, division, group,
+                        type);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
+    public Collection findAllClubContracts() throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((CreditCardContractBMPBean) entity)
+                .ejbFindAllClubContracts();
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
+
+    public CreditCardContract findByGroupAndType(Group group,
+            CreditCardType type) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        Object pk = ((CreditCardContractBMPBean) entity).ejbFindByGroupAndType(
+                group, type);
+        this.idoCheckInPooledEntity(entity);
+        return this.findByPrimaryKey(pk);
+    }
 
 }

@@ -4,6 +4,7 @@
 package com.idega.block.cal.presentation;
 
 import java.util.Date;
+
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.business.DefaultLedgerVariationsHandler;
 import com.idega.block.cal.business.LedgerVariationsHandler;
@@ -20,7 +21,6 @@ import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.repository.data.ImplementorRepository;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.User;
 import com.idega.user.presentation.GroupChooser;

@@ -89,22 +89,22 @@ public class EditTariffList extends CashierSubWindowTemplate {
 		}
 		catch (IllegalArgumentException e) {
 			fromTimestamp = new IWTimestamp(Long.parseLong(from));
-			fromTimestamp.setHour(0);
-			fromTimestamp.setMinute(0);
-			fromTimestamp.setSecond(0);
-			fromTimestamp.setMilliSecond(0);
 		}
+		fromTimestamp.setHour(0);
+		fromTimestamp.setMinute(0);
+		fromTimestamp.setSecond(0);
+		fromTimestamp.setMilliSecond(0);
 
 		try {
 			toTimestamp = new IWTimestamp(to);
 		}
 		catch (IllegalArgumentException e) {
 			toTimestamp = new IWTimestamp(Long.parseLong(to));
-			toTimestamp.setHour(23);
-			toTimestamp.setMinute(59);
-			toTimestamp.setSecond(59);
-			toTimestamp.setMilliSecond(99);
 		}
+		toTimestamp.setHour(23);
+		toTimestamp.setMinute(59);
+		toTimestamp.setSecond(59);
+		toTimestamp.setMilliSecond(99);
 		
         if (group == null || "".equals(group)) {
             errorList.add(ERROR_NO_GROUP_SELECTED);

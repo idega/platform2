@@ -17,10 +17,12 @@ import java.util.List;
 import java.util.Map;
 
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.GroupBusiness;
@@ -453,6 +455,60 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
 
         return false;
     }
+    
+    /*
+     * 1. Find all groups conntected to the league
+     * 2. Find the club/division
+     * 3. Go through all division children and match to the player group templates
+     * 4. If any are missing, create them
+     */
+    private void addMissingGroupsToClubs(Group league, Group divisionTemplate, IWContext iwc) {
+        try {
+            Collection clubs = ((GroupHome) com.idega.data.IDOLookup
+                    .getHome(Group.class))
+                    .findGroupsByMetaData(IWMemberConstants.META_DATA_CLUB_LEAGUE_CONNECTION, ((Integer)league.getPrimaryKey()).toString());
+
+            Collection divisions = ((GroupHome) com.idega.data.IDOLookup
+                    .getHome(Group.class))
+                    .findGroupsByMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION, ((Integer)league.getPrimaryKey()).toString());
+            
+            if (clubs != null && !clubs.isEmpty()) {
+                Iterator it = clubs.iterator();
+                while (it.hasNext()) {
+                    Group club = (Group) it.next();
+                    Group division = findDivisionForClub(club);
+                    
+                    if (division != null) {
+                        
+                    }
+                }
+            }
+        } catch (IDOLookupException e) {
+            e.printStackTrace();
+        } catch (FinderException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private Group findDivisionForClub(Group club) {
+        Collection children = club.getChildren();
+        if (children != null && !children.isEmpty()) {
+            Iterator it = children.iterator();
+            while (it.hasNext()) {
+                Group child = (Group) it.next();
+                if (child.getGroupType().equals(IWMemberConstants.GROUP_TYPE_CLUB_DIVISION)) {
+                    return child;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    private void updateDivision(Group division, Group divisionTemplate, Group club ) {
+        
+    }
+    
 
     private void updatePlayerGroupsConnectedTo(Group parent, IWContext iwc) {
         Collection connected = null;
@@ -467,6 +523,7 @@ public class ClubInformationPluginBusinessBean extends IBOServiceBean implements
                 while (it.hasNext()) {
                     Group conn = (Group) it.next();
                     if (conn.getAliasID() == parent_id) {
+                        conn.setName(parent.getName());
                         conn.setMetaDataAttributes(metadata);
                         conn.store();
                     }

@@ -8,7 +8,7 @@
 
 package is.idega.idegaweb.member.isi.block.accounting.presentation.plugin;
 
-import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContract;
+import is.idega.idegaweb.member.isi.block.accounting.data.PaymentContract;
 
 
 /**
@@ -18,7 +18,7 @@ import is.idega.idegaweb.member.isi.block.accounting.data.CreditCardContract;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class CreditCardExtraInfo {
-    public CreditCardContract contract = null;
+    public PaymentContract contract = null;
     
     public int amount[] = null;
     
@@ -26,7 +26,7 @@ public class CreditCardExtraInfo {
     /**
      * 
      */
-    public CreditCardExtraInfo(CreditCardContract contract, int amount[]) {
+    public CreditCardExtraInfo(PaymentContract contract, int amount[]) {
         this.contract = contract;
         this.amount = new int[amount.length];
         for (int i = 0; i < amount.length; i++) {

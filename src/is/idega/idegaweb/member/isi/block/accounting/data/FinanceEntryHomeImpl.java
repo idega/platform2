@@ -1,85 +1,137 @@
+/*
+ * Copyright (C) 2004 Idega software. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega software.
+ * Use is subject to license terms.
+ *
+ */
+
 package is.idega.idegaweb.member.isi.block.accounting.data;
 
 
-public class FinanceEntryHomeImpl extends com.idega.data.IDOFactory implements FinanceEntryHome
-{
- protected Class getEntityInterfaceClass(){
-  return FinanceEntry.class;
- }
+import java.sql.Date;
+import java.util.Collection;
 
+import javax.ejb.FinderException;
 
- public FinanceEntry create() throws javax.ejb.CreateException{
-  return (FinanceEntry) super.createIDO();
- }
+import com.idega.data.IDOFactory;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
+/**
+ * @author palli
+ */
+public class FinanceEntryHomeImpl extends IDOFactory implements
+        FinanceEntryHome {
+    protected Class getEntityInterfaceClass() {
+        return FinanceEntry.class;
+    }
 
-public java.util.Collection findAllAssessmentByUser(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllAssessmentByUser(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public FinanceEntry create() throws javax.ejb.CreateException {
+        return (FinanceEntry) super.createIDO();
+    }
 
-public java.util.Collection findAllAssessmentByUser(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2,com.idega.util.IWTimestamp p3)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllAssessmentByUser(p0,p1,p2,p3);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public FinanceEntry findByPrimaryKey(Object pk)
+            throws javax.ejb.FinderException {
+        return (FinanceEntry) super.findByPrimaryKeyIDO(pk);
+    }
 
-public java.util.Collection findAllByAssessmentRound(is.idega.idegaweb.member.isi.block.accounting.data.AssessmentRound p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllByAssessmentRound(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllByAssessmentRound(AssessmentRound round)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllByAssessmentRound(round);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-public java.util.Collection findAllByUser(com.idega.user.data.User p0)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllByUser(p0);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllByUser(User user) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllByUser(user);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-public java.util.Collection findAllByUser(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllByUser(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllByUser(Group club, Group division, User user)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllByUser(club, division, user);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-public java.util.Collection findAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(com.idega.user.data.Group p0,java.lang.String[] p1,java.sql.Date p2,java.sql.Date p3,java.util.Collection p4,java.util.Collection p5,java.lang.String p6)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(p0,p1,p2,p3,p4,p5,p6);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllOpenAssessmentByUser(Group club, Group division,
+            User user) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllOpenAssessmentByUser(club, division, user);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-public java.util.Collection findAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(com.idega.user.data.Group p0,java.lang.String[] p1,java.util.Collection p2,java.util.Collection p3,java.lang.String p4)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(p0,p1,p2,p3,p4);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllAssessmentByUser(Group club, Group division,
+            User user) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllAssessmentByUser(club, division, user);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-public java.util.Collection findAllOpenAssessmentByUser(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllOpenAssessmentByUser(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllAssessmentByUser(Group club, Group division,
+            User user, IWTimestamp entriesAfter) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllAssessmentByUser(club, division, user, entriesAfter);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
-public java.util.Collection findAllPaymentsByUser(com.idega.user.data.Group p0,com.idega.user.data.Group p1,com.idega.user.data.User p2)throws javax.ejb.FinderException{
-	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((FinanceEntryBMPBean)entity).ejbFindAllPaymentsByUser(p0,p1,p2);
-	this.idoCheckInPooledEntity(entity);
-	return this.getEntityCollectionForPrimaryKeys(ids);
-}
+    public Collection findAllPaymentsByUser(Group club, Group division,
+            User user) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllPaymentsByUser(club, division, user);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
- public FinanceEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (FinanceEntry) super.findByPrimaryKeyIDO(pk);
- }
+    public Collection findAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(
+            Group club, String[] types, Date dateFrom, Date dateTo,
+            Collection divisions, Collection groups, String personalID)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllFinanceEntriesByDateIntervalDivisionsAndGroupsOrderedByDivisionGroupAndDate(
+                        club, types, dateFrom, dateTo, divisions, groups,
+                        personalID);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
+    public Collection findAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(
+            Group club, String[] types, Collection divisions,
+            Collection groups, String personalID) throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllFinanceEntriesByPaymentDateDivisionsAndGroupsOrderedByDivisionGroupAndDate(
+                        club, types, divisions, groups, personalID);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
+    public Collection findAllByGroupAndPaymentTypeNotInBatch(Group group,
+            PaymentType type, IWTimestamp dateFrom, IWTimestamp dateTo)
+            throws FinderException {
+        com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+        java.util.Collection ids = ((FinanceEntryBMPBean) entity)
+                .ejbFindAllByGroupAndPaymentTypeNotInBatch(group, type,
+                        dateFrom, dateTo);
+        this.idoCheckInPooledEntity(entity);
+        return this.getEntityCollectionForPrimaryKeys(ids);
+    }
 
 }

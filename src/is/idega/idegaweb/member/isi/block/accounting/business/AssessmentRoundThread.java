@@ -41,21 +41,21 @@ import com.idega.util.IWTimestamp;
 public class AssessmentRoundThread extends Thread {
 	private AssessmentRound round = null;
 	private IWApplicationContext iwac = null;
-	private List tariffs = null;
+	private List tariffList = null;
 	
 	public AssessmentRoundThread(AssessmentRound assessmentRound, IWApplicationContext iwac, List tariffs) {
 		round = assessmentRound;
 		this.iwac = iwac;
 		if (tariffs != null) {
-			this.tariffs = new ArrayList();
-			this.tariffs.addAll(tariffs);
+			tariffList = new ArrayList();
+			tariffList.addAll(tariffs);
 		}
 	}
 
 	public void run() {
 		Group top = round.getGroup();
-		if (tariffs != null && !tariffs.isEmpty()) {
-			Iterator it = tariffs.iterator();
+		if (tariffList != null && !tariffList.isEmpty()) {
+			Iterator it = tariffList.iterator();
 			while (it.hasNext()) {
 				String id = (String) it.next();
 				try {
