@@ -1,5 +1,6 @@
 package com.idega.block.quote.presentation;
 
+import com.idega.block.text.business.TextFormatter;
 import com.idega.block.IWBlock;
 import com.idega.block.quote.business.QuoteHolder;
 import com.idega.block.quote.business.QuoteBusiness;
@@ -96,7 +97,7 @@ protected IWBundle _iwb;
       }
 
       Text quoteOrigin = formatText(originString+":",originStyle_);
-      Text quoteText = formatText("\""+textString+"\"",quoteStyle_);
+      Text quoteText = formatText("\""+TextFormatter.formatText(textString,1,Table.HUNDRED_PERCENT)+"\"",quoteStyle_);
 	quoteText.setHorizontalAlignment(alignment_);
       Text quoteAuthor = formatText("-"+Text.getNonBrakingSpace().getText()+authorString,authorStyle_);
 
