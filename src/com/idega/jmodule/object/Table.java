@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.8 2001/07/09 16:18:28 tryggvil Exp $
+ * $Id: Table.java,v 1.9 2001/07/11 13:06:19 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -297,6 +297,10 @@ public class Table extends ModuleObjectContainer {
 
   public void setBorder(String border){
     setAttribute("border",border);
+  }
+
+  public void setBorderColor(String color) {
+    setAttribute("bordercolor",color);
   }
 
   public void setBorder(int i){
