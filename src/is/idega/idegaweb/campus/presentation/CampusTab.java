@@ -126,7 +126,7 @@ public class CampusTab extends CampusBlock {
     try {
       obj = (CampusTab)super.clone();
       obj.container = (Table)this.container.clone();
-
+      obj.tabLink = (Link)this.tabLink.clone();
     }
     catch(Exception ex) {
       ex.printStackTrace(System.err);
