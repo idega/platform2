@@ -28,6 +28,7 @@ import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.posting.business.MissingMandatoryFieldException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.regulations.business.AgeBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.BruttoIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.LowIncomeException;
 import se.idega.idegaweb.commune.accounting.regulations.business.MissingConditionTypeException;
@@ -66,7 +67,6 @@ import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.User;
-import com.idega.util.Age;
 import com.idega.util.CalendarMonth;
 
 /**
@@ -207,7 +207,7 @@ public class InvoiceChildcareThread extends BillingThread{
 		//Collection contractArray = new ArrayList();
 		Collection regulationArray = new ArrayList();
 		User custodian;
-		Age age;
+//		Age age;
 		int hours;
 		PlacementTimes placementTimes = null;
 		long totalSum;
@@ -281,15 +281,19 @@ public class InvoiceChildcareThread extends BillingThread{
 
 					//childcare = ((Integer)schoolClassMember.getSchoolType().getPrimaryKey()).intValue();
 					hours = contract.getCareTime();
-					age = new Age(contract.getChild().getDateOfBirth());
+
+					AgeBusiness ageBusiness = (AgeBusiness) IBOLookup.getServiceInstance(iwc, AgeBusiness.class);
+					int ageInYears = ageBusiness.getChildAge(contract.getChild().getPersonalID(), startPeriod.getDate());
+//					age = new Age(contract.getChild().getDateOfBirth());
+
 					ArrayList conditions = new ArrayList();
 					errorRelated.append("Hours "+contract.getCareTime());
-					errorRelated.append("Age "+age.getYears()+" years");
+					errorRelated.append("Age "+ageInYears+" years");
 					errorRelated.append("Date of birth "+contract.getChild().getDateOfBirth());
 					
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION,childcareType));
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_HOURS,new Integer(hours)));
-					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL,new Integer(age.getYears())));
+					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_AGE_INTERVAL,new Integer(ageInYears)));
 					EmploymentType employmentType = contract.getEmploymentType();
 					if(employmentType!= null){
 						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,employmentType.getPrimaryKey()));
