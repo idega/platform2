@@ -141,6 +141,9 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 			GroupComparator groupComparator = new GroupComparator(iwc.getCurrentLocale());
 			groupComparator.setGroupBusiness(this.getGroupBusiness(iwc));
 			Collections.sort(groups, groupComparator);//sort alphabetically
+		}else{
+			add(iwrb.getLocalizedString("clubexchangewindow.no_club_division_to_manage","You do not have any club divisions to manage!" ));
+			return;
 		}
 		
 		DropdownMenu divisionFrom = getGroupDropDown(groups,PARAMETER_FROM_CLUB_DIVISION_ID);
@@ -173,6 +176,7 @@ public class ClubMemberExchangeWindow extends IWAdminWindow {
 		table.add(initDate,3,4);
 		table.add(close,1,5);
 		table.add(save,1,5);
+		
 		
 		add(form);
 		
