@@ -77,7 +77,14 @@ public class CampusTariffReports extends Block implements Campus{
     }
     building = iwc.isParameterSet(prmBuilding)?Integer.parseInt(iwc.getParameter(prmBuilding)):-1;
     key = iwc.isParameterSet(prmAccountKey)?Integer.parseInt(iwc.getParameter(prmAccountKey)):-1;
-    reports = CampusAccountFinder.getAccountEntryReport(building,key,from,to);
+    //reports = CampusAccountFinder.getAccountEntryReport(building,key,from,to);
+    //reports = CampusAccountFinder.findAccountEntryReports(building,key,from,to);
+    try{
+    reports = EntryReportBMPBean.findAllBySearch(building,key,from,to);
+    }
+    catch(java.sql.SQLException ex){
+      ex.printStackTrace();
+    }
   }
 
   public PresentationObject getSearchForm()throws java.rmi.RemoteException{
@@ -127,7 +134,7 @@ public class CampusTariffReports extends Block implements Campus{
     T.setTitlesHorizontal(true);
     if(L!=null && !L.isEmpty()){
       java.util.Iterator iter = L.iterator();
-      BuildingAccountEntry entry;
+      EntryReport entry;
       int iBuildingId = -1,row = 1,col=1;
       float total = 0,Alltotal = 0;
       boolean last = false;
@@ -139,7 +146,7 @@ public class CampusTariffReports extends Block implements Campus{
       row++;
       while(iter.hasNext()){
         col = 1;
-        entry = (BuildingAccountEntry) iter.next();
+        entry = (EntryReport) iter.next();
 
         if(iBuildingId != entry.getBuildingId() ){
 
@@ -166,7 +173,8 @@ public class CampusTariffReports extends Block implements Campus{
         T.add(tf.format(String.valueOf(total),tf.HEADER),4,row++);
         Alltotal += total;
       }
-      T.add(tf.format(String.valueOf(Alltotal),tf.HEADER),4,row);
+      if(!(Alltotal==total))
+        T.add(tf.format(String.valueOf(Alltotal),tf.HEADER),4,row);
       T.getContentTable().setColumnAlignment(4,"right");
       T.getContentTable().setColumnAlignment(5,"right");
 

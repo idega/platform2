@@ -306,13 +306,4 @@ public class CampusAccountFinder  {
       return null;
   }
 
-  /*
-  public Account findAccountFromApartmentSeries(String serie){
-
-    //
-    select ac.* from fin_account
-    //
-  }
-  */
-
 }
