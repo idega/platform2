@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.1 2003/09/17 09:29:04 anders Exp $
+ * $Id: ProviderEditor.java,v 1.2 2003/09/17 16:27:27 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,8 +37,11 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
+import com.idega.block.school.data.SchoolManagementType;
 
 import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsType;
+import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsTypeHome;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
 import se.idega.idegaweb.commune.accounting.school.business.ProviderException;
 
@@ -51,10 +54,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/17 09:29:04 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/17 16:27:27 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -90,6 +93,7 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String PARAMETER_PAYMENT_BY_INVOICE = PP + "payment_by_invoice";
 	private final static String PARAMETER_POSTGIRO = PP + "postgiro";
 	private final static String PARAMETER_BANKGIRO = PP + "bankgiro";
+	private final static String PARAMETER_STATISTICS_TYPE = PP + "statistics_type";
 	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
@@ -122,8 +126,10 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_PAYMENT_BY_INVOICE = KP + "payment_by_invoice";
 	private final static String KEY_POSTGIRO = KP + "postgiro";
 	private final static String KEY_BANKGIRO = KP + "bankgiro";
+	private final static String KEY_STATISTICS_TYPE = KP + "statistics_type";
 	private final static String KEY_SCHOOL_AREA_SELECTOR_HEADER = KP + "school_area_selector_header";
 	private final static String KEY_SCHOOL_MANAGEMENT_TYPE_SELECTOR_HEADER = KP + "school_management_type_selector_header";
+	private final static String KEY_STATISTICS_TYPE_SELECTOR_HEADER = KP + "statistics_type_selector_header";
 	private final static String KEY_COMMUNE_SELECTOR_HEADER = KP + "commune_selector_header";
 	private final static String KEY_COUNTRY_SELECTOR_HEADER = KP + "country_selector_header";
 	private final static String KEY_NEW = KP + "new";
@@ -206,7 +212,7 @@ public class ProviderEditor extends AccountingBlock {
 	 */	
 	private void handleNewAction(IWContext iwc) {
 		add(getProviderForm(iwc, "-1", "", "", "", "", "", "", "", "", "", "-1", 
-				new TreeMap(), "", "", "", "", "", "", "", "", "", "", null, true));
+				new TreeMap(), "", "", "", "", "", "", "", "", "", "", "", null, true));
 	}
 
 	/*
@@ -264,6 +270,7 @@ public class ProviderEditor extends AccountingBlock {
 					provider.getPaymentByInvoice() ? "true" : "",
 					provider.getPostgiro(),
 					provider.getBankgiro(),
+					provider.getStatisticsType(),
 					null,
 					false));
 		} catch (RemoteException e) {
@@ -302,6 +309,7 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_PAYMENT_BY_INVOICE),
 					getParameter(iwc, PARAMETER_POSTGIRO),
 					getParameter(iwc, PARAMETER_BANKGIRO),
+					getParameter(iwc, PARAMETER_STATISTICS_TYPE),
 					"", // getParameter(iwc, PARAMETER_OWN_POSTING),
 					""); // getParameter(iwc, PARAMETER_DOUBLE_POSTING))
 		} catch (RemoteException e) {
@@ -336,6 +344,7 @@ public class ProviderEditor extends AccountingBlock {
 					getParameter(iwc, PARAMETER_PAYMENT_BY_INVOICE),
 					getParameter(iwc, PARAMETER_POSTGIRO),
 					getParameter(iwc, PARAMETER_BANKGIRO),
+					getParameter(iwc, PARAMETER_STATISTICS_TYPE),
 					errorMessage,
 					!iwc.isParameterSet(PARAMETER_EDIT)));
 		} else {
@@ -406,8 +415,8 @@ public class ProviderEditor extends AccountingBlock {
 		list.setLocalizedHeader(KEY_ZIP_CODE, "Zip code", 3);
 		list.setLocalizedHeader(KEY_ZIP_AREA, "Zip area", 4);
 		list.setLocalizedHeader(KEY_PHONE, "Phone", 5);
-		list.setLocalizedHeader(KEY_EDIT, "Edit", 5);
-		list.setLocalizedHeader(KEY_DELETE, "Delete", 5);
+		list.setLocalizedHeader(KEY_EDIT, "Edit", 6);
+		list.setLocalizedHeader(KEY_DELETE, "Delete", 7);
 
 //		list.setColumnWidth(2, "66%");
 //		list.setColumnWidth(3, "60");
@@ -481,6 +490,7 @@ public class ProviderEditor extends AccountingBlock {
 			String paymentByInvoice,
 			String postgiro,
 			String bankgiro,
+			String statisticsType,
 			String errorMessage,
 			boolean isNew) {
 				
@@ -498,6 +508,8 @@ public class ProviderEditor extends AccountingBlock {
 		latitude = latitude == null ? "" : latitude;
 		organizationNumber = organizationNumber == null ? "" : organizationNumber;
 		extraProviderId = extraProviderId == null ? "" : extraProviderId;
+		postgiro = postgiro == null ? "" : postgiro;
+		bankgiro = bankgiro == null ? "" : bankgiro;
 				
 		ApplicationForm app = new ApplicationForm(this);
 		if (isNew) {
@@ -581,9 +593,11 @@ public class ProviderEditor extends AccountingBlock {
 		table.add(di, 2, row++);
 		// Statistiktyp
 		table.add(getSmallHeader(localize(KEY_COMMUNE, "Commune")), 1, row);
-		table.add(getCommuneDropdownMenu(iwc, PARAMETER_COMMUNE_ID, communeId), 2, row++);
+		table.add(getCommuneDropdownMenu(PARAMETER_COMMUNE_ID, communeId), 2, row++);
 		table.add(getSmallHeader(localize(KEY_COUNTRY, "Country")), 1, row);
 		table.add(getCountryDropdownMenu(PARAMETER_COUNTRY_ID, countryId), 2, row++);
+		table.add(getSmallHeader(localize(KEY_STATISTICS_TYPE, "Statistics type")), 1, row);
+		table.add(getStatisticsTypeDropdownMenu(PARAMETER_STATISTICS_TYPE, statisticsType), 2, row++);
 		table.add(getSmallHeader(localize(KEY_POSTGIRO, "Postgiro")), 1, row);
 		table.add(getTextInput(PARAMETER_POSTGIRO, postgiro, 100), 2, row++);
 		table.add(getSmallHeader(localize(KEY_BANKGIRO, "Bankgiro")), 1, row);
@@ -686,9 +700,10 @@ public class ProviderEditor extends AccountingBlock {
 		if (c != null) {
 			Iterator iter = c.iterator();
 			while (iter.hasNext()) {
-				SchoolArea sa = (SchoolArea) iter.next();
-				int saId = ((Integer) sa.getPrimaryKey()).intValue();
-				menu.addMenuElement("" + saId, sa.getName());
+				SchoolManagementType smt = (SchoolManagementType) iter.next();
+				String id = smt.getPrimaryKey().toString();
+				String key = smt.getLocalizedKey();
+				menu.addMenuElement(id, localize(key, key));
 			}
 			if (selectedId > 0) {
 				menu.setSelectedElement(selectedId);
@@ -700,28 +715,26 @@ public class ProviderEditor extends AccountingBlock {
 	/*
 	 * Returns a DropdownMenu for communes. 
 	 */
-	private DropdownMenu getCommuneDropdownMenu(IWContext iwc, String parameter, String communeId) {
-		iwc.toString(); // remove this line later
-		communeId.toString(); // remove this line later
+	private DropdownMenu getCommuneDropdownMenu(String parameter, String communeId) {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
 		menu.addMenuElement(0, localize(KEY_COMMUNE_SELECTOR_HEADER, "Choose commune"));
-//		int selectedId = communeId.equals("") ? -1 : (new Integer(communeId)).intValue();
+		int selectedId = communeId.equals("") ? -1 : (new Integer(communeId)).intValue();
 		try {
 			CommuneHome home = (CommuneHome) com.idega.data.IDOLookup.getHome(Commune.class);
 			home.toString();			
-//			Collection c = home.findAllCommunes();
-//			if (c != null) {
-//				Iterator iter = c.iterator();
-//				while (iter.hasNext()) {
-//					SchoolArea sa = (SchoolArea) iter.next();
-//					int saId = ((Integer) sa.getPrimaryKey()).intValue();
-//					menu.addMenuElement("" + saId, sa.getName());
-//				}
-//				if (selectedId > 0) {
-//					menu.setSelectedElement(selectedId);
-//				}
-//			}		
-		} catch (RemoteException e) {
+			Collection c = home.findAllCommunes();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					Commune commune = (Commune) iter.next();
+					int id = ((Integer) commune.getPrimaryKey()).intValue();
+					menu.addMenuElement("" + id, commune.getCommuneName());
+				}
+				if (selectedId > 0) {
+					menu.setSelectedElement(selectedId);
+				}
+			}		
+		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}
 		return menu;	
@@ -740,12 +753,39 @@ public class ProviderEditor extends AccountingBlock {
 			if (c != null) {
 				Iterator iter = c.iterator();
 				while (iter.hasNext()) {
-					SchoolArea sa = (SchoolArea) iter.next();
-					int saId = ((Integer) sa.getPrimaryKey()).intValue();
-					menu.addMenuElement("" + saId, sa.getName());
+					Country country = (Country) iter.next();
+					String id = country.getPrimaryKey().toString();
+					menu.addMenuElement(id, country.getName());
 				}
 				if (selectedId > 0) {
 					menu.setSelectedElement(selectedId);
+				}
+			}		
+		} catch (Exception e) {
+			add(new ExceptionWrapper(e));
+		}
+		return menu;	
+	}
+	
+	/*
+	 * Returns a DropdownMenu for provider statistics types. 
+	 */
+	private DropdownMenu getStatisticsTypeDropdownMenu(String parameter, String statisticsType) {
+		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(parameter));
+		menu.addMenuElement("", localize(KEY_STATISTICS_TYPE_SELECTOR_HEADER, "Choose statistics type"));
+		try {
+			ProviderStatisticsTypeHome home = (ProviderStatisticsTypeHome) com.idega.data.IDOLookup.getHome(ProviderStatisticsType.class);			
+			Collection c = home.findAll();
+			if (c != null) {
+				Iterator iter = c.iterator();
+				while (iter.hasNext()) {
+					ProviderStatisticsType pst = (ProviderStatisticsType) iter.next();
+					String id = pst.getPrimaryKey().toString();
+					String key = pst.getLocalizationKey();
+					menu.addMenuElement(id, localize(key, key));
+				}
+				if (!statisticsType.equals("")) {
+					menu.setSelectedElement(statisticsType);
 				}
 			}		
 		} catch (Exception e) {
@@ -832,8 +872,7 @@ public class ProviderEditor extends AccountingBlock {
 	private Collection getSchoolManagementTypes(IWContext iwc) {
 		Collection c = null;
 		try {
-			c = getSchoolBusiness(iwc).findAllSchoolAreas();
-//			c = getSchoolBusiness(iwc).findAllSchoolManagementTypes();
+			c = getSchoolBusiness(iwc).getSchoolManagementTypes();
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 		}
