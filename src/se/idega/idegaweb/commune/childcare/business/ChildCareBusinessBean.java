@@ -2420,7 +2420,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
-	public void importChildToProvider(int childID, int providerID, int groupID, int careTime, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) {
+	public boolean importChildToProvider(int childID, int providerID, int groupID, int careTime, IWTimestamp fromDate, IWTimestamp toDate, Locale locale, User parent, User admin) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -2464,6 +2464,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				getSchoolBusiness().storeSchoolClassMember(childID, groupID, fromDate.getTimestamp(), removedDate, ((Integer)admin.getPrimaryKey()).intValue(), null);
 			}
 			t.commit();
+			return true;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -2474,5 +2475,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				ex.printStackTrace();
 			}
 		}
+		return false;
 	}
 }
