@@ -757,11 +757,22 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return super.idoFindPKsByQuery(sql);
 	}
 	
+	public Collection ejbFindApplicationsBeforeLastReplyDate(Date date, String[] caseStatus) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().append("c."+LAST_REPLY_DATE).appendLessThanSign().append(date);
+		return idoFindPKsByQuery(sql);
+	}
+	
 	public Collection ejbFindApplicationsByProviderAndBeforeDate(int providerID, Date date, String[] caseStatus) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");
 		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
-		sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		if (providerID != -1) {
+			sql.appendAndEquals("c."+PROVIDER_ID,providerID);
+		}
 		sql.appendAnd().append("p.case_status").appendInArrayWithSingleQuotes(caseStatus);
 		sql.appendAnd().append("c."+QUEUE_DATE).appendLessThanSign().append(date);
 		return idoFindPKsByQuery(sql);
