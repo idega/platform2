@@ -1,7 +1,7 @@
 package com.idega.block.building.data;
 
 
-public interface RoomSubType extends com.idega.data.TextEntity
+public interface RoomSubType extends com.idega.block.text.data.TextEntity
 {
  public float getArea();
  public boolean getBalcony();

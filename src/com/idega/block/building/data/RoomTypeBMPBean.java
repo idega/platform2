@@ -8,7 +8,7 @@ package com.idega.block.building.data;
  * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
-public class RoomTypeBMPBean extends com.idega.data.TextEntityBMPBean  implements com.idega.block.building.data.RoomType {
+public class RoomTypeBMPBean extends com.idega.block.text.data.TextEntityBMPBean  implements com.idega.block.building.data.RoomType {
 	
 	public String getEntityName() {
 		return "room_type";

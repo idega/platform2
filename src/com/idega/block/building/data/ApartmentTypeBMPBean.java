@@ -8,7 +8,7 @@ package com.idega.block.building.data;
  * @version 1.0
  */
 public class ApartmentTypeBMPBean
-	extends com.idega.data.TextEntityBMPBean 
+	extends com.idega.block.text.data.TextEntityBMPBean 
 	implements ApartmentType {
 	
 	public void initializeAttributes() {

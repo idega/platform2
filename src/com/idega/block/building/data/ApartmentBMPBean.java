@@ -9,7 +9,7 @@ import java.sql.Date;
  * @version 1.0
 
  */
-public class ApartmentBMPBean extends com.idega.data.TextEntityBMPBean implements com.idega.block.building.data.Apartment {
+public class ApartmentBMPBean extends com.idega.block.text.data.TextEntityBMPBean implements com.idega.block.building.data.Apartment {
 	
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());

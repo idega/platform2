@@ -1,5 +1,5 @@
 /*
- * $Id: ApartmentCategoryBMPBean.java,v 1.4 2003/04/03 07:21:44 laddi Exp $
+ * $Id: ApartmentCategoryBMPBean.java,v 1.5 2003/05/03 01:36:11 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -13,7 +13,7 @@ package com.idega.block.building.data;
  * @version 1.0
  */
 public class ApartmentCategoryBMPBean
-	extends com.idega.data.TextEntityBMPBean 
+	extends com.idega.block.text.data.TextEntityBMPBean 
 	implements com.idega.block.building.data.ApartmentCategory {
 	
 	public void initializeAttributes() {

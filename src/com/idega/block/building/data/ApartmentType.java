@@ -1,7 +1,7 @@
 package com.idega.block.building.data;
 
 
-public interface ApartmentType extends com.idega.data.TextEntity
+public interface ApartmentType extends com.idega.block.text.data.TextEntity
 {
  public int getApartmentCategoryId();
  public float getArea();

@@ -1,7 +1,7 @@
 package com.idega.block.building.data;
 
 
-public interface Floor extends com.idega.data.TextEntity
+public interface Floor extends com.idega.block.text.data.TextEntity
 {
  public int getBuildingId();
  public int getImageId();

@@ -9,7 +9,7 @@ package com.idega.block.building.data;
  * @version 1.0
  */
 public class RoomSubTypeBMPBean
-	extends com.idega.data.TextEntityBMPBean 
+	extends com.idega.block.text.data.TextEntityBMPBean 
 	implements com.idega.block.building.data.RoomSubType {
 	
 	public String getEntityName() {

@@ -7,7 +7,7 @@ package com.idega.block.building.data;
  * @author       <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.0
  */
-public class ComplexBMPBean extends com.idega.data.TextEntityBMPBean implements com.idega.block.building.data.Complex {
+public class ComplexBMPBean extends com.idega.block.text.data.TextEntityBMPBean implements com.idega.block.building.data.Complex {
 	
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());

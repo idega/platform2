@@ -1,7 +1,7 @@
 package com.idega.block.building.data;
 
 
-public interface Building extends com.idega.data.TextEntity
+public interface Building extends com.idega.block.text.data.TextEntity
 {
  public int getComplexId();
  public int getImageId();
