@@ -31,14 +31,12 @@ public class ICLanguage extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(_COLUMN_LanguageName,"nafn",true,true, "java.lang.String");
-    addAttribute(_COLUMN_LanguageDescription,"lýsing",true,true, "java.lang.String", 510);
-    addAttribute(_COLUMN_ISOabbreviation,"ISO skammstöfun",true,true,String.class,10);
-    /**@todo: implement this com.idega.data.GenericEntity abstract method*/
+    addAttribute(_COLUMN_LanguageName,"Name",true,true, "java.lang.String");
+    addAttribute(_COLUMN_LanguageDescription,"Description",true,true, "java.lang.String", 510);
+    addAttribute(_COLUMN_ISOabbreviation,"ISO abbreviation",true,true,String.class,10);
   }
   public String getEntityName() {
     return "ic_language";
-    /**@todo: implement this com.idega.data.GenericEntity abstract method*/
   }
 
   public void insertStartData()throws Exception{
