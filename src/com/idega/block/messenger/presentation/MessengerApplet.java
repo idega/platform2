@@ -94,11 +94,10 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
     }
 
     try {
-
-        faceLabel = new ImageLabel(getCodeBase(),"face_in.gif");
         System.out.println("CODEBASE = "+getCodeBase());
+        faceLabel = new ImageLabel(getCodeBase(),"face_in.gif");
         logoLabel = new ImageLabel(getCodeBase(),"idegalogo.gif");
-        //alertSound = getAudioClip(getCodeBase(),"notify.wav");
+        alertSound = getAudioClip(getCodeBase(),"notify.au");
 
       }
       catch (Exception ex) {
