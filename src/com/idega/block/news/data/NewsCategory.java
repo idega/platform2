@@ -22,16 +22,14 @@ public class NewsCategory extends GenericEntity{
     addAttribute(getNewsDateColumnName(), "News date", true, true, "java.sql.Date");
     addAttribute(getValidColumnName(), "Valid", true, true, "java.lang.String",1);
   }
-  public String getIDColumnName(){
-    return "NEWS_CATEGORY_ID";
-  }
+
   public static String getNameColumnName(){return "NAME";}
   public static String getDescriptionColumnName(){return "DESCRIPTION";}
   public static String getValidColumnName(){return "VALID";}
   public static String getNewsDateColumnName(){return "NEWS_DATE";}
 
   public String getEntityName(){
-    return "NEWS_CATEGORY";
+    return "NW_NEWS_CAT";
   }
   public String getName(){
     return getNewsCategoryName();

@@ -208,10 +208,12 @@ public void main(ModuleInfo modinfo)throws Exception{
 
       if( date == null ){//not by Date
         if( showAll ) {
-          if( categoryString!=null ) categoryString = " where " + categoryString;
-          else categoryString = "";
+          if( categoryString!=null )
+            categoryString = " where " + categoryString;
+          else
+            categoryString = "";
 
-          news = (News[]) (new News()).findAll("select * from news "+categoryString+orderBy);
+          news = (News[]) (new News()).findAll("select * from "+News.getNewsTableName()+" "+categoryString+orderBy);
         }
         else news = (News[]) (new News()).findAllByColumn(News.getNewsCategoryIdColumnName(),categoryId);
       }

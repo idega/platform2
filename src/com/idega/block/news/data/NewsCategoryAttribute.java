@@ -23,14 +23,11 @@ public class NewsCategoryAttribute extends GenericEntity{
     addAttribute(getAttributeIdColumnName(),"Attribute Id",true,true, "java.lang.Integer");
   }
 
-  public String getIDColumnName(){
-    return "news_category_attribute_id";
-  }
   public String getEntityName(){
-    return "news_category_attribute";
+    return "nw_cat_att";
   }
 
-  public static String getNewsCategoryIdColumnName(){return "NEWS_CATAGORY_ID";}
+  public static String getNewsCategoryIdColumnName(){return "NW_NEWS_CAT_ID";}
   public static String getAttributeNameColumnName(){return "ATTRIBUTE_NAME";}
   public static String getAttributeIdColumnName(){return "ATTRIBUTE_ID";}
 

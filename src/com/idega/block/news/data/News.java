@@ -27,14 +27,11 @@ public class News extends GenericEntity{
     addAttribute(getSourceColumnName(), "Source", true, true, "java.lang.String");
     addAttribute(getDaysShownColumnName(), "Days shown", true, true, "java.lang.Integer");
   }
-  public String getIDColumnName(){
-    return "news_id";
-  }
   public String getEntityName(){
-    return "news";
+    return getNewsTableName();
   }
-
-  public static String getNewsCategoryIdColumnName(){return "NEWS_CATAGORY_ID";}
+  public static String getNewsTableName(){return "NW_NEWS";}
+  public static String getNewsCategoryIdColumnName(){return "NW_NEWS_CAT_ID";}
   public static String getHeadLineColumnName(){return "HEADLINE";}
   public static String getNewsTextColumnName(){return "NEWSTEXT";}
   public static String getIncludeImageColumnName(){return "INCLUDE_IMAGE";}
