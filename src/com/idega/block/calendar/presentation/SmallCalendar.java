@@ -33,7 +33,7 @@ private String headerColor = "#FFFFFF";
 private String dayCellColor = headerColor;
 private String bodyColor = "#FFFFFF";
 private String inactiveCellColor = bodyColor;
-private String backgroundColor = "#FFFFFF";
+private String backgroundColor = null;
 private String todayColor = headerColor;
 private String selectedColor = "#CCCCCC";
 private String URL;
@@ -123,7 +123,7 @@ public SmallCalendar(int year,int month) {
     T.setWidth(width);
     T2.setHeight(height);
     T.setHeight(height);
-    T2.setColor(backgroundColor);
+    if( backgroundColor != null ) T2.setColor(backgroundColor);
     T2.setColumnAlignment(1,"center");
     T2.setColumnVerticalAlignment(1,"middle");
 
