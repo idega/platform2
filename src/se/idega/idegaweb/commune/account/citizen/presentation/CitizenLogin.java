@@ -47,6 +47,7 @@ public class CitizenLogin extends Login {
 	private Image iRegisterImage;
 	
 	private String iWidth = Table.HUNDRED_PERCENT;
+	private String iInputLength = "16";
 
 	/* (non-Javadoc)
 	 * @see com.idega.block.login.presentation.Login#isLoggedOn(com.idega.presentation.IWContext)
@@ -111,7 +112,6 @@ public class CitizenLogin extends Login {
 		table.setCellpaddingTop(1, row, 16);
 		table.setCellpaddingTop(2, row, 16);
 		table.setCellpaddingLeft(2, row, 6);
-		table.setAlignment(2, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(logoutButton, 1, row);
 		table.add(settingsButton, 2, row);
 		
@@ -156,7 +156,6 @@ public class CitizenLogin extends Login {
 		table.setCellpaddingTop(1, 2, 16);
 		table.setCellpaddingTop(2, 2, 16);
 		table.setCellpaddingLeft(2, 2, 6);
-		table.setAlignment(2, 2, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(tryAgainButton, 1, 2);
 		table.add(registerButton, 2, 2);
 		
@@ -169,13 +168,13 @@ public class CitizenLogin extends Login {
 	 */
 	protected void startState(IWContext iwc) {
 		TextInput login = (TextInput) getStyleObject(new TextInput(LOGIN_PARAMETER_NAME), iInputStyleName);
-		login.setSize(getInputLength());
+		login.setWidth(iInputLength);
 		if (isEnterSubmit()) {
 			login.setOnKeyPress("return enterSubmit(this,event)");
 		}
 		
 		PasswordInput password = (PasswordInput) getStyleObject(new PasswordInput(PASSWORD_PARAMETER_NAME), iInputStyleName);
-		password.setSize(getInputLength());
+		password.setWidth(iInputLength);
 		if (isEnterSubmit()) {
 			password.setOnKeyPress("return enterSubmit(this,event)");
 		}
@@ -212,14 +211,15 @@ public class CitizenLogin extends Login {
 		table.add(loginLabel, 1, 1);
 		table.add(passwordLabel, 2, 1);
 		
+		table.setCellpaddingTop(1, 2, 3);
+		table.setCellpaddingTop(2, 2, 3);
 		table.setCellpaddingLeft(2, 2, 6);
 		table.add(login, 1, 2);
 		table.add(password, 2, 2);
 		
-		table.setCellpaddingTop(1, 3, 6);
-		table.setCellpaddingTop(2, 3, 6);
+		table.setCellpaddingTop(1, 3, 8);
+		table.setCellpaddingTop(2, 3, 8);
 		table.setCellpaddingLeft(2, 3, 6);
-		table.setAlignment(2, 3, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.add(loginButton, 1, 3);
 		table.add(registerButton, 2, 3);
 		
@@ -303,5 +303,9 @@ public class CitizenLogin extends Login {
 	 */
 	public void setWidth(String width) {
 		this.iWidth = width;
+	}
+	
+	public void setInputLength(String length) {
+		this.iInputLength = length;
 	}
 }
