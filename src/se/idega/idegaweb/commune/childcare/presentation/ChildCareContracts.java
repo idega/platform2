@@ -26,6 +26,7 @@ public class ChildCareContracts extends ChildCareBlock {
 
 	private boolean allowAlter = true;
 	private boolean _requiresPrognosis;
+	private int allowedFutureContracts = 2;
 	
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
@@ -180,8 +181,11 @@ public class ChildCareContracts extends ChildCareBlock {
 		
 						if (allowAlter) {
 							table.setWidth(column, row, 12);
-							if (getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue()) < 2)
+							int futureContractCount = getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue());
+							if ( futureContractCount < allowedFutureContracts)
 								table.add(alterCareTime, column++, row);
+							else
+								table.add(getInformationIcon(localize("child_care.to_many_future_contracts","To many future contracts")),column,row);
 						}
 					}
 					else {
@@ -243,4 +247,10 @@ public class ChildCareContracts extends ChildCareBlock {
 		_requiresPrognosis = requiresPrognosis;
 	}
 
+	/**
+	 * @param allowedFutureContracts The allowedFutureContracts to set.
+	 */
+	public void setAllowedFutureContracts(int allowedFutureContracts) {
+		this.allowedFutureContracts = allowedFutureContracts;
+	}
 }

@@ -732,7 +732,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		textInput.setLength(2);
 		textInput.setAsNotEmpty(localize("child_care.child_care_time_required","You must fill in the child care time."));
 		textInput.setAsIntegers(localize("child_care.only_integers_allowed","Not a valid child care time."));
-		if(application.getCareTime()>0)
+		if(archive.getCareTime()>0)
 			textInput.setContent(String.valueOf(application.getCareTime()));
 
 		table.add(getSmallHeader(localize("child_care.enter_child_care_time", "Enter child care time:")), 1, row++);
