@@ -614,9 +614,8 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 		if(attendees != null && !attendees.equals("")) {
 			groupID = new Integer(attendees);
 		}	
-		int i = 0;
 		while(start < end) {
-			Timestamp endOfEntryTime = startTime;
+			Timestamp endOfEntryTime = Timestamp.valueOf(startTime.toString());
 			if(endHour != null || !endHour.equals("")) {
 				Integer eH =new Integer(endHour);
 				endOfEntryTime.setHours(eH.intValue());
@@ -627,10 +626,6 @@ public class CalBusinessBean extends IBOServiceBean implements CalBusiness{
 			}
 			endOfEntryTime.setSeconds(0);
 			
-			System.out.println("iteration: " + i++);
-			System.out.println("start is less than end");
-			System.out.println("startTime is: " + startTime.toString());
-			System.out.println("entTIme is: " + endTime.toString());
 			try {
 				CalendarEntryHome entryHome = (CalendarEntryHome) getIDOHome(CalendarEntry.class);
 				CalendarEntry entry = entryHome.findByPrimaryKey(id);
