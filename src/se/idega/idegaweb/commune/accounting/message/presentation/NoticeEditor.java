@@ -1,5 +1,5 @@
 /*
- * $Id: NoticeEditor.java,v 1.8 2003/10/07 16:07:31 anders Exp $
+ * $Id: NoticeEditor.java,v 1.9 2003/10/08 08:44:12 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import se.idega.idegaweb.commune.accounting.message.business.NoticeException;
  * notice message to all providers. The message is sent as an
  * e-mail and as case.
  * <p>
- * Last modified: $Date: 2003/10/07 16:07:31 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/08 08:44:12 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class NoticeEditor extends AccountingBlock {
 
@@ -71,6 +71,7 @@ public class NoticeEditor extends AccountingBlock {
 	private final static String KEY_SCHOOL = KP + "school";
 	private final static String KEY_OPERATIONAL_FIELDS = KP + "operational_fields";	
 	private final static String KEY_NO_OPERATIONAL_FIELDS_SELECTED = KP + "no_operational_fields_selected";	
+	private final static String KEY_AND = KP + "and";
 	private final static String KEY_PREVIEW = KP + "preview";
 	private final static String KEY_BACK = KP + "back";
 	private final static String KEY_SEND_NOTICE = KP + "send_notice";
@@ -233,7 +234,7 @@ public class NoticeEditor extends AccountingBlock {
 								if (i != (selectedOperationalFields.length - 2)) {
 									fields += ", ";
 								} else {
-									fields += " och ";
+									fields += " " + localize(KEY_AND, "och") + " ";
 								}
 							}
 						}
@@ -265,10 +266,10 @@ public class NoticeEditor extends AccountingBlock {
 		Collection schools = null; 		
 		try {
 			NoticeBusiness nb = getNoticeBusiness(iwc);
-			//String subject = getParameter(iwc, PARAMETER_SUBJECT);
+			String subject = getParameter(iwc, PARAMETER_SUBJECT);
 			String body = getParameter(iwc, PARAMETER_BODY);
 			String[] operationalFields = iwc.getParameterValues(PARAMETER_OPERATIONAL_FIELD);
-			schools = nb.sendNotice("Rubrik", body, operationalFields);
+			schools = nb.sendNotice(subject, body, operationalFields);
 		} 
 		catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
