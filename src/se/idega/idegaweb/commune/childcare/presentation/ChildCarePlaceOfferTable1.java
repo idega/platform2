@@ -47,7 +47,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 			HEADER_NO = page.getLocalHeader("ccatp1_no", "No");
 	
 			GRANTED = page.localize("ccatp1_granted", "You have received an offer from ").toString();
-		
+
 			_initializeStatics = true;
 		}
 	}
@@ -135,6 +135,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 		rb2.setOnChange(CCConstants.NEW_DATE + index + ".disabled=false;");
 		rb3.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
 	*/	
+		rb1.setSelected();
 		DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
 		date.setStyleAttribute("style", _page.getSmallTextFontStyle());
 		
@@ -181,8 +182,8 @@ class ChildCarePlaceOfferTable1 extends Table{
 		setRowColor(1, _page.getHeaderColor());
 
 		
-		setCellspacing(_page.getCellspacing());
-		setCellpadding(_page.getCellpadding());
+		setCellspacing(2);
+		setCellpadding(4);
 	
 		//Heading
 		add(HEADER_YOUR_CHOICE, 1, 1);
