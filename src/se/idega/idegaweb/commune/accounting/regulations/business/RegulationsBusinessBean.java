@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.21 2003/09/11 15:53:25 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.22 2003/09/11 17:15:27 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
@@ -49,6 +50,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
 import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
+import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 
 
 
@@ -67,6 +70,9 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	public final static String KEY_ERROR_REGULATION_CREATE = KP + "cannot_create";
 	public final static String KEY_GENERAL_ERROR  = KP + "general_error";
 	public final static String DEFAULT_GENERAL_ERROR = "Systemfel";
+
+
+
 
 
  
@@ -266,7 +272,54 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		} catch (Exception e) {}
 
  	}
-		 
+
+
+	/**
+	 * gets a posting detail
+	 *  
+	 * @param xxx  
+	 * @return yyy
+	 * 
+	 * @author kelly
+	 */
+	public PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(
+			String operation, 
+			String flow, 
+			Date period, 
+			Collection condition, 
+			String regSpecType,
+			int totalSum, 
+			ChildCareContract contract) {
+
+		PostingDetail postingDetail = new PostingDetail();
+
+		Collection items = findRegulationsByPeriod(period, period);
+		if (items != null) {
+			Iterator iter = items.iterator();
+			int match = 0;
+			while (iter.hasNext()) {
+				Regulation r = (Regulation) iter.next();
+				if (flow.compareTo(r.getPaymentFlowType().getLocalizationKey()) == 0) {
+					match++;
+				}
+				if (regSpecType.compareTo(r.getRegSpecType().getLocalizationKey()) == 0) {
+					match++;
+				}
+				match += checkConditions(r, condition);
+				if (match == (2 + condition.size())) {
+					// match
+					postingDetail.setAmount(r.getAmount().intValue());
+					postingDetail.setTerm(r.getLocalizationKey());
+				}	
+			}
+		}
+		return postingDetail;
+	}
+
+
+	private int checkConditions(Regulation r, Collection c) {
+		return 0;	
+	}
 		 
 	/**
 	 * Gets a Condition by Regulation ID and Index
@@ -289,8 +342,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}
-		 
-		 
 		 
 	/**
 	 * Gets all Activity types
@@ -456,8 +507,6 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}	
-
-
 
 	/**
 	 * Gets all Main Rules

@@ -27,6 +27,7 @@ public interface RegulationsBusiness extends com.idega.business.IBOService
  public se.idega.idegaweb.commune.accounting.regulations.data.Regulation findRegulation(int p0) throws java.rmi.RemoteException;
  public java.lang.Object findRegulationSpecType(int p0) throws java.rmi.RemoteException;
  public java.util.Collection findRegulationsByPeriod(java.sql.Date p0,java.sql.Date p1) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail getPostingDetailByOperationFlowPeriodConditionTypeRegSpecType(java.lang.String p0,java.lang.String p1,java.sql.Date p2,java.util.Collection p3,java.lang.String p4,int p5,se.idega.idegaweb.commune.childcare.data.ChildCareContract p6) throws java.rmi.RemoteException;
  public java.util.Collection getYesNo() throws java.rmi.RemoteException;
  public java.lang.String replaceToDot(java.lang.String p0) throws java.rmi.RemoteException;
  public void saveCondition(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws se.idega.idegaweb.commune.accounting.regulations.business.RegulationException,java.rmi.RemoteException, java.rmi.RemoteException;
