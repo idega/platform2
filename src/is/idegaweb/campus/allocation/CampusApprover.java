@@ -12,6 +12,7 @@ import com.idega.util.idegaCalendar;
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationSubject;
+import com.idega.block.application.data.Application;
 import com.idega.block.application.business.ApplicationHolder;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.business.BuildingFinder;
@@ -107,7 +108,7 @@ public class CampusApprover extends KeyEditor{
     int id = Integer.parseInt(modinfo.getParameter("application_id"));
     String status = modinfo.getParameter("status_drop");
     try{
-      com.idega.block.application.data.Application A = new com.idega.block.application.data.Application(id);
+      Application A = new Application(id);
       A.setStatus(status);
       A.update();
       add(makeApplicationTable(id,modinfo,iwrb));
@@ -146,7 +147,7 @@ public class CampusApprover extends KeyEditor{
         col = 1;
         ApplicationHolder AH = (ApplicationHolder) L.get(i);
         Applicant A = AH.getApplicant();
-        com.idega.block.application.data.Application a = AH.getApplication();
+        Application a = AH.getApplication();
         T.add(formatText(String.valueOf(i+1)),col++,row);
         String Name = A.getFirstName()+" "+A.getMiddleName()+" "+A.getLastName();
         T.add(formatText(Name),col++,row);
@@ -182,7 +183,7 @@ public class CampusApprover extends KeyEditor{
         OuterFrame.setCellspacing(0);
 
     try{
-      com.idega.block.application.data.Application  eApplication = null;
+      Application  eApplication = null;
       Applicant eApplicant = null;
       if(id < -1 && iterator != null){
         ApplicationHolder AS = null;
@@ -199,7 +200,7 @@ public class CampusApprover extends KeyEditor{
         }
       }
       else{
-        eApplication = new  com.idega.block.application.data.Application(id);
+        eApplication = new Application(id);
         eApplicant = new Applicant(eApplication.getApplicantId());
       }
 
@@ -418,7 +419,7 @@ public class CampusApprover extends KeyEditor{
       return T;
   }
 
-  public ModuleObject getApplicationTable(com.idega.block.application.data.Application eApplication){
+  public ModuleObject getApplicationTable(Application eApplication){
     Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("application","Application")),1,1);
       T.add(boldText(iwrb.getLocalizedString("submitted","Submitted")),1,2);

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.6 2001/07/30 11:48:31 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.7 2001/07/30 13:10:37 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package is.idegaweb.campus.application;
 import com.idega.block.application.presentation.ApplicationForm;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.ApplicationSubject;
+import com.idega.block.application.data.Application;
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.building.business.BuildingFinder;
@@ -164,7 +165,7 @@ public class CampusApplicationForm extends ApplicationForm {
   protected void saveSubject(ModuleInfo modinfo) {
     String subject = (String)modinfo.getParameter("subject");
     String aprtCat = (String)modinfo.getParameter("aprtCat");
-    com.idega.block.application.data.Application application = new com.idega.block.application.data.Application();
+    Application application = new Application();
     application.setSubjectId(Integer.parseInt(subject));
     application.setSubmitted(idegaTimestamp.getTimestampRightNow());
     application.setStatusSubmitted();
@@ -707,7 +708,7 @@ public class CampusApplicationForm extends ApplicationForm {
    */
   protected boolean saveDataToDB(ModuleInfo modinfo) {
     Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
-    com.idega.block.application.data.Application application = (com.idega.block.application.data.Application)modinfo.getSessionAttribute("application");
+    Application application = (Application)modinfo.getSessionAttribute("application");
     CampusApplication campusApplication = (CampusApplication)modinfo.getSessionAttribute("campusapplication");
     Applied applied1 = (Applied)modinfo.getSessionAttribute("applied1");
     Applied applied2 = (Applied)modinfo.getSessionAttribute("applied2");
@@ -752,7 +753,7 @@ public class CampusApplicationForm extends ApplicationForm {
 
       String body = new String("Umsókn þín hefur verið skráð. Tilvísunarnúmer þitt er : " + cypher);
 
-      SendMail.send("","aron@idega.is","","palli@idega.is","mail.idega.is","Umsókn skráð",body);
+      SendMail.send("admin@campus.is","aron@idega.is","","palli@idega.is","mail.idega.is","Umsókn skráð",body);
 
       t.commit();
       modinfo.removeSessionAttribute("applicant");
