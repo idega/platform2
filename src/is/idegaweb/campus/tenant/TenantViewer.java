@@ -12,7 +12,7 @@ import com.idega.core.accesscontrol.data.LoginTable;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
-import com.idega.block.login.presentation.LoginEditor;
+import com.idega.block.login.presentation.LoginEditorWindow;
 import com.idega.block.login.business.LoginBusiness;
 import com.idega.block.login.presentation.LoginEditor;
 import com.idega.block.application.business.ApplicationFinder;
@@ -69,8 +69,9 @@ public class TenantViewer extends ModuleObjectContainer {
     LoginTable LT = LoginDBHandler.findUserLogin(user.getID());
     if(LT!= null)
       sLogin = LT.getUserLogin();
-    Link loginLink = new Link(sLogin,LoginEditor.class);
+    Link loginLink = new Link(sLogin);
     loginLink.addParameter(LoginEditor.prmUserId,user.getID());
+    loginLink.setWindowToOpen(LoginEditorWindow.class);
     sPhone = sPhone==null?"":sPhone;
     sMobile = sMobile==null?"":sMobile;
 
@@ -93,10 +94,11 @@ public class TenantViewer extends ModuleObjectContainer {
     T.add(tiEmail,3,5);
     T.add(loginLink,3,6);
     Frame.add(T,1,1);
-    IFrame ifr = new IFrame("peer",LoginEditor.class,Page.class);
+   /* IFrame ifr = new IFrame("peer",LoginEditor.class,Page.class);
     ifr.setWidth(200);
     ifr.setHeight(300);
-    Frame.add(ifr,2,1);
+    //Frame.add(ifr,2,1);
+  */
     return Frame;
   }
    private Link getLoginLink(String s){
