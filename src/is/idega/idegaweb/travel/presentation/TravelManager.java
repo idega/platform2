@@ -7,7 +7,9 @@ import javax.servlet.jsp.JspPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.projects.nat.business.NatBusiness;
 import com.idega.idegaweb.IWResourceBundle;
+import is.idega.travel.business.TravelStockroomBusiness;
 import is.idega.travel.presentation.*;
+import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 
 public class TravelManager extends JModuleObject {
@@ -16,6 +18,8 @@ public class TravelManager extends JModuleObject {
     private IWBundle bundle;
     private IWResourceBundle iwrb;
     Table table = new Table(1,2);
+
+    private Supplier supplier;
 
     protected Text theText = new Text();
     protected Text theBoldText = new Text();
@@ -38,6 +42,10 @@ public class TravelManager extends JModuleObject {
 
     public IWResourceBundle getResourceBundle() {
       return iwrb;
+    }
+
+    public Supplier getSupplier() {
+        return supplier;
     }
 
     public void main(ModuleInfo modinfo) throws SQLException{
@@ -108,6 +116,14 @@ public class TravelManager extends JModuleObject {
     public void initializer(ModuleInfo modinfo) {
         bundle = getBundle(modinfo);
         iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
+
+        try {
+            int supplierId = TravelStockroomBusiness.getUserSupplierId(modinfo);
+            supplier = new Supplier(supplierId);
+        }
+        catch (Exception e) {
+
+        }
 
         theText.setFontSize(Text.FONT_SIZE_10_HTML_2);
         theText.setFontFace(Text.FONT_FACE_VERDANA);

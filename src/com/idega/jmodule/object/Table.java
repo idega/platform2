@@ -1,5 +1,5 @@
 /*
- * $Id: Table.java,v 1.14 2001/08/20 12:08:36 laddi Exp $
+ * $Id: Table.java,v 1.15 2001/08/20 13:43:29 laddi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -314,13 +314,49 @@ public class Table extends ModuleObjectContainer {
     setBorder(Integer.toString(i));
   }
 
+  /**
+   * displays top and bottom edges
+   */
   public void setFrameHsides() {
-      setAttribute("FRAME","hsides");
+      setFrame("hsides");
   }
 
+  /**
+   * displays left and right edges
+   */
   public void setFrameVsides() {
-      setAttribute("FRAME","vsides");
+      setFrame("vsides");
   }
+
+  /**
+   * displays no border
+   */
+  public void setFrameVoid() {
+      setFrame("void");
+  }
+
+  /**
+   * displays top edge only
+   */
+  public void setFrameAbove() {
+      setFrame("above");
+  }
+
+  /**
+   * below: displays bottom edge only
+   * border: displays all four sides (default)
+   * box: displays all four sides (like border)
+   * hsides: displays top and bottom edges
+   * lhs: displays left edge only
+   * rhs: displays right edge only
+   * void: displays no border
+   * vsides: displays left and right edges
+   */
+  public void setFrame(String frame) {
+      setAttribute("FRAME",frame);
+  }
+
+
 
   public void setCellspacing(int i){
     setCellspacing(Integer.toString(i));

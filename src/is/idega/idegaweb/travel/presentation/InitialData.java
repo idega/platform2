@@ -10,8 +10,10 @@ import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.data.*;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.projects.nat.business.NatBusiness;
-import com.idega.block.trade.stockroom.business.SupplierManager;
+import com.idega.block.trade.stockroom.business.*;
+import is.idega.travel.business.TravelStockroomBusiness;
 import java.sql.SQLException;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import java.util.*;
 
 
@@ -79,9 +81,14 @@ public class InitialData extends TravelManager {
         sb.setAlignment("center");
 
 
+//      AccessControl.hasAdminPermission();
 
-        if (AccessControl.isAdmin(modinfo)) {
+        Supplier supplier = super.getSupplier();
 
+        if (supplier != null) {
+            sb.add(getSupplierCreation(supplier.getID()));
+        }
+        else {
             if (action.equals("")) {
               sb.add(selectSupplier(modinfo));
             }
@@ -104,6 +111,7 @@ public class InitialData extends TravelManager {
               sb.add(selectSupplier(modinfo));
             }
         }
+
 
       int row = 0;
       add(Text.getBreak());

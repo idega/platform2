@@ -390,7 +390,7 @@ public class Booking extends TravelManager {
 
   public Table getTotalTable(ModuleInfo modinfo) {
       Table table = new Table();
-        table.setFrameHsides();
+        table.setFrameVoid();
         table.setWidth("100%");
         table.setCellspacing(0);
         table.setBorder(1);

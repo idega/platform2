@@ -7,8 +7,8 @@ import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.block.trade.stockroom.data.*;
-import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
+import com.idega.block.trade.stockroom.business.*;
 import com.idega.util.idegaCalendar;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.projects.nat.business.NatBusiness;
@@ -25,10 +25,10 @@ import java.sql.SQLException;
 
 public class ServiceDesigner extends TravelManager {
 
-//  private  TravelManager tm;
-
   private IWBundle bundle;
   private IWResourceBundle iwrb;
+
+  private Supplier supplier;
 
   String tableBackgroundColor = "#FFFFFF";
 
@@ -105,14 +105,14 @@ public class ServiceDesigner extends TravelManager {
 
 
       ++row;
-      Text nameText = (Text) theText.clone();
+      Text nameText = (Text) theBoldText.clone();
           nameText.setText(iwrb.getLocalizedString("travel.name_of_trip","Name of trip"));
       table.add(nameText,1,row);
       table.add(name,2,row);
 
       ++row;
 
-      Text descText = (Text) theText.clone();
+      Text descText = (Text) theBoldText.clone();
           descText.setText(iwrb.getLocalizedString("travel.description","Description"));
       Table descFixTable = new Table(3,1);
         descFixTable.setCellpadding(0);
@@ -135,11 +135,18 @@ public class ServiceDesigner extends TravelManager {
       table.add(descFixTable,2,row);
 
       ++row;
-      Text timeframeText = (Text) theText.clone();
+      Text supplierText = (Text) theBoldText.clone();
+        supplierText.setText(iwrb.getLocalizedString("travel.supplier","Supplier"));
+
+
+      table.add(supplierText,1,row);
+
+      ++row;
+      Text timeframeText = (Text) theBoldText.clone();
         timeframeText.setText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
-      Text tfFromText = (Text) theText.clone();
+      Text tfFromText = (Text) theBoldText.clone();
         tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
-      Text tfToText = (Text) theText.clone();
+      Text tfToText = (Text) theBoldText.clone();
         tfToText.setText(iwrb.getLocalizedString("travel.to","to"));
 
       table.add(timeframeText,1,row );
@@ -200,25 +207,25 @@ public class ServiceDesigner extends TravelManager {
         weekdayFixTable.add(saturdays,8,2);
         weekdayFixTable.add(sundays,9,2);
 
-      Text weekdaysText = (Text) theText.clone();
+      Text weekdaysText = (Text) theBoldText.clone();
           weekdaysText.setText(iwrb.getLocalizedString("travel.weekdays","Weekdays"));
       table.add(weekdaysText,1,row);
       table.add(weekdayFixTable,2,row);
 
       ++row;
-      Text departureFromText = (Text) theText.clone();
+      Text departureFromText = (Text) theBoldText.clone();
           departureFromText.setText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
       table.add(departureFromText,1,row);
       table.add(departure_from,2,row);
 
       ++row;
-      Text departureTimeText = (Text) theText.clone();
+      Text departureTimeText = (Text) theBoldText.clone();
           departureTimeText.setText(iwrb.getLocalizedString("travel.departure_time","Departure time"));
       table.add(departureTimeText,1,row);
       table.add(departure_time,2,row);
 
       ++row;
-      Text hotelPickupText = (Text) theText.clone();
+      Text hotelPickupText = (Text) theBoldText.clone();
           hotelPickupText.setText(iwrb.getLocalizedString("travel.hotel_pickup","Hotel pick-up"));
 
       Table hotelPickupFixTable = new Table(3,2);
@@ -249,6 +256,9 @@ public class ServiceDesigner extends TravelManager {
       add(form);
   }
 
+
+  public void createService(ModuleInfo modinfo) {
+  }
 
 
 
