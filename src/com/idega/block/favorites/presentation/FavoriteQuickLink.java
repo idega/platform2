@@ -29,6 +29,7 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	private static final String PARAMETER_QUICK_LINK = "quick_link_url";
 	
 	private int iSpaceBetween = -1;
+	private int iMaxLength = -1;
 
 	private User user;
 
@@ -67,6 +68,10 @@ public class FavoriteQuickLink extends FavoriteBlock {
 		while (iter.hasNext()) {
 			Favorite element = (Favorite) iter.next();
 			String URI = element.getURL();
+			String name = element.getName();
+			if (iMaxLength > 0 && name.length() > iMaxLength) {
+				name = name.substring(0, iMaxLength + 1) + "...";
+			}
 			
 			if (URI != null) {
 				try {
@@ -113,5 +118,13 @@ public class FavoriteQuickLink extends FavoriteBlock {
 	 */
 	public void setSpaceBetween(int spaceBetween) {
 		iSpaceBetween = spaceBetween;
+	}
+
+	/**
+	 * Sets the maximum length of the names of the favorites in the dropdown.
+	 * @param maxLength The maximum length to set.
+	 */
+	public void setMaximumLength(int maxLength) {
+		iMaxLength = maxLength;
 	}
 }
