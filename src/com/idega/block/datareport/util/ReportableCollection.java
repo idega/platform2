@@ -6,11 +6,14 @@
  */
 package com.idega.block.datareport.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import com.idega.data.IDOReportableEntity;
+import com.idega.data.IDOReportableField;
 
 import dori.jasper.engine.JRDataSource;
 import dori.jasper.engine.JRException;
@@ -30,6 +33,8 @@ public class ReportableCollection extends Vector implements JRDataSource {
 	
 	private Iterator _reportIterator = null;
 	private IDOReportableEntity _currentJRDataSource = null;
+	private List _fields = new ArrayList();
+	private Object _defaultFieldValue = null;
 	
 	/**
 	 * @param initialCapacity
@@ -90,7 +95,20 @@ public class ReportableCollection extends Vector implements JRDataSource {
 		if(_reportIterator == null){
 			next();
 		}
-		return _currentJRDataSource.getFieldValue(new ReportableField(field));
+		Object returner = _currentJRDataSource.getFieldValue(new ReportableField(field));
+		if(returner == null){
+			return _defaultFieldValue;
+		} else {
+			return returner;
+		}
+	}
+	
+	public List getListOfFields(){
+		return _fields;
+	}
+	
+	public void addField(IDOReportableField field){
+		_fields.add(field);
 	}
 
 }

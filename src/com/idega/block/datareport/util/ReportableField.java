@@ -6,6 +6,11 @@
  */
 package com.idega.block.datareport.util;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import com.idega.data.EntityAttribute;
 import com.idega.data.IDOEntityField;
 import com.idega.data.IDOReportableField;
 
@@ -24,10 +29,11 @@ public class ReportableField implements IDOReportableField, JRField {
 	private int _typeOfContainedField;
 	private static final int CONTAINED_FIELD_TYPE_IDOFIELD = 0;
 	private static final int CONTAINED_FIELD_TYPE_JRFIELD = 1;
-	
+	private Map _localizedNames = new HashMap();
 	
 	private JRField _jrField = null;
 	private IDOEntityField _idoField = null;
+	private String _customMadeFiledName = null;
 	
 	/**
 	 * @param field
@@ -40,19 +46,31 @@ public class ReportableField implements IDOReportableField, JRField {
 	public ReportableField(IDOEntityField field){
 		_idoField = field;
 		_typeOfContainedField=CONTAINED_FIELD_TYPE_IDOFIELD;
+		if(_idoField instanceof EntityAttribute){
+			_localizedNames = ((EntityAttribute)_idoField).getMapOfLocalizedNames();
+		}
 	}
-
+	
+	
+	public void setCustomMadeFieldName(String name){
+		_customMadeFiledName = name;
+	}
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.IDOReportableField#getName()
 	 */
 	public String getName() {
-		switch (_typeOfContainedField) {
-			case CONTAINED_FIELD_TYPE_JRFIELD :
-				return _jrField.getName();
-			default :
-				return _idoField.getSQLFieldName();
+		if(_customMadeFiledName != null){
+			return _customMadeFiledName;
+		} else {
+			switch (_typeOfContainedField) {
+				case CONTAINED_FIELD_TYPE_JRFIELD :
+					return _jrField.getName();
+				default :
+					return _idoField.getSQLFieldName();
+			}			
 		}
+
 	}
 
 	/* (non-Javadoc)
@@ -92,6 +110,20 @@ public class ReportableField implements IDOReportableField, JRField {
 			default :
 				return _idoField.getDataTypeClass();
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.data.IDOReportableField#getLocalizedName(java.util.Locale)
+	 */
+	public String getLocalizedName(Locale locale) {
+		return (String)_localizedNames.get(locale);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.data.IDOReportableField#setLocalizedName(java.lang.String, java.util.Locale)
+	 */
+	public void setLocalizedName(String name, Locale locale) {
+		_localizedNames.put(locale, name);
 	}
 
 }
