@@ -474,16 +474,16 @@ public abstract class AbstractSearchForm extends TravelBlock{
 		} else if (action.equals(ACTION_PRODUCT_DETAILS)) {
 			STATE = STATE_SHOW_DETAILED_PRODUCT;
 		}
-		
 		getSession(iwc).setState(STATE);
 	}
 	
 	protected void setupPresentation(Form form) throws RemoteException {
 
+		int STATE = getSession(iwc).getState();
 		if (isAlwaysSearchForm) {
 			form.add(getBookingForm().formTable);
-			if (getSession(iwc).getState() != STATE_DEFINED_PRODUCT && getSession(iwc).getState() != STATE_SHOW_SEARCH_RESULTS) {
-				getSession(iwc).setState(STATE_SHOW_SEARCH_FORM);
+			if (STATE != STATE_DEFINED_PRODUCT && STATE != STATE_SHOW_SEARCH_RESULTS) {
+				STATE = STATE_SHOW_SEARCH_FORM;
 			}
 //			else {
 //				System.out.println("Not setting state as search");
@@ -494,7 +494,7 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			getSession(iwc).setState(STATE_SHOW_DETAILED_PRODUCT);
 		}
 		*/
-		switch (getSession(iwc).getState()) {
+		switch (STATE) {
 			case STATE_DEFINED_PRODUCT :
 				if (isAlwaysSearchForm) {
 					setupSearchForm();
@@ -792,10 +792,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 			ccTable.setCellpaddingLeft(2, 2, 5);
 			//table.add(ccTable, 1, row);
 			getBookingForm().getCurrentBookingPart().add(ccTable, 1, getBookingForm().getCurrentBookingPartRow());
-			//currentSearchPart.setCellpaddingTop(1, currentSearchPartRow, 6);
 			getBookingForm().getCurrentBookingPart().setCellpaddingLeft(1, getBookingForm().getCurrentBookingPartRow(), 10);
 			getBookingForm().getCurrentBookingPart().setCellpaddingBottom(1, getBookingForm().getCurrentBookingPartRow(), 9);
-			//currentSearchPart.setCellpaddingTop(2, currentSearchPartRow, 6);
 			getBookingForm().getCurrentBookingPart().setCellpaddingLeft(2, getBookingForm().getCurrentBookingPartRow(), 10);
 			getBookingForm().getCurrentBookingPart().setCellpaddingBottom(2, getBookingForm().getCurrentBookingPartRow(), 9);
 			
