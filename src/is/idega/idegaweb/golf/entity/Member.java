@@ -1,6 +1,6 @@
 /*
- * $Id: Member.java,v 1.12 2005/02/07 11:20:28 laddi Exp $
- * Created on 7.2.2005
+ * $Id: Member.java,v 1.13 2005/02/08 10:10:38 laddi Exp $
+ * Created on 8.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -17,16 +17,17 @@ import java.sql.SQLException;
 import javax.ejb.FinderException;
 
 import com.idega.data.IDOLegacyEntity;
+import com.idega.data.UniqueIDCapable;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/07 11:20:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/08 10:10:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
-public interface Member extends IDOLegacyEntity {
+public interface Member extends IDOLegacyEntity, UniqueIDCapable {
 
 	/**
 	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#getEmail

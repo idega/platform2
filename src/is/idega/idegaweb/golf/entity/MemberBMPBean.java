@@ -31,6 +31,7 @@ public class MemberBMPBean extends GenericEntity implements Member {
     //super.initializeAttributes();
     //par1: column name, par2: visible column name, par3-par4: editable/showable, par5 ...
     addAttribute(getIDColumnName());
+    addUniqueIDColumn();
     addAttribute("first_name","Fornafn",true,true,"java.lang.String");
     addAttribute("middle_name","Miðnafn",true,true,"java.lang.String");
     addAttribute("last_name","Eftirnafn",true,true,"java.lang.String");
@@ -610,6 +611,10 @@ public class MemberBMPBean extends GenericEntity implements Member {
 	
 	public Object ejbFindBySSN(String ssn) throws FinderException {
 		return idoFindOnePKByColumnBySQL(getSocialSecurityNumberColumnName(), ssn);
+	}
+	
+	public Object ejbFindByUniqueID(String uniqueID) throws FinderException {
+		return idoFindOnePKByColumnBySQL(this.getUniqueIdColumnName(), uniqueID);
 	}
 	
 	public Collection ejbFindAll() throws FinderException {

@@ -1,6 +1,6 @@
 /*
- * $Id: MemberHome.java,v 1.7 2005/02/07 11:20:28 laddi Exp $
- * Created on 7.2.2005
+ * $Id: MemberHome.java,v 1.8 2005/02/08 10:10:38 laddi Exp $
+ * Created on 8.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -19,10 +19,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/07 11:20:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/08 10:10:38 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public interface MemberHome extends IDOHome {
 
@@ -43,6 +43,11 @@ public interface MemberHome extends IDOHome {
 	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#ejbFindBySSN
 	 */
 	public Member findBySSN(String ssn) throws FinderException;
+
+	/**
+	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#ejbFindByUniqueID
+	 */
+	public Member findByUniqueID(String uniqueID) throws FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.golf.entity.MemberBMPBean#ejbFindAll
