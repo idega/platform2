@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.26 2003/09/25 22:59:31 kjell Exp $
+ * $Id: PostingBusinessBean.java,v 1.27 2003/10/02 22:22:43 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -327,14 +327,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				if (communeBelongingID == null) communeBelongingID = "0"; 
 				if (schoolYear1ID == null) schoolYear1ID = "0";
 				if (schoolYear2ID == null) schoolYear2ID = "0";
-								
-				if (activityID.indexOf("0") != -1) activityID = "0"; 
-				if (regSpecTypeID.indexOf("0") != -1) regSpecTypeID = "0"; 
-				if (companyTypeID.indexOf("0") != -1) companyTypeID = "0"; 
-				if (communeBelongingID.indexOf("0") != -1) communeBelongingID = "0"; 
-				if (schoolYear1ID.indexOf("0") != -1) schoolYear1ID = "0"; 
-				if (schoolYear2ID.indexOf("0") != -1) schoolYear2ID = "0"; 
-
+				
 				parm1 = Integer.parseInt(activityID);
 				parm2 = Integer.parseInt(regSpecTypeID);
 				parm3 = companyTypeID;
@@ -380,12 +373,12 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 				pp.setChangedDate(IWTimestamp.getTimestampRightNow());
 				pp.setPostingString(ownPostingString);
 				pp.setDoublePostingString(doublePostingString);
-				pp.setActivity(parm1);
-				pp.setRegSpecType(parm2);
+				if(parm1 != 0) pp.setActivity(parm1);
+				if(parm2 != 0) pp.setRegSpecType(parm2);
 				pp.setCompanyType(parm3);
-				pp.setCommuneBelonging(parm4);
-				pp.setSchoolYear1(parm5);
-				pp.setSchoolYear2(parm6);
+				if(parm4 != 0) pp.setCommuneBelonging(parm4);
+				if(parm5 != 0) pp.setSchoolYear1(parm5);
+				if(parm6 != 0) pp.setSchoolYear2(parm6);
 				pp.store();
 			} catch (CreateException ce) {
 				throw new PostingParametersException(KEY_ERROR_POST_PARAM_CREATE, "Kan ej skapa parameter");			
@@ -463,7 +456,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 						if (code3 == null) {
 							eq++;
 						}
-					} else if (pp.getCompanyType().getPrimaryKey().toString() == code3) {
+					} else if (pp.getCompanyType().getPrimaryKey().toString().compareTo(code3) == 0) {
 						eq++;
 					}	
 				} catch (FinderException e) {}
@@ -480,7 +473,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					if (code5 == 0) {
 						eq++;
 					}
-				} else if (Integer.parseInt(pp.getSchoolYear1().getPrimaryKey().toString()) == code4) {
+				} else if (Integer.parseInt(pp.getSchoolYear1().getPrimaryKey().toString()) == code5) {
 					eq++;				
 				}
 					
@@ -488,10 +481,9 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 					if (code6 == 0) {
 						eq++;
 					}
-				} else if (Integer.parseInt(pp.getSchoolYear2().getPrimaryKey().toString()) == code4) {
+				} else if (Integer.parseInt(pp.getSchoolYear2().getPrimaryKey().toString()) == code6) {
 					eq++;				
 				}	
-					
 				if (eq == 10) {
 					return true;
 				}
