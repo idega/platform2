@@ -193,6 +193,9 @@ public abstract class ChildCareBlock extends CommuneBlock {
 		else if (status == getBusiness().getStatusNewChoice()) {
 			return localize("child_care.status_new_choice","New Choice");
 		}
+		else if (status == ChildCareBusiness.STATUS_DELETED) {
+			return localize("cihld_care.status_deleted", "Deleted");
+		}
 		
 		return "";
 	}
