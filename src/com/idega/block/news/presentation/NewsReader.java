@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.63 2002/01/04 14:06:57 aron Exp $
+ * $Id: NewsReader.java,v 1.64 2002/01/04 14:20:24 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -70,6 +70,7 @@ public class NewsReader extends Block implements IWBlock {
   private boolean showImages = true;
   private boolean showOnlyDates = false;
   private boolean showTime = true;
+  private boolean showInfo = true;
   private boolean showTimeFirst = false;
   private boolean headlineAsLink = false;
   private boolean showHeadlineImage = false;
@@ -381,7 +382,8 @@ public class NewsReader extends Block implements IWBlock {
     }
 
     Text headLine = new Text(sHeadline);
-    newsInfo = setInformationAttributes(newsInfo);
+    if(newsInfo!=null)
+      newsInfo = setInformationAttributes(newsInfo);
     headLine = setHeadlineAttributes(headLine);
 
     Table infoTable = new Table();
@@ -399,7 +401,8 @@ public class NewsReader extends Block implements IWBlock {
       infoTable.add(tUpdated,6,2);
 
     int row = 1;
-    T.add(newsInfo,1,row++);
+    if(showInfo)
+      T.add(newsInfo,1,row++);
     T.add(headLine,1,row++);
     T.add(infoTable,1,row++);
 
@@ -547,14 +550,17 @@ public class NewsReader extends Block implements IWBlock {
     Text headLine = new Text(sHeadline);
 
     Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates,showTime,showTimeFirst);
-    newsInfo = setInformationAttributes(newsInfo);
+    if(newsInfo !=null)
+      newsInfo = setInformationAttributes(newsInfo);
     headLine = setHeadlineAttributes(headLine);
 
 
     // Check if using single_line_layout
     if(iLayout != SINGLE_LINE_LAYOUT){
-      T.add(newsInfo,1,row);
-      row++;
+      if(newsInfo !=null){
+        T.add(newsInfo,1,row);
+        row++;
+      }
 
       //////// HEADLINE PART ////////////////
 
@@ -673,7 +679,9 @@ public class NewsReader extends Block implements IWBlock {
           T.add(iwb.getImage(headlineImageURL), dateCol,1);
         }
 
-        T.add(newsInfo,dateCol,1);
+        if(showInfo){
+          T.add(newsInfo,dateCol,1);
+        }
         T.setAlignment(headlineCol,1,"left");
         T.setAlignment(4,1,"right");
         T.setWidth(headlineCol,1,"100%");
@@ -734,7 +742,10 @@ public class NewsReader extends Block implements IWBlock {
   }
 
   private Text getInfoText(NwNews nwNews,Content content ,String sCategoryName,Locale locale, boolean ifUseOnlyDates,boolean ifShowTime,boolean ifShowTimeFirst){
-    return new Text(NewsFormatter.getInfoText(nwNews,content,sCategoryName,locale,ifUseOnlyDates,ifShowTime,ifShowTimeFirst) );
+    if(showInfo)
+      return new Text(NewsFormatter.getInfoText(nwNews,content,sCategoryName,locale,ifUseOnlyDates,ifShowTime,ifShowTimeFirst) );
+    else
+      return null;
   }
 
   public void main(IWContext iwc)throws Exception{
@@ -978,6 +989,9 @@ public class NewsReader extends Block implements IWBlock {
   public void setShowTimeFirst(boolean showTimeFirst) {
     this.showTimeFirst=showTimeFirst;
   }
+  public void setShowInfo(boolean showInfo) {
+    this.showInfo=showInfo;
+  }
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
@@ -1025,6 +1039,7 @@ public class NewsReader extends Block implements IWBlock {
         obj.showImages = showImages;
         obj.showOnlyDates = showOnlyDates;
         obj.showTime = showTime;
+        obj.showInfo = showInfo;
         obj.showTimeFirst = showTimeFirst;
         obj.headlineAsLink = headlineAsLink;
         obj.showHeadlineImage = showHeadlineImage;
