@@ -1083,6 +1083,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return null;
 		}
 	}
+	
+	public Collection getSchoolTypesForCategory(SchoolCategory category, boolean showFreetimeTypes) {
+		try {
+			return getSchoolTypeHome().findAllByCategory(category.getCategory(), showFreetimeTypes);
+		}
+		catch (FinderException ex) {
+			return null;
+		}
+	}
 
 	public void removeSchoolType(int id) {
 		try {
