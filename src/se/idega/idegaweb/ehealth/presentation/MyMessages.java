@@ -275,17 +275,180 @@ public class MyMessages extends EHealthBlock {
 		int theRow = 1;
 		int theColumn = 1;
 		
+		ArrayList cases = new ArrayList();
+		ArrayList dates = new ArrayList();		
+		ArrayList receivers = new ArrayList();
+		ArrayList senders = new ArrayList();
+		ArrayList careunits = new ArrayList();
 		
-		
-		String cases[] = {"Ont i foten", "Sv: Ont i foten", "Halsont", "Sv: Halsont", "Böld på smalb..", "Sv: Böld på sm..", "Feber och huv..", "Sv: Feber och..", "Feber", "Sv: Feber"};
-		String dates[] = {"2004-10-11", "2004-10-12","2004-10-06", "2004-10-07", "2004-06-15","2004-06-17", "2004-02-07", "2004-02-08", "2003-12-16", "2003-12-19"};
-		String receivers[] = {name, name, name, name, name, name, name, name, name, name};
-		String senders[] = {"Dr Magne Syhl", "Dr Alve Don", "Dr Inga Pren", "Dr Alve Don", "Dr Alve Don", "Dr Alve Don", "Dr Alve Don", "Dr Alve Don", "Dr Inga Pren", "Dr Magne Syhl"};
-		String careunits[] = {"Gimo VC", "Östberga VC", "Flogsta VC", "Östberga VC", "Östberga VC", "Östberga VC", "Östberga VC", "Östberga VC", "Flogsta VC", "Gimo VC",};
-		
+		if (user !=null && user.getGroupID() == 142 ) {
+			cases.add("Ont i foten");
+			cases.add("Sv:Ont i foten");
+			cases.add("Halsont");
+			cases.add("Sv:Halsont");
+			cases.add("Böld på smalb..");
+			cases.add("Sv:Böld på sm..");
+			cases.add("Feber och huv..");
+			cases.add("Sv:Feber och..");
+			cases.add("Feber");
+			cases.add("Sv:Feber");
+			dates.add("2004-10-11");
+			dates.add("2004-10-12");
+			dates.add("2004-10-06");
+			dates.add("2004-10-07");
+			dates.add("2004-06-15");
+			dates.add("2004-06-17");
+			dates.add("2004-02-07");
+			dates.add("2004-02-08");
+			dates.add("2003-12-16");
+			dates.add("2003-12-19");
+			receivers.add(name);
+			receivers.add("Lasse Aronsson");
+			receivers.add(name);
+			receivers.add("Astrid Axelsson");
+			receivers.add(name);
+			receivers.add("Lasse Aronsson");
+			receivers.add(name);
+			receivers.add("Astrid Axelsson");
+			receivers.add(name);
+			receivers.add("Lasse Aronsson");
+			receivers.add(name);
+			senders.add("Lasse Aronsson");
+			senders.add(name);
+			senders.add("Astrid Axelsson");
+			senders.add(name);
+			senders.add("Lasse Aronsson");
+			senders.add(name);
+			senders.add("Astrid Axelsson");
+			senders.add(name);
+			senders.add("Lasse Aronsson");
+			senders.add(name);
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
+			careunits.add("Gimo VC");
 			
-				
-		for (theRow = 1; theRow <= 10; theRow++) {
+		}
+		else if (age != null && age.getYears() >= 70){
+			cases.add("Ont i foten");
+			cases.add("Sv:Ont i foten");
+			cases.add("Halsont");
+			cases.add("Sv:Halsont");
+			cases.add("Böld på smalb..");
+			cases.add("Sv:Böld på sm..");
+			cases.add("Feber och huv..");
+			cases.add("Sv:Feber och..");
+			cases.add("Feber");
+			cases.add("Sv:Feber");
+			dates.add("2004-10-11");
+			dates.add("2004-10-12");
+			dates.add("2004-10-06");
+			dates.add("2004-10-07");
+			dates.add("2004-06-15");
+			dates.add("2004-06-17");
+			dates.add("2004-02-07");
+			dates.add("2004-02-08");
+			dates.add("2003-12-16");
+			dates.add("2003-12-19");
+			receivers.add("Dr Magne Syhl");
+			receivers.add(name);
+			receivers.add("Dr Inga Pren");
+			receivers.add(name);
+			receivers.add("Dr Alve Don");
+			receivers.add(name);
+			receivers.add("Dr Inga Pren");
+			receivers.add(name);
+			receivers.add("Dr Magne Syhl");
+			receivers.add(name);
+			senders.add(name);
+			senders.add("Dr Alve Don");
+			senders.add("Dr Inga Pren");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Inga Pren");
+			senders.add("Dr Magne Syhl");
+			careunits.add("Gimo VC");
+			careunits.add("Östberga VC");
+			careunits.add("Flogsta VC");
+			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Flogsta VC");
+			careunits.add("Gimo VC");
+			
+		}
+		else{
+			cases.add("Ont i foten");
+			cases.add("Sv:Ont i foten");
+			cases.add("Halsont");
+			cases.add("Sv:Halsont");
+			cases.add("Böld på smalb..");
+			cases.add("Sv:Böld på sm..");
+			cases.add("Feber och huv..");
+			cases.add("Sv:Feber och..");
+			cases.add("Feber");
+			cases.add("Sv:Feber");
+			dates.add("2004-10-11");
+			dates.add("2004-10-12");
+			dates.add("2004-10-06");
+			dates.add("2004-10-07");
+			dates.add("2004-06-15");
+			dates.add("2004-06-17");
+			dates.add("2004-02-07");
+			dates.add("2004-02-08");
+			dates.add("2003-12-16");
+			dates.add("2003-12-19");
+			receivers.add("Dr Magne Syhl");
+			receivers.add(name);
+			receivers.add("Dr Inga Pren");
+			receivers.add(name);
+			receivers.add("Dr Alve Don");
+			receivers.add(name);
+			receivers.add("Dr Inga Pren");
+			receivers.add(name);
+			receivers.add("Dr Magne Syhl");
+			receivers.add(name);
+			senders.add(name);
+			senders.add("Dr Alve Don");
+			senders.add("Dr Inga Pren");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Alve Don");
+			senders.add("Dr Inga Pren");
+			senders.add("Dr Magne Syhl");
+			careunits.add("Gimo VC");
+			careunits.add("Östberga VC");
+			careunits.add("Flogsta VC");
+			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Östberga VC");
+			careunits.add("Flogsta VC");
+			careunits.add("Gimo VC");
+		}
+		
+		Iterator icases = cases.iterator();
+		Iterator idates = dates.iterator();
+		Iterator ireceivers = receivers.iterator();
+		Iterator isenders = senders.iterator();
+		Iterator icareunits = careunits.iterator();
+		
+					
+		while (idates.hasNext()) {		
 			
 			for (theColumn = 1; theColumn <= 11; theColumn++) {
 				Layer layers = (Layer) layer.clone();
@@ -295,32 +458,47 @@ public class MyMessages extends EHealthBlock {
 					layers.setWidth("15");
 				}
 				else if (theColumn == 1){
-					
-					if (theRow % 2 == 0){
-						layers.add(greenArrow);
+					if (user !=null && user.getGroupID() == 142 ) {
+						if (theRow % 2 == 0){
+							layers.add(redArrow);
+						}
+						else
+							layers.add(greenArrow);
 					}
-					else
-						layers.add(redArrow);	
+					else{
+						if (theRow % 2 == 0){
+							layers.add(greenArrow);
+						}
+						else
+							layers.add(redArrow);
+					}
+						
 				}
 				
 				else if (theColumn == 3){
-					layers.add(cases[theRow-1]);
+					String theCase = (String) icases.next();
+					layers.add(theCase);
 				}
 				else if (theColumn == 5){
-					layers.add(dates[theRow-1]);
+					String theDate = (String) idates.next();
+					layers.add(theDate);
 				}
 				else if (theColumn == 7){
-					layers.add(receivers[theRow-1]);
+					String theReceiver = (String) ireceivers.next();
+					layers.add(theReceiver);
 				}
 				else if (theColumn == 9){
-					layers.add(senders[theRow-1]);
+					String theSender = (String) isenders.next();
+					layers.add(theSender);
 				}
 				else if (theColumn == 11){
-					layers.add(careunits[theRow-1]);
+					String theCU = (String) icareunits.next();
+					layers.add(theCU);
 				}
 				
 				tableInfo.add(layers, theColumn, theRow);
 			}
+			theRow++;
 			
 		}
 	
