@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDOLookup;
 import java.util.Vector;
 import com.idega.data.IDOFinderException;
 import com.idega.presentation.Block;
@@ -517,14 +518,20 @@ public class ServiceOverview extends TravelManager {
         contentTable.add(prodName,3,contRow);
         contentTable.setRowColor(contRow, super.GRAY);
 
-        dayOfWeek = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(service.getID());
-        if (dayOfWeek.length == 7) {
-          actDays.setText(iwrb.getLocalizedString("travel.daily","daily"));
-        }else {
-          for (int j = 0; j < dayOfWeek.length; j++) {
-            if (j > 0) actDays.addToText(", ");
-            actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
+        try {
+          ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+          ServiceDay sDay = sdayHome.create();
+          dayOfWeek = sDay.getDaysOfWeek(service.getID());
+          if (dayOfWeek.length == 7) {
+            actDays.setText(iwrb.getLocalizedString("travel.daily","daily"));
+          }else {
+            for (int j = 0; j < dayOfWeek.length; j++) {
+              if (j > 0) actDays.addToText(", ");
+              actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
+            }
           }
+        }catch (Exception e) {
+          e.printStackTrace(System.err);
         }
 
         contentTable.add(activeDaysText,4,contRow);

@@ -195,17 +195,50 @@ public class TourBusiness extends TravelStockroomBusiness {
            */
           this.removeDepartureDaysApplication(IWContext.getInstance(), tour);
 
-          is.idega.idegaweb.travel.data.ServiceDayBMPBean.deleteService(serviceId);
+          List list = new Vector();
+          for (int i = 0; i < activeDays.length; i++) {
+            list.add(new Integer(activeDays[i]));
+          }
 
-          if (activeDays.length > 0) {
-            ServiceDay sDay;
-            for (int i = 0; i < activeDays.length; i++) {
-              sDay = ((is.idega.idegaweb.travel.data.ServiceDayHome)com.idega.data.IDOLookup.getHomeLegacy(ServiceDay.class)).createLegacy();
-                sDay.setServiceId(serviceId);
-                sDay.setDayOfWeek(activeDays[i]);
-              sDay.insert();
+
+          if (tourId != -1) {
+            if (activeDays.length > 0) {
+              ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+              ServiceDay sDayTemp = sDayHome.create();
+              ServiceDay sDay;
+
+              for (int i = ServiceDayBMPBean.SUNDAY; i <= ServiceDayBMPBean.SATURDAY; i++) {
+                sDay = sDayTemp.getServiceDay(tourId, i);
+                if (list.contains(new Integer(i))) {
+                  if (sDay == null) {
+                    sDay = sDayHome.create();
+                    sDay.setServiceId(serviceId);
+                    sDay.setDayOfWeek(i);
+                    sDay.store();
+                  }
+                }else {
+                  if (sDay != null) {
+                    sDay.delete();
+                  }
+
+                }
+              }
+/*
+              for (int i = 0; i < activeDays.length; i++) {
+                sDay = sDay.getServiceDay(tourId, activeDays[i]);
+                if (sDay == null) {
+                  sDay = sDayHome.create();
+                  sDay.setServiceId(serviceId);
+                  sDay.setDayOfWeek(activeDays[i]);
+                  sDay.store();
+                }
+              }
+*/
+            }else {
+              is.idega.idegaweb.travel.data.ServiceDayBMPBean.deleteService(serviceId);
             }
           }
+
 
 
           //tm.commit();
@@ -225,7 +258,15 @@ public class TourBusiness extends TravelStockroomBusiness {
 
       int counter = 0;
 
-      int[] daysOfWeek = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(serviceId);
+      int[] daysOfWeek = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(serviceId);
+      try {
+        ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+        ServiceDay sDay = sdayHome.create();
+        daysOfWeek = sDay.getDaysOfWeek(serviceId);
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+
       int fromDayOfWeek = fromStamp.getDayOfWeek();
       int toDayOfWeek = toStamp.getDayOfWeek();
 
@@ -542,7 +583,6 @@ public class TourBusiness extends TravelStockroomBusiness {
 /**
  * @todo Speed up....
  */
-
     try {
       int nod = tour.getNumberOfDays();
       if (nod < 1) nod = 1;
@@ -551,10 +591,12 @@ public class TourBusiness extends TravelStockroomBusiness {
 
       while (teljari++ < nod) {
         stamp.addDays(1);
-        if (TravelStockroomBusiness.getIfDay(iwc,product, timeframes, stamp, false, false)) {
+        if (TravelStockroomBusiness.getIfDay(iwc,product, timeframes, stamp, false, true)) {
+          /** @todo breytti false i true..... skoda takk */
           found = true;
           break;
         }
+
       }
 
     }catch (Exception e) {

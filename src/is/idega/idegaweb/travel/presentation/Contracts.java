@@ -151,7 +151,7 @@ public class Contracts extends TravelManager {
         linkTable.add(addReseller,1,1);
 
       //if (supplier != null)
-      form.add(linkTable);
+//      form.add(linkTable);
 
       form.add(Text.BREAK);
 
@@ -839,7 +839,14 @@ public class Contracts extends TravelManager {
         int[] tempDays = new int[7];
         int counter = 0;
           if (allDays != null) {
-            tempDays = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
+            try {
+              ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+              ServiceDay sDay = sdayHome.create();
+              tempDays = sDay.getDaysOfWeek(productId);
+            }catch (Exception e) {
+              e.printStackTrace(System.err);
+            }
+            //tempDays = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
             counter = tempDays.length;
           }else {
             if (sundays != null) tempDays[counter++] = java.util.GregorianCalendar.SUNDAY;
@@ -1107,7 +1114,14 @@ public class Contracts extends TravelManager {
             pDiscount = new TextInput("discount");
               pDiscount.setSize(3);
 
-            int[] serviceDays  = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
+            int[] serviceDays = new int[]{};// = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(productId);
+            try {
+              ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+              ServiceDay sDay = sdayHome.create();
+              serviceDays = sDay.getDaysOfWeek(productId);
+            }catch (Exception e) {
+              e.printStackTrace(System.err);
+            }
 
           CheckBox allDays = new CheckBox("all_days");
           CheckBox mondays = new CheckBox("mondays");

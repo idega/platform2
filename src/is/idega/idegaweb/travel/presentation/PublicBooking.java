@@ -312,7 +312,15 @@ public class PublicBooking extends Block  {
         dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.THURSDAY ,iwc).substring(0,3);
         dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.FRIDAY ,iwc).substring(0,3);
         dayOfWeekName[is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY] = cal.getNameOfDay(is.idega.idegaweb.travel.data.ServiceDayBMPBean.SATURDAY ,iwc).substring(0,3);
-      int[] days = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
+      int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
+      try {
+        ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+        ServiceDay sDay = sdayHome.create();
+        days = sDay.getDaysOfWeek(product.getID());
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+      }
+
       if (days.length == 7) {
         daysTextBold.setText(iwrb.getLocalizedString("travel.daily","daily"));
       }else {
@@ -354,38 +362,39 @@ public class PublicBooking extends Block  {
         pTable.add(departureFromTextBold, 1, pRow);
         for (int i = 0; i < timeframes.length; i++) {
           prices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), timeframes[i].getID(), depAddress.getID(), true);
-          stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
-          stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
-          if (timeframes[i].getIfYearly()) {
-            try {
-              stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
-              stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
-            }catch (NumberFormatException n) {}
-          }
-          timeframeTextBold = getText("");
-            timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-          pTable.add(timeframeTextBold,2,pRow);
-
-          if (prices.length == 0) {
-            ++pRow;
-          }
-          for (int j = 0; j < prices.length; j++) {
-            currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
-            nameOfCategory = getText(prices[j].getPriceCategory().getName());
-              nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
-            try {
-              priceText = getBoldText(Integer.toString( (int) TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
-              currencyText = getBoldText(currency.getCurrencyAbbreviation());
-              pTable.add(currencyText,5,pRow);
-            }catch (ProductPriceException p) {
-              priceText.setText("T - rangt upp sett");
+          if (prices.length > 0) {
+            stampTxt1 = new idegaTimestamp(timeframes[i].getFrom()).getLocaleDate(iwc);
+            stampTxt2 = new idegaTimestamp(timeframes[i].getTo()).getLocaleDate(iwc);
+            if (timeframes[i].getIfYearly()) {
+              try {
+                stampTxt1 = stampTxt1.substring(0, stampTxt1.length()-4);
+                stampTxt2 = stampTxt2.substring(0, stampTxt2.length()-4);
+              }catch (NumberFormatException n) {}
             }
+            timeframeTextBold = getText("");
+              timeframeTextBold.setText(stampTxt1+" - "+stampTxt2+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+            pTable.add(timeframeTextBold,2,pRow);
 
-            pTable.add(nameOfCategory,3,pRow);
-            pTable.add(priceText,4,pRow);
-            ++pRow;
+            if (prices.length == 0) {
+              ++pRow;
+            }
+            for (int j = 0; j < prices.length; j++) {
+              currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(prices[j].getCurrencyId());
+              nameOfCategory = getText(prices[j].getPriceCategory().getName());
+                nameOfCategory.addToText(Text.NON_BREAKING_SPACE+":"+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE);
+              try {
+                priceText = getBoldText(Integer.toString( (int) TravelStockroomBusiness.getPrice(prices[j].getID(), service.getID(),prices[j].getPriceCategoryID() , prices[j].getCurrencyId(), idegaTimestamp.getTimestampRightNow(), timeframes[i].getID(), depAddress.getID()) ) );
+                currencyText = getBoldText(currency.getCurrencyAbbreviation());
+                pTable.add(currencyText,5,pRow);
+              }catch (ProductPriceException p) {
+                priceText.setText(iwrb.getLocalizedString("travel.not_configured","Not configured"));
+              }
+
+              pTable.add(nameOfCategory,3,pRow);
+              pTable.add(priceText,4,pRow);
+              ++pRow;
+            }
           }
-
         }
       }
 
@@ -433,13 +442,6 @@ public class PublicBooking extends Block  {
         ch.setProduct(product);
 
       boolean legalDay = false;
-      /*for (int i = 0; i < timeframes.length; i++) {
-        if (stamp.isLaterThanOrEquals(idegaTimestamp.RightNow()) && idegaTimestamp.isInTimeframe(new idegaTimestamp(timeframes[i].getFrom()), new idegaTimestamp(timeframes[i].getTo()), stamp, timeframes[i].getIfYearly())) {
-          legalDay = true;
-          break;
-        }
-      }*/
-
       legalDay = TravelStockroomBusiness.getIfDay(iwc, product, stamp);
 
 
@@ -526,6 +528,8 @@ public class PublicBooking extends Block  {
     String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
     String ccMonth = iwc.getParameter(TourBookingForm.parameterCCMonth);
     String ccYear = iwc.getParameter(TourBookingForm.parameterCCYear);
+
+    String inquiry = iwc.getParameter(TourBookingForm.parameterInquiry);
 
     boolean valid = true;
     String errorColor = "YELLOW";
@@ -635,6 +639,10 @@ public class PublicBooking extends Block  {
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.email","E-mail")),1,row);
       table.add(getBoldTextWhite(email),2,row);
+      if (email.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
 
       ++row;
       table.setAlignment(1,row,"right");
@@ -642,12 +650,12 @@ public class PublicBooking extends Block  {
       table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
       table.add(getBoldTextWhite(telephoneNumber),2,row);
 
-      ++row;
+/*      ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.comment","Comment")),1,row);
       table.add(getBoldTextWhite(comment),2,row);
-
+*/
       ++row;
 
       float price = 0;
@@ -703,56 +711,65 @@ public class PublicBooking extends Block  {
           no.setAttribute("onClick","history.go(-1)");
 
 
-      ++row;
-      table.setAlignment(1,row,"right");
-      table.setAlignment(2,row,"left");
-      table.add(getTextWhite(iwrb.getLocalizedString("travel.creditcard_number","Creditcard number")),1,row);
-      if (ccNumber.length() <5) {
-        table.add(getBoldTextWhite(ccNumber),2,row);
-      }else {
-        for (int i = 0; i < ccNumber.length() -4; i++) {
-          table.add(getBoldTextWhite("*"),2,row);
-        }
-        table.add(getBoldTextWhite(ccNumber.substring(ccNumber.length()-4, ccNumber.length())),2,row);
-
-      }
-      if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2) {
-        valid = false;
-        Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
-          ccError.setFontColor(errorColor);
+      if (inquiry == null) {
         ++row;
-        table.mergeCells(1, row, 2, row);
-        table.add(ccError, 1, row);
-      }
-
-      Text bookingsError = getBoldText(iwrb.getLocalizedString("travel.some_days_are_not_available","Some of the selected days are not available"));
-        bookingsError.setFontColor(errorColor);
-      try {
-        TourBookingForm tbf = new TourBookingForm(iwc, product);
-        int id = tbf.checkBooking(iwc, false);
-        if (id != TourBookingForm.errorTooMany) {
+        table.setAlignment(1,row,"right");
+        table.setAlignment(2,row,"left");
+        table.add(getTextWhite(iwrb.getLocalizedString("travel.creditcard_number","Creditcard number")),1,row);
+        if (ccNumber.length() <5) {
+          table.add(getBoldTextWhite(ccNumber),2,row);
         }else {
+          for (int i = 0; i < ccNumber.length() -4; i++) {
+            table.add(getBoldTextWhite("*"),2,row);
+          }
+          table.add(getBoldTextWhite(ccNumber.substring(ccNumber.length()-4, ccNumber.length())),2,row);
+
+        }
+        if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2) {
+          valid = false;
+          Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
+            ccError.setFontColor(errorColor);
           ++row;
           table.mergeCells(1, row, 2, row);
-          table.add(bookingsError, 1, row);
-          List errorDays = tbf.getErrorDays();
-          Text dayText;
-          if (errorDays != null) {
-            valid = false;
-            for (int i = 0; i < errorDays.size(); i++) {
-              ++row;
-              dayText = getBoldText(((idegaTimestamp) errorDays.get(i)).getLocaleDate(iwc));
-                dayText.setFontColor(errorColor);
-              table.add(dayText, 2, row);
-            }
-          }
-
+          table.add(ccError, 1, row);
         }
-      }catch (Exception e) {
-        valid = false;
-        table.mergeCells(1, row, 2, row);
-        table.add(bookingsError, 1, row);
-        e.printStackTrace(System.err);
+      }else {
+        debug("inquiry");
+      }
+
+
+      if (inquiry == null) {
+        Text bookingsError = getBoldText(iwrb.getLocalizedString("travel.some_days_are_not_available","Some of the selected days are not available"));
+          bookingsError.setFontColor(errorColor);
+        try {
+          TourBookingForm tbf = new TourBookingForm(iwc, product);
+          int id = tbf.checkBooking(iwc, false);
+          if (id != TourBookingForm.errorTooMany) {
+          }else {
+            ++row;
+            table.mergeCells(1, row, 2, row);
+            table.add(bookingsError, 1, row);
+            List errorDays = tbf.getErrorDays();
+            Text dayText;
+            if (errorDays != null) {
+              valid = false;
+              for (int i = 0; i < errorDays.size(); i++) {
+                ++row;
+                dayText = getBoldText(((idegaTimestamp) errorDays.get(i)).getLocaleDate(iwc));
+                  dayText.setFontColor(errorColor);
+                table.add(dayText, 2, row);
+              }
+            }
+
+          }
+        }catch (Exception e) {
+          valid = false;
+          table.mergeCells(1, row, 2, row);
+          table.add(bookingsError, 1, row);
+          e.printStackTrace(System.err);
+        }
+      }else {
+        debug("INQUIRY");
       }
 
       ++row;
@@ -775,6 +792,7 @@ public class PublicBooking extends Block  {
 
       Text display = getBoldTextWhite("");
       boolean success = false;
+      boolean inquirySent = false;
       String heimild = "";
 
       com.idega.block.tpos.business.TPosClient t = null;
@@ -815,75 +833,83 @@ public class PublicBooking extends Block  {
 
         TourBookingForm tbf = new TourBookingForm(iwc,product);
         int bookingId = tbf.handleInsert(iwc);
+        debug("bookingId = "+bookingId);
 
-        try {
-          System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
-          t = new com.idega.block.tpos.business.TPosClient(iwc);
-          heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
-          //System.out.println("heimild = " + heimild);
-          System.out.println("Ending TPOS test : "+idegaTimestamp.RightNow().toString());
-        }catch(com.idega.block.tpos.business.TPosException e) {
-          System.out.println("TPOS errormessage = " + e.getErrorMessage());
-          System.out.println("number = " + e.getErrorNumber());
-          System.out.println("display = " + e.getDisplayError());
-          int number = Integer.parseInt(e.getErrorNumber());
-          switch (number) {
-            case 6:
-            case 12:
-            case 19:
-              display.setText(iwrb.getLocalizedString("travel.creditcard_number_incorrect","Creditcard number incorrect"));
-              break;
-            case 10:
-            case 22:
-            case 74:
-              display.setText(iwrb.getLocalizedString("travel.creditcard_type_not_accepted","Creditcard type not accepted"));
-              break;
-            case 17:
-            case 18:
-              display.setText(iwrb.getLocalizedString("travel.creditcard_is_expired","Creditcard is expired"));
-              break;
-            case 48:
-            case 49:
-            case 50:
-            case 51:
-            case 56:
-            case 57:
-            case 76:
-            case 79:
-            case 2002:
-            case 2010:
-              display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
-              break;
-            case 7:
-            case 37:
-            case 69:
-            case 75:
-              display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
-              break;
-            /*case 69:
-              display.setText(e.getErrorMessage());
-              break;*/
-            case 20:
-            case 31:
-              display.setText(iwrb.getLocalizedString("travel.transaction_not_permitted","Transaction not permitted"));
-              break;
-            case 99999:
-              display.setText(iwrb.getLocalizedString("travel.booking_was_not_confirmed_try_again_later","Booking was not confirmed. Please try again later"));
-              break;
-            default:
-              display.setText(iwrb.getLocalizedString("travel.cannot_connect","Cannot communicate with server"));
-              break;
+        if (bookingId == TourBookingForm.inquirySent) {
+          inquirySent = true;
+          tm.commit();
+        }else {
+          try {
+            System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
+            t = new com.idega.block.tpos.business.TPosClient(iwc);
+            heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
+            //System.out.println("heimild = " + heimild);
+            System.out.println("Ending TPOS test : "+idegaTimestamp.RightNow().toString());
+          }catch(com.idega.block.tpos.business.TPosException e) {
+            System.out.println("TPOS errormessage = " + e.getErrorMessage());
+            System.out.println("number = " + e.getErrorNumber());
+            System.out.println("display = " + e.getDisplayError());
+            int number = Integer.parseInt(e.getErrorNumber());
+            switch (number) {
+              case 6:
+              case 12:
+              case 19:
+                display.setText(iwrb.getLocalizedString("travel.creditcard_number_incorrect","Creditcard number incorrect"));
+                break;
+              case 10:
+              case 22:
+              case 74:
+                display.setText(iwrb.getLocalizedString("travel.creditcard_type_not_accepted","Creditcard type not accepted"));
+                break;
+              case 17:
+              case 18:
+                display.setText(iwrb.getLocalizedString("travel.creditcard_is_expired","Creditcard is expired"));
+                break;
+              case 48:
+              case 49:
+              case 50:
+              case 51:
+              case 56:
+              case 57:
+              case 76:
+              case 79:
+              case 2002:
+              case 2010:
+                display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
+                break;
+              case 7:
+              case 37:
+              case 69:
+              case 75:
+                display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
+                break;
+              /*case 69:
+                display.setText(e.getErrorMessage());
+                break;*/
+              case 20:
+              case 31:
+                display.setText(iwrb.getLocalizedString("travel.transaction_not_permitted","Transaction not permitted"));
+                break;
+              case 99999:
+                display.setText(iwrb.getLocalizedString("travel.booking_was_not_confirmed_try_again_later","Booking was not confirmed. Please try again later"));
+                break;
+              default:
+                display.setText(iwrb.getLocalizedString("travel.cannot_connect","Cannot communicate with server"));
+                break;
+            }
+
+            throw new Exception(e.getErrorMessage());
           }
 
-          throw new Exception(e.getErrorMessage());
+          gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
+          gBooking.setCreditcardAuthorizationNumber(heimild);
+          gBooking.update();
+
+          tm.commit();
+          success = true;
         }
 
-        gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
-        gBooking.setCreditcardAuthorizationNumber(heimild);
-        gBooking.update();
 
-        tm.commit();
-        success = true;
       }catch (Exception e) {
         display.addToText(" ( "+e.getMessage()+" )");
         e.printStackTrace(System.err);
@@ -1000,6 +1026,10 @@ public class PublicBooking extends Block  {
         table.setAlignment(1,1,"left");
         table.setAlignment(1,2,"right");
         table.setAlignment(1,3,"right");
+      }else if (inquirySent) {
+        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.inquiry_has_been_sent","Inquiry has been sent")));
+        table.add(Text.BREAK);
+        table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.you_will_reveice_an_confirmation_email_shortly","You will receive an confirmation email shortly.")));
       }else {
         table.add(display);
         if (gBooking == null) {

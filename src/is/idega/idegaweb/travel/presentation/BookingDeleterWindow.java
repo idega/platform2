@@ -48,12 +48,18 @@ public class BookingDeleterWindow extends TravelWindow {
         if (handleDelete(iwc)) {
           completed(iwc);
         } else {
+          debug("delete failed");
           error(iwc);
         }
       }else if (action.equals(this.paramClose)) {
         super.close(true);
       }
     }else {
+      if (_bookings == null) {
+        debug("_bookings == null");
+      }else if ( _bookings.size() <= 0 ) {
+        debug("_bookings.size() <= 0");
+      }
       error(iwc);
     }
   }
@@ -136,6 +142,7 @@ public class BookingDeleterWindow extends TravelWindow {
       table.add(new HiddenInput(this.parameterBookingIdForForm, Integer.toString(bookingId)), 4,row);
 
       if (bookingId == this._bookingId) {
+        box.setChecked(true);
         //Merkja юб sem var valin
       }
     }

@@ -87,7 +87,6 @@ public class TourBookingBMPBean extends com.idega.data.GenericEntity implements 
   public static String getHotelPickupPlaceIDColumnName() {return "TB_HOTEL_PICKUP_PLACE_ID";}
   public static String getRoomNumberColumnName() {return "ROOM_NUMBER";}
 
-  // Abstract shit
 
   public void insert() throws SQLException {
     super.insert();
@@ -95,7 +94,8 @@ public class TourBookingBMPBean extends com.idega.data.GenericEntity implements 
     try {
       _booking.update();
     }catch (SQLException sql) {
-      sql.printStackTrace(System.err);
+      debug("UPDATE FAILED ... Inserting......");
+      //sql.printStackTrace(System.err);
       _booking.insert();
     }
   }

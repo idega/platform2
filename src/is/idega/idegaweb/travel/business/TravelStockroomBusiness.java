@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.data.*;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.data.*;
@@ -9,15 +10,12 @@ import is.idega.idegaweb.travel.data.HotelPickupPlace;
 import java.sql.SQLException;
 import com.idega.util.*;
 import java.sql.SQLException;
-import com.idega.data.EntityFinder;
-import com.idega.data.EntityControl;
 import java.util.*;
 import com.idega.util.datastructures.HashtableDoubleKeyed;
 import com.idega.presentation.IWContext;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
 import java.sql.Date;
-import com.idega.data.SimpleQuerier;
 import com.idega.block.trade.data.Currency;
 
 /**
@@ -776,8 +774,17 @@ public class TravelStockroomBusiness extends StockroomBusiness {
           }
         }
 
+        int[] weekDays = new int[]{};
+        try {
+          ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+          ServiceDay sDay = sdayHome.create();
+          weekDays = sDay.getDaysOfWeek(product.getID());
+        }catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
 
-        int[] weekDays = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
+
+        //weekDays = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek(product.getID());
 
         while (to.isLaterThan(stamp)) {
           for (int i = 0; i < weekDays.length; i++) {

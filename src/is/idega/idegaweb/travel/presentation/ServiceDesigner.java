@@ -242,10 +242,10 @@ public class ServiceDesigner extends TravelManager {
           table.setRowColor(row, super.GRAY);
           table.mergeCells(1,row,4,row);
           ++row;
-          //table.add(servDaySetter,1,row);
-          //table.setRowColor(row, super.GRAY);
-          //table.mergeCells(1,row,4,row);
-          //++row;
+          table.add(servDaySetter,1,row);
+          table.setRowColor(row, super.GRAY);
+          table.mergeCells(1,row,4,row);
+          ++row;
 
 
           Text addrText;

@@ -1,4 +1,5 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
@@ -465,7 +466,14 @@ public class TourDesigner extends TravelManager {
         number.setContent( product.getNumber() );
         description.setContent( ProductBusiness.getProductDescription( product, iwc ) );
 
-        int[] days = is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
+        int[] days = new int[]{};//is.idega.idegaweb.travel.data.ServiceDayBMPBean.getDaysOfWeek( service.getID() );
+        try {
+          ServiceDayHome sdayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+          ServiceDay sDay = sdayHome.create();
+          days = sDay.getDaysOfWeek(service.getID());
+        }catch (Exception e) {
+          e.printStackTrace(System.err);
+        }
         for ( int i = 0; i < days.length; i++ ) {
           switch ( days[i] ) {
             case is.idega.idegaweb.travel.data.ServiceDayBMPBean.SUNDAY:

@@ -1,5 +1,12 @@
 package is.idega.idegaweb.travel.business;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+import java.rmi.RemoteException;
+import com.idega.core.data.Email;
+import com.idega.util.SendMail;
+import com.idega.block.trade.stockroom.business.ProductBusiness;
+import javax.mail.MessagingException;
 import java.sql.SQLException;
 import java.util.*;
 import com.idega.util.idegaTimestamp;
@@ -139,7 +146,7 @@ public class Inquirer {
 
   public static int sendInquery(String name,String email, idegaTimestamp inqueryDate, int productId, int numberOfSeats, int bookingId, Reseller reseller) throws SQLException {
     String sInquery = "Are the available seats this day";
-
+    System.err.println("Inquierer...... bara ad checka");
 
     int returner = -1;
         Inquery inq = ((is.idega.idegaweb.travel.data.InqueryHome)com.idega.data.IDOLookup.getHomeLegacy(Inquery.class)).createLegacy();
@@ -158,6 +165,7 @@ public class Inquirer {
           inq.addTo(reseller);
         }
       returner = inq.getID();
+      System.err.println("Inquirer : inq.getID() = "+returner);
     return returner;
   }
 
@@ -343,5 +351,134 @@ public class Inquirer {
     return list;
   }
 
+
+  /**
+   * returns int[], int[0] is number of current booking, int[1] is total bookings number
+   */
+  public static int[] getMultibleInquiriesNumber(Inquery inquiry) {
+    List list = getMultibleInquiries(inquiry);
+    int[] returner = new  int[2];
+    if (list == null || list.size() < 2 ) {
+      returner[0] = 0;
+      returner[1] = 0;
+    }else {
+      returner[0] = list.indexOf(inquiry) + 1;
+      returner[1] = list.size();
+    }
+    return returner;
+  }
+
+  /**
+   * returns 0 if valid, else -1
+   */
+  public static int sendInquiryEmails(IWContext iwc, IWResourceBundle iwrb, int inquiryId) throws RemoteException{
+    boolean sendEmail = false;
+    boolean doubleSendSuccessful = false;
+
+    try {
+
+      InqueryHome iHome = (InqueryHome) IDOLookup.getHome(Inquery.class);
+      ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+      SupplierHome sHome = (SupplierHome) IDOLookup.getHome(Supplier.class);
+
+      Inquery inq = iHome.findByPrimaryKey(inquiryId);
+      Product prod = pHome.findByPrimaryKey(inq.getServiceID());
+      Supplier suppl = sHome.findByPrimaryKey(prod.getSupplierId());
+      Settings settings = suppl.getSettings();
+      List inqs = Inquirer.getMultibleInquiries(inq);
+      int inqsSize = inqs.size();
+      Inquery tempInq;
+
+
+      Email sEmail = suppl.getEmail();
+      String suppEmail = "";
+      if (sEmail != null) {
+        suppEmail = sEmail.getEmailAddress();
+      }
+      String inqEmail = inq.getEmail();
+
+      if (settings.getIfDoubleConfirmation()) {
+        try {
+          sendEmail = true;
+          StringBuffer mailText = new StringBuffer();
+//          mailText.append(iwrb.getLocalizedString("travel.inquiry.this_is_an_automatic_response_to_your_inquiry","This is an automatic response to your inquiry."));
+          mailText.append(iwrb.getLocalizedString("travel.inquiry_double_confirmation","This is an automatic response to your inquiry.\nIt will be answered as soon as possible."));
+
+          mailText.append("\n\n").append(iwrb.getLocalizedString("travel.your_inquiry_was",   "Your inquiry was")).append(" : ");
+          mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(inq.getName());
+          mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+          if (inqsSize == 1) {
+            mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new idegaTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
+          }else {
+            for (int i = 0; i < inqsSize; i++) {
+              tempInq = (Inquery) inqs.get(i);
+              if (i == 0) {
+                mailText.append("\n").append(iwrb.getLocalizedString("travel.dates",   "Dates :"));
+              }
+              mailText.append("\n\t").append(new idegaTimestamp(tempInq.getInqueryDate()).getLocaleDate(iwc));
+            }
+          }
+          mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(inq.getNumberOfSeats());
+
+          mailText.append("\n\n").append(iwrb.getLocalizedString("travel.inquiry.reply_to_this_email_if_you_wish","Please reply to this email if you wish to make changes to your inquiry or if the information is incorrect."));
+
+
+          SendMail sm = new SendMail();
+            sm.send(suppEmail, inqEmail, "", "", "mail.idega.is", "Inquiry",mailText.toString());
+          doubleSendSuccessful = true;
+        }catch (MessagingException me) {
+          doubleSendSuccessful = false;
+          me.printStackTrace(System.err);
+        }
+      }
+
+      if (settings.getIfEmailAfterOnlineBooking()) {
+        try {
+          String subject = "Inquiry";
+
+          StringBuffer mailText = new StringBuffer();
+          mailText.append(iwrb.getLocalizedString("travel.email_after_online_inquiry","You have just received an inquiry through nat.sidan.is."));
+          mailText.append("\n\n").append(iwrb.getLocalizedString("travel.the_inquiry_was",   "The inquiry was")).append(" : ");
+          mailText.append("\n").append(iwrb.getLocalizedString("travel.name",   "Name    ")).append(" : ").append(inq.getName());
+          mailText.append("\n").append(iwrb.getLocalizedString("travel.service","Service ")).append(" : ").append(ProductBusiness.getProductNameWithNumber(prod, true, iwc.getCurrentLocaleId()));
+          if (inqsSize == 1) {
+            mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new idegaTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
+          }else {
+            for (int i = 0; i < inqsSize; i++) {
+              tempInq = (Inquery) inqs.get(i);
+              if (i == 0) {
+                mailText.append("\n").append(iwrb.getLocalizedString("travel.dates",   "Dates :"));
+              }
+              mailText.append("\n\t").append(new idegaTimestamp(tempInq.getInqueryDate()).getLocaleDate(iwc));
+            }
+          }
+//          mailText.append("\n").append(iwrb.getLocalizedString("travel.date",   "Date    ")).append(" : ").append(new idegaTimestamp(inq.getInqueryDate()).getLocaleDate(iwc));
+          mailText.append("\n").append(iwrb.getLocalizedString("travel.seats",  "Seats   ")).append(" : ").append(inq.getNumberOfSeats());
+          if (doubleSendSuccessful) {
+            mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_been_sent","Double confirmation has been sent."));
+          }else {
+            mailText.append("\n\n").append(iwrb.getLocalizedString("travel.double_confirmation_has_not_been_sent","Double confirmation has NOT been sent."));
+            mailText.append("\n").append("   - ").append(iwrb.getLocalizedString("travel.email_was_probably_incorrect","E-mail was probably incorrect."));
+            subject = "Inquiry - double confirmation failed!";
+          }
+
+
+          SendMail sm = new SendMail();
+            sm.send(suppEmail, suppEmail, "", "", "mail.idega.is", subject,mailText.toString());
+        }catch (MessagingException me) {
+          me.printStackTrace(System.err);
+        }
+      }
+
+      return 0;
+    }catch (FinderException fe) {
+      fe.printStackTrace(System.err);
+    }catch (CreateException ce) {
+      ce.printStackTrace(System.err);
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return -1;
+  }
 
 }

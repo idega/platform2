@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDOLookup;
 import com.idega.block.calendar.business.CalendarBusiness;
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
@@ -17,8 +18,6 @@ import is.idega.idegaweb.travel.business.*;
 import com.idega.util.text.*;
 import java.sql.SQLException;
 import java.util.*;
-import is.idega.idegaweb.travel.business.Booker;
-import is.idega.idegaweb.travel.business.Inquirer;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.service.tour.presentation.*;
 import is.idega.idegaweb.travel.service.tour.data.*;
@@ -40,16 +39,16 @@ public class Booking extends TravelManager {
   private IWResourceBundle iwrb;
 
   private Supplier supplier;
-    private int supplierId;
+  private int supplierId;
   private Reseller reseller;
-    private int resellerId;
+  private int resellerId;
   private Contract contract;
-    private int contractId;
+  private int contractId;
   private GeneralBooking booking;
-    private int bookingId;
+  private int bookingId;
 
   private Product product;
-    private int productId;
+  private int productId;
   private TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
 
   public static String BookingAction = "booking_action";
@@ -73,6 +72,8 @@ public class Booking extends TravelManager {
   public static int available = availableIfNoLimit;
 
   private idegaTimestamp stamp;
+  private int iMax = 0;
+  private int iBookings = 0;
 
   public Booking() {
   }
@@ -338,6 +339,7 @@ public class Booking extends TravelManager {
           table.add(Text.BREAK ,1,row);
 
           // Warning if no seats are available
+/*
           if (this.tour != null) {
             int seats = tour.getTotalSeats();
             boolean addWarning = false;
@@ -357,7 +359,16 @@ public class Booking extends TravelManager {
               table.add(overBookingWarning, 1, row);
             }
           }
+*/
 
+          ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+          ServiceDay sDay = sDayHome.create();
+          sDay = sDay.getServiceDay(this.productId, stamp.getDayOfWeek());
+
+          if ((this.iMax <= this.iBookings) && (this.iMax > 0)) {
+            table.add(super.getHeaderText(iwrb.getLocalizedString("travel.note_fully_booked","NOTE!!! Fully booked")), 1, row);
+            table.add(Text.BREAK ,1,row);
+          }
 
           table.add(Text.BREAK ,1,row);
           table.add(getBookingForm(iwc),1,row);
@@ -649,6 +660,7 @@ public class Booking extends TravelManager {
               available = iAvailable;
               availableTextBold.setText(Integer.toString(iAvailable));
             }
+
             iCount = iCount - iBooked;
 
           }
@@ -659,9 +671,26 @@ public class Booking extends TravelManager {
         else {
            try {
           if (TravelStockroomBusiness.getIfDay(iwc, this.product, this.product.getTimeframes(),this.stamp, false, true)) {
-            iCount = tour.getTotalSeats();
+            iCount = 0;
             iBooked = Booker.getNumberOfBookings(service.getID(), this.stamp);
             iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, true);
+
+            try {
+              ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+              ServiceDay sDay = sDayHome.create();
+              sDay = sDay.getServiceDay(this.productId, stamp.getDayOfWeek());
+              if (sDay != null) {
+                iCount = sDay.getMax();
+                if (iCount < 1) {
+                  iCount = tour.getTotalSeats();
+                }
+              }else {
+                iCount = tour.getTotalSeats();
+              }
+            }catch (Exception e) {
+              e.printStackTrace(System.err);
+              iCount = tour.getTotalSeats();
+            }
 
             if (supplier != null) {
               if (iCount >0) {
@@ -689,6 +718,9 @@ public class Booking extends TravelManager {
             tfnfe.printStackTrace(System.err);
       }
 
+
+      this.iMax = iCount;
+      this.iBookings = iBooked;
 
       table.add(dateText,1,row);
 
@@ -731,6 +763,7 @@ public class Booking extends TravelManager {
   }
 
   private Form getBookingForm(IWContext iwc) throws Exception{
+
     TourBookingForm tbf = new TourBookingForm(iwc,product);
     try {
       if (reseller != null) tbf.setReseller(reseller);

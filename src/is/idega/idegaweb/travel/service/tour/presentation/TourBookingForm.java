@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
 
+import com.idega.data.IDOLookup;
 import com.idega.data.IDOFinderException;
 import is.idega.idegaweb.travel.presentation.TravelManager;
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
@@ -56,6 +57,7 @@ public class TourBookingForm extends TravelManager {
   public static String parameterBookingId = is.idega.idegaweb.travel.presentation.Booking.parameterBookingId;
   public static String parameterUpdateBooking = "bookingUpdateBooking";
   private static String parameterBookAnyway = "bookingBookAnyway";
+  public static String parameterInquiry = "bookingInquiry";
   private static String parameterSendInquery = "bookingSendInquery";
   private static String parameterSupplierId = "bookingSupplierId";
   public static String parameterDepartureAddressId = "depAddrId";
@@ -73,6 +75,7 @@ public class TourBookingForm extends TravelManager {
   public static final int errorTooMany = -1;
   public static final int inquirySent = -10;
   public List errorDays = new Vector();
+  private boolean _useInquiryForm = false;
 
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
@@ -564,6 +567,61 @@ public class TourBookingForm extends TravelManager {
   }
 
   public Form getPublicBookingForm(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException {
+    int bookings = TourBooker.getNumberOfBookings(_productId, this._stamp);
+    int max = 0;
+    int min = 0;
+
+    try {
+      ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+      ServiceDay sDay = sDayHome.create();
+        sDay = sDay.getServiceDay(this._productId, stamp);
+      if (sDay != null) {
+        max = sDay.getMax();
+        min = sDay.getMin();
+        if (max < 1) {
+          max = _tour.getTotalSeats();
+        }
+        if (min < 1) {
+          min = _tour.getMinimumSeats();
+        }
+      }else {
+        max = _tour.getTotalSeats();
+        min = _tour.getMinimumSeats();
+      }
+    }catch (Exception e) {
+      e.printStackTrace(System.err);
+    }
+
+    /** ef ferd er fullbokud eda ef ferd er vanbokud */
+    if ((max > 0 && max <= bookings) || (min > 0 && min > bookings) ){
+      _useInquiryForm = true;
+    }
+
+    return getPublicBookingFormPrivate(iwc, product, stamp);
+  }
+/*
+  private Form getInquiryForm(IWContext iwc, Product product, idegaTimestamp stamp) {
+    Form form = new Form();
+    Table table = new Table();
+      table.setCellpadding(0);
+      table.setCellspacing(6);
+      table.setBorder(0);
+      table.setWidth("100%");
+    form.add(table);
+
+    if (stamp != null) {
+      form.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
+      form.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
+      form.addParameter(CalendarBusiness.PARAMETER_DAY,stamp.getDay());
+    }
+
+    int row = 1;
+    table.add(getText("Hmm gera bóku, is_valid = false... senda inquiry ... fattaru.... jamm besta leiðin og eina"), 1, row);
+
+    return form;
+  }*/
+
+  private Form getPublicBookingFormPrivate(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, SQLException {
     Form form = new Form();
     Table table = new Table();
       table.setCellpadding(0);
@@ -581,14 +639,14 @@ public class TourBookingForm extends TravelManager {
       boolean isDay = true;
 
       isDay = TourBusiness.getIfDay(iwc, _tour, stamp, false);
-
+/*
       if (isDay) {
         if (_tour.getTotalSeats() > 0)
         if (_tour.getTotalSeats() <= Booker.getNumberOfBookings(_tour.getID(), stamp) ) {
           isDay = false;
         }
       }
-
+*/
       List addresses;
       try {
         addresses = ProductBusiness.getDepartureAddresses(_product, false);
@@ -616,6 +674,12 @@ public class TourBookingForm extends TravelManager {
       Text notAvailSeats = (Text) theText.clone();
         notAvailSeats.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats","There are no available seats "));
 
+      Text inquiryText = (Text) theBoldText.clone();
+        inquiryText.setText(iwrb.getLocalizedString("travel.attention","Attention!"));
+        //inquiryText.setText(iwrb.getLocalizedString("travel.please_fill_out_inquiry_form","An inquiry must be sent. Please fill out the inquiry form, or select another day."));
+      Text inquiryExplain = (Text) theText.clone();
+        inquiryExplain.setText(iwrb.getLocalizedString("travel.inquiry_explain","A departure on the selected day cannot be guarenteed. By filling out this form you will send us your request and we will try to meet your requirements.\nYou can also select another day from the calendar."));
+
       Text dateText = (Text) theBoldText.clone();
         dateText.setText(stamp.getLocaleDate(iwc));
         dateText.addToText("."+Text.NON_BREAKING_SPACE);
@@ -642,9 +706,15 @@ public class TourBookingForm extends TravelManager {
 
 
           if (isDay) {
-            table.add(availSeats,1,row);
-            table.add(dateText,1,row);
-            table.add(pleaseBook,1,row);
+            if (_useInquiryForm) {
+              table.add(inquiryText, 1, row);
+              table.add(Text.BREAK, 1, row);
+              table.add(inquiryExplain, 1, row);
+            }else {
+              table.add(availSeats,1,row);
+              table.add(dateText,1,row);
+              table.add(pleaseBook,1,row);
+            }
             ++row;
 
           String star = " * ";
@@ -662,7 +732,7 @@ public class TourBookingForm extends TravelManager {
               areaCodeText.setText(star);
               areaCodeText.addToText(iwrb.getLocalizedString("travel.area_code","area code"));
           Text emailText = (Text) theText.clone();
-              //emailText.setText(star);
+              emailText.setText(star);
               emailText.addToText(iwrb.getLocalizedString("travel.email","e-mail"));
           Text telNumberText = (Text) theText.clone();
               telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
@@ -1014,50 +1084,56 @@ public class TourBookingForm extends TravelManager {
             Text ccSlash = (Text) theText.clone();
               ccSlash.setText(" / ");
 
-          ++row;
-          table.mergeCells(1,row,6,row);
-          table.add(hr,1,row);
-          ++row;
-          table.mergeCells(1,row,6,row);
-          subHeader = (Text) theBoldText.clone();
-            subHeader.setFontColor(WHITE);
-            subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
-            subHeader.addToText(Text.NON_BREAKING_SPACE);
-          Text starTextTwo = (Text) theText.clone();
-            starTextTwo.setFontColor(WHITE);
-            starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_only","Visa and Eurocard only.")+")");
-          table.add(subHeader,1,row);
-          table.add(starTextTwo,1,row);
-          table.setAlignment(1,row,"left");
-          ++row;
+
+            // CREDITCARD STUFF
+            if (this._useInquiryForm) {
+              table.add(new HiddenInput(this.parameterInquiry,"true"), 1, row);
+            }else {
+              ++row;
+              table.mergeCells(1,row,6,row);
+              table.add(hr,1,row);
+              ++row;
+              table.mergeCells(1,row,6,row);
+              subHeader = (Text) theBoldText.clone();
+                subHeader.setFontColor(WHITE);
+                subHeader.setText(iwrb.getLocalizedString("travel.booking_creditcard_info","Creditcard infomation"));
+                subHeader.addToText(Text.NON_BREAKING_SPACE);
+              Text starTextTwo = (Text) theText.clone();
+                starTextTwo.setFontColor(WHITE);
+                starTextTwo.setText("("+iwrb.getLocalizedString("travel.visa_eurocard_only","Visa and Eurocard only.")+")");
+              table.add(subHeader,1,row);
+              table.add(starTextTwo,1,row);
+              table.setAlignment(1,row,"left");
+              ++row;
 
 
-            Text month = (Text) super.theSmallBoldText.clone();
-              month.setText(iwrb.getLocalizedString("travel.month","Month"));
-            Text year = (Text) super.theSmallBoldText.clone();
-              year.setText(iwrb.getLocalizedString("travel.year","Year"));
-            table.add(month,4,row);
-            table.add(ccSlash,5,row);
-            table.add(year,6,row);
+              Text month = (Text) super.theSmallBoldText.clone();
+                month.setText(iwrb.getLocalizedString("travel.month","Month"));
+              Text year = (Text) super.theSmallBoldText.clone();
+                year.setText(iwrb.getLocalizedString("travel.year","Year"));
+              table.add(month,4,row);
+              table.add(ccSlash,5,row);
+              table.add(year,6,row);
 
-            table.setBorder(0);
-//            table.setWidth(4,"2");
-            table.setAlignment(4,row,"right");
-            table.setWidth(5,"2");
+              table.setBorder(0);
+            //            table.setWidth(4,"2");
+              table.setAlignment(4,row,"right");
+              table.setWidth(5,"2");
 
-            ++row;
-            table.add(ccText,1,row);
-            table.add(ccNumber,2,row);
-            table.add(ccMY,3,row);
+              ++row;
+              table.add(ccText,1,row);
+              table.add(ccNumber,2,row);
+              table.add(ccMY,3,row);
 
-            table.add(ccMonth,4,row);
-            table.add(ccSlash,5,row);
-            table.add(ccYear,6,row);
+              table.add(ccMonth,4,row);
+              table.add(ccSlash,5,row);
+              table.add(ccYear,6,row);
 
-            table.setAlignment(1,row,"right");
-            table.setAlignment(2,row,"left");
-            table.setAlignment(3,row,"right");
-            table.setAlignment(4,row,"right");
+              table.setAlignment(1,row,"right");
+              table.setAlignment(2,row,"left");
+              table.setAlignment(3,row,"right");
+              table.setAlignment(4,row,"right");
+            }
 
             if (super.user != null) {
               ++row;
@@ -1092,7 +1168,11 @@ public class TourBookingForm extends TravelManager {
             if (_booking != null) {
               table.add(new SubmitButton(iwrb.getImage("buttons/update.gif"), this.sAction, this.parameterSaveBooking),6,row);
             }else {
-              table.add(new SubmitButton(iwrb.getImage("buttons/book.gif"), this.sAction, this.parameterSaveBooking),6,row);
+              if (this._useInquiryForm) {
+                table.add(new SubmitButton(iwrb.getLocalizedImageButton("travel.send_inquiry","Semd Inquiry"), this.sAction, this.parameterSaveBooking),6,row);
+              }else {
+                table.add(new SubmitButton(iwrb.getImage("buttons/book.gif"), this.sAction, this.parameterSaveBooking),6,row);
+              }
             }
             table.add(new HiddenInput(this.BookingAction,this.BookingParameter),6,row);
 
@@ -1179,6 +1259,8 @@ public class TourBookingForm extends TravelManager {
       form.maintainParameter(this.parameterCCYear);
       form.maintainParameter(this.parameterDepartureAddressId);
       form.maintainParameter(this.sAction);
+      form.maintainParameter(this.parameterInquiry);
+      form.maintainParameter(parameterFromDate);
       if (withBookingAction)
       form.maintainParameter(this.BookingAction);
       ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, false);
@@ -1197,6 +1279,10 @@ public class TourBookingForm extends TravelManager {
   }
 
   public int checkBooking(IWContext iwc, boolean saveBookingIfValid) throws Exception {
+    return checkBooking(iwc, saveBookingIfValid, false);
+  }
+
+  public int checkBooking(IWContext iwc, boolean saveBookingIfValid, boolean bookIfTooMany) throws Exception {
     boolean tooMany = false;
 //    String sAvailable = iwc.getParameter("available");
 
@@ -1236,7 +1322,7 @@ public class TourBookingForm extends TravelManager {
     idegaTimestamp fromStamp = null;
     idegaTimestamp toStamp = null;
     int betw = 1;
-    int totalSeats = _tour.getTotalSeats();
+    int totalSeats = 0;
 
     try {
       fromStamp = new idegaTimestamp(fromDate);
@@ -1244,6 +1330,18 @@ public class TourBookingForm extends TravelManager {
       if (iManyDays < 1) betw = 1;
       else betw = iManyDays;
     }catch (Exception e) {}
+
+    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+    ServiceDay sDay = sDayHome.create();
+    sDay = sDay.getServiceDay(serviceId, fromStamp.getDayOfWeek());
+    if (sDay != null) {
+      totalSeats = sDay.getMax();
+      if (totalSeats < 1) {
+        totalSeats = _tour.getTotalSeats();
+      }
+    }else {
+      totalSeats = _tour.getTotalSeats();
+    }
 
     iMany -= previousBookings;
 
@@ -1275,7 +1373,7 @@ public class TourBookingForm extends TravelManager {
 //    debug("saveBookingIfValid = "+saveBookingIfValid);
 //    debug("tooMany            = "+tooMany);
 
-    if (tooMany) {
+    if (tooMany && !bookIfTooMany) {
       return this.errorTooMany;
     }else {
       if (saveBookingIfValid) {
@@ -1347,6 +1445,7 @@ public class TourBookingForm extends TravelManager {
   public int handleInsert(IWContext iwc) throws Exception{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
+    String inquiry = iwc.getParameter(this.parameterInquiry);
     //debug("check  = "+check);
     //debug("action = "+action);
 
@@ -1360,7 +1459,25 @@ public class TourBookingForm extends TravelManager {
     if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
-          return checkBooking(iwc, true);
+          if (inquiry == null) {
+            return checkBooking(iwc, true);
+          }else {
+            int checkInt = checkBooking(iwc, true, true);
+            ///// INquiry STUFF JAMMS
+            if (checkInt > 0) {
+              int inqId = this.sendInquery(iwc, checkInt, true);
+              int resp = Inquirer.sendInquiryEmails(iwc, iwrb, inqId);
+              /** @todo senda email....grrrr */
+              if (resp == 0) {
+                return this.inquirySent;
+              }else {
+                debug("RESP = "+resp);
+                throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
+              }
+            }else {
+              throw new Exception(iwrb.getLocalizedString("travel.inquiry_failed","Inquiry failed"));
+            }
+          }
         }else if (action.equals(this.parameterBookAnyway)) {
           return saveBooking(iwc);
         }else if (action.equals(this.parameterSendInquery)) {
@@ -1378,8 +1495,8 @@ public class TourBookingForm extends TravelManager {
     }else {
       return 0;
     }
-
   }
+
 
   public int saveBooking(IWContext iwc) throws SQLException {
       String surname = iwc.getParameter("surname");
@@ -1436,6 +1553,7 @@ public class TourBookingForm extends TravelManager {
       String many;
       int iMany = 0;
       int iHotelId;
+
 
 //      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
       ProductPrice[] pPrices = {};
@@ -1627,7 +1745,12 @@ public class TourBookingForm extends TravelManager {
       return returner;
   }
 
+
   public int sendInquery(IWContext iwc) throws Exception {
+    return sendInquery(iwc, -1, false);
+  }
+
+  public int sendInquery(IWContext iwc, int bookingId, boolean returnInquiryId) throws Exception {
     String surname = iwc.getParameter("surname");
     String lastname = iwc.getParameter("lastname");
     String address = iwc.getParameter("address");
@@ -1653,7 +1776,9 @@ public class TourBookingForm extends TravelManager {
       idegaTimestamp toStamp = new idegaTimestamp(fromStamp);
         toStamp.addDays(iManyDays);
 
-      int bookingId = saveBooking(iwc);
+      if (bookingId == -1) {
+        bookingId = saveBooking(iwc);
+      }
 
       GeneralBooking gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHomeLegacy(GeneralBooking.class)).findByPrimaryKeyLegacy(bookingId);
       List bookings = Booker.getMultibleBookings(gBooking);
@@ -1661,23 +1786,31 @@ public class TourBookingForm extends TravelManager {
 
       int numberOfSeats = gBooking.getTotalCount();
       int counter = 0;
+      int inquiryId = 0;
 
       while (toStamp.isLaterThan(fromStamp)) {
         booking = (Booking) bookings.get(counter);
         booking.setIsValid(false);
         booking.update();
 
-        Inquirer.sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, booking.getID(), _reseller);
+        inquiryId = Inquirer.sendInquery(surname+" "+lastname, email, fromStamp, _product.getID() , numberOfSeats, booking.getID(), _reseller);
 
         if (_tour != null) {
           fromStamp = TourBusiness.getNextAvailableDay(iwc, _tour, _product, fromStamp);
+          if (fromStamp == null) {
+            break;
+          }
         }else {
           fromStamp.addDays(1);
         }
         ++counter;
       }
 
+      if (returnInquiryId) {
+        return inquiryId;
+      }else {
         return bookingId;
+      }
     }catch (SQLException sql) {
       sql.printStackTrace();
       return -1;
