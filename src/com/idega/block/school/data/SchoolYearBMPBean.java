@@ -203,7 +203,7 @@ public class SchoolYearBMPBean extends GenericEntity implements SchoolYear {
 		}
 		sql.appendAndEquals("y." + getIDColumnName(), "sy." + getIDColumnName());
 		sql.appendAndEquals("sy.sch_school_id", school);
-		sql.appendOrderBy(getIDColumnName());
+		sql.appendOrderBy("y." + getIDColumnName());
 		return super.idoFindPKsByQuery(sql);
 	}
 
