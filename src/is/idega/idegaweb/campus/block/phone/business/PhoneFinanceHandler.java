@@ -19,6 +19,7 @@ import com.idega.data.EntityBulkUpdater;
 import com.idega.data.SimpleQuerier;
 import com.idega.util.idegaTimestamp;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -48,6 +49,26 @@ public class PhoneFinanceHandler implements FinanceHandler{
   }
 
   public boolean rollbackAssessment(int iAssessmentRoundId){
+    StringBuffer sql = new StringBuffer("update ").append(AccountPhoneEntry.getEntityTableName());
+    sql.append(" set ").append(AccountPhoneEntry.getColumnNameAccountEntryId()).append(" = null ");
+    sql.append(" , ").append(AccountPhoneEntry.getRoundIdColumnName()).append(" = null ");
+    sql.append(" , ").append(AccountPhoneEntry.getColumnNameStatus()).append(" = '").append(AccountPhoneEntry.statusRead).append("'");
+    sql.append(" where ").append(AccountPhoneEntry.getRoundIdColumnName()).append(" = ").append(iAssessmentRoundId);
+    System.err.println(sql.toString());
+    try{
+      SimpleQuerier.execute(sql.toString());
+      SimpleQuerier.execute(getSQLString(iAssessmentRoundId));
+      SimpleQuerier.execute("delete from fin_acc_entry where fin_assessment_round_id = "+iAssessmentRoundId);
+      SimpleQuerier.execute("delete from fin_assessment_round where fin_assessment_round_id = "+iAssessmentRoundId);
+
+     return true;
+    }
+    catch(Exception ex){
+     ex.printStackTrace();
+    }
+    return false;
+
+    /*
     EntityBulkUpdater bulk = new EntityBulkUpdater();
     Hashtable H = new Hashtable();
     Vector V = new Vector();
@@ -97,6 +118,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
 
     }
     return false;
+    */
   }
 
   public static List listOfContractAccounts(){
@@ -109,12 +131,143 @@ public class PhoneFinanceHandler implements FinanceHandler{
    }
   }
 
+  public Map getMapOfContractsAccountsByPhoneAccountId(List listOfContractAccounts){
+    if(listOfContractAccounts!=null){
+      Iterator iter = listOfContractAccounts.iterator();
+      ContractAccounts conAcc ;
+      Hashtable H = new Hashtable(listOfContractAccounts.size());
+      while(iter.hasNext()){
+        conAcc = (ContractAccounts) iter.next();
+        H.put(new Integer(conAcc.getPhoneAccountId()),conAcc);
+      }
+      return H;
+    }
+    return null;
+  }
+
   public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate,idegaTimestamp start,idegaTimestamp end){
     List listOfAccounts = CampusAccountFinder.listOfContractAccounts(start,end);
+
     //List listOfAccounts = listOfContractAccounts();
     if(listOfAccounts != null){
-      //System.err.println("phoneaccounts :"+listOfUsers.size());
+      System.err.println("Accounts not null");
+      Map M = getMapOfContractsAccountsByPhoneAccountId(listOfAccounts);
+      Map E = new HashMap(listOfAccounts.size());
+      List entries = FinanceFinder.getInstance().listOfUnBilledPhoneEntries(-1,start,end);
 
+      AccountPhoneEntry ape;
+      ContractAccounts accounts;
+      if(entries != null){
+        System.err.println("Entries not null ");
+        AssessmentRound AR = null;
+
+        int iRoundId = -1;
+        int iAccountCount = 0;
+        try {
+            AR = new AssessmentRound();
+            AR.setAsNew(roundName);
+            AR.setCategoryId(iCategoryId);
+            AR.setTariffGroupId(iTariffGroupId);
+            AR.setType(getAccountType());
+            AR.insert();
+            iRoundId = AR.getID();
+          }
+          catch (SQLException ex) {
+            ex.printStackTrace();
+            try {
+              AR.delete();
+            }
+            catch (SQLException ex2) {
+              ex2.printStackTrace();
+              AR = null;
+            }
+          }
+
+       if(AR != null){
+        javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
+
+        try{
+          t.begin();
+            AccountKey AK = new AccountKey(iAccountKeyId);
+            TariffKey TK = new TariffKey(AK.getTariffKeyId());
+            Integer phAccId;
+            Iterator iter = entries.iterator();
+            AccountEntry AE;
+            while(iter.hasNext()){
+              ape = (AccountPhoneEntry) iter.next();
+              phAccId = new Integer(ape.getAccountId());
+              if(M.containsKey(phAccId)){
+                accounts = (ContractAccounts) M.get(phAccId);
+                if(E.containsKey(phAccId)){
+                  AE = (AccountEntry) E.get(phAccId);
+                  AE.setNetto(AE.getNetto()+ape.getPrice());
+                }
+                else{
+                  AE = insertEntry(accounts.getFinanceAccountId(),iRoundId,paydate,ape.getPrice(),AK,TK,iCashierId);
+                  E.put(phAccId,AE);
+                }
+                ape.setAccountEntryId(AE.getID());
+                ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
+                ape.setStatus(ape.statusBilled);
+                ape.setRoundId(iRoundId);
+                ape.update();
+              }
+            }
+
+            if(E.size() >0){
+
+              Iterator ents = E.entrySet().iterator();
+              AccountEntry entry;
+              AccountPhoneEntry phoneEntry;
+              Map.Entry me;
+              Integer AccountId;
+              while(ents.hasNext()){
+                me = (Map.Entry) ents.next();
+                entry = (AccountEntry) me.getValue();
+                AccountId = (Integer) me.getKey();
+                entry.setTotal(entry.getNetto()*tax);
+                phoneEntry = new AccountPhoneEntry();
+                phoneEntry.setAccountId(AccountId.intValue());
+                phoneEntry.setPrice(-1*entry.getNetto());
+                phoneEntry.setRoundId(iRoundId);
+                phoneEntry.setAccountEntryId(entry.getID());
+                phoneEntry.setStatus(phoneEntry.statusBilled);
+                phoneEntry.insert();
+                entry.update();
+              }
+            }
+            t.commit();
+            return true;
+          }
+          catch(Exception e) {
+            try {
+              t.rollback();
+            }
+            catch(javax.transaction.SystemException ex) {
+              ex.printStackTrace();
+            }
+            try {
+              AR.delete();
+            }
+            catch (Exception ex2) {
+              ex2.printStackTrace();
+
+            }
+            e.printStackTrace();
+          }
+        }
+
+      }
+      else
+        System.err.println("Entries  null ");
+
+    }
+
+
+    return false;
+   }
+
+      /*
       Iterator I = listOfAccounts.iterator();
       ContractAccounts accounts;
       AssessmentRound AR = null;
@@ -167,6 +320,7 @@ public class PhoneFinanceHandler implements FinanceHandler{
                   ape.setAccountEntryId(AE.getID());
                   ape.setLastUpdated(idegaTimestamp.getTimestampRightNow());
                   ape.setStatus(ape.statusBilled);
+                  ape.setRoundId(iRoundId);
                   ape.update();
                 }
                 //System.err.println("totalAmount : "+totalAmount);
@@ -204,8 +358,9 @@ public class PhoneFinanceHandler implements FinanceHandler{
         }
     }
     return false;
+    */
 
-  }
+
 
   public String getSQLString(int iAssessmentRound){
     StringBuffer sql = new StringBuffer("update fin_phone_entry p ");
@@ -253,13 +408,13 @@ public class PhoneFinanceHandler implements FinanceHandler{
     */
   }
 
-  private static AccountEntry insertKreditEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float amount,AccountKey key,TariffKey tkey,int iCashierId) throws SQLException{
+  private static AccountEntry insertEntry(int iAccountId,int iRoundId,idegaTimestamp itPaydate,float nettoamount,AccountKey key,TariffKey tkey,int iCashierId) throws SQLException{
     AccountEntry AE = new AccountEntry();
     AE.setAccountId(iAccountId);
     AE.setAccountKeyId(key.getID());
     AE.setCashierId(iCashierId);
     AE.setLastUpdated(idegaTimestamp.getTimestampRightNow());
-    AE.setPrice(-amount);
+    AE.setNetto(nettoamount);
     AE.setRoundId(iRoundId);
     AE.setName(tkey.getName());
     AE.setInfo(tkey.getInfo());

@@ -45,6 +45,8 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
 
   private Image image ;
 
+  private float tax = 1.245f;
+
   private String sHeaderColor,sDarkColor,sLightColor,sWhiteColor;
   private String sTextColor,sHeaderTextColor;
   private String sDebetColor,sKreditColor;
@@ -233,9 +235,12 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
           accountLink.addParameter(prmUserId,account.getUserId());
         T.add(accountLink,col++,row);
         T.add(tf.format(eUser.getName()),col++,row);
-        T.add(tf.format(getDateString(new idegaTimestamp(eAccount.getLastUpdated()))),col++,row);
+        T.add(tf.format(getDateString(new idegaTimestamp(account.getLastUpdated()))),col++,row);
         float b = eAccount.getBalance();
-        boolean debet = b > 0?true:false;
+        if(account.getAccountType().equals(Account.typePhone))
+          b = FinanceFinder.getInstance().getPhoneAccountBalance(account.getAccountId())*tax;
+
+        boolean debet = b > 0 ? true:false;
         T.add(tf.format(NF.format( (double) b)),col++,row);
         row++;
       }
@@ -579,13 +584,13 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     boolean debet = false;
     if(listEntries != null){
       int len = listEntries.size();
-      float totPrice = 0;
+      double totPrice = 0;
       for(int j = 0; j < len; j++){
         AccountEntry entry = (AccountEntry) listEntries.get(j);
         TableTexts[0] = new Text(getDateString(new idegaTimestamp(entry.getLastUpdated())));
         TableTexts[1] = new Text(entry.getName());
         TableTexts[2] = new Text(entry.getInfo());
-        float p = entry.getTotal();
+        double p = entry.getTotal();
         debet = p > 0 ? true : false ;
         totPrice += p;
         TableTexts[3] = new Text(NF.format(p));
@@ -662,11 +667,11 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     boolean debet = false;
     if(listEntries != null){
       int len = listEntries.size();
-      float totPrice = 0;
+      double totPrice = 0;
       int row = 3;
       for(int j = 0; j < len; j++){
         AccountEntry entry = (AccountEntry) listEntries.get(j);
-        float p = entry.getTotal();
+        double p = entry.getTotal();
         debet = p > 0 ? true : false ;
         totPrice += p;
         T.add(formatText(getDateString(new idegaTimestamp(entry.getLastUpdated()))),1,row );
@@ -742,7 +747,7 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     }
 
 
-    listAccount = FinanceFinder.getInstance().listOfFinanceAccountByUserId(iUserId);
+    listAccount = FinanceFinder.getInstance().listOfFinanceAccountsByUserId(iUserId);
       /*
     if(iUserId <= 0){
       if(iwc.getParameter(prmUserId)!=null){

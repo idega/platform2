@@ -27,9 +27,12 @@ import java.util.Vector;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.HashMap;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
+import com.idega.core.user.data.User;
 
 /**
  * Title:
@@ -341,33 +344,56 @@ public class TariffAssessments extends Block {
     return T;
   }
 
+  private Map mapOfAccountUsers(int iAssessmentRoundId){
+    List L = FinanceFinder.getInstance().listOfAccountUsersByRoundId(iAssessmentRoundId);
+    if(L!=null){
+      Iterator iter = L.iterator();
+      Map map = new java.util.HashMap();
+      User u ;
+      while(iter.hasNext()){
+        u = (User) iter.next();
+        map.put(new Integer(u.getID()),u);
+      }
+      return map;
+    }
+    return null;
+  }
+
   private PresentationObject getTableOfAssessmentAccounts(IWContext iwc){
     Table T = new Table();
     String id = iwc.getParameter("ass_round_id");
     if(id != null){
-      List L = Finder.listOfAccountsInfoInAssessmentRound(Integer.parseInt(id));
+      int ID = Integer.parseInt(id);
+      List L = FinanceFinder.getInstance().listOfAccountsInfoInAssessmentRound(ID);
       //List L = null ;//CampusAccountFinder.listOfContractAccountApartmentsInAssessment(Integer.parseInt(id));
       if(L!= null){
+        Map users = mapOfAccountUsers(ID);
         int len = L.size();
-        T.add(Edit.formatText(iwrb.getLocalizedString("account_name","Account name")),1,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("user_name","User name")),1,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("account_name","Account name")),2,1);
         //T.add(Edit.titleText(iwrb.getLocalizedString("account_stamp","Last updated")),2,1);
-        T.add(Edit.formatText(iwrb.getLocalizedString("last_updated","Last updated")),2,1);
-        T.add(Edit.formatText(iwrb.getLocalizedString("totals","Balance")),3,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("last_updated","Last updated")),3,1);
+        T.add(Edit.formatText(iwrb.getLocalizedString("totals","Balance")),4,1);
 
         int col = 1;
         int row = 2;
         AccountInfo A;
-        java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
+        java.text.NumberFormat nf=  java.text.NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
         float total = 0;
+        String username;
         for (int i = 0; i < len; i++) {
           col = 1;
+          username = "";
           A = (AccountInfo) L.get(i);
+
+          if(users.containsKey(new Integer(A.getUserId())))
+            username = ((User) users.get(new Integer(A.getUserId()))).getName();
           Link li = new Link(Edit.formatText(A.getName()));
           li.addParameter("ass_round_id",id);
           li.addParameter("ass_acc_id",A.getAccountId());
           li.addParameter(strAction,ACT7);
+          T.add(Edit.formatText(username),col++,row);
           T.add(li,col++,row);
-
           T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
           T.add(Edit.formatText(nf.format(A.getBalance())),col++,row);
           total += A.getBalance();
@@ -379,7 +405,7 @@ public class TariffAssessments extends Block {
         T.setCellspacing(1);
         T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
         T.setRowColor(1,Edit.colorMiddle);
-        T.setColumnAlignment(3,"right");
+        T.setColumnAlignment(4,"right");
         row++;
       }
       else
@@ -453,18 +479,21 @@ public class TariffAssessments extends Block {
     DateInput di = new DateInput("pay_date",true);
     di.setStyleAttribute("type",Edit.styleAttribute);
     idegaTimestamp today = idegaTimestamp.RightNow();
+    di.setYearRange(today.getYear()-2,today.getYear()+3);
     today.addMonths(1);
     di.setDate(new idegaTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
 
     DateInput start = new DateInput("start_date",true);
     start.setStyleAttribute("type",Edit.styleAttribute);
     idegaTimestamp today1 = idegaTimestamp.RightNow();
+    start.setYearRange(today1.getYear()-2,today1.getYear()+3);
     today1.addMonths(1);
     start.setDate(new idegaTimestamp(1,today.getMonth(),today.getYear()).getSQLDate());
 
     DateInput end = new DateInput("end_date",true);
     end.setStyleAttribute("type",Edit.styleAttribute);
     idegaTimestamp today2 = idegaTimestamp.RightNow();
+    end.setYearRange(today2.getYear()-2,today2.getYear()+3);
     today2.addMonths(1);
     idegaCalendar cal = new idegaCalendar();
     int day = cal.getLengthOfMonth(today2.getMonth(),today2.getYear());

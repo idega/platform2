@@ -573,24 +573,60 @@ public class FinanceFinder  {
 
   }
 
-  public List listOfFinanceAccountByUserId(int iUserId){
+  public List listOfFinanceAccountsByUserId(int iUserId){
     try {
-      EntityFinder.debug = true;
-      List L = EntityFinder.getInstance().findAllByColumn(AccountInfo.class,AccountInfo.getColumnUserId(),iUserId);
-      if(L==null || L.size()==0)
-        L = listOfAccountByUserId(iUserId);
-      return L;
+      List F = listOfFinanceAccountByUserId(iUserId);
+      List P = listOfPhoneAccountByUserId(iUserId);
+      if(F==null || F.size()==0)
+        F = listOfAccountByUserId(iUserId);
+      else if(P!=null)
+        F = P;
+      return F;
     }
-    catch (IDOFinderException ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
     return null;
 
   }
 
+  public List listOfFinanceAccountByUserId(int iUserId){
+    try {
+      StringBuffer sql = new StringBuffer("select * from ");
+      sql.append(AccountInfo.getEntityTableName());
+      sql.append(" where ").append(AccountInfo.getColumnType()).append(" = '").append(Account.typeFinancial).append("'");
+      sql.append(" and ").append(AccountInfo.getColumnUserId()).append(" = ").append(iUserId);
+      EntityFinder.debug = true;
+      List L =  EntityFinder.getInstance().findAll(AccountInfo.class,sql.toString());
+      EntityFinder.debug = false;
+      return L;
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+  }
+
+  public List listOfPhoneAccountByUserId(int iUserId){
+    try {
+      StringBuffer sql = new StringBuffer("select * from ");
+      sql.append(Account.getEntityTableName());
+      sql.append(" where ").append(Account.getTypeColumnName()).append(" = '").append(Account.typePhone).append("' ");
+      sql.append(" and ").append(Account.getUserIdColumnName()).append(" = ").append(iUserId);
+
+      EntityFinder.debug = true;
+      List L =  EntityFinder.getInstance().findAll(Account.class,sql.toString());
+      EntityFinder.debug = false;
+      return L;
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+    }
+    return null;
+  }
+
    public List listOfAccountByUserId(int iUserId){
     try {
-      EntityFinder.debug = true;
       return EntityFinder.getInstance().findAllByColumn(Account.class,Account.getUserIdColumnName(),iUserId);
     }
     catch (IDOFinderException ex) {
@@ -625,19 +661,33 @@ public class FinanceFinder  {
    public List listOfUnBilledPhoneEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
     StringBuffer sql = new StringBuffer("select * from ");
     sql.append(AccountPhoneEntry.getEntityTableName());
-    sql.append(" where ");
-    sql.append(AccountPhoneEntry.getColumnNameAccountId());
-    sql.append(" = ");
-    sql.append(iAccountId);
+    boolean where = false;
+    if(iAccountId > 0){
+      sql.append(" where ");
+      where = true;
+      sql.append(AccountPhoneEntry.getColumnNameAccountId());
+      sql.append(" = ");
+      sql.append(iAccountId);
+    }
     if(from !=null){
-      sql.append(" and ");
+      if(where)
+        sql.append(" and ");
+      else{
+        sql.append(" where ");
+        where = true;
+      }
       sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
       sql.append(" >= '");
       sql.append(from.getSQLDate());
       sql.append("'");
     }
     if(to != null){
-      sql.append(" and ");
+      if(where)
+        sql.append(" and ");
+      else{
+        sql.append(" where ");
+        where = true;
+      }
       sql.append(AccountPhoneEntry.getColumnNamePhonedStamp());
       sql.append(" <= '");
       sql.append(to.getSQLDate());
@@ -646,7 +696,7 @@ public class FinanceFinder  {
     sql.append(" and ");
     sql.append(AccountPhoneEntry.getColumnNameAccountEntryId());
     sql.append(" is null ");
-    //System.err.println(sql.toString());
+    System.err.println(sql.toString());
     List A = null;
     try{
         A = EntityFinder.findAll(new AccountPhoneEntry(),sql.toString());
@@ -655,5 +705,76 @@ public class FinanceFinder  {
     return A;
   }
 
+  public float getPhoneAccountBalance(int iAccountId){
+    String sql = "select sum(total_price) from fin_phone_entry where fin_account_id = "+iAccountId;
+    try {
+      String[] s = com.idega.data.SimpleQuerier.executeStringQuery(sql);
+      if(s!=null && s.length > 0)
+        return Float.parseFloat(s[0]);
+    }
+    catch (Exception ex) {
+
+    }
+    return 0;
+  }
+
+  public  List listOfAccountsInfoInAssessmentRound(int roundid){
+    StringBuffer sql = new StringBuffer("select distinct a.* ");
+    sql.append(" from fin_account_info a,fin_acc_entry e,fin_assessment_round r ");
+    sql.append(" where a.account_id = e.fin_account_id ");
+    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
+    sql.append(" and r.fin_assessment_round_id = ");
+    sql.append(roundid);
+    try {
+      return EntityFinder.getInstance().findAll(AccountInfo.class,sql.toString());
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+
+  }
+
+
+  public List listOfAccountsInAssessmentRound(int roundid){
+    StringBuffer sql = new StringBuffer("select distinct a.* ");
+    sql.append(" from fin_account a,fin_acc_entry e,fin_assessment_round r ");
+    sql.append(" where a.fin_account_id = e.fin_account_id ");
+    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
+    sql.append(" and r.fin_assessment_round_id = ");
+    sql.append(roundid);
+    try {
+      return EntityFinder.findAll(new Account(),sql.toString());
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+
+  }
+
+  public List listOfAccountUsersByRoundId(int roundId){
+    StringBuffer sql = new StringBuffer("select distinct u.* ");
+    sql.append(" from fin_account a,fin_acc_entry e,fin_assessment_round r,ic_user u ");
+    sql.append(" where a.fin_account_id = e.fin_account_id ");
+    sql.append(" and e.fin_assessment_round_id = r.fin_assessment_round_id ");
+    sql.append(" and a.ic_user_id = u.ic_user_id");
+    sql.append(" and r.fin_assessment_round_id = ");
+    sql.append(roundId);
+    try {
+      return EntityFinder.getInstance().findAll(User.class,sql.toString());
+    }
+    catch (IDOFinderException ex) {
+      ex.printStackTrace();
+      return null;
+    }
+  }
+/*
+  public List listOfPhoneEntriesInAssessment(){
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(AccountPhoneEntry.getEntityTableName()).append(" e,");
+    sql.append()
+  }
+*/
 
 }// class FinanceFinder

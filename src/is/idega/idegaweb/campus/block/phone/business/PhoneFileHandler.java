@@ -290,7 +290,7 @@ public class PhoneFileHandler {
         javax.transaction.TransactionManager t = com.idega.transaction.IdegaTransactionManager.getInstance();
         try{
           t.begin();
-
+          int entryFactor = -1;
           String line = null;
           StringTokenizer st;
           StringBuffer sbError = new StringBuffer(),sbNoAccount = new StringBuffer();;
@@ -332,7 +332,7 @@ public class PhoneFileHandler {
                 ape.setMainNumber(anumber);
                 ape.setPhonedStamp(stamp.getTimestamp());
                 ape.setPhoneNumber(bnumber);
-                ape.setPrice(price);
+                ape.setPrice(entryFactor*price);
                 ape.setSubNumber(snumber);
                 ape.setStatus(ape.statusUnread);
                 cont = true;
