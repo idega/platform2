@@ -53,7 +53,9 @@ private boolean _showVotes;
 private boolean _showCollection;
 private idegaTimestamp _date;
 private Image _linkImage;
+private Image _questionImage;
 private boolean _showInformation = false;
+private String _questionAlignment;
 
 public static final int RADIO_BUTTON_VIEW = 1;
 public static final int LINK_VIEW = 2;
@@ -266,13 +268,25 @@ private int _layout = RADIO_BUTTON_VIEW;
       pollTable.setCellpadding(3);
       pollTable.setCellspacing(0);
       pollTable.setWidth(_pollWidth);
-      pollTable.setAlignment(1,1,"center");
+      pollTable.setAlignment(1,1,_questionAlignment);
     int pollRow = 1;
 
     Text question = new Text(locText.getHeadline());
       question.setFontStyle(_questionStyleAttribute);
 
-    pollTable.add(question,1,pollRow);
+    if ( _questionImage != null ) {
+      Table questionTable = new Table(3,1);
+        questionTable.setCellpadding(0);
+        questionTable.setCellspacing(0);
+      questionTable.add(_questionImage,1,1);
+      questionTable.setWidth(2,1,"4");
+      questionTable.add(question,3,1);
+
+      pollTable.add(questionTable,1,pollRow);
+    }
+    else {
+      pollTable.add(question,1,pollRow);
+    }
     pollRow++;
 
     Table answerTable = new Table();
@@ -459,6 +473,10 @@ private int _layout = RADIO_BUTTON_VIEW;
     _showCollection = collection;
   }
 
+  public void setQuestionImage(Image image) {
+    _questionImage = image;
+  }
+
   public void setLinkImage(Image image) {
     _linkImage = image;
   }
@@ -469,5 +487,9 @@ private int _layout = RADIO_BUTTON_VIEW;
 
   public void setShowInformation(boolean showInformation) {
     _showInformation = showInformation;
+  }
+
+  public void setQuestionAlignment(String alignment) {
+    _questionAlignment = alignment;
   }
 }
