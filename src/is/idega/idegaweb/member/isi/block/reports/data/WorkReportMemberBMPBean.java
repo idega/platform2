@@ -360,6 +360,14 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 		return getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(-1,null,report);
 	}
 	
+	public int ejbHomeGetCountOfMaleMembersByWorkReport(WorkReport report) {
+		return getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(-1,MALE,report);
+	}
+	
+	public int ejbHomeGetCountOfFemaleMembersByWorkReport(WorkReport report) {
+		return getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(-1,FEMALE,report);
+	}
+	
 	//equal or older
 	public int ejbHomeGetCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age,WorkReport report,WorkReportGroup league) {
 		return getCountOfPlayersEqualOrOlderThanAgeAndByGenderWorkReportAndWorkReportGroup(age,null,report,league);
@@ -375,6 +383,14 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	
 	public int ejbHomeGetCountOfMembersEqualOrOlderThanAgeByWorkReport(int age, WorkReport report) {
 		return getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(age,null,report);
+	}
+	
+	public int ejbHomeGetCountOfMaleMembersEqualOrOlderThanAgeByWorkReport(int age, WorkReport report) {
+		return getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(age,MALE,report);
+	}
+	
+	public int ejbHomeGetCountOfFemaleMembersEqualOrOlderThanAgeByWorkReport(int age, WorkReport report) {
+		return getCountOfMembersOfEqualOrOlderThanAgeByGenderAndWorkReport(age,FEMALE,report);
 	}
 	
 	//younger
@@ -393,7 +409,14 @@ public class WorkReportMemberBMPBean extends GenericEntity implements WorkReport
 	public int ejbHomeGetCountOfMembersOfYoungerAgeByWorkReport(int age, WorkReport report) {
 		return getCountOfMembersOfYoungerAgeByGenderAndWorkReport(age,null,report);
 	}
-
+	
+	public int ejbHomeGetCountOfMaleMembersOfYoungerAgeByWorkReport(int age, WorkReport report) {
+		return getCountOfMembersOfYoungerAgeByGenderAndWorkReport(age,MALE,report);
+	}
+	
+	public int ejbHomeGetCountOfFemaleMembersOfYoungerAgeByWorkReport(int age, WorkReport report) {
+		return getCountOfMembersOfYoungerAgeByGenderAndWorkReport(age,FEMALE,report);
+	}
 	
 	public Collection getLeaguesForMember() throws IDOException {
 		//could be optimized by only getting league workreportgroups
