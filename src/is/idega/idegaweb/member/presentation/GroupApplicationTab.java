@@ -18,6 +18,7 @@ import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.user.presentation.GroupSelectionDoubleBox;
 import com.idega.user.presentation.UserTab;
+import com.idega.util.Timer;
 
 
 /**
@@ -113,14 +114,27 @@ public class GroupApplicationTab extends UserTab {
 				add("Status. "+app.getStatus());
 				addBreak();
 				
-				Group parent = (Group)(groupBiz.getGroupByGroupID(app.getApplicationGroupId()).getParentNode());
+				Timer time1 = new Timer();
+
+				Timer time2 = new Timer();
 				
+				
+				time1.start();
+				Group parent = (Group)(groupBiz.getGroupByGroupID(app.getApplicationGroupId()).getParentNode());
+				time1.stop();
+				
+				System.out.println("GroupApplicationTab: time to complete getParentNode() : "+time1.getTime()/1000+"s");
 				if(parent!=null){
 				
 					add("parent : "+parent.getName());
 					
-					
+					time2.start();
 					Collection allGroups = groupBiz.getChildGroupsRecursive( parent  );
+					
+					time2.stop();
+					System.out.println("GroupApplicationTab: time to complete getChildGroupsRecursive( parent  ) : "+time1.getTime()/1000+"s");
+				
+					
 					Iterator aGroups = allGroups.iterator();
 					while (aGroups.hasNext()) {
 						Group group = (Group) aGroups.next();
