@@ -30,6 +30,16 @@ public class SchoolTypeEditor extends SchoolBlock {
 	private static final String PARAMETER_MAX_AGE = "sch_type_max_age";
 	private static final String PARAMETER_ORDER = "sch_type_order";
 	
+	private boolean _useTypeStringId = false;
+	
+	public boolean getUseTypeStringId() {
+		return _useTypeStringId;
+	}
+	
+	public void setUseTypeStringId(boolean b) {
+		_useTypeStringId = b;
+	}
+	
 	protected void init(IWContext iwc) throws Exception {
 		Form F = new Form();
 
@@ -67,6 +77,7 @@ public class SchoolTypeEditor extends SchoolBlock {
 	private void saveType(IWContext iwc) throws java.rmi.RemoteException {
 		if (iwc.isParameterSet("sch_save_type")) {
 			String id = iwc.getParameter("sch_school_type_id");
+			String typeStringId = iwc.getParameter("sch_type_string_id");
 			String name = iwc.getParameter("sch_type_name");
 			String info = iwc.getParameter("sch_type_info");
 			String cat = iwc.getParameter("sch_type_cat");
@@ -100,7 +111,7 @@ public class SchoolTypeEditor extends SchoolBlock {
 				}
 			}
 			
-			getBusiness().storeSchoolType(aid, name, info, cat, locKey, maxAge, isFreetimeType, isFamilyFreetimeType, order);
+			getBusiness().storeSchoolType(aid, name, info, cat, locKey, maxAge, isFreetimeType, isFamilyFreetimeType, order, typeStringId);
 		}
 	}
 
@@ -171,19 +182,26 @@ public class SchoolTypeEditor extends SchoolBlock {
 		T.setColumns(3);
 		T.mergeCells(1, 1, 3, 1);
 		
-		T.add(getHeader(localize("school_type", "Schooltype")), 1, 1);
-		T.add(getHeader(localize("category", "Category")), 1, 2);
-		T.add(getHeader(localize("name", "Name")), 1, 3);
-		T.add(getHeader(localize("info", "Info")), 1, 4);
-		T.add(getHeader(localize("maxage", "Max school age")), 1, 5);
-		T.add(getHeader(localize("localization_key", "Key")), 1, 6);
-		T.add(getHeader(localize("is_freetime_type", "Is freetime type")), 1, 7);
-		T.add(getHeader(localize("is_family_freetime_type", "Is family freetime type")), 1, 8);
-		T.add(getHeader(localize("order", "order")), 1, 9);
+		int row = 1;
+		
+		T.add(getHeader(localize("school_type", "Schooltype")), 1, row++);
+		T.add(getHeader(localize("category", "Category")), 1, row++);
+		if (_useTypeStringId) {
+			T.add(getHeader(localize("school_type_string_id", "Type ID")), 1, row++);			
+		}
+		T.add(getHeader(localize("name", "Name")), 1, row++);
+		T.add(getHeader(localize("info", "Info")), 1, row++);
+		T.add(getHeader(localize("maxage", "Max school age")), 1, row++);
+		T.add(getHeader(localize("localization_key", "Key")), 1, row++);
+		T.add(getHeader(localize("is_freetime_type", "Is freetime type")), 1, row++);
+		T.add(getHeader(localize("is_family_freetime_type", "Is family freetime type")), 1, row++);
+		T.add(getHeader(localize("order", "order")), 1, row++);
 		
 		SelectorUtility util = new SelectorUtility();
 		DropdownMenu drpCategory = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu("sch_type_cat"), getBusiness().getSchoolCategories(), "getLocalizedKey", getResourceBundle()));
 
+		TextInput inputTypeStringId = (TextInput) getStyledInterface(new TextInput("sch_type_string_id"));
+		inputTypeStringId.setAsNotEmpty(localize("type_string_id_not_empty", "Type ID must be entered."));
 		TextInput inputName = (TextInput) getStyledInterface(new TextInput("sch_type_name"));
 		TextInput inputKey = (TextInput) getStyledInterface(new TextInput("sch_type_lockey"));
 		TextInput inputAge = (TextInput) getStyledInterface(new TextInput(PARAMETER_MAX_AGE));
@@ -197,6 +215,11 @@ public class SchoolTypeEditor extends SchoolBlock {
 		int typeId = -1;
 		if (type != null) {
 			try {
+				if (_useTypeStringId) {
+					String typeStringId = type.getTypeStringId();
+					if (typeStringId != null)
+						inputTypeStringId.setContent(typeStringId);
+				}
 				String name = type.getSchoolTypeName();
 				if (name != null)
 					inputName.setContent(name);
@@ -223,27 +246,32 @@ public class SchoolTypeEditor extends SchoolBlock {
 			}
 		}
 
-		T.add(drpCategory, 3, 2);
-		T.add(inputName, 3, 3);
-		T.add(inputInfo, 3, 4);
-		T.add(inputAge, 3, 5);
-		T.add(inputKey, 3, 6);
-		T.add(isFreetime, 3, 7);
-		T.add(isFamilyFreetime, 3, 8);
-		T.add(inputOrder, 3, 9);
+		row = 2;
 		
-		T.setHeight(10, 6);
+		T.add(drpCategory, 3, row++);
+		if (_useTypeStringId) {
+			T.add(inputTypeStringId, 3, row++);			
+		}
+		T.add(inputName, 3, row++);
+		T.add(inputInfo, 3, row++);
+		T.add(inputAge, 3, row++);
+		T.add(inputKey, 3, row++);
+		T.add(isFreetime, 3, row++);
+		T.add(isFamilyFreetime, 3, row++);
+		T.add(inputOrder, 3, row++);
 		
-		T.mergeCells(1, 11, 3, 11);
+		T.setHeight(row++, 6);
+		
+		T.mergeCells(1, row, 3, row);
 		T.add(getButton(new SubmitButton(localize("save", "Save"), "sch_save_type", "true")), 1, 11);
 		GenericButton cancel = getButton(new GenericButton("cancel", localize("cancel", "Cancel")));
 		cancel.setPageToOpen(iwc.getCurrentIBPageID());
-		T.add(cancel, 1, 11);
+		T.add(cancel, 1, row);
 		if (typeId > 0) {
 			GenericButton delete = getButton(new GenericButton("delete", localize("delete", "Delete")));
 			delete.setPageToOpen(iwc.getCurrentIBPageID());
 			delete.addParameterToPage("sch_delete_type", typeId);
-			T.add(delete, 1, 11);
+			T.add(delete, 1, row);
 		}
 
 		return T;
