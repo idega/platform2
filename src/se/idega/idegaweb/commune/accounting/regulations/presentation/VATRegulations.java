@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.4 2003/08/19 10:35:45 anders Exp $
+ * $Id: VATRegulations.java,v 1.5 2003/08/19 19:11:38 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -13,26 +13,24 @@ import com.idega.presentation.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.IWContext;
 
-import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 
 /**
  * VATRegulations is an idegaWeb block that handles VAT values and
- * regulations for providers.
+ * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/19 10:35:45 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/19 19:11:38 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
-public class VATRegulations extends CommuneBlock {
+public class VATRegulations extends AccountingBlock {
 
 	private final static int ACTION_DEFAULT = 0;
 	
-	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.accounting";
-
 	private final static String KEY_PREFIX = "vat_regulations."; 
 	
 	private final static String KEY_TITLE = KEY_PREFIX + "title";
@@ -60,13 +58,6 @@ public class VATRegulations extends CommuneBlock {
 		catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}
-	}
-
-	/**
-	 * Returns the name of the bundle for this block.
-	 */
-	public String getBundleIdentifier() {
-		return IW_BUNDLE_IDENTIFIER;
 	}
 
 	/*
@@ -123,8 +114,8 @@ public class VATRegulations extends CommuneBlock {
 	 */
 	private ButtonPanel getButtonPanel() {
 		ButtonPanel bp = new ButtonPanel();
-		bp.addButton("Save", "save", "true");
-		bp.addButton("Delete", "delete", "true");
+		bp.addButton("save", "Spara");
+		bp.addButton("delete", "Radera");
 		return bp;
 	}
 }
