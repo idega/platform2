@@ -22,9 +22,11 @@ import com.idega.util.IWTimestamp;
 
 public class KortathjonustanCreditCardClient implements CreditCardClient
 {
-	private static String HOST_NAME 									= "test.kortathjonustan.is";
-	private static int HOST_PORT											= 8443;
-	
+	private String HOST_NAME;// 									= "test.kortathjonustan.is";
+	private int HOST_PORT	;//										= 8443;
+	String strKeystore;// = "/demoFolder/testkeys.jks";
+	String strKeystorePass;// = "changeit";
+
 	private String PROPERTY_USER								= "user";
 	private String PROPERTY_PASSWORD						= "pwd";
 	private String PROPERTY_SITE								= "site";
@@ -98,11 +100,16 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 	private boolean bTestServer = false;
 	private CreditCardTransaction cct = null;
 
-	public KortathjonustanCreditCardClient(CreditCardMerchant merchant) {
-		this(merchant.getLocation(), merchant.getUser(), merchant.getPassword(), merchant.getTerminalID(), merchant.getMerchantID());
+	public KortathjonustanCreditCardClient(String host, int port, String keystoreLocation, String keystorePass, CreditCardMerchant merchant) {
+		this(host, port, keystoreLocation, keystorePass, merchant.getLocation(), merchant.getUser(), merchant.getPassword(), merchant.getTerminalID(), merchant.getMerchantID());
 	}
 	
-	public KortathjonustanCreditCardClient(String site, String user, String password, String acceptorTerminalID, String acceptorIdentification) {
+	public KortathjonustanCreditCardClient(String host, int port, String keystoreLocation, String keystorePass, String site, String user, String password, String acceptorTerminalID, String acceptorIdentification) {
+		HOST_NAME = host;
+		HOST_PORT = port;
+		strKeystore = keystoreLocation;
+		strKeystorePass = keystorePass;
+		
 		SITE = site;
 		USER = user;
 		PASSWORD = password;
@@ -244,6 +251,8 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 	
 	public static void main(String[] args) throws Exception 
   {
+			String host = "test.kortathjonustan.is";
+			int port											= 8443;
 		 String SITE = "22";
 		 String USER = "idega";
 		 String PASSWORD = "zde83af";
@@ -254,8 +263,10 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 			String strCCExpire								= "0504";
 			String strCCVerify								= "150";
 			String strReferenceNumber					= Integer.toString((int) (Math.random() * 43200));
+			String keystore = "/demoFolder/testkeys.jks";
+			String keystorePass = "changeit";
 
-		KortathjonustanCreditCardClient client = new KortathjonustanCreditCardClient(SITE, USER, PASSWORD, ACCEPTOR_TERM_ID, ACCEPTOR_IDENTIFICATION);
+		KortathjonustanCreditCardClient client = new KortathjonustanCreditCardClient(host, port, keystore, keystorePass, SITE, USER, PASSWORD, ACCEPTOR_TERM_ID, ACCEPTOR_IDENTIFICATION);
 		try {
 			String tmp = client.doSale("Gr’mur Steri", strCCNumber, strCCExpire.substring(2, 4), strCCExpire.substring(0, 2), strCCVerify, 1, "ISK", strReferenceNumber );
 			
@@ -512,8 +523,6 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 	 * @throws IOException
 	 */
 	private SSLClient getSSLClient() throws KortathjonustanAuthorizationException {
-		String strKeystore = "/demoFolder/testkeys.jks";
-		String strKeystorePass = "changeit";
 
 		SSLClient client;
 		try {

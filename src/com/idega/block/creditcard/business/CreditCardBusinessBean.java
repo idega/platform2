@@ -40,6 +40,11 @@ import com.idega.util.IWTimestamp;
 public class CreditCardBusinessBean extends IBOServiceBean implements CreditCardBusiness{
 	
   public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.creditcard";
+  
+  private final static String PROPERTY_KORTATHJONUSTAN_HOST_NAME = "kortathjonustan_host_name";
+  private final static String PROPERTY_KORTATHJONUSTAN_HOST_PORT = "kortathjonustan_host_port";
+  private final static String PROPERTY_KORTATHJONUSTAN_KEYSTORE = "kortathjonustan_keystore";
+  private final static String PROPERTY_KORTATHJONUSTAN_KEYSTORE_PASS = "kortathjonustan_keystore_pass";
 
   public String getBundleIdentifier() {
   		return IW_BUNDLE_IDENTIFIER;
@@ -93,7 +98,12 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 			if (CreditCardMerchant.MERCHANT_TYPE_TPOS.equals(merchant.getType())) {
 				return new TPosClient(getIWApplicationContext(), merchant);
 			} else if (CreditCardMerchant.MERCHANT_TYPE_KORTHATHJONUSTAN.equals(merchant.getType())) {
-				return new KortathjonustanCreditCardClient(merchant);
+				String hostName = getBundle().getProperty(PROPERTY_KORTATHJONUSTAN_HOST_NAME);
+				String hostPort =  getBundle().getProperty(PROPERTY_KORTATHJONUSTAN_HOST_PORT);
+				String keystore = getBundle().getProperty(PROPERTY_KORTATHJONUSTAN_KEYSTORE);
+				String keystorePass =  getBundle().getProperty(PROPERTY_KORTATHJONUSTAN_KEYSTORE_PASS);
+				
+				return new KortathjonustanCreditCardClient(hostName, Integer.parseInt(hostPort), keystore, keystorePass, merchant);
 			}
 		}
 		return null;
