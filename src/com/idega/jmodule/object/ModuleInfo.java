@@ -270,6 +270,10 @@ public String[] getParameterValues(String parameterName){
   return getRequest().getParameterValues(parameterName);
 }
 
+public String getQueryString(){
+  return getRequest().getQueryString();
+}
+
 /**
  * @deprecated
  */
