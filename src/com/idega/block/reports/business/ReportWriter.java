@@ -131,7 +131,7 @@ public class ReportWriter {
         Document document = new Document(PageSize.A4, 50, 50, 50, 50);
         PdfWriter.getInstance(document, new FileOutputStream(file));
         document.addTitle(report.getName());
-        document.addAuthor("Idega Golf");
+        document.addAuthor("Idega Reports");
         document.addSubject(report.getInfo());
         document.open();
 
@@ -140,6 +140,7 @@ public class ReportWriter {
         datatable.setCellspacing(3);
         datatable.setBorder(Rectangle.NO_BORDER);
         datatable.setWidth(100);
+
         for (int i = 0; i < Hlen; i++) {
           //datatable.addCell(Headers[i]);
           datatable.addCell(new Phrase(Headers[i], new Font(Font.HELVETICA, 14, Font.BOLD)));
@@ -151,11 +152,16 @@ public class ReportWriter {
         ResultSet RS  = stmt.executeQuery(sql);
         ResultSetMetaData MD = RS.getMetaData();
         String temp = null;
+        StringBuffer sb = null;
         while(RS.next()){
+          sb = new StringBuffer();
           for(int i = 1; i <= Hlen; i++){
+
             temp = RS.getString(i);
             temp = temp!=null?temp:"";
-            datatable.addCell(temp);
+            sb.append(temp);
+            Cell C = new Cell(temp);
+            datatable.addCell(C);
           }
         }
 

@@ -47,7 +47,7 @@ public class ReportEntityHandler {
    public static ReportItem[] findReportItems(int iCatId){
     try {
       if(iCatId > 0){
-        return (ReportItem[]) new ReportItem().findAllByColumn(ReportItem.getColumnNameCategory(),iCatId);
+        return (ReportItem[]) new ReportItem().findAllByColumnOrdered(ReportItem.getColumnNameCategory(),String.valueOf(iCatId),ReportItem.getColumnNameDisplayOrder());
       }
       else{
         return new ReportItem[0];

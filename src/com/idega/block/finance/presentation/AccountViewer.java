@@ -250,7 +250,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     T.setWidth(1,"20");
    // T.setWidth(2,"40%");
    // T.setWidth(3,"60%");
-    T.setWidth(cols,"20");
+    T.setWidth(cols,"25");
     T.setWidth("100%");
 
     T.setHorizontalZebraColored(sLightColor,sWhiteColor);
@@ -353,7 +353,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
 
     Table T = new Table(4,tableDepth);
     T.setWidth("100%");
-    T.setWidth(1,"65");
+    //T.setWidth(1,"65");
     T.setCellspacing(0);
     T.setCellpadding(2);
     T.setColumnAlignment(1,"right");
@@ -363,9 +363,9 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     T.setAlignment(1,1,"left");
     T.setAlignment(1,2,"left");
     T.setWidth(1,"20");
-    T.setWidth(2,"40%");
-    T.setWidth(3,"60%");
-    T.setWidth(4,"20");
+    //T.setWidth(2,"40%");
+    //T.setWidth(3,"60%");
+    //T.setWidth(4,"25");
 
     T.setHorizontalZebraColored(sLightColor,sWhiteColor);
     T.setRowColor(1,sWhiteColor);

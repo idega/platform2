@@ -21,6 +21,7 @@ import java.sql.SQLException;
   private boolean bCondition,bSelect,bField = false;
   private boolean bBetween = false;
   private Integer orderNumber = null;
+  private Integer colOrder = null;
 
   public ReportCondition(ReportItem Item) {
    this.Item = Item;
@@ -112,6 +113,12 @@ import java.sql.SQLException;
   }
   public boolean isSelect(){
     return bSelect;
+  }
+  public void setColumnOrder(Integer order){
+    colOrder = order;
+  }
+  public Integer getColumnOrder(){
+    return colOrder;
   }
   public void setOrder(Integer order){
     orderNumber = order;

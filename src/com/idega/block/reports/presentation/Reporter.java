@@ -238,7 +238,7 @@ public class Reporter extends ReportPresentation{
       if(bEdit){
         T.setWidth(4,"40");
         T.setColumnAlignment(4,"center");
-        T.add(formatText("Delete"),4,2);
+        T.add(formatText(iwrb.getLocalizedString("delete","Delete")),4,2);
 
       }
       TextFontColor = "#000000";

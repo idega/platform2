@@ -16,6 +16,7 @@ import com.idega.data.EntityFinder;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.StringTokenizer;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
@@ -255,7 +256,7 @@ public class ReportEditorWindow extends IWAdminWindow {
         Table ML = new Table();
         ML.setColor(ReportPresentation.MiddleColor);
         ML.setCellpadding(0);
-        ML.setCellspacing(0);
+        ML.setCellspacing(1);
         if(sManual != null)
           T.add(this.formatText(sManual),1,5);
 
@@ -276,8 +277,9 @@ public class ReportEditorWindow extends IWAdminWindow {
         ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("fields","Fields")),1,1);
         ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("select","Select")),2,1);
         ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("condition","Condition")),3,1);
-        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("orderby","Order by")),4,1);
-        TextInput ti;
+         ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("colorder","Col order")),4,1);
+        ML.add(ReportPresentation.formatText(iwrb.getLocalizedString("orderby","Order by")),5,1);
+        TextInput ti,ti2;
         InterfaceObject mo;
         CheckBox chk;
         int a = 1;
@@ -290,14 +292,21 @@ public class ReportEditorWindow extends IWAdminWindow {
           ti = new TextInput(prefix+"ord"+i);
           ti.setAsIntegers();
           ti.setLength(2);
+
+          ti2 = new TextInput(prefix+"col"+i);
+          ti2.setAsIntegers();
+          ti2.setLength(2);
+
           ReportPresentation.setStyle(chk);
           ReportPresentation.setStyle(mo);
           ReportPresentation.setStyle(ti);
+          ReportPresentation.setStyle(ti2);
 
           ML.add(ReportPresentation.formatText(RC.getDisplay()),1,++a);
           ML.add(chk,2,a);
           ML.add(mo,3,a);
-          ML.add(ti,4,a);
+          ML.add(ti2,4,a);
+          ML.add(ti,5,a);
         }
         ML.setWidth("100%");
         T.setVerticalAlignment(1,3,"top");
@@ -376,21 +385,19 @@ public class ReportEditorWindow extends IWAdminWindow {
   protected void doUpdateSetup(ModuleInfo modinfo) throws SQLException{
     Vector RC = (Vector)modinfo.getSessionAttribute(prefix+"force");
     Vector vRC = new Vector();
-
+    TreeMap orderMap = new TreeMap();
+    TreeMap headerMap = new TreeMap();
     int rlen = RC.size();
-    String chk,in,ord;
+    String chk,in,ord,col;
     Vector headers = new Vector();
-    boolean use = false;
+    boolean use = false,colorder = false;
     for (int i = 0; i < rlen; i++) {
       ReportCondition rc = (ReportCondition) RC.get(i);
       chk = modinfo.getParameter(prefix+"chk"+i);
       in = modinfo.getParameter(prefix+"in"+i);
       ord = modinfo.getParameter(prefix+"ord"+i);
-      if(chk!= null){
-        rc.setIsSelect();
-        headers.add( rc.getDisplay() );
-        use = true;
-      }
+      col = modinfo.getParameter(prefix+"col"+i);
+
       if(!"".equalsIgnoreCase(in) && !"0".equals(in)){
         rc.setVariable(in);
         use = true;
@@ -399,13 +406,31 @@ public class ReportEditorWindow extends IWAdminWindow {
         rc.setOrder(new Integer(ord));
         use = true;
       }
+      if(col!= null && col.length() > 0){
+        rc.setColumnOrder(new Integer(col));
+        use = true;
+        colorder = true;
+      }
+      if(chk!= null){
+        rc.setIsSelect();
+        use = true;
+        if(colorder)
+          headerMap.put(new Integer(col),rc.getDisplay());
+        else
+          headers.add( rc.getDisplay() );
+      }
       if(use){
-        System.err.println(rc.getItem().getMainTable());
-        vRC.add(rc);
+        //System.err.println(rc.getItem().getMainTable());
+        if(colorder )
+          orderMap.put(new Integer(col),rc);
+        else
+          vRC.add(rc);
       }
       use = false;
+      colorder = false;
     }
     modinfo.removeSessionAttribute(prefix+"force");
+    headers.addAll(0,headerMap.values());
     String[] heads = new String[headers.size()];
     for (int i = 0; i < headers.size(); i++) {
       heads[i] = (String) headers.get(i);
@@ -417,9 +442,12 @@ public class ReportEditorWindow extends IWAdminWindow {
     name = name != null?name: "";
     info = info != null?info: "";
 
+    Vector vConds = new Vector(orderMap.values());
+    vConds.addAll(vRC );
+
     ReportMaker rm = new ReportMaker();
 
-    String sql = rm.makeSQL(vRC);
+    String sql = rm.makeSQL(vConds);
     //add(sql);
 
     if(iSaveCategoryIds != null){

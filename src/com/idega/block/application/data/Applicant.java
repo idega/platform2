@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.10 2001/08/01 11:49:54 aron Exp $
+ * $Id: Applicant.java,v 1.11 2001/09/29 18:44:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -22,6 +22,7 @@ public class Applicant extends GenericEntity {
   private static final String firstName_ = "first_name";
   private static final String middleName_ = "middle_name";
   private static final String lastName_ = "last_name";
+  private static final String fullName_ = "full_name";
   private static final String ssn_ = "ssn";
   private static final String legalResidence_ = "legal_residence";
   private static final String residence_ = "residence";
@@ -43,6 +44,7 @@ public class Applicant extends GenericEntity {
     addAttribute(firstName_,"First name",true,true,"java.lang.String",255);
     addAttribute(middleName_,"Middle name",true,true,"java.lang.String",255);
     addAttribute(lastName_,"Last name",true,true,"java.lang.String",255);
+     addAttribute(fullName_,"Full name",true,true,"java.lang.String",255);
     addAttribute(ssn_,"Social security number",true,true,"java.lang.String",20);
     addAttribute(legalResidence_,"Legal residence",true,true,"java.lang.String",255);
     addAttribute(residence_,"Residence",true,true,"java.lang.String",255);
@@ -57,6 +59,7 @@ public class Applicant extends GenericEntity {
   public static String getFirstNameColumnName() {    return(firstName_);  }
   public static String getMiddleNameColumnName() {    return(middleName_);  }
   public static String getLastNameColumnName() {    return(lastName_);  }
+  public static String getFullNameColumnName() {    return(fullName_);  }
   public static String getSSNColumnName() {    return(ssn_);  }
   public static String getLegalResidenceColumnName() {    return(legalResidence_);  }
   public static String getResidenceColumnName() {    return(residence_);  }
@@ -90,6 +93,10 @@ public class Applicant extends GenericEntity {
 
   public String getLastName() {
     return(getStringColumnValue(lastName_));
+  }
+
+  private void setFullName(){
+    setColumn(fullName_ ,getFullName());
   }
 
   public void setSSN(String ssn) {
@@ -162,5 +169,15 @@ public class Applicant extends GenericEntity {
     " "+(getMiddleName()!= null?getMiddleName():"")+
     " "+(getLastName()!= null?getLastName():"");
 
+  }
+
+  public void insert() throws SQLException{
+    setFullName();
+    super.insert();
+  }
+
+  public void update() throws SQLException{
+    setFullName();
+    super.update();
   }
 }

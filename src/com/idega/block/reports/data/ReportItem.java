@@ -35,6 +35,7 @@ public class ReportItem extends GenericEntity {
     addAttribute(getColumnNameMaintable(), "Table", true, true, java.lang.String.class);
     addAttribute(getColumnNameJoins(),"Join",true,true,java.lang.String.class);
     addAttribute(getColumnNameJoinTables(), "Join Tables", true, true, java.lang.String.class);
+    addAttribute(getColumnNameDisplayOrder(),"Display order",true,true,java.lang.String.class);
 
 
   }
@@ -52,6 +53,7 @@ public class ReportItem extends GenericEntity {
   public static String getColumnNameMaintable(){return "DEP_MAINTABLE";}
   public static String getColumnNameJoins(){return "DEP_JOINS";}
   public static String getColumnNameJoinTables(){return "DEP_JOINTABLE";}
+  public static String getColumnNameDisplayOrder(){return "DISPLAY_ORDER";}
 
   public String getEntityName() {
     return getEntityTableName();
@@ -67,6 +69,12 @@ public class ReportItem extends GenericEntity {
   }
   public void setEntityId(int id){
     setColumn(getColumnNameEntityId(), new Integer(id));
+  }
+  public int getDisplayOrder(){
+    return getIntColumnValue(getColumnNameDisplayOrder());
+  }
+  public void setDisplayOrder(int order){
+    setColumn(getColumnNameDisplayOrder(), new Integer(order));
   }
   public String getName(){
     return getStringColumnValue(getColumnNameName());

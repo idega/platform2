@@ -104,7 +104,6 @@ public class AccountManager {
       sql.append(" <= '");
       sql.append(to.getSQLDate());
       sql.append(" 23:59:59'");
-      sql.append("'");
     }
     if(status!=null){
       sql.append(" and ");
