@@ -32,14 +32,14 @@ public interface ResellerManager extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.ResellerManagerBean#updateReseller
 	 */
 	public Reseller updateReseller(int resellerId, String name, String description, int[] addressIds, int[] phoneIds,
-			int[] emailIds) throws Exception, java.rmi.RemoteException;
+			int[] emailIds, String organizationID) throws Exception, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.ResellerManagerBean#createReseller
 	 */
 	public Reseller createReseller(Reseller parentReseller, String name, String userName, String password,
-			String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception,
-			java.rmi.RemoteException;
+			String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID)
+			throws Exception, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.ResellerManagerBean#invalidateReseller

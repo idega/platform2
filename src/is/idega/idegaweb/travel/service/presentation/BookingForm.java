@@ -1488,7 +1488,7 @@ public abstract class BookingForm extends TravelManager{
 		headerTable.setCellpaddingBottom(headerColumn, hRow, 3);
 		headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
 		headerTable.add(getSmallText(iwrb.getLocalizedString("travel.supplier", "Supplier") + " : "), headerColumn, hRow);
-		Text txt = getOrangeText(supplier.getName());
+		Text txt = getOrangeText(supplier.getOrganizationID());
 		try {
 			Address a = supplier.getAddress();
 			if (a != null) {
@@ -1499,6 +1499,16 @@ public abstract class BookingForm extends TravelManager{
 			e.printStackTrace();
 		}
 		headerTable.add(txt, headerColumn, hRow++);
+		headerTable.setCellpaddingTop(headerColumn, hRow, 3);
+		headerTable.setCellpaddingBottom(headerColumn, hRow, 3);
+		headerTable.setCellpaddingLeft(headerColumn, hRow, 10);
+		headerTable.add(getSmallText(iwrb.getLocalizedString("travel.organization_id", "Organization ID") + " : "), headerColumn, hRow);
+		if (supplier.getOrganizationID() != null) {
+			headerTable.add(getOrangeText(supplier.getOrganizationID()), headerColumn, hRow++);
+		} else {
+			++hRow;
+		}
+		
 		headerTable.setHeight(hRow++, 10);
 		
 		List addresses = null;

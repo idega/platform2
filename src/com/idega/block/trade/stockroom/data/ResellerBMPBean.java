@@ -17,6 +17,7 @@ import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.TreeableEntity;
 import com.idega.data.TreeableEntityBMPBean;
 import com.idega.data.query.Column;
 import com.idega.data.query.MatchCriteria;
@@ -35,8 +36,9 @@ import com.idega.user.data.Group;
  * @version 1.0
  */
 
-public class ResellerBMPBean extends TreeableEntityBMPBean implements Reseller{
+public class ResellerBMPBean extends TreeableEntityBMPBean implements Reseller, TreeableEntity{
   private String newName;
+	private static String COLUMN_ORGANIZATION_ID = "ORGANIZATION_ID";
 
   public ResellerBMPBean() {
     super();
@@ -55,6 +57,7 @@ public class ResellerBMPBean extends TreeableEntityBMPBean implements Reseller{
     addAttribute(getColumnNameReferenceNumber(), "Tilvisunarnúmer", true, true, String.class);
     addAttribute(getColumnNameTPosMerchantID(), "Viðskiptanumer", true, true, Integer.class);
 		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
+		addAttribute(COLUMN_ORGANIZATION_ID, "organization ID", true, true, String.class, 20);
 
     this.addManyToManyRelationShip(Address.class);
     this.addManyToManyRelationShip(Email.class);
@@ -306,5 +309,13 @@ public class ResellerBMPBean extends TreeableEntityBMPBean implements Reseller{
 		query.addCriteria(new MatchCriteria(validColumn, MatchCriteria.EQUALS, true));
 		return this.idoFindPKsByQuery(query);
 	}
-  	
+
+	public String getOrganizationID() {
+		return getStringColumnValue(COLUMN_ORGANIZATION_ID);
+	}
+
+	public void setOrganizationID(String organizationId) {
+		setColumn(COLUMN_ORGANIZATION_ID, organizationId);
+	}
+
 }

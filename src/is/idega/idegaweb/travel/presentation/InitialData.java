@@ -294,7 +294,8 @@ public class InitialData extends TravelManager {
 				
 				if (action.equals(this.parameterUpdateReseller)) {
 					String sResellerId = iwc.getParameter(this.parameterResellerId);
-					saveReseller(iwc,Integer.parseInt(sResellerId));
+					System.out.println("NOT SAVING RESELLER !!!! FIX ME");
+	//				saveReseller(iwc,Integer.parseInt(sResellerId));
 				}
 				form = getResellerCreation(reseller.getID());
 			}else if (selected.equals(this.parameterUsers)) {
@@ -559,6 +560,12 @@ public class InitialData extends TravelManager {
 		emailText.setFontColor(super.BLACK);
 		emailText.setText(iwrb.getLocalizedString("travel.email_lg","E-mail"));
 		emailText.addToText(":");
+
+		Text orgIDText = (Text) theBoldText.clone();
+		orgIDText.setFontColor(super.BLACK);
+		orgIDText.setText(iwrb.getLocalizedString("travel.organization_id","Organization ID"));
+		orgIDText.addToText(":");
+
 		
 		Text loginText = (Text) theBoldText.clone();
 		loginText.setFontColor(super.BLACK);
@@ -596,6 +603,8 @@ public class InitialData extends TravelManager {
 		fax.setSize(inputSize);
 		TextInput email = new TextInput("supplier_email");
 		email.setSize(inputSize);
+		TextInput orgID = new TextInput("organization_id");
+		orgID.setSize(inputSize);
 		TextInput userName = new TextInput("supplier_user_name");
 		userName.setAsNotEmpty(iwrb.getLocalizedString("travel.a_username_must_be_selected","Verður að velja notendanafn"));
 		PasswordInput passOne = new PasswordInput("supplier_password_one");
@@ -643,6 +652,9 @@ public class InitialData extends TravelManager {
 			Email eEmail = lSupplier.getEmail();
 			if (eEmail != null) {
 				email.setContent(eEmail.getEmailAddress());
+			}
+			if (lSupplier.getOrganizationID() != null) {
+				orgID.setContent(lSupplier.getOrganizationID());
 			}
 		}
 		
@@ -712,6 +724,13 @@ public class InitialData extends TravelManager {
 		table.setAlignment(2,row,"left");
 		table.setRowColor(row,super.GRAY);
 		
+		++row;
+		table.add(orgIDText, 1,row);
+		table.add(orgID, 2, row);
+		table.setAlignment(1, row, "left");
+		table.setAlignment(2, row, "left");
+		table.setRowColor(row, GRAY);
+		
 		if (supplier_id == -1) {
 			++row;
 			table.add(loginText,1,row);
@@ -772,6 +791,7 @@ public class InitialData extends TravelManager {
 			String phone = iwc.getParameter("supplier_phone");
 			String fax = iwc.getParameter("supplier_fax");
 			String email = iwc.getParameter("supplier_email");
+			String orgID = iwc.getParameter("organization_id");
 			String supplier_id = iwc.getParameter("supplier_id");
 			
 			String userName = iwc.getParameter("supplier_user_name");
@@ -855,7 +875,7 @@ public class InitialData extends TravelManager {
 				int[] emailIds = new int[1];
 				emailIds[0] = eml.getID();
 				
-				supplier = getSupplierManagerBusiness(iwc).updateSupplier(supplierId,name, description, addressIds, phoneIds, emailIds);
+				supplier = getSupplierManagerBusiness(iwc).updateSupplier(supplierId,name, description, addressIds, phoneIds, emailIds, orgID);
 				
 				
 				add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
@@ -901,7 +921,7 @@ public class InitialData extends TravelManager {
 					eEmail.insert();
 					emailIds[0] = eEmail.getID();
 					
-					Supplier supplier = getSupplierManagerBusiness(iwc).createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds);
+					Supplier supplier = getSupplierManagerBusiness(iwc).createSupplier(name, userName, passOne, description, addressIds, phoneIds, emailIds, orgID);
 					supplier.setSupplierManager(getSupplierManager());
 					supplier.store();
 					
@@ -1129,6 +1149,7 @@ public class InitialData extends TravelManager {
 		
 		
 	}
+	/*
 	public void saveReseller(IWContext iwc, int resellerId)  {
 		add(Text.getBreak());
 		try {
@@ -1268,5 +1289,5 @@ public class InitialData extends TravelManager {
 			sql.printStackTrace(System.err);
 		}
 	}
-	
+*/	
 }

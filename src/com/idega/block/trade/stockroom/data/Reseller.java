@@ -136,4 +136,14 @@ public interface Reseller extends IDOLegacyEntity, TreeableEntity {
 	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#getSettings
 	 */
 	public Settings getSettings() throws FinderException, RemoteException, CreateException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#getOrganizationID
+	 */
+	public String getOrganizationID();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.ResellerBMPBean#setOrganizationID
+	 */
+	public void setOrganizationID(String organizationId);
 }

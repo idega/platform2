@@ -197,15 +197,15 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
     invalidateSupplier(((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(id));
   }
 
-  public Supplier updateSupplier(int supplierId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-      return createSupplier(supplierId, name, null,null, description, addressIds, phoneIds, emailIds);
+  public Supplier updateSupplier(int supplierId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID) throws Exception {
+      return createSupplier(supplierId, name, null,null, description, addressIds, phoneIds, emailIds, organizationID);
   }
 
-  public Supplier createSupplier(String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-    return createSupplier(-1, name, userName, password, description, addressIds, phoneIds, emailIds);
+  public Supplier createSupplier(String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID) throws Exception {
+    return createSupplier(-1, name, userName, password, description, addressIds, phoneIds, emailIds, organizationID);
   }
 
-  private Supplier createSupplier(int supplierId,String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+  private Supplier createSupplier(int supplierId,String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID) throws Exception {
     try {
     boolean isUpdate = false;
     if (supplierId != -1) isUpdate = true;
@@ -214,6 +214,9 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
       Supplier supp = ((com.idega.block.trade.stockroom.data.SupplierHome)com.idega.data.IDOLookup.getHomeLegacy(Supplier.class)).findByPrimaryKeyLegacy(supplierId);
         supp.setName(name);
         supp.setDescription(description);
+        if (organizationID != null) {
+        	supp.setOrganizationID(organizationID);
+        }
       supp.update();
 
       supp.removeFrom(com.idega.core.location.data.AddressBMPBean.getStaticInstance(Address.class));
@@ -230,7 +233,6 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
       for (int i = 0; i < emailIds.length; i++) {
         supp.addTo(Email.class, emailIds[i]);
       }
-
       return supp;
 
     }else {
@@ -295,6 +297,11 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
 
 
       supp.setGroupId(((Integer)sGroup.getPrimaryKey()).intValue());
+      
+      if (organizationID != null) {
+      	supp.setOrganizationID(organizationID);
+      }
+      
       supp.update();
 
       return supp;

@@ -96,15 +96,15 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
     }
   }
 
-  public Reseller updateReseller(int resellerId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-      return createReseller(resellerId, null, name, null,null, description, addressIds, phoneIds, emailIds);
+  public Reseller updateReseller(int resellerId, String name, String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID) throws Exception {
+      return createReseller(resellerId, null, name, null,null, description, addressIds, phoneIds, emailIds, organizationID);
   }
 
-  public Reseller createReseller(Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
-    return createReseller(-1, parentReseller, name, userName, password, description, addressIds, phoneIds, emailIds);
+  public Reseller createReseller(Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID) throws Exception {
+    return createReseller(-1, parentReseller, name, userName, password, description, addressIds, phoneIds, emailIds, organizationID);
   }
 
-  private Reseller createReseller(int resellerId, Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds) throws Exception {
+  private Reseller createReseller(int resellerId, Reseller parentReseller, String name, String userName, String password, String description, int[] addressIds, int[] phoneIds, int[] emailIds, String organizationID) throws Exception {
     boolean isUpdate = false;
     if (resellerId != -1) isUpdate = true;
 
@@ -115,6 +115,9 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
       Reseller res = ((com.idega.block.trade.stockroom.data.ResellerHome)com.idega.data.IDOLookup.getHomeLegacy(Reseller.class)).findByPrimaryKeyLegacy(resellerId);
         res.setName(name);
         res.setDescription(description);
+        if (organizationID != null) {
+        	res.setOrganizationID(organizationID);
+        }
       res.update();
 
       res.removeFrom(com.idega.core.location.data.AddressBMPBean.getStaticInstance(Address.class));
@@ -131,6 +134,7 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
       for (int i = 0; i < emailIds.length; i++) {
         res.addTo(Email.class, emailIds[i]);
       }
+
       return res;
     }
     else {
@@ -192,6 +196,9 @@ public class ResellerManagerBean extends IBOServiceBean  implements ResellerMana
       }
 
       reseller.setGroupId(((Integer)sGroup.getPrimaryKey()).intValue());
+      if (organizationID != null) {
+      	reseller.setOrganizationID(organizationID);
+      }
       reseller.update();
 
       return reseller;

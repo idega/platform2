@@ -167,4 +167,14 @@ public interface Supplier extends IDOLegacyEntity {
 	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#getProductCategories
 	 */
 	public Collection getProductCategories() throws IDORelationshipException;
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#getOrganizationID
+	 */
+	public String getOrganizationID();
+
+	/**
+	 * @see com.idega.block.trade.stockroom.data.SupplierBMPBean#setOrganizationID
+	 */
+	public void setOrganizationID(String organizationId);
 }

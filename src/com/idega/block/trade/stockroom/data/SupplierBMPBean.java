@@ -17,6 +17,7 @@ import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.data.EntityFinder;
+import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
@@ -41,10 +42,11 @@ import com.idega.user.data.Group;
  * @version 1.0
  */
 
-public class SupplierBMPBean extends com.idega.data.GenericEntity implements Supplier{
+public class SupplierBMPBean extends GenericEntity implements Supplier{
 
 	private String newName;
 	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
+	private static String COLUMN_ORGANIZATION_ID = "ORGANIZATION_ID";
 
 	public SupplierBMPBean() {
 		super();
@@ -61,6 +63,7 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements Sup
 		addAttribute(getColumnNameGroupID(), "HÛpur", true, true, Integer.class, "many_to_one", SupplierStaffGroup.class);
 		addAttribute(getColumnNameIsValid(), "Õ notkun", true, true, Boolean.class);
 		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
+		addAttribute(COLUMN_ORGANIZATION_ID, "organization ID", true, true, String.class, 20);
 		/* can this be removed */
 		addAttribute(getColumnNameTPosMerchantID(), "Vi›skiptamannanumer", true, true, Integer.class);
 
@@ -366,6 +369,14 @@ public class SupplierBMPBean extends com.idega.data.GenericEntity implements Sup
 		query.addCriteria(new MatchCriteria(groupColumn, MatchCriteria.EQUALS, groupID));
 		query.addCriteria(new MatchCriteria(validColumn, MatchCriteria.EQUALS, true));
 		return this.idoFindPKsByQuery(query);
+	}
+
+	public String getOrganizationID() {
+		return getStringColumnValue(COLUMN_ORGANIZATION_ID);
+	}
+
+	public void setOrganizationID(String organizationId) {
+		setColumn(COLUMN_ORGANIZATION_ID, organizationId);
 	}
 }
 

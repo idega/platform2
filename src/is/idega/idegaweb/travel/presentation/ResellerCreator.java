@@ -187,6 +187,11 @@ public class ResellerCreator extends TravelManager {
           emailText.setText(iwrb.getLocalizedString("travel.email_lg","E-mail"));
           emailText.addToText(":");
           emailText.setFontColor(super.BLACK);
+          
+      Text orgIDText = (Text) theBoldText.clone();
+      orgIDText.setText(iwrb.getLocalizedString("travel.organization_id","Organization ID"));
+      orgIDText.addToText(":");
+      orgIDText.setFontColor(super.BLACK);
 
       Text loginText = (Text) theBoldText.clone();
           loginText.setText(iwrb.getLocalizedString("travel.user_name","User name"));
@@ -222,6 +227,8 @@ public class ResellerCreator extends TravelManager {
         fax.setSize(inputSize);
       TextInput email = new TextInput("reseller_email");
         email.setSize(inputSize);
+      TextInput orgID = new TextInput("organization_id");
+      orgID.setSize(inputSize);
       TextInput userName = new TextInput("reseller_user_name");
         userName.setAsNotEmpty(iwrb.getLocalizedString("travel.a_username_must_be_selected","Verður að velja notendanafn"));
       PasswordInput passOne = new PasswordInput("reseller_password_one");
@@ -276,6 +283,11 @@ public class ResellerCreator extends TravelManager {
           if (eEmail != null) {
             email.setContent(eEmail.getEmailAddress());
           }
+          
+          if (reseller.getOrganizationID() != null) {
+          	orgID.setContent(reseller.getOrganizationID());
+          }
+          
           submit = new SubmitButton(iwrb.getImage("buttons/update.gif"),this.sAction,this.parameterUpdateReseller);
       }
 
@@ -321,6 +333,11 @@ public class ResellerCreator extends TravelManager {
       table.add(emailText,1,row);
       table.add(email,2,row);
       table.setRowColor(row,super.GRAY);
+      
+      ++row;
+      table.add(orgIDText, 1, row);
+      table.add(orgID, 2, row);
+      table.setRowColor(row, GRAY);
 
       if (!isUpdate) {
         ++row;
@@ -384,6 +401,7 @@ public class ResellerCreator extends TravelManager {
           String phone = iwc.getParameter("reseller_phone");
           String fax = iwc.getParameter("reseller_fax");
           String email = iwc.getParameter("reseller_email");
+          String orgID = iwc.getParameter("organization_id");
 
           String userName = iwc.getParameter("reseller_user_name");
           String passOne = iwc.getParameter("reseller_password_one");
@@ -467,7 +485,7 @@ public class ResellerCreator extends TravelManager {
               int[] emailIds = new int[1];
               emailIds[0] = eml.getID();
 
-              reseller = getResellerManager(iwc).updateReseller(resellerId,  name, description, addressIds, phoneIds, emailIds);
+              reseller = getResellerManager(iwc).updateReseller(resellerId,  name, description, addressIds, phoneIds, emailIds, orgID);
 
 
               add(iwrb.getLocalizedString("travel.information_updated","Information updated"));
@@ -514,7 +532,7 @@ public class ResellerCreator extends TravelManager {
                   eEmail.insert();
                 emailIds[0] = eEmail.getID();
 
-                Reseller tempReseller = getResellerManager(iwc).createReseller(null, name, userName, passOne, description, addressIds, phoneIds, emailIds);
+                Reseller tempReseller = getResellerManager(iwc).createReseller(null, name, userName, passOne, description, addressIds, phoneIds, emailIds, orgID);
                 tempReseller.setSupplierManager(getSupplierManager());
                 tempReseller.store();
                 /*if (supplier != null) {

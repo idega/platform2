@@ -56,13 +56,13 @@ public interface SupplierManagerBusiness extends IBOService {
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#updateSupplier
 	 */
 	public Supplier updateSupplier(int supplierId, String name, String description, int[] addressIds, int[] phoneIds,
-			int[] emailIds) throws Exception, java.rmi.RemoteException;
+			int[] emailIds, String organizationID) throws Exception, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#createSupplier
 	 */
 	public Supplier createSupplier(String name, String userName, String password, String description, int[] addressIds,
-			int[] phoneIds, int[] emailIds) throws Exception, java.rmi.RemoteException;
+			int[] phoneIds, int[] emailIds, String organizationID) throws Exception, java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.trade.stockroom.business.SupplierManagerBusinessBean#invalidateSupplier
