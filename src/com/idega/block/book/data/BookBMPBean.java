@@ -7,6 +7,7 @@ import com.idega.core.data.ICCategory;
 import com.idega.core.data.ICFile;
 import javax.ejb.FinderException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.sql.Timestamp;
 
 /**
@@ -159,15 +160,26 @@ public class BookBMPBean extends GenericEntity implements Book {
     return super.idoGetRelatedEntities(ICCategory.class);
   }
 
-  public void remove() throws IDORemoveException,RemoveException {
-    idoRemoveFrom(ICCategory.class);
-    idoRemoveFrom(Author.class);
+  public void remove() throws RemoveException {
     try {
-      SimpleQuerier.execute("delete from "+ReviewBMPBean.getEntityTableName()+" where "+getIDColumnName()+" = "+String.valueOf(((Integer)this.getPrimaryKey()).intValue()));
+      idoRemoveFrom(ICCategory.class);
+      idoRemoveFrom(Author.class);
+      Collection reviews = getReviewHome().findAllReviewsForBook(this.getID());
+      Iterator iter = reviews.iterator();
+      while (iter.hasNext()) {
+        Review item = (Review)iter.next();
+        item.remove();
+      }
+      //SimpleQuerier.execute("delete from "+ReviewBMPBean.getEntityTableName()+" where "+getIDColumnName()+" = "+String.valueOf(((Integer)this.getPrimaryKey()).intValue()));
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
+      throw new RemoveException(e.getMessage());
     }
     super.remove();
+  }
+
+  public ReviewHome getReviewHome()throws RemoteException{
+    return (ReviewHome)IDOLookup.getHome(Review.class);
   }
 }

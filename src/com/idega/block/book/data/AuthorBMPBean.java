@@ -1,7 +1,7 @@
 package com.idega.block.book.data;
 
 import javax.ejb.RemoveException;
-import com.idega.data.IDORemoveException;
+import com.idega.data.IDORemoveRelationshipException;
 import javax.ejb.FinderException;
 import java.util.Collection;
 import java.sql.Timestamp;
@@ -81,8 +81,13 @@ public class AuthorBMPBean extends GenericEntity implements Author {
     return super.idoFindIDsBySQL("select a.* from "+getEntityTableName()+" a,"+BookBMPBean.getTableNameBookAuthor()+" ba where a."+getIDColumnName()+" = ba."+getIDColumnName()+" and ba.BO_BOOK_ID = "+String.valueOf(bookID));
   }
 
-  public void remove() throws IDORemoveException,RemoveException {
-    idoRemoveFrom(Book.class);
+  public void remove() throws RemoveException{
+    try{
+      idoRemoveFrom(Book.class);
+    }
+    catch(IDORemoveRelationshipException e){
+      throw new RemoveException(e.getMessage());
+    }
     super.remove();
   }
 }
