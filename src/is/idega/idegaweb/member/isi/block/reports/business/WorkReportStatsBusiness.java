@@ -1,13 +1,9 @@
 package is.idega.idegaweb.member.isi.block.reports.business;
 
-import java.rmi.RemoteException;
-import java.util.Collection;
-
-import com.idega.block.datareport.util.ReportableCollection;
-
 
 public interface WorkReportStatsBusiness extends com.idega.business.IBOSession
 {
- public com.idega.block.datareport.util.ReportableCollection getClubMemberStatisticsForRegionalUnions(Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
- public ReportableCollection getStatisticsForLeaguesByYearRegionalUnionsClubsAndLeaguesFiltering(final Integer year, Collection regionalUnionsFilter, Collection clubsFilter, Collection leaguesFilter) throws RemoteException;
+ public com.idega.block.datareport.util.ReportableCollection getClubMemberStatisticsForRegionalUnions(java.lang.Integer p0,java.util.Collection p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.datareport.util.ReportableCollection getStatisticsForLeaguesByYearRegionalUnionsAndLeaguesFiltering(java.lang.Integer p0,java.util.Collection p1,java.util.Collection p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.block.datareport.util.ReportableCollection getStatisticsForLeaguesByYearRegionalUnionsClubsAndLeaguesFiltering(java.lang.Integer p0,java.util.Collection p1,java.util.Collection p2,java.util.Collection p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
 }
