@@ -48,6 +48,7 @@ import com.idega.presentation.ui.AbstractTreeViewer;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.RadioGroup;
 import com.idega.presentation.ui.SelectionBox;
 import com.idega.presentation.ui.SelectionDoubleBox;
 import com.idega.presentation.ui.SubmitButton;
@@ -115,6 +116,11 @@ public class ReportQueryBuilder extends Block {
 	//private static final String PARAM_FUNC_TYPE = "mkfunctype";
 	
 	private static final String FORM_NAME = "reportQueryBuilderForm";
+	
+	private static final String PARAM_IS_PRIVATE_QUERY = "param_private_query";
+	
+	private static final String PRIVATE = "private";
+	private static final String PUBLIC = "public";
 	
 	private int heightOfStepTable = 300;
 	private int step = 1;
@@ -348,9 +354,10 @@ public class ReportQueryBuilder extends Block {
 		else if (iwc.isParameterSet(PARAM_SAVE)) {
 			helper.setTemplate(iwc.isParameterSet(PARAM_ASTEMPLATE));
 			String name = iwc.getParameter(PARAM_QUERY_NAME);
+			boolean isPrivate = PRIVATE.equals(iwc.getParameter(PARAM_IS_PRIVATE_QUERY));
 			if (name == null)
 				name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
-			ICFile q = sessionBean.storeQuery(name, queryFolderID);
+			ICFile q = sessionBean.storeQuery(name, queryFolderID, isPrivate);
 			if (q != null) {
 				queryID = ((Integer) q.getPrimaryKey()).intValue();
 				//add("Query was saved with ID: "+queryID  );
@@ -1363,12 +1370,18 @@ public class ReportQueryBuilder extends Block {
 //			table.add(iwrb.getLocalizedString("step_5_choose_folder", "Choose folder to save in"), 1, row);
 //		}
 //		table.add(folderChooser, 2, row);
-		row++;
-		CheckBox templateCheck = new CheckBox(PARAM_ASTEMPLATE, "true");
-		templateCheck.setChecked(helper.isTemplate());
+//		row++;
+//		CheckBox templateCheck = new CheckBox(PARAM_ASTEMPLATE, "true");
+//		templateCheck.setChecked(helper.isTemplate());
 //LOCK		table.add(iwrb.getLocalizedString("step_5_check_template", "Save as template query ?"), 1, row);
 //LOCK		table.add(templateCheck, 2, row);
-
+		// add checkbox private or public
+		row++;
+		RadioGroup radioGroup = new RadioGroup(PARAM_IS_PRIVATE_QUERY);
+		radioGroup.setWidth(1);
+		radioGroup.addRadioButton(PRIVATE, new Text(iwrb.getLocalizedString("step_5_private_query", "private")), true);
+		radioGroup.addRadioButton(PUBLIC, new Text(iwrb.getLocalizedString("step_5_public_query", "public")));
+		table.add(radioGroup, 2, row);
 		return table;
 	}
 
