@@ -81,9 +81,12 @@ private idegaTimestamp dateAfter;
       StringBuffer data = new StringBuffer();
       data.append("Kylfingur"); data.append("\t");
       data.append("Kennitala"); data.append("\t");
+      data.append("Fæðingardagur"); data.append("\t");
+      data.append("Kyn"); data.append("\t");
       data.append("Forgjöf fyrir"); data.append("\t");
       data.append("Forgjöf eftir");data.append("\t");
       data.append("Mismunur"); data.append("\t");
+      data.append("Símar"); data.append("\t");
       data.append("\n");
       out.write(data.toString().toCharArray());
 
@@ -152,33 +155,101 @@ private idegaTimestamp dateAfter;
           }
 
           difference = handicapBefore - handicapAfter;
-
           data = new StringBuffer();
-          String s = member.getName(); // Name
-          data.append(s);
-          data.append("\t");
+          String s = "";
 
-          s = member.getSocialSecurityNumber(); // SocialSecurityNumber
-          if ( s.length() == 10 ) {
-            s = s.substring(0,6)+"-"+s.substring(6,s.length());
+          try {
+            s = member.getName(); // Name
+            data.append(s);
+            data.append("\t");
           }
-          data.append(s);
-          data.append("\t");
+          catch ( Exception e ) {
+            e.printStackTrace(System.err);
+          }
 
-          s = TextSoap.singleDecimalFormat((double)handicapBefore); // HandicapBefore
-          s = s.replace('.',',');
-          data.append(s);
-          data.append("\t");
+          try {
+            s = member.getSocialSecurityNumber(); // SocialSecurityNumber
+            if ( s.length() == 10 ) {
+              s = s.substring(0,6)+"-"+s.substring(6,s.length());
+            }
+            data.append(s);
+            data.append("\t");
+          }
+          catch ( Exception e ) {
+            e.printStackTrace(System.err);
+          }
 
-          s = TextSoap.singleDecimalFormat((double)handicapAfter); // HandicapAfter
-          s = s.replace('.',',');
-          data.append(s);
-          data.append("\t");
+          try {
+            if ( member.getDateOfBirth() != null ) {
+              s = member.getDateOfBirth().toString();
+              data.append(s);
+            }
+            data.append("\t");
+          }
+          catch ( Exception e ) {
+            e.printStackTrace(System.err);
+          }
 
-          s = TextSoap.singleDecimalFormat((double)difference); // Difference
-          s = s.replace('.',',');
-          data.append(s);
-          data.append("\n");
+          try {
+            if ( member.getGender() != null ) {
+              s = member.getGender();
+              data.append(s);
+            }
+            data.append("\t");
+          }
+          catch ( Exception e ) {
+            e.printStackTrace(System.err);
+          }
+
+          try {
+            s = TextSoap.singleDecimalFormat((double)handicapBefore); // HandicapBefore
+            s = s.replace('.',',');
+            data.append(s);
+            data.append("\t");
+          }
+          catch ( Exception e ) {
+            e.printStackTrace(System.err);
+          }
+
+          try {
+            s = TextSoap.singleDecimalFormat((double)handicapAfter); // HandicapAfter
+            s = s.replace('.',',');
+            data.append(s);
+            data.append("\t");
+          }
+          catch ( Exception e ) {
+            e.printStackTrace(System.err);
+          }
+
+          try {
+            s = TextSoap.singleDecimalFormat((double)difference); // Difference
+            s = s.replace('.',',');
+            data.append(s);
+            data.append("\t");
+          }
+          catch ( Exception e ) {
+            e.printStackTrace(System.err);
+          }
+
+          try {
+            Phone[] phones = member.getPhone();
+            for ( int z = 0; z < phones.length; z++ ) {
+              s = phones[z].getNumber();
+              data.append(s);
+              if ( z + 1 < phones.length ) {
+                 data.append("\t");
+              }
+              else {
+                data.append("\n");
+              }
+            }
+            if ( phones.length == 0 ) {
+              data.append("\n");
+            }
+          }
+          catch ( Exception e ) {
+            e.printStackTrace(System.err);
+          }
 
           c = data.toString().toCharArray();
           out.write(c);
