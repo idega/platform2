@@ -9,5 +9,6 @@ public interface AfterSchoolBusiness extends ChildCareBusiness
  public se.idega.idegaweb.commune.childcare.data.AfterSchoolChoice findChoicesByChildAndChoiceNumberAndSeason(java.lang.Integer p0,int p1,java.lang.Integer p2)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.AfterSchoolChoice findChoicesByChildAndProviderAndSeason(int p0,int p1,int p2)throws javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection findChoicesByProvider(int p0) throws java.rmi.RemoteException;
+ public java.util.Collection findChoicesByProvider(int p0, String p1) throws java.rmi.RemoteException;
  public se.idega.idegaweb.commune.childcare.data.AfterSchoolChoice getAfterSchoolChoice(java.lang.Object p0)throws javax.ejb.FinderException, java.rmi.RemoteException;
 }

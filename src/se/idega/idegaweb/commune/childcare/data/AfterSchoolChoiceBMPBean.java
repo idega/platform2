@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolChoiceBMPBean.java,v 1.8 2003/12/05 14:05:34 laddi Exp $
+ * $Id: AfterSchoolChoiceBMPBean.java,v 1.9 2004/08/30 08:46:22 malin Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -138,6 +138,23 @@ public class AfterSchoolChoiceBMPBean extends ChildCareApplicationBMPBean implem
 		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
 		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
 		sql.appendOrderBy("c."+QUEUE_DATE+",c."+QUEUE_ORDER);
+
+		return idoFindPKsBySQL(sql.toString());
+	}	
+	
+	//same as above but with a parameter for sorting and also selects from ic_user
+	public Collection ejbFindAllCasesByProviderAndNotInStatus(int providerId, String[] caseStatus, String sorting) throws FinderException {
+		IDOQuery sql = idoQuery();
+		//sql.appendSelect().append("*.c").append(", *.p, iu.first_name, iu.last_name");
+		sql.appendSelectAllFrom(this).append(" c, proc_case p, ic_user iu");
+		//sql.append(", ic_user iu");
+		//sql.appendFrom().append(this).append(" c, proc_case p");
+		sql.appendWhereEquals("c."+getIDColumnName(), "p.proc_case_id");
+		sql.appendAndEquals("c."+PROVIDER_ID,providerId);
+		sql.appendAnd().appendEquals("c.child_id","iu.ic_user_id");
+		sql.appendAnd().append("p.case_status").appendNotInArrayWithSingleQuotes(caseStatus);
+		sql.appendAnd().appendEqualsQuoted("p.case_code",CASE_CODE_KEY);
+		sql.appendOrderBy(sorting+",c."+QUEUE_ORDER);
 
 		return idoFindPKsBySQL(sql.toString());
 	}	

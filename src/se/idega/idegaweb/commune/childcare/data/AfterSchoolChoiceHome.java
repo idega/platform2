@@ -6,6 +6,7 @@ public interface AfterSchoolChoiceHome extends com.idega.data.IDOHome
  public AfterSchoolChoice create() throws javax.ejb.CreateException;
  public AfterSchoolChoice findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException;
+ public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,java.lang.String[] p1, String p2)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndStatus(int p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.school.data.School p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllCasesByProviderAndStatus(com.idega.block.school.data.School p0,java.lang.String p1)throws javax.ejb.FinderException;

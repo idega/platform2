@@ -19,6 +19,12 @@ public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,java.lan
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
+public java.util.Collection findAllCasesByProviderAndNotInStatus(int p0,java.lang.String[] p1, String p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((AfterSchoolChoiceBMPBean)entity).ejbFindAllCasesByProviderAndNotInStatus(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
 
 public java.util.Collection findAllCasesByProviderAndStatus(int p0,com.idega.block.process.data.CaseStatus p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
