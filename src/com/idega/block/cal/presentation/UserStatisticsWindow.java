@@ -211,19 +211,22 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		table.add(getHeaderTable(iwc),1,1);
 		Table underTable = new Table();
 		underTable.setCellpadding(0);
-		underTable.setCellspacing(2);
-		underTable.setWidth("100%");
+		underTable.setCellspacing(1);
+		underTable.setWidth(Table.HUNDRED_PERCENT);
 		underTable.setStyleClass(grayBackground);
 		Collection marks = calBiz.getAllMarks();
 		Collection practices = calBiz.getPracticesByLedgerID(ledID);
 		
 		Table tpTable = new Table();
-		tpTable.setCellpadding(1);
+		tpTable.setCellpadding(5);
 		tpTable.setCellspacing(0);
-		tpTable.setWidth("100%");
-		tpTable.setHeight("100%");
+		tpTable.setWidth(Table.HUNDRED_PERCENT);
+		tpTable.setHeight(Table.HUNDRED_PERCENT);
 		tpTable.setColor("#ffffff");
-		tpTable.add(iwrb.getLocalizedString("userStat.total_practices","Total practices")+ " "  +  practices.size(),1,1);
+		Text totalPrac = new Text(iwrb.getLocalizedString("userStat.total_practices","Total practices")+ ":");
+		totalPrac.setBold();
+		tpTable.add(totalPrac,1,1);
+		tpTable.add(" " + practices.size(),1,1);
 		underTable.add(tpTable,1,1);
 
 		User user = null;
@@ -233,17 +236,17 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		while(userIter.hasNext()) {
 			
 			Table nameTable = new Table();
-			nameTable.setCellpadding(1);
+			nameTable.setCellpadding(5);
 			nameTable.setCellspacing(0);
-			nameTable.setWidth("100%");
-			nameTable.setHeight("100%");
+			nameTable.setWidth(Table.HUNDRED_PERCENT);
+			nameTable.setHeight(Table.HUNDRED_PERCENT);
 			nameTable.setColor("#ffffff");
 			int column = 2;
 			user = (User) userIter.next();
 			Integer userID = (Integer) user.getPrimaryKey();
 			nameTable.add(user.getName(),1,1);
 			underTable.add(nameTable,1,row);
-			underTable.setHeight(1,row,"25");
+			underTable.setHeight(1,row,25);
 			underTable.setWidth(1,row,150);
 			AttendanceMark attendanceMark = null;
 			Iterator markIter = marks.iterator();
@@ -251,18 +254,18 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 				attendanceMark = (AttendanceMark) markIter.next();
 				String markName = attendanceMark.getMark();
 				Table markTable = new Table();
-				markTable.setCellpadding(1);
+				markTable.setCellpadding(5);
 				markTable.setCellspacing(0);
 				markTable.setColor("#ffffff");
-				markTable.setWidth("100%");
-				markTable.setHeight("100%");
-				markTable.setAlignment(1,1,"center");
+				markTable.setWidth(Table.HUNDRED_PERCENT);
+				markTable.setHeight(Table.HUNDRED_PERCENT);
+				markTable.setAlignment(1,1,Table.HORIZONTAL_ALIGN_CENTER);
 				Table statsTable =new Table();
 				statsTable.setCellpadding(1);
 				statsTable.setCellspacing(0);
 				statsTable.setColor("#ffffff");
-				statsTable.setWidth("100%");
-				statsTable.setHeight("100%");
+				statsTable.setWidth(Table.HUNDRED_PERCENT);
+				statsTable.setHeight(Table.HUNDRED_PERCENT);
 				
 				if(row == 2) {
 					markTable.add(markName,1,1);
@@ -270,20 +273,29 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 				}		
 				Collection markedEntries = calBiz.getMarkedEntriesByUserIDandLedgerID(userID.intValue(),ledID);
 				Table stat = getStatsForUser(iwc,userID.intValue(),ledID,attendanceMark.getMark(),markedEntries.size());
-				System.out.println("markedEntries.size: " + markedEntries.size());
 				statsTable.add(stat,1,1);
 				underTable.setWidth(column,row,50);
-				underTable.setHeight(column,row,"25");
+				underTable.setHeight(column,row,25);
 				underTable.add(statsTable,column++,row);
 				
 			}			
 			row++;
-		}	
-		table.add(underTable,1,2);
-		table.setAlignment(1,3,"right");
-		table.add(closeButton,1,3);
+		}
 		
-		table.add(getHelp(this.HELP_TEXT_KEY), 1, 4);
+		Table buttonTable = new Table();
+		buttonTable.setWidth(Table.HUNDRED_PERCENT);
+		buttonTable.setCellpadding(0);
+		buttonTable.setCellspacing(12);
+		buttonTable.setStyleClass(borderAllWhite);
+		buttonTable.add(getHelp(this.HELP_TEXT_KEY),1,1);
+		buttonTable.setAlignment(2,1,Table.HORIZONTAL_ALIGN_RIGHT);
+		buttonTable.add(closeButton,2,1);
+		
+		table.setHeight(2,5);
+		table.add(underTable,1,3);
+		table.setHeight(4,5);
+		table.add(buttonTable,1,5);
+		
 	}
 	/**
 	 * 
@@ -295,16 +307,16 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	 * @return
 	 */
 	public Table getStatsForUser(IWContext iwc, int userID, int ledID, String mark, float totalPractices) {
-		System.out.println("totalprac: " + totalPractices);
 		Table t = new Table();
-		t.setWidth("100%");
-		t.setHeight("100%");
+		t.setWidth(Table.HUNDRED_PERCENT);
+		t.setHeight(Table.HUNDRED_PERCENT);
 		List numberOfMarks = getCalendarBusiness(iwc).getAttendanceMarks(userID,ledID,mark);
 		NumberFormat nfp = NumberFormat.getPercentInstance();
 		NumberFormat nfi = NumberFormat.getIntegerInstance();
 		float i = numberOfMarks.size();
-		float j = i/totalPractices;
-		if(j != 0) {
+		
+		if(i != 0) {
+			float j = i/totalPractices;
 			t.add(nfp.format(j),1,1);
 		}
 		else {
@@ -312,7 +324,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		}
 		
 		t.setStyleClass(1,1,borderRight);
-		t.setHeight(1,1,"100%");
+		t.setHeight(1,1,Table.HUNDRED_PERCENT);
 		t.add(nfi.format(i),2,1);
 				
 		return t;
@@ -324,9 +336,9 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		
 		Table headerTable = new Table();
 		headerTable.setCellpadding(0);
-		headerTable.setCellspacing(0);
-		headerTable.setWidth("100%");
-		headerTable.setHeight("100%");
+		headerTable.setCellspacing(12);
+		headerTable.setWidth(Table.HUNDRED_PERCENT);
+		headerTable.setHeight(Table.HUNDRED_PERCENT);
 		headerTable.setStyleClass(borderAllWhite);
 		headerTable.add(userText,1,1);
 		headerTable.add(userField,2,1);
@@ -353,11 +365,11 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 			AttendanceMark attendanceMark = (AttendanceMark) markIter.next();
 			String markName = attendanceMark.getMark();
 			headerTable.add(markName+": "+attendanceMark.getMarkDescription(),4,1);
-			headerTable.add("<br>",4,1);
+			headerTable.add(Text.BREAK,4,1);
 		}
-		headerTable.setVerticalAlignment(5,4,"bottom");
-		headerTable.setAlignment(5,4,"right");
-		headerTable.add(printButton,5,4);
+		headerTable.setVerticalAlignment(5,6,Table.VERTICAL_ALIGN_BOTTOM);
+		headerTable.setAlignment(5,6,Table.HORIZONTAL_ALIGN_RIGHT);
+		headerTable.add(printButton,5,6);
 		return headerTable;
 	}
 	
