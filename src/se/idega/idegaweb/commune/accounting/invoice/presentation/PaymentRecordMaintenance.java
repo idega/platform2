@@ -66,11 +66,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/08 11:06:33 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/08 13:16:34 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.36 $
+ * @version $Revision: 1.37 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -782,6 +782,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                      new java.sql.Date
                      (endPeriod != null ? endPeriod.getTime ()
                       : System.currentTimeMillis ()));
+            table.setHeight (row++, 12);
             table.mergeCells (1, row, columnCount, row);
             if (0 < records.length) {
                 table.setAlignment (columnCount, 2,
@@ -798,18 +799,21 @@ public class PaymentRecordMaintenance extends AccountingBlock {
                 context.setSessionAttribute (PAYMENT_RECORDS_KEY, records);
                 context.setSessionAttribute (PROVIDER_KEY, providerId);
                 context.setSessionAttribute (MAIN_ACTIVITY_KEY, schoolCategory);
-                table.setHeight (row++, 12);
                 table.add (getPaymentRecordListTable (records), 1, row++);
                 table.mergeCells (1, row, columnCount, row);
                 table.add (getPaymentSummaryTable (context, records, business),
                            1, row++);
+                /*
                 table.setHeight (row++, 12);
                 table.mergeCells (1, row, columnCount, row);
-                table.add (getSubmitButton (0, PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT), 1, row);
+                final SubmitButton providerConfirmButton = new SubmitButton
+                        (localize (PROVIDER_CONFIRM_KEY, PROVIDER_CONFIRM_DEFAULT), "ib_page", "1344");
+                table.add (getButton (providerConfirmButton), 1, row);
                 table.add (Text.getNonBrakingSpace(), 1, row);
                 table.add (getSubmitButton (0, NEW_KEY, NEW_DEFAULT), 1, row);
                 table.add (Text.getNonBrakingSpace(), 1, row);
                 table.add (getSubmitButton (0, REMOVE_KEY, REMOVE_DEFAULT), 1, row);
+                */
             } else {
                 addSmallText (table, 1, row++, NO_PAYMENT_RECORDS_FOUND_KEY,
                               NO_PAYMENT_RECORDS_FOUND_DEFAULT);
