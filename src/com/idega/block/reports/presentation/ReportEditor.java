@@ -142,7 +142,6 @@ public class ReportEditor extends Block implements Reports{
       MLL.setColor(MiddleColor);
       MLL.setCellpadding(0);
       MLL.setCellspacing(0);
-      MLL.setVerticalAlignment("top");
       if(this.sManual != null)
         MLL.add(Edit.formatText(sManual));
 
@@ -153,6 +152,7 @@ public class ReportEditor extends Block implements Reports{
       M.setWidth(1,"40%");
       M.add(box,1,1);
       M.add(ML,2,1);
+      M.setVerticalAlignment(4, 1, Table.VERTICAL_ALIGN_TOP);
       M.add(MLL,4,1);
       T.add(U,1,1);
       T.add(M,1,2);

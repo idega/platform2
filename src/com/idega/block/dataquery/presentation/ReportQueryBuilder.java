@@ -723,7 +723,6 @@ public class ReportQueryBuilder extends Block {
 		T.setBorder(tableBorder);
 		//T.setHeight(heightOfStepTable);
 		T.setWidth(Table.HUNDRED_PERCENT);
-		T.setVerticalAlignment(Table.VERTICAL_ALIGN_TOP);
 		return T;
 	}
 

@@ -83,7 +83,6 @@ public class AccessControllerApp extends IWApplication {
       Table headerTable = new Table();
       headerTable.setCellpadding(0);
       headerTable.setCellspacing(0);
-      headerTable.setVerticalAlignment("middle");
       headerTable.setWidth("100%");
       headerTable.setAlignment(2,1,"right");
       Image idegaweb = iwbCore.getImage("/editorwindow/idegaweb.gif","idegaWeb");
@@ -333,7 +332,6 @@ public class AccessControllerApp extends IWApplication {
         if(identifier != null && category != null){
           int intPermissionCategory = Integer.parseInt(category);
 
-          frameTable.setVerticalAlignment("middle");
           frameTable.setAlignment(1,1,"left");
           frameTable.setAlignment(1,2,"left");
           frameTable.setAlignment(1,3,"left");
@@ -485,6 +483,7 @@ public class AccessControllerApp extends IWApplication {
 
         }
         myTable.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_CENTER);
+        myTable.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_MIDDLE);
         myTable.add(frameTable, 1, 1);
         return myTable;
       }
