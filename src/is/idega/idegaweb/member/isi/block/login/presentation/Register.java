@@ -141,7 +141,7 @@ public class Register extends Block {
 			if(user.getGroupID()==-1) {
 				return _iwrb.getLocalizedString("register.user_not_in_any_group", "User must be a member of a group.");
 			}
-			LoginTable lt = getLoginTable(user);
+			LoginTable lt = getLoginTable(user, false);
 			if(lt!=null) {
 				return _iwrb.getLocalizedString("register.user_already_has_login", "You already have a login, can not create another");
 			}
@@ -246,7 +246,7 @@ public class Register extends Block {
 		}
 		String msg = null;
 		try {
-			LoginTable lt = getLoginTable(user);
+			LoginTable lt = getLoginTable(user, true);
 			lt.setUserId(user.getID());
 			lt.setUserLogin(kt);
 			lt.store();
@@ -379,7 +379,7 @@ public class Register extends Block {
 		}
 	}
 
-	private LoginTable getLoginTable(User user) {
+	private LoginTable getLoginTable(User user, boolean create) {
 		LoginTable lt = null;
 		try {
 			LoginTableHome ltHome = (LoginTableHome) IDOLookup.getHome(LoginTable.class);
@@ -393,7 +393,7 @@ public class Register extends Block {
 					lt = null;
 				}
 			}
-			if(lt==null) {
+			if(lt==null && create) {
 				lt = ltHome.create();
 			}
 		} catch (Exception e) {
