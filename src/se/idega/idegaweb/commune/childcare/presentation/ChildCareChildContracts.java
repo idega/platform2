@@ -385,6 +385,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		form.add(new HiddenInput(PARAMETER_APPLICATION_ID, String.valueOf(applicationId)));
 		
 		SubmitButton removeContracts = (SubmitButton) getStyledInterface(new SubmitButton("remove", localize("child_care.remove_future_contracts","Remove future contracts")));
+		form.add(removeContracts);
 		if (!getBusiness().hasFutureContracts(applicationId) && !getBusiness().hasFutureLogs(applicationId, new java.sql.Date(System.currentTimeMillis()))) {
 			removeContracts.setDisabled(true);			
 		} else {
@@ -397,7 +398,6 @@ public class ChildCareChildContracts extends ChildCareBlock {
 						" " + new IWTimestamp(earliestPossibleRemoveDate).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + "'); return false; }");
 			}
 		}
-		form.add(removeContracts);
 	
 		return form;
 	}
