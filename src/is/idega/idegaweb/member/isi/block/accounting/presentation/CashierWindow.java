@@ -482,8 +482,8 @@ public class CashierWindow extends StyledIWAdminWindow {
 
         if (iwc.isSuperAdmin()) return true;
 
-        User currentUser = iwc.getCurrentUser();
-        if (currentUser == null) {
+        
+        if (!iwc.isLoggedOn()) {
             Text errorText = new Text(iwrb.getLocalizedString(
                     "isi_acc_no_user",
                     "There is no user logged in. Please log in and try again."));
@@ -495,7 +495,7 @@ public class CashierWindow extends StyledIWAdminWindow {
 
         //System.out.println("Going to get all the cashierGroups for the
         // user");
-
+        User currentUser = iwc.getCurrentUser();
         Collection cashierGroupsInClubForUser = getGroupsForUser(iwc,
                 currentUser);
         //System.out.println("Done getting groups.");
