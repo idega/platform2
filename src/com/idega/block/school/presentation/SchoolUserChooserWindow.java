@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolUserChooserWindow.java,v 1.1 2005/03/04 10:37:33 anna Exp $ Created on
+ * $Id: SchoolUserChooserWindow.java,v 1.2 2005/03/07 13:17:20 anna Exp $ Created on
  * 24.2.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -26,7 +26,7 @@ import com.idega.user.presentation.UserChooserWindow;
  * Last modified: 24.2.2005 15:06:52 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SchoolUserChooserWindow extends UserChooserWindow {
 
@@ -73,12 +73,12 @@ public class SchoolUserChooserWindow extends UserChooserWindow {
 		}
 		try {
 			SchoolUserBusiness biz = getSchoolUserBusiness(iwc);
-			users = biz.getUserIds(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_HEADMASTER);
-			users.addAll(biz.getUserIds(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER));
-			users.addAll(biz.getUserIds(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_IB_COORDINATOR));
-			users.addAll(biz.getUserIds(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_STUDY_AND_WORK_COUNCEL));
-			users.addAll(biz.getUserIds(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_TEACHER));
-			users.addAll(biz.getUserIds(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN));
+			users = biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_HEADMASTER);
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_ASSISTANT_HEADMASTER));
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_IB_COORDINATOR));
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_STUDY_AND_WORK_COUNCEL));
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_TEACHER));
+			users.addAll(biz.getUsers(getProvider(iwc), SchoolUserBusinessBean.USER_TYPE_WEB_ADMIN));
 		}
 		catch (FinderException ex) {
 			ex.printStackTrace();
