@@ -1,5 +1,5 @@
 /*
- * $Id: HandicapReportBean.java,v 1.1 2005/02/07 11:20:28 laddi Exp $
+ * $Id: HandicapReportBean.java,v 1.2 2005/02/07 13:57:42 laddi Exp $
  * Created on 7.2.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -37,14 +37,14 @@ import com.idega.util.text.TextSoap;
 
 
 /**
- * Last modified: $Date: 2005/02/07 11:20:28 $ by $Author: laddi $
+ * Last modified: $Date: 2005/02/07 13:57:42 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class HandicapReportBean extends IBOSessionBean  implements HandicapReport{
 
-	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 	
 	private final static String PREFIX = "handicap_report.";
 	private static final String FIELD_CLUB = "club";
