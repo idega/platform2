@@ -183,7 +183,7 @@ public class ContractKeyWindow extends Window{
 
       row++;
       boolean canSign = true;
-      if(listOfContracts != null){
+      if(listOfContracts != null && !listOfContracts.isEmpty()){
         Contract C = (Contract) listOfContracts.get(0);
         if(C.getID() != eContract.getID())
           canSign = false;
