@@ -341,6 +341,7 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Collections.sort(assetKeys, keyComparator);
     Collections.sort(debtKeys, keyComparator);
     // add sorted keys to the fields
+    fieldList.add(LEAGUE_NAME);
     addKeys(incomeKeys);
     fieldList.add(INCOME_SUM_KEY);
     addKeys(exponsesKeys);
@@ -444,8 +445,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     // define path short keys and map corresponding converters
     int i = 1;
-    browser.setMandatoryColumn(i++, LEAGUE_NAME);
-    browser.setEntityToPresentationConverter(LEAGUE_NAME, textEditorConverter);
     Iterator fieldListIterator = fieldList.iterator();
     while (fieldListIterator.hasNext()) {
       String fieldName = fieldListIterator.next().toString();
