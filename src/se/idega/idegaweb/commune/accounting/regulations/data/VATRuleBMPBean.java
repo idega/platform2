@@ -1,5 +1,5 @@
 /*
- * $Id: VATRuleBMPBean.java,v 1.3 2003/11/11 10:57:45 anders Exp $
+ * $Id: VATRuleBMPBean.java,v 1.4 2003/12/09 16:21:27 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -21,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Holds VAT rules ("Momsersättning förskoleklass", "Momsersättning grundskola" etc) 
  * 
  * <p>
- * $Id: VATRuleBMPBean.java,v 1.3 2003/11/11 10:57:45 anders Exp $
+ * $Id: VATRuleBMPBean.java,v 1.4 2003/12/09 16:21:27 anders Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class VATRuleBMPBean extends GenericEntity implements VATRule {
 	
@@ -46,10 +46,12 @@ public class VATRuleBMPBean extends GenericEntity implements VATRule {
 			"momsersattning_forskola",
 			"momsersattning_familjedaghem",
 			"momsersattning_allman_forskola",
-			"momsersattning_oppen_forskoleverksamhet",
-			"momsersattning_fritidshem",
-			"momsersattning_familjefritidshem",
-			"momsersattning_oppen_fritidsverksamhet",
+			"momsersattning_fritidshem_6_ar",
+			"momsersattning_fritidshem_7_9_ar",
+			"momsersattning_familjefritids_6_ar",
+			"momsersattning_familjefritids_7_9_ar",
+			"momsersattning_familjedaghem_allman_forskola",
+			"momsersattning_fritidsklubb",
 			"momsersattning_forskoleklass",
 			"momsersattning_grundskola",
 			"momsersattning_obligatorisk_sarskola",
@@ -60,7 +62,7 @@ public class VATRuleBMPBean extends GenericEntity implements VATRule {
 			"momsersattning_individresurs_enligt_avtal",
 			"momsersattning_modersmal",
 			"momsersattning_svenska_som_andrasprak",
-			"momsersattning_mindre_undervisningsgrupper"
+			"momsersattning_mindre_undervisningsgrupp"
 		};
 		for (int i = 0; i < data.length; i++) {
 			VATRule sc = home.create();
