@@ -214,7 +214,7 @@ public class ApartmentFreezer extends CampusBlock {
     Apartment A =((ApartmentHome)IDOLookup.getHome(Apartment.class)).findByPrimaryKey(id);
     
     DateInput DI = new DateInput("frozen_date",true);
-    DI.setIWContext(iwc);
+    //DI.setIWContext(iwc);
     if(A.getUnavailableUntil()!=null)
       DI.setDate(A.getUnavailableUntil());
     //else
