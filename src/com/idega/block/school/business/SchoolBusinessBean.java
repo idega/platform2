@@ -1481,7 +1481,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			SchoolClass group = this.findSchoolClass(new Integer(schoolClassID));
 			if (group.getIsSubGroup()) {
 				try {
-					SchoolClassMember member = getSchoolClassMemberHome().findByUserAndSchoolAndSeason(studentID, group.getSchoolId(), group.getSchoolSeasonId());
+					SchoolClassMember member = getSchoolClassMemberHome().findByUserAndSchoolAndSeason(studentID, group.getSchoolId(), group.getSchoolSeasonId(), getSchoolTypesForCategory(getCategoryElementarySchool(), false));
 					member.removeFromGroup(group);
 				}
 				catch (FinderException fe) {
@@ -1599,7 +1599,7 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			SchoolClass group = this.findSchoolClass(new Integer(schoolClassID));
 			if (group.getIsSubGroup()) {
 				try {
-					SchoolClassMember member = getSchoolClassMemberHome().findByUserAndSchoolAndSeason(studentID, group.getSchoolId(), group.getSchoolSeasonId());
+					SchoolClassMember member = getSchoolClassMemberHome().findByUserAndSchoolAndSeason(studentID, group.getSchoolId(), group.getSchoolSeasonId(), getSchoolTypesForCategory(getCategoryElementarySchool(), false));
 					member.addToGroup(group);
 					return member;
 				}
