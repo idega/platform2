@@ -108,7 +108,7 @@
 					<reportElement
 						mode="Transparent"
 						x="114"
-						y="3"
+						y="4"
 						width="96"
 						height="15"
 						forecolor="#000000"
@@ -127,8 +127,8 @@
 					<reportElement
 						mode="Opaque"
 						x="0"
-						y="1"
-						width="530"
+						y="2"
+						width="554"
 						height="1"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -142,7 +142,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="219"
-						y="3"
+						y="4"
 						width="40"
 						height="15"
 						forecolor="#000000"
@@ -160,7 +160,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="261"
-						y="3"
+						y="4"
 						width="40"
 						height="15"
 						forecolor="#000000"
@@ -178,7 +178,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="304"
-						y="3"
+						y="4"
 						width="34"
 						height="15"
 						forecolor="#000000"
@@ -196,7 +196,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="356"
-						y="3"
+						y="4"
 						width="40"
 						height="15"
 						forecolor="#000000"
@@ -214,7 +214,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="398"
-						y="3"
+						y="4"
 						width="40"
 						height="15"
 						forecolor="#000000"
@@ -232,7 +232,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="440"
-						y="3"
+						y="4"
 						width="34"
 						height="15"
 						forecolor="#000000"
@@ -250,7 +250,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="479"
-						y="3"
+						y="4"
 						width="34"
 						height="15"
 						forecolor="#000000"
@@ -269,7 +269,7 @@
 					<reportElement
 						mode="Transparent"
 						x="514"
-						y="3"
+						y="4"
 						width="14"
 						height="15"
 						forecolor="#000000"
@@ -441,7 +441,7 @@
 						mode="Transparent"
 						x="0"
 						y="19"
-						width="66"
+						width="69"
 						height="16"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -457,7 +457,7 @@
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
-						x="68"
+						x="70"
 						y="19"
 						width="273"
 						height="16"
