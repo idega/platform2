@@ -106,8 +106,6 @@ public class ChildCareContracts extends ChildCareBlock {
 					child = application.getChild();
 					//provider = application.getProviderId();
 					
-					student = contract.getSchoolClassMember();
-					
 					hasComment = true;
 
 					if (useStyleNames()) {
@@ -128,6 +126,8 @@ public class ChildCareContracts extends ChildCareBlock {
 					}
 					
 					if (contract != null) {
+						student = contract.getSchoolClassMember();
+						
 						created = new IWTimestamp(contract.getCreatedDate());
 						if (contract.getValidFromDate() != null)
 							validFrom = new IWTimestamp(contract.getValidFromDate());
