@@ -94,11 +94,11 @@ public class CampusFinanceHandler implements FinanceHandler {
 		//List listOfUsers =
 		// CampusAccountFinder.listOfContractAccountApartment(getAccountType(),
 		// start, end);
-		int iAccountCount = 0;
+		//int iAccountCount = 0;
 		if (tariffs != null) {
 			if (listOfUsers != null) {
-				NumberFormat nf = NumberFormat.getPercentInstance();
-				int rlen = listOfUsers.size();
+				//NumberFormat nf = NumberFormat.getPercentInstance();
+				//int rlen = listOfUsers.size();
 				Tariff tariff;
 				char cAttribute;
 				ContractAccountApartment user;
@@ -253,7 +253,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 	}
 	
 	private double getFactor(long begin,long endin,long valfr,long valto,int precision){
-		long del = endin - begin;
+		//long del = endin - begin;
 		int periodDays = IWTimestamp.getDaysBetween(new IWTimestamp(begin),new IWTimestamp(endin))+1;
 		
 		
@@ -284,7 +284,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 			ret=new BigDecimal(0);
 		*/
 		BigDecimal ret = new BigDecimal(validDays);
-		ret = ret.divide(new BigDecimal(periodDays),precision,BigDecimal.ROUND_UP);
+		ret = ret.divide(new BigDecimal(periodDays),precision,BigDecimal.ROUND_HALF_EVEN);
 		return ret.doubleValue();
 	}
 	
@@ -333,7 +333,7 @@ public class CampusFinanceHandler implements FinanceHandler {
 		}
 		if (tariffs != null && listOfUsers != null) {
 			Hashtable H = new Hashtable(tariffs.size());
-			int rlen = listOfUsers.size();
+			//int rlen = listOfUsers.size();
 			Tariff eTariff;
 			char cAttribute;
 			ContractAccountApartment user;
