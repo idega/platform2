@@ -79,7 +79,7 @@ public class SchoolSeasonBMPBean extends GenericEntity implements SchoolSeason{
   }
 
   public java.util.Collection ejbFindAllPreviousSchoolSeasons(SchoolSeason schoolSeason)throws FinderException, RemoteException {
-    IDOQuery sql = new IDOQuery();
+    IDOQuery sql = idoQuery();
     sql.appendSelectAllFrom(this.getEntityName()).appendWhere().append(START).append("<").appendWithinSingleQuotes(schoolSeason.getSchoolSeasonStart().toString()).appendOrderBy(START);
     return super.idoFindPKsBySQL(sql.toString());
   }

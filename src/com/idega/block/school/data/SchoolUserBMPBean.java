@@ -74,7 +74,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	 * Returns a Collection of UserPrimaryKeys NOT SchoolUserPrimaryKeys	 * @param school School	 * @param userType User type	 * @return Collection	 * @throws FinderException	 * @throws RemoteException
 	 */
 	public Collection ejbHomeFindBySchoolAndType(School school, int userType) throws FinderException, RemoteException {
-		IDOQuery sql = new IDOQuery();
+		IDOQuery sql = idoQuery();
 			sql.appendSelect()
 			 .append("*")
 			 .appendFrom()
@@ -103,7 +103,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	}
 	
 	public Collection ejbHomeFindBySchoolAndUser(School school, User user) throws FinderException {
-		IDOQuery sql = new IDOQuery();
+		IDOQuery sql = idoQuery();
 			sql.appendSelect()
 			 .append("*")
 			 .appendFrom()
@@ -120,7 +120,7 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 	}
 	
 	public Object ejbHomeGetSchoolUserId(School school, User user, int userType) throws FinderException{
-		IDOQuery sql = new IDOQuery();
+		IDOQuery sql = idoQuery();
 			sql.appendSelect()
 			 .append("*")
 			 .appendFrom()

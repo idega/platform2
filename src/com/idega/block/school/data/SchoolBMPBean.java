@@ -191,7 +191,7 @@ public class SchoolBMPBean extends GenericEntity implements School {
 	}
 
 	public Integer ejbFindBySchoolName(String schoolName) throws javax.ejb.FinderException {
-		IDOQuery sql = new IDOQuery();
+		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getEntityName()).appendWhereEqualsQuoted(this.NAME,schoolName);
 		
 		return (Integer)super.idoFindOnePKByQuery(sql);

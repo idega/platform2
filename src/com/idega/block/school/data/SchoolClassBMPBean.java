@@ -203,7 +203,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   }
   
   public Integer ejbFindBySchoolClassNameSchoolSchoolYearSchoolSeason(String className, School school, SchoolYear schoolYear, SchoolSeason schoolSeason)throws FinderException ,RemoteException{
-  	IDOQuery sql = new IDOQuery();
+  	IDOQuery sql = idoQuery();
 
   	sql.appendSelectAllFrom(this).appendWhere().append(NAME).appendEqualSign().appendWithinSingleQuotes(className)
   	.appendAnd().append(SCHOOL).appendEqualSign().append(((Integer)school.getPrimaryKey()).intValue())
@@ -215,7 +215,7 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
   }
 
   public int ejbHomeGetNumberOfStudentsInClass(int schoolClassID) throws FinderException, IDOException, RemoteException {
-  	IDOQuery sql = new IDOQuery();
+  	IDOQuery sql = idoQuery();
   	sql.appendSelect().append("count(*)").appendFrom().append(getEntityName()).append(" sc,").append(SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER).append(" scm");
   	sql.appendWhere().append("sc.").append(getIDColumnName()).appendEqualSign().append(schoolClassID).appendAnd().append("sc.").append(getIDColumnName()).appendEqualSign().append("scm.").append(getIDColumnName());
 
