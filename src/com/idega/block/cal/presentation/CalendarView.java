@@ -153,6 +153,7 @@ public class CalendarView extends CategoryBlock{
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(j);
 				CalendarLedger ledger = null;
 				int groupIDInLedger;
+				boolean isInGroup = false;
 				//get a collection of groups the current user may view
 				
 				Collection viewGroups = null;
@@ -176,30 +177,33 @@ public class CalendarView extends CategoryBlock{
 					Group group =(Group) viewGroupsIter.next();
 					Integer groupID = (Integer) group.getPrimaryKey();
 					if(entry.getGroupID() == groupID.intValue()  
-							|| groupIDInLedger == groupID.intValue()
-							|| iwc.isSuperAdmin()) {
-						Timestamp fStamp = entry.getDate();
-						Timestamp tStamp = entry.getEndDate();
-						//i is the current hour 
-						if(i <= tStamp.getHours() && i >= fStamp.getHours()) {
-							entry.getGroupID();
-							String headline = entry.getName();
-							Link headlineLink = new Link(headline);
-							headlineLink.addParameter(ACTION,OPEN);
-							headlineLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
-							headlineLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
-							headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
-							headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
-							headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
-							if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
-								headlineLink.setWindowToOpen(EntryInfoWindow.class);
-							}
-							headlineLink.setStyleClass(entryLink);
-							entryTable.add(headlineLink,1,1);
-							entryTable.add("<br>",1,1);
-						}						
+							|| groupIDInLedger == groupID.intValue()) {
+						isInGroup = true;
 					}
-				}				
+				}
+				if(isInGroup || iwc.isSuperAdmin()) {
+					Timestamp fStamp = entry.getDate();
+					Timestamp tStamp = entry.getEndDate();
+					//i is the current hour 
+					if(i <= tStamp.getHours() && i >= fStamp.getHours()) {
+						entry.getGroupID();
+						String headline = entry.getName();
+						Link headlineLink = new Link(headline);
+						headlineLink.addParameter(ACTION,OPEN);
+						headlineLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
+						headlineLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
+						headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
+						headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
+						headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
+						if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
+							headlineLink.setWindowToOpen(EntryInfoWindow.class);
+						}
+						headlineLink.setStyleClass(entryLink);
+						entryTable.add(headlineLink,1,1);
+						entryTable.add("<br>",1,1);
+					}						
+				}
+							
 			}	
 			backTable.add(entryTable,2,row);
 			row++;
@@ -333,6 +337,7 @@ public class CalendarView extends CategoryBlock{
 						CalendarEntry entry = (CalendarEntry) listOfEntries.get(h);
 						Collection viewGroups = null;
 						CalendarLedger ledger = null;
+						boolean isInGroup = false;
 						int groupIDInLedger;
 						try {
 							viewGroups = getUserBusiness(iwc).getUserGroups(user);
@@ -354,29 +359,31 @@ public class CalendarView extends CategoryBlock{
 							Group group =(Group) viewGroupsIter.next();
 							Integer groupID = (Integer) group.getPrimaryKey();
 							if(entry.getGroupID() == groupID.intValue() 
-									|| groupIDInLedger == groupID.intValue()
-									|| iwc.isSuperAdmin()) {
-								Timestamp fStamp = entry.getDate();
-								Timestamp ttStamp = entry.getEndDate();
-								if(j <= ttStamp.getHours() && j >= fStamp.getHours()) {
-									String headline = entry.getName();
-									Link headlineLink = new Link(headline);
-									headlineLink.addParameter(ACTION,OPEN);
-									headlineLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
-									headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
-									headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
-									headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
-									if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
-										headlineLink.setWindowToOpen(EntryInfoWindow.class);
-									}									
-									headlineLink.setStyleClass(entryLink);
-									headlineLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
-									weekTable.add(headlineLink,1,1);
-									weekTable.add("<br>",1,1);
-//									backTable.add(weekTable,column,row);
-								}
-							}	
+									|| groupIDInLedger == groupID.intValue()) {
+								isInGroup = true;
+							}
 						}
+						if(isInGroup || iwc.isSuperAdmin()) {
+							Timestamp fStamp = entry.getDate();
+							Timestamp ttStamp = entry.getEndDate();
+							if(j <= ttStamp.getHours() && j >= fStamp.getHours()) {
+								String headline = entry.getName();
+								Link headlineLink = new Link(headline);
+								headlineLink.addParameter(ACTION,OPEN);
+								headlineLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
+								headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
+								headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
+								headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
+								if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
+									headlineLink.setWindowToOpen(EntryInfoWindow.class);
+								}									
+								headlineLink.setStyleClass(entryLink);
+								headlineLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
+								weekTable.add(headlineLink,1,1);
+								weekTable.add("<br>",1,1);
+//									backTable.add(weekTable,column,row);
+							}
+						}							
 					}	//end for	
 					backTable.setHeight(column,row,"40");
 					backTable.add(weekTable,column,row);
@@ -488,13 +495,12 @@ public class CalendarView extends CategoryBlock{
 			toStamp.setMinutes(59);
 			toStamp.setNanos(0);
 			List listOfEntries = (List) getCalBusiness(iwc).getEntriesBetweenTimestamps(fromStamp,toStamp);
-			System.out.println("fromStamp: " + fromStamp.toString());
-			System.out.println("toStamp: "+ toStamp.toString());
 			User user = iwc.getCurrentUser();
 			for(int h=0; h<listOfEntries.size(); h++) {
 				CalendarEntry entry = (CalendarEntry) listOfEntries.get(h);
 				CalendarLedger ledger = null;
 				int groupIDInLedger = 0;
+				boolean isInGroup = false;
 				Collection viewGroups = null;
 
 				try {
@@ -523,32 +529,34 @@ public class CalendarView extends CategoryBlock{
 					Integer groupID = (Integer) group.getPrimaryKey();
 					
 					if(entry.getGroupID() == groupID.intValue() 
-							|| groupIDInLedger == groupID.intValue()
-							|| iwc.isSuperAdmin()) {
-						System.out.println("monthV after if... ");
-							Timestamp startDate = entry.getDate();
-							int hours = startDate.getHours();
-							int minutes = startDate.getMinutes();
-							DecimalFormat f = new DecimalFormat("###");
-							String mi = f.format(minutes);
-							String ho = f.format(hours);
-							String headline = ho + ":" + mi + " " + entry.getName();
-							Link headlineLink = new Link(headline);
-							headlineLink.addParameter(ACTION,OPEN);
-							headlineLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
-							headlineLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
-							headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
-							headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
-							headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
-							if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
-								headlineLink.setWindowToOpen(EntryInfoWindow.class);
-							}
-							headlineLink.setStyleClass(entryLink);
-							dayCell.add(headlineLink,1,cellRow);
-							dayCell.setVerticalAlignment(1,cellRow,"top");
-							dayCell.add("<br>",1,cellRow++);						
+							|| groupIDInLedger == groupID.intValue()){
+						isInGroup = true;
 					}
 				}
+				if(isInGroup || iwc.isSuperAdmin()) {
+					Timestamp startDate = entry.getDate();
+					int hours = startDate.getHours();
+					int minutes = startDate.getMinutes();
+					DecimalFormat f = new DecimalFormat("###");
+					String mi = f.format(minutes);
+					String ho = f.format(hours);
+					String headline = ho + ":" + mi + " " + entry.getName();
+					Link headlineLink = new Link(headline);
+					headlineLink.addParameter(ACTION,OPEN);
+					headlineLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
+					headlineLink.addParameter(CalendarParameters.PARAMETER_YEAR, stamp.getYear());
+					headlineLink.addParameter(CalendarParameters.PARAMETER_MONTH, stamp.getMonth());
+					headlineLink.addParameter(CalendarParameters.PARAMETER_DAY, stamp.getDay());
+					headlineLink.addParameter("entryID", entry.getPrimaryKey().toString());
+					if(!iwc.getAccessController().hasRole("cal_view_entry_creator",iwc)) {
+						headlineLink.setWindowToOpen(EntryInfoWindow.class);
+					}
+					headlineLink.setStyleClass(entryLink);
+					dayCell.add(headlineLink,1,cellRow);
+					dayCell.setVerticalAlignment(1,cellRow,"top");
+					dayCell.add("<br>",1,cellRow++);						
+				}
+				
 			}
 			backTable.add(dayCell,column,row);
 			backTable.setColor(column,row,"#ffffff");
