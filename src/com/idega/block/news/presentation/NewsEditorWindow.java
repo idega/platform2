@@ -27,6 +27,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.core.data.ICFile;
+import com.idega.presentation.texteditor.TextEditor;
 
 /**
  * Title:
@@ -500,7 +501,10 @@ private IWResourceBundle iwrb;
     LocaleDrop.setToSubmit();
     LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
 
-    TextArea taBody = new TextArea(prmBody,65,18);
+    //TextArea taBody = new TextArea(prmBody,65,18);
+    TextEditor taBody = new TextEditor();
+    taBody.setInputName(prmBody);
+
     TextArea taTeaser = new TextArea(prmTeaser,65,2);
 
     List cats = CategoryFinder.getInstance().listOfCategoryForObjectInstanceId(iObjInsId);
