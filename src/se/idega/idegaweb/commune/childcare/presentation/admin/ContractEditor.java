@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
@@ -15,6 +16,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.childcare.data.EmploymentType;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock;
+import se.idega.idegaweb.commune.provider.business.ProviderSession;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
 import com.idega.block.school.data.SchoolClassMember;
@@ -23,6 +25,8 @@ import com.idega.block.school.presentation.SchoolClassDropdownDouble;
 import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWUserContext;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
@@ -109,6 +113,7 @@ public class ContractEditor extends ChildCareBlock {
 			ChildCareContractHome contractHome = (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
 			ChildCareContract contract = contractHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CONTRACT_ID)));
 			//SchoolClassMember placement = contract.getSchoolClassMember();
+			removeProviderSession(iwc);
 			
 			String fromDate = iwc.getParameter(PARAMETER_FROM_DATE);
 			String toDate = iwc.getParameter(PARAMETER_CANCELLED_DATE);
@@ -207,6 +212,7 @@ public class ContractEditor extends ChildCareBlock {
 			
 			//School school = contract.getApplication().getProvider();
 			SchoolClassMember placement = contract.getSchoolClassMember();
+			getProviderSession(iwc,placement.getSchoolClass().getSchoolId());
 			Collection custodians =	getBusiness().getUserBusiness().getParentsForChild(contract.getChild());
 			/*Collection schoolTypes = null;
 			try {
@@ -290,11 +296,11 @@ public class ContractEditor extends ChildCareBlock {
 			
 			SchoolClassDropdownDouble schoolClasses = new SchoolClassDropdownDouble(PARAMETER_SCHOOL_TYPE,PARAMETER_SCHOOL_CLASS);
 			//schoolClasses.setLayoutVertical(true);
-			schoolClasses.setPrimaryLabel(getSmallText(localize("child_care.school_type", "School type")));
-			schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.school_class", "School class")));
+			//schoolClasses.setPrimaryLabel(getSmallText(localize("child_care.school_type", "School type")));
+			//schoolClasses.setSecondaryLabel(getSmallText(localize("child_care.school_class", "School class")));
 			//schoolClasses.setVerticalSpaceBetween(15);
-			schoolClasses.setSpaceBetween(15);
-			schoolClasses.setNoDataListEntry(localize("child_care.no_school_classes","No school classes"));
+			//schoolClasses.setSpaceBetween(15);
+			//schoolClasses.setNoDataListEntry(localize("child_care.no_school_classes","No school classes"));
 			schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);	
 			//int classID = archive.getSchoolClassMember().getSchoolClassId();
 			schoolClasses.getSecondaryDropdown().setAsNotEmpty(localize("child_care.must_choose_a_school_class","You must choose a school class"));
@@ -344,10 +350,18 @@ public class ContractEditor extends ChildCareBlock {
 			table.add(employmentTypes, 2, row++);
 			table.add(getLocalizedSmallText("child_care.invoice_receiver", "Invoice receiver"), 1, row);
 			table.add(mCustodians, 2, row++);
-			table.add(getLocalizedSmallText("child_care.school_type_and_school_class", "School type and class"), 1, row);
+			table.add(getLocalizedSmallText("child_care.school_type", "School type"), 1, row);
 			//table.add(mSchoolType, 2, row++);
-			table.add(schoolClasses,2,row++);
-			
+			table.add(schoolClasses.getPrimaryDropdown(),2,row++);
+			table.add(getLocalizedSmallText("child_care.school_class", "School class"), 1, row);
+			table.add(schoolClasses.getSecondaryDropdown(),2,row++);
+			table.add(schoolClasses,2,row);
+			/*
+			GenericButton createGroup = getButton(new GenericButton("", localize("child_care.create_group", "Create group")));
+			createGroup.setWindowToOpen(CentralPlacementSchoolGroupEditor.class);
+			table.add(createGroup,2,row);
+			*/
+			row++;
 			Link back = new Link(getResourceBundle().getLocalizedImageButton("child_care.cancel","Cancel"));
 			table.add(back, 1, row);
 			
@@ -473,6 +487,7 @@ public class ContractEditor extends ChildCareBlock {
 					editLink = new Link(getEditIcon(localize("child_care.edit_contract", "Edit contract")));
 					editLink.addParameter(ACTION, ACTION_EDIT);
 					editLink.addParameter(PARAMETER_CONTRACT_ID, contract.getPrimaryKey().toString());
+					
 
 					deleteLink = new Link(getDeleteIcon(localize("child_care.delete_contract","Delete contract")));
 					deleteLink.addParameter(ACTION, ACTION_DELETE);
@@ -594,6 +609,16 @@ public class ContractEditor extends ChildCareBlock {
 	//}
 		//contract.get
 		add(table);
+	}
+	
+	private ProviderSession getProviderSession(IWApplicationContext iwac,int providerID)throws RemoteException{
+	    ProviderSession sess = (ProviderSession) IBOLookup.getServiceInstance(iwac,ProviderSession.class);
+	    sess.setProviderID(providerID);
+	    return sess;
+	}
+	
+	private void removeProviderSession(IWUserContext iwuc)throws RemoveException,RemoteException{
+	    IBOLookup.removeSessionInstance(iwuc,ProviderSession.class);
 	}
 	
 }
