@@ -812,7 +812,6 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(Integer.parseInt(providerId));
 						
-		//TODO: (Roar) localize
 		String prognosisText = prognosis == null ? localize("ccpqw_no_prognosis", "No prognosis available") :
 			localize("ccpqw_three_months", "Three months:") +" " + prognosis.getThreeMonthsPrognosis()+ "  " +
 			localize("ccpqw_one_year", "One year:") + " " + prognosis.getOneYearPrognosis() + "  " +
@@ -1111,6 +1110,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				public void setSignedFlag(boolean flag) {
 					_contract.setSignedFlag(new Boolean(flag));												
 				}
+				
+				public void setText(String text) {
+					_contract.setText(text);											
+				}				
 	
 				public void store() {
 					_contract.store();
