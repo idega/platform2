@@ -14,6 +14,7 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.ui.InterfaceObjectContainer;
 import com.idega.presentation.ui.RadioButton;
 
 /**
@@ -287,6 +288,10 @@ public class CommuneBlock extends com.idega.presentation.Block {
 
 	public InterfaceObject getStyledInterface(InterfaceObject obj) {
 		return (InterfaceObject) setStyle(obj, this.STYLENAME_INTERFACE);
+	}
+	
+	public InterfaceObjectContainer getStyledInterface(InterfaceObjectContainer obj) {
+		return (InterfaceObjectContainer) setStyle(obj, this.STYLENAME_INTERFACE);
 	}
 	
 	public IBPage getResponsePage() {
