@@ -1,5 +1,5 @@
 /*
- * $Id: MessageBusinessBean.java,v 1.15 2002/10/08 22:14:39 tryggvil Exp $
+ * $Id: MessageBusinessBean.java,v 1.16 2002/10/08 22:16:29 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -63,10 +63,10 @@ public class MessageBusinessBean extends com.idega.block.process.business.CaseBu
 			return (MessageHome) this.getIDOHome(UserMessage.class);
 		}
 		if (messageType.equals(TYPE_SYSTEM_PRINT_ARCHIVATION_MESSAGE)) {
-			return (MessageHome) this.getIDOHome(PrintedLetterMessage.class);
+			return (MessageHome) this.getIDOHome(SystemArchivationMessage.class);
 		}
 		if (messageType.equals(TYPE_SYSTEM_PRINT_MAIL_MESSAGE)) {
-			return (MessageHome) this.getIDOHome(SystemArchivationMessage.class);
+			return (MessageHome) this.getIDOHome(PrintedLetterMessage.class);
 		}
 		else {
 			throw new java.lang.UnsupportedOperationException("MessageType " + messageType + " not yet implemented");
