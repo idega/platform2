@@ -283,7 +283,7 @@ public class RunResultViewer extends Block {
 			iterator = orderedGroups.values().iterator();
 			while (iterator.hasNext()) {
 				RunGroup runGroup = (RunGroup) iterator.next();
-				Collection runnersInRunGroup = (Collection) map.get(runGroup);
+				Collection runnersInRunGroup = map.getCollection(runGroup);
 				row = insertRunGroupIntoTable(table, row, runGroup.getGroupName() + " - " + runGroup.getCounter().toString());
 
 				Iterator runIter = runnersInRunGroup.iterator();
@@ -319,14 +319,14 @@ public class RunResultViewer extends Block {
 		distanceMenu.addMenuElementFirst("", "");
 
 		Integer threeKM = new Integer(iwrb.getIWBundleParent().getProperty("3_km_id", "126"));
-		Integer sevenKM = new Integer(iwrb.getIWBundleParent().getProperty("7_km_id", "113"));
+		//Integer sevenKM = new Integer(iwrb.getIWBundleParent().getProperty("7_km_id", "113"));
 
 		if (year != null) {
 			List distances = getRunBiz().getDistancesMap(run, year.getName());
 			Iterator iter = distances.iterator();
 			while (iter.hasNext()) {
 				Group distance = (Group) iter.next();
-				if (!distance.getPrimaryKey().equals(threeKM) && !distance.getPrimaryKey().equals(sevenKM)) {
+				if (!distance.getPrimaryKey().equals(threeKM)/* && !distance.getPrimaryKey().equals(sevenKM)*/) {
 					distanceMenu.addMenuElement(distance.getPrimaryKey().toString(), iwrb.getLocalizedString(distance.getName(), distance.getName()));
 				}
 			}
