@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.2 2001/07/31 09:16:16 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.3 2001/08/01 10:31:06 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ public class CampusContractWriter{
   public final static String apartment_address = "[apartment_address]";
   public final static String apartment_area = "[apartment_area]";
   public final static String apartment_floor = "[apartment_floor]";
+  public final static String apartment_info = "[apartment_info]";
 
   public final static String apartment_roomcount = "[apartment_roomcount]";
   public final static String contract_starts = "[contract_starts]";
@@ -51,7 +52,8 @@ public class CampusContractWriter{
   public  static String[] TAGS = {renter_name,renter_address,renter_id,
                             tenant_name,tenant_address,tenant_id,
                             apartment_name,apartment_floor,apartment_address,apartment_area,
-                            apartment_roomcount,contract_starts,contract_ends};
+                            apartment_roomcount,apartment_info,
+                            contract_starts,contract_ends};
 
   public final static String IS ="IS";
   public final static String EN ="EN";
@@ -194,12 +196,16 @@ public class CampusContractWriter{
       else if(tag.equalsIgnoreCase(apartment_roomcount)){
         s = String.valueOf(eApartmentType.getRoomCount());
       }
+      else if(tag.equalsIgnoreCase(apartment_info)){
+        s = (eApartmentType.getExtraInfo());
+      }
       else if(tag.equalsIgnoreCase(contract_starts)){
         s = new idegaTimestamp(eContract.getValidFrom()).getISLDate("/",true);
       }
       else if(tag.equalsIgnoreCase(contract_ends)){
         s = new idegaTimestamp(eContract.getValidTo()).getISLDate("/",true);
       }
+
     }
     catch (SQLException ex) {
       ex.printStackTrace();
