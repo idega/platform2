@@ -11,6 +11,7 @@ import com.idega.presentation.ui.*;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICLocale;
+import com.idega.block.IWBlock;
 import com.idega.block.boxoffice.data.*;
 import com.idega.block.boxoffice.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -63,7 +64,7 @@ public BoxEditorWindow(){
      */
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
     _superAdmin = iwc.hasEditPermission(this);
-    _iwb = getBundle(iwc);
+    _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("box_admin","Box Admin"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
@@ -76,15 +77,9 @@ public BoxEditorWindow(){
       _userID = -1;
     }
 
-    _editImage = _iwrb.getImage("edit.gif");
-      _editImage.setHorizontalSpacing(4);
-      _editImage.setVerticalSpacing(3);
-    _createImage = _iwrb.getImage("create.gif");
-      _createImage.setHorizontalSpacing(4);
-      _createImage.setVerticalSpacing(3);
-    _deleteImage = _iwrb.getImage("delete.gif");
-      _deleteImage.setHorizontalSpacing(4);
-      _deleteImage.setVerticalSpacing(3);
+    _editImage = _iwb.getImage("shared/edit.gif");
+    _createImage = _iwb.getImage("shared/create.gif");
+    _deleteImage = _iwb.getImage("shared/delete.gif");
 
     String sLocaleId = iwc.getParameter(BoxBusiness.PARAMETER_LOCALE_DROP);
 
@@ -250,7 +245,7 @@ public BoxEditorWindow(){
       }
     categoryTable.add(categoryDrop,1,1);
 
-    Link categoryLink = new Link(_iwrb.getImage("edit.gif"));
+    Link categoryLink = new Link(_editImage);
       categoryLink.setWindowToOpen(BoxCategoryEditor.class);
       categoryLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
       categoryLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,_boxCategoryID);
@@ -308,8 +303,8 @@ public BoxEditorWindow(){
     addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_LINK_ID,Integer.toString(_linkID)));
     addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_LOCALE_ID,Integer.toString(iLocaleID)));
 
-    addSubmitButton(new SubmitButton(_iwrb.getImage("close.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_CLOSE));
-    addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE));
   }
 
   private void saveBoxLink(IWContext iwc,int iLocaleID,boolean setToClose) {

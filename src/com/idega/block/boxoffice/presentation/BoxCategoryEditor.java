@@ -11,6 +11,7 @@ import com.idega.presentation.ui.*;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICLocale;
+import com.idega.block.IWBlock;
 import com.idega.block.boxoffice.data.*;
 import com.idega.block.boxoffice.business.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -46,7 +47,7 @@ public BoxCategoryEditor(){
      * @todo permission
      */
     _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
-    _iwb = getBundle(iwc);
+    _iwb = iwc.getApplication().getBundle(IWBlock.IW_CORE_BUNDLE_IDENTIFIER);
     _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("box_category_editor","Category Editor"));
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
@@ -137,7 +138,7 @@ public BoxCategoryEditor(){
       categoryDrop.setToSubmit();
       categoryDrop.setSelectedElement(Integer.toString(_boxCategoryID));
     categoryTable.add(categoryDrop,1,1);
-    SubmitButton categoryButton = new SubmitButton(_iwrb.getImage("delete.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_DELETE);
+    SubmitButton categoryButton = new SubmitButton(_iwb.getImage("shared/delete.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_DELETE);
     if ( _boxCategoryID != -1 )
       categoryTable.add(categoryButton,3,1);
 
@@ -157,8 +158,8 @@ public BoxCategoryEditor(){
     addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_BOX_ID,Integer.toString(_boxID)));
     addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_LOCALE_ID,Integer.toString(iLocaleID)));
 
-    addSubmitButton(new SubmitButton(_iwrb.getImage("close.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_CLOSE));
-    addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("close","CLOSE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_CLOSE));
+    addSubmitButton(new SubmitButton(_iwrb.getLocalizedImageButton("save","SAVE"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE));
   }
 
   private void deleteCategory(IWContext iwc) {

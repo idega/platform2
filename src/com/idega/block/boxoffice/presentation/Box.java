@@ -29,6 +29,9 @@ public final static int CATEGORY_VIEW = 2;
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.boxoffice";
 protected IWResourceBundle _iwrb;
 protected IWBundle _iwb;
+private Image _deleteImage;
+private Image _createImage;
+private Image _editImage;
 
 private Table _myTable;
 private boolean _newObjInst = false;
@@ -68,7 +71,11 @@ public Box(String attribute){
 
 	public void main(IWContext iwc) throws Exception {
     _iwrb = getResourceBundle(iwc);
-    _iwb = getBundle(iwc);
+    _iwb = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+
+    _createImage = _iwb.getImage("shared/create.gif");
+    _deleteImage = _iwb.getImage("shared/delete.gif");
+    _editImage = _iwb.getImage("shared/edit.gif");
 
     _isAdmin = iwc.hasEditPermission(this);
     //_isAdmin = true;
@@ -166,7 +173,7 @@ public Box(String attribute){
         }
 
         if ( _isAdmin ) {
-          Image deleteImage = _iwb.getImage("shared/delete.gif");
+          Image deleteImage = (Image) _deleteImage.clone();
             deleteImage.setAlignment("left");
           Link detachCategory = new Link(deleteImage);
             detachCategory.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
@@ -229,11 +236,11 @@ public Box(String attribute){
                 link.setTarget(target);
               }
 
-              Link editLink = new Link(_iwb.getImage("shared/edit.gif"));
+              Link editLink = new Link(_editImage);
                 editLink.setWindowToOpen(BoxEditorWindow.class);
                 editLink.addParameter(BoxBusiness.PARAMETER_LINK_ID,links[b].getID());
                 editLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
-              Link deleteLink = new Link(_iwb.getImage("shared/delete.gif"));
+              Link deleteLink = new Link(_deleteImage);
                 deleteLink.setWindowToOpen(BoxEditorWindow.class);
                 deleteLink.addParameter(BoxBusiness.PARAMETER_LINK_ID,links[b].getID());
                 deleteLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
@@ -241,13 +248,13 @@ public Box(String attribute){
 
               if ( _isAdmin ) {
                 linksTable.add(editLink,2,linkRow);
-                linksTable.add(deleteLink,3,linkRow);
+                linksTable.add(deleteLink,2,linkRow);
               }
               linkRow++;
             }
           }
 
-          Link addLink = new Link(_iwb.getImage("shared/add.gif"));
+          Link addLink = new Link(_createImage);
             addLink.setWindowToOpen(BoxEditorWindow.class);
             addLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
             addLink.addParameter(BoxBusiness.PARAMETER_CATEGORY_ID,categories[a].getID());
@@ -275,7 +282,7 @@ public Box(String attribute){
   }
 
   private Link getAdminPart() {
-    Link adminLink = new Link(_iwb.getImage("shared/add.gif"));
+    Link adminLink = new Link(_createImage);
       adminLink.setWindowToOpen(BoxEditorWindow.class);
       adminLink.addParameter(BoxBusiness.PARAMETER_BOX_ID,_boxID);
       adminLink.addParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
