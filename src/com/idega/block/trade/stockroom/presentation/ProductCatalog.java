@@ -200,8 +200,8 @@ public class ProductCatalog extends CategoryBlock{
 	  productCategories = (List) getCategories();
 	  if (productCategories == null) {
 	    productCategories = new Vector();
-	    Collections.sort(productCategories, new CategoryComparator());
 	  }
+		Collections.sort(productCategories, new CategoryComparator());
 	}catch (Exception e) {
 	  e.printStackTrace(System.err);
 	}
