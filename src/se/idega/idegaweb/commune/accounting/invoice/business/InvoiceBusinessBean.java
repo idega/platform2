@@ -25,6 +25,7 @@ public class InvoiceBusinessBean {
 		
 		ChildCareContractArchive contract;
 		Collection archive = new ArrayList();
+//		int days;
 
 		//Flag all contracts as 'not processed'
 
@@ -50,6 +51,9 @@ public class InvoiceBusinessBean {
 		while(iter.hasNext())
 		{
 			contract = (ChildCareContractArchive)iter.next();
+			if(contract.getValidFromDate().before(startDate) && (contract.getValidFromDate().after(endDate))){
+			}
+			
 			//If contract is used in the given period
 				//Calc days placed in the given period
 		}
