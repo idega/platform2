@@ -48,6 +48,8 @@ public class ChangeHealthCentre extends EHealthBlock {
 	
 	private int userID = -1;
 	private User user;
+	
+	private boolean showButtons = true;
 
 	public void main(IWContext iwc) throws Exception {
 		iwrb = this.getResourceBundle(iwc);
@@ -238,51 +240,55 @@ public class ChangeHealthCentre extends EHealthBlock {
 		
 		tableHCentre.add(centreInfo,3,1);
 		
-		
-		DropdownMenu dropHCentre = new DropdownMenu(prmHealthCentre);
-		if (age != null && age.getYears() >= 70){
-			dropHCentre.addMenuElement("1", "Flogsta VC");
-		}
-		else{
-			dropHCentre.addMenuElementFirst("1", "Gimo VC");
-		}
-		dropHCentre.addMenuElement("2", "Östhammar VC");
-		dropHCentre.addMenuElement("3", "Alunda VC");
-		dropHCentre.addMenuElement("4", "Österbybruk VC");
-		dropHCentre.addMenuElement("5", "Tierp VC");
-		dropHCentre.addMenuElement("6", "Öregrund VC");
-		dropHCentre.addMenuElement("7", "Skutskär VC");
-		dropHCentre.addMenuElement("8", "Månkarbo VC");
-		dropHCentre.setStyleClass("lul_form");
-		tableHCentre.add(dropHCentre,1,2);
-		
-		DropdownMenu dropDr = new DropdownMenu(prmDoctor);
-		if (age != null && age.getYears() >= 70){
-			dropDr.addMenuElementFirst("1", "Dr Inga Pren");
-			dropDr.addMenuElement("2", "Dr Magne Syhl");
-		}
-		else{
-			dropDr.addMenuElementFirst("1", "Dr Magne Syhl");
-			dropDr.addMenuElement("2", "Dr Inga Pren");
-		}
+		if (showButtons){		
+			DropdownMenu dropHCentre = new DropdownMenu(prmHealthCentre);
+			if (age != null && age.getYears() >= 70){
+				dropHCentre.addMenuElement("1", "Flogsta VC");
+			}
+			else{
+				dropHCentre.addMenuElementFirst("1", "Gimo VC");
+			}
+			dropHCentre.addMenuElement("2", "Östhammar VC");
+			dropHCentre.addMenuElement("3", "Alunda VC");
+			dropHCentre.addMenuElement("4", "Österbybruk VC");
+			dropHCentre.addMenuElement("5", "Tierp VC");
+			dropHCentre.addMenuElement("6", "Öregrund VC");
+			dropHCentre.addMenuElement("7", "Skutskär VC");
+			dropHCentre.addMenuElement("8", "Månkarbo VC");
+			dropHCentre.setStyleClass("lul_form");
+			tableHCentre.add(dropHCentre,1,2);
 			
-		dropDr.addMenuElement("3", "Dr Alve Don");
-		
-		dropDr.setStyleClass("lul_form");
-		tableHCentre.add(dropDr,1,3);
-		
-		SubmitButton selectCentre = (SubmitButton) getStyledInterface(new SubmitButton(prmChoose));
-		selectCentre.setOnClick("setTime(); return false");
-		selectCentre.setValue(localize(prmShowSelect,"Display/Select"));
-		selectCentre.setStyleClass("lul_form");
-		tableHCentre.add(selectCentre,1,4);
-		
-		SubmitButton confirm = (SubmitButton) getStyledInterface(new SubmitButton(prmConfirm));
-		confirm.setValue(localize(prmConfirm,"Confirm"));		
-		confirm.setStyleClass("lul_form");
-		confirm.setOnClick("alert('Din ansökan om byte av husläkare har skickats');");	
-		tableHCentre.add(confirm,1,5);
-		
+			DropdownMenu dropDr = new DropdownMenu(prmDoctor);
+			if (age != null && age.getYears() >= 70){
+				dropDr.addMenuElementFirst("1", "Dr Inga Pren");
+				dropDr.addMenuElement("2", "Dr Magne Syhl");
+			}
+			else{
+				dropDr.addMenuElementFirst("1", "Dr Magne Syhl");
+				dropDr.addMenuElement("2", "Dr Inga Pren");
+			}
+				
+			dropDr.addMenuElement("3", "Dr Alve Don");
+			
+			dropDr.setStyleClass("lul_form");
+			tableHCentre.add(dropDr,1,3);
+			
+			SubmitButton selectCentre = (SubmitButton) getStyledInterface(new SubmitButton(prmChoose));
+			selectCentre.setOnClick("setTime(); return false");
+			selectCentre.setValue(localize(prmShowSelect,"Display/Select"));
+			selectCentre.setStyleClass("lul_form");
+			tableHCentre.add(selectCentre,1,4);
+			
+			SubmitButton confirm = (SubmitButton) getStyledInterface(new SubmitButton(prmConfirm));
+			confirm.setValue(localize(prmConfirm,"Confirm"));		
+			confirm.setStyleClass("lul_form");
+			confirm.setOnClick("alert('Din ansökan om byte av husläkare har skickats');");	
+			tableHCentre.add(confirm,1,5);
+		}
 		return tableHCentre;
+	}
+	
+	public void setShowDropButtons(boolean showButtons){
+		this.showButtons = showButtons;
 	}
 }
