@@ -197,31 +197,31 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
     T.setBorder(0);
 
     if(iCategoryId > 0){
-      Link ne = new Link(iwrb.getImage("newseditor.gif"));
+      Link ne = new Link(iwb.getImage("/shared/create.gif"));
       ne.setWindowToOpen(NewsEditorWindow.class);
       ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       T.add(ne,1,1);
 
-      Link list = new Link(iwrb.getImage("list.gif"));
+      Link list = new Link(iwb.getImage("/shared/edit.gif"));
       list.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       list.addParameter(prmListCategory,"true");
       T.add(list,1,1);
 
-      Link change = new Link(iwrb.getImage("change.gif"));
+      Link change = new Link(iwb.getImage("/shared/edit.gif"));
       change.setWindowToOpen(NewsEditorWindow.class);
       change.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       change.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
-      T.add(change,2,1);
+      T.add(change,1,1);
 
       if ( enableDelete ) {
-        Link delete = new Link(iwrb.getImage("delete.gif"));
+        Link delete = new Link(iwb.getImage("/shared/delete.gif"));
         delete.setWindowToOpen(NewsEditorWindow.class);
         delete.addParameter(NewsEditorWindow.prmDelete,iCategoryId);
         T.add(delete,3,1);
       }
     }
     if(newObjInst){
-      Link newLink = new Link(iwrb.getImage("new.gif"));
+      Link newLink = new Link(iwb.getImage("/shared/create.gif"));
       newLink.setWindowToOpen(NewsEditorWindow.class);
       if(newObjInst)
         newLink.addParameter(NewsEditorWindow.prmObjInstId,getICObjectInstanceID());
@@ -472,18 +472,18 @@ public class NewsReader extends PresentationObjectContainer implements IWBlock{
 
   private PresentationObject getNewsAdminPart(NwNews news){
     Table links = new Table(2,1);
-      Link newsEdit = new Link(iwrb.getImage("change.gif"));
+      Link newsEdit = new Link(iwb.getImage("/shared/edit.gif"));
       newsEdit.setWindowToOpen(NewsEditorWindow.class);
       newsEdit.addParameter(NewsEditorWindow.prmNwNewsId,news.getID());
 
-      Link newsDelete = new Link(iwrb.getImage("delete.gif"));
+      Link newsDelete = new Link(iwb.getImage("/shared/delete.gif"));
       newsDelete.setWindowToOpen(NewsEditorWindow.class);
       newsDelete.addParameter(NewsEditorWindow.prmDelete,news.getID());
 
       links.setAlignment(1,1,"left");
       links.setAlignment(2,1,"right");
-      links.add(newsEdit,2,1);
-      links.add(newsDelete,1,1);
+      links.add(newsEdit,1,1);
+      links.add(newsDelete,2,1);
     return links;
   }
 
