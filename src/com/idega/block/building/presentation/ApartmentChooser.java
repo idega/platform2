@@ -1,9 +1,9 @@
 package com.idega.block.building.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.*;
 import com.idega.block.building.data.*;
 import com.idega.block.building.presentation.BuildingEditor;
 import java.sql.SQLException;
@@ -20,12 +20,12 @@ import java.io.IOException;
 
 public class ApartmentChooser extends BuildingEditor{
 
-  public void main(ModuleInfo modinfo)  {
+  public void main(IWContext iwc)  {
     try{
-      String apartment = modinfo.getParameter("dr_id");
+      String apartment = iwc.getParameter("dr_id");
 
       if ( apartment != null ) {
-        modinfo.setSessionAttribute("dr_id",modinfo.getParameter("dr_id"));
+        iwc.setSessionAttribute("dr_id",iwc.getParameter("dr_id"));
         this.getParentPage().setParentToReload();
         this.getParentPage().close();
       }
@@ -40,7 +40,7 @@ public class ApartmentChooser extends BuildingEditor{
     }
   }
 
-  private ModuleObject getApartments(){
+  private PresentationObject getApartments(){
     int border = 0;
     int padding = 6;
     int spacing = 1;

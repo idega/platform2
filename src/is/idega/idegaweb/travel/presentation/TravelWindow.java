@@ -1,8 +1,8 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import is.idega.travel.presentation.TravelManager;
 
 import com.idega.idegaweb.IWResourceBundle;
@@ -34,7 +34,7 @@ public class TravelWindow extends Window {
   public TravelWindow() {
   }
 
-  public void add(ModuleObject mo) {
+  public void add(PresentationObject mo) {
     table.add(mo,2,2);
   }
 
@@ -43,8 +43,8 @@ public class TravelWindow extends Window {
   }
 
 
-  public void main(ModuleInfo modinfo) {
-    setTemplate(modinfo);
+  public void main(IWContext iwc) {
+    setTemplate(iwc);
     super.add(table);
   }
 
@@ -55,13 +55,13 @@ public class TravelWindow extends Window {
 
   }
 
-  private void setTemplate(ModuleInfo modinfo) {
+  private void setTemplate(IWContext iwc) {
     table.setWidth("100%");
     table.setBorder(0);
     table.setCellpadding(0);
     table.setCellspacing(0);
 
-    jPage = super.getPage(modinfo);
+    jPage = super.getPage(iwc);
       jPage.setAllMargins(0);
 
     table.setColor(1,1,TravelManager.DARKBLUE);
@@ -83,7 +83,7 @@ public class TravelWindow extends Window {
     text.setFontColor(TravelManager.textColor);
     text.setFontSize(Text.FONT_SIZE_10_HTML_2);
 
-    iwrb = super.getResourceBundle(modinfo);
+    iwrb = super.getResourceBundle(iwc);
 
   }
 

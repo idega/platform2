@@ -7,9 +7,9 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.boxoffice.data.*;
 import com.idega.jmodule.file.data.*;
 import com.idega.data.*;
@@ -17,7 +17,7 @@ import com.idega.util.text.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
-public class BoxEditor extends JModuleObject{
+public class BoxEditor extends Block{
 
 private boolean isAdmin = false;
 private boolean update = false;
@@ -40,22 +40,22 @@ public BoxEditor(boolean isAdmin){
 	this.isAdmin=isAdmin;
 }
 
-	public void main(ModuleInfo modinfo) throws IOException,SQLException {
-    iwrb = getResourceBundle(modinfo);
+	public void main(IWContext iwc) throws IOException,SQLException {
+    iwrb = getResourceBundle(iwc);
 		if ( isAdmin ) {
 
-			String mode = modinfo.getRequest().getParameter("mode");
-			String action = modinfo.getRequest().getParameter("action");
+			String mode = iwc.getRequest().getParameter("mode");
+			String action = iwc.getRequest().getParameter("action");
 				if ( action == null ) { action = "none"; }
 
 			if ( mode == null ) {
 				mode = "new";
-				newSubject(modinfo);
+				newSubject(iwc);
 			}
 
 			else if ( mode.equals("update") ) {
 				update = true;
-				newSubject(modinfo);
+				newSubject(iwc);
 			}
 
 			else if ( mode.equals(iwrb.getLocalizedString("save","Save")) ) {
@@ -63,15 +63,15 @@ public BoxEditor(boolean isAdmin){
 
 				if ( action.equals("update") ) { update = true; }
 
-				saveSubject(modinfo);
+				saveSubject(iwc);
 			}
 
 			else if ( mode.equals("delete") ) {
-				deleteSubject(modinfo);
+				deleteSubject(iwc);
 			}
 
 			if ( action.equals("delete") ) {
-				confirmDelete(modinfo);
+				confirmDelete(iwc);
 			}
 
 			add(outerTable);
@@ -102,14 +102,14 @@ public BoxEditor(boolean isAdmin){
 
 	}
 
-	private void newSubject(ModuleInfo modinfo) throws IOException,SQLException {
+	private void newSubject(IWContext iwc) throws IOException,SQLException {
 
-		HttpSession Session = modinfo.getSession();
+		HttpSession Session = iwc.getSession();
 
 		int subject_id = -1;
 
 		if ( update ) {
-			String subject_id2 = modinfo.getRequest().getParameter("subject_id");
+			String subject_id2 = iwc.getRequest().getParameter("subject_id");
 				if ( subject_id2 == null ) { subject_id2 = "-1"; }
 
 			subject_id = Integer.parseInt(subject_id2);
@@ -190,11 +190,11 @@ public BoxEditor(boolean isAdmin){
 
 			myTable.add(issue_text,2,1);
 			myTable.addBreak(2,1);
-			myTable.add(createIssueMenu(subject_id,modinfo),2,1);
+			myTable.add(createIssueMenu(subject_id,iwc),2,1);
 
 			myTable.add(category_text,2,2);
 			myTable.addBreak(2,2);
-			myTable.add(createCategoryMenu(subject_id,modinfo),2,2);
+			myTable.add(createCategoryMenu(subject_id,iwc),2,2);
 
 			myTable.add(content_text,2,3);
 			myTable.addBreak(2,3);
@@ -273,13 +273,13 @@ public BoxEditor(boolean isAdmin){
 
 	}
 
-	private void saveSubject(ModuleInfo modinfo) throws IOException,SQLException {
+	private void saveSubject(IWContext iwc) throws IOException,SQLException {
 
 		boolean check = true;
 
-		HttpServletRequest request = modinfo.getRequest();
+		HttpServletRequest request = iwc.getRequest();
 
-		String subject_id = modinfo.getRequest().getParameter("subject_id");
+		String subject_id = iwc.getRequest().getParameter("subject_id");
 
 		String subject_name = request.getParameter("subject_name");
 			if ( subject_name == null || subject_name.equals("") ) { check = false; }
@@ -342,9 +342,9 @@ public BoxEditor(boolean isAdmin){
 		}
 	}
 
-	private void deleteSubject(ModuleInfo modinfo) throws IOException,SQLException {
+	private void deleteSubject(IWContext iwc) throws IOException,SQLException {
 
-		String subject_id = modinfo.getRequest().getParameter("subject_id");
+		String subject_id = iwc.getRequest().getParameter("subject_id");
 
 		Subject subject = new Subject(Integer.parseInt(subject_id));
 
@@ -370,9 +370,9 @@ public BoxEditor(boolean isAdmin){
 
 	}
 
-	private void confirmDelete(ModuleInfo modinfo) throws IOException,SQLException {
+	private void confirmDelete(IWContext iwc) throws IOException,SQLException {
 
-		String subject_id = modinfo.getRequest().getParameter("subject_id");
+		String subject_id = iwc.getRequest().getParameter("subject_id");
 
 		Subject subject = new Subject(Integer.parseInt(subject_id));
 
@@ -410,9 +410,9 @@ public BoxEditor(boolean isAdmin){
 		return content_menu;
 	}
 
-	private DropdownMenu createIssueMenu(int subject_id,ModuleInfo modinfo) throws IOException,SQLException {
+	private DropdownMenu createIssueMenu(int subject_id,IWContext iwc) throws IOException,SQLException {
 
-		String issue_id = modinfo.getRequest().getParameter("issue_id");
+		String issue_id = iwc.getRequest().getParameter("issue_id");
 			if ( issue_id == null ) { issue_id = "1"; }
 
 
@@ -444,9 +444,9 @@ public BoxEditor(boolean isAdmin){
 		return issue_menu;
 	}
 
-	private DropdownMenu createCategoryMenu(int subject_id,ModuleInfo modinfo) throws IOException,SQLException {
+	private DropdownMenu createCategoryMenu(int subject_id,IWContext iwc) throws IOException,SQLException {
 
-		String issue_category_id = modinfo.getRequest().getParameter("issue_category_id");
+		String issue_category_id = iwc.getRequest().getParameter("issue_category_id");
 			if ( issue_category_id == null ) { issue_category_id = "1"; }
 
 

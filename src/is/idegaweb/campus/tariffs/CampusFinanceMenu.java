@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinanceMenu.java,v 1.7 2001/10/02 00:13:56 aron Exp $
+ * $Id: CampusFinanceMenu.java,v 1.8 2001/10/05 08:05:44 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,10 +9,10 @@
  */
 package is.idegaweb.campus.tariffs;
 
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.FrameList;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.Table;
+import com.idega.presentation.FrameList;
+import com.idega.presentation.IWContext;
 import is.idegaweb.campus.phone.presentation.PhoneFiles;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -35,9 +35,9 @@ public class CampusFinanceMenu extends FrameList{
   public CampusFinanceMenu() {
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
     setLinkStyle("font-family: Verdana, Arial, sans-serif; font-weight: bold; font-size: 7pt; text-decoration: none;");
     makeLinkTable();

@@ -7,9 +7,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.news.data.*;
 import com.idega.block.text.data.*;
 import com.idega.core.user.data.User;
@@ -96,13 +96,13 @@ private IWResourceBundle iwrb;
     setTitle(sEditor);
   }
 
-  private void control(ModuleInfo modinfo)throws Exception{
+  private void control(IWContext iwc)throws Exception{
     init();
     boolean doView = true;
-    Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
-    String sLocaleId = modinfo.getParameter(prmLocale);
-    String sCategoryId = modinfo.getParameter(prmCategory);
+    String sLocaleId = iwc.getParameter(prmLocale);
+    String sCategoryId = iwc.getParameter(prmCategory);
     int iCategoryId = sCategoryId !=null?Integer.parseInt(sCategoryId):-1;
     String sAtt = null;
 
@@ -123,22 +123,22 @@ private IWResourceBundle iwrb;
 
       // Text initialization
       String sNewsId = null,sAttribute = null;
-      String sLocTextId = modinfo.getParameter(prmLocalizedTextId);
-      sAttribute = modinfo.getParameter(prmAttribute);
+      String sLocTextId = iwc.getParameter(prmLocalizedTextId);
+      sAttribute = iwc.getParameter(prmAttribute);
 
       // News Id Request :
-      if(modinfo.getParameter(prmNwNewsId) != null){
-        sNewsId = modinfo.getParameter(prmNwNewsId);
+      if(iwc.getParameter(prmNwNewsId) != null){
+        sNewsId = iwc.getParameter(prmNwNewsId);
       }
       // Delete Request :
-      else if(modinfo.getParameter(prmDelete)!=null){
-        sNewsId = modinfo.getParameter(prmDelete);
+      else if(iwc.getParameter(prmDelete)!=null){
+        sNewsId = iwc.getParameter(prmDelete);
         confirmDelete(sNewsId,iObjInsId);
         doView = false;
       }
       // Object Instance Request :
-      else if(modinfo.getParameter(prmObjInstId)!= null){
-        iObjInsId = Integer.parseInt(modinfo.getParameter(prmObjInstId ) );
+      else if(iwc.getParameter(prmObjInstId)!= null){
+        iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
         doView = false;
         if(iObjInsId > 0)
           iCategoryId = NewsFinder.getObjectInstanceCategoryId(iObjInsId );
@@ -147,11 +147,11 @@ private IWResourceBundle iwrb;
       // end of News initialization
 
       // Form processing
-      if(modinfo.getParameter(prmFormProcess)!=null){
-        if(modinfo.getParameter(prmFormProcess).equals("Y"))
-          processForm(modinfo,sNewsId,sLocTextId, sCategoryId);
-        else if(modinfo.getParameter(prmFormProcess).equals("C"))
-          processCategoryForm(modinfo,sCategoryId,iObjInsId);
+      if(iwc.getParameter(prmFormProcess)!=null){
+        if(iwc.getParameter(prmFormProcess).equals("Y"))
+          processForm(iwc,sNewsId,sLocTextId, sCategoryId);
+        else if(iwc.getParameter(prmFormProcess).equals("C"))
+          processCategoryForm(iwc,sCategoryId,iObjInsId);
 
         doView = false;
       }
@@ -164,16 +164,16 @@ private IWResourceBundle iwrb;
   }
 
   // Form Processing :
-  private void processForm(ModuleInfo modinfo,String sNewsId,String sLocTextId,String sCategory){
+  private void processForm(IWContext iwc,String sNewsId,String sLocTextId,String sCategory){
     // Save :
-    if(modinfo.getParameter(actSave)!=null || modinfo.getParameter(actSave+".x")!=null ){
-      saveNews(modinfo,sNewsId,sLocTextId,sCategory);
+    if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
+      saveNews(iwc,sNewsId,sLocTextId,sCategory);
     }
     // Delete :
-    else if(modinfo.getParameter( actDelete )!=null || modinfo.getParameter(actDelete+".x")!=null){
+    else if(iwc.getParameter( actDelete )!=null || iwc.getParameter(actDelete+".x")!=null){
       try {
-        if(modinfo.getParameter(modeDelete)!=null){
-          int I = Integer.parseInt(modinfo.getParameter(modeDelete));
+        if(iwc.getParameter(modeDelete)!=null){
+          int I = Integer.parseInt(iwc.getParameter(modeDelete));
           deleteNews(I);
         }
       }
@@ -183,16 +183,16 @@ private IWResourceBundle iwrb;
     }
     // New:
      /** @todo make possible */
-   /*else if(modinfo.getParameter( actNew ) != null || modinfo.getParameter(actNew+".x")!= null){
+   /*else if(iwc.getParameter( actNew ) != null || iwc.getParameter(actNew+".x")!= null){
       sNewsId = null;
     }
     */
     // end of Form Actions
   }
 
-  private void processCategoryForm(ModuleInfo modinfo,String sCategoryId,int iObjInsId){
-    String sName = modinfo.getParameter(prmCatName);
-    String sDesc = modinfo.getParameter(prmCatDesc);
+  private void processCategoryForm(IWContext iwc,String sCategoryId,int iObjInsId){
+    String sName = iwc.getParameter(prmCatName);
+    String sDesc = iwc.getParameter(prmCatDesc);
     if(sName!=null){
       int iCatId = sCategoryId != null ? Integer.parseInt(sCategoryId):-1;
       NewsBusiness.saveNewsCategory(iCatId,sName,sDesc,iObjInsId);
@@ -217,15 +217,15 @@ private IWResourceBundle iwrb;
     addNewsFields(LocTx,news,iLocaleId,iObjInsId,iCategoryId);
   }
 
-  private void saveNews(ModuleInfo modinfo,String sNwNewsId,String sLocalizedTextId,String sCategoryId){
+  private void saveNews(IWContext iwc,String sNwNewsId,String sLocalizedTextId,String sCategoryId){
 
-    String sHeadline = modinfo.getParameter( prmHeadline );
-    String sBody = modinfo.getParameter(prmBody );
-    String sImageId = modinfo.getParameter(prmImageId);
-    String sLocaleId = modinfo.getParameter(prmLocale);
-    String sUseImage = modinfo.getParameter(prmUseImage);
-    String sAuthor = modinfo.getParameter(prmAuthor);
-    String sSource = modinfo.getParameter(prmSource);
+    String sHeadline = iwc.getParameter( prmHeadline );
+    String sBody = iwc.getParameter(prmBody );
+    String sImageId = iwc.getParameter(prmImageId);
+    String sLocaleId = iwc.getParameter(prmLocale);
+    String sUseImage = iwc.getParameter(prmUseImage);
+    String sAuthor = iwc.getParameter(prmAuthor);
+    String sSource = iwc.getParameter(prmSource);
     if(sHeadline != null || sBody != null){
       int iNwNewsId = sNwNewsId!=null?Integer.parseInt(sNwNewsId): -1;
       int iLocalizedTextId = sLocalizedTextId != null ? Integer.parseInt(sLocalizedTextId): -1;
@@ -441,16 +441,16 @@ private IWResourceBundle iwrb;
     }
   }
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    super.main(modinfo);
-    isAdmin = AccessControl.hasEditPermission(this,modinfo);
-    eUser = com.idega.block.login.business.LoginBusiness.getUser(modinfo);
+  public void main(IWContext iwc) throws Exception {
+    super.main(iwc);
+    isAdmin = AccessControl.hasEditPermission(this,iwc);
+    eUser = com.idega.block.login.business.LoginBusiness.getUser(iwc);
     iUserId = eUser != null?eUser.getID():-1;
     isAdmin = true;
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("news_editor","News Editor"));
-    control(modinfo);
+    control(iwc);
   }
 
   public String getBundleIdentifier(){

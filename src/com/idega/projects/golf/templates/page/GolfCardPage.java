@@ -5,27 +5,27 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.banner.presentation.BannerContainer;
 import java.sql.*;
 import java.io.*;
 
 public class GolfCardPage extends GolfMainJSPModulePage{
 
-  protected void User(ModuleInfo modinfo)throws SQLException,IOException{
+  protected void User(IWContext iwc)throws SQLException,IOException{
     this.setTextDecoration("none");
     setTopMargin(5);
     add( "top", golfHeader());
     add("bottom", golfFooter());
-    add(Left(modinfo), Center(), Right(modinfo));
+    add(Left(iwc), Center(), Right(iwc));
     setWidth(1, "" + LEFTWIDTH);
     setContentWidth( "100%");
     setWidth(3, "" + RIGHTWIDTH);
   }
 
-  protected Table Left(ModuleInfo modinfo) throws IOException,SQLException {
+  protected Table Left(IWContext iwc) throws IOException,SQLException {
     Table leftTable = new Table(2,1);
       leftTable.setHeight("100%");
       leftTable.setWidth("" + LEFTWIDTH);
@@ -43,7 +43,7 @@ public class GolfCardPage extends GolfMainJSPModulePage{
     return leftTable;
   }
 
-  protected Table Right(ModuleInfo modinfo) throws SQLException,IOException{
+  protected Table Right(IWContext iwc) throws SQLException,IOException{
     Table rightTable = new Table(2,1);
       rightTable.setCellpadding(0);
       rightTable.setCellspacing(0);

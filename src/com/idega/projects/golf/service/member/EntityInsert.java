@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service.member;
 
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.InterfaceObject;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.InterfaceObject;
 import com.idega.util.*;
 import java.util.*;
 import java.sql.*;
@@ -30,12 +30,12 @@ public abstract class EntityInsert {
     bUpdate = false;
   }
 
-  public abstract boolean areSomeFieldsEmpty(ModuleInfo modinfo);
-  public abstract boolean areNeededFieldsEmpty(ModuleInfo modinfo);
+  public abstract boolean areSomeFieldsEmpty(IWContext iwc);
+  public abstract boolean areNeededFieldsEmpty(IWContext iwc);
   public abstract Vector getEmptyFields();
-  public abstract Vector getNeededEmptyFields(ModuleInfo modinfo);
-  public abstract void store(ModuleInfo modinfo)throws SQLException, IOException;
-  public abstract void setVariables(ModuleInfo modinfo);
+  public abstract Vector getNeededEmptyFields(IWContext iwc);
+  public abstract void store(IWContext iwc)throws SQLException, IOException;
+  public abstract void setVariables(IWContext iwc);
 
   public boolean isDateInputValid(String inputName) {
       if(inputName+"_day" == null || (inputName+"_day").equals(""))
@@ -59,22 +59,22 @@ public abstract class EntityInsert {
       return true;
   }
 
-  public boolean isEmpty(ModuleInfo modinfo,String inputName) {
-      return (getValue(modinfo,inputName) == null || getValue(modinfo,inputName).equals(""));
+  public boolean isEmpty(IWContext iwc,String inputName) {
+      return (getValue(iwc,inputName) == null || getValue(iwc,inputName).equals(""));
   }
 
-  public String getValue(ModuleInfo modinfo,String attribute) {
-      return modinfo.getParameter(attribute);
+  public String getValue(IWContext iwc,String attribute) {
+      return iwc.getParameter(attribute);
   }
 
   protected boolean isUpdate() {
       return bUpdate;
   }
 
-  protected java.sql.Date getDateFromInput(ModuleInfo modinfo,String inputName) {
-      String strDay = getValue(modinfo,inputName+"_day");
-      String strMonth = getValue(modinfo,inputName+"_month");
-      String strYear = getValue(modinfo,inputName+"_year");
+  protected java.sql.Date getDateFromInput(IWContext iwc,String inputName) {
+      String strDay = getValue(iwc,inputName+"_day");
+      String strMonth = getValue(iwc,inputName+"_month");
+      String strYear = getValue(iwc,inputName+"_year");
       if(strDay == null || strMonth == null || strYear == null ||
           strDay.equals("") || strMonth.equals("") || strYear.equals("")) {
           return null;

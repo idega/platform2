@@ -1,7 +1,7 @@
 package com.idega.block.projectmanager.presentation;
 
 import com.idega.block.projectmanager.data.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.jmodule.boxoffice.data.*;
 import com.idega.core.user.data.User;
 import com.idega.core.data.*;
@@ -10,8 +10,8 @@ import java.sql.*;
 import java.io.*;
 import java.util.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 
 /**
  * Title: Project Administrative Tool
@@ -22,12 +22,12 @@ import com.idega.jmodule.object.textObject.*;
  * @version 1.0
  */
 
-public class ProjectAdmin extends JModuleObject{
+public class ProjectAdmin extends Block{
 
     String header_color="#ABABAB";
     String color="#EFEFEF";
     private boolean isAdmin = false;
-    ModuleInfo modinfo;
+    IWContext iwc;
     String URI = null;
 
 
@@ -80,8 +80,8 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void projectFinances() throws SQLException{
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
-		String view = modinfo.getParameter("view");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
+		String view = iwc.getParameter("view");
 			if (view == null) {
 				view = "";
 			}
@@ -128,9 +128,9 @@ public class ProjectAdmin extends JModuleObject{
 	}
 
 	public void saveProjectFinances() throws SQLException{
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
 		if (project_id != null) {
-			String finances = modinfo.getParameter("project_goals");
+			String finances = iwc.getParameter("project_goals");
 			if (finances != null) {
 				Project project = new Project(Integer.parseInt(project_id));
 				ProjectExtra[] extra = (ProjectExtra[]) project.findRelated(new ProjectExtra());
@@ -152,8 +152,8 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void projectTasks() throws SQLException{
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
-		String view = modinfo.getParameter("view");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
+		String view = iwc.getParameter("view");
 			if (view == null) {
 				view = "";
 			}
@@ -197,9 +197,9 @@ public class ProjectAdmin extends JModuleObject{
 	}
 
 	public void saveProjectTasks() throws SQLException{
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
 		if (project_id != null) {
-			String tasks = modinfo.getParameter("project_tasks");
+			String tasks = iwc.getParameter("project_tasks");
 			if (tasks != null) {
 				Project project = new Project(Integer.parseInt(project_id));
 				ProjectExtra[] extra = (ProjectExtra[]) project.findRelated(new ProjectExtra());
@@ -226,8 +226,8 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void projectGoals() throws SQLException{
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
-		String view = modinfo.getParameter("view");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
+		String view = iwc.getParameter("view");
 			if (view == null) {
 				view = "";
 			}
@@ -271,9 +271,9 @@ public class ProjectAdmin extends JModuleObject{
 	}
 
 	public void saveProjectGoals() throws SQLException{
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
 		if (project_id != null) {
-			String goals = modinfo.getParameter("project_goals");
+			String goals = iwc.getParameter("project_goals");
 			if (goals != null) {
 				Project project = new Project(Integer.parseInt(project_id));
 				ProjectExtra[] extra = (ProjectExtra[]) project.findRelated(new ProjectExtra());
@@ -295,8 +295,8 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void projectDescription() throws SQLException{
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
-		String view = modinfo.getParameter("view");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
+		String view = iwc.getParameter("view");
 			if (view == null) {
 				view = "";
 			}
@@ -340,9 +340,9 @@ public class ProjectAdmin extends JModuleObject{
 	}
 
 	public void saveProjectDescription() throws SQLException{
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
 		if (project_id != null) {
-			String description = modinfo.getParameter("project_description");
+			String description = iwc.getParameter("project_description");
 			if (description != null) {
 				Project project = new Project(Integer.parseInt(project_id));
 				ProjectExtra[] extra = (ProjectExtra[]) project.findRelated(new ProjectExtra());
@@ -364,7 +364,7 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void viewGroup() throws SQLException {
-		String[] groups = modinfo.getParameterValues("group_");
+		String[] groups = iwc.getParameterValues("group_");
 		if (groups != null) {
 			ProjectGroup group;
 			User[] user;
@@ -437,8 +437,8 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void saveGroup()throws SQLException {
-		String[] members = modinfo.getParameterValues("member");
-		String group_name = modinfo.getParameter("group_name");
+		String[] members = iwc.getParameterValues("member");
+		String group_name = iwc.getParameter("group_name");
 		ProjectGroup group = new ProjectGroup();
 			group.setName(group_name);
 			group.insert();
@@ -452,7 +452,7 @@ public class ProjectAdmin extends JModuleObject{
 	}
 
         public void deleteGroup() throws SQLException {
-              String[] group_id = (String[]) modinfo.getParameterValues("group_");
+              String[] group_id = (String[]) iwc.getParameterValues("group_");
               ProjectGroup group;
               User user = new User();
 
@@ -472,7 +472,7 @@ public class ProjectAdmin extends JModuleObject{
                   }
                   catch (Exception e) {
                     add("Gat ekki framkvæmt skipun<br> - Hópur er ennþá í notkun<br>");
-                    add(new BackButton(new com.idega.jmodule.object.Image("/pics/bakka.gif")));
+                    add(new BackButton(new com.idega.presentation.Image("/pics/bakka.gif")));
                   }
               }
 
@@ -481,7 +481,7 @@ public class ProjectAdmin extends JModuleObject{
         }
 
 	public void save() throws SQLException {
-		String save_action = modinfo.getParameter("save_action");
+		String save_action = iwc.getParameter("save_action");
 		if (save_action != null) {
 			if (save_action.equals("saveGroup")) {
 				saveGroup();
@@ -507,9 +507,9 @@ public class ProjectAdmin extends JModuleObject{
 
 	public void groupChosen(String what)throws SQLException {
                 User sUser = (User) (User.getStaticInstance(User.class));
-		String[] group = modinfo.getParameterValues("group_");
-		String[] members = modinfo.getParameterValues(sUser.getEntityName());
-		String project_id = (String) modinfo.getSessionAttribute("project_id");
+		String[] group = iwc.getParameterValues("group_");
+		String[] members = iwc.getParameterValues(sUser.getEntityName());
+		String project_id = (String) iwc.getSessionAttribute("project_id");
 
 
 		if (what != null) {
@@ -742,11 +742,11 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void groups() throws SQLException{
-		String actionInn = modinfo.getParameter("action");
-		String project_id = (String) modinfo.getSessionAttribute("project_id");
+		String actionInn = iwc.getParameter("action");
+		String project_id = (String) iwc.getSessionAttribute("project_id");
 		String veljaAction = "";
-                String member_id = modinfo.getParameter("member_id");
-                String group_id = modinfo.getParameter("group_id");
+                String member_id = iwc.getParameter("member_id");
+                String group_id = iwc.getParameter("group_id");
 
 		if (actionInn != null) {
 			if (actionInn.equals("plusStyri")) {
@@ -843,7 +843,7 @@ public class ProjectAdmin extends JModuleObject{
                   newMember.addParameter("project_uri",URI);
 
                 SubmitButton deleteMember = new SubmitButton("action","Eyða");
-//                SubmitButton deleteMember = new SubmitButton(new com.idega.jmodule.object.Image("/pics/eyda_medium.gif"),"delete");
+//                SubmitButton deleteMember = new SubmitButton(new com.idega.presentation.Image("/pics/eyda_medium.gif"),"delete");
 
                 //myTable.add(newMember,4,3);
                 myTable.addBreak(4,3);
@@ -901,8 +901,8 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void newProject2() throws SQLException {
-		String name = modinfo.getParameter("name");
-                       		String project_id = (String) modinfo.getSession().getAttribute("project_id");
+		String name = iwc.getParameter("name");
+                       		String project_id = (String) iwc.getSession().getAttribute("project_id");
 		Project project;
 		String issue_id;
 		String importance;
@@ -910,9 +910,9 @@ public class ProjectAdmin extends JModuleObject{
 		boolean newProject = true;
 
 		if (project_id == null) {
-			issue_id = modinfo.getParameter("Issues");
+			issue_id = iwc.getParameter("Issues");
                         // uses tablename as parametername
-			importance = modinfo.getParameter("i_pm_importance");
+			importance = iwc.getParameter("i_pm_importance");
 			project = new Project();
 //			add(Integer.parseInt(issue_id)+"");
                         if (issue_id != null)
@@ -926,7 +926,7 @@ public class ProjectAdmin extends JModuleObject{
                         project.setProjectManagerIdFinal(false);
                         project.setGroupIdFinal(false);
 			project.insert();
-			modinfo.setSessionAttribute("project_id",Integer.toString(project.getID()));
+			iwc.setSessionAttribute("project_id",Integer.toString(project.getID()));
 			//debug ma vera fyrir utan
                         if (issue_id != null)
                         iss = new Issues(Integer.parseInt(issue_id));
@@ -949,7 +949,7 @@ public class ProjectAdmin extends JModuleObject{
 
 
 
-//g		String URI = modinfo.getRequest().getRequestURI();
+//g		String URI = iwc.getRequest().getRequestURI();
 
 //			myTable.add(new HiddenInput("project_id",Integer.toString(project.getID())));
 
@@ -1262,9 +1262,9 @@ public class ProjectAdmin extends JModuleObject{
 	}
 
 	public void viewProject() throws SQLException {
-		String name = modinfo.getParameter("name");
+		String name = iwc.getParameter("name");
 
-		String project_id = (String) modinfo.getSession().getAttribute("project_id");
+		String project_id = (String) iwc.getSession().getAttribute("project_id");
 		Project project;
 		String issue_id;
 		String importance;
@@ -1278,7 +1278,7 @@ public class ProjectAdmin extends JModuleObject{
 			issue_id = Integer.toString(project.getIssueId());
 			iss = new Issues(Integer.parseInt(issue_id));
 
-//g		String URI = modinfo.getRequest().getRequestURI();
+//g		String URI = iwc.getRequest().getRequestURI();
 
 //			myTable.add(new HiddenInput("project_id",Integer.toString(project.getID())));
 
@@ -1391,13 +1391,13 @@ public class ProjectAdmin extends JModuleObject{
 
 
 	public void newProject3() throws SQLException {
-		String project_id = (String)modinfo.getSession().getAttribute("project_id");
+		String project_id = (String)iwc.getSession().getAttribute("project_id");
 		Project project = new Project(Integer.parseInt(project_id));
 
-                String wheel_final = modinfo.getParameter("wheel_group");
-                String project_final = modinfo.getParameter("project_group");
-                String manager_final = modinfo.getParameter("project_manager");
-                String other_final = modinfo.getParameter("other_group");
+                String wheel_final = iwc.getParameter("wheel_group");
+                String project_final = iwc.getParameter("project_group");
+                String manager_final = iwc.getParameter("project_manager");
+                String other_final = iwc.getParameter("other_group");
 
                       project.setWheelGroupIdFinal(false);
                       project.setProjectGroupIdFinal(false);
@@ -1421,9 +1421,9 @@ public class ProjectAdmin extends JModuleObject{
 
 			project.setValid(true);
 			project.update();
-                        modinfo.getServletContext().removeAttribute("all_projects_array");
+                        iwc.getServletContext().removeAttribute("all_projects_array");
 
-		modinfo.getSession().removeAttribute("project_id");
+		iwc.getSession().removeAttribute("project_id");
 
 		Form myForm = new Form();
 //                myForm.setMethod("get");
@@ -1434,7 +1434,7 @@ public class ProjectAdmin extends JModuleObject{
 //			myTable.setBorder(0);
 			myTable.add("Verkefni stofnað");
 			myTable.addBreak();
-			myTable.add(new Link(new com.idega.jmodule.object.Image("/pics/bakka.gif","Til baka"),URI));
+			myTable.add(new Link(new com.idega.presentation.Image("/pics/bakka.gif","Til baka"),URI));
 
 			myTable.setColor(color);
 			myTable.setCellspacing(0);
@@ -1460,7 +1460,7 @@ public class ProjectAdmin extends JModuleObject{
                 }
 
                 project.delete();
-                modinfo.getServletContext().removeAttribute("all_projects_array");
+                iwc.getServletContext().removeAttribute("all_projects_array");
 
             }
             catch (Exception e) {
@@ -1478,10 +1478,10 @@ public class ProjectAdmin extends JModuleObject{
         }
 
         public void deleteMembers() throws SQLException {
-            String[] member_id = modinfo.getParameterValues("member");
-            String veljaAction = modinfo.getParameter("save_action2");
-            String group_id = modinfo.getParameter("group_id");
-            String member__id = modinfo.getParameter("member_id");
+            String[] member_id = iwc.getParameterValues("member");
+            String veljaAction = iwc.getParameter("save_action2");
+            String group_id = iwc.getParameter("group_id");
+            String member__id = iwc.getParameter("member_id");
 
             if (member_id != null)
             for (int p = 0 ; p < member_id.length ; p++ ) {
@@ -1547,7 +1547,7 @@ public class ProjectAdmin extends JModuleObject{
             else {
                add("Enginn starfsmaður var valinn<br>");
             }
-            Link linki = new Link(new com.idega.jmodule.object.Image("/pics/bakka.gif","Til baka"),modinfo.getRequestURI());
+            Link linki = new Link(new com.idega.presentation.Image("/pics/bakka.gif","Til baka"),iwc.getRequestURI());
               linki.addParameter("action",veljaAction);
               if (group_id != null)
               linki.addParameter("groupd_id",group_id);
@@ -1569,22 +1569,22 @@ public class ProjectAdmin extends JModuleObject{
 
 
 
-	public void main(ModuleInfo modinfo2)throws Exception {
-          this.modinfo = modinfo2;
-          URI = modinfo.getRequestURI();
+	public void main(IWContext iwc2)throws Exception {
+          this.iwc = iwc2;
+          URI = iwc.getRequestURI();
 
-		String action = modinfo.getParameter("action");
+		String action = iwc.getParameter("action");
 
 //                Integer kalli = (Integer) getRequest().getSession().getAttribute("project_id");
 
 //           if (kalli != null) {
-                if (modinfo.getParameter("Breyta.y") != null) {
+                if (iwc.getParameter("Breyta.y") != null) {
                   action = "Breyta";
                 }
-                if (modinfo.getParameter("Henda.y") != null) {
+                if (iwc.getParameter("Henda.y") != null) {
                   action = "Henda";
                 }
-                if (modinfo.getParameter("delete.x") != null){
+                if (iwc.getParameter("delete.x") != null){
                   action = "delete_members";
                 }
 
@@ -1598,28 +1598,28 @@ public class ProjectAdmin extends JModuleObject{
 		}
 		else if ( (action.equals("newProject2")) || (action.equals("Breyta")) || (action.equalsIgnoreCase("Til Baka")) ) {
 			if (action.equals("newProject2")) {
-					modinfo.getSession().removeAttribute("project_id");
+					iwc.getSession().removeAttribute("project_id");
 			}
-			else if  (modinfo.getParameter("project_id") != null ) {
-					modinfo.getSession().setAttribute("project_id",modinfo.getParameter("project_id"));
+			else if  (iwc.getParameter("project_id") != null ) {
+					iwc.getSession().setAttribute("project_id",iwc.getParameter("project_id"));
 			}
 			newProject2();
 		}
 		else if (action.equals("Skoða/breyta")) {
-	/*session?*/		modinfo.setSessionAttribute("project_id",modinfo.getParameter("project"));
-                        System.err.println(""+modinfo.getParameter("project"));
+	/*session?*/		iwc.setSessionAttribute("project_id",iwc.getParameter("project"));
+                        System.err.println(""+iwc.getParameter("project"));
 //			getRequest().getSession().removeAttribute("project_id");
                         newProject2();
 //			viewProject();
 		}
                 else if (action.equals("Henda")) {
-                      String project_id_temp = modinfo.getParameter("project");
+                      String project_id_temp = iwc.getParameter("project");
                       if (project_id_temp == null) {
-                        project_id_temp = (String) modinfo.getSession().getAttribute("project_id");
+                        project_id_temp = (String) iwc.getSession().getAttribute("project_id");
                       }
 
                       if (project_id_temp != null) {
-                          if (modinfo.getParameter("Henda.y") == null) {
+                          if (iwc.getParameter("Henda.y") == null) {
                             delete(project_id_temp,true);
                           }
                           else {
@@ -1632,7 +1632,7 @@ public class ProjectAdmin extends JModuleObject{
 
                 }
 		else if (action.equals("newProject3")) {
-			if (modinfo.getParameter("takki").equals("Áfram")) {
+			if (iwc.getParameter("takki").equals("Áfram")) {
 				newProject3();
 			}
 		}
@@ -1649,26 +1649,26 @@ public class ProjectAdmin extends JModuleObject{
                         this.deleteGroup();
 		}
 		else if (action.equals("Verklýsing")) {
-			 if  (modinfo.getParameter("project_id") != null ) {
-					modinfo.getSession().setAttribute("project_id",modinfo.getParameter("project_id"));
+			 if  (iwc.getParameter("project_id") != null ) {
+					iwc.getSession().setAttribute("project_id",iwc.getParameter("project_id"));
 			}
 			projectDescription();
 		}
 		else if (action.equals("Markmið/Árangur")) {
-			 if  (modinfo.getParameter("project_id") != null ) {
-					modinfo.getSession().setAttribute("project_id",modinfo.getParameter("project_id"));
+			 if  (iwc.getParameter("project_id") != null ) {
+					iwc.getSession().setAttribute("project_id",iwc.getParameter("project_id"));
 			}
 			projectGoals();
 		}
 		else if (action.equals("Fjármál")) {
-			 if  (modinfo.getParameter("project_id") != null ) {
-					modinfo.getSession().setAttribute("project_id",modinfo.getParameter("project_id"));
+			 if  (iwc.getParameter("project_id") != null ) {
+					iwc.getSession().setAttribute("project_id",iwc.getParameter("project_id"));
 			}
 			projectFinances();
 		}
 		else if (action.equals("Verkliðir - Tímarammi")) {
-			 if  (modinfo.getParameter("project_id") != null ) {
-					modinfo.getSession().setAttribute("project_id",modinfo.getParameter("project_id"));
+			 if  (iwc.getParameter("project_id") != null ) {
+					iwc.getSession().setAttribute("project_id",iwc.getParameter("project_id"));
 			}
 			projectTasks();
 		}

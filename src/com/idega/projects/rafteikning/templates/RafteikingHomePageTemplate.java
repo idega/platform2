@@ -1,7 +1,7 @@
 package com.idega.projects.rafteikning.templates;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.idegaweb.template.TemplatePage;
 
 /**
@@ -42,7 +42,7 @@ public class RafteikingHomePageTemplate extends TemplatePage {
 
   }
 
-  public ModuleObject getHeader(){
+  public PresentationObject getHeader(){
     Table HeaderTable = new Table(3,1);
     HeaderTable.setWidth("100%");
     Image header1 = new Image("/pics/template/raflogo.gif", "Rafteikning");
@@ -57,15 +57,15 @@ public class RafteikingHomePageTemplate extends TemplatePage {
 
 
 
-  public void add(ModuleObject obj){
+  public void add(PresentationObject obj){
     addInTable.add(obj,2,1);
   }
 
-  public void add1(ModuleObject obj){
+  public void add1(PresentationObject obj){
     addInTable.add(obj,1,1);
   }
 
-  public boolean isAdministrator(ModuleInfo modinfo)throws Exception{
+  public boolean isAdministrator(IWContext iwc)throws Exception{
     return true;
   }
 

@@ -2,7 +2,7 @@ package com.idega.block.projectmanager.presentation;
 
 import com.idega.block.projectmanager.presentation.ProjectAdmin;
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -22,8 +22,8 @@ public class ProjectAdminWindow extends IWAdminWindow {
       setHeight(460);
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
-    super.main(modinfo);
+  public void main(IWContext iwc) throws Exception{
+    super.main(iwc);
     ProjectAdmin pa = new ProjectAdmin();
     add(pa);
   }

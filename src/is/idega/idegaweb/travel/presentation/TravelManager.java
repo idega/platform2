@@ -1,8 +1,8 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import javax.servlet.jsp.JspPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -12,7 +12,7 @@ import com.idega.block.trade.stockroom.data.*;
 import java.sql.SQLException;
 import com.idega.core.accesscontrol.business.AccessControl;
 
-public class TravelManager extends JModuleObject {
+public class TravelManager extends Block {
 
     public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
     private IWBundle bundle;
@@ -68,17 +68,17 @@ public class TravelManager extends JModuleObject {
         return supplier;
     }
 
-    public void main(ModuleInfo modinfo) throws SQLException{
-        initializer(modinfo);
+    public void main(IWContext iwc) throws SQLException{
+        initializer(iwc);
 
-        String action = modinfo.getParameter(this.sAction);
+        String action = iwc.getParameter(this.sAction);
         if (action == null) {
-          action = (String) modinfo.getSessionAttribute(this.sAction);
+          action = (String) iwc.getSessionAttribute(this.sAction);
           if (action == null) {
             action ="";
           }
         }else {
-          modinfo.setSessionAttribute(sAction, action);
+          iwc.setSessionAttribute(sAction, action);
         }
 
 
@@ -119,7 +119,7 @@ public class TravelManager extends JModuleObject {
           iDailyReport = iwrb.getImage("buttons/daily_report_on.gif");
         }
 
-        if ( AccessControl.isAdmin(modinfo)){
+        if ( AccessControl.isAdmin(iwc)){
 
             Link lInitialData = new Link(iInitialData,InitialData.class);
               lInitialData.addParameter(this.sAction,"lInitialData");
@@ -180,19 +180,19 @@ public class TravelManager extends JModuleObject {
     }
 
 
-    public void initializer(ModuleInfo modinfo) {
-        bundle = getBundle(modinfo);
-        iwrb = bundle.getResourceBundle(modinfo.getCurrentLocale());
+    public void initializer(IWContext iwc) {
+        bundle = getBundle(iwc);
+        iwrb = bundle.getResourceBundle(iwc.getCurrentLocale());
 
         try {
-            int supplierId = TravelStockroomBusiness.getUserSupplierId(modinfo);
+            int supplierId = TravelStockroomBusiness.getUserSupplierId(iwc);
             supplier = new Supplier(supplierId);
         }
         catch (Exception e) {
         }
 
         try {
-            int resellerId = TravelStockroomBusiness.getUserResellerId(modinfo);
+            int resellerId = TravelStockroomBusiness.getUserResellerId(iwc);
             reseller = new Reseller(resellerId);
         }
         catch (Exception e) {
@@ -216,7 +216,7 @@ public class TravelManager extends JModuleObject {
 
     }
 
-    public void add(ModuleObject mo) {
+    public void add(PresentationObject mo) {
         table.add(mo,1,2);
     }
 

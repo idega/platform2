@@ -4,9 +4,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import	com.idega.presentation.*;
+import	com.idega.presentation.ui.*;
 import	com.idega.jmodule.news.data.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
 import	com.idega.data.*;
@@ -15,7 +15,7 @@ import javax.servlet.http.*;
 import com.idega.util.text.TextSoap;
 
 
-public class NewsEditor extends JModuleObject{
+public class NewsEditor extends Block{
 
 
 private String Error;
@@ -56,13 +56,13 @@ public NewsEditor(boolean isAdmin){
 
 }
 
-private void setSpokenLanguage(ModuleInfo modinfo){
+private void setSpokenLanguage(IWContext iwc){
 
-String language2 = modinfo.getParameter("language");
-    if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
+String language2 = iwc.getParameter("language");
+    if (language2==null) language2 = ( String ) iwc.getSession().getAttribute("language");
     if ( language2 != null) language = language2;
 
- // language = modinfo.getSpokenLanguage();
+ // language = iwc.getSpokenLanguage();
 // if(language!=null){
   if (language.equalsIgnoreCase("IS")){
     Lang = IS;
@@ -100,12 +100,12 @@ return values;
 
 }
 
-public void main(ModuleInfo modinfo)throws Exception{
+public void main(IWContext iwc)throws Exception{
         if(askForPermission){
-          this.isAdmin=this.isAdministrator(modinfo);
+          this.isAdmin=this.isAdministrator(iwc);
         }
-        setSpokenLanguage(modinfo);
-	String mode = modinfo.getParameter("mode");
+        setSpokenLanguage(iwc);
+	String mode = iwc.getParameter("mode");
 
 
         headlinestring = new Text("<b>"+Lang[1]+"</b>");
@@ -127,19 +127,19 @@ public void main(ModuleInfo modinfo)throws Exception{
 				//add(drawBrowseTable());
 			}
 			else if( mode.equals("save")){
-				if( storeNews(modinfo) ) add(feedBack(true));
+				if( storeNews(iwc) ) add(feedBack(true));
 				else add(feedBack(false));
 			}
-                        else if( mode.equals("delete") ){ add(deleteNews(modinfo.getParameter("news_id"))); }
+                        else if( mode.equals("delete") ){ add(deleteNews(iwc.getParameter("news_id"))); }
 		}
 
 		//else we are either writing something new or we are updating something we have selected
 		else{
 			if(isAdmin){
-			add(editorTable(modinfo));
+			add(editorTable(iwc));
 			}
 			else add(new Text("<center><b></b>Login First!</b></center>") );
-			//add(editorTable(modinfo));
+			//add(editorTable(iwc));
 		}
 	}
 	catch(Exception e){
@@ -157,9 +157,9 @@ return new Text("Deleted the news");
 }
 
 
-public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
+public Table editorTable(IWContext iwc)throws SQLException, IOException
 {
-	HttpSession Session = modinfo.getSession();
+	HttpSession Session = iwc.getSession();
 
 	Table mainTable = new Table(1, 2);
 //	Table topToolTable = (new NewsToolbar()).getToolbarTable();//4,1
@@ -207,10 +207,10 @@ public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
 
 
 
-		String news_id = modinfo.getParameter("news_id");
-		String category_id = modinfo.getParameter("category_id");
-		/*String mode = modinfo.getParameter("mode");
-		String mode = modinfo.getParameter("mode");*/
+		String news_id = iwc.getParameter("news_id");
+		String category_id = iwc.getParameter("category_id");
+		/*String mode = iwc.getParameter("mode");
+		String mode = iwc.getParameter("mode");*/
 
 	//draw everything first and then if we already selected a news then
 	//fill up the selection boxes with that
@@ -264,7 +264,7 @@ public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
 
         if( (categoryString!=null) && !(categoryString.equals("")) ) categoryString += " AND ";
 
-         // PrintWriter out = modinfo.getResponse().getWriter();
+         // PrintWriter out = iwc.getResponse().getWriter();
           //out.println("categoryString :"+categoryString);
 
         NewsCategory newscat = new NewsCategory();
@@ -378,11 +378,11 @@ public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException
 
 }
 
-public boolean storeNews(ModuleInfo modinfo)throws SQLException, IOException{
+public boolean storeNews(IWContext iwc)throws SQLException, IOException{
 
 boolean update=false;
 
-String news_id = modinfo.getParameter("news_id");
+String news_id = iwc.getParameter("news_id");
 //	out.println("newsid :"+news_id);
 
 if ( (news_id!=null) && !(news_id.equals("-1"))) update=true;
@@ -393,17 +393,17 @@ if ( (news_id!=null) && !(news_id.equals("-1"))) update=true;
   //first the required ones
 
 
-  String newsHeader = modinfo.getParameter("NewsHeader");
+  String newsHeader = iwc.getParameter("NewsHeader");
   //out.println("<br> fyrirsogn: "+newsHeader);
 
-  String newsText = modinfo.getParameter("NewsText");
+  String newsText = iwc.getParameter("NewsText");
 
   newsText = TextSoap.findAndReplace(newsText, "“","\"");
   newsText = TextSoap.findAndReplace(newsText, "'","´");
 
   //out.println("<br> text: "+newsText);
 
-  String category_id = modinfo.getParameter("category_id");
+  String category_id = iwc.getParameter("category_id");
   //out.println("<br> category_id: "+category_id);
 
 
@@ -429,25 +429,25 @@ if ( (news_id!=null) && !(news_id.equals("-1"))) update=true;
   newsattr.setAttributeId(Integer.parseInt(union_id));*/
 
   //then the optional ones
-  String source = modinfo.getParameter("source");
+  String source = iwc.getParameter("source");
   //out.println("<br> source: "+source);
   if ( source!=null ) news.setSource(source);
 
-  String author = modinfo.getParameter("author");
+  String author = iwc.getParameter("author");
   //out.println("<br> author: "+author);
   if ( author!=null ) news.setAuthor(author);
 
-  String daysShown = modinfo.getParameter("daysShown");
+  String daysShown = iwc.getParameter("daysShown");
   //out.println("<br> daysShown: "+daysShown);
   if ( daysShown!=null ) news.setDaysShown(new Integer(daysShown));
 
 
-  String includeImage = modinfo.getParameter("insertImage");
+  String includeImage = iwc.getParameter("insertImage");
   //out.println("<br> includeImage: "+includeImage);
   if( includeImage!=null ) news.setIncludeImage(includeImage);
   else news.setIncludeImage("N");
 
-  String image_id = modinfo.getParameter("image_id");
+  String image_id = iwc.getParameter("image_id");
 
   //laga a edison
   //if(image_id == null) image_id="-1";//ef engin mynd
@@ -613,11 +613,11 @@ public DropdownMenu counterDropdown(String dropdownName, int countFrom, int coun
 	return myDropdown;
 }
 
-public DropdownMenu newsDropdown(String newsDropdownName, String categoryDropdownName, Connection Conn, ModuleInfo modinfo)throws IOException, SQLException
+public DropdownMenu newsDropdown(String newsDropdownName, String categoryDropdownName, Connection Conn, IWContext iwc)throws IOException, SQLException
 {
-	//PrintWriter out = modinfo.getResponse().getWriter();
+	//PrintWriter out = iwc.getResponse().getWriter();
 	DropdownMenu myDropdown = new DropdownMenu(newsDropdownName);
-	String cotgegoryId = modinfo.getParameter(categoryDropdownName);
+	String cotgegoryId = iwc.getParameter(categoryDropdownName);
 
 
 		Statement Stmt = Conn.createStatement();
@@ -638,7 +638,7 @@ public DropdownMenu newsDropdown(String newsDropdownName, String categoryDropdow
 
 public DropdownMenu categoryDropdown(String categoryDropdownName, Connection Conn)throws IOException, SQLException
 {
-	//PrintWriter out = modinfo.getResponse().getWriter();
+	//PrintWriter out = iwc.getResponse().getWriter();
 	DropdownMenu myDropdown = new DropdownMenu(categoryDropdownName);
 
 	try

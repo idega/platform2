@@ -4,9 +4,9 @@ package com.idega.jmodule.poll.moduleobject;
 import com.idega.jmodule.*;
 import com.idega.data.*;
 import java.io.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import com.idega.jmodule.poll.data.*;
 import java.sql.SQLException;
@@ -15,7 +15,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
 
-public class BasicPollVoter extends JModuleObject{
+public class BasicPollVoter extends Block{
         private String attributeName = "idega_id";
         private int attributeId = 1;
 
@@ -34,7 +34,7 @@ boolean isAdmin;
 Poll poll;
 Table table;
 Form form;
-ModuleInfo modinfo;
+IWContext iwc;
 Window gluggi;
 private String resultPageUrl  = "poll_result.jsp";
 private String pollAdminUrl = "/poll/pollAdmin.jsp";
@@ -181,8 +181,8 @@ private String color_2 = null;
 	}
 
 
-	private boolean thisObjectSubmitted(ModuleInfo modinfo){
-                String idega_poll_voter = modinfo.getParameter("idega_poll_voter");
+	private boolean thisObjectSubmitted(IWContext iwc){
+                String idega_poll_voter = iwc.getParameter("idega_poll_voter");
                 boolean returner = false;
 
 		if (idega_poll_voter != null){
@@ -194,9 +194,9 @@ private String color_2 = null;
                 return returner;
 	}
 
-        private boolean canVote(ModuleInfo modinfo) {
-               Cookie[] cookies = (Cookie[]) modinfo.getRequest().getCookies();
-               String URI = modinfo.getRequest().getRequestURI();
+        private boolean canVote(IWContext iwc) {
+               Cookie[] cookies = (Cookie[]) iwc.getRequest().getCookies();
+               String URI = iwc.getRequest().getRequestURI();
                boolean returner = true;
 
                 if (cookies != null) {
@@ -214,12 +214,12 @@ private String color_2 = null;
         }
 
 
-	private void handleInsert(ModuleInfo modinfo)throws SQLException,IOException{
-               String URI = modinfo.getRequest().getRequestURI();
-                HttpServletResponse response = modinfo.getResponse();
+	private void handleInsert(IWContext iwc)throws SQLException,IOException{
+               String URI = iwc.getRequest().getRequestURI();
+                HttpServletResponse response = iwc.getResponse();
 		boolean mayVote = true;
-                String poll_option_id = modinfo.getRequest().getParameter("poll_option");
-                String temp_poll_id = modinfo.getParameter("result_poll_id");
+                String poll_option_id = iwc.getRequest().getParameter("poll_option");
+                String temp_poll_id = iwc.getParameter("result_poll_id");
 
                 PollResult[] result = (PollResult[])(new PollResult()).findAllByColumn("poll_option_id",poll_option_id);
 
@@ -228,7 +228,7 @@ private String color_2 = null;
                 poll_id = poll.getID();
 
 
-                if (canVote(modinfo)) {
+                if (canVote(iwc)) {
 
                   if (poll_option_id != null)
   		  if (result != null)
@@ -270,38 +270,38 @@ private String color_2 = null;
 		this.header_text_color=header_text_color;
 	}
 
-	public void main(ModuleInfo modinfo)throws Exception{
-          iwrb = getResourceBundle(modinfo);
-          iwb = getBundle(modinfo);
+	public void main(IWContext iwc)throws Exception{
+          iwrb = getResourceBundle(iwc);
+          iwb = getBundle(iwc);
 
           this.voteImage = iwrb.getImage("vote.gif");
           this.otherPollsImage = iwrb.getImage("vote_history.gif");
 
-          this.isAdmin=isAdministrator(modinfo);
+          this.isAdmin=isAdministrator(iwc);
 
-            String temp_attribute_id = modinfo.getParameter("i_poll_attribute_id");
-            String temp_attribute_name = modinfo.getParameter("i_poll_attribute_name");
+            String temp_attribute_id = iwc.getParameter("i_poll_attribute_id");
+            String temp_attribute_name = iwc.getParameter("i_poll_attribute_name");
             if ((temp_attribute_id != null) && (temp_attribute_name != null) ) {
                 this.attributeId = Integer.parseInt(temp_attribute_id);
                 this.attributeName = temp_attribute_name;
             }
 
-            String poll_action = modinfo.getParameter("i_poll_action");
+            String poll_action = iwc.getParameter("i_poll_action");
 
             if (poll_action == null)  {
-                String result_poll_id = modinfo.getRequest().getParameter("result_poll_id");
-                String temp_poll_id = modinfo.getRequest().getParameter("poll_id");
+                String result_poll_id = iwc.getRequest().getParameter("result_poll_id");
+                String temp_poll_id = iwc.getRequest().getParameter("poll_id");
 
-                if (thisObjectSubmitted(modinfo)) {
-                    handleInsert(modinfo);
+                if (thisObjectSubmitted(iwc)) {
+                    handleInsert(iwc);
                 }
                 else {
                     if (result_poll_id == null) {
                         if ( temp_poll_id == null) {
-                            showPoll(modinfo);
+                            showPoll(iwc);
                         }
                         else {
-                            displayPoll(modinfo,temp_poll_id);
+                            displayPoll(iwc,temp_poll_id);
                         }
                     }
                     else {
@@ -310,7 +310,7 @@ private String color_2 = null;
                 }
             }
             else if (poll_action.equals("view_collection")) {
-                viewCollection(modinfo);
+                viewCollection(iwc);
             }
 
 
@@ -318,12 +318,12 @@ private String color_2 = null;
 	}
 
 
-  private void viewCollection(ModuleInfo modinfo) throws SQLException {
+  private void viewCollection(IWContext iwc) throws SQLException {
       PollAttributes[] poll_attrib = (PollAttributes[]) (new PollAttributes()).findAllByColumnDescendingOrdered("attribute_name",attributeName,"attribute_id",""+attributeId,"poll_id");
-      String URI = modinfo.getRequest().getRequestURI();
+      String URI = iwc.getRequest().getRequestURI();
 
       int first = 0;
-      String first_string = modinfo.getParameter("i_poll_first");
+      String first_string = iwc.getParameter("i_poll_first");
       try {
           first = Integer.parseInt(first_string);
           if (first < 0 ) {
@@ -490,7 +490,7 @@ private String color_2 = null;
   }
 
 
-        private void showPoll(ModuleInfo modinfo) throws SQLException, IOException{
+        private void showPoll(IWContext iwc) throws SQLException, IOException{
                 int manyQuestions = 0;
                 int manyAnswers = 0;
 
@@ -642,8 +642,8 @@ private String color_2 = null;
 			//....hingað....
 
 
-			if (thisObjectSubmitted(modinfo)){
-				handleInsert(modinfo);
+			if (thisObjectSubmitted(iwc)){
+				handleInsert(iwc);
 			}
 			else{
 				Text spurning = new Text(poll.getQuestion());
@@ -759,7 +759,7 @@ private String color_2 = null;
                                 adForm.add(new HiddenInput("attribute_name",this.attributeName));
                                 adForm.add(new HiddenInput("attribute_id",""+this.attributeId));
                                 if (this.poll != null) {
-                                  modinfo.getRequest().getSession().setAttribute("admin_poll_id",""+poll.getID());
+                                  iwc.getRequest().getSession().setAttribute("admin_poll_id",""+poll.getID());
 //  				  adForm.add(new HiddenInput("admin_poll_id", ""+poll.getID()));
                                 }
 			add(adForm);
@@ -772,7 +772,7 @@ private String color_2 = null;
         }
 
 
-        private void displayPoll(ModuleInfo modinfo, String poll_id) throws SQLException, IOException{
+        private void displayPoll(IWContext iwc, String poll_id) throws SQLException, IOException{
 
                 this.poll_id = Integer.parseInt(poll_id);
 
@@ -801,8 +801,8 @@ private String color_2 = null;
 				table.setAlignment(1,3,"right");
 			form.add(table);
 
-			if (thisObjectSubmitted(modinfo)){
-				handleInsert(modinfo);
+			if (thisObjectSubmitted(iwc)){
+				handleInsert(iwc);
 			}
 			else{
 				Text spurning = new Text(poll.getQuestion());
@@ -829,7 +829,7 @@ private String color_2 = null;
                                 adForm.add(new HiddenInput("attribute_name",this.attributeName));
                                 adForm.add(new HiddenInput("attribute_id",""+this.attributeId));
                                 if (this.poll != null) {
-                                  modinfo.getRequest().getSession().setAttribute("admin_poll_id",""+this.poll.getID());
+                                  iwc.getRequest().getSession().setAttribute("admin_poll_id",""+this.poll.getID());
 //  				  adForm.add(new HiddenInput("admin_poll_id", ""+poll.getID()));
                                 }
 			add(adForm);
@@ -842,9 +842,9 @@ private String color_2 = null;
 
 
 
-	public void print(ModuleInfo modinfo)throws Exception{
+	public void print(IWContext iwc)throws Exception{
 		//try{
-			super.print(modinfo);
+			super.print(iwc);
 		//}
 		//catch(SQLException ex){
 		//	throw new IOException(ex.getMessage());

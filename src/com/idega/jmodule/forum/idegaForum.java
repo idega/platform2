@@ -1,7 +1,7 @@
 package com.idega.jmodule.forum;
 
 import com.idega.jmodule.forum.presentation.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
 /**
  * Title:        JForums<p>
@@ -12,9 +12,9 @@ import com.idega.jmodule.object.*;
  * @version 1.0
  */
 
-public class idegaForum extends JModuleObject{
+public class idegaForum extends Block{
 
-//  protected ModuleObject SomeThreads;
+//  protected PresentationObject SomeThreads;
 //  protected Variables myVariables;
 //  protected Forum myForum;
 //  protected String UserPresentation;
@@ -22,40 +22,40 @@ public class idegaForum extends JModuleObject{
 
   public idegaForum( boolean isAdmin, String UserName, int UserID, String SomeThreadsPresentation ) {
     // setja í Application
-//    SomeThreads = ((ModuleObject)Class.forName(SomeThreadsPresentation)).getSomeThreadsModule();
+//    SomeThreads = ((PresentationObject)Class.forName(SomeThreadsPresentation)).getSomeThreadsModule();
 
   }
 /*
 
-  public ModuleObject getSomeThreads(){
+  public PresentationObject getSomeThreads(){
     return SomeThreads;
   }
 
 
 
-  public void main( ModuleInfo modinfo ){
+  public void main( IWContext iwc ){
 
-    myVariables = (Variables)modinfo.getRequest().getSession().getAttribute("ForumVariables");
+    myVariables = (Variables)iwc.getRequest().getSession().getAttribute("ForumVariables");
     if (myVariables == null){
       myVariables =  new myVariables();
-      modinfo.getRequest().getSession().setAttribute("ForumVariables", myVariables );
+      iwc.getRequest().getSession().setAttribute("ForumVariables", myVariables );
     }
 
-    myVariables.update(modinfo);
+    myVariables.update(iwc);
 
-    myForum = new Forum(modinfo);
+    myForum = new Forum(iwc);
 
     this.add(myForum);
   }
 
 
 
-  protected class Forum extends ModuleObjectContainer{
+  protected class Forum extends PresentationObjectContainer{
 
     public Table FrameTable;
     public FourmPresentation myPresentation;
 
-    public Forum( ModuleInfo modinfo, String presentation ){
+    public Forum( IWContext iwc, String presentation ){
       FrameTable = new Table(1,1);
 
       myPresentation = (ForumPresentation)Class.forName(presentation);

@@ -1,8 +1,8 @@
 package com.idega.block.projectmanager.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import java.sql.*;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.util.text.*;
@@ -22,9 +22,9 @@ import com.idega.util.text.*;
  * @version 1.0
  */
 
-public class ProjectManager extends JModuleObject {
+public class ProjectManager extends Block {
 
-  ModuleInfo modinfo;
+  IWContext iwc;
     String URI;
     String project_id;
     String language;
@@ -74,9 +74,9 @@ System.err.print("2");
                     add("<p>");
                     if (isAdmin) {
                         Form myForm = new Form(ProjectAdmin.class,"project"+Integer.toString(projects[i].getID()));
-                                myForm.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyta"));
+                                myForm.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyta"));
                                 myForm.add("&nbsp;&nbsp;&nbsp;");
-                                myForm.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/eyda_medium.gif"),"Henda"));
+                                myForm.add(new SubmitButton(new com.idega.presentation.Image("/pics/eyda_medium.gif"),"Henda"));
                                 myForm.add(new HiddenInput("project_id",Integer.toString(projects[i].getID())));
                                 myForm.add(new HiddenInput("action","Breyta"));
                         add(myForm);
@@ -121,7 +121,7 @@ System.err.print("2");
                     Form myForm1 = new Form(ProjectAdmin.class,"project"+Integer.toString(project.getID()));
 
 
-                            myForm1.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyting"));
+                            myForm1.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyting"));
     //			myForm1.add(new SubmitButton("tranus","Breyta"));
                             myForm1.add(new HiddenInput("project_id",Integer.toString(project.getID())));
                             myForm1.add(new HiddenInput("action","Verklýsing"));
@@ -140,7 +140,7 @@ System.err.print("2");
                             table.mergeCells(1,row,3,row);
                             table.add("<u>Markmið / Árangur:</u>",1,row);
                     Form myForm1 = new Form(ProjectAdmin.class,"project"+Integer.toString(project.getID()));
-                            myForm1.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyting"));
+                            myForm1.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyting"));
     //			myForm1.add(new SubmitButton("tranus","Breyta"));
                             myForm1.add(new HiddenInput("project_id",Integer.toString(project.getID())));
                             myForm1.add(new HiddenInput("action","Markmið/Árangur"));
@@ -159,7 +159,7 @@ System.err.print("2");
                             table.mergeCells(1,row,3,row);
                             table.add("<u>Tímarammi - tillaga:</u>",1,row);
                     Form myForm1 = new Form(ProjectAdmin.class,"project"+Integer.toString(project.getID()));
-                            myForm1.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyting"));
+                            myForm1.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyting"));
     //			myForm1.add(new SubmitButton("tranus","Breyta"));
                             myForm1.add(new HiddenInput("project_id",Integer.toString(project.getID())));
                             myForm1.add(new HiddenInput("action","Verkliðir - Tímarammi"));
@@ -180,7 +180,7 @@ System.err.print("2");
             Link link;
                     table.mergeCells(1,row,3,row);
                             Form myForm2 = new Form(ProjectAdmin.class,"project"+Integer.toString(project.getID()));
-                            myForm2.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyta"));
+                            myForm2.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyta"));
     //				myForm2.add(new SubmitButton("action","Breyta"));
                                     myForm2.add(new HiddenInput("project_id",Integer.toString(project.getID())));
     //				myForm1.add(new HiddenInput("action","Fjármál"));
@@ -282,7 +282,7 @@ System.err.print("2");
                             table.mergeCells(1,row,3,row);
                             table.add("<u>Kostnaðaráætlun:</u>",1,row);
                             Form myForm1 = new Form(ProjectAdmin.class,"project"+Integer.toString(project.getID()));
-                            myForm1.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyting"));
+                            myForm1.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyting"));
     //				myForm1.add(new SubmitButton("tranus","Breyta"));
                                     myForm1.add(new HiddenInput("project_id",Integer.toString(project.getID())));
                                     myForm1.add(new HiddenInput("action","Fjármál"));
@@ -326,11 +326,11 @@ System.err.print("2");
     }
 
 
-    public void main(ModuleInfo modinfo) throws Exception {
-        this.modinfo = modinfo;
-        URI = modinfo.getRequestURI();
-        project_id = modinfo.getParameter("project_id");
-        isAdmin = AccessControl.isAdmin(modinfo);
+    public void main(IWContext iwc) throws Exception {
+        this.iwc = iwc;
+        URI = iwc.getRequestURI();
+        project_id = iwc.getParameter("project_id");
+        isAdmin = AccessControl.isAdmin(iwc);
 
 
         if ( isAdmin) {
@@ -338,7 +338,7 @@ System.err.println("ER admind");
           add("ER admind");
 
             Form myForm = new Form(ProjectAdmin.class);
-                    myForm.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/Verkefnastjori.gif","Verkefnisstjórinn")));
+                    myForm.add(new SubmitButton(new com.idega.presentation.Image("/pics/Verkefnastjori.gif","Verkefnisstjórinn")));
             add(myForm);
 
             if (project_id == null) {

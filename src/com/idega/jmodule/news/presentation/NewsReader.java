@@ -4,9 +4,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.news.data.*;
 import com.idega.data.*;
 import com.idega.util.text.*;
@@ -21,7 +21,7 @@ import com.idega.idegaweb.IWMainApplication;
 **
 */
 
-public class NewsReader extends JModuleObject{
+public class NewsReader extends Block{
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private boolean isAdmin=false;
@@ -113,19 +113,19 @@ public NewsReader(int categoryId, idegaTimestamp timestamp){
   this.date = timestamp.toSQLString();
 }
 
-public void main(ModuleInfo modinfo)throws Exception{
+public void main(IWContext iwc)throws Exception{
 
   if(askForPermission){
-    this.isAdmin=this.isAdministrator(modinfo);
+    this.isAdmin=this.isAdministrator(iwc);
   }
-  IWBundle iwb = getBundle(modinfo);
-  IWResourceBundle iwrb = getResourceBundle(modinfo);
+  IWBundle iwb = getBundle(iwc);
+  IWResourceBundle iwrb = getResourceBundle(iwc);
 
   if( newsReaderURL == null ){
-    newsReaderURL = iwb.getProperty("news_reader_url",modinfo.getRequestURI());//link with "" constructs a link to the calling page
+    newsReaderURL = iwb.getProperty("news_reader_url",iwc.getRequestURI());//link with "" constructs a link to the calling page
   }
   if( newsCollectionURL == null ){
-    newsCollectionURL = iwb.getProperty("news_collection_url",modinfo.getRequestURI());
+    newsCollectionURL = iwb.getProperty("news_collection_url",iwc.getRequestURI());
   }
   if( newsEditorURL == null ){
      newsEditorURL = iwb.getProperty("news_editor_url","/news/editor.jsp");
@@ -140,8 +140,8 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   News[] news = new News[1];
 
-  String news_id = modinfo.getParameter("news_id");
-  String news_category_id = modinfo.getParameter("news_category_id");
+  String news_id = iwc.getParameter("news_id");
+  String news_category_id = iwc.getParameter("news_category_id");
 //added for multiple newsreader support in one page
   boolean showSingleNews = false;
 
@@ -830,12 +830,12 @@ public void showNewsCollectionButton(boolean showNewsCollectionButton){
   this.showNewsCollectionButton = showNewsCollectionButton;
 }
 
-public void setNewsReaderURLAsSamePage(ModuleInfo modinfo){
-  this.newsReaderURL =  modinfo.getRequestURI();
+public void setNewsReaderURLAsSamePage(IWContext iwc){
+  this.newsReaderURL =  iwc.getRequestURI();
 }
 
-public void setNewsCollectionURLAsSamePage(ModuleInfo modinfo){
-  this.newsCollectionURL =  modinfo.getRequestURI();
+public void setNewsCollectionURLAsSamePage(IWContext iwc){
+  this.newsCollectionURL =  iwc.getRequestURI();
 }
 
 

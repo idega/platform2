@@ -2,14 +2,14 @@
 package com.idega.block.poll.presentation;
 
 import java.sql.SQLException;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Page;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.Page;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.*;
 import com.idega.block.IWBlock;
 import com.idega.block.poll.data.*;
 import com.idega.core.data.ICObjectInstance;
@@ -23,7 +23,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.util.idegaTimestamp;
 
 
-public class Poll extends JModuleObject implements IWBlock{
+public class Poll extends Block implements IWBlock{
 
 private boolean _isAdmin;
 private int _pollID;
@@ -66,13 +66,13 @@ private idegaTimestamp _date;
     _pollID = pollID;
   }
 
-	public void main(ModuleInfo modinfo)throws Exception{
-    _iwrb = getResourceBundle(modinfo);
-    _iwb = getBundle(modinfo);
+	public void main(IWContext iwc)throws Exception{
+    _iwrb = getResourceBundle(iwc);
+    _iwb = getBundle(iwc);
 
-    _isAdmin = AccessControl.hasEditPermission(this,modinfo);
-    _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
-    _parameterString = modinfo.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
+    _isAdmin = AccessControl.hasEditPermission(this,iwc);
+    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
+    _parameterString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
     _date = new idegaTimestamp();
 
     PollEntity poll = null;
@@ -84,7 +84,7 @@ private idegaTimestamp _date;
       _myTable.setWidth(_pollWidth);
 
     if(_pollID <= 0){
-      String sPollID = modinfo.getParameter(_prmPollID);
+      String sPollID = iwc.getParameter(_prmPollID);
       if(sPollID != null)
         _pollID = Integer.parseInt(sPollID);
       else if(getICObjectInstanceID() > 0){
@@ -117,7 +117,7 @@ private idegaTimestamp _date;
       row++;
     }
 
-    _myTable.add(getPoll(modinfo, poll),1,row);
+    _myTable.add(getPoll(iwc, poll),1,row);
     add(_myTable);
 	}
 
@@ -133,7 +133,7 @@ private idegaTimestamp _date;
     return adminLink;
   }
 
-  private Form getPoll(ModuleInfo modinfo, PollEntity poll) {
+  private Form getPoll(IWContext iwc, PollEntity poll) {
     LocalizedText locText = null;
     PollQuestion pollQuestion = PollBusiness.getQuestion(poll);
     Image submitImage = _iwrb.getImage("vote.gif");

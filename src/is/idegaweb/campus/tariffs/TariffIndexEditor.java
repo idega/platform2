@@ -3,11 +3,11 @@ package is.idegaweb.campus.tariffs;
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.Finder;
 import com.idega.block.finance.presentation.KeyEditor;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import java.text.DateFormat;
 import java.sql.SQLException;
@@ -16,7 +16,7 @@ import java.util.Vector;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idegaweb.campus.presentation.Edit;
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.PresentationObjectContainer;
 
 
 /**
@@ -28,7 +28,7 @@ import com.idega.jmodule.object.ModuleObjectContainer;
  * @version 1.0
  */
 
-public class TariffIndexEditor extends ModuleObjectContainer {
+public class TariffIndexEditor extends PresentationObjectContainer {
 
 
   public static String strAction = "ti_action";
@@ -45,22 +45,22 @@ public class TariffIndexEditor extends ModuleObjectContainer {
   public TariffIndexEditor(){
 
   }
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     if(isAdmin){
       try{
-        ModuleObject MO = new Text("nothing");
-        if(modinfo.getParameter(strAction) == null){
-          MO = getMainTable(modinfo);
+        PresentationObject MO = new Text("nothing");
+        if(iwc.getParameter(strAction) == null){
+          MO = getMainTable(iwc);
         }
-        if(modinfo.getParameter(strAction) != null){
-          String sAct = modinfo.getParameter(strAction);
+        if(iwc.getParameter(strAction) != null){
+          String sAct = iwc.getParameter(strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
-            case ACT1 : MO =  getMainTable(modinfo);        break;
-            case ACT2 : MO = getChangeTable(modinfo);      break;
-            case ACT3 : MO = doUpdate(modinfo);      break;
-            default: MO = getMainTable(modinfo);           break;
+            case ACT1 : MO =  getMainTable(iwc);        break;
+            case ACT2 : MO = getChangeTable(iwc);      break;
+            case ACT3 : MO = doUpdate(iwc);      break;
+            default: MO = getMainTable(iwc);           break;
           }
         }
         Table T = new Table(1,3);
@@ -80,7 +80,7 @@ public class TariffIndexEditor extends ModuleObjectContainer {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -103,8 +103,8 @@ public class TariffIndexEditor extends ModuleObjectContainer {
     return LinkTable;
   }
 
-  protected ModuleObject getMainTable(ModuleInfo modinfo){
-    DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,modinfo.getCurrentLocale());
+  protected PresentationObject getMainTable(IWContext iwc){
+    DateFormat dfLong = DateFormat.getDateInstance(DateFormat.LONG,iwc.getCurrentLocale());
     List L = getIndices();
     int count = 0;
     if(L!= null)
@@ -138,7 +138,7 @@ public class TariffIndexEditor extends ModuleObjectContainer {
     return (keyTable);
   }
 
-  protected ModuleObject getChangeTable(ModuleInfo modinfo) throws SQLException{
+  protected PresentationObject getChangeTable(IWContext iwc) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
     List L= getIndices();
@@ -213,19 +213,19 @@ public class TariffIndexEditor extends ModuleObjectContainer {
     return (myForm);
   }
 
-  protected ModuleObject doUpdate(ModuleInfo modinfo) throws SQLException{
-    int count = Integer.parseInt(modinfo.getParameter("ti_count"));
+  protected PresentationObject doUpdate(IWContext iwc) throws SQLException{
+    int count = Integer.parseInt(iwc.getParameter("ti_count"));
     String sName,sInfo,sDel,sIndex,sType;
     int ID;
     float findex = 0;
     TariffIndex ti = null;
     for (int i = 1; i < count+1 ;i++){
-      sName = modinfo.getParameter("ti_nameinput"+i ).trim();
-      sInfo = modinfo.getParameter("ti_infoinput"+i).trim();
-      sIndex = modinfo.getParameter("ti_indexinput"+i).trim();
-      sDel = modinfo.getParameter("ti_delcheck"+i);
-      sType = modinfo.getParameter("ti_typedrp"+i).trim();
-      ID = Integer.parseInt(modinfo.getParameter("ti_idinput"+i));
+      sName = iwc.getParameter("ti_nameinput"+i ).trim();
+      sInfo = iwc.getParameter("ti_infoinput"+i).trim();
+      sIndex = iwc.getParameter("ti_indexinput"+i).trim();
+      sDel = iwc.getParameter("ti_delcheck"+i);
+      sType = iwc.getParameter("ti_typedrp"+i).trim();
+      ID = Integer.parseInt(iwc.getParameter("ti_idinput"+i));
       java.sql.Timestamp stamp = idegaTimestamp.getTimestampRightNow();
       if(!"".equals(sIndex)){
         sIndex = sIndex.replace(',','.');
@@ -277,7 +277,7 @@ public class TariffIndexEditor extends ModuleObjectContainer {
 
     }// for loop
 
-   return getMainTable(modinfo);
+   return getMainTable(iwc);
   }
 
 
@@ -306,15 +306,15 @@ public class TariffIndexEditor extends ModuleObjectContainer {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 
 }// class TariffKeyEditor

@@ -1,12 +1,12 @@
 package is.idegaweb.campus.allocation;
 
 import is.idegaweb.campus.presentation.Edit;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.IWContext;
 import com.idega.block.finance.presentation.*;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
@@ -21,7 +21,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaCalendar;
 import com.idega.util.idegaTimestamp;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Image;
 import is.idegaweb.campus.application.*;
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -38,7 +38,7 @@ import java.util.List;
  * @version 1.0
  */
 
-public class CampusContracts extends ModuleObjectContainer{
+public class CampusContracts extends PresentationObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
@@ -64,38 +64,38 @@ public class CampusContracts extends ModuleObjectContainer{
     super();
   }
 
-  protected void control(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  protected void control(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     for (int i = 0; i < prmArray.length; i++) {
-      if(modinfo.getParameter(prmArray[i])!=null){
-      sValues[i] = (modinfo.getParameter(prmArray[i]));
-      modinfo.setSessionAttribute(sessConPrm,sValues[i]);
+      if(iwc.getParameter(prmArray[i])!=null){
+      sValues[i] = (iwc.getParameter(prmArray[i]));
+      iwc.setSessionAttribute(sessConPrm,sValues[i]);
       }
-      else if(modinfo.getSessionAttribute(sessArray[i])!=null){
-        sValues[i] = ((String)modinfo.getSessionAttribute(sessArray[i]));
+      else if(iwc.getSessionAttribute(sessArray[i])!=null){
+        sValues[i] = ((String)iwc.getSessionAttribute(sessArray[i]));
       }
     }
 
-    if(modinfo.getParameter(conPrm)!=null){
-      this.sGlobalStatus= (modinfo.getParameter(conPrm));
-      modinfo.setSessionAttribute(sessConPrm,sGlobalStatus);
+    if(iwc.getParameter(conPrm)!=null){
+      this.sGlobalStatus= (iwc.getParameter(conPrm));
+      iwc.setSessionAttribute(sessConPrm,sGlobalStatus);
     }
-    else if(modinfo.getSessionAttribute(sessConPrm)!=null){
-      this.sGlobalStatus = ((String)modinfo.getSessionAttribute(sessConPrm));
+    else if(iwc.getSessionAttribute(sessConPrm)!=null){
+      this.sGlobalStatus = ((String)iwc.getSessionAttribute(sessConPrm));
     }
 
     if(isAdmin){
         add(statusForm());
-        if(modinfo.getParameter("sign")!=null){
-          doSignContract(modinfo);
-          add(getContractTable(modinfo));
+        if(iwc.getParameter("sign")!=null){
+          doSignContract(iwc);
+          add(getContractTable(iwc));
         }
-        else if(modinfo.getParameter("signed_id")!=null){
-          add(getSignatureTable(modinfo));
+        else if(iwc.getParameter("signed_id")!=null){
+          add(getSignatureTable(iwc));
         }
         else
-          add(getContractTable(modinfo));
+          add(getContractTable(iwc));
       }
 
     else
@@ -107,7 +107,7 @@ public class CampusContracts extends ModuleObjectContainer{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public ModuleObject makeLinkTable(int menuNr){
+  public PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(6,1);
 
     return LinkTable;
@@ -250,7 +250,7 @@ public class CampusContracts extends ModuleObjectContainer{
     return drp;
   }
 
-  private ModuleObject getContractTable(ModuleInfo modinfo){
+  private PresentationObject getContractTable(IWContext iwc){
     int order = Integer.parseInt(sValues[5]);
     List L = ContractFinder.listOfContracts(sValues[0],sValues[1],sValues[2],sValues[3],sValues[4],sGlobalStatus,order);
     //List L = ContractFinder.listOfStatusContracts(this.sGlobalStatus);
@@ -322,8 +322,8 @@ public class CampusContracts extends ModuleObjectContainer{
     return T;
   }
 
-  private ModuleObject getSignatureTable(ModuleInfo modinfo){
-    int iContractId = Integer.parseInt( modinfo.getParameter("signed_id"));
+  private PresentationObject getSignatureTable(IWContext iwc){
+    int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
     try {
       Contract eContract = new Contract(iContractId);
       Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
@@ -342,8 +342,8 @@ public class CampusContracts extends ModuleObjectContainer{
     }
   }
 
-  private void doSignContract(ModuleInfo modinfo){
-    int id = Integer.parseInt(modinfo.getParameter("signed_id"));
+  private void doSignContract(IWContext iwc){
+    int id = Integer.parseInt(iwc.getParameter("signed_id"));
     try {
       Contract eContract = new Contract(id);
       eContract.setStatusSigned();
@@ -354,7 +354,7 @@ public class CampusContracts extends ModuleObjectContainer{
     }
   }
 
-  private ModuleObject getApartmentTable(Apartment A){
+  private PresentationObject getApartmentTable(Apartment A){
     Table T = new Table();
     Floor F = BuildingCacher.getFloor(A.getFloorId());
     Building B = BuildingCacher.getBuilding(F.getBuildingId());
@@ -394,7 +394,7 @@ public class CampusContracts extends ModuleObjectContainer{
 
 
 
-  public Link getSignedLink(ModuleObject MO,int contractId){
+  public Link getSignedLink(PresentationObject MO,int contractId){
     //ContractSignWindow W = new ContractSignWindow();
     //Window W = new Window("Signature","/allocation/contractsign.jsp");
     //W.setResizable(true);
@@ -405,7 +405,7 @@ public class CampusContracts extends ModuleObjectContainer{
     return L;
   }
 
-  public Link getPDFLink(ModuleObject MO,int contractId){
+  public Link getPDFLink(PresentationObject MO,int contractId){
     Window W = new Window("PDF","/allocation/contractfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
@@ -414,7 +414,7 @@ public class CampusContracts extends ModuleObjectContainer{
     return L;
   }
 
-  public Link getPDFLink(ModuleObject MO,int contractId,String filename){
+  public Link getPDFLink(PresentationObject MO,int contractId,String filename){
     Window W = new Window("PDF","/allocation/contractfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
@@ -423,7 +423,7 @@ public class CampusContracts extends ModuleObjectContainer{
     L.addParameter(ContractFiler.prmFileName,filename);
     return L;
   }
-   public Link getPDFLink(ModuleObject MO,String ids){
+   public Link getPDFLink(PresentationObject MO,String ids){
     Window W = new Window("PDF","/allocation/contractfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
@@ -433,12 +433,12 @@ public class CampusContracts extends ModuleObjectContainer{
   }
 
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 }

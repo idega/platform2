@@ -1,8 +1,8 @@
 package com.idega.projects.golf.templates.page;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import java.lang.Exception;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
 import com.idega.projects.golf.presentation.*;
 import com.idega.projects.golf.business.GolferPageViewController;
 
@@ -20,8 +20,8 @@ public class GolfersPage2 extends GolfersPage {
   public GolfersPage2() {
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
-    super.main(modinfo);
+  public void main(IWContext iwc) throws Exception{
+    super.main(iwc);
     LinkMenu linkMenu = new LinkMenu();
     addMenuLinks(linkMenu);
     CornerImageController cornerImageController = new CornerImageController();
@@ -49,6 +49,6 @@ public class GolfersPage2 extends GolfersPage {
 
     FakeSideMenu fakeSideMenu = new FakeSideMenu();
     this.addLeftLink(fakeSideMenu);
-    add(GolferPageViewController.getView(modinfo));
+    add(GolferPageViewController.getView(iwc));
   }
 }

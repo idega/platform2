@@ -10,9 +10,9 @@ import java.io.*;
 import com.idega.util.*;
 import com.idega.util.text.*;
 import com.idega.util.database.*;
-import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import	com.idega.presentation.*;
+import	com.idega.presentation.ui.*;
 import	com.idega.jmodule.news.data.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
@@ -23,11 +23,11 @@ import javax.transaction.*;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class DataRecordCreator extends JModuleObject{
+public class DataRecordCreator extends Block{
 
 
-	public void main(ModuleInfo modinfo) throws Exception{
-		String action = modinfo.getParameter("action");
+	public void main(IWContext iwc) throws Exception{
+		String action = iwc.getParameter("action");
 		if (action == null) {action = "start";}
                 TransactionManager tm = IdegaTransactionManager.getInstance();
                 tm.begin();
@@ -35,14 +35,14 @@ public class DataRecordCreator extends JModuleObject{
 
                 try{
 			if (action.equals("start")) {
-				start(modinfo);
+				start(iwc);
 			}
 			else if (action.equals("select")) {
-				if (modinfo.getParameter("submit").equals("Create")){
-					create(modinfo);
+				if (iwc.getParameter("submit").equals("Create")){
+					create(iwc);
 				}
-				else if (modinfo.getParameter("submit").equals("Delete")){
-					delete(modinfo);
+				else if (iwc.getParameter("submit").equals("Delete")){
+					delete(iwc);
 				}
 			}
                 }
@@ -59,7 +59,7 @@ public class DataRecordCreator extends JModuleObject{
                 }
 	}
 
-	public void start(ModuleInfo modinfo)throws Exception {
+	public void start(IWContext iwc)throws Exception {
 		Form form = new Form();
 		Table table = new Table(1,4);
 		form.add(table);
@@ -86,9 +86,9 @@ public class DataRecordCreator extends JModuleObject{
 		table.add(button2,1,4);
 	}
 
-	public void create(ModuleInfo modinfo)throws Exception {
+	public void create(IWContext iwc)throws Exception {
 		TextSoap soap = new TextSoap();
-		Vector classes = soap.FindAllWithSeparator(modinfo.getParameter("entities"),",");
+		Vector classes = soap.FindAllWithSeparator(iwc.getParameter("entities"),",");
 		boolean check=true;
 		String className="";
 		for(Enumeration enum=classes.elements();enum.hasMoreElements();){
@@ -98,7 +98,7 @@ public class DataRecordCreator extends JModuleObject{
 
 		if (check){
 			add("Creation successful");
-			String datasource = modinfo.getParameter("datasource");
+			String datasource = iwc.getParameter("datasource");
 			GenericEntity entity;
 			DatastoreInterface dsi;
 			for(Enumeration enum=classes.elements();enum.hasMoreElements();){
@@ -114,9 +114,9 @@ public class DataRecordCreator extends JModuleObject{
 		}
 	}
 
-	public void delete(ModuleInfo modinfo)throws Exception {
+	public void delete(IWContext iwc)throws Exception {
 		//TextSoap soap = new TextSoap();
-		Vector classes = TextSoap.FindAllWithSeparator(modinfo.getParameter("entities"),",");
+		Vector classes = TextSoap.FindAllWithSeparator(iwc.getParameter("entities"),",");
 		boolean check=true;
 		String className="";
 		for(Enumeration enum=classes.elements();enum.hasMoreElements();){
@@ -126,7 +126,7 @@ public class DataRecordCreator extends JModuleObject{
 
 		if (check){
 			add("Deletion successful");
-			String datasource = modinfo.getParameter("datasource");
+			String datasource = iwc.getParameter("datasource");
 			GenericEntity entity;
 			DatastoreInterface dsi;
 			for(Enumeration enum=classes.elements();enum.hasMoreElements();){

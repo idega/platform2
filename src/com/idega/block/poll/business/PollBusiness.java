@@ -2,14 +2,14 @@ package com.idega.block.poll.business;
 
 import java.sql.*;
 import javax.servlet.http.Cookie;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.block.poll.data.*;
 import com.idega.data.EntityFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.block.text.business.TextFinder;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.util.idegaTimestamp;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.util.database.ConnectionBroker;
 import java.util.List;
 
@@ -191,11 +191,11 @@ public static final String _PARAMETER_CLOSE = "close";
     }
   }
 
-	public static void handleInsert(ModuleInfo modinfo) {
-    String questionString = modinfo.getParameter(_PARAMETER_POLL_QUESTION);
+	public static void handleInsert(IWContext iwc) {
+    String questionString = iwc.getParameter(_PARAMETER_POLL_QUESTION);
     if ( questionString != null ) {
       try {
-        handleInsert(modinfo,Integer.parseInt(questionString));
+        handleInsert(iwc,Integer.parseInt(questionString));
       }
       catch (NumberFormatException e) {
         e.printStackTrace();
@@ -203,10 +203,10 @@ public static final String _PARAMETER_CLOSE = "close";
     }
 	}
 
-	public static void handleInsert(ModuleInfo modinfo, int pollQuestionID) {
-    String URI = modinfo.getRequestURI();
+	public static void handleInsert(IWContext iwc, int pollQuestionID) {
+    String URI = iwc.getRequestURI();
 		boolean mayVote = true;
-    String pollAnswerID = modinfo.getParameter(_PARAMETER_POLL_ANSWER);
+    String pollAnswerID = iwc.getParameter(_PARAMETER_POLL_ANSWER);
 
     PollAnswer answer = null;
     if ( pollAnswerID != null ) {
@@ -218,18 +218,18 @@ public static final String _PARAMETER_CLOSE = "close";
       }
     }
 
-    if ( answer != null && canVote(modinfo, pollQuestionID) ) {
+    if ( answer != null && canVote(iwc, pollQuestionID) ) {
       increaseHits(answer);
 
       Cookie cookie = new Cookie(URI+"idega_poll_"+Integer.toString(pollQuestionID),"vote");
       cookie.setMaxAge(20000);
-      modinfo.addCookies(cookie);
+      iwc.addCookies(cookie);
     }
 	}
 
-  public static boolean canVote(ModuleInfo modinfo, int pollQuestionID) {
-    Cookie[] cookies = (Cookie[]) modinfo.getCookies();
-    String URI = modinfo.getRequestURI();
+  public static boolean canVote(IWContext iwc, int pollQuestionID) {
+    Cookie[] cookies = (Cookie[]) iwc.getCookies();
+    String URI = iwc.getRequestURI();
     boolean returner = true;
 
     if (cookies != null) {

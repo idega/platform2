@@ -3,12 +3,12 @@ package com.idega.projects.golf.moduleobject;
 import java.io.*;
 import java.util.*;
 import java.sql.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 
 
-public class GolfDialog extends ModuleObjectContainer{
+public class GolfDialog extends PresentationObjectContainer{
 
 private String header;
 private Table mainTable;
@@ -87,7 +87,7 @@ private String width = "100%";
 		return header;
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		mainTable.add(objectToAdd,1,2);
 	}
 

@@ -1,17 +1,17 @@
 package com.idega.jmodule.reports.presentation;
 
 import com.idega.jmodule.reports.data.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.Editor;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Script;
+import com.idega.presentation.Editor;
 import com.idega.block.reports.presentation.ReportObjectHandler;
 import com.idega.block.reports.business.ReportEntityHandler;
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.PresentationObject;
 import com.idega.data.GenericEntity;
 
 
@@ -38,20 +38,20 @@ public class ReportItemizer extends Editor{
 
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
 
     try{
-        doSome(modinfo);
-        doMain(modinfo);
-        if(modinfo.getParameter(sAction) != null){
-          sActPrm = modinfo.getParameter(sAction);
+        doSome(iwc);
+        doMain(iwc);
+        if(iwc.getParameter(sAction) != null){
+          sActPrm = iwc.getParameter(sAction);
           try{
             iAction = Integer.parseInt(sActPrm);
             switch(iAction){
               case ACT1:    break;
               case ACT2:    break;
-              case ACT3: doChange(modinfo); break;
-              case ACT4: doUpdate(modinfo);        break;
+              case ACT3: doChange(iwc); break;
+              case ACT4: doUpdate(iwc);        break;
             }
           }
           catch(Exception e){
@@ -64,7 +64,7 @@ public class ReportItemizer extends Editor{
     }
 
   }
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -85,12 +85,12 @@ public class ReportItemizer extends Editor{
     return LinkTable;
   }
 
-  private void doSome(ModuleInfo modinfo){
+  private void doSome(IWContext iwc){
     int id = 0;
-    String sIndex = modinfo.getParameter("rep_cat_drp");
+    String sIndex = iwc.getParameter("rep_cat_drp");
     if(sIndex != null){
       id = Integer.parseInt(sIndex);
-      modinfo.setSessionAttribute(prefix+"id",new Integer(id));
+      iwc.setSessionAttribute(prefix+"id",new Integer(id));
       if(id != 0){
         try {
           ReportCategory RC = new ReportCategory(id);
@@ -103,8 +103,8 @@ public class ReportItemizer extends Editor{
     }
   }
 
-  private void doMain(ModuleInfo modinfo){
-    String sIndex = modinfo.getParameter("rep_cat_drp");
+  private void doMain(IWContext iwc){
+    String sIndex = iwc.getParameter("rep_cat_drp");
     Table T = new Table();
     Form myForm = new Form();
     if(sIndex==null)
@@ -130,7 +130,7 @@ public class ReportItemizer extends Editor{
     this.addHeader(this.makeLinkTable(0));
     this.addMain(T);
   }
-  protected void doChange(ModuleInfo modinfo) throws SQLException{
+  protected void doChange(IWContext iwc) throws SQLException{
     Form myForm = new Form();
 
     /*
@@ -224,21 +224,21 @@ public class ReportItemizer extends Editor{
     this.addMain(myForm);
   }
 
- protected void doUpdate(ModuleInfo modinfo) throws SQLException{
+ protected void doUpdate(IWContext iwc) throws SQLException{
 
-    int id  = Integer.parseInt(modinfo.getParameter(prefix+"id"));
+    int id  = Integer.parseInt(iwc.getParameter(prefix+"id"));
     String name,field,table,joins,jointables,condtype,conddata,condop,entity,info;
 
-    name        = modinfo.getParameter(prefix+"name");
-    field       = modinfo.getParameter(prefix+"field");
-    table       = modinfo.getParameter(prefix+"table");
-    joins       = modinfo.getParameter(prefix+"joins");
-    jointables  = modinfo.getParameter(prefix+"jointables");
-    condtype    = modinfo.getParameter(prefix+"condtype");
-    conddata    = modinfo.getParameter(prefix+"conddata");
-    condop      = modinfo.getParameter(prefix+"condop");
-    entity      = modinfo.getParameter(prefix+"entity");
-    info        = modinfo.getParameter(prefix+"info");
+    name        = iwc.getParameter(prefix+"name");
+    field       = iwc.getParameter(prefix+"field");
+    table       = iwc.getParameter(prefix+"table");
+    joins       = iwc.getParameter(prefix+"joins");
+    jointables  = iwc.getParameter(prefix+"jointables");
+    condtype    = iwc.getParameter(prefix+"condtype");
+    conddata    = iwc.getParameter(prefix+"conddata");
+    condop      = iwc.getParameter(prefix+"condop");
+    entity      = iwc.getParameter(prefix+"entity");
+    info        = iwc.getParameter(prefix+"info");
     if(id != 0){
     boolean b = ReportEntityHandler.saveReportItem(id,name,field,table,joins, jointables,condtype,conddata,condop,entity,info);
     add(new Boolean(b).toString() );

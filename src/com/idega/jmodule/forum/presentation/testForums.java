@@ -1,10 +1,10 @@
 package com.idega.jmodule.forum.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.forum.business.*;
 import com.idega.jmodule.forum.data.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import java.util.ResourceBundle.*;
 import java.sql.*;
@@ -117,7 +117,7 @@ public class testForums extends ForumPresentation{
   }
 
   // Make a list of Forums
-  protected ModuleObject ForumList_Presentation(){
+  protected PresentationObject ForumList_Presentation(){
     // Edited by aron@idega.is 08.11.00
     Table Mainframe = new Table(1,2);
     Mainframe.setWidth("100%");
@@ -226,7 +226,7 @@ public class testForums extends ForumPresentation{
   }
 
   // Still Unused
-  protected ModuleObject SomeThreads_Presentation(){
+  protected PresentationObject SomeThreads_Presentation(){
     Table frame = new Table(1,3);
  /*   frame.setColor(1,2, "#99CC99");
     frame.setCellpadding(1);
@@ -238,7 +238,7 @@ public class testForums extends ForumPresentation{
   }
 
 
-  protected ModuleObject ThreadContents_Presentation() throws Exception{
+  protected PresentationObject ThreadContents_Presentation() throws Exception{
     Table frame2 = new Table(1,1);
     frame2.setWidth("100%");
     frame2.setColor(MenuFontColor);
@@ -327,7 +327,7 @@ public class testForums extends ForumPresentation{
     // get a delete link
     Link delTemp = thread.getDeleteLink();
     if(delTemp != null){
-      if(isAdministrator(getModuleInfo())){
+      if(isAdministrator(getIWContext())){
        frame.add(delTemp,1,3);
        frame.add("   ",1,3);
       }
@@ -346,7 +346,7 @@ public class testForums extends ForumPresentation{
   }
 
 
-  protected ModuleObject ThreadEntry_Presentation(boolean useNameTextInput){
+  protected PresentationObject ThreadEntry_Presentation(boolean useNameTextInput){
     // Button text "Send"
     Entry.setSubjectTextInput(false);
     Entry.setBodyTextArea();
@@ -478,7 +478,7 @@ public class testForums extends ForumPresentation{
   }
 
 
-  protected ModuleObject ThreadTree_Presentation(){
+  protected PresentationObject ThreadTree_Presentation(){
 
     if (firstTree){
       Tree.setTempIcon(new Image(lang.getString("upsImage")));
@@ -556,17 +556,17 @@ public class testForums extends ForumPresentation{
   }
 
 
-  protected ModuleObject ForumError_Presentation( String errorType ){
+  protected PresentationObject ForumError_Presentation( String errorType ){
     return new Table();
   }
 
 
-  protected ModuleObject ForumAdministration_Presentation(){
+  protected PresentationObject ForumAdministration_Presentation(){
     return new Table();
   }
 
 
-  protected ModuleObject UserRegistration_Presentation(){
+  protected PresentationObject UserRegistration_Presentation(){
     return new Table();
   }
 
@@ -579,7 +579,7 @@ public class testForums extends ForumPresentation{
 
   }
 
-  protected ModuleObject ForumNameHeader(){
+  protected PresentationObject ForumNameHeader(){
     Text forumName= new Text(getCurrentForumName());
     forumName.setFontColor(MenuFontColor);
     forumName.setFontSize(headerFontSize);

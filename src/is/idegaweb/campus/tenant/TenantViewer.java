@@ -1,9 +1,9 @@
 package is.idegaweb.campus.tenant;
 
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.core.data.Email;
@@ -30,7 +30,7 @@ import java.util.List;
  * @version 1.0
  */
 
-public class TenantViewer extends ModuleObjectContainer {
+public class TenantViewer extends PresentationObjectContainer {
   private IWResourceBundle iwrb;
   private final static String IW_BUNDLE_IDENTIFIER = "is.idegaweb.campus.tenant";
   private User eUser = null;
@@ -49,9 +49,9 @@ public class TenantViewer extends ModuleObjectContainer {
     }
   }
 
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
     if(eUser == null)
-      eUser = LoginBusiness.getUser(modinfo);
+      eUser = LoginBusiness.getUser(iwc);
     eApplicant = ContractFinder.findApplicant(eUser);
     if(eApplicant!= null)
       add(getTableInfo(eUser,eApplicant));
@@ -59,7 +59,7 @@ public class TenantViewer extends ModuleObjectContainer {
       add("is not a tenant");
   }
 
-  private ModuleObject getTableInfo(User user,Applicant applicant){
+  private PresentationObject getTableInfo(User user,Applicant applicant){
     List lEmail = UserBusiness.listOfUserEmails(user.getID());
     String sEmail = "",sLogin = "";
     if(lEmail != null)
@@ -111,8 +111,8 @@ public class TenantViewer extends ModuleObjectContainer {
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    control(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    control(iwc);
   }
 }

@@ -59,7 +59,7 @@ public class HysingAboutTemplate extends HysingTemplate{
   }
 
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
 
   }
 
@@ -79,7 +79,7 @@ public class HysingAboutTemplate extends HysingTemplate{
 
 	public Table template(){
 
-                 String page = modinfo.getRequest().getRequestURI();
+                 String page = iwc.getRequest().getRequestURI();
                  subPage = page.substring(1,page.indexOf("."));
 
 		if (myTable == null){
@@ -348,7 +348,7 @@ public class HysingAboutTemplate extends HysingTemplate{
 		return contentTable2;
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		try{
 			content().add(objectToAdd,2,2);
 		}
@@ -357,7 +357,7 @@ public class HysingAboutTemplate extends HysingTemplate{
 		}
 	}
 
-	public void add2(ModuleObject objectToAdd){
+	public void add2(PresentationObject objectToAdd){
 		try{
 			content2().add(objectToAdd,2,2);
 		}

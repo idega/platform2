@@ -9,12 +9,12 @@ import com.idega.block.finance.business.*;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.data.GenericEntity;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import java.sql.SQLException;
@@ -41,7 +41,7 @@ import is.idegaweb.campus.entity.Contract;
  * @version 1.1
  */
 
-public class CampusAssessments extends ModuleObjectContainer {
+public class CampusAssessments extends PresentationObjectContainer {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   public  String strAction = "tt_action";
@@ -65,26 +65,26 @@ public class CampusAssessments extends ModuleObjectContainer {
 
   }
 
-   protected void control(ModuleInfo modinfo){
+   protected void control(IWContext iwc){
 
    if(isAdmin){
       try{
-        ModuleObject MO = new Text();
+        PresentationObject MO = new Text();
 
-        if(modinfo.getParameter(strAction) == null){
-          MO = getTableOfAssessments(modinfo);
+        if(iwc.getParameter(strAction) == null){
+          MO = getTableOfAssessments(iwc);
         }
-        if(modinfo.getParameter(strAction) != null){
-          String sAct = modinfo.getParameter(strAction);
+        if(iwc.getParameter(strAction) != null){
+          String sAct = iwc.getParameter(strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
-            case ACT1 : MO = getTableOfAssessments(modinfo); break;
-            case ACT2 : MO = doMainTable(modinfo);      break;
-            case ACT3 : MO = doSomeThing( modinfo);      break;
-            case ACT4 : MO = getTableOfAssessmentAccounts( modinfo);      break;
-            case ACT5 : MO = doRollback(modinfo); break;
-            default: MO = getTableOfAssessments(modinfo);           break;
+            case ACT1 : MO = getTableOfAssessments(iwc); break;
+            case ACT2 : MO = doMainTable(iwc);      break;
+            case ACT3 : MO = doSomeThing( iwc);      break;
+            case ACT4 : MO = getTableOfAssessmentAccounts( iwc);      break;
+            case ACT5 : MO = doRollback(iwc); break;
+            default: MO = getTableOfAssessments(iwc);           break;
           }
         }
          Table T = new Table();
@@ -105,9 +105,9 @@ public class CampusAssessments extends ModuleObjectContainer {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  private ModuleObject doRollback(ModuleInfo modinfo){
+  private PresentationObject doRollback(IWContext iwc){
     Table T = new Table();
-    String sRoundId = modinfo.getParameter("rollback");
+    String sRoundId = iwc.getParameter("rollback");
     if(sRoundId != null){
       int iRoundId = Integer.parseInt(sRoundId);
       try{
@@ -121,13 +121,13 @@ public class CampusAssessments extends ModuleObjectContainer {
     return T;
   }
 
-  private ModuleObject doSomeThing(ModuleInfo modinfo){
-    ModuleObject MO = new Text("failed");
-    if(modinfo.getParameter("pay_date")!=null){
-      String date = modinfo.getParameter("pay_date");
-      String roundName = modinfo.getParameter("round_name");
-      String accountType = modinfo.getParameter("account_type");
-      String accountKeyId = modinfo.getParameter("account_key_id");
+  private PresentationObject doSomeThing(IWContext iwc){
+    PresentationObject MO = new Text("failed");
+    if(iwc.getParameter("pay_date")!=null){
+      String date = iwc.getParameter("pay_date");
+      String roundName = iwc.getParameter("round_name");
+      String accountType = iwc.getParameter("account_type");
+      String accountKeyId = iwc.getParameter("account_key_id");
       //add(accountKeyId);
       if(date !=null && date.length() == 10){
         if(roundName != null && roundName.trim().length() > 1){
@@ -140,17 +140,17 @@ public class CampusAssessments extends ModuleObjectContainer {
         }
         else{
           add(iwrb.getLocalizedString("no_name_error","No name entered"));
-          MO = doMainTable(modinfo);
+          MO = doMainTable(iwc);
         }
       }
       else{
-        MO = doMainTable(modinfo);
+        MO = doMainTable(iwc);
       }
     }
     return MO;
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -171,7 +171,7 @@ public class CampusAssessments extends ModuleObjectContainer {
     return LinkTable;
   }
 
-  private ModuleObject getTableOfAssessments(ModuleInfo modinfo){
+  private PresentationObject getTableOfAssessments(IWContext iwc){
     Table T = new Table();
     int row = 2;
     List L = Finder.listOfAssessments();
@@ -188,12 +188,12 @@ public class CampusAssessments extends ModuleObjectContainer {
       int col = 1;
       row = 2;
       AssessmentRound AR;
-      java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(modinfo.getCurrentLocale());
+      java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
       for (int i = 0; i < len; i++) {
         col = 1;
         AR = (AssessmentRound) L.get(i);
         T.add(getRoundLink(AR.getName(),AR.getID()),col++,row);
-        T.add(Edit.formatText(new idegaTimestamp(AR.getRoundStamp()).getLocaleDate(modinfo)),col++,row);
+        T.add(Edit.formatText(new idegaTimestamp(AR.getRoundStamp()).getLocaleDate(iwc)),col++,row);
         T.add(Edit.formatText(nf.format(AR.getTotals())),col++,row);
         Link R = new Link(iwb.getImage("rollback.gif"));
         R.addParameter("rollback",AR.getID());
@@ -214,9 +214,9 @@ public class CampusAssessments extends ModuleObjectContainer {
     return T;
   }
 
-  private ModuleObject getTableOfAssessmentAccounts(ModuleInfo modinfo){
+  private PresentationObject getTableOfAssessmentAccounts(IWContext iwc){
     Table T = new Table();
-    String id = modinfo.getParameter("ass_round_id");
+    String id = iwc.getParameter("ass_round_id");
     if(id != null){
       List L = Finder.listOfAccountsInAssessmentRound(Integer.parseInt(id));
       if(L!= null){
@@ -228,12 +228,12 @@ public class CampusAssessments extends ModuleObjectContainer {
         int col = 1;
         int row = 2;
         Account A;
-        java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(modinfo.getCurrentLocale());
+        java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
         for (int i = 0; i < len; i++) {
           col = 1;
           A = (Account) L.get(i);
           T.add(Edit.formatText(A.getName()),col++,row);
-          T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(modinfo)),col++,row);
+          T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
           T.add(Edit.formatText(nf.format(A.getBalance())),col++,row);
           row++;
         }
@@ -250,7 +250,7 @@ public class CampusAssessments extends ModuleObjectContainer {
     return T;
   }
 
-  private ModuleObject doMainTable(ModuleInfo modinfo){
+  private PresentationObject doMainTable(IWContext iwc){
     Form F = new Form();
     Table T = new Table();
 
@@ -322,7 +322,7 @@ public class CampusAssessments extends ModuleObjectContainer {
     return drp;
   }
 
-  private ModuleObject doAssess(idegaTimestamp paydate,String roundName,String accountType,int iAccountKeyId){
+  private PresentationObject doAssess(idegaTimestamp paydate,String roundName,String accountType,int iAccountKeyId){
     if(accountType.equalsIgnoreCase(Account.typeFinancial)){
       return doAssessFinance(paydate,roundName ,accountType);
     }
@@ -332,7 +332,7 @@ public class CampusAssessments extends ModuleObjectContainer {
     return new Table();
   }
 
-  private ModuleObject doAssessPhone(idegaTimestamp paydate,String roundName,String accountType,int iAccountKeyId){
+  private PresentationObject doAssessPhone(idegaTimestamp paydate,String roundName,String accountType,int iAccountKeyId){
     Table T = new Table();
     try{
       AssessmentRound AR = CampusAssessmentBusiness.assessPhones(paydate,roundName,accountType ,iAccountKeyId ,iCashierId );
@@ -351,7 +351,7 @@ public class CampusAssessments extends ModuleObjectContainer {
     return T;
   }
 
-  private ModuleObject doAssessFinance(idegaTimestamp paydate,String roundName,String accountType){
+  private PresentationObject doAssessFinance(idegaTimestamp paydate,String roundName,String accountType){
     Table T = new Table();
     try {
       AssessmentRound AR = CampusAssessmentBusiness.assessFinance(paydate,roundName ,accountType ,iCashierId );
@@ -392,14 +392,14 @@ public class CampusAssessments extends ModuleObjectContainer {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 }

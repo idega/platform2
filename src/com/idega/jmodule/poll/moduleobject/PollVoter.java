@@ -4,15 +4,15 @@ package com.idega.jmodule.poll.moduleobject;
 import com.idega.jmodule.*;
 import com.idega.data.*;
 import java.io.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import java.sql.SQLException;
 import java.util.*;
 import com.idega.projects.golf.entity.*;
 
-public class PollVoter extends JModuleObject{
+public class PollVoter extends Block{
 
 
 int poll_id=0;
@@ -20,7 +20,7 @@ boolean isAdmin;
 Poll poll;
 Table table;
 Form form;
-ModuleInfo modinfo;
+IWContext iwc;
 Window gluggi;
 String resultPageUrl;
 String submitButtonText;
@@ -86,9 +86,9 @@ String pollWidth;
 		this.submitButtonText = submitButtonText;
 	}
 
-	public boolean thisObjectSubmitted(ModuleInfo modinfo){
-		if (modinfo.getRequest().getParameter("idega_poll_voter") != null){
-			if (modinfo.getRequest().getParameter("idega_poll_voter").equals("true")){
+	public boolean thisObjectSubmitted(IWContext iwc){
+		if (iwc.getRequest().getParameter("idega_poll_voter") != null){
+			if (iwc.getRequest().getParameter("idega_poll_voter").equals("true")){
 				return true;
 			}
 			else{
@@ -101,15 +101,15 @@ String pollWidth;
 	}
 
 
-	public void handleInsert(ModuleInfo modinfo)throws SQLException,IOException{
+	public void handleInsert(IWContext iwc)throws SQLException,IOException{
 
 		boolean mayVote = true;
 
-		if (modinfo.getRequest().getParameter("poll_option") != null)
+		if (iwc.getRequest().getParameter("poll_option") != null)
 		{
 			Poll_result result = new Poll_result();
-			result.setOption(Integer.parseInt(modinfo.getRequest().getParameter("poll_option")));
-			String userIPAddress = modinfo.getRequest().getRemoteAddr();
+			result.setOption(Integer.parseInt(iwc.getRequest().getParameter("poll_option")));
+			String userIPAddress = iwc.getRequest().getRemoteAddr();
 
 			result.setUserIPAddress(userIPAddress);
 
@@ -129,10 +129,10 @@ String pollWidth;
 				result.insert();
 			}
 
-			modinfo.getResponse().sendRedirect(resultPageUrl+"?poll_id="+poll_id);
+			iwc.getResponse().sendRedirect(resultPageUrl+"?poll_id="+poll_id);
 		}
 		else {
-			modinfo.getResponse().sendRedirect(resultPageUrl+"?poll_id="+poll_id);
+			iwc.getResponse().sendRedirect(resultPageUrl+"?poll_id="+poll_id);
 		}
 
 	}
@@ -142,16 +142,16 @@ String pollWidth;
 //		add("Engin skoðanakönnun");
 	}
 
-	public void main(ModuleInfo modinfo)throws Exception{
+	public void main(IWContext iwc)throws Exception{
 
-            this.isAdmin=this.isAdministrator(modinfo);
+            this.isAdmin=this.isAdministrator(iwc);
 
-		if (modinfo.getSession().getAttribute("union_id") == null) {
-		   modinfo.getSession().setAttribute("union_id","3");
+		if (iwc.getSession().getAttribute("union_id") == null) {
+		   iwc.getSession().setAttribute("union_id","3");
 			union_id ="3";
 		}
 		else {
-			union_id = (String) modinfo.getSession().getAttribute("union_id");
+			union_id = (String) iwc.getSession().getAttribute("union_id");
 		}
 
 		Poll[] poll1 = (Poll[]) (new Poll()).findAllByColumn("union_id",union_id);
@@ -185,8 +185,8 @@ String pollWidth;
 			form.add(table);
 			super.add(form);
 
-			if (thisObjectSubmitted(modinfo)){
-				handleInsert(modinfo);
+			if (thisObjectSubmitted(iwc)){
+				handleInsert(iwc);
 			}
 			else{
 				Text spurning = new Text(poll.getQuestion());
@@ -217,9 +217,9 @@ String pollWidth;
 
 
 
-	public void print(ModuleInfo modinfo)throws Exception{
+	public void print(IWContext iwc)throws Exception{
 		//try{
-			super.print(modinfo);
+			super.print(iwc);
 		//}
 		//catch(SQLException ex){
 		//	throw new IOException(ex.getMessage());

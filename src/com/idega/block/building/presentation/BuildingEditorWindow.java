@@ -1,7 +1,7 @@
 package com.idega.block.building.presentation;
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 
 
 /**
@@ -19,12 +19,12 @@ public class BuildingEditorWindow extends IWAdminWindow {
     super();
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
+  public void main(IWContext iwc) throws Exception{
     BuildingEditor BE = new BuildingEditor();
     add(BE);
     BE.setToIncludeLinks(false);
     setTitle("Building Editor");
     addTitle("Building Editor");
-    addHeaderObject(BE.getLinkTable(modinfo));
+    addHeaderObject(BE.getLinkTable(iwc));
   }
 }

@@ -13,14 +13,14 @@ import java.sql.*;
 import java.io.*;
 import com.idega.data.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.vf.entity.*;
 import com.idega.jmodule.boxoffice.data.*;
 import com.idega.jmodule.text.data.TextModule;
 
-public class ProjectEditor extends JModuleObject {
+public class ProjectEditor extends Block {
 
 private int projectID = -1;
 private int projectCategoryID = -1;
@@ -45,23 +45,23 @@ private int selection = -1;
     this.selection = selection;
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
     try {
-      String action = modinfo.getParameter("action");
+      String action = iwc.getParameter("action");
       if ( action == null ) action = getAction();
-      String mode = modinfo.getParameter("mode");
+      String mode = iwc.getParameter("mode");
       if ( mode == null ) mode = "select";
 
-      if ( modinfo.getParameter("new.x") != null ) {
+      if ( iwc.getParameter("new.x") != null ) {
         mode = "new";
       }
-      if ( modinfo.getParameter("edit.x") != null ) {
+      if ( iwc.getParameter("edit.x") != null ) {
         mode = "edit";
       }
-      if ( modinfo.getParameter("delete.x") != null ) {
+      if ( iwc.getParameter("delete.x") != null ) {
         mode = "delete";
       }
-      if ( modinfo.getParameter("save.x") != null ) {
+      if ( iwc.getParameter("save.x") != null ) {
         mode = "save";
       }
 
@@ -70,7 +70,7 @@ private int selection = -1;
       outerTable = new Table();
       myForm.add(outerTable);
 
-      getEditor(modinfo,action,mode);
+      getEditor(iwc,action,mode);
       drawOuterTable();
 
       add(myForm);
@@ -80,22 +80,22 @@ private int selection = -1;
     }
   }
 
-  private void getEditor(ModuleInfo modinfo,String action,String mode) {
+  private void getEditor(IWContext iwc,String action,String mode) {
     try {
       HiddenInput hidden = new HiddenInput("action",action);
       myForm.add(hidden);
 
       if ( action.equalsIgnoreCase("editProject") ) {
         selection = PROJECT;
-        editProject(modinfo,mode);
+        editProject(iwc,mode);
       }
       else if ( action.equalsIgnoreCase("editCategories") ) {
         selection = CATEGORY;
-        editCategories(modinfo,mode);
+        editCategories(iwc,mode);
       }
       else if ( action.equalsIgnoreCase("editStatus") ) {
         selection = STATUS;
-        editStatus(modinfo,mode);
+        editStatus(iwc,mode);
       }
       else if ( action.equalsIgnoreCase("close") ) {
         selection = CLOSE;
@@ -107,7 +107,7 @@ private int selection = -1;
     }
   }
 
-  private void editProject(ModuleInfo modinfo,String mode) {
+  private void editProject(IWContext iwc,String mode) {
     try {
       if ( mode.equalsIgnoreCase("select") ) {
         ProjectModule[] project = (ProjectModule[]) ProjectModule.getStaticInstance("com.idega.projects.vf.entity.ProjectModule").findAllOrdered("name");
@@ -148,7 +148,7 @@ private int selection = -1;
           categoryMenu.addMenuElement(category[a].getID(),category[a].getName());
         }
 
-        String projectIDString = modinfo.getParameter("project_id");
+        String projectIDString = iwc.getParameter("project_id");
         if ( projectIDString != null && projectIDString.length() > 0 ) {
           projectID = Integer.parseInt(projectIDString);
           project = new ProjectModule(projectID);
@@ -195,7 +195,7 @@ private int selection = -1;
         myTable.add(saveProject,1,3);
       }
       else if ( mode.equalsIgnoreCase("delete") ) {
-        String projectIDString = modinfo.getParameter("project_id");
+        String projectIDString = iwc.getParameter("project_id");
         if ( projectIDString != null ) {
           ProjectModule project = new ProjectModule(Integer.parseInt(projectIDString));
 
@@ -214,22 +214,22 @@ private int selection = -1;
       else if ( mode.equalsIgnoreCase("save") ) {
         boolean update = false;
 
-        String name = modinfo.getParameter("name");
+        String name = iwc.getParameter("name");
         if ( name == null || name.length() == 0 ) {
           name = "Óşekkt";
         }
 
-        String statusID = modinfo.getParameter("status_id");
+        String statusID = iwc.getParameter("status_id");
         if ( statusID != null && statusID.length() > 0) {
           projectStatusID = Integer.parseInt(statusID);
         }
 
-        String categoryID = modinfo.getParameter("category_id");
+        String categoryID = iwc.getParameter("category_id");
         if ( categoryID != null && categoryID.length() > 0) {
           projectCategoryID = Integer.parseInt(categoryID);
         }
 
-        String projectIDString = modinfo.getParameter("project_id");
+        String projectIDString = iwc.getParameter("project_id");
         if ( projectIDString != null && projectIDString.length() > 0 ) {
           update = true;
         }
@@ -290,7 +290,7 @@ private int selection = -1;
     }
   }
 
-  private void editCategories(ModuleInfo modinfo,String mode) {
+  private void editCategories(IWContext iwc,String mode) {
     try {
       if ( mode.equalsIgnoreCase("select") ) {
         ProjectCategory[] project = (ProjectCategory[]) ProjectCategory.getStaticInstance("com.idega.projects.vf.entity.ProjectCategory").findAllOrdered("name");
@@ -319,7 +319,7 @@ private int selection = -1;
         TextInput name = new TextInput("name");
           name.setMaxlength(128);
 
-        String projectCategoryIDString = modinfo.getParameter("project_category_id");
+        String projectCategoryIDString = iwc.getParameter("project_category_id");
         if ( projectCategoryIDString != null && projectCategoryIDString.length() > 0 ) {
           projectCategoryID = Integer.parseInt(projectCategoryIDString);
           project = new ProjectCategory(projectCategoryID);
@@ -345,7 +345,7 @@ private int selection = -1;
         myTable.add(saveProject,1,2);
       }
       else if ( mode.equalsIgnoreCase("delete") ) {
-        String projectCategoryIDString = modinfo.getParameter("project_category_id");
+        String projectCategoryIDString = iwc.getParameter("project_category_id");
         if ( projectCategoryIDString != null ) {
           ProjectCategory projectCategory = new ProjectCategory(Integer.parseInt(projectCategoryIDString));
 
@@ -369,12 +369,12 @@ private int selection = -1;
       else if ( mode.equalsIgnoreCase("save") ) {
         boolean update = false;
 
-        String name = modinfo.getParameter("name");
+        String name = iwc.getParameter("name");
         if ( name == null || name.length() == 0 ) {
           name = "Óşekkt";
         }
 
-        String projectCategoryIDString = modinfo.getParameter("project_category_id");
+        String projectCategoryIDString = iwc.getParameter("project_category_id");
         if ( projectCategoryIDString != null && projectCategoryIDString.length() > 0 ) {
           update = true;
         }
@@ -400,7 +400,7 @@ private int selection = -1;
     }
   }
 
-  private void editStatus(ModuleInfo modinfo,String mode) {
+  private void editStatus(IWContext iwc,String mode) {
     try {
       if ( mode.equalsIgnoreCase("select") ) {
         ProjectStatus[] project = (ProjectStatus[]) ProjectStatus.getStaticInstance("com.idega.projects.vf.entity.ProjectStatus").findAllOrdered("name");
@@ -429,7 +429,7 @@ private int selection = -1;
         TextInput name = new TextInput("name");
           name.setMaxlength(128);
 
-        String projectStatusIDString = modinfo.getParameter("project_status_id");
+        String projectStatusIDString = iwc.getParameter("project_status_id");
         if ( projectStatusIDString != null && projectStatusIDString.length() > 0 ) {
           projectStatusID = Integer.parseInt(projectStatusIDString);
           project = new ProjectStatus(projectStatusID);
@@ -455,7 +455,7 @@ private int selection = -1;
         myTable.add(saveProject,1,2);
       }
       else if ( mode.equalsIgnoreCase("delete") ) {
-        String projectStatusIDString = modinfo.getParameter("project_status_id");
+        String projectStatusIDString = iwc.getParameter("project_status_id");
         if ( projectStatusIDString != null ) {
           ProjectStatus projectStatus = new ProjectStatus(Integer.parseInt(projectStatusIDString));
 
@@ -479,12 +479,12 @@ private int selection = -1;
       else if ( mode.equalsIgnoreCase("save") ) {
         boolean update = false;
 
-        String name = modinfo.getParameter("name");
+        String name = iwc.getParameter("name");
         if ( name == null || name.length() == 0 ) {
           name = "Óşekkt";
         }
 
-        String projectStatusIDString = modinfo.getParameter("project_status_id");
+        String projectStatusIDString = iwc.getParameter("project_status_id");
         if ( projectStatusIDString != null && projectStatusIDString.length() > 0 ) {
           update = true;
         }

@@ -4,9 +4,9 @@ package com.idega.jmodule.sidemenu.presentation;
 import com.idega.jmodule.*;
 import com.idega.data.*;
 import java.io.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import com.idega.jmodule.poll.data.*;
 import java.sql.SQLException;
@@ -17,7 +17,7 @@ import com.idega.util.*;
 import com.idega.builder.data.*;
 import com.idega.builder.data.IBObject;
 
-public class SidemenuAdmin extends JModuleObject{
+public class SidemenuAdmin extends Block{
         private String attribute_name = "idega_id";
         private int attribute_id = 1;
 
@@ -85,7 +85,7 @@ boolean show_menu_name = false;
     }
 
 
-    private void setAttributes(ModuleInfo modinfo) {
+    private void setAttributes(IWContext iwc) {
         HttpServletRequest request = getRequest();
         String temp_attribute_name = request.getParameter("attribute_name");
 	String temp_attribute_id = request.getParameter("attribute_id");
@@ -94,12 +94,12 @@ boolean show_menu_name = false;
 		this.attribute_name = temp_attribute_name;
 		this.attribute_id = Integer.parseInt(temp_attribute_id);
 
-                modinfo.getSession().setAttribute("attribute_name",attribute_name);
-                modinfo.getSession().setAttribute("attribute_id",""+attribute_id);
+                iwc.getSession().setAttribute("attribute_name",attribute_name);
+                iwc.getSession().setAttribute("attribute_id",""+attribute_id);
 	}
         else {
-            String temp_attribute_name_2 = (String) modinfo.getSession().getAttribute("attribute_name");
-            String temp_attribute_id_2 = (String) modinfo.getSession().getAttribute("attribute_id");
+            String temp_attribute_name_2 = (String) iwc.getSession().getAttribute("attribute_name");
+            String temp_attribute_id_2 = (String) iwc.getSession().getAttribute("attribute_id");
             if ((temp_attribute_name_2 != null ) && (temp_attribute_id_2 != null)) {
 		this.attribute_name = temp_attribute_name_2;
 		this.attribute_id = Integer.parseInt(temp_attribute_id_2);
@@ -109,19 +109,19 @@ boolean show_menu_name = false;
 
     }
 
-    public void main(ModuleInfo modinfo) throws Exception{
+    public void main(IWContext iwc) throws Exception{
 
-      this.isAdmin=this.isAdministrator(modinfo);
+      this.isAdmin=this.isAdministrator(iwc);
 
       HttpServletRequest request = getRequest();
       String URI = request.getRequestURI();
       String action = request.getParameter("side_menu_action");
 
-      setAttributes(modinfo);
+      setAttributes(iwc);
 
       if (action.equals("admin")){
         if (isAdmin)
-        removeApplication(modinfo);
+        removeApplication(iwc);
         admin();
       }
       else if (action.equals("new_menu")) {
@@ -143,7 +143,7 @@ boolean show_menu_name = false;
       else if (action.equals("Henda Menu")) {
           String menu_id = getRequest().getParameter("menu_id");
           if (menu_id != null) {
-              deleteMenu(modinfo,Integer.parseInt(menu_id));
+              deleteMenu(iwc,Integer.parseInt(menu_id));
           }
           else {
             add("Gleymdir að velja<br>");
@@ -157,7 +157,7 @@ boolean show_menu_name = false;
         newOption();
       }
       else if (action.equals("Vista")) {
-        save(modinfo);
+        save(iwc);
       }
       else if (action.equals("Til baka")) {
         if (isAdmin)
@@ -177,7 +177,7 @@ boolean show_menu_name = false;
         String option_id = getRequest().getParameter("sidemenu_option_id");
         String menu_id = getRequest().getParameter("menu_id");
 
-        deleteOption(modinfo, Integer.parseInt(option_id));
+        deleteOption(iwc, Integer.parseInt(option_id));
 
         editMenu(Integer.parseInt(menu_id));
       }
@@ -200,9 +200,9 @@ boolean show_menu_name = false;
 
     }
 
-    private void removeApplication(ModuleInfo modinfo) throws SQLException{
+    private void removeApplication(IWContext iwc) throws SQLException{
 
-        Table table = (Table) modinfo.getServletContext().getAttribute("sidemenu_table"+attribute_id+"0");
+        Table table = (Table) iwc.getServletContext().getAttribute("sidemenu_table"+attribute_id+"0");
         getRequest().getSession().removeAttribute("side_menu_session"+attribute_id);
 
         String open = getRequest().getParameter("open");
@@ -212,7 +212,7 @@ boolean show_menu_name = false;
         if (table != null) {
             try {
               System.out.println("Table : sidemenu_table"+attribute_id+"0 removed from application");
-              modinfo.getServletContext().removeAttribute("sidemenu_table"+attribute_id+"0");
+              iwc.getServletContext().removeAttribute("sidemenu_table"+attribute_id+"0");
             }
             catch (Exception e) {
               System.out.println("Table : sidemenu_table"+attribute_id+"0 NOT removed from application");
@@ -228,7 +228,7 @@ boolean show_menu_name = false;
                         if (opt != null) {
                           if (opt.length > 0) {
                             for (int o=0 ; o < opt.length ; o ++) {
-                                modinfo.getServletContext().removeAttribute("sidemenu_table"+attribute_id+""+opt[o].getID());
+                                iwc.getServletContext().removeAttribute("sidemenu_table"+attribute_id+""+opt[o].getID());
                                 System.out.println("Table : sidemenu_table"+attribute_id+""+opt[o].getID()+" removed from application");
                             }
                           }
@@ -300,12 +300,12 @@ boolean show_menu_name = false;
 
     }
 
-    private void save(ModuleInfo modinfo) throws Exception{
+    private void save(IWContext iwc) throws Exception{
       String action = getRequest().getParameter("save_action");
 
       if (action != null) {
         if (action.equals("new_option")) {
-          saveNewOption(modinfo);
+          saveNewOption(iwc);
         }
         else if (action.equals("update_option")) {
           updateOption();
@@ -361,14 +361,14 @@ boolean show_menu_name = false;
       }
     }
 
-    private void deleteMenu(ModuleInfo modinfo, int menu_id) throws SQLException{
+    private void deleteMenu(IWContext iwc, int menu_id) throws SQLException{
         SidemenuModule menu = new SidemenuModule(menu_id);
         SidemenuOption[] options = (SidemenuOption[]) menu.findReverseRelated(new SidemenuOption());
         SidemenuAttributes[] attrib = (SidemenuAttributes[])(new SidemenuAttributes()).findAllByColumn("sidemenu_id",""+menu.getID());
         if (options != null) {
           if (options.length > 0) {
             for (int i = 0 ; i < options.length ; i++ ) {
-                deleteOption(modinfo,options[i].getID());
+                deleteOption(iwc,options[i].getID());
             }
           }
         }
@@ -571,7 +571,7 @@ boolean show_menu_name = false;
 
     }
 
-    private void saveNewOption(ModuleInfo modinfo) throws Exception{
+    private void saveNewOption(IWContext iwc) throws Exception{
       String option_id = getRequest().getParameter("sidemenu_option_id");
       String name = getRequest().getParameter("sidemenu_option_name");
       String menu_id = getRequest().getParameter("menu_id");
@@ -607,14 +607,14 @@ boolean show_menu_name = false;
 
                     }
                      catch (Exception e){
-                        e.printStackTrace(modinfo.getResponse().getWriter());
+                        e.printStackTrace(iwc.getResponse().getWriter());
                      }
 
                   }
               }
           }
 
-          option.setModuleObjectClassName(class_name);
+          option.setPresentationObjectClassName(class_name);
           option.setEntityIdColumnName(entity_name);
           option.setEntityIdColumnValue(entity_id);
           option.update();
@@ -677,7 +677,7 @@ boolean show_menu_name = false;
     }
 
 
-    private void deleteOption(ModuleInfo modinfo, int option_id) throws SQLException {
+    private void deleteOption(IWContext iwc, int option_id) throws SQLException {
 
 
         Vector items = new Vector();
@@ -690,7 +690,7 @@ boolean show_menu_name = false;
             for (int j = (items.size()) ; j > 0 ; j--) {
               intArr = (Integer[])items.elementAt(j-1);
               if (intArr[0].intValue() != 0) {
-                deleteOptions(modinfo, intArr[0].intValue());
+                deleteOptions(iwc, intArr[0].intValue());
               }
               else {
               }
@@ -704,7 +704,7 @@ boolean show_menu_name = false;
 
 
 
-    private void deleteOptions(ModuleInfo modinfo,int option_id) throws SQLException {
+    private void deleteOptions(IWContext iwc,int option_id) throws SQLException {
       String menu_id = getRequest().getParameter("menu_id");
         SidemenuOption option = new SidemenuOption(option_id);
 
@@ -728,7 +728,7 @@ boolean show_menu_name = false;
           if (text.length > 0) {
             for (int i = 0 ; i < text.length ; i++) {
               text[i].removeFrom(option);
-              modinfo.getServletContext().removeAttribute("sidemenu_table"+attribute_id+""+text[i].getID());
+              iwc.getServletContext().removeAttribute("sidemenu_table"+attribute_id+""+text[i].getID());
 
             }
           }

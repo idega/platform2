@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.17 2001/05/24 23:15:55 palli Exp $
+ * $Id: GolfMainJSPModule.java,v 1.18 2001/10/05 08:04:41 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,9 +10,9 @@
 package com.idega.projects.golf.templates;
 
 import com.idega.projects.golf.templates.page.GolfMainJSPModulePage;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.PresentationObject;
 import com.idega.projects.golf.entity.Member;
 import java.sql.SQLException;
 import com.idega.idegaweb.IWBundle;
@@ -34,18 +34,18 @@ public class GolfMainJSPModule extends MainSideJSPModule {
     ((GolfMainJSPModulePage)getPage()).setVerticalAlignment(alignment);
   }
 
-  public void add(ModuleObject objectToAdd) {
+  public void add(PresentationObject objectToAdd) {
     ((GolfMainJSPModulePage)getPage()).add(objectToAdd);
   }
 
 
 	public Member getMember(){
-		return (Member)getModuleInfo().getSession().getAttribute("member_login");
+		return (Member)getIWContext().getSession().getAttribute("member_login");
 	}
 
   public boolean isAdmin() {
     try {
-      return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
+      return com.idega.jmodule.login.business.AccessControl.isAdmin(getIWContext());
     }
     catch(SQLException E) {
     }
@@ -53,18 +53,18 @@ public class GolfMainJSPModule extends MainSideJSPModule {
   }
 
   public boolean isDeveloper() {
-    return com.idega.jmodule.login.business.AccessControl.isDeveloper(getModuleInfo());
+    return com.idega.jmodule.login.business.AccessControl.isDeveloper(getIWContext());
   }
 
   public boolean isClubAdmin() {
-    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
+    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getIWContext());
   }
 
   public boolean isClubWorker() {
     boolean ret;
 
     try {
-      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getModuleInfo());
+      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getIWContext());
     }
     catch(java.sql.SQLException e) {
       e.printStackTrace();
@@ -75,28 +75,28 @@ public class GolfMainJSPModule extends MainSideJSPModule {
   }
 
   public boolean isUser() {
-    return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
+    return com.idega.jmodule.login.business.AccessControl.isUser(getIWContext());
   }
 
-    public void removeUnionIdSessionAttribute(ModuleInfo modinfo){
-    modinfo.removeSessionAttribute("golf_union_id");
+    public void removeUnionIdSessionAttribute(IWContext iwc){
+    iwc.removeSessionAttribute("golf_union_id");
   }
 
-  public String getUnionID(ModuleInfo modinfo){
-    return (String)modinfo.getSessionAttribute("golf_union_id");
+  public String getUnionID(IWContext iwc){
+    return (String)iwc.getSessionAttribute("golf_union_id");
   }
 
-  public void setUnionID(ModuleInfo modinfo, String union_id){
-    modinfo.setSessionAttribute("golf_union_id", union_id);
+  public void setUnionID(IWContext iwc, String union_id){
+    iwc.setSessionAttribute("golf_union_id", union_id);
   }
 
 
   public IWResourceBundle getResourceBundle(){
-     return getResourceBundle(getModuleInfo());
+     return getResourceBundle(getIWContext());
   }
 
   public IWBundle getBundle(){
-    return getBundle(getModuleInfo());
+    return getBundle(getIWContext());
   }
 
   public String getBundleIdentifier(){

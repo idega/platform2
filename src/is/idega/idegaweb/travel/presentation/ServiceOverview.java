@@ -1,11 +1,11 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
@@ -41,24 +41,24 @@ public class ServiceOverview extends TravelManager {
   public ServiceOverview() {
   }
 
-  public void add(ModuleObject mo) {
+  public void add(PresentationObject mo) {
     super.add(mo);
   }
 
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-      super.main(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+      super.main(iwc);
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
 
-      String action = modinfo.getParameter(actionParameter);
+      String action = iwc.getParameter(actionParameter);
       if (action == null) {action = "";}
 
       if (action.equals("")) {
-          displayForm(modinfo);
+          displayForm(iwc);
       }else if (action.equals("delete")) {
-          deleteServices(modinfo);
-          displayForm(modinfo);
+          deleteServices(iwc);
+          displayForm(iwc);
       }
 
       super.addBreak();
@@ -66,16 +66,16 @@ public class ServiceOverview extends TravelManager {
   }
 
 
-  public Table getTopTable(ModuleInfo modinfo) {
+  public Table getTopTable(IWContext iwc) {
       Table topTable = new Table(4,2);
         topTable.setBorder(0);
         topTable.setWidth("90%");
 
       DateInput active_from = new DateInput("active_from");
-          idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
+          idegaTimestamp fromStamp = getFromIdegaTimestamp(iwc);
           active_from.setDate(fromStamp.getSQLDate());
       DateInput active_to = new DateInput("active_to");
-          idegaTimestamp toStamp = getToIdegaTimestamp(modinfo);
+          idegaTimestamp toStamp = getToIdegaTimestamp(iwc);
           active_to.setDate(toStamp.getSQLDate());
 
       Text tfFromText = (Text) theText.clone();
@@ -106,8 +106,8 @@ public class ServiceOverview extends TravelManager {
       return topTable;
   }
 
-  public void deleteServices(ModuleInfo modinfo) throws SQLException{
-    String[] serviceIds = (String[]) modinfo.getParameterValues(deleteParameter);
+  public void deleteServices(IWContext iwc) throws SQLException{
+    String[] serviceIds = (String[]) iwc.getParameterValues(deleteParameter);
     Service serviceToDelete;
     for (int i = 0; i < serviceIds.length; i++) {
         serviceToDelete = new Service(Integer.parseInt(serviceIds[i]));
@@ -117,10 +117,10 @@ public class ServiceOverview extends TravelManager {
   }
 
 
-  public void displayForm(ModuleInfo modinfo) {
+  public void displayForm(IWContext iwc) {
       add(Text.getBreak());
       Form form = new Form();
-      Table topTable = this.getTopTable(modinfo);
+      Table topTable = this.getTopTable(iwc);
         form.add(Text.BREAK);
       Table table = new Table();
         table.setBorder(0);
@@ -134,7 +134,7 @@ public class ServiceOverview extends TravelManager {
         sb.add(table);
 
       table.setWidth("95%");
-      String sYear = modinfo.getParameter("year");
+      String sYear = iwc.getParameter("year");
       if (sYear == null) {
           sYear = Text.emptyString().toString();
       }
@@ -143,13 +143,13 @@ public class ServiceOverview extends TravelManager {
       idegaTimestamp stamp = idegaTimestamp.RightNow();
 
       String[] dayOfWeekName = new String[8];
-        dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,modinfo).substring(0,3);
-        dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,modinfo).substring(0,3);
-        dayOfWeekName[ServiceDay.TUESDAY] = cal.getNameOfDay(ServiceDay.TUESDAY ,modinfo).substring(0,3);
-        dayOfWeekName[ServiceDay.WEDNESDAY] = cal.getNameOfDay(ServiceDay.WEDNESDAY ,modinfo).substring(0,3);
-        dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,modinfo).substring(0,3);
-        dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,modinfo).substring(0,3);
-        dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,modinfo).substring(0,3);
+        dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.TUESDAY] = cal.getNameOfDay(ServiceDay.TUESDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.WEDNESDAY] = cal.getNameOfDay(ServiceDay.WEDNESDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,iwc).substring(0,3);
 
       int[] dayOfWeek = new int[] {};
 
@@ -183,7 +183,7 @@ public class ServiceOverview extends TravelManager {
       Supplier supplier = super.getSupplier();
       if (supplier != null) {
         TravelStockroomBusiness tsb = TravelStockroomBusiness.getNewInstance();
-        //Product[] products = tsb.getProducts(supplier.getID(), this.getFromIdegaTimestamp(modinfo), this.getToIdegaTimestamp(modinfo));
+        //Product[] products = tsb.getProducts(supplier.getID(), this.getFromIdegaTimestamp(iwc), this.getToIdegaTimestamp(iwc));
         Product[] products = tsb.getProducts(supplier.getID());
 
         Service service;
@@ -213,9 +213,9 @@ public class ServiceOverview extends TravelManager {
                 prodName.setText(service.getName());
 
             timeframeTxt = (Text) theBoldText.clone();
-                timeframeTxt.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(modinfo) + " - ");
+                timeframeTxt.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc) + " - ");
                 timeframeTxt.addToText(Text.BREAK);
-                timeframeTxt.addToText(new idegaTimestamp(timeframe.getTo()).getLocaleDate(modinfo));
+                timeframeTxt.addToText(new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc));
 
             depFrom = (Text) theBoldText.clone();
                 depFrom.setText(address.getStreetName());
@@ -346,9 +346,9 @@ public class ServiceOverview extends TravelManager {
 
 
   // BUSINESS
-  public idegaTimestamp getFromIdegaTimestamp(ModuleInfo modinfo) {
+  public idegaTimestamp getFromIdegaTimestamp(IWContext iwc) {
       idegaTimestamp stamp = null;
-      String from_time = modinfo.getParameter("active_from");
+      String from_time = iwc.getParameter("active_from");
       if (from_time!= null) {
           stamp = new idegaTimestamp(from_time);
       }
@@ -359,9 +359,9 @@ public class ServiceOverview extends TravelManager {
   }
 
   // BUSINESS
-  public idegaTimestamp getToIdegaTimestamp(ModuleInfo modinfo) {
+  public idegaTimestamp getToIdegaTimestamp(IWContext iwc) {
       idegaTimestamp stamp = null;
-      String from_time = modinfo.getParameter("active_to");
+      String from_time = iwc.getParameter("active_to");
       if (from_time!= null) {
           stamp = new idegaTimestamp(from_time);
       }

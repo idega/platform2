@@ -1,8 +1,8 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import is.idega.travel.business.TravelStockroomBusiness;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.travel.data.*;
@@ -38,21 +38,21 @@ public class HotelPickupPlaceDesigner extends TravelWindow {
     super.setTitle("idegaWeb Travel");
   }
 
-  public void main(ModuleInfo modinfo) {
-    super.main(modinfo);
+  public void main(IWContext iwc) {
+    super.main(iwc);
 
-    if (checkForEverything(modinfo)) {
-      String action = modinfo.getParameter(this.action);
+    if (checkForEverything(iwc)) {
+      String action = iwc.getParameter(this.action);
 
 
       if (action == null) {
-        mainMenu(modinfo);
+        mainMenu(iwc);
       }else if (action.equals(this.parameterCreate) ) {
-        createPickupPlace(modinfo);
+        createPickupPlace(iwc);
       }else if (action.equals(this.parameterDelete) ) {
-        deletePickupPlace(modinfo);
+        deletePickupPlace(iwc);
       }else if (action.equals(this.parameterSave) ) {
-        savePickupPlace(modinfo);
+        savePickupPlace(iwc);
       }else if (action.equals(this.parameterClose) ) {
         closer();
       }
@@ -66,8 +66,8 @@ public class HotelPickupPlaceDesigner extends TravelWindow {
     super.close(false);
   }
 
-  private void savePickupPlace(ModuleInfo modinfo) {
-      String address = modinfo.getParameter("address");
+  private void savePickupPlace(IWContext iwc) {
+      String address = iwc.getParameter("address");
 
       try {
         if  ( (address != null) && (!address.equals("")) ) {
@@ -87,11 +87,11 @@ public class HotelPickupPlaceDesigner extends TravelWindow {
       }catch (SQLException sql) {
         sql.printStackTrace(System.err);
       }
-      mainMenu(modinfo);
+      mainMenu(iwc);
   }
 
-  private void deletePickupPlace(ModuleInfo modinfo) {
-    String placeId = modinfo.getParameter(this.dropdownMenuName);
+  private void deletePickupPlace(IWContext iwc) {
+    String placeId = iwc.getParameter(this.dropdownMenuName);
     try {
       HotelPickupPlace place = new HotelPickupPlace(Integer.parseInt(placeId));
         place.delete();
@@ -99,10 +99,10 @@ public class HotelPickupPlaceDesigner extends TravelWindow {
     catch (Exception e) {
       add("T- Villa");
     }
-    mainMenu(modinfo);
+    mainMenu(iwc);
   }
 
-  private void createPickupPlace(ModuleInfo modinfo) {
+  private void createPickupPlace(IWContext iwc) {
     Form form = new Form();
     Table table = new Table();
       form.add(table);
@@ -124,7 +124,7 @@ public class HotelPickupPlaceDesigner extends TravelWindow {
   }
 
 
-  private void mainMenu(ModuleInfo modinfo) {
+  private void mainMenu(IWContext iwc) {
     int row = 1;
     Form form = new Form();
     Table table = new Table();
@@ -166,11 +166,11 @@ public class HotelPickupPlaceDesigner extends TravelWindow {
     add(form);
   }
 
-  private boolean checkForEverything(ModuleInfo modinfo) {
+  private boolean checkForEverything(IWContext iwc) {
     boolean returner = true;
     try {
 
-      this.supplierId = tsb.getUserSupplierId(modinfo);
+      this.supplierId = tsb.getUserSupplierId(iwc);
       this.supplier = new Supplier(supplierId);
 
     }catch (Exception e) {

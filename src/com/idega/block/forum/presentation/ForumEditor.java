@@ -2,14 +2,14 @@ package com.idega.block.forum.presentation;
 
 import com.idega.builder.presentation.IBAdminWindow;
 
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.TextArea;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.HiddenInput;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.textObject.Text;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
 import com.idega.core.user.data.User;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.block.forum.business.ForumService;
@@ -77,7 +77,7 @@ public class ForumEditor extends IWAdminWindow {
   }
 
 
-  public void lineUpElements(ModuleInfo modinfo){
+  public void lineUpElements(IWContext iwc){
     myForm.empty();
 
     Table frameTable = new Table(1,2);
@@ -123,10 +123,10 @@ public class ForumEditor extends IWAdminWindow {
   }
 
 
-   public void commitCreation(ModuleInfo modinfo) throws Exception{
+   public void commitCreation(IWContext iwc) throws Exception{
 
-    String name = modinfo.getParameter(this.groupNameFieldParameterName);
-    String description = modinfo.getParameter(this.descriptionFieldParameterName);
+    String name = iwc.getParameter(this.groupNameFieldParameterName);
+    String description = iwc.getParameter(this.descriptionFieldParameterName);
 
     if(name != null && description != null){
       ForumService service = new ForumService();
@@ -135,23 +135,23 @@ public class ForumEditor extends IWAdminWindow {
   }
 
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    super.main(modinfo);
+  public void main(IWContext iwc) throws Exception {
+    super.main(iwc);
     if(myForm == null){
       myForm = new Form();
       this.add(myForm);
     }
-    String submit = modinfo.getParameter("submit");
+    String submit = iwc.getParameter("submit");
     if(submit != null){
       if(submit.equals("ok")){
-        this.commitCreation(modinfo);
+        this.commitCreation(iwc);
         this.close();
         this.setParentToReload();
       }else if(submit.equals("cancel")){
         this.close();
       }
     }
-    lineUpElements(modinfo);
+    lineUpElements(iwc);
   }
 
 

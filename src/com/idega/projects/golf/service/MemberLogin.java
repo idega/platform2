@@ -10,9 +10,9 @@ package com.idega.projects.golf.service;
  */
 
 import java.sql.SQLException;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.entity.Member;
 import com.idega.projects.golf.entity.UnionMemberInfo;
 import com.idega.projects.golf.entity.LoginTable;
@@ -30,9 +30,9 @@ public class MemberLogin extends Editor{
   public MemberLogin(){
   }
 
-  protected void control(ModuleInfo modinfo){
-    String member_id = modinfo.getParameter("member_id");
-    String union_id = modinfo.getParameter("union_id");
+  protected void control(IWContext iwc){
+    String member_id = iwc.getParameter("member_id");
+    String union_id = iwc.getParameter("union_id");
     sUnionId = union_id;
 
     this.makeView();
@@ -42,8 +42,8 @@ public class MemberLogin extends Editor{
         eMember = new Member(Integer.parseInt(member_id));
         String userlogin = null;
         boolean check = false;
-        if(modinfo.getParameter("ok")!=null || modinfo.getParameter("ok.x")!=null ){
-          check = doAddTo(modinfo,eMember.getID());
+        if(iwc.getParameter("ok")!=null || iwc.getParameter("ok.x")!=null ){
+          check = doAddTo(iwc,eMember.getID());
         }
         userlogin = this.getUsrLogin(eMember.getID());
 
@@ -65,7 +65,7 @@ public class MemberLogin extends Editor{
     return t;
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     return new Text("");
   }
 
@@ -77,10 +77,10 @@ public class MemberLogin extends Editor{
       return "Ekkert til";
   }
 
-  private boolean doAddTo(ModuleInfo modinfo,int iMemberId){
-    String sLogin = modinfo.getParameter("ml.usrlgn");
-    String sPasswd = modinfo.getParameter("ml.psw1");
-    String sConfirm = modinfo.getParameter("ml.psw2");
+  private boolean doAddTo(IWContext iwc,int iMemberId){
+    String sLogin = iwc.getParameter("ml.usrlgn");
+    String sPasswd = iwc.getParameter("ml.psw1");
+    String sConfirm = iwc.getParameter("ml.psw2");
     boolean register = false;
     if(sLogin != null && sPasswd != null && sConfirm != null){
       if(sLogin.length() > 0  && sPasswd.length() > 0 && sConfirm.length() > 0){
@@ -99,7 +99,7 @@ public class MemberLogin extends Editor{
     return register;
   }
 
-  private ModuleObject doView(Member member,String sUserLogin){
+  private PresentationObject doView(Member member,String sUserLogin){
     Table T = new Table();
     T.add(formatText(member.getName()),1,1);
     String kt = member.getSocialSecurityNumber()!=null?member.getSocialSecurityNumber():"engin";

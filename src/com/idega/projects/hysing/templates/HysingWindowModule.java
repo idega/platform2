@@ -1,6 +1,6 @@
 package com.idega.projects.hysing.templates;
 
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
 
 

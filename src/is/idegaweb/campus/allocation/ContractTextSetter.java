@@ -4,9 +4,9 @@ import is.idegaweb.campus.presentation.Edit;
 import is.idegaweb.campus.entity.SystemProperties;
 import is.idegaweb.campus.entity.ContractText;
 import com.idega.idegaweb.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.development.presentation.Localizer;
@@ -23,7 +23,7 @@ import com.idega.data.EntityFinder;
  * @version 1.0
  */
 
-public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectContainer{
+public class ContractTextSetter extends com.idega.presentation.PresentationObjectContainer{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   private final static String IS ="IS";
@@ -51,42 +51,42 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     useObjectInstanciator=use;
   }
 
-  protected void control(ModuleInfo modinfo){
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+  protected void control(IWContext iwc){
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
 
     if(isAdmin){
       //add(getPDFLink(new Image("/pics/print.gif")));
-      if(modinfo.getParameter("savetitle")!=null){
+      if(iwc.getParameter("savetitle")!=null){
           add(getHomeLink());
-          updateTitleForm(modinfo);
+          updateTitleForm(iwc);
           add(getMainTable());
 
       }
-      else if(modinfo.getParameter("savetext")!=null){
+      else if(iwc.getParameter("savetext")!=null){
         add(getHomeLink());
-        updateForm(modinfo);
+        updateForm(iwc);
         add(getMainTable());
       }
-      else if( modinfo.getParameter("delete")!= null){
-        add (ConfirmDelete(modinfo));
+      else if( iwc.getParameter("delete")!= null){
+        add (ConfirmDelete(iwc));
       }
-      else if(modinfo.getParameter("conf_delete")!=null){
-        deleteText(modinfo);
+      else if(iwc.getParameter("conf_delete")!=null){
+        deleteText(iwc);
         add(getHomeLink());
         add(getMainTable());
       }
-      else if(modinfo.getParameter("text_id")!=null || modinfo.getParameter("new_text")!=null){
+      else if(iwc.getParameter("text_id")!=null || iwc.getParameter("new_text")!=null){
         add(getUpLink());
-        add(getSetupForm(modinfo));
+        add(getSetupForm(iwc));
       }
-      else if(modinfo.getParameter("new_title")!=null){
+      else if(iwc.getParameter("new_title")!=null){
         add(getUpLink());
-        add(getTitleForm(modinfo));
+        add(getTitleForm(iwc));
       }
-      else if(modinfo.getParameter("title_id")!=null){
+      else if(iwc.getParameter("title_id")!=null){
         add(getUpLink());
-        add(getTitleForm(modinfo));
+        add(getTitleForm(iwc));
       }
       else {
         add(getHomeLink());
@@ -100,7 +100,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
 
   }
 
-  private ModuleObject getMainTable(){
+  private PresentationObject getMainTable(){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -163,12 +163,12 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     return T;
   }
 
-  private ModuleObject getTitleForm(ModuleInfo modinfo){
+  private PresentationObject getTitleForm(IWContext iwc){
     Form F = new Form();
     Table T = new Table();
     int row = 1;
     TextInput text = null;
-    String sId = modinfo.getParameter("title_id");
+    String sId = iwc.getParameter("title_id");
     if(sId!=null){
      try {
         ContractText CT = new ContractText(Integer.parseInt(sId));
@@ -192,7 +192,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     return (F);
   }
 
-  private ModuleObject getSetupForm(ModuleInfo modinfo){
+  private PresentationObject getSetupForm(IWContext iwc){
     Table Frame = new Table(2,1);
     Table T = new Table();
 
@@ -203,7 +203,7 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     TextInput name = null;
     TextArea text = null;
     CheckBox CB = new CheckBox("usetags","true");
-    String sId = modinfo.getParameter("text_id");
+    String sId = iwc.getParameter("text_id");
     if(sId!=null){
       try {
         ContractText CT = new ContractText(Integer.parseInt(sId));
@@ -261,8 +261,8 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     return myForm;
   }
 
-  private ModuleObject ConfirmDelete(ModuleInfo modinfo){
-    String sTextId = modinfo.getParameter("text_id");
+  private PresentationObject ConfirmDelete(IWContext iwc){
+    String sTextId = iwc.getParameter("text_id");
     Form F = new Form();
 
     Table T = new Table(3,2);
@@ -279,8 +279,8 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     return F;
   }
 
-  private void deleteText(ModuleInfo modinfo){
-    String sTextId = modinfo.getParameter("text_id");
+  private void deleteText(IWContext iwc){
+    String sTextId = iwc.getParameter("text_id");
     if(sTextId !=null){
       try {
         int id = Integer.parseInt(sTextId);
@@ -292,12 +292,12 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     }
   }
 
-  private void updateForm(ModuleInfo modinfo){
-    String sTextId = modinfo.getParameter("text_id");
-    String sOrdinal = modinfo.getParameter("ordinal");
-    String sName = modinfo.getParameter("name");
-    String sText = modinfo.getParameter("text");
-    String sUseTags = modinfo.getParameter("usetags");
+  private void updateForm(IWContext iwc){
+    String sTextId = iwc.getParameter("text_id");
+    String sOrdinal = iwc.getParameter("ordinal");
+    String sName = iwc.getParameter("name");
+    String sText = iwc.getParameter("text");
+    String sUseTags = iwc.getParameter("usetags");
 
     ContractText CT = null;
     boolean bInsert = true;
@@ -336,9 +336,9 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     }
   }
 
-   private void updateTitleForm(ModuleInfo modinfo){
-    String sTextId = modinfo.getParameter("title_id");
-    String sText = modinfo.getParameter("tname");
+   private void updateTitleForm(IWContext iwc){
+    String sTextId = iwc.getParameter("title_id");
+    String sText = iwc.getParameter("tname");
 
     ContractText CT = null;
     boolean bInsert = true;
@@ -415,11 +415,11 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     return newLink;
   }
 
-  public Link getPDFLink(ModuleObject MO){
+  public Link getPDFLink(PresentationObject MO){
 
     Window W ;
     if(useObjectInstanciator)
-      W = new Window("PDF",ContractFiler.class,com.idega.jmodule.object.Page.class);
+      W = new Window("PDF",ContractFiler.class,com.idega.presentation.Page.class);
     else
       W = new Window("PDF","/allocation/contractfile.jsp");
     W.setResizable(true);
@@ -445,13 +445,13 @@ public class ContractTextSetter extends com.idega.jmodule.object.ModuleObjectCon
     return TA;
   }
 
-   public void main(ModuleInfo modinfo){
+   public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 
 }

@@ -5,7 +5,7 @@ import java.awt.event.*;
 import java.util.Vector;
 import java.net.URL;
 import com.idega.block.messenger.data.Message;
-import com.idega.jmodule.object.awt.ImageLabel;
+import com.idega.presentation.awt.ImageLabel;
 
 /**
  * Title:        com.idega.block.messenger.presentation

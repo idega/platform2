@@ -2,16 +2,16 @@ package com.idega.block.reports.presentation;
 
 import com.idega.block.reports.data.*;
 import com.idega.block.reports.business.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Script;
+import com.idega.presentation.PresentationObject;
 import com.idega.data.GenericEntity;
 
-public class ReportObjectHandler extends JModuleObject{
+public class ReportObjectHandler extends Block{
 
 
   public static DropdownMenu drpCategories(String sPrm,String selected) {

@@ -7,9 +7,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.boxoffice.data.*;
 import com.idega.jmodule.news.data.*;
 import com.idega.jmodule.news.presentation.*;
@@ -19,7 +19,7 @@ import com.idega.projects.lv.entity.Project;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
-public class BoxReader extends JModuleObject{
+public class BoxReader extends Block{
 
 private String issue_id = null;
 private boolean isAdmin=false;
@@ -117,18 +117,18 @@ public BoxReader(String issue_id, int numberOfColumns){
 	this.numberOfColumns=numberOfColumns;
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
-    iwrb = getResourceBundle(modinfo);
+	public void main(IWContext iwc) throws Exception {
+    iwrb = getResourceBundle(iwc);
 
-    String temp_issue_id = modinfo.getParameter("issue_id");
+    String temp_issue_id = iwc.getParameter("issue_id");
     if (temp_issue_id != null && !boxOnly) {
       this.issue_id = temp_issue_id;
     }
-    this.isAdmin=isAdministrator(modinfo);
+    this.isAdmin=isAdministrator(iwc);
 
     Image boxeditor = iwrb.getImage("boxeditor.gif");
 
-    HttpSession Session = modinfo.getSession();
+    HttpSession Session = iwc.getSession();
 			if ( !boxOnly ) {
 				Session.removeAttribute("file_id");
 			}
@@ -164,8 +164,8 @@ public BoxReader(String issue_id, int numberOfColumns){
 		}
 
 		else {
-			String issue_category_id = modinfo.getRequest().getParameter("issue_category_id");
-			String subject_id = modinfo.getRequest().getParameter("subject_id");
+			String issue_category_id = iwc.getRequest().getParameter("issue_category_id");
+			String subject_id = iwc.getRequest().getParameter("subject_id");
 			if ( isAdmin ) {
 				Form editForm = new Form(adminURL);
 					editForm.add(new SubmitButton(boxeditor));

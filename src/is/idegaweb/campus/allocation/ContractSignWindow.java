@@ -2,12 +2,12 @@ package is.idegaweb.campus.allocation;
 
 import is.idegaweb.campus.allocation.business.ContractBusiness;
 import is.idegaweb.campus.presentation.Edit;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.building.business.BuildingCacher;
@@ -60,21 +60,21 @@ public class ContractSignWindow extends Window{
   public ContractSignWindow() {
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     setParentToReload();
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
     if(isAdmin){
       add(iwrb.getLocalizedString("manual","Instructions"));
-      if(modinfo.getApplicationAttribute(SysProps.getEntityTableName())!=null){
-      SysProps = (SystemProperties)modinfo.getApplicationAttribute(SysProps.getEntityTableName());
+      if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
 
-      if(modinfo.getParameter("sign")!=null || modinfo.getParameter("save")!=null){
-        doSignContract(modinfo);
+      if(iwc.getParameter("sign")!=null || iwc.getParameter("save")!=null){
+        doSignContract(iwc);
       }
-      add(getSignatureTable(modinfo));
+      add(getSignatureTable(iwc));
     }
     else
       add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
@@ -86,14 +86,14 @@ public class ContractSignWindow extends Window{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public ModuleObject makeLinkTable(int menuNr){
+  public PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(6,1);
 
     return LinkTable;
   }
 
-  private ModuleObject getSignatureTable(ModuleInfo modinfo){
-    int iContractId = Integer.parseInt( modinfo.getParameter("signed_id"));
+  private PresentationObject getSignatureTable(IWContext iwc){
+    int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
     try {
       Contract eContract = new Contract(iContractId);
       User eUser = new User(eContract.getUserId().intValue());
@@ -139,7 +139,7 @@ public class ContractSignWindow extends Window{
       T.add(Edit.formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,row);
       row++;
       T.add(Edit.headerText(iwrb.getLocalizedString("contractdate","Contract date")+" :"),1,row);
-      T.add(Edit.formatText(from.getLocaleDate(modinfo)+" "+to.getLocaleDate(modinfo)),2,row);
+      T.add(Edit.formatText(from.getLocaleDate(iwc)+" "+to.getLocaleDate(iwc)),2,row);
       row++;
       T.add(Edit.headerText(iwrb.getLocalizedString("email","Email")+" : "),1,row);
       if(lEmails !=null){
@@ -223,16 +223,16 @@ public class ContractSignWindow extends Window{
    *  returns id of login
    */
    /*
-  private void doSignContract(ModuleInfo modinfo){
+  private void doSignContract(IWContext iwc){
 
-    int id = Integer.parseInt(modinfo.getParameter("signed_id"));
-    String sEmail = modinfo.getParameter("new_email");
-    String sSendMail = modinfo.getParameter("send_mail");
-    String sFinAccount = modinfo.getParameter("new_fin_account");
-    String sPhoneAccount = modinfo.getParameter("new_phone_account");
-    String sCreateLogin = modinfo.getParameter("new_login");
-    String sUserGroup = modinfo.getParameter("user_group");
-    String sSigned =  modinfo.getParameter("sign");
+    int id = Integer.parseInt(iwc.getParameter("signed_id"));
+    String sEmail = iwc.getParameter("new_email");
+    String sSendMail = iwc.getParameter("send_mail");
+    String sFinAccount = iwc.getParameter("new_fin_account");
+    String sPhoneAccount = iwc.getParameter("new_phone_account");
+    String sCreateLogin = iwc.getParameter("new_login");
+    String sUserGroup = iwc.getParameter("user_group");
+    String sSigned =  iwc.getParameter("sign");
     Contract eContract = null;
 
       try {
@@ -299,16 +299,16 @@ public class ContractSignWindow extends Window{
   }
 
   */
-  private void doSignContract(ModuleInfo modinfo){
+  private void doSignContract(IWContext iwc){
 
-    int id = Integer.parseInt(modinfo.getParameter("signed_id"));
-    String sEmail = modinfo.getParameter("new_email");
-    String sSendMail = modinfo.getParameter("send_mail");
-    String sFinAccount = modinfo.getParameter("new_fin_account");
-    String sPhoneAccount = modinfo.getParameter("new_phone_account");
-    String sCreateLogin = modinfo.getParameter("new_login");
-    String sUserGroup = modinfo.getParameter("user_group");
-    String sSigned =  modinfo.getParameter("sign");
+    int id = Integer.parseInt(iwc.getParameter("signed_id"));
+    String sEmail = iwc.getParameter("new_email");
+    String sSendMail = iwc.getParameter("send_mail");
+    String sFinAccount = iwc.getParameter("new_fin_account");
+    String sPhoneAccount = iwc.getParameter("new_phone_account");
+    String sCreateLogin = iwc.getParameter("new_login");
+    String sUserGroup = iwc.getParameter("user_group");
+    String sSigned =  iwc.getParameter("sign");
     int iGroupId = sUserGroup != null ? Integer.parseInt(sUserGroup):-1;
     boolean sendMail =  sSendMail != null ? true:false;
     sendMail = true;
@@ -324,12 +324,12 @@ public class ContractSignWindow extends Window{
     //add(passwd);
   }
 
-  private void doAddEmail( int iUserId ,ModuleInfo modinfo){
-    String sEmail = modinfo.getParameter("new_email");
+  private void doAddEmail( int iUserId ,IWContext iwc){
+    String sEmail = iwc.getParameter("new_email");
     UserBusiness.addNewUserEmail(iUserId,sEmail);
   }
 
-  private ModuleObject getApartmentTable(Apartment A){
+  private PresentationObject getApartmentTable(Apartment A){
     Table T = new Table();
     Floor F = BuildingCacher.getFloor(A.getFloorId());
     Building B = BuildingCacher.getBuilding(F.getBuildingId());
@@ -353,12 +353,12 @@ public class ContractSignWindow extends Window{
     return S.toString();
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 }

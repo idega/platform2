@@ -1,11 +1,11 @@
 package com.idega.projects.golf.presentation;
 
 import com.idega.jmodule.login.business.AccessControl;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.moduleobject.GolfDialog;
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.projects.golf.business.TournamentController;
 import com.idega.jmodule.ModuleEvent;
@@ -58,19 +58,19 @@ import com.idega.data.EntityFinder;
     }
 
 
-    public void main(ModuleInfo modinfo) throws Exception{
+    public void main(IWContext iwc) throws Exception{
         System.out.println("TournamentCreator().main()");
         add("Kominn inn í TournamentCreator");
 
-        checkIfUpdate(modinfo);
-	initializeButtons(modinfo);
-        checkAction(modinfo);
+        checkIfUpdate(iwc);
+	initializeButtons(iwc);
+        checkAction(iwc);
     }
 
-public void checkIfUpdate(ModuleInfo modinfo) {
+public void checkIfUpdate(IWContext iwc) {
         System.out.println("TournamentCreator().checkIfUpdate()");
 
-        String sIsUpdate = modinfo.getParameter("tournament_control_mode");
+        String sIsUpdate = iwc.getParameter("tournament_control_mode");
 
         bIsUpdate = false;
         boolean remove = false;
@@ -79,11 +79,11 @@ public void checkIfUpdate(ModuleInfo modinfo) {
             if (sIsUpdate.equals("edit")) {
               bIsUpdate = true;
               remove = false;
-              String tournament_id = modinfo.getParameter("tournament");
+              String tournament_id = iwc.getParameter("tournament");
 
               if (tournament_id != null) {
                   sTournamentIdToUpdate = tournament_id;
-                  modinfo.setSessionAttribute("i_golf_tournament_update_id",tournament_id);
+                  iwc.setSessionAttribute("i_golf_tournament_update_id",tournament_id);
               }
             }
             else if (sIsUpdate.equals("create")) {
@@ -91,7 +91,7 @@ public void checkIfUpdate(ModuleInfo modinfo) {
             }
         }
         else {
-            String temp_tournament_id = (String) modinfo.getSessionAttribute("i_golf_tournament_update_id");
+            String temp_tournament_id = (String) iwc.getSessionAttribute("i_golf_tournament_update_id");
             if (temp_tournament_id != null) {
                 sTournamentIdToUpdate = temp_tournament_id;
                 bIsUpdate = true;
@@ -100,11 +100,11 @@ public void checkIfUpdate(ModuleInfo modinfo) {
         }
 
         if (remove) {
-                modinfo.removeSessionAttribute("i_golf_tournament_update_id");
+                iwc.removeSessionAttribute("i_golf_tournament_update_id");
         }
 }
 
-public void initializeButtons(ModuleInfo modinfo){
+public void initializeButtons(IWContext iwc){
         System.out.println("TournamentCreator().initializeButtons()");
 
         if (Button1 == null){
@@ -178,50 +178,50 @@ public void initializeButtons(ModuleInfo modinfo){
         }
 }
 
-public void checkAction(ModuleInfo modinfo) throws Exception{
-    String action = modinfo.getParameter("TournamentCreatorAction");
+public void checkAction(IWContext iwc) throws Exception{
+    String action = iwc.getParameter("TournamentCreatorAction");
     add("<br>"+action);
     System.err.println("TournamentCreatorAction = "+action);
 
 
-    String entityPar = modinfo.getParameter("idega_entity");
+    String entityPar = iwc.getParameter("idega_entity");
     if (entityPar != null) {
-        String thePar = (String) modinfo.getSessionAttribute("group_tournament");
+        String thePar = (String) iwc.getSessionAttribute("group_tournament");
         if (thePar == null) { thePar = "";}
         if (thePar.equals("Y")){
-                createTournament3(modinfo);
+                createTournament3(iwc);
         }
         else{
-                createTournament5(modinfo);
+                createTournament5(iwc);
         }
     }
     else {
         if (action == null) {
-            createTournament(modinfo);
+            createTournament(iwc);
         }
         else if (action.equals("b1") ) {
-            createTournament(modinfo);
+            createTournament(iwc);
         }
         else if (action.equals("bu2")) {
-            createTournament2(modinfo);
+            createTournament2(iwc);
         }
         else if (action.equals("bu3")) {
-            createTournament4(modinfo);
+            createTournament4(iwc);
         }
         else if (action.equals("bu4")) {
-            createTournament6(modinfo);
+            createTournament6(iwc);
         }
         else if (action.equals("bu5")) {
-            createTournament6(modinfo);
+            createTournament6(iwc);
         }
         else if (action.equals("bu6")) {
-            SaveTournament(modinfo);
+            SaveTournament(iwc);
         }
         else if (action.equals("stbtt7")) {
-            confirmSaveTournament(modinfo);
+            confirmSaveTournament(iwc);
         }
         else if (action.equals("dbu")) {
-            typeInTournamentText(modinfo);
+            typeInTournamentText(iwc);
         }
     }
 
@@ -230,20 +230,20 @@ public void checkAction(ModuleInfo modinfo) throws Exception{
 
 public void actionPerformed(ModuleEvent e)throws Exception{
 
-        ModuleInfo modinfo = e.getModuleInfo();
-	initializeButtons(modinfo);
-        checkIfUpdate(modinfo);
+        IWContext iwc = e.getIWContext();
+	initializeButtons(iwc);
+        checkIfUpdate(iwc);
 //        add(""+bIsUpdate);
 
 	//try{
 		if(e.getSource().equals(Button1)){
-			createTournament(modinfo);
+			createTournament(iwc);
 		}
 		/*else if(e.getSource().equals(modifyTournamentB1)){
 			editTournament();
 		}*/
 		else if(e.getSource().equals(Button2)){
-			createTournament2(modinfo);
+			createTournament2(iwc);
 		}
 		/*else if(e.getSource().equals(Dropdown2)){
 			editTournament2();
@@ -252,38 +252,38 @@ public void actionPerformed(ModuleEvent e)throws Exception{
 			editTournament2();
 		}*/
 		else if(e.getSource().equals(entityPar)){
-			if (((String)modinfo.getSessionAttribute("group_tournament")).equals("Y")){
-				createTournament3(modinfo);
+			if (((String)iwc.getSessionAttribute("group_tournament")).equals("Y")){
+				createTournament3(iwc);
 			}
 			else{
-				createTournament5(modinfo);
+				createTournament5(iwc);
 			}
 		}
 		else if(e.getSource().equals(Button3)){
-			createTournament4(modinfo);
+			createTournament4(iwc);
 		}
 		else if(e.getSource().equals(Button4)){
 			//if (((String)getSessionAttribute("group_tournament")).equals("Y")){
-				createTournament6(modinfo);
+				createTournament6(iwc);
 			//}
 			//else{
-			//	createTournament5(modinfo);
+			//	createTournament5(iwc);
 			//}
 		}
 		else if(e.getSource().equals(Button5)){
-                        createTournament6(modinfo);
+                        createTournament6(iwc);
 
-                        //setTournamentDays(modinfo);
+                        //setTournamentDays(iwc);
 
 		}
 		else if(e.getSource().equals(daysButton)){
-                    typeInTournamentText(modinfo);
+                    typeInTournamentText(iwc);
 		}
 		else if(e.getSource().equals(textFinished)){
-                    confirmSaveTournament(modinfo);
+                    confirmSaveTournament(iwc);
 		}
 		else if(e.getSource().equals(Button6)){
-			SaveTournament(modinfo);
+			SaveTournament(iwc);
 		}
 		/*else if (e.getSource().equals(RegisterButton1)){
 			FindRegistrationMember();
@@ -301,7 +301,7 @@ public void actionPerformed(ModuleEvent e)throws Exception{
 			setupStartingtime();
 		}*/
 		else{
-                        createTournament(modinfo);
+                        createTournament(iwc);
 		}
 	//}
 	/*catch(SQLException ex){
@@ -312,7 +312,7 @@ public void actionPerformed(ModuleEvent e)throws Exception{
 }
 
 
-public void createTournament(ModuleInfo modinfo)throws SQLException{
+public void createTournament(IWContext iwc)throws SQLException{
 	GolfDialog dialog1;
 
         String sSelectedTournamentType = "-1";
@@ -339,7 +339,7 @@ public void createTournament(ModuleInfo modinfo)throws SQLException{
         }
 	add(dialog1);
         Form dialog = new Form();
-           //addIfUpdate(modinfo,dialog);
+           //addIfUpdate(iwc,dialog);
         dialog1.add(dialog);
 
 	Table table = new Table(2,5);
@@ -378,12 +378,12 @@ public void createTournament(ModuleInfo modinfo)throws SQLException{
 	table.add(Button2,2,5);
 }
 
-public void createTournament2(ModuleInfo modinfo)throws SQLException{
+public void createTournament2(IWContext iwc)throws SQLException{
         Tournament tournament = null;
         if (this.bIsUpdate) {
             tournament = new Tournament(Integer.parseInt(sTournamentIdToUpdate));
-            tournament.setTournamentTypeID(Integer.parseInt(modinfo.getParameter("tournament_type")));
-            tournament.setTournamentFormID(Integer.parseInt(modinfo.getParameter("tournament_form")));
+            tournament.setTournamentTypeID(Integer.parseInt(iwc.getParameter("tournament_type")));
+            tournament.setTournamentFormID(Integer.parseInt(iwc.getParameter("tournament_form")));
         }
         else {
             tournament = new Tournament();
@@ -392,13 +392,13 @@ public void createTournament2(ModuleInfo modinfo)throws SQLException{
             //TournamentType type = new TournamentType(Integer.parseInt(getParameter("tournament_type")));
             //TournamentForm form = new TournamentForm(Integer.parseInt(getParameter("tournament_form")));
 
-            //type.setID(Integer.parseInt(getModuleInfo().getRequest().getParameter("tournament_type")));
+            //type.setID(Integer.parseInt(getIWContext().getRequest().getParameter("tournament_type")));
             //type.setID(1);
 
             //add(new Text(type.getName()));
             //tournament.setTournamentType(type);
-            tournament.setTournamentTypeID(Integer.parseInt(modinfo.getParameter("tournament_type")));
-            tournament.setTournamentFormID(Integer.parseInt(modinfo.getParameter("tournament_form")));
+            tournament.setTournamentTypeID(Integer.parseInt(iwc.getParameter("tournament_type")));
+            tournament.setTournamentFormID(Integer.parseInt(iwc.getParameter("tournament_form")));
 
             //default settings
             tournament.setName("Nafn móts");
@@ -410,17 +410,17 @@ public void createTournament2(ModuleInfo modinfo)throws SQLException{
             GolfDialog dialog1 = new GolfDialog("Skráðu inn upplýsingar fyrir mótið");
             add(dialog1);
             Form dialog = new Form();
-              //addIfUpdate(modinfo,dialog);
+              //addIfUpdate(iwc,dialog);
             dialog1.add(dialog);
 
-            EntityInsert entityForm = new EntityInsert(tournament,modinfo.getRequestURI()+"?idega_entity=true");
+            EntityInsert entityForm = new EntityInsert(tournament,iwc.getRequestURI()+"?idega_entity=true");
             entityForm.setFieldNotDisplayed("tournament_type_id");
             entityForm.setNotToInsert();
             entityForm.setButtonText("Áfram");
             dialog.add(entityForm);
 
-            if(AccessControl.isClubAdmin(modinfo)){
-              Member member = (Member)com.idega.jmodule.login.business.AccessControl.getMember(modinfo);
+            if(AccessControl.isClubAdmin(iwc)){
+              Member member = (Member)com.idega.jmodule.login.business.AccessControl.getMember(iwc);
               int union_id = member.getMainUnionID();
               Union union = new Union(union_id);
               tournament.setUnion(union);
@@ -428,8 +428,8 @@ public void createTournament2(ModuleInfo modinfo)throws SQLException{
               entityForm.setColumnValueRange("field_id",union.getOwningFields());
             }
 
-              modinfo.setSessionAttribute("group_tournament",modinfo.getParameter("group_tournament"));
-            if(modinfo.getParameter("group_tournament").equals("Y")){
+              iwc.setSessionAttribute("group_tournament",iwc.getParameter("group_tournament"));
+            if(iwc.getParameter("group_tournament").equals("Y")){
                     //tournament.setVisible("registration_fee",false);
                     entityForm.setFieldNotDisplayed("registration_fee");
                     tournament.setGroupTournament(true);
@@ -438,7 +438,7 @@ public void createTournament2(ModuleInfo modinfo)throws SQLException{
                     tournament.setGroupTournament(false);
             }
 
-            if(modinfo.getParameter("open_tournament").equals("Y")){
+            if(iwc.getParameter("open_tournament").equals("Y")){
                     //tournament.setVisible("registration_fee",false);
                     entityForm.setFieldNotDisplayed("registration_fee");
                     tournament.setOpenTournament(true);
@@ -463,23 +463,23 @@ public void createTournament2(ModuleInfo modinfo)throws SQLException{
 
 
 
-public void createTournament3(ModuleInfo modinfo)throws SQLException{
+public void createTournament3(IWContext iwc)throws SQLException{
 	TournamentGroup group = new TournamentGroup();
 
         GolfDialog dialog1 = new GolfDialog("Veldu flokka sem eiga að verða með");
 	add(dialog1);
         Form dialog = new Form();
         dialog1.add(dialog);
-        //addIfUpdate(modinfo,dialog);
+        //addIfUpdate(iwc,dialog);
         SelectionBox  box = new SelectionBox("tournament_group");
-        if(AccessControl.isClubAdmin(modinfo)){
-          Member member = (Member)com.idega.jmodule.login.business.AccessControl.getMember(modinfo);
+        if(AccessControl.isClubAdmin(iwc)){
+          Member member = (Member)com.idega.jmodule.login.business.AccessControl.getMember(iwc);
           int union_id = member.getMainUnionID();
           Union union = new Union(union_id);
           box.addMenuElements(union.getTournamentGroupsRecursive());
 
         }
-        else if(AccessControl.isAdmin(modinfo)){
+        else if(AccessControl.isAdmin(iwc)){
           box.addMenuElements(EntityFinder.findAll(group));
         }
 
@@ -498,16 +498,16 @@ public void createTournament3(ModuleInfo modinfo)throws SQLException{
 }
 
 
-public void createTournament4(ModuleInfo modinfo) throws SQLException{
+public void createTournament4(IWContext iwc) throws SQLException{
 
-	String[] stringArr = modinfo.getParameterValues("tournament_group");
+	String[] stringArr = iwc.getParameterValues("tournament_group");
 	if (stringArr == null){
 		add(new Text("Þú verdur að velja einhverja flokka"));
-		createTournament3(modinfo);
+		createTournament3(iwc);
 	}
 	else{
 		TournamentGroup[] groupArr = (TournamentGroup[]) (new TournamentGroup()).constructArray(stringArr);
-		modinfo.setSessionAttribute("tournament_group",groupArr);
+		iwc.setSessionAttribute("tournament_group",groupArr);
 
 
         GolfDialog dialog1 = new GolfDialog("Skilgreindu keppnisgjöld fyrir hvern flokk fyrir sig");
@@ -537,7 +537,7 @@ public void createTournament4(ModuleInfo modinfo) throws SQLException{
 	}
 }
 
-public void createTournament5(ModuleInfo modinfo) throws SQLException{
+public void createTournament5(IWContext iwc) throws SQLException{
 
         TeeColor[] color = (TeeColor[]) new TeeColor().findAll();;
 	SelectionBox  box = new SelectionBox(color);
@@ -564,40 +564,40 @@ public void createTournament5(ModuleInfo modinfo) throws SQLException{
 
 }
 
-public void createTournament6(ModuleInfo modinfo) throws Exception{
+public void createTournament6(IWContext iwc) throws Exception{
 	//Tournament tournament = (Tournament) getSession().getAttribute("idega_entity");
 	//Enumeration enum = getRequest().getParameterNames();
 
-	if (((String)modinfo.getSessionAttribute("group_tournament")).equals("Y")){
+	if (((String)iwc.getSessionAttribute("group_tournament")).equals("Y")){
 
-			String[] stringArr = modinfo.getParameterValues("group_fee");
-			modinfo.setSessionAttribute("group_fee",stringArr);
+			String[] stringArr = iwc.getParameterValues("group_fee");
+			iwc.setSessionAttribute("group_fee",stringArr);
 
-                        setTournamentDays(modinfo);
+                        setTournamentDays(iwc);
 
 
 
 	}
 	else{
-		String[] stringArr = modinfo.getParameterValues("tee_color");
+		String[] stringArr = iwc.getParameterValues("tee_color");
 		if (stringArr == null){
 			add(new Text("Þú verður ad velja einhverja teiga"));
-			createTournament5(modinfo);
+			createTournament5(iwc);
 		}
 		else{
 
 			TeeColor[] teecolorArr = (TeeColor[])(new TeeColor()).constructArray(stringArr);
-			modinfo.setSessionAttribute("tee_color",teecolorArr);
+			iwc.setSessionAttribute("tee_color",teecolorArr);
 
-                        setTournamentDays(modinfo);
+                        setTournamentDays(iwc);
 
 		}
 	}
 }
 
 
-public void setTournamentDays(ModuleInfo modinfo)throws Exception{
-  Tournament tournament = (Tournament) modinfo.getSessionAttribute("idega_entity");
+public void setTournamentDays(IWContext iwc)throws Exception{
+  Tournament tournament = (Tournament) iwc.getSessionAttribute("idega_entity");
   int numberOfDays=tournament.getNumberOfDays();
   if(numberOfDays>1){
       GolfDialog dialog1 = new GolfDialog("Skilgreindu mótsdaga");
@@ -626,15 +626,15 @@ public void setTournamentDays(ModuleInfo modinfo)throws Exception{
         day.setDate(stamp.getSQLDate());
         //day.setTournament(tournament);
         //day.insert();
-        modinfo.setSessionAttribute("idega_tournament_day",day);
-      typeInTournamentText(modinfo);
+        iwc.setSessionAttribute("idega_tournament_day",day);
+      typeInTournamentText(iwc);
   }
 }
 
-public void typeInTournamentText(ModuleInfo modinfo) throws Exception{
-    Tournament tournament = (Tournament) modinfo.getSessionAttribute("idega_entity");
+public void typeInTournamentText(IWContext iwc) throws Exception{
+    Tournament tournament = (Tournament) iwc.getSessionAttribute("idega_entity");
 
-    String[] tournamentDays = modinfo.getParameterValues("tournament_day");
+    String[] tournamentDays = iwc.getParameterValues("tournament_day");
     if(tournamentDays!=null){
       for(int i=0;i<tournamentDays.length;i++){
         idegaTimestamp stamp = new idegaTimestamp(tournamentDays[i]);
@@ -642,7 +642,7 @@ public void typeInTournamentText(ModuleInfo modinfo) throws Exception{
         day.setDate(stamp.getSQLDate());
         //day.setTournament(tournament);
         //day.insert();
-        modinfo.setSessionAttribute("idega_tournament_day"+i,day);
+        iwc.setSessionAttribute("idega_tournament_day"+i,day);
       }
     }
 
@@ -664,9 +664,9 @@ public void typeInTournamentText(ModuleInfo modinfo) throws Exception{
 }
 
 
-public void confirmSaveTournament(ModuleInfo modinfo) throws Exception{
-    Tournament tournament = (Tournament) modinfo.getSessionAttribute("idega_entity");
-    String extra_text = modinfo.getParameter("extra_text");
+public void confirmSaveTournament(IWContext iwc) throws Exception{
+    Tournament tournament = (Tournament) iwc.getSessionAttribute("idega_entity");
+    String extra_text = iwc.getParameter("extra_text");
 
     if(extra_text!=null){
       if (!extra_text.equalsIgnoreCase("")){
@@ -683,9 +683,9 @@ public void confirmSaveTournament(ModuleInfo modinfo) throws Exception{
 }
 
 
-public void SaveTournament(ModuleInfo modinfo) throws SQLException,IOException{
+public void SaveTournament(IWContext iwc) throws SQLException,IOException{
 
-	Tournament tournament = (Tournament) modinfo.getSessionAttribute("idega_entity");
+	Tournament tournament = (Tournament) iwc.getSessionAttribute("idega_entity");
         if (bIsUpdate) {
             tournament.update();
 
@@ -712,18 +712,18 @@ public void SaveTournament(ModuleInfo modinfo) throws SQLException,IOException{
 
         TournamentDay[] tournamentDays = tournament.getTournamentDays();
 
-        TournamentDay day = (TournamentDay) modinfo.getSessionAttribute("idega_tournament_day");
-        modinfo.removeSessionAttribute("idega_tournament_day");
+        TournamentDay day = (TournamentDay) iwc.getSessionAttribute("idega_tournament_day");
+        iwc.removeSessionAttribute("idega_tournament_day");
 
         if(day==null){
           int i = 0;
-          day=(TournamentDay) modinfo.getSessionAttribute("idega_tournament_day"+i);
+          day=(TournamentDay) iwc.getSessionAttribute("idega_tournament_day"+i);
           while (day!=null){
-            modinfo.removeSessionAttribute("idega_tournament_day"+i);
+            iwc.removeSessionAttribute("idega_tournament_day"+i);
             day.setTournament(tournament);
             day.insert();
             i++;
-            day=(TournamentDay) modinfo.getSessionAttribute("idega_tournament_day"+i);
+            day=(TournamentDay) iwc.getSessionAttribute("idega_tournament_day"+i);
           }
         }
         else{
@@ -735,9 +735,9 @@ public void SaveTournament(ModuleInfo modinfo) throws SQLException,IOException{
 
 
 
-	if (((String)modinfo.getSessionAttribute("group_tournament")).equals("Y")){
-		TournamentGroup[] group = (TournamentGroup[]) modinfo.getSessionAttribute("tournament_group");
-		String[] group_fee = (String[]) modinfo.getSessionAttribute("group_fee");
+	if (((String)iwc.getSessionAttribute("group_tournament")).equals("Y")){
+		TournamentGroup[] group = (TournamentGroup[]) iwc.getSessionAttribute("tournament_group");
+		String[] group_fee = (String[]) iwc.getSessionAttribute("group_fee");
 		for (int i = 0 ; i < group.length;i++){
 			group[i].addTo(tournament,"registration_fee",group_fee[i]);
 			try{
@@ -749,13 +749,13 @@ public void SaveTournament(ModuleInfo modinfo) throws SQLException,IOException{
 		}
 	}
 	else{
-		TeeColor[] color = (TeeColor[]) modinfo.getSessionAttribute("tee_color");
+		TeeColor[] color = (TeeColor[]) iwc.getSessionAttribute("tee_color");
 		for (int i = 0; i< color.length;i++){
 			color[i].addTo(tournament);
 		}
 	}
 
-        TournamentController.removeTournamentTableApplicationAttribute(modinfo);
+        TournamentController.removeTournamentTableApplicationAttribute(iwc);
 	GolfDialog dialog = new GolfDialog("Lokaskref");
 	add(dialog);
 	dialog.add(new Text("Mót vistað!"));
@@ -782,18 +782,18 @@ public void selectTournament(String controlParameter)throws SQLException{
 /**
  * UNFINISHED
  */
-public boolean isInEditMode(ModuleInfo modinfo){
+public boolean isInEditMode(IWContext iwc){
 /*
   String controlParameter="tournament_control_mode";
-  String mode = modinfo.getParameter(controlParameter);
+  String mode = iwc.getParameter(controlParameter);
   if(mode!=null){
-    modinfo.setSessionAttribute(controlParameter,mode);
+    iwc.setSessionAttribute(controlParameter,mode);
     if(mode.equals("edit"))
       return true;
     return false;
   }
   else{
-    mode = (String)modinfo.getSessionAttribute(controlParameter);
+    mode = (String)iwc.getSessionAttribute(controlParameter);
     if(mode!=null){
       if(mode.equals("edit"))
         return true;
@@ -808,15 +808,15 @@ public boolean isInEditMode(ModuleInfo modinfo){
 /**
  * UNFINISHED???
  */
-public Tournament getTournament(ModuleInfo modinfo)throws Exception{
-  String tournament_par = modinfo.getParameter("tournament");
+public Tournament getTournament(IWContext iwc)throws Exception{
+  String tournament_par = iwc.getParameter("tournament");
   Tournament tournament=null;
   if(tournament_par==null){
-    tournament = (Tournament)modinfo.getSessionAttribute("tournament_admin_tournament");
+    tournament = (Tournament)iwc.getSessionAttribute("tournament_admin_tournament");
   }
   else{
     tournament = new Tournament(Integer.parseInt(tournament_par));
-    modinfo.setSessionAttribute("tournament_admin_tournament",tournament);
+    iwc.setSessionAttribute("tournament_admin_tournament",tournament);
   }
   return tournament;
 }

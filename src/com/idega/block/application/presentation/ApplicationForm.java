@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.12 2001/09/04 13:14:34 palli Exp $
+ * $Id: ApplicationForm.java,v 1.13 2001/10/05 07:59:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,26 +11,26 @@ package com.idega.block.application.presentation;
 
 import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.business.ApplicationFormHelper;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.BackButton;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
-import com.idega.jmodule.object.interfaceobject.HiddenInput;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.Table;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.Table;
 import com.idega.idegaweb.IWResourceBundle;
 import java.util.List;
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ApplicationForm extends ModuleObjectContainer {
+public class ApplicationForm extends PresentationObjectContainer {
   private final int statusEnteringPage_ = 0;
   private final int statusSubject_ = 1;
   private final int statusGeneralInfo_ = 2;
@@ -45,8 +45,8 @@ public class ApplicationForm extends ModuleObjectContainer {
   public ApplicationForm() {
   }
 
-  protected void control(ModuleInfo modinfo) {
-    String statusString = modinfo.getParameter("status");
+  protected void control(IWContext iwc) {
+    String statusString = iwc.getParameter("status");
     int status = 0;
 
     if (statusString == null){
@@ -57,15 +57,15 @@ public class ApplicationForm extends ModuleObjectContainer {
     }
 
     if (status == statusEnteringPage_) {
-      doSelectSubject(modinfo);
+      doSelectSubject(iwc);
     }
     else if (status == statusSubject_) {
-      ApplicationFormHelper.saveSubject(modinfo);
-      doGeneralInformation(modinfo);
+      ApplicationFormHelper.saveSubject(iwc);
+      doGeneralInformation(iwc);
     }
     else if (status == statusGeneralInfo_) {
-      ApplicationFormHelper.saveApplicantInformation(modinfo);
-      if (ApplicationFormHelper.saveDataToDB(modinfo) != null)
+      ApplicationFormHelper.saveApplicantInformation(iwc);
+      if (ApplicationFormHelper.saveDataToDB(iwc) != null)
         doDone();
       else
         doError();
@@ -76,7 +76,7 @@ public class ApplicationForm extends ModuleObjectContainer {
     return(IW_RESOURCE_BUNDLE);
   }
 
-  protected void doSelectSubject(ModuleInfo modinfo) {
+  protected void doSelectSubject(IWContext iwc) {
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
     Text textTemplate = new Text();
 
@@ -123,7 +123,7 @@ public class ApplicationForm extends ModuleObjectContainer {
     add(form);
   }
 
-  protected void doGeneralInformation(ModuleInfo modinfo) {
+  protected void doGeneralInformation(IWContext iwc) {
     Text textTemplate = new Text();
     TextInput textInputTemplate = new TextInput();
     Form form = new Form();
@@ -259,9 +259,9 @@ public class ApplicationForm extends ModuleObjectContainer {
     add(iwrb_.getLocalizedString("applicationDBError","Gagnagrunnsvilla við skráningu umsóknar"));
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb_ = getResourceBundle(modinfo);
-    control(modinfo);
+  public void main(IWContext iwc){
+    iwrb_ = getResourceBundle(iwc);
+    control(iwc);
   }
 
   protected void doSubjectError() {

@@ -1,5 +1,5 @@
 /*
- * $Id: TextControl.java,v 1.6 2001/08/27 19:52:22 laddi Exp $
+ * $Id: TextControl.java,v 1.7 2001/10/05 08:05:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,9 +9,9 @@
  */
 package is.idegaweb.campus.service;
 //test
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.IWContext;
 import com.idega.jmodule.login.business.AccessControl;
 import com.idega.data.genericentity.Member;
 import com.idega.data.genericentity.Group;
@@ -26,13 +26,13 @@ import java.io.IOException;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class TextControl extends JModuleObject {
+public class TextControl extends Block {
 
   private String LightColor,MiddleColor,DarkColor;
   private String action;
   public static final String strAction = "text_action";
   private Member eMember;
-  private ModuleObject Tabs;
+  private PresentationObject Tabs;
   private CampusObject CampObj;
   private Hashtable PermissionHash;
   private boolean isAdmin;
@@ -47,20 +47,20 @@ public class TextControl extends JModuleObject {
     DarkColor = "#27324B";
   }
 
-  public ModuleObject getTabs(){
+  public PresentationObject getTabs(){
     return Tabs;
   }
 
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
 
     try{
 
 
-      if(modinfo.getParameter(strAction) == null){
+      if(iwc.getParameter(strAction) == null){
         iAct = NOACT;
       }
       else {
-        sAct = modinfo.getParameter(strAction);
+        sAct = iwc.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
       }
 
@@ -157,15 +157,15 @@ public class TextControl extends JModuleObject {
     }
   }
 
-  public void main(ModuleInfo modinfo)  {
+  public void main(IWContext iwc)  {
     try{
-      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch (SQLException sql) {
       isAdmin = false;
     }
     /** @todo fixa Admin*/
-    control(modinfo);
+    control(iwc);
   }
 }// class PriceCatalogueMaker
 

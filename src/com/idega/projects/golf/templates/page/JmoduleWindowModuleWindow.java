@@ -6,10 +6,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
@@ -47,7 +47,7 @@ public boolean initialized = false;
     }
 
 
-    private void initTable(ModuleInfo modinfo) {
+    private void initTable(IWContext iwc) {
 	  tafla.setWidth("100%");
 	  tafla.setHeight("100%");
 	  tafla.setHeight(1,1,"58");
@@ -78,7 +78,7 @@ public boolean initialized = false;
 	}
 
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
           tafla.add(objectToAdd,1,2);
 	}
 
@@ -142,12 +142,12 @@ public boolean initialized = false;
         }
 
 
-        public void main(ModuleInfo modinfo) throws Exception {
+        public void main(IWContext iwc) throws Exception {
 
-          iwrb = getResourceBundle(modinfo);
-          iwb = getBundle(modinfo);
+          iwrb = getResourceBundle(iwc);
+          iwb = getBundle(iwc);
           if(!initialized ){
-            initTable(modinfo);
+            initTable(iwc);
           }
 
         }

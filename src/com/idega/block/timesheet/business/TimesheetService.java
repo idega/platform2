@@ -1,8 +1,8 @@
 package com.idega.block.timesheet.business;
 
 import com.idega.block.timesheet.data.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.*;
 import com.idega.util.text.TextSoap;
 import java.sql.SQLException;
 import java.util.Enumeration;
@@ -31,13 +31,13 @@ public class TimesheetService {
       /**
        * Removes all application attributes concerning Timesheet
        */
-      public static void removeAllProjectApplicationAttributes(ModuleInfo modinfo) {
-          Enumeration enum = modinfo.getServletContext().getAttributeNames();
+      public static void removeAllProjectApplicationAttributes(IWContext iwc) {
+          Enumeration enum = iwc.getServletContext().getAttributeNames();
           String myString = "";
           while (enum.hasMoreElements()) {
               myString = (String) enum.nextElement();
               if (myString.indexOf("i_timesheet_all_projects_array") != -1) {
-                  modinfo.removeApplicationAttribute(myString);
+                  iwc.removeApplicationAttribute(myString);
               }
           }
       }
@@ -45,12 +45,12 @@ public class TimesheetService {
       /**
        * Returns valid projects...
        */
-      public static TimesheetProject[] getAllProjects(ModuleInfo modinfo) throws SQLException {
-          TimesheetProject[] allProjects = (TimesheetProject[]) modinfo.getApplicationAttribute("i_timesheet_all_projects_array");
+      public static TimesheetProject[] getAllProjects(IWContext iwc) throws SQLException {
+          TimesheetProject[] allProjects = (TimesheetProject[]) iwc.getApplicationAttribute("i_timesheet_all_projects_array");
 
           if (allProjects == null) {
                 allProjects = (TimesheetProject[]) (new TimesheetProject()).findAllByColumn("valid","Y");
-                modinfo.setApplicationAttribute("i_timesheet_all_projects_array",allProjects);
+                iwc.setApplicationAttribute("i_timesheet_all_projects_array",allProjects);
           }
 
           return allProjects;
@@ -59,19 +59,19 @@ public class TimesheetService {
       /**
        * Returns valid projects order by ProjectNumber
        */
-      public static TimesheetProject[] getAllProjectsOrderByProjectNumber(ModuleInfo modinfo) throws SQLException {
-          return getAllProjects(modinfo,"project_number,name");
+      public static TimesheetProject[] getAllProjectsOrderByProjectNumber(IWContext iwc) throws SQLException {
+          return getAllProjects(iwc,"project_number,name");
       }
 
       /**
        * Returns valid projects order by <i>order_by</i>
        */
-      public static TimesheetProject[] getAllProjects(ModuleInfo modinfo, String order_by) throws SQLException{
-          TimesheetProject[] allProjects = (TimesheetProject[]) modinfo.getApplicationAttribute("i_timesheet_all_projects_array_"+TextSoap.findAndCut(order_by,","));
+      public static TimesheetProject[] getAllProjects(IWContext iwc, String order_by) throws SQLException{
+          TimesheetProject[] allProjects = (TimesheetProject[]) iwc.getApplicationAttribute("i_timesheet_all_projects_array_"+TextSoap.findAndCut(order_by,","));
 
           if (allProjects == null) {
                 allProjects = (TimesheetProject[]) (new TimesheetProject()).findAllByColumnOrdered("valid","Y",order_by);
-                modinfo.setApplicationAttribute("i_timesheet_all_projects_array_"+TextSoap.findAndCut(order_by,","),allProjects);
+                iwc.setApplicationAttribute("i_timesheet_all_projects_array_"+TextSoap.findAndCut(order_by,","),allProjects);
           }
           return allProjects;
       }

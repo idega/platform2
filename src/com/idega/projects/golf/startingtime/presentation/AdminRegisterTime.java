@@ -1,30 +1,30 @@
 package com.idega.projects.golf.startingtime.presentation;
 
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.projects.golf.startingtime.business.TeeTimeBusiness;
 import com.idega.projects.golf.entity.Tournament;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.CheckBox;
-import com.idega.jmodule.object.interfaceobject.FloatInput;
-import com.idega.jmodule.object.interfaceobject.HiddenInput;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.FloatInput;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.Image;
 import com.idega.projects.golf.GolfField;
 import com.idega.data.GenericEntity;
 import com.idega.util.idegaTimestamp;
 import com.idega.projects.golf.entity.TournamentRound;
 import com.idega.projects.golf.entity.Tournament;
 import com.idega.data.EntityFinder;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
 import com.idega.projects.golf.entity.Union;
 import com.idega.projects.golf.entity.Member;
-import com.idega.jmodule.object.interfaceobject.CloseButton;
-import com.idega.jmodule.object.interfaceobject.BackButton;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.BackButton;
 import com.idega.projects.golf.entity.StartingtimeFieldConfig;
 import com.idega.projects.golf.business.GolfCacher;
 import com.idega.projects.golf.startingtime.data.TeeTime;
@@ -141,7 +141,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
         return null;
   }
 
-  public void lineUpTable(ModuleInfo modinfo) throws SQLException {
+  public void lineUpTable(IWContext iwc) throws SQLException {
 
     Vector illegalTimes = new Vector(0);
     int illegalTimesIndex = 0;
@@ -575,26 +575,26 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
   }
 
 
-  public void handleFormInfo(ModuleInfo modinfo) throws SQLException {
+  public void handleFormInfo(IWContext iwc) throws SQLException {
 
-    Object rfObj = modinfo.getSessionAttribute(formParmeterIDParameterString);
-    String rfParam = modinfo.getParameter(formParmeterIDParameterString);
+    Object rfObj = iwc.getSessionAttribute(formParmeterIDParameterString);
+    String rfParam = iwc.getParameter(formParmeterIDParameterString);
 
 
     if(!((String)rfObj).equals(rfParam)){
 
-      modinfo.setSessionAttribute(formParmeterIDParameterString,rfParam);
+      iwc.setSessionAttribute(formParmeterIDParameterString,rfParam);
 
-      String[] sentTimes = modinfo.getParameterValues(timeParameterString);
-      String[] sentLastGroups = modinfo.getParameterValues(lastGroupParameterString);
-      String[] sentStartIDs = modinfo.getParameterValues(timeChangeStartIDParameterString);
+      String[] sentTimes = iwc.getParameterValues(timeParameterString);
+      String[] sentLastGroups = iwc.getParameterValues(lastGroupParameterString);
+      String[] sentStartIDs = iwc.getParameterValues(timeChangeStartIDParameterString);
 
-      String[] sentDeletes = modinfo.getParameterValues(deleteParameterString);
+      String[] sentDeletes = iwc.getParameterValues(deleteParameterString);
 
-      String[] sentNames = modinfo.getParameterValues(nameParameterString);
-      String[] sentGroupNums = modinfo.getParameterValues(groupNumParameterString);
-      String[] sentUnions = modinfo.getParameterValues(unionParameterString);
-      String[] sentHandycaps = modinfo.getParameterValues(handycapParameterString);
+      String[] sentNames = iwc.getParameterValues(nameParameterString);
+      String[] sentGroupNums = iwc.getParameterValues(groupNumParameterString);
+      String[] sentUnions = iwc.getParameterValues(unionParameterString);
+      String[] sentHandycaps = iwc.getParameterValues(handycapParameterString);
 
 
 
@@ -697,18 +697,18 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
 
 
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    super.main(modinfo);
-    String date = modinfo.getParameter("date");
-    currentField = modinfo.getParameter("field_id");
-    currentUnion = modinfo.getParameter("union_id");
-    MemberID= modinfo.getParameter("member_id");
-    String sDayTime = modinfo.getParameter("daytime");
+  public void main(IWContext iwc) throws Exception {
+    super.main(iwc);
+    String date = iwc.getParameter("date");
+    currentField = iwc.getParameter("field_id");
+    currentUnion = iwc.getParameter("union_id");
+    MemberID= iwc.getParameter("member_id");
+    String sDayTime = iwc.getParameter("daytime");
 
-    String rfParam = modinfo.getParameter(formParmeterIDParameterString);
+    String rfParam = iwc.getParameter(formParmeterIDParameterString);
 
-    if(modinfo.getSessionAttribute(formParmeterIDParameterString) == null){
-      modinfo.setSessionAttribute(formParmeterIDParameterString,Integer.toString(myForm.hashCode()-1));
+    if(iwc.getSessionAttribute(formParmeterIDParameterString) == null){
+      iwc.setSessionAttribute(formParmeterIDParameterString,Integer.toString(myForm.hashCode()-1));
       myForm.add(new HiddenInput(formParmeterIDParameterString,Integer.toString(myForm.hashCode())));
     }else if ( rfParam != null){
       myForm.add(new HiddenInput(formParmeterIDParameterString, Integer.toString((Integer.parseInt(rfParam)+rfParam.hashCode())%Integer.MAX_VALUE)));
@@ -717,7 +717,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     }
 
     if(sDayTime == null){
-      Object tempObj = modinfo.getSessionAttribute("when");
+      Object tempObj = iwc.getSessionAttribute("when");
       if(tempObj != null){
         daytime = Integer.parseInt(tempObj.toString());
         myForm.add(new HiddenInput("daytime",tempObj.toString()));
@@ -728,7 +728,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     }
 
     if(date == null){
-      Object tempObj = modinfo.getSessionAttribute("date");
+      Object tempObj = iwc.getSessionAttribute("date");
       if(tempObj != null){
         date = tempObj.toString();
         myForm.add(new HiddenInput("date",date));
@@ -738,7 +738,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     }
 
     if(currentField == null){
-      Object tempObj = modinfo.getSessionAttribute("field_id");
+      Object tempObj = iwc.getSessionAttribute("field_id");
       if(tempObj != null){
         currentField = tempObj.toString();
         myForm.add(new HiddenInput("field_id",currentField));
@@ -748,7 +748,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     }
 
     if(currentUnion == null){
-      Object tempObj = modinfo.getSessionAttribute("union_id");
+      Object tempObj = iwc.getSessionAttribute("union_id");
       if(tempObj != null){
         currentUnion = tempObj.toString();
         myForm.add(new HiddenInput("union_id",currentUnion));
@@ -758,7 +758,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
     }
 
     if(MemberID == null){
-      Object tempObj = com.idega.projects.golf.login.business.LoginBusiness.getMember(modinfo);
+      Object tempObj = com.idega.projects.golf.login.business.LoginBusiness.getMember(iwc);
       if(tempObj != null){
         MemberID = Integer.toString(((GenericEntity)tempObj).getID());
         myForm.add(new HiddenInput("member_id",MemberID));
@@ -776,13 +776,13 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
       this.noPermission();
     }
 
-    if(modinfo.getParameter(saveParameterString+".x") != null || modinfo.getParameter(saveParameterString) != null){
-      this.handleFormInfo(modinfo);
+    if(iwc.getParameter(saveParameterString+".x") != null || iwc.getParameter(saveParameterString) != null){
+      this.handleFormInfo(iwc);
     }
 
     if(keepOn){
-        String hasPermission = modinfo.getParameter("golf");
-        if( hasPermission != null || AccessControl.isAdmin(modinfo) || (AccessControl.isClubAdmin(modinfo) && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) || (AccessControl.isClubWorker(modinfo) && modinfo.getSessionAttribute("member_main_union_id").equals(modinfo.getSessionAttribute("union_id"))) ){
+        String hasPermission = iwc.getParameter("golf");
+        if( hasPermission != null || AccessControl.isAdmin(iwc) || (AccessControl.isClubAdmin(iwc) && iwc.getSessionAttribute("member_main_union_id").equals(iwc.getSessionAttribute("union_id"))) || (AccessControl.isClubWorker(iwc) && iwc.getSessionAttribute("member_main_union_id").equals(iwc.getSessionAttribute("union_id"))) ){
           if(hasPermission == null){
             myForm.add(new HiddenInput("golf","79")); // some dummy value
           }else{
@@ -809,7 +809,7 @@ public class AdminRegisterTime extends com.idega.projects.golf.templates.page.Jm
 
 
           this.setTitle( business.getFieldName(Integer.parseInt(this.currentField)) + sDayTimeString + this.currentDay.getISLDate());
-          lineUpTable(modinfo);
+          lineUpTable(iwc);
         }else{
           noPermission();
         }

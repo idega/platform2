@@ -2,9 +2,9 @@ package com.idega.block.forum.business;
 
 import com.idega.block.forum.data.*;
 import com.idega.block.forum.presentation.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import java.util.*;
 import java.sql.*;
 

@@ -7,9 +7,9 @@ package com.idega.jmodule.login.presentation;
 
 
 import com.idega.data.genericentity.Member;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import java.util.*;
 import com.idega.jmodule.login.business.*;
 
@@ -22,7 +22,7 @@ import com.idega.jmodule.login.business.*;
   *@author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.1
  */
-public class Login extends JModuleObject{
+public class Login extends Block{
 
 String backgroundImageUrl = "";
 String loginImageUrl = "";
@@ -137,12 +137,12 @@ public static String controlParameter;
 	public void setLogOutImageUrl(String url) {
 		logOutImageUrl = url;
 	}
-	public static boolean isAdmin(ModuleInfo modinfo)throws Exception{
-            return AccessControl.isAdmin(modinfo);
+	public static boolean isAdmin(IWContext iwc)throws Exception{
+            return AccessControl.isAdmin(iwc);
 	}
 
-/*       public boolean isDeveloper(ModuleInfo modinfo)throws Exception{
-		Member member = getMember(modinfo);
+/*       public boolean isDeveloper(IWContext iwc)throws Exception{
+		Member member = getMember(iwc);
 	    if (member != null){
          Group[] access = member.getGroups();
          for(int i = 0; i < access.length; i++){
@@ -153,8 +153,8 @@ public static String controlParameter;
          return false;
        }
 
-       public boolean isClubAdmin(ModuleInfo modinfo)throws Exception{
-        Member member = getMember(modinfo);
+       public boolean isClubAdmin(IWContext iwc)throws Exception{
+        Member member = getMember(iwc);
 		if (member != null){
          Group[] access = member.getGroups();
          for(int i = 0; i < access.length; i++){
@@ -165,8 +165,8 @@ public static String controlParameter;
          return false;
        }
 
-       public boolean isUser(ModuleInfo modinfo)throws Exception{
-		Member member = getMember(modinfo);
+       public boolean isUser(IWContext iwc)throws Exception{
+		Member member = getMember(iwc);
          if (member != null){
           Group[] access = member.getGroups();
           for(int i = 0; i < access.length; i++){
@@ -178,8 +178,8 @@ public static String controlParameter;
        }
 */
 
-	public static Member getMember(ModuleInfo modinfo){
-		return AccessControl.getMember(modinfo);
+	public static Member getMember(IWContext iwc){
+		return AccessControl.getMember(iwc);
 	}
 
 
@@ -209,7 +209,7 @@ public static String controlParameter;
 */
 		Table TveirTable = new Table(1,1);
 //			TveirTable.setBorder(1);
-			TveirTable.setBackgroundImage(1,1,new com.idega.jmodule.object.Image(backgroundImageUrl));
+			TveirTable.setBackgroundImage(1,1,new com.idega.presentation.Image(backgroundImageUrl));
 			TveirTable.setAlignment(1,1,"center");
 			if (!(color.equals(""))) {
 			TveirTable.setColor(color);
@@ -231,7 +231,7 @@ public static String controlParameter;
 			}
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,new com.idega.jmodule.object.Image(""));
+			TrirTable.setBackgroundImage(1,2,new com.idega.presentation.Image(""));
 //			TrirTable.setColor(1,2,"#FFFFFF");
 
 
@@ -335,7 +335,7 @@ public static String controlParameter;
 
                         }
                         else{
-                          nidri.add(new SubmitButton(new com.idega.jmodule.object.Image(loginImageUrl),"tengja"),1,1);
+                          nidri.add(new SubmitButton(new com.idega.presentation.Image(loginImageUrl),"tengja"),1,1);
                           nidri.add(new Parameter(LoginBusiness.LoginStateParameter,"login"));
                         }
 
@@ -348,7 +348,7 @@ public static String controlParameter;
 	}
 
 
-	private void isLoggedOn(ModuleInfo modinfo) throws Exception{
+	private void isLoggedOn(IWContext iwc) throws Exception{
 
 		Text user = new Text();
 //			user.setBold();
@@ -359,7 +359,7 @@ public static String controlParameter;
 				user.setFontColor(userTextColor);
 			}
 
-		Member member = (Member) getMember(modinfo);
+		Member member = (Member) getMember(iwc);
 
 
                 user.addToText(member.getName());
@@ -391,7 +391,7 @@ public static String controlParameter;
 			if (!(color.equals(""))) {
 			TveirTable.setColor(color);
 			}
-			TveirTable.setBackgroundImage(1,1,new com.idega.jmodule.object.Image(backgroundImageUrl));
+			TveirTable.setBackgroundImage(1,1,new com.idega.presentation.Image(backgroundImageUrl));
 			TveirTable.setAlignment(1,1,"center");
 			TveirTable.setWidth(loginWidth);
 			TveirTable.setHeight(loginHeight);
@@ -407,7 +407,7 @@ public static String controlParameter;
 //			TrirTable.setHeight("87");
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,new com.idega.jmodule.object.Image(""));
+			TrirTable.setBackgroundImage(1,2,new com.idega.presentation.Image(""));
 			if (!(color.equals(""))) {
 			TrirTable.setColor(color);
 			}
@@ -446,7 +446,7 @@ public static String controlParameter;
                         nidri.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
 		}
 		else {
-			com.idega.jmodule.object.Image logOut = new com.idega.jmodule.object.Image(logOutImageUrl);
+			com.idega.presentation.Image logOut = new com.idega.presentation.Image(logOutImageUrl);
 			nidri.add(new SubmitButton(logOut,"utskraning"));
                         nidri.add(new Parameter(LoginBusiness.LoginStateParameter,"logoff"));
 		}
@@ -483,7 +483,7 @@ public static String controlParameter;
 			if (!(color.equals(""))) {
 				TveirTable.setColor(color);
 			}
-			TveirTable.setBackgroundImage(1,1,new com.idega.jmodule.object.Image(backgroundImageUrl));
+			TveirTable.setBackgroundImage(1,1,new com.idega.presentation.Image(backgroundImageUrl));
 			TveirTable.setAlignment(1,1,"center");
 			TveirTable.setWidth(loginWidth);
 			TveirTable.setHeight(loginHeight);
@@ -499,7 +499,7 @@ public static String controlParameter;
 //			TrirTable.setHeight("87");
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,new com.idega.jmodule.object.Image(""));
+			TrirTable.setBackgroundImage(1,2,new com.idega.presentation.Image(""));
 			if (!(color.equals(""))) {
 				TrirTable.setColor(color);
 			}
@@ -546,7 +546,7 @@ public static String controlParameter;
                         nidri.add(new Parameter(LoginBusiness.LoginStateParameter,"tryagain"));
 		}
 		else {
-			com.idega.jmodule.object.Image tryAgain = new com.idega.jmodule.object.Image(tryAgainImageUrl);
+			com.idega.presentation.Image tryAgain = new com.idega.presentation.Image(tryAgainImageUrl);
 			nidri.add(new SubmitButton(tryAgain,"tryAgain"));
                         nidri.add(new Parameter(LoginBusiness.LoginStateParameter,"tryagain"));
 		}
@@ -584,7 +584,7 @@ public static String controlParameter;
 			if (!(color.equals(""))) {
 				TveirTable.setColor(color);
 			}
-			TveirTable.setBackgroundImage(1,1,new com.idega.jmodule.object.Image(backgroundImageUrl));
+			TveirTable.setBackgroundImage(1,1,new com.idega.presentation.Image(backgroundImageUrl));
 			TveirTable.setAlignment(1,1,"center");
 			TveirTable.setWidth(loginWidth);
 			TveirTable.setHeight(loginHeight);
@@ -603,7 +603,7 @@ public static String controlParameter;
 			}
 			TrirTable.setCellpadding(0);
 			TrirTable.setCellspacing(0);
-			TrirTable.setBackgroundImage(1,2,new com.idega.jmodule.object.Image(""));
+			TrirTable.setBackgroundImage(1,2,new com.idega.presentation.Image(""));
 			TrirTable.setColor(1,2,"#FFFFFF");
 			TveirTable.add(TrirTable,1,1);
 
@@ -651,11 +651,11 @@ public static String controlParameter;
 	}
 
 
-        public void main(ModuleInfo modinfo)throws Exception{
-            String state = internalGetState(modinfo);
+        public void main(IWContext iwc)throws Exception{
+            String state = internalGetState(iwc);
             if(state!=null){
                 if(state.equals("loggedon")){
-                  isLoggedOn(modinfo);
+                  isLoggedOn(iwc);
                 }
                 else if(state.equals("loggedoff")){
                   startState();
@@ -675,8 +675,8 @@ public static String controlParameter;
 
 
 
-        public String internalGetState(ModuleInfo modinfo){
-            return LoginBusiness.internalGetState(modinfo);
+        public String internalGetState(IWContext iwc){
+            return LoginBusiness.internalGetState(iwc);
         }
 
 

@@ -6,9 +6,9 @@ package com.idega.projects.hysing.templates;
 
 
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.poll.moduleobject.*;
 import com.idega.idegaweb.template.*;
 import java.util.*;
@@ -55,7 +55,7 @@ public class HysingPage extends TemplatePage{
   }
 
 
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(IWContext iwc)throws Exception{
       if(headerImageURL==null){
         headerImageURL="/pics/headers/forsida/forsida_topp.jpg";
       }
@@ -335,15 +335,15 @@ public class HysingPage extends TemplatePage{
           clickablemenu.setClickedMenuItem(menuItemName);
         }
 
-        public ModuleObject getMenuItem(String menuItemName){
+        public PresentationObject getMenuItem(String menuItemName){
           return clickablemenu.getMenuItem(menuItemName);
         }
 
-        public ModuleObject getLeftMenuItem(String menuItemName){
+        public PresentationObject getLeftMenuItem(String menuItemName){
           return clickablemenu.getLeftMenuItem(menuItemName);
         }
 
-        public ModuleObject getRightMenuItem(String menuItemName){
+        public PresentationObject getRightMenuItem(String menuItemName){
           return clickablemenu.getRightMenuItem(menuItemName);
         }
 
@@ -601,7 +601,7 @@ public class HysingPage extends TemplatePage{
 	}
 
 // ###########  Public - Föll
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		try{
 			content().add(objectToAdd,2,2);
 		}
@@ -610,7 +610,7 @@ public class HysingPage extends TemplatePage{
 		}
 	}
 
-	public void add2(ModuleObject objectToAdd){
+	public void add2(PresentationObject objectToAdd){
 		try{
 			content2().add(objectToAdd,2,2);
 		}
@@ -619,7 +619,7 @@ public class HysingPage extends TemplatePage{
 		}
 	}
 
-	public void add3(ModuleObject objectToAdd){
+	public void add3(PresentationObject objectToAdd){
 		try{
 			content3().add(objectToAdd,2,2);
 		}

@@ -2,11 +2,11 @@ package com.idega.block.finance.presentation;
 
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.Finder;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.*;
 import com.idega.data.EntityFinder;
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -41,22 +41,22 @@ public class AccountKeyEditor extends KeyEditor {
     this.sHeader = sHeader;
   }
 
-   protected void control(ModuleInfo modinfo){
+   protected void control(IWContext iwc){
 
     try{
 
-      if(modinfo.getParameter(strAction) == null){
-        doMain(modinfo);
+      if(iwc.getParameter(strAction) == null){
+        doMain(iwc);
       }
-      if(modinfo.getParameter(strAction) != null){
-        String sAct = modinfo.getParameter(strAction);
+      if(iwc.getParameter(strAction) != null){
+        String sAct = iwc.getParameter(strAction);
         int iAct = Integer.parseInt(sAct);
 
         switch (iAct) {
-          case ACT1 : doMain(modinfo);        break;
-          case ACT2 : doChange(modinfo);      break;
-          case ACT3 : doUpdate(modinfo);      break;
-          default: doMain(modinfo);           break;
+          case ACT1 : doMain(iwc);        break;
+          case ACT2 : doChange(iwc);      break;
+          case ACT3 : doUpdate(iwc);      break;
+          default: doMain(iwc);           break;
         }
 
       }
@@ -66,7 +66,7 @@ public class AccountKeyEditor extends KeyEditor {
     }
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -87,7 +87,7 @@ public class AccountKeyEditor extends KeyEditor {
     return LinkTable;
   }
 
-  private void doMain(ModuleInfo modinfo){
+  private void doMain(IWContext iwc){
 
     AccountKey[] keys = Finder.findAccountKeys();
     int count = keys.length;
@@ -120,7 +120,7 @@ public class AccountKeyEditor extends KeyEditor {
     this.addMain(keyTable);
   }
 
-  private void doChange(ModuleInfo modinfo) throws SQLException{
+  private void doChange(IWContext iwc) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
     AccountKey[] keys = Finder.findAccountKeys();
@@ -189,19 +189,19 @@ public class AccountKeyEditor extends KeyEditor {
     this.addMain(myForm);
   }
 
-  private void doUpdate(ModuleInfo modinfo) throws SQLException{
-    int count = Integer.parseInt(modinfo.getParameter("ake_count"));
+  private void doUpdate(IWContext iwc) throws SQLException{
+    int count = Integer.parseInt(iwc.getParameter("ake_count"));
     String sName,sInfo,sDel,sTKid;
     int ID,TKid;
     AccountKey key = null;
 
     for (int i = 1; i < count+1 ;i++){
-      sName = modinfo.getParameter("ake_nameinput"+i );
-      sInfo = modinfo.getParameter("ake_infoinput"+i);
-      sDel = modinfo.getParameter("ake_delcheck"+i);
-      sTKid = modinfo.getParameter("ake_keydrp"+i);
+      sName = iwc.getParameter("ake_nameinput"+i );
+      sInfo = iwc.getParameter("ake_infoinput"+i);
+      sDel = iwc.getParameter("ake_delcheck"+i);
+      sTKid = iwc.getParameter("ake_keydrp"+i);
       TKid = Integer.parseInt(sTKid);
-      ID = Integer.parseInt(modinfo.getParameter("ake_idinput"+i));
+      ID = Integer.parseInt(iwc.getParameter("ake_idinput"+i));
       if(ID != -1 && TKid > 0){
         try{
           key = new AccountKey(ID);
@@ -233,7 +233,7 @@ public class AccountKeyEditor extends KeyEditor {
       }
     }// for loop
 
-   doMain(modinfo);
+   doMain(iwc);
   }
 
   private Hashtable getKeys(){

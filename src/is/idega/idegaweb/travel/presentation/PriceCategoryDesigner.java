@@ -1,8 +1,8 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import is.idega.travel.business.TravelStockroomBusiness;
 import is.idega.travel.presentation.TravelWindow;
 import com.idega.block.trade.stockroom.data.*;
@@ -56,28 +56,28 @@ public class PriceCategoryDesigner extends TravelWindow {
     super.setTitle("idegaWeb Travel");
   }
 
-  public void main(ModuleInfo modinfo) {
-    super.main(modinfo);
+  public void main(IWContext iwc) {
+    super.main(iwc);
 
-    if (checkForEverything(modinfo)) {
-      String sAction = modinfo.getParameter(action);
+    if (checkForEverything(iwc)) {
+      String sAction = iwc.getParameter(action);
       if (sAction == null) sAction = "";
 
       if ( (sAction.equals("")) || (sAction.equals(this.parameterCloserLook)) ){
         if (sAction.equals(this.parameterCloserLook)) fillForm = true;
-        mainMenu(modinfo);
+        mainMenu(iwc);
       }else if (sAction.equals(parameterNew)) {
         newCat = true;
-        mainMenu(modinfo);
+        mainMenu(iwc);
       }else if (sAction.equals(parameterDelete)) {
         delete();
-        mainMenu(modinfo);
+        mainMenu(iwc);
       }else if (sAction.equals(parameterSave)) {
-        saveUpdate(modinfo,false);
-        mainMenu(modinfo);
+        saveUpdate(iwc,false);
+        mainMenu(iwc);
       }else if (sAction.equals(parameterUpdate)) {
-        saveUpdate(modinfo,true);
-        mainMenu(modinfo);
+        saveUpdate(iwc,true);
+        mainMenu(iwc);
       }else if (sAction.equals(parameterClose)) {
         super.close(true);
       }
@@ -87,9 +87,9 @@ public class PriceCategoryDesigner extends TravelWindow {
   }
 
 
-  public void mainMenu(ModuleInfo modinfo) {
+  public void mainMenu(IWContext iwc) {
       Form form = new Form();
-        form.add(getHeaderTable(modinfo));
+        form.add(getHeaderTable(iwc));
 
       HorizontalRule hr = new HorizontalRule();
         hr.setWidth("90%");
@@ -97,7 +97,7 @@ public class PriceCategoryDesigner extends TravelWindow {
       add(hr);
 
       if (newCat || fillForm)
-      add(getBodyForm(modinfo));
+      add(getBodyForm(iwc));
 
       Paragraph p = new Paragraph("right");
       SubmitButton close = new SubmitButton(iwrb.getImage("/buttons/close.gif"),this.action,this.parameterClose );
@@ -105,7 +105,7 @@ public class PriceCategoryDesigner extends TravelWindow {
       form.add(p);
   }
 
-  public Table getHeaderTable(ModuleInfo modinfo) {
+  public Table getHeaderTable(IWContext iwc) {
       Table table = new Table();
         table.setAlignment("center");
         table.setWidth("90%");
@@ -138,7 +138,7 @@ public class PriceCategoryDesigner extends TravelWindow {
     return table;
   }
 
-  private Form getBodyForm(ModuleInfo modinfo) {
+  private Form getBodyForm(IWContext iwc) {
     Form form = new Form();
     Table table = new Table();
       form.add(table);
@@ -204,14 +204,14 @@ public class PriceCategoryDesigner extends TravelWindow {
     return form;
   }
 
-  private boolean checkForEverything(ModuleInfo modinfo) {
+  private boolean checkForEverything(IWContext iwc) {
     boolean returner = true;
     try {
-      String service_id = modinfo.getParameter(SERVICE_ID_PARAMETER_NAME);
-      this.supplierId = TravelStockroomBusiness.getUserSupplierId(modinfo);
+      String service_id = iwc.getParameter(SERVICE_ID_PARAMETER_NAME);
+      this.supplierId = TravelStockroomBusiness.getUserSupplierId(iwc);
 
       iCatId = -1;
-      sCatId = modinfo.getParameter("price_category_id");
+      sCatId = iwc.getParameter("price_category_id");
       if (sCatId != null) {
         iCatId = Integer.parseInt(sCatId);
         priceCategory = new PriceCategory(iCatId);
@@ -258,17 +258,17 @@ public class PriceCategoryDesigner extends TravelWindow {
     this.iCatId = -1;
   }
 
-  private void saveUpdate(ModuleInfo modinfo, boolean isUpdate) {
+  private void saveUpdate(IWContext iwc, boolean isUpdate) {
 
-      String name =   modinfo.getParameter("name");
-      String desc =   modinfo.getParameter("description");
-      String online = modinfo.getParameter("online");
-      String type =   modinfo.getParameter("price_type");
-      String info =   modinfo.getParameter("extra_info");
-      String discountOf = modinfo.getParameter("discount_of");
+      String name =   iwc.getParameter("name");
+      String desc =   iwc.getParameter("description");
+      String online = iwc.getParameter("online");
+      String type =   iwc.getParameter("price_type");
+      String info =   iwc.getParameter("extra_info");
+      String discountOf = iwc.getParameter("discount_of");
 
       if (isUpdate) {
-          String updatePriceCategoryId = modinfo.getParameter("price_category_id_to_update");
+          String updatePriceCategoryId = iwc.getParameter("price_category_id_to_update");
           try {
             boolean bOnline;
                 if (online.equals("Y")) {

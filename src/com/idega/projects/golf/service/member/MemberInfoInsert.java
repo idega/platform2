@@ -1,7 +1,7 @@
 package com.idega.projects.golf.service.member;
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import com.idega.util.text.*;
 import java.util.*;
@@ -9,9 +9,9 @@ import java.sql.Date;
 import java.sql.*;
 import java.io.*;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.*;
 import com.idega.util.*;
 import com.idega.data.*;
@@ -57,11 +57,11 @@ public class MemberInfoInsert extends EntityInsert {
     memberID = id;
   }
 
-  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
+  public boolean areNeededFieldsEmpty(IWContext iwc) {
     return false;
   }
 
-  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+  public Vector getNeededEmptyFields(IWContext iwc) {
     return new Vector();
   }
 
@@ -75,8 +75,8 @@ public class MemberInfoInsert extends EntityInsert {
     return this.handicap;
   }
 
-  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
-    return (isEmpty(modinfo,inputHandicapName));
+  public boolean areSomeFieldsEmpty(IWContext iwc) {
+    return (isEmpty(iwc,inputHandicapName));
   }
 
   public Vector getEmptyFields() {
@@ -103,8 +103,8 @@ public class MemberInfoInsert extends EntityInsert {
     return hTable;
   }
 
-  public void store(ModuleInfo modinfo)throws SQLException, IOException {
-    setVariables(modinfo);
+  public void store(IWContext iwc)throws SQLException, IOException {
+    setVariables(iwc);
     if(bUpdate)
         eMemberInfo.update();
     else {
@@ -116,8 +116,8 @@ public class MemberInfoInsert extends EntityInsert {
     }
   }
 
-  public void setVariables(ModuleInfo modinfo) {
-    inputHandicapValue = getValue(modinfo,inputHandicapName);
+  public void setVariables(IWContext iwc) {
+    inputHandicapValue = getValue(iwc,inputHandicapName);
     if (! isInvalid(inputHandicapValue)) {
       this.eMemberInfo.setHandicap(Float.valueOf(inputHandicapValue));
     }

@@ -7,13 +7,13 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.quote.data.*;
 import com.idega.util.text.*;
 
-public class QuoteEditor extends JModuleObject{
+public class QuoteEditor extends Block{
 
 private String adminURL = "/quote/quoteadmin.jsp";
 private boolean isAdmin = false;
@@ -28,31 +28,31 @@ private String headlineBgColor = "FFFFFF";
 public QuoteEditor(){
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
+	public void main(IWContext iwc) throws Exception {
 
-        isAdmin=isAdministrator(modinfo);
+        isAdmin=isAdministrator(iwc);
 
 		if ( isAdmin ) {
 
-			String newQuote = modinfo.getRequest().getParameter("new");
-			String change = modinfo.getRequest().getParameter("change");
-			String delete = modinfo.getRequest().getParameter("delete");
-			String action = modinfo.getRequest().getParameter("action");
+			String newQuote = iwc.getRequest().getParameter("new");
+			String change = iwc.getRequest().getParameter("change");
+			String delete = iwc.getRequest().getParameter("delete");
+			String action = iwc.getRequest().getParameter("action");
 				if ( action == null ) { action = "none"; }
-			String mode = modinfo.getRequest().getParameter("mode");
+			String mode = iwc.getRequest().getParameter("mode");
 				if ( mode == null ) { mode = "none"; }
 
 			if ( newQuote != null ) {
-				newQuote(modinfo);
+				newQuote(iwc);
 			}
 
 			if ( change != null ) {
 				update = true;
-				newQuote(modinfo);
+				newQuote(iwc);
 			}
 
 			if ( delete != null ) {
-				deleteQuote(modinfo);
+				deleteQuote(iwc);
 			}
 
 			if ( mode.equals("Vista") ) {
@@ -61,7 +61,7 @@ public QuoteEditor(){
 					update = true;
 				}
 
-				saveQuote(modinfo);
+				saveQuote(iwc);
 			}
 
 			add(outerTable);
@@ -91,12 +91,12 @@ public QuoteEditor(){
 
 	}
 
-	public void newQuote(ModuleInfo modinfo) throws IOException,SQLException {
+	public void newQuote(IWContext iwc) throws IOException,SQLException {
 
 		int quote_id = -1;
 
 		if ( update ) {
-			String quote_id2 = modinfo.getRequest().getParameter("quote_id");
+			String quote_id2 = iwc.getRequest().getParameter("quote_id");
 				if ( quote_id2 == null ) { quote_id2 = "-1"; }
 
 			quote_id = Integer.parseInt(quote_id2);
@@ -108,7 +108,7 @@ public QuoteEditor(){
 			quote = new Quote(quote_id);
 		}
 
-		HttpSession Session = modinfo.getSession();
+		HttpSession Session = iwc.getSession();
 
 		outerTable = new Table(1,3);
 			outerTable.setCellpadding(2);
@@ -186,11 +186,11 @@ public QuoteEditor(){
 
 	}
 
-	public void saveQuote(ModuleInfo modinfo) throws IOException,SQLException {
+	public void saveQuote(IWContext iwc) throws IOException,SQLException {
 
 		boolean check = true;
 
-		HttpServletRequest request = modinfo.getRequest();
+		HttpServletRequest request = iwc.getRequest();
 
 		String quote_id = request.getParameter("quote_id");
 
@@ -228,9 +228,9 @@ public QuoteEditor(){
 
 	}
 
-	public void deleteQuote(ModuleInfo modinfo) throws IOException,SQLException {
+	public void deleteQuote(IWContext iwc) throws IOException,SQLException {
 
-		String quote_id = modinfo.getRequest().getParameter("quote_id");
+		String quote_id = iwc.getRequest().getParameter("quote_id");
 
 		Quote quote = new Quote(Integer.parseInt(quote_id));
 

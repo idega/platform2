@@ -1,7 +1,7 @@
 package com.idega.projects.golf.templates.page;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import java.io.*;
 
 public class MainPage extends Page{
@@ -164,11 +164,11 @@ public class MainPage extends Page{
 
 
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		mainTable.add(objectToAdd,1,2);
 	}
 
- 	public void add(String position, ModuleObject objectToAdd){
+ 	public void add(String position, PresentationObject objectToAdd){
                 if (position.equals("top"))
 		  mainTable.add(objectToAdd,1,1);
                 if (position.equals("middle"))
@@ -181,7 +181,7 @@ public class MainPage extends Page{
 
 
 
-	public void add(ModuleObject Left, ModuleObject Center, ModuleObject Right){
+	public void add(PresentationObject Left, PresentationObject Center, PresentationObject Right){
                 contentTable = new Table(3,1);
 
                 contentTable.setCellpadding(0);
@@ -209,7 +209,7 @@ public class MainPage extends Page{
 
 
 
-	public void add(ModuleObject Left,  ModuleObject Right ){
+	public void add(PresentationObject Left,  PresentationObject Right ){
                 contentTable = new Table(2,1);
 
                 contentTable.setCellpadding(0);
@@ -223,9 +223,9 @@ public class MainPage extends Page{
 
 
 
-        public void print(ModuleInfo modinfo)throws Exception{
+        public void print(IWContext iwc)throws Exception{
           checkSettings();
-          super.print(modinfo);
+          super.print(iwc);
         }
 
 

@@ -3,14 +3,14 @@
 package com.idega.jmodule.banner.presentation;
 
 import com.idega.jmodule.banner.data.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import java.sql.SQLException;
 
 
 
-public class InsertBanner extends JModuleObject{
+public class InsertBanner extends Block{
 
 	boolean isAdmin;
 	int banner_id;
@@ -32,8 +32,8 @@ public class InsertBanner extends JModuleObject{
 		this.banner_id = banner_id;
 	}
 
-	public void main(ModuleInfo modinfo)throws Exception {
-                this.isAdmin=isAdministrator(modinfo);
+	public void main(IWContext iwc)throws Exception {
+                this.isAdmin=isAdministrator(iwc);
 		Banner banner;
 		int ad_id;
 		try {

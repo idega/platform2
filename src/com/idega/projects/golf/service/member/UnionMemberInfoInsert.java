@@ -1,11 +1,11 @@
 package com.idega.projects.golf.service.member;
 
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
+import com.idega.presentation.IWContext;
 import com.idega.projects.golf.service.Tariffer;
 import java.util.Vector;
 import java.util.List;
@@ -234,17 +234,17 @@ import java.util.GregorianCalendar;
 
     return vec;
   }
-  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+  public Vector getNeededEmptyFields(IWContext iwc) {
       return new Vector();
   }
-  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
+  public boolean areSomeFieldsEmpty(IWContext iwc) {
       return (getEmptyFields().size() > 0);
   }
-  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
-    return (getNeededEmptyFields(modinfo).size() > 0);
+  public boolean areNeededFieldsEmpty(IWContext iwc) {
+    return (getNeededEmptyFields(iwc).size() > 0);
   }
-  public void store(ModuleInfo modinfo) throws java.io.IOException, java.sql.SQLException {
-      setVariables(modinfo);
+  public void store(IWContext iwc) throws java.io.IOException, java.sql.SQLException {
+      setVariables(iwc);
 
       if(isUpdate())
           eUMI.update();
@@ -317,18 +317,18 @@ import java.util.GregorianCalendar;
     return hTable;
   }
 
-  public void setVariables(ModuleInfo modinfo) {
-    inputMemberNumberValue = getValue(modinfo,inputMemberNumberName);
-    dropMemberShipTypeValue = getValue(modinfo,dropMemberShipTypeName);
-    dropNumberOfPaimentsValue = getValue(modinfo,dropNumberOfPaimentsName);
-    inputLockerValue = getValue(modinfo,inputLockerName);
-    dateInputFirstPaydayValue = getDateFromInput(modinfo,dateInputFirstPaydayName);
-    areaCommentValue = getValue(modinfo,areaCommentName);
-    dropVisibleValue = getValue(modinfo,dropVisibleName);
-    dropPaymentTypesValue = getValue(modinfo,dropPaymentTypesName);
-    dropCatalogueValue = getValue(modinfo,dropCatalogueName);
-    dropActiveValue = getValue(modinfo,dropActiveName);
-    dropFamilyStatusValue = getValue(modinfo,dropFamilyStatusName);
+  public void setVariables(IWContext iwc) {
+    inputMemberNumberValue = getValue(iwc,inputMemberNumberName);
+    dropMemberShipTypeValue = getValue(iwc,dropMemberShipTypeName);
+    dropNumberOfPaimentsValue = getValue(iwc,dropNumberOfPaimentsName);
+    inputLockerValue = getValue(iwc,inputLockerName);
+    dateInputFirstPaydayValue = getDateFromInput(iwc,dateInputFirstPaydayName);
+    areaCommentValue = getValue(iwc,areaCommentName);
+    dropVisibleValue = getValue(iwc,dropVisibleName);
+    dropPaymentTypesValue = getValue(iwc,dropPaymentTypesName);
+    dropCatalogueValue = getValue(iwc,dropCatalogueName);
+    dropActiveValue = getValue(iwc,dropActiveName);
+    dropFamilyStatusValue = getValue(iwc,dropFamilyStatusName);
     setEntity();
   }
 

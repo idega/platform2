@@ -1,6 +1,6 @@
 package com.idega.projects.golf;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
 
 public class GolfPage extends Page{
@@ -66,7 +66,7 @@ public class GolfPage extends Page{
 	}
 	
 	
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		mainTable.add(objectToAdd,1,2);
 	}
 

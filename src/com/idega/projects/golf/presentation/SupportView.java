@@ -1,12 +1,12 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 import java.lang.String;
 import java.sql.SQLException;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.projects.golf.entity.GolferPageData;
@@ -23,13 +23,13 @@ import com.idega.projects.golf.entity.Member;
  * @version 1.0
  */
 
-public class SupportView extends GolferJModuleObject implements LinkParameters{
+public class SupportView extends GolferBlock implements LinkParameters{
 
   public SupportView() {
   }
 
   //STUÐNINGSAÐILAR
-  private void setSupportView(ModuleInfo modinfo) throws SQLException{
+  private void setSupportView(IWContext iwc) throws SQLException{
     //Image iInterviewsLogo = iwrb.getImage("/golferpage/velkomin.gif");
     //this.addLeftLogo(iInterviewsLogo);
 
@@ -63,16 +63,16 @@ public class SupportView extends GolferJModuleObject implements LinkParameters{
     //String name =
 
     GolferFriendsSigningSheet golferFriendsSigningSheet = new GolferFriendsSigningSheet(this.golferPageData.getSupportPreSigningID(),
-      (String) modinfo.getSessionAttribute("golferName"), sTopMenuParameterName,sInterviewsParameterValue,
+      (String) iwc.getSessionAttribute("golferName"), sTopMenuParameterName,sInterviewsParameterValue,
       sSubmitParameterValue, fullName);
     interviewsTable.add(golferFriendsSigningSheet,1,1);
     add(interviewsTable);
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-    super.main(modinfo);
-    if (modinfo.getParameter(LinkParameters.sTopMenuParameterName).equalsIgnoreCase(LinkParameters.sInterviewsParameterValue)) {
-      setSupportView(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+    super.main(iwc);
+    if (iwc.getParameter(LinkParameters.sTopMenuParameterName).equalsIgnoreCase(LinkParameters.sInterviewsParameterValue)) {
+      setSupportView(iwc);
     }
   }
 }

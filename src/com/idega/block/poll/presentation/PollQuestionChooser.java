@@ -5,9 +5,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICLocale;
@@ -39,25 +39,25 @@ public PollQuestionChooser(){
   setHeight(150);
 }
 
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
     /**
      * @todo permission
      */
-    isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
-    superAdmin = AccessControl.isAdmin(modinfo);
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+    isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    superAdmin = AccessControl.isAdmin(iwc);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("poll_question_chooser","Poll Question Chooser"));
-    Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
     try {
-      userID = LoginBusiness.getUser(modinfo).getID();
+      userID = LoginBusiness.getUser(iwc).getID();
     }
     catch (Exception e) {
       userID = -1;
     }
 
-    String sLocaleId = modinfo.getParameter(PollAdminWindow.prmLocale);
+    String sLocaleId = iwc.getParameter(PollAdminWindow.prmLocale);
 
     int iLocaleId = -1;
     if(sLocaleId!= null){
@@ -70,16 +70,16 @@ public PollQuestionChooser(){
     }
 
     if ( isAdmin ) {
-      processForm(modinfo, iLocaleId);
+      processForm(iwc, iLocaleId);
     }
     else {
       noAccess();
     }
   }
 
-  private void processForm(ModuleInfo modinfo, int iLocaleId) {
-    String pollQuestion = modinfo.getParameter(prmQuestions);
-    String pollIDString = modinfo.getParameter(Poll._prmPollID);
+  private void processForm(IWContext iwc, int iLocaleId) {
+    String pollQuestion = iwc.getParameter(prmQuestions);
+    String pollIDString = iwc.getParameter(Poll._prmPollID);
     try {
       pollID = Integer.parseInt(pollIDString);
     }
@@ -96,7 +96,7 @@ public PollQuestionChooser(){
     }
 
     if ( pollQuestionID != -1 ) {
-      setToClose(modinfo, pollQuestionID);
+      setToClose(iwc, pollQuestionID);
     }
     else {
       Form myForm = new Form();
@@ -131,8 +131,8 @@ public PollQuestionChooser(){
     }
   }
 
-  private void setToClose(ModuleInfo modinfo, int pollQuestionID) {
-    modinfo.setApplicationAttribute(prmQuestions,Integer.toString(pollQuestionID));
+  private void setToClose(IWContext iwc, int pollQuestionID) {
+    iwc.setApplicationAttribute(prmQuestions,Integer.toString(pollQuestionID));
     setParentToReload();
     close();
   }

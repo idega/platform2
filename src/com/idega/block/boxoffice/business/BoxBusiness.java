@@ -10,7 +10,7 @@ import com.idega.util.idegaTimestamp;
 import com.idega.block.text.business.TextFinder;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.data.GenericEntity;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
+import com.idega.presentation.ui.DropdownMenu;
 
 /**
  * Title:

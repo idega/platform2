@@ -1,9 +1,9 @@
 package is.idegaweb.campus.finance.presentation;
 
-import com.idega.jmodule.object.interfaceobject.Window;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.Script;
+import com.idega.presentation.ui.Window;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.Script;
 
 /**
  * Title:
@@ -27,7 +27,7 @@ public class MessageWindow extends Window {
 
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     Text T = new Text(" Vinnsla í gangi");
     T.setFontSize(4);
     add(T);

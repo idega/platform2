@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.10 2001/10/02 00:13:56 aron Exp $
+ * $Id: CampusFinance.java,v 1.11 2001/10/05 08:05:44 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,13 +9,13 @@
  */
 package is.idegaweb.campus.tariffs;
 
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.IFrame;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.IFrame;
 import is.idegaweb.campus.phone.presentation.PhoneFiles;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.IWContext;
 import com.idega.block.finance.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -26,7 +26,7 @@ import is.idegaweb.campus.tariffs.CampusFinanceMenu;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusFinance extends JModuleObject {
+public class CampusFinance extends Block {
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
   public final static String FRAME_NAME = "fin_rightFrame";
@@ -39,9 +39,9 @@ public class CampusFinance extends JModuleObject {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
     Table myTable = new Table(2,2);
       myTable.setBorderColor("#000000");
@@ -87,7 +87,7 @@ public class CampusFinance extends JModuleObject {
     add(myTable);
   }
 
-  public ModuleObject getLinkTable(){
+  public PresentationObject getLinkTable(){
       Table FL = new Table();
       //FL.setListpadding(1);
       FL.add(getLink(TariffKeyEditor.class,iwrb.getLocalizedString("tariff_keys","Tariff keys"),CampusFinance.FRAME_NAME),1,1);

@@ -2,7 +2,7 @@ package com.idega.block.reports.business;
 
 import java.io.*;
 import java.util.*;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.block.reports.data.Report;
 
 /**
@@ -20,48 +20,48 @@ public class ReportService {
     return "reports.session.report";
   }
 
-  public static boolean isSessionReport(ModuleInfo modinfo){
-    if(modinfo.getSessionAttribute(getPrmName())!=null)
+  public static boolean isSessionReport(IWContext iwc){
+    if(iwc.getSessionAttribute(getPrmName())!=null)
       return true;
     else
       return false;
   }
 
-  public static void setSessionReport(ModuleInfo modinfo,Report R){
-    modinfo.setSessionAttribute(getPrmName(),R );
+  public static void setSessionReport(IWContext iwc,Report R){
+    iwc.setSessionAttribute(getPrmName(),R );
   }
-  public static Report getSessionReport(ModuleInfo modinfo){
-    if(modinfo.getSessionAttribute(getPrmName()) != null)
-      return (Report) modinfo.getSessionAttribute(getPrmName());
+  public static Report getSessionReport(IWContext iwc){
+    if(iwc.getSessionAttribute(getPrmName()) != null)
+      return (Report) iwc.getSessionAttribute(getPrmName());
     else
       return null;
   }
-  public static void removeSessionReport(ModuleInfo modinfo){
-    if(modinfo.getSessionAttribute(getPrmName()) != null)
-      modinfo.removeSessionAttribute(getPrmName());
+  public static void removeSessionReport(IWContext iwc){
+    if(iwc.getSessionAttribute(getPrmName()) != null)
+      iwc.removeSessionAttribute(getPrmName());
   }
   public static String categoryPrm(){
     return "reports.category";
   }
 
-  public static boolean isSessionCategory(ModuleInfo modinfo){
-    if(modinfo.getSessionAttribute(categoryPrm())!=null)
+  public static boolean isSessionCategory(IWContext iwc){
+    if(iwc.getSessionAttribute(categoryPrm())!=null)
       return true;
     else
       return false;
   }
 
-  public static int getSessionCategory(ModuleInfo modinfo){
+  public static int getSessionCategory(IWContext iwc){
     int r = 0;
-    if(modinfo.getSessionAttribute( categoryPrm())!= null)
-      r = ((Integer)modinfo.getSessionAttribute( categoryPrm())).intValue();
+    if(iwc.getSessionAttribute( categoryPrm())!= null)
+      r = ((Integer)iwc.getSessionAttribute( categoryPrm())).intValue();
     return r;
   }
-  public static void setSessionCategory(ModuleInfo modinfo,int category){
-    modinfo.setSessionAttribute( categoryPrm(),new Integer(category) );
+  public static void setSessionCategory(IWContext iwc,int category){
+    iwc.setSessionAttribute( categoryPrm(),new Integer(category) );
   }
-  public static void removeSessionCategory(ModuleInfo modinfo){
-    if(modinfo.getSessionAttribute( categoryPrm()) != null)
-      modinfo.removeSessionAttribute( categoryPrm());
+  public static void removeSessionCategory(IWContext iwc){
+    if(iwc.getSessionAttribute( categoryPrm()) != null)
+      iwc.removeSessionAttribute( categoryPrm());
   }
 }

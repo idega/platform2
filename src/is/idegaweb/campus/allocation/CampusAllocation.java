@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.9 2001/10/02 00:13:56 aron Exp $
+ * $Id: CampusAllocation.java,v 1.10 2001/10/05 08:05:28 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,12 +9,12 @@
  */
 package is.idegaweb.campus.allocation;
 
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.application.data.*;
 import com.idega.block.application.business.ApplicationFinder;
@@ -29,17 +29,17 @@ import is.idegaweb.campus.allocation.AllocationMenu;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusAllocation extends JModuleObject{
+public class CampusAllocation extends Block{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   public final static String FRAME_NAME = "cal_rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
-   public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
-    SysPropsSetter.isSysPropsInMemoryElseLoad(modinfo);
+   public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
+    SysPropsSetter.isSysPropsInMemoryElseLoad(iwc);
 
     Table myTable = new Table(2,2);
       myTable.setBorder(1);
@@ -81,7 +81,7 @@ public class CampusAllocation extends JModuleObject{
     add(myTable);
   }
 
-  public ModuleObject getLinkTable(){
+  public PresentationObject getLinkTable(){
       Table FL = new Table();
       //FL.setListpadding(1);
       FL.add(getLink(CampusApprover.class,iwrb.getLocalizedString("applications","Applications"),CampusAllocation.FRAME_NAME),1,1);;

@@ -1,8 +1,8 @@
 package com.idega.jmodule.forum.business;
 
 import com.idega.jmodule.forum.data.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import java.util.*;
 import java.sql.*;
 
@@ -22,7 +22,7 @@ public class ThreadContents {
   private boolean ALParametersAdded;
   private boolean DELParametersAdded;
   private boolean ReturnLinks;
-  private ModuleInfo modinfo;
+  private IWContext iwc;
 
   private ForumThread thisThread;
 
@@ -97,7 +97,7 @@ public class ThreadContents {
   }
 
 
-  public void setDeleteLinkObject( ModuleObject onLink ){
+  public void setDeleteLinkObject( PresentationObject onLink ){
     DeleteLink.setObject(onLink);
   }
 
@@ -106,7 +106,7 @@ public class ThreadContents {
   }
 
 
-  public void setAnswerLinkObject( ModuleObject onLink ){
+  public void setAnswerLinkObject( PresentationObject onLink ){
     AnswerLink.setObject(onLink);
   }
 

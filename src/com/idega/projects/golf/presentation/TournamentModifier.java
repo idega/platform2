@@ -1,11 +1,11 @@
 package com.idega.projects.golf.presentation;
 
 import com.idega.jmodule.login.business.AccessControl;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.moduleobject.GolfDialog;
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.business.TournamentController;
 
 /**
@@ -20,11 +20,11 @@ import com.idega.projects.golf.business.TournamentController;
     }
 
 
-public void main(ModuleInfo modinfo) throws Exception{
+public void main(IWContext iwc) throws Exception{
 	//initializeButtons();
         //System.out.println("TournamentModifier.main()");
 
-	String tournament_id=modinfo.getParameter("tournament");
+	String tournament_id=iwc.getParameter("tournament");
 
 	if (tournament_id == null){
                 GolfDialog dialog = new GolfDialog("Breyta móti");
@@ -39,17 +39,17 @@ public void main(ModuleInfo modinfo) throws Exception{
 
                         Tournament tournament = new Tournament();
                         DropdownMenu Dropdown2 = new DropdownMenu();
-                        if (AccessControl.isClubAdmin(modinfo)) {
-                            com.idega.data.genericentity.Member member = com.idega.jmodule.login.business.AccessControl.getMember(modinfo);
+                        if (AccessControl.isClubAdmin(iwc)) {
+                            com.idega.data.genericentity.Member member = com.idega.jmodule.login.business.AccessControl.getMember(iwc);
                             int member_id = member.getID();
                             Member golfMember = new Member(member_id);
                             int main_union_id = golfMember.getMainUnionID();
-                            Dropdown2 = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),modinfo);
+                            Dropdown2 = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),iwc);
 
 //                            Dropdown2 = new DropdownMenu(tournament.findAll("Select * from tournament where union_id =3 OR union_id = "+main_union_id+" order by name"));
                         }
-                        else if (AccessControl.isAdmin(modinfo)) {
-                            Dropdown2 = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),modinfo);
+                        else if (AccessControl.isAdmin(iwc)) {
+                            Dropdown2 = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),iwc);
 //                            Dropdown2 = TournamentController. new DropdownMenu(tournament.findAllOrdered("name"));
                             //Dropdown2 = new DropdownMenu(tournament.findAllOrdered("name"));
                         }
@@ -72,7 +72,7 @@ public void main(ModuleInfo modinfo) throws Exception{
 
 	  dialog.add( updater );
 
-          if(updater.thisObjectSubmitted(modinfo)){
+          if(updater.thisObjectSubmitted(iwc)){
             dialog.add("Móti breytt");
             updater.setAsPrinted(false);
           }

@@ -1,5 +1,5 @@
 /*
- * $Id: Tabs.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: Tabs.java,v 1.2 2001/10/05 08:05:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package is.idegaweb.campus.service;
 
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.PresentationObject;
 
 /**
  *
@@ -19,7 +19,7 @@ import com.idega.jmodule.object.ModuleObject;
 public interface Tabs {
 
 
-  ModuleObject getTabs();
+  PresentationObject getTabs();
 
 
 }

@@ -1,7 +1,7 @@
 package is.idegaweb.campus.reports;
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.block.reports.presentation.Reporter;
 
 
@@ -20,8 +20,8 @@ public class CampusReporterWindow extends IWAdminWindow {
     super();
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
-    boolean isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+  public void main(IWContext iwc) throws Exception{
+    boolean isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     Reporter R = new Reporter();
     R.setMainCategoryAttribute("tenants");
     R.setSQLEdit(isAdmin);

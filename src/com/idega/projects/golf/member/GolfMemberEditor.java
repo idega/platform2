@@ -1,8 +1,8 @@
 package com.idega.projects.golf.member;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.service.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
@@ -35,9 +35,9 @@ public class GolfMemberEditor extends Editor{
     profile = new GolfMemberProfile(eMember,iUnionId);
   }
 
-  protected void control(ModuleInfo modinfo){
-    if(modinfo.getParameter(sAction) != null)
-      sActPrm = modinfo.getParameter(sAction);
+  protected void control(IWContext iwc){
+    if(iwc.getParameter(sAction) != null)
+      sActPrm = iwc.getParameter(sAction);
     else
       sActPrm = "0";
     try{
@@ -46,9 +46,9 @@ public class GolfMemberEditor extends Editor{
         case ACT1:    break;
         case ACT2: break;
         case ACT3:  break;
-        case ACT4: doUpdate(modinfo); break;
+        case ACT4: doUpdate(iwc); break;
       }
-      doMain(modinfo);
+      doMain(iwc);
     }
     catch(Exception e){
       e.printStackTrace();
@@ -56,18 +56,18 @@ public class GolfMemberEditor extends Editor{
 
 
   }
-  private void doMain(ModuleInfo modinfo)throws SQLException{
+  private void doMain(IWContext iwc)throws SQLException{
     add("hallo");
-    add(drawTable(modinfo));
+    add(drawTable(iwc));
   }
-  private ModuleObject drawTable(ModuleInfo modinfo) throws SQLException{
+  private PresentationObject drawTable(IWContext iwc) throws SQLException{
     Form form = new Form();
-    ModuleObject imageObject = null;
+    PresentationObject imageObject = null;
     Image memberImg;
     if(iImageId >0) {
       memberImg = new Image(iImageId);
       memberImg.setWidth(110);
-      modinfo.getSession().removeAttribute("image_id");
+      iwc.getSession().removeAttribute("image_id");
       imageObject = memberImg;
     }
     else if( eMember != null && eMember.getImageId() != 1){
@@ -107,7 +107,7 @@ public class GolfMemberEditor extends Editor{
 
     //BorderTable memberTable = getMemberTable();
     AddressInput AI = new AddressInput();
-    ModuleObject addressTable = AI.getAddressTable(this.profile);
+    PresentationObject addressTable = AI.getAddressTable(this.profile);
     System.err.println("hallo");
     form.add(addressTable);
     /*
@@ -204,7 +204,7 @@ public class GolfMemberEditor extends Editor{
     return form;
 
   }
-  private void doUpdate(ModuleInfo modinfo){
+  private void doUpdate(IWContext iwc){
 
   }
 
@@ -222,8 +222,8 @@ public class GolfMemberEditor extends Editor{
     return headerText(String.valueOf(i));
   }
 
-  public void main(ModuleInfo modinfo){
-    control(modinfo);
+  public void main(IWContext iwc){
+    control(iwc);
   }
 
 

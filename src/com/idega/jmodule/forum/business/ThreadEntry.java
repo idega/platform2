@@ -1,8 +1,8 @@
 package com.idega.jmodule.forum.business;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import java.io.*;
 
 /**
@@ -17,19 +17,19 @@ import java.io.*;
 public class ThreadEntry {
 
 
-  protected ModuleInfo modinfo;
+  protected IWContext iwc;
   protected TEVariables myVar;
 
   //######  Smiðir #######
 
-  public ThreadEntry(ModuleInfo modinfo){
-     this.modinfo = modinfo;
+  public ThreadEntry(IWContext iwc){
+     this.iwc = iwc;
 
-    if (this.modinfo.getRequest().getSession().getAttribute( "ThreadEntryVar") == null){
+    if (this.iwc.getRequest().getSession().getAttribute( "ThreadEntryVar") == null){
       myVar = new TEVariables();
-      this.modinfo.getRequest().getSession().setAttribute( "ThreadEntryVar", myVar);
+      this.iwc.getRequest().getSession().setAttribute( "ThreadEntryVar", myVar);
     }else{
-      myVar = (TEVariables)this.modinfo.getRequest().getSession().getAttribute( "ThreadEntryVar");
+      myVar = (TEVariables)this.iwc.getRequest().getSession().getAttribute( "ThreadEntryVar");
     }
     checkSettings();
   }

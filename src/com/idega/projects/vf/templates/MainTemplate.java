@@ -5,10 +5,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 import com.idega.util.*;
 import com.idega.projects.vf.entity.*;
@@ -42,13 +42,13 @@ public String language = "IS";
 
 	public Table template() {
 
-		String language2 = getModuleInfo().getRequest().getParameter("language");
-			if (language2==null) language2 = ( String ) getModuleInfo().getSession().getAttribute("language");
+		String language2 = getIWContext().getRequest().getParameter("language");
+			if (language2==null) language2 = ( String ) getIWContext().getSession().getAttribute("language");
 			if ( language2 != null) language = language2;
 
-		getModuleInfo().setSpokenLanguage( language );
+		getIWContext().setSpokenLanguage( language );
 
-		getModuleInfo().getSession().setAttribute("language",language);
+		getIWContext().getSession().setAttribute("language",language);
 
 		 frame = new Table(1,1);
 			frame.setWidth("100%");
@@ -128,11 +128,11 @@ public String language = "IS";
 		}
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		tafla.add(objectToAdd,2,1);
 	}
 
-    public void addLeft(ModuleObject objectToAdd){
+    public void addLeft(PresentationObject objectToAdd){
 		tafla.add(objectToAdd,1,1);
 	}
 
@@ -140,7 +140,7 @@ public String language = "IS";
 		tafla.addBreak(1,1);
 	}
 
-    public void addRight(ModuleObject objectToAdd){
+    public void addRight(PresentationObject objectToAdd){
 		tafla.add(objectToAdd,4,1);
 	}
 
@@ -182,8 +182,8 @@ public String language = "IS";
 
   private void getJavaScript() {
     try {
-      ModuleInfo modinfo = getModuleInfo();
-      String projectStatusID = modinfo.getParameter("project_status_id");
+      IWContext iwc = getIWContext();
+      String projectStatusID = iwc.getParameter("project_status_id");
 
       MenuBar menu = new MenuBar();
         menu.setSizes(1,2,1);

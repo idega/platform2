@@ -1,12 +1,12 @@
 package is.idegaweb.campus.allocation;
 
 import is.idegaweb.campus.presentation.Edit;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.finance.presentation.*;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 
 
-public class SubjectMaker extends ModuleObjectContainer{
+public class SubjectMaker extends PresentationObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final String strAction = "fin_action";
@@ -40,15 +40,15 @@ public class SubjectMaker extends ModuleObjectContainer{
 
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
 
 
       if(isAdmin){
-        if(modinfo.getParameter("save") != null){
-          doUpdate(modinfo);
+        if(iwc.getParameter("save") != null){
+          doUpdate(iwc);
         }
-        else if(modinfo.getParameter("delete")!= null){
-          doDelete(modinfo);
+        else if(iwc.getParameter("delete")!= null){
+          doDelete(iwc);
         }
         this.add(makeInputTable());
       }
@@ -57,13 +57,13 @@ public class SubjectMaker extends ModuleObjectContainer{
 
   }
 
-  public ModuleObject makeLinkTable(int menuNr){
+  public PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(6,1);
 
     return LinkTable;
   }
 
-  public ModuleObject makeInputTable(){
+  public PresentationObject makeInputTable(){
 
     Table Frame = new Table(3,2);
       Frame.setCellpadding(0);
@@ -112,9 +112,9 @@ public class SubjectMaker extends ModuleObjectContainer{
     return L;
   }
 
-  public void doDelete(ModuleInfo modinfo){
+  public void doDelete(IWContext iwc){
     try {
-      int id = Integer.parseInt(modinfo.getParameter("delete"));
+      int id = Integer.parseInt(iwc.getParameter("delete"));
       ApplicationSubject AS = new ApplicationSubject(id);
       AS.delete();
     }
@@ -124,9 +124,9 @@ public class SubjectMaker extends ModuleObjectContainer{
 
   }
 
-  public void doUpdate(ModuleInfo modinfo){
-    String sDesc= modinfo.getParameter("app_subj_desc").trim();
-    String sDate = modinfo.getParameter("app_subj_xdate");
+  public void doUpdate(IWContext iwc){
+    String sDesc= iwc.getParameter("app_subj_desc").trim();
+    String sDate = iwc.getParameter("app_subj_xdate");
     if(sDesc.length() > 0){
       ApplicationSubject AS = new ApplicationSubject();
       AS.setDescription(sDesc);
@@ -140,16 +140,16 @@ public class SubjectMaker extends ModuleObjectContainer{
     }
   }
 
-   public void main(ModuleInfo modinfo){
+   public void main(IWContext iwc){
     try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){
       isAdmin = false;
     }
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
-    control(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
+    control(iwc);
   }
 
 }

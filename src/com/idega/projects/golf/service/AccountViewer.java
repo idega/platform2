@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.ModuleObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.PresentationObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.projects.golf.*;
@@ -27,7 +27,7 @@ import com.idega.idegaweb.IWResourceBundle;
 *@version 1.0
 */
 
-public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContainer {
+public class AccountViewer extends com.idega.presentation.PresentationObjectContainer {
 
   private String union_id,unionName,unionAbbrev,member_id;
   private int un_id,mem_id,cashier_id;
@@ -80,19 +80,19 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     this.ItemColor = ItemColor;
   }
 
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
 
     try{
-      if(modinfo.getParameter("member_id") != null){
-        member_id = modinfo.getParameter("member_id");
-        modinfo.getSession().setAttribute("account_member_id",member_id);
+      if(iwc.getParameter("member_id") != null){
+        member_id = iwc.getParameter("member_id");
+        iwc.getSession().setAttribute("account_member_id",member_id);
       }
 
-      union_id = (String)  modinfo.getSession().getAttribute("golf_union_id");
-      member_id = (String) modinfo.getSession().getAttribute("account_member_id");
+      union_id = (String)  iwc.getSession().getAttribute("golf_union_id");
+      member_id = (String) iwc.getSession().getAttribute("account_member_id");
 
-      if(modinfo.getSession().getAttribute("member_login")!= null){
-       Cashier = (Member) modinfo.getSession().getAttribute("member_login");
+      if(iwc.getSession().getAttribute("member_login")!= null){
+       Cashier = (Member) iwc.getSession().getAttribute("member_login");
         cashier_id = Cashier.getID();
       }
 
@@ -117,41 +117,41 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
 
       strMessage = "";
 
-      if(modinfo.getRequest().getParameter(prmString) == null){
-        doMain(modinfo);
+      if(iwc.getRequest().getParameter(prmString) == null){
+        doMain(iwc);
       }
-      if(modinfo.getParameter("deleteall.x")!=null){
-        doDeleteAll(modinfo);
+      if(iwc.getParameter("deleteall.x")!=null){
+        doDeleteAll(iwc);
       }
-      else if(modinfo.getParameter("payall.x")!=null){
-        this.doPayAll(modinfo);
+      else if(iwc.getParameter("payall.x")!=null){
+        this.doPayAll(iwc);
       }
-      else if(modinfo.getParameter("updatepay.x")!=null){
-        this.doUpdatePay(modinfo);
+      else if(iwc.getParameter("updatepay.x")!=null){
+        this.doUpdatePay(iwc);
       }
-      else if(modinfo.getParameter("makenew.x")!=null){
-        this.doMakeNew(modinfo);
+      else if(iwc.getParameter("makenew.x")!=null){
+        this.doMakeNew(iwc);
       }
-      else if(modinfo.getRequest().getParameter(prmString) != null){
-        sAction = modinfo.getRequest().getParameter(prmString);
-        if(sAction.equals("main"))	        { doMain(modinfo);      }
-        else if(sAction.equals("change"))	{ doChange(modinfo); 	}
-        else if(sAction.equals("clearaccount")) { doClearAccount(modinfo);}
-        else if(sAction.equals("update"))	{ doUpdate(modinfo); 	}
-        else if(sAction.equals("view"))	        { doView(modinfo); 	}
-        else if(sAction.equals("save"))	        { doSave(modinfo); 	}
-        else if(sAction.equals("calc"))	        { doCalc(modinfo); 	}
-        else if(sAction.equals("tariffs"))	{ doTariff(modinfo); 	}
+      else if(iwc.getRequest().getParameter(prmString) != null){
+        sAction = iwc.getRequest().getParameter(prmString);
+        if(sAction.equals("main"))	        { doMain(iwc);      }
+        else if(sAction.equals("change"))	{ doChange(iwc); 	}
+        else if(sAction.equals("clearaccount")) { doClearAccount(iwc);}
+        else if(sAction.equals("update"))	{ doUpdate(iwc); 	}
+        else if(sAction.equals("view"))	        { doView(iwc); 	}
+        else if(sAction.equals("save"))	        { doSave(iwc); 	}
+        else if(sAction.equals("calc"))	        { doCalc(iwc); 	}
+        else if(sAction.equals("tariffs"))	{ doTariff(iwc); 	}
         else if(sAction.equals("new"))	        { 	}
-        else if(sAction.equals("updatenew"))	{ doUpdateNew(modinfo); }
-        else if(sAction.equals("paychange"))	{ doChange(modinfo);    }
+        else if(sAction.equals("updatenew"))	{ doUpdateNew(iwc); }
+        else if(sAction.equals("paychange"))	{ doChange(iwc);    }
       }
     }
     catch(SQLException S){	S.printStackTrace();	}
     catch(Exception s){ }
     }
 
-    private void doMain(ModuleInfo modinfo) throws SQLException {
+    private void doMain(IWContext iwc) throws SQLException {
       makeMainFrame();
       makeFrame();
       makeFrame2();
@@ -161,7 +161,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       add(MainFrame);
     }
 
-    private void doTariff(ModuleInfo modinfo){
+    private void doTariff(IWContext iwc){
       makeMainFrame();
       makeFrame();
       makeFrame2();
@@ -206,24 +206,24 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       Frame2.setHeight("100%");
     }
 
-    private void addMain(ModuleObject T){
+    private void addMain(PresentationObject T){
       Frame.add(T,1,3);
     }
 
-    private void addHead(ModuleObject T){
+    private void addHead(PresentationObject T){
       Frame.add(T,1,1);
     }
 
-    private void addRight(ModuleObject T){
+    private void addRight(PresentationObject T){
       Frame2.add(T,1,1);
     }
 
-    private void addLinks(ModuleObject T){
+    private void addLinks(PresentationObject T){
       MainFrame.add(T,2,2);
     }
 
-    private void doChange(ModuleInfo modinfo) throws SQLException{
-      String sPaymId = modinfo.getRequest().getParameter("payid");
+    private void doChange(IWContext iwc) throws SQLException{
+      String sPaymId = iwc.getRequest().getParameter("payid");
       Payment P = null;
       if(sPaymId!=null)
       try{
@@ -245,15 +245,15 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       add(MainFrame);
     }
 
-    private void doUpdate(ModuleInfo modinfo) throws SQLException{
+    private void doUpdate(IWContext iwc) throws SQLException{
       String strPaymID,strPrice,strPaytype,strDescr,strChkPaid,strChkUnPaid,strChkDel;
-      strPaymID = modinfo.getRequest().getParameter("payment_id");
-      strPrice = modinfo.getRequest().getParameter("payment_iprice");
-      strDescr = modinfo.getRequest().getParameter("payment_idesc");
-      strPaytype = modinfo.getRequest().getParameter("payment_ipaytype");
-      strChkPaid = modinfo.getRequest().getParameter("payment_ichkpaid");
-      strChkUnPaid = modinfo.getRequest().getParameter("payment_ichkunpaid");
-      strChkDel = modinfo.getRequest().getParameter("payment_ichkdel");
+      strPaymID = iwc.getRequest().getParameter("payment_id");
+      strPrice = iwc.getRequest().getParameter("payment_iprice");
+      strDescr = iwc.getRequest().getParameter("payment_idesc");
+      strPaytype = iwc.getRequest().getParameter("payment_ipaytype");
+      strChkPaid = iwc.getRequest().getParameter("payment_ichkpaid");
+      strChkUnPaid = iwc.getRequest().getParameter("payment_ichkunpaid");
+      strChkDel = iwc.getRequest().getParameter("payment_ichkdel");
 
       int pm_id,price,pt_id;
       if(strChkDel != null && strChkDel.equalsIgnoreCase("true")){}
@@ -287,24 +287,24 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
           strMessage = av_msg2;}
       }
       }
-      this.doMain(modinfo);
+      this.doMain(iwc);
 
     }
-    private void doView(ModuleInfo modinfo) throws SQLException{
+    private void doView(IWContext iwc) throws SQLException{
 
     }
-    private void doSave(ModuleInfo modinfo) throws SQLException{
+    private void doSave(IWContext iwc) throws SQLException{
 
     }
-    private void doUpdatePay(ModuleInfo modinfo) throws SQLException{
-      String sPaymentId   = modinfo.getParameter("account_oldpayid");
-      String sPay         = modinfo.getParameter("payment_ichkpaid");
-      String sUpdate      = modinfo.getParameter("payment_ichkupdate");
-      String sDelete      = modinfo.getParameter("payment_ichkdel");
-      String sDescription = modinfo.getParameter(this.getDscPrm());
-      String sPrice       = modinfo.getParameter(this.getPrcPrm());
-      String sPayDate     = modinfo.getParameter(this.getDtPrm());
-      String sPayTypeId   = modinfo.getParameter(this.getPTPrm());
+    private void doUpdatePay(IWContext iwc) throws SQLException{
+      String sPaymentId   = iwc.getParameter("account_oldpayid");
+      String sPay         = iwc.getParameter("payment_ichkpaid");
+      String sUpdate      = iwc.getParameter("payment_ichkupdate");
+      String sDelete      = iwc.getParameter("payment_ichkdel");
+      String sDescription = iwc.getParameter(this.getDscPrm());
+      String sPrice       = iwc.getParameter(this.getPrcPrm());
+      String sPayDate     = iwc.getParameter(this.getDtPrm());
+      String sPayTypeId   = iwc.getParameter(this.getPTPrm());
 
       int iPaymentId = Integer.parseInt(sPaymentId);
       Payment ePayment;
@@ -359,17 +359,17 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
           }
           catch(SQLException sql){sql.printStackTrace();}
         }
-        this.doTariff(modinfo);
+        this.doTariff(iwc);
       }
     }
 
-    private void doMakeNew(ModuleInfo modinfo) throws SQLException{
-      String sCatIds = modinfo.getParameter(this.getIDsPrm());
-      String sDescr = modinfo.getParameter(this.getDscPrm());
-      String sPrice = modinfo.getParameter(this.getPrcPrm());
-      String sDate = modinfo.getParameter(this.getDtPrm());
-      String sCost = modinfo.getParameter(this.getCostprm());
-      String sInterest = modinfo.getParameter(this.getInterestprm());
+    private void doMakeNew(IWContext iwc) throws SQLException{
+      String sCatIds = iwc.getParameter(this.getIDsPrm());
+      String sDescr = iwc.getParameter(this.getDscPrm());
+      String sPrice = iwc.getParameter(this.getPrcPrm());
+      String sDate = iwc.getParameter(this.getDtPrm());
+      String sCost = iwc.getParameter(this.getCostprm());
+      String sInterest = iwc.getParameter(this.getInterestprm());
       int totalprice = 0;
       int iCost = 0;
       double dInterest = 0.0;
@@ -390,7 +390,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         while( ST.hasMoreTokens()){
           //iCats[i] = Integer.parseInt(ST.nextToken());
           itemp = Integer.parseInt(ST.nextToken());
-          stemp = modinfo.getParameter(this.getChkPrm()+itemp);
+          stemp = iwc.getParameter(this.getChkPrm()+itemp);
           if(stemp != null && stemp.equalsIgnoreCase("true")){
             try{
               PriceCatalogue P = new PriceCatalogue(itemp);
@@ -421,9 +421,9 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         }
       }
       if(totalprice != 0){
-        int iInst = Integer.parseInt( modinfo.getParameter(this.getInstPrm()));
-        int iType = Integer.parseInt( modinfo.getParameter(this.getPTPrm()));
-        String sdate = modinfo.getParameter(this.getDtPrm());
+        int iInst = Integer.parseInt( iwc.getParameter(this.getInstPrm()));
+        int iType = Integer.parseInt( iwc.getParameter(this.getPTPrm()));
+        String sdate = iwc.getParameter(this.getDtPrm());
         idPayDate = parseStamp(sdate);
 
         double Multi = dInterest/100 ;
@@ -457,7 +457,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         }
       }
 
-      this.doTariff(modinfo);
+      this.doTariff(iwc);
     }
 
     private idegaTimestamp parseStamp(String sDate){
@@ -477,19 +477,19 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       return it;
     }
 
-    private void doUpdateNew(ModuleInfo modinfo) throws SQLException{
+    private void doUpdateNew(IWContext iwc) throws SQLException{
       DecimalFormat Formatter = new DecimalFormat("00");
 
       String strPrice,strPaytype,strDescr,strIfRoundRel,strRoundId,strInst;
-      strPrice = modinfo.getRequest().getParameter("payment_iprice");
-      strDescr = modinfo.getRequest().getParameter("payment_idesc");
-      strPaytype = modinfo.getRequest().getParameter("payment_ipaytype");
-      strIfRoundRel = modinfo.getRequest().getParameter("payment_roundrel");
-      strRoundId = modinfo.getRequest().getParameter("payment_irounds");
-      strInst = modinfo.getRequest().getParameter("payment_installments");
-      int iday = Integer.parseInt(modinfo.getRequest().getParameter("payment_day"));
-      int imonth = Integer.parseInt(modinfo.getRequest().getParameter("payment_month"));
-      int iyear = Integer.parseInt(modinfo.getRequest().getParameter("payment_year"));
+      strPrice = iwc.getRequest().getParameter("payment_iprice");
+      strDescr = iwc.getRequest().getParameter("payment_idesc");
+      strPaytype = iwc.getRequest().getParameter("payment_ipaytype");
+      strIfRoundRel = iwc.getRequest().getParameter("payment_roundrel");
+      strRoundId = iwc.getRequest().getParameter("payment_irounds");
+      strInst = iwc.getRequest().getParameter("payment_installments");
+      int iday = Integer.parseInt(iwc.getRequest().getParameter("payment_day"));
+      int imonth = Integer.parseInt(iwc.getRequest().getParameter("payment_month"));
+      int iyear = Integer.parseInt(iwc.getRequest().getParameter("payment_year"));
 
       int inst = Integer.parseInt(strInst);
       int pm_id,price,pt_id;
@@ -544,10 +544,10 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
           }
         }
       }
-     this.doMain(modinfo);
+     this.doMain(iwc);
     }
 
-    private void doClearAccount(ModuleInfo modinfo){
+    private void doClearAccount(IWContext iwc){
       if(this.eAccount.getBalance()==0){
       AccountEntry[] E = TariffService.getAccountEntrys(this.eAccount.getID());
       for (int i = 0; i < E.length; i++) {
@@ -559,10 +559,10 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         }
       }
       }
-      doTariff(modinfo);
+      doTariff(iwc);
     }
 
-    private void doCalc(ModuleInfo modinfo) throws SQLException{
+    private void doCalc(IWContext iwc) throws SQLException{
       try{
         idegaTimestamp accountLastUpd = new idegaTimestamp(eAccount.getLastUpdated());
         AccountEntry[] E = TariffService.getAccountEntrys(this.eAccount.getID());
@@ -591,18 +591,18 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       }
       catch(SQLException sql){ ;
       }
-      this.doMain(modinfo);
+      this.doMain(iwc);
     }
-    private void doDeleteAll(ModuleInfo modinfo){
-      int pCount = Integer.parseInt(modinfo.getParameter("payment_totalpaydel"));
+    private void doDeleteAll(IWContext iwc){
+      int pCount = Integer.parseInt(iwc.getParameter("payment_totalpaydel"));
       String sInfo = "NiðurFelling";
       int totalprice = 0;
       Timestamp today = idegaTimestamp.getTimestampRightNow();
       Timestamp lastpaydate = today;
       String name = "";
      for (int i = 0; i < pCount; i++) {
-        if(modinfo.getParameter("payment_delchk"+i)!=null){
-          int id = Integer.parseInt(modinfo.getParameter("payment_delchk"+i));
+        if(iwc.getParameter("payment_delchk"+i)!=null){
+          int id = Integer.parseInt(iwc.getParameter("payment_delchk"+i));
            Payment ePayment = null;
           try{
             ePayment = new Payment(id);
@@ -628,19 +628,19 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         catch (SQLException ex) {        }
 
       }
-      this.doTariff(modinfo);
+      this.doTariff(iwc);
     }
 
-    private void doPayAll(ModuleInfo modinfo){
-      int pCount = Integer.parseInt(modinfo.getParameter("payment_totalpaydel"));
+    private void doPayAll(IWContext iwc){
+      int pCount = Integer.parseInt(iwc.getParameter("payment_totalpaydel"));
       String sInfo = "Greiðsla";
       int totalprice = 0;
       Timestamp today = idegaTimestamp.getTimestampRightNow();
       Timestamp lastpaydate = today;
       String name = "";
       for (int i = 0; i < pCount; i++) {
-        if(modinfo.getParameter("payment_delchk"+i)!=null){
-          int id = Integer.parseInt(modinfo.getParameter("payment_delchk"+i));
+        if(iwc.getParameter("payment_delchk"+i)!=null){
+          int id = Integer.parseInt(iwc.getParameter("payment_delchk"+i));
            Payment ePayment = null;
           try{
             ePayment = new Payment(id);
@@ -666,7 +666,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
         catch (SQLException ex) {        }
 
       }
-      this.doTariff(modinfo);
+      this.doTariff(iwc);
     }
 
     private Table makeViewTable(){
@@ -1636,16 +1636,16 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       return drp;
     }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
     try{
-      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     /** @todo: fixa Admin*/
     //isAdmin = true;
-    control(modinfo);
+    control(iwc);
   }
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;

@@ -1,10 +1,10 @@
 package com.idega.jmodule.forum.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.forum.business.*;
 import com.idega.jmodule.forum.data.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import java.sql.*;
 import java.lang.*;
@@ -108,7 +108,7 @@ public class GrayForums extends ForumPresentation{
   }
 
   // Make a list of Forums
-  protected ModuleObject ForumList_Presentation() throws Exception{
+  protected PresentationObject ForumList_Presentation() throws Exception{
     // Edited by aron@idega.is 08.11.00
     Table Mainframe = new Table(1,2);
     Mainframe.setWidth("100%");
@@ -176,7 +176,7 @@ public class GrayForums extends ForumPresentation{
       nameUnit.setAlignment(5,1,"left");
       nameUnit.add(forumLink, 1,1);
 
-    //temp  if (isAdministrator(getModuleInfo()))
+    //temp  if (isAdministrator(getIWContext()))
        //temp nameUnit.add(theList.getForumEmailButton(), 2,1);
 
       nameUnit.add(Text.emptyString(),4,1);
@@ -221,14 +221,14 @@ public class GrayForums extends ForumPresentation{
       Mainframe.add(forumUnit,1,2);
     }
 /*
-    if (isAdministrator(getModuleInfo()))
+    if (isAdministrator(getIWContext()))
       Mainframe.add(this.getForumList().getForumInsertButton(),1,2);
 
     return Mainframe;
   }
 
   // Still Unused
-  protected ModuleObject SomeThreads_Presentation(){
+  protected PresentationObject SomeThreads_Presentation(){
     Table frame = new Table(1,3);
  /*   frame.setColor(1,2, "#99CC99");
     frame.setCellpadding(1);
@@ -240,7 +240,7 @@ public class GrayForums extends ForumPresentation{
   }
 
 
-  protected ModuleObject ThreadContents_Presentation() throws Exception{
+  protected PresentationObject ThreadContents_Presentation() throws Exception{
     Table frame2 = new Table(1,1);
     frame2.setWidth("100%");
     frame2.setColor(MenuFontColor);
@@ -333,7 +333,7 @@ public class GrayForums extends ForumPresentation{
     // get a delete link
     Link delTemp = thread.getDeleteLink();
     if(delTemp != null){
-      if(isAdministrator(getModuleInfo())){
+      if(isAdministrator(getIWContext())){
        frame.add(delTemp,1,3);
        frame.add("   ",1,3);
       }
@@ -352,7 +352,7 @@ public class GrayForums extends ForumPresentation{
   }
 
 
-  protected ModuleObject ThreadEntry_Presentation(boolean useNameTextInput){
+  protected PresentationObject ThreadEntry_Presentation(boolean useNameTextInput){
     // Button text "Send"
     Entry.setSubjectTextInput(false);
     Entry.setBodyTextArea();
@@ -456,7 +456,7 @@ public class GrayForums extends ForumPresentation{
       //toolTable.add(NameSend,2,5);
     }
 
-    if(this.getProperties().useEmail(modinfo)){
+    if(this.getProperties().useEmail(iwc)){
       TextInput emailInput = Entry.getEmailInput();
       emailInput.setLength(10);
       // Header with "Name"
@@ -498,7 +498,7 @@ public class GrayForums extends ForumPresentation{
   }
 
 
-  protected ModuleObject ThreadTree_Presentation(){
+  protected PresentationObject ThreadTree_Presentation(){
 
     if (firstTree){
       Tree.setTempIcon(new Image("/pics/jmodules/forum/"+languageDir+"/ups.gif"));
@@ -576,22 +576,22 @@ public class GrayForums extends ForumPresentation{
   }
 
 
-  protected ModuleObject ForumError_Presentation( String errorType ){
+  protected PresentationObject ForumError_Presentation( String errorType ){
     return new Table();
   }
 
 
-  protected ModuleObject ForumAdministration_Presentation(){
+  protected PresentationObject ForumAdministration_Presentation(){
     return new Table();
   }
 
 
-  protected ModuleObject UserRegistration_Presentation(){
+  protected PresentationObject UserRegistration_Presentation(){
     return new Table();
   }
 
 
-  protected ModuleObject SomeThreads_Presentation(){
+  protected PresentationObject SomeThreads_Presentation(){
     return new Table();
   }
 
@@ -603,7 +603,7 @@ public class GrayForums extends ForumPresentation{
 
   }
 
-  protected ModuleObject ForumNameHeader(){
+  protected PresentationObject ForumNameHeader(){
     Text forumName= new Text(getCurrentForumName());
     forumName.setFontColor(MenuFontColor);
     forumName.setFontSize(headerFontSize);

@@ -6,10 +6,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.templates.page.JmoduleWindowModuleWindow;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -55,7 +55,7 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
 	}
 
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
           ((JmoduleWindowModuleWindow)getPage()).add(objectToAdd);
 	}
 
@@ -88,23 +88,23 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
           return ((JmoduleWindowModuleWindow)getWindow()).getMenu();
         }
 
-        public boolean isAdmin(ModuleInfo modinfo)throws Exception{
-          return com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+        public boolean isAdmin(IWContext iwc)throws Exception{
+          return com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
         }
 
   public boolean isDeveloper() {
-    return com.idega.jmodule.login.business.AccessControl.isDeveloper(getModuleInfo());
+    return com.idega.jmodule.login.business.AccessControl.isDeveloper(getIWContext());
   }
 
   public boolean isClubAdmin() {
-    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
+    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getIWContext());
   }
 
   public boolean isClubWorker() {
     boolean ret;
 
     try {
-      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getModuleInfo());
+      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(getIWContext());
     }
     catch(java.sql.SQLException e) {
       e.printStackTrace();
@@ -115,16 +115,16 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
   }
 
   public boolean isUser() {
-    return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
+    return com.idega.jmodule.login.business.AccessControl.isUser(getIWContext());
   }
 
 
   public IWResourceBundle getResourceBundle(){
-     return getResourceBundle(getModuleInfo());
+     return getResourceBundle(getIWContext());
   }
 
   public IWBundle getBundle(){
-    return getBundle(getModuleInfo());
+    return getBundle(getIWContext());
   }
 
   public String getBundleIdentifier(){
@@ -132,16 +132,16 @@ public String MenuAlignment = "&nbsp;&nbsp;&nbsp;&nbsp;";
   }
 
 
-  public void removeUnionIdSessionAttribute(ModuleInfo modinfo){
-    modinfo.removeSessionAttribute("golf_union_id");
+  public void removeUnionIdSessionAttribute(IWContext iwc){
+    iwc.removeSessionAttribute("golf_union_id");
   }
 
-  public String getUnionID(ModuleInfo modinfo){
-    return (String)modinfo.getSessionAttribute("golf_union_id");
+  public String getUnionID(IWContext iwc){
+    return (String)iwc.getSessionAttribute("golf_union_id");
   }
 
-  public void setUnionID(ModuleInfo modinfo, String union_id){
-    modinfo.setSessionAttribute("golf_union_id", union_id);
+  public void setUnionID(IWContext iwc, String union_id){
+    iwc.setSessionAttribute("golf_union_id", union_id);
   }
 
 

@@ -1,8 +1,8 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import is.idega.travel.data.*;
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.travel.business.*;
@@ -37,16 +37,16 @@ public class AdditionalBooking extends TravelWindow {
     super.setTitle("idegaWeb Travel");
   }
 
-  public void main(ModuleInfo modinfo) {
-    super.main(modinfo);
-    initialize(modinfo);
+  public void main(IWContext iwc) {
+    super.main(iwc);
+    initialize(iwc);
 
     if (service != null) {
-      String action = modinfo.getParameter(this.sAction);
+      String action = iwc.getParameter(this.sAction);
       if (action == null) {
-        displayForm(modinfo);
+        displayForm(iwc);
       }else if (action.equals(this.parameterSave) ) {
-        saveBooking(modinfo);
+        saveBooking(iwc);
         super.close(true);
       }
     }else {
@@ -54,16 +54,16 @@ public class AdditionalBooking extends TravelWindow {
     }
   }
 
-  private void initialize(ModuleInfo modinfo) {
+  private void initialize(IWContext iwc) {
     try {
-        service = new Service(Integer.parseInt(modinfo.getParameter(this.parameterServiceId)));
-        stamp = new idegaTimestamp(modinfo.getParameter(this.parameterDate));
+        service = new Service(Integer.parseInt(iwc.getParameter(this.parameterServiceId)));
+        stamp = new idegaTimestamp(iwc.getParameter(this.parameterDate));
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
   }
 
-  private void displayForm(ModuleInfo modinfo) {
+  private void displayForm(IWContext iwc) {
       Form form = new Form();
       Table table = new Table();
         form.add(table);
@@ -137,8 +137,8 @@ public class AdditionalBooking extends TravelWindow {
   }
 
 
-  public void saveBooking(ModuleInfo modinfo) {
-      String name = modinfo.getParameter("name");
+  public void saveBooking(IWContext iwc) {
+      String name = iwc.getParameter("name");
 
       String many;
       int iMany = 0;
@@ -150,7 +150,7 @@ public class AdditionalBooking extends TravelWindow {
       try {
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
-            many = modinfo.getParameter("priceCategory"+i);
+            many = iwc.getParameter("priceCategory"+i);
             if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
                 manys[i] = Integer.parseInt(many);
                 iMany += Integer.parseInt(many);

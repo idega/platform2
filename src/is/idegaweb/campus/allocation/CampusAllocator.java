@@ -1,12 +1,12 @@
 package is.idegaweb.campus.allocation;
 
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.finance.presentation.KeyEditor;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.IWContext;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.block.application.business.ApplicationFinder;
@@ -18,7 +18,7 @@ import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.*;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idegaweb.campus.application.*;
@@ -39,7 +39,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class CampusAllocator extends ModuleObjectContainer{
+public class CampusAllocator extends PresentationObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
@@ -85,35 +85,35 @@ public class CampusAllocator extends ModuleObjectContainer{
     monthOverlap = overlap;
   }
 
-  protected void control(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  protected void control(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     this.fontSize = 1;
-    if(modinfo.getParameter("list")!=null){
-      if(modinfo.getSessionAttribute("sess_cplx_id")!=null)
-        modinfo.removeSessionAttribute("sess_cplx_id");
-      if(modinfo.getSessionAttribute("sess_type_id")!=null)
-        modinfo.removeSessionAttribute("sess_type_id");
+    if(iwc.getParameter("list")!=null){
+      if(iwc.getSessionAttribute("sess_cplx_id")!=null)
+        iwc.removeSessionAttribute("sess_cplx_id");
+      if(iwc.getSessionAttribute("sess_type_id")!=null)
+        iwc.removeSessionAttribute("sess_type_id");
     }
-    if(modinfo.getParameter("type_id")!=null){
-      pTypeId = new Parameter("type_id",modinfo.getParameter("type_id"));
-      this.iTypeId = Integer.parseInt(modinfo.getParameter("type_id"));
-      modinfo.setSessionAttribute("sess_type_id",new Integer(iTypeId));
+    if(iwc.getParameter("type_id")!=null){
+      pTypeId = new Parameter("type_id",iwc.getParameter("type_id"));
+      this.iTypeId = Integer.parseInt(iwc.getParameter("type_id"));
+      iwc.setSessionAttribute("sess_type_id",new Integer(iTypeId));
     }
-    else if(modinfo.getSessionAttribute("sess_type_id")!=null){
-      this.iTypeId = ((Integer)modinfo.getSessionAttribute("sess_type_id")).intValue();
+    else if(iwc.getSessionAttribute("sess_type_id")!=null){
+      this.iTypeId = ((Integer)iwc.getSessionAttribute("sess_type_id")).intValue();
     }
-    if(modinfo.getParameter("cplx_id")!=null){
-      pComplexId = new Parameter("cplx_id",modinfo.getParameter("cplx_id"));
-      this.iComplexId = Integer.parseInt(modinfo.getParameter("cplx_id"));
-      modinfo.setSessionAttribute("sess_cplx_id",new Integer(iComplexId));
+    if(iwc.getParameter("cplx_id")!=null){
+      pComplexId = new Parameter("cplx_id",iwc.getParameter("cplx_id"));
+      this.iComplexId = Integer.parseInt(iwc.getParameter("cplx_id"));
+      iwc.setSessionAttribute("sess_cplx_id",new Integer(iComplexId));
     }
-    else if(modinfo.getSessionAttribute("sess_cplx_id")!=null){
-      this.iComplexId = ((Integer)modinfo.getSessionAttribute("sess_cplx_id")).intValue();
+    else if(iwc.getSessionAttribute("sess_cplx_id")!=null){
+      this.iComplexId = ((Integer)iwc.getSessionAttribute("sess_cplx_id")).intValue();
     }
 
-    if(modinfo.getApplicationAttribute(SysProps.getEntityTableName())!=null){
-      SysProps = (SystemProperties)modinfo.getApplicationAttribute(SysProps.getEntityTableName());
+    if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
     }
 
     Table Frame = new Table();
@@ -121,26 +121,26 @@ public class CampusAllocator extends ModuleObjectContainer{
     if(isAdmin){
       if(iTypeId > 0 && iComplexId > 0){
 
-        if(modinfo.getParameter("allocate")!=null){
-          int applicantId = Integer.parseInt(modinfo.getParameter("allocate"));
+        if(iwc.getParameter("allocate")!=null){
+          int applicantId = Integer.parseInt(iwc.getParameter("allocate"));
           Frame.add( getFreeApartments(iTypeId,iComplexId,applicantId,-1),3,1 );
-          Frame.add( getApplicantInfo(applicantId,modinfo),1,1 );
+          Frame.add( getApplicantInfo(applicantId,iwc),1,1 );
         }
-        else if(modinfo.getParameter("change")!=null){
-          int iContractId = Integer.parseInt(modinfo.getParameter("change"));
+        else if(iwc.getParameter("change")!=null){
+          int iContractId = Integer.parseInt(iwc.getParameter("change"));
           Frame.add( getFreeApartments(iTypeId,iComplexId,-1,iContractId),3,1 );
           //Frame.add( getContractTable(iContractId),3,1 );
           Frame.add( getWaitingList(iTypeId,iComplexId,iContractId),1,1 );
         }
-        else if(modinfo.getParameter("save_allocation")!=null){
-          if(saveAllocation(modinfo))
+        else if(iwc.getParameter("save_allocation")!=null){
+          if(saveAllocation(iwc))
             System.err.println("vistadist");
           else
              System.err.println("vistadist ekki");
           Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,1 );
         }
-        else if(modinfo.getParameter("delete_allocation")!=null){
-          deleteAllocation(modinfo);
+        else if(iwc.getParameter("delete_allocation")!=null){
+          deleteAllocation(iwc);
           Frame.add( getWaitingList(iTypeId,iComplexId,-1),1,1 );
         }
         else
@@ -161,7 +161,7 @@ public class CampusAllocator extends ModuleObjectContainer{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private ModuleObject getCategoryLists(){
+  private PresentationObject getCategoryLists(){
     Table T = new Table();
     T.setWidth(500);
     List Categories = BuildingFinder.listOfApartmentCategory();
@@ -257,7 +257,7 @@ public class CampusAllocator extends ModuleObjectContainer{
     }
     return T;
   }
-  private ModuleObject getWaitingLists(ApartmentCategory AC){
+  private PresentationObject getWaitingLists(ApartmentCategory AC){
     Table T = new Table();
 
     List L = BuildingFinder.getApartmentTypesComplexForCategory(AC.getID());
@@ -296,7 +296,7 @@ public class CampusAllocator extends ModuleObjectContainer{
     return L;
   }
 
-  private ModuleObject getWaitingList(int aprtTypeId,int cmplxId,int ContractId){
+  private PresentationObject getWaitingList(int aprtTypeId,int cmplxId,int ContractId){
     Table Frame = new Table();
     int row = 1;
     int col = 1;
@@ -409,9 +409,9 @@ public class CampusAllocator extends ModuleObjectContainer{
     return L;
   }
 
-  public ModuleObject getApplicantInfo(int applicantId,ModuleInfo modinfo){
+  public PresentationObject getApplicantInfo(int applicantId,IWContext iwc){
     CampusApprover CA = new CampusApprover();
-    ModuleObject MO = new Table();
+    PresentationObject MO = new Table();
 
       CampusApplicationHolder AH = CampusApplicationFinder.getApplicantInfo(applicantId);
       if(AH !=null){
@@ -434,7 +434,7 @@ public class CampusAllocator extends ModuleObjectContainer{
           Frame.mergeCells(1,1,2,1);
         }
 
-        Frame.add(CA.getViewApartment(AH.getCampusApplication(),AH.getApplied(),modinfo,iwrb),1,2);
+        Frame.add(CA.getViewApartment(AH.getCampusApplication(),AH.getApplied(),iwc,iwrb),1,2);
 
         MO =  Frame;
       }
@@ -444,7 +444,7 @@ public class CampusAllocator extends ModuleObjectContainer{
     return MO;
   }
 
-  private ModuleObject getFreeApartments(int aprtTypeId,int cmplxId,int applicant_id,int contract_id){
+  private PresentationObject getFreeApartments(int aprtTypeId,int cmplxId,int applicant_id,int contract_id){
     List L = BuildingFinder.listOfApartmentsInTypeAndComplex(aprtTypeId,cmplxId);
     ApartmentType AT = BuildingCacher.getApartmentType(aprtTypeId);
     Complex CX = BuildingCacher.getComplex(cmplxId);
@@ -619,7 +619,7 @@ public class CampusAllocator extends ModuleObjectContainer{
     return Frame;
   }
 
-  private ModuleObject getContractTable(int iContractId){
+  private PresentationObject getContractTable(int iContractId){
     Table T = new Table();
 
     Form myForm = new Form();
@@ -658,13 +658,13 @@ public class CampusAllocator extends ModuleObjectContainer{
     return myForm;
   }
 
-  private boolean saveAllocation(ModuleInfo modinfo){
+  private boolean saveAllocation(IWContext iwc){
     boolean returner = false;
-    String sContractId = modinfo.getParameter("contract_id");
-    String sApartmentId = modinfo.getParameter("apartmentid");
-    String sApplicantId = modinfo.getParameter("applicantid");
-    String sDateFrom = modinfo.getParameter("contract_date_from");
-    String sDateTo = modinfo.getParameter("contract_date_to");
+    String sContractId = iwc.getParameter("contract_id");
+    String sApartmentId = iwc.getParameter("apartmentid");
+    String sApplicantId = iwc.getParameter("applicantid");
+    String sDateFrom = iwc.getParameter("contract_date_from");
+    String sDateTo = iwc.getParameter("contract_date_to");
     if( sDateFrom!=null && sDateTo!=null){
       if(sApplicantId !=null && sApartmentId!=null ){
         int iApartmentId = Integer.parseInt(sApartmentId);
@@ -711,8 +711,8 @@ public class CampusAllocator extends ModuleObjectContainer{
     return returner;
   }
 
-  private boolean deleteAllocation(ModuleInfo modinfo){
-    String sContractId = modinfo.getParameter("contract_id");
+  private boolean deleteAllocation(IWContext iwc){
+    String sContractId = iwc.getParameter("contract_id");
     int iContractId = Integer.parseInt(sContractId);
     try {
       Contract eContract = new Contract(iContractId);
@@ -791,7 +791,7 @@ public class CampusAllocator extends ModuleObjectContainer{
     return boldText(String.valueOf(i));
   }
 
-   public Link getPDFLink(ModuleObject MO,int cam_app_id){
+   public Link getPDFLink(PresentationObject MO,int cam_app_id){
     Window W = new Window("PDF","/allocation/applicationfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
@@ -799,7 +799,7 @@ public class CampusAllocator extends ModuleObjectContainer{
     L.addParameter("cam_app_id",cam_app_id);
     return L;
   }
-  public Link getPDFLink(ModuleObject MO,int aprt_type_id,int cmplx_id){
+  public Link getPDFLink(PresentationObject MO,int aprt_type_id,int cmplx_id){
     Window W = new Window("PDF","/allocation/applicationfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
@@ -853,13 +853,13 @@ public Text formatText(String s){
   protected void setStyle(InterfaceObject O){
     O.setAttribute("style",this.styleAttribute);
   }
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 
 }

@@ -1,13 +1,13 @@
 package com.idega.projects.golf.presentation;
 
 
-import com.idega.jmodule.object.JModuleAdminWindow;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.JModuleAdminWindow;
+import com.idega.presentation.text.Link;
 import com.idega.jmodule.login.business.AccessControl;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.moduleobject.GolfDialog;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Image;
+import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWMainApplication;
 
 public class TournamentAdminCentral extends TournamentAdmin{
@@ -18,17 +18,17 @@ public class TournamentAdminCentral extends TournamentAdmin{
       super();
     }
 
-    public void main(ModuleInfo modinfo){
+    public void main(IWContext iwc){
 
         try {
-            if (AccessControl.isAdmin(modinfo)){
+            if (AccessControl.isAdmin(iwc)){
                     GolfDialog dialog = new GolfDialog("Mótastjóri");
                     add(dialog);
 
                     Link link = this.getAdminButton("com.idega.projects.golf.presentation.TournamentDeleter","Eyða móti");
                     dialog.add(link);
 
-                if (AccessControl.isClubAdmin(modinfo)){
+                if (AccessControl.isClubAdmin(iwc)){
 
 
 

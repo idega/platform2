@@ -1,18 +1,18 @@
 package com.idega.projects.golf.templates.page;
 
-import com.idega.jmodule.object.Page;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.Page;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.jmodule.banner.presentation.*;
 import com.idega.jmodule.sidemenu.presentation.Sidemenu;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
 import com.idega.jmodule.news.presentation.NewsReader;
 import java.util.Vector;
 import java.sql.SQLException;
 import com.idega.projects.golf.HandicapOverview;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -153,7 +153,7 @@ public class GolferPage extends Page{
     return isAdmin;
   }
 
-  public void add(ModuleObject objectToAdd){
+  public void add(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,3,3);
   }
 
@@ -161,39 +161,39 @@ public class GolferPage extends Page{
     Maintable.add(stringToAdd,3,3);
   }
 
-  public void addFooter(ModuleObject objectToAdd){
+  public void addFooter(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,1,5);
   }
 
-  public void addLeftTopBanner(ModuleObject objectToAdd){
+  public void addLeftTopBanner(PresentationObject objectToAdd){
     topBannerTable.add(objectToAdd,2,1);
   }
 
-  public void addRightTopBanner(ModuleObject objectToAdd){
+  public void addRightTopBanner(PresentationObject objectToAdd){
     topBannerTable.add(objectToAdd,4,1);
   }
 
-  public void addCenterTopBanner(ModuleObject objectToAdd){
+  public void addCenterTopBanner(PresentationObject objectToAdd){
     topBannerTable.add(objectToAdd,3,1);
   }
 
-  public void addLeftLogo(ModuleObject objectToAdd){
+  public void addLeftLogo(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,1,2);
   }
 
-  public void addLeftBanners(ModuleObject objectToAdd){
+  public void addLeftBanners(PresentationObject objectToAdd){
     innerLeftTable.add(objectToAdd,1,2);
   }
 
-  public void addLeftLink(ModuleObject objectToAdd){
+  public void addLeftLink(PresentationObject objectToAdd){
     innerLeftTable.add(objectToAdd,1,1);
   }
 
-  public void addCornerLogo(ModuleObject objectToAdd){
+  public void addCornerLogo(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,1,1);
   }
 
-  public void addMenuLinks(ModuleObject objectToAdd){
+  public void addMenuLinks(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,3,2);
   }
 
@@ -351,12 +351,12 @@ public class GolferPage extends Page{
 
   }
 
-  public void chooseView(ModuleInfo modinfo){
+  public void chooseView(IWContext iwc){
 
-    if (modinfo.isParameterSet(sTopMenuParameterName)) {
+    if (iwc.isParameterSet(sTopMenuParameterName)) {
 
       String[] chosenParameterValue;
-       chosenParameterValue = modinfo.getParameterValues(sTopMenuParameterName);
+       chosenParameterValue = iwc.getParameterValues(sTopMenuParameterName);
 
       //INFO
       if (chosenParameterValue[0].equals(sInfoParameterValue)) {
@@ -385,12 +385,12 @@ public class GolferPage extends Page{
 
       //HOME
       else if (chosenParameterValue[0].equals(sHomeParameterValue)) {
-        setHomeView(modinfo);
+        setHomeView(iwc);
       }
 
       //INTERVIEWS
       else if ((chosenParameterValue[0].equals(sInterviewsParameterValue)) || (chosenParameterValue[0].equals(sSubmitParameterValue))) {
-        setInterviewsView(modinfo);
+        setInterviewsView(iwc);
       }
       /*else{
         this.setStyleSheetURL("/style/idega.css");
@@ -399,14 +399,14 @@ public class GolferPage extends Page{
     //temporarily!!
     else{
 //      this.setStyleSheetURL("/style/StatisticsView.css");
-      setHomeView(modinfo);
+      setHomeView(iwc);
     }
-//    getSideMenuViewType(modinfo);
+//    getSideMenuViewType(iwc);
   }
 
   //HOME_VIEW
 
-  private void setHomeView(ModuleInfo modinfo){
+  private void setHomeView(IWContext iwc){
     this.setStyleSheetURL("/style/GolferPageView.css");
     Image iWelcomeLogo = iwrb.getImage("/golferpage/velkomin.gif");
     this.addLeftLogo(iWelcomeLogo);
@@ -426,7 +426,7 @@ public class GolferPage extends Page{
     //temp
     boolean isBjorgvin = false;
     try {
-      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(modinfo).getID() == this.memberId);
+      isBjorgvin = (com.idega.jmodule.login.business.LoginBusiness.getMember(iwc).getID() == this.memberId);
     }
     catch (Exception ex) {
       isBjorgvin = false;
@@ -439,7 +439,7 @@ public class GolferPage extends Page{
 //    news.setNumberOfDays(4);
     news.setHeadlineImageURL("/idegaweb/bundles/golf.bundle/resources/shared/bullet.gif");
     news.setWidth("100%");
-    news.setNewsReaderURLAsSamePage(modinfo);
+    news.setNewsReaderURLAsSamePage(iwc);
     news.setNumberOfExpandedNews(8);
     news.setNumberOfDisplayedNews(8);
     news.setNumberOfLetters(220);
@@ -449,7 +449,7 @@ public class GolferPage extends Page{
     news.setCollectionImage("collection.gif");
 
     //only hide images when in category view
-    if( modinfo.getParameter("news_id") == null ){
+    if( iwc.getParameter("news_id") == null ){
       news.setShowImages(false);
     }
 
@@ -579,7 +579,7 @@ public class GolferPage extends Page{
   }
 
   //STUÐNINGSAÐILAR
-  private void setInterviewsView(ModuleInfo modinfo){
+  private void setInterviewsView(IWContext iwc){
     Image iInterviewsLogo = iwrb.getImage("/golferpage/studningsadilar.gif");
     this.addLeftLogo(iInterviewsLogo);
 
@@ -611,8 +611,8 @@ public class GolferPage extends Page{
     interviewsTable.add(dummyTable,3,1);
 
     GolferFriendsSigningSheet golferFriendsSigningSheet = new GolferFriendsSigningSheet(supportTextReaderId,
-      (String) modinfo.getSessionAttribute("golferName"), sTopMenuParameterName,sInterviewsParameterValue,
-      sSubmitParameterValue, (String) modinfo.getSessionAttribute("fullGolferName"));
+      (String) iwc.getSessionAttribute("golferName"), sTopMenuParameterName,sInterviewsParameterValue,
+      sSubmitParameterValue, (String) iwc.getSessionAttribute("fullGolferName"));
     /*Table dummyTable = new Table(1,2);
     //dummyTable.setHeight(1,"20");
     dummyTable.setCellpadding(0);
@@ -692,28 +692,28 @@ public class GolferPage extends Page{
     this.addLeftLink(dummyTable);
   }
 
-/* private void getSideMenuViewType(ModuleInfo modinfo){
-  String module_object = modinfo.getParameter("module_object");
+/* private void getSideMenuViewType(IWContext iwc){
+  String module_object = iwc.getParameter("module_object");
 
   if (module_object == null) {
-    //add(getNews(modinfo),2,2);
+    //add(getNews(iwc),2,2);
   }
   else {
       try {
           if (!module_object.equals("com.idega.jmodule.sidemenu.presentation.Sidemenu")) {
-             ModuleObject  jmodule = (ModuleObject) Class.forName(module_object).newInstance();
+             PresentationObject  jmodule = (PresentationObject) Class.forName(module_object).newInstance();
              add(jmodule);
-             configure(module_object,jmodule,modinfo);
+             configure(module_object,jmodule,iwc);
           }
       }
       catch (Exception e) {
-          //add(getNews(modinfo));
+          //add(getNews(iwc));
       }
     }
   }
 
 
-  private void configure(String module_object, ModuleObject jmodule, ModuleInfo modinfo) throws Exception {
+  private void configure(String module_object, PresentationObject jmodule, IWContext iwc) throws Exception {
     if (module_object.equals("com.idega.jmodule.boxoffice.presentation.BoxReader")) {
 
       com.idega.jmodule.boxoffice.presentation.BoxReader box = (com.idega.jmodule.boxoffice.presentation.BoxReader) jmodule;
@@ -766,7 +766,7 @@ public class GolferPage extends Page{
       news.setConnectionAttributes("golfer_page", homeNewsReaderId);
       news.setNewsEditorURL("/golfers/newsIndex.jsp");
       news.setNumberOfDays(4);
-      news.setNewsReaderURLAsSamePage(modinfo);
+      news.setNewsReaderURLAsSamePage(iwc);
       news.setNumberOfExpandedNews(3);
       news.setNumberOfDisplayedNews(3);
       news.setNumberOfLetters(250);
@@ -779,14 +779,14 @@ public class GolferPage extends Page{
     }
   }*/
 
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
 
     try {
-      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException E) {    }
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     addCornerLogoImage();
 
     Image dotLineBackgroundImage;
@@ -817,6 +817,6 @@ public class GolferPage extends Page{
     sidemenu.setBulletImage(bullet);*/
 
     setLinkMenu();
-    chooseView(modinfo);
+    chooseView(iwc);
   }
 }

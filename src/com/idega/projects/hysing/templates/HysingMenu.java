@@ -6,9 +6,9 @@ package com.idega.projects.hysing.templates;
 
 
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.poll.moduleobject.*;
 import com.idega.idegaweb.template.*;
 import java.util.*;
@@ -61,7 +61,7 @@ import java.util.*;
 
               }
 
-            public ModuleObject getMenuItem(String menuItemName){
+            public PresentationObject getMenuItem(String menuItemName){
               /*Table returnTable = new Table(3,1);
               returnTable.setCellpadding(0);
               returnTable.setCellspacing(0);
@@ -89,7 +89,7 @@ import java.util.*;
                 return false;
             }
 
-            public ModuleObject getRightMenuItem(String itemName){
+            public PresentationObject getRightMenuItem(String itemName){
 
                   if(isClicked(itemName)){
                       if(itemName.equals("about")){
@@ -119,7 +119,7 @@ import java.util.*;
                   }
             }
 
-            public ModuleObject getLeftMenuItem(String itemName){
+            public PresentationObject getLeftMenuItem(String itemName){
 
                   if(isClicked(itemName)){
                       if(itemName.equals("about")){

@@ -1,9 +1,9 @@
 // idega - Laddi
 package com.idega.projects.idega.templates;
 
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.util.*;
 
 public class IdegaTemplate extends Page{
@@ -160,15 +160,15 @@ public String language = "IS";
 
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		tafla.add(objectToAdd,3,1);
 	}
 
-        public void add2(ModuleObject objectToAdd){
+        public void add2(PresentationObject objectToAdd){
                     tafla.add(objectToAdd,1,1);
         }
 
-        public void add3(ModuleObject objectToAdd){
+        public void add3(PresentationObject objectToAdd){
                     tafla.add(objectToAdd,5,1);
         }
 

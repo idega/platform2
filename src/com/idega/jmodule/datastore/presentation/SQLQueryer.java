@@ -8,9 +8,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import	com.idega.presentation.*;
+import	com.idega.presentation.ui.*;
 import	com.idega.jmodule.news.data.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
@@ -19,7 +19,7 @@ import com.idega.util.text.*;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.0
 */
-public class SQLQueryer extends JModuleObject{
+public class SQLQueryer extends Block{
 
     private static String queryParameter="SQLQUERYSTRING";
     private FramePane queryPane;
@@ -32,7 +32,7 @@ public class SQLQueryer extends JModuleObject{
     public SQLQueryer(){
     }
 
-    public void add(ModuleObject obj){
+    public void add(PresentationObject obj){
       resultsPane.add(obj);
     }
 
@@ -51,7 +51,7 @@ public class SQLQueryer extends JModuleObject{
       this.resultName = resultName;
     }
 
-    public void main(ModuleInfo modinfo)throws Exception{
+    public void main(IWContext iwc)throws Exception{
       resultsPane = new FramePane(resultName);
 
       if(displayForm){
@@ -70,7 +70,7 @@ public class SQLQueryer extends JModuleObject{
 
 
       Connection conn=getConnection();
-      String  queryString = modinfo.getParameter (queryParameter);
+      String  queryString = iwc.getParameter (queryParameter);
       if(queryString == null) queryString = query;
 
       try {

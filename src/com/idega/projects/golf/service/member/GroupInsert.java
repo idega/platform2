@@ -2,9 +2,9 @@
 package com.idega.projects.golf.service.member;
 
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
 import java.util.Vector;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class GroupInsert extends EntityInsert {
         selectGroups.setHeight(10);
     }
     catch(SQLException e) {
-        System.out.println("Villa i GroupInsert(ModuleInfo modinfo) "+e.getMessage());
+        System.out.println("Villa i GroupInsert(IWContext iwc) "+e.getMessage());
         e.printStackTrace();
     }
   }
@@ -67,11 +67,11 @@ public class GroupInsert extends EntityInsert {
     }
   }
 
-  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
+  public boolean areNeededFieldsEmpty(IWContext iwc) {
       return false;
   }
 
-  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+  public Vector getNeededEmptyFields(IWContext iwc) {
       return this.getEmptyFields();
   }
 
@@ -83,7 +83,7 @@ public class GroupInsert extends EntityInsert {
       return false;
   }
 
-  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
+  public boolean areSomeFieldsEmpty(IWContext iwc) {
       return false;
   }
 
@@ -106,8 +106,8 @@ public class GroupInsert extends EntityInsert {
     return hTable;
   }
 
-  public void store(ModuleInfo modinfo,Member mem)throws SQLException, IOException {
-    setVariables(modinfo);
+  public void store(IWContext iwc,Member mem)throws SQLException, IOException {
+    setVariables(iwc);
     eMember = mem;
     if(selectGroupsValues == null)
         return;
@@ -116,20 +116,20 @@ public class GroupInsert extends EntityInsert {
     }
   }
 
-  public void store(ModuleInfo modinfo)throws SQLException, IOException {
-      setVariables(modinfo);
+  public void store(IWContext iwc)throws SQLException, IOException {
+      setVariables(iwc);
       if(selectGroupsValues == null)
           return;
 
       selectGroupsValues = removeGroupsMemberHas(selectGroupsValues);
       for(int i = 0; i < selectGroupsValues.length; i++) {
-          modinfo.getResponse().getWriter().print("<br>"+Integer.parseInt(selectGroupsValues[i]));
+          iwc.getResponse().getWriter().print("<br>"+Integer.parseInt(selectGroupsValues[i]));
           eMember.addTo(new Group(Integer.parseInt(selectGroupsValues[i])));
       }
   }
 
-  public void setVariables(ModuleInfo modinfo) {
-      selectGroupsValues = modinfo.getRequest().getParameterValues(selectGroupsName);
+  public void setVariables(IWContext iwc) {
+      selectGroupsValues = iwc.getRequest().getParameterValues(selectGroupsName);
   }
 
   private String[] removeGroupsMemberHas(String[] values)throws IOException {

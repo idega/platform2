@@ -5,8 +5,8 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.projects.golf.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import java.sql.*;
 import java.io.*;
 
@@ -25,12 +25,12 @@ public class GolfMainJSPModulePage3 extends GolfMainJSPModulePage{
 
 
 
-       protected void User(ModuleInfo modinfo)throws SQLException,IOException{
+       protected void User(IWContext iwc)throws SQLException,IOException{
               this.setTextDecoration("none");
               setTopMargin(5);
-              centerTable.add(Left(modinfo), 1, 1);
+              centerTable.add(Left(iwc), 1, 1);
               add( "top", golfHeader());
-              add("top", Top(modinfo));
+              add("top", Top(iwc));
               add("bottom", golfFooter());
               add("middle", Center());
 	}
@@ -58,7 +58,7 @@ public class GolfMainJSPModulePage3 extends GolfMainJSPModulePage{
         }
 
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 	  centerTable.add(objectToAdd,2,1);
 	}
 

@@ -1,11 +1,11 @@
 package com.idega.projects.golf.presentation;
 
 import com.idega.jmodule.login.business.AccessControl;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.moduleobject.GolfDialog;
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.business.TournamentController;
 import com.idega.projects.golf.entity.Member;
 import java.sql.SQLException;
@@ -28,24 +28,24 @@ Tournament tournament = null;
 
 
 
-public void main(ModuleInfo modinfo)throws Exception{
+public void main(IWContext iwc)throws Exception{
 	//initializeButtons();
 	String tournament_id;
-        String action = modinfo.getParameter("action");
+        String action = iwc.getParameter("action");
         Table table = new Table(2,3);
         add(table);
-        Member member = (Member) AccessControl.getMember(modinfo);
+        Member member = (Member) AccessControl.getMember(iwc);
 
-        tournament_id=modinfo.getParameter("tournament");
+        tournament_id=iwc.getParameter("tournament");
         if (tournament_id == null) {
-            tournament_id = (String) modinfo.getSessionAttribute("golf_register_member_tournament_id");
+            tournament_id = (String) iwc.getSessionAttribute("golf_register_member_tournament_id");
         }
         else {
-            modinfo.setSessionAttribute("golf_register_member_tournament_id",tournament_id);
+            iwc.setSessionAttribute("golf_register_member_tournament_id",tournament_id);
         }
 
         if (action == null) {
-            modinfo.removeApplicationAttribute("golf_register_member_tournament_id");
+            iwc.removeApplicationAttribute("golf_register_member_tournament_id");
 //            action = "";
         }
 
@@ -108,22 +108,22 @@ public void main(ModuleInfo modinfo)throws Exception{
                     }
               }
               else if (action.equals("selectmember") ) {
-                  selectMember(modinfo);
+                  selectMember(iwc);
               }
               else if (action.equals("searchBySocialSecurityNumber")) {
-                  searchBySocialSecurityNumber(modinfo);
+                  searchBySocialSecurityNumber(iwc);
               }
               else if (action.equals("getSearchBySocialSecurityNumberResults")) {
-                  getSearchBySocialSecurityNumberResults(modinfo);
+                  getSearchBySocialSecurityNumberResults(iwc);
               }
               else if (action.equals("registermarkedmembers")) {
-                  registerMarkedMembers(modinfo);
+                  registerMarkedMembers(iwc);
               }
               else if (action.equals("searchByName")) {
-                  searchByName(modinfo);
+                  searchByName(iwc);
               }
               else if (action.equals("getSearchByNameResults")) {
-                  getSearchByNameResults(modinfo);
+                  getSearchByNameResults(iwc);
               }
 
 	}
@@ -133,7 +133,7 @@ public void main(ModuleInfo modinfo)throws Exception{
             table2.setAlignment("center");
             table2.add("Veldu mót:",1,1);
 //            DropdownMenu menu = new DropdownMenu();
-            DropdownMenu menu = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),modinfo);
+            DropdownMenu menu = TournamentController.getDropdownOrderedByUnion(new DropdownMenu("tournament"),iwc);
                 menu.setAttribute("size","10");
 
 
@@ -156,7 +156,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 
 }
 
-public void selectMember(ModuleInfo modinfo) throws SQLException{
+public void selectMember(IWContext iwc) throws SQLException{
     Form form = new Form();
     Table table2 = new Table(1,4);
     table2.setAlignment("center");
@@ -172,7 +172,7 @@ public void selectMember(ModuleInfo modinfo) throws SQLException{
 }
 
 
-public void searchByName(ModuleInfo modinfo) {
+public void searchByName(IWContext iwc) {
     Form form = new Form();
     Table table2 = new Table(1,4);
     table2.setWidth(200);
@@ -195,19 +195,19 @@ public void searchByName(ModuleInfo modinfo) {
 
 }
 
-public void getSearchByNameResults(ModuleInfo modinfo) throws SQLException {
-    String names = modinfo.getParameter("name");
+public void getSearchByNameResults(IWContext iwc) throws SQLException {
+    String names = iwc.getParameter("name");
     Member[] theMembers = this.findMembersByName(names);
-    drawTableWithMembers(modinfo, theMembers);
+    drawTableWithMembers(iwc, theMembers);
 }
-public void getSearchBySocialSecurityNumberResults(ModuleInfo modinfo) throws SQLException {
-    String socialSecurityNumbers = modinfo.getParameter("socialSecurityNumbers");
+public void getSearchBySocialSecurityNumberResults(IWContext iwc) throws SQLException {
+    String socialSecurityNumbers = iwc.getParameter("socialSecurityNumbers");
     Member[] theMembers = this.findMembersBySocialSecurityNumber(socialSecurityNumbers);
-    drawTableWithMembers(modinfo, theMembers);
+    drawTableWithMembers(iwc, theMembers);
 }
 
 
-public void searchBySocialSecurityNumber(ModuleInfo modinfo) {
+public void searchBySocialSecurityNumber(IWContext iwc) {
     Form form = new Form();
     Table table2 = new Table(1,4);
     table2.setWidth(200);
@@ -227,7 +227,7 @@ public void searchBySocialSecurityNumber(ModuleInfo modinfo) {
 }
 
 
-public void drawTableWithMembers(ModuleInfo modinfo, Member[] theMembers) {
+public void drawTableWithMembers(IWContext iwc, Member[] theMembers) {
     int tableHeight = 4;
 
     if (theMembers != null) {
@@ -279,7 +279,7 @@ public void drawTableWithMembers(ModuleInfo modinfo, Member[] theMembers) {
             checker = new CheckBox("checkedMemberId_"+memberId);
               checker.setChecked(true);
 
-            link = new Link("Skrá í mót",modinfo.getRequestURI());
+            link = new Link("Skrá í mót",iwc.getRequestURI());
               link.addParameter("action","registerthesemembers");
               link.addParameter("member_id",memberId+"");
             table.add(memberSocialNumber,1,row);
@@ -316,13 +316,13 @@ public void drawTableWithMembers(ModuleInfo modinfo, Member[] theMembers) {
 
 
 
-public void registerMarkedMembers(ModuleInfo modinfo) throws SQLException{
-    String[] member_id = (String[]) modinfo.getParameterValues("member_id");
+public void registerMarkedMembers(IWContext iwc) throws SQLException{
+    String[] member_id = (String[]) iwc.getParameterValues("member_id");
     String checker;
     Member member;
 
     for (int i = 0; i < member_id.length; i++) {
-        checker = modinfo.getParameter("checkedMemberId_"+member_id[i]);
+        checker = iwc.getParameter("checkedMemberId_"+member_id[i]);
         if (checker != null) {
           member = new Member(Integer.parseInt(member_id[i]));
           if (isMemberAllowedToRegister(member,this.tournament)) {

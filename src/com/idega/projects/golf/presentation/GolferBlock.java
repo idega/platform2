@@ -1,13 +1,13 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.data.EntityFinder;
 import java.util.LinkedList;
 import java.util.List;
 import com.idega.data.GenericEntity;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.lang.Integer;
 import com.idega.projects.golf.entity.GolferPageData;
@@ -21,7 +21,7 @@ import com.idega.projects.golf.entity.GolferPageData;
  * @version 1.0
  */
 
-public class GolferJModuleObject extends JModuleObject {
+public class GolferBlock extends Block {
 
   protected final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
   protected IWResourceBundle iwrb;
@@ -29,16 +29,16 @@ public class GolferJModuleObject extends JModuleObject {
   protected int member_id ;
   protected GolferPageData golferPageData;
 
-  public GolferJModuleObject() {
+  public GolferBlock() {
   }
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     this.member_id = 3152;
     golferPageData = new GolferPageData();
     List list = EntityFinder.findAllByColumn( (GenericEntity) golferPageData, GolferPageData.MEMBER_ID, 3152);

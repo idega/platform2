@@ -7,12 +7,12 @@ import com.idega.projects.golf.*;
 import com.idega.projects.golf.moduleobject.Login;
 import com.idega.jmodule.*;
 import com.idega.jmodule.banner.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.text.data.*;
 import com.idega.jmodule.forum.data.*;
 import com.idega.jmodule.poll.moduleobject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 //import com.idega.jmodule.linkgroup.moduleobject.*;
 import com.idega.jmodule.boxoffice.presentation.*;
 import com.idega.jmodule.banner.presentation.BannerContainer;
@@ -23,22 +23,22 @@ import java.io.*;
 
 public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
 
-  protected void User(ModuleInfo modinfo)throws SQLException,IOException{
+  protected void User(IWContext iwc)throws SQLException,IOException{
     this.setTextDecoration("none");
     setTopMargin(5);
     add( "top", golfHeader());
-    add("top", Top(modinfo));
+    add("top", Top(iwc));
     add("bottom", golfFooter());
-    add(Left(modinfo), Center(), Right(modinfo));
+    add(Left(iwc), Center(), Right(iwc));
     setWidth(1, "" + LEFTWIDTH);
     setWidth(2, "398");
     setWidth(3, "" + RIGHTWIDTH);
     setContentWidth( "100%");
   }
-  protected Table clubTable(ModuleInfo modinfo) throws SQLException,IOException {
-    String union_id = modinfo.getParameter("union_id");
+  protected Table clubTable(IWContext iwc) throws SQLException,IOException {
+    String union_id = iwc.getParameter("union_id");
 
-    if ( union_id == null ) union_id = (String) modinfo.getSession().getAttribute("golf_union_id");
+    if ( union_id == null ) union_id = (String) iwc.getSession().getAttribute("golf_union_id");
     if ( union_id == null ) union_id = "3";
     Image spacer = new Image("/pics/spacer.gif","",20,1);
     Union union = new Union(Integer.parseInt(union_id));
@@ -218,7 +218,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
       }
     return innerTable;
   }
-  protected Table Left(ModuleInfo modinfo) throws IOException,SQLException {
+  protected Table Left(IWContext iwc) throws IOException,SQLException {
     Table leftTable = new Table(1,4);
     //leftTable.setBorder(1);
     leftTable.setVerticalAlignment("top");
@@ -230,11 +230,11 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     leftTable.setWidth("" + LEFTWIDTH);
     leftTable.setCellpadding(0);
     leftTable.setCellspacing(0);
-    leftTable.add(clubTable(modinfo), 1,1);
-    leftTable.add(getLinks(modinfo),1,3);
+    leftTable.add(clubTable(iwc), 1,1);
+    leftTable.add(getLinks(iwc),1,3);
       return leftTable;
   }
-  protected Table Right(ModuleInfo modinfo) throws SQLException,IOException{
+  protected Table Right(IWContext iwc) throws SQLException,IOException{
     Table rightTable = new Table(1,1);
     rightTable.setWidth(Integer.toString(RIGHTWIDTH));
     rightTable.setCellpadding(0);
@@ -242,9 +242,9 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     rightTable.setVerticalAlignment(1,1,"top");
     rightTable.setColumnAlignment(1, "center");
 
-    rightTable.add(ClubSponsors(modinfo),1,1);
+    rightTable.add(ClubSponsors(iwc),1,1);
 
-    if ((modinfo.getParameter("union_id")).equalsIgnoreCase("81")){
+    if ((iwc.getParameter("union_id")).equalsIgnoreCase("81")){
       rightTable.resize(1,2);
       rightTable.setWidth(1,"100%");
       rightTable.setAlignment(1,2, "center");
@@ -258,7 +258,7 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     }
     return rightTable;
   }
-  protected Form ClubSponsors(ModuleInfo modinfo) throws IOException{
+  protected Form ClubSponsors(IWContext iwc) throws IOException{
     String action = getRequest().getParameter("action");
     String union_id = "3";
     String temp_union_id;
@@ -293,10 +293,10 @@ public class GolfClubJSPModulePage extends GolfMainJSPModulePage{
     adalTable.add(contain,1,1);
     return myForm;
   }
-  public BoxReader getLinks(ModuleInfo modinfo){
+  public BoxReader getLinks(IWContext iwc){
 
-    String union_id = modinfo.getParameter("union_id");
-    if ( union_id == null ) union_id = (String) modinfo.getSession().getAttribute("golf_union_id");
+    String union_id = iwc.getParameter("union_id");
+    if ( union_id == null ) union_id = (String) iwc.getSession().getAttribute("golf_union_id");
     if ( union_id == null ) union_id = "3";
     BoxReader box_office= new BoxReader(union_id,isAdmin);
     box_office.setBoxBorder(0);

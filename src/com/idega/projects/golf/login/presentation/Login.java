@@ -6,9 +6,9 @@
 package com.idega.projects.golf.login.presentation;
 
 import com.idega.projects.golf.entity.Member;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import java.util.*;
 import com.idega.projects.golf.login.business.*;
 import com.idega.jmodule.login.business.AccessControl;
@@ -24,7 +24,7 @@ import com.idega.idegaweb.IWResourceBundle;
   *@author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>,<a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.1
  */
-public class Login extends JModuleObject{
+public class Login extends Block{
 
 String backgroundImageUrl = "";
 String loginImageUrl = "";
@@ -142,13 +142,13 @@ protected IWBundle iwb;
 	public void setLogOutImageUrl(String url) {
 		logOutImageUrl = url;
 	}
-	public static boolean isAdmin(ModuleInfo modinfo)throws Exception{
-            return AccessControl.isAdmin(modinfo);
+	public static boolean isAdmin(IWContext iwc)throws Exception{
+            return AccessControl.isAdmin(iwc);
 	}
 
 
-	public static com.idega.projects.golf.entity.Member getMember(ModuleInfo modinfo){
-		return (com.idega.projects.golf.entity.Member)AccessControl.getMember(modinfo);
+	public static com.idega.projects.golf.entity.Member getMember(IWContext iwc){
+		return (com.idega.projects.golf.entity.Member)AccessControl.getMember(iwc);
 	}
 
 	private void isNotSignedOn(String what) {
@@ -302,12 +302,12 @@ protected IWBundle iwb;
                             }
 
 
-                        com.idega.jmodule.object.Image loginImage = null;
+                        com.idega.presentation.Image loginImage = null;
                           if (userImageUrl != null) {
                             loginImage = iwrb.getImage(userImageUrl);
                           }
 
-                        com.idega.jmodule.object.Image passwordImage = null;
+                        com.idega.presentation.Image passwordImage = null;
                           if (passwordImageUrl != null) {
                             passwordImage = iwrb.getImage(passwordImageUrl);
                           }
@@ -414,20 +414,20 @@ protected IWBundle iwb;
 
 
 
-        public void main(ModuleInfo modinfo)throws Exception{
-            iwrb = getResourceBundle(modinfo);
-            iwb = getBundle(modinfo);
+        public void main(IWContext iwc)throws Exception{
+            iwrb = getResourceBundle(iwc);
+            iwb = getBundle(iwc);
 
-            String state = internalGetState(modinfo);
+            String state = internalGetState(iwc);
             if(state!=null){
                 if(state.equals("loggedon")){
-                  isLoggedOn(modinfo);
+                  isLoggedOn(iwc);
                 }
                 else if(state.equals("loggedoff")){
                   startState();
                 }
                 else if(state.equals("newlogin")){
-                  String temp = modinfo.getRequest().getParameter("login");
+                  String temp = iwc.getRequest().getParameter("login");
                   if(temp != null){
                     if (temp.length() == 11) {
                       loginFailed("toBig");
@@ -453,11 +453,11 @@ protected IWBundle iwb;
 
 
 
-        public String internalGetState(ModuleInfo modinfo){
-            return LoginBusiness.internalGetState(modinfo);
+        public String internalGetState(IWContext iwc){
+            return LoginBusiness.internalGetState(iwc);
         }
 
-private void isLoggedOn(ModuleInfo modinfo){
+private void isLoggedOn(IWContext iwc){
         String color = "";
         String loginWidth = "150";
         String loginHeight = "90";
@@ -538,7 +538,7 @@ private void isLoggedOn(ModuleInfo modinfo){
                                 user.setBold();
                                 user.setFontSize(1);
 
-                        Member member = (Member) modinfo.getSession().getAttribute("member_login");
+                        Member member = (Member) iwc.getSession().getAttribute("member_login");
                         user.addToText(member.getName());
 
                         Link hlekkur = new Link(user,"/createlogin.jsp?kt="+member.getSocialSecurityNumber());
@@ -800,8 +800,8 @@ private void isLoggedOn(ModuleInfo modinfo){
  ///// additional mothods  /////////
 
 
-	private void logOut(ModuleInfo modinfo) throws Exception{
-    	  LoginBusiness.logOut2(modinfo);
+	private void logOut(IWContext iwc) throws Exception{
+    	  LoginBusiness.logOut2(iwc);
         }
 
 

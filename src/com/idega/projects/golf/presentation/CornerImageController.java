@@ -1,7 +1,7 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import java.sql.SQLException;
 import java.lang.String;
 import com.idega.idegaweb.IWBundle;
@@ -16,18 +16,18 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class CornerImageController extends GolferJModuleObject implements LinkParameters{
+public class CornerImageController extends GolferBlock implements LinkParameters{
 
   public CornerImageController() {
 
   }
 
-  public void chooseView(ModuleInfo modinfo){
+  public void chooseView(IWContext iwc){
 
-    if (modinfo.isParameterSet(sTopMenuParameterName)) {
+    if (iwc.isParameterSet(sTopMenuParameterName)) {
 
       String[] chosenParameterValue;
-       chosenParameterValue = modinfo.getParameterValues(sTopMenuParameterName);
+       chosenParameterValue = iwc.getParameterValues(sTopMenuParameterName);
 
       //GOLFBAG
       if (chosenParameterValue[0].equals(sInfoParameterValue)) {
@@ -77,8 +77,8 @@ public class CornerImageController extends GolferJModuleObject implements LinkPa
     }
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-    super.main(modinfo);
-    chooseView(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+    super.main(iwc);
+    chooseView(iwc);
   }
 }

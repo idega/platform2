@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.ModuleObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.PresentationObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.projects.golf.*;
@@ -26,7 +26,7 @@ import com.idega.idegaweb.IWResourceBundle;
 *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
 *@version 1.0
 */
- public class PaymentBooker extends com.idega.jmodule.object.ModuleObjectContainer {
+ public class PaymentBooker extends com.idega.presentation.PresentationObjectContainer {
 
   private String sUnionID,sUnionName,sUnionAbbrev;
   private int iUnionID,iCashierID;
@@ -67,13 +67,13 @@ import com.idega.idegaweb.IWResourceBundle;
     this.sItemColor = sItemColor;
   }
 
-  private void control(ModuleInfo modinfo) throws IOException{
+  private void control(IWContext iwc) throws IOException{
 
     try{
-      sUnionID = (String)  modinfo.getSession().getAttribute("golf_union_id");
+      sUnionID = (String)  iwc.getSession().getAttribute("golf_union_id");
 
-      if(modinfo.getSession().getAttribute("member_login")!= null){
-        eCashier = (Member) modinfo.getSession().getAttribute("member_login");
+      if(iwc.getSession().getAttribute("member_login")!= null){
+        eCashier = (Member) iwc.getSession().getAttribute("member_login");
         iCashierID = eCashier.getID();
       }
 
@@ -85,22 +85,22 @@ import com.idega.idegaweb.IWResourceBundle;
       //add(""+Integer.parseInt("0000000000003665"));
       boolean hasSomeValues = false;
 
-      if(modinfo.getRequest().getParameter( sParameterPrefix+"action") != null){
-        sAction = modinfo.getRequest().getParameter( sParameterPrefix+"action");
+      if(iwc.getRequest().getParameter( sParameterPrefix+"action") != null){
+        sAction = iwc.getRequest().getParameter( sParameterPrefix+"action");
       }
 
-      if(modinfo.getSession().getAttribute(sParameterPrefix+"action")!=null)
-        sAction = (String)  modinfo.getSession().getAttribute(sParameterPrefix+"action");
+      if(iwc.getSession().getAttribute(sParameterPrefix+"action")!=null)
+        sAction = (String)  iwc.getSession().getAttribute(sParameterPrefix+"action");
 
-      if(sAction.equals("main"))	{   doMain(modinfo); 		}
-      else if(sAction.equals("list"))	{   doList(modinfo); 	        }
-      else if(sAction.equals("update"))	{   doUpdate(modinfo); 	        }
-      else if(sAction.equals("view"))	{   doView(modinfo); 		}
-      else if(sAction.equals("uploadfile"))	{   doUploadFile(modinfo); 		}
-      else if(sAction.equals("file"))      {   doFile(modinfo);            }
-      else if(sAction.equals("write"))      {   doWriteFile(modinfo);            }
-      else if(sAction.equals("fetch"))      {   doFetchFile(modinfo);            }
-      else doMain(modinfo);
+      if(sAction.equals("main"))	{   doMain(iwc); 		}
+      else if(sAction.equals("list"))	{   doList(iwc); 	        }
+      else if(sAction.equals("update"))	{   doUpdate(iwc); 	        }
+      else if(sAction.equals("view"))	{   doView(iwc); 		}
+      else if(sAction.equals("uploadfile"))	{   doUploadFile(iwc); 		}
+      else if(sAction.equals("file"))      {   doFile(iwc);            }
+      else if(sAction.equals("write"))      {   doWriteFile(iwc);            }
+      else if(sAction.equals("fetch"))      {   doFetchFile(iwc);            }
+      else doMain(iwc);
 
 
 
@@ -108,7 +108,7 @@ import com.idega.idegaweb.IWResourceBundle;
     catch(SQLException S){ System.err.print(S.toString());	}
     }
 
-    private void doMain(ModuleInfo modinfo) throws SQLException {
+    private void doMain(IWContext iwc) throws SQLException {
       Form myForm = new Form();
       myForm.maintainAllParameters();
 
@@ -150,18 +150,18 @@ import com.idega.idegaweb.IWResourceBundle;
 
     }
 
-    private void doList(ModuleInfo modinfo) throws SQLException{
+    private void doList(IWContext iwc) throws SQLException{
       idegaTimestamp toDay = new idegaTimestamp();
       int iToDay = toDay.getDay();
       int iToMonth = toDay.getMonth();
       int iToYear = toDay.getYear();
 
-      int iDay = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drpday"));
-      int iMonth = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drpmonth"));
-      int iYear = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drpyear"));
-      int iPaytype = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drppaytype"));
+      int iDay = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drpday"));
+      int iMonth = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drpmonth"));
+      int iYear = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drpyear"));
+      int iPaytype = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drppaytype"));
 
-      String radio = modinfo.getRequest().getParameter(sParameterPrefix+"radio");
+      String radio = iwc.getRequest().getParameter(sParameterPrefix+"radio");
       boolean ifPaid = false;
       if(radio.equalsIgnoreCase("paid"))
         ifPaid = true;
@@ -270,10 +270,10 @@ import com.idega.idegaweb.IWResourceBundle;
 
     }
 
-    private void doUpdate(ModuleInfo modinfo) throws SQLException{
-      int iLen = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"listcount"));
+    private void doUpdate(IWContext iwc) throws SQLException{
+      int iLen = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"listcount"));
       for(int i = 0; i < iLen; i++){
-        String sChkid = modinfo.getRequest().getParameter(this.sParameterPrefix+"pmnt_chk"+i);
+        String sChkid = iwc.getRequest().getParameter(this.sParameterPrefix+"pmnt_chk"+i);
         if(sChkid != null){
           int iPaymentId = Integer.parseInt(sChkid);
           try{
@@ -443,7 +443,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
     }
 
-    private void doView(ModuleInfo modinfo) throws SQLException{
+    private void doView(IWContext iwc) throws SQLException{
       Form myForm = new Form();
       myForm.maintainAllParameters();
 
@@ -476,18 +476,18 @@ import com.idega.idegaweb.IWResourceBundle;
 
     }
 
-    private void doFetchFile(ModuleInfo modinfo) throws SQLException{
+    private void doFetchFile(IWContext iwc) throws SQLException{
       String sLowerCaseUnionAbbreviation = this.sUnionAbbrev.toLowerCase();
       String fileSeperator = System.getProperty("file.separator");
-      String filepath = modinfo.getServletContext().getRealPath(fileSeperator+sLowerCaseUnionAbbreviation+fileSeperator);
+      String filepath = iwc.getServletContext().getRealPath(fileSeperator+sLowerCaseUnionAbbreviation+fileSeperator);
       String fileLink = (filepath+fileSeperator);
 
       Form myForm = new Form();
       myForm.maintainAllParameters();
       //myForm.setAction("/tarif/inputfile.jsp");
       myForm.setMultiPart();
-      //com.idega.io.FileSaver.setUploadDir(modinfo,fileLink);
-      modinfo.getSession().setAttribute(sParameterPrefix+"action","uploadfile" );
+      //com.idega.io.FileSaver.setUploadDir(iwc,fileLink);
+      iwc.getSession().setAttribute(sParameterPrefix+"action","uploadfile" );
       myForm.add(new HiddenInput( FileSaver.getUploadDirParameterName(),fileLink ));
       myForm.add(new FileInput());
       myForm.add(new SubmitButton());
@@ -500,15 +500,15 @@ import com.idega.idegaweb.IWResourceBundle;
       add(MainTable);
     }
 
-    private void doUploadFile(ModuleInfo modinfo){
-      modinfo.getSession().removeAttribute(sParameterPrefix+"action");
+    private void doUploadFile(IWContext iwc){
+      iwc.getSession().removeAttribute(sParameterPrefix+"action");
        String fileSeperator = System.getProperty("file.separator");
       String sMessage = "";
       Table MainTable = makeMainTable();
       MainTable.add(makeLinkTable(5),1,1);
 /*
       try{
-        File f =  FileSaver.FileToDir(modinfo);
+        File f =  FileSaver.FileToDir(iwc);
         FileReader reader = new FileReader(fileName);
         LineNumberReader lineReader = new LineNumberReader(reader);
         Payment P;
@@ -528,7 +528,7 @@ import com.idega.idegaweb.IWResourceBundle;
 
  */
       try {
-      MultipartParser mp = new MultipartParser(modinfo.getRequest(), 10*1024*1024); // 10MB
+      MultipartParser mp = new MultipartParser(iwc.getRequest(), 10*1024*1024); // 10MB
       Part part;
       File dir = null;
       String value = null;
@@ -572,10 +572,10 @@ import com.idega.idegaweb.IWResourceBundle;
 
     }
 
-    private void doFile(ModuleInfo modinfo) throws SQLException{
-      int iCompany = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drppaycompany"));
-      int iMonth = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drpmonth"));
-      int iYear = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drpyear"));
+    private void doFile(IWContext iwc) throws SQLException{
+      int iCompany = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drppaycompany"));
+      int iMonth = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drpmonth"));
+      int iYear = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drpyear"));
 
       Form myForm = new Form();
       myForm.maintainAllParameters();
@@ -687,13 +687,13 @@ import com.idega.idegaweb.IWResourceBundle;
 
     }
 
-    private void doWriteFile(ModuleInfo modinfo) throws SQLException,IOException{
-      int iCompany = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drppaycompany"));
-      int iMonth = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drpmonth"));
-      int iYear = Integer.parseInt(modinfo.getRequest().getParameter(sParameterPrefix+"drpyear"));
-      String bank = modinfo.getRequest().getParameter("payment_bank");
-      String bnkofc = modinfo.getRequest().getParameter("payment_bank_office");
-      String kreditcc = modinfo.getRequest().getParameter("payment_kreditcc");
+    private void doWriteFile(IWContext iwc) throws SQLException,IOException{
+      int iCompany = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drppaycompany"));
+      int iMonth = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drpmonth"));
+      int iYear = Integer.parseInt(iwc.getRequest().getParameter(sParameterPrefix+"drpyear"));
+      String bank = iwc.getRequest().getParameter("payment_bank");
+      String bnkofc = iwc.getRequest().getParameter("payment_bank_office");
+      String kreditcc = iwc.getRequest().getParameter("payment_kreditcc");
       String Message = "";
       double dPercent = 0.0;
       int iAmount = 0;
@@ -704,21 +704,21 @@ import com.idega.idegaweb.IWResourceBundle;
         if(iCompany == this.iGIROID){
           if(bnkofc != null || !bnkofc.equals("")){
             int bankOffice = Integer.parseInt(bnkofc);
-            int finalpayday = Integer.parseInt(modinfo.getRequest().getParameter("payment_finalpayday"));
-            String B1input = modinfo.getRequest().getParameter("payment_girotext1");
-            String B2input = modinfo.getRequest().getParameter("payment_girotext2");
-            String B3input = modinfo.getRequest().getParameter("payment_girotext3");
-            String B4input = modinfo.getRequest().getParameter("payment_girotext4");
+            int finalpayday = Integer.parseInt(iwc.getRequest().getParameter("payment_finalpayday"));
+            String B1input = iwc.getRequest().getParameter("payment_girotext1");
+            String B2input = iwc.getRequest().getParameter("payment_girotext2");
+            String B3input = iwc.getRequest().getParameter("payment_girotext3");
+            String B4input = iwc.getRequest().getParameter("payment_girotext4");
             GiroFile GF = new GiroFile();
-            GF.writeFile(modinfo,ePayments,bankOffice,finalpayday,B1input,B2input,B3input,B4input,this.iUnionID);
+            GF.writeFile(iwc,ePayments,bankOffice,finalpayday,B1input,B2input,B3input,B4input,this.iUnionID);
             sFileLink = GF.getFileLinkString();
             Message =("<H3>File was saved</H3>");
           }
         }
         else if(iCompany == this.iEUROID || iCompany == this.iVISAID){
-          String sKreditPercent = modinfo.getRequest().getParameter("payment_kredit_pr");
-          String sKreditAmount = modinfo.getRequest().getParameter("payment_kredit_kr");
-          String sContractNumber = modinfo.getRequest().getParameter("payment_kredit_contract");
+          String sKreditPercent = iwc.getRequest().getParameter("payment_kredit_pr");
+          String sKreditAmount = iwc.getRequest().getParameter("payment_kredit_kr");
+          String sContractNumber = iwc.getRequest().getParameter("payment_kredit_contract");
 
           if(sKreditPercent.equalsIgnoreCase("")){
             dPercent = 0.0;
@@ -734,13 +734,13 @@ import com.idega.idegaweb.IWResourceBundle;
           }
           if(iCompany == this.iEUROID ){
             EuroFile EF = new EuroFile();
-            EF.writeFile(modinfo,ePayments,sContractNumber,dPercent,iAmount,this.iUnionID);
+            EF.writeFile(iwc,ePayments,sContractNumber,dPercent,iAmount,this.iUnionID);
             sFileLink = EF.getFileLinkString();
             Message =("<H3>File was saved</H3>");
           }
           if(iCompany == this.iVISAID){
             VisaFile VF = new VisaFile();
-            VF.writeFile(modinfo,ePayments,sContractNumber,dPercent,iAmount,this.iUnionID);
+            VF.writeFile(iwc,ePayments,sContractNumber,dPercent,iAmount,this.iUnionID);
             sFileLink = VF.getFileLinkString();
             Message =("<H3>File was saved</H3>");
           }
@@ -757,7 +757,7 @@ import com.idega.idegaweb.IWResourceBundle;
         MainTable.add(Message,1,4);
         MainTable.add(new Link("right click and save",sFileLink),1,5);
         add(MainTable);
-        //add(modinfo.getRequest().getRequestURI());
+        //add(iwc.getRequest().getRequestURI());
       }
 
     }
@@ -879,13 +879,13 @@ import com.idega.idegaweb.IWResourceBundle;
       return P;
     }
 
-    public void main(ModuleInfo modinfo) throws IOException {
-      //isAdmin = com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
+    public void main(IWContext iwc) throws IOException {
+      //isAdmin = com.idega.presentation.PresentationObject.isAdministrator(this.iwc);
       /** @todo: fixa Admin*/
-      iwrb = getResourceBundle(modinfo);
-      iwb = getBundle(modinfo);
+      iwrb = getResourceBundle(iwc);
+      iwb = getBundle(iwc);
       isAdmin = true;
-      control(modinfo);
+      control(iwc);
     }
 
     public String getBundleIdentifier(){

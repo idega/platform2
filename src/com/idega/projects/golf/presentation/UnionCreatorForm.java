@@ -1,8 +1,8 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 
 import com.idega.idegaweb.*;
 
@@ -18,7 +18,7 @@ import com.idega.projects.golf.entity.Country;
  * @version 1.0
  */
 
-public class UnionCreatorForm extends JModuleObject {
+public class UnionCreatorForm extends Block {
 
   private static final String PARAMETER_NAME="unioncreator_name";
   private static final String PARAMETER_TYPE="unioncreator_type";
@@ -38,11 +38,11 @@ public class UnionCreatorForm extends JModuleObject {
   }
 
 
-  public void main(ModuleInfo modinfo)throws Exception{
-    IWBundle iwb = this.getBundle(modinfo);
-    IWResourceBundle iwrb = iwb.getResourceBundle(modinfo);
-    if(modinfo.isParameterSet(PARAMETER_ACTION)){
-      processForm(modinfo);
+  public void main(IWContext iwc)throws Exception{
+    IWBundle iwb = this.getBundle(iwc);
+    IWResourceBundle iwrb = iwb.getResourceBundle(iwc);
+    if(iwc.isParameterSet(PARAMETER_ACTION)){
+      processForm(iwc);
     }
     Form form = new Form();
     add(form);
@@ -132,21 +132,21 @@ public class UnionCreatorForm extends JModuleObject {
 
   }
 
-  private void processForm(ModuleInfo modinfo)throws Exception{
-      String name = modinfo.getParameter(PARAMETER_NAME);
-      String type = modinfo.getParameter(PARAMETER_TYPE);
-      String abbreviation = modinfo.getParameter(PARAMETER_ABBR);
+  private void processForm(IWContext iwc)throws Exception{
+      String name = iwc.getParameter(PARAMETER_NAME);
+      String type = iwc.getParameter(PARAMETER_TYPE);
+      String abbreviation = iwc.getParameter(PARAMETER_ABBR);
       if(abbreviation.equals("")){
         abbreviation=name.substring(0,2).toUpperCase();
       }
-      int CountryID = Integer.parseInt(modinfo.getParameter(PARAMETER_COUNTRY));
-      String loginName = modinfo.getParameter(PARAMETER_LOGIN);
-      String passwd = modinfo.getParameter(PARAMETER_PASSWD);
-      String city = modinfo.getParameter(PARAMETER_CITY);
-      String zipcode = modinfo.getParameter(PARAMETER_ZIPCODE);
+      int CountryID = Integer.parseInt(iwc.getParameter(PARAMETER_COUNTRY));
+      String loginName = iwc.getParameter(PARAMETER_LOGIN);
+      String passwd = iwc.getParameter(PARAMETER_PASSWD);
+      String city = iwc.getParameter(PARAMETER_CITY);
+      String zipcode = iwc.getParameter(PARAMETER_ZIPCODE);
 
       int unionID=-1;
-      String unionParentID = modinfo.getParameter(PARAMETER_PARENT);
+      String unionParentID = iwc.getParameter(PARAMETER_PARENT);
       if(unionParentID!=null){
         if(!unionParentID.equals("")){
           unionID = Integer.parseInt(unionParentID);

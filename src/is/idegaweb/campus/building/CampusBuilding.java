@@ -1,5 +1,5 @@
 /*
- * $Id: CampusBuilding.java,v 1.3 2001/10/02 00:13:56 aron Exp $
+ * $Id: CampusBuilding.java,v 1.4 2001/10/05 08:05:31 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,12 +9,12 @@
  */
 package is.idegaweb.campus.building;
 
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.IFrame;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.IFrame;
+import com.idega.presentation.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.IWContext;
 import com.idega.block.finance.presentation.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -27,7 +27,7 @@ import is.idegaweb.campus.phone.presentation.CampusPhones;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusBuilding extends JModuleObject {
+public class CampusBuilding extends Block {
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.building";
   public final static String FRAME_NAME = "cbu_rightFrame";
@@ -37,9 +37,9 @@ public class CampusBuilding extends JModuleObject {
   public CampusBuilding() {
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     Table myTable = new Table(2,2);
       myTable.setBorderColor("#000000");
       myTable.mergeCells(2,1,2,2);
@@ -78,7 +78,7 @@ public class CampusBuilding extends JModuleObject {
     add(myTable);
   }
 
-  public ModuleObject getLinkTable(){
+  public PresentationObject getLinkTable(){
       Table T = new Table();
       Link Build = new Link(new Text(iwrb.getLocalizedString("building_editor","Building Editor")));
       Build.setWindowToOpen(BuildingEditorWindow.class);

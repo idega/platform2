@@ -3,14 +3,14 @@ package com.idega.projects.golf.presentation;
 import java.io.*;
 import java.util.*;
 import java.sql.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.idegaweb.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.business.*;
 
-public class TournamentBox extends JModuleObject{
+public class TournamentBox extends Block{
 
 private String header;
 private String headerT;
@@ -48,9 +48,9 @@ private IWResourceBundle iwrb;
         /**
          * Workaround so that this object doesn't call the main() function of HeaderTable
          */
-        public void _main(ModuleInfo modinfo) throws Exception {
-          iwb = getBundle(modinfo);
-          iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
+        public void _main(IWContext iwc) throws Exception {
+          iwb = getBundle(iwc);
+          iwrb = iwb.getResourceBundle(iwc.getCurrentLocale());
 
 
 
@@ -64,12 +64,12 @@ private IWResourceBundle iwrb;
 
           if(!goneThrough_main){
               goneThrough_main=true;
-              super._main(modinfo);
+              super._main(iwc);
           }
 
         }
 
-        /*public void main(ModuleInfo modinfo){
+        /*public void main(IWContext iwc){
           empty();
           if(headerImage==null){
             initialize(header);
@@ -183,7 +183,7 @@ private IWResourceBundle iwrb;
 		return header;
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		mainTable.add(objectToAdd);
 	}
 }

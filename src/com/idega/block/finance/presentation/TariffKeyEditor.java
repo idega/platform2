@@ -2,11 +2,11 @@ package com.idega.block.finance.presentation;
 
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.Finder;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.*;
 import java.sql.SQLException;
 
 /**
@@ -26,22 +26,22 @@ public class TariffKeyEditor extends KeyEditor {
   public TariffKeyEditor(String sHeader){
     super(sHeader);
   }
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
 
     try{
 
-      if(modinfo.getParameter(strAction) == null){
-        doMain(modinfo);
+      if(iwc.getParameter(strAction) == null){
+        doMain(iwc);
       }
-      if(modinfo.getParameter(strAction) != null){
-        String sAct = modinfo.getParameter(strAction);
+      if(iwc.getParameter(strAction) != null){
+        String sAct = iwc.getParameter(strAction);
         int iAct = Integer.parseInt(sAct);
 
         switch (iAct) {
-          case ACT1 : doMain(modinfo);        break;
-          case ACT2 : doChange(modinfo);      break;
-          case ACT3 : doUpdate(modinfo);      break;
-          default: doMain(modinfo);           break;
+          case ACT1 : doMain(iwc);        break;
+          case ACT2 : doChange(iwc);      break;
+          case ACT3 : doUpdate(iwc);      break;
+          default: doMain(iwc);           break;
         }
       }
     }
@@ -50,7 +50,7 @@ public class TariffKeyEditor extends KeyEditor {
     }
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -71,7 +71,7 @@ public class TariffKeyEditor extends KeyEditor {
     return LinkTable;
   }
 
-  protected void doMain(ModuleInfo modinfo){
+  protected void doMain(IWContext iwc){
 
     TariffKey[] keys = Finder.findTariffKeys();
     int count = keys.length;
@@ -99,7 +99,7 @@ public class TariffKeyEditor extends KeyEditor {
     this.addMain(keyTable);
   }
 
-  protected void doChange(ModuleInfo modinfo) throws SQLException{
+  protected void doChange(IWContext iwc) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
     TariffKey[] keys = Finder.findTariffKeys();
@@ -159,18 +159,18 @@ public class TariffKeyEditor extends KeyEditor {
     this.addMain(myForm);
   }
 
-  protected void doUpdate(ModuleInfo modinfo) throws SQLException{
-    int count = Integer.parseInt(modinfo.getParameter("tke_count"));
+  protected void doUpdate(IWContext iwc) throws SQLException{
+    int count = Integer.parseInt(iwc.getParameter("tke_count"));
     String sName,sInfo,sDel;
     int ID;
     TariffKey[] keys = new TariffKey[count];
     TariffKey key = null;
 
     for (int i = 1; i < count+1 ;i++){
-      sName = modinfo.getParameter("tke_nameinput"+i );
-      sInfo = modinfo.getParameter("tke_infoinput"+i);
-      sDel = modinfo.getParameter("tke_delcheck"+i);
-      ID = Integer.parseInt(modinfo.getParameter("tke_idinput"+i));
+      sName = iwc.getParameter("tke_nameinput"+i );
+      sInfo = iwc.getParameter("tke_infoinput"+i);
+      sDel = iwc.getParameter("tke_delcheck"+i);
+      ID = Integer.parseInt(iwc.getParameter("tke_idinput"+i));
       if(ID != -1){
         try{
           key = new TariffKey(ID);
@@ -200,6 +200,6 @@ public class TariffKeyEditor extends KeyEditor {
       }
     }// for loop
 
-   doMain(modinfo);
+   doMain(iwc);
   }
 }// class TariffKeyEditor

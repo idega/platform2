@@ -5,9 +5,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICLocale;
@@ -41,24 +41,24 @@ public BoxCategoryEditor(){
   setMethod("get");
 }
 
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
     /**
      * @todo permission
      */
-    _isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
-    _iwb = getBundle(modinfo);
-    _iwrb = getResourceBundle(modinfo);
+    _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    _iwb = getBundle(iwc);
+    _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("box_category_editor","Category Editor"));
-    Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
     try {
-      _userID = LoginBusiness.getUser(modinfo).getID();
+      _userID = LoginBusiness.getUser(iwc).getID();
     }
     catch (Exception e) {
       _userID = -1;
     }
 
-    String sLocaleId = modinfo.getParameter(BoxBusiness.PARAMETER_LOCALE_DROP);
+    String sLocaleId = iwc.getParameter(BoxBusiness.PARAMETER_LOCALE_DROP);
 
     int iLocaleId = -1;
     if(sLocaleId!= null){
@@ -71,47 +71,47 @@ public BoxCategoryEditor(){
     }
 
     if ( _isAdmin ) {
-      processForm(modinfo, iLocaleId, sLocaleId);
+      processForm(iwc, iLocaleId, sLocaleId);
     }
     else {
       noAccess();
     }
   }
 
-  private void processForm(ModuleInfo modinfo, int iLocaleId, String sLocaleId) {
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_BOX_ID) != null ) {
+  private void processForm(IWContext iwc, int iLocaleId, String sLocaleId) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID) != null ) {
       try {
-        _boxID = Integer.parseInt(modinfo.getParameter(BoxBusiness.PARAMETER_BOX_ID));
+        _boxID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID));
       }
       catch (NumberFormatException e) {
         _boxID = -1;
       }
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
       try {
-        _boxCategoryID = Integer.parseInt(modinfo.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
-        modinfo.setApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID,Integer.toString(_boxCategoryID));
+        _boxCategoryID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
+        iwc.setApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID,Integer.toString(_boxCategoryID));
       }
       catch (NumberFormatException e) {
         _boxCategoryID = -1;
       }
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_MODE) != null ) {
-      if ( modinfo.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_CLOSE) ) {
-        closePollQuestion(modinfo);
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE) != null ) {
+      if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_CLOSE) ) {
+        closePollQuestion(iwc);
       }
-      else if ( modinfo.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_SAVE) ) {
-        saveCategory(modinfo,iLocaleId);
+      else if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_SAVE) ) {
+        saveCategory(iwc,iLocaleId);
         _boxCategoryID = -1;
       }
     }
 
     if ( _boxCategoryID != -1 ) {
-      if ( modinfo.getParameter(BoxBusiness.PARAMETER_MODE) != null ) {
-        if ( modinfo.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_DELETE) ) {
-          deleteCategory(modinfo);
+      if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE) != null ) {
+        if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_DELETE) ) {
+          deleteCategory(iwc);
           _boxCategoryID = -1;
         }
       }
@@ -161,13 +161,13 @@ public BoxCategoryEditor(){
     addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE));
   }
 
-  private void deleteCategory(ModuleInfo modinfo) {
+  private void deleteCategory(IWContext iwc) {
     BoxBusiness.deleteCategory(_boxCategoryID);
   }
 
-  private void saveCategory(ModuleInfo modinfo,int iLocaleID) {
-    String categoryName = modinfo.getParameter(BoxBusiness.PARAMETER_CATEGORY_NAME);
-    String localeString = modinfo.getParameter(BoxBusiness.PARAMETER_LOCALE_ID);
+  private void saveCategory(IWContext iwc,int iLocaleID) {
+    String categoryName = iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_NAME);
+    String localeString = iwc.getParameter(BoxBusiness.PARAMETER_LOCALE_ID);
     int boxCategoryID = -1;
 
     if ( categoryName == null || categoryName.length() == 0 ) {
@@ -175,11 +175,11 @@ public BoxCategoryEditor(){
     }
     if ( localeString != null ) {
       boxCategoryID = BoxBusiness.saveCategory(_userID,_boxCategoryID,categoryName,Integer.parseInt(localeString));
-      modinfo.setApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID,Integer.toString(boxCategoryID));
+      iwc.setApplicationAttribute(BoxBusiness.PARAMETER_CATEGORY_ID,Integer.toString(boxCategoryID));
     }
   }
 
-  private void closePollQuestion(ModuleInfo modinfo) {
+  private void closePollQuestion(IWContext iwc) {
     setParentToReload();
     close();
   }

@@ -4,15 +4,15 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.quote.data.*;
 import com.idega.data.*;
 import com.idega.util.text.*;
 
 
-public class QuoteReader extends JModuleObject{
+public class QuoteReader extends Block{
 
 private String quote_id = null;
 private boolean isAdmin = false;
@@ -55,9 +55,9 @@ public QuoteReader(String quote_id){
 	this.quote_id=quote_id;
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
+	public void main(IWContext iwc) throws Exception {
 
-        this.isAdmin=isAdministrator(modinfo);
+        this.isAdmin=isAdministrator(iwc);
 
 		drawTable();
 		drawContentTable();

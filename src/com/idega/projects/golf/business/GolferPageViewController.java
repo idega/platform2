@@ -1,6 +1,6 @@
 package com.idega.projects.golf.business;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import java.lang.String;
 import com.idega.projects.golf.presentation.*;
 
@@ -18,9 +18,9 @@ public class GolferPageViewController {
   public GolferPageViewController() {
   }
 
-  public static JModuleObject getView(ModuleInfo modinfo){
-    if (modinfo.isParameterSet(LinkParameters.sTopMenuParameterName)) {
-      String parameterValue = modinfo.getParameter(LinkParameters.sTopMenuParameterName);
+  public static Block getView(IWContext iwc){
+    if (iwc.isParameterSet(LinkParameters.sTopMenuParameterName)) {
+      String parameterValue = iwc.getParameter(LinkParameters.sTopMenuParameterName);
 
       if (parameterValue.equalsIgnoreCase(LinkParameters.sHomeParameterValue)) {
         return( new HomeView());
@@ -43,7 +43,7 @@ public class GolferPageViewController {
       }
 
       else if (parameterValue.equalsIgnoreCase(LinkParameters.sPicturesParameterValue)) {
-        return( new JModuleObject());
+        return( new Block());
       }
 
       else if (parameterValue.equalsIgnoreCase(LinkParameters.sRecordParameterValue)) {
@@ -55,7 +55,7 @@ public class GolferPageViewController {
       }
 
       else if (parameterValue.equalsIgnoreCase(LinkParameters.sSubmitParameterValue)) {
-        return( new JModuleObject());
+        return( new Block());
       }
       else {
         return( new HomeView());

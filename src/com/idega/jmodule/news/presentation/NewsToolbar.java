@@ -3,28 +3,28 @@ package com.idega.jmodule.news.presentation;
 import com.idega.jmodule.*;
 import com.idega.data.*;
 import java.io.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import java.sql.*;
 import java.util.*;
 import com.idega.util.*;
 
-public class NewsToolbar extends JModuleObject{
+public class NewsToolbar extends Block{
 
 
 private Table myTable = new Table(5, 1);
 
-private ModuleInfo modinfo;
+private IWContext iwc;
 
 public NewsToolbar(){}
 
-public void main(ModuleInfo modinfo){
+public void main(IWContext iwc){
 
-	this.modinfo = modinfo;
+	this.iwc = iwc;
 
-        String news_id = modinfo.getRequest().getParameter("news_id");
+        String news_id = iwc.getRequest().getParameter("news_id");
 	Window categoryWindow = new Window("Gluggi", 420, 370, "/news/insertnewscategories.jsp");
 	Window delCategoryWindow = new Window("Gluggi", 270, 420, "/news/delnewscategories.jsp");
 	//Window insertNewsImageWindow = new Window("Gluggi", 480, 420, "/news/insertimage.jsp?submit=new");

@@ -1,14 +1,14 @@
 package is.idegaweb.campus.building;
 
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import is.idegaweb.campus.presentation.Edit;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.*;
@@ -24,7 +24,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ApartmentSerie extends ModuleObjectContainer {
+public class ApartmentSerie extends PresentationObjectContainer {
   protected boolean isAdmin = false;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.building";
   protected IWResourceBundle iwrb;
@@ -33,16 +33,16 @@ public class ApartmentSerie extends ModuleObjectContainer {
   }
 
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
 
     if(isAdmin){
-      if(modinfo.getParameter("make")!=null){
+      if(iwc.getParameter("make")!=null){
         updateApartmentSerie();
       }
-      else if(modinfo.getParameter("print")!=null){
+      else if(iwc.getParameter("print")!=null){
         add(printApartmentSerie());
       }
-      else if(modinfo.getParameter("reload")!=null){
+      else if(iwc.getParameter("reload")!=null){
         BuildingCacher.reload();
       }
       add(makeMainTable());
@@ -52,7 +52,7 @@ public class ApartmentSerie extends ModuleObjectContainer {
 
   }
 
-  public ModuleObject makeMainTable(){
+  public PresentationObject makeMainTable(){
     Table T = new Table();
     Link Make = new Link("Make");
     Make.addParameter("make","make");
@@ -95,7 +95,7 @@ public class ApartmentSerie extends ModuleObjectContainer {
     }
   }
 
-  public ModuleObject printApartmentSerie(){
+  public PresentationObject printApartmentSerie(){
     //List L = BuildingCacher.getApartments();
     List L = BuildingFinder.ListOfAparmentOrderedByFloor();
     if(L != null){
@@ -123,15 +123,15 @@ public class ApartmentSerie extends ModuleObjectContainer {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 
 }

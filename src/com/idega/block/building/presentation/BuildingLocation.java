@@ -1,12 +1,12 @@
 package com.idega.block.building.presentation;
 
 import java.sql.SQLException;
-import com.idega.jmodule.object.interfaceobject.Window;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.ui.Window;
+import com.idega.presentation.IWContext;
 import com.idega.block.building.data.Complex;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.CloseButton;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.idegaweb.IWResourceBundle;
 
 /**
@@ -33,12 +33,12 @@ private int complexID;
     this.setScrollbar(false);
   }
 
-  public void main(ModuleInfo modinfo) {
-    iwrb_ = this.getResourceBundle(modinfo);
+  public void main(IWContext iwc) {
+    iwrb_ = this.getResourceBundle(iwc);
     setTitle(iwrb_.getLocalizedString("map","Map of the area"));
 
     try {
-      complexID = Integer.parseInt(modinfo.getParameter(BuildingViewer.PARAMETER_STRING));
+      complexID = Integer.parseInt(iwc.getParameter(BuildingViewer.PARAMETER_STRING));
     }
     catch (NumberFormatException e) {
       complexID = 0;

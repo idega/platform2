@@ -10,12 +10,12 @@ package com.idega.block.staff.presentation;
  */
 
 import java.sql.SQLException;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.Table;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.data.EntityFinder;
 import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.user.business.UserBusiness;
@@ -35,7 +35,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 
 
-public class StaffViewer extends JModuleObject{
+public class StaffViewer extends Block{
 
 private boolean isAdmin=false;
 private IWBundle iwb;
@@ -61,17 +61,17 @@ private List usersInNoGroup;
     initialize();
   }
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
-    isAdmin = AccessControl.hasEditPermission(this,modinfo);
+  public void main(IWContext iwc) throws Exception {
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
+    isAdmin = AccessControl.hasEditPermission(this,iwc);
 
-    String mode = modinfo.getParameter(PARAMETER_MODE);
+    String mode = iwc.getParameter(PARAMETER_MODE);
     if ( mode != null ) {
       if ( mode.equalsIgnoreCase(PARAMETER_DELETE_USER) )
-        deleteUser(modinfo);
+        deleteUser(iwc);
       if ( mode.equalsIgnoreCase(PARAMETER_DELETE_GROUP) )
-        deleteGroup(modinfo);
+        deleteGroup(iwc);
     }
 
     getGroups();
@@ -264,15 +264,15 @@ private List usersInNoGroup;
     usersInNoGroup = UserBusiness.getUsersInNoGroup();
   }
 
-  private void deleteUser(ModuleInfo modinfo) throws SQLException {
-    String userId = modinfo.getParameter(PARAMETER_USER_ID);
+  private void deleteUser(IWContext iwc) throws SQLException {
+    String userId = iwc.getParameter(PARAMETER_USER_ID);
     if ( userId != null ) {
       StaffBusiness.deleteStaff(Integer.parseInt(userId));
     }
   }
 
-  private void deleteGroup(ModuleInfo modinfo) throws SQLException {
-    String groupId = modinfo.getParameter(PARAMETER_GROUP_ID);
+  private void deleteGroup(IWContext iwc) throws SQLException {
+    String groupId = iwc.getParameter(PARAMETER_GROUP_ID);
     if ( groupId != null ) {
       UserGroupBusiness.deleteGroup(Integer.parseInt(groupId));
     }

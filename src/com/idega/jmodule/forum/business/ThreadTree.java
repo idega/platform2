@@ -1,8 +1,8 @@
 package com.idega.jmodule.forum.business;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.jmodule.forum.data.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.util.*;
 import java.util.*;
 import java.sql.*;
@@ -16,7 +16,7 @@ import java.sql.*;
  * @version 2.0
  */
 
-public class ThreadTree  extends ModuleObjectContainer {
+public class ThreadTree  extends PresentationObjectContainer {
 
   protected Vector OpenThreads;
   protected Table ThreadTable;
@@ -37,13 +37,13 @@ public class ThreadTree  extends ModuleObjectContainer {
   protected int ImageWidht;
   protected int ImageHeight;
   protected boolean useForums;
-  protected ModuleInfo modinfo;
+  protected IWContext iwc;
   protected boolean TreeOpen;
   protected boolean mainOnes;
 
   protected Link OpenCloseAll;
-  protected ModuleObject CloseAll;
-  protected ModuleObject OpenAll;
+  protected PresentationObject CloseAll;
+  protected PresentationObject OpenAll;
   protected Link openTree;
   protected Link closeTree;
   protected Link NewThreadLink;
@@ -80,7 +80,7 @@ public class ThreadTree  extends ModuleObjectContainer {
   protected Link TClosed;
   protected Link TOpen;
 
-  protected ModuleObjectContainer container;
+  protected PresentationObjectContainer container;
 
   private boolean first;
 
@@ -121,13 +121,13 @@ public class ThreadTree  extends ModuleObjectContainer {
     tempint = 1;
   }
 
-  public ThreadTree(ModuleInfo modinfo)throws Exception{
+  public ThreadTree(IWContext iwc)throws Exception{
     this();
-    if (modinfo.getRequest().getParameter("forum_id") != null){
-       ForumID = Integer.parseInt(modinfo.getRequest().getParameter("forum_id"));
+    if (iwc.getRequest().getParameter("forum_id") != null){
+       ForumID = Integer.parseInt(iwc.getRequest().getParameter("forum_id"));
     }
-    this.modinfo = modinfo;
-    //this.main(modinfo);
+    this.iwc = iwc;
+    //this.main(iwc);
     first = true;
   }
 
@@ -139,22 +139,22 @@ public class ThreadTree  extends ModuleObjectContainer {
 
   //## Föll ##//
 
-  protected Link closeLinks( ModuleObject LinkImage, int thread_id ){
+  protected Link closeLinks( PresentationObject LinkImage, int thread_id ){
     Link closeLink = new Link(LinkImage);
     closeLink.addParameter("FTclose", "" + thread_id);
-    closeLink.addParameter( "state", modinfo.getRequest().getParameter("state"));
+    closeLink.addParameter( "state", iwc.getRequest().getParameter("state"));
     return closeLink;
   }
 
 
-  protected Link openLinks( ModuleObject LinkImage, int thread_id ){
+  protected Link openLinks( PresentationObject LinkImage, int thread_id ){
     Link openLink = new Link(LinkImage);
     openLink.addParameter("FTopen", "" + thread_id);
-    openLink.addParameter( "state", modinfo.getRequest().getParameter("state"));
+    openLink.addParameter( "state", iwc.getRequest().getParameter("state"));
     return openLink;
   }
 
-  protected ModuleObject subjectLink(String subject, int thread_id, int forum_id, boolean isOpen ){
+  protected PresentationObject subjectLink(String subject, int thread_id, int forum_id, boolean isOpen ){
       if (theThreadID != null && theThreadID.equals("" + thread_id)){
         Text myText = new Text("<small>" + subject);
         myText.setBold();
@@ -174,21 +174,21 @@ public class ThreadTree  extends ModuleObjectContainer {
   }
 
 /*
-  protected Vector getTreePageLinks( Vector LinkFace, ModuleObject NextIfMore ){
+  protected Vector getTreePageLinks( Vector LinkFace, PresentationObject NextIfMore ){
   }
   */
 
   protected void updateOpenThreads(){
-    String text = modinfo.getRequest().getParameter("FTopen");
+    String text = iwc.getRequest().getParameter("FTopen");
     if ( text != null &  !OpenThreads.contains(text))
      OpenThreads.add(text);
 
-    if ( modinfo.getRequest().getParameter("FTclose") != null ){
-      OpenThreads.remove(modinfo.getRequest().getParameter("FTclose"));
+    if ( iwc.getRequest().getParameter("FTclose") != null ){
+      OpenThreads.remove(iwc.getRequest().getParameter("FTclose"));
     }
   }
 
-  protected Table ThreadLink(ForumThread theThread, Image Front, ModuleObject Icon, boolean Open){    //, boolean New){
+  protected Table ThreadLink(ForumThread theThread, Image Front, PresentationObject Icon, boolean Open){    //, boolean New){
       Table linkTable;
       linkTable = new Table(9,1);
 
@@ -324,7 +324,7 @@ public class ThreadTree  extends ModuleObjectContainer {
   }
 
 
-  public void setNewThreadLink(ModuleObject onLink){
+  public void setNewThreadLink(PresentationObject onLink){
     NewThreadLink.setObject(onLink);
   }
 
@@ -334,9 +334,9 @@ public class ThreadTree  extends ModuleObjectContainer {
 
   private void updateNewThreadLink(){
     NewThreadLink.clearParameters();
-/*    if (this.modinfo!= null){
-      if (this.modinfo.getRequest().getParameter("forum_id") != null)
-         NewThreadLink.addParameter("forum_id", this.modinfo.getRequest().getParameter("forum_id"));
+/*    if (this.iwc!= null){
+      if (this.iwc.getRequest().getParameter("forum_id") != null)
+         NewThreadLink.addParameter("forum_id", this.iwc.getRequest().getParameter("forum_id"));
     }
 */
     NewThreadLink.addParameter("forum_id", ForumID);
@@ -345,7 +345,7 @@ public class ThreadTree  extends ModuleObjectContainer {
 
   }
 
-  public void setToForumListLink(ModuleObject obj){
+  public void setToForumListLink(PresentationObject obj){
     if (toForums == null){
        toForums = new Link("<small>Yfirlit Spjallþráða");
        toForums.addParameter("state", "1");
@@ -414,7 +414,7 @@ public class ThreadTree  extends ModuleObjectContainer {
     tempIcon =  ImageName;
   }
 
-  public void setOpenCloseLink(ModuleObject openTree, ModuleObject closeTree){
+  public void setOpenCloseLink(PresentationObject openTree, PresentationObject closeTree){
       OpenAll = openTree;
       CloseAll = closeTree;
   }
@@ -426,7 +426,7 @@ public class ThreadTree  extends ModuleObjectContainer {
     if (length%ThreadsOnPage > 0)
        links++;
 
-    container = new ModuleObjectContainer();
+    container = new PresentationObjectContainer();
 
     Link myLink;
     for (int i = 1; i <= links; i++){
@@ -441,7 +441,7 @@ public class ThreadTree  extends ModuleObjectContainer {
 
   }
 
-  public ModuleObjectContainer getTreePageLinks(){
+  public PresentationObjectContainer getTreePageLinks(){
     return container;
   }
 */
@@ -453,7 +453,7 @@ public class ThreadTree  extends ModuleObjectContainer {
   }
 
 
-  public ModuleObject getNextPageLink(){
+  public PresentationObject getNextPageLink(){
     return nextpage;
   }
 
@@ -461,7 +461,7 @@ public class ThreadTree  extends ModuleObjectContainer {
   public void updateLastPageLink(){
     if (TreeNum <= 1){
       lastpage.clearParameters();
-      lastpage.addParameter("state", modinfo.getRequest().getParameter("state"));
+      lastpage.addParameter("state", iwc.getRequest().getParameter("state"));
     }else{
       lastpage.clearParameters();
       lastpage.addParameter("FTreePage", TreeNum-1);
@@ -469,7 +469,7 @@ public class ThreadTree  extends ModuleObjectContainer {
     }
   }
 
-  public ModuleObject getLastPageLink(){
+  public PresentationObject getLastPageLink(){
     return lastpage;
   }
 
@@ -504,24 +504,24 @@ public class ThreadTree  extends ModuleObjectContainer {
 
   protected void checkSettings(){
 
-    if(modinfo.getRequest().getParameter("FTOpenAll") != null)
+    if(iwc.getRequest().getParameter("FTOpenAll") != null)
       TreeOpen = true;
 
-    if(modinfo.getRequest().getParameter("FTCloseAll") != null){
+    if(iwc.getRequest().getParameter("FTCloseAll") != null){
       TreeOpen = false;
       OpenThreads = new Vector();
     }
-    if (modinfo.getRequest().getParameter("FTreePage") != null){
-       TreeNum = Integer.parseInt(modinfo.getRequest().getParameter("FTreePage"));
+    if (iwc.getRequest().getParameter("FTreePage") != null){
+       TreeNum = Integer.parseInt(iwc.getRequest().getParameter("FTreePage"));
        OpenThreads = new Vector();
     }
 
-    if (modinfo.getRequest().getParameter("forum_id") != null){
-       ForumID = Integer.parseInt(modinfo.getRequest().getParameter("forum_id"));
+    if (iwc.getRequest().getParameter("forum_id") != null){
+       ForumID = Integer.parseInt(iwc.getRequest().getParameter("forum_id"));
     }
 
-    if (modinfo.getRequest().getParameter("from") != null){
-      if (modinfo.getRequest().getParameter("from").equals("TFLink"))
+    if (iwc.getRequest().getParameter("from") != null){
+      if (iwc.getRequest().getParameter("from").equals("TFLink"))
        OpenThreads = new Vector();
     }
 
@@ -536,9 +536,9 @@ public class ThreadTree  extends ModuleObjectContainer {
 
 
 
-  public void main(ModuleInfo modinfo) throws SQLException, Exception{
-    this.modinfo = modinfo;
-    theThreadID = modinfo.getRequest().getParameter("forum_thread_id");
+  public void main(IWContext iwc) throws SQLException, Exception{
+    this.iwc = iwc;
+    theThreadID = iwc.getRequest().getParameter("forum_thread_id");
     checkSettings();
     doTable();
     first = false;

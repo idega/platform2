@@ -1,6 +1,6 @@
 package com.idega.projects.nat.business;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import java.util.Locale;
 
 

@@ -1,7 +1,7 @@
 package is.idega.experimental.mm.presentation;
 
-import com.idega.jmodule.object.interfaceobject.Window;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.Window;
+import com.idega.presentation.*;
 import is.idega.experimental.mm.business.*;
 import is.idega.experimental.mm.data.*;
 import java.util.*;
@@ -22,8 +22,8 @@ public class MmWindow extends Window {
   public MmWindow() {
   }
 
-  public void main(ModuleInfo modinfo)throws Exception{
-    int questID = Integer.parseInt(modinfo.getParameter(responseID));
+  public void main(IWContext iwc)throws Exception{
+    int questID = Integer.parseInt(iwc.getParameter(responseID));
     Response r = new Response(questID);
     add("My response is "+r.getResponse());
   }

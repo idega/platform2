@@ -1,13 +1,13 @@
 package com.idega.projects.golf.service;
 
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import java.util.*;
 import java.sql.*;
 import java.io.*;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.util.*;
 /**
  * Title:
@@ -20,7 +20,7 @@ import com.idega.util.*;
 
 
 
-public class GroupMemberRemoveWindow extends com.idega.jmodule.object.interfaceobject.Window{
+public class GroupMemberRemoveWindow extends com.idega.presentation.ui.Window{
 
   private Member member = null;
   private Union union;
@@ -42,16 +42,16 @@ public class GroupMemberRemoveWindow extends com.idega.jmodule.object.interfaceo
       return this.selectGroups;
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
       this.empty();
-      add(getInputTable(modinfo));
+      add(getInputTable(iwc));
   }
 
-  public Form getInputTable(ModuleInfo modinfo){
+  public Form getInputTable(IWContext iwc){
       Form form = new Form();
       try {
 
-          //form.setAction(modinfo.getRequest().getRequestURI()+"?cmd=remove");
+          //form.setAction(iwc.getRequest().getRequestURI()+"?cmd=remove");
           form.add(new Parameter("cmd","remove"));
           HeaderTable hTable = new HeaderTable();
           hTable.setHeaderText(headerText);
@@ -67,8 +67,8 @@ public class GroupMemberRemoveWindow extends com.idega.jmodule.object.interfaceo
               table.add("Enginn flokkur skráður", 1, 1);
           }
 
-          if(modinfo.getRequest().getParameter("cmd") != null) {
-              remove(modinfo);
+          if(iwc.getRequest().getParameter("cmd") != null) {
+              remove(iwc);
               setParentToReload();
               close();
           }
@@ -80,8 +80,8 @@ public class GroupMemberRemoveWindow extends com.idega.jmodule.object.interfaceo
       return form;
   }
 
-  public void remove(ModuleInfo modinfo)throws SQLException, IOException {
-      selectGroupsValues = modinfo.getRequest().getParameterValues(new Group().getEntityName());
+  public void remove(IWContext iwc)throws SQLException, IOException {
+      selectGroupsValues = iwc.getRequest().getParameterValues(new Group().getEntityName());
 
       for(int i = 0; i < selectGroupsValues.length; i++) {
           Group gr = new Group(Integer.parseInt(selectGroupsValues[i]));

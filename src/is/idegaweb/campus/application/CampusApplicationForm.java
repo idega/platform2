@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.19 2001/09/04 13:14:48 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.20 2001/10/05 08:05:30 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,23 +14,23 @@ import com.idega.block.application.business.ApplicationFinder;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.interfaceobject.Window;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.TextArea;
-import com.idega.jmodule.object.interfaceobject.DateInput;
-import com.idega.jmodule.object.interfaceobject.CheckBox;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.BackButton;
-import com.idega.jmodule.object.interfaceobject.HiddenInput;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.Page;
+import com.idega.presentation.Image;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Script;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.Window;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.BackButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.Page;
 import com.idega.idegaweb.IWBundle;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.SendMail;
@@ -73,8 +73,8 @@ public class CampusApplicationForm extends ApplicationForm {
   /*
    *
    */
-  protected void control(ModuleInfo modinfo) {
-    String statusString = modinfo.getParameter("status");
+  protected void control(IWContext iwc) {
+    String statusString = iwc.getParameter("status");
     int status = 0;
 
     if (statusString == null) {
@@ -96,22 +96,22 @@ public class CampusApplicationForm extends ApplicationForm {
       }
 
       addStage(1);
-      doGeneralInformation(modinfo);
+      doGeneralInformation(iwc);
     }
     else if (status == statusGeneralInfo_) {
       addStage(2);
-      CampusApplicationFormHelper.saveApplicantInformation(modinfo);
-      doCampusInformation(modinfo);
+      CampusApplicationFormHelper.saveApplicantInformation(iwc);
+      doCampusInformation(iwc);
     }
     else if (status == statusCampusInfo_) {
       addStage(3);
-      CampusApplicationFormHelper.saveSubject(modinfo);
-      CampusApplicationFormHelper.saveCampusInformation(modinfo);
-      doSelectAppliedFor(modinfo);
+      CampusApplicationFormHelper.saveSubject(iwc);
+      CampusApplicationFormHelper.saveCampusInformation(iwc);
+      doSelectAppliedFor(iwc);
     }
     else if (status == statusAppliedFor_) {
-      CampusApplicationFormHelper.saveAppliedFor(modinfo);
-      String cypher = CampusApplicationFormHelper.saveDataToDB(modinfo);
+      CampusApplicationFormHelper.saveAppliedFor(iwc);
+      String cypher = CampusApplicationFormHelper.saveDataToDB(iwc);
       if ( cypher != null)
         doDone(cypher);
       else
@@ -119,8 +119,8 @@ public class CampusApplicationForm extends ApplicationForm {
     }
     else if (status == statusSelectingApartmentTypes_) {
       addStage(3);
-      checkAparmentTypesSelected(modinfo);
-      doSelectAppliedFor(modinfo);
+      checkAparmentTypesSelected(iwc);
+      doSelectAppliedFor(iwc);
     }
   }
 
@@ -128,9 +128,9 @@ public class CampusApplicationForm extends ApplicationForm {
   /*
    *
    */
-  protected void doSelectAppliedFor(ModuleInfo modinfo) {
+  protected void doSelectAppliedFor(IWContext iwc) {
     int id;
-    String aprtCat = (String)modinfo.getSessionAttribute("aprtCat");
+    String aprtCat = (String)iwc.getSessionAttribute("aprtCat");
     try {
       id = Integer.parseInt(aprtCat);
     }
@@ -310,7 +310,7 @@ public class CampusApplicationForm extends ApplicationForm {
   /*
    *
    */
-  protected void doCampusInformation(ModuleInfo modinfo) {
+  protected void doCampusInformation(IWContext iwc) {
     List subjects = ApplicationFinder.listOfNonExpiredSubjects();
     List categories = BuildingFinder.listOfApartmentCategory();
     Text textTemplate = new Text();
@@ -630,10 +630,10 @@ public class CampusApplicationForm extends ApplicationForm {
   /*
    *
    */
-  private void checkAparmentTypesSelected(ModuleInfo modinfo) {
-    String key1 = (String)modinfo.getParameter("aprtType");
-    String key2 = (String)modinfo.getParameter("aprtType2");
-    String key3 = (String)modinfo.getParameter("aprtType3");
+  private void checkAparmentTypesSelected(IWContext iwc) {
+    String key1 = (String)iwc.getParameter("aprtType");
+    String key2 = (String)iwc.getParameter("aprtType2");
+    String key3 = (String)iwc.getParameter("aprtType3");
 
     try {
       int type = ApartmentTypeComplexHelper.getPartKey(key1,1);
@@ -657,8 +657,8 @@ public class CampusApplicationForm extends ApplicationForm {
     }
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb_ = getResourceBundle(modinfo);
-    control(modinfo);
+  public void main(IWContext iwc){
+    iwrb_ = getResourceBundle(iwc);
+    control(iwc);
   }
 }

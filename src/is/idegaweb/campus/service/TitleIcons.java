@@ -1,12 +1,12 @@
 package is.idegaweb.campus.service;
 
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.Image;
+import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
-public class TitleIcons extends JModuleObject {
+public class TitleIcons extends Block {
 
 private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus";
 public final static String IDEGALOGO = "idegalogo";
@@ -23,9 +23,9 @@ private Image image;
     this.icon = icon;
   }
 
-  public void main(ModuleInfo modinfo) {
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc) {
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
     if ( icon.equalsIgnoreCase(MAINMENU) )
       image = iwrb.getImage("/title/mainmenu.gif");

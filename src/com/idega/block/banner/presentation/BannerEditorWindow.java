@@ -5,9 +5,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.banner.data.*;
 import com.idega.block.banner.business.*;
@@ -46,18 +46,18 @@ public BannerEditorWindow(){
   setMethod("get");
 }
 
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
     /**
      * @todo permission
      */
-    _isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
-    _superAdmin = AccessControl.isAdmin(modinfo);
-    _iwb = getBundle(modinfo);
-    _iwrb = getResourceBundle(modinfo);
+    _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    _superAdmin = AccessControl.isAdmin(iwc);
+    _iwb = getBundle(iwc);
+    _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("banner_admin","Banner Admin"));
 
     try {
-      _userID = LoginBusiness.getUser(modinfo).getID();
+      _userID = LoginBusiness.getUser(iwc).getID();
     }
     catch (Exception e) {
       _userID = -1;
@@ -74,45 +74,45 @@ public BannerEditorWindow(){
       _deleteImage.setVerticalSpacing(3);
 
     if ( _isAdmin ) {
-      processForm(modinfo);
+      processForm(iwc);
     }
     else {
       noAccess();
     }
   }
 
-  private void processForm(ModuleInfo modinfo) {
-    if ( modinfo.getParameter(BannerBusiness.PARAMETER_BANNER_ID) != null ) {
+  private void processForm(IWContext iwc) {
+    if ( iwc.getParameter(BannerBusiness.PARAMETER_BANNER_ID) != null ) {
       try {
-        _bannerID = Integer.parseInt(modinfo.getParameter(BannerBusiness.PARAMETER_BANNER_ID));
+        _bannerID = Integer.parseInt(iwc.getParameter(BannerBusiness.PARAMETER_BANNER_ID));
       }
       catch (NumberFormatException e) {
         _bannerID = -1;
       }
     }
 
-    if ( modinfo.getParameter(BannerBusiness.PARAMETER_AD_ID) != null ) {
+    if ( iwc.getParameter(BannerBusiness.PARAMETER_AD_ID) != null ) {
       try {
-        _adID = Integer.parseInt(modinfo.getParameter(BannerBusiness.PARAMETER_AD_ID));
+        _adID = Integer.parseInt(iwc.getParameter(BannerBusiness.PARAMETER_AD_ID));
       }
       catch (NumberFormatException e) {
         _adID = -1;
       }
     }
 
-    if ( modinfo.getParameter(BannerBusiness.PARAMETER_MODE) != null ) {
-      if ( modinfo.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_CLOSE) ) {
-        closeEditor(modinfo);
+    if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE) != null ) {
+      if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_CLOSE) ) {
+        closeEditor(iwc);
       }
-      else if ( modinfo.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_SAVE) ) {
+      else if ( iwc.getParameter(BannerBusiness.PARAMETER_MODE).equalsIgnoreCase(BannerBusiness.PARAMETER_SAVE) ) {
         if ( _adID > -2 )
-          saveAd(modinfo);
+          saveAd(iwc);
       }
     }
 
     if ( _adID != -1 ) {
-      if ( modinfo.getParameter(BannerBusiness.PARAMETER_DELETE) != null ) {
-        deleteAd(modinfo);
+      if ( iwc.getParameter(BannerBusiness.PARAMETER_DELETE) != null ) {
+        deleteAd(iwc);
       }
       else {
         _update = true;
@@ -194,19 +194,19 @@ public BannerEditorWindow(){
     addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),BannerBusiness.PARAMETER_MODE,BannerBusiness.PARAMETER_SAVE));
   }
 
-  private void saveAd(ModuleInfo modinfo) {
+  private void saveAd(IWContext iwc) {
     setParentToReload();
     close();
     _adID = -1;
   }
 
-  private void deleteAd(ModuleInfo modinfo) {
+  private void deleteAd(IWContext iwc) {
     BannerBusiness.deleteAd(_adID);
     setParentToReload();
     close();
   }
 
-  private void closeEditor(ModuleInfo modinfo) {
+  private void closeEditor(IWContext iwc) {
     setParentToReload();
     close();
   }

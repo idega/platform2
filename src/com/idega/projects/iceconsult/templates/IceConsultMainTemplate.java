@@ -5,11 +5,11 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.iceconsult.moduleobject.IceConsultPage;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 
 public abstract class IceConsultMainTemplate extends JSPModule implements JspPage{
@@ -29,13 +29,13 @@ public String language = "EN";
 		jmodule.setLinkColor("black");
 
 
-              String language2 = getModuleInfo().getRequest().getParameter("language");
-              if (language2==null) language2 = ( String ) getModuleInfo().getSession().getAttribute("language");
+              String language2 = getIWContext().getRequest().getParameter("language");
+              if (language2==null) language2 = ( String ) getIWContext().getSession().getAttribute("language");
               if ( language2 != null) language = language2;
 
-              getModuleInfo().setSpokenLanguage( language );
+              getIWContext().setSpokenLanguage( language );
 
-              getModuleInfo().getSession().setAttribute("language",language);
+              getIWContext().getSession().setAttribute("language",language);
 
                 String title = (language.equalsIgnoreCase("IS")) ? "ICEconsult" : "ICEconsult";
                 jmodule.setTitle(title);
@@ -65,11 +65,11 @@ public String language = "EN";
         }
 
 
-        public void setLeftImage(com.idega.jmodule.object.Image mynd) {
+        public void setLeftImage(com.idega.presentation.Image mynd) {
         	((IceConsultPage)getPage()).setLeftImage(mynd);
         }
 
-        public void setRightImage(com.idega.jmodule.object.Image mynd) {
+        public void setRightImage(com.idega.presentation.Image mynd) {
         	((IceConsultPage)getPage()).setRightImage(mynd);
         }
 

@@ -333,7 +333,7 @@ public class HysingAssociatesTemplate extends HysingTemplate{
 		return contentTable2;
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		try{
 			content().add(objectToAdd,2,2);
 		}
@@ -342,7 +342,7 @@ public class HysingAssociatesTemplate extends HysingTemplate{
 		}
 	}
 
-	public void add2(ModuleObject objectToAdd){
+	public void add2(PresentationObject objectToAdd){
 		try{
 			content2().add(objectToAdd,2,2);
 		}

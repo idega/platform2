@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.ModuleObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.PresentationObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.projects.golf.*;
@@ -21,7 +21,7 @@ import java.util.*;
 *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
 *@version 1.0
 */
-public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectContainer {
+public class PriceCatalogueMaker extends com.idega.presentation.PresentationObjectContainer {
 
   private String union_id,unionName,unionAbbrev;
   private int un_id;
@@ -150,14 +150,14 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
   public void setInputLines(int inputlines){
     this.inputLines = inputlines;
   }
-  private void control(ModuleInfo modinfo) throws IOException{
+  private void control(IWContext iwc) throws IOException{
 
     try{
-      if(modinfo.getRequest().getParameter("union_id") != null){
-         union_id = modinfo.getRequest().getParameter("union_id");
+      if(iwc.getRequest().getParameter("union_id") != null){
+         union_id = iwc.getRequest().getParameter("union_id");
       }
       else{
-         union_id = (String)  modinfo.getSession().getAttribute("golf_union_id");
+         union_id = (String)  iwc.getSession().getAttribute("golf_union_id");
       }
       un_id = Integer.parseInt(union_id)  ;
       union = new Union(un_id);
@@ -166,18 +166,18 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
 
       boolean hasSomeValues = false;
 
-      if(modinfo.getRequest().getParameter("extra_catal_action") == null){
-        doMain(modinfo);
+      if(iwc.getRequest().getParameter("extra_catal_action") == null){
+        doMain(iwc);
       }
-      if(modinfo.getRequest().getParameter("extra_catal_action") != null){
-        extra_catal_action = modinfo.getRequest().getParameter("extra_catal_action");
+      if(iwc.getRequest().getParameter("extra_catal_action") != null){
+        extra_catal_action = iwc.getRequest().getParameter("extra_catal_action");
 
-        if(extra_catal_action.equals("main")){ doMain(modinfo); }
-        if(extra_catal_action.equals("change")){ doChange(modinfo); }
-        if(extra_catal_action.equals("update")){ doUpdate(modinfo); }
-        if(extra_catal_action.equals("view")){ doView(modinfo); }
-        if(extra_catal_action.equals("save")){ doSave(modinfo); }
-        if(extra_catal_action.equals("list")){ doList(modinfo); }
+        if(extra_catal_action.equals("main")){ doMain(iwc); }
+        if(extra_catal_action.equals("change")){ doChange(iwc); }
+        if(extra_catal_action.equals("update")){ doUpdate(iwc); }
+        if(extra_catal_action.equals("view")){ doView(iwc); }
+        if(extra_catal_action.equals("save")){ doSave(iwc); }
+        if(extra_catal_action.equals("list")){ doList(iwc); }
 
       }
     }
@@ -186,7 +186,7 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
    // catch(Exception E){ E.printStackTrace(); add("<br> villa "+E.toString()  );}
 }
 
-    private void doMain(ModuleInfo modinfo) throws SQLException {
+    private void doMain(IWContext iwc) throws SQLException {
 
       PriceCatalogue[] Catalogs = (PriceCatalogue[]) (new PriceCatalogue()).findAll("select * from price_catalogue where union_id = '"+union_id+"' and in_use = 'Y' and is_independent = 'Y'");
       java.text.NumberFormat nf = java.text.NumberFormat.getInstance();
@@ -211,8 +211,8 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
             catalTable.add(nf.format(Catalogs[i].getPrice())+" Kr",3,i+2);
           }
           Values = fetchValues(union_id);
-          setValues( modinfo , fetchValues(union_id) );
-          setValuesCount( modinfo , count );
+          setValues( iwc , fetchValues(union_id) );
+          setValuesCount( iwc , count );
         }
       }
 
@@ -242,11 +242,11 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
        return activeCats;
     }
 
-    private void doChange(ModuleInfo modinfo) throws SQLException{
+    private void doChange(IWContext iwc) throws SQLException{
       Form myForm = new Form();
       myForm.maintainAllParameters();
-      Values = this.getValues(modinfo)  ;
-      int count = this.getValuesCount(modinfo);
+      Values = this.getValues(iwc)  ;
+      int count = this.getValuesCount(iwc);
 
       Table inputTable =  new Table(3,inputLines+1);
       inputTable.setWidth(tablewidth);
@@ -294,8 +294,8 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
       add(MainTable);
     }
 
-    private void doUpdate(ModuleInfo modinfo) throws SQLException{
-      int number = Integer.parseInt(modinfo.getRequest().getParameter("numofcatal"));
+    private void doUpdate(IWContext iwc) throws SQLException{
+      int number = Integer.parseInt(iwc.getRequest().getParameter("numofcatal"));
       int cols = 3;
       boolean hasNull = false;
       if (Values == null);
@@ -305,8 +305,8 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
 
       for (int i = 1; i < number+1 ;i++){
         count = i;
-        text = modinfo.getRequest().getParameter("extra_catal_text"+i );
-        price = modinfo.getRequest().getParameter("extra_catal_price"+i);
+        text = iwc.getRequest().getParameter("extra_catal_text"+i );
+        price = iwc.getRequest().getParameter("extra_catal_price"+i);
 
         if(text.equalsIgnoreCase("")){
            text = "null";
@@ -330,8 +330,8 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
         }
       }
       Values = parsedValues;
-      this.setValues( modinfo , Values );
-      this.setValuesCount(modinfo,numOfCat) ;
+      this.setValues( iwc , Values );
+      this.setValuesCount(iwc,numOfCat) ;
 
       Table MainTable = makeMainTable(3);
       MainTable.setWidth(tablewidth);
@@ -341,15 +341,15 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
       add(MainTable);
     }
 
-    private void doView(ModuleInfo modinfo) throws SQLException{
-      Values = getValues( modinfo);
+    private void doView(IWContext iwc) throws SQLException{
+      Values = getValues( iwc);
       Table MainTable = this.makeMainTable(3);
       MainTable.add(makeSubTable(),1,3);
       add(MainTable);
     }
 
-    private void doSave(ModuleInfo modinfo) throws SQLException{
-      Values = this.getValues( modinfo );
+    private void doSave(IWContext iwc) throws SQLException{
+      Values = this.getValues( iwc );
       Text messageText;
       if(Values != null){
       	makeAllUnUsable();
@@ -365,7 +365,7 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
       add(MainTable);
     }
 
-    private void doList(ModuleInfo modinfo) throws SQLException{
+    private void doList(IWContext iwc) throws SQLException{
 
     }
 
@@ -406,30 +406,30 @@ public class PriceCatalogueMaker extends com.idega.jmodule.object.ModuleObjectCo
     }
   }
 
-  private void setValues(ModuleInfo modinfo , String[][] values){
-    modinfo.getSession().setAttribute("extra_catalog_tarifs", values);
+  private void setValues(IWContext iwc , String[][] values){
+    iwc.getSession().setAttribute("extra_catalog_tarifs", values);
   }
-  private String[][] getValues(ModuleInfo modinfo){
-    String S[][] = (String[][]) modinfo.getSession().getAttribute("extra_catalog_tarifs");
+  private String[][] getValues(IWContext iwc){
+    String S[][] = (String[][]) iwc.getSession().getAttribute("extra_catalog_tarifs");
     return S;
   }
 
-  private void setValuesCount(ModuleInfo modinfo , int count){
-    modinfo.getSession().setAttribute("extra_catalog_count", new Integer(count));
+  private void setValuesCount(IWContext iwc , int count){
+    iwc.getSession().setAttribute("extra_catalog_count", new Integer(count));
   }
-  private int getValuesCount(ModuleInfo modinfo){
-    if(modinfo.getSession().getAttribute("extra_catalog_count")!= null){
-      Integer I = (Integer)modinfo.getSession().getAttribute("extra_catalog_count");
+  private int getValuesCount(IWContext iwc){
+    if(iwc.getSession().getAttribute("extra_catalog_count")!= null){
+      Integer I = (Integer)iwc.getSession().getAttribute("extra_catalog_count");
       return I.intValue();
     }
     else return 0;
   }
 
-  public void main(ModuleInfo modinfo) throws IOException {
-    //isAdmin = com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
+  public void main(IWContext iwc) throws IOException {
+    //isAdmin = com.idega.presentation.PresentationObject.isAdministrator(this.iwc);
     /** @todo: fixa Admin*/
     isAdmin = true;
-    control(modinfo);
+    control(iwc);
   }
 }// class PriceCatalogueMaker
 

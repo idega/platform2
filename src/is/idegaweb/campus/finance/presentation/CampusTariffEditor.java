@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.1 2001/10/04 13:38:22 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.2 2001/10/05 08:05:32 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,12 +17,12 @@ import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.data.GenericEntity;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Enumeration;
-import com.idega.jmodule.object.Editor;
+import com.idega.presentation.Editor;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import java.text.DecimalFormat;
@@ -43,7 +43,7 @@ import com.idega.util.text.TextSoap;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class CampusTariffEditor extends ModuleObjectContainer{
+public class CampusTariffEditor extends PresentationObjectContainer{
 
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4;
@@ -86,31 +86,31 @@ public class CampusTariffEditor extends ModuleObjectContainer{
     this.entities = entities;
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     this.getParentPage().setAllMargins(0);
     if(isAdmin){
     try{
-      ModuleObject MO = new Text();
+      PresentationObject MO = new Text();
 
-      if(modinfo.getParameter("updateindex")!=null){
-        MO =doUpdateIndex(modinfo);
+      if(iwc.getParameter("updateindex")!=null){
+        MO =doUpdateIndex(iwc);
       }
-      else if(modinfo.getParameter("savetariffs")!=null){
-        MO =doUpdate(modinfo);
+      else if(iwc.getParameter("savetariffs")!=null){
+        MO =doUpdate(iwc);
       }
-      else if(modinfo.getParameter(strAction) != null){
-        String sAct = modinfo.getParameter(strAction);
+      else if(iwc.getParameter(strAction) != null){
+        String sAct = iwc.getParameter(strAction);
         int iAct = Integer.parseInt(sAct);
         switch (iAct) {
-          case ACT1 : MO =getMain(modinfo);        break;
-          case ACT2 : MO =getChange(modinfo,false,false);break;
-          case ACT3 : MO =doUpdate(modinfo);      break;
-          case ACT4 : MO =getChange(modinfo,true,false); break;
-          default: MO =getMain(modinfo);           break;
+          case ACT1 : MO =getMain(iwc);        break;
+          case ACT2 : MO =getChange(iwc,false,false);break;
+          case ACT3 : MO =doUpdate(iwc);      break;
+          case ACT4 : MO =getChange(iwc,true,false); break;
+          default: MO =getMain(iwc);           break;
         }
       }
       else{
-        MO = getMain(modinfo);
+        MO = getMain(iwc);
       }
     Table T = new Table(1,3);
         T.add(Edit.headerText(iwrb.getLocalizedString("tariff_editor","Tariff editor"),3),1,1);
@@ -126,7 +126,7 @@ public class CampusTariffEditor extends ModuleObjectContainer{
     else
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(4,1);
     int last = 4;
     LinkTable.setWidth("100%");
@@ -153,8 +153,8 @@ public class CampusTariffEditor extends ModuleObjectContainer{
   protected void setPeriod(int period){
     this.period = period;
   }
-  protected ModuleObject getPeriodChooser(int init){
-    ModuleObject mo;
+  protected PresentationObject getPeriodChooser(int init){
+    PresentationObject mo;
     switch (this.period) {
       case YEAR : mo =  this.YearChooser(init);      break;
       case MONTH: mo =  this.MonthChooser(init);     break;
@@ -190,7 +190,7 @@ public class CampusTariffEditor extends ModuleObjectContainer{
     }
     return mo;
   }
-  protected ModuleObject getMain(ModuleInfo modinfo){
+  protected PresentationObject getMain(IWContext iwc){
     idegaTimestamp today = new idegaTimestamp();
     Tariff[] tariffs = Finder.findTariffs();
     List AK = Finder.getAccountKeys();
@@ -250,14 +250,14 @@ public class CampusTariffEditor extends ModuleObjectContainer{
 
   }
 
-  private ModuleObject doUpdateIndex(ModuleInfo modinfo){
+  private PresentationObject doUpdateIndex(IWContext iwc){
     /** @todo  *
      *
      */
-    return getChange(modinfo,false,true);
+    return getChange(iwc,false,true);
   }
 
-  protected ModuleObject getChange(ModuleInfo modinfo,boolean ifnew,boolean factor){
+  protected PresentationObject getChange(IWContext iwc,boolean ifnew,boolean factor){
     Form myForm = new Form();
     myForm.maintainAllParameters();
     boolean updateIndex = factor;
@@ -337,7 +337,7 @@ public class CampusTariffEditor extends ModuleObjectContainer{
         pos = i-1;
         float iPrice = tariffs[pos].getPrice();
         String ixType = tariffs[pos].getIndexType();
-        String ixDate = modinfo.getParameter("te_ixdate"+i);
+        String ixDate = iwc.getParameter("te_ixdate"+i);
         idegaTimestamp ixdate = null;
 
         if(ixDate != null){
@@ -446,9 +446,9 @@ public class CampusTariffEditor extends ModuleObjectContainer{
     return (myForm);
   }
 
-  protected ModuleObject doUpdate(ModuleInfo modinfo) {
+  protected PresentationObject doUpdate(IWContext iwc) {
     Map M = Finder.mapOfIndicesByTypes(Finder.listOfTypeGroupedIndices());
-    int count = Integer.parseInt(modinfo.getParameter("te_count"));
+    int count = Integer.parseInt(iwc.getParameter("te_count"));
     String sName,sInfo,sDel,sPrice,sAtt,sAK,sTK,sID,sDateFrom,sDateTo,sIndex,sIndexStamp;
     int ID,Attid,AKid,TKid;
     float Price;
@@ -456,21 +456,21 @@ public class CampusTariffEditor extends ModuleObjectContainer{
     idegaTimestamp dFrom,dTo;
 
     Tariff tariff = null;
-    sDateFrom = modinfo.getParameter("te_datefrom");
+    sDateFrom = iwc.getParameter("te_datefrom");
     dFrom = this.parseStamp(sDateFrom);
-    sDateTo = modinfo.getParameter("te_dateto");
+    sDateTo = iwc.getParameter("te_dateto");
     dTo = this.parseStamp(sDateTo);
 
     for (int i = 1; i < count+1 ;i++){
-      sName = modinfo.getParameter("te_nameinput"+i);
-      sPrice = (modinfo.getParameter("te_priceinput"+i));
-      sInfo = modinfo.getParameter("te_infoinput"+i);
-      sAtt = modinfo.getParameter("te_attdrp"+i);
-      sAK = (modinfo.getParameter("te_akdrp"+i));
-      sIndex = (modinfo.getParameter("te_ixdrp"+i));
-      sDel = modinfo.getParameter("te_delcheck"+i);
-      sID = modinfo.getParameter("te_idinput"+i);
-      sIndexStamp = modinfo.getParameter("te_ixdate"+i);
+      sName = iwc.getParameter("te_nameinput"+i);
+      sPrice = (iwc.getParameter("te_priceinput"+i));
+      sInfo = iwc.getParameter("te_infoinput"+i);
+      sAtt = iwc.getParameter("te_attdrp"+i);
+      sAK = (iwc.getParameter("te_akdrp"+i));
+      sIndex = (iwc.getParameter("te_ixdrp"+i));
+      sDel = iwc.getParameter("te_delcheck"+i);
+      sID = iwc.getParameter("te_idinput"+i);
+      sIndexStamp = iwc.getParameter("te_ixdate"+i);
       idegaTimestamp stamp = sIndexStamp!= null ?new idegaTimestamp(sIndexStamp):null;
 
       if(stamp == null && sIndex !=null && M!=null && M.containsKey(sIndex)){
@@ -485,7 +485,7 @@ public class CampusTariffEditor extends ModuleObjectContainer{
         sIndex = "";
       }
 
-      ID = Integer.parseInt(modinfo.getParameter("te_idinput"+i));
+      ID = Integer.parseInt(iwc.getParameter("te_idinput"+i));
       if(ID != -1){
         try{
           tariff = new Tariff(ID);
@@ -533,7 +533,7 @@ public class CampusTariffEditor extends ModuleObjectContainer{
       }
     }// for loop
 
-   return getChange(modinfo,false,false);
+   return getChange(iwc,false,false);
   }
 
   private Hashtable getKeys(List AK){
@@ -557,10 +557,10 @@ public class CampusTariffEditor extends ModuleObjectContainer{
     }
     return drp;
   }
-  private ModuleObject YearChooser(int year){
+  private PresentationObject YearChooser(int year){
     return new Text();
   }
-  private ModuleObject MonthChooser(int month){
+  private PresentationObject MonthChooser(int month){
     Link left = new Link("<< ");
     left.addParameter(this.strAction,this.ACT7);
     Link right = new Link(" >>");
@@ -571,8 +571,8 @@ public class CampusTariffEditor extends ModuleObjectContainer{
     T.add(right,3,1);
     return T;
   }
-  private ModuleObject WeekChooser(int week){ return new Text();}
-  private ModuleObject DayChooser(int day){ return new Text();}
+  private PresentationObject WeekChooser(int week){ return new Text();}
+  private PresentationObject DayChooser(int day){ return new Text();}
 
   private idegaTimestamp parseStamp(String sDate){
     idegaTimestamp it = new idegaTimestamp();
@@ -731,15 +731,15 @@ public class CampusTariffEditor extends ModuleObjectContainer{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 
 }

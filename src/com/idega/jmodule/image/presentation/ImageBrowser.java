@@ -4,15 +4,15 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.image.data.*;
 import com.idega.jmodule.image.presentation.*;
 import com.idega.data.*;
 import com.idega.util.text.*;
 
-public class ImageBrowser extends JModuleObject{
+public class ImageBrowser extends Block{
 
 private String width="100%";
 private String treeWidth = "170";
@@ -50,19 +50,19 @@ private ImageViewer viewer = new ImageViewer();
     return this.tree;
   }
 
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(IWContext iwc)throws Exception{
 
-    String mode = modinfo.getParameter("mode");
-    String edit = modinfo.getParameter("edit");//so it doesn't conflict with imageviewer
-    String action = modinfo.getParameter("action");//so it doesn't conflict with imageviewer
+    String mode = iwc.getParameter("mode");
+    String edit = iwc.getParameter("edit");//so it doesn't conflict with imageviewer
+    String action = iwc.getParameter("action");//so it doesn't conflict with imageviewer
 
-    String refreshing = (String) modinfo.getSessionAttribute("refresh");
+    String refreshing = (String) iwc.getSessionAttribute("refresh");
     if( refreshing!=null ) refresh = true;
 
     if ( refresh ) {
       tree.refresh();
       viewer.refresh();
-      modinfo.removeSessionAttribute("refresh");
+      iwc.removeSessionAttribute("refresh");
     }
 
       if ( mode == null ) { mode = "image"; }
@@ -120,7 +120,7 @@ private ImageViewer viewer = new ImageViewer();
       }
     }
     else if( mode.equalsIgnoreCase("search") ){
-      imageTable.add(getSearchResults(modinfo),3,1);
+      imageTable.add(getSearchResults(iwc),3,1);
       imageTable.add(tree,1,1);
     }
 
@@ -183,17 +183,17 @@ private ImageViewer viewer = new ImageViewer();
 
   }
 
-  private Table getSearchResults(ModuleInfo modinfo) throws SQLException {
+  private Table getSearchResults(IWContext iwc) throws SQLException {
 
     boolean isQuery = true;
     boolean allCategories = false;
 
-    String category_id = modinfo.getParameter("catagory_id");
+    String category_id = iwc.getParameter("catagory_id");
       if ( category_id.equalsIgnoreCase("0") ) {
         allCategories = true;
       }
 
-    String searchString = modinfo.getParameter("searchString");
+    String searchString = iwc.getParameter("searchString");
       if ( searchString == null || searchString.equalsIgnoreCase("") ) {
         searchString = "";
         isQuery = false;

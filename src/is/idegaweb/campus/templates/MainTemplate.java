@@ -1,5 +1,5 @@
 /*
- * $Id: MainTemplate.java,v 1.5 2001/08/29 21:15:54 aron Exp $
+ * $Id: MainTemplate.java,v 1.6 2001/10/05 08:05:45 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -13,10 +13,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 import is.idegaweb.campus.templates.MainPage;
 
@@ -53,62 +53,62 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   public void setCenterAlignment(String align){
     getMainPage().setCenterAlignment(align);
   }
-  /** Adds a ModuleObject to the middle section
+  /** Adds a PresentationObject to the middle section
    *
    */
-  public void add(ModuleObject objectToAdd){
+  public void add(PresentationObject objectToAdd){
     ((MainPage)getPage()).add(objectToAdd);
   }
 
   public void add(String stringToAdd){
     ((MainPage)getPage()).add(new Text(stringToAdd));
   }
-  /** Adds a ModuleObject to the center of the left side
+  /** Adds a PresentationObject to the center of the left side
    *
    */
-  public void addLeft(ModuleObject objectToAdd){
+  public void addLeft(PresentationObject objectToAdd){
     getMainPage().addLeft(objectToAdd);
   }
-  /** Adds a ModuleObject to the center of the right side
+  /** Adds a PresentationObject to the center of the right side
    *
    */
-  public void addRight(ModuleObject objectToAdd){
+  public void addRight(PresentationObject objectToAdd){
     getMainPage().addRight( objectToAdd);
   }
-  /** Adds a ModuleObject to the bottom of the right side
+  /** Adds a PresentationObject to the bottom of the right side
    *
    */
-  public void addRightBottom(ModuleObject objectToAdd){
+  public void addRightBottom(PresentationObject objectToAdd){
     getMainPage().addRightBottom(objectToAdd);
   }
-  /** Adds a ModuleObject to the titlebar on the left side
+  /** Adds a PresentationObject to the titlebar on the left side
    *
    */
-  public void addMenuTitle(ModuleObject objectToAdd){
+  public void addMenuTitle(PresentationObject objectToAdd){
     getMainPage().addMenuTitle(objectToAdd);
   }
-  /** Adds a ModuleObject to the titlebar in the middle
+  /** Adds a PresentationObject to the titlebar in the middle
    *
    */
-  public void addMainTitle(ModuleObject objectToAdd){
+  public void addMainTitle(PresentationObject objectToAdd){
     getMainPage().addMainTitle(objectToAdd);
   }
-  /** Adds a ModuleObject to the titlebar on the right side
+  /** Adds a PresentationObject to the titlebar on the right side
    *
    */
-  public void addRightTitle(ModuleObject objectToAdd){
+  public void addRightTitle(PresentationObject objectToAdd){
     getMainPage().addRightTitle(objectToAdd);
   }
-  /** Adds a ModuleObject to the top of left side
+  /** Adds a PresentationObject to the top of left side
    *
    */
-  public void addTopLeft(ModuleObject objectToAdd){
+  public void addTopLeft(PresentationObject objectToAdd){
     getMainPage().addTopLeft(objectToAdd);
   }
-  /** Adds a ModuleObject to the top of right side
+  /** Adds a PresentationObject to the top of right side
    *
    */
-  public void addTopRight(ModuleObject objectToAdd){
+  public void addTopRight(PresentationObject objectToAdd){
     getMainPage().addTopRight( objectToAdd);
   }
   /** Adds a divider to the top of right side
@@ -117,22 +117,22 @@ public abstract class MainTemplate extends JSPModule implements JspPage{
   public void addTopRightDivider(){
     getMainPage().addTopRightDivider();
   }
-  /** Adds a ModuleObject to the upper logo area on the left
+  /** Adds a PresentationObject to the upper logo area on the left
    *
    */
-  public void addLogo(ModuleObject objectToAdd){
+  public void addLogo(PresentationObject objectToAdd){
     getMainPage().addLogo( objectToAdd);
   }
-  /** Adds a ModuleObject to the lower logo area on the left
+  /** Adds a PresentationObject to the lower logo area on the left
    *
    */
-  public void addLowerLogo(ModuleObject objectToAdd){
+  public void addLowerLogo(PresentationObject objectToAdd){
     getMainPage(). addLowerLogo( objectToAdd);
   }
-  /** Adds a ModuleObject into tab area
+  /** Adds a PresentationObject into tab area
    *
    */
-  public void addTabs(ModuleObject objectToAdd){
+  public void addTabs(PresentationObject objectToAdd){
     getMainPage().addTabs( objectToAdd);
 
   }

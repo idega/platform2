@@ -1,9 +1,9 @@
 package is.idegaweb.campus.allocation;
 
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.Page;
+import com.idega.presentation.Block;
+import com.idega.presentation.Page;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.lowagie.text.Font;
 import java.util.StringTokenizer;
 import com.idega.util.idegaTimestamp;
@@ -17,22 +17,22 @@ import com.idega.util.idegaTimestamp;
  * @version 1.1
  */
 
-public class ContractFiler extends JModuleObject {
+public class ContractFiler extends Block {
 
   public static String prmOneId ="contract_id" ,prmTest="test",prmManyIds="many_ids";
   public static String prmSeperator = "_",prmFileName = "fname";
   public ContractFiler() {
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
 
-    //ModuleInfo modinfo = getModuleInfo();
-    //IWMainApplication iwma = modinfo.getApplication()
+    //IWContext iwc = getIWContext();
+    //IWMainApplication iwma = iwc.getApplication()
     String identifier = "is.idegaweb.campus.contract";
-    IWResourceBundle iwrb = modinfo.getApplication().getBundle(identifier).getResourceBundle(modinfo);
+    IWResourceBundle iwrb = iwc.getApplication().getBundle(identifier).getResourceBundle(iwc);
     String fileSeperator = System.getProperty("file.separator");
-    String filepath = modinfo.getServletContext().getRealPath(fileSeperator+"allocation/files"+fileSeperator);
-    String prefFilename = modinfo.getParameter("fname");
+    String filepath = iwc.getServletContext().getRealPath(fileSeperator+"allocation/files"+fileSeperator);
+    String prefFilename = iwc.getParameter("fname");
     String filename = "contract.pdf";
     String filetest = "test.pdf";
     Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
@@ -47,8 +47,8 @@ public class ContractFiler extends JModuleObject {
     String path = filepath;
       Page p = getParentPage();
       //Page p = getPage();
-      if(modinfo.getParameter(prmOneId)!=null){
-        int id = Integer.parseInt(modinfo.getParameter(prmOneId));
+      if(iwc.getParameter(prmOneId)!=null){
+        int id = Integer.parseInt(iwc.getParameter(prmOneId));
         boolean filewritten = CampusContractWriter.writePDF(id,iwrb,path+filename, nameFont,titleFont, paraFont, tagFont, textFont);
 
         if(filewritten)
@@ -57,7 +57,7 @@ public class ContractFiler extends JModuleObject {
           add("failed");
 
       }
-      else if(modinfo.getParameter(prmTest)!=null){
+      else if(iwc.getParameter(prmTest)!=null){
 
         boolean filewritten = CampusContractWriter.writeTestPDF(iwrb,path+filetest,  nameFont,titleFont, paraFont, tagFont, textFont);
         if(filewritten)
@@ -65,9 +65,9 @@ public class ContractFiler extends JModuleObject {
         else
           add("failed");
       }
-      else if(modinfo.getParameter(prmManyIds)!=null){
+      else if(iwc.getParameter(prmManyIds)!=null){
         System.err.println(prmManyIds);
-        String values = modinfo.getParameter(prmManyIds);
+        String values = iwc.getParameter(prmManyIds);
         StringTokenizer st = new StringTokenizer(values,prmSeperator);
         int[] ids = new int[st.countTokens()];
         for (int i = 0; i < ids.length; i++) {

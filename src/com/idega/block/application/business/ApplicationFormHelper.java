@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.2 2001/08/29 22:51:41 laddi Exp $
+ * $Id: ApplicationFormHelper.java,v 1.3 2001/10/05 07:59:57 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.block.application.business;
 
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.util.idegaTimestamp;
@@ -21,15 +21,15 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class ApplicationFormHelper {
-  public static void saveApplicantInformation(ModuleInfo modinfo) {
-    String firstName = modinfo.getParameter("firstName");
-    String middleName = modinfo.getParameter("middleName");
-    String lastName = modinfo.getParameter("lastName");
-    String ssn = modinfo.getParameter("ssn");
-    String legalResidence = modinfo.getParameter("legalResidence");
-    String residence = modinfo.getParameter("residence");
-    String residencePhone = modinfo.getParameter("residencePhone");
-    String po = modinfo.getParameter("po");
+  public static void saveApplicantInformation(IWContext iwc) {
+    String firstName = iwc.getParameter("firstName");
+    String middleName = iwc.getParameter("middleName");
+    String lastName = iwc.getParameter("lastName");
+    String ssn = iwc.getParameter("ssn");
+    String legalResidence = iwc.getParameter("legalResidence");
+    String residence = iwc.getParameter("residence");
+    String residencePhone = iwc.getParameter("residencePhone");
+    String po = iwc.getParameter("po");
 
     Applicant applicant = new Applicant();
     applicant.setFirstName(firstName);
@@ -41,12 +41,12 @@ public class ApplicationFormHelper {
     applicant.setResidencePhone(residencePhone);
     applicant.setPO(po);
 
-    modinfo.setSessionAttribute("applicant",applicant);
+    iwc.setSessionAttribute("applicant",applicant);
   }
 
-  public static String saveDataToDB(ModuleInfo modinfo) {
-    Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
-    Application application = (Application)modinfo.getSessionAttribute("application");
+  public static String saveDataToDB(IWContext iwc) {
+    Applicant applicant = (Applicant)iwc.getSessionAttribute("applicant");
+    Application application = (Application)iwc.getSessionAttribute("application");
 
     String string = "";
 
@@ -61,20 +61,20 @@ public class ApplicationFormHelper {
       return(null);
     }
     finally {
-      modinfo.removeSessionAttribute("applicant");
-      modinfo.removeSessionAttribute("application");
+      iwc.removeSessionAttribute("applicant");
+      iwc.removeSessionAttribute("application");
     }
 
     return(string);
   }
 
-  public static void saveSubject(ModuleInfo modinfo) {
-    String subject = (String)modinfo.getParameter("subject");
+  public static void saveSubject(IWContext iwc) {
+    String subject = (String)iwc.getParameter("subject");
     Application application = new Application();
     application.setSubjectId(Integer.parseInt(subject));
     application.setSubmitted(idegaTimestamp.getTimestampRightNow());
     application.setStatusSubmitted();
     application.setStatusChanged(idegaTimestamp.getTimestampRightNow());
-    modinfo.setSessionAttribute("application",application);
+    iwc.setSessionAttribute("application",application);
   }
 }

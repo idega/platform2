@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.ModuleObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.PresentationObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.*;
 import com.idega.projects.*;
@@ -20,7 +20,7 @@ import java.util.*;
 *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
 *@version 1.0
 */
- public class PaymentViewer extends com.idega.jmodule.object.ModuleObjectContainer {
+ public class PaymentViewer extends com.idega.presentation.PresentationObjectContainer {
 
   private String union_id,unionName,unionAbbrev,member_id;
   private int un_id,mem_id,cashier_id;
@@ -68,19 +68,19 @@ import java.util.*;
   public void setInputLines(int inputlines){
     this.inputLines = inputlines;
   }
-  private void control(ModuleInfo modinfo) throws IOException{
+  private void control(IWContext iwc) throws IOException{
 
     try{
-      if(modinfo.getParameter("member_id") != null){
-        member_id = modinfo.getParameter("member_id");
-        modinfo.getSession().setAttribute("payment_member_id",member_id);
+      if(iwc.getParameter("member_id") != null){
+        member_id = iwc.getParameter("member_id");
+        iwc.getSession().setAttribute("payment_member_id",member_id);
       }
 
-      union_id = (String)  modinfo.getSession().getAttribute("golf_union_id");
-      member_id = (String) modinfo.getSession().getAttribute("payment_member_id");
+      union_id = (String)  iwc.getSession().getAttribute("golf_union_id");
+      member_id = (String) iwc.getSession().getAttribute("payment_member_id");
 
-      if(modinfo.getSession().getAttribute("member_login")!= null){
-       Cashier = (Member) modinfo.getSession().getAttribute("member_login");
+      if(iwc.getSession().getAttribute("member_login")!= null){
+       Cashier = (Member) iwc.getSession().getAttribute("member_login");
         cashier_id = Cashier.getID();
       }
 
@@ -99,27 +99,27 @@ import java.util.*;
       boolean hasSomeValues = false;
       strMessage = "";
 
-      if(modinfo.getRequest().getParameter("payment_action") == null){
-        doMain(modinfo);
+      if(iwc.getRequest().getParameter("payment_action") == null){
+        doMain(iwc);
       }
-      if(modinfo.getRequest().getParameter("payment_action") != null){
-        payment_action = modinfo.getRequest().getParameter("payment_action");
+      if(iwc.getRequest().getParameter("payment_action") != null){
+        payment_action = iwc.getRequest().getParameter("payment_action");
 
-        if(payment_action.equals("main"))	{ doMain(modinfo); 		}
-        if(payment_action.equals("change"))	{ doChange(modinfo); 	}
-        if(payment_action.equals("update"))	{ doUpdate(modinfo); 	}
-        if(payment_action.equals("view"))	{ doView(modinfo); 		}
-        if(payment_action.equals("save"))	{ doSave(modinfo); 		}
-        if(payment_action.equals("list"))	{ doList(modinfo); 		}
-        if(payment_action.equals("new"))	{ doNew(modinfo); 		}
-        if(payment_action.equals("updatenew"))	{ doUpdateNew(modinfo); 		}
+        if(payment_action.equals("main"))	{ doMain(iwc); 		}
+        if(payment_action.equals("change"))	{ doChange(iwc); 	}
+        if(payment_action.equals("update"))	{ doUpdate(iwc); 	}
+        if(payment_action.equals("view"))	{ doView(iwc); 		}
+        if(payment_action.equals("save"))	{ doSave(iwc); 		}
+        if(payment_action.equals("list"))	{ doList(iwc); 		}
+        if(payment_action.equals("new"))	{ doNew(iwc); 		}
+        if(payment_action.equals("updatenew"))	{ doUpdateNew(iwc); 		}
 
       }
     }
     catch(SQLException S){	S.printStackTrace();	}
     }
 
-    private void doMain(ModuleInfo modinfo) throws SQLException {
+    private void doMain(IWContext iwc) throws SQLException {
       Table MainTable = makeMainTable();
       MainTable.add(makeLinkTable(2),1,1);
       MainTable.add(makeTopTable(),1,3);
@@ -128,8 +128,8 @@ import java.util.*;
       add(MainTable);
     }
 
-    private void doChange(ModuleInfo modinfo) throws SQLException{
-      String paym_id = modinfo.getRequest().getParameter("payment_id");
+    private void doChange(IWContext iwc) throws SQLException{
+      String paym_id = iwc.getRequest().getParameter("payment_id");
       PaymentType[] PT = (PaymentType[])(new PaymentType()).findAll();
       Form myForm = new Form();
       myForm.maintainAllParameters();
@@ -216,15 +216,15 @@ import java.util.*;
       }
     }
 
-    private void doUpdate(ModuleInfo modinfo) throws SQLException{
+    private void doUpdate(IWContext iwc) throws SQLException{
       String strPaymID,strPrice,strPaytype,strDescr,strChkPaid,strChkUnPaid,strChkDel;
-      strPaymID = modinfo.getRequest().getParameter("payment_id");
-      strPrice = modinfo.getRequest().getParameter("payment_iprice");
-      strDescr = modinfo.getRequest().getParameter("payment_idesc");
-      strPaytype = modinfo.getRequest().getParameter("payment_ipaytype");
-      strChkPaid = modinfo.getRequest().getParameter("payment_ichkpaid");
-      strChkUnPaid = modinfo.getRequest().getParameter("payment_ichkunpaid");
-      strChkDel = modinfo.getRequest().getParameter("payment_ichkdel");
+      strPaymID = iwc.getRequest().getParameter("payment_id");
+      strPrice = iwc.getRequest().getParameter("payment_iprice");
+      strDescr = iwc.getRequest().getParameter("payment_idesc");
+      strPaytype = iwc.getRequest().getParameter("payment_ipaytype");
+      strChkPaid = iwc.getRequest().getParameter("payment_ichkpaid");
+      strChkUnPaid = iwc.getRequest().getParameter("payment_ichkunpaid");
+      strChkDel = iwc.getRequest().getParameter("payment_ichkdel");
 
       int pm_id,price,pt_id;
       if(strChkDel != null && strChkDel.equalsIgnoreCase("true")){}
@@ -254,16 +254,16 @@ import java.util.*;
         catch(SQLException e){strMessage = "Tókst ekki að breyta greiðslu";}
       }
       }
-      this.doMain(modinfo);
+      this.doMain(iwc);
 
     }
-    private void doView(ModuleInfo modinfo) throws SQLException{
+    private void doView(IWContext iwc) throws SQLException{
 
     }
-    private void doSave(ModuleInfo modinfo) throws SQLException{
+    private void doSave(IWContext iwc) throws SQLException{
 
     }
-    private void doNew(ModuleInfo modinfo) throws SQLException{
+    private void doNew(IWContext iwc) throws SQLException{
       PaymentType[] PT = (PaymentType[])(new PaymentType()).findAll();
       PaymentRound[] PR = (PaymentRound[]) (new PaymentRound()).findAllByColumnDescendingOrdered("union_id",union_id,"round_date");
       Form myForm = new Form();
@@ -337,19 +337,19 @@ import java.util.*;
       add(MainTable);
     }
 
-    private void doUpdateNew(ModuleInfo modinfo) throws SQLException{
+    private void doUpdateNew(IWContext iwc) throws SQLException{
       DecimalFormat Formatter = new DecimalFormat("00");
 
       String strPrice,strPaytype,strDescr,strIfRoundRel,strRoundId,strInst;
-      strPrice = modinfo.getRequest().getParameter("payment_iprice");
-      strDescr = modinfo.getRequest().getParameter("payment_idesc");
-      strPaytype = modinfo.getRequest().getParameter("payment_ipaytype");
-      strIfRoundRel = modinfo.getRequest().getParameter("payment_roundrel");
-      strRoundId = modinfo.getRequest().getParameter("payment_irounds");
-      strInst = modinfo.getRequest().getParameter("payment_installments");
-      int iday = Integer.parseInt(modinfo.getRequest().getParameter("payment_day"));
-      int imonth = Integer.parseInt(modinfo.getRequest().getParameter("payment_month"));
-      int iyear = Integer.parseInt(modinfo.getRequest().getParameter("payment_year"));
+      strPrice = iwc.getRequest().getParameter("payment_iprice");
+      strDescr = iwc.getRequest().getParameter("payment_idesc");
+      strPaytype = iwc.getRequest().getParameter("payment_ipaytype");
+      strIfRoundRel = iwc.getRequest().getParameter("payment_roundrel");
+      strRoundId = iwc.getRequest().getParameter("payment_irounds");
+      strInst = iwc.getRequest().getParameter("payment_installments");
+      int iday = Integer.parseInt(iwc.getRequest().getParameter("payment_day"));
+      int imonth = Integer.parseInt(iwc.getRequest().getParameter("payment_month"));
+      int iyear = Integer.parseInt(iwc.getRequest().getParameter("payment_year"));
 
       int inst = Integer.parseInt(strInst);
       int pm_id,price,pt_id;
@@ -400,10 +400,10 @@ import java.util.*;
           }
         }
       }
-     this.doMain(modinfo);
+     this.doMain(iwc);
     }
 
-    private void doList(ModuleInfo modinfo) throws SQLException{
+    private void doList(IWContext iwc) throws SQLException{
 
     }
     private Table makeMainTable(){
@@ -715,11 +715,11 @@ import java.util.*;
       return T;
     }
 
-  public void main(ModuleInfo modinfo) throws IOException {
-    //isAdmin = com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
+  public void main(IWContext iwc) throws IOException {
+    //isAdmin = com.idega.presentation.PresentationObject.isAdministrator(this.iwc);
     /** @todo: fixa Admin*/
     isAdmin = true;
-    control(modinfo);
+    control(iwc);
   }
 }// class PaymentViewer
 

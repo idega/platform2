@@ -1,15 +1,15 @@
 package is.idegaweb.campus.building;
 
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.PresentationObjectContainer;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import is.idegaweb.campus.presentation.Edit;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.*;
@@ -25,7 +25,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class ApartmentFreezer extends ModuleObjectContainer {
+public class ApartmentFreezer extends PresentationObjectContainer {
 
 
 
@@ -40,21 +40,21 @@ public class ApartmentFreezer extends ModuleObjectContainer {
 
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
 
 
       if(isAdmin){
         Table T = new Table();
         T.add((makeSearchTable()),1,1);
-        if(modinfo.getParameter("search")!= null){
-          String searchId = modinfo.getParameter("ap_search").trim();
-          T.add(makeResultTable(searchId,modinfo),1,2);
+        if(iwc.getParameter("search")!= null){
+          String searchId = iwc.getParameter("ap_search").trim();
+          T.add(makeResultTable(searchId,iwc),1,2);
         }
-        else if( modinfo.getParameter("apartment_id")!= null){
-          T.add(makeEditTable(Integer.parseInt(modinfo.getParameter("apartment_id")),modinfo),1,3);
+        else if( iwc.getParameter("apartment_id")!= null){
+          T.add(makeEditTable(Integer.parseInt(iwc.getParameter("apartment_id")),iwc),1,3);
         }
-        else if(modinfo.getParameter("freeze")!=null){
-          T.add(this.freezeApartment(modinfo),1,3);
+        else if(iwc.getParameter("freeze")!=null){
+          T.add(this.freezeApartment(iwc),1,3);
           add("freeze");
         }
         add(T);
@@ -64,13 +64,13 @@ public class ApartmentFreezer extends ModuleObjectContainer {
 
   }
 
-  public ModuleObject makeLinkTable(int menuNr){
+  public PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(6,1);
 
     return LinkTable;
   }
 
-  public ModuleObject makeSearchTable(){
+  public PresentationObject makeSearchTable(){
 
     Table Frame = new Table(3,2);
       Frame.setCellpadding(0);
@@ -98,7 +98,7 @@ public class ApartmentFreezer extends ModuleObjectContainer {
     return Frame;
 
   }
-  public ModuleObject makeResultTable(String searchName,ModuleInfo modinfo){
+  public PresentationObject makeResultTable(String searchName,IWContext iwc){
      Table Frame = new Table(3,2);
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
@@ -126,7 +126,7 @@ public class ApartmentFreezer extends ModuleObjectContainer {
         T.add(Edit.formatText(F.getName()),2,i+1);
         T.add(Edit.formatText(B.getName()),3,i+1);
         if(A.getUnavailableUntil()!=null)
-          T.add(Edit.formatText((new idegaTimestamp(A.getUnavailableUntil())).getLocaleDate(modinfo)),4,i+1);
+          T.add(Edit.formatText((new idegaTimestamp(A.getUnavailableUntil())).getLocaleDate(iwc)),4,i+1);
         else
           T.add(Edit.formatText("Unfrozen"),4,i+1);
       }
@@ -135,7 +135,7 @@ public class ApartmentFreezer extends ModuleObjectContainer {
     return Frame;
   }
 
-  private ModuleObject makeEditTable(int id,ModuleInfo modinfo){
+  private PresentationObject makeEditTable(int id,IWContext iwc){
     Table Frame = new Table(3,2);
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
@@ -144,7 +144,7 @@ public class ApartmentFreezer extends ModuleObjectContainer {
     Building B = BuildingCacher.getBuilding( F.getBuildingId());
 
     DateInput DI = new DateInput("frozen_date",true);
-    DI.setModuleInfo(modinfo);
+    DI.setIWContext(iwc);
     if(A.getUnavailableUntil()!=null)
       DI.setDate(A.getUnavailableUntil());
     //else
@@ -166,10 +166,10 @@ public class ApartmentFreezer extends ModuleObjectContainer {
     return Frame;
   }
 
-  private ModuleObject freezeApartment(ModuleInfo modinfo){
+  private PresentationObject freezeApartment(IWContext iwc){
     Table T = new Table();
-    String appId = modinfo.getParameter("app_id");
-    String frozenDate = modinfo.getParameter("frozen_date");
+    String appId = iwc.getParameter("app_id");
+    String frozenDate = iwc.getParameter("frozen_date");
 
     try{
       if(frozenDate != null && frozenDate.length()==10){
@@ -189,14 +189,14 @@ public class ApartmentFreezer extends ModuleObjectContainer {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 }

@@ -1,12 +1,12 @@
 package com.idega.projects.golf.service;
 
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity. *;
 import com.idega.projects.golf.service.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
 import java.sql.*;
 import java.util.*;
 import com.idega.idegaweb.*;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
 *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
 *@version 1.0
 */
-public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer {
+public class MemberReport extends com.idega.presentation.PresentationObjectContainer {
 
   private final int ACT1 = 1, ACT2 = 2, ACT3 = 3, ACT4 = 4;
   private final int NOACT = 0;
@@ -48,33 +48,33 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
 
   }
 
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
 
     try{
 
-      if(modinfo.getSession().getAttribute("golf_union_id")!=null){
-        sUnionId = (String)modinfo.getSession().getAttribute("golf_union_id");
+      if(iwc.getSession().getAttribute("golf_union_id")!=null){
+        sUnionId = (String)iwc.getSession().getAttribute("golf_union_id");
       }
 
-      if(modinfo.getParameter(sAction) == null){
-        doMain(modinfo);
+      if(iwc.getParameter(sAction) == null){
+        doMain(iwc);
       }
-      if(modinfo.getParameter(sAction) != null){
-        sActPrm = modinfo.getParameter(sAction);
+      if(iwc.getParameter(sAction) != null){
+        sActPrm = iwc.getParameter(sAction);
         iAction = Integer.parseInt(sActPrm);
         switch(iAction){
-        case ACT1: doUpdate(modinfo);     break;
-        case ACT2: doTable(modinfo);      break;
+        case ACT1: doUpdate(iwc);     break;
+        case ACT2: doTable(iwc);      break;
         case ACT3:                        break;
         case ACT4:                        break;
-        default:  doMain(modinfo);        break;
+        default:  doMain(iwc);        break;
         }
       }
     }
     catch(SQLException S){	S.printStackTrace();	}
     }
 
-  private void doMain(ModuleInfo modinfo) throws SQLException {
+  private void doMain(IWContext iwc) throws SQLException {
 
     FramePane pane = new FramePane("Listar");
     pane.setWidth(paneWidth);
@@ -128,16 +128,16 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
     form.add(new SubmitButton("Áfram",this.sAction,String.valueOf(ACT1)));
   }
 
-  private void doUpdate(ModuleInfo modinfo) throws SQLException{
-    String[] selectedValues = modinfo.getParameterValues(boxName);
+  private void doUpdate(IWContext iwc) throws SQLException{
+    String[] selectedValues = iwc.getParameterValues(boxName);
     if(selectedValues!=null){
-      int iGroup        = Integer.parseInt(modinfo.getParameter("list_grp" ));
-      String sStatus    = modinfo.getParameter("list_status");
-      String sGender    = modinfo.getParameter("list_gender");
-      int iAgefrom      = Integer.parseInt(modinfo.getParameter("list_agefrom"));
-      int iAgeto        = Integer.parseInt(modinfo.getParameter("list_ageto" ));
-      int iHndCpfrom    = Integer.parseInt(modinfo.getParameter("list_hndcpfrom"));
-      int iHndCpto    = Integer.parseInt(modinfo.getParameter("list_hndcpto"));
+      int iGroup        = Integer.parseInt(iwc.getParameter("list_grp" ));
+      String sStatus    = iwc.getParameter("list_status");
+      String sGender    = iwc.getParameter("list_gender");
+      int iAgefrom      = Integer.parseInt(iwc.getParameter("list_agefrom"));
+      int iAgeto        = Integer.parseInt(iwc.getParameter("list_ageto" ));
+      int iHndCpfrom    = Integer.parseInt(iwc.getParameter("list_hndcpfrom"));
+      int iHndCpto    = Integer.parseInt(iwc.getParameter("list_hndcpto"));
 
       Vector vSelect = new Vector();
       Vector vTables = new Vector();
@@ -217,8 +217,8 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
 
       String sql = makeSQL(vSelect,vTables,vJoin,vWhere,vOrder);
       Vector mbs = searchInDatabase(sql);
-      modinfo.getSession().setAttribute("mbsvector",mbs);
-      modinfo.getSession().setAttribute("icols",iCols);
+      iwc.getSession().setAttribute("mbsvector",mbs);
+      iwc.getSession().setAttribute("icols",iCols);
       add(new Link("Listi","/list"));
       add(Text.getBreak());
       add("Fjöldi "+mbs.size());
@@ -227,24 +227,24 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
     }
   }
 
-  private void doTable(ModuleInfo modinfo){
-    if(modinfo.getSession().getAttribute("mbsvector")!=null){
-      Vector mbs = (Vector) modinfo.getSession().getAttribute("mbsvector");
-      if(modinfo.getSession().getAttribute("lastorder")!=null)
-        this.sLastOrder = (String) modinfo.getSession().getAttribute("lastorder");
+  private void doTable(IWContext iwc){
+    if(iwc.getSession().getAttribute("mbsvector")!=null){
+      Vector mbs = (Vector) iwc.getSession().getAttribute("mbsvector");
+      if(iwc.getSession().getAttribute("lastorder")!=null)
+        this.sLastOrder = (String) iwc.getSession().getAttribute("lastorder");
       else
         this.sLastOrder = "";
-      if(modinfo.getSession().getAttribute("icols")!=null){
-      iCols = (int[]) modinfo.getSession().getAttribute("icols");
-        if(modinfo.getParameter("order")!= null){
-          String sOrd = modinfo.getParameter("order");
+      if(iwc.getSession().getAttribute("icols")!=null){
+      iCols = (int[]) iwc.getSession().getAttribute("icols");
+        if(iwc.getParameter("order")!= null){
+          String sOrd = iwc.getParameter("order");
           boolean reverse = false;
           if(this.sLastOrder.equalsIgnoreCase(sOrd))
             reverse = true;
-          int order = Integer.parseInt(modinfo.getParameter("order"));
+          int order = Integer.parseInt(iwc.getParameter("order"));
 
           OrderVector(mbs,order,reverse);
-          modinfo.getSession().setAttribute("lastorder",sOrd);
+          iwc.getSession().setAttribute("lastorder",sOrd);
           add(new Link("Listi","/list"));
           add(Text.getBreak());
           add("Fjöldi "+mbs.size());
@@ -512,16 +512,16 @@ public class MemberReport extends com.idega.jmodule.object.ModuleObjectContainer
     return drp;
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
     /* try{
-      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException e){
       isAdmin = false;
     }
     */
     isAdmin = true;
-    control(modinfo);
+    control(iwc);
   }
 }//class MemberReport
 

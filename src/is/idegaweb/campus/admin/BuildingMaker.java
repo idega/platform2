@@ -1,5 +1,5 @@
 /*
- * $Id: BuildingMaker.java,v 1.2 2001/06/12 14:58:43 aron Exp $
+ * $Id: BuildingMaker.java,v 1.3 2001/10/05 08:05:27 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,11 +9,11 @@
  */
 package is.idegaweb.campus.admin;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.login.business.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.block.building.data.*;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import is.idegaweb.campus.entity.*;
  * @version 1.0
  */
 
-public class BuildingMaker extends JModuleObject{
+public class BuildingMaker extends Block{
 
   private int iAct;
   private String sAct;
@@ -49,27 +49,27 @@ public class BuildingMaker extends JModuleObject{
   private Boolean isMulti = new Boolean(false);
   private ImageProperties ip = null;
 /*
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
 
     try{
-      if(modinfo.getSession().getAttribute("lodging_id")!=null)
-        add(modinfo.getSession().getAttribute("lodging_id"));
-      if(modinfo.getSession().getAttribute("build_multi")!=null)
-        isMulti = (Boolean)  modinfo.getSession().getAttribute("build_multi");
-      if(modinfo.getSession().getAttribute("bm_ip")!=null)
-        ip = (ImageProperties)modinfo.getSession().getAttribute("bm_ip");
+      if(iwc.getSession().getAttribute("lodging_id")!=null)
+        add(iwc.getSession().getAttribute("lodging_id"));
+      if(iwc.getSession().getAttribute("build_multi")!=null)
+        isMulti = (Boolean)  iwc.getSession().getAttribute("build_multi");
+      if(iwc.getSession().getAttribute("bm_ip")!=null)
+        ip = (ImageProperties)iwc.getSession().getAttribute("bm_ip");
       if(isMulti.booleanValue()){
-        doUpload(modinfo);
+        doUpload(iwc);
       }
       else{
-        doMain(modinfo,true,this.BUILDING );
+        doMain(iwc,true,this.BUILDING );
       }
     }
     catch(Exception S){	S.printStackTrace();	}
   }
 
-  private void doMain(ModuleInfo modinfo,boolean ifMulti,int choice) {
-    modinfo.getSession().setAttribute("build_multi",new Boolean(ifMulti));
+  private void doMain(IWContext iwc,boolean ifMulti,int choice) {
+    iwc.getSession().setAttribute("build_multi",new Boolean(ifMulti));
     this.makeView(ifMulti);
     this.addLinks(this.makeLinkTable());
     this.addBrowse(this.makeBrowse());
@@ -88,7 +88,7 @@ public class BuildingMaker extends JModuleObject{
 
     this.addEdit(this.makeTextArea(""));
     this.addSave(new SubmitButton("submit","Save"));
-    ModuleObject MO = null;
+    PresentationObject MO = null;
     switch (choice) {
       case BUILDING :  MO = this.makeBuildingFields("","","");      break;
       case FLOOR    :  MO = this.makeFloorFields("","");            break;
@@ -102,14 +102,14 @@ public class BuildingMaker extends JModuleObject{
   }
 
 
-  private void doUpload(ModuleInfo modinfo){
+  private void doUpload(IWContext iwc){
     String sep = System.getProperty("file.separator");
-    String realPath = modinfo.getServletContext().getRealPath(PicPath);
+    String realPath = iwc.getServletContext().getRealPath(PicPath);
     String webPath = PicPath;
     String realFile = "";
 
     try {
-    MultipartParser mp = new MultipartParser(modinfo.getRequest(), 10*1024*1024); // 10MB
+    MultipartParser mp = new MultipartParser(iwc.getRequest(), 10*1024*1024); // 10MB
     Part part;
     File dir = null;
     String value = null;
@@ -154,8 +154,8 @@ public class BuildingMaker extends JModuleObject{
         FilePart filePart = (FilePart) part;
         String fileName = filePart.getFileName();
         if (fileName != null) {
-          if(modinfo.getSession().getAttribute("bm_ip")!=null)
-            modinfo.getSession().removeAttribute("bm_ip");
+          if(iwc.getSession().getAttribute("bm_ip")!=null)
+            iwc.getSession().removeAttribute("bm_ip");
           //add("<br>");
           //add(name);
           //add("skrá er til:<br>");
@@ -165,18 +165,18 @@ public class BuildingMaker extends JModuleObject{
           File file = new File(realPath+s);
           long size = filePart.writeTo(file);
           ip = new ImageProperties(fileName,filePart.getContentType(),realPath+s,webPath,size);
-          modinfo.getSession().setAttribute("bm_ip",ip);
-          //modinfo.getSession().removeAttribute("bm_ip");
+          iwc.getSession().setAttribute("bm_ip",ip);
+          //iwc.getSession().removeAttribute("bm_ip");
         }
       }
     }
     add("plan:"+bPlan);
     boolean multi = true;
-    modinfo.getSession().setAttribute("build_multi",new Boolean(multi));
+    iwc.getSession().setAttribute("build_multi",new Boolean(multi));
 
     if(!sButton.equalsIgnoreCase("")){
-      if(modinfo.getSession().getAttribute("bm_ip")!=null)
-        modinfo.getSession().removeAttribute("bm_ip");
+      if(iwc.getSession().getAttribute("bm_ip")!=null)
+        iwc.getSession().removeAttribute("bm_ip");
       ip = null;
       int iChoice = 0;
       if(sButton.equalsIgnoreCase("House")) iChoice = this.BUILDING;
@@ -184,51 +184,51 @@ public class BuildingMaker extends JModuleObject{
       else if(sButton.equalsIgnoreCase("Type")) iChoice = this.ROOMTYPE;
       else if(sButton.equalsIgnoreCase("Room")) iChoice = this.ROOM;
       else if(sButton.equalsIgnoreCase("Subtype")) iChoice = this.ROOMSUBTYPE;
-      doMain(modinfo,true,iChoice);
+      doMain(iwc,true,iChoice);
       //add("choice "+iChoice);
       return;
     }
     else if(submitAction.equalsIgnoreCase("Save")){
       int iImageId = -1;
       int id = -1;
-      if(modinfo.getSession().getAttribute("lodging_id")!=null)
-       id = ((Integer)modinfo.getSession().getAttribute("lodging_id")).intValue();
+      if(iwc.getSession().getAttribute("lodging_id")!=null)
+       id = ((Integer)iwc.getSession().getAttribute("lodging_id")).intValue();
       add(""+id);
       if(ip!=null)
         iImageId = this.SaveImage(ip);
-      if(modinfo.getSession().getAttribute("bm_ip")!=null)
-        modinfo.getSession().removeAttribute("bm_ip");
+      if(iwc.getSession().getAttribute("bm_ip")!=null)
+        iwc.getSession().removeAttribute("bm_ip");
       ip = null;
       if(sLodging.equalsIgnoreCase("building") ){
         this.storeBuilding(sName,sAddress,sZip,sInfo,iImageId,id);
-        this.doMain(modinfo,true,this.BUILDING  );
+        this.doMain(iwc,true,this.BUILDING  );
       }
       else if(sLodging.equalsIgnoreCase("floor") ){
         this.storeFloor(sName,sHouse,sInfo,iImageId,id);
-        this.doMain(modinfo,true,this.FLOOR);
+        this.doMain(iwc,true,this.FLOOR);
       }
       else if(sLodging.equalsIgnoreCase("roomtype") ){
         this.storeRoomType(sName,sInfo,iImageId,id);
-        this.doMain(modinfo,true,this.ROOMTYPE );
+        this.doMain(iwc,true,this.ROOMTYPE );
       }
       else if(sLodging.equalsIgnoreCase("room") ){
         this.storeRoom(sName,sFloor,sSubType,sInfo,iImageId,id);
-        this.doMain(modinfo,true,this.ROOM);
+        this.doMain(iwc,true,this.ROOM);
       }
       else if(sLodging.equalsIgnoreCase("subtype") ){
         this.storeRoomSubType(sName, sInfo,id,Integer.parseInt(sType),iImageId,bPlan,
         sArea, sRoomCount,bKitchen,bBath,bStorage,bLoft,bStudy,bBalcony);
-        this.doMain(modinfo,true,this.ROOMSUBTYPE);
+        this.doMain(iwc,true,this.ROOMSUBTYPE);
       }
-      if(modinfo.getSession().getAttribute("lodging_id")!=null)
-        modinfo.getSession().removeAttribute("lodging_id");
+      if(iwc.getSession().getAttribute("lodging_id")!=null)
+        iwc.getSession().removeAttribute("lodging_id");
     }
    else if(!sGet.equalsIgnoreCase("")){
       this.makeView(multi);
       this.addLinks(this.makeLinkTable());
       this.addBrowse(this.makeBrowse());
 
-      ModuleObject fields = null;
+      PresentationObject fields = null;
       int id = Integer.parseInt(sId);
       int imageid = -1;
       String einfo ="";
@@ -278,7 +278,7 @@ public class BuildingMaker extends JModuleObject{
           com.idega.jmodule.image.data.ImageEntity im = new com.idega.jmodule.image.data.ImageEntity(imageid);
           ImageProperties ip = new ImageProperties(im.getImageName(),im.getContentType(),"","",0);
           ip.setId(imageid);
-          modinfo.getSession().setAttribute("bm_ip",ip);
+          iwc.getSession().setAttribute("bm_ip",ip);
         }
         catch (SQLException ex) {     }
       }
@@ -289,7 +289,7 @@ public class BuildingMaker extends JModuleObject{
       if(fields != null)
         this.addFields(fields);
 
-      modinfo.getSession().setAttribute("lodging_id",new Integer(id));
+      iwc.getSession().setAttribute("lodging_id",new Integer(id));
     }
     else{
       this.makeView(multi);
@@ -323,8 +323,8 @@ public class BuildingMaker extends JModuleObject{
 
   }
 
-  private void doQuit(ModuleInfo modinfo) throws SQLException{  }
-  private void doSave(ModuleInfo modinfo) throws SQLException{  }
+  private void doQuit(IWContext iwc) throws SQLException{  }
+  private void doSave(IWContext iwc) throws SQLException{  }
 
   private void storeBuilding(String name, String address, String zip, String info, int imageid,int id){
 
@@ -511,32 +511,32 @@ public class BuildingMaker extends JModuleObject{
     this.addForm(theForm);
   }
 
-  private void addFrame(ModuleObject T){
+  private void addFrame(PresentationObject T){
     theForm.add(T);
   }
 
-  private void addLinks(ModuleObject T){
+  private void addLinks(PresentationObject T){
     Frame.add(T,1,1);
   }
-  private void addInnerFrame(ModuleObject T){
+  private void addInnerFrame(PresentationObject T){
     Frame.add(T,1,2);
   }
-  private void addEdit(ModuleObject T){
+  private void addEdit(PresentationObject T){
     Frame.add(T,1,3);
   }
-  private void addForm(ModuleObject T){
+  private void addForm(PresentationObject T){
     MainFrame.add(T,2,2);
   }
-  private void addImage(ModuleObject T){
+  private void addImage(PresentationObject T){
     InnerFrame.add(T,2,1);
   }
-  private void addBrowse(ModuleObject T){
+  private void addBrowse(PresentationObject T){
     InnerFrame.add(T,2,1);
   }
-  private void addFields(ModuleObject T){
+  private void addFields(PresentationObject T){
     InnerFrame.add(T,1,1);
   }
-  private void addSave(ModuleObject T){
+  private void addSave(PresentationObject T){
     Frame.add(T,1,4);
   }
 
@@ -563,7 +563,7 @@ public class BuildingMaker extends JModuleObject{
       return LinkTable;
     }
 
-  private ModuleObject makeBrowse(){
+  private PresentationObject makeBrowse(){
     Table T = new Table();
     FileInput fi = new FileInput("file");
     SubmitButton sb = new SubmitButton("submit","OK");
@@ -572,14 +572,14 @@ public class BuildingMaker extends JModuleObject{
     return T;
   }
 
-  private ModuleObject makeTextArea(String sInit){
+  private PresentationObject makeTextArea(String sInit){
     TextArea TA = new TextArea("bm_info");
     TA.setContent(sInit);
     TA.setWidth(63);
     TA.setHeight(6);
     return TA;
   }
-  private ModuleObject makeBuildingFields(String sName,String sAddress,String sZip){
+  private PresentationObject makeBuildingFields(String sName,String sAddress,String sZip){
     Table T = new Table();
     TextInput name = new TextInput("bm_name",sName);
     TextInput address = new TextInput("bm_address",sAddress);
@@ -600,7 +600,7 @@ public class BuildingMaker extends JModuleObject{
     T.add(HI);
     return T;
   }
-  private ModuleObject makeFloorFields(String sName,String sHouse){
+  private PresentationObject makeFloorFields(String sName,String sHouse){
     Table T = new Table();
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu floors = this.drpFloors("dr_id","Hæð","",true);
@@ -616,7 +616,7 @@ public class BuildingMaker extends JModuleObject{
     T.add(this.drpLodgings(new Building(),"bm_house","Hús",sHouse),1,6);
     return T;
   }
-  private ModuleObject makeTypeFields(String sName){
+  private PresentationObject makeTypeFields(String sName){
     Table T = new Table();
     String s;
     TextInput name = new TextInput("bm_name",sName);
@@ -632,7 +632,7 @@ public class BuildingMaker extends JModuleObject{
     return T;
   }
 
- private ModuleObject makeSubTypeFields(String sName,String sType,String sArea,String sSubType,
+ private PresentationObject makeSubTypeFields(String sName,String sType,String sArea,String sSubType,
     String sRoomCount,boolean bPlan,boolean bKitch,boolean bBath,boolean bStor, boolean bBalc,
     boolean bStud, boolean bLoft){
     Table T = new Table();
@@ -684,7 +684,7 @@ public class BuildingMaker extends JModuleObject{
     T.add(plan,2,13);
     return T;
   }
- private ModuleObject makeRoomFields(String sName,String sFloor,String sSubType){
+ private PresentationObject makeRoomFields(String sName,String sFloor,String sSubType){
     Table T = new Table();
     TextInput name = new TextInput("bm_name",sName);
     DropdownMenu rooms = drpLodgings(new Room(),"dr_id","Rými","");
@@ -778,12 +778,12 @@ public class BuildingMaker extends JModuleObject{
     return drp;
   }
 
-  public void main(ModuleInfo modinfo)  {
+  public void main(IWContext iwc)  {
     try{
-    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
     /** @todo: fixa Admin*/
-    /*control(modinfo);
+    /*control(iwc);
   }*/
 }// class BuildingMaker

@@ -2,8 +2,8 @@ package com.idega.projects.golf.service.member;
 
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.service.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import com.idega.util.text.*;
 import java.util.*;
@@ -12,8 +12,8 @@ import java.sql.*;
 import java.io.*;
 import javax.servlet.*;
 
-import com.idega.jmodule.object.Editor;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.Editor;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
 
@@ -60,24 +60,24 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     this.bUpdate = true;
   }
 
-  protected  void control(ModuleInfo modinfo){
+  protected  void control(IWContext iwc){
     try{
       entitySearch();
-      init(modinfo);
+      init(iwc);
 
       this.makeView();
-      String cmd = modinfo.getParameter("cmd");
+      String cmd = iwc.getParameter("cmd");
       if("submit".equalsIgnoreCase(cmd))
-        insert(modinfo);
+        insert(iwc);
 
-        addMain(this.showInputForm(modinfo));
+        addMain(this.showInputForm(iwc));
           }
     catch(Exception ex){
       ex.printStackTrace();
     }
 
   }
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     return new Text("");
   }
 
@@ -104,7 +104,7 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     }
   }
 
-  private void init(ModuleInfo modinfo)throws Exception{
+  private void init(IWContext iwc)throws Exception{
 
     if(this.bUpdate){
 
@@ -142,18 +142,18 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     }
   }
 
-  public ModuleObject showInputForm(ModuleInfo modinfo)throws IOException, SQLException {
+  public PresentationObject showInputForm(IWContext iwc)throws IOException, SQLException {
 
     Form form = new Form();
     boolean isUpdating = false;
-    if(modinfo.getRequest().getParameter("cmd") != null && modinfo.getRequest().getParameter("cmd").equalsIgnoreCase("submit")) {
+    if(iwc.getRequest().getParameter("cmd") != null && iwc.getRequest().getParameter("cmd").equalsIgnoreCase("submit")) {
         isUpdating = true;
     }
-    imageId = (String) modinfo.getSession().getAttribute("image_id");
+    imageId = (String) iwc.getSession().getAttribute("image_id");
 
     if(imageId != null) {
         memberImg = new Image(Integer.parseInt( imageId));
-        modinfo.getSession().removeAttribute("image_id");
+        iwc.getSession().removeAttribute("image_id");
     }
     else {
       if( eMember != null && eMember.getImageId() != 1)
@@ -165,9 +165,9 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     memberImg.setWidth(110);
 
     if(eMember != null)
-        form.setAction(modinfo.getRequest().getRequestURI()+"?cmd=submit&image_id="+imageId+"&member_id="+eMember.getID());
+        form.setAction(iwc.getRequest().getRequestURI()+"?cmd=submit&image_id="+imageId+"&member_id="+eMember.getID());
     else
-        form.setAction(modinfo.getRequest().getRequestURI()+"?cmd=submit&image_id="+imageId);
+        form.setAction(iwc.getRequest().getRequestURI()+"?cmd=submit&image_id="+imageId);
 
 
     ImageInserter imageInsert = new ImageInserter("image_id");
@@ -208,7 +208,7 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     BorderTable groupTable = getGroupTable();
     BorderTable unionMemInfTable = getUnionMemberInfoTable();
     BorderTable memberInfoTable = getMemberInfoTable();
-    BorderTable familyTable = getFamilyTable(modinfo);
+    BorderTable familyTable = getFamilyTable(iwc);
 
     memberTable.setColor(LightColor);
     addressTable.setColor(LightColor);
@@ -292,7 +292,7 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     return form;
   }
 
-  private void insert(ModuleInfo modinfo)throws SQLException, IOException {
+  private void insert(IWContext iwc)throws SQLException, IOException {
 
     Union union = this.eUnion;
 
@@ -301,22 +301,22 @@ import com.idega.jmodule.image.presentation.ImageInserter;
         family.insert();
         unionMemberInfoInsert.getUnionMemberInfo().setFamily(family);
     }
-    imageId = modinfo.getRequest().getParameter("image_id");
+    imageId = iwc.getRequest().getParameter("image_id");
     if((imageId != null) && (! imageId.equals("null"))) {
         memberInsert.getMember().setImageId(Integer.parseInt(imageId));
     }
 
-    memberInsert.store(modinfo);
+    memberInsert.store(iwc);
     eMember = memberInsert.getMember();
 
     memberInfoInsert.setMemberId(eMember.getID());
-    memberInfoInsert.store(modinfo);
-    phoneInsert1.store(modinfo,eMember);
-    phoneInsert2.store(modinfo,eMember);
-    phoneInsert3.store(modinfo,eMember);
-    addressInsert.store(modinfo,eMember);
-    addressInsert2.store(modinfo,eMember);
-    cardInsert.store(modinfo);
+    memberInfoInsert.store(iwc);
+    phoneInsert1.store(iwc,eMember);
+    phoneInsert2.store(iwc,eMember);
+    phoneInsert3.store(iwc,eMember);
+    addressInsert.store(iwc,eMember);
+    addressInsert2.store(iwc,eMember);
+    cardInsert.store(iwc);
     unionMemberInfoInsert.setMemberId(eMember.getID());
     int cardID = cardInsert.getCard().getID();
     if(cardID == -1)
@@ -338,16 +338,16 @@ import com.idega.jmodule.image.presentation.ImageInserter;
       unionMemberInfoInsert.setMemberStatus("A");
     }
 
-    unionMemberInfoInsert.store(modinfo);
+    unionMemberInfoInsert.store(iwc);
 
-    if(modinfo.getSession().getAttribute("image_id") != null) {
-      String imId = (String) modinfo.getSession().getAttribute("image_id");
+    if(iwc.getSession().getAttribute("image_id") != null) {
+      String imId = (String) iwc.getSession().getAttribute("image_id");
       eMember.setimage_id(Integer.parseInt(imId));
-      modinfo.getSession().removeAttribute("image_id");
+      iwc.getSession().removeAttribute("image_id");
     }
 
-   //modinfo.getResponse().sendRedirect(modinfo.getRequest().getRequestURI()+"?&member_id="+eMember.getID());
-    //getPage().setToRedirect(modinfo.getRequest().getRequestURI()+"?&member_id="+member.getID());
+   //iwc.getResponse().sendRedirect(iwc.getRequest().getRequestURI()+"?&member_id="+eMember.getID());
+    //getPage().setToRedirect(iwc.getRequest().getRequestURI()+"?&member_id="+member.getID());
   }
 
   public BorderTable getAddressTable() {
@@ -457,7 +457,7 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     return hTable;
   }
 
-  public ModuleObject getGroupLinkTable() throws SQLException{
+  public PresentationObject getGroupLinkTable() throws SQLException{
     Union uni = new Union(iUnionId);
     GroupMemberInsertWindow group = new GroupMemberInsertWindow(eMember, uni, false);
     Link linkInsertGroup = new Link(new Image("/pics/formtakks/finna.gif"), group);
@@ -469,7 +469,7 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     return T;
   }
 
-  public ModuleObject getFamilyLinkTable() throws SQLException{
+  public PresentationObject getFamilyLinkTable() throws SQLException{
     Table T = new Table(2,1);
     FamilyInsertWindow findFam = new FamilyInsertWindow(iMemberId,iUnionId);
     Link linkFindFamily = new Link(new Image("/pics/formtakks/finna.gif"),findFam);
@@ -480,7 +480,7 @@ import com.idega.jmodule.image.presentation.ImageInserter;
     return T;
   }
 
-  public BorderTable getFamilyTable(ModuleInfo modinfo) throws SQLException{
+  public BorderTable getFamilyTable(IWContext iwc) throws SQLException{
 
     BorderTable familyTable = new BorderTable();
     UnionMemberInfo uniMem = null;
@@ -497,7 +497,7 @@ import com.idega.jmodule.image.presentation.ImageInserter;
 
           Table familyInnerTable =  new Table(1, vector.size());
           for (int i = 0; i < vector.size(); i++) {
-            familyInnerTable.add(new Link( ((Member)vector.elementAt(i)).getName(), modinfo.getRequestURI()+"?member_id="+( (Member)vector.elementAt(i) ).getID()),1,i+1);
+            familyInnerTable.add(new Link( ((Member)vector.elementAt(i)).getName(), iwc.getRequestURI()+"?member_id="+( (Member)vector.elementAt(i) ).getID()),1,i+1);
           }
 
           familyTable.add(familyInnerTable);

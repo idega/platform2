@@ -1,15 +1,15 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 import com.idega.projects.golf.HandicapOverview;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 import com.idega.jmodule.news.presentation.NewsReader;
 import java.lang.String;
 import java.sql.SQLException;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -24,7 +24,7 @@ import com.idega.projects.golf.entity.GolferPageData;
  * @version 1.0
  */
 
-public class HomeResultsView extends GolferJModuleObject implements LinkParameters{
+public class HomeResultsView extends GolferBlock implements LinkParameters{
 
   public HomeResultsView() {
   }
@@ -72,8 +72,8 @@ public class HomeResultsView extends GolferJModuleObject implements LinkParamete
     add(dummyTable1);
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-    super.main(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+    super.main(iwc);
     setHomeResultsView();
   }
 }

@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service;
 
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.util.*;
 import com.idega.util.text.Name;
 import com.idega.util.text.*;
@@ -23,7 +23,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class FamilyDisconnecterWindow extends com.idega.jmodule.object.interfaceobject.Window{
+public class FamilyDisconnecterWindow extends com.idega.presentation.ui.Window{
 
   private final String STORE_NAME = "STOREFAMILY";
   private UnionMemberInfo uniMemInfo = null;
@@ -38,18 +38,18 @@ public class FamilyDisconnecterWindow extends com.idega.jmodule.object.interface
       uniMemInfo  = new Member(memberId).getUnionMemberInfo(unionId);
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
       this.empty();
-      add(getInputTable(modinfo));
+      add(getInputTable(iwc));
   }
 
-  public Form getInputTable(ModuleInfo modinfo){
+  public Form getInputTable(IWContext iwc){
       Form form = new Form();
       form.setMethod("get");
       try {
 
 
-          String strStore = modinfo.getRequest().getParameter(STORE_NAME+".x");
+          String strStore = iwc.getRequest().getParameter(STORE_NAME+".x");
 
           HeaderTable hTable = new HeaderTable();
           hTable.setHeaderText(headerText);
@@ -69,7 +69,7 @@ public class FamilyDisconnecterWindow extends com.idega.jmodule.object.interface
           table.add(buttonTable, 1, 3);
           if(strStore != null) {
 
-              store(modinfo);
+              store(iwc);
               close();
               setParentToReload();
           }
@@ -83,7 +83,7 @@ public class FamilyDisconnecterWindow extends com.idega.jmodule.object.interface
       return form;
   }
 
-  private void store(ModuleInfo modinfo)throws SQLException, IOException {
+  private void store(IWContext iwc)throws SQLException, IOException {
 
       Family family = new Family();
       family.insert();

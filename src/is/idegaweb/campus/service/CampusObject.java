@@ -1,5 +1,5 @@
 /*
- * $Id: CampusObject.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: CampusObject.java,v 1.2 2001/10/05 08:05:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,18 +9,18 @@
  */
 package is.idegaweb.campus.service;
 
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.Block;
+import com.idega.presentation.PresentationObject;
 
 /**
  *
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public abstract class CampusObject extends JModuleObject {
+public abstract class CampusObject extends Block {
 
   public String iObjectName = "Campus";
-  public abstract ModuleObject getTabs();
+  public abstract PresentationObject getTabs();
 
   public String getObjectName(){
       return iObjectName;

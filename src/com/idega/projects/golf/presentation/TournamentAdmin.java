@@ -1,8 +1,8 @@
 package com.idega.projects.golf.presentation;
 
 import com.idega.jmodule.login.business.AccessControl;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.IWContext;
 import com.idega.projects.golf.moduleobject.GolfDialog;
 //    com.idega.projects.golf.entity.*,
 //    com.idega.projects.golf.moduleobject.*,
@@ -12,25 +12,25 @@ import com.idega.projects.golf.moduleobject.GolfDialog;
 *@author <a href="mailto:gimmi@idega.is">Grímur</a>
 *@version 1.0
 */
- public class TournamentAdmin extends com.idega.jmodule.object.JModuleAdminWindow {
+ public class TournamentAdmin extends com.idega.presentation.JModuleAdminWindow {
 
     public TournamentAdmin(){
       super();
       super.setMenubar(false);
     }
 
-    public void _main(ModuleInfo modinfo)throws Exception{
+    public void _main(IWContext iwc)throws Exception{
        this.empty();
-       super._main(modinfo);
+       super._main(iwc);
     }
 
     /*
-    public void main(ModuleInfo modinfo)throws Exception{
-        if (AccessControl.isAdmin(modinfo)){
+    public void main(IWContext iwc)throws Exception{
+        if (AccessControl.isAdmin(iwc)){
                 GolfDialog dialog = new GolfDialog("Mótastjóri");
                 add(dialog);
 
-            if (AccessControl.isClubAdmin(modinfo)){
+            if (AccessControl.isClubAdmin(iwc)){
 
                 Form form1 = new Form("createtournament.jsp");
                 SubmitButton Button1 = new SubmitButton(new Image("/pics/tournament/stofna.gif"),"b1");

@@ -1,9 +1,9 @@
 package com.idega.projects.golf.member;
 
 import com.idega.projects.golf.member.Service;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.service.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 public class AddressInput extends Input{
 
-  public static ModuleObject getAddressTable(GolfMemberProfile profile) {
+  public static PresentationObject getAddressTable(GolfMemberProfile profile) {
     Address eAddress1 = null,eAddress2 = null;
     boolean a1 = false,a2 = false;
     if(profile.bHasAddresses){
@@ -72,7 +72,7 @@ public class AddressInput extends Input{
     return table;
   }
 
-  public void AddressUpdate(ModuleInfo modinfo,GolfMemberProfile profile){
+  public void AddressUpdate(IWContext iwc,GolfMemberProfile profile){
     Address eAddress1 = null,eAddress2 = null;
     boolean a1 = false,a2 = false;
     if(profile.bHasAddresses){
@@ -86,14 +86,14 @@ public class AddressInput extends Input{
         a2 = true;
       }
     }
-    String street1 = modinfo.getParameter("street1").trim();
-    String hstreet1 = modinfo.getParameter("hstreet1").trim();
+    String street1 = iwc.getParameter("street1").trim();
+    String hstreet1 = iwc.getParameter("hstreet1").trim();
     boolean bstreet1 = street1.equalsIgnoreCase(hstreet1)?false:true;
-    String zip1 = modinfo.getParameter("zip1");
-    String hzip1 = modinfo.getParameter("hzip1");
+    String zip1 = iwc.getParameter("zip1");
+    String hzip1 = iwc.getParameter("hzip1");
     boolean bzip1 = zip1.equalsIgnoreCase(hzip1)?false:true;
-    String country1 = modinfo.getParameter("country1");
-    String hcountry1 = modinfo.getParameter("hcountry1");
+    String country1 = iwc.getParameter("country1");
+    String hcountry1 = iwc.getParameter("hcountry1");
     boolean bcountry1 = country1.equalsIgnoreCase(hcountry1)?false:true;
     if(bstreet1 || bzip1 || bcountry1){
       if(a1){
@@ -113,14 +113,14 @@ public class AddressInput extends Input{
       profile.bEditAddresses = true;
     }
 
-    String street2 = modinfo.getParameter("street2").trim();
-    String hstreet2 = modinfo.getParameter("hstreet2").trim();
+    String street2 = iwc.getParameter("street2").trim();
+    String hstreet2 = iwc.getParameter("hstreet2").trim();
     boolean bstreet2 = street1.equalsIgnoreCase(hstreet1)?false:true;
-    String zip2 = modinfo.getParameter("zip2");
-    String hzip2 = modinfo.getParameter("hzip2");
+    String zip2 = iwc.getParameter("zip2");
+    String hzip2 = iwc.getParameter("hzip2");
     boolean bzip2 = zip1.equalsIgnoreCase(hzip1)?false:true;
-    String country2 = modinfo.getParameter("country2");
-    String hcountry2 = modinfo.getParameter("hcountry2");
+    String country2 = iwc.getParameter("country2");
+    String hcountry2 = iwc.getParameter("hcountry2");
     boolean bcountry2 = country1.equalsIgnoreCase(hcountry1)?false:true;
     if(bstreet2 || bzip2 || bcountry2){
       if(a2){

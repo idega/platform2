@@ -2,18 +2,18 @@ package com.idega.jmodule.reports.presentation;
 
 import com.idega.jmodule.reports.data.*;
 import com.idega.jmodule.reports.business.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.Collections;
-import com.idega.jmodule.object.Editor;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Editor;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Script;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 
 
 public class ReportContentViewer extends Editor{
@@ -46,29 +46,29 @@ public class ReportContentViewer extends Editor{
   public void setDisplayNumber(int number){
     this.displayNumber = number;
   }
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     try{
 
-      if(modinfo.getParameter("start")!=null){
-        listStart = Integer.parseInt(modinfo.getParameter("start"));
+      if(iwc.getParameter("start")!=null){
+        listStart = Integer.parseInt(iwc.getParameter("start"));
       }
-      modinfo.setSessionAttribute("liststart",new Integer(listStart));
+      iwc.setSessionAttribute("liststart",new Integer(listStart));
 
-      if(modinfo.getParameter("report")!=null){
-        iReport = Integer.parseInt(modinfo.getParameter("report"));
+      if(iwc.getParameter("report")!=null){
+        iReport = Integer.parseInt(iwc.getParameter("report"));
         eReport = new Report(iReport);
-        ReportService.setSessionReport(modinfo,eReport);
-        doMain(modinfo);
+        ReportService.setSessionReport(iwc,eReport);
+        doMain(iwc);
       }
-      else if(modinfo.getParameter(sAction) != null){
-        sActPrm = modinfo.getParameter(sAction);
+      else if(iwc.getParameter(sAction) != null){
+        sActPrm = iwc.getParameter(sAction);
         try{
           iAction = Integer.parseInt(sActPrm);
           switch(iAction){
             case ACT1:    break;
-            case ACT2: doTable(modinfo);  break;
-            case ACT3: doChange(modinfo); break;
-            case ACT4: doUpdate(modinfo);        break;
+            case ACT2: doTable(iwc);  break;
+            case ACT3: doChange(iwc); break;
+            case ACT4: doUpdate(iwc);        break;
           }
         }
         catch(Exception e){
@@ -76,14 +76,14 @@ public class ReportContentViewer extends Editor{
         }
       }
       else
-        doMain(modinfo);
+        doMain(iwc);
     }
     catch(Exception S){
       S.printStackTrace();
     }
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -105,13 +105,13 @@ public class ReportContentViewer extends Editor{
   }
 
 
-  private void doMain(ModuleInfo modinfo){
-    if(modinfo.getParameter("report") != null){
+  private void doMain(IWContext iwc){
+    if(iwc.getParameter("report") != null){
       String sql = eReport.getSQL();
       String[] headers = eReport.getHeaders();
       Vector v = new ReportMaker().makeReport(sql);
-      modinfo.setSessionAttribute("content",v);
-      modinfo.setSessionAttribute("headers",headers);
+      iwc.setSessionAttribute("content",v);
+      iwc.setSessionAttribute("headers",headers);
       makeView();
       if(v != null){
         this.addHeader(this.doHeader(eReport));
@@ -127,44 +127,44 @@ public class ReportContentViewer extends Editor{
 
     }
     else{
-      doTable(modinfo);
+      doTable(iwc);
     }
   }
-  protected void doChange(ModuleInfo modinfo) throws SQLException{
+  protected void doChange(IWContext iwc) throws SQLException{
 
   }
 
-  protected void doUpdate(ModuleInfo modinfo) throws SQLException{
+  protected void doUpdate(IWContext iwc) throws SQLException{
   }
 
-  private void doTable(ModuleInfo modinfo){
-    if(modinfo.getSession().getAttribute("content")!=null){
-      Vector v= (Vector) modinfo.getSession().getAttribute("content");
-      eReport = ReportService.getSessionReport(modinfo);
-      listStart = ((Integer)modinfo.getSessionAttribute("liststart")).intValue();
+  private void doTable(IWContext iwc){
+    if(iwc.getSession().getAttribute("content")!=null){
+      Vector v= (Vector) iwc.getSession().getAttribute("content");
+      eReport = ReportService.getSessionReport(iwc);
+      listStart = ((Integer)iwc.getSessionAttribute("liststart")).intValue();
       String[] headers = null;
-      if(modinfo.getSessionAttribute("headers") != null){
-        headers = (String[]) modinfo.getSessionAttribute("headers");
+      if(iwc.getSessionAttribute("headers") != null){
+        headers = (String[]) iwc.getSessionAttribute("headers");
       }
 
-      if(modinfo.getSession().getAttribute(prefix+"lastorder")!=null)
-        this.sLastOrder = (String) modinfo.getSession().getAttribute(prefix+"lastorder");
+      if(iwc.getSession().getAttribute(prefix+"lastorder")!=null)
+        this.sLastOrder = (String) iwc.getSession().getAttribute(prefix+"lastorder");
       else
         this.sLastOrder = "";
 
       String sOrder = "0";
-      if(modinfo.getParameter("order")!= null){
-        sOrder = modinfo.getParameter("order");
+      if(iwc.getParameter("order")!= null){
+        sOrder = iwc.getParameter("order");
       }
       boolean reverse = false;
       if(this.sLastOrder.equalsIgnoreCase(sOrder))
         reverse = true;
       int order = Integer.parseInt(sOrder);
 
-      if(!(modinfo.getParameter("start")!= null))
+      if(!(iwc.getParameter("start")!= null))
         OrderVector(v,order,reverse);
 
-      modinfo.getSession().setAttribute(prefix+"lastorder",sOrder);
+      iwc.getSession().setAttribute(prefix+"lastorder",sOrder);
 
       this.makeView();
 
@@ -180,7 +180,7 @@ public class ReportContentViewer extends Editor{
       this.addToHeader(back);
     }
   }
-  private ModuleObject doHeader(Report R){
+  private PresentationObject doHeader(Report R){
     Table T2 = new Table(2,1);
     T2.setWidth("100%");
     T2.setColumnAlignment(1,"left");
@@ -204,7 +204,7 @@ public class ReportContentViewer extends Editor{
     T2.add(T3,2,1);
     return T2;
   }
-  private ModuleObject doFooter(int start,int total){
+  private PresentationObject doFooter(int start,int total){
     Table T = new Table(5,1);
     T.setColor(this.DarkColor);
     T.setWidth("100%");
@@ -264,7 +264,7 @@ public class ReportContentViewer extends Editor{
     return T;
   }
 
-  private ModuleObject doView(String[] headers,Vector content,int start){
+  private PresentationObject doView(String[] headers,Vector content,int start){
     int len = content.size();
     Table T;
     if(start != -1)

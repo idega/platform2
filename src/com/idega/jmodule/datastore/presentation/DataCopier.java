@@ -9,9 +9,9 @@ import java.util.*;
 import java.io.*;
 import com.idega.util.*;
 import com.idega.util.database.*;
-import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import	com.idega.presentation.*;
+import	com.idega.presentation.ui.*;
 import	com.idega.jmodule.news.data.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
@@ -20,25 +20,25 @@ import com.idega.util.text.*;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class DataCopier extends JModuleObject{
+public class DataCopier extends Block{
 
-	public void main(ModuleInfo modinfo) throws Exception{
-		String action = modinfo.getParameter("action");
+	public void main(IWContext iwc) throws Exception{
+		String action = iwc.getParameter("action");
 		if (action == null) {action = "start";}
 
 
 			if (action.equals("start")) {
-				start(modinfo);
+				start(iwc);
 			}
 			else if (action.equals("select")) {
-				if (modinfo.getParameter("submit").equals("Copy")){
-					copy(modinfo);
+				if (iwc.getParameter("submit").equals("Copy")){
+					copy(iwc);
 				}
 			}
 
 	}
 
-	public void start(ModuleInfo modinfo)throws Exception {
+	public void start(IWContext iwc)throws Exception {
 		Form form = new Form();
 		Table table = new Table(1,6);
 		form.add(table);
@@ -77,9 +77,9 @@ public class DataCopier extends JModuleObject{
 
 	}
 
-	public void copy(ModuleInfo modinfo)throws Exception {
+	public void copy(IWContext iwc)throws Exception {
 		TextSoap soap = new TextSoap();
-		Vector classes = soap.FindAllWithSeparator(modinfo.getParameter("entities"),",");
+		Vector classes = soap.FindAllWithSeparator(iwc.getParameter("entities"),",");
 		boolean check=true;
 		String className="";
 		for(Enumeration enum=classes.elements();enum.hasMoreElements();){
@@ -89,11 +89,11 @@ public class DataCopier extends JModuleObject{
 
 		if (check){
 			add("Copy successful");
-			String fromdatasource = modinfo.getParameter("fromdatasource");
-			String todatasource = modinfo.getParameter("todatasource");
+			String fromdatasource = iwc.getParameter("fromdatasource");
+			String todatasource = iwc.getParameter("todatasource");
 			GenericEntity entity;
 			DatastoreInterface dsi;
-			String maintain_ids=modinfo.getParameter("maintain_ids");
+			String maintain_ids=iwc.getParameter("maintain_ids");
 
 			for(Enumeration enum=classes.elements();enum.hasMoreElements();){
 				className=(String)enum.nextElement();

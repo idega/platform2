@@ -1,7 +1,7 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -21,12 +21,12 @@ public class LinkGenerator extends TravelWindow {
     super.setTitle("idegaWeb Travel");
   }
 
-  public void main(ModuleInfo modinfo) {
-    super.main(modinfo);
+  public void main(IWContext iwc) {
+    super.main(iwc);
 
-    String productId = modinfo.getParameter(parameterProductId);
+    String productId = iwc.getParameter(parameterProductId);
 
-    String link = modinfo.getServerName()+":"+modinfo.getServerPort()+"/servlet/ObjectInstanciator?idegaweb_instance_class="+Booking.class.getName()+"&"+Booking.parameterProductId+"="+productId;
+    String link = iwc.getServerName()+":"+iwc.getServerPort()+"/servlet/ObjectInstanciator?idegaweb_instance_class="+Booking.class.getName()+"&"+Booking.parameterProductId+"="+productId;
 
     Text tLink = (Text) text.clone();
       tLink.setBold();

@@ -2,12 +2,12 @@ package is.idegaweb.campus.allocation;
 
 import is.idegaweb.campus.presentation.Edit;
 import is.idegaweb.campus.allocation.business.ContractBusiness;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.building.business.BuildingCacher;
@@ -40,7 +40,7 @@ import com.idega.jmodule.server.mail.SendMail;
  * @version 1.0
  */
 
-public class ContractSigner extends ModuleObjectContainer{
+public class ContractSigner extends PresentationObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
@@ -63,19 +63,19 @@ public class ContractSigner extends ModuleObjectContainer{
   public ContractSigner() {
   }
 
-  protected void control(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  protected void control(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
     if(isAdmin){
-      if(modinfo.getApplicationAttribute(SysProps.getEntityTableName())!=null){
-      SysProps = (SystemProperties)modinfo.getApplicationAttribute(SysProps.getEntityTableName());
+      if(iwc.getApplicationAttribute(SysProps.getEntityTableName())!=null){
+      SysProps = (SystemProperties)iwc.getApplicationAttribute(SysProps.getEntityTableName());
       }
 
-      if(modinfo.getParameter("sign")!=null || modinfo.getParameter("save")!=null){
-        doSignContract(modinfo);
+      if(iwc.getParameter("sign")!=null || iwc.getParameter("save")!=null){
+        doSignContract(iwc);
       }
-      add(getSignatureTable(modinfo));
+      add(getSignatureTable(iwc));
     }
     else
       add(Edit.formatText(iwrb.getLocalizedString("access_denied","Access denied")));
@@ -87,14 +87,14 @@ public class ContractSigner extends ModuleObjectContainer{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public ModuleObject makeLinkTable(int menuNr){
+  public PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(6,1);
 
     return LinkTable;
   }
 
-  private ModuleObject getSignatureTable(ModuleInfo modinfo){
-    int iContractId = Integer.parseInt( modinfo.getParameter("signed_id"));
+  private PresentationObject getSignatureTable(IWContext iwc){
+    int iContractId = Integer.parseInt( iwc.getParameter("signed_id"));
     try {
       Contract eContract = new Contract(iContractId);
       User eUser = new User(eContract.getUserId().intValue());
@@ -140,7 +140,7 @@ public class ContractSigner extends ModuleObjectContainer{
       T.add(Edit.formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,row);
       row++;
       T.add(Edit.titleText(iwrb.getLocalizedString("contractdate","Contract date")+" :"),1,row);
-      T.add(Edit.formatText(from.getLocaleDate(modinfo)+" "+to.getLocaleDate(modinfo)),2,row);
+      T.add(Edit.formatText(from.getLocaleDate(iwc)+" "+to.getLocaleDate(iwc)),2,row);
       row++;
       T.add(Edit.titleText(iwrb.getLocalizedString("email","Email")+" : "),1,row);
       if(lEmails !=null){
@@ -219,16 +219,16 @@ public class ContractSigner extends ModuleObjectContainer{
    *  Signing contracts included creation of financial account,email and login
    *  returns id of login
    */
-  private void doSignContract(ModuleInfo modinfo){
+  private void doSignContract(IWContext iwc){
 
-    int id = Integer.parseInt(modinfo.getParameter("signed_id"));
-    String sEmail = modinfo.getParameter("new_email");
-    String sSendMail = modinfo.getParameter("send_mail");
-    String sFinAccount = modinfo.getParameter("new_fin_account");
-    String sPhoneAccount = modinfo.getParameter("new_phone_account");
-    String sCreateLogin = modinfo.getParameter("new_login");
-    String sUserGroup = modinfo.getParameter("user_group");
-    String sSigned =  modinfo.getParameter("sign");
+    int id = Integer.parseInt(iwc.getParameter("signed_id"));
+    String sEmail = iwc.getParameter("new_email");
+    String sSendMail = iwc.getParameter("send_mail");
+    String sFinAccount = iwc.getParameter("new_fin_account");
+    String sPhoneAccount = iwc.getParameter("new_phone_account");
+    String sCreateLogin = iwc.getParameter("new_login");
+    String sUserGroup = iwc.getParameter("user_group");
+    String sSigned =  iwc.getParameter("sign");
     int iGroupId = sUserGroup != null ? Integer.parseInt(sUserGroup):-1;
     boolean sendMail =  sSendMail != null ? true:false;
     sendMail = true;
@@ -246,12 +246,12 @@ public class ContractSigner extends ModuleObjectContainer{
 
 
 
-  private void doAddEmail( int iUserId ,ModuleInfo modinfo){
-    String sEmail = modinfo.getParameter("new_email");
+  private void doAddEmail( int iUserId ,IWContext iwc){
+    String sEmail = iwc.getParameter("new_email");
     UserBusiness.addNewUserEmail(iUserId,sEmail);
   }
 
-  private ModuleObject getApartmentTable(Apartment A){
+  private PresentationObject getApartmentTable(Apartment A){
     Table T = new Table();
     Floor F = BuildingCacher.getFloor(A.getFloorId());
     Building B = BuildingCacher.getBuilding(F.getBuildingId());
@@ -275,12 +275,12 @@ public class ContractSigner extends ModuleObjectContainer{
     return S.toString();
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 }

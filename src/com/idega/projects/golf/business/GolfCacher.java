@@ -1,6 +1,6 @@
 package com.idega.projects.golf.business;
 
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.projects.golf.entity.Union;
 import com.idega.data.EntityFinder;
 import com.idega.projects.golf.entity.Union;

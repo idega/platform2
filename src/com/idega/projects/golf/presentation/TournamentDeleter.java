@@ -1,10 +1,10 @@
 package com.idega.projects.golf.presentation;
 
 import com.idega.jmodule.login.business.AccessControl;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.moduleobject.GolfDialog;
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.projects.golf.business.TournamentController;
 
 /**
@@ -19,21 +19,21 @@ import com.idega.projects.golf.business.TournamentController;
     }
 
 
-public void main(ModuleInfo modinfo){
+public void main(IWContext iwc){
 	//initializeButtons();
         //System.out.println("TournamentDeleter.main()");
         try{
           String tournament_id;
-          String action = modinfo.getParameter("action");
+          String action = iwc.getParameter("action");
           Table table = new Table(2,3);
           add(table);
-          Member member = (Member) AccessControl.getMember(modinfo);
+          Member member = (Member) AccessControl.getMember(iwc);
           //if (member == null){
           //  member = new Member();
           //}
 
-          tournament_id=modinfo.getParameter("tournament_id");
-          String OK = modinfo.getParameter("OK");
+          tournament_id=iwc.getParameter("tournament_id");
+          String OK = iwc.getParameter("OK");
 
           if (tournament_id != null){
 
@@ -41,11 +41,11 @@ public void main(ModuleInfo modinfo){
 
             if(OK==null){
                 boolean permission=false;
-                if(AccessControl.isAdmin(modinfo)){
+                if(AccessControl.isAdmin(iwc)){
                   permission=true;
-                  if(AccessControl.isClubAdmin(modinfo)){
+                  if(AccessControl.isClubAdmin(iwc)){
 
-                    //member = (Member)com.idega.jmodule.login.business.AccessControl.getMember(modinfo);
+                    //member = (Member)com.idega.jmodule.login.business.AccessControl.getMember(iwc);
                     int union_id = member.getMainUnionID();
                     int tourn_union_id=tournament.getUnionId();
 
@@ -78,7 +78,7 @@ public void main(ModuleInfo modinfo){
                 tournament.delete();
                 table.add("Móti "+tournament.getName()+" eytt",1,1);
                 table.add(new CloseButton("Loka"),1,2);
-                TournamentController.removeTournamentTableApplicationAttribute(modinfo);
+                TournamentController.removeTournamentTableApplicationAttribute(iwc);
                 getWindow().setParentToReload();
 
             }

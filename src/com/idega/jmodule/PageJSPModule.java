@@ -5,7 +5,7 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.projects.golf.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
 
 public class PageJSPModule extends JSPModule{

@@ -40,10 +40,10 @@ public class SidemenuOption extends GenericEntity{
 	}
 
 
-        public void setModuleObjectClassName(String class_name) {
+        public void setPresentationObjectClassName(String class_name) {
           setColumn("module_object_class_name",class_name);
         }
-        public String getModuleObjectClassName() {
+        public String getPresentationObjectClassName() {
           return getStringColumnValue("module_object_class_name");
         }
         public void setEntityIdColumnName(String column_name) {

@@ -1,6 +1,6 @@
 package com.idega.jmodule.forum.presentation;
 
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.PresentationObject;
 import java.lang.*;
 import java.sql.*;
 

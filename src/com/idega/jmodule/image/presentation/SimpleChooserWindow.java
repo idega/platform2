@@ -2,9 +2,9 @@ package com.idega.jmodule.image.presentation;
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.jmodule.image.business.SimpleImage;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.image.data.ImageEntity;
 import com.idega.util.idegaTimestamp;
 
@@ -26,7 +26,7 @@ import com.idega.util.idegaTimestamp;
       setHeight(460);
     }
 
-    public void  main(ModuleInfo modinfo) throws Exception{
+    public void  main(IWContext iwc) throws Exception{
       SimpleChooser SC = new SimpleChooser();
       SC.setToIncludeLinks(false);
       add(SC);

@@ -4,10 +4,10 @@ package com.idega.projects.idega.templates;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 import com.idega.util.*;
 import java.util.Random;
@@ -223,11 +223,11 @@ public String language = "IS";
 		}
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		tafla.add(objectToAdd,3,1);
 	}
 
-        public void addLeft(ModuleObject objectToAdd){
+        public void addLeft(PresentationObject objectToAdd){
                     tafla.add(objectToAdd,1,1);
         }
 
@@ -235,7 +235,7 @@ public String language = "IS";
                     tafla.addBreak(1,1);
         }
 
-        public void addRight(ModuleObject objectToAdd){
+        public void addRight(PresentationObject objectToAdd){
                     tafla.add(objectToAdd,5,1);
         }
 
@@ -243,11 +243,11 @@ public String language = "IS";
                     tafla.addBreak(5,1);
         }
 
-        public void addFlash(ModuleObject objectToAdd){
+        public void addFlash(PresentationObject objectToAdd){
                     header.add(objectToAdd,1,1);
         }
 
-        public void addScroller(ModuleObject objectToAdd){
+        public void addScroller(PresentationObject objectToAdd){
                     outerTable.add(objectToAdd,2,1);
         }
 

@@ -6,7 +6,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
 public abstract class MainTemplate extends JSPModule implements JspPage{
 
@@ -44,7 +44,7 @@ public Table frame;
 
       }
 
-      public void add(ModuleObject objectToAdd){
+      public void add(PresentationObject objectToAdd){
           frame.add(objectToAdd,1,1);
       }
 

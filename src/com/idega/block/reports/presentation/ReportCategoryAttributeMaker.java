@@ -1,14 +1,14 @@
 package com.idega.block.reports.presentation;
 
 import com.idega.block.reports.data.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Script;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Script;
 
-public class ReportCategoryAttributeMaker extends JModuleObject{
+public class ReportCategoryAttributeMaker extends Block{
 
   private boolean isAdmin;
   private final int ACT0 = 0,ACT1=1,ACT2=2,ACT3=3,ACT4=4;
@@ -27,19 +27,19 @@ public class ReportCategoryAttributeMaker extends JModuleObject{
     sAttId = "0";
   }
 
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
 
     try{
-        doSome(modinfo);
+        doSome(iwc);
 
-        if(modinfo.getParameter(sAction) != null){
-          sActPrm = modinfo.getParameter(sAction);
+        if(iwc.getParameter(sAction) != null){
+          sActPrm = iwc.getParameter(sAction);
           try{
             iAction = Integer.parseInt(sActPrm);
             switch(iAction){
-              case ACT0: doSome(modinfo); break;
-              case ACT1: doAct1(modinfo); break;
-              case ACT2: doAct2(modinfo); break;
+              case ACT0: doSome(iwc); break;
+              case ACT1: doAct1(iwc); break;
+              case ACT2: doAct2(iwc); break;
               case ACT3: break;
               case ACT4: break;
             }
@@ -52,12 +52,12 @@ public class ReportCategoryAttributeMaker extends JModuleObject{
     catch(Exception S){
       S.printStackTrace();
     }
-    doMain(modinfo);
+    doMain(iwc);
   }
 
-  private void doSome(ModuleInfo modinfo){
+  private void doSome(IWContext iwc){
     int id = 0;
-    String sIndex = modinfo.getParameter(prefix+"drp");
+    String sIndex = iwc.getParameter(prefix+"drp");
     if(sIndex != null){
       id = Integer.parseInt(sIndex);
       if(id != 0){
@@ -71,14 +71,14 @@ public class ReportCategoryAttributeMaker extends JModuleObject{
         }
       }
       else{
-        String sId = modinfo.getParameter(prefix+"drp2");
+        String sId = iwc.getParameter(prefix+"drp2");
       }
     }
   }
 
-  private void doMain(ModuleInfo modinfo){
-    String sIndex = modinfo.getParameter(prefix+"drp");
-    String sId = modinfo.getParameter(prefix+"drp2");
+  private void doMain(IWContext iwc){
+    String sIndex = iwc.getParameter(prefix+"drp");
+    String sId = iwc.getParameter(prefix+"drp2");
     Table T = new Table();
     Form myForm = new Form();
     if(sIndex == null)
@@ -109,14 +109,14 @@ public class ReportCategoryAttributeMaker extends JModuleObject{
     add(T);
   }
 
-  private void doAct1(ModuleInfo modinfo){
+  private void doAct1(IWContext iwc){
     int id = -1;
-    String sIndex = modinfo.getParameter(prefix+"drp");
+    String sIndex = iwc.getParameter(prefix+"drp");
     if(sIndex != null)
        id = Integer.parseInt(sIndex);
-    sId = modinfo.getParameter(prefix+"drp2");
-    sName = modinfo.getParameter(prefix+"name");
-    sAttId = modinfo.getParameter(prefix+"attid");
+    sId = iwc.getParameter(prefix+"drp2");
+    sName = iwc.getParameter(prefix+"name");
+    sAttId = iwc.getParameter(prefix+"attid");
     add(" cat: "+ sId );
     add(" att: "+ sName );
     add(" attid: "+ sAttId );
@@ -129,9 +129,9 @@ public class ReportCategoryAttributeMaker extends JModuleObject{
 
   }
 
-  private void doAct2(ModuleInfo modinfo){
+  private void doAct2(IWContext iwc){
     int id = 0;
-    String sIndex = modinfo.getParameter(prefix+"drp");
+    String sIndex = iwc.getParameter(prefix+"drp");
     if(sIndex != null)
        id = Integer.parseInt(sIndex);
     if(id != 0)
@@ -222,16 +222,16 @@ public class ReportCategoryAttributeMaker extends JModuleObject{
     return drp;
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
     /* try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException e){
       isAdmin = false;
     }
     */
     isAdmin = true;
-    control(modinfo);
+    control(iwc);
   }
 
 }

@@ -7,8 +7,8 @@ import com.idega.projects.golf.*;
 import com.idega.jmodule.login.presentation.Login;
 import com.idega.jmodule.*;
 import com.idega.jmodule.banner.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.poll.moduleobject.*;
 import com.idega.jmodule.boxoffice.presentation.*;
 import java.sql.*;
@@ -217,7 +217,7 @@ public class ISITemplate extends MainSideJSPModule{
         }
 
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		//centerTable.add(objectToAdd,1,2);
 		try{
 			Center().add(objectToAdd,1,1);
@@ -231,7 +231,7 @@ public class ISITemplate extends MainSideJSPModule{
 	}
 
 	public Member getMember(){
-		return (Member)getModuleInfo().getSession().getAttribute("member_login");
+		return (Member)getIWContext().getSession().getAttribute("member_login");
 	}
 
 
@@ -239,7 +239,7 @@ public class ISITemplate extends MainSideJSPModule{
         public boolean isAdmin() {
 
           try{
-            return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
+            return com.idega.jmodule.login.business.AccessControl.isAdmin(getIWContext());
           }catch (SQLException E) {
             /*
             out.print("SQLException: " + E.getMessage());

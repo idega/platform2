@@ -6,12 +6,12 @@ import is.idegaweb.campus.entity.CampusPhone;
 import is.idegaweb.campus.entity.PhoneFileInfo;
 import com.idega.data.EntityFinder;
 import com.idega.business.IWEventListener;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.finance.data.AccountPhoneEntry;
@@ -31,7 +31,7 @@ import java.util.Iterator;
  * @version 1.1
  */
 
-public class PhoneFiles extends ModuleObjectContainer {
+public class PhoneFiles extends PresentationObjectContainer {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String sAction = "cam.ph.file.action";
@@ -43,9 +43,9 @@ public class PhoneFiles extends ModuleObjectContainer {
 
   private String sessConPrm = "sess_con_status";
 
-  protected void control(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  protected void control(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -54,13 +54,13 @@ public class PhoneFiles extends ModuleObjectContainer {
       T.add(Edit.headerText(iwrb.getLocalizedString("phone_files","Phone Files"),3),1,1);
       T.add(makeLinkTable(  1),1,2);
       int iAction = 0;
-      if(modinfo.getParameter(sAction )!= null){
-        iAction = Integer.parseInt(modinfo.getParameter(sAction ));
+      if(iwc.getParameter(sAction )!= null){
+        iAction = Integer.parseInt(iwc.getParameter(sAction ));
       }
       switch (iAction) {
-        case ACT1 : T.add(getReadTable(modinfo),1,3);     break;
-        case ACT2 : T.add(getProcessTable(modinfo),1,3);  break;
-        default: T.add(getFileTable(modinfo),1,3);        break;
+        case ACT1 : T.add(getReadTable(iwc),1,3);     break;
+        case ACT2 : T.add(getProcessTable(iwc),1,3);  break;
+        default: T.add(getFileTable(iwc),1,3);        break;
       }
     }
     else
@@ -69,7 +69,7 @@ public class PhoneFiles extends ModuleObjectContainer {
     add(T);
   }
 
-   protected ModuleObject makeLinkTable(int menuNr){
+   protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -85,10 +85,10 @@ public class PhoneFiles extends ModuleObjectContainer {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private ModuleObject getReadTable(ModuleInfo modinfo){
+  private PresentationObject getReadTable(IWContext iwc){
     Form form = new Form();
     Table T = new Table();
-    String fileName = modinfo.getParameter("filename");
+    String fileName = iwc.getParameter("filename");
     T.add(Edit.formatText(iwrb.getLocalizedString("filename","Filename")),1,1);
     T.add(Edit.formatText(iwrb.getLocalizedString("filesize","Filesize")),2,1);
     if(fileName != null){
@@ -111,17 +111,17 @@ public class PhoneFiles extends ModuleObjectContainer {
     return form;
   }
 
-  private ModuleObject getProcessTable(ModuleInfo modinfo){
+  private PresentationObject getProcessTable(IWContext iwc){
 
-    String fileName = modinfo.getParameter("filename");
+    String fileName = iwc.getParameter("filename");
     if(fileName != null){
-      String filePath = modinfo.getApplication().getRealPath(dir+fileName);
+      String filePath = iwc.getApplication().getRealPath(dir+fileName);
       new PhoneFileHandler().processFile(filePath);
     }
-    return getFileTable(modinfo);
+    return getFileTable(iwc);
   }
 
-  private ModuleObject getFileTable(ModuleInfo modinfo){
+  private PresentationObject getFileTable(IWContext iwc){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -133,7 +133,7 @@ public class PhoneFiles extends ModuleObjectContainer {
     T.add(Edit.formatText(iwrb.getLocalizedString("amount_read","Amount read")),6,1);
     Map M = mapOfReadFilesByFileName() ;
     try{
-      File F = new File(modinfo.getApplication().getRealPath("/phone/upload"));
+      File F = new File(iwc.getApplication().getRealPath("/phone/upload"));
       File[] Fs = F.listFiles();
       if(Fs.length > 0){
         String name;
@@ -203,13 +203,13 @@ public class PhoneFiles extends ModuleObjectContainer {
   }
 
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 
 }

@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.ModuleObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.PresentationObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.projects.golf.*;
@@ -31,7 +31,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class Tariffer extends ModuleObjectContainer {
+public class Tariffer extends PresentationObjectContainer {
 
   private String catal_action = "";
   private String union_id="1";
@@ -85,15 +85,15 @@ public class Tariffer extends ModuleObjectContainer {
     MainFrame.setCellpadding(0);
   }
 
-  private void addMain(ModuleObject T){
+  private void addMain(PresentationObject T){
     MainFrame.add(T,2,3);
   }
 
-  private void addRight(ModuleObject T){
+  private void addRight(PresentationObject T){
     MainFrame.add(T,4,3);
   }
 
-  private void addLinks(ModuleObject T){
+  private void addLinks(PresentationObject T){
     MainFrame.add(T,2,2);
   }
 
@@ -340,14 +340,14 @@ public class Tariffer extends ModuleObjectContainer {
   public void setInputLines(int inputlines){
     this.inputLines = inputlines;
   }
-  private void control(ModuleInfo modinfo) throws IOException{
+  private void control(IWContext iwc) throws IOException{
 
     try{
 
-      union_id = (String)  modinfo.getSession().getAttribute("golf_union_id");
+      union_id = (String)  iwc.getSession().getAttribute("golf_union_id");
 
-      if(modinfo.getSession().getAttribute("member_login")!= null){
-        Cashier = (Member) modinfo.getSession().getAttribute("member_login");
+      if(iwc.getSession().getAttribute("member_login")!= null){
+        Cashier = (Member) iwc.getSession().getAttribute("member_login");
         cashier_id = Cashier.getID();
       }
       try{
@@ -365,33 +365,33 @@ public class Tariffer extends ModuleObjectContainer {
 
       boolean hasSomeValues = false;
       fileSeparator = System.getProperty("file.separator");
-      filepath = modinfo.getServletContext().getRealPath(fileSeparator+"files");
+      filepath = iwc.getServletContext().getRealPath(fileSeparator+"files");
 
-      if(modinfo.getRequest().getParameter("catal_action") == null){
-        doMain(modinfo);
+      if(iwc.getRequest().getParameter("catal_action") == null){
+        doMain(iwc);
       }
-      if(modinfo.getRequest().getParameter("catal_action") != null){
-        catal_action = modinfo.getRequest().getParameter("catal_action");
+      if(iwc.getRequest().getParameter("catal_action") != null){
+        catal_action = iwc.getRequest().getParameter("catal_action");
 
-        if(catal_action.equals("main")){ doMain(modinfo); }
-        if(catal_action.equals("change")){ doChange(modinfo); }
-        if(catal_action.equals("update")){ doUpdate(modinfo); }
-        if(catal_action.equals("view")){ doView(modinfo); }
-        if(catal_action.equals("save")){ doSave(modinfo); }
-        if(catal_action.equals("list")){ doList(modinfo); }
-        if(catal_action.equals("file")){ doFile(modinfo); }
-        if(catal_action.equals("price")){ doNotPrice(modinfo); }
-        if(catal_action.equals("skrifa")){ doSkrifa(modinfo); }
-        if(catal_action.equals("gjalda")){ doPrice(modinfo); }
-        if(catal_action.equals("updateextra")){ doUpdateExtra(modinfo); }
-        if(catal_action.equals("seek")){ doSeek(modinfo); }
+        if(catal_action.equals("main")){ doMain(iwc); }
+        if(catal_action.equals("change")){ doChange(iwc); }
+        if(catal_action.equals("update")){ doUpdate(iwc); }
+        if(catal_action.equals("view")){ doView(iwc); }
+        if(catal_action.equals("save")){ doSave(iwc); }
+        if(catal_action.equals("list")){ doList(iwc); }
+        if(catal_action.equals("file")){ doFile(iwc); }
+        if(catal_action.equals("price")){ doNotPrice(iwc); }
+        if(catal_action.equals("skrifa")){ doSkrifa(iwc); }
+        if(catal_action.equals("gjalda")){ doPrice(iwc); }
+        if(catal_action.equals("updateextra")){ doUpdateExtra(iwc); }
+        if(catal_action.equals("seek")){ doSeek(iwc); }
 
       }
     }
     catch(SQLException S){S.printStackTrace();}
 }
 
-    private void doMain(ModuleInfo modinfo) throws SQLException {
+    private void doMain(IWContext iwc) throws SQLException {
       PriceCatalogue pricecatalog = new PriceCatalogue();
       List CatalogList = this.getCatalogList(union_id);
       java.text.NumberFormat nf = java.text.NumberFormat.getInstance();
@@ -424,9 +424,9 @@ public class Tariffer extends ModuleObjectContainer {
             catalTable.add(nf.format(PC.getPrice())+" Kr",3,i+2);
           }
           Values = this.fetchValues(union_id);
-          this.setCatalogIds(modinfo,CatalogIds);
-          setValues( modinfo , Values );
-          setValuesCount( modinfo , count );
+          this.setCatalogIds(iwc,CatalogIds);
+          setValues( iwc , Values );
+          setValuesCount( iwc , count );
         }
       }
       MainTable.add(catalTable,2,3);
@@ -435,12 +435,12 @@ public class Tariffer extends ModuleObjectContainer {
 
 
 
-    private void doChange(ModuleInfo modinfo) throws SQLException{
+    private void doChange(IWContext iwc) throws SQLException{
       Form myForm = new Form();
       myForm.maintainAllParameters();
-      Values = getValues( modinfo );
+      Values = getValues( iwc );
 
-      int count = this.getValuesCount(modinfo) ;
+      int count = this.getValuesCount(iwc) ;
 
       Table inputTable =  new Table(7,inputLines+1);
       inputTable.setWidth(tablewidth);
@@ -560,8 +560,8 @@ public class Tariffer extends ModuleObjectContainer {
       add(MainTable);
     }
 
-    private void doUpdate(ModuleInfo modinfo) throws SQLException{
-      int number = Integer.parseInt(modinfo.getRequest().getParameter("numofcatal"));
+    private void doUpdate(IWContext iwc) throws SQLException{
+      int number = Integer.parseInt(iwc.getRequest().getParameter("numofcatal"));
       int cols = 8;
       boolean hasNull = false;
       if (Values == null);
@@ -575,12 +575,12 @@ public class Tariffer extends ModuleObjectContainer {
 
       for (int i = 1; i < number+1 ;i++){
         count = i;
-        text = modinfo.getRequest().getParameter("catal_text"+i );
-        price = modinfo.getRequest().getParameter("catal_price"+i);
-        agefrom = modinfo.getRequest().getParameter("catal_agefrom"+i);
-        ageto = modinfo.getRequest().getParameter("catal_ageto"+i);
-        gender = modinfo.getRequest().getParameter("catal_gender"+i);
-        extra = modinfo.getRequest().getParameter("catal_extra"+i);
+        text = iwc.getRequest().getParameter("catal_text"+i );
+        price = iwc.getRequest().getParameter("catal_price"+i);
+        agefrom = iwc.getRequest().getParameter("catal_agefrom"+i);
+        ageto = iwc.getRequest().getParameter("catal_ageto"+i);
+        gender = iwc.getRequest().getParameter("catal_gender"+i);
+        extra = iwc.getRequest().getParameter("catal_extra"+i);
 
         if(text.equalsIgnoreCase("")){
            text = "null";
@@ -612,9 +612,9 @@ public class Tariffer extends ModuleObjectContainer {
       }
 
       Values = parsedValues;
-      this.setValues( modinfo , Values );
-      this.setValuesCount(modinfo,numOfCat) ;
-      this.removeMemberVectorArray(modinfo);
+      this.setValues( iwc , Values );
+      this.setValuesCount(iwc,numOfCat) ;
+      this.removeMemberVectorArray(iwc);
       Table MainTable = makeMainTable(3);
       MainTable.add(makeSubZeroTable(),2,3);
       String sHelp1 = iwrb.getLocalizedString("help1","Choose Look to get a calculation");
@@ -624,8 +624,8 @@ public class Tariffer extends ModuleObjectContainer {
       add(MainTable);
     }
 
-    private void doView(ModuleInfo modinfo) {
-      this.getEveryThing(modinfo);
+    private void doView(IWContext iwc) {
+      this.getEveryThing(iwc);
       Link findLink = new Link(iwrb.getImage("search.gif"));
       findLink.addParameter("catal_action","seek");
       Table MainTable = makeMainTable(3);
@@ -634,21 +634,21 @@ public class Tariffer extends ModuleObjectContainer {
       add(MainTable);
     }
 
-    private void doSeek(ModuleInfo modinfo){
+    private void doSeek(IWContext iwc){
       try{
-      seekThem(modinfo);
+      seekThem(iwc);
       }
       catch(SQLException sql){sql.printStackTrace();}
-      doView(modinfo);
+      doView(iwc);
     }
 
-    private void doSave(ModuleInfo modinfo) throws SQLException{
-      this.getEveryThing(modinfo);
+    private void doSave(IWContext iwc) throws SQLException{
+      this.getEveryThing(iwc);
       Text messageText;
       if(Values != null){
       	makeAllUnUsable();
       	saveCatalogs();
-        removeMemberTotals(modinfo);
+        removeMemberTotals(iwc);
         String sMsg1 = iwrb.getLocalizedString("msg1","Rate list was saved !");
       	messageText = new Text("<H3>"+sMsg1+"</H3> ");
       }
@@ -662,11 +662,11 @@ public class Tariffer extends ModuleObjectContainer {
       add(MainTable);
     }
 
-    private void doList(ModuleInfo modinfo) throws SQLException{
-      this.getEveryThing(modinfo);
+    private void doList(IWContext iwc) throws SQLException{
+      this.getEveryThing(iwc);
 
-      int number = Integer.parseInt(modinfo.getRequest().getParameter("catal_list_number"));
-      String listextra = modinfo.getRequest().getParameter("listextra");
+      int number = Integer.parseInt(iwc.getRequest().getParameter("catal_list_number"));
+      String listextra = iwc.getRequest().getParameter("listextra");
       boolean ExtraCatalogs = false;
       boolean PcCheck = false;
       java.text.NumberFormat nf = java.text.NumberFormat.getInstance();
@@ -780,18 +780,18 @@ public class Tariffer extends ModuleObjectContainer {
       add(MainTable);
     }
 
-    private void doUpdateExtra(ModuleInfo modinfo) throws SQLException{
-      this.getEveryThing(modinfo);
-      int number = Integer.parseInt(modinfo.getRequest().getParameter("numofextra"));
+    private void doUpdateExtra(IWContext iwc) throws SQLException{
+      this.getEveryThing(iwc);
+      int number = Integer.parseInt(iwc.getRequest().getParameter("numofextra"));
 
       int extraCatalNumber;
       String membernumber,strExtraCatalNumber;
       UnionMemberInfo umi;
       Member M;
       for (int i = 0; i < number ;i++){
-        strExtraCatalNumber = modinfo.getRequest().getParameter("catal_extrapcdrop"+i);
+        strExtraCatalNumber = iwc.getRequest().getParameter("catal_extrapcdrop"+i);
         extraCatalNumber = Integer.parseInt(strExtraCatalNumber);
-        membernumber = modinfo.getRequest().getParameter("membernumber"+i);
+        membernumber = iwc.getRequest().getParameter("membernumber"+i);
         if(extraCatalNumber != 0){
           M = new Member(Integer.parseInt(membernumber));
           umi = M.getUnionMemberInfo(union_id,membernumber);
@@ -800,13 +800,13 @@ public class Tariffer extends ModuleObjectContainer {
           umi.update();
         }
       }
-      this.removeMemberVectorArray(modinfo);
+      this.removeMemberVectorArray(iwc);
       Table MainTable = makeMainTable(3);
       MainTable.add(makeSubZeroTable(),2,3);
       add(MainTable);
     }
 
-    private void doFile(ModuleInfo modinfo) throws SQLException{
+    private void doFile(IWContext iwc) throws SQLException{
       PaymentRound[] rounds = (PaymentRound[]) (new PaymentRound()).findAllByColumnDescendingOrdered("union_id", union_id,"round_date");
 
       Form myForm = new Form();
@@ -919,11 +919,11 @@ public class Tariffer extends ModuleObjectContainer {
       add(myForm);
     }
 
-    private void doSkrifa(ModuleInfo modinfo) throws SQLException,IOException{
-      String bank = modinfo.getRequest().getParameter("catal_bank");
-      String bnkofc = modinfo.getRequest().getParameter("catal_bank_office");
-      String kreditcc = modinfo.getRequest().getParameter("catal_kreditcc");
-      String roundstring = modinfo.getRequest().getParameter("catal_round");
+    private void doSkrifa(IWContext iwc) throws SQLException,IOException{
+      String bank = iwc.getRequest().getParameter("catal_bank");
+      String bnkofc = iwc.getRequest().getParameter("catal_bank_office");
+      String kreditcc = iwc.getRequest().getParameter("catal_kreditcc");
+      String roundstring = iwc.getRequest().getParameter("catal_round");
       String Message = "";
       double prosent = 0;
       int amount = 0;
@@ -933,19 +933,19 @@ public class Tariffer extends ModuleObjectContainer {
           if(!bank.equalsIgnoreCase("nobnk")){
             if(bnkofc != null || !bnkofc.equals("")){
             int bankOffice = Integer.parseInt(bnkofc);
-            int finalpayday = Integer.parseInt(modinfo.getRequest().getParameter("catal_finalpayday"));
-            String B1input = modinfo.getRequest().getParameter("catal_girotext1");
-            String B2input = modinfo.getRequest().getParameter("catal_girotext2");
-            String B3input = modinfo.getRequest().getParameter("catal_girotext3");
-            String B4input = modinfo.getRequest().getParameter("catal_girotext4");
+            int finalpayday = Integer.parseInt(iwc.getRequest().getParameter("catal_finalpayday"));
+            String B1input = iwc.getRequest().getParameter("catal_girotext1");
+            String B2input = iwc.getRequest().getParameter("catal_girotext2");
+            String B3input = iwc.getRequest().getParameter("catal_girotext3");
+            String B4input = iwc.getRequest().getParameter("catal_girotext4");
             GiroFile GF = new GiroFile(roundid,bankOffice,finalpayday,B1input,B2input,B3input,B4input);
-            GF.makeFile(modinfo);
+            GF.makeFile(iwc);
             }
           }
           if(!kreditcc.equalsIgnoreCase("nocr")){
-            String kreditPr = modinfo.getRequest().getParameter("catal_kredit_pr");
-            String kreditKr = modinfo.getRequest().getParameter("catal_kredit_kr");
-            String contractnr = modinfo.getRequest().getParameter("catal_kredit_contract");
+            String kreditPr = iwc.getRequest().getParameter("catal_kredit_pr");
+            String kreditKr = iwc.getRequest().getParameter("catal_kredit_kr");
+            String contractnr = iwc.getRequest().getParameter("catal_kredit_contract");
 
             if(kreditPr.equalsIgnoreCase("")){
               add("prósenta tómt");
@@ -962,11 +962,11 @@ public class Tariffer extends ModuleObjectContainer {
             }
             if(kreditcc.equalsIgnoreCase("euro")){
               EuroFile EF = new EuroFile(roundid,contractnr,prosent,amount);
-              EF.makeFile(modinfo);
+              EF.makeFile(iwc);
             }
             if(kreditcc.equalsIgnoreCase("visa")){
               VisaFile VF = new VisaFile(roundid,contractnr,prosent,amount);
-              VF.makeFile(modinfo);
+              VF.makeFile(iwc);
 
             }
           }
@@ -985,12 +985,12 @@ public class Tariffer extends ModuleObjectContainer {
       finally{
         add(makeMainTable(6));
         add(Message);
-        //add(modinfo.getRequest().getRequestURI());
+        //add(iwc.getRequest().getRequestURI());
       }
     }
 
-    private void doNotPrice(ModuleInfo modinfo)throws SQLException{
-      this.getEveryThing(modinfo);
+    private void doNotPrice(IWContext iwc)throws SQLException{
+      this.getEveryThing(iwc);
       Form myForm = new Form();
       myForm.maintainAllParameters();
 
@@ -1094,12 +1094,12 @@ public class Tariffer extends ModuleObjectContainer {
       add(myForm);
     }
 
-    private void doPrice(ModuleInfo modinfo) throws SQLException{
-      this.getEveryThing(modinfo);
+    private void doPrice(IWContext iwc) throws SQLException{
+      this.getEveryThing(iwc);
 
-      String ifGiro = modinfo.getRequest().getParameter("catal_giro_choice");
-      String ifEuro = modinfo.getRequest().getParameter("catal_euro_choice");
-      String ifVisa = modinfo.getRequest().getParameter("catal_visa_choice");
+      String ifGiro = iwc.getRequest().getParameter("catal_giro_choice");
+      String ifEuro = iwc.getRequest().getParameter("catal_euro_choice");
+      String ifVisa = iwc.getRequest().getParameter("catal_visa_choice");
       int defGiroInstlm=0,defGiroPayday=0,defGiroFirstMonth=0;
       int defEuroInstlm=0,defEuroPayday=0,defEuroFirstMonth=0;
       int defVisaInstlm=0,defVisaPayday=0,defVisaFirstMonth=0;
@@ -1107,55 +1107,55 @@ public class Tariffer extends ModuleObjectContainer {
       double  dGiroInterest = 0.0,dEuroInterest = 0.0, dVisaInterest = 0.0;
 
       if(mbsVectorArray == null){
-        seekThem(modinfo);
+        seekThem(iwc);
       }
 
       if(mbsVectorArray != null){
       System.err.print("\nÁlagning hefst "+ new idegaTimestamp().toSQLTimeString());
 
         if(ifGiro != null &&ifGiro.equalsIgnoreCase("true")){
-          defGiroInstlm =  Integer.parseInt( modinfo.getRequest().getParameter("catal_giro_installments"));
-          defGiroPayday =  Integer.parseInt( modinfo.getRequest().getParameter("catal_giro_payday"));
-          defGiroFirstMonth =  Integer.parseInt( modinfo.getRequest().getParameter("catal_giro_firstmonth"));
-          String sGiroInterest =  modinfo.getRequest().getParameter("catal_giro_bankinterest");
-          String sGiroCost =  modinfo.getRequest().getParameter("catal_giro_bankcost");
+          defGiroInstlm =  Integer.parseInt( iwc.getRequest().getParameter("catal_giro_installments"));
+          defGiroPayday =  Integer.parseInt( iwc.getRequest().getParameter("catal_giro_payday"));
+          defGiroFirstMonth =  Integer.parseInt( iwc.getRequest().getParameter("catal_giro_firstmonth"));
+          String sGiroInterest =  iwc.getRequest().getParameter("catal_giro_bankinterest");
+          String sGiroCost =  iwc.getRequest().getParameter("catal_giro_bankcost");
           if( !sGiroInterest.equalsIgnoreCase("")){
             dGiroInterest = Double.parseDouble(sGiroInterest);
           }
           else if( !sGiroCost.equalsIgnoreCase("")){
             iGiroCost = Integer.parseInt(sGiroCost);
           }
-          letThemPay(modinfo , 1 , defGiroInstlm , defGiroFirstMonth , defGiroFirstMonth ,dGiroInterest,iGiroCost);
+          letThemPay(iwc , 1 , defGiroInstlm , defGiroFirstMonth , defGiroFirstMonth ,dGiroInterest,iGiroCost);
 
         }
         if(ifEuro != null && ifEuro.equalsIgnoreCase("true")){
-          defEuroInstlm =  Integer.parseInt( modinfo.getRequest().getParameter("catal_euro_installments"));
-          defEuroPayday =  Integer.parseInt( modinfo.getRequest().getParameter("catal_euro_payday"));
-          defEuroFirstMonth =  Integer.parseInt( modinfo.getRequest().getParameter("catal_euro_firstmonth"));
-          String sEuroInterest =  modinfo.getRequest().getParameter("catal_euro_bankinterest");
-          String sEuroCost =  modinfo.getRequest().getParameter("catal_euro_bankcost");
+          defEuroInstlm =  Integer.parseInt( iwc.getRequest().getParameter("catal_euro_installments"));
+          defEuroPayday =  Integer.parseInt( iwc.getRequest().getParameter("catal_euro_payday"));
+          defEuroFirstMonth =  Integer.parseInt( iwc.getRequest().getParameter("catal_euro_firstmonth"));
+          String sEuroInterest =  iwc.getRequest().getParameter("catal_euro_bankinterest");
+          String sEuroCost =  iwc.getRequest().getParameter("catal_euro_bankcost");
           if( !sEuroInterest.equalsIgnoreCase("")){
             dEuroInterest = Double.parseDouble(sEuroInterest);
           }
           else if( !sEuroCost.equalsIgnoreCase("")){
             iEuroCost = Integer.parseInt(sEuroCost);
           }
-          letThemPay(modinfo , 2 , defEuroInstlm , defEuroFirstMonth , defEuroFirstMonth , dEuroInterest,iEuroCost);
+          letThemPay(iwc , 2 , defEuroInstlm , defEuroFirstMonth , defEuroFirstMonth , dEuroInterest,iEuroCost);
 
         }
         if(ifVisa != null && ifVisa.equalsIgnoreCase("true")){
-          defVisaInstlm =  Integer.parseInt( modinfo.getRequest().getParameter("catal_visa_installments"));
-          defVisaPayday =  Integer.parseInt( modinfo.getRequest().getParameter("catal_visa_payday"));
-          defVisaFirstMonth =  Integer.parseInt( modinfo.getRequest().getParameter("catal_visa_firstmonth"));
-          String sVisaInterest =  modinfo.getRequest().getParameter("catal_visa_bankinterest");
-          String sVisaCost =  modinfo.getRequest().getParameter("catal_visa_bankcost");
+          defVisaInstlm =  Integer.parseInt( iwc.getRequest().getParameter("catal_visa_installments"));
+          defVisaPayday =  Integer.parseInt( iwc.getRequest().getParameter("catal_visa_payday"));
+          defVisaFirstMonth =  Integer.parseInt( iwc.getRequest().getParameter("catal_visa_firstmonth"));
+          String sVisaInterest =  iwc.getRequest().getParameter("catal_visa_bankinterest");
+          String sVisaCost =  iwc.getRequest().getParameter("catal_visa_bankcost");
           if( !sVisaInterest.equalsIgnoreCase("")){
             dVisaInterest = Double.parseDouble(sVisaInterest);
           }
           else if( !sVisaCost.equalsIgnoreCase("")){
             iVisaCost = Integer.parseInt(sVisaCost);
           }
-          letThemPay(modinfo , 3 , defVisaInstlm , defVisaFirstMonth , defVisaFirstMonth,dVisaInterest, iVisaCost );
+          letThemPay(iwc , 3 , defVisaInstlm , defVisaFirstMonth , defVisaFirstMonth,dVisaInterest, iVisaCost );
 
         }
       System.err.print("\nÁlagningu lýkur "+ new idegaTimestamp().toSQLTimeString());
@@ -1169,153 +1169,153 @@ public class Tariffer extends ModuleObjectContainer {
       add(makeMainTable(5));
     }
 
-     private void setValues(ModuleInfo modinfo , String[][] values){
-       modinfo.getSession().setAttribute("catalog_values", values);
+     private void setValues(IWContext iwc , String[][] values){
+       iwc.getSession().setAttribute("catalog_values", values);
     }
-    private String[][] getValues(ModuleInfo modinfo){
-       if(modinfo.getSession().getAttribute("catalog_values")!= null){
-        String S[][] = (String[][]) modinfo.getSession().getAttribute("catalog_values");
+    private String[][] getValues(IWContext iwc){
+       if(iwc.getSession().getAttribute("catalog_values")!= null){
+        String S[][] = (String[][]) iwc.getSession().getAttribute("catalog_values");
         return S;
         }
         else return null;
     }
-    private void removeValues(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_values")!= null){
-        modinfo.getSession().removeAttribute("catalog_values");
+    private void removeValues(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_values")!= null){
+        iwc.getSession().removeAttribute("catalog_values");
       }
     }
 
-    private void setCatalogIds(ModuleInfo modinfo , int[] catalogids){
-       modinfo.getSession().setAttribute("catalog_catalogids", catalogids);
+    private void setCatalogIds(IWContext iwc , int[] catalogids){
+       iwc.getSession().setAttribute("catalog_catalogids", catalogids);
     }
-    private int[] getCatalogIds(ModuleInfo modinfo){
-       if(modinfo.getSession().getAttribute("catalog_catalogids")!= null){
-        int S[] = (int[]) modinfo.getSession().getAttribute("catalog_catalogids");
+    private int[] getCatalogIds(IWContext iwc){
+       if(iwc.getSession().getAttribute("catalog_catalogids")!= null){
+        int S[] = (int[]) iwc.getSession().getAttribute("catalog_catalogids");
         return S;
         }
         else return null;
     }
-    private void removeCatalogIds(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_catalogids")!= null){
-        modinfo.getSession().removeAttribute("catalog_catalogids");
+    private void removeCatalogIds(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_catalogids")!= null){
+        iwc.getSession().removeAttribute("catalog_catalogids");
       }
     }
-    private void setValuesCount(ModuleInfo modinfo , int count){
-      modinfo.getSession().setAttribute("catalog_count", new Integer(count));
+    private void setValuesCount(IWContext iwc , int count){
+      iwc.getSession().setAttribute("catalog_count", new Integer(count));
     }
-    private int getValuesCount(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_count")!= null){
-      Integer I = (Integer)modinfo.getSession().getAttribute("catalog_count");
+    private int getValuesCount(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_count")!= null){
+      Integer I = (Integer)iwc.getSession().getAttribute("catalog_count");
       return I.intValue();
       }
       else return 0;
     }
-    private void removeValuesCount(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_count")!= null){
-        modinfo.getSession().removeAttribute("catalog_count");
+    private void removeValuesCount(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_count")!= null){
+        iwc.getSession().removeAttribute("catalog_count");
       }
     }
 
-    private void setMemberArray(ModuleInfo modinfo,Member[][] memberarray){
-     modinfo.getSession().setAttribute("catalog_victims", memberarray);
+    private void setMemberArray(IWContext iwc,Member[][] memberarray){
+     iwc.getSession().setAttribute("catalog_victims", memberarray);
     }
-    private Member[][] getMemberArray(ModuleInfo modinfo){
-     if(modinfo.getSession().getAttribute("catalog_victims")!= null){
-       return (Member[][])modinfo.getSession().getAttribute("catalog_victims" );
+    private Member[][] getMemberArray(IWContext iwc){
+     if(iwc.getSession().getAttribute("catalog_victims")!= null){
+       return (Member[][])iwc.getSession().getAttribute("catalog_victims" );
       }
       else return null;
     }
-    private void setMemberVectorArray(ModuleInfo modinfo,Vector[] V){
-     modinfo.getSession().setAttribute("catalog_victs", V);
+    private void setMemberVectorArray(IWContext iwc,Vector[] V){
+     iwc.getSession().setAttribute("catalog_victs", V);
     }
-    private Vector[] getMemberVectorArray(ModuleInfo modinfo){
-     if(modinfo.getSession().getAttribute("catalog_victs")!= null){
-       return (Vector[]) modinfo.getSession().getAttribute("catalog_victs" );
-      }
-      else return null;
-    }
-
-    private void removeMemberVectorArray(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_victs")!= null){
-        modinfo.getSession().removeAttribute("catalog_victs");
-      }
-    }
-    private void setMbsInfoVectorArray(ModuleInfo modinfo,Vector[] V){
-     modinfo.getSession().setAttribute("catalog_totalinfo", V);
-    }
-    private Vector[] getMbsInfoVectorArray(ModuleInfo modinfo){
-     if(modinfo.getSession().getAttribute("catalog_totalinfo")!= null){
-       return (Vector[]) modinfo.getSession().getAttribute("catalog_totalinfo" );
+    private Vector[] getMemberVectorArray(IWContext iwc){
+     if(iwc.getSession().getAttribute("catalog_victs")!= null){
+       return (Vector[]) iwc.getSession().getAttribute("catalog_victs" );
       }
       else return null;
     }
 
-    private void removeMbsInfoVectorArray(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_totalinfo")!= null){
-        modinfo.getSession().removeAttribute("catalog_totalinfo");
+    private void removeMemberVectorArray(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_victs")!= null){
+        iwc.getSession().removeAttribute("catalog_victs");
       }
     }
-
-    private void setTotalMembersVector(ModuleInfo modinfo,Vector[] V){
-     modinfo.getSession().setAttribute("catalog_totalmembers", V);
+    private void setMbsInfoVectorArray(IWContext iwc,Vector[] V){
+     iwc.getSession().setAttribute("catalog_totalinfo", V);
     }
-    private Vector[] getTotalMembersVector(ModuleInfo modinfo){
-     if(modinfo.getSession().getAttribute("catalog_totalmembers")!= null){
-       return (Vector[]) modinfo.getSession().getAttribute("catalog_totalmembers" );
+    private Vector[] getMbsInfoVectorArray(IWContext iwc){
+     if(iwc.getSession().getAttribute("catalog_totalinfo")!= null){
+       return (Vector[]) iwc.getSession().getAttribute("catalog_totalinfo" );
       }
       else return null;
     }
 
-    private void removeTotalMembersVector(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_totalmembers")!= null){
-        modinfo.getSession().removeAttribute("catalog_totalmembers");
+    private void removeMbsInfoVectorArray(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_totalinfo")!= null){
+        iwc.getSession().removeAttribute("catalog_totalinfo");
       }
     }
 
-    private void setMemberTotals(ModuleInfo modinfo, Integer[][] totals){
-      modinfo.getSession().setAttribute("catalog_totals", totals);
+    private void setTotalMembersVector(IWContext iwc,Vector[] V){
+     iwc.getSession().setAttribute("catalog_totalmembers", V);
     }
-    private Integer[][] getMemberTotals(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_totals")!= null){
-        Integer[][] T = (Integer[][])modinfo.getSession().getAttribute("catalog_totals" );
+    private Vector[] getTotalMembersVector(IWContext iwc){
+     if(iwc.getSession().getAttribute("catalog_totalmembers")!= null){
+       return (Vector[]) iwc.getSession().getAttribute("catalog_totalmembers" );
+      }
+      else return null;
+    }
+
+    private void removeTotalMembersVector(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_totalmembers")!= null){
+        iwc.getSession().removeAttribute("catalog_totalmembers");
+      }
+    }
+
+    private void setMemberTotals(IWContext iwc, Integer[][] totals){
+      iwc.getSession().setAttribute("catalog_totals", totals);
+    }
+    private Integer[][] getMemberTotals(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_totals")!= null){
+        Integer[][] T = (Integer[][])iwc.getSession().getAttribute("catalog_totals" );
         return T;
       }
       else return null;
     }
-    private void removeMemberTotals(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_totals")!= null){
-        modinfo.getSession().removeAttribute("catalog_totals");
+    private void removeMemberTotals(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_totals")!= null){
+        iwc.getSession().removeAttribute("catalog_totals");
       }
     }
-    private void setMemberCount(ModuleInfo modinfo ,int membercount){
-      modinfo.getSession().setAttribute("catalog_member_count", new Integer(membercount));
+    private void setMemberCount(IWContext iwc ,int membercount){
+      iwc.getSession().setAttribute("catalog_member_count", new Integer(membercount));
     }
-    private int getMemberCount(ModuleInfo modinfo ){
-      if(modinfo.getSession().getAttribute("catalog_member_count")!= null){
-        Integer mc = (Integer)modinfo.getSession().getAttribute("catalog_member_count");
+    private int getMemberCount(IWContext iwc ){
+      if(iwc.getSession().getAttribute("catalog_member_count")!= null){
+        Integer mc = (Integer)iwc.getSession().getAttribute("catalog_member_count");
         return mc.intValue();
       }
       else return 0;
     }
-     private void removeMemberCount(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_member_count")!= null){
-        modinfo.getSession().removeAttribute("catalog_member_count");
+     private void removeMemberCount(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_member_count")!= null){
+        iwc.getSession().removeAttribute("catalog_member_count");
       }
     }
 
-    private void setAccountsHash(ModuleInfo modinfo ,Hashtable H){
-      modinfo.getSession().setAttribute("catalog_accounthsh", H);
+    private void setAccountsHash(IWContext iwc ,Hashtable H){
+      iwc.getSession().setAttribute("catalog_accounthsh", H);
     }
-    private Hashtable getAccountsHash(ModuleInfo modinfo ){
-      if(modinfo.getSession().getAttribute("catalog_accounthsh")!= null){
-        Hashtable H = (Hashtable)modinfo.getSession().getAttribute("catalog_accounthsh");
+    private Hashtable getAccountsHash(IWContext iwc ){
+      if(iwc.getSession().getAttribute("catalog_accounthsh")!= null){
+        Hashtable H = (Hashtable)iwc.getSession().getAttribute("catalog_accounthsh");
         return H;
       }
       else return null;
     }
-     private void removeAccountsHash(ModuleInfo modinfo){
-      if(modinfo.getSession().getAttribute("catalog_accounthsh")!= null){
-        modinfo.getSession().removeAttribute("catalog_accounthsh");
+     private void removeAccountsHash(IWContext iwc){
+      if(iwc.getSession().getAttribute("catalog_accounthsh")!= null){
+        iwc.getSession().removeAttribute("catalog_accounthsh");
       }
     }
 
@@ -1334,14 +1334,14 @@ public class Tariffer extends ModuleObjectContainer {
     }
 
     // Fetch the objects saved in the Session
-    private void getEveryThing(ModuleInfo modinfo){
-      Values = getValues(modinfo);
-      mbsVectorArray = this.getMemberVectorArray( modinfo );
-      mbsInfoVectorArray = this.getMbsInfoVectorArray(modinfo);
-      totals = this.getMemberTotals( modinfo );
-      TotalMembersVector = this.getTotalMembersVector(modinfo);
-      memberCount = this.getMemberCount( modinfo );
-      CatalogIds = this.getCatalogIds( modinfo );
+    private void getEveryThing(IWContext iwc){
+      Values = getValues(iwc);
+      mbsVectorArray = this.getMemberVectorArray( iwc );
+      mbsInfoVectorArray = this.getMbsInfoVectorArray(iwc);
+      totals = this.getMemberTotals( iwc );
+      TotalMembersVector = this.getTotalMembersVector(iwc);
+      memberCount = this.getMemberCount( iwc );
+      CatalogIds = this.getCatalogIds( iwc );
       AccHsh = this.getAccountsHash();
     }
 
@@ -1576,7 +1576,7 @@ public class Tariffer extends ModuleObjectContainer {
       return iReturnArray;
   }
 
-  private void seekThem(ModuleInfo modinfo) throws SQLException{
+  private void seekThem(IWContext iwc) throws SQLException{
     this.Values = this.fetchValues(union_id);
     if(this.Values != null){
     idegaTimestamp dateToday = new idegaTimestamp(idegaTimestamp.getTimestampRightNow());
@@ -1699,11 +1699,11 @@ public class Tariffer extends ModuleObjectContainer {
     System.err.println("Samtölur búnar" + idegaTimestamp.RightNow().toString());
     if(TotalMembersVector == null) System.err.println("Vector er tomur");
     else System.err.println(TotalMembersVector[0].size());
-    this.setMemberTotals( modinfo , totals );
-    this.setMemberVectorArray( modinfo , mbsVectorArray );
-    this.setMbsInfoVectorArray( modinfo , mbsInfoVectorArray );
-    this.setMemberCount( modinfo , memberCount ) ;
-    this.setTotalMembersVector( modinfo , TotalMembersVector );
+    this.setMemberTotals( iwc , totals );
+    this.setMemberVectorArray( iwc , mbsVectorArray );
+    this.setMbsInfoVectorArray( iwc , mbsInfoVectorArray );
+    this.setMemberCount( iwc , memberCount ) ;
+    this.setTotalMembersVector( iwc , TotalMembersVector );
     }
     else{
       String sMsg7 = iwrb.getLocalizedString("msg7","Search failed");
@@ -1711,15 +1711,15 @@ public class Tariffer extends ModuleObjectContainer {
     }
   }// seekThem
 
-  private void setEverything( ModuleInfo modinfo ){
-    this.setMemberTotals( modinfo , totals );
-    this.setMemberVectorArray( modinfo , mbsVectorArray );
-    this.setMbsInfoVectorArray( modinfo , mbsInfoVectorArray );
-    this.setMemberCount( modinfo , memberCount) ;
-    this.setTotalMembersVector( modinfo, TotalMembersVector );
+  private void setEverything( IWContext iwc ){
+    this.setMemberTotals( iwc , totals );
+    this.setMemberVectorArray( iwc , mbsVectorArray );
+    this.setMbsInfoVectorArray( iwc , mbsInfoVectorArray );
+    this.setMemberCount( iwc , memberCount) ;
+    this.setTotalMembersVector( iwc, TotalMembersVector );
   }
 
-  private void letThemPay(ModuleInfo modinfo, int payTypeId, int defaultInstallmentNr, int defaultFirstMonth, int defaultPayday,double fBankInterest,int iBankCost) throws SQLException{
+  private void letThemPay(IWContext iwc, int payTypeId, int defaultInstallmentNr, int defaultFirstMonth, int defaultPayday,double fBankInterest,int iBankCost) throws SQLException{
     //System.err.print("\nÁlagning hefst "+ new idegaTimestamp().toSQLTimeString());
     int giroID=1;
     int euroID=2;
@@ -1760,7 +1760,7 @@ public class Tariffer extends ModuleObjectContainer {
     boolean extra = false;
     int totalPrice = 0;
 
-    CatalogIds = this.getCatalogIds(modinfo);
+    CatalogIds = this.getCatalogIds(iwc);
 
     UnionMemberInfo UMI;
     int[] mbgr;
@@ -1907,13 +1907,13 @@ public class Tariffer extends ModuleObjectContainer {
     A.update();
   }
 
-  public void main(ModuleInfo modinfo) throws IOException {
-    //isAdmin = com.idega.jmodule.object.ModuleObject.isAdministrator(this.modinfo);
+  public void main(IWContext iwc) throws IOException {
+    //isAdmin = com.idega.presentation.PresentationObject.isAdministrator(this.iwc);
     /** @todo: fixa Admin*/
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     isAdmin = true;
-    control(modinfo);
+    control(iwc);
   }
 
    public String getBundleIdentifier(){

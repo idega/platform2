@@ -3,15 +3,15 @@ package com.idega.jmodule.boxoffice.presentation;
 import com.idega.jmodule.*;
 import com.idega.data.*;
 import java.io.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import java.sql.*;
 import java.util.*;
 import com.idega.util.*;
 
-public class BoxToolbar extends JModuleObject{
+public class BoxToolbar extends Block{
 
 private String language = "EN";
 private String[] Lang = {"Málaflokkar","Undirflokkar","Skjalaflokkar","Nýtt skjal"};
@@ -67,8 +67,8 @@ public Table getToolbarTable(){
 }
 
 
-private void setSpokenLanguage(ModuleInfo modinfo){
-  language = modinfo.getSpokenLanguage();
+private void setSpokenLanguage(IWContext iwc){
+  language = iwc.getSpokenLanguage();
   if (language.equalsIgnoreCase("IS")){
     Lang = IS;
   }else{
@@ -76,18 +76,18 @@ private void setSpokenLanguage(ModuleInfo modinfo){
   }
 }
 
-public void main(ModuleInfo modinfo){
-  setSpokenLanguage(modinfo);
+public void main(IWContext iwc){
+  setSpokenLanguage(iwc);
   if(this.isEmpty())
     add(getToolbarTable());
 }
 
 /*
-public void print(ModuleInfo modinfo)throws IOException{
-	initVariables(modinfo);
-	if( doPrint(modinfo) ){
+public void print(IWContext iwc)throws IOException{
+	initVariables(iwc);
+	if( doPrint(iwc) ){
 		if (getLanguage().equals("HTML")){
-				getToolbarTable().print(modinfo);
+				getToolbarTable().print(iwc);
 		}
 	}
 }*/

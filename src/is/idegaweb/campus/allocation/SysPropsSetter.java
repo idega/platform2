@@ -1,20 +1,20 @@
 package is.idegaweb.campus.allocation;
 
 import is.idegaweb.campus.presentation.Edit;
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.PresentationObjectContainer;
 import java.util.List;
 import java.sql.SQLException;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.DateInput;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
 import is.idegaweb.campus.entity.SystemProperties;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.EntityFinder;
@@ -31,7 +31,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class SysPropsSetter extends ModuleObjectContainer{
+public class SysPropsSetter extends PresentationObjectContainer{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   protected IWResourceBundle iwrb;
@@ -47,19 +47,19 @@ public class SysPropsSetter extends ModuleObjectContainer{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     SystemProperties SysProps = null;
-    if(modinfo.getParameter("save")!=null){
-      SysProps = saveProperties(modinfo);
-      modinfo.setApplicationAttribute(propParameter,SysProps);
+    if(iwc.getParameter("save")!=null){
+      SysProps = saveProperties(iwc);
+      iwc.setApplicationAttribute(propParameter,SysProps);
     }
-    else if(modinfo.getApplicationAttribute(propParameter)!=null){
-     SysProps = (SystemProperties) modinfo.getApplicationAttribute(propParameter);
+    else if(iwc.getApplicationAttribute(propParameter)!=null){
+     SysProps = (SystemProperties) iwc.getApplicationAttribute(propParameter);
     }
     else{
       SysProps = seekProperties();
       if(SysProps != null)
-        modinfo.setApplicationAttribute(propParameter,SysProps);
+        iwc.setApplicationAttribute(propParameter,SysProps);
       else{
         add(iwrb.getLocalizedString("no_sys_props","No System properties in database"));
       }
@@ -70,25 +70,25 @@ public class SysPropsSetter extends ModuleObjectContainer{
 
   }
 
-  public static boolean isSysPropsInMemoryElseLoad(ModuleInfo modinfo){
-    if(modinfo.getApplicationAttribute(propParameter)!=null)
+  public static boolean isSysPropsInMemoryElseLoad(IWContext iwc){
+    if(iwc.getApplicationAttribute(propParameter)!=null)
       return true;
     else
-      return loadSystemProperties(modinfo);
+      return loadSystemProperties(iwc);
 
   }
 
-  public static SystemProperties getSystemProperties(ModuleInfo modinfo){
-    if(isSysPropsInMemoryElseLoad( modinfo))
-      return (SystemProperties) modinfo.getApplicationAttribute(propParameter);
+  public static SystemProperties getSystemProperties(IWContext iwc){
+    if(isSysPropsInMemoryElseLoad( iwc))
+      return (SystemProperties) iwc.getApplicationAttribute(propParameter);
     else
       return null;
   }
 
-  public static boolean loadSystemProperties(ModuleInfo modinfo){
+  public static boolean loadSystemProperties(IWContext iwc){
     SystemProperties Props = seekProperties();
       if(Props != null){
-        modinfo.setApplicationAttribute(propParameter,Props);
+        iwc.setApplicationAttribute(propParameter,Props);
         return true;
       }
       else
@@ -113,7 +113,7 @@ public class SysPropsSetter extends ModuleObjectContainer{
     return new Link(new Image("/pics/list.gif"),"/allocation/index.jsp");
   }
 
-  private ModuleObject getProperties(SystemProperties SysProps){
+  private PresentationObject getProperties(SystemProperties SysProps){
     Table T = new Table();
     Form myForm = new Form();
     DateInput DI = new DateInput("contract_date",true);
@@ -169,12 +169,12 @@ public class SysPropsSetter extends ModuleObjectContainer{
     return myForm;
   }
 
-  public SystemProperties saveProperties(ModuleInfo modinfo){
-    String contractDate = modinfo.getParameter("contract_date");
-    String contractYears = modinfo.getParameter("contract_years");
-    String adminEmail = modinfo.getParameter("admin_email");
-    String emailHost = modinfo.getParameter("email_host");
-    String defaultGroup = modinfo.getParameter("def_group");
+  public SystemProperties saveProperties(IWContext iwc){
+    String contractDate = iwc.getParameter("contract_date");
+    String contractYears = iwc.getParameter("contract_years");
+    String adminEmail = iwc.getParameter("admin_email");
+    String emailHost = iwc.getParameter("email_host");
+    String defaultGroup = iwc.getParameter("def_group");
     SystemProperties SysProps = seekProperties();
     if(SysProps !=null){
       if(contractDate.length() == 10){
@@ -218,15 +218,15 @@ public class SysPropsSetter extends ModuleObjectContainer{
     return drp;
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){
       isAdmin = false;
     }
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
-    control(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
+    control(iwc);
   }
 }

@@ -1,11 +1,11 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
@@ -54,41 +54,41 @@ public class DailyReport extends TravelManager {
   public DailyReport() {
   }
 
-  public void add(ModuleObject mo) {
+  public void add(PresentationObject mo) {
     super.add(mo);
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException {
-      super.main(modinfo);
-      initialize(modinfo);
+  public void main(IWContext iwc) throws SQLException {
+      super.main(iwc);
+      initialize(iwc);
 
-      String action = modinfo.getParameter(sAction);
+      String action = iwc.getParameter(sAction);
       if (action == null) {action = "";}
 
       if (action.equals(this.parameterUpdate)) {
-        update(modinfo);
+        update(iwc);
       }else if (action.equals(this.parameterYes)) {
         this.closerLook = true;
       }else if (action.equals(this.parameterNo)) {
         this.closerLook = false;
       }
-      displayForm(modinfo);
+      displayForm(iwc);
 
       super.addBreak();
   }
 
-  public void initialize(ModuleInfo modinfo) {
+  public void initialize(IWContext iwc) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
 
       supplier = super.getSupplier();
 
-      String productId = modinfo.getParameter(Product.getProductEntityName());
+      String productId = iwc.getParameter(Product.getProductEntityName());
       try {
         if (productId == null) {
-          productId = (String) modinfo.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
+          productId = (String) iwc.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
         }else {
-          modinfo.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
+          iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",productId);
         }
         if (productId != null) {
           product = new Product(Integer.parseInt(productId));
@@ -104,7 +104,7 @@ public class DailyReport extends TravelManager {
           tnfe.printStackTrace(System.err);
       }catch (SQLException sql) {sql.printStackTrace(System.err);}
 
-      String toggler = modinfo.getParameter(this.parameterToggleCloser);
+      String toggler = iwc.getParameter(this.parameterToggleCloser);
       if (toggler != null) {
         if (toggler.equals(this.parameterYes)) {
           this.closerLook = true;
@@ -113,21 +113,21 @@ public class DailyReport extends TravelManager {
         }
       }
 
-      stamp = getFromIdegaTimestamp(modinfo);
+      stamp = getFromIdegaTimestamp(iwc);
   }
 
-  public void displayForm(ModuleInfo modinfo) {
+  public void displayForm(IWContext iwc) {
 
       Form form = new Form();
-      Table topTable = getTopTable(modinfo);
+      Table topTable = getTopTable(iwc);
         form.add(topTable);
       ShadowBox sb = new ShadowBox();
             sb.setWidth("90%");
         form.add(sb);
         if (product != null) {
             sb.setAlignment("center");
-            sb.add(getContentHeader(modinfo));
-          Table table = getContentTable(modinfo);
+            sb.add(getContentHeader(iwc));
+          Table table = getContentTable(iwc);
             sb.add(table);
 
           Paragraph par = new Paragraph();
@@ -147,9 +147,9 @@ public class DailyReport extends TravelManager {
 
 
   // BUSINESS
-  public idegaTimestamp getFromIdegaTimestamp(ModuleInfo modinfo) {
+  public idegaTimestamp getFromIdegaTimestamp(IWContext iwc) {
       idegaTimestamp stamp = null;
-      String from_time = modinfo.getParameter("active_from");
+      String from_time = iwc.getParameter("active_from");
       if (from_time!= null) {
           try {
               stamp = new idegaTimestamp(from_time);
@@ -165,7 +165,7 @@ public class DailyReport extends TravelManager {
   }
 
 
-  public Table getTopTable(ModuleInfo modinfo) {
+  public Table getTopTable(IWContext iwc) {
       Table topTable = new Table(4,3);
         topTable.setBorder(0);
         topTable.setWidth("90%");
@@ -192,7 +192,7 @@ public class DailyReport extends TravelManager {
 
 
       DateInput active_from = new DateInput("active_from");
-          idegaTimestamp fromStamp = getFromIdegaTimestamp(modinfo);
+          idegaTimestamp fromStamp = getFromIdegaTimestamp(iwc);
           active_from.setDate(fromStamp.getSQLDate());
 
 
@@ -220,13 +220,13 @@ public class DailyReport extends TravelManager {
       return topTable;
   }
 
-  public Table getContentHeader(ModuleInfo modinfo) {
+  public Table getContentHeader(IWContext iwc) {
       Table table = new Table(2,2);
       table.setWidth("95%");
 
 
 
-      String mode = modinfo.getParameter("mode");
+      String mode = iwc.getParameter("mode");
       if (mode== null) mode="";
 
 
@@ -236,7 +236,7 @@ public class DailyReport extends TravelManager {
           headerText.addToText(" : ");
 
       Text timeText = (Text) theBoldText.clone();
-          timeText.setText(stamp.getLocaleDate(modinfo));
+          timeText.setText(stamp.getLocaleDate(iwc));
           timeText.setFontColor(super.textColor);
       Text nameText = (Text) theBoldText.clone();
           nameText.setText(product.getName());
@@ -252,7 +252,7 @@ public class DailyReport extends TravelManager {
       return table;
   }
 
-  public Table getContentTable(ModuleInfo modinfo) {
+  public Table getContentTable(IWContext iwc) {
 
       int totalBookings = 0;
       int totalAttendance = 0;
@@ -600,9 +600,9 @@ public class DailyReport extends TravelManager {
 
   }
 
-  private void update(ModuleInfo modinfo) {
-    String[] booking_ids = (String[]) modinfo.getParameterValues("booking_id");
-    String[] attendance  = (String[]) modinfo.getParameterValues("attendance");
+  private void update(IWContext iwc) {
+    String[] booking_ids = (String[]) iwc.getParameterValues("booking_id");
+    String[] attendance  = (String[]) iwc.getParameterValues("attendance");
 
     is.idega.travel.data.Booking booking;
     if (booking_ids != null)

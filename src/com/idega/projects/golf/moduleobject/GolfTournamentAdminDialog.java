@@ -3,14 +3,14 @@ package com.idega.projects.golf.moduleobject;
 import java.io.*;
 import java.util.*;
 import java.sql.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
 
-public class GolfTournamentAdminDialog extends ModuleObjectContainer{
+public class GolfTournamentAdminDialog extends PresentationObjectContainer{
 
 private String header;
 private Table myTable;
@@ -58,16 +58,16 @@ private String width = "100%";
 
 
 
-        public void main(ModuleInfo modinfo) throws Exception{
+        public void main(IWContext iwc) throws Exception{
 
-            iwrb = getResourceBundle(modinfo);
-            iwb = getBundle(modinfo);
+            iwrb = getResourceBundle(iwc);
+            iwb = getBundle(iwc);
 
 
-            if (com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo) || com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo)) {
-                String view = modinfo.getParameter("tournament_admin_view");
+            if (com.idega.jmodule.login.business.AccessControl.isAdmin(iwc) || com.idega.jmodule.login.business.AccessControl.isClubAdmin(iwc)) {
+                String view = iwc.getParameter("tournament_admin_view");
 
-                String URI = modinfo.getRequestURI();
+                String URI = iwc.getRequestURI();
 
                 Image mynd4 = iwrb.getImage("leftcorner.gif");
                 Image iCreateTournament = iwrb.getImage("tabs/newtournament1.gif");
@@ -158,7 +158,7 @@ private String width = "100%";
 		return header;
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		myTable.add(objectToAdd,1,3);
 	}
 

@@ -1,19 +1,19 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 import com.idega.jmodule.news.presentation.NewsReader;
 import java.lang.String;
 import java.sql.SQLException;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.projects.golf.entity.GolferPageData;
 
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 
 /**
  * Title:        idegaWeb Classes
@@ -24,12 +24,12 @@ import com.idega.jmodule.object.JModuleObject;
  * @version 1.0
  */
 
-public class HomeView extends GolferJModuleObject {
+public class HomeView extends GolferBlock {
 
   public HomeView() {
   }
 
-  public void setHomeView(ModuleInfo modinfo){
+  public void setHomeView(IWContext iwc){
 
   /**@todo  Set the correct stylesheet here*/
   //  this.setStyleSheetURL("/style/GolferPageView.css");
@@ -51,7 +51,7 @@ public class HomeView extends GolferJModuleObject {
 //    news.setNumberOfDays(4);
     news.setHeadlineImageURL("/idegaweb/bundles/golf.bundle/resources/shared/bullet.gif");
     news.setWidth("100%");
-    news.setNewsReaderURLAsSamePage(modinfo);
+    news.setNewsReaderURLAsSamePage(iwc);
     news.setNumberOfExpandedNews(8);
     news.setNumberOfDisplayedNews(8);
     news.setNumberOfLetters(200);
@@ -85,8 +85,8 @@ public class HomeView extends GolferJModuleObject {
     add(homeTable);
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-    super.main(modinfo);
-      setHomeView(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+    super.main(iwc);
+      setHomeView(iwc);
   }
 }

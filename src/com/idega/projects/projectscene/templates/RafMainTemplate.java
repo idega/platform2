@@ -4,10 +4,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 
 
@@ -62,7 +62,7 @@ public abstract class RafMainTemplate extends ProjectMainTemplate{
 	}
 
 
-	public void add2(ModuleObject objectToAdd){
+	public void add2(PresentationObject objectToAdd){
 		try{
 			content2().add(objectToAdd,1,1);
 		}

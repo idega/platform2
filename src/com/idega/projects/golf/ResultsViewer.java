@@ -17,9 +17,9 @@ import java.util.*;
 import java.math.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.*;
 import com.idega.data.*;
 import com.idega.projects.golf.service.*;
@@ -27,7 +27,7 @@ import com.idega.projects.golf.entity.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
-public class ResultsViewer extends JModuleObject {
+public class ResultsViewer extends Block {
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 protected IWResourceBundle iwrb;
@@ -55,24 +55,24 @@ private Table resultTable;
       myForm.setName("resultform");
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
     try {
-      iwrb = getResourceBundle(modinfo);
+      iwrb = getResourceBundle(iwc);
       tournament = new Tournament(tournamentID);
       if ( tournament.getNumberOfRounds() >= 4 ) {
         championship = true;
       }
 
-      add(getResult(modinfo));
+      add(getResult(iwc));
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
     }
   }
 
-  private Form getResult(ModuleInfo modinfo) {
+  private Form getResult(IWContext iwc) {
     try {
-      getFormValues(modinfo);
+      getFormValues(iwc);
       getOuterTable();
 
       myForm.add(outerTable);
@@ -84,8 +84,8 @@ private Table resultTable;
     return myForm;
   }
 
-  private void getFormValues(ModuleInfo modinfo) {
-    String tournamentGroupId_ = modinfo.getParameter("tournament_group_id");
+  private void getFormValues(IWContext iwc) {
+    String tournamentGroupId_ = iwc.getParameter("tournament_group_id");
       if ( tournamentGroupId_ != null ) {
         if ( tournamentGroupId_.length() > 0 ) {
           int tournamentGroupId = Integer.parseInt(tournamentGroupId_);
@@ -99,7 +99,7 @@ private Table resultTable;
         }
       }
 
-    String tournamentRounds_ = modinfo.getParameter("tournament_round_id");
+    String tournamentRounds_ = iwc.getParameter("tournament_round_id");
       if ( tournamentRounds_ != null ) {
         if ( tournamentRounds_.length() > 0 ) {
           if ( Integer.parseInt(tournamentRounds_) != 0 ) {
@@ -124,7 +124,7 @@ private Table resultTable;
         }
       }
 
-    String gender_ = modinfo.getParameter("gender");
+    String gender_ = iwc.getParameter("gender");
       if ( gender_ != null ) {
         if ( gender_.equalsIgnoreCase("f") || gender_.equalsIgnoreCase("m") ) {
           gender = gender_.toUpperCase();
@@ -134,7 +134,7 @@ private Table resultTable;
         }
       }
 
-    String sort_ = modinfo.getParameter("sort");
+    String sort_ = iwc.getParameter("sort");
       if ( sort_ != null ) {
         if ( sort_.length() > 0 ) {
           sortBy = Integer.parseInt(sort_);
@@ -147,7 +147,7 @@ private Table resultTable;
         sortBy = this.getTournamentType();
       }
 
-    String order_ = modinfo.getParameter("order");
+    String order_ = iwc.getParameter("order");
       if ( order_ != null ) {
         if ( order_.length() > 0 ) {
           if ( order_.equalsIgnoreCase("0") ) {

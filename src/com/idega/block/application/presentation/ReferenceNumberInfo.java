@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberInfo.java,v 1.8 2001/08/29 23:41:38 laddi Exp $
+ * $Id: ReferenceNumberInfo.java,v 1.9 2001/10/05 07:59:59 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -20,30 +20,30 @@ import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.application.business.ReferenceNumberHandler;
 import is.idegaweb.campus.application.CampusApplicationFinder;
 import is.idegaweb.campus.application.CampusApplicationHolder;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.textObject.Text;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.text.Text;
 import com.idega.idegaweb.IWResourceBundle;
 import java.util.Vector;
 import java.util.Date;
 import java.text.DateFormat;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.BackButton;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.BackButton;
 
 /**
  *
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ReferenceNumberInfo extends ModuleObjectContainer {
+public class ReferenceNumberInfo extends PresentationObjectContainer {
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.application";
   private IWResourceBundle iwrb_ = null;
 
   public ReferenceNumberInfo() {
   }
 
-  protected void control(ModuleInfo modinfo) {
-    String ref = ReferenceNumberHandler.getReferenceNumber(modinfo);
+  protected void control(IWContext iwc) {
+    String ref = ReferenceNumberHandler.getReferenceNumber(iwc);
 
     int aid = 0;
     try {
@@ -74,7 +74,7 @@ public class ReferenceNumberInfo extends ModuleObjectContainer {
       refTable.add(nameText,1,row);
       row++;
 
-      DateFormat format = DateFormat.getDateInstance(1,modinfo.getCurrentLocale());
+      DateFormat format = DateFormat.getDateInstance(1,iwc.getCurrentLocale());
       String date = format.format(new Date(app.getSubmitted().getTime()));
       Text dateText = new Text(date);
         dateText.setBold();
@@ -154,11 +154,11 @@ public class ReferenceNumberInfo extends ModuleObjectContainer {
     add(refTable);
   }
 
-  private void approved(ModuleInfo modinfo) {
+  private void approved(IWContext iwc) {
 
   }
 
-  private void rejected(ModuleInfo modinfo) {
+  private void rejected(IWContext iwc) {
 
   }
 
@@ -166,9 +166,9 @@ public class ReferenceNumberInfo extends ModuleObjectContainer {
     return(IW_BUNDLE_IDENTIFIER);
   }
 
-  public void main(ModuleInfo modinfo) {
-    iwrb_ = getResourceBundle(modinfo);
-//    iwb = getBundle(modinfo);
-    control(modinfo);
+  public void main(IWContext iwc) {
+    iwrb_ = getResourceBundle(iwc);
+//    iwb = getBundle(iwc);
+    control(iwc);
   }
 }

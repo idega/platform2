@@ -1,10 +1,10 @@
 package com.idega.block.poll.presentation;
 
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.*;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
 import com.idega.block.poll.business.*;
 import com.idega.block.poll.data.*;
 import com.idega.block.text.business.TextFinder;
@@ -53,9 +53,9 @@ public PollResult() {
   setScrollbar(false);
 }
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    _iwrb = getResourceBundle(modinfo);
-    _iwb = getBundle(modinfo);
+  public void main(IWContext iwc) throws Exception {
+    _iwrb = getResourceBundle(iwc);
+    _iwb = getBundle(iwc);
 
     setAllMargins(0);
     setTitle(_iwrb.getLocalizedString("results","Results"));
@@ -63,16 +63,16 @@ public PollResult() {
     /**
      * @todo permission
      */
-    _isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
-    _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
+    _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-    String collectionString = modinfo.getParameter(Poll._prmPollCollection);
-    String showVotesString = modinfo.getParameter(Poll._prmShowVotes);
-    String numberOfPollsString = modinfo.getParameter(Poll._prmNumberOfPolls);
-    String pollIDString = modinfo.getParameter(Poll._prmPollID);
+    String collectionString = iwc.getParameter(Poll._prmPollCollection);
+    String showVotesString = iwc.getParameter(Poll._prmShowVotes);
+    String numberOfPollsString = iwc.getParameter(Poll._prmNumberOfPolls);
+    String pollIDString = iwc.getParameter(Poll._prmPollID);
 
     try {
-      _pollQuestionID = Integer.parseInt(modinfo.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
+      _pollQuestionID = Integer.parseInt(iwc.getParameter(PollBusiness._PARAMETER_POLL_QUESTION));
     }
     catch (NumberFormatException e) {
       _pollQuestionID = -1;
@@ -109,11 +109,11 @@ public PollResult() {
     }
 
     if ( _showCollection ) {
-      showCollection(modinfo);
+      showCollection(iwc);
     }
     else {
-      if (PollBusiness.thisObjectSubmitted(modinfo.getParameter(PollBusiness._PARAMETER_POLL_VOTER))){
-        PollBusiness.handleInsert(modinfo);
+      if (PollBusiness.thisObjectSubmitted(iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER))){
+        PollBusiness.handleInsert(iwc);
       }
 
       if ( _pollQuestionID != -1 )
@@ -217,7 +217,7 @@ public PollResult() {
     return myTable;
   }
 
-  private void showCollection(ModuleInfo modinfo) {
+  private void showCollection(IWContext iwc) {
     int pollSize = 0;
     int first = 0;
     int numberOfAnswers = 0;
@@ -226,7 +226,7 @@ public PollResult() {
       pollSize = pollQuestions.size();
     }
 
-    String first_string = modinfo.getParameter(prmPollFirst);
+    String first_string = iwc.getParameter(prmPollFirst);
     try {
       first = Integer.parseInt(first_string);
       if (first < 0 ) {

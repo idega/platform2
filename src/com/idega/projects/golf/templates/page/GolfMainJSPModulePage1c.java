@@ -7,9 +7,9 @@ import com.idega.projects.golf.*;
 import com.idega.projects.golf.moduleobject.Login;
 import com.idega.jmodule.*;
 import com.idega.jmodule.banner.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.poll.moduleobject.*;
 import com.idega.jmodule.boxoffice.presentation.*;
 import com.idega.jmodule.sidemenu.presentation.*;
@@ -26,13 +26,13 @@ public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
   protected final int LEFTWIDTH = 163;
   protected final int RIGHTWIDTH = 0;
 
-      protected void User(ModuleInfo modinfo) throws SQLException,IOException{
+      protected void User(IWContext iwc) throws SQLException,IOException{
           this.setTextDecoration("none");
           setTopMargin(5);
           add( "top", golfHeader());
-          add("top", Top(modinfo));
+          add("top", Top(iwc));
           add("bottom", golfFooter());
-          add(Left(modinfo), Center());
+          add(Left(iwc), Center());
 //          add(Left(), Center(), Right());
 	  setWidth(1, "" + LEFTWIDTH);
 	  setContentWidth( "100%");
@@ -41,7 +41,7 @@ public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
       }
 
 
-        protected Table Left(ModuleInfo modinfo) throws SQLException,IOException{
+        protected Table Left(IWContext iwc) throws SQLException,IOException{
           Table leftTable = new Table(1,4);
 //          leftTable.setBorder(1);
           leftTable.setVerticalAlignment("top");
@@ -63,7 +63,7 @@ public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
           leftTable.setCellspacing(0);
 
 
-          leftTable.add(getSidemenu(modinfo),1,2);
+          leftTable.add(getSidemenu(iwc),1,2);
           leftTable.add(Text.getBreak(),1,3);
           leftTable.add( Sponsors(), 1,3);
 //          leftTable.add(getLinks(),1,4);  // gimmi
@@ -75,7 +75,7 @@ public class GolfMainJSPModulePage1c extends GolfMainJSPModulePage{
         }
 
 
-      protected Table getSidemenu(ModuleInfo modinfo) {
+      protected Table getSidemenu(IWContext iwc) {
           Table table = new Table();
             table.setBorder(0);
             table.setWidth(148);

@@ -4,10 +4,10 @@ package com.idega.projects.sbudgeting.templates;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 import com.idega.util.*;
 
@@ -41,7 +41,7 @@ public String language = "IS";
 
 	public Table template() {
 
-		ModuleInfo modinfo = getModuleInfo();
+		IWContext iwc = getIWContext();
 
                 Table myTable = new Table(1,1);
                   myTable.setCellpadding(0);
@@ -100,11 +100,11 @@ public String language = "IS";
 		}
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		tafla.add(objectToAdd,2,2);
 	}
 
-        public void addLeft(ModuleObject objectToAdd){
+        public void addLeft(PresentationObject objectToAdd){
                 tafla.add(objectToAdd,1,2);
         }
 

@@ -10,9 +10,9 @@ import com.idega.block.timesheet.data.*;
 import com.idega.data.*;
 import java.io.*;
 import java.sql.Timestamp;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
@@ -25,7 +25,7 @@ import com.idega.util.text.*;
 
 import com.idega.idegaweb.*;
 
-public class Timesheet extends JModuleObject{
+public class Timesheet extends Block{
     private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.timesheet";
     private IWResourceBundle iwrb;
     private IWBundle iwb;
@@ -191,8 +191,8 @@ public class Timesheet extends JModuleObject{
                 correct = false;
 	}
 
-        private void setStrings(ModuleInfo modinfo) {
-          String temp_language = modinfo.getSpokenLanguage();
+        private void setStrings(IWContext iwc) {
+          String temp_language = iwc.getSpokenLanguage();
           if (temp_language != null) {
             language = temp_language;
           }
@@ -363,18 +363,18 @@ public class Timesheet extends JModuleObject{
 	}
 
 
-  private void initialize(ModuleInfo modinfo) throws SQLException {
-    this.isAdmin = AccessControl.isAdmin(modinfo);
-    user = LoginBusiness.getUser(modinfo);
+  private void initialize(IWContext iwc) throws SQLException {
+    this.isAdmin = AccessControl.isAdmin(iwc);
+    user = LoginBusiness.getUser(iwc);
 
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
 
     this.save_image_url = iwrb.getImage("save.gif").getURL();
 
-    dagar(modinfo);
-    calculate(modinfo);
-    setStrings(modinfo);
+    dagar(iwc);
+    calculate(iwc);
+    setStrings(iwc);
 
   }
 
@@ -383,8 +383,8 @@ public class Timesheet extends JModuleObject{
   }
 
 
-  public void main(ModuleInfo modinfo) throws  SQLException, IOException, Exception{
-    initialize(modinfo);
+  public void main(IWContext iwc) throws  SQLException, IOException, Exception{
+    initialize(iwc);
 
 
     if (isAdmin) {
@@ -395,24 +395,24 @@ public class Timesheet extends JModuleObject{
     }
 
 
-    URI = modinfo.getRequestURI();
+    URI = iwc.getRequestURI();
 
-          String sIsPrintable = modinfo.getParameter("i_timesheet_printable");
+          String sIsPrintable = iwc.getParameter("i_timesheet_printable");
           if (sIsPrintable!= null) {
               if (sIsPrintable.equalsIgnoreCase("true")) {
                   this.isPrintable = true;
               }
           }
-          timesheet_project_id = modinfo.getParameter("i_timesheet_project_id");
+          timesheet_project_id = iwc.getParameter("i_timesheet_project_id");
 
 
 
 
           if (edit == null) {
-            edit = modinfo.getParameter("idega_timesheet_entry_edit");
+            edit = iwc.getParameter("idega_timesheet_entry_edit");
           }
 
-          URI = modinfo.getRequestURI();
+          URI = iwc.getRequestURI();
           if (edit== null) {
             edit = "";
           }
@@ -420,7 +420,7 @@ public class Timesheet extends JModuleObject{
       if (user != null) {
         user_id = user.getID();
 
-          String temp_member_id = modinfo.getParameter("i_timesheet_member_id");
+          String temp_member_id = iwc.getParameter("i_timesheet_member_id");
           if (temp_member_id != null) {
               try {
                   if (isAdmin ) {
@@ -438,13 +438,13 @@ public class Timesheet extends JModuleObject{
 
 
         if (edit.equals("henda")) {
-                  henda(modinfo);
+                  henda(iwc);
         }
         else if (edit.equals(save_string)) {
-                  save(modinfo);
+                  save(iwc);
         }
         else if (edit.equals("undirskyrsla")) {
-                  undirskyrsla(modinfo);
+                  undirskyrsla(iwc);
                   if (!isPrintable) {
                       //add(getPrintableLink("undirskyrsla"));
                   }
@@ -454,7 +454,7 @@ public class Timesheet extends JModuleObject{
 
         }
         else if (edit.equals("hreyfingStarfsmann")) {
-                  hreyfingStarfsmann(modinfo);
+                  hreyfingStarfsmann(iwc);
                   if (!isPrintable) {
                       //add(getPrintableLink("hreyfingStarfsmann"));
                   }
@@ -464,7 +464,7 @@ public class Timesheet extends JModuleObject{
 
         }
         else if (edit.equals("hreyfingVerk")) {
-                  hreyfingVerk(modinfo);
+                  hreyfingVerk(iwc);
                   if (!isPrintable) {
                   //add(getPrintableLink("hreyfingVerk"));
                   }
@@ -473,7 +473,7 @@ public class Timesheet extends JModuleObject{
                   }
         }
         else if (edit.equals("hreyfingVerkAll")) {
-                  hreyfingVerkAll(modinfo);
+                  hreyfingVerkAll(iwc);
                   if (!isPrintable) {
                      // add(getPrintableLink("hreyfingVerkAll"));
                   }
@@ -482,7 +482,7 @@ public class Timesheet extends JModuleObject{
                   }
         }
         else if (edit.equals("hour_pr_employee")) {
-                  reportHourPrEmployee(modinfo);
+                  reportHourPrEmployee(iwc);
                   if (!isPrintable) {
                       //add(getPrintableLink("hour_pr_employee"));
                   }
@@ -491,7 +491,7 @@ public class Timesheet extends JModuleObject{
                   }
         }
         else if (edit.equals("hour_pr_project")) {
-                  reportHourPrProject(modinfo);
+                  reportHourPrProject(iwc);
                   if (!isPrintable) {
                      // add(getPrintableLink("hour_pr_project"));
                   }
@@ -501,7 +501,7 @@ public class Timesheet extends JModuleObject{
 
         }
         else if (edit.equals("hour_pr_project_all")) {
-                  reportHourPrProjectAll(modinfo);
+                  reportHourPrProjectAll(iwc);
                   if (!isPrintable) {
                       //add(getPrintableLink("hour_pr_project_all"));
                   }
@@ -510,7 +510,7 @@ public class Timesheet extends JModuleObject{
                   }
         }
         else if (edit.equals("unbooked")) {
-                showUnBooked(modinfo,false);
+                showUnBooked(iwc,false);
                   if (!isPrintable) {
                      // add(getPrintableLink("unbooked"));
                   }
@@ -519,7 +519,7 @@ public class Timesheet extends JModuleObject{
                   }
         }
         else if (edit.equals("booked")) {
-                showBooked(modinfo);
+                showBooked(iwc);
                   if (!isPrintable) {
                      // add(getPrintableLink("booked"));
                   }
@@ -528,21 +528,21 @@ public class Timesheet extends JModuleObject{
                   }
         }
         else if (edit.equals("save_booked")) {
-                saveBooked(modinfo);
+                saveBooked(iwc);
         }
         else if (edit.equals("save_registered")) {
-                saveRegistered(modinfo);
+                saveRegistered(iwc);
         }
         else if (edit.equals("my_projects")) {
-                myProjects(modinfo);
+                myProjects(iwc);
         }
         else if (edit.equals("move_project")) {
-                moveProjects(modinfo);
+                moveProjects(iwc);
         }
 
 
         else if (edit.equals("checkPreviousEntries")) {
-                showUnBooked(modinfo,true);
+                showUnBooked(iwc,true);
                   if (!isPrintable) {
                       //add(getPrintableLink("checkPreviousEntries"));
                   }
@@ -552,7 +552,7 @@ public class Timesheet extends JModuleObject{
         }
         else {
 
-                  drawTable(modinfo);
+                  drawTable(iwc);
         }
 
         add(getMyProjectsLink());
@@ -569,12 +569,12 @@ public class Timesheet extends JModuleObject{
 		dagur = FunctColl.getDay();
 	}
 
-        private void dagar(ModuleInfo modinfo) {
+        private void dagar(IWContext iwc) {
 
                 try {
-                  String temp_dagur = modinfo.getParameter("idega_timesheet_entry_dagur");
-                  String temp_manudur = modinfo.getParameter("idega_timesheet_entry_manudur");
-                  String temp_ar = modinfo.getParameter("idega_timesheet_entry_ar");
+                  String temp_dagur = iwc.getParameter("idega_timesheet_entry_dagur");
+                  String temp_manudur = iwc.getParameter("idega_timesheet_entry_manudur");
+                  String temp_ar = iwc.getParameter("idega_timesheet_entry_ar");
 
                   if (temp_manudur != null) {
                     manudur= Integer.parseInt(temp_manudur);
@@ -624,9 +624,9 @@ public class Timesheet extends JModuleObject{
 
         }
 
-	private void calculate(ModuleInfo modinfo) {
+	private void calculate(IWContext iwc) {
 
-                  String temp_daysShown = modinfo.getParameter("idega_timesheet_entry_number_of_days");
+                  String temp_daysShown = iwc.getParameter("idega_timesheet_entry_number_of_days");
                   if (temp_daysShown != null) {
                     try {
                       daysShown = Integer.parseInt(temp_daysShown);
@@ -634,7 +634,7 @@ public class Timesheet extends JModuleObject{
                     catch (NumberFormatException n) {
                     }
                   }
-                  String temp_extraLines = modinfo.getParameter("idega_timesheet_entry_number_of_lines");
+                  String temp_extraLines = iwc.getParameter("idega_timesheet_entry_number_of_lines");
                   if (temp_extraLines != null) {
                     try {
                       extraLines = Integer.parseInt(temp_extraLines);
@@ -663,16 +663,16 @@ public class Timesheet extends JModuleObject{
 			myDags.setFontSize(3);
                         myDags.setBold();
 			if ( (dagur - daysShown) < 1) {
-				myDags.addToText(FunctColl.getNameOfMonth((manudur-1),modinfo)+"/");
+				myDags.addToText(FunctColl.getNameOfMonth((manudur-1),iwc)+"/");
 			}
-			myDags.addToText(FunctColl.getNameOfMonth(manudur,modinfo)+" "+ar);
+			myDags.addToText(FunctColl.getNameOfMonth(manudur,iwc)+" "+ar);
 
 
 
 
 	}
 
-	private void drawTable(ModuleInfo modinfo) throws SQLException{
+	private void drawTable(IWContext iwc) throws SQLException{
 		boolean fridagur;
 		String litur;
 		String verk;
@@ -706,10 +706,10 @@ public class Timesheet extends JModuleObject{
                   resources.addMenuElement(-1,(new User(this.user_id)).getName() );
 
                 Resource[] res;
-                  res = (Resource[]) modinfo.getServletContext().getAttribute("all_resource_array");
+                  res = (Resource[]) iwc.getServletContext().getAttribute("all_resource_array");
                 if (res == null ) {
                     res = (Resource[])(new Resource()).findAllByColumnOrdered("is_closed","N","resource_name");
-                    modinfo.getServletContext().setAttribute("all_resource_array",res);
+                    iwc.getServletContext().setAttribute("all_resource_array",res);
                 }
 
                 if (res != null) {
@@ -732,7 +732,7 @@ public class Timesheet extends JModuleObject{
                 if (userDefinedProjectId == -1) {
                       projects.setName("projects");
 
-//                    com.idega.data.genericentity.Member memberja = com.idega.jmodule.login.business.AccessControl.getMember(modinfo);
+//                    com.idega.data.genericentity.Member memberja = com.idega.jmodule.login.business.AccessControl.getMember(iwc);
                     TimesheetProject[] pro = (TimesheetProject[]) user.findRelated(new TimesheetProject());
 
                     if (pro != null) {
@@ -878,7 +878,7 @@ public class Timesheet extends JModuleObject{
 					}
 					else {
 					}
-					myText1.addToText(FunctColl.getNameOfDay(vikuDagurNr,modinfo).substring(0,3)+" "+(dagur-u)+".");
+					myText1.addToText(FunctColl.getNameOfDay(vikuDagurNr,iwc).substring(0,3)+" "+(dagur-u)+".");
 				myTable.add(myText1,1,current_row);
 				}
 				skrifaDags=false;
@@ -1003,7 +1003,7 @@ public class Timesheet extends JModuleObject{
 							}
 							else {
 							}
-							myTextAuka1.addToText(FunctColl.getNameOfDay(vikuDagurNr,modinfo).substring(0,3)+" "+(dagur-u)+".");
+							myTextAuka1.addToText(FunctColl.getNameOfDay(vikuDagurNr,iwc).substring(0,3)+" "+(dagur-u)+".");
 						myTable.add(myTextAuka1,1,current_row);
 						}
 						skrifaDags=false;
@@ -1163,7 +1163,7 @@ public class Timesheet extends JModuleObject{
 	}
 
 
-      private void undirskyrsla(ModuleInfo modinfo) throws SQLException{
+      private void undirskyrsla(IWContext iwc) throws SQLException{
 
 
 		Text myText;
@@ -1218,11 +1218,11 @@ public class Timesheet extends JModuleObject{
                         headerTable.add(new Image("/pics/jmodules/poll/rightcorner.gif",""),3,1);
 
 
-//                Text header = new Text(FunctColl.getNameOfMonth(manudur, modinfo) + " " +ar);
+//                Text header = new Text(FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
 //                  header.setFontSize(5);
 //                add(header);
 
-                        Text nafnPaMoned = new Text("Unnir tímar í "+FunctColl.getNameOfMonth(manudur, modinfo) + " " +ar);
+                        Text nafnPaMoned = new Text("Unnir tímar í "+FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
                             nafnPaMoned.setFontSize(3);
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
@@ -1458,8 +1458,8 @@ public class Timesheet extends JModuleObject{
       }
       //undirskyrsla
 
- private void hreyfingVerk(ModuleInfo modinfo) throws SQLException{
-	String project_id = modinfo.getParameter("i_timesheet_project_id");
+ private void hreyfingVerk(IWContext iwc) throws SQLException{
+	String project_id = iwc.getParameter("i_timesheet_project_id");
 
         if (project_id != null) {
 
@@ -1476,14 +1476,14 @@ public class Timesheet extends JModuleObject{
           User user = new User(this.user_id);
           TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date");
 
-          movementVerk(modinfo, entry, project_id, false);
+          movementVerk(iwc, entry, project_id, false);
 
           }
   }
 
 
-  private void hreyfingVerkAll(ModuleInfo modinfo) throws SQLException{
-	String project_id = modinfo.getParameter("i_timesheet_project_id");
+  private void hreyfingVerkAll(IWContext iwc) throws SQLException{
+	String project_id = iwc.getParameter("i_timesheet_project_id");
 
         if (isAdmin) {
             if (project_id != null) {
@@ -1500,17 +1500,17 @@ public class Timesheet extends JModuleObject{
 
               TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date");
 
-              movementVerk(modinfo, entry, project_id, true);
+              movementVerk(iwc, entry, project_id, true);
 
               }
 
           }
           else {
-              hreyfingVerk(modinfo);
+              hreyfingVerk(iwc);
           }
   }
 
-  private void movementVerk(ModuleInfo modinfo, TimesheetEntry[] entry, String project_id, boolean viewAll) throws SQLException {
+  private void movementVerk(IWContext iwc, TimesheetEntry[] entry, String project_id, boolean viewAll) throws SQLException {
 
           String edit_string = "hreyfingVerk";
           String hour_report_string = "hour_pr_project";
@@ -1532,7 +1532,7 @@ public class Timesheet extends JModuleObject{
 
           Table headerTable = this.getHeaderTable();
 
-                Text nafnPaMoned = new Text("Verkskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, modinfo) + " " +ar);
+                Text nafnPaMoned = new Text("Verkskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
                       nafnPaMoned.setFontSize(3);
                       nafnPaMoned.setBold();
                       nafnPaMoned.setFontColor(this.header_text_color);
@@ -1702,7 +1702,7 @@ public class Timesheet extends JModuleObject{
 }  //  hreyfingVerk endar
 
 
-private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
+private void hreyfingStarfsmann(IWContext iwc) throws SQLException{
 
 		int dagariman = FunctColl.getLengthOfMonth(manudur,ar);
 		double vinnaSamtals = 0;
@@ -1732,13 +1732,13 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
                 }
 
 
-//                Text header = new Text(FunctColl.getNameOfMonth(manudur, modinfo) + " " +ar);
+//                Text header = new Text(FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
                 Text myText;
 
 
 		Table headerTable = this.getHeaderTable();
 
-                        Text nafnPaMoned = new Text(FunctColl.getNameOfMonth(manudur, modinfo) + " " +ar);
+                        Text nafnPaMoned = new Text(FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
                             nafnPaMoned.setFontSize(3);
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
@@ -1895,10 +1895,10 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
 
 
 
-      public void henda(ModuleInfo modinfo) throws Exception{
+      public void henda(IWContext iwc) throws Exception{
 
-          String entry_id = modinfo.getParameter("idega_timesheet_entry_timesheet_entry_id");
-          String member_id =modinfo.getParameter("i_timesheet_member_id");
+          String entry_id = iwc.getParameter("idega_timesheet_entry_timesheet_entry_id");
+          String member_id =iwc.getParameter("i_timesheet_member_id");
           int member_id_int = Integer.parseInt(member_id);
 
 
@@ -1919,18 +1919,18 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
           }
 
           edit = "";
-          main(modinfo);
+          main(iwc);
       }
 
-      private void save(ModuleInfo modinfo) throws SQLException{
+      private void save(IWContext iwc) throws SQLException{
 
-//		String member_id = modinfo.getParameter("member_id");
-		String project_id[] = modinfo.getParameterValues("projects");
-		String resource_id[] = modinfo.getParameterValues("resource");
-		String timar[] = modinfo.getParameterValues("timar");
-		String entry_id[] = modinfo.getParameterValues("timesheet_entry_id");
-		String date[] = modinfo.getParameterValues("timesheet_date");
-		String description[] = modinfo.getParameterValues("description");
+//		String member_id = iwc.getParameter("member_id");
+		String project_id[] = iwc.getParameterValues("projects");
+		String resource_id[] = iwc.getParameterValues("resource");
+		String timar[] = iwc.getParameterValues("timar");
+		String entry_id[] = iwc.getParameterValues("timesheet_entry_id");
+		String date[] = iwc.getParameterValues("timesheet_date");
+		String description[] = iwc.getParameterValues("description");
 
 
 
@@ -1999,12 +1999,12 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
 		  }
                 }
 
-          drawTable(modinfo);
+          drawTable(iwc);
       }
 //end save
 
 
-       private void reportHourPrEmployee(ModuleInfo modinfo) throws SQLException {
+       private void reportHourPrEmployee(IWContext iwc) throws SQLException {
 
             int dagariman = FunctColl.getLengthOfMonth(manudur,ar);
             idegaCalendar cal = new idegaCalendar();
@@ -2032,7 +2032,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
 
             Table headerTable = this.getHeaderTable();
                   headerTable.setWidth(tableWidth);
-                    Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + FunctColl.getNameOfMonth(manudur, modinfo) + " " +ar);
+                    Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
                         nafnPaMoned.setFontSize(3);
                         nafnPaMoned.setBold();
                         nafnPaMoned.setFontColor(this.header_text_color);
@@ -2230,7 +2230,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
             }
 
 		Table headerTable = this.getHeaderTable();
-                        Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + FunctColl.getNameOfMonth(manudur, modinfo) + " " +ar);
+                        Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
                             nafnPaMoned.setFontSize(3);
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
@@ -2366,8 +2366,8 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
         // end reportPerEmployee
 
 
-       private void reportHourPrProject(ModuleInfo modinfo) throws SQLException {
-  	  String project_id = modinfo.getParameter("i_timesheet_project_id");
+       private void reportHourPrProject(IWContext iwc) throws SQLException {
+  	  String project_id = iwc.getParameter("i_timesheet_project_id");
 
 	  int dagariman = FunctColl.getLengthOfMonth(manudur,ar);
                 String dags1 = (ar+"-"+manudur+"-01");
@@ -2381,13 +2381,13 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
 
           TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where user_id="+this.user_id+" AND timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date,project_id");
 
-          projectReportHour(modinfo, entry, project_id, false);
+          projectReportHour(iwc, entry, project_id, false);
 
       }
-      private void reportHourPrProjectAll(ModuleInfo modinfo) throws Exception {
+      private void reportHourPrProjectAll(IWContext iwc) throws Exception {
 
           if (isAdmin) {
-              String project_id = modinfo.getParameter("i_timesheet_project_id");
+              String project_id = iwc.getParameter("i_timesheet_project_id");
               int dagariman = FunctColl.getLengthOfMonth(manudur,ar);
                     String dags1 = (ar+"-"+manudur+"-01");
                     String dags2 = (ar+"-"+manudur+"-"+(dagariman));
@@ -2400,15 +2400,15 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
 
               TimesheetEntry[] entry = (TimesheetEntry[])(new TimesheetEntry()).findAll("select * from timesheet_entry where timesheet_entry_date >= '"+dags1+"' AND timesheet_entry_date <= '"+dags2+"' and project_id ="+project_id+" order by timesheet_entry_date,project_id");
 
-              projectReportHour(modinfo, entry, project_id, true);
+              projectReportHour(iwc, entry, project_id, true);
 
           }
           else {
-              reportHourPrProject(modinfo);
+              reportHourPrProject(iwc);
           }
       }
 
-      private void projectReportHour(ModuleInfo modinfo, TimesheetEntry[] entry, String project_id, boolean viewAll) throws SQLException {
+      private void projectReportHour(IWContext iwc, TimesheetEntry[] entry, String project_id, boolean viewAll) throws SQLException {
           String edit_string = "hour_pr_project";
           User current_user = this.user;
           if (viewAll) {
@@ -2428,7 +2428,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
             }
 
 		Table headerTable = this.getHeaderTable();
-                        Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, modinfo) + " " +ar);
+                        Text nafnPaMoned = new Text("Tímaskýrsla&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +FunctColl.getNameOfMonth(manudur, iwc) + " " +ar);
                             nafnPaMoned.setFontSize(3);
                             nafnPaMoned.setBold();
                             nafnPaMoned.setFontColor(this.header_text_color);
@@ -2572,7 +2572,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
         }
         // end reportPerEmployee
 
-        private void showUnBooked(ModuleInfo modinfo, boolean viewPrevious) throws SQLException{
+        private void showUnBooked(IWContext iwc, boolean viewPrevious) throws SQLException{
 
   	        int dagariman = FunctColl.getLengthOfMonth(manudur,ar);
                 String dags1 = (ar+"-"+manudur+"-01");
@@ -2610,7 +2610,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
                       memName.setFontSize(3);
                       memName.setBold();
                       memName.setFontColor(this.header_text_color);
-                    Text monthName = new Text(FunctColl.getNameOfMonth(manudur,modinfo)+" "+this.ar);
+                    Text monthName = new Text(FunctColl.getNameOfMonth(manudur,iwc)+" "+this.ar);
                       if (viewPrevious) {
                           monthName.setText("fyrir " + monthName.getText());
                           add(monthName.getText());
@@ -2820,7 +2820,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
         }
         // end showUnBooked
 
-        private void showBooked(ModuleInfo modinfo) throws SQLException{
+        private void showBooked(IWContext iwc) throws SQLException{
 
   	        int dagariman = FunctColl.getLengthOfMonth(manudur,ar);
                 String dags1 = (ar+"-"+manudur+"-01");
@@ -2849,7 +2849,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
                       memName.setFontSize(3);
                       memName.setBold();
                       memName.setFontColor(this.header_text_color);
-                    Text monthName = new Text(FunctColl.getNameOfMonth(manudur,modinfo)+" "+this.ar);
+                    Text monthName = new Text(FunctColl.getNameOfMonth(manudur,iwc)+" "+this.ar);
                       monthName.setFontSize(3);
                       monthName.setBold();
                       monthName.setFontColor(this.header_text_color);
@@ -3028,8 +3028,8 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
         }
         //  end showBooked
 
-        private void saveBooked(ModuleInfo modinfo) throws SQLException{
-              String[] entry_id = (String[]) modinfo.getParameterValues("idega_timesheet_entry_id");
+        private void saveBooked(IWContext iwc) throws SQLException{
+              String[] entry_id = (String[]) iwc.getParameterValues("idega_timesheet_entry_id");
               TimesheetEntry entry;
               String active = "";
               if (entry_id != null) {
@@ -3041,7 +3041,7 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
                       }
                       else {
                           active = "";
-                          active = modinfo.getParameter("idega_timesheet_Book"+entry_id[i]);
+                          active = iwc.getParameter("idega_timesheet_Book"+entry_id[i]);
                           if (active != null){
                             if (!active.equals("")) {
                                 entry = new TimesheetEntry(Integer.parseInt(entry_id[i]));
@@ -3053,18 +3053,18 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
                   }
               }
 
-              showBooked(modinfo);
+              showBooked(iwc);
 
         }
 
-        private void saveRegistered(ModuleInfo modinfo) throws SQLException{
-              String[] entry_id = (String[]) modinfo.getParameterValues("idega_timesheet_entry_id");
+        private void saveRegistered(IWContext iwc) throws SQLException{
+              String[] entry_id = (String[]) iwc.getParameterValues("idega_timesheet_entry_id");
               TimesheetEntry entry;
               String active = "";
               if (entry_id != null) {
                   for (int i = 0; i < entry_id.length; i++) {
                       active = "";
-                      active = modinfo.getParameter("idega_timesheet_Register"+entry_id[i]);
+                      active = iwc.getParameter("idega_timesheet_Register"+entry_id[i]);
                       if (active != null){
                         if (!active.equals("")) {
                             entry = new TimesheetEntry(Integer.parseInt(entry_id[i]));
@@ -3076,14 +3076,14 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
                   }
               }
 
-              showBooked(modinfo);
+              showBooked(iwc);
 
         }
 
 
-    private void moveProjects(ModuleInfo modinfo) throws Exception{
-        String where_to = modinfo.getParameter("direction");
-        String[] project_id = modinfo.getParameterValues("project_id");
+    private void moveProjects(IWContext iwc) throws Exception{
+        String where_to = iwc.getParameter("direction");
+        String[] project_id = iwc.getParameterValues("project_id");
         if ((where_to != null) && (project_id != null) ) {
 
             try {
@@ -3106,14 +3106,14 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
             }
         }
 
-        myProjects(modinfo);
+        myProjects(iwc);
 
     }
 
 
 
-        private void myProjects(ModuleInfo modinfo) throws SQLException{
-            TimesheetProject[] allProjects = TimesheetService.getAllProjectsOrderByProjectNumber(modinfo);
+        private void myProjects(IWContext iwc) throws SQLException{
+            TimesheetProject[] allProjects = TimesheetService.getAllProjectsOrderByProjectNumber(iwc);
 
             TimesheetProject[] usedProjects = (TimesheetProject[]) user.findRelated(new TimesheetProject());
 
@@ -3200,8 +3200,8 @@ private void hreyfingStarfsmann(ModuleInfo modinfo) throws SQLException{
                             headerTable.setAlignment(3,1,"right");
                             headerTable.setAlignment("center");
 
-                            headerTable.add(new com.idega.jmodule.object.Image("/pics/jmodules/headerTable/leftcorner.gif",""),1,1);
-                            headerTable.add(new com.idega.jmodule.object.Image("/pics/jmodules/headerTable/rightcorner.gif",""),3,1);
+                            headerTable.add(new com.idega.presentation.Image("/pics/jmodules/headerTable/leftcorner.gif",""),1,1);
+                            headerTable.add(new com.idega.presentation.Image("/pics/jmodules/headerTable/rightcorner.gif",""),3,1);
 
 
 

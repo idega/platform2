@@ -1,6 +1,6 @@
 package com.idega.block.news.presentation;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 /**
  * Title:
  * Description:
@@ -12,7 +12,7 @@ import com.idega.jmodule.object.*;
 
 import java.util.*;
 
-public class NewsTable extends ModuleObjectContainer {
+public class NewsTable extends PresentationObjectContainer {
 
   public static final int SINGLE_FILE_LAYOUT = 1;
   public static final int NEWS_SITE_LAYOUT = 2;
@@ -79,7 +79,7 @@ public class NewsTable extends ModuleObjectContainer {
     }
   }
 
-  public void add(ModuleObject Mo,boolean useSetDivison,String sAlign){
+  public void add(PresentationObject Mo,boolean useSetDivison,String sAlign){
     if(table == null)
       init();
     if(useSetDivison && iLayout == NEWS_SITE_LAYOUT){
@@ -117,15 +117,15 @@ public class NewsTable extends ModuleObjectContainer {
     }
   }
 
-  public void add(ModuleObject Mo){
+  public void add(PresentationObject Mo){
    add(Mo,false,sAlign);
   }
 
-  public void add(ModuleObject Mo,String sAlign){
+  public void add(PresentationObject Mo,String sAlign){
    add(Mo,false,sAlign);
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     finite();
     super.add(table);
   }

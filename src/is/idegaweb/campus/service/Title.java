@@ -1,5 +1,5 @@
 /*
- * $Id: Title.java,v 1.6 2001/10/04 13:40:34 aron Exp $
+ * $Id: Title.java,v 1.7 2001/10/05 08:05:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,8 +11,8 @@ package is.idegaweb.campus.service;
 
 import com.idega.data.genericentity.Group;
 import com.idega.data.genericentity.Member;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.login.business.*;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class Title extends JModuleObject{
+public class Title extends Block{
 
   private String iObjectName = "Title";
   private String LightColor,MiddleColor,DarkColor;
@@ -47,13 +47,13 @@ public class Title extends JModuleObject{
     DarkColor = "#27324B";
   }
 
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
 
     try{
 
-      if(modinfo.getParameter(strAction) == null){
-        if ( modinfo.getSessionAttribute(strAction) != null ) {
-          sAct = (String) modinfo.getSessionAttribute(strAction);
+      if(iwc.getParameter(strAction) == null){
+        if ( iwc.getSessionAttribute(strAction) != null ) {
+          sAct = (String) iwc.getSessionAttribute(strAction);
           try {
             iAct = Integer.parseInt(sAct);
           }
@@ -65,16 +65,16 @@ public class Title extends JModuleObject{
           iAct = NOACT;
         }
       }
-      if(modinfo.getParameter(strAction) != null){
-        sAct = modinfo.getParameter(strAction);
+      if(iwc.getParameter(strAction) != null){
+        sAct = iwc.getParameter(strAction);
         try {
           iAct = Integer.parseInt(sAct);
         }
         catch (NumberFormatException e){
           iAct = -1;
         }
-        if ( ((String) modinfo.getSessionAttribute(strAction)) != (sAct) ) {
-          modinfo.setSessionAttribute(strAction,sAct);
+        if ( ((String) iwc.getSessionAttribute(strAction)) != (sAct) ) {
+          iwc.setSessionAttribute(strAction,sAct);
         }
       }
       doAct();
@@ -111,15 +111,15 @@ public class Title extends JModuleObject{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo)  {
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc)  {
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
-    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
     /** @todo: fixa Admin*/
-    control(modinfo);
+    control(iwc);
   }
 }// class PriceCatalogueMaker
 

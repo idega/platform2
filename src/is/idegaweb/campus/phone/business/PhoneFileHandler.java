@@ -2,7 +2,7 @@ package is.idegaweb.campus.phone.business;
 
 import java.io.*;
 import com.idega.block.finance.data.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import java.util.StringTokenizer;
 import java.util.List;
 import java.util.Vector;

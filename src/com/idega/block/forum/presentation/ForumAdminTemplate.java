@@ -1,8 +1,8 @@
 package com.idega.block.forum.presentation;
 
 import com.idega.block.forum.business.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import java.sql.*;
 
 
@@ -23,7 +23,7 @@ public class ForumAdminTemplate extends ForumAdminPresentation {
   }
 
 
-  public ModuleObject ForumEdit_Presentation() throws SQLException{
+  public PresentationObject ForumEdit_Presentation() throws SQLException{
     ForumList FList = getForumList();
 
     Table Frame = new Table(1,7);
@@ -35,7 +35,7 @@ public class ForumAdminTemplate extends ForumAdminPresentation {
   }
 
 
-  public ModuleObject ForumEmail_Presentation() throws SQLException{
+  public PresentationObject ForumEmail_Presentation() throws SQLException{
     ForumList FList = getForumList();
 
     Table Frame = new Table(1,5);

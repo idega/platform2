@@ -1,6 +1,6 @@
 package com.idega.projects.golf.member;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;

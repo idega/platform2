@@ -1,5 +1,5 @@
 /*
- * $Id: CampusPage.java,v 1.7 2001/09/30 13:30:44 aron Exp $
+ * $Id: CampusPage.java,v 1.8 2001/10/05 08:05:45 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,11 +12,11 @@ package is.idegaweb.campus.templates;
 import com.idega.block.login.presentation.Login;
 import com.idega.block.application.presentation.ReferenceNumber;
 import com.idega.block.application.business.ReferenceNumberHandler;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.Window;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.Image;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.Window;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
 import is.idegaweb.campus.service.Menu;
 import is.idegaweb.campus.service.Title;
 import is.idegaweb.campus.service.Tabber;
@@ -44,9 +44,9 @@ public class CampusPage extends MainPage{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
-    super.main(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc) throws Exception{
+    super.main(iwc);
+    iwb = getBundle(iwc);
 
   }
 

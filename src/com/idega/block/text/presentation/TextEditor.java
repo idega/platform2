@@ -7,9 +7,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.text.data.TextModule;
 import com.idega.block.text.business.TextBusiness;
 import com.idega.jmodule.image.presentation.ImageInserter;
@@ -36,28 +36,28 @@ public TextEditor(){
   setUnMerged();
 }
 
-	public void main(ModuleInfo modinfo) {
+	public void main(IWContext iwc) {
     try {
-      isAdmin = AccessControl.hasEditPermission(new TextReader(),modinfo);
+      isAdmin = AccessControl.hasEditPermission(new TextReader(),iwc);
     }
     catch (SQLException e) {
       isAdmin = false;
     }
 
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
 
 		if ( isAdmin ) {
       addTitle(iwrb.getLocalizedString("text_editor","Text Editor"));
 
-			String mode = modinfo.getParameter("mode");
-			String action = modinfo.getParameter("action");
+			String mode = iwc.getParameter("mode");
+			String action = iwc.getParameter("action");
 				if ( action == null ) { action = "none"; }
 
 			if ( mode == null ) {
 				mode = "new";
         try {
-  				newText(modinfo);
+  				newText(iwc);
         }
         catch (Exception e) {
           e.printStackTrace(System.err);
@@ -66,7 +66,7 @@ public TextEditor(){
 			else if ( mode.equals("update") ) {
 				update = true;
         try {
-  				newText(modinfo);
+  				newText(iwc);
         }
         catch (Exception e) {
           e.printStackTrace(System.err);
@@ -78,7 +78,7 @@ public TextEditor(){
           update = true;
         }
         try {
-          saveText(modinfo);
+          saveText(iwc);
         }
         catch (Exception e) {
           e.printStackTrace(System.err);
@@ -86,7 +86,7 @@ public TextEditor(){
 			}
 			else if ( mode.equals("delete") ) {
         try {
-  				confirmDelete(modinfo);
+  				confirmDelete(iwc);
         }
         catch (Exception e) {
           e.printStackTrace(System.err);
@@ -95,7 +95,7 @@ public TextEditor(){
 
 			if ( action.equals("delete") ) {
         try {
-  				deleteText(modinfo);
+  				deleteText(iwc);
         }
         catch (Exception e) {
           e.printStackTrace(System.err);
@@ -117,8 +117,8 @@ public TextEditor(){
 		this.addSubmitButton(new CloseButton("Loka"));
 	}
 
-	public void newText(ModuleInfo modinfo) throws IOException,SQLException {
-		TextModule text = TextBusiness.getTextModule(modinfo);
+	public void newText(IWContext iwc) throws IOException,SQLException {
+		TextModule text = TextBusiness.getTextModule(iwc);
 
     TextInput text_headline = new TextInput("text_headline");
       text_headline.setLength(40);
@@ -154,8 +154,8 @@ public TextEditor(){
     addHiddenInput(new HiddenInput("mode","save"));
 	}
 
-	public void confirmDelete(ModuleInfo modinfo) throws IOException,SQLException {
-		TextModule text = TextBusiness.getTextModule(modinfo);
+	public void confirmDelete(IWContext iwc) throws IOException,SQLException {
+		TextModule text = TextBusiness.getTextModule(iwc);
 		String textHeadline = text.getTextHeadline();
 
     if ( textHeadline != null ) {
@@ -172,14 +172,14 @@ public TextEditor(){
     }
 	}
 
-	public void saveText(ModuleInfo modinfo) throws IOException,SQLException {
-    TextBusiness.saveText(modinfo,update);
+	public void saveText(IWContext iwc) throws IOException,SQLException {
+    TextBusiness.saveText(iwc,update);
     setParentToReload();
     close();
 	}
 
-	public void deleteText(ModuleInfo modinfo) throws IOException,SQLException {
-    TextBusiness.deleteText(modinfo);
+	public void deleteText(IWContext iwc) throws IOException,SQLException {
+    TextBusiness.deleteText(iwc);
     setParentToReload();
     close();
 	}

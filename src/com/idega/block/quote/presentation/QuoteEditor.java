@@ -1,11 +1,11 @@
 package com.idega.block.quote.presentation;
 
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.TextArea;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.CloseButton;
-import com.idega.jmodule.object.interfaceobject.HiddenInput;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -34,22 +34,22 @@ public QuoteEditor(){
   setMethod("get");
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
-    _isAdmin=AccessControl.hasEditPermission(new Quote(),modinfo);
-    _iwb = getBundle(modinfo);
-    _iwrb = getResourceBundle(modinfo);
+	public void main(IWContext iwc) throws Exception {
+    _isAdmin=AccessControl.hasEditPermission(new Quote(),iwc);
+    _iwb = getBundle(iwc);
+    _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("quote_admin","Quote Admin"));
-    _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
+    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
     try {
-      _quoteID = Integer.parseInt(modinfo.getParameter(QuoteBusiness.PARAMETER_QUOTE_ID));
+      _quoteID = Integer.parseInt(iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_ID));
       _quote = QuoteBusiness.getQuote(_quoteID);
     }
     catch (NumberFormatException e) {
       _quoteID = -1;
     }
 
-    String mode = modinfo.getParameter(QuoteBusiness.PARAMETER_MODE);
+    String mode = iwc.getParameter(QuoteBusiness.PARAMETER_MODE);
 
     if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_EDIT) ) {
       if ( _quoteID != -1 ) {
@@ -64,7 +64,7 @@ public QuoteEditor(){
       deleteQuote();
     }
     else if ( mode.equalsIgnoreCase(QuoteBusiness.PARAMETER_SAVE) ) {
-      saveQuote(modinfo);
+      saveQuote(iwc);
     }
 	}
 
@@ -96,10 +96,10 @@ public QuoteEditor(){
     addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),QuoteBusiness.PARAMETER_MODE,QuoteBusiness.PARAMETER_SAVE));
   }
 
-  private void saveQuote(ModuleInfo modinfo) {
-    String quoteOrigin = modinfo.getParameter(QuoteBusiness.PARAMETER_QUOTE_ORIGIN);
-    String quoteText = modinfo.getParameter(QuoteBusiness.PARAMETER_QUOTE_TEXT);
-    String quoteAuthor = modinfo.getParameter(QuoteBusiness.PARAMETER_QUOTE_AUTHOR);
+  private void saveQuote(IWContext iwc) {
+    String quoteOrigin = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_ORIGIN);
+    String quoteText = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_TEXT);
+    String quoteAuthor = iwc.getParameter(QuoteBusiness.PARAMETER_QUOTE_AUTHOR);
 
     QuoteBusiness.saveQuote(_quoteID,_iLocaleID,quoteOrigin,quoteText,quoteAuthor);
 

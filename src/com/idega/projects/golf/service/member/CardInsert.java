@@ -1,16 +1,16 @@
 package com.idega.projects.golf.service.member;
 
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.TextInput;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.*;
 import java.util.*;
 import java.sql.*;
 import java.io.*;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.*;
 import com.idega.util.*;
 import com.idega.data.*;
@@ -132,33 +132,33 @@ public class CardInsert extends EntityInsert{
       return this.typeDrop;
   }
 
-  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
-      if(areAllFieldsEmpty(modinfo))
+  public boolean areNeededFieldsEmpty(IWContext iwc) {
+      if(areAllFieldsEmpty(iwc))
           return false;
-      else return areSomeFieldsEmpty(modinfo);
+      else return areSomeFieldsEmpty(iwc);
 
   }
 
-  public boolean areAllFieldsEmpty(ModuleInfo modinfo)  {
+  public boolean areAllFieldsEmpty(IWContext iwc)  {
       boolean isEmpty = true;
-      isEmpty = (isInvalid(expireMonthValue) && isInvalid(expireYearValue)/*expireValue == null*/ && isEmpty(modinfo,ownerName) &&
-              isEmpty(modinfo,numberName) && isEmpty(modinfo,socialName) && isEmpty(modinfo,typeName));
+      isEmpty = (isInvalid(expireMonthValue) && isInvalid(expireYearValue)/*expireValue == null*/ && isEmpty(iwc,ownerName) &&
+              isEmpty(iwc,numberName) && isEmpty(iwc,socialName) && isEmpty(iwc,typeName));
       return isEmpty;
   }
 
-  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
+  public boolean areSomeFieldsEmpty(IWContext iwc) {
     return (isInvalid(expireMonthValue) || isInvalid(expireYearValue) || (ownerValue == null) ||
       (numberValue == null) || (socialValue == null) || (typeValue == null) || ! ownerValue.equals("") ||
       ! numberValue.equals("") || ! socialValue.equals("") || ! typeValue.equals(""));
   }
 
-  public void setVariables(ModuleInfo modinfo) {
-    ownerValue = getValue(modinfo,ownerName);
-    numberValue = getValue(modinfo,numberName);
-    socialValue = getValue(modinfo,socialName);
-    typeValue = getValue(modinfo,typeName);
-    expireMonthValue = getValue(modinfo,expireMonthName);
-    expireYearValue = getValue(modinfo,expireYearName);
+  public void setVariables(IWContext iwc) {
+    ownerValue = getValue(iwc,ownerName);
+    numberValue = getValue(iwc,numberName);
+    socialValue = getValue(iwc,socialName);
+    typeValue = getValue(iwc,typeName);
+    expireMonthValue = getValue(iwc,expireMonthName);
+    expireYearValue = getValue(iwc,expireYearName);
 
     if (numberValue  != null) {
         eCard.setCardNumber(numberValue);
@@ -181,7 +181,7 @@ public class CardInsert extends EntityInsert{
     }
   }
 
-  public Vector getNeededEmptyFields(ModuleInfo modinfo){
+  public Vector getNeededEmptyFields(IWContext iwc){
     return getEmptyFields();
   }
 
@@ -206,8 +206,8 @@ public class CardInsert extends EntityInsert{
   }
 
 
-  public void store(ModuleInfo modinfo)throws SQLException, IOException {
-      setVariables(modinfo);
+  public void store(IWContext iwc)throws SQLException, IOException {
+      setVariables(iwc);
       Vector vError = getEmptyFields();
       int errSize = vError.size();
       if((! bUpdate) && errSize == 5) {

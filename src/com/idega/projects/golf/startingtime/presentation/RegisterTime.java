@@ -1,27 +1,27 @@
 package com.idega.projects.golf.startingtime.presentation;
 
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.projects.golf.startingtime.business.TeeTimeBusiness;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.HiddenInput;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.Image;
 import com.idega.projects.golf.GolfField;
 import com.idega.util.idegaTimestamp;
 import com.idega.projects.golf.entity.TournamentDay;
 import com.idega.projects.golf.entity.Tournament;
 import com.idega.projects.golf.entity.TournamentRound;
 import com.idega.data.EntityFinder;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
 import com.idega.projects.golf.entity.Union;
 import com.idega.projects.golf.entity.Member;
-import com.idega.jmodule.object.interfaceobject.CloseButton;
-import com.idega.jmodule.object.interfaceobject.BackButton;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.BackButton;
 import com.idega.projects.golf.entity.StartingtimeFieldConfig;
 import com.idega.projects.golf.business.GolfCacher;
 import com.idega.projects.golf.templates.page.JmoduleWindowModuleWindow;
@@ -142,15 +142,15 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
             return mySubmit;
     }
 
-    public void lineUpTable(int skraMarga, ModuleInfo modinfo)throws IOException
+    public void lineUpTable(int skraMarga, IWContext iwc)throws IOException
     {
 
 
             int memberId = -1;
             boolean memberAvailable = false;
             //fá member id fyrir member til að finna hann og setja inn í textinputið fyrir hann
-            if(modinfo.getSession().getAttribute("member_id") != null){
-              memberId = Integer.parseInt((String)modinfo.getSession().getAttribute("member_id"));
+            if(iwc.getSession().getAttribute("member_id") != null){
+              memberId = Integer.parseInt((String)iwc.getSession().getAttribute("member_id"));
               memberAvailable = true;
             }
 
@@ -163,10 +163,10 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
               if(memberId != -1)
                 member = new Member(memberId);
               String FieldID = currentField;
-              String Date = modinfo.getSession().getAttribute("date").toString();
-              String MemberId = modinfo.getSession().getAttribute("member_id").toString();
+              String Date = iwc.getSession().getAttribute("date").toString();
+              String MemberId = iwc.getSession().getAttribute("member_id").toString();
               GolfField myGolfField = getFieldInfo( Integer.parseInt(FieldID), Date);
-              int Line = Integer.parseInt( modinfo.getParameter("line"));
+              int Line = Integer.parseInt( iwc.getParameter("line"));
               int max =business.countEntriesInGroup(Line,this.currentField,this.currentDay);
 
               for(int j = 0; j < skraMarga ; j++){
@@ -206,9 +206,9 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
               String unionAbbrevation = null;
 
               if(memberAvailable){
-                admin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
-                clubadmin = com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo);
-                clubworker = com.idega.jmodule.login.business.AccessControl.isClubWorker(modinfo);
+                admin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
+                clubadmin = com.idega.jmodule.login.business.AccessControl.isClubAdmin(iwc);
+                clubworker = com.idega.jmodule.login.business.AccessControl.isClubWorker(iwc);
                 unionAbbrevation = member.getMainUnion().getAbbrevation();
               }
 
@@ -233,10 +233,10 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
               myTable.setColumnAlignment(5,"center");
               myTable.setColumnAlignment(6,"center");
 
-              //setPlayers(modinfo);
+              //setPlayers(iwc);
 
               myTable.mergeCells(4, i+2, 6, i+2);
-              myTable.add(insertButton(this.iwrb.getImage("buttons/book.gif"),"", modinfo.getRequestURI(), "post", myForm), 4, i+2);
+              myTable.add(insertButton(this.iwrb.getImage("buttons/book.gif"),"", iwc.getRequestURI(), "post", myForm), 4, i+2);
               myTable.add(new SubmitButton(this.iwrb.getImage("buttons/cancel.gif"),closeParameterString, "true"), 4, i+2);
               myTable.setAlignment(4, i+2, "right");
               frameTable.empty();
@@ -251,17 +251,17 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
             }
     }
 
-    public void handleFormInfo(ModuleInfo modinfo)throws SQLException, IOException {
+    public void handleFormInfo(IWContext iwc)throws SQLException, IOException {
 
       Vector illegal = new Vector(0);
       int k = 0;
       frameTable.empty();
       frameTable.setAlignment(1,1,"center");
-        if( modinfo.getParameter("secure_num") != null){
-          String sentSecureNums[] =  modinfo.getParameterValues("secure_num");
-          String playerCard[] =  modinfo.getParameterValues("card");
-          String playerCardNo[] =  modinfo.getParameterValues("cardNo");
-          String lines[] = modinfo.getParameterValues("group_num");
+        if( iwc.getParameter("secure_num") != null){
+          String sentSecureNums[] =  iwc.getParameterValues("secure_num");
+          String playerCard[] =  iwc.getParameterValues("card");
+          String playerCardNo[] =  iwc.getParameterValues("cardNo");
+          String lines[] = iwc.getParameterValues("group_num");
           int numPlayers = sentSecureNums.length;
           boolean ones = false;
           boolean fullGroup = false;
@@ -487,16 +487,16 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
 
 
 
-public void main(ModuleInfo modinfo) throws Exception {
-    super.main(modinfo);
+public void main(IWContext iwc) throws Exception {
+    super.main(iwc);
     this.setTitle(this.iwrb.getLocalizedString("start.register_tee_time","Register tee time"));
 
 
 
     //Check if the Close button was pressed
     boolean doingClose=false;
-    String closeValue = modinfo.getParameter(closeParameterString);
-    String closeValueX = modinfo.getParameter(closeParameterString+".x");
+    String closeValue = iwc.getParameter(closeParameterString);
+    String closeValueX = iwc.getParameter(closeParameterString+".x");
     if(closeValue!=null && closeValueX != null){
       if(closeValue!=null){
         if(!closeValue.equals("")){
@@ -514,13 +514,13 @@ public void main(ModuleInfo modinfo) throws Exception {
     }else{
       boolean keepOn = true;
       try{
-        String date = modinfo.getSession().getAttribute("date").toString();
-        //String field_id = modinfo.getSession().getAttribute("field_id").toString();
-        currentField = modinfo.getSession().getAttribute("field_id").toString();
-        currentUnion = modinfo.getSession().getAttribute("union_id").toString();
+        String date = iwc.getSession().getAttribute("date").toString();
+        //String field_id = iwc.getSession().getAttribute("field_id").toString();
+        currentField = iwc.getSession().getAttribute("field_id").toString();
+        currentUnion = iwc.getSession().getAttribute("union_id").toString();
 
 
-        currentMember = Integer.toString(com.idega.projects.golf.login.business.LoginBusiness.getMember(modinfo).getID());
+        currentMember = Integer.toString(com.idega.projects.golf.login.business.LoginBusiness.getMember(iwc).getID());
         currentDay = new idegaTimestamp(date);
       }catch(Exception e){
         keepOn = false;
@@ -529,29 +529,29 @@ public void main(ModuleInfo modinfo) throws Exception {
 
 
 
-  //    if(modinfo.getParameter(saveParameterString+".x") != null || modinfo.getParameter(saveParameterString) != null){
-  //      this.handleFormInfo(modinfo);
+  //    if(iwc.getParameter(saveParameterString+".x") != null || iwc.getParameter(saveParameterString) != null){
+  //      this.handleFormInfo(iwc);
   //    }
 
       if(keepOn){
           myForm.maintainParameter("secure_num");
           myForm.maintainParameter("line");
           int skraMargaInt = 0;
-          String skraMarga = modinfo.getParameter("skraMarga");
+          String skraMarga = iwc.getParameter("skraMarga");
 
-          int line = Integer.parseInt( modinfo.getParameter("line"));
+          int line = Integer.parseInt( iwc.getParameter("line"));
           int check = business.countEntriesInGroup(line, currentField, currentDay);
 
           if( check > 3){
             setErroResponse(myForm, false);
           }
           else{
-            if( modinfo.getParameter("secure_num") != null){
-              handleFormInfo(modinfo);
+            if( iwc.getParameter("secure_num") != null){
+              handleFormInfo(iwc);
             }else{
               fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
               skraMargaInt = Integer.parseInt(skraMarga);
-              lineUpTable(skraMargaInt, modinfo);
+              lineUpTable(skraMargaInt, iwc);
             }
           }
 

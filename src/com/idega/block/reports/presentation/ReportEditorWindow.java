@@ -3,15 +3,15 @@ package com.idega.block.reports.presentation;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.block.reports.data.*;
 import com.idega.block.reports.business.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Script;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 import com.idega.data.EntityFinder;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -63,14 +63,14 @@ public class ReportEditorWindow extends IWAdminWindow {
     this.sManual = manual;
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
     try{
         if(isAdmin){
-          sSaveCategories = modinfo.getParameter(prmSaveCategory);
-          sViewCategories = modinfo.getParameter(prmViewCategory);
+          sSaveCategories = iwc.getParameter(prmSaveCategory);
+          sViewCategories = iwc.getParameter(prmViewCategory);
           if(sSaveCategories!=null){
             iSaveCategoryIds = str2IntegerArray(sSaveCategories,prmDelim);
           }
@@ -83,10 +83,10 @@ public class ReportEditorWindow extends IWAdminWindow {
 
           String sActPrm = "0";
 
-          if(modinfo.getParameter(sAction) != null)
-            sActPrm = modinfo.getParameter(sAction);
-          else if(modinfo.getParameter(prmReportId)!=null){
-            iReportId = Integer.parseInt(modinfo.getParameter(prmReportId));
+          if(iwc.getParameter(sAction) != null)
+            sActPrm = iwc.getParameter(sAction);
+          else if(iwc.getParameter(prmReportId)!=null){
+            iReportId = Integer.parseInt(iwc.getParameter(prmReportId));
             sActPrm = "2";
           }
           else if(useCheckBoxes ){
@@ -97,14 +97,14 @@ public class ReportEditorWindow extends IWAdminWindow {
           try{
             int iAction = Integer.parseInt(sActPrm);
             switch(iAction){
-              case ACT1: doSaveEdit(modinfo);   break;
-              case ACT2: T.add(getEditTable(modinfo,iReportId),1,2);  break;
-              case ACT3: doChange(modinfo); break;
-              case ACT4: doUpdate(modinfo); break;
+              case ACT1: doSaveEdit(iwc);   break;
+              case ACT2: T.add(getEditTable(iwc,iReportId),1,2);  break;
+              case ACT3: doChange(iwc); break;
+              case ACT4: doUpdate(iwc); break;
               case ACT5: doCloseNoAction(); break;
-              case ACT6: doUpdateSetup(modinfo);break;
-              case ACT7: T.add(getSetupTable(modinfo),1,2); break;
-              default : T.add(getMakeTable(modinfo),1,2); break;
+              case ACT6: doUpdateSetup(iwc);break;
+              case ACT7: T.add(getSetupTable(iwc),1,2); break;
+              default : T.add(getMakeTable(iwc),1,2); break;
             }
           }
           catch(Exception e){
@@ -122,7 +122,7 @@ public class ReportEditorWindow extends IWAdminWindow {
     add(F);
   }
 
-  private ModuleObject getMakeTable(ModuleInfo modinfo){
+  private PresentationObject getMakeTable(IWContext iwc){
     Table T = new Table(3,5);
     if(iViewCategoryIds != null){
       Vector V = new Vector();
@@ -132,7 +132,7 @@ public class ReportEditorWindow extends IWAdminWindow {
         V.addAll(L);
       }
       if(V != null && V.size() > 0){
-        modinfo.setSessionAttribute(prefix+"force",V);
+        iwc.setSessionAttribute(prefix+"force",V);
 
         T.setWidth("100%");
         T.setCellpadding(1);
@@ -231,7 +231,7 @@ public class ReportEditorWindow extends IWAdminWindow {
     return T;
   }
 
-   private ModuleObject getSetupTable(ModuleInfo modinfo){
+   private PresentationObject getSetupTable(IWContext iwc){
     Table T = new Table(3,5);
     if(iViewCategoryIds != null){
       Vector V = new Vector();
@@ -241,7 +241,7 @@ public class ReportEditorWindow extends IWAdminWindow {
         V.addAll(L);
       }
       if(V != null && V.size() > 0){
-        modinfo.setSessionAttribute(prefix+"force",V);
+        iwc.setSessionAttribute(prefix+"force",V);
 
         T.setWidth("100%");
         T.setCellpadding(1);
@@ -330,9 +330,9 @@ public class ReportEditorWindow extends IWAdminWindow {
   }
 
 
-  protected void doUpdate(ModuleInfo modinfo) throws SQLException{
-    String[] s = modinfo.getParameterValues("box");
-    Vector RC = (Vector)modinfo.getSessionAttribute(prefix+"force");
+  protected void doUpdate(IWContext iwc) throws SQLException{
+    String[] s = iwc.getParameterValues("box");
+    Vector RC = (Vector)iwc.getSessionAttribute(prefix+"force");
     Vector vRC = new Vector();
     int slen = s.length;
     String[] headers = new String[slen];
@@ -345,7 +345,7 @@ public class ReportEditorWindow extends IWAdminWindow {
     String temp;
     int rlen = RC.size();
     for (int i = 0; i < rlen; i++) {
-      temp = modinfo.getParameter(prefix+"in"+i);
+      temp = iwc.getParameter(prefix+"in"+i);
       if(!"".equalsIgnoreCase(temp) && !"0".equals(temp)){
         //add(" check "+i);
         ReportCondition rc = (ReportCondition) RC.get(i);
@@ -354,10 +354,10 @@ public class ReportEditorWindow extends IWAdminWindow {
 
       }
     }
-    modinfo.removeSessionAttribute(prefix+"force");
+    iwc.removeSessionAttribute(prefix+"force");
 
-    String name = modinfo.getParameter(prefix+"name");
-    String info = modinfo.getParameter(prefix+"info");
+    String name = iwc.getParameter(prefix+"name");
+    String info = iwc.getParameter(prefix+"info");
 
     name = name != null?name: "";
     info = info != null?info: "";
@@ -382,8 +382,8 @@ public class ReportEditorWindow extends IWAdminWindow {
     }
   }
 
-  protected void doUpdateSetup(ModuleInfo modinfo) throws SQLException{
-    Vector RC = (Vector)modinfo.getSessionAttribute(prefix+"force");
+  protected void doUpdateSetup(IWContext iwc) throws SQLException{
+    Vector RC = (Vector)iwc.getSessionAttribute(prefix+"force");
     Vector vRC = new Vector();
     TreeMap orderMap = new TreeMap();
     TreeMap headerMap = new TreeMap();
@@ -393,10 +393,10 @@ public class ReportEditorWindow extends IWAdminWindow {
     boolean use = false,colorder = false;
     for (int i = 0; i < rlen; i++) {
       ReportCondition rc = (ReportCondition) RC.get(i);
-      chk = modinfo.getParameter(prefix+"chk"+i);
-      in = modinfo.getParameter(prefix+"in"+i);
-      ord = modinfo.getParameter(prefix+"ord"+i);
-      col = modinfo.getParameter(prefix+"col"+i);
+      chk = iwc.getParameter(prefix+"chk"+i);
+      in = iwc.getParameter(prefix+"in"+i);
+      ord = iwc.getParameter(prefix+"ord"+i);
+      col = iwc.getParameter(prefix+"col"+i);
 
       if(!"".equalsIgnoreCase(in) && !"0".equals(in)){
         rc.setVariable(in);
@@ -429,15 +429,15 @@ public class ReportEditorWindow extends IWAdminWindow {
       use = false;
       colorder = false;
     }
-    modinfo.removeSessionAttribute(prefix+"force");
+    iwc.removeSessionAttribute(prefix+"force");
     headers.addAll(0,headerMap.values());
     String[] heads = new String[headers.size()];
     for (int i = 0; i < headers.size(); i++) {
       heads[i] = (String) headers.get(i);
     }
 
-    String name = modinfo.getParameter(prefix+"name");
-    String info = modinfo.getParameter(prefix+"info");
+    String name = iwc.getParameter(prefix+"name");
+    String info = iwc.getParameter(prefix+"info");
 
     name = name != null?name: "";
     info = info != null?info: "";
@@ -469,11 +469,11 @@ public class ReportEditorWindow extends IWAdminWindow {
   }
 
 
-  protected void doChange(ModuleInfo modinfo) throws SQLException{
+  protected void doChange(IWContext iwc) throws SQLException{
 
   }
 
-  private ModuleObject getCloseLink(){
+  private PresentationObject getCloseLink(){
     Link back =  new Link(iwrb.getImage("/pics/close.gif"));
     back.addParameter(sAction,ACT5);
     return back;
@@ -484,7 +484,7 @@ public class ReportEditorWindow extends IWAdminWindow {
   }
 
 
-  protected ModuleObject getEditTable(ModuleInfo modinfo,int iReportId) throws SQLException{
+  protected PresentationObject getEditTable(IWContext iwc,int iReportId) throws SQLException{
     Report R = null;
     boolean b = false;
     if(iReportId >0 ){
@@ -543,15 +543,15 @@ public class ReportEditorWindow extends IWAdminWindow {
     return T;
   }
 
-  private void doSaveEdit(ModuleInfo modinfo){
+  private void doSaveEdit(IWContext iwc){
     String msg = "";
-    String sName = modinfo.getParameter(prefix+"name").trim();
-    String sInfo = modinfo.getParameter(prefix+"info").trim();
-    String sHeaders = modinfo.getParameter(prefix+"headers").trim();
+    String sName = iwc.getParameter(prefix+"name").trim();
+    String sInfo = iwc.getParameter(prefix+"info").trim();
+    String sHeaders = iwc.getParameter(prefix+"headers").trim();
 
-    String sSql = modinfo.getParameter(prefix+"sql").trim();
-    String sReportId = modinfo.getParameter(prefix+"repid");
-    String sReportCatId = modinfo.getParameter(prefix+"repcatid");
+    String sSql = iwc.getParameter(prefix+"sql").trim();
+    String sReportId = iwc.getParameter(prefix+"repid");
+    String sReportCatId = iwc.getParameter(prefix+"repcatid");
     int catid = sReportCatId != null?Integer.parseInt(sReportCatId):-1;
     int id = sReportId!=null? Integer.parseInt(sReportId ):-1;
 
@@ -621,19 +621,19 @@ public class ReportEditorWindow extends IWAdminWindow {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
-    super.main(modinfo);
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+  public void main(IWContext iwc) throws Exception{
+    super.main(iwc);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
     String title = iwrb.getLocalizedString("report_editor","Report Editor");
     setTitle(title);
     addTitle(title);
 
     try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
     sManual = iwrb.getLocalizedString("manual","");
   }
 

@@ -12,9 +12,9 @@ import com.idega.data.*;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.data.genericentity.Address;
 import com.idega.block.building.data.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.idegaweb.IWResourceBundle;
 
 /**
@@ -26,7 +26,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class BuildingViewer extends JModuleObject{
+public class BuildingViewer extends Block{
 
 private static final String IW_RESOURCE_BUNDLE = "com.idega.block.building";
 public static final String PARAMETER_STRING = "complex_id";
@@ -44,14 +44,14 @@ public BuildingViewer(int building_id){
 }
 
 
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
     if ( iwrb_ == null ) {
-      iwrb_ = getResourceBundle(modinfo);
+      iwrb_ = getResourceBundle(iwc);
     }
 
-    if ( modinfo.getParameter(PARAMETER_STRING) != null ) {
+    if ( iwc.getParameter(PARAMETER_STRING) != null ) {
       try {
-        building_id = Integer.parseInt(modinfo.getParameter(PARAMETER_STRING));
+        building_id = Integer.parseInt(iwc.getParameter(PARAMETER_STRING));
       }
       catch (NumberFormatException e) {
         building_id = 0;
@@ -59,11 +59,11 @@ public BuildingViewer(int building_id){
     }
 
     if ( building_id == 0 ) {
-      getAllBuildings(modinfo);
+      getAllBuildings(iwc);
     }
 
     else {
-      getSingleBuilding(modinfo);
+      getSingleBuilding(iwc);
     }
 
   }
@@ -74,7 +74,7 @@ public BuildingViewer(int building_id){
     this.infoStyle = "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
   }
 
-  private void getAllBuildings(ModuleInfo modinfo) throws SQLException {
+  private void getAllBuildings(IWContext iwc) throws SQLException {
 
     Complex[] complex = (Complex[]) (new Complex()).findAllOrdered(Complex.getNameColumnName());
     Table campusTable = new Table(1,complex.length);
@@ -121,7 +121,7 @@ public BuildingViewer(int building_id){
       Image moreImage = iwrb_.getImage("/building/more.gif");
       Image mapImage = iwrb_.getImage("/building/map.gif");
 
-      Link complexLink = new Link(moreImage,modinfo.getRequestURI());
+      Link complexLink = new Link(moreImage,iwc.getRequestURI());
         complexLink.addParameter(PARAMETER_STRING,iComplexId);
 
       Link locationLink = new Link(mapImage);
@@ -171,7 +171,7 @@ public BuildingViewer(int building_id){
       return T;
     }
 
-  private void getSingleBuilding(ModuleInfo modinfo) throws SQLException {
+  private void getSingleBuilding(IWContext iwc) throws SQLException {
 
     Complex complex = new Complex(building_id);
     ApartmentType[] types = BuildingFinder.findApartmentTypesInComplex(building_id);

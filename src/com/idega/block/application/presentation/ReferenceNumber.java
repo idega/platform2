@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumber.java,v 1.3 2001/08/29 17:43:54 laddi Exp $
+ * $Id: ReferenceNumber.java,v 1.4 2001/10/05 07:59:58 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,16 +10,16 @@
 package com.idega.block.application.presentation;
 
 import com.idega.block.application.business.ReferenceNumberHandler;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.Parameter;
-import com.idega.jmodule.object.interfaceobject.HelpButton;
-import com.idega.jmodule.object.textObject.Text;
+import com.idega.presentation.Block;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Parameter;
+import com.idega.presentation.ui.HelpButton;
+import com.idega.presentation.text.Text;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -28,7 +28,7 @@ import com.idega.idegaweb.IWBundle;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ReferenceNumber extends JModuleObject {
+public class ReferenceNumber extends Block {
   public static final int LAYOUT_VERTICAL = 1;
   public static final int LAYOUT_HORIZONTAL = 2;
   public static final int LAYOUT_STACKED = 3;
@@ -63,9 +63,9 @@ public class ReferenceNumber extends JModuleObject {
 		setDefaultValues();
   }
 
-  public void main(ModuleInfo modinfo)throws Exception{
-    iwb_ = getBundle(modinfo);
-    iwrb_ = getResourceBundle(modinfo);
+  public void main(IWContext iwc)throws Exception{
+    iwb_ = getBundle(iwc);
+    iwrb_ = getResourceBundle(iwc);
 
     referenceImage_ = iwrb_.getImage("get.gif");
 

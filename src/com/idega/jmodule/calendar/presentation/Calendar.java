@@ -11,16 +11,16 @@ import java.sql.Timestamp;
 import com.idega.jmodule.projectmanager.data.Project;
 import com.idega.jmodule.timesheet.data.TimesheetEntry;
 import com.idega.jmodule.timesheet.data.Resource;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import java.util.*;
 import com.idega.util.text.*;
 
-public class Calendar extends JModuleObject{
+public class Calendar extends Block{
         boolean connect_to_timesheet = false;
         boolean is_announcement = false;
         boolean showNameOfMonth = true;
@@ -68,7 +68,7 @@ public class Calendar extends JModuleObject{
         private String next_image_url;
         private String today_image_url;
 
-        private com.idega.jmodule.object.Image schedule_header_image = null;
+        private com.idega.presentation.Image schedule_header_image = null;
         private String schedule_header_height = "22";
 
   private String language = "IS";
@@ -195,7 +195,7 @@ private String DatastoreType;
           this.previous_image_url = url;
         }
 
-        public void setScheduleHeaderImage(com.idega.jmodule.object.Image header_image) {
+        public void setScheduleHeaderImage(com.idega.presentation.Image header_image) {
           this.schedule_header_image = header_image;
         }
 
@@ -236,8 +236,8 @@ private String DatastoreType;
 	}
 
 
-      private void setSpokenLanguage(ModuleInfo modinfo){
-        language = modinfo.getSpokenLanguage();
+      private void setSpokenLanguage(IWContext iwc){
+        language = iwc.getSpokenLanguage();
         if (language != null) {
         if (language.equalsIgnoreCase("IS")){
           LANG = IS;
@@ -251,18 +251,18 @@ private String DatastoreType;
       }
 
 
-	private String getDate(ModuleInfo modinfo) {
-		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
+	private String getDate(IWContext iwc) {
+		String	temp_manudu = iwc.getParameter("idega_calendar_month");
+		String	temp_ar2 = iwc.getParameter("idega_calendar_year");
+		String	temp_dom2 = iwc.getParameter("idega_calendar_day");
 
 		return temp_dom2 + " " + temp_manudu + " " + temp_ar2;
 	}
 
-        private Timestamp getTimestamp(ModuleInfo modinfo) {
-		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
+        private Timestamp getTimestamp(IWContext iwc) {
+		String	temp_manudu = iwc.getParameter("idega_calendar_month");
+		String	temp_ar2 = iwc.getParameter("idega_calendar_year");
+		String	temp_dom2 = iwc.getParameter("idega_calendar_day");
 
                 Timestamp returner = null;
                 if ((temp_manudu != null) && (temp_ar2 != null) && (temp_dom2 != null) ) {
@@ -273,10 +273,10 @@ private String DatastoreType;
                 return returner;
         }
 
-        private void forwardDate(ModuleInfo modinfo,Form form) {
-		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
+        private void forwardDate(IWContext iwc,Form form) {
+		String	temp_manudu = iwc.getParameter("idega_calendar_month");
+		String	temp_ar2 = iwc.getParameter("idega_calendar_year");
+		String	temp_dom2 = iwc.getParameter("idega_calendar_day");
 
                 form.add(new HiddenInput("idega_calendar_month",temp_manudu));
                 form.add(new HiddenInput("idega_calendar_year",temp_ar2));
@@ -284,44 +284,44 @@ private String DatastoreType;
         }
 
 
-	private String getSQLDate(ModuleInfo modinfo) {
-		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
+	private String getSQLDate(IWContext iwc) {
+		String	temp_manudu = iwc.getParameter("idega_calendar_month");
+		String	temp_ar2 = iwc.getParameter("idega_calendar_year");
+		String	temp_dom2 = iwc.getParameter("idega_calendar_day");
 
 		return temp_ar2 + "-" + temp_manudu + "-" + dom2;
 	}
 
 
-        private int getSubmittedDay(ModuleInfo modinfo) {
+        private int getSubmittedDay(IWContext iwc) {
             int returner = 0;
-            String temp = modinfo.getParameter("idega_calendar_day");
+            String temp = iwc.getParameter("idega_calendar_day");
             if (temp != null) {
                 returner = Integer.parseInt(temp);
             }
             return returner;
         }
-        private int getSubmittedMonth(ModuleInfo modinfo) {
+        private int getSubmittedMonth(IWContext iwc) {
             int returner = 0;
-            String temp = modinfo.getParameter("idega_calendar_month");
+            String temp = iwc.getParameter("idega_calendar_month");
             if (temp != null) {
                 returner = Integer.parseInt(temp);
             }
             return returner;
         }
-        private int getSubmittedYear(ModuleInfo modinfo) {
+        private int getSubmittedYear(IWContext iwc) {
             int returner = 0;
-            String temp = modinfo.getParameter("idega_calendar_year");
+            String temp = iwc.getParameter("idega_calendar_year");
             if (temp != null) {
                 returner = Integer.parseInt(temp);
             }
             return returner;
         }
 
-	private void Calculate(ModuleInfo modinfo) {
-		String	temp_manudu = modinfo.getParameter("idega_calendar_month");
-		String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
-		String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
+	private void Calculate(IWContext iwc) {
+		String	temp_manudu = iwc.getParameter("idega_calendar_month");
+		String	temp_ar2 = iwc.getParameter("idega_calendar_year");
+		String	temp_dom2 = iwc.getParameter("idega_calendar_day");
 
 		if (( temp_manudu != null) && (temp_ar2 != null) && (temp_dom2 != null))  {
 			manudu = temp_manudu;
@@ -329,7 +329,7 @@ private String DatastoreType;
 			dom2 = temp_dom2;
 		}
 
-		String temp_typa = modinfo.getParameter("idega_calendar_skoda");
+		String temp_typa = iwc.getParameter("idega_calendar_skoda");
 		if (temp_typa != null) {
 			typa = temp_typa;
 		}
@@ -411,7 +411,7 @@ private String DatastoreType;
 		}
 	}
 
-	private void schedule(ModuleInfo modinfo) throws SQLException {
+	private void schedule(IWContext iwc) throws SQLException {
 
 		int dag = (FunctColl.getDay()-1);
 		int man = (FunctColl.getMonth());
@@ -497,7 +497,7 @@ private String DatastoreType;
 
 
 
-	private Table year(ModuleInfo modinfo) throws SQLException {
+	private Table year(IWContext iwc) throws SQLException {
 
 		Table table = new Table();
 			table.setBorder(0);
@@ -515,51 +515,51 @@ private String DatastoreType;
 
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),1,2);
-			table.add(month(modinfo,true),1,2);
+			table.add(month(iwc,true),1,2);
 			table.setVerticalAlignment(1,2,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),2,2);
-			table.add(month(modinfo,true),2,2);
+			table.add(month(iwc,true),2,2);
 			table.setVerticalAlignment(2,2,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),3,2);
-			table.add(month(modinfo,true),3,2);
+			table.add(month(iwc,true),3,2);
 			table.setVerticalAlignment(3,2,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),1,3);
-			table.add(month(modinfo,true),1,3);
+			table.add(month(iwc,true),1,3);
 			table.setVerticalAlignment(1,3,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),2,3);
-			table.add(month(modinfo,true),2,3);
+			table.add(month(iwc,true),2,3);
 			table.setVerticalAlignment(2,3,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),3,3);
-			table.add(month(modinfo,true),3,3);
+			table.add(month(iwc,true),3,3);
 			table.setVerticalAlignment(3,3,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),1,4);
-			table.add(month(modinfo,true),1,4);
+			table.add(month(iwc,true),1,4);
 			table.setVerticalAlignment(1,4,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),2,4);
-			table.add(month(modinfo,true),2,4);
+			table.add(month(iwc,true),2,4);
 			table.setVerticalAlignment(2,4,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),3,4);
-			table.add(month(modinfo,true),3,4);
+			table.add(month(iwc,true),3,4);
 			table.setVerticalAlignment(3,4,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),1,5);
-			table.add(month(modinfo,true),1,5);
+			table.add(month(iwc,true),1,5);
 			table.setVerticalAlignment(1,5,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),2,5);
-			table.add(month(modinfo,true),2,5);
+			table.add(month(iwc,true),2,5);
 			table.setVerticalAlignment(2,5,"top");
 		++manudur;
 			table.add(FunctColl.getNameOfMonth(manudur),3,5);
-			table.add(month(modinfo,true),3,5);
+			table.add(month(iwc,true),3,5);
 			table.setVerticalAlignment(3,5,"top");
 
 		return table;
@@ -627,7 +627,7 @@ private String DatastoreType;
 	}
 
 
-	private void day(ModuleInfo modinfo) throws SQLException, IOException{
+	private void day(IWContext iwc) throws SQLException, IOException{
 		if (dombreyta-1== FunctColl.getLengthOfMonth(manudur, ar))  {
 			dombreyta=1;
 			++manudur;
@@ -658,8 +658,8 @@ private String DatastoreType;
 
                 Table header_table = getHeaderTable();
                     Text dags = new Text("");
-                        dags.addToText(FunctColl.getNameOfDay(FunctColl.getDayOfWeek(ar,manudur,dombreyta),modinfo)+ " "+this.dombreyta+". ");
-                        dags.addToText(FunctColl.getNameOfMonth(this.manudur,modinfo)+ " "+this.ar);
+                        dags.addToText(FunctColl.getNameOfDay(FunctColl.getDayOfWeek(ar,manudur,dombreyta),iwc)+ " "+this.dombreyta+". ");
+                        dags.addToText(FunctColl.getNameOfMonth(this.manudur,iwc)+ " "+this.ar);
                         dags.setFontColor(this.header_text_color);
                         dags.setFontSize(3);
                         dags.setBold();
@@ -755,7 +755,7 @@ private String DatastoreType;
 
 
 
-	private void week(ModuleInfo modinfo) throws SQLException{
+	private void week(IWContext iwc) throws SQLException{
 /*
 	Paragraph myPar = new Paragraph();
 		myPar.setAlign("left");
@@ -781,7 +781,7 @@ private String DatastoreType;
 
         Table header_table = getHeaderTable();
             Text dags = new Text("");
-                dags.addToText(FunctColl.getNameOfMonth(this.manudur,modinfo)+ " "+this.ar);
+                dags.addToText(FunctColl.getNameOfMonth(this.manudur,iwc)+ " "+this.ar);
                 dags.setFontColor(this.header_text_color);
                 dags.setFontSize(3);
                 dags.setBold();
@@ -855,7 +855,7 @@ private String DatastoreType;
 				minnHlekkur.addParameter("idega_calendar_year",ar);
 				minnHlekkur.addParameter("action","calendar");
 
-                        short_name_of_month = this.FunctColl.getShortNameOfMonth(manudur, modinfo);
+                        short_name_of_month = this.FunctColl.getShortNameOfMonth(manudur, iwc);
 			switch (j) {
 				case 1 :
 					myTable.setWidth(j+1,"12.5%");
@@ -948,7 +948,7 @@ private String DatastoreType;
 
 
 
-	private Table month(ModuleInfo modinfo, boolean isYear) throws SQLException{
+	private Table month(IWContext iwc, boolean isYear) throws SQLException{
 
           if (this.member != null) {
             if (this.connect_to_timesheet) {
@@ -963,7 +963,7 @@ private String DatastoreType;
 	vdagur = (calendar.get(calendar.DAY_OF_WEEK));
 
 	dagarman = (FunctColl.getLengthOfMonth(manudur,ar));
-	manudurnafn =(FunctColl.getNameOfMonth(manudur,modinfo));
+	manudurnafn =(FunctColl.getNameOfMonth(manudur,iwc));
 
 
 	int dombreyta2 = 1;
@@ -1039,25 +1039,25 @@ private String DatastoreType;
 
 	myTable.setHeight(row,"20");
 
-	Text Sun = new Text(FunctColl.getNameOfDay(1,modinfo).substring(0,3));
+	Text Sun = new Text(FunctColl.getNameOfDay(1,iwc).substring(0,3));
 		Sun.setBold();
 		Sun.setFontColor(header_text_color);
-	Text Man = new Text(FunctColl.getNameOfDay(2,modinfo).substring(0,3));
+	Text Man = new Text(FunctColl.getNameOfDay(2,iwc).substring(0,3));
 		Man.setBold();
 		Man.setFontColor(header_text_color);
-	Text Tri = new Text(FunctColl.getNameOfDay(3,modinfo).substring(0,3));
+	Text Tri = new Text(FunctColl.getNameOfDay(3,iwc).substring(0,3));
 		Tri.setBold();
 		Tri.setFontColor(header_text_color);
-	Text Mid = new Text(FunctColl.getNameOfDay(4,modinfo).substring(0,3));
+	Text Mid = new Text(FunctColl.getNameOfDay(4,iwc).substring(0,3));
 		Mid.setBold();
 		Mid.setFontColor(header_text_color);
-	Text Fim  = new Text(FunctColl.getNameOfDay(5,modinfo).substring(0,3));
+	Text Fim  = new Text(FunctColl.getNameOfDay(5,iwc).substring(0,3));
 		Fim.setBold();
 		Fim.setFontColor(header_text_color);
-	Text Fos = new Text(FunctColl.getNameOfDay(6,modinfo).substring(0,3));
+	Text Fos = new Text(FunctColl.getNameOfDay(6,iwc).substring(0,3));
 		Fos.setBold();
 		Fos.setFontColor(header_text_color);
-	Text Lau = new Text(FunctColl.getNameOfDay(7,modinfo).substring(0,3));
+	Text Lau = new Text(FunctColl.getNameOfDay(7,iwc).substring(0,3));
 		Lau.setBold();
 		Lau.setFontColor(header_text_color);
 
@@ -1510,9 +1510,9 @@ private String formatText(String textString)
 	return textString;
 }
 
-protected void deleteEntry(ModuleInfo modinfo)  throws Exception{
+protected void deleteEntry(IWContext iwc)  throws Exception{
       try {
-            String faerslur_id = modinfo.getParameter("idega_calendar_faerslu_id");
+            String faerslur_id = iwc.getParameter("idega_calendar_faerslu_id");
 
             CalendarEntry entry = new CalendarEntry(Integer.parseInt(faerslur_id));
             idegaTimestamp i_stamp = new idegaTimestamp(entry.getDate());
@@ -1535,19 +1535,19 @@ protected void deleteEntry(ModuleInfo modinfo)  throws Exception{
           e.printStackTrace(System.err);
         }
 
-        add(month(modinfo, false));
+        add(month(iwc, false));
 
 }
 
 
 
-private void viewToday(ModuleInfo modinfo) throws SQLException {
-	String day   = modinfo.getParameter("idega_calendar_day");
-	String month = modinfo.getParameter("idega_calendar_month");
-	String year  = modinfo.getParameter("idega_calendar_year");
+private void viewToday(IWContext iwc) throws SQLException {
+	String day   = iwc.getParameter("idega_calendar_day");
+	String month = iwc.getParameter("idega_calendar_month");
+	String year  = iwc.getParameter("idega_calendar_year");
 
 	String dateString = "";
-	Text header = new Text(this.getDate(modinfo));
+	Text header = new Text(this.getDate(iwc));
           header.setBold();
           header.setFontColor(this.header_text_color);
 
@@ -1596,8 +1596,8 @@ private void viewToday(ModuleInfo modinfo) throws SQLException {
 
 
 
-private void view(ModuleInfo modinfo) throws SQLException {
-	String faerslu_id = modinfo.getParameter("idega_calendar_faerslur_id");
+private void view(IWContext iwc) throws SQLException {
+	String faerslu_id = iwc.getParameter("idega_calendar_faerslur_id");
 
         CalendarEntry  entry = new CalendarEntry(Integer.parseInt(faerslu_id));
 
@@ -1671,13 +1671,13 @@ private void view(ModuleInfo modinfo) throws SQLException {
 
 
 
-private void nytt(ModuleInfo modinfo, boolean update) throws SQLException{
+private void nytt(IWContext iwc, boolean update) throws SQLException{
 
         if (this.connect_to_timesheet) {
             addMenu();
         }
 
-        String faerslur_id = modinfo.getParameter("idega_calendar_faerslu_id");
+        String faerslur_id = iwc.getParameter("idega_calendar_faerslu_id");
         String titleText = "";
         String contentText = "";
         if (update) {
@@ -1725,7 +1725,7 @@ private void nytt(ModuleInfo modinfo, boolean update) throws SQLException{
                 myTable.mergeCells(1,4,2,4);
           contentTable.add(myTable,1,2);
 
-	String head = modinfo.getParameter("idega_calendar_day") + ". " + cal.getNameOfMonth(modinfo.getParameter("idega_calendar_month")) + " "+modinfo.getParameter("idega_calendar_year");
+	String head = iwc.getParameter("idega_calendar_day") + ". " + cal.getNameOfMonth(iwc.getParameter("idega_calendar_month")) + " "+iwc.getParameter("idega_calendar_year");
 	Text header = new Text(head);
 		header.setBold();
 		header.setFontColor(this.header_text_color);
@@ -1771,11 +1771,11 @@ private void nytt(ModuleInfo modinfo, boolean update) throws SQLException{
 
 
 
-private void saveModified(ModuleInfo modinfo) throws Exception{
-	String forda_id_string = modinfo.getParameter("forda_id_string");
-	String comment = modinfo.getParameter("comment");
+private void saveModified(IWContext iwc) throws Exception{
+	String forda_id_string = iwc.getParameter("forda_id_string");
+	String comment = iwc.getParameter("comment");
 
-	String faerslur_id = modinfo.getParameter("idega_calendar_faerslu_id");
+	String faerslur_id = iwc.getParameter("idega_calendar_faerslu_id");
 
 
 	boolean villa = false;
@@ -1785,7 +1785,7 @@ private void saveModified(ModuleInfo modinfo) throws Exception{
 	}
 
 	if (forda_id_string.equals("")) {
-		nytt(modinfo, true);
+		nytt(iwc, true);
 	}
 	{
 		if (comment==null) {
@@ -1809,19 +1809,19 @@ private void saveModified(ModuleInfo modinfo) throws Exception{
 //		add(new BackButton(LANG[3]));
 	}
 	else {
-        		//modinfo.getResponse().sendRedirect("/calendar.jsp");
+        		//iwc.getResponse().sendRedirect("/calendar.jsp");
 	}
-        add(month(modinfo, false));
+        add(month(iwc, false));
 
 }
 
 
 
-private void saveNytt(ModuleInfo modinfo) throws Exception{
-	String forda_id_string = modinfo.getParameter("forda_id_string");
-	String comment = modinfo.getParameter("comment");
+private void saveNytt(IWContext iwc) throws Exception{
+	String forda_id_string = iwc.getParameter("forda_id_string");
+	String comment = iwc.getParameter("comment");
 
-//	String modifySt = modinfo.getParameter("idega_calendar_modify");
+//	String modifySt = iwc.getParameter("idega_calendar_modify");
 
 	boolean villa = false;
 //        System.out.println("Kominn í idega_calendar_nytt_save FALLIÐ");
@@ -1831,7 +1831,7 @@ private void saveNytt(ModuleInfo modinfo) throws Exception{
 	}
 
 	if (forda_id_string.equals("")) {
-		nytt(modinfo,false);
+		nytt(iwc,false);
 	}
 	{
 		if (comment==null) {
@@ -1839,9 +1839,9 @@ private void saveNytt(ModuleInfo modinfo) throws Exception{
 		}
 		try {
                         System.out.println("Kominn í idega_calendar_nytt_save TRY");
-			String	temp_manudu = modinfo.getParameter("idega_calendar_month");
-			String	temp_ar2 = modinfo.getParameter("idega_calendar_year");
-			String	temp_dom2 = modinfo.getParameter("idega_calendar_day");
+			String	temp_manudu = iwc.getParameter("idega_calendar_month");
+			String	temp_ar2 = iwc.getParameter("idega_calendar_year");
+			String	temp_dom2 = iwc.getParameter("idega_calendar_day");
                         System.out.println("Save to this date : "+this.ar+"-"+TextSoap.addZero(this.manudur)+"-"+TextSoap.addZero(this.dagur));
 
 
@@ -1868,17 +1868,17 @@ private void saveNytt(ModuleInfo modinfo) throws Exception{
 	else {
 
 	}
-            add(month(modinfo, false));
+            add(month(iwc, false));
 
 }
 
-private void newEntry(ModuleInfo modinfo) throws SQLException {
+private void newEntry(IWContext iwc) throws SQLException {
 
         addMenu();
-	//HttpServletRequest request = modinfo.getRequest();
+	//HttpServletRequest request = iwc.getRequest();
 
 
-	String timi = modinfo.getParameter("timi");
+	String timi = iwc.getParameter("timi");
 	double timifra;
 	double timitil;
 
@@ -1900,7 +1900,7 @@ private void newEntry(ModuleInfo modinfo) throws SQLException {
 
 
 
-        this.forwardDate(modinfo,myForm);
+        this.forwardDate(iwc,myForm);
 
 	add(myForm);
 
@@ -1916,7 +1916,7 @@ private void newEntry(ModuleInfo modinfo) throws SQLException {
 	myForm.add(myTable);
 
 
-        Text theDate = new Text(this.getDate(modinfo));
+        Text theDate = new Text(this.getDate(iwc));
           theDate.setFontColor(this.header_text_color);
           theDate.setBold();
         myTable.add(theDate,1,1);
@@ -2072,14 +2072,14 @@ private void newEntry(ModuleInfo modinfo) throws SQLException {
 
 
 
-private void saveNewEntry(ModuleInfo modinfo) throws Exception {
+private void saveNewEntry(IWContext iwc) throws Exception {
     try {
-        String forda_id = modinfo.getParameter("forda_id");
-        String verk_id = modinfo.getParameter("verk_id");
-        String fra = modinfo.getParameter("fra");
-        String til = modinfo.getParameter("til");
-        String lysing = modinfo.getParameter("lysing");
-        String athugasemd = modinfo.getParameter("athugasemd");
+        String forda_id = iwc.getParameter("forda_id");
+        String verk_id = iwc.getParameter("verk_id");
+        String fra = iwc.getParameter("fra");
+        String til = iwc.getParameter("til");
+        String lysing = iwc.getParameter("lysing");
+        String athugasemd = iwc.getParameter("athugasemd");
 
 
         CalendarEntry calEntry = new CalendarEntry();
@@ -2114,7 +2114,7 @@ private void saveNewEntry(ModuleInfo modinfo) throws Exception {
 
             }
 
-            calEntry.setDate(this.getTimestamp(modinfo));
+            calEntry.setDate(this.getTimestamp(iwc));
 
             calEntry.insert();
 
@@ -2148,7 +2148,7 @@ private void saveNewEntry(ModuleInfo modinfo) throws Exception {
                   entry.setDescription(lysing);
               }
 
-              entry.setDate(this.getTimestamp(modinfo));
+              entry.setDate(this.getTimestamp(iwc));
               entry.setMemberId(this.member_id);
               entry.setBooked(false);
               entry.setRegistered(false);
@@ -2163,9 +2163,9 @@ private void saveNewEntry(ModuleInfo modinfo) throws Exception {
       e.printStackTrace(System.err);
     }
 
-//        main(modinfo);
-        add(month(modinfo, false));
-        //       modinfo.getResponse().sendRedirect(URI);
+//        main(iwc);
+        add(month(iwc, false));
+        //       iwc.getResponse().sendRedirect(URI);
 
 }
 
@@ -2188,11 +2188,11 @@ private void saveNewEntry(ModuleInfo modinfo) throws Exception {
         }
 
 
-	public void main(ModuleInfo modinfo) throws Exception{
+	public void main(IWContext iwc) throws Exception{
 
 
             if (member == null) {
-                member = (com.idega.data.genericentity.Member) modinfo.getSession().getAttribute("member_login");
+                member = (com.idega.data.genericentity.Member) iwc.getSession().getAttribute("member_login");
             }
             try {
               this.member_id = this.member.getID();
@@ -2200,66 +2200,66 @@ private void saveNewEntry(ModuleInfo modinfo) throws Exception {
             catch (Exception e) {
             }
 
-                this.isAdmin=super.isAdministrator(modinfo);
+                this.isAdmin=super.isAdministrator(iwc);
 
 
-           setSpokenLanguage(modinfo);
+           setSpokenLanguage(iwc);
 
-		URI = modinfo.getRequestURI();
-		String action = modinfo.getParameter("idega_calendar_action");
+		URI = iwc.getRequestURI();
+		String action = iwc.getParameter("idega_calendar_action");
 
 		if (action == null) {
-  		  Calculate(modinfo);
+  		  Calculate(iwc);
 			if (typa.equals("Dagur")) {
-				day(modinfo);
+				day(iwc);
 			}
 			else if (typa.equals("Vika")) {
 				addLinks();
-				week(modinfo);
+				week(iwc);
 			}
 			else if (typa.equals("Manudur")) {
-				add(month(modinfo,false));
+				add(month(iwc,false));
 			}
 			else if (typa.equals("Ar")) {
-				add(year(modinfo));
+				add(year(iwc));
 			}
 			else if (typa.equals("Schedule")) {
-				schedule(modinfo);
+				schedule(iwc);
 			}
 		}
 		else {  // action != null
-                    this.Calculate(modinfo);
+                    this.Calculate(iwc);
 //                    System.out.println("actionid er : "+action);
-//                    add("actionid er : "+action+" og dagsetning er dagur = "+this.getSubmittedDay(modinfo)+" ("+this.dagur+"), mánuður "+this.getSubmittedMonth(modinfo)+", ár "+this.getSubmittedYear(modinfo)+"");
+//                    add("actionid er : "+action+" og dagsetning er dagur = "+this.getSubmittedDay(iwc)+" ("+this.dagur+"), mánuður "+this.getSubmittedMonth(iwc)+", ár "+this.getSubmittedYear(iwc)+"");
 			if (action.equals("idega_calendar_new")) {
 //				add("gimmi");
-				nytt(modinfo,false);
+				nytt(iwc,false);
 			}
 			else if (action.equals("idega_calendar_nytt_save")) {
                                 System.out.println("Kominn í idega_calendar_nytt_save");
-				saveNytt(modinfo);
+				saveNytt(iwc);
 			}
 			else if (action.equals("idega_calendar_modify_save")) {
-				saveModified(modinfo);
+				saveModified(iwc);
 			}
 
 			else if (action.equals("view")) {
-				view(modinfo);
+				view(iwc);
 			}
 			else if (action.equals("complete_list")) {
-				viewToday(modinfo);
+				viewToday(iwc);
 			}
 			else if (action.equals(LANG[9])) {
-				deleteEntry(modinfo);
+				deleteEntry(iwc);
 			}
 			else if (action.equals(LANG[10])) {
-                                nytt(modinfo,true);
+                                nytt(iwc,true);
 			}
                         else if (action.equals("new_entry")) {
-                                newEntry(modinfo);
+                                newEntry(iwc);
                         }
                         else if (action.equals("save_new_entry")) {
-                                saveNewEntry(modinfo);
+                                saveNewEntry(iwc);
                         }
 		}
 

@@ -4,7 +4,7 @@ import java.sql.*;
 import com.idega.data.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import java.io.*;
 
 /**

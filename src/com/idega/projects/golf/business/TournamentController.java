@@ -6,11 +6,11 @@
 
 package com.idega.projects.golf.business;
 
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.DropdownMenu;
 import com.idega.projects.golf.Handicap;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import java.util.*;
 import java.io.*;
 import com.idega.jmodule.login.data.*;
@@ -119,33 +119,33 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
       return (!(finished||ongoing));
     }
 
-    public static void removeTournamentTableApplicationAttribute(ModuleInfo modinfo) {
-      Enumeration enum = modinfo.getServletContext().getAttributeNames();
+    public static void removeTournamentTableApplicationAttribute(IWContext iwc) {
+      Enumeration enum = iwc.getServletContext().getAttributeNames();
       String myString = "";
       while (enum.hasMoreElements()) {
           myString = (String) enum.nextElement();
           if (myString.indexOf("tournament_table_union_id_") != -1) {
-              modinfo.removeApplicationAttribute(myString);
+              iwc.removeApplicationAttribute(myString);
           }
           else if (myString.indexOf("tournament_dropdownmenu_ordered_by_union_clubadmin") != -1) {
-              modinfo.removeApplicationAttribute(myString);
+              iwc.removeApplicationAttribute(myString);
           }
       }
-      TournamentController.removeTournamentBoxApplication(modinfo);
+      TournamentController.removeTournamentBoxApplication(iwc);
 
 
     }
 
-    public static void removeTournamentBoxApplication(ModuleInfo modinfo) {
-        modinfo.removeApplicationAttribute("tournament_box");
+    public static void removeTournamentBoxApplication(IWContext iwc) {
+        iwc.removeApplicationAttribute("tournament_box");
     }
 
-    public static TournamentBox getTournamentBox(ModuleInfo modinfo) {
-      TournamentBox tBox = (TournamentBox) modinfo.getApplicationAttribute("tournament_box");
+    public static TournamentBox getTournamentBox(IWContext iwc) {
+      TournamentBox tBox = (TournamentBox) iwc.getApplicationAttribute("tournament_box");
       if (tBox == null) {
           System.err.println("TournamentBox IS NULL");
           tBox = new TournamentBox();
-          modinfo.setApplicationAttribute("tournament_box",tBox);
+          iwc.setApplicationAttribute("tournament_box",tBox);
       }
       else {
           System.err.println("TournamentBox is NOT null");
@@ -154,10 +154,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
     }
 
 
-    public static DropdownMenu getDropdownOrderedByUnion(DropdownMenu menu,ModuleInfo modinfo)  {
+    public static DropdownMenu getDropdownOrderedByUnion(DropdownMenu menu,IWContext iwc)  {
         try {
-            boolean clubAdmin = com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo);
-            com.idega.projects.golf.entity.Member member = (com.idega.projects.golf.entity.Member)com.idega.jmodule.login.business.AccessControl.getMember(modinfo);
+            boolean clubAdmin = com.idega.jmodule.login.business.AccessControl.isClubAdmin(iwc);
+            com.idega.projects.golf.entity.Member member = (com.idega.projects.golf.entity.Member)com.idega.jmodule.login.business.AccessControl.getMember(iwc);
             Union union = null;
             try {
               union = member.getMainUnion();
@@ -174,7 +174,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
                 menuName = menu.getName();
             }
 
-            DropdownMenu applicationMenu = (DropdownMenu) modinfo.getApplicationAttribute("tournament_dropdownmenu_ordered_by_union_clubadmin_"+clubAdmin+"_union_id_"+union_id+"_menuName_"+menuName);
+            DropdownMenu applicationMenu = (DropdownMenu) iwc.getApplicationAttribute("tournament_dropdownmenu_ordered_by_union_clubadmin_"+clubAdmin+"_union_id_"+union_id+"_menuName_"+menuName);
             if (applicationMenu == null) {
                     if (clubAdmin) {
                         String union_abb = union.getAbbrevation();
@@ -200,7 +200,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
                             }
                         }
                     }
-                    modinfo.setApplicationAttribute("tournament_dropdownmenu_ordered_by_union_clubadmin_"+clubAdmin+"_union_id_"+union_id+"_menuName_"+menuName,menu);
+                    iwc.setApplicationAttribute("tournament_dropdownmenu_ordered_by_union_clubadmin_"+clubAdmin+"_union_id_"+union_id+"_menuName_"+menuName,menu);
             }
             else {
                 menu = applicationMenu;
@@ -469,10 +469,10 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
     }
 
-    public static Link getBackLink(ModuleInfo modinfo,int backUpHowManyPages) {
-        IWMainApplication iwma = modinfo.getApplication();
+    public static Link getBackLink(IWContext iwc,int backUpHowManyPages) {
+        IWMainApplication iwma = iwc.getApplication();
         IWBundle iwb = iwma.getBundle(TournamentController.getBundleIdentifier());
-        IWResourceBundle iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
+        IWResourceBundle iwrb = iwb.getResourceBundle(iwc.getCurrentLocale());
 
         Link backLink = new Link(iwrb.getImage("buttons/back.gif"),"#");
             backLink.setAttribute("onClick","history.go(-"+backUpHowManyPages+")");
@@ -480,12 +480,12 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
         return backLink;
     }
 
-    public static Link getBackLink(ModuleInfo modinfo) {
-        return getBackLink(modinfo,1);
+    public static Link getBackLink(IWContext iwc) {
+        return getBackLink(iwc,1);
     }
 
-    public static List getUnionTournamentGroups(ModuleInfo modinfo) throws SQLException {
-        Union union = ((com.idega.projects.golf.entity.Member) com.idega.jmodule.login.business.AccessControl.getMember(modinfo)).getMainUnion();
+    public static List getUnionTournamentGroups(IWContext iwc) throws SQLException {
+        Union union = ((com.idega.projects.golf.entity.Member) com.idega.jmodule.login.business.AccessControl.getMember(iwc)).getMainUnion();
         return getUnionTournamentGroups(union);
     }
 
@@ -507,12 +507,12 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
     }
 
 
-    public static SubmitButton getAheadButton(ModuleInfo modinfo, String name, String value) {
-        IWMainApplication iwma = modinfo.getApplication();
+    public static SubmitButton getAheadButton(IWContext iwc, String name, String value) {
+        IWMainApplication iwma = iwc.getApplication();
         IWBundle iwb = iwma.getBundle(TournamentController.getBundleIdentifier());
-        IWResourceBundle iwrb = iwb.getResourceBundle(modinfo.getCurrentLocale());
+        IWResourceBundle iwrb = iwb.getResourceBundle(iwc.getCurrentLocale());
 
-        com.idega.jmodule.object.Image aheadImage = iwrb.getImage("buttons/continue.gif");
+        com.idega.presentation.Image aheadImage = iwrb.getImage("buttons/continue.gif");
         SubmitButton aheadButton = new SubmitButton(aheadImage,name,value);
 
         return aheadButton;
@@ -644,8 +644,8 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
             List members;
             CheckBox delete;
 
-            com.idega.jmodule.object.Image rusl = new com.idega.jmodule.object.Image("/pics/icons/trash.gif","Skrá úr móti");
-//            com.idega.jmodule.object.Image time;
+            com.idega.presentation.Image rusl = new com.idega.presentation.Image("/pics/icons/trash.gif","Skrá úr móti");
+//            com.idega.presentation.Image time;
             Flash time;
 
             Link remove;

@@ -5,10 +5,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 import java.util.*;
 
@@ -42,9 +42,9 @@ public String subPage;
 
       public void template() {
 
-        ModuleInfo modinfo = getModuleInfo();
+        IWContext iwc = getIWContext();
 
-        String page = modinfo.getRequest().getRequestURI();
+        String page = iwc.getRequest().getRequestURI();
         subPage = page.substring(1,page.indexOf("."));
 
 	content = new Table(1,3);
@@ -238,11 +238,11 @@ public String subPage;
               }
       }
 
-      public void add(ModuleObject objectToAdd){
+      public void add(PresentationObject objectToAdd){
         mainTable.add(objectToAdd,1,1);
       }
 
-      public void addLeft(ModuleObject objectToAdd){
+      public void addLeft(PresentationObject objectToAdd){
         leftTable.add(objectToAdd,1,1);
       }
 

@@ -1,9 +1,9 @@
 package com.idega.block.finance.presentation;
 
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.IWContext;
 
 /**
  * Title:
@@ -23,7 +23,7 @@ public class Finance extends KeyEditor{
     super(sHeader);
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
 
   }
 }

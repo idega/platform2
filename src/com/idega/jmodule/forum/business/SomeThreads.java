@@ -1,7 +1,7 @@
 package com.idega.jmodule.forum.business;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
@@ -15,7 +15,7 @@ import java.io.*;
  * @version 1.0
  */
 
-public class SomeThreads extends ModuleObjectContainer {
+public class SomeThreads extends PresentationObjectContainer {
 
   private Table myTable;
   private ForumService service;

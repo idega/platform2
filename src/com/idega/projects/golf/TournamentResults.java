@@ -15,16 +15,16 @@ import java.io.*;
 import com.idega.util.*;
 import com.idega.data.*;
 import com.idega.util.text.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.*;
 import com.idega.projects.golf.business.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
-public class TournamentResults extends JModuleObject {
+public class TournamentResults extends Block {
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
   protected IWResourceBundle iwrb;
@@ -106,10 +106,10 @@ public class TournamentResults extends JModuleObject {
     gender_ = gender;
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException {
+  public void main(IWContext iwc) throws SQLException {
     try {
-      iwrb = getResourceBundle(modinfo);
-      iwb = getBundle(modinfo);
+      iwrb = getResourceBundle(iwc);
+      iwb = getBundle(iwc);
       tournament = new Tournament(tournamentId_);
       numberOfRounds = tournament.getNumberOfRounds();
       getMemberVector();

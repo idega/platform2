@@ -5,8 +5,8 @@
 
 package com.idega.jmodule.login.business;
 
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import java.util.*;
 import java.io.*;
 import com.idega.jmodule.login.data.*;
@@ -32,52 +32,52 @@ public class AccessControl{
         public static final String CLUB_ADMIN_GOLF_UNION_ID_ATTRIBUTE = "admin_golf_union_id";
 
 
-	public static Member getMember(ModuleInfo modinfo){
-		return LoginBusiness.getMember(modinfo);
+	public static Member getMember(IWContext iwc){
+		return LoginBusiness.getMember(iwc);
 	}
 
-        public static String getAccesscontrolGroupForUser(ModuleInfo modinfo){
-          return (String)modinfo.getSessionAttribute(ACCESSCONTROL_GROUP_PARAMETER);
+        public static String getAccesscontrolGroupForUser(IWContext iwc){
+          return (String)iwc.getSessionAttribute(ACCESSCONTROL_GROUP_PARAMETER);
         }
 
-        public static void setCurrentGolfUnionID(ModuleInfo modinfo,String unionID){
-          modinfo.setSessionAttribute(CURRENT_GOLF_UNION_ID_ATTRIBUTE,unionID);
+        public static void setCurrentGolfUnionID(IWContext iwc,String unionID){
+          iwc.setSessionAttribute(CURRENT_GOLF_UNION_ID_ATTRIBUTE,unionID);
         }
 
-        public static String getCurrentGolfUnionID(ModuleInfo modinfo){
-          return (String)modinfo.getSessionAttribute(CURRENT_GOLF_UNION_ID_ATTRIBUTE);
+        public static String getCurrentGolfUnionID(IWContext iwc){
+          return (String)iwc.getSessionAttribute(CURRENT_GOLF_UNION_ID_ATTRIBUTE);
         }
 
-        public static String getGolfUnionOfClubAdmin(ModuleInfo modinfo){
-          return (String)modinfo.getSessionAttribute(CLUB_ADMIN_GOLF_UNION_ID_ATTRIBUTE);
+        public static String getGolfUnionOfClubAdmin(IWContext iwc){
+          return (String)iwc.getSessionAttribute(CLUB_ADMIN_GOLF_UNION_ID_ATTRIBUTE);
         }
 
-        static void setGolfUnionOfClubAdmin(ModuleInfo modinfo,String unionID){
-          modinfo.setSessionAttribute(CLUB_ADMIN_GOLF_UNION_ID_ATTRIBUTE,unionID);
+        static void setGolfUnionOfClubAdmin(IWContext iwc,String unionID){
+          iwc.setSessionAttribute(CLUB_ADMIN_GOLF_UNION_ID_ATTRIBUTE,unionID);
         }
 
-        public static void setAccesscontrolGroupForUser(ModuleInfo modinfo,String accessControlGroup){
-          modinfo.setSessionAttribute(ACCESSCONTROL_GROUP_PARAMETER,accessControlGroup);
+        public static void setAccesscontrolGroupForUser(IWContext iwc,String accessControlGroup){
+          iwc.setSessionAttribute(ACCESSCONTROL_GROUP_PARAMETER,accessControlGroup);
         }
 
-	public static boolean isAdmin(ModuleInfo modinfo)throws SQLException{
-		Member member = getMember(modinfo);
+	public static boolean isAdmin(IWContext iwc)throws SQLException{
+		Member member = getMember(iwc);
                 if(member!=null){
                     if(member instanceof com.idega.projects.golf.entity.Member){
-                      String acc_group = getAccesscontrolGroupForUser(modinfo);
+                      String acc_group = getAccesscontrolGroupForUser(iwc);
                       if(acc_group==null){
                         com.idega.projects.golf.entity.Member membi = (com.idega.projects.golf.entity.Member)member;
                     	Group[] access = membi.getGroups(); //  (member).getGenericGroups();
 			for(int i = 0; i < access.length; i++){
                           if ("administrator".equals(access[i].getName())){
-                                  setAccesscontrolGroupForUser(modinfo,ADMIN_GROUP);
+                                  setAccesscontrolGroupForUser(iwc,ADMIN_GROUP);
                                   return true;
                           }
                           if ("club_admin".equals(access[i].getName())){
                             int uni_id = membi.getMainUnionID();
-                            setAccesscontrolGroupForUser(modinfo,CLUB_ADMIN_GROUP);
-                            setGolfUnionOfClubAdmin(modinfo,Integer.toString(uni_id));
-                            Object ID = modinfo.getSessionAttribute(CURRENT_GOLF_UNION_ID_ATTRIBUTE);
+                            setAccesscontrolGroupForUser(iwc,CLUB_ADMIN_GROUP);
+                            setGolfUnionOfClubAdmin(iwc,Integer.toString(uni_id));
+                            Object ID = iwc.getSessionAttribute(CURRENT_GOLF_UNION_ID_ATTRIBUTE);
                             if( ID != null){
                               if (uni_id == Integer.parseInt( ((String)ID) ) ){
                                 return true;
@@ -94,9 +94,9 @@ public class AccessControl{
                             return true;
                           }
                           else if(acc_group.equals(CLUB_ADMIN_GROUP)){
-                            String currentUnion = getCurrentGolfUnionID(modinfo);
+                            String currentUnion = getCurrentGolfUnionID(iwc);
                             if(currentUnion!=null){
-                              if(currentUnion.equals(getGolfUnionOfClubAdmin(modinfo))){
+                              if(currentUnion.equals(getGolfUnionOfClubAdmin(iwc))){
                                 return true;
                               }
                             }
@@ -105,13 +105,13 @@ public class AccessControl{
                       }
                     }
                     else{
-                      String acc_group = getAccesscontrolGroupForUser(modinfo);
+                      String acc_group = getAccesscontrolGroupForUser(iwc);
                       if(acc_group==null){
 			LoginType[] access = member.getLoginType();
                         if (access != null){
                           for(int i = 0; i < access.length; i++){
                               if ("administrator".equals(access[i].getName())){
-                                  setAccesscontrolGroupForUser(modinfo,ADMIN_GROUP);
+                                  setAccesscontrolGroupForUser(iwc,ADMIN_GROUP);
                                   return true;
                               }
                           }
@@ -131,7 +131,7 @@ public class AccessControl{
 
 
 
-        public static boolean hasPermission(String permissionType, ModuleObject obj,ModuleInfo info){
+        public static boolean hasPermission(String permissionType, PresentationObject obj,IWContext info){
           try {
             return com.idega.core.accesscontrol.business.AccessControl.hasPermission(permissionType,obj,info);
           }
@@ -145,10 +145,10 @@ public class AccessControl{
 
 
 
-        /*public boolean isAdmin(ModuleInfo modinfo) {
+        /*public boolean isAdmin(IWContext iwc) {
 
           try{
-            return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
+            return com.idega.jmodule.login.business.AccessControl.isAdmin(getIWContext());
           }catch (SQLException E) {
 
             //out.print("SQLException: " + E.getMessage());
@@ -163,9 +163,9 @@ public class AccessControl{
 
 
 
-        public static boolean isDeveloper(ModuleInfo modinfo) {
-			if (modinfo.getSession().getAttribute("member_access") != null) {
-				if (modinfo.getSession().getAttribute("member_access").equals("developer")) {
+        public static boolean isDeveloper(IWContext iwc) {
+			if (iwc.getSession().getAttribute("member_access") != null) {
+				if (iwc.getSession().getAttribute("member_access").equals("developer")) {
 					return true;
 				}
 				else {
@@ -177,9 +177,9 @@ public class AccessControl{
 			}
         }
 
-        public static boolean isClubAdmin(ModuleInfo modinfo) {
-			if (modinfo.getSession().getAttribute("member_access") != null) {
-				if (modinfo.getSession().getAttribute("member_access").equals("club_admin")) {
+        public static boolean isClubAdmin(IWContext iwc) {
+			if (iwc.getSession().getAttribute("member_access") != null) {
+				if (iwc.getSession().getAttribute("member_access").equals("club_admin")) {
 					return true;
 				}
 				else {
@@ -191,9 +191,9 @@ public class AccessControl{
 			}
         }
 
-        public static boolean isUser(ModuleInfo modinfo) {
-			if (modinfo.getSession().getAttribute("member_access") != null) {
-				if (modinfo.getSession().getAttribute("member_access").equals("user")) {
+        public static boolean isUser(IWContext iwc) {
+			if (iwc.getSession().getAttribute("member_access") != null) {
+				if (iwc.getSession().getAttribute("member_access").equals("user")) {
 					return true;
 				}
 				else {
@@ -208,8 +208,8 @@ public class AccessControl{
 
 
 
-        public static boolean isClubWorker(ModuleInfo modinfo) throws SQLException{
-		Member member = getMember(modinfo);
+        public static boolean isClubWorker(IWContext iwc) throws SQLException{
+		Member member = getMember(iwc);
                 if(member!=null){
                     if(member instanceof com.idega.projects.golf.entity.Member){
 
@@ -222,7 +222,7 @@ public class AccessControl{
                           }
 
                           if ("club_worker".equals(access[i].getName())){
-                            Object ID = modinfo.getSessionAttribute("golf_union_id");
+                            Object ID = iwc.getSessionAttribute("golf_union_id");
                             if( ID != null){
                               int uni_id = membi.getMainUnionID();
                               if (uni_id == Integer.parseInt( ((String)ID) ) ){
@@ -252,8 +252,8 @@ public class AccessControl{
 
         }
 
-        public static boolean isTournamentManager(ModuleInfo modinfo) throws SQLException{
-		Member member = getMember(modinfo);
+        public static boolean isTournamentManager(IWContext iwc) throws SQLException{
+		Member member = getMember(iwc);
                 if(member!=null){
                     if(member instanceof com.idega.projects.golf.entity.Member){
 

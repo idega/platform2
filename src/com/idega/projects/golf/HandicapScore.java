@@ -17,9 +17,9 @@ import java.util.*;
 import java.math.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.*;
 import com.idega.jmodule.news.data.*;
 import com.idega.jmodule.news.presentation.*;
@@ -31,7 +31,7 @@ import com.idega.projects.golf.templates.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
-public class HandicapScore extends JModuleObject {
+public class HandicapScore extends Block {
 
 private String member_id;
 private boolean isAdmin = false;
@@ -53,18 +53,18 @@ private Form myForm;
     this.member_id=String.valueOf(member_id);
   }
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
-    this.isAdmin=isAdministrator(modinfo);
+  public void main(IWContext iwc) throws Exception {
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
+    this.isAdmin=isAdministrator(iwc);
 
     if ( member_id == null ) {
-      member_id = modinfo.getRequest().getParameter("member_id");
+      member_id = iwc.getRequest().getParameter("member_id");
     }
     if ( member_id == null ) {
-      member_id = (String) modinfo.getSession().getAttribute("member_id");
+      member_id = (String) iwc.getSession().getAttribute("member_id");
         if ( member_id == null ) {
-          Member memberinn = (Member) modinfo.getSession().getAttribute("member_login");
+          Member memberinn = (Member) iwc.getSession().getAttribute("member_login");
           if ( memberinn != null ) {
             member_id = String.valueOf(memberinn.getID());
               if ( member_id == null ) {
@@ -97,21 +97,21 @@ private Form myForm;
 
       else {
         getForm();
-        drawTable(modinfo);
+        drawTable(iwc);
 
         myForm.add(outerTable);
         add(myForm);
       }
   }
 
-  private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
+  private void drawTable(IWContext iwc) throws IOException,SQLException {
 
       Member memberInfo = new Member(Integer.parseInt(member_id));
       float forgjof = memberInfo.getHandicap();
       int union_id = memberInfo.getMainUnionID();
       String gender = memberInfo.getGender();
 
-      String field_id = (String) modinfo.getSession().getAttribute("field_id");
+      String field_id = (String) iwc.getSession().getAttribute("field_id");
       if ( field_id == null ) {
         Field[] field = (Field[]) (new Field()).findAllByColumn("union_id",String.valueOf(union_id));
           if ( union_id > 3 && field.length > 0 ) {
@@ -155,7 +155,7 @@ private Form myForm;
 
       DropdownMenu select_month = new DropdownMenu("month");
         for ( int m = 1 ; m <= 12 ; m++ ) {
-          select_month.addMenuElement(String.valueOf(m),dagatal.getNameOfMonth(m,modinfo).toLowerCase());
+          select_month.addMenuElement(String.valueOf(m),dagatal.getNameOfMonth(m,iwc).toLowerCase());
         }
         select_month.setSelectedElement(month);
         select_month.keepStatusOnAction();

@@ -1,6 +1,6 @@
 package com.idega.jmodule.image.presentation;
 
-import com.idega.jmodule.object.interfaceobject.Window;
+import com.idega.presentation.ui.Window;
 
 /**
  * Title:        IdegaWeb

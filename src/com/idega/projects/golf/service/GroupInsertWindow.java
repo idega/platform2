@@ -2,13 +2,13 @@
 package com.idega.projects.golf.service;
 
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import java.util.*;
 import java.sql.*;
 import java.io.*;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.util.*;
 /**
  * Title:
@@ -20,7 +20,7 @@ import com.idega.util.*;
  */
 
 
-public class GroupInsertWindow extends com.idega.jmodule.object.interfaceobject.Window{
+public class GroupInsertWindow extends com.idega.presentation.ui.Window{
 
   private Union union;
   private Group group;
@@ -40,16 +40,16 @@ public class GroupInsertWindow extends com.idega.jmodule.object.interfaceobject.
       return this.inputGroup;
   }
 
-  public void main(ModuleInfo modinfo)throws Exception  {
+  public void main(IWContext iwc)throws Exception  {
       this.empty();
-      add(getInputTable(modinfo));
+      add(getInputTable(iwc));
   }
 
-  public Form getInputTable(ModuleInfo modinfo)throws Exception {
+  public Form getInputTable(IWContext iwc)throws Exception {
       Form form = new Form();
       try {
 
-          //form.setAction(modinfo.getRequest().getRequestURI()+"?cmd=save");
+          //form.setAction(iwc.getRequest().getRequestURI()+"?cmd=save");
           form.add(new Parameter("cmd","save"));
           HeaderTable hTable = new HeaderTable();
           hTable.setHeaderText(headerText);
@@ -59,15 +59,15 @@ public class GroupInsertWindow extends com.idega.jmodule.object.interfaceobject.
           table.add(new CloseButton("Loka"), 1, 2);
           hTable.add(table);
           table.add(getInputGroup(), 1, 1);
-          if(modinfo.getRequest().getParameter("cmd") != null) {
-              String name = modinfo.getRequest().getParameter(inputGroupName);
+          if(iwc.getRequest().getParameter("cmd") != null) {
+              String name = iwc.getRequest().getParameter(inputGroupName);
               if(name == null || name.equals("")) {
-                  modinfo.getWriter().print("Nafn á flokk vantar");
+                  iwc.getWriter().print("Nafn á flokk vantar");
                   //form.add(new BackButton("Til baka"));
               }
               else {
-                  modinfo.getWriter().print("Takk");
-                  store(modinfo);
+                  iwc.getWriter().print("Takk");
+                  store(iwc);
                   setParentToReload();
                   close();
               }
@@ -75,14 +75,14 @@ public class GroupInsertWindow extends com.idega.jmodule.object.interfaceobject.
           form.add(hTable);
       }
       catch(Exception e) {
-          e.printStackTrace(modinfo.getWriter());
+          e.printStackTrace(iwc.getWriter());
 
       }
       return form;
   }
 
-  public void store(ModuleInfo modinfo)throws SQLException, IOException {
-      String name = modinfo.getParameter(inputGroupName);
+  public void store(IWContext iwc)throws SQLException, IOException {
+      String name = iwc.getParameter(inputGroupName);
       if((name != null) && (! name.equals("")) && (union.getID() != -1)) {
           group.setName(name);
           group.setGroupType("union_group");

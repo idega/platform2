@@ -1,8 +1,8 @@
 package com.idega.jmodule.projectmanager.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import java.sql.*;
 import com.idega.util.text.*;
 import java.io.*;
@@ -21,9 +21,9 @@ import com.idega.util.text.*;
  * @version 1.0
  */
 
-public class ProjectManager extends JModuleObject {
+public class ProjectManager extends Block {
 
-  ModuleInfo modinfo;
+  IWContext iwc;
     String URI;
     String project_id;
     String language;
@@ -37,7 +37,7 @@ public class ProjectManager extends JModuleObject {
 
     public void displayProjects() throws Exception{
             Project[] projects = (Project[]) (new Project()).findAllByColumnOrdered("valid","Y","project_id");
-            boolean isAdmin = isAdministrator(getModuleInfo());
+            boolean isAdmin = isAdministrator(getIWContext());
             for (int i = (projects.length -1) ; i >= 0 ; i-- ) {
 
 
@@ -58,9 +58,9 @@ public class ProjectManager extends JModuleObject {
                     add("<p>");
                     if (isAdmin) {
                         Form myForm = new Form("/verkefnistemplate/index.jsp","project"+Integer.toString(projects[i].getID()));
-                                myForm.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyta"));
+                                myForm.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyta"));
                                 myForm.add("&nbsp;&nbsp;&nbsp;");
-                                myForm.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/eyda_medium.gif"),"Henda"));
+                                myForm.add(new SubmitButton(new com.idega.presentation.Image("/pics/eyda_medium.gif"),"Henda"));
                                 myForm.add(new HiddenInput("project_id",Integer.toString(projects[i].getID())));
                                 myForm.add(new HiddenInput("action","Breyta"));
                         add(myForm);
@@ -72,7 +72,7 @@ public class ProjectManager extends JModuleObject {
     }
 
     public void closerLook(int project_id) throws Exception{
-            boolean isAdmin = isAdministrator(getModuleInfo());
+            boolean isAdmin = isAdministrator(getIWContext());
             Project project = new Project(project_id);
             ProjectExtra[] extra = (ProjectExtra[])project.findRelated(new ProjectExtra());
             com.idega.jmodule.boxoffice.data.Issues iss;
@@ -105,7 +105,7 @@ public class ProjectManager extends JModuleObject {
                     Form myForm1 = new Form("/verkefnistemplate/index.jsp","project"+Integer.toString(project.getID()));
 
 
-                            myForm1.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyting"));
+                            myForm1.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyting"));
     //			myForm1.add(new SubmitButton("tranus","Breyta"));
                             myForm1.add(new HiddenInput("project_id",Integer.toString(project.getID())));
                             myForm1.add(new HiddenInput("action","Verklýsing"));
@@ -124,7 +124,7 @@ public class ProjectManager extends JModuleObject {
                             table.mergeCells(1,row,3,row);
                             table.add("<u>Markmið / Árangur:</u>",1,row);
                     Form myForm1 = new Form("/verkefnistemplate/index.jsp","project"+Integer.toString(project.getID()));
-                            myForm1.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyting"));
+                            myForm1.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyting"));
     //			myForm1.add(new SubmitButton("tranus","Breyta"));
                             myForm1.add(new HiddenInput("project_id",Integer.toString(project.getID())));
                             myForm1.add(new HiddenInput("action","Markmið/Árangur"));
@@ -143,7 +143,7 @@ public class ProjectManager extends JModuleObject {
                             table.mergeCells(1,row,3,row);
                             table.add("<u>Tímarammi - tillaga:</u>",1,row);
                     Form myForm1 = new Form("/verkefnistemplate/index.jsp","project"+Integer.toString(project.getID()));
-                            myForm1.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyting"));
+                            myForm1.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyting"));
     //			myForm1.add(new SubmitButton("tranus","Breyta"));
                             myForm1.add(new HiddenInput("project_id",Integer.toString(project.getID())));
                             myForm1.add(new HiddenInput("action","Verkliðir - Tímarammi"));
@@ -164,7 +164,7 @@ public class ProjectManager extends JModuleObject {
             Link link;
                     table.mergeCells(1,row,3,row);
                             Form myForm2 = new Form("/verkefnistemplate/index.jsp","project"+Integer.toString(project.getID()));
-                            myForm2.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyta"));
+                            myForm2.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyta"));
     //				myForm2.add(new SubmitButton("action","Breyta"));
                                     myForm2.add(new HiddenInput("project_id",Integer.toString(project.getID())));
     //				myForm1.add(new HiddenInput("action","Fjármál"));
@@ -266,7 +266,7 @@ public class ProjectManager extends JModuleObject {
                             table.mergeCells(1,row,3,row);
                             table.add("<u>Kostnaðaráætlun:</u>",1,row);
                             Form myForm1 = new Form("/verkefnistemplate/index.jsp","project"+Integer.toString(project.getID()));
-                            myForm1.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/breyta_medium.gif"),"Breyting"));
+                            myForm1.add(new SubmitButton(new com.idega.presentation.Image("/pics/breyta_medium.gif"),"Breyting"));
     //				myForm1.add(new SubmitButton("tranus","Breyta"));
                                     myForm1.add(new HiddenInput("project_id",Integer.toString(project.getID())));
                                     myForm1.add(new HiddenInput("action","Fjármál"));
@@ -310,19 +310,19 @@ public class ProjectManager extends JModuleObject {
     }
 
 
-    public ModuleInfo getModuleInfo(){
-      return modinfo;
+    public IWContext getIWContext(){
+      return iwc;
     }
 
 
-    public void main(ModuleInfo modinfo) throws Exception {
-        this.modinfo = modinfo;
-        URI = getModuleInfo().getRequest().getRequestURI();
-        project_id = this.getModuleInfo().getParameter("project_id");
+    public void main(IWContext iwc) throws Exception {
+        this.iwc = iwc;
+        URI = getIWContext().getRequest().getRequestURI();
+        project_id = this.getIWContext().getParameter("project_id");
 
-        if ( isAdministrator(modinfo)) {
+        if ( isAdministrator(iwc)) {
                 Form myForm = new Form("/verkefnistemplate/");
-                        myForm.add(new SubmitButton(new com.idega.jmodule.object.Image("/pics/Verkefnastjori.gif","Verkefnisstjórinn")));
+                        myForm.add(new SubmitButton(new com.idega.presentation.Image("/pics/Verkefnastjori.gif","Verkefnisstjórinn")));
                 add(myForm);
         }
 
@@ -343,7 +343,7 @@ public class ProjectManager extends JModuleObject {
     }
 
 
-  public boolean isAdministrator(ModuleInfo modinfo)throws Exception{
+  public boolean isAdministrator(IWContext iwc)throws Exception{
     return true;
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: RoughOrderForm.java,v 1.2 2001/08/15 11:56:43 palli Exp $
+ * $Id: RoughOrderForm.java,v 1.3 2001/10/05 08:05:28 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,15 +10,15 @@
 package is.idegaweb.campus.allocation;
 
 import com.idega.block.application.business.ApplicationFinder;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
-import com.idega.jmodule.object.interfaceobject.HiddenInput;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObjectContainer;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.util.List;
@@ -29,7 +29,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class RoughOrderForm extends ModuleObjectContainer {
+public class RoughOrderForm extends PresentationObjectContainer {
   private final int statusEnteringPage_ = 0;
   private final int statusSubject_ = 1;
   private boolean isAdmin_ = false;
@@ -46,9 +46,9 @@ public class RoughOrderForm extends ModuleObjectContainer {
   /*
    *
    */
-  protected void control(ModuleInfo modinfo) {
+  protected void control(IWContext iwc) {
     if (isAdmin_) {
-      String statusString = modinfo.getParameter("status");
+      String statusString = iwc.getParameter("status");
       int status = 0;
 
       if (statusString == null){
@@ -59,10 +59,10 @@ public class RoughOrderForm extends ModuleObjectContainer {
       }
 
       if (status == statusEnteringPage_) {
-        doSelectSubject(modinfo);
+        doSelectSubject(iwc);
       }
       else if (status == statusSubject_)
-        doRoughOrdering(modinfo);
+        doRoughOrdering(iwc);
     }
     else
       add(new Text("Ekki Réttindi"));
@@ -71,7 +71,7 @@ public class RoughOrderForm extends ModuleObjectContainer {
   /*
    *
    */
-  protected void doSelectSubject(ModuleInfo modinfo) {
+  protected void doSelectSubject(IWContext iwc) {
     List subjects = ApplicationFinder.listOfSubject();
     Text textTemplate = new Text();
 
@@ -108,8 +108,8 @@ public class RoughOrderForm extends ModuleObjectContainer {
   /*
    *
    */
-  protected void doRoughOrdering(ModuleInfo modinfo) {
-    String subject = (String)modinfo.getParameter("subject");
+  protected void doRoughOrdering(IWContext iwc) {
+    String subject = (String)iwc.getParameter("subject");
     int subject_id = Integer.parseInt(subject);
 
     RoughOrderer rough = new RoughOrderer();
@@ -131,16 +131,16 @@ public class RoughOrderForm extends ModuleObjectContainer {
   /**
    *
    */
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try {
-      isAdmin_ = AccessControl.isAdmin(modinfo);
+      isAdmin_ = AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql) {
       isAdmin_ = false;
     }
 
-    iwrb_ = getResourceBundle(modinfo);
-    //iwb = getBundle(modinfo);
-    control(modinfo);
+    iwrb_ = getResourceBundle(iwc);
+    //iwb = getBundle(iwc);
+    control(iwc);
   }
 }

@@ -3,11 +3,11 @@ package com.idega.block.finance.presentation;
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.Finder;
 import com.idega.data.GenericEntity;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import java.sql.SQLException;
@@ -38,23 +38,23 @@ public class TariffEditor extends KeyEditor{
     this.entities = entities;
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
 
     try{
 
-      if(modinfo.getParameter(strAction) == null){
-        doMain(modinfo);
+      if(iwc.getParameter(strAction) == null){
+        doMain(iwc);
       }
-      if(modinfo.getParameter(strAction) != null){
-        String sAct = modinfo.getParameter(strAction);
+      if(iwc.getParameter(strAction) != null){
+        String sAct = iwc.getParameter(strAction);
 
         int iAct = Integer.parseInt(sAct);
         switch (iAct) {
-          case ACT1 : doMain(modinfo);        break;
-          case ACT2 : doChange(modinfo,false);break;
-          case ACT3 : doUpdate(modinfo);      break;
-          case ACT4 : doChange(modinfo,true); break;
-          default: doMain(modinfo);           break;
+          case ACT1 : doMain(iwc);        break;
+          case ACT2 : doChange(iwc,false);break;
+          case ACT3 : doUpdate(iwc);      break;
+          case ACT4 : doChange(iwc,true); break;
+          default: doMain(iwc);           break;
         }
       }
     }
@@ -63,7 +63,7 @@ public class TariffEditor extends KeyEditor{
     }
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(4,1);
     int last = 4;
     LinkTable.setWidth("100%");
@@ -90,8 +90,8 @@ public class TariffEditor extends KeyEditor{
   protected void setPeriod(int period){
     this.period = period;
   }
-  protected ModuleObject getPeriodChooser(int init){
-    ModuleObject mo;
+  protected PresentationObject getPeriodChooser(int init){
+    PresentationObject mo;
     switch (this.period) {
       case YEAR : mo =  this.YearChooser(init);      break;
       case MONTH: mo =  this.MonthChooser(init);     break;
@@ -127,7 +127,7 @@ public class TariffEditor extends KeyEditor{
     }
     return mo;
   }
-  protected void doMain(ModuleInfo modinfo){
+  protected void doMain(IWContext iwc){
     idegaTimestamp today = new idegaTimestamp();
     //Tariff[] tariffs = Finder.findTariffs(today.getMonth(),today.getYear());
     Tariff[] tariffs = Finder.findTariffs();
@@ -183,7 +183,7 @@ public class TariffEditor extends KeyEditor{
     this.addMain(T2);
   }
 
-  protected void doChange(ModuleInfo modinfo,boolean ifnew){
+  protected void doChange(IWContext iwc,boolean ifnew){
     Form myForm = new Form();
     myForm.maintainAllParameters();
     idegaTimestamp today = new idegaTimestamp();
@@ -278,30 +278,30 @@ public class TariffEditor extends KeyEditor{
 
   }
 
-  protected void doUpdate(ModuleInfo modinfo) {
-    int count = Integer.parseInt(modinfo.getParameter("te_count"));
+  protected void doUpdate(IWContext iwc) {
+    int count = Integer.parseInt(iwc.getParameter("te_count"));
     String sName,sInfo,sDel,sPrice,sAK,sTK,sID,sDateFrom,sDateTo;
     int ID,AKid,TKid,Price;
     idegaTimestamp dFrom,dTo;
 
     Tariff tariff = null;
-    sDateFrom = modinfo.getParameter("te_datefrom");
+    sDateFrom = iwc.getParameter("te_datefrom");
     add(sDateFrom);
     dFrom = this.parseStamp(sDateFrom);
-    sDateTo = modinfo.getParameter("te_dateto");
+    sDateTo = iwc.getParameter("te_dateto");
     add(sDateTo);
     dTo = this.parseStamp(sDateTo);
 
     for (int i = 1; i < count+1 ;i++){
-      sName = modinfo.getParameter("te_nameinput"+i);
-      sPrice = (modinfo.getParameter("te_priceinput"+i));
-      sInfo = modinfo.getParameter("te_infoinput"+i);
-      sAK = (modinfo.getParameter("te_akdrp"+i));
-      sTK = (modinfo.getParameter("te_tkdrp"+i));
-      sDel = modinfo.getParameter("te_delcheck"+i);
-      sID = modinfo.getParameter("te_idinput"+i);
+      sName = iwc.getParameter("te_nameinput"+i);
+      sPrice = (iwc.getParameter("te_priceinput"+i));
+      sInfo = iwc.getParameter("te_infoinput"+i);
+      sAK = (iwc.getParameter("te_akdrp"+i));
+      sTK = (iwc.getParameter("te_tkdrp"+i));
+      sDel = iwc.getParameter("te_delcheck"+i);
+      sID = iwc.getParameter("te_idinput"+i);
 
-      ID = Integer.parseInt(modinfo.getParameter("te_idinput"+i));
+      ID = Integer.parseInt(iwc.getParameter("te_idinput"+i));
       if(ID != -1){
         try{
           tariff = new Tariff(ID);
@@ -339,7 +339,7 @@ public class TariffEditor extends KeyEditor{
       }
     }// for loop
 
-   doMain(modinfo);
+   doMain(iwc);
   }
 
   private DropdownMenu drpTariffKeys(String name, String selected){
@@ -365,12 +365,12 @@ public class TariffEditor extends KeyEditor{
       drp.setSelectedElement(selected);
     return drp;
   }
-  private ModuleObject YearChooser(int year){
+  private PresentationObject YearChooser(int year){
     return new Text();
   }
-  private ModuleObject MonthChooser(int month){ return new Text();}
-  private ModuleObject WeekChooser(int week){ return new Text();}
-  private ModuleObject DayChooser(int day){ return new Text();}
+  private PresentationObject MonthChooser(int month){ return new Text();}
+  private PresentationObject WeekChooser(int week){ return new Text();}
+  private PresentationObject DayChooser(int day){ return new Text();}
 
   private idegaTimestamp parseStamp(String sDate){
     idegaTimestamp it = new idegaTimestamp();

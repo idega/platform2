@@ -9,12 +9,12 @@ import com.idega.block.finance.business.*;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.data.GenericEntity;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import java.sql.SQLException;
@@ -41,7 +41,7 @@ import is.idegaweb.campus.entity.Contract;
  * @version 1.1
  */
 
-public class CampusEntryGroups extends ModuleObjectContainer {
+public class CampusEntryGroups extends PresentationObjectContainer {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   public  String strAction = "tt_action";
@@ -65,26 +65,26 @@ public class CampusEntryGroups extends ModuleObjectContainer {
 
   }
 
-   protected void control(ModuleInfo modinfo){
+   protected void control(IWContext iwc){
 
    if(isAdmin){
       try{
-        ModuleObject MO = new Text();
+        PresentationObject MO = new Text();
 
-        if(modinfo.getParameter(strAction) == null){
-          MO = getTableOfGroups(modinfo);
+        if(iwc.getParameter(strAction) == null){
+          MO = getTableOfGroups(iwc);
         }
-        if(modinfo.getParameter(strAction) != null){
-          String sAct = modinfo.getParameter(strAction);
+        if(iwc.getParameter(strAction) != null){
+          String sAct = iwc.getParameter(strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
-            case ACT1 : MO = getTableOfGroups(modinfo); break;
-            case ACT2 : MO = doMainTable(modinfo);      break;
-            case ACT3 : MO = doSomeThing( modinfo);      break;
-            case ACT4 : MO = getTableOfAssessmentAccounts( modinfo);      break;
-            case ACT5 : MO = doRollback(modinfo); break;
-            default: MO = getTableOfGroups(modinfo);           break;
+            case ACT1 : MO = getTableOfGroups(iwc); break;
+            case ACT2 : MO = doMainTable(iwc);      break;
+            case ACT3 : MO = doSomeThing( iwc);      break;
+            case ACT4 : MO = getTableOfAssessmentAccounts( iwc);      break;
+            case ACT5 : MO = doRollback(iwc); break;
+            default: MO = getTableOfGroups(iwc);           break;
           }
         }
          Table T = new Table();
@@ -105,9 +105,9 @@ public class CampusEntryGroups extends ModuleObjectContainer {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  private ModuleObject doRollback(ModuleInfo modinfo){
+  private PresentationObject doRollback(IWContext iwc){
     Table T = new Table();
-    String sRoundId = modinfo.getParameter("rollback");
+    String sRoundId = iwc.getParameter("rollback");
     if(sRoundId != null){
       int iRoundId = Integer.parseInt(sRoundId);
       try{
@@ -121,12 +121,12 @@ public class CampusEntryGroups extends ModuleObjectContainer {
     return T;
   }
 
-  private ModuleObject doSomeThing(ModuleInfo modinfo){
-    ModuleObject MO = new Text("failed");
-    if(modinfo.getParameter("ent_to")!=null){
+  private PresentationObject doSomeThing(IWContext iwc){
+    PresentationObject MO = new Text("failed");
+    if(iwc.getParameter("ent_to")!=null){
 
-      String dateFrom = modinfo.getParameter("ent_from");
-      String dateTo = modinfo.getParameter("ent_to");
+      String dateFrom = iwc.getParameter("ent_from");
+      String dateTo = iwc.getParameter("ent_to");
       if(!"".equals(dateTo)){
         idegaTimestamp to = new idegaTimestamp(dateTo);
         idegaTimestamp from = null;
@@ -141,7 +141,7 @@ public class CampusEntryGroups extends ModuleObjectContainer {
     return MO;
   }
 
-  private ModuleObject doGroup(idegaTimestamp from , idegaTimestamp to){
+  private PresentationObject doGroup(idegaTimestamp from , idegaTimestamp to){
     try {
       //System.err.println(" doGroup start :"+idegaTimestamp.RightNow().toString());
       //CampusAssessmentBusiness.groupEntries(from,to);
@@ -155,7 +155,7 @@ public class CampusEntryGroups extends ModuleObjectContainer {
     }
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -180,7 +180,7 @@ public class CampusEntryGroups extends ModuleObjectContainer {
     return LinkTable;
   }
 
-  private ModuleObject getTableOfGroups(ModuleInfo modinfo){
+  private PresentationObject getTableOfGroups(IWContext iwc){
     Table T = new Table();
     int row = 2;
     List L = Finder.listOfEntryGroups();
@@ -199,12 +199,12 @@ public class CampusEntryGroups extends ModuleObjectContainer {
       int col = 1;
       row = 2;
       EntryGroup EG;
-      java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(modinfo.getCurrentLocale());
+      java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
       for (int i = 0; i < len; i++) {
         col = 1;
         EG = (EntryGroup) L.get(i);
         T.add(getGroupLink(EG.getName(),EG.getID()),col++,row);
-        T.add(Edit.formatText(new idegaTimestamp(EG.getGroupDate()).getLocaleDate(modinfo)),col++,row);
+        T.add(Edit.formatText(new idegaTimestamp(EG.getGroupDate()).getLocaleDate(iwc)),col++,row);
         T.add(Edit.formatText(EG.getEntryIdFrom()),col++,row);
         T.add(Edit.formatText(EG.getEntryIdTo()),col++,row);
         T.add(Edit.formatText(EG.getFileName()),col++,row);
@@ -230,9 +230,9 @@ public class CampusEntryGroups extends ModuleObjectContainer {
     return T;
   }
 
-  private ModuleObject getTableOfAssessmentAccounts(ModuleInfo modinfo){
+  private PresentationObject getTableOfAssessmentAccounts(IWContext iwc){
     Table T = new Table();
-    String id = modinfo.getParameter("entry_group_id");
+    String id = iwc.getParameter("entry_group_id");
     if(id != null){
       List L = Finder.listOfEntriesInGroup(Integer.parseInt(id));
       if(L!= null){
@@ -244,12 +244,12 @@ public class CampusEntryGroups extends ModuleObjectContainer {
         int col = 1;
         int row = 2;
         AccountEntry A;
-        java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(modinfo.getCurrentLocale());
+        java.text.NumberFormat nf=  java.text.NumberFormat.getNumberInstance(iwc.getCurrentLocale());
         for (int i = 0; i < len; i++) {
           col = 1;
           A = (AccountEntry) L.get(i);
           T.add(Edit.formatText(A.getName()),col++,row);
-          T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(modinfo)),col++,row);
+          T.add(Edit.formatText(new idegaTimestamp(A.getLastUpdated()).getLocaleDate(iwc)),col++,row);
           T.add(Edit.formatText(nf.format(A.getPrice())),col++,row);
           row++;
         }
@@ -266,7 +266,7 @@ public class CampusEntryGroups extends ModuleObjectContainer {
     return T;
   }
 
-  private ModuleObject doMainTable(ModuleInfo modinfo){
+  private PresentationObject doMainTable(IWContext iwc){
     Form F = new Form();
     Table T = new Table();
 
@@ -316,7 +316,7 @@ public class CampusEntryGroups extends ModuleObjectContainer {
     return drp;
   }
 
-  private ModuleObject makeEntryGroups(){
+  private PresentationObject makeEntryGroups(){
     return new Text();
   }
 
@@ -342,14 +342,14 @@ public class CampusEntryGroups extends ModuleObjectContainer {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 }

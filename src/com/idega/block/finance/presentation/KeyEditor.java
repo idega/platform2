@@ -1,11 +1,11 @@
 package com.idega.block.finance.presentation;
 
 import com.idega.block.finance.data.*;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.text.*;
 import java.sql.SQLException;
 
 /**
@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectContainer {
+public abstract class KeyEditor extends com.idega.presentation.PresentationObjectContainer {
 
   protected final static int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4;
   protected boolean isAdmin = false;
@@ -45,7 +45,7 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
     this("Tariff Editor");
   }
 
-  protected abstract void control(ModuleInfo modinfo);
+  protected abstract void control(IWContext iwc);
 
 
   public void setColors(String LightColor,String MainColor,String DarkColor){
@@ -125,19 +125,19 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
     BorderTable.add(whiteTable);
     this.MainFrame.add(BorderTable,1,2);
   }
-  protected void addMain(ModuleObject T){
+  protected void addMain(PresentationObject T){
     this.Frame.add(T,1,2);
   }
-  protected void addLinks(ModuleObject T){
+  protected void addLinks(PresentationObject T){
     this.MainFrame.add(T,1,1);
   }
-  protected void addHeader(ModuleObject T){
+  protected void addHeader(PresentationObject T){
     this.Frame.add(T,1,1);
   }
-  protected void addToRightHeader(ModuleObject T){
+  protected void addToRightHeader(PresentationObject T){
     this.HeaderFrame.add(T,2,1);
   }
-  protected void addMsg(ModuleObject T){
+  protected void addMsg(PresentationObject T){
 
   }
   public Text formatText(String s){
@@ -157,12 +157,12 @@ public abstract class KeyEditor extends com.idega.jmodule.object.ModuleObjectCon
   protected void setStyle(InterfaceObject O){
     O.setAttribute("style",this.styleAttribute);
   }
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 }// class TariffKeyEditor

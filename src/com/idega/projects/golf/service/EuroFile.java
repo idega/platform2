@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.ModuleObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.PresentationObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.projects.golf.*;
@@ -55,8 +55,8 @@ public class EuroFile  {
     this.roundid = roundid;
   }
 
-  public void makeFile(ModuleInfo modinfo) throws SQLException,IOException{
-    euroFiling(modinfo,roundid,contract,addPercent,addAmount);
+  public void makeFile(IWContext iwc) throws SQLException,IOException{
+    euroFiling(iwc,roundid,contract,addPercent,addAmount);
   }
 
   public String getFileLinkString(){
@@ -67,7 +67,7 @@ public class EuroFile  {
     this.sFileLink = sFileLink;
   }
 
-  public void writeFile(ModuleInfo modinfo,Payment[] ePayments, String sContract, double dPercent, int iAmount, int iUnionId)throws SQLException,IOException{
+  public void writeFile(IWContext iwc,Payment[] ePayments, String sContract, double dPercent, int iAmount, int iUnionId)throws SQLException,IOException{
     String euroID = "2";
 
     StringBuffer SB = new StringBuffer();
@@ -78,7 +78,7 @@ public class EuroFile  {
     String sLowerCaseUnionAbbreviation = U.getAbbrevation().toLowerCase();
 
     String fileSeperator = System.getProperty("file.separator");
-    String filepath = modinfo.getServletContext().getRealPath(fileSeperator+sLowerCaseUnionAbbreviation+fileSeperator);
+    String filepath = iwc.getServletContext().getRealPath(fileSeperator+sLowerCaseUnionAbbreviation+fileSeperator);
     StringBuffer fileName = new StringBuffer(sLowerCaseUnionAbbreviation);
     fileName.append(datenow.getDay());
     fileName.append(datenow.getMonth());
@@ -160,8 +160,8 @@ public class EuroFile  {
 
   }
 
-  private void euroFiling(ModuleInfo modinfo, int roundid, String sContract, double dPercent, int iAmount) throws SQLException,IOException{
-    String union_id = (String)  modinfo.getSession().getAttribute("golf_union_id");
+  private void euroFiling(IWContext iwc, int roundid, String sContract, double dPercent, int iAmount) throws SQLException,IOException{
+    String union_id = (String)  iwc.getSession().getAttribute("golf_union_id");
     int un_id = Integer.parseInt(union_id)  ;
 
     String euroID = "2";
@@ -180,7 +180,7 @@ public class EuroFile  {
     idegaTimestamp datenow = new idegaTimestamp();
 
     String fileSeperator = System.getProperty("file.separator");
-    String filepath = modinfo.getServletContext().getRealPath(fileSeperator+fileSeperator+"files"+fileSeperator);
+    String filepath = iwc.getServletContext().getRealPath(fileSeperator+fileSeperator+"files"+fileSeperator);
     StringBuffer fileName = new StringBuffer(U.getAbbrevation());
     fileName.append(datenow.getDay());
     fileName.append(datenow.getMonth());

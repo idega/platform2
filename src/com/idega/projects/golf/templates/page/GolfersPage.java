@@ -1,18 +1,18 @@
 package com.idega.projects.golf.templates.page;
 
-import com.idega.jmodule.object.Page;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.Page;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.jmodule.banner.presentation.*;
 import com.idega.jmodule.sidemenu.presentation.Sidemenu;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
 import com.idega.jmodule.news.presentation.NewsReader;
 import java.util.Vector;
 import java.sql.SQLException;
 import com.idega.projects.golf.HandicapOverview;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -96,7 +96,7 @@ public class GolfersPage extends Page {
   }
 
 
-  public void add(ModuleObject objectToAdd){
+  public void add(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,3,3);
   }
 
@@ -104,7 +104,7 @@ public class GolfersPage extends Page {
     Maintable.add(stringToAdd,3,3);
   }
 
-  public void addFooter(ModuleObject objectToAdd){
+  public void addFooter(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,1,5);
   }
 
@@ -116,7 +116,7 @@ public class GolfersPage extends Page {
     topBannerTable.add( stringToAdd, 1, 1);
   }
 
-  public void addLeftTopBanner(ModuleObject objectToAdd){
+  public void addLeftTopBanner(PresentationObject objectToAdd){
     topBannerTable.add(objectToAdd,1,1);
   }
 
@@ -124,11 +124,11 @@ public class GolfersPage extends Page {
     topBannerTable.add( stringToAdd,3,1);
   }
 
-  public void addRightTopBanner(ModuleObject objectToAdd){
+  public void addRightTopBanner(PresentationObject objectToAdd){
     topBannerTable.add(objectToAdd,3,1);
   }
 
-  public void addCenterTopBanner(ModuleObject objectToAdd){
+  public void addCenterTopBanner(PresentationObject objectToAdd){
     topBannerTable.add(objectToAdd,2,1);
   }
 
@@ -136,7 +136,7 @@ public class GolfersPage extends Page {
     topBannerTable.add( stringToAdd,2,1);
   }
 
-  public void addLeftLogo(ModuleObject objectToAdd){
+  public void addLeftLogo(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,1,2);
   }
 
@@ -144,7 +144,7 @@ public class GolfersPage extends Page {
     Maintable.add( stringToAdd, 1, 2);
   }
 
-  public void addLeftBanners(ModuleObject objectToAdd){
+  public void addLeftBanners(PresentationObject objectToAdd){
     innerLeftTable.add(objectToAdd,1,2);
   }
 
@@ -152,7 +152,7 @@ public class GolfersPage extends Page {
     innerLeftTable.add( stringToAdd, 1, 2);
   }
 
-  public void addLeftLink(ModuleObject objectToAdd){
+  public void addLeftLink(PresentationObject objectToAdd){
     innerLeftTable.add(objectToAdd,1,1);
   }
 
@@ -160,7 +160,7 @@ public class GolfersPage extends Page {
     innerLeftTable.add(stringToAdd,1,1);
   }
 
-  public void addCornerLogo(ModuleObject objectToAdd){
+  public void addCornerLogo(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,1,1);
   }
 
@@ -168,7 +168,7 @@ public class GolfersPage extends Page {
     Maintable.add(stringToAdd,1,1);
   }
 
-  public void addMenuLinks(ModuleObject objectToAdd){
+  public void addMenuLinks(PresentationObject objectToAdd){
     Maintable.add(objectToAdd,3,2);
   }
 
@@ -212,13 +212,13 @@ public class GolfersPage extends Page {
     Maintable.add(imageToAdd,1,1);
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
+  public void main(IWContext iwc) throws Exception{
     try {
-      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      isAdmin =  com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException E) {    }
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
     Image dotLineBackgroundImage;
     dotLineBackgroundImage = iwb.getImage("shared/brotalina.gif");

@@ -13,9 +13,9 @@ import com.idega.data.*;
 import com.idega.block.building.business.BuildingFinder;
 import com.idega.data.genericentity.Address;
 import com.idega.block.building.data.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -28,7 +28,7 @@ import com.idega.idegaweb.IWBundle;
  * @version 1.0
  */
 
-public class ApartmentTypeViewer extends JModuleObject{
+public class ApartmentTypeViewer extends Block{
 
 private static final String IW_RESOURCE_BUNDLE = "com.idega.block.building";
 public static final String PARAMETER_STRING = "type_id";
@@ -46,18 +46,18 @@ public ApartmentTypeViewer(int apartmenttypeid){
 }
 
 
-    public void main(ModuleInfo modinfo) throws Exception {
+    public void main(IWContext iwc) throws Exception {
       if ( iwrb_ == null ) {
-        iwrb_ = getResourceBundle(modinfo);
+        iwrb_ = getResourceBundle(iwc);
       }
 
       if ( iwb_ == null ) {
-        iwb_ = getBundle(modinfo);
+        iwb_ = getBundle(iwc);
       }
 
-      if ( modinfo.getParameter(PARAMETER_STRING) != null ) {
+      if ( iwc.getParameter(PARAMETER_STRING) != null ) {
         try {
-          apartmenttypeid = Integer.parseInt(modinfo.getParameter(PARAMETER_STRING));
+          apartmenttypeid = Integer.parseInt(iwc.getParameter(PARAMETER_STRING));
         }
         catch (NumberFormatException e) {
           apartmenttypeid = 0;
@@ -67,7 +67,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
       this.getParentPage().setAllMargins(0);
 
       if ( iwrb_ != null && iwb_ != null ) {
-        getApartmentType(modinfo);
+        getApartmentType(iwc);
       }
       else {
         add(getBoldText("No bundle available"));
@@ -79,7 +79,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
       this.infoStyle = "font-family:arial; font-size:8pt; color:#000000; line-height: 1.8; text-align: justify;";
     }
 
-    private void getApartmentType(ModuleInfo modinfo) throws SQLException {
+    private void getApartmentType(IWContext iwc) throws SQLException {
 
       ApartmentType room = new ApartmentType(apartmenttypeid);
 
@@ -115,7 +115,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
       topTable.add(iwrb_.getImage("/room/topright.gif","",153,40),2,1);
 
       roomTable.add(topTable,1,1);
-      roomTable.add(getApartmentTable(room, modinfo),1,3);
+      roomTable.add(getApartmentTable(room, iwc),1,3);
       roomTable.add(getAllApartmentTypes(room),1,4);
       roomTable.add(iwrb_.getImage("/room/bottom.gif","",400,66),1,5);
 
@@ -123,7 +123,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
 
     }
 
-    private Table getApartmentTable(ApartmentType room, ModuleInfo modinfo) throws SQLException {
+    private Table getApartmentTable(ApartmentType room, IWContext iwc) throws SQLException {
 
        Table roomTable = new Table(2,2);
         roomTable.mergeCells(1,1,1,2);
@@ -217,7 +217,7 @@ public ApartmentTypeViewer(int apartmenttypeid){
 
       if(room.getRent() > 0){
         roomTable.add(getBoldText(iwrb_.getLocalizedString("rent","Rent")+": "),2,1);
-        NumberFormat format = DecimalFormat.getCurrencyInstance(modinfo.getApplication().getSettings().getDefaultLocale());
+        NumberFormat format = DecimalFormat.getCurrencyInstance(iwc.getApplication().getSettings().getDefaultLocale());
         String rentString = format.format((long)room.getRent());
         roomTable.add(getInfoText(rentString),2,1);
       }

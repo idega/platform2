@@ -4,15 +4,15 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.text.data.*;
 import com.idega.data.*;
 import com.idega.util.text.*;
 
 
-public class TextReader extends JModuleObject{
+public class TextReader extends Block{
 
 private String text_id = null;
 private boolean isAdmin=false;
@@ -76,12 +76,12 @@ public TextReader(String text_id, boolean isAdmin){
 	this.isAdmin=isAdmin;
 }
 
-public void main(ModuleInfo modinfo) throws Exception {
+public void main(IWContext iwc) throws Exception {
 
-  String text_id2 = modinfo.getRequest().getParameter("text_id");
+  String text_id2 = iwc.getRequest().getParameter("text_id");
         if( text_id2 != null ) text_id = text_id2;
 
-        isAdmin=isAdministrator(modinfo);
+        isAdmin=isAdministrator(iwc);
 
 
 		if ( isAdmin ) {

@@ -11,9 +11,9 @@ import java.util.*;
 import java.io.*;
 import java.text.DateFormat;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.news.data.*;
 import com.idega.data.*;
 import com.idega.util.text.*;
@@ -31,7 +31,7 @@ import com.idega.idegaweb.IWMainApplication;
  * @version 1.1
  */
 
-public class NewsReader extends ModuleObjectContainer implements IWBlock{
+public class NewsReader extends PresentationObjectContainer implements IWBlock{
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
   private boolean isAdmin=false;
@@ -140,13 +140,13 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
 
   }
 
-  private void control(ModuleInfo modinfo){
-    Locale locale = modinfo.getCurrentLocale();
-    String sNewsId = modinfo.getParameter(prmMore);
+  private void control(IWContext iwc){
+    Locale locale = iwc.getCurrentLocale();
+    String sNewsId = iwc.getParameter(prmMore);
     NewsCategory newsCategory = null;
 
     if(iCategoryId <= 0){
-      String sCategoryId = modinfo.getParameter(prmNewsCategoryId );
+      String sCategoryId = iwc.getParameter(prmNewsCategoryId );
       if(sCategoryId != null)
         iCategoryId = Integer.parseInt(sCategoryId);
       else if(getICObjectInstanceID() > 0){
@@ -172,7 +172,7 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
           T.add(getNewsTable(nh,newsCategory,locale,true),1,1);
         }
         else
-          T.add(publishNews(modinfo,newsCategory,locale),1,1);
+          T.add(publishNews(iwc,newsCategory,locale),1,1);
       }
     }
     else{
@@ -182,7 +182,7 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
     super.add(T);
   }
 
-  public ModuleObject getAdminPart(int iCategoryId,boolean enableDelete,boolean newObjInst){
+  public PresentationObject getAdminPart(int iCategoryId,boolean enableDelete,boolean newObjInst){
     Table T = new Table(3,1);
     T.setCellpadding(2);
     T.setCellspacing(2);
@@ -221,7 +221,7 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
 
   }
 
-  private ModuleObject publishNews(ModuleInfo modinfo ,NewsCategory newsCategory,Locale locale){
+  private PresentationObject publishNews(IWContext iwc ,NewsCategory newsCategory,Locale locale){
     List L = NewsFinder.listOfNewsHelpersInCategory(newsCategory.getID(),numberOfDisplayedNews,locale );
     NewsTable T = new NewsTable(NewsTable.NEWS_SITE_LAYOUT );
     boolean useDividedTable = iLayout == NEWS_SITE_LAYOUT ? true:false;
@@ -235,7 +235,7 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
         if(objectsBetween != null && objectsBetween.containsKey(I)){
           Table t = new Table(1,1);
           t.setCellpadding(4);
-          t.add((ModuleObject)objectsBetween.get(I));
+          t.add((PresentationObject)objectsBetween.get(I));
           T.add(t,sObjectAlign );
           objectsBetween.remove(I);
         }
@@ -246,7 +246,7 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
         Collections.reverse(V);
         Iterator iter = V.iterator();
         while(iter.hasNext()){
-          T.add((ModuleObject)iter.next(),sObjectAlign );
+          T.add((PresentationObject)iter.next(),sObjectAlign );
         }
       }
     }
@@ -257,7 +257,7 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
   }
 
   // Make a table around each news
-  private ModuleObject getNewsTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,boolean showAll){
+  private PresentationObject getNewsTable(NewsHelper newsHelper,NewsCategory newsCategory, Locale locale,boolean showAll){
     Table T = new Table(1,4);
     T.setCellpadding(0);
     T.setCellspacing(0);
@@ -347,7 +347,7 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
     return T;
   }
 
-  private ModuleObject getNewsAdminPart(NwNews news){
+  private PresentationObject getNewsAdminPart(NwNews news){
     Table links = new Table(2,1);
       Link newsEdit = new Link(iwrb.getImage("change.gif"));
       newsEdit.setWindowToOpen(NewsEditorWindow.class);
@@ -372,19 +372,19 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
 
   }
 
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(IWContext iwc)throws Exception{
     try {
-      //isAdmin = AccessControl.isAdmin(modinfo);
+      //isAdmin = AccessControl.isAdmin(iwc);
       /** @todo  */
-      isAdmin = AccessControl.hasEditPermission(this,modinfo);
+      isAdmin = AccessControl.hasEditPermission(this,iwc);
     }
     catch (SQLException ex) {
       isAdmin = false;
     }
 
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
-    control(modinfo);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
+    control(iwc);
   }
 
   public boolean deleteBlock(int instanceid){
@@ -490,11 +490,11 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
   public void showNewsCollectionButton(boolean showNewsCollectionButton){
     this.showNewsCollectionButton = showNewsCollectionButton;
   }
-  public void setNewsReaderURLAsSamePage(ModuleInfo modinfo){
-    this.newsReaderURL =  modinfo.getRequestURI();
+  public void setNewsReaderURLAsSamePage(IWContext iwc){
+    this.newsReaderURL =  iwc.getRequestURI();
   }
-  public void setNewsCollectionURLAsSamePage(ModuleInfo modinfo){
-    this.newsCollectionURL =  modinfo.getRequestURI();
+  public void setNewsCollectionURLAsSamePage(IWContext iwc){
+    this.newsCollectionURL =  iwc.getRequestURI();
   }
   public void setNumberOfExpandedNews(int numberOfExpandedNews){
     this.numberOfExpandedNews = Math.abs(numberOfExpandedNews);
@@ -531,13 +531,13 @@ public class NewsReader extends ModuleObjectContainer implements IWBlock{
   public void setObjectAligment(String sAlign){
     sObjectAlign = sAlign;
   }
-  public void addObjectBetween(ModuleObject object,int spaceNumber){
+  public void addObjectBetween(PresentationObject object,int spaceNumber){
     if(objectsBetween == null)
       objectsBetween = new Hashtable();
     objectsBetween.put(new Integer(spaceNumber),object);
   }
   // overriding super class method
-  public void add(ModuleObject MO){
+  public void add(PresentationObject MO){
     addObjectBetween(MO,iSpaceBetween);
     if(iLayout == NEWS_SITE_LAYOUT){
       iSpaceBetween+=2;

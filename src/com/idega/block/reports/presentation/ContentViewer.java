@@ -2,22 +2,22 @@ package com.idega.block.reports.presentation;
 
 import com.idega.block.reports.data.*;
 import com.idega.block.reports.business.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.Collections;
-import com.idega.jmodule.object.Editor;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.Editor;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Script;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
+import com.idega.presentation.PresentationObjectContainer;
 
 
-public class ContentViewer extends ModuleObjectContainer{
+public class ContentViewer extends PresentationObjectContainer{
 
   private final String sAction = "rcv_action";
   private String sActPrm = "";
@@ -116,21 +116,21 @@ public class ContentViewer extends ModuleObjectContainer{
   public void setAllowOrder(boolean allow){
     this.allowOrder = allow;
   }
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     try{
 
-      if(modinfo.getParameter(prmStart)!=null){
-        listStart = Integer.parseInt(modinfo.getParameter(prmStart));
+      if(iwc.getParameter(prmStart)!=null){
+        listStart = Integer.parseInt(iwc.getParameter(prmStart));
       }
-      modinfo.setSessionAttribute(prmListStart,new Integer(listStart));
+      iwc.setSessionAttribute(prmListStart,new Integer(listStart));
 
-      if(modinfo.getParameter(sAction) != null){
-        sActPrm = modinfo.getParameter(sAction);
+      if(iwc.getParameter(sAction) != null){
+        sActPrm = iwc.getParameter(sAction);
         try{
           iAction = Integer.parseInt(sActPrm);
           switch(iAction){
             case ACT1:    break;
-            case ACT2: doTable(modinfo);  break;
+            case ACT2: doTable(iwc);  break;
           }
         }
         catch(Exception e){
@@ -138,25 +138,25 @@ public class ContentViewer extends ModuleObjectContainer{
         }
       }
       else
-        doMain(modinfo);
+        doMain(iwc);
     }
     catch(Exception S){
       S.printStackTrace();
     }
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
 
     return LinkTable;
   }
 
-  private void doMain(ModuleInfo modinfo){
-    if(modinfo.getSessionAttribute(prmContent) == null){
+  private void doMain(IWContext iwc){
+    if(iwc.getSessionAttribute(prmContent) == null){
       String[] headers = sTitles;
       Vector v = vContent;
-      modinfo.setSessionAttribute(prmContent,v);
-      modinfo.setSessionAttribute(prmHeaders,headers);
+      iwc.setSessionAttribute(prmContent,v);
+      iwc.setSessionAttribute(prmHeaders,headers);
       if(v != null){
         add(this.doFooter(listStart,v.size()));
         add(this.doView(headers,v,listStart));
@@ -166,36 +166,36 @@ public class ContentViewer extends ModuleObjectContainer{
         add(new Text(" nothing to show"));
     }
     else{
-      doTable(modinfo);
+      doTable(iwc);
     }
   }
 
-  private void doTable(ModuleInfo modinfo){
-    if(modinfo.getSession().getAttribute( prmContent)!=null){
-      Vector v= (Vector) modinfo.getSession().getAttribute(prmContent);
-      eReport = ReportService.getSessionReport(modinfo);
-      listStart = ((Integer)modinfo.getSessionAttribute(prmListStart)).intValue();
+  private void doTable(IWContext iwc){
+    if(iwc.getSession().getAttribute( prmContent)!=null){
+      Vector v= (Vector) iwc.getSession().getAttribute(prmContent);
+      eReport = ReportService.getSessionReport(iwc);
+      listStart = ((Integer)iwc.getSessionAttribute(prmListStart)).intValue();
       String[] headers = null;
-      if(modinfo.getSessionAttribute(prmHeaders) != null){
-        headers = (String[]) modinfo.getSessionAttribute(prmHeaders);
+      if(iwc.getSessionAttribute(prmHeaders) != null){
+        headers = (String[]) iwc.getSessionAttribute(prmHeaders);
       }
       if(allowOrder){
-        if(modinfo.getSession().getAttribute(prmLastOrder)!=null)
-          this.sLastOrder = (String) modinfo.getSessionAttribute(prmLastOrder);
+        if(iwc.getSession().getAttribute(prmLastOrder)!=null)
+          this.sLastOrder = (String) iwc.getSessionAttribute(prmLastOrder);
         else
           this.sLastOrder = "";
 
         String sOrder = "0";
-        if(modinfo.getParameter(prmOrder)!= null){
-          sOrder = modinfo.getParameter(prmOrder);
+        if(iwc.getParameter(prmOrder)!= null){
+          sOrder = iwc.getParameter(prmOrder);
         }
         boolean reverse = false;
         if(this.sLastOrder.equalsIgnoreCase(sOrder))
           reverse = true;
         int order = Integer.parseInt(sOrder);
-        if(!(modinfo.getParameter(prmStart)!= null))
+        if(!(iwc.getParameter(prmStart)!= null))
           OrderVector(v,order,reverse);
-        modinfo.setSessionAttribute(prmLastOrder,sOrder);
+        iwc.setSessionAttribute(prmLastOrder,sOrder);
       }
 
       if(v != null){
@@ -208,7 +208,7 @@ public class ContentViewer extends ModuleObjectContainer{
     }
   }
 
-  private ModuleObject doFooter(int start,int total){
+  private PresentationObject doFooter(int start,int total){
     Table T = new Table(5,1);
     T.setColor(this.DarkColor);
     T.setWidth("100%");
@@ -268,7 +268,7 @@ public class ContentViewer extends ModuleObjectContainer{
     return T;
   }
 
-  private ModuleObject doView(String[] headers,Vector content,int start){
+  private PresentationObject doView(String[] headers,Vector content,int start){
     int len = content.size();
     Table T;
     if(start != -1)
@@ -393,8 +393,8 @@ public class ContentViewer extends ModuleObjectContainer{
     this.headerLinkToClone = linkToClonePropertiesFrom;
   }
 
-  public void main(ModuleInfo modinfo){
-    control(modinfo);
+  public void main(IWContext iwc){
+    control(iwc);
   }
 
 }

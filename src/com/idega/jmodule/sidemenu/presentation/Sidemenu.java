@@ -4,9 +4,9 @@ package com.idega.jmodule.sidemenu.presentation;
 import com.idega.jmodule.*;
 import com.idega.data.*;
 import java.io.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import com.idega.jmodule.poll.data.*;
 import java.sql.SQLException;
@@ -15,7 +15,7 @@ import com.idega.jmodule.sidemenu.data.*;
 import java.util.*;
 import com.idega.util.*;
 
-public class Sidemenu extends JModuleObject{
+public class Sidemenu extends Block{
     private String attribute_name = "idega_id";
     private int attribute_id = 1;
     private boolean forward_id = true;
@@ -148,25 +148,25 @@ public class Sidemenu extends JModuleObject{
     }
 
 
-    public void main(ModuleInfo modinfo) throws Exception{
-        this.isAdmin=this.isAdministrator(modinfo);
+    public void main(IWContext iwc) throws Exception{
+        this.isAdmin=this.isAdministrator(iwc);
 
-        drawMenu(modinfo);
+        drawMenu(iwc);
     }
 
-    private void removeApplication(ModuleInfo modinfo) throws SQLException{
+    private void removeApplication(IWContext iwc) throws SQLException{
 
-        Table table = (Table) modinfo.getServletContext().getAttribute("sidemenu_table"+attribute_id+"0");
-        modinfo.removeSessionAttribute("side_menu_session"+attribute_id);
+        Table table = (Table) iwc.getServletContext().getAttribute("sidemenu_table"+attribute_id+"0");
+        iwc.removeSessionAttribute("side_menu_session"+attribute_id);
 
-        String open = modinfo.getParameter("open");
+        String open = iwc.getParameter("open");
           if (open == null) { open = "0";}
 
 
         if (table != null) {
             try {
               System.out.println("Table : sidemenu_table"+attribute_id+"0 removed from application");
-              modinfo.getServletContext().removeAttribute("sidemenu_table"+attribute_id+"0");
+              iwc.getServletContext().removeAttribute("sidemenu_table"+attribute_id+"0");
             }
             catch (Exception e) {
               System.out.println("Table : sidemenu_table"+attribute_id+"0 NOT removed from application");
@@ -182,7 +182,7 @@ public class Sidemenu extends JModuleObject{
                         if (opt != null) {
                           if (opt.length > 0) {
                             for (int o=0 ; o < opt.length ; o ++) {
-                                modinfo.getServletContext().removeAttribute("sidemenu_table"+attribute_id+""+opt[o].getID());
+                                iwc.getServletContext().removeAttribute("sidemenu_table"+attribute_id+""+opt[o].getID());
                                 System.out.println("Table : sidemenu_table"+attribute_id+""+opt[o].getID()+" removed from application");
                             }
                           }
@@ -229,10 +229,10 @@ public class Sidemenu extends JModuleObject{
     }
 
 
-    private Table createMenu(ModuleInfo modinfo,Vector items, int menu_id)throws SQLException {
-        String URI = modinfo.getRequestURI();
-        String open = modinfo.getParameter("open");
-        String text_ids = modinfo.getParameter("text_id");
+    private Table createMenu(IWContext iwc,Vector items, int menu_id)throws SQLException {
+        String URI = iwc.getRequestURI();
+        String open = iwc.getParameter("open");
+        String text_ids = iwc.getParameter("text_id");
 
         String entity_id_column_name = "";
         String entity_id_column_value = "";
@@ -266,7 +266,7 @@ public class Sidemenu extends JModuleObject{
           if (open == null) { open = "0"; }
           if (text_ids == null) { text_ids = "0"; }
 
-        Table table = (Table) modinfo.getServletContext().getAttribute("sidemenu_table"+attribute_id+""+open);
+        Table table = (Table) iwc.getServletContext().getAttribute("sidemenu_table"+attribute_id+""+open);
 
           if (table != null) {
 //              add("tafla til");
@@ -338,7 +338,7 @@ public class Sidemenu extends JModuleObject{
 
 
                   link.addParameter(entity_id_column_name,entity_id_column_value);
-                  link.addParameter("module_object",option.getModuleObjectClassName());
+                  link.addParameter("module_object",option.getPresentationObjectClassName());
 //                  link.addParameter("items_position",i);
 //                  link.addParameter("return_type",entity_id_column_name);
 //                  link.addParameter("return_value",entity_id_column_value);
@@ -388,15 +388,15 @@ public class Sidemenu extends JModuleObject{
             try {
               table.resize(depth,row-1);
             }catch (ArrayIndexOutOfBoundsException aioobe) {}
-            modinfo.getServletContext().setAttribute("sidemenu_table"+attribute_id+""+open,table);
+            iwc.getServletContext().setAttribute("sidemenu_table"+attribute_id+""+open,table);
 
 
 /*
             if (text_ids != null) {
-              modinfo.getServletContext().setAttribute("sidemenu_table"+attribute_id+""+open,table);
+              iwc.getServletContext().setAttribute("sidemenu_table"+attribute_id+""+open,table);
             }
             else {
-              modinfo.getServletContext().setAttribute("sidemenu_table"+attribute_id+"0",table);
+              iwc.getServletContext().setAttribute("sidemenu_table"+attribute_id+"0",table);
             }
 */
           }
@@ -405,7 +405,7 @@ public class Sidemenu extends JModuleObject{
     }
 
 
-    private void drawMenu(ModuleInfo modinfo) throws SQLException {
+    private void drawMenu(IWContext iwc) throws SQLException {
 
       if (isAdmin) {
         Window gluggi = new Window("Sidemenustjórinn",700,500,admin_page_url);
@@ -442,7 +442,7 @@ public class Sidemenu extends JModuleObject{
               if (options != null) {
                 if (options.length > 0) {
                   for (int j = 0 ; j < options.length ; j++) {
-                    Vector session_vector = (Vector) modinfo.getSessionAttribute("side_menu_session"+attribute_id);
+                    Vector session_vector = (Vector) iwc.getSessionAttribute("side_menu_session"+attribute_id);
 
                     if (session_vector!= null) {
                       items = session_vector;
@@ -451,14 +451,14 @@ public class Sidemenu extends JModuleObject{
                       findNodes(items,options[j].getID(),1,new SidemenuOption());
                     }
                   }
-                  modinfo.setSessionAttribute("side_menu_session"+attribute_id,items);
+                  iwc.setSessionAttribute("side_menu_session"+attribute_id,items);
                 }
               }
 
             }
 
             if (items.size() > 0 ) {
-              table = createMenu(modinfo,items, menu.getID());
+              table = createMenu(iwc,items, menu.getID());
             }
 
 

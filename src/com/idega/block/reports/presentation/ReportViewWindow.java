@@ -1,10 +1,10 @@
 package com.idega.block.reports.presentation;
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -38,9 +38,9 @@ public class ReportViewWindow extends IWAdminWindow {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
+  public void main(IWContext iwc) throws Exception{
 
-    iwrb = getResourceBundle(modinfo);
+    iwrb = getResourceBundle(iwc);
     ReportContentViewer RCV = new ReportContentViewer();
     add(RCV);
     String title = iwrb.getLocalizedString("report_viewer","Report Viewer");
@@ -49,7 +49,7 @@ public class ReportViewWindow extends IWAdminWindow {
     addHeaderObject(getLinkTable());
   }
 
-  private ModuleObject getLinkTable(){
+  private PresentationObject getLinkTable(){
     Link L = new Link(iwrb.getLocalizedString("close","Close"));
     L.setFontStyle("text-decoration: none");
     L.setFontColor("#FFFFFF");
@@ -59,8 +59,8 @@ public class ReportViewWindow extends IWAdminWindow {
     return L;
   }
 
-  private void doCloseNoAction(ModuleInfo modinfo){
-    ReportContentViewer.removeSessionParameters(modinfo);
+  private void doCloseNoAction(IWContext iwc){
+    ReportContentViewer.removeSessionParameters(iwc);
     close();
   }
 }

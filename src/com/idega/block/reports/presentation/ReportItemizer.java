@@ -1,18 +1,18 @@
 package com.idega.block.reports.presentation;
 
 import com.idega.block.reports.data.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
 import java.sql.SQLException;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.Editor;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Script;
+import com.idega.presentation.Editor;
 import com.idega.block.reports.presentation.ReportObjectHandler;
 import com.idega.block.reports.business.ReportEntityHandler;
-import com.idega.jmodule.object.ModuleObject;
+import com.idega.presentation.PresentationObject;
 import com.idega.data.GenericEntity;
 import com.idega.data.EntityFinder;
 import java.util.List;
@@ -37,28 +37,28 @@ public class ReportItemizer extends ReportPresentation{
     sInfo = "";
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     if(isAdmin){
       try{
         Form F = new Form();
         Table T = new Table();
         T.add(this.makeLinkTable(0),1,1);
-        T.add(getCategoryTable(modinfo),1,2);
-        if(modinfo.getParameter("risave")!=null){
-          doUpdate(modinfo);
+        T.add(getCategoryTable(iwc),1,2);
+        if(iwc.getParameter("risave")!=null){
+          doUpdate(iwc);
         }
-        else if(modinfo.getParameter("ea_apply")!= null || modinfo.getParameter("ea_ok")!= null){
-          doUpdateEntityForm(modinfo);
+        else if(iwc.getParameter("ea_apply")!= null || iwc.getParameter("ea_ok")!= null){
+          doUpdateEntityForm(iwc);
         }
 
-        if(modinfo.getParameter(sAction) != null){
-          sActPrm = modinfo.getParameter(sAction);
+        if(iwc.getParameter(sAction) != null){
+          sActPrm = iwc.getParameter(sAction);
           try{
             iAction = Integer.parseInt(sActPrm);
             switch(iAction){
-              case ACT1: T.add(doEntityAdd(modinfo),1,3);    break;
-              case ACT2: T.add(doView(modinfo),1,3);         break;
-              case ACT3: T.add(doChange(modinfo),1,3);       break;
+              case ACT1: T.add(doEntityAdd(iwc),1,3);    break;
+              case ACT2: T.add(doView(iwc),1,3);         break;
+              case ACT3: T.add(doChange(iwc),1,3);       break;
             }
           }
           catch(Exception e){
@@ -66,7 +66,7 @@ public class ReportItemizer extends ReportPresentation{
           }
         }
         else{
-          T.add(doView(modinfo),1,3);
+          T.add(doView(iwc),1,3);
         }
         F.add(T);
         add(F);
@@ -80,7 +80,7 @@ public class ReportItemizer extends ReportPresentation{
     }
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -105,12 +105,12 @@ public class ReportItemizer extends ReportPresentation{
     return LinkTable;
   }
 
-  private void doSome(ModuleInfo modinfo){
+  private void doSome(IWContext iwc){
     int id = 0;
-    String sIndex = modinfo.getParameter("rep.cat.drp");
+    String sIndex = iwc.getParameter("rep.cat.drp");
     if(sIndex != null){
       id = Integer.parseInt(sIndex);
-      modinfo.setSessionAttribute(prefix+"id",new Integer(id));
+      iwc.setSessionAttribute(prefix+"id",new Integer(id));
       if(id != 0){
         try {
           ReportCategory RC = new ReportCategory(id);
@@ -123,15 +123,15 @@ public class ReportItemizer extends ReportPresentation{
     }
   }
 
-  private void doMain(ModuleInfo modinfo){
-    String sIndex = modinfo.getParameter("rep_cat_drp");
+  private void doMain(IWContext iwc){
+    String sIndex = iwc.getParameter("rep_cat_drp");
     Table T = new Table();
     if(sIndex==null)
       sIndex = "0";
     add(T);
   }
 
-  private ModuleObject doView(ModuleInfo modinfo){
+  private PresentationObject doView(IWContext iwc){
     List L = null;
     try{
       L = EntityFinder.findAllByColumn(new ReportItem(),ReportItem.getColumnNameCategory(),iCategoryId);
@@ -158,15 +158,15 @@ public class ReportItemizer extends ReportPresentation{
     return T;
   }
 
-  private ModuleObject getCategoryTable(ModuleInfo modinfo){
-    String sCatId = modinfo.getParameter("rep.cat.drp");
+  private PresentationObject getCategoryTable(IWContext iwc){
+    String sCatId = iwc.getParameter("rep.cat.drp");
     if(sCatId != null){
       int iCatId = Integer.parseInt(sCatId);
       iCategoryId = iCatId;
-      modinfo.setSessionAttribute(sSessPrm,new Integer(iCategoryId));
+      iwc.setSessionAttribute(sSessPrm,new Integer(iCategoryId));
     }
-    else if(modinfo.getSessionAttribute(sSessPrm )!=null){
-      iCategoryId = ((Integer)modinfo.getSessionAttribute(sSessPrm )).intValue();
+    else if(iwc.getSessionAttribute(sSessPrm )!=null){
+      iCategoryId = ((Integer)iwc.getSessionAttribute(sSessPrm )).intValue();
       sCatId = String.valueOf(iCategoryId);
     }
     Table T = new Table();
@@ -177,8 +177,8 @@ public class ReportItemizer extends ReportPresentation{
     return T;
   }
 
-  protected ModuleObject doChange(ModuleInfo modinfo) throws SQLException{
-    String sRepItemId = modinfo.getParameter("repitemid");
+  protected PresentationObject doChange(IWContext iwc) throws SQLException{
+    String sRepItemId = iwc.getParameter("repitemid");
     Table Frame = new Table(2,1);
     Frame.setRowVerticalAlignment(1,"top");
     Table T =  new Table(2,12);
@@ -285,9 +285,9 @@ public class ReportItemizer extends ReportPresentation{
     return(Frame);
   }
 
-  private ModuleObject doEntityAdd(ModuleInfo modinfo){
+  private PresentationObject doEntityAdd(IWContext iwc){
 
-    String sEntId = modinfo.getParameter("ent_drp");
+    String sEntId = iwc.getParameter("ent_drp");
     int iEntId = -1;
     if(sEntId !=null)
       iEntId = Integer.parseInt(sEntId);
@@ -310,7 +310,7 @@ public class ReportItemizer extends ReportPresentation{
     return T;
   }
 
-  private ModuleObject getEntityTable(ReportEntity RE){
+  private PresentationObject getEntityTable(ReportEntity RE){
     try{
     GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
     Table T = new Table();
@@ -331,7 +331,7 @@ public class ReportItemizer extends ReportPresentation{
     catch(Exception ex){return new Table();}
   }
 
-  private ModuleObject getEntityForm(ReportEntity RE){
+  private PresentationObject getEntityForm(ReportEntity RE){
     try{
     GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
     Table T = new Table();
@@ -363,13 +363,13 @@ public class ReportItemizer extends ReportPresentation{
     }
   }
 
-  protected void doUpdateEntityForm(ModuleInfo modinfo) throws SQLException{
+  protected void doUpdateEntityForm(IWContext iwc) throws SQLException{
     System.err.println("doUpdateEntityForm");
     try{
-      int re_id = Integer.parseInt(modinfo.getParameter("re_id"));
+      int re_id = Integer.parseInt(iwc.getParameter("re_id"));
       ReportEntity RE = new ReportEntity(re_id);
       GenericEntity ent = (GenericEntity)Class.forName(RE.getEntity()).newInstance();
-      String[] s = modinfo.getParameterValues("box");
+      String[] s = iwc.getParameterValues("box");
       int len = s.length;
       String[] columns  = ent.getVisibleColumnNames();
       for (int i = 0; i < len; i++) {
@@ -417,8 +417,8 @@ public class ReportItemizer extends ReportPresentation{
     return drp;
   }
 
-  protected void doUpdate(ModuleInfo modinfo) throws SQLException{
-    String entityId = modinfo.getParameter("repitemid");
+  protected void doUpdate(IWContext iwc) throws SQLException{
+    String entityId = iwc.getParameter("repitemid");
     int itemId = -1;
     if(entityId!= null){
       itemId = Integer.parseInt(entityId);
@@ -427,16 +427,16 @@ public class ReportItemizer extends ReportPresentation{
     int id  = iCategoryId;
     String name,field,table,joins,jointables,condtype,conddata,condop,entity,info;
 
-    name        = modinfo.getParameter(prefix+"name");
-    field       = modinfo.getParameter(prefix+"field");
-    table       = modinfo.getParameter(prefix+"table");
-    joins       = modinfo.getParameter(prefix+"joins");
-    jointables  = modinfo.getParameter(prefix+"jointables");
-    condtype    = modinfo.getParameter(prefix+"condtype");
-    conddata    = modinfo.getParameter(prefix+"conddata");
-    condop      = modinfo.getParameter(prefix+"condop");
-    entity      = modinfo.getParameter(prefix+"entity");
-    info        = modinfo.getParameter(prefix+"info");
+    name        = iwc.getParameter(prefix+"name");
+    field       = iwc.getParameter(prefix+"field");
+    table       = iwc.getParameter(prefix+"table");
+    joins       = iwc.getParameter(prefix+"joins");
+    jointables  = iwc.getParameter(prefix+"jointables");
+    condtype    = iwc.getParameter(prefix+"condtype");
+    conddata    = iwc.getParameter(prefix+"conddata");
+    condop      = iwc.getParameter(prefix+"condop");
+    entity      = iwc.getParameter(prefix+"entity");
+    info        = iwc.getParameter(prefix+"info");
     if(id != 0){
       boolean b = false;
       if(itemId > 0){

@@ -1,7 +1,7 @@
 package com.idega.projects.golf.business;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.service.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.jmodule.login.data.LoginTable;
@@ -18,9 +18,9 @@ import com.idega.util.idegaTimestamp;
  * @version 1.0
  */
 
-public class ClubAdminHandler extends JModuleObject {
+public class ClubAdminHandler extends Block {
 
-  ModuleInfo modinfo;
+  IWContext iwc;
   int begin;
   int end;
 
@@ -31,7 +31,7 @@ public class ClubAdminHandler extends JModuleObject {
   }
 
   private void insertClubAdminMembers(int beginUnionID, int endUnionID)throws SQLException, IOException{
-    PrintWriter ut = modinfo.getResponse().getWriter();
+    PrintWriter ut = iwc.getResponse().getWriter();
     ut.print("inni");
     Group group = new Group(14);
     Group[] groups = new Group[1];
@@ -159,13 +159,13 @@ public class ClubAdminHandler extends JModuleObject {
   }
 
 
-  public void main(ModuleInfo modinfo2) throws Exception{
+  public void main(IWContext iwc2) throws Exception{
     try{
-      this.modinfo = modinfo2;
+      this.iwc = iwc2;
       insertClubAdminMembers(begin, end);
     }
     catch(Exception ex){
-      ex.printStackTrace(modinfo2.getResponse().getWriter());
+      ex.printStackTrace(iwc2.getResponse().getWriter());
     }
   }
 

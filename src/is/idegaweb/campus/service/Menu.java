@@ -1,5 +1,5 @@
 /*
- * $Id: Menu.java,v 1.16 2001/08/29 22:27:22 laddi Exp $
+ * $Id: Menu.java,v 1.17 2001/10/05 08:05:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,9 +11,9 @@ package is.idegaweb.campus.service;
 
 import com.idega.data.genericentity.Group;
 import com.idega.data.genericentity.Member;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.login.business.*;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import com.idega.util.LocaleUtil;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class Menu extends JModuleObject{
+public class Menu extends Block{
 
   private String iObjectName = "Menu";
   private String LightColor,MiddleColor,DarkColor;
@@ -50,29 +50,29 @@ public class Menu extends JModuleObject{
     DarkColor = "#27324B";
   }
 
-  private void control(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  private void control(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
-      eMember = AccessControl.getMember(modinfo);
+      eMember = AccessControl.getMember(iwc);
 
-      if(modinfo.getParameter(strAction) == null){
-        if ( modinfo.getSessionAttribute(strAction) != null ) {
-          sAct = (String) modinfo.getSessionAttribute(strAction);
+      if(iwc.getParameter(strAction) == null){
+        if ( iwc.getSessionAttribute(strAction) != null ) {
+          sAct = (String) iwc.getSessionAttribute(strAction);
           iAct = Integer.parseInt(sAct);
         }
         else {
           iAct = NOACT;
         }
       }
-      if(modinfo.getParameter(strAction) != null){
-        sAct = modinfo.getParameter(strAction);
+      if(iwc.getParameter(strAction) != null){
+        sAct = iwc.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
-        if ( ((String) modinfo.getSessionAttribute(strAction)) != (sAct) ) {
-          modinfo.setSessionAttribute(strAction,sAct);
+        if ( ((String) iwc.getSessionAttribute(strAction)) != (sAct) ) {
+          iwc.setSessionAttribute(strAction,sAct);
         }
       }
-      doAct(modinfo);
+      doAct(iwc);
     }
     catch(Exception S){	S.printStackTrace();	}
   }
@@ -81,7 +81,7 @@ public class Menu extends JModuleObject{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  private void doAct(ModuleInfo modinfo){
+  private void doAct(IWContext iwc){
     int MenuCount = 7;
     Table LinkTable = new Table();
     LinkTable.setBorder(0);
@@ -184,15 +184,15 @@ public class Menu extends JModuleObject{
 
     Link link6 = new Link();
     link6 = new Link(iwrb.getImage("/menu/language.gif",iwrb.getLocalizedString("language","English"),95,37));
-    if(modinfo.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())){
+    if(iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale())){
       link6.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.englishParameterString);
     }
     else{
       link6.addParameter(LocaleSwitcher.languageParameterString,LocaleSwitcher.icelandicParameterString);
     }
     link6.setEventListener(com.idega.core.localisation.business.LocaleSwitcher.class.getName());
-    link6.maintainParameter("text_action",modinfo);
-    link6.maintainParameter("campus_action",modinfo);
+    link6.maintainParameter("text_action",iwc);
+    link6.maintainParameter("campus_action",iwc);
     LinkTable.add(link6,1,row);
     LinkTable.setHeight(1,row,"51");
     LinkTable.setAlignment(1,row,"center");
@@ -244,12 +244,12 @@ public class Menu extends JModuleObject{
       return iObjectName;
   }
 
-  public void main(ModuleInfo modinfo)  {
+  public void main(IWContext iwc)  {
     try{
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
 
-    control(modinfo);
+    control(iwc);
   }
 }// class Menu

@@ -1,7 +1,7 @@
 package is.idegaweb.campus.presentation;
 
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.interfaceobject.InterfaceObject;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.InterfaceObject;
 /**
  * Title:
  * Description:

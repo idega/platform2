@@ -1,8 +1,8 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.idegaweb.*;
 import is.idega.travel.business.*;
@@ -27,12 +27,12 @@ public class TourDesigner extends TravelManager {
   String ServiceAction = ServiceDesigner.ServiceAction;
 
 
-  public TourDesigner(ModuleInfo modinfo) throws SQLException{
-    init(modinfo);
+  public TourDesigner(IWContext iwc) throws SQLException{
+    init(iwc);
   }
 
-  public void init(ModuleInfo modinfo) throws SQLException{
-    super.main(modinfo);
+  public void init(IWContext iwc) throws SQLException{
+    super.main(iwc);
     iwrb = super.getResourceBundle();
     iwb = super.getBundle();
     supplier = super.getSupplier();
@@ -310,31 +310,31 @@ public class TourDesigner extends TravelManager {
       return form;
   }
 
-  public int createTour(ModuleInfo modinfo) {
+  public int createTour(IWContext iwc) {
 
-      String name = modinfo.getParameter("name_of_trip");
-      String description = modinfo.getParameter("description");
-      String imageId = modinfo.getParameter("design_image_id");
-      String activeFrom = modinfo.getParameter("active_from");
-      String activeTo = modinfo.getParameter("active_to");
-      String activeYearly = modinfo.getParameter("active_yearly");
+      String name = iwc.getParameter("name_of_trip");
+      String description = iwc.getParameter("description");
+      String imageId = iwc.getParameter("design_image_id");
+      String activeFrom = iwc.getParameter("active_from");
+      String activeTo = iwc.getParameter("active_to");
+      String activeYearly = iwc.getParameter("active_yearly");
 
-      String allDays = modinfo.getParameter("all_days");
-      String mondays = modinfo.getParameter("mondays");
-      String tuesdays = modinfo.getParameter("tuesdays");
-      String wednesdays = modinfo.getParameter("wednesdays");
-      String thursdays = modinfo.getParameter("thursdays");
-      String fridays = modinfo.getParameter("fridays");
-      String saturdays = modinfo.getParameter("saturdays");
-      String sundays = modinfo.getParameter("sundays");
+      String allDays = iwc.getParameter("all_days");
+      String mondays = iwc.getParameter("mondays");
+      String tuesdays = iwc.getParameter("tuesdays");
+      String wednesdays = iwc.getParameter("wednesdays");
+      String thursdays = iwc.getParameter("thursdays");
+      String fridays = iwc.getParameter("fridays");
+      String saturdays = iwc.getParameter("saturdays");
+      String sundays = iwc.getParameter("sundays");
 
-      String departureFrom = modinfo.getParameter("departure_from");
-      String departureTime = modinfo.getParameter("departure_time");
-      String arrivalAt = modinfo.getParameter("arrival_at");
-      String arrivalTime = modinfo.getParameter("arrival_time");
-      String[] hotelPickup = modinfo.getParameterValues("hotelPickupId");
+      String departureFrom = iwc.getParameter("departure_from");
+      String departureTime = iwc.getParameter("departure_time");
+      String arrivalAt = iwc.getParameter("arrival_at");
+      String arrivalTime = iwc.getParameter("arrival_time");
+      String[] hotelPickup = iwc.getParameterValues("hotelPickupId");
 
-      String numberOfSeats = modinfo.getParameter("number_of_seats");
+      String numberOfSeats = iwc.getParameter("number_of_seats");
 /*
       if (hotelPickup != null) {
         if (hotelPickup.equals("N")) hotelPickupAddress = "";

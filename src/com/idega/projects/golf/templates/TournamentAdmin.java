@@ -12,10 +12,10 @@ import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.*;
 import com.idega.projects.golf.moduleobject.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import java.sql.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import java.io.*;
 import java.util.*;
 import com.idega.jmodule.template.*;
@@ -86,21 +86,21 @@ public abstract class TournamentAdmin extends JmoduleWindowModule{
 	}
 
    public void setPageAttribute(String attributeName,Object attribute){
-      setSessionAttribute(getModuleInfo().getRequest().getRequestURI()+attributeName,attribute);
+      setSessionAttribute(getIWContext().getRequest().getRequestURI()+attributeName,attribute);
    }
 
    public Object getPageAttribute(String attributeName){
-      return getSessionAttribute(getModuleInfo().getRequest().getRequestURI()+attributeName);
+      return getSessionAttribute(getIWContext().getRequest().getRequestURI()+attributeName);
    }
 
    public void removePageAttribute(String attributeName){
-      removeSessionAttribute(getModuleInfo().getRequest().getRequestURI()+attributeName);
+      removeSessionAttribute(getIWContext().getRequest().getRequestURI()+attributeName);
    }
 
    public void removeAllPageAttributes(){
-      Enumeration enum = getModuleInfo().getSession().getAttributeNames();
+      Enumeration enum = getIWContext().getSession().getAttributeNames();
       String attributeName;
-      String Page = getModuleInfo().getRequest().getRequestURI();
+      String Page = getIWContext().getRequest().getRequestURI();
       while (enum.hasMoreElements()){
          attributeName = (String)enum.nextElement();
          if (attributeName.indexOf(Page) != -1){
@@ -116,13 +116,13 @@ public abstract class TournamentAdmin extends JmoduleWindowModule{
 
  */
 
-        public void _main(ModuleInfo modinfo)throws Exception{
-          super._main(modinfo);
+        public void _main(IWContext iwc)throws Exception{
+          super._main(iwc);
           getPage().setTitle("Mótastjóri");
         }
 
 	public Member getMember(){
-		return (Member)getModuleInfo().getSession().getAttribute("member_login");
+		return (Member)getIWContext().getSession().getAttribute("member_login");
 	}
 
 
@@ -130,7 +130,7 @@ public abstract class TournamentAdmin extends JmoduleWindowModule{
         public boolean isAdmin() {
 
           try{
-            return com.idega.jmodule.login.business.AccessControl.isAdmin(getModuleInfo());
+            return com.idega.jmodule.login.business.AccessControl.isAdmin(getIWContext());
           }catch (SQLException E) {
             /*
             out.print("SQLException: " + E.getMessage());
@@ -146,23 +146,23 @@ public abstract class TournamentAdmin extends JmoduleWindowModule{
 
 
         public boolean isDeveloper() {
-            return com.idega.jmodule.login.business.AccessControl.isDeveloper(getModuleInfo());
+            return com.idega.jmodule.login.business.AccessControl.isDeveloper(getIWContext());
        }
 
         public boolean isClubAdmin() {
-            return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getModuleInfo());
+            return com.idega.jmodule.login.business.AccessControl.isClubAdmin(getIWContext());
         }
 
         public boolean isUser() {
-            return com.idega.jmodule.login.business.AccessControl.isUser(getModuleInfo());
+            return com.idega.jmodule.login.business.AccessControl.isUser(getIWContext());
         }
 
   public IWResourceBundle getResourceBundle(){
-     return getResourceBundle(getModuleInfo());
+     return getResourceBundle(getIWContext());
   }
 
   public IWBundle getBundle(){
-    return getBundle(getModuleInfo());
+    return getBundle(getIWContext());
   }
 
   public String getBundleIdentifier(){

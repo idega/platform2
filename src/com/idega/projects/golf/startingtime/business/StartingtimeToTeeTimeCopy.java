@@ -3,7 +3,7 @@ package com.idega.projects.golf.startingtime.business;
 import com.idega.projects.golf.entity.Startingtime;
 import com.idega.projects.golf.startingtime.data.TeeTime;
 import com.idega.data.EntityFinder;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import java.util.List;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -22,18 +22,18 @@ public class StartingtimeToTeeTimeCopy {
   public StartingtimeToTeeTimeCopy() {
   }
 
-  public static void putListsInSession(ModuleInfo modinfo) throws SQLException{
+  public static void putListsInSession(IWContext iwc) throws SQLException{
     Startingtime stTime = new Startingtime();
     List from = EntityFinder.findAll(stTime,"select * from "+stTime.getEntityName());
     List notFrom = EntityFinder.findAll(stTime,"select * from tournament_round_startingtime trs, startingtime st where trs.startingtime_id = st.startingtime_id");
 
-    modinfo.setSessionAttribute("from",from);
-    modinfo.setSessionAttribute("notFrom",from);
+    iwc.setSessionAttribute("from",from);
+    iwc.setSessionAttribute("notFrom",from);
   }
 
-  public static void sortLists(ModuleInfo modinfo){
-    List from = (List)modinfo.getSessionAttribute("from");
-    List notFrom = (List)modinfo.getSessionAttribute("notFrom");
+  public static void sortLists(IWContext iwc){
+    List from = (List)iwc.getSessionAttribute("from");
+    List notFrom = (List)iwc.getSessionAttribute("notFrom");
 
     Vector vector = new Vector();
 
@@ -43,14 +43,14 @@ public class StartingtimeToTeeTimeCopy {
       }
     }
     System.err.println(vector.size());
-    modinfo.setSessionAttribute("vector",vector);
+    iwc.setSessionAttribute("vector",vector);
 
 
   }
 
 
-  public static void copy(ModuleInfo modinfo)throws SQLException{
-    List toCopy = (List)modinfo.getSessionAttribute("vector");
+  public static void copy(IWContext iwc)throws SQLException{
+    List toCopy = (List)iwc.getSessionAttribute("vector");
     TeeTime t = new TeeTime();
     Startingtime s = null;
     System.err.println(toCopy.size());
@@ -76,9 +76,9 @@ public class StartingtimeToTeeTimeCopy {
   }
 
 
-  public static void remove(ModuleInfo modinfo){
-    modinfo.removeSessionAttribute("from");
-    modinfo.removeSessionAttribute("notFrom");
-    modinfo.removeSessionAttribute("vector");
+  public static void remove(IWContext iwc){
+    iwc.removeSessionAttribute("from");
+    iwc.removeSessionAttribute("notFrom");
+    iwc.removeSessionAttribute("vector");
   }
 }

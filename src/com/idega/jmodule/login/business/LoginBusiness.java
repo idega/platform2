@@ -6,8 +6,8 @@
 package com.idega.jmodule.login.business;
 
 
-import com.idega.jmodule.object.*;
-//import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+//import com.idega.presentation.ui.*;
 import com.idega.data.genericentity.*;
 import com.idega.jmodule.login.data.*;
 import java.sql.*;
@@ -36,33 +36,33 @@ public class LoginBusiness implements IWEventListener{
   }
 
 
-  public static boolean isLoggedOn(ModuleInfo modinfo){
-      if(modinfo.getSessionAttribute(UserAttributeParameter)==null){
+  public static boolean isLoggedOn(IWContext iwc){
+      if(iwc.getSessionAttribute(UserAttributeParameter)==null){
         return false;
       }
       return true;
   }
 
-  public static void internalSetState(ModuleInfo modinfo,String state){
-      modinfo.setSessionAttribute(LoginStateParameter,state);
+  public static void internalSetState(IWContext iwc,String state){
+      iwc.setSessionAttribute(LoginStateParameter,state);
   }
 
-  public static String internalGetState(ModuleInfo modinfo){
-      return (String) modinfo.getSessionAttribute(LoginStateParameter);
+  public static String internalGetState(IWContext iwc){
+      return (String) iwc.getSessionAttribute(LoginStateParameter);
   }
 
-  public void actionPerformed(ModuleInfo modinfo)throws IWException{
+  public void actionPerformed(IWContext iwc)throws IWException{
         //System.out.println("LoginBusiness.actionPerformed");
 
         try{
 
-            if(isLoggedOn(modinfo)){
-                  String controlParameter = modinfo.getParameter(LoginBusiness.LoginStateParameter);
+            if(isLoggedOn(iwc)){
+                  String controlParameter = iwc.getParameter(LoginBusiness.LoginStateParameter);
                   if (controlParameter != null) {
 
                         if(controlParameter.equals("logoff")){
-                            logOut(modinfo);
-                            internalSetState(modinfo,"loggedoff");
+                            logOut(iwc);
+                            internalSetState(iwc,"loggedoff");
 
                         }
 
@@ -71,26 +71,26 @@ public class LoginBusiness implements IWEventListener{
 
             }
             else{
-                  String controlParameter = modinfo.getParameter(LoginBusiness.LoginStateParameter);
+                  String controlParameter = iwc.getParameter(LoginBusiness.LoginStateParameter);
 
                   if (controlParameter != null) {
                       if(controlParameter.equals("login")){
 
                                 boolean canLogin = false;
-				if ((modinfo.getParameter("login") != null) && (modinfo.getParameter("password") != null)) {
-					canLogin = verifyPassword(modinfo, modinfo.getParameter("login"),modinfo.getParameter("password"));
+				if ((iwc.getParameter("login") != null) && (iwc.getParameter("password") != null)) {
+					canLogin = verifyPassword(iwc, iwc.getParameter("login"),iwc.getParameter("password"));
 					if (canLogin) {
-						isLoggedOn(modinfo);
-                                                internalSetState(modinfo,"loggedon");
+						isLoggedOn(iwc);
+                                                internalSetState(iwc,"loggedon");
 					}
 					else {
-                                                internalSetState(modinfo,"loginfailed");
+                                                internalSetState(iwc,"loginfailed");
 					}
 				}
 			}
                         else if(controlParameter.equals("tryagain")){
 
-                            internalSetState(modinfo,"loggedoff");
+                            internalSetState(iwc,"loggedoff");
 
                         }
 
@@ -105,37 +105,37 @@ public class LoginBusiness implements IWEventListener{
 
   }
 
-  public boolean isAdmin(ModuleInfo modinfo)throws SQLException{
-    return AccessControl.isAdmin(modinfo);
+  public boolean isAdmin(IWContext iwc)throws SQLException{
+    return AccessControl.isAdmin(iwc);
   }
 
 
-  public static Member getMember(ModuleInfo modinfo){
-    return (Member)modinfo.getSession().getAttribute(UserAttributeParameter);
+  public static Member getMember(IWContext iwc){
+    return (Member)iwc.getSession().getAttribute(UserAttributeParameter);
   }
 
 
-  private boolean verifyPassword(ModuleInfo modinfo,String login, String password) throws IOException,SQLException{
+  private boolean verifyPassword(IWContext iwc,String login, String password) throws IOException,SQLException{
           boolean returner = false;
           LoginTable[] login_table = (LoginTable[]) (new LoginTable()).findAllByColumn("user_login",login);
 
           for (int i = 0 ; i < login_table.length ; i++ ) {
                   if (login_table[i].getUserPassword().equals(password)) {
-                          modinfo.getSession().setAttribute(UserAttributeParameter,new Member(login_table[i].getMemberId())   );
+                          iwc.getSession().setAttribute(UserAttributeParameter,new Member(login_table[i].getMemberId())   );
                           returner = true;
                   }
           }
-          if (isAdmin(modinfo)) {
-                  modinfo.getSession().setAttribute(UserAccessAttributeParameter,"admin");
+          if (isAdmin(iwc)) {
+                  iwc.getSession().setAttribute(UserAccessAttributeParameter,"admin");
           }
-/*		if (isDeveloper(modinfo)) {
-                  modinfo.getSession().setAttribute("member_access","developer");
+/*		if (isDeveloper(iwc)) {
+                  iwc.getSession().setAttribute("member_access","developer");
           }
-          if (isClubAdmin(modinfo)) {
-                  modinfo.getSession().setAttribute("member_access","club_admin");
+          if (isClubAdmin(iwc)) {
+                  iwc.getSession().setAttribute("member_access","club_admin");
           }
-          if (isUser(modinfo)) {
-                  modinfo.getSession().setAttribute("member_access","user");
+          if (isUser(iwc)) {
+                  iwc.getSession().setAttribute("member_access","user");
           }
 */
           return returner;
@@ -143,11 +143,11 @@ public class LoginBusiness implements IWEventListener{
 
 
 
-    private void logOut(ModuleInfo modinfo) throws Exception{
+    private void logOut(IWContext iwc) throws Exception{
             //System.out.print("inside logOut");
-            modinfo.removeSessionAttribute(UserAttributeParameter);
-            if (modinfo.getSessionAttribute(UserAccessAttributeParameter) != null) {
-                    modinfo.removeSessionAttribute(UserAccessAttributeParameter);
+            iwc.removeSessionAttribute(UserAttributeParameter);
+            if (iwc.getSessionAttribute(UserAccessAttributeParameter) != null) {
+                    iwc.removeSessionAttribute(UserAccessAttributeParameter);
             }
     }
 

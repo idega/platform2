@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.2 2001/08/29 22:56:06 laddi Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.3 2001/10/05 08:05:30 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -15,7 +15,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.ApartmentType;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.util.CypherText;
 import com.idega.util.SendMail;
 import com.idega.util.idegaTimestamp;
@@ -33,10 +33,10 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
   /**
    *
    */
-  public static void saveAppliedFor(ModuleInfo modinfo) {
-    String key1 = (String)modinfo.getParameter("aprtType");
-    String key2 = (String)modinfo.getParameter("aprtType2");
-    String key3 = (String)modinfo.getParameter("aprtType3");
+  public static void saveAppliedFor(IWContext iwc) {
+    String key1 = (String)iwc.getParameter("aprtType");
+    String key2 = (String)iwc.getParameter("aprtType2");
+    String key3 = (String)iwc.getParameter("aprtType3");
 
     Applied applied1 = null;
     Applied applied2 = null;
@@ -67,23 +67,23 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
       applied3.setOrder(3);
     }
 
-    modinfo.setSessionAttribute("applied1",applied1);
+    iwc.setSessionAttribute("applied1",applied1);
     if (applied2 != null)
-      modinfo.setSessionAttribute("applied2",applied2);
+      iwc.setSessionAttribute("applied2",applied2);
     if (applied3 != null)
-      modinfo.setSessionAttribute("applied3",applied3);
+      iwc.setSessionAttribute("applied3",applied3);
   }
 
   /**
    *
    */
-  public static String saveDataToDB(ModuleInfo modinfo) {
-    Applicant applicant = (Applicant)modinfo.getSessionAttribute("applicant");
-    Application application = (Application)modinfo.getSessionAttribute("application");
-    CampusApplication campusApplication = (CampusApplication)modinfo.getSessionAttribute("campusapplication");
-    Applied applied1 = (Applied)modinfo.getSessionAttribute("applied1");
-    Applied applied2 = (Applied)modinfo.getSessionAttribute("applied2");
-    Applied applied3 = (Applied)modinfo.getSessionAttribute("applied3");
+  public static String saveDataToDB(IWContext iwc) {
+    Applicant applicant = (Applicant)iwc.getSessionAttribute("applicant");
+    Application application = (Application)iwc.getSessionAttribute("application");
+    CampusApplication campusApplication = (CampusApplication)iwc.getSessionAttribute("campusapplication");
+    Applied applied1 = (Applied)iwc.getSessionAttribute("applied1");
+    Applied applied2 = (Applied)iwc.getSessionAttribute("applied2");
+    Applied applied3 = (Applied)iwc.getSessionAttribute("applied3");
 
     String cypher = "";
 
@@ -113,7 +113,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
       }
 
       ReferenceNumberHandler h = new ReferenceNumberHandler();
-      String key = h.getCypherKey(modinfo);
+      String key = h.getCypherKey(iwc);
       CypherText ct = new CypherText();
 
       String id = Integer.toString(application.getID());
@@ -134,13 +134,13 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
       SendMail.send("admin@campus.is",receiver,"","palli@idega.is","mail.idega.is","Umsókn skráð",body);
 
       t.commit();
-      modinfo.removeSessionAttribute("applicant");
-      modinfo.removeSessionAttribute("application");
-      modinfo.removeSessionAttribute("campusapplication");
-      modinfo.removeSessionAttribute("applied1");
-      modinfo.removeSessionAttribute("applied2");
-      modinfo.removeSessionAttribute("applied3");
-      modinfo.removeSessionAttribute("aprtCat");
+      iwc.removeSessionAttribute("applicant");
+      iwc.removeSessionAttribute("application");
+      iwc.removeSessionAttribute("campusapplication");
+      iwc.removeSessionAttribute("applied1");
+      iwc.removeSessionAttribute("applied2");
+      iwc.removeSessionAttribute("applied3");
+      iwc.removeSessionAttribute("aprtCat");
     }
     catch(Exception e) {
       try {
@@ -159,93 +159,93 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
   /**
    *
    */
-  public static void saveCampusInformation(ModuleInfo modinfo) {
+  public static void saveCampusInformation(IWContext iwc) {
     int studyBeginMon = 0;
     int studyBeginYr = 0;
     int studyEndMo = 0;
     int studyEndYr = 0;
-    String faculty = modinfo.getParameter("faculty");
-    String studyTrack = modinfo.getParameter("studyTrack");
+    String faculty = iwc.getParameter("faculty");
+    String studyTrack = iwc.getParameter("studyTrack");
     int currentResidence = 0;
     int spouseOccupation = 0;
-    String resInfo = modinfo.getParameter("resInfo");
-    String spouseName = modinfo.getParameter("spouseName");
-    String spouseSSN = modinfo.getParameter("spouseSSN");
-    String spouseSchool = modinfo.getParameter("spouseSchool");
-    String spouseStudyTrack = modinfo.getParameter("spouseStudyTrack");
+    String resInfo = iwc.getParameter("resInfo");
+    String spouseName = iwc.getParameter("spouseName");
+    String spouseSSN = iwc.getParameter("spouseSSN");
+    String spouseSchool = iwc.getParameter("spouseSchool");
+    String spouseStudyTrack = iwc.getParameter("spouseStudyTrack");
     int spouseStudyBeginMo = 0;
     int spouseStudyBeginYr = 0;
     int spouseStudyEndMo = 0;
     int spouseStudyEndYr = 0;
-    String children = modinfo.getParameter("children");
+    String children = iwc.getParameter("children");
     int income = 0;
     int spouseIncome = 0;
-    String wantHousingFrom = modinfo.getParameter("wantHousingFrom");
-    String waitingList = modinfo.getParameter("waitingList");
-    String furniture = modinfo.getParameter("furniture");
-    String contact = modinfo.getParameter("contact");
-    String email = modinfo.getParameter("email");
-    String info = modinfo.getParameter("info");
+    String wantHousingFrom = iwc.getParameter("wantHousingFrom");
+    String waitingList = iwc.getParameter("waitingList");
+    String furniture = iwc.getParameter("furniture");
+    String contact = iwc.getParameter("contact");
+    String email = iwc.getParameter("email");
+    String info = iwc.getParameter("info");
 
     CampusApplication application = new CampusApplication();
 
     try {
-      currentResidence = Integer.parseInt(modinfo.getParameter("currentResidence"));
+      currentResidence = Integer.parseInt(iwc.getParameter("currentResidence"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      spouseOccupation = Integer.parseInt(modinfo.getParameter("spouseOccupation"));
+      spouseOccupation = Integer.parseInt(iwc.getParameter("spouseOccupation"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      studyBeginMon = Integer.parseInt(modinfo.getParameter("studyBeginMo"));
+      studyBeginMon = Integer.parseInt(iwc.getParameter("studyBeginMo"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      studyBeginYr = Integer.parseInt(modinfo.getParameter("studyBeginYr"));
+      studyBeginYr = Integer.parseInt(iwc.getParameter("studyBeginYr"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      studyEndMo = Integer.parseInt(modinfo.getParameter("studyEndMo"));
+      studyEndMo = Integer.parseInt(iwc.getParameter("studyEndMo"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      studyEndYr = Integer.parseInt(modinfo.getParameter("studyEndYr"));
+      studyEndYr = Integer.parseInt(iwc.getParameter("studyEndYr"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      spouseIncome = Integer.parseInt(modinfo.getParameter("spouseIncome"));
+      spouseIncome = Integer.parseInt(iwc.getParameter("spouseIncome"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      spouseStudyBeginMo = Integer.parseInt(modinfo.getParameter("spouseStudyBeginMo"));
+      spouseStudyBeginMo = Integer.parseInt(iwc.getParameter("spouseStudyBeginMo"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      spouseStudyBeginYr = Integer.parseInt(modinfo.getParameter("spouseStudyBeginYr"));
+      spouseStudyBeginYr = Integer.parseInt(iwc.getParameter("spouseStudyBeginYr"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      spouseStudyEndMo = Integer.parseInt(modinfo.getParameter("spouseStudyEndMo"));
+      spouseStudyEndMo = Integer.parseInt(iwc.getParameter("spouseStudyEndMo"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      spouseStudyEndYr = Integer.parseInt(modinfo.getParameter("spouseStudyEndYr"));
+      spouseStudyEndYr = Integer.parseInt(iwc.getParameter("spouseStudyEndYr"));
     }
     catch(java.lang.NumberFormatException e) {}
 
     try {
-      income = Integer.parseInt(modinfo.getParameter("income"));
+      income = Integer.parseInt(iwc.getParameter("income"));
     }
     catch(java.lang.NumberFormatException e) {}
 
@@ -282,31 +282,31 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     application.setOtherInfo(info);
     application.setEmail(email);
 
-    modinfo.setSessionAttribute("campusapplication",application);
+    iwc.setSessionAttribute("campusapplication",application);
   }
 
   /**
    *
    */
-  public static void saveSubject(ModuleInfo modinfo) {
-    String subject = (String)modinfo.getParameter("subject");
-    String aprtCat = (String)modinfo.getParameter("aprtCat");
+  public static void saveSubject(IWContext iwc) {
+    String subject = (String)iwc.getParameter("subject");
+    String aprtCat = (String)iwc.getParameter("aprtCat");
     Application application = new Application();
     application.setSubjectId(Integer.parseInt(subject));
     application.setSubmitted(idegaTimestamp.getTimestampRightNow());
     application.setStatusSubmitted();
     application.setStatusChanged(idegaTimestamp.getTimestampRightNow());
-    modinfo.setSessionAttribute("application",application);
-    modinfo.setSessionAttribute("aprtCat",aprtCat);
+    iwc.setSessionAttribute("application",application);
+    iwc.setSessionAttribute("aprtCat",aprtCat);
   }
 
   /**
    *
    */
-  public static Vector checkAparmentTypesSelected(ModuleInfo modinfo) {
-    String key1 = (String)modinfo.getParameter("aprtType");
-    String key2 = (String)modinfo.getParameter("aprtType2");
-    String key3 = (String)modinfo.getParameter("aprtType3");
+  public static Vector checkAparmentTypesSelected(IWContext iwc) {
+    String key1 = (String)iwc.getParameter("aprtType");
+    String key2 = (String)iwc.getParameter("aprtType2");
+    String key3 = (String)iwc.getParameter("aprtType3");
 
     Vector ret = new Vector(3);
 

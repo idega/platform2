@@ -4,9 +4,9 @@ package com.idega.jmodule.poll.moduleobject;
 import com.idega.jmodule.*;
 import com.idega.data.*;
 import java.io.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import javax.servlet.http.*;
 import com.idega.jmodule.poll.data.*;
 import java.sql.SQLException;
@@ -15,7 +15,7 @@ import com.idega.jmodule.poll.data.*;
 import java.util.*;
 import com.idega.util.*;
 
-public class PollAdmin extends JModuleObject{
+public class PollAdmin extends Block{
         private String attribute_name = "idega_id";
         private int attribute_id = 1;
         private String admin_page_url = "/poll/pollAdmin.jsp";
@@ -57,7 +57,7 @@ boolean isAdmin = false;
       this.depth = depth;
     }
 
-    private void setAttributes(ModuleInfo modinfo,HttpServletRequest request) {
+    private void setAttributes(IWContext iwc,HttpServletRequest request) {
         String temp_attribute_name = request.getParameter("attribute_name");
 	String temp_attribute_id = request.getParameter("attribute_id");
 
@@ -65,12 +65,12 @@ boolean isAdmin = false;
 		this.attribute_name = temp_attribute_name;
 		this.attribute_id = Integer.parseInt(temp_attribute_id);
 
-                modinfo.getSession().setAttribute("attribute_name",attribute_name);
-                modinfo.getSession().setAttribute("attribute_id",""+attribute_id);
+                iwc.getSession().setAttribute("attribute_name",attribute_name);
+                iwc.getSession().setAttribute("attribute_id",""+attribute_id);
 	}
         else {
-            String temp_attribute_name_2 = (String) modinfo.getSession().getAttribute("attribute_name");
-            String temp_attribute_id_2 = (String) modinfo.getSession().getAttribute("attribute_id");
+            String temp_attribute_name_2 = (String) iwc.getSession().getAttribute("attribute_name");
+            String temp_attribute_id_2 = (String) iwc.getSession().getAttribute("attribute_id");
             if ((temp_attribute_name_2 != null ) && (temp_attribute_id_2 != null)) {
 		this.attribute_name = temp_attribute_name_2;
 		this.attribute_id = Integer.parseInt(temp_attribute_id_2);
@@ -80,7 +80,7 @@ boolean isAdmin = false;
 
     }
 
-    private void getAction(ModuleInfo modinfo,HttpServletRequest request) throws IOException, SQLException {
+    private void getAction(IWContext iwc,HttpServletRequest request) throws IOException, SQLException {
             String submit = request.getParameter("submit");
             String submit2 = request.getParameter("submit2");
             String poll_id = request.getParameter("poll_id");
@@ -120,7 +120,7 @@ boolean isAdmin = false;
                             closeWindow();
                     }
                     else {
-                      start(modinfo);
+                      start(iwc);
                     }
             }
             else if (submit2 != null) {
@@ -144,7 +144,7 @@ boolean isAdmin = false;
                     }
             }
             else {
-                    start(modinfo);
+                    start(iwc);
                     }
         if (poll_id != null) {
             updateQuestion(poll_id);
@@ -158,11 +158,11 @@ public void closeWindow() {
   //this.close();
 }
 
-public void start(ModuleInfo modinfo) throws SQLException, IOException {
+public void start(IWContext iwc) throws SQLException, IOException {
 
 
 
-                String admin_poll_id = (String) modinfo.getRequest().getSession().getAttribute("admin_poll_id");
+                String admin_poll_id = (String) iwc.getRequest().getSession().getAttribute("admin_poll_id");
 //                add("|"+admin_poll_id+"|");
 
 		Form myForm = new Form();
@@ -243,7 +243,7 @@ public void start(ModuleInfo modinfo) throws SQLException, IOException {
 //                add("<br>");
 //                add(new BackButton("Til baka"));
 
-//		getModuleInfo().getResponse().sendRedirect("polltest.jsp");
+//		getIWContext().getResponse().sendRedirect("polltest.jsp");
 		//this.setParentToReload();
 		//this.close();
 	}
@@ -280,7 +280,7 @@ public void start(ModuleInfo modinfo) throws SQLException, IOException {
 
                 }
 
-//		getModuleInfo().getResponse().sendRedirect("polltest.jsp");
+//		getIWContext().getResponse().sendRedirect("polltest.jsp");
 
 	}
 
@@ -666,20 +666,20 @@ public void switchModule(){}
 */
 
 
-    public void main(ModuleInfo modinfo) throws Exception{
+    public void main(IWContext iwc) throws Exception{
       System.out.println("númer 2");
 
-        this.isAdmin=this.isAdministrator(modinfo);
+        this.isAdmin=this.isAdministrator(iwc);
 
         HttpServletRequest request = getRequest();
         String URI = request.getRequestURI();
         String action = request.getParameter("action");
 
       System.out.println("númer 3");
-        setAttributes(modinfo,request);
+        setAttributes(iwc,request);
       System.out.println("númer 4");
 
-        getAction(modinfo, request);
+        getAction(iwc, request);
       System.out.println("númer 5");
 
 

@@ -8,7 +8,7 @@ package com.idega.block.forum.business;
 import com.idega.block.forum.business.*;
 import com.idega.jmodule.mailclient.business.*;
 import com.idega.block.forum.data.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.util.*;
 import com.idega.util.text.*;
 import java.sql.*;
@@ -34,9 +34,9 @@ public class ForumDBWriter {
   }
 
 
-  public int delThread(ModuleInfo modinfo)throws SQLException{
+  public int delThread(IWContext iwc)throws SQLException{
 
-    ForumThread toDel = new ForumThread(Integer.parseInt(modinfo.getParameter("thread_id")));
+    ForumThread toDel = new ForumThread(Integer.parseInt(iwc.getParameter("thread_id")));
     int parent = toDel.getParentThreadID();
     int myParent = parent;
     int responses = toDel.getNumberOfResponses() + 1;
@@ -62,38 +62,38 @@ public class ForumDBWriter {
     return myParent;
   }
 
-  public int saveThread(ModuleInfo modinfo, String UserName, int UserID)throws Exception{
+  public int saveThread(IWContext iwc, String UserName, int UserID)throws Exception{
     int newThreadID;
     int parent_id;
     int forum_id;
     String Author;
     int user_id;
     String emailAddress;
-    String subject = modinfo.getParameter("thread_subject");
-    String body = modinfo.getParameter("thread_body");
+    String subject = iwc.getParameter("thread_subject");
+    String body = iwc.getParameter("thread_body");
 
-    if (modinfo.getParameter("parent_id") != null){
-      parent_id = Integer.parseInt(modinfo.getParameter("parent_id"));
+    if (iwc.getParameter("parent_id") != null){
+      parent_id = Integer.parseInt(iwc.getParameter("parent_id"));
     } else {
       parent_id = -1;
     }
 
-    if (modinfo.getParameter("forum_id") != null){
-      forum_id = Integer.parseInt(modinfo.getParameter("forum_id"));
+    if (iwc.getParameter("forum_id") != null){
+      forum_id = Integer.parseInt(iwc.getParameter("forum_id"));
     } else {
       forum_id = 1;
     }
 
-    if (modinfo.getParameter("thread_author") != null){
-      Author = modinfo.getParameter("thread_author");
+    if (iwc.getParameter("thread_author") != null){
+      Author = iwc.getParameter("thread_author");
       user_id = -1;
     } else {
       Author = UserName;
       user_id = UserID;
     }
 
-    if (modinfo.getParameter("forum_email") != null){
-      emailAddress = modinfo.getParameter("forum_email");
+    if (iwc.getParameter("forum_email") != null){
+      emailAddress = iwc.getParameter("forum_email");
     } else {
       emailAddress = null;
     }
@@ -118,7 +118,7 @@ public class ForumDBWriter {
 
    try {
       String[] emails = myEmailHandler.getAddresses(newThreadID);
-      String URL = modinfo.getRequestURI();
+      String URL = iwc.getRequestURI();
       String eSubject = "Nýtt innlegg á spjallþræði " + URL;
       String eText = "Fyrirsögning er : " + subject + " og sendandi : " + Author;
 
@@ -146,12 +146,12 @@ public class ForumDBWriter {
 
 
 
-  public int saveForum(ModuleInfo modinfo, String AttibuteName, Integer AttributeValue) throws SQLException{
+  public int saveForum(IWContext iwc, String AttibuteName, Integer AttributeValue) throws SQLException{
     String ForumName;
     String ForumDescription;
 
-    ForumName = modinfo.getParameter(ForumList.getForumNameParameterString());
-    ForumDescription = modinfo.getParameter(ForumList.getForumDescriptionParameterString());
+    ForumName = iwc.getParameter(ForumList.getForumNameParameterString());
+    ForumDescription = iwc.getParameter(ForumList.getForumDescriptionParameterString());
 
     if (ForumName == null)
       ForumName = "Untitled";
@@ -181,11 +181,11 @@ public class ForumDBWriter {
 
 
 
-  public void saveToForumPostlist(ModuleInfo modinfo){
+  public void saveToForumPostlist(IWContext iwc){
 
   }
 
-  public void saveToThreadPostlist(ModuleInfo modinfo){
+  public void saveToThreadPostlist(IWContext iwc){
 
   }
 

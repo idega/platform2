@@ -3,9 +3,9 @@ package is.idegaweb.campus.allocation;
 import is.idegaweb.campus.presentation.Edit;
 import is.idegaweb.campus.entity.SystemProperties;
 import com.idega.idegaweb.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.finance.presentation.KeyEditor;
 import com.idega.development.presentation.Localizer;
@@ -22,7 +22,7 @@ import com.idega.data.EntityFinder;
  * @version 1.0
  */
 
-public class EmailSetter extends ModuleObjectContainer{
+public class EmailSetter extends PresentationObjectContainer{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.emails";
   protected IWResourceBundle iwrb;
@@ -39,37 +39,37 @@ public class EmailSetter extends ModuleObjectContainer{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  protected void control(ModuleInfo modinfo){
-    iwb = getBundle(modinfo);
-    if(modinfo.getParameter(localesParameter)!=null){
-      iwrb = iwb.getResourceBundle(LocaleUtil.getLocale(modinfo.getParameter(localesParameter)));
+  protected void control(IWContext iwc){
+    iwb = getBundle(iwc);
+    if(iwc.getParameter(localesParameter)!=null){
+      iwrb = iwb.getResourceBundle(LocaleUtil.getLocale(iwc.getParameter(localesParameter)));
     }
     else
-      iwrb = getResourceBundle(modinfo);
+      iwrb = getResourceBundle(iwc);
 
     if(isAdmin){
-      if(modinfo.getParameter("save")!=null){
-        updateForm(modinfo);
+      if(iwc.getParameter("save")!=null){
+        updateForm(iwc);
       }
-      else if(modinfo.getParameter("bundlesave")!=null){
+      else if(iwc.getParameter("bundlesave")!=null){
         iwb.storeState();
       }
-      else if(modinfo.getParameter("bundlereload")!=null){
+      else if(iwc.getParameter("bundlereload")!=null){
         iwb.reloadBundle();
-        iwrb = iwb.getResourceBundle(LocaleUtil.getLocale(modinfo.getParameter(localesParameter)));
+        iwrb = iwb.getResourceBundle(LocaleUtil.getLocale(iwc.getParameter(localesParameter)));
       }
       add(getHomeLink());
-      add(getSetupForm(modinfo));
+      add(getSetupForm(iwc));
     }
     else
       add("Hefur ekki réttindi");
   }
 
-  private ModuleObject getSetupForm(ModuleInfo modinfo){
+  private PresentationObject getSetupForm(IWContext iwc){
     Table T = new Table(1,10);
     T.setBorder(1);
     int row = 1;
-    DropdownMenu localeDrop = Localizer.getAvailableLocalesDropdown(modinfo.getApplication(),localesParameter);
+    DropdownMenu localeDrop = Localizer.getAvailableLocalesDropdown(iwc.getApplication(),localesParameter);
     localeDrop.keepStatusOnAction();
     localeDrop.setToSubmit();
     SubmitButton save = new SubmitButton("save","Save");
@@ -94,20 +94,20 @@ public class EmailSetter extends ModuleObjectContainer{
     return myForm;
   }
 
-  private void updateForm(ModuleInfo modinfo){
-    String Tx1 = modinfo.getParameter("ta1");
+  private void updateForm(IWContext iwc){
+    String Tx1 = iwc.getParameter("ta1");
     if(Tx1!=null){
       iwrb.setString("letter_applied",Tx1);
     }
-    String Tx2 = modinfo.getParameter("ta2");
+    String Tx2 = iwc.getParameter("ta2");
     if(Tx2!=null){
       iwrb.setString("letter_invalid",Tx2);
     }
-    String Tx3 = modinfo.getParameter("ta3");
+    String Tx3 = iwc.getParameter("ta3");
     if(Tx3!=null){
       iwrb.setString("letter_approved",Tx3);
     }
-    String Tx4 = modinfo.getParameter("ta4");
+    String Tx4 = iwc.getParameter("ta4");
     if(Tx4!=null){
       iwrb.setString("letter_allocated",Tx4);
     }
@@ -125,14 +125,14 @@ public class EmailSetter extends ModuleObjectContainer{
     return TA;
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){
       isAdmin = false;
     }
-    control(modinfo);
+    control(iwc);
   }
 
 }

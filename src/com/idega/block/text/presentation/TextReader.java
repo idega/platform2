@@ -13,9 +13,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.text.data.*;
 import com.idega.block.text.business.*;
 import com.idega.data.*;
@@ -28,7 +28,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.block.IWBlock;
 
 
-public class TextReader extends JModuleObject implements IWBlock{
+public class TextReader extends Block implements IWBlock{
 
 private boolean isAdmin=false;
 private TextModule text;
@@ -79,11 +79,11 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     this.iTextId = iTextId;
   }
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    isAdmin = AccessControl.hasEditPermission(this,modinfo);
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
-    Locale locale = modinfo.getCurrentLocale();
+  public void main(IWContext iwc) throws Exception {
+    isAdmin = AccessControl.hasEditPermission(this,iwc);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
+    Locale locale = iwc.getCurrentLocale();
 
     TxText txText = null;
     LocalizedText locText = null;
@@ -94,7 +94,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     T.setWidth(textWidth);
 
     if(iTextId < 0){
-      String sTextId = modinfo.getParameter(prmTextId );
+      String sTextId = iwc.getParameter(prmTextId );
       if(sTextId != null)
         iTextId = Integer.parseInt(sTextId);
       else if(getICObjectInstanceID() > 0){
@@ -135,7 +135,7 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     add(T);
   }
 
-  public ModuleObject getTextTable(TxText txText,LocalizedText locText) throws IOException,SQLException {
+  public PresentationObject getTextTable(TxText txText,LocalizedText locText) throws IOException,SQLException {
     Table T = new Table(2,2);
 
     T.setCellpadding(3);
@@ -205,12 +205,12 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.text";
     return T;
   }
 
-  public ModuleObject getAdminPart(int iTextId,boolean enableDelete,boolean newObjInst,boolean newWithAttribute,boolean hasId){
+  public PresentationObject getAdminPart(int iTextId,boolean enableDelete,boolean newObjInst,boolean newWithAttribute,boolean hasId){
     Table T = new Table();
     T.setCellpadding(2);
     T.setCellspacing(2);
     T.setBorder(0);
-    Window adminWindow = new Window("AdminWindow",TextEditorWindow.class,com.idega.jmodule.object.Page.class);
+    Window adminWindow = new Window("AdminWindow",TextEditorWindow.class,com.idega.presentation.Page.class);
     adminWindow.setWidth(570);
     adminWindow.setHeight(430);
     if(iTextId > 0){

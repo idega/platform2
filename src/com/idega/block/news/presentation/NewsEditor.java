@@ -6,9 +6,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.news.data.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.data.*;
@@ -20,7 +20,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 
 
-public class NewsEditor extends JModuleObject{
+public class NewsEditor extends Block{
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private String Error;
@@ -40,15 +40,15 @@ private IWResourceBundle iwrb;
     this.isAdmin=isAdmin;
   }
 
-  public void main(ModuleInfo modinfo)throws Exception{
+  public void main(IWContext iwc)throws Exception{
     /**
      * @todo permission
      */
-    this.isAdmin=true;  //AccessControl.hasEditPermission(this,modinfo);
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+    this.isAdmin=true;  //AccessControl.hasEditPermission(this,iwc);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
 
-    String mode = modinfo.getParameter("mode");
+    String mode = iwc.getParameter("mode");
     this.sHeadline = iwrb.getLocalizedString("headline","Headline");
     this.sNews = iwrb.getLocalizedString("news","News");;
     this.sCategory = iwrb.getLocalizedString("category","Category");;
@@ -70,20 +70,20 @@ private IWResourceBundle iwrb;
       //check to see if we are doing anything special
       if( mode != null){
         if( mode.equals("save")){
-          if( storeNews(modinfo) )
+          if( storeNews(iwc) )
             add(feedBack(true));
           else
             add(feedBack(false));
         }
         else if( mode.equals("delete") ){
-          deleteNews(modinfo.getParameter("news_id"));
+          deleteNews(iwc.getParameter("news_id"));
         }
       }
 
       //else we are either writing something new or we are updating something we have selected
       else{
         if(isAdmin){
-        add(editorTable(modinfo));
+        add(editorTable(iwc));
         }
         else add(new Text("<center><b>"+iwrb.getLocalizedString("login_first","Login first!")+"</b></center>") );
       }
@@ -131,7 +131,7 @@ private IWResourceBundle iwrb;
   }
 
 
-  public Form editorTable(ModuleInfo modinfo)throws SQLException, IOException{
+  public Form editorTable(IWContext iwc)throws SQLException, IOException{
 
     Table mainTable = new Table(2, 2);
       mainTable.setWidth("100%");
@@ -187,8 +187,8 @@ private IWResourceBundle iwrb;
     mainPanel.setVerticalAlignment(1,1,"top");
     mainPanel.setVerticalAlignment(1,2,"top");
 
-    String news_id = modinfo.getParameter("news_id");
-    String category_id = modinfo.getParameter("category_id");
+    String news_id = iwc.getParameter("news_id");
+    String category_id = iwc.getParameter("category_id");
 
     com.idega.block.news.data.News news=null;
     HiddenInput newsHidden;
@@ -331,21 +331,21 @@ private IWResourceBundle iwrb;
     return myForm;
   }
 
-  public boolean storeNews(ModuleInfo modinfo)throws SQLException, IOException{
+  public boolean storeNews(IWContext iwc)throws SQLException, IOException{
 
     boolean update=false;
-    String news_id = modinfo.getParameter("news_id");
+    String news_id = iwc.getParameter("news_id");
 
     if ( (news_id!=null) && !(news_id.equals("-1")))
       update=true;
 
-    String newsHeader = modinfo.getParameter("NewsHeader");
-    String newsText = modinfo.getParameter("NewsText");
+    String newsHeader = iwc.getParameter("NewsHeader");
+    String newsText = iwc.getParameter("NewsText");
 
     newsText = TextSoap.findAndReplace(newsText, "“","\"");
     newsText = TextSoap.findAndReplace(newsText, "'","´");
 
-    String category_id = modinfo.getParameter("category_id");
+    String category_id = iwc.getParameter("category_id");
 
     if( ((newsHeader==null)||(newsHeader.equalsIgnoreCase("")) ) || ((newsText==null)||(newsText.equalsIgnoreCase(""))) || ((category_id==null)||(category_id.equalsIgnoreCase("-1")) )){
         return false;
@@ -361,25 +361,25 @@ private IWResourceBundle iwrb;
     news.setText(newsText);
     news.setNewsCategoryId(new Integer(category_id));
 
-    String source = modinfo.getParameter("source");
+    String source = iwc.getParameter("source");
     if ( source!=null )
       news.setSource(source);
 
-    String author = modinfo.getParameter("author");
+    String author = iwc.getParameter("author");
     if ( author!=null )
       news.setAuthor(author);
 
-    String daysShown = modinfo.getParameter("daysShown");
+    String daysShown = iwc.getParameter("daysShown");
     if ( daysShown!=null )
       news.setDaysShown(new Integer(daysShown));
 
-    String includeImage = modinfo.getParameter("insertImage");
+    String includeImage = iwc.getParameter("insertImage");
     if( includeImage!=null )
       news.setIncludeImage(includeImage);
     else
       news.setIncludeImage("N");
 
-    String image_id = modinfo.getParameter("image_id");
+    String image_id = iwc.getParameter("image_id");
     if(image_id == null)
       image_id="-1";
 
@@ -492,9 +492,9 @@ private IWResourceBundle iwrb;
     return myDropdown;
   }
 
-  public DropdownMenu newsDropdown(String newsDropdownName, String categoryDropdownName, Connection Conn, ModuleInfo modinfo)throws IOException, SQLException{
+  public DropdownMenu newsDropdown(String newsDropdownName, String categoryDropdownName, Connection Conn, IWContext iwc)throws IOException, SQLException{
     DropdownMenu myDropdown = new DropdownMenu(newsDropdownName);
-    String cotgegoryId = modinfo.getParameter(categoryDropdownName);
+    String cotgegoryId = iwc.getParameter(categoryDropdownName);
 
     Statement Stmt = Conn.createStatement();
     StringBuffer sql = new StringBuffer( "select ");
@@ -527,7 +527,7 @@ private IWResourceBundle iwrb;
 
   public DropdownMenu categoryDropdown(String categoryDropdownName, Connection Conn)throws IOException, SQLException
   {
-    //PrintWriter out = modinfo.getResponse().getWriter();
+    //PrintWriter out = iwc.getResponse().getWriter();
     DropdownMenu myDropdown = new DropdownMenu(categoryDropdownName);
 
     try

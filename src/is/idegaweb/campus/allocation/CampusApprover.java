@@ -1,13 +1,13 @@
 package is.idegaweb.campus.allocation;
 
 import is.idegaweb.campus.presentation.Edit;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.IWContext;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
 import com.idega.block.building.business.BuildingCacher;
@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 
-public class CampusApprover extends ModuleObjectContainer{
+public class CampusApprover extends PresentationObjectContainer{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
@@ -57,67 +57,67 @@ public class CampusApprover extends ModuleObjectContainer{
 
   }
 
-  protected void control(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  protected void control(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
-    if(modinfo.getSessionAttribute("iterator")!=null){
-      iterator = (ListIterator)modinfo.getSessionAttribute("iterator");
+    if(iwc.getSessionAttribute("iterator")!=null){
+      iterator = (ListIterator)iwc.getSessionAttribute("iterator");
     }
-    if(modinfo.getParameter("app_subject_id")!=null){
-      this.iSubjectId = Integer.parseInt(modinfo.getParameter("app_subject_id"));
-      modinfo.setSessionAttribute("subject_id",new Integer(iSubjectId));
+    if(iwc.getParameter("app_subject_id")!=null){
+      this.iSubjectId = Integer.parseInt(iwc.getParameter("app_subject_id"));
+      iwc.setSessionAttribute("subject_id",new Integer(iSubjectId));
     }
-    else if(modinfo.getSessionAttribute("subject_id")!=null){
-      this.iSubjectId = ((Integer)modinfo.getSessionAttribute("subject_id")).intValue();
+    else if(iwc.getSessionAttribute("subject_id")!=null){
+      this.iSubjectId = ((Integer)iwc.getSessionAttribute("subject_id")).intValue();
     }
-    if(modinfo.getParameter("global_status")!=null){
-      this.sGlobalStatus= (modinfo.getParameter("global_status"));
-      modinfo.setSessionAttribute("gl_status",sGlobalStatus);
+    if(iwc.getParameter("global_status")!=null){
+      this.sGlobalStatus= (iwc.getParameter("global_status"));
+      iwc.setSessionAttribute("gl_status",sGlobalStatus);
     }
-    else if(modinfo.getSessionAttribute("gl_status")!=null){
-      this.sGlobalStatus = ((String)modinfo.getSessionAttribute("gl_status"));
+    else if(iwc.getSessionAttribute("gl_status")!=null){
+      this.sGlobalStatus = ((String)iwc.getSessionAttribute("gl_status"));
     }
-    if(modinfo.getParameter("global_order")!=null){
-      this.sGlobalOrder= (modinfo.getParameter("global_order"));
-      modinfo.setSessionAttribute("gl_order",sGlobalOrder);
+    if(iwc.getParameter("global_order")!=null){
+      this.sGlobalOrder= (iwc.getParameter("global_order"));
+      iwc.setSessionAttribute("gl_order",sGlobalOrder);
     }
-    else if(modinfo.getSessionAttribute("gl_order")!=null){
-      this.sGlobalOrder = ((String)modinfo.getSessionAttribute("gl_order"));
+    else if(iwc.getSessionAttribute("gl_order")!=null){
+      this.sGlobalOrder = ((String)iwc.getSessionAttribute("gl_order"));
     }
 
     if(isAdmin){
-      if(modinfo.getParameter("view")!=null){
-        int id = Integer.parseInt(modinfo.getParameter("view"));
-        add(makeApplicationTable(id,false,modinfo,iwrb));
+      if(iwc.getParameter("view")!=null){
+        int id = Integer.parseInt(iwc.getParameter("view"));
+        add(makeApplicationTable(id,false,iwc,iwrb));
       }
-      else if(modinfo.getParameter("application_id")!=null){
-        int id = Integer.parseInt(modinfo.getParameter("application_id"));
+      else if(iwc.getParameter("application_id")!=null){
+        int id = Integer.parseInt(iwc.getParameter("application_id"));
         boolean bEdit = false;
-        if(modinfo.getParameter("editor")!=null){
+        if(iwc.getParameter("editor")!=null){
           bEdit = true;
         }
-        else if(modinfo.getParameter("viewer")!=null){
+        else if(iwc.getParameter("viewer")!=null){
           bEdit = false;
         }
 
-        if(modinfo.getParameter("save")!= null){
-          updateWholeApplication(modinfo,id);
+        if(iwc.getParameter("save")!= null){
+          updateWholeApplication(iwc,id);
         }
         else{
-          updateApplication(modinfo,id);
+          updateApplication(iwc,id);
         }
 
         if(bEdit){
-          add(makeApplicationForm(id,bEdit,modinfo,iwrb));
+          add(makeApplicationForm(id,bEdit,iwc,iwrb));
         }
         else{
-          add(makeApplicationTable(id,bEdit,modinfo,iwrb));
+          add(makeApplicationTable(id,bEdit,iwc,iwrb));
         }
       }
       else{
         add(subjectForm());
-        add(makeApplicantTable(modinfo,iwrb));
+        add(makeApplicantTable(iwc,iwrb));
       }
     }
     else
@@ -129,15 +129,15 @@ public class CampusApprover extends ModuleObjectContainer{
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public ModuleObject makeLinkTable(int menuNr){
+  public PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(6,1);
 
     return LinkTable;
   }
 
-  private void updateApplication(ModuleInfo modinfo,int id){
-    //int id = Integer.parseInt(modinfo.getParameter("application_id"));
-    String status = modinfo.getParameter("status_drop");
+  private void updateApplication(IWContext iwc,int id){
+    //int id = Integer.parseInt(iwc.getParameter("application_id"));
+    String status = iwc.getParameter("status_drop");
     try{
       Application A = new Application(id);
       A.setStatus(status);
@@ -149,7 +149,7 @@ public class CampusApprover extends ModuleObjectContainer{
     }
   }
 
-  private void updateWholeApplication(ModuleInfo modinfo,int id){
+  private void updateWholeApplication(IWContext iwc,int id){
     try {
       Application eApplication = new Application(id);
       Applicant eApplicant = new Applicant(eApplication.getApplicantId());
@@ -157,10 +157,10 @@ public class CampusApprover extends ModuleObjectContainer{
         CampusApplication A = new CampusApplication();
         CampusApplication eCampusApplication = ((CampusApplication[])(A.findAllByColumn(A.getApplicationIdColumnName(),id)))[0];
         List L = CampusApplicationFinder.listOfAppliedInApplication(eCampusApplication.getID());
-        updateApplicant(modinfo,eApplicant,eCampusApplication);
-        updateApartment(modinfo,eCampusApplication,L);
-        updateSpouse(modinfo,eCampusApplication);
-        updateChildren(modinfo,eCampusApplication);
+        updateApplicant(iwc,eApplicant,eCampusApplication);
+        updateApartment(iwc,eCampusApplication,L);
+        updateSpouse(iwc,eCampusApplication);
+        updateChildren(iwc,eCampusApplication);
         try {
           eApplicant.update();
           eCampusApplication.update();
@@ -188,7 +188,7 @@ public class CampusApprover extends ModuleObjectContainer{
 
   }
 
-  public ModuleObject makeApplicantTable(ModuleInfo modinfo,IWResourceBundle iwrb){
+  public PresentationObject makeApplicantTable(IWContext iwc,IWResourceBundle iwrb){
 
     Table T = new Table();
       T.setCellpadding(2);
@@ -197,7 +197,7 @@ public class CampusApprover extends ModuleObjectContainer{
 
     if(L != null){
       ListIterator iterator = L.listIterator();
-      modinfo.setSessionAttribute("iterator",iterator);
+      iwc.setSessionAttribute("iterator",iterator);
       int len = L.size();
       int row = 1;
       int col = 1;
@@ -252,7 +252,7 @@ public class CampusApprover extends ModuleObjectContainer{
     return T;
   }
 
-  public ModuleObject makeApplicationTable(int id,boolean bEdit,ModuleInfo modinfo,IWResourceBundle iwrb){
+  public PresentationObject makeApplicationTable(int id,boolean bEdit,IWContext iwc,IWResourceBundle iwrb){
      Table OuterFrame = new Table(2,1);
         OuterFrame.setCellpadding(0);
         OuterFrame.setCellspacing(0);
@@ -310,7 +310,7 @@ public class CampusApprover extends ModuleObjectContainer{
           Frame.setBorder(border);
           Frame.add(getViewApplication(eApplication),1,1);
           Frame.add(InnerFrame,1,3);
-          Frame.add(getViewApartment(eCampusApplication,L,modinfo,iwrb),1,5);
+          Frame.add(getViewApartment(eCampusApplication,L,iwc,iwrb),1,5);
 
         Table OtherFrame = new Table(1,2);
           OtherFrame.setCellpadding(2);
@@ -336,7 +336,7 @@ public class CampusApprover extends ModuleObjectContainer{
   }
 
 
-  public ModuleObject makeApplicationForm(int id,boolean bEdit,ModuleInfo modinfo,IWResourceBundle iwrb){
+  public PresentationObject makeApplicationForm(int id,boolean bEdit,IWContext iwc,IWResourceBundle iwrb){
      Form theForm = new Form();
 
      Table OuterFrame = new Table(2,1);
@@ -397,7 +397,7 @@ public class CampusApprover extends ModuleObjectContainer{
           Frame.setBorder(border);
           Frame.add( getViewApplication(eApplication) ,1,1);
           Frame.add(InnerFrame,1,3);
-          Frame.add( getFieldsApartment(eCampusApplication,L,modinfo,iwrb) ,1,5);
+          Frame.add( getFieldsApartment(eCampusApplication,L,iwc,iwrb) ,1,5);
 
         Table OtherFrame = new Table(1,2);
           OtherFrame.setCellpadding(2);
@@ -421,7 +421,7 @@ public class CampusApprover extends ModuleObjectContainer{
     return theForm;
   }
 
-  public ModuleObject getViewApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
+  public PresentationObject getViewApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -474,7 +474,7 @@ public class CampusApprover extends ModuleObjectContainer{
       return T;
   }
 
-  public ModuleObject getFieldsApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
+  public PresentationObject getFieldsApplicant(Applicant eApplicant,CampusApplication eCampusApplication,IWResourceBundle iwrb){
     int year = idegaTimestamp.RightNow().getYear();
     Table T = new Table();
       int col = 1;
@@ -565,23 +565,23 @@ public class CampusApprover extends ModuleObjectContainer{
       return T;
   }
 
-  public void updateApplicant(ModuleInfo modinfo,Applicant eApplicant,CampusApplication eCampusApplication){
-    String sFullName =modinfo.getParameter("ti_full");
-    String sSsn = modinfo.getParameter("ti_ssn");
-    String sLegRes = modinfo.getParameter("ti_legres");
-    String sRes = modinfo.getParameter("ti_res");
-    String sPo = modinfo.getParameter("ti_po");
-    String sResPho = modinfo.getParameter("ti_respho");
-    String sMobPho = modinfo.getParameter("ti_mobpho");
+  public void updateApplicant(IWContext iwc,Applicant eApplicant,CampusApplication eCampusApplication){
+    String sFullName =iwc.getParameter("ti_full");
+    String sSsn = iwc.getParameter("ti_ssn");
+    String sLegRes = iwc.getParameter("ti_legres");
+    String sRes = iwc.getParameter("ti_res");
+    String sPo = iwc.getParameter("ti_po");
+    String sResPho = iwc.getParameter("ti_respho");
+    String sMobPho = iwc.getParameter("ti_mobpho");
     System.err.print(sMobPho);
-    String sEmail = modinfo.getParameter("ti_email");
-    String sFac = modinfo.getParameter("ti_facult");
-    String sTrack= modinfo.getParameter("ti_track");
-    String sIncome= modinfo.getParameter("ti_income");
-    String sBM = modinfo.getParameter("dr_bm");
-    String sEM = modinfo.getParameter("dr_em");
-    String sBY = modinfo.getParameter("dr_by");
-    String sEY = modinfo.getParameter("dr_ey");
+    String sEmail = iwc.getParameter("ti_email");
+    String sFac = iwc.getParameter("ti_facult");
+    String sTrack= iwc.getParameter("ti_track");
+    String sIncome= iwc.getParameter("ti_income");
+    String sBM = iwc.getParameter("dr_bm");
+    String sEM = iwc.getParameter("dr_em");
+    String sBY = iwc.getParameter("dr_by");
+    String sEY = iwc.getParameter("dr_ey");
 
     try{
       int iIncome = 0;
@@ -629,7 +629,7 @@ public class CampusApprover extends ModuleObjectContainer{
     }
   }
 
-  public ModuleObject getViewSpouse(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+  public PresentationObject getViewSpouse(CampusApplication eCampusApplication,IWResourceBundle iwrb){
     int year = idegaTimestamp.RightNow().getYear();
     Table T = new Table();
       int col = 1;
@@ -671,7 +671,7 @@ public class CampusApprover extends ModuleObjectContainer{
       return T;
   }
 
-  public ModuleObject getFieldsSpouse(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+  public PresentationObject getFieldsSpouse(CampusApplication eCampusApplication,IWResourceBundle iwrb){
     int year = idegaTimestamp.RightNow().getYear();
     Table T = new Table();
       int col = 1;
@@ -737,16 +737,16 @@ public class CampusApprover extends ModuleObjectContainer{
       return T;
   }
 
-  public void updateSpouse(ModuleInfo modinfo,CampusApplication eCampusApplication){
-    String sSpName = modinfo.getParameter("ti_sp_name");
-    String sSpSsn = modinfo.getParameter("ti_sp_ssn");
-    String sSpSchl = modinfo.getParameter("ti_sp_schl");
-    String sSpStTr = modinfo.getParameter("ti_sp_sttr");
-    String sSPIncome = modinfo.getParameter("ti_sp_income");
-    String sBM = modinfo.getParameter("dr_sp_bm");
-    String sEM = modinfo.getParameter("dr_sp_em");
-    String sBY = modinfo.getParameter("dr_sp_by");
-    String sEY = modinfo.getParameter("dr_sp_ey");
+  public void updateSpouse(IWContext iwc,CampusApplication eCampusApplication){
+    String sSpName = iwc.getParameter("ti_sp_name");
+    String sSpSsn = iwc.getParameter("ti_sp_ssn");
+    String sSpSchl = iwc.getParameter("ti_sp_schl");
+    String sSpStTr = iwc.getParameter("ti_sp_sttr");
+    String sSPIncome = iwc.getParameter("ti_sp_income");
+    String sBM = iwc.getParameter("dr_sp_bm");
+    String sEM = iwc.getParameter("dr_sp_em");
+    String sBY = iwc.getParameter("dr_sp_by");
+    String sEY = iwc.getParameter("dr_sp_ey");
 
     try{
       int iIncome = Integer.parseInt(sSPIncome);
@@ -781,7 +781,7 @@ public class CampusApprover extends ModuleObjectContainer{
     eCampusApplication.setSpouseSSN(sSpSsn);
   }
 
-  public ModuleObject getViewChildren(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+  public PresentationObject getViewChildren(CampusApplication eCampusApplication,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -805,7 +805,7 @@ public class CampusApprover extends ModuleObjectContainer{
       return T;
   }
 
-  public ModuleObject getFieldsChildren(CampusApplication eCampusApplication,IWResourceBundle iwrb){
+  public PresentationObject getFieldsChildren(CampusApplication eCampusApplication,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -831,14 +831,14 @@ public class CampusApprover extends ModuleObjectContainer{
       return T;
   }
 
-  public void updateChildren(ModuleInfo modinfo,CampusApplication eCampusApplication){
-    String sChilds = modinfo.getParameter("ti_sp_childs");
+  public void updateChildren(IWContext iwc,CampusApplication eCampusApplication){
+    String sChilds = iwc.getParameter("ti_sp_childs");
     if(sChilds != null){
       eCampusApplication.setChildren(sChilds);
     }
   }
 
-  public ModuleObject getViewApartment(CampusApplication eCampusApplication,List lApplied,ModuleInfo modinfo,IWResourceBundle iwrb){
+  public PresentationObject getViewApartment(CampusApplication eCampusApplication,List lApplied,IWContext iwc,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -860,7 +860,7 @@ public class CampusApprover extends ModuleObjectContainer{
       col = 4;
       row = 2;
       idegaTimestamp iT = new idegaTimestamp(eCampusApplication.getHousingFrom());
-      T.add(Edit.formatText(iT.getLocaleDate(modinfo)),col,row++);
+      T.add(Edit.formatText(iT.getLocaleDate(iwc)),col,row++);
       if(eCampusApplication.getWantFurniture())
         T.add(Edit.formatText("X"),col,row++);
       if(eCampusApplication.getOnWaitinglist())
@@ -894,7 +894,7 @@ public class CampusApprover extends ModuleObjectContainer{
     return drpTypes;
   }
 
-  public ModuleObject getFieldsApartment(CampusApplication eCampusApplication,List lApplied,ModuleInfo modinfo,IWResourceBundle iwrb){
+  public PresentationObject getFieldsApartment(CampusApplication eCampusApplication,List lApplied,IWContext iwc,IWResourceBundle iwrb){
     Table T = new Table();
       int col = 1;
       int row = 1;
@@ -978,10 +978,10 @@ public class CampusApprover extends ModuleObjectContainer{
       return T;
   }
 
-  public void updateApartment(ModuleInfo modinfo,CampusApplication eCampusApplication,List lApplied){
-    String sRentFrom = modinfo.getParameter("ap_rentfrom");
-    String sFurni = modinfo.getParameter("ap_furni");
-    String sWait = modinfo.getParameter("ap_wait");
+  public void updateApartment(IWContext iwc,CampusApplication eCampusApplication,List lApplied){
+    String sRentFrom = iwc.getParameter("ap_rentfrom");
+    String sFurni = iwc.getParameter("ap_furni");
+    String sWait = iwc.getParameter("ap_wait");
     System.err.println("RentFrom "+sRentFrom);
     if(sRentFrom!= null)
       eCampusApplication.setHousingFrom(new idegaTimestamp(sRentFrom).getSQLDate());
@@ -996,9 +996,9 @@ public class CampusApprover extends ModuleObjectContainer{
     else
       eCampusApplication.setOnWaitinglist(false);
 
-    String key1 = (String)modinfo.getParameter("drp_one");
-    String key2 = (String)modinfo.getParameter("drp_two");
-    String key3 = (String)modinfo.getParameter("drp_three");
+    String key1 = (String)iwc.getParameter("drp_one");
+    String key2 = (String)iwc.getParameter("drp_two");
+    String key3 = (String)iwc.getParameter("drp_three");
     if(key1!=null && key2!=null && key3!=null){
       Applied applied1 = null;
       Applied applied2 = null;
@@ -1058,7 +1058,7 @@ public class CampusApprover extends ModuleObjectContainer{
   }
 
 
-  public ModuleObject getViewApplication(Application eApplication){
+  public PresentationObject getViewApplication(Application eApplication){
     Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("application","Application")),1,1);
       T.add(Edit.titleText(iwrb.getLocalizedString("submitted","Submitted")),1,2);
@@ -1084,7 +1084,7 @@ public class CampusApprover extends ModuleObjectContainer{
     return T;
   }
 
-  private ModuleObject getRemoteControl(String sStatus,boolean bEdit,IWResourceBundle iwrb){
+  private PresentationObject getRemoteControl(String sStatus,boolean bEdit,IWResourceBundle iwrb){
       Table T = new Table();
       T.add(headerText(iwrb.getLocalizedString("control","Control")),1,1);
       T.add(Edit.titleText(iwrb.getLocalizedString("tax_return","Tax return")),1,2);
@@ -1135,7 +1135,7 @@ public class CampusApprover extends ModuleObjectContainer{
     return T;
   }
 
-  private ModuleObject getKnobs(IWResourceBundle iwrb){
+  private PresentationObject getKnobs(IWResourceBundle iwrb){
     Table T = new Table(5,1);
     T.setAlignment("center");
 
@@ -1159,9 +1159,9 @@ public class CampusApprover extends ModuleObjectContainer{
     return T;
   }
 
-  public void doUpdate(ModuleInfo modinfo){
-    String sDesc= modinfo.getParameter("app_subj_desc").trim();
-    String sDate = modinfo.getParameter("app_subj_xdate");
+  public void doUpdate(IWContext iwc){
+    String sDesc= iwc.getParameter("app_subj_desc").trim();
+    String sDate = iwc.getParameter("app_subj_xdate");
     if(sDesc.length() > 0){
       ApplicationSubject AS = new ApplicationSubject();
       AS.setDescription(sDesc);
@@ -1251,7 +1251,7 @@ public class CampusApprover extends ModuleObjectContainer{
   }
 
 
-  public Link getApplicationLink(ModuleObject MO,int id){
+  public Link getApplicationLink(PresentationObject MO,int id){
     Link L = new Link(MO);
     L.setFontSize(1);
     L.addParameter("view",id);
@@ -1266,7 +1266,7 @@ public class CampusApprover extends ModuleObjectContainer{
     return T;
   }
 
-  public Link getPDFLink(ModuleObject MO,int cam_app_id){
+  public Link getPDFLink(PresentationObject MO,int cam_app_id){
     Window W = new Window("PDF","/allocation/applicationfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
@@ -1274,7 +1274,7 @@ public class CampusApprover extends ModuleObjectContainer{
     L.addParameter("cam_app_id",cam_app_id);
     return L;
   }
-  public Link getPDFLink(ModuleObject MO,String status,int subject_id){
+  public Link getPDFLink(PresentationObject MO,String status,int subject_id){
     Window W = new Window("PDF","/allocation/applicationfile.jsp");
     W.setResizable(true);
     W.setMenubar(true);
@@ -1284,13 +1284,13 @@ public class CampusApprover extends ModuleObjectContainer{
     return L;
   }
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 
 }

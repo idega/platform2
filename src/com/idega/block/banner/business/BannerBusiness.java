@@ -11,8 +11,8 @@ import java.util.Iterator;
 import java.util.Random;
 import com.idega.util.idegaTimestamp;
 import com.idega.data.GenericEntity;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.Image;
 
 /**
  * Title:

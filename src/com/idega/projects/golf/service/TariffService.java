@@ -5,8 +5,8 @@ package com.idega.projects.golf.service;
 import com.idega.data.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.util.idegaTimestamp;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.DropdownMenu;
 import java.sql.*;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -52,95 +52,95 @@ public class TariffService  {
     return "select * from price_catalogue where union_id = '"+union_id+"' and in_use = 'Y' and is_independent = 'Y'";
   }
 
-  static public void saveStringMatrixValues(ModuleInfo modinfo , String[][] matrix, String ParameterName){
-    modinfo.getSession().setAttribute(ParameterName, matrix);
+  static public void saveStringMatrixValues(IWContext iwc , String[][] matrix, String ParameterName){
+    iwc.getSession().setAttribute(ParameterName, matrix);
   }
-  static public String[][] getValues(ModuleInfo modinfo, String ParameterName){
-     if(modinfo.getSession().getAttribute(ParameterName)!= null){
-      String S[][] = (String[][]) modinfo.getSession().getAttribute(ParameterName);
+  static public String[][] getValues(IWContext iwc, String ParameterName){
+     if(iwc.getSession().getAttribute(ParameterName)!= null){
+      String S[][] = (String[][]) iwc.getSession().getAttribute(ParameterName);
       return S;
       }
       else return null;
   }
 
-  static public void saveIntArray(ModuleInfo modinfo , int[] array, String ParameterName){
-     modinfo.getSession().setAttribute(ParameterName, array );
+  static public void saveIntArray(IWContext iwc , int[] array, String ParameterName){
+     iwc.getSession().setAttribute(ParameterName, array );
   }
-  static public int[] retrieveIntArray(ModuleInfo modinfo, String ParameterName){
-     if(modinfo.getSession().getAttribute(ParameterName)!= null){
-      int S[] = (int[]) modinfo.getSession().getAttribute(ParameterName);
+  static public int[] retrieveIntArray(IWContext iwc, String ParameterName){
+     if(iwc.getSession().getAttribute(ParameterName)!= null){
+      int S[] = (int[]) iwc.getSession().getAttribute(ParameterName);
       return S;
       }
       else return null;
   }
 
-  static public void saveCatalogArray(ModuleInfo modinfo , PriceCatalogue[] array, String ParameterName){
-     modinfo.getSession().setAttribute(ParameterName, array );
+  static public void saveCatalogArray(IWContext iwc , PriceCatalogue[] array, String ParameterName){
+     iwc.getSession().setAttribute(ParameterName, array );
   }
-  static public PriceCatalogue[] retrieveCatalogArray(ModuleInfo modinfo, String ParameterName){
-     if(modinfo.getSession().getAttribute(ParameterName)!= null){
-      PriceCatalogue S[] = (PriceCatalogue[]) modinfo.getSession().getAttribute(ParameterName);
+  static public PriceCatalogue[] retrieveCatalogArray(IWContext iwc, String ParameterName){
+     if(iwc.getSession().getAttribute(ParameterName)!= null){
+      PriceCatalogue S[] = (PriceCatalogue[]) iwc.getSession().getAttribute(ParameterName);
       return S;
       }
       else return null;
   }
 
-  static public void saveMemberArray(ModuleInfo modinfo,Member[][] memberarray , String ParameterName){
-   modinfo.getSession().setAttribute(ParameterName, memberarray);
+  static public void saveMemberArray(IWContext iwc,Member[][] memberarray , String ParameterName){
+   iwc.getSession().setAttribute(ParameterName, memberarray);
   }
-  static public Member[][] getMemberArray(ModuleInfo modinfo , String ParameterName){
-   if(modinfo.getSession().getAttribute(ParameterName)!= null){
-     return (Member[][])modinfo.getSession().getAttribute( ParameterName );
+  static public Member[][] getMemberArray(IWContext iwc , String ParameterName){
+   if(iwc.getSession().getAttribute(ParameterName)!= null){
+     return (Member[][])iwc.getSession().getAttribute( ParameterName );
     }
     else return null;
   }
 
-  static public void saveVectorArray(ModuleInfo modinfo,Vector[] V, String ParameterName){
-   modinfo.getSession().setAttribute(ParameterName, V);
+  static public void saveVectorArray(IWContext iwc,Vector[] V, String ParameterName){
+   iwc.getSession().setAttribute(ParameterName, V);
   }
-  static public Vector[] retrieveVectorArray(ModuleInfo modinfo, String ParameterName){
-   if(modinfo.getSession().getAttribute(ParameterName)!= null){
-     return (Vector[]) modinfo.getSession().getAttribute(ParameterName );
+  static public Vector[] retrieveVectorArray(IWContext iwc, String ParameterName){
+   if(iwc.getSession().getAttribute(ParameterName)!= null){
+     return (Vector[]) iwc.getSession().getAttribute(ParameterName );
     }
     else return null;
   }
 
-  static public void saveIntegerMatrix(ModuleInfo modinfo, Integer[][] matrix ,String ParameterName){
-    modinfo.getSession().setAttribute(ParameterName, matrix);
+  static public void saveIntegerMatrix(IWContext iwc, Integer[][] matrix ,String ParameterName){
+    iwc.getSession().setAttribute(ParameterName, matrix);
   }
-  static public Integer[][] retrieveIntegerMatrix(ModuleInfo modinfo,String ParameterName){
-    if(modinfo.getSession().getAttribute(ParameterName)!= null){
-      Integer[][] T = (Integer[][])modinfo.getSession().getAttribute(ParameterName );
+  static public Integer[][] retrieveIntegerMatrix(IWContext iwc,String ParameterName){
+    if(iwc.getSession().getAttribute(ParameterName)!= null){
+      Integer[][] T = (Integer[][])iwc.getSession().getAttribute(ParameterName );
       return T;
     }
     else return null;
   }
 
-  static public void saveInt(ModuleInfo modinfo ,int i,String ParameterName){
-    modinfo.getSession().setAttribute(ParameterName, new Integer(i));
+  static public void saveInt(IWContext iwc ,int i,String ParameterName){
+    iwc.getSession().setAttribute(ParameterName, new Integer(i));
   }
-  static public int retrieveInt(ModuleInfo modinfo ,String ParameterName){
-    if(modinfo.getSession().getAttribute(ParameterName)!= null){
-      Integer mc = (Integer)modinfo.getSession().getAttribute(ParameterName);
+  static public int retrieveInt(IWContext iwc ,String ParameterName){
+    if(iwc.getSession().getAttribute(ParameterName)!= null){
+      Integer mc = (Integer)iwc.getSession().getAttribute(ParameterName);
       return mc.intValue();
     }
     else return 0;
   }
 
-  static public void saveHashtable(ModuleInfo modinfo ,Hashtable H , String ParameterName){
-    modinfo.getSession().setAttribute(ParameterName, H);
+  static public void saveHashtable(IWContext iwc ,Hashtable H , String ParameterName){
+    iwc.getSession().setAttribute(ParameterName, H);
   }
-  static public Hashtable retrieveHashtable(ModuleInfo modinfo , String ParameterName){
-    if(modinfo.getSession().getAttribute(ParameterName)!= null){
-      Hashtable H = (Hashtable)modinfo.getSession().getAttribute(ParameterName);
+  static public Hashtable retrieveHashtable(IWContext iwc , String ParameterName){
+    if(iwc.getSession().getAttribute(ParameterName)!= null){
+      Hashtable H = (Hashtable)iwc.getSession().getAttribute(ParameterName);
       return H;
     }
     else return null;
   }
 
-  static public void deleteElement(ModuleInfo modinfo, String ParameterName){
-    if(modinfo.getSession().getAttribute(ParameterName)!= null){
-      modinfo.getSession().removeAttribute(ParameterName);
+  static public void deleteElement(IWContext iwc, String ParameterName){
+    if(iwc.getSession().getAttribute(ParameterName)!= null){
+      iwc.getSession().removeAttribute(ParameterName);
     }
   }
 

@@ -1,7 +1,7 @@
 package com.idega.projects.golf.service.member;
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import com.idega.util.text.*;
 import java.util.*;
@@ -9,9 +9,9 @@ import java.sql.Date;
 import java.sql.*;
 import java.io.*;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.*;
 import com.idega.util.*;
 import com.idega.data.*;
@@ -171,8 +171,8 @@ public class MemberInsert extends EntityInsert {
       return vec;
   }
 
-  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
-    setVariables(modinfo);
+  public Vector getNeededEmptyFields(IWContext iwc) {
+    setVariables(iwc);
     Vector vec = new Vector();
 
       if ( isInvalid(inputSocialValue)) {
@@ -191,7 +191,7 @@ public class MemberInsert extends EntityInsert {
       return vec;
   }
 
-  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
+  public boolean areSomeFieldsEmpty(IWContext iwc) {
       return (getEmptyFields().size() > 0);
   }
 
@@ -199,12 +199,12 @@ public class MemberInsert extends EntityInsert {
       return this.eMember;
   }
 
-  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
-    return (getNeededEmptyFields(modinfo).size() > 0);
+  public boolean areNeededFieldsEmpty(IWContext iwc) {
+    return (getNeededEmptyFields(iwc).size() > 0);
   }
 
   //precondition Have to call getNetedEmptyFields() !!!
-  public void store(ModuleInfo modinfo) throws java.io.IOException, java.sql.SQLException {
+  public void store(IWContext iwc) throws java.io.IOException, java.sql.SQLException {
     if(isUpdate())
       eMember.update();
     else
@@ -232,13 +232,13 @@ public class MemberInsert extends EntityInsert {
     return hTable;
   }
 
-  public void setVariables(ModuleInfo modinfo) {
-      inputSocialValue = getValue(modinfo,inputSocialName);
-      inputNameValue = getValue(modinfo,inputNameName);
-      inputEmailValue = getValue(modinfo,inputEmailName);
-      inputJobValue = getValue(modinfo,inputJobName);
-      inputWorkPlaceValue = getValue(modinfo,inputWorkPlaceName);
-      dropGenderValue = getValue(modinfo,dropGenderName);
+  public void setVariables(IWContext iwc) {
+      inputSocialValue = getValue(iwc,inputSocialName);
+      inputNameValue = getValue(iwc,inputNameName);
+      inputEmailValue = getValue(iwc,inputEmailName);
+      inputJobValue = getValue(iwc,inputJobName);
+      inputWorkPlaceValue = getValue(iwc,inputWorkPlaceName);
+      dropGenderValue = getValue(iwc,dropGenderName);
       setEntity();
   }
 

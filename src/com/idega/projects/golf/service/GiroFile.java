@@ -1,9 +1,9 @@
 package com.idega.projects.golf.service;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.ModuleObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.PresentationObject.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.projects.golf.*;
@@ -64,8 +64,8 @@ public class GiroFile  {
     this.roundid = roundid;
   }
 
-  public void makeFile(ModuleInfo modinfo) throws SQLException,IOException{
-    giroFiling(modinfo,roundid,bankoffice,finalpayday,giroB1, giroB2, giroB3,  giroB4);
+  public void makeFile(IWContext iwc) throws SQLException,IOException{
+    giroFiling(iwc,roundid,bankoffice,finalpayday,giroB1, giroB2, giroB3,  giroB4);
   }
 
   public String getFileLinkString(){
@@ -76,13 +76,13 @@ public class GiroFile  {
     this.sFileLink = sFileLink;
   }
 
-  public void writeFile(ModuleInfo modinfo,Payment[] ePayments, int bankoffice,int finalpayday,String giroB1,String giroB2, String giroB3, String giroB4, int union_id) throws SQLException,IOException{
+  public void writeFile(IWContext iwc,Payment[] ePayments, int bankoffice,int finalpayday,String giroB1,String giroB2, String giroB3, String giroB4, int union_id) throws SQLException,IOException{
     Union U = new Union(union_id);
     idegaTimestamp datenow = new idegaTimestamp();
 
     String sLowerCaseUnionAbbreviation = U.getAbbrevation().toLowerCase();
     String fileSeperator = System.getProperty("file.separator");
-    String filepath = modinfo.getServletContext().getRealPath(fileSeperator+sLowerCaseUnionAbbreviation+fileSeperator);
+    String filepath = iwc.getServletContext().getRealPath(fileSeperator+sLowerCaseUnionAbbreviation+fileSeperator);
     StringBuffer fileName = new StringBuffer(sLowerCaseUnionAbbreviation);
     fileName.append(datenow.getDay());
     fileName.append(datenow.getMonth());
@@ -214,16 +214,16 @@ public class GiroFile  {
     //add(SB.toString());
   }
 
-   private void giroFiling(ModuleInfo modinfo,int roundid, int bankoffice,int finalpayday,String giroB1,String giroB2, String giroB3, String giroB4) throws SQLException,IOException{
+   private void giroFiling(IWContext iwc,int roundid, int bankoffice,int finalpayday,String giroB1,String giroB2, String giroB3, String giroB4) throws SQLException,IOException{
     //PaymentType[] giroPtype = (PaymentType[]) (new PaymentType()).findAll("select * from payment_type where name like 'Gíró%'");
-    String union_id = (String)  modinfo.getSession().getAttribute("golf_union_id");
+    String union_id = (String)  iwc.getSession().getAttribute("golf_union_id");
     int un_id = Integer.parseInt(union_id)  ;
     Union U = new Union(un_id);
     idegaTimestamp datenow = new idegaTimestamp();
 
     String sLowerCaseUnionAbbreviation = U.getAbbrevation().toLowerCase();
     String fileSeperator = System.getProperty("file.separator");
-    String filepath = modinfo.getServletContext().getRealPath(fileSeperator+sLowerCaseUnionAbbreviation+fileSeperator);
+    String filepath = iwc.getServletContext().getRealPath(fileSeperator+sLowerCaseUnionAbbreviation+fileSeperator);
     StringBuffer fileName = new StringBuffer(sLowerCaseUnionAbbreviation);
     fileName.append(datenow.getDay());
     fileName.append(datenow.getMonth());

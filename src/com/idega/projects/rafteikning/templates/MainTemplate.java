@@ -5,10 +5,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 
 public abstract class MainTemplate extends JSPModule implements JspPage{
@@ -121,7 +121,7 @@ public void locateObjects() {
 
   String language = "IS";
 
-    getModuleInfo().setSpokenLanguage( language );
+    getIWContext().setSpokenLanguage( language );
 
     String commImage = (language.equalsIgnoreCase("IS")) ? "/pics/Slysaskraning/islenska/samskipti.gif" : "/pics/Slysaskraning/enska/comm.gif";
     String calendarImage = (language.equalsIgnoreCase("IS")) ? "/pics/Slysaskraning/islenska/dagatal.gif" : "/pics/Slysaskraning/enska/calendar.gif";
@@ -221,16 +221,16 @@ public void locateObjects() {
 
 
 
-    public void add(ModuleObject objectToAdd){
+    public void add(PresentationObject objectToAdd){
       mainTable.add(Text.getBreak(),2,1);
       mainTable.add(objectToAdd,2,1);
     }
 
-    public void addLeft(ModuleObject objectToAdd){
+    public void addLeft(PresentationObject objectToAdd){
       mainTable.add(objectToAdd,1,1);
     }
 
-    public void addRight(ModuleObject objectToAdd){
+    public void addRight(PresentationObject objectToAdd){
       mainTable.add(objectToAdd,3,1);
     }
 

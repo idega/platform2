@@ -1,21 +1,21 @@
 package is.idegaweb.campus.allocation;
 
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.PresentationObjectContainer;
 import java.util.List;
 import java.sql.SQLException;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import is.idegaweb.campus.presentation.Edit;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.DropdownMenu;
-import com.idega.jmodule.object.interfaceobject.Form;
-import com.idega.jmodule.object.interfaceobject.HiddenInput;
-import com.idega.jmodule.object.interfaceobject.SubmitButton;
-import com.idega.jmodule.object.interfaceobject.InterfaceObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.InterfaceObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
 import is.idegaweb.campus.entity.ApartmentTypePeriods;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.block.building.data.ApartmentType;
@@ -32,7 +32,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class AprtTypePeriodMaker extends ModuleObjectContainer{
+public class AprtTypePeriodMaker extends PresentationObjectContainer{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.allocation";
   private boolean isAdmin = false;
@@ -47,11 +47,11 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
 
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
 
       if(isAdmin){
-        if(modinfo.getParameter("save") != null){
-          doUpdate(modinfo);
+        if(iwc.getParameter("save") != null){
+          doUpdate(iwc);
         }
 
         this.add(makeInputTable());
@@ -62,7 +62,7 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
 
   }
 
-  public ModuleObject makeInputTable(){
+  public PresentationObject makeInputTable(){
     Form F = new Form();
     Table T = new Table();
     List Types = BuildingCacher.getTypes();
@@ -128,21 +128,21 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
     return F;
   }
 
-  public void doUpdate(ModuleInfo modinfo){
-    if(modinfo.getParameter("count")!=null){
-      int count = Integer.parseInt(modinfo.getParameter("count"));
+  public void doUpdate(IWContext iwc){
+    if(iwc.getParameter("count")!=null){
+      int count = Integer.parseInt(iwc.getParameter("count"));
       ApartmentTypePeriods ATP ;
       boolean update = false;
       try{
         for (int i = 0; i < count; i++) {
-          String sId = modinfo.getParameter("id"+i);
+          String sId = iwc.getParameter("id"+i);
           if(sId != null){
             int id = Integer.parseInt(sId);
-            int dayOne = Integer.parseInt(modinfo.getParameter("dayone"+i));
-            int monthOne = Integer.parseInt(modinfo.getParameter("monthone"+i));
-            int dayTwo = Integer.parseInt(modinfo.getParameter("daytwo"+i));
-            int monthTwo = Integer.parseInt(modinfo.getParameter("monthtwo"+i));
-            int typeid = Integer.parseInt(modinfo.getParameter("typeid"+i));
+            int dayOne = Integer.parseInt(iwc.getParameter("dayone"+i));
+            int monthOne = Integer.parseInt(iwc.getParameter("monthone"+i));
+            int dayTwo = Integer.parseInt(iwc.getParameter("daytwo"+i));
+            int monthTwo = Integer.parseInt(iwc.getParameter("monthtwo"+i));
+            int typeid = Integer.parseInt(iwc.getParameter("typeid"+i));
             if(id == -1){
               ATP = new ApartmentTypePeriods();
               update = false;
@@ -212,16 +212,16 @@ public class AprtTypePeriodMaker extends ModuleObjectContainer{
   }
 
 
-  public void main(ModuleInfo modinfo){
+  public void main(IWContext iwc){
     try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){
       isAdmin = false;
     }
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
-    control(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
+    control(iwc);
   }
 
   private Link getHomeLink(){

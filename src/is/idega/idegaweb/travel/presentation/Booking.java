@@ -1,11 +1,11 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.jmodule.calendar.presentation.SmallCalendar;
 import com.idega.util.idegaTimestamp;
@@ -67,29 +67,29 @@ public class Booking extends TravelManager {
   }
 
 
-  public void add(ModuleObject mo) {
+  public void add(PresentationObject mo) {
     super.add(mo);
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException {
-      super.main(modinfo);
-      initialize(modinfo);
+  public void main(IWContext iwc) throws SQLException {
+      super.main(iwc);
+      initialize(iwc);
 
 //      if ( (supplier != null) || (reseller != null)) {
-        String action = modinfo.getParameter(this.BookingAction);
+        String action = iwc.getParameter(this.BookingAction);
         if (action == null) {action = "";}
 
         if (action.equals("")) {
-            displayForm(modinfo);
+            displayForm(iwc);
         }else if (action.equals(this.BookingParameter)) {
-            checkBooking(modinfo);
+            checkBooking(iwc);
         }else if (action.equals(this.parameterBookAnyway)) {
-            saveBooking(modinfo, true);
+            saveBooking(iwc, true);
         }else if (action.equals(this.parameterSendInquery)) {
-            sendInquery(modinfo);
+            sendInquery(iwc);
         }else if (action.equals(this.parameterRespondInquery)) {
-            inqueryResponse(modinfo);
-            displayForm(modinfo);
+            inqueryResponse(iwc);
+            displayForm(iwc);
         }
 //      }else {
 //        add("TEMP _LOGIN");
@@ -98,7 +98,7 @@ public class Booking extends TravelManager {
       super.addBreak();
   }
 
-  public void initialize(ModuleInfo modinfo) {
+  public void initialize(IWContext iwc) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
 
@@ -107,12 +107,12 @@ public class Booking extends TravelManager {
       if (supplier != null) supplierId = supplier.getID();
       if (reseller != null) resellerId = reseller.getID();
 
-      String sProductId = modinfo.getParameter(parameterProductId);
+      String sProductId = iwc.getParameter(parameterProductId);
       try {
         if (sProductId == null) {
-          sProductId = (String) modinfo.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
+          sProductId = (String) iwc.getSessionAttribute("TB_BOOKING_PRODUCT_ID");
         }else {
-          modinfo.setSessionAttribute("TB_BOOKING_PRODUCT_ID",sProductId);
+          iwc.setSessionAttribute("TB_BOOKING_PRODUCT_ID",sProductId);
         }
         if (sProductId != null) {
           productId = Integer.parseInt(sProductId);
@@ -141,14 +141,14 @@ public class Booking extends TravelManager {
         }
 
       }
-      stamp = getIdegaTimestamp(modinfo);
+      stamp = getIdegaTimestamp(iwc);
 
   }
 
-  public void displayForm(ModuleInfo modinfo) {
+  public void displayForm(IWContext iwc) {
 
       Form form = new Form();
-      Table topTable = getTopTable(modinfo);
+      Table topTable = getTopTable(iwc);
 
       if ((supplier != null) || (reseller != null) || ((supplier == null) && (reseller == null) && (product == null)) )
         form.add(topTable);
@@ -161,9 +161,9 @@ public class Booking extends TravelManager {
         if (product != null) {
           Table contentTable = new Table(1,1);
               contentTable.setBorder(1);
-              contentTable.add(getContentHeader(modinfo));
-              contentTable.add(getTotalTable(modinfo));
-              contentTable.add(getContentTable(modinfo));
+              contentTable.add(getContentHeader(iwc));
+              contentTable.add(getTotalTable(iwc));
+              contentTable.add(getContentTable(iwc));
               contentTable.setWidth("95%");
               contentTable.setCellspacing(0);
               contentTable.setCellpadding(0);
@@ -182,7 +182,7 @@ public class Booking extends TravelManager {
   }
 
 
-  public Table getTopTable(ModuleInfo modinfo) {
+  public Table getTopTable(IWContext iwc) {
       Table topTable = new Table(5,1);
         topTable.setBorder(0);
         topTable.setWidth("90%");
@@ -216,7 +216,7 @@ public class Booking extends TravelManager {
               year.addMenuElement(i,""+i);
           }
 
-          String parYear = modinfo.getParameter("chosen_year");
+          String parYear = iwc.getParameter("chosen_year");
           if (parYear != null) {
               year.setSelectedElement(parYear);
           }else {
@@ -244,7 +244,7 @@ public class Booking extends TravelManager {
       return topTable;
   }
 
-  public Table getContentHeader(ModuleInfo modinfo) {
+  public Table getContentHeader(IWContext iwc) {
       Table table = new Table(3,4);
       table.setBorder(0);
       table.setWidth("100%");
@@ -279,7 +279,7 @@ public class Booking extends TravelManager {
             nameTextC.setText(service.getName());
 
           Text timeTextC = (Text) theText.clone();
-            timeTextC.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(modinfo)+" - "+new idegaTimestamp(timeframe.getTo()).getLocaleDate(modinfo) );
+            timeTextC.setText(new idegaTimestamp(timeframe.getFrom()).getLocaleDate(iwc)+" - "+new idegaTimestamp(timeframe.getTo()).getLocaleDate(iwc) );
 
           Text depFrom = (Text) theText.clone();
             depFrom.setText(service.getAddress().getStreetName());
@@ -300,7 +300,7 @@ public class Booking extends TravelManager {
       return table;
   }
 
-  public Table getContentTable(ModuleInfo modinfo) {
+  public Table getContentTable(IWContext iwc) {
       Table table = new Table();
         table.setWidth("100%");
         table.setBorder(0);
@@ -315,11 +315,11 @@ public class Booking extends TravelManager {
         if (reseller != null) {
           isExpired = TravelStockroomBusiness.getIfExpired(contract, stamp);
           if (!isExpired) {
-            isDayVisible = TravelStockroomBusiness.getIfDay(modinfo, contract, product, stamp);
+            isDayVisible = TravelStockroomBusiness.getIfDay(iwc, contract, product, stamp);
           }
         }
         else {
-          isDayVisible = TravelStockroomBusiness.getIfDay(modinfo,this.product, this.stamp);
+          isDayVisible = TravelStockroomBusiness.getIfDay(iwc,this.product, this.stamp);
         }
       }catch (TravelStockroomBusiness.ServiceNotFoundException snfe) {
             snfe.printStackTrace(System.err);
@@ -333,7 +333,7 @@ public class Booking extends TravelManager {
             Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp , true, Inquery.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
-              table.add(getInqueries(modinfo, inqueries),1,row);
+              table.add(getInqueries(iwc, inqueries),1,row);
               table.setColor(1,row,super.YELLOW);
             }else {
               table.setColor(1,row,super.backgroundColor);
@@ -343,7 +343,7 @@ public class Booking extends TravelManager {
             Inquery[] inqueries = Inquirer.getInqueries(product.getID(), stamp ,reseller.getID(), true, Inquery.getInqueryPostDateColumnName());
 
             if (inqueries.length > 0) {
-              table.add(getInqueries(modinfo, inqueries),1,row);
+              table.add(getInqueries(iwc, inqueries),1,row);
               table.setColor(1,row,super.YELLOW);
             }else {
               table.setColor(1,row,super.backgroundColor);
@@ -352,7 +352,7 @@ public class Booking extends TravelManager {
 
           table.setColor(6,row,super.backgroundColor);
           table.setVerticalAlignment(6,row,"top");
-          table.add(getCalendar(modinfo),6,row);
+          table.add(getCalendar(iwc),6,row);
 
           ++row;
           table.mergeCells(1,row,5,row);
@@ -364,14 +364,14 @@ public class Booking extends TravelManager {
         if (isExpired) {
           table.add("TEMP - Frestur liðinn ");
         }else {
-          table.add("TEMP - Ferð ekki farinn þennan dag : " + stamp.getLocaleDate(modinfo));
+          table.add("TEMP - Ferð ekki farinn þennan dag : " + stamp.getLocaleDate(iwc));
         }
           table.mergeCells(1,row,5,row);
           table.setAlignment(1,row, "center");
 
           table.setColor(6,row,super.backgroundColor);
           table.setVerticalAlignment(6,row,"top");
-          table.add(getCalendar(modinfo),6,row);
+          table.add(getCalendar(iwc),6,row);
 
           ++row;
           table.mergeCells(1,row,5,row);
@@ -384,7 +384,7 @@ public class Booking extends TravelManager {
   }
 
 
-  public Table getCalendar(ModuleInfo modinfo) {
+  public Table getCalendar(IWContext iwc) {
       String colorForAvailableDay = super.textColor;
       String colorForInquery = super.YELLOW;
       String colorForToday = "#71CBFB";
@@ -398,29 +398,29 @@ public class Booking extends TravelManager {
       idegaCalendar cal = new idegaCalendar();
 
       Text jan = (Text) theText.clone();
-        jan.setText(cal.getShortNameOfMonth(1,modinfo).substring(0,3));
+        jan.setText(cal.getShortNameOfMonth(1,iwc).substring(0,3));
       Text feb = (Text) theText.clone();
-        feb.setText(cal.getShortNameOfMonth(2,modinfo).substring(0,3));
+        feb.setText(cal.getShortNameOfMonth(2,iwc).substring(0,3));
       Text mar = (Text) theText.clone();
-        mar.setText(cal.getShortNameOfMonth(3,modinfo).substring(0,3));
+        mar.setText(cal.getShortNameOfMonth(3,iwc).substring(0,3));
       Text apr = (Text) theText.clone();
-        apr.setText(cal.getShortNameOfMonth(4,modinfo).substring(0,3));
+        apr.setText(cal.getShortNameOfMonth(4,iwc).substring(0,3));
       Text may = (Text) theText.clone();
-        may.setText(cal.getShortNameOfMonth(5,modinfo).substring(0,3));
+        may.setText(cal.getShortNameOfMonth(5,iwc).substring(0,3));
       Text jun = (Text) theText.clone();
-        jun.setText(cal.getShortNameOfMonth(6,modinfo).substring(0,3));
+        jun.setText(cal.getShortNameOfMonth(6,iwc).substring(0,3));
       Text jul = (Text) theText.clone();
-        jul.setText(cal.getShortNameOfMonth(7,modinfo).substring(0,3));
+        jul.setText(cal.getShortNameOfMonth(7,iwc).substring(0,3));
       Text aug = (Text) theText.clone();
-        aug.setText(cal.getShortNameOfMonth(8,modinfo).substring(0,3));
+        aug.setText(cal.getShortNameOfMonth(8,iwc).substring(0,3));
       Text sep = (Text) theText.clone();
-        sep.setText(cal.getShortNameOfMonth(9,modinfo).substring(0,3));
+        sep.setText(cal.getShortNameOfMonth(9,iwc).substring(0,3));
       Text oct = (Text) theText.clone();
-        oct.setText(cal.getShortNameOfMonth(10,modinfo).substring(0,3));
+        oct.setText(cal.getShortNameOfMonth(10,iwc).substring(0,3));
       Text nov = (Text) theText.clone();
-        nov.setText(cal.getShortNameOfMonth(11,modinfo).substring(0,3));
+        nov.setText(cal.getShortNameOfMonth(11,iwc).substring(0,3));
       Text dec = (Text) theText.clone();
-        dec.setText(cal.getShortNameOfMonth(12,modinfo).substring(0,3));
+        dec.setText(cal.getShortNameOfMonth(12,iwc).substring(0,3));
 
       Link lJan = new Link(jan,Booking.class);
         lJan.addParameter("year",stamp.getYear());
@@ -514,7 +514,7 @@ public class Booking extends TravelManager {
         if (contract != null) {
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (!TravelStockroomBusiness.getIfExpired(contract, temp))
-            if (TravelStockroomBusiness.getIfDay(modinfo,contract,product,temp)) {
+            if (TravelStockroomBusiness.getIfDay(iwc,contract,product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
             }
             temp.addDays(1);
@@ -524,7 +524,7 @@ public class Booking extends TravelManager {
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(productId, temp, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
-            }else if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
+            }else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
             }
             temp.addDays(1);
@@ -534,7 +534,7 @@ public class Booking extends TravelManager {
           for (int i = 1; i <= lengthOfMonth; i++) {
             if (Inquirer.getInqueredSeats(productId, temp,resellerId, true) > 0) {
               sm.setDayColor(temp, colorForInquery);
-            }else if (TravelStockroomBusiness.getIfDay(modinfo, product,temp)) {
+            }else if (TravelStockroomBusiness.getIfDay(iwc, product,temp)) {
               sm.setDayColor(temp, colorForAvailableDay);
             }
             temp.addDays(1);
@@ -553,7 +553,7 @@ public class Booking extends TravelManager {
   }
 
 
-  public Table getInqueries(ModuleInfo modinfo,Inquery[] inqueries) {
+  public Table getInqueries(IWContext iwc,Inquery[] inqueries) {
       Table table = new Table();
           table.setWidth("100%");
           table.setBorder(0);
@@ -577,7 +577,7 @@ public class Booking extends TravelManager {
           theStamp = new idegaTimestamp(inqueries[i].getInqueryDate());
 
           dateText = (Text) theSmallBoldText.clone();
-              dateText.setText(theStamp.getLocaleDate(modinfo));
+              dateText.setText(theStamp.getLocaleDate(iwc));
           nameText = (Text) theSmallBoldText.clone();
               nameText.setText(inqueries[i].getName());
           countText = (Text) theSmallBoldText.clone();
@@ -635,7 +635,7 @@ public class Booking extends TravelManager {
   }
 
 
-  public Table getTotalTable(ModuleInfo modinfo) {
+  public Table getTotalTable(IWContext iwc) {
       Table table = new Table();
         table.setFrameVoid();
         table.setWidth("100%");
@@ -658,7 +658,7 @@ public class Booking extends TravelManager {
 
 
       Text dateText = (Text) theBoldText.clone();
-          dateText.setText(stamp.getLocaleDate(modinfo));
+          dateText.setText(stamp.getLocaleDate(iwc));
       Text countText = (Text) theText.clone();
           countText.setText(iwrb.getLocalizedString("travel.count_sm","count"));
       Text assignedText = (Text) theText.clone();
@@ -685,7 +685,7 @@ public class Booking extends TravelManager {
 
       try {
         if (reseller != null) {
-          if (TravelStockroomBusiness.getIfDay(modinfo, contract,product, this.stamp)) {
+          if (TravelStockroomBusiness.getIfDay(iwc, contract,product, this.stamp)) {
             iCount = contract.getAlotment();
 
             if (iCount >0) {
@@ -707,7 +707,7 @@ public class Booking extends TravelManager {
           }
         }
         else {
-          if (TravelStockroomBusiness.getIfDay(modinfo, this.product, this.stamp)) {
+          if (TravelStockroomBusiness.getIfDay(iwc, this.product, this.stamp)) {
             iCount = tour.getTotalSeats();
             iBooked = Booker.getNumberOfBookings(service.getID(), this.stamp);
             iInquery = Inquirer.getInqueredSeats(service.getID(), this.stamp, true);
@@ -985,14 +985,14 @@ public class Booking extends TravelManager {
 
 
   // BUSINESS
-  public idegaTimestamp getIdegaTimestamp(ModuleInfo modinfo) {
+  public idegaTimestamp getIdegaTimestamp(IWContext iwc) {
       idegaTimestamp stamp = null;
 
-      String year = modinfo.getParameter("year");
-      String month = modinfo.getParameter("month");
-      String day = modinfo.getParameter("day");
+      String year = iwc.getParameter("year");
+      String month = iwc.getParameter("month");
+      String day = iwc.getParameter("day");
 
-      String chYear = modinfo.getParameter("chosen_year");
+      String chYear = iwc.getParameter("chosen_year");
       if ((chYear != null) && (year != null)) year = chYear;
 
       if (stamp == null)
@@ -1019,7 +1019,7 @@ public class Booking extends TravelManager {
 
   }
 
-  private void checkBooking(ModuleInfo modinfo) {
+  private void checkBooking(IWContext iwc) {
     Form form = new Form();
       form.maintainParameter("surname");
       form.maintainParameter("lastname");
@@ -1036,7 +1036,7 @@ public class Booking extends TravelManager {
       form.maintainParameter("day");
 
     boolean tooMany = false;
-    String available = modinfo.getParameter("available");
+    String available = iwc.getParameter("available");
 
 
     int iAvailable = Integer.parseInt(available);
@@ -1048,7 +1048,7 @@ public class Booking extends TravelManager {
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
             form.maintainParameter("priceCategory"+i);
-            many = modinfo.getParameter("priceCategory"+i);
+            many = iwc.getParameter("priceCategory"+i);
             if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
                 manys[i] = Integer.parseInt(many);
                 iMany += Integer.parseInt(many);
@@ -1080,29 +1080,29 @@ public class Booking extends TravelManager {
 
       add(form);
     }else {
-      saveBooking(modinfo, true);
+      saveBooking(iwc, true);
     }
 
   }
 
 
-  private int saveBooking(ModuleInfo modinfo, boolean displayForm) {
-      String surname = modinfo.getParameter("surname");
-      String lastname = modinfo.getParameter("lastname");
-      String address = modinfo.getParameter("address");
-      String areaCode = modinfo.getParameter("area_code");
-      String email = modinfo.getParameter("e-mail");
-      String phone = modinfo.getParameter("telephone_number");
+  private int saveBooking(IWContext iwc, boolean displayForm) {
+      String surname = iwc.getParameter("surname");
+      String lastname = iwc.getParameter("lastname");
+      String address = iwc.getParameter("address");
+      String areaCode = iwc.getParameter("area_code");
+      String email = iwc.getParameter("e-mail");
+      String phone = iwc.getParameter("telephone_number");
 
-      String city = modinfo.getParameter("city");
-      String country = modinfo.getParameter("country");
-      String hotelPickupPlaceId = modinfo.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+      String city = iwc.getParameter("city");
+      String country = iwc.getParameter("country");
+      String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
 
-      String referenceNumber = modinfo.getParameter("reference_number");
+      String referenceNumber = iwc.getParameter("reference_number");
 
-      String ccNumber = modinfo.getParameter("ccNumber");
-      String ccMonth = modinfo.getParameter("ccMonth");
-      String ccYear = modinfo.getParameter("ccYear");
+      String ccNumber = iwc.getParameter("ccNumber");
+      String ccMonth = iwc.getParameter("ccMonth");
+      String ccYear = iwc.getParameter("ccYear");
 
 
       int returner = 0;
@@ -1119,7 +1119,7 @@ public class Booking extends TravelManager {
       try {
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
-            many = modinfo.getParameter("priceCategory"+i);
+            many = iwc.getParameter("priceCategory"+i);
             if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
                 manys[i] = Integer.parseInt(many);
                 iMany += Integer.parseInt(many);
@@ -1173,29 +1173,29 @@ public class Booking extends TravelManager {
 
       if (displayForm)
       if (displayFormInternal)
-      displayForm(modinfo);
+      displayForm(iwc);
 
 
       return returner;
   }
 
-  private void sendInquery(ModuleInfo modinfo) {
-    String surname = modinfo.getParameter("surname");
-    String lastname = modinfo.getParameter("lastname");
-    String address = modinfo.getParameter("address");
-    String areaCode = modinfo.getParameter("area_code");
-    String email = modinfo.getParameter("e-mail");
-    String phone = modinfo.getParameter("telephone_number");
+  private void sendInquery(IWContext iwc) {
+    String surname = iwc.getParameter("surname");
+    String lastname = iwc.getParameter("lastname");
+    String address = iwc.getParameter("address");
+    String areaCode = iwc.getParameter("area_code");
+    String email = iwc.getParameter("e-mail");
+    String phone = iwc.getParameter("telephone_number");
 
-    String city = modinfo.getParameter("city");
-    String country = modinfo.getParameter("country");
-    String hotelPickupPlaceId = modinfo.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
-    String numberOfSeats = modinfo.getParameter("numberOfSeats");
+    String city = iwc.getParameter("city");
+    String country = iwc.getParameter("country");
+    String hotelPickupPlaceId = iwc.getParameter(HotelPickupPlace.getHotelPickupPlaceTableName());
+    String numberOfSeats = iwc.getParameter("numberOfSeats");
 
-    String referenceNumber = modinfo.getParameter("reference_number");
+    String referenceNumber = iwc.getParameter("reference_number");
 
     try {
-        int bookingId = saveBooking(modinfo, false);
+        int bookingId = saveBooking(iwc, false);
         is.idega.travel.data.Booking booking = new is.idega.travel.data.Booking(bookingId);
           booking.setIsValid(false);
           booking.update();
@@ -1208,9 +1208,9 @@ public class Booking extends TravelManager {
     }
   }
 
-  private void inqueryResponse(ModuleInfo modinfo) {
-    String yesNo = modinfo.getParameter(this.parameterRespondInquery);
-    String sInqueryId = modinfo.getParameter(this.parameterInqueryId);
+  private void inqueryResponse(IWContext iwc) {
+    String yesNo = iwc.getParameter(this.parameterRespondInquery);
+    String sInqueryId = iwc.getParameter(this.parameterInqueryId);
     Boolean book = null;
 
     String mailHost = "mail.idega.is";
@@ -1234,7 +1234,7 @@ public class Booking extends TravelManager {
         Service tempService = booking.getService();
 
 
-        responseString.append("T - Svar við fyrirspurn þinni varðandi "+inquery.getNumberOfSeats()+" sæti í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(modinfo)+"\n");
+        responseString.append("T - Svar við fyrirspurn þinni varðandi "+inquery.getNumberOfSeats()+" sæti í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
 
         if (book.booleanValue() == false) {
             responseString.append("Beiðninni er hafnað");
@@ -1255,7 +1255,7 @@ public class Booking extends TravelManager {
         if (reseller != null) {  // if this is not a reseller deleting his own inquiry
           if (resellers != null) { // if there was a reseller who send the inquery
             responseString = new StringBuffer();
-            responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(modinfo)+"\n");
+            responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
             for (int i = 0; i < resellers.length; i++) {
               if (resellers[i].getEmail() != null)
               sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());

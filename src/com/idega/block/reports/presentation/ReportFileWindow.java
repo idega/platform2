@@ -1,10 +1,10 @@
 package com.idega.block.reports.presentation;
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import java.io.File;
 import java.sql.SQLException;
 import com.idega.block.reports.data.Report;
@@ -42,9 +42,9 @@ public class ReportFileWindow extends IWAdminWindow {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo) throws Exception{
+  public void main(IWContext iwc) throws Exception{
 
-    iwrb = getResourceBundle(modinfo);
+    iwrb = getResourceBundle(iwc);
     String title = iwrb.getLocalizedString("report_filer","Report Filer");
     setTitle(title);
     addTitle(title);
@@ -52,9 +52,9 @@ public class ReportFileWindow extends IWAdminWindow {
 
     String prefix = "";
     String fileSeperator = System.getProperty("file.separator");
-    String filepath = modinfo.getServletContext().getRealPath(fileSeperator+"reports/temp"+fileSeperator);
+    String filepath = iwc.getServletContext().getRealPath(fileSeperator+"reports/temp"+fileSeperator);
     String filename = prefix+"temp.";
-    String sReportId = modinfo.getParameter(prmReportId );
+    String sReportId = iwc.getParameter(prmReportId );
     if(sReportId!=null){
       Report R = null;
       try{
@@ -65,8 +65,8 @@ public class ReportFileWindow extends IWAdminWindow {
         ex.printStackTrace();
       }
       if(R!= null){
-        if(modinfo.getParameter("type")!=null){
-          String type = modinfo.getParameter("type");
+        if(iwc.getParameter("type")!=null){
+          String type = iwc.getParameter("type");
           if(type.equalsIgnoreCase("xls")){
             filename = filename+type;
             String path = filepath+filename;
@@ -90,7 +90,7 @@ public class ReportFileWindow extends IWAdminWindow {
        add(formatText(iwrb.getLocalizedString("no_report","No Report")));
   }
 
-  private ModuleObject getLinkTable(){
+  private PresentationObject getLinkTable(){
     Link L = new Link(iwrb.getLocalizedString("close","Close"));
     L.setFontStyle("text-decoration: none");
     L.setFontColor("#FFFFFF");

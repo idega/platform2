@@ -1,8 +1,8 @@
 package com.idega.projects.iceconsult.moduleobject;
 
 import java.io.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 
 /**
 *@author <a href="mailto:gimmi@idega.is">Grímur Jónsson</a>
@@ -11,13 +11,13 @@ import com.idega.jmodule.object.textObject.*;
 public class IceConsultPage extends Page{
 
 
-public com.idega.jmodule.object.Image maini = new com.idega.jmodule.object.Image("/pics/iceconsult/Main.gif");
-public com.idega.jmodule.object.Image productsi = new com.idega.jmodule.object.Image("/pics/iceconsult/Products.gif");
-public com.idega.jmodule.object.Image partnersi = new com.idega.jmodule.object.Image("/pics/iceconsult/Partners.gif");
-public com.idega.jmodule.object.Image companyi = new com.idega.jmodule.object.Image("/pics/iceconsult/Company.gif");
-public com.idega.jmodule.object.Image newsi = new com.idega.jmodule.object.Image("/pics/iceconsult/News.gif");
-public com.idega.jmodule.object.Image contacti = new com.idega.jmodule.object.Image("/pics/iceconsult/Contact-us.gif");
-public com.idega.jmodule.object.Image customeri = new com.idega.jmodule.object.Image("/pics/iceconsult/Customer-showcase.gif");
+public com.idega.presentation.Image maini = new com.idega.presentation.Image("/pics/iceconsult/Main.gif");
+public com.idega.presentation.Image productsi = new com.idega.presentation.Image("/pics/iceconsult/Products.gif");
+public com.idega.presentation.Image partnersi = new com.idega.presentation.Image("/pics/iceconsult/Partners.gif");
+public com.idega.presentation.Image companyi = new com.idega.presentation.Image("/pics/iceconsult/Company.gif");
+public com.idega.presentation.Image newsi = new com.idega.presentation.Image("/pics/iceconsult/News.gif");
+public com.idega.presentation.Image contacti = new com.idega.presentation.Image("/pics/iceconsult/Contact-us.gif");
+public com.idega.presentation.Image customeri = new com.idega.presentation.Image("/pics/iceconsult/Customer-showcase.gif");
 
 
 
@@ -27,8 +27,8 @@ public Table extra;
 public Table left = new Table(1,1);
 public Table right = new Table(1,1);
 
-private com.idega.jmodule.object.Image leftImage = null;
-private com.idega.jmodule.object.Image rightImage = null;
+private com.idega.presentation.Image leftImage = null;
+private com.idega.presentation.Image rightImage = null;
 private Text leftText = null;
 private Text rightText = null;
 
@@ -63,7 +63,7 @@ public int width = 798;
           width_rightside = ( (100 - width_leftside_percent) * width) / 100;
         }
 
-        public void main(ModuleInfo modinfo) throws Exception{
+        public void main(IWContext iwc) throws Exception{
 
           double left_side = ( width_leftside_percent * width) / 100;
           double right_side = ( (100 - width_leftside_percent) * width) / 100;
@@ -80,25 +80,25 @@ public int width = 798;
             table.mergeCells(1,1,1,2);
 
 
-            com.idega.jmodule.object.Image spacer = new com.idega.jmodule.object.Image("/pics/iceconsult/spacer.gif");
+            com.idega.presentation.Image spacer = new com.idega.presentation.Image("/pics/iceconsult/spacer.gif");
 
-            com.idega.jmodule.object.Image logo = new com.idega.jmodule.object.Image("/pics/iceconsult/iceconlogo.jpg");
+            com.idega.presentation.Image logo = new com.idega.presentation.Image("/pics/iceconsult/iceconlogo.jpg");
               logo.setWidth(259);
               logo.setHeight(62);
-            com.idega.jmodule.object.Image himinn = new com.idega.jmodule.object.Image("/pics/iceconsult/himinn-.jpg");
+            com.idega.presentation.Image himinn = new com.idega.presentation.Image("/pics/iceconsult/himinn-.jpg");
               himinn.setWidth(541);
               himinn.setHeight(44);
-            com.idega.jmodule.object.Image bar1 = new com.idega.jmodule.object.Image("/pics/iceconsult/barlina1.gif");
-            com.idega.jmodule.object.Image lina = new com.idega.jmodule.object.Image("/pics/iceconsult/millilinahvit.gif");
-            com.idega.jmodule.object.Image bar2 = new com.idega.jmodule.object.Image("/pics/iceconsult/barlina2.gif");
-            com.idega.jmodule.object.Image bar3 = new com.idega.jmodule.object.Image("/pics/iceconsult/barlina3.gif");
-            com.idega.jmodule.object.Image bar4 = new com.idega.jmodule.object.Image("/pics/iceconsult/barlina4.gif");
-            com.idega.jmodule.object.Image bar5 = new com.idega.jmodule.object.Image("/pics/iceconsult/barlina5.gif");
-            com.idega.jmodule.object.Image bar6 = new com.idega.jmodule.object.Image("/pics/iceconsult/barlina6.gif");
-            com.idega.jmodule.object.Image millibar = new com.idega.jmodule.object.Image("/pics/iceconsult/millibar.gif");
-            com.idega.jmodule.object.Image midjulinur_tiler = new com.idega.jmodule.object.Image("/pics/iceconsult/midjubarlinur_tiler.gif");
-            com.idega.jmodule.object.Image midjulinur = new com.idega.jmodule.object.Image("/pics/iceconsult/midjubarlinur1.gif");
-            com.idega.jmodule.object.Image endalina = new com.idega.jmodule.object.Image("/pics/iceconsult/endalina.gif");
+            com.idega.presentation.Image bar1 = new com.idega.presentation.Image("/pics/iceconsult/barlina1.gif");
+            com.idega.presentation.Image lina = new com.idega.presentation.Image("/pics/iceconsult/millilinahvit.gif");
+            com.idega.presentation.Image bar2 = new com.idega.presentation.Image("/pics/iceconsult/barlina2.gif");
+            com.idega.presentation.Image bar3 = new com.idega.presentation.Image("/pics/iceconsult/barlina3.gif");
+            com.idega.presentation.Image bar4 = new com.idega.presentation.Image("/pics/iceconsult/barlina4.gif");
+            com.idega.presentation.Image bar5 = new com.idega.presentation.Image("/pics/iceconsult/barlina5.gif");
+            com.idega.presentation.Image bar6 = new com.idega.presentation.Image("/pics/iceconsult/barlina6.gif");
+            com.idega.presentation.Image millibar = new com.idega.presentation.Image("/pics/iceconsult/millibar.gif");
+            com.idega.presentation.Image midjulinur_tiler = new com.idega.presentation.Image("/pics/iceconsult/midjubarlinur_tiler.gif");
+            com.idega.presentation.Image midjulinur = new com.idega.presentation.Image("/pics/iceconsult/midjubarlinur1.gif");
+            com.idega.presentation.Image endalina = new com.idega.presentation.Image("/pics/iceconsult/endalina.gif");
 
 
             Link main = new Link(maini,"/index.jsp");
@@ -110,9 +110,9 @@ public int width = 798;
             Link customer = new Link(customeri,"/customer.jsp?text_id=33");
 
 
-            com.idega.jmodule.object.Image bogi1 = new com.idega.jmodule.object.Image("/pics/iceconsult/bogi1.gif");
-            com.idega.jmodule.object.Image bogiv = new com.idega.jmodule.object.Image("/pics/iceconsult/barvinstri.gif");
-            com.idega.jmodule.object.Image bogih = new com.idega.jmodule.object.Image("/pics/iceconsult/barhaegri.gif");
+            com.idega.presentation.Image bogi1 = new com.idega.presentation.Image("/pics/iceconsult/bogi1.gif");
+            com.idega.presentation.Image bogiv = new com.idega.presentation.Image("/pics/iceconsult/barvinstri.gif");
+            com.idega.presentation.Image bogih = new com.idega.presentation.Image("/pics/iceconsult/barhaegri.gif");
 
 
             table.setBackgroundImage(1,1, logo);
@@ -263,11 +263,11 @@ public int width = 798;
             this.space = space;
        }
 
-        public void setLeftImage(com.idega.jmodule.object.Image mynd) {
+        public void setLeftImage(com.idega.presentation.Image mynd) {
         	leftImage = mynd;
         }
 
-        public void setRightImage(com.idega.jmodule.object.Image mynd) {
+        public void setRightImage(com.idega.presentation.Image mynd) {
         	rightImage = mynd;
         }
 
@@ -281,12 +281,12 @@ public int width = 798;
 
 
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 //		table.add(Text.getBreak(),2,1);
 	  left.add(objectToAdd,1,1);
 	}
 
-        public void addLeft(ModuleObject objectToAdd){
+        public void addLeft(PresentationObject objectToAdd){
 	  left.add(objectToAdd,1,1);
 	}
 
@@ -294,11 +294,11 @@ public int width = 798;
 	  left.add(string,1,1);
 	}
 
-        public void addRight(ModuleObject objectToAdd){
+        public void addRight(PresentationObject objectToAdd){
 	  right.add(objectToAdd,1,1);
 	}
 
-        public void addRight2(ModuleObject objectToAdd){
+        public void addRight2(PresentationObject objectToAdd){
 	  extra.add(objectToAdd,4,2);
 	}
 

@@ -2,9 +2,9 @@ package com.idega.jmodule.image.presentation;
 
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.jmodule.image.business.SimpleImage;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.image.data.ImageEntity;
 import com.idega.util.idegaTimestamp;
 
@@ -17,7 +17,7 @@ import com.idega.util.idegaTimestamp;
  * @version 1.1
  */
 
- public class SimpleChooser extends ModuleObjectContainer implements SimpleImage{
+ public class SimpleChooser extends PresentationObjectContainer implements SimpleImage{
 
     private String sessImageParameter = "image_id";
     private boolean includeLinks;
@@ -26,8 +26,8 @@ import com.idega.util.idegaTimestamp;
       this.includeLinks = includeLinks;
     }
 
-    public void  main(ModuleInfo modinfo){
-      checkParameterName(modinfo);
+    public void  main(IWContext iwc){
+      checkParameterName(iwc);
       Table Frame = new Table();
       Frame.setCellpadding(0);
       Frame.setCellspacing(0);
@@ -55,17 +55,17 @@ import com.idega.util.idegaTimestamp;
     public String getSessionSaveParameterName(){
       return sessImageParameter;
     }
-     public void checkParameterName(ModuleInfo modinfo){
-       if(modinfo.getParameter(sessImageParameterName)!=null){
-        sessImageParameter = modinfo.getParameter(sessImageParameterName);
+     public void checkParameterName(IWContext iwc){
+       if(iwc.getParameter(sessImageParameterName)!=null){
+        sessImageParameter = iwc.getParameter(sessImageParameterName);
         //add(sessImageParameter);
-        modinfo.setSessionAttribute(sessImageParameterName,sessImageParameter);
+        iwc.setSessionAttribute(sessImageParameterName,sessImageParameter);
       }
-      else if(modinfo.getSessionAttribute(sessImageParameterName)!=null)
-        sessImageParameter = (String) modinfo.getSessionAttribute(sessImageParameterName);
+      else if(iwc.getSessionAttribute(sessImageParameterName)!=null)
+        sessImageParameter = (String) iwc.getSessionAttribute(sessImageParameterName);
     }
 
-    public ModuleObject getLinkTable(){
+    public PresentationObject getLinkTable(){
       Table T = new Table();
       Link btnAdd = getNewImageLink("add");
         btnAdd.setFontStyle("text-decoration: none");

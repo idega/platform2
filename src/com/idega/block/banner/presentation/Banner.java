@@ -1,13 +1,13 @@
 package com.idega.block.banner.presentation;
 
 import com.idega.block.IWBlock;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.interfaceobject.HeaderTable;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.HeaderTable;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -16,7 +16,7 @@ import com.idega.core.data.ICObjectInstance;
 import com.idega.block.banner.data.*;
 import com.idega.block.banner.business.*;
 
-public class Banner extends JModuleObject implements IWBlock {
+public class Banner extends Block implements IWBlock {
 
 private int _bannerID = -1;
 private boolean _isAdmin = false;
@@ -44,16 +44,16 @@ public Banner(String attribute){
 	_attribute = attribute;
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
-    _iwrb = getResourceBundle(modinfo);
-    _iwb = getBundle(modinfo);
+	public void main(IWContext iwc) throws Exception {
+    _iwrb = getResourceBundle(iwc);
+    _iwb = getBundle(iwc);
 
-    _isAdmin = AccessControl.hasEditPermission(this,modinfo);
-    _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
+    _isAdmin = AccessControl.hasEditPermission(this,iwc);
+    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-    String mode = modinfo.getParameter(BannerBusiness.PARAMETER_MODE);
+    String mode = iwc.getParameter(BannerBusiness.PARAMETER_MODE);
     if ( mode != null ) {
-      doMode(mode,modinfo);
+      doMode(mode,iwc);
     }
 
     BannerEntity banner = null;
@@ -64,7 +64,7 @@ public Banner(String attribute){
       _myTable.setBorder(0);
 
     if(_bannerID <= 0){
-      String sBannerID = modinfo.getParameter(BannerBusiness.PARAMETER_BANNER_ID);
+      String sBannerID = iwc.getParameter(BannerBusiness.PARAMETER_BANNER_ID);
       if(sBannerID != null)
         _bannerID = Integer.parseInt(sBannerID);
       else if(getICObjectInstanceID() > 0){
@@ -146,9 +146,9 @@ public Banner(String attribute){
     return adminLink;
   }
 
-  private void doMode(String mode, ModuleInfo modinfo) {
+  private void doMode(String mode, IWContext iwc) {
     if ( mode.equalsIgnoreCase(BannerBusiness.PARAMETER_CLICKED) ) {
-      String adID = modinfo.getParameter(BannerBusiness.PARAMETER_AD_ID);
+      String adID = iwc.getParameter(BannerBusiness.PARAMETER_AD_ID);
       String URL = null;
       if ( adID != null ) {
         URL = BannerBusiness.updateHits(Integer.parseInt(adID));

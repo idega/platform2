@@ -17,10 +17,10 @@ import java.util.*;
 import java.math.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.*;
 import com.idega.jmodule.news.data.*;
 import com.idega.jmodule.news.presentation.*;
@@ -32,7 +32,7 @@ import com.idega.projects.golf.templates.*;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
-public class HandicapOverview extends JModuleObject {
+public class HandicapOverview extends Block {
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 protected IWResourceBundle iwrb;
@@ -103,19 +103,19 @@ private Link textLink = new Link();
     this.member_id=String.valueOf(member_id);
   }
 
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
 
-        iwrb = getResourceBundle(modinfo);
-        iwb = getBundle(modinfo);
+        iwrb = getResourceBundle(iwc);
+        iwb = getBundle(iwc);
 
-        this.isAdmin=isAdministrator(modinfo);
+        this.isAdmin=isAdministrator(iwc);
 
         if ( member_id == null ) {
-          member_id = modinfo.getParameter("member_id");
+          member_id = iwc.getParameter("member_id");
           if ( member_id == null ) {
-            member_id = (String) modinfo.getSession().getAttribute("member_id");
+            member_id = (String) iwc.getSession().getAttribute("member_id");
             if ( member_id == null ) {
-                    Member memberinn = (Member) modinfo.getSession().getAttribute("member_login");
+                    Member memberinn = (Member) iwc.getSession().getAttribute("member_login");
                             if ( memberinn != null ) {
                                     member_id = String.valueOf(memberinn.getID());
                                             if ( member_id == null ) {
@@ -129,19 +129,19 @@ private Link textLink = new Link();
           }
         }
 
-	fillTable(modinfo);
+	fillTable(iwc);
         myForm.add(myTable);
 
 	add(myForm);
 
   }
 
-	private void fillTable(ModuleInfo modinfo) throws IOException,SQLException {
+	private void fillTable(IWContext iwc) throws IOException,SQLException {
 
 		Member member = new Member(Integer.parseInt(this.member_id));
     MemberInfo memberInfo = member.getMemberInfo();
 
-    String[] dates = getDates(modinfo);
+    String[] dates = getDates(iwc);
 
     Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' and scorecard_date is not null order by scorecard_date");
     Scorecard[] scoreCardsBefore = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+dates[0]+"' order by scorecard_date desc");
@@ -667,7 +667,7 @@ private Link textLink = new Link();
 
 	}
 
-	private String[] getDates(ModuleInfo modinfo) throws IOException {
+	private String[] getDates(IWContext iwc) throws IOException {
 
 		String[] dates = {"",""};
 
@@ -676,16 +676,16 @@ private Link textLink = new Link();
 			month = dagatalid.getMonth();
 			day = dagatalid.getDay();
 
-		this.start_year = modinfo.getParameter("start_year");
+		this.start_year = iwc.getParameter("start_year");
 			if ( start_year == null ) {
 				start_year = String.valueOf(year - 1);
 			}
 
-		this.start_month = modinfo.getParameter("start_month");
+		this.start_month = iwc.getParameter("start_month");
 			if ( start_month == null ) {
 				start_month = String.valueOf(month);
 			}
-		this.start_day = modinfo.getParameter("start_day");
+		this.start_day = iwc.getParameter("start_day");
 			if ( start_day == null ) {
 				start_day = String.valueOf(day);
 			}
@@ -694,15 +694,15 @@ private Link textLink = new Link();
 				start_day = String.valueOf(dagatalid.getLengthOfMonth(start_month,start_year));
 			}
 
-		this.end_year = modinfo.getParameter("end_year");
+		this.end_year = iwc.getParameter("end_year");
 			if ( end_year == null ) {
 				end_year = String.valueOf(year);
 			}
-		this.end_month = modinfo.getParameter("end_month");
+		this.end_month = iwc.getParameter("end_month");
 			if ( end_month == null ) {
 				end_month = String.valueOf(month);
 			}
-		this.end_day = modinfo.getParameter("end_day");
+		this.end_day = iwc.getParameter("end_day");
 			if ( end_day == null ) {
 				end_day = String.valueOf(day);
 			}

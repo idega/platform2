@@ -5,7 +5,7 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.projects.golf.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.projects.golf.templates.page.*;
 
 
@@ -160,23 +160,23 @@ public class MainSideJSPModule extends PageJSPModule{
 
 
 
-  public void add(ModuleObject objectToAdd){
+  public void add(PresentationObject objectToAdd){
     ((MainPage)getPage()).add(objectToAdd);
   }
 
-  public void add(String position, ModuleObject objectToAdd){
+  public void add(String position, PresentationObject objectToAdd){
     ((MainPage)getPage()).add( position, objectToAdd);
   }
 
 
 
-  public void add(ModuleObject Left, ModuleObject Center, ModuleObject Right){
+  public void add(PresentationObject Left, PresentationObject Center, PresentationObject Right){
     ((MainPage)getPage()).add( Left, Center, Right);
   }
 
 
 
-  public void add(ModuleObject Left,  ModuleObject Right ){
+  public void add(PresentationObject Left,  PresentationObject Right ){
     ((MainPage)getPage()).add( Left,  Right );
   }
 

@@ -1,8 +1,8 @@
 package com.idega.projects.timereg.moduleobject;
 
 import java.io.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.*;
+import com.idega.presentation.text.Link;
 public class TimeRegPage extends Page{
 
 Table myTable;
@@ -86,12 +86,12 @@ private Link link5;
 		super.add(myTable);
 	}
 
-	public void add(ModuleObject mo){
+	public void add(PresentationObject mo){
 		myTable.add(mo,1,2);
 	}
 
-	public void print(ModuleInfo modinfo)throws Exception{
-		super.print(modinfo);
+	public void print(IWContext iwc)throws Exception{
+		super.print(iwc);
 	}
 
 	public void setLocation(String loc) {

@@ -4,9 +4,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.quote.data.*;
 import com.idega.block.quote.business.QuoteBusiness;
 import com.idega.data.*;
@@ -16,7 +16,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.accesscontrol.business.AccessControl;
 
-public class Quote extends JModuleObject{
+public class Quote extends Block{
 
 private int _quoteID;
 private boolean _isAdmin = false;
@@ -56,12 +56,12 @@ public Quote(int quoteID){
   _quoteID = quoteID;
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
-    _iwrb = getResourceBundle(modinfo);
-    _iwb = getBundle(modinfo);
+	public void main(IWContext iwc) throws Exception {
+    _iwrb = getResourceBundle(iwc);
+    _iwb = getBundle(iwc);
 
-    _isAdmin = AccessControl.hasEditPermission(this,modinfo);
-    _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
+    _isAdmin = AccessControl.hasEditPermission(this,iwc);
+    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
 		drawTable();
 	}

@@ -8,7 +8,7 @@ import com.idega.data.EntityFinder;
 import com.idega.core.user.data.User;
 import com.idega.data.GenericEntity;
 import com.idega.block.login.business.LoginBusiness;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import java.util.List;
 import java.util.Iterator;
@@ -170,18 +170,18 @@ public class StockroomBusiness /* implements SupplyManager */ {
     throw new RuntimeException("Does not belong to any supplier");
   }
 
-  public static int getUserSupplierId(ModuleInfo modinfo) throws RuntimeException, SQLException {
+  public static int getUserSupplierId(IWContext iwc) throws RuntimeException, SQLException {
     String supplierLoginAttributeString = "sr_supplier_id";
 
-    Object obj = LoginBusiness.getLoginAttribute(supplierLoginAttributeString,modinfo);
+    Object obj = LoginBusiness.getLoginAttribute(supplierLoginAttributeString,iwc);
 
     if(obj != null){
       return ((Integer)obj).intValue();
     }else{
-      User us = LoginBusiness.getUser(modinfo);
+      User us = LoginBusiness.getUser(iwc);
       if(us != null){
         int suppId = getUserSupplierId(us);
-        LoginBusiness.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), modinfo);
+        LoginBusiness.setLoginAttribute(supplierLoginAttributeString,new Integer(suppId), iwc);
         return suppId;
       } else{
         throw new NotLoggedOnException();
@@ -189,18 +189,18 @@ public class StockroomBusiness /* implements SupplyManager */ {
     }
   }
 
-  public static int getUserResellerId(ModuleInfo modinfo) throws RuntimeException, SQLException {
+  public static int getUserResellerId(IWContext iwc) throws RuntimeException, SQLException {
     String resellerLoginAttributeString = "sr_reseller_id";
 
-    Object obj = LoginBusiness.getLoginAttribute(resellerLoginAttributeString,modinfo);
+    Object obj = LoginBusiness.getLoginAttribute(resellerLoginAttributeString,iwc);
 
     if(obj != null){
       return ((Integer)obj).intValue();
     }else{
-      User us = LoginBusiness.getUser(modinfo);
+      User us = LoginBusiness.getUser(iwc);
       if(us != null){
         int resellerId = getUserResellerId(us);
-        LoginBusiness.setLoginAttribute(resellerLoginAttributeString,new Integer(resellerId), modinfo);
+        LoginBusiness.setLoginAttribute(resellerLoginAttributeString,new Integer(resellerId), iwc);
         return resellerId;
       } else{
         throw new NotLoggedOnException();

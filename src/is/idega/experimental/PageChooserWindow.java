@@ -1,9 +1,9 @@
 package is.idega.experimental;
 
-import com.idega.jmodule.object.interfaceobject.AbstractChooserWindow;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.TreeViewer;
-import com.idega.jmodule.object.textObject.Link;
+import com.idega.presentation.ui.AbstractChooserWindow;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.TreeViewer;
+import com.idega.presentation.text.Link;
 
 
 /**
@@ -24,14 +24,14 @@ public class PageChooserWindow extends AbstractChooserWindow {
     add("Select page");
   }
 
-  public void displaySelection(ModuleInfo modinfo){
+  public void displaySelection(IWContext iwc){
     try{
-      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.projects.golf.entity.Union(3),modinfo);
+      TreeViewer viewer = TreeViewer.getTreeViewerInstance(new com.idega.projects.golf.entity.Union(3),iwc);
       add(viewer);
-      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,modinfo);
-      viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,modinfo);
-      viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,modinfo);
-      viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,modinfo);
+      viewer.setToMaintainParameter(SCRIPT_PREFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(SCRIPT_SUFFIX_PARAMETER,iwc);
+      viewer.setToMaintainParameter(DISPLAYSTRING_PARAMETER_NAME,iwc);
+      viewer.setToMaintainParameter(VALUE_PARAMETER_NAME,iwc);
 
       Link prototype = new Link();
       viewer.setToUseOnClick();

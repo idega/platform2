@@ -1,7 +1,7 @@
 package com.idega.projects.golf.service.member;
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import com.idega.util.text.*;
 import java.util.*;
@@ -9,9 +9,9 @@ import java.sql.Date;
 import java.sql.*;
 import java.io.*;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.*;
 import com.idega.util.*;
 import com.idega.data.*;
@@ -112,11 +112,11 @@ public class PhoneInsert extends EntityInsert {
     setStyle(typeDrop);
   }
 
-  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
-    return isEmpty(modinfo,phoneNumberName);
+  public boolean areNeededFieldsEmpty(IWContext iwc) {
+    return isEmpty(iwc,phoneNumberName);
   }
 
-  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
+  public Vector getNeededEmptyFields(IWContext iwc) {
     Vector vec = new Vector();
     if (isInvalid(phoneNumberValue)) {
         vec.addElement(phoneType);
@@ -136,12 +136,12 @@ public class PhoneInsert extends EntityInsert {
       return this.typeDrop;
   }
 
-  public boolean areAllFieldsEmpty(ModuleInfo modinfo) {
-      return (isEmpty(modinfo,phoneNumberName) && isEmpty(modinfo,countryName) && isEmpty(modinfo,typeName));
+  public boolean areAllFieldsEmpty(IWContext iwc) {
+      return (isEmpty(iwc,phoneNumberName) && isEmpty(iwc,countryName) && isEmpty(iwc,typeName));
   }
 
-  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
-      return areAllFieldsEmpty(modinfo);
+  public boolean areSomeFieldsEmpty(IWContext iwc) {
+      return areAllFieldsEmpty(iwc);
   }
 
   public void setPhoneType(String phoneType) {
@@ -169,8 +169,8 @@ public class PhoneInsert extends EntityInsert {
 
     return hTable;
   }
-  public void store(ModuleInfo modinfo)throws SQLException, IOException {
-    setVariables(modinfo);
+  public void store(IWContext iwc)throws SQLException, IOException {
+    setVariables(iwc);
     if(phoneNumberValue == null) {
       return;
     }
@@ -182,8 +182,8 @@ public class PhoneInsert extends EntityInsert {
     }
   }
 
-  public void store(ModuleInfo modinfo,Member member)throws SQLException, IOException {
-    setVariables(modinfo);
+  public void store(IWContext iwc,Member member)throws SQLException, IOException {
+    setVariables(iwc);
     if(phoneNumberValue == null) {
         System.err.println("   Empty   ()");
         return;
@@ -202,9 +202,9 @@ public class PhoneInsert extends EntityInsert {
         ePhone.addTo(member);
     }
   }
-  public void setVariables(ModuleInfo modinfo) {
-    phoneNumberValue = getValue(modinfo,phoneNumberName);
-    typeValue = getValue(modinfo,typeName);
+  public void setVariables(IWContext iwc) {
+    phoneNumberValue = getValue(iwc,phoneNumberName);
+    typeValue = getValue(iwc,typeName);
 
     if(! isInvalid(typeValue))
         ePhone.setPhoneTypeId(Integer.parseInt(typeValue));

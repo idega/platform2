@@ -1,7 +1,7 @@
 package com.idega.projects.golf.service.member;
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import com.idega.util.text.*;
 import java.util.*;
@@ -9,9 +9,9 @@ import java.sql.Date;
 import java.sql.*;
 import java.io.*;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.*;
 import com.idega.util.*;
 import com.idega.data.*;
@@ -133,10 +133,10 @@ import com.idega.data.*;
     return drp;
   }
 
-  public void setVariables(ModuleInfo modinfo) {
-      addressValue = getValue(modinfo,addressName);
-      zipValue = getValue(modinfo,zipName);
-      countryValue = getValue(modinfo,countryName);
+  public void setVariables(IWContext iwc) {
+      addressValue = getValue(iwc,addressName);
+      zipValue = getValue(iwc,zipName);
+      countryValue = getValue(iwc,countryName);
 
       addressInput.keepStatusOnAction();
       zipDrop.keepStatusOnAction();
@@ -162,11 +162,11 @@ import com.idega.data.*;
   public DropdownMenu getDropZipcode() {
       return zipDrop;
   }
-  public boolean areSomeFieldsEmpty(ModuleInfo modinfo) {
-      return (isEmpty(modinfo,addressName) || isEmpty(modinfo,zipName) || isEmpty(modinfo,countryName));
+  public boolean areSomeFieldsEmpty(IWContext iwc) {
+      return (isEmpty(iwc,addressName) || isEmpty(iwc,zipName) || isEmpty(iwc,countryName));
   }
-  public boolean areNeededFieldsEmpty(ModuleInfo modinfo) {
-      return isEmpty(modinfo,addressName);
+  public boolean areNeededFieldsEmpty(IWContext iwc) {
+      return isEmpty(iwc,addressName);
   }
   public Vector getEmptyFields() {
       Vector vec = new Vector();
@@ -183,8 +183,8 @@ import com.idega.data.*;
       return vec;
   }
 
-  public Vector getNeededEmptyFields(ModuleInfo modinfo) {
-      setVariables(modinfo);
+  public Vector getNeededEmptyFields(IWContext iwc) {
+      setVariables(iwc);
       Vector vec = new Vector();
 
       if (isInvalid(addressValue)) {
@@ -198,8 +198,8 @@ import com.idega.data.*;
       return this.eAddress;
   }
 
-  public void store(ModuleInfo modinfo)throws SQLException, IOException {
-    setVariables(modinfo);
+  public void store(IWContext iwc)throws SQLException, IOException {
+    setVariables(iwc);
     if(addressValue == null) {
         return;
     }
@@ -209,8 +209,8 @@ import com.idega.data.*;
         this.eAddress.insert();
   }
   /** If to link the address to a member*/
-  public void store(ModuleInfo modinfo,Member member)throws SQLException, IOException {
-    setVariables(modinfo);
+  public void store(IWContext iwc,Member member)throws SQLException, IOException {
+    setVariables(iwc);
     if(addressValue == null) {
         return;
     }

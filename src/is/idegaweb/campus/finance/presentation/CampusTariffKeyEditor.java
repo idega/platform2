@@ -5,13 +5,13 @@ import is.idegaweb.campus.tariffs.*;
 import com.idega.block.finance.presentation.*;
 import com.idega.block.finance.data.*;
 import com.idega.block.finance.business.Finder;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.ui.*;
 import is.idegaweb.campus.presentation.Edit;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.Table;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.text.*;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
@@ -28,7 +28,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class CampusTariffKeyEditor extends ModuleObjectContainer {
+public class CampusTariffKeyEditor extends PresentationObjectContainer {
 
 
   public String strAction = "tke_action";
@@ -42,23 +42,23 @@ public class CampusTariffKeyEditor extends ModuleObjectContainer {
 
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     if(isAdmin){
       try{
-        ModuleObject MO = new Text();
+        PresentationObject MO = new Text();
 
-        if(modinfo.getParameter(strAction) == null){
-          MO = getMain(modinfo);
+        if(iwc.getParameter(strAction) == null){
+          MO = getMain(iwc);
         }
-        if(modinfo.getParameter(strAction) != null){
-          String sAct = modinfo.getParameter(strAction);
+        if(iwc.getParameter(strAction) != null){
+          String sAct = iwc.getParameter(strAction);
           int iAct = Integer.parseInt(sAct);
 
           switch (iAct) {
-            case ACT1 : MO = getMain(modinfo);        break;
-            case ACT2 : MO = getChange(modinfo);      break;
-            case ACT3 : MO = doUpdate(modinfo);      break;
-            default: MO = getMain(modinfo);           break;
+            case ACT1 : MO = getMain(iwc);        break;
+            case ACT2 : MO = getChange(iwc);      break;
+            case ACT3 : MO = doUpdate(iwc);      break;
+            default: MO = getMain(iwc);           break;
           }
         }
         Table T = new Table(1,3);
@@ -76,7 +76,7 @@ public class CampusTariffKeyEditor extends ModuleObjectContainer {
       add(iwrb.getLocalizedString("access_denied","Access denies"));
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -97,7 +97,7 @@ public class CampusTariffKeyEditor extends ModuleObjectContainer {
     return LinkTable;
   }
 
-  protected ModuleObject getMain(ModuleInfo modinfo){
+  protected PresentationObject getMain(IWContext iwc){
 
     TariffKey[] keys = Finder.findTariffKeys();
     int count = keys.length;
@@ -124,7 +124,7 @@ public class CampusTariffKeyEditor extends ModuleObjectContainer {
     return (keyTable);
   }
 
-  protected ModuleObject getChange(ModuleInfo modinfo) throws SQLException{
+  protected PresentationObject getChange(IWContext iwc) throws SQLException{
     Form myForm = new Form();
     myForm.maintainAllParameters();
     TariffKey[] keys = Finder.findTariffKeys();
@@ -185,18 +185,18 @@ public class CampusTariffKeyEditor extends ModuleObjectContainer {
     return (myForm);
   }
 
-  protected ModuleObject doUpdate(ModuleInfo modinfo) throws SQLException{
-    int count = Integer.parseInt(modinfo.getParameter("tke_count"));
+  protected PresentationObject doUpdate(IWContext iwc) throws SQLException{
+    int count = Integer.parseInt(iwc.getParameter("tke_count"));
     String sName,sInfo,sDel;
     int ID;
     TariffKey[] keys = new TariffKey[count];
     TariffKey key = null;
 
     for (int i = 1; i < count+1 ;i++){
-      sName = modinfo.getParameter("tke_nameinput"+i );
-      sInfo = modinfo.getParameter("tke_infoinput"+i);
-      sDel = modinfo.getParameter("tke_delcheck"+i);
-      ID = Integer.parseInt(modinfo.getParameter("tke_idinput"+i));
+      sName = iwc.getParameter("tke_nameinput"+i );
+      sInfo = iwc.getParameter("tke_infoinput"+i);
+      sDel = iwc.getParameter("tke_delcheck"+i);
+      ID = Integer.parseInt(iwc.getParameter("tke_idinput"+i));
       if(ID != -1){
         try{
           key = new TariffKey(ID);
@@ -226,21 +226,21 @@ public class CampusTariffKeyEditor extends ModuleObjectContainer {
       }
     }// for loop
 
-    return getMain(modinfo);
+    return getMain(iwc);
   }
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 }// class TariffKeyEditor

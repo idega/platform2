@@ -5,9 +5,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.block.text.data.*;
@@ -69,11 +69,11 @@ public class TextEditorWindow extends IWAdminWindow{
     setUnMerged();
   }
 
-  private void control(ModuleInfo modinfo)throws Exception{
+  private void control(IWContext iwc)throws Exception{
     boolean doView = true;
-    Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
-    String sLocaleId = modinfo.getParameter(prmLocale);
+    String sLocaleId = iwc.getParameter(prmLocale);
     String sAtt = null;
 
     // LocaleHandling
@@ -93,33 +93,33 @@ public class TextEditorWindow extends IWAdminWindow{
 
     // Text initialization
     String sTextId = null,sAttribute = null;
-    String sLocTextId = modinfo.getParameter(prmLocalizedTextId);
-    sAttribute = modinfo.getParameter(prmAttribute);
+    String sLocTextId = iwc.getParameter(prmLocalizedTextId);
+    sAttribute = iwc.getParameter(prmAttribute);
 
     // Text Id Request :
-    if(modinfo.getParameter(prmTxTextId) != null){
-      sTextId = modinfo.getParameter(prmTxTextId);
+    if(iwc.getParameter(prmTxTextId) != null){
+      sTextId = iwc.getParameter(prmTxTextId);
     }
     // Attribute Request :
-    else if(modinfo.getParameter(prmAttribute)!=null){
+    else if(iwc.getParameter(prmAttribute)!=null){
 
     }
     // Delete Request :
-    else if(modinfo.getParameter(prmDelete)!=null){
-      sTextId = modinfo.getParameter(prmDelete);
+    else if(iwc.getParameter(prmDelete)!=null){
+      sTextId = iwc.getParameter(prmDelete);
       //add(""+iObjInsId);
       confirmDelete(sTextId,iObjInsId);
       doView = false;
     }
     // Object Instance Request :
-    else if(modinfo.getParameter(prmObjInstId)!= null){
-      iObjInsId = Integer.parseInt(modinfo.getParameter(prmObjInstId ) );
+    else if(iwc.getParameter(prmObjInstId)!= null){
+      iObjInsId = Integer.parseInt(iwc.getParameter(prmObjInstId ) );
     }
 
     // end of Text initialization
 
     // Form processing
-    processForm(modinfo,sTextId,sLocTextId, sAttribute);
+    processForm(iwc,sTextId,sLocTextId, sAttribute);
 
     if(doView)
       doViewText(sTextId,sAttribute,chosenLocale,iLocaleId);
@@ -130,17 +130,17 @@ public class TextEditorWindow extends IWAdminWindow{
   }
 
   // Form Processing :
-  private void processForm(ModuleInfo modinfo,String sTextId,String sLocTextId,String sAttribute){
+  private void processForm(IWContext iwc,String sTextId,String sLocTextId,String sAttribute){
 
     // Save :
-    if(modinfo.getParameter(actSave)!=null || modinfo.getParameter(actSave+".x")!=null ){
-      saveText(modinfo,sTextId,sLocTextId,sAttribute);
+    if(iwc.getParameter(actSave)!=null || iwc.getParameter(actSave+".x")!=null ){
+      saveText(iwc,sTextId,sLocTextId,sAttribute);
     }
     // Delete :
-    else if(modinfo.getParameter( actDelete )!=null || modinfo.getParameter(actDelete+".x")!=null){
+    else if(iwc.getParameter( actDelete )!=null || iwc.getParameter(actDelete+".x")!=null){
       try {
-        if(modinfo.getParameter(modeDelete)!=null){
-          int I = Integer.parseInt(modinfo.getParameter(modeDelete));
+        if(iwc.getParameter(modeDelete)!=null){
+          int I = Integer.parseInt(iwc.getParameter(modeDelete));
           deleteText(I);
         }
       }
@@ -150,7 +150,7 @@ public class TextEditorWindow extends IWAdminWindow{
     }
     // New:
      /** @todo make possible */
-    else if(modinfo.getParameter( actNew ) != null || modinfo.getParameter(actNew+".x")!= null){
+    else if(iwc.getParameter( actNew ) != null || iwc.getParameter(actNew+".x")!= null){
       sTextId = null;sAttribute = null;
     }
     // end of Form Actions
@@ -252,12 +252,12 @@ public class TextEditorWindow extends IWAdminWindow{
     }
   }
 
-  private void saveText(ModuleInfo modinfo,String sTxTextId,String sLocalizedTextId,String sAttribute){
-    String sHeadline = modinfo.getParameter( prmHeadline );
-    String sBody = modinfo.getParameter(prmBody );
-    String sImageId = modinfo.getParameter(prmImageId);
-    String sLocaleId = modinfo.getParameter(prmLocale);
-    String sUseImage = modinfo.getParameter(prmUseImage);
+  private void saveText(IWContext iwc,String sTxTextId,String sLocalizedTextId,String sAttribute){
+    String sHeadline = iwc.getParameter( prmHeadline );
+    String sBody = iwc.getParameter(prmBody );
+    String sImageId = iwc.getParameter(prmImageId);
+    String sLocaleId = iwc.getParameter(prmLocale);
+    String sUseImage = iwc.getParameter(prmUseImage);
     if(sHeadline != null || sBody != null){
       int iTxTextId = sTxTextId!=null?Integer.parseInt(sTxTextId): -1;
       int iLocalizedTextId = sLocalizedTextId != null ? Integer.parseInt(sLocalizedTextId): -1;
@@ -278,16 +278,16 @@ public class TextEditorWindow extends IWAdminWindow{
     close();
   }
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    super.main(modinfo);
-    isAdmin = AccessControl.hasEditPermission(new TextReader(),modinfo);
-    User u= com.idega.block.login.business.LoginBusiness.getUser(modinfo);
+  public void main(IWContext iwc) throws Exception {
+    super.main(iwc);
+    isAdmin = AccessControl.hasEditPermission(new TextReader(),iwc);
+    User u= com.idega.block.login.business.LoginBusiness.getUser(iwc);
     iUserId = u != null?u.getID():-1;
     isAdmin = true;
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
     addTitle(iwrb.getLocalizedString("text_editor","Text Editor"));
-    control(modinfo);
+    control(iwc);
   }
 
   public String getBundleIdentifier(){

@@ -1,10 +1,10 @@
 package com.idega.block.staff.presentation;
 
-import com.idega.jmodule.object.Table;
+import com.idega.presentation.Table;
 import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.jmodule.image.presentation.ImageEditorWindow;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.textObject.Text;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
 import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.data.StaffInfo;
 import com.idega.util.idegaTimestamp;
@@ -87,10 +87,10 @@ public class StaffImageTab extends UserTab{
   }
 
 
-  public boolean collect(ModuleInfo modinfo){
-    if(modinfo != null){
+  public boolean collect(IWContext iwc){
+    if(iwc != null){
 
-      String image = modinfo.getParameter(this.imageFieldName);
+      String image = iwc.getParameter(this.imageFieldName);
 
       if(image != null){
         fieldValues.put(this.imageFieldName,image);
@@ -101,7 +101,7 @@ public class StaffImageTab extends UserTab{
     return false;
   }
 
-  public boolean store(ModuleInfo modinfo){
+  public boolean store(IWContext iwc){
     try{
       if(getUserId() > -1){
         StaffBusiness business = new StaffBusiness();

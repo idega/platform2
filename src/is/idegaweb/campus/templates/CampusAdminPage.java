@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAdminPage.java,v 1.1 2001/08/29 21:18:24 aron Exp $
+ * $Id: CampusAdminPage.java,v 1.2 2001/10/05 08:05:45 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,8 +11,8 @@ package is.idegaweb.campus.templates;
 
 
 import is.idegaweb.campus.service.*;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.textObject.Text;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Text;
 
 /**
  *

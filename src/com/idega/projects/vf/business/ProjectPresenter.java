@@ -12,14 +12,14 @@ package com.idega.projects.vf.business;
 import java.sql.*;
 import java.io.*;
 import com.idega.data.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.vf.entity.*;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.jmodule.boxoffice.presentation.BoxReader;
 
-public class ProjectPresenter extends JModuleObject {
+public class ProjectPresenter extends Block {
 
 private int projectID = -1;
 private int projectStatusID = -1;
@@ -39,19 +39,19 @@ private Table table;
     this.projectStatusID=projectStatusID;
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
     try {
-      isAdmin=isAdministrator(modinfo);
+      isAdmin=isAdministrator(iwc);
 
       if ( projectStatusID == -1 ) {
-        String projectStatusID_ = modinfo.getParameter("project_status_id");
+        String projectStatusID_ = iwc.getParameter("project_status_id");
         if ( projectStatusID_ != null ) {
           projectStatusID = Integer.parseInt(projectStatusID_);
         }
       }
 
       if ( projectID == -1 ) {
-        String projectID_ = modinfo.getParameter("project_id");
+        String projectID_ = iwc.getParameter("project_id");
         if ( projectID_ != null ) {
           projectID = Integer.parseInt(projectID_);
         }

@@ -9,9 +9,9 @@ import java.util.*;
 
 import com.idega.util.*;
 import com.idega.util.database.*;
-import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import	com.idega.presentation.*;
+import	com.idega.presentation.ui.*;
 
 
 
@@ -19,7 +19,7 @@ import	com.idega.jmodule.object.interfaceobject.*;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class PoolMonitor extends JModuleObject{
+public class PoolMonitor extends Block{
 
     PoolManager poolmanager;
 

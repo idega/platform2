@@ -1,8 +1,8 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.moduleobject.GolfDialog;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import java.sql.SQLException;
 
 /**
@@ -17,7 +17,7 @@ import java.sql.SQLException;
     }
 
 
-    public void main(ModuleInfo modinfo)throws SQLException{
+    public void main(IWContext iwc)throws SQLException{
         add("TournamentGroupDeleter");
     }
 

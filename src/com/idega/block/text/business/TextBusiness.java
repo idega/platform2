@@ -1,7 +1,7 @@
 package com.idega.block.text.business;
 
 import java.sql.*;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.block.text.data.*;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.util.idegaTimestamp;
@@ -81,9 +81,9 @@ public class TextBusiness{
   }
 
 
-  public static TextModule getTextModule(ModuleInfo modinfo) {
+  public static TextModule getTextModule(IWContext iwc) {
     int textID = -1;
-    String text_id = modinfo.getParameter("text_id");
+    String text_id = iwc.getParameter("text_id");
 
     if ( text_id != null ) {
       try {
@@ -108,10 +108,10 @@ public class TextBusiness{
     }
   }
 
-  public static void deleteText(ModuleInfo modinfo) {
+  public static void deleteText(IWContext iwc) {
 
     try {
-      TextModule text = getTextModule(modinfo);
+      TextModule text = getTextModule(iwc);
       text.delete();
     }
     catch (SQLException e) {
@@ -120,10 +120,10 @@ public class TextBusiness{
     }
   }
 
-  public static void saveText(ModuleInfo modinfo,boolean update) {
-		modinfo.getSession().removeAttribute("image_id");
+  public static void saveText(IWContext iwc,boolean update) {
+		iwc.getSession().removeAttribute("image_id");
     int textID = -1;
-    String text_id = modinfo.getParameter("text_id");
+    String text_id = iwc.getParameter("text_id");
 
     if ( text_id != null ) {
       try {
@@ -135,17 +135,17 @@ public class TextBusiness{
     }
 
     if ( textID != -1 ) {
-      String text_headline = modinfo.getParameter("text_headline");
+      String text_headline = iwc.getParameter("text_headline");
         if ( text_headline == null ) { text_headline = ""; }
 
-      String text_body = modinfo.getParameter("text_body");
+      String text_body = iwc.getParameter("text_body");
         if ( text_body == null ) { text_body = ""; }
 
-      String include_image = modinfo.getParameter("insertImage");
+      String include_image = iwc.getParameter("insertImage");
         if ( include_image == null ) { include_image = "N"; }
 
       int imageID = -1;
-      String image_id = modinfo.getParameter("image_id");
+      String image_id = iwc.getParameter("image_id");
       if ( image_id != null ) {
         try {
           imageID = Integer.parseInt(image_id);

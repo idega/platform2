@@ -5,10 +5,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 import com.idega.jmodule.calendar.presentation.*;
 import com.idega.jmodule.poll.moduleobject.*;
@@ -286,14 +286,14 @@ public Table leftBottomTable;
 
     }
 
-      public void addLeft2(ModuleObject objectToAdd){
+      public void addLeft2(PresentationObject objectToAdd){
         leftTable2.add(objectToAdd,1,1);
       }
 
-      public void addLeft3(ModuleObject objectToAdd){
+      public void addLeft3(PresentationObject objectToAdd){
         leftBottomTable.add(objectToAdd,1,1);
       }
-      public void addRight(ModuleObject objectToAdd){
+      public void addRight(PresentationObject objectToAdd){
         bottomTable.add(objectToAdd,1,1);
       }
 

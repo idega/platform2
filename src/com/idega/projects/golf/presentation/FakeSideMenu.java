@@ -1,13 +1,13 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Block;
+import com.idega.presentation.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 import java.lang.String;
 import java.sql.SQLException;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.projects.golf.entity.GolferPageData;
@@ -21,7 +21,7 @@ import com.idega.projects.golf.entity.GolferPageData;
  * @version 1.0
  */
 
-public class FakeSideMenu extends GolferJModuleObject implements LinkParameters{
+public class FakeSideMenu extends GolferBlock implements LinkParameters{
 
   public FakeSideMenu() {
   }
@@ -59,10 +59,10 @@ public class FakeSideMenu extends GolferJModuleObject implements LinkParameters{
     add(dummyTable);
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-    super.main(modinfo);
-    if (modinfo.isParameterSet(LinkParameters.sTopMenuParameterName)) {
-      String parameterValue = modinfo.getParameter(LinkParameters.sTopMenuParameterName);
+  public void main(IWContext iwc) throws SQLException{
+    super.main(iwc);
+    if (iwc.isParameterSet(LinkParameters.sTopMenuParameterName)) {
+      String parameterValue = iwc.getParameter(LinkParameters.sTopMenuParameterName);
       if ((parameterValue.equalsIgnoreCase(LinkParameters.sRecordParameterValue)) ||
         (parameterValue.equalsIgnoreCase(LinkParameters.homeResultsParameterValue)) ||
         (parameterValue.equalsIgnoreCase(LinkParameters.abroadResultsParameterValue))){

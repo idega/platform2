@@ -1,6 +1,6 @@
 package com.idega.block;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
 /**
  * Title:
@@ -27,15 +27,15 @@ public class BlockProperties {
   private boolean languageChecked;
   private boolean languageSame;
 
-  public boolean isLanguageSame(ModuleInfo modinfo){
+  public boolean isLanguageSame(IWContext iwc){
     if (!languageChecked)
-      checkLanguage(modinfo);
+      checkLanguage(iwc);
 
     return languageSame;
   }
 
-  private void checkLanguage(ModuleInfo modinfo){
-    String currentLanguage = modinfo.getSpokenLanguage();
+  private void checkLanguage(IWContext iwc){
+    String currentLanguage = iwc.getSpokenLanguage();
     if (currentLanguage.equalsIgnoreCase(language))
       languageSame = true;
     else{
@@ -61,11 +61,11 @@ public class BlockProperties {
   /**
    * Returns array of strings needed for the presentation of the module.
    *
-   * <p>Chooses the right language by asking the getSpokenLanguage() method in ModuleInfo
+   * <p>Chooses the right language by asking the getSpokenLanguage() method in IWContext
    */
-  public String[] getStringCollection(ModuleInfo modinfo){
-    String language = modinfo.getSpokenLanguage();
-    if (language.equals("IS") && IS != null)  // modinfo.isIcelandic()
+  public String[] getStringCollection(IWContext iwc){
+    String language = iwc.getSpokenLanguage();
+    if (language.equals("IS") && IS != null)  // iwc.isIcelandic()
       return IS;
     if(language.equals("EN") && EN  != null)
       return EN;
@@ -106,14 +106,14 @@ public class BlockProperties {
    *
    * <p>  String HeaderImageUrl = "?.gif";
    *
-   * <p>  public String getHeaderImageUrl(ModuleInfo modinfo){
-   * <br>   return getImageUrl(modinfo, HeaderImageName);
+   * <p>  public String getHeaderImageUrl(IWContext iwc){
+   * <br>   return getImageUrl(iwc, HeaderImageName);
    * <br> }
    */
 
-  public String getImageUrl(ModuleInfo modinfo, String imageName){
+  public String getImageUrl(IWContext iwc, String imageName){
     StringBuffer toReturn =  new StringBuffer(ImagePrefix);
-    toReturn.append(modinfo.getSpokenLanguage());
+    toReturn.append(iwc.getSpokenLanguage());
     toReturn.append(slash);
 //    if (BlockName != null){
       toReturn.append(BlockName.toLowerCase());
@@ -125,8 +125,8 @@ public class BlockProperties {
   }
 
 
-  public Image getImage(ModuleInfo modinfo, String imageName, String ImagePublicName){
-    return new Image(getImageUrl(modinfo, imageName), ImagePublicName);
+  public Image getImage(IWContext iwc, String imageName, String ImagePublicName){
+    return new Image(getImageUrl(iwc, imageName), ImagePublicName);
   }
 
 

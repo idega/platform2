@@ -1,5 +1,5 @@
 /*
- * $Id: CampusBuildingMenu.java,v 1.3 2001/09/26 23:42:03 aron Exp $
+ * $Id: CampusBuildingMenu.java,v 1.4 2001/10/05 08:05:31 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,15 +9,15 @@
  */
 package is.idegaweb.campus.building;
 
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.FrameList;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.Window;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.Table;
+import com.idega.presentation.FrameList;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.Window;
 import com.idega.block.building.presentation.BuildingEditor;
 import is.idegaweb.campus.phone.presentation.CampusPhones;
-import com.idega.jmodule.object.Page;
+import com.idega.presentation.Page;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
@@ -39,9 +39,9 @@ public class CampusBuildingMenu extends FrameList{
   public CampusBuildingMenu() {
   }
 
-  public void main(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
     setLinkStyle("font-family: Verdana, Arial, sans-serif; font-weight: bold; font-size: 7pt; text-decoration: none;");
     makeLinkTable();

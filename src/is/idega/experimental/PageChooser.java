@@ -1,6 +1,6 @@
 package is.idega.experimental;
 
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 
 
 /**

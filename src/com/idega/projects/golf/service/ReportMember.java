@@ -1,6 +1,6 @@
  package com.idega.projects.golf.service;
 
- import com.idega.jmodule.object.Image;
+ import com.idega.presentation.Image;
  import java.util.*;
  import com.idega.projects.golf.entity.*;
 

@@ -1,11 +1,11 @@
 package com.idega.block.staff.presentation;
 
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.TextInput;
-import com.idega.jmodule.object.interfaceobject.TextArea;
-import com.idega.jmodule.object.interfaceobject.DateInput;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.textObject.Text;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.TextInput;
+import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Text;
 import com.idega.block.staff.business.StaffBusiness;
 import com.idega.block.staff.data.StaffInfo;
 import com.idega.util.idegaTimestamp;
@@ -171,14 +171,14 @@ public class StaffInfoTab extends UserTab{
   }
 
 
-  public boolean collect(ModuleInfo modinfo){
-    if(modinfo != null){
+  public boolean collect(IWContext iwc){
+    if(iwc != null){
 
-      String title = modinfo.getParameter(this.titleFieldName);
-      String education = modinfo.getParameter(this.educationFieldName);
-      String school = modinfo.getParameter(this.schoolFieldName);
-      String area = modinfo.getParameter(this.areaFieldName);
-      String beganWork = modinfo.getParameter(this.beganWorkFieldName);
+      String title = iwc.getParameter(this.titleFieldName);
+      String education = iwc.getParameter(this.educationFieldName);
+      String school = iwc.getParameter(this.schoolFieldName);
+      String area = iwc.getParameter(this.areaFieldName);
+      String beganWork = iwc.getParameter(this.beganWorkFieldName);
 
       if(title != null){
         fieldValues.put(this.titleFieldName,title);
@@ -203,7 +203,7 @@ public class StaffInfoTab extends UserTab{
     return false;
   }
 
-  public boolean store(ModuleInfo modinfo){
+  public boolean store(IWContext iwc){
     try{
       if(getUserId() > -1){
         idegaTimestamp beganWorkTS = null;

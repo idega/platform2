@@ -1,5 +1,5 @@
 /*
- * $Id: AdminPage.java,v 1.1 2001/08/29 21:18:24 aron Exp $
+ * $Id: AdminPage.java,v 1.2 2001/10/05 08:05:45 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -10,10 +10,10 @@
 package is.idegaweb.campus.templates;
 
 import java.io.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 import com.idega.idegaweb.IWBundle;
 
@@ -266,9 +266,9 @@ public class AdminPage extends Page{
     RightTitle = new Image("/pics/template/logintitle.gif");
     this.addRightTitle(RightTitle);
   }
-  public boolean isAdmin(ModuleInfo modinfo) {
-    if (modinfo.getSessionAttribute("member_access") != null) {
-      if (modinfo.getSessionAttribute("member_access").equals("admin")) {
+  public boolean isAdmin(IWContext iwc) {
+    if (iwc.getSessionAttribute("member_access") != null) {
+      if (iwc.getSessionAttribute("member_access").equals("admin")) {
         return true;
       }
       else {
@@ -313,62 +313,62 @@ public class AdminPage extends Page{
   public void setCenterAlignment(String align){
     MainTable.setAlignment(2,1,align);
   }
-  /** Adds a ModuleObject to the middle section
+  /** Adds a PresentationObject to the middle section
    *
    */
 
-  public void add(ModuleObject objectToAdd){
+  public void add(PresentationObject objectToAdd){
     myTable.add(objectToAdd,1,1);
   }
-  /** Adds a ModuleObject to the center of the left side
+  /** Adds a PresentationObject to the center of the left side
    *
    */
-  public void addLeft(ModuleObject objectToAdd){
+  public void addLeft(PresentationObject objectToAdd){
     LeftTable.add(objectToAdd,1,2);
   }
 
-  /** Adds a ModuleObject to the titlebar on the left side
+  /** Adds a PresentationObject to the titlebar on the left side
    *
    */
-  public void addMenuTitle(ModuleObject objectToAdd){
+  public void addMenuTitle(PresentationObject objectToAdd){
     TitleTable.add(objectToAdd,1,1);
   }
-  /** Adds a ModuleObject to the titlebar in the middle
+  /** Adds a PresentationObject to the titlebar in the middle
    *
    */
-  public void addMainTitle(ModuleObject objectToAdd){
+  public void addMainTitle(PresentationObject objectToAdd){
     TitleTable.add(objectToAdd,2,1);
   }
-  /** Adds a ModuleObject to the titlebar on the right side
+  /** Adds a PresentationObject to the titlebar on the right side
    *
    */
-  public void addRightTitle(ModuleObject objectToAdd){
+  public void addRightTitle(PresentationObject objectToAdd){
     TitleTable.add(objectToAdd,3,1);
   }
-  /** Adds a ModuleObject to the top of left side
+  /** Adds a PresentationObject to the top of left side
    *
    */
-  public void addTopLeft(ModuleObject objectToAdd){
+  public void addTopLeft(PresentationObject objectToAdd){
     LeftTable.add(objectToAdd,1,1);
   }
 
 
-  /** Adds a ModuleObject to the upper logo area on the left
+  /** Adds a PresentationObject to the upper logo area on the left
    *
    */
-  public void addLogo(ModuleObject objectToAdd){
+  public void addLogo(PresentationObject objectToAdd){
     SubHeaderTable.add(objectToAdd,1,1);
   }
-  /** Adds a ModuleObject to the lower logo area on the left
+  /** Adds a PresentationObject to the lower logo area on the left
    *
    */
-  public void addLowerLogo(ModuleObject objectToAdd){
+  public void addLowerLogo(PresentationObject objectToAdd){
     LeftTable.add(objectToAdd,1,3);
   }
-  /** Adds a ModuleObject into tab area
+  /** Adds a PresentationObject into tab area
    *
    */
-  public void addTabs(ModuleObject objectToAdd){
+  public void addTabs(PresentationObject objectToAdd){
     TabTable.add(objectToAdd,1,2);
    SubHeaderTable.add(TabTable,3,1);
   }

@@ -8,9 +8,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import	com.idega.jmodule.object.*;
-import	com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import	com.idega.presentation.*;
+import	com.idega.presentation.ui.*;
 import	com.idega.jmodule.news.data.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
@@ -19,10 +19,10 @@ import com.idega.util.text.*;
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
 *@version 1.2
 */
-public class DataManipulator extends JModuleObject{
+public class DataManipulator extends Block{
 
-public void main(ModuleInfo modinfo)throws Exception{
-	//ModuleInfo modinfo = getModuleInfo();
+public void main(IWContext iwc)throws Exception{
+	//IWContext iwc = getIWContext();
 
 	/*Insert = new SubmitButton("i1","insert");
 	Update = new SubmitButton("u1","update");
@@ -30,40 +30,40 @@ public void main(ModuleInfo modinfo)throws Exception{
 	Update2 = new SubmitButton("u2","update");
 	Update3 = new SubmitButton("u3","Search");*/
 
-        String control=modinfo.getParameter("control");
+        String control=iwc.getParameter("control");
 
         if(control==null){
-          screen1(modinfo);
+          screen1(iwc);
         }
         else{
 
           if (control.equals("i1")){
-                  doTheInsert(modinfo);
+                  doTheInsert(iwc);
           }
 
           else if (control.equals("u1")){
-                  doTheUpdate(modinfo);
+                  doTheUpdate(iwc);
 
           }
           else if (control.equals("i2")){
-                  doTheInsert(modinfo);
+                  doTheInsert(iwc);
           }
 
           else if (control.equals("u2")){
-                  doTheUpdate(modinfo);
+                  doTheUpdate(iwc);
 
           }
           else if (control.equals("u3")){
-                  doTheUpdate2(modinfo);
+                  doTheUpdate2(iwc);
 
           }
           else{
-            screen1(modinfo);
+            screen1(iwc);
           }
         }
 }
 
-public void screen1(ModuleInfo modinfo)throws Exception{
+public void screen1(IWContext iwc)throws Exception{
 	Form myForm = new Form();
 	myForm.setMethod("get");
 	add(myForm);
@@ -149,7 +149,7 @@ public void screen1(ModuleInfo modinfo)throws Exception{
 
 /*public void actionPerformed(ModuleEvent ev)throws Exception{
 
-	ModuleInfo modinfo = getModuleInfo();
+	IWContext iwc = getIWContext();
 
 	Insert = new SubmitButton("i1","insert");
 	Update = new SubmitButton("u1","update");
@@ -159,38 +159,38 @@ public void screen1(ModuleInfo modinfo)throws Exception{
 
 
 	if (ev.getSource().equals(Insert)){
-		doTheInsert(modinfo);
+		doTheInsert(iwc);
 	}
 
 	else if (ev.getSource().equals(Update)){
-		doTheUpdate(modinfo);
+		doTheUpdate(iwc);
 
 	}
 	if (ev.getSource().equals(Insert2)){
-		doTheInsert(modinfo);
+		doTheInsert(iwc);
 	}
 
 	else if (ev.getSource().equals(Update2)){
-		doTheUpdate(modinfo);
+		doTheUpdate(iwc);
 
 	}
 	else if (ev.getSource().equals(Update3)){
-		doTheUpdate2(modinfo);
+		doTheUpdate2(iwc);
 
 	}
 
 }*/
 
-public void doTheInsert(ModuleInfo modinfo)throws Exception{
-		GenericEntity ent = (GenericEntity)Class.forName(modinfo.getParameter("class")).newInstance();
+public void doTheInsert(IWContext iwc)throws Exception{
+		GenericEntity ent = (GenericEntity)Class.forName(iwc.getParameter("class")).newInstance();
 		add(new EntityInsert(ent));
 }
 
-public void doTheUpdate(ModuleInfo modinfo)throws Exception{
+public void doTheUpdate(IWContext iwc)throws Exception{
 
 
-	GenericEntity ent = (GenericEntity)Class.forName(modinfo.getParameter("class")).newInstance();
-	modinfo.getSession().setAttribute("entity",ent);
+	GenericEntity ent = (GenericEntity)Class.forName(iwc.getParameter("class")).newInstance();
+	iwc.getSession().setAttribute("entity",ent);
 	EntityManipulator manip = new EntityManipulator(ent);
 
         SubmitButton Update3 = new SubmitButton("u3","Search");
@@ -211,19 +211,19 @@ public void doTheUpdate(ModuleInfo modinfo)throws Exception{
 }
 
 
-public void doTheUpdate2(ModuleInfo modinfo)throws Exception{
-	GenericEntity ent = (GenericEntity)modinfo.getSession().getAttribute("entity");
+public void doTheUpdate2(IWContext iwc)throws Exception{
+	GenericEntity ent = (GenericEntity)iwc.getSession().getAttribute("entity");
 	if (ent instanceof com.idega.projects.golf.entity.Member){
 		ent.setVisible("family",false);
 	}
-	String columnName = modinfo.getParameter("columnname");
+	String columnName = iwc.getParameter("columnname");
 
-	/*java.util.Enumeration enum = modinfo.getParameterNames();
+	/*java.util.Enumeration enum = iwc.getParameterNames();
 
 	String tempString = (String)enum.nextElement();
 	tempString = (String)enum.nextElement();*/
 
-	add(new EntityUpdater(ent.findAllByColumn(columnName,modinfo.getParameter(columnName)+"%")));
+	add(new EntityUpdater(ent.findAllByColumn(columnName,iwc.getParameter(columnName)+"%")));
 
 }
 

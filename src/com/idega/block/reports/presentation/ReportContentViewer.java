@@ -2,18 +2,18 @@ package com.idega.block.reports.presentation;
 
 import com.idega.block.reports.data.*;
 import com.idega.block.reports.business.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.Collections;
-import com.idega.jmodule.object.Editor;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Editor;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Script;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 import com.idega.business.IWEventListener;
 
 
@@ -52,33 +52,33 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
   public void setDisplayNumber(int number){
     this.displayNumber = number;
   }
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     Table  T = new Table();
     T.setWidth("100%");
     T.setCellpadding(0);
     T.setCellspacing(0);
     try{
 
-      if(modinfo.getParameter("start")!=null){
-        listStart = Integer.parseInt(modinfo.getParameter("start"));
+      if(iwc.getParameter("start")!=null){
+        listStart = Integer.parseInt(iwc.getParameter("start"));
       }
-      modinfo.setSessionAttribute(prmListStart,new Integer(listStart));
+      iwc.setSessionAttribute(prmListStart,new Integer(listStart));
 
-      if(modinfo.getParameter(prmReportId)!=null){
-        iReport = Integer.parseInt(modinfo.getParameter(prmReportId));
+      if(iwc.getParameter(prmReportId)!=null){
+        iReport = Integer.parseInt(iwc.getParameter(prmReportId));
         eReport = new Report(iReport);
-        ReportService.setSessionReport(modinfo,eReport);
-        T.add(doMain(modinfo));
+        ReportService.setSessionReport(iwc,eReport);
+        T.add(doMain(iwc));
       }
-      else if(modinfo.getParameter(sAction) != null){
-        sActPrm = modinfo.getParameter(sAction);
+      else if(iwc.getParameter(sAction) != null){
+        sActPrm = iwc.getParameter(sAction);
         try{
           iAction = Integer.parseInt(sActPrm);
           switch(iAction){
             case ACT1:    break;
-            case ACT2: T.add(doTable(modinfo));  break;
-            case ACT3: doChange(modinfo); break;
-            case ACT4: doUpdate(modinfo);        break;
+            case ACT2: T.add(doTable(iwc));  break;
+            case ACT3: doChange(iwc); break;
+            case ACT4: doUpdate(iwc);        break;
           }
         }
         catch(Exception e){
@@ -86,7 +86,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
         }
       }
       else
-        T.add(doMain(modinfo));
+        T.add(doMain(iwc));
     }
     catch(Exception S){
       S.printStackTrace();
@@ -94,7 +94,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     add(T);
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -116,17 +116,17 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
   }
 
 
-  private ModuleObject doMain(ModuleInfo modinfo){
+  private PresentationObject doMain(IWContext iwc){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
     T.setWidth("100%");
-    if(modinfo.getParameter(prmReportId) != null){
+    if(iwc.getParameter(prmReportId) != null){
       String sql = eReport.getSQL();
       String[] headers = eReport.getHeaders();
       Vector v = new ReportMaker().makeReport(sql);
-      modinfo.setSessionAttribute(prmContent,v);
-      modinfo.setSessionAttribute(prmHeaders,headers);
+      iwc.setSessionAttribute(prmContent,v);
+      iwc.setSessionAttribute(prmHeaders,headers);
       if(v != null){
         T.add(this.doHeader(eReport),1,1);
         T.add(this.doFooter(listStart,v.size()),1,2);
@@ -139,49 +139,49 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
       //this.addToHeader(back);
     }
     else{
-      return doTable(modinfo);
+      return doTable(iwc);
     }
     return T;
   }
-  protected void doChange(ModuleInfo modinfo) throws SQLException{
+  protected void doChange(IWContext iwc) throws SQLException{
 
   }
 
-  protected void doUpdate(ModuleInfo modinfo) throws SQLException{
+  protected void doUpdate(IWContext iwc) throws SQLException{
   }
 
-  private ModuleObject doTable(ModuleInfo modinfo){
+  private PresentationObject doTable(IWContext iwc){
     Table T = new Table();
     T.setCellpadding(0);
     T.setCellspacing(0);
     T.setWidth("100%");
-    if(modinfo.getSession().getAttribute(prmContent)!=null){
-      Vector v= (Vector) modinfo.getSession().getAttribute(prmContent);
-      eReport = ReportService.getSessionReport(modinfo);
-      listStart = ((Integer)modinfo.getSessionAttribute(prmListStart)).intValue();
+    if(iwc.getSession().getAttribute(prmContent)!=null){
+      Vector v= (Vector) iwc.getSession().getAttribute(prmContent);
+      eReport = ReportService.getSessionReport(iwc);
+      listStart = ((Integer)iwc.getSessionAttribute(prmListStart)).intValue();
       String[] headers = null;
-      if(modinfo.getSessionAttribute(prmHeaders) != null){
-        headers = (String[]) modinfo.getSessionAttribute(prmHeaders);
+      if(iwc.getSessionAttribute(prmHeaders) != null){
+        headers = (String[]) iwc.getSessionAttribute(prmHeaders);
       }
 
-      if(modinfo.getSessionAttribute(prmLastOrder)!=null)
-        this.sLastOrder = (String) modinfo.getSessionAttribute(prmLastOrder);
+      if(iwc.getSessionAttribute(prmLastOrder)!=null)
+        this.sLastOrder = (String) iwc.getSessionAttribute(prmLastOrder);
       else
         this.sLastOrder = "";
 
       String sOrder = "0";
-      if(modinfo.getParameter("order")!= null){
-        sOrder = modinfo.getParameter("order");
+      if(iwc.getParameter("order")!= null){
+        sOrder = iwc.getParameter("order");
       }
       boolean reverse = false;
       if(this.sLastOrder.equalsIgnoreCase(sOrder))
         reverse = true;
       int order = Integer.parseInt(sOrder);
 
-      if(!(modinfo.getParameter("start")!= null))
+      if(!(iwc.getParameter("start")!= null))
         OrderVector(v,order,reverse);
 
-      modinfo.setSessionAttribute(prmLastOrder,sOrder);
+      iwc.setSessionAttribute(prmLastOrder,sOrder);
 
       if(v != null){
         T.add(this.doHeader(eReport),1,1);
@@ -197,7 +197,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     return T;
   }
 
-  private ModuleObject doHeader(Report R){
+  private PresentationObject doHeader(Report R){
     Table T2 = new Table(2,1);
     T2.setWidth("100%");
     T2.setColumnAlignment(1,"left");
@@ -224,7 +224,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     T2.add(T3,2,1);
     return T2;
   }
-  private ModuleObject doFooter(int start,int total){
+  private PresentationObject doFooter(int start,int total){
     Table T = new Table(5,1);
     T.setColor(this.DarkColor);
     T.setWidth("100%");
@@ -283,7 +283,7 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     return T;
   }
 
-  private ModuleObject doView(String[] headers,Vector content,int start){
+  private PresentationObject doView(String[] headers,Vector content,int start){
     int len = content.size();
     Table T;
     if(start != -1)
@@ -390,23 +390,23 @@ public class ReportContentViewer extends ReportPresentation implements IWEventLi
     return s;
   }
 
-  protected static void removeSessionParameters(ModuleInfo modinfo){
-    if(modinfo.getSessionAttribute(prmContent)!=null){
-      modinfo.removeSessionAttribute(prmContent );
+  protected static void removeSessionParameters(IWContext iwc){
+    if(iwc.getSessionAttribute(prmContent)!=null){
+      iwc.removeSessionAttribute(prmContent );
     }
-    if(modinfo.getSessionAttribute(prmHeaders)!=null){
-      modinfo.removeSessionAttribute(prmHeaders );
+    if(iwc.getSessionAttribute(prmHeaders)!=null){
+      iwc.removeSessionAttribute(prmHeaders );
     }
-    if(modinfo.getSessionAttribute(prmLastOrder)!=null){
-      modinfo.removeSessionAttribute(prmLastOrder );
+    if(iwc.getSessionAttribute(prmLastOrder)!=null){
+      iwc.removeSessionAttribute(prmLastOrder );
     }
-    if(modinfo.getSessionAttribute(prmListStart)!=null){
-      modinfo.removeSessionAttribute(prmListStart );
+    if(iwc.getSessionAttribute(prmListStart)!=null){
+      iwc.removeSessionAttribute(prmListStart );
     }
   }
 
-  public void actionPerformed(ModuleInfo modinfo){
-    removeSessionParameters(modinfo);
+  public void actionPerformed(IWContext iwc){
+    removeSessionParameters(iwc);
   }
 
 }

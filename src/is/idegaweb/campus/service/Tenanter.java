@@ -1,5 +1,5 @@
 /*
- * $Id: Tenanter.java,v 1.1 2001/06/06 11:29:36 palli Exp $
+ * $Id: Tenanter.java,v 1.2 2001/10/05 08:05:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -11,8 +11,8 @@ package is.idegaweb.campus.service;
 
 import com.idega.data.genericentity.Group;
 import com.idega.data.genericentity.Member;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.login.business.*;
 import java.sql.SQLException;
 import java.io.IOException;
@@ -39,24 +39,24 @@ public class Tenanter extends CampusObject implements Tabs{
     DarkColor = "#27324B";
   }
 
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
 
     try{
-      eMember = AccessControl.getMember(modinfo);
+      eMember = AccessControl.getMember(iwc);
 
-      if(modinfo.getParameter(strAction) == null){
-        doAct1(modinfo);
+      if(iwc.getParameter(strAction) == null){
+        doAct1(iwc);
       }
-      if(modinfo.getParameter(strAction) != null){
-        sAct = modinfo.getParameter(strAction);
+      if(iwc.getParameter(strAction) != null){
+        sAct = iwc.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
 
         switch (iAct) {
-          case ACT1 : doAct1(modinfo);        break;
-          case ACT2 : doAct2(modinfo);        break;
-          case ACT3 : doAct3(modinfo);        break;
-          case ACT4 : doAct4(modinfo);        break;
-          default: doAct1(modinfo);           break;
+          case ACT1 : doAct1(iwc);        break;
+          case ACT2 : doAct2(iwc);        break;
+          case ACT3 : doAct3(iwc);        break;
+          case ACT4 : doAct4(iwc);        break;
+          default: doAct1(iwc);           break;
         }
 
       }
@@ -64,23 +64,23 @@ public class Tenanter extends CampusObject implements Tabs{
     catch(SQLException S){	S.printStackTrace();	}
 }
 
-    private void doAct1(ModuleInfo modinfo) throws SQLException {
+    private void doAct1(IWContext iwc) throws SQLException {
 
     }
 
-    private void doAct2(ModuleInfo modinfo) throws SQLException{
+    private void doAct2(IWContext iwc) throws SQLException{
 
     }
 
-    private void doAct3(ModuleInfo modinfo) throws SQLException{
+    private void doAct3(IWContext iwc) throws SQLException{
 
     }
 
-    private void doAct4(ModuleInfo modinfo) throws SQLException{
+    private void doAct4(IWContext iwc) throws SQLException{
 
     }
 
-    public ModuleObject getTabs(){
+    public PresentationObject getTabs(){
       return makeLinkTable();
     }
 
@@ -113,13 +113,13 @@ public class Tenanter extends CampusObject implements Tabs{
       return iObjectName;
   }
 
-  public void main(ModuleInfo modinfo)  {
+  public void main(IWContext iwc)  {
     try{
-    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
     /** @todo: fixa Admin*/
-    control(modinfo);
+    control(iwc);
   }
 }// class PriceCatalogueMaker
 

@@ -1,13 +1,13 @@
 package com.idega.projects.golf.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.textObject.Text;
+import com.idega.presentation.Block;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Text;
 import com.idega.jmodule.text.presentation.TextReader;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import com.idega.projects.golf.entity.GolferPageData;
 
@@ -20,7 +20,7 @@ import com.idega.projects.golf.entity.GolferPageData;
  * @version 1.0
  */
 
-public class GolfbagView extends GolferJModuleObject {
+public class GolfbagView extends GolferBlock {
 
   public GolfbagView() {
   }
@@ -44,8 +44,8 @@ public class GolfbagView extends GolferJModuleObject {
     add(dummyTable);
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-    super.main(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+    super.main(iwc);
     setGolfbagView();
   }
 

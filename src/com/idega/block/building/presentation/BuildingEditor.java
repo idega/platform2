@@ -1,9 +1,9 @@
 package com.idega.block.building.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.*;
 import com.idega.block.building.data.*;
 import com.idega.block.building.business.BuildingCacher;
 import com.idega.jmodule.image.presentation.SimpleChooserWindow;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 import com.oreilly.servlet.*;
 import com.idega.data.GenericEntity;
-import com.idega.jmodule.object.Editor;
+import com.idega.presentation.Editor;
 import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
@@ -26,7 +26,7 @@ import com.idega.idegaweb.IWBundle;
  * @version 1.0
  */
 
-public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContainer{
+public class BuildingEditor extends com.idega.presentation.PresentationObjectContainer{
 
   protected boolean isAdmin = false;
   protected String TextFontColor = "#000000";
@@ -55,7 +55,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  protected void control(ModuleInfo modinfo){
+  protected void control(IWContext iwc){
     outerTable = new Table(1,2);
       outerTable.setCellpadding(0);
       outerTable.setCellspacing(0);
@@ -65,34 +65,34 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
       outerTable.setColor(1,1,"#0E2456");
 
     int iAction = BUILDING;
-    if(modinfo.getParameter(sAction)!= null){
-      iAction = Integer.parseInt(modinfo.getParameter(sAction));
+    if(iwc.getParameter(sAction)!= null){
+      iAction = Integer.parseInt(iwc.getParameter(sAction));
     }
 
-    if(modinfo.getParameter("dr_id")!=null){
-       eId = Integer.parseInt(modinfo.getParameter("dr_id"));
+    if(iwc.getParameter("dr_id")!=null){
+       eId = Integer.parseInt(iwc.getParameter("dr_id"));
     }
-    else if ( (String) modinfo.getSessionAttribute("dr_id") != null ) {
-       eId = Integer.parseInt((String) modinfo.getSessionAttribute("dr_id"));
-       modinfo.removeSessionAttribute("dr_id");
+    else if ( (String) iwc.getSessionAttribute("dr_id") != null ) {
+       eId = Integer.parseInt((String) iwc.getSessionAttribute("dr_id"));
+       iwc.removeSessionAttribute("dr_id");
     }
 
-    if(modinfo.getParameter(prmSave)!=null || modinfo.getParameter(prmSave+".x")!=null){
-      if(modinfo.getParameter("bm_choice")!=null){
-        int i = Integer.parseInt(modinfo.getParameter("bm_choice"));
+    if(iwc.getParameter(prmSave)!=null || iwc.getParameter(prmSave+".x")!=null){
+      if(iwc.getParameter("bm_choice")!=null){
+        int i = Integer.parseInt(iwc.getParameter("bm_choice"));
          switch (i) {
-            case COMPLEX  : storeComplex(modinfo);   break;
-            case BUILDING : storeBuilding(modinfo);  break;
-            case FLOOR    : storeFloor(modinfo);     break;
-            case APARTMENT: storeApartment(modinfo); break;
-            case CATEGORY : storeApartmentCategory(modinfo);  break;
-            case TYPE     : storeApartmentType(modinfo);   break;
+            case COMPLEX  : storeComplex(iwc);   break;
+            case BUILDING : storeBuilding(iwc);  break;
+            case FLOOR    : storeFloor(iwc);     break;
+            case APARTMENT: storeApartment(iwc); break;
+            case CATEGORY : storeApartmentCategory(iwc);  break;
+            case TYPE     : storeApartmentType(iwc);   break;
         }
       }
     }
-    else if(modinfo.getParameter( prmDelete)!=null || modinfo.getParameter(prmDelete+".x")!=null){
-       if(modinfo.getParameter("bm_choice")!=null && eId > 0){
-        int i = Integer.parseInt(modinfo.getParameter("bm_choice"));
+    else if(iwc.getParameter( prmDelete)!=null || iwc.getParameter(prmDelete+".x")!=null){
+       if(iwc.getParameter("bm_choice")!=null && eId > 0){
+        int i = Integer.parseInt(iwc.getParameter("bm_choice"));
          switch (i) {
             case COMPLEX  : deleteComplex(eId);   break;
             case BUILDING : deleteBuilding(eId);  break;
@@ -108,41 +108,41 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     if(includeLinks)
     outerTable.add(makeLinkTable(iAction),1,1);
     switch (iAction) {
-      case COMPLEX  : doComplex(modinfo);   break;
-      case BUILDING : doBuilding(modinfo);  break;
-      case FLOOR    : doFloor(modinfo);     break;
-      case APARTMENT: doApartment(modinfo); break;
-      case CATEGORY : doCategory(modinfo);  break;
-      case TYPE     : doType(modinfo);   break;
+      case COMPLEX  : doComplex(iwc);   break;
+      case BUILDING : doBuilding(iwc);  break;
+      case FLOOR    : doFloor(iwc);     break;
+      case APARTMENT: doApartment(iwc); break;
+      case CATEGORY : doCategory(iwc);  break;
+      case TYPE     : doType(iwc);   break;
     }
     add(outerTable);
   }
-  private void doMain(ModuleInfo modinfo,boolean ifMulti,int choice) {
-    doBuilding(modinfo);
+  private void doMain(IWContext iwc,boolean ifMulti,int choice) {
+    doBuilding(iwc);
 
   }
-  private void doComplex(ModuleInfo modinfo){
+  private void doComplex(IWContext iwc){
     try{
       Complex eComplex = eId > 0 ? new Complex(eId) : null;
       outerTable.add(makeComplexFields(eComplex),1,2);
     }
     catch(SQLException sql){}
   }
-  private void doBuilding(ModuleInfo modinfo){
+  private void doBuilding(IWContext iwc){
     try{
       Building eBuilding = eId > 0 ? new Building(eId) : null;
       outerTable.add(makeBuildingFields(eBuilding),1,2);
     }
     catch(SQLException sql){}
   }
-  private void doFloor(ModuleInfo modinfo){
+  private void doFloor(IWContext iwc){
     try{
       Floor eFloor = eId > 0 ? new Floor(eId) : null;
       outerTable.add(makeFloorFields(eFloor),1,2);
     }
     catch(SQLException sql){}
   }
-  private void doApartment(ModuleInfo modinfo){
+  private void doApartment(IWContext iwc){
     try{
       Apartment eApartment = eId > 0 ? new Apartment(eId) : null;
       outerTable.add(makeApartmentFields(eApartment),1,2);
@@ -151,21 +151,21 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     catch(SQLException sql){}
     //add(getApartments());
   }
-  private void doType(ModuleInfo modinfo){
+  private void doType(IWContext iwc){
     // Dirty job below
     int iPhotoId = 1, iPlanId = 1;
     boolean b1 = false,b2 = false;
-    if(modinfo.getSessionAttribute("tphotoid2") != null){
+    if(iwc.getSessionAttribute("tphotoid2") != null){
       b1 = true;
-      iPhotoId = Integer.parseInt((String)modinfo.getSessionAttribute("tphotoid2"));
+      iPhotoId = Integer.parseInt((String)iwc.getSessionAttribute("tphotoid2"));
     }
-    if(modinfo.getSessionAttribute("tplanid2")!=null){
+    if(iwc.getSessionAttribute("tplanid2")!=null){
       b2 = true;
-      iPlanId = Integer.parseInt((String)modinfo.getSessionAttribute("tplanid2"));
+      iPlanId = Integer.parseInt((String)iwc.getSessionAttribute("tplanid2"));
     }
     if(b1 && b2){
-      modinfo.removeSessionAttribute("tphotoid2");
-      modinfo.removeSessionAttribute("tplanid2");
+      iwc.removeSessionAttribute("tphotoid2");
+      iwc.removeSessionAttribute("tplanid2");
     }
     try{
       ApartmentType eApartmentType = eId > 0 ? new ApartmentType(eId) : null;
@@ -174,7 +174,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     catch(SQLException sql){sql.printStackTrace();}
     //add(getTypes());
   }
-  private void doCategory(ModuleInfo modinfo){
+  private void doCategory(IWContext iwc){
     try{
       ApartmentCategory eApartmentCategory = eId > 0 ? new ApartmentCategory(eId) : null;
       outerTable.add(makeCategoryFields(eApartmentCategory),1,2);
@@ -232,14 +232,14 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     }
   }
 
-  private void doQuit(ModuleInfo modinfo) throws SQLException{  }
-  private void doSave(ModuleInfo modinfo) throws SQLException{  }
+  private void doQuit(IWContext iwc) throws SQLException{  }
+  private void doSave(IWContext iwc) throws SQLException{  }
 
-  private void storeComplex(ModuleInfo modinfo){
-    String sName = modinfo.getParameter("bm_name").trim();
-    String sInfo = modinfo.getParameter("bm_info").trim();
-    String sImageId = modinfo.getParameter("mapid");
-    String sId = modinfo.getParameter("dr_id");
+  private void storeComplex(IWContext iwc){
+    String sName = iwc.getParameter("bm_name").trim();
+    String sInfo = iwc.getParameter("bm_info").trim();
+    String sImageId = iwc.getParameter("mapid");
+    String sId = iwc.getParameter("dr_id");
     int imageid = 1;
     int id = -1;
     try {  imageid = Integer.parseInt(sImageId); }
@@ -265,14 +265,14 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     catch(SQLException e){e.printStackTrace();}
   }
 
-  private void storeBuilding(ModuleInfo modinfo){
-    String sName = modinfo.getParameter("bm_name").trim();
-    String sInfo = modinfo.getParameter("bm_info").trim();
-    String sAddress = modinfo.getParameter("bm_address").trim();
-    String sImageId = modinfo.getParameter("photoid");
-    String sComplexId = modinfo.getParameter("dr_complex");
-    String sId = modinfo.getParameter("dr_id");
-    String sSerie = modinfo.getParameter("bm_serie");
+  private void storeBuilding(IWContext iwc){
+    String sName = iwc.getParameter("bm_name").trim();
+    String sInfo = iwc.getParameter("bm_info").trim();
+    String sAddress = iwc.getParameter("bm_address").trim();
+    String sImageId = iwc.getParameter("photoid");
+    String sComplexId = iwc.getParameter("dr_complex");
+    String sId = iwc.getParameter("dr_id");
+    String sSerie = iwc.getParameter("bm_serie");
     int imageid = 1,iSerie = 0;
     int id = -1;
     int complexid = -1;
@@ -305,13 +305,13 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     }
     catch(SQLException e){}
   }
-  private void storeFloor(ModuleInfo modinfo){
+  private void storeFloor(IWContext iwc){
 
-    String sName = modinfo.getParameter("bm_name").trim();
-    String sInfo = modinfo.getParameter("bm_info").trim();
-    String sImageId = modinfo.getParameter("photoid");
-    String sBuildingId = modinfo.getParameter("dr_building");
-    String sId = modinfo.getParameter("dr_id");
+    String sName = iwc.getParameter("bm_name").trim();
+    String sInfo = iwc.getParameter("bm_info").trim();
+    String sImageId = iwc.getParameter("photoid");
+    String sBuildingId = iwc.getParameter("dr_building");
+    String sId = iwc.getParameter("dr_id");
     int imageid = 1;
     int id = -1;
     int buildingid = -1;
@@ -341,11 +341,11 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     catch(SQLException e){e.printStackTrace();}
 
   }
-  private void storeApartmentCategory(ModuleInfo modinfo){
-    String sName = modinfo.getParameter("bm_name").trim();
-    String sInfo = modinfo.getParameter("bm_info").trim();
-    String sImageId = modinfo.getParameter("iconid");
-    String sId = modinfo.getParameter("dr_id");
+  private void storeApartmentCategory(IWContext iwc){
+    String sName = iwc.getParameter("bm_name").trim();
+    String sInfo = iwc.getParameter("bm_info").trim();
+    String sImageId = iwc.getParameter("iconid");
+    String sId = iwc.getParameter("dr_id");
     int imageid = 1;
     int id = -1;
     try {  imageid = Integer.parseInt(sImageId); }
@@ -371,25 +371,25 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     catch(SQLException e){}
 
   }
-  private void storeApartmentType(ModuleInfo modinfo){
+  private void storeApartmentType(IWContext iwc){
 
-    String sName = modinfo.getParameter("bm_name").trim();
-    String sInfo = modinfo.getParameter("bm_info").trim();
-    String sExtraInfo = modinfo.getParameter("extra_info").trim();
-    String sId = modinfo.getParameter("dr_id");
-    String sRoomCount = modinfo.getParameter("bm_roomcount");
-    String sCategoryId = modinfo.getParameter("bm_category");
-    String sImageId = modinfo.getParameter("tphotoid");
-    String sPlanId = modinfo.getParameter("tplanid");
-    String sArea = modinfo.getParameter("bm_area").trim();
-    String sKitch = modinfo.getParameter("bm_kitch");
-    String sBath = modinfo.getParameter("bm_bath");
-    String sStorage = modinfo.getParameter("bm_stor");
-    String sBalcony = modinfo.getParameter("bm_balc");
-    String sStudy = modinfo.getParameter("bm_study");
-    String sLoft = modinfo.getParameter("bm_loft");
-    String sFurniture = modinfo.getParameter("bm_furni");
-    String sRent = modinfo.getParameter("bm_rent");
+    String sName = iwc.getParameter("bm_name").trim();
+    String sInfo = iwc.getParameter("bm_info").trim();
+    String sExtraInfo = iwc.getParameter("extra_info").trim();
+    String sId = iwc.getParameter("dr_id");
+    String sRoomCount = iwc.getParameter("bm_roomcount");
+    String sCategoryId = iwc.getParameter("bm_category");
+    String sImageId = iwc.getParameter("tphotoid");
+    String sPlanId = iwc.getParameter("tplanid");
+    String sArea = iwc.getParameter("bm_area").trim();
+    String sKitch = iwc.getParameter("bm_kitch");
+    String sBath = iwc.getParameter("bm_bath");
+    String sStorage = iwc.getParameter("bm_stor");
+    String sBalcony = iwc.getParameter("bm_balc");
+    String sStudy = iwc.getParameter("bm_study");
+    String sLoft = iwc.getParameter("bm_loft");
+    String sFurniture = iwc.getParameter("bm_furni");
+    String sRent = iwc.getParameter("bm_rent");
 
     int planid = 1;
     int imageid = 1;
@@ -448,16 +448,16 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
 
 
   }
-  private void storeApartment(ModuleInfo modinfo){
+  private void storeApartment(IWContext iwc){
 
-    String sName = modinfo.getParameter("bm_name").trim();
-    String sInfo = modinfo.getParameter("bm_info").trim();
-    String sId = modinfo.getParameter("dr_id");
-    String sType = modinfo.getParameter("bm_type");
-    String sFloorId = modinfo.getParameter("bm_floor");
-    String sRentable = modinfo.getParameter("bm_rentable");
-    String sImageId = modinfo.getParameter("photoid");
-    String sSerie = modinfo.getParameter("bm_serie");
+    String sName = iwc.getParameter("bm_name").trim();
+    String sInfo = iwc.getParameter("bm_info").trim();
+    String sId = iwc.getParameter("dr_id");
+    String sType = iwc.getParameter("bm_type");
+    String sFloorId = iwc.getParameter("bm_floor");
+    String sRentable = iwc.getParameter("bm_rentable");
+    String sImageId = iwc.getParameter("photoid");
+    String sSerie = iwc.getParameter("bm_serie");
     boolean bRentable = sRentable!=null?true:false;
 
     int id = -1;
@@ -546,11 +546,11 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     catch(SQLException sql){sql.printStackTrace();}
   }
 
-  public ModuleObject getLinkTable(ModuleInfo modinfo){
+  public PresentationObject getLinkTable(IWContext iwc){
     int iAct = BUILDING;
-    IWResourceBundle iwrb = getResourceBundle(modinfo);
-    if(modinfo.getParameter(sAction)!= null){
-      iAct = Integer.parseInt(modinfo.getParameter(sAction));
+    IWResourceBundle iwrb = getResourceBundle(iwc);
+    if(iwc.getParameter(sAction)!= null){
+      iAct = Integer.parseInt(iwc.getParameter(sAction));
     }
 
     Table LinkTable = new Table();
@@ -607,7 +607,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return LinkTable;
   }
 
-  protected ModuleObject makeLinkTable(int i){
+  protected PresentationObject makeLinkTable(int i){
     Table headerTable = new Table(2,2);
       headerTable.setCellpadding(0);
       headerTable.setCellspacing(0);
@@ -679,7 +679,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return headerTable;
   }
 
-  private ModuleObject makeTextArea(String sInit){
+  private PresentationObject makeTextArea(String sInit){
     TextArea TA = new TextArea("bm_info");
     TA.setContent(sInit);
     TA.setWidth(50);
@@ -688,7 +688,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return TA;
   }
 
-  private ModuleObject makeTextArea(String name,String sInit){
+  private PresentationObject makeTextArea(String name,String sInit){
     TextArea TA = new TextArea(name);
     TA.setContent(sInit);
     TA.setWidth(50);
@@ -697,8 +697,8 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return TA;
   }
 
-  private ModuleObject makeImageInput(int id,String name){
-    ModuleObject imageObject = null;
+  private PresentationObject makeImageInput(int id,String name){
+    PresentationObject imageObject = null;
     ImageInserter imageInsert = null;
     if( id > 1){
       imageInsert = new ImageInserter(id,name);
@@ -715,7 +715,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     imageObject = imageInsert;
     return imageObject;
   }
-  private ModuleObject makeComplexFields(Complex eComplex){
+  private PresentationObject makeComplexFields(Complex eComplex){
     boolean e = eComplex != null ? true : false;
     String sId = e ? String.valueOf(eComplex.getID()):"";
     String sName = e ? eComplex.getName():"";
@@ -772,7 +772,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return form;
   }
 
-  private ModuleObject makeBuildingFields(Building eBuilding){
+  private PresentationObject makeBuildingFields(Building eBuilding){
     boolean e = eBuilding != null ? true : false ;
     String sName = e ? eBuilding.getName() : "" ;
     String sInfo = e ? eBuilding.getInfo() : "" ;
@@ -848,7 +848,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     form.add(Frame);
     return form;
   }
-  private ModuleObject makeFloorFields(Floor eFloor){
+  private PresentationObject makeFloorFields(Floor eFloor){
     boolean e = eFloor != null ? true : false ;
     String sName = e ? eFloor.getName() : "" ;
     String sInfo = e ? eFloor.getInfo() : "" ;
@@ -910,7 +910,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     form.add(Frame);
     return form;
   }
-  private ModuleObject makeCategoryFields(ApartmentCategory eApartmentCategory){
+  private PresentationObject makeCategoryFields(ApartmentCategory eApartmentCategory){
     boolean e = eApartmentCategory != null ? true : false;
     String sName = e ? eApartmentCategory.getName() : "" ;
     String sInfo = e ? eApartmentCategory.getInfo() : "" ;
@@ -967,7 +967,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return form;
   }
 
- private ModuleObject makeTypeFields(ApartmentType eApartmentType,int iPhoto,int iPlan){
+ private PresentationObject makeTypeFields(ApartmentType eApartmentType,int iPhoto,int iPlan){
     boolean e = eApartmentType != null ? true : false ;
     String sName = e ? eApartmentType.getName() : "" ;
     String sInfo = e ? eApartmentType.getInfo() : "" ;
@@ -1103,7 +1103,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     form.add(Frame);
     return form;
   }
-  private ModuleObject makeApartmentFields(Apartment eApartment){
+  private PresentationObject makeApartmentFields(Apartment eApartment){
     boolean e = eApartment != null ? true : false ;
     String sName = e ? eApartment.getName() : "" ;
     String sInfo = e ? eApartment.getInfo() : "" ;
@@ -1197,7 +1197,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return form;
   }
 
-  private ModuleObject getApartments(){
+  private PresentationObject getApartments(){
     int border = 0;
     int padding = 6;
     int spacing = 1;
@@ -1264,7 +1264,7 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
 
   }
 
-  private ModuleObject getTypes(){
+  private PresentationObject getTypes(){
     try {
       ApartmentType[] AT = (ApartmentType[])(new ApartmentType()).findAllOrdered(ApartmentType.getNameColumnName());
       int len = AT.length;
@@ -1452,18 +1452,18 @@ public class BuildingEditor extends com.idega.jmodule.object.ModuleObjectContain
     return formatText(String.valueOf(i));
   }
 
-  public void main(ModuleInfo modinfo)  {
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc)  {
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
-    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+    isAdmin = com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     this.getParentPage().setName("b_editor");
     this.getParentPage().setTitle(iwrb.getLocalizedString("buildingEditor","Building Editor"));
     this.getParentPage().setAllMargins(0);
     }
     catch(SQLException sql){ isAdmin = false;}
     /** @todo: fixa Admin*/
-    control(modinfo);
+    control(iwc);
   }
   protected void setStyle(InterfaceObject O){
     O.setAttribute("style",this.styleAttribute);

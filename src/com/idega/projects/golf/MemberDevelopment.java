@@ -16,15 +16,15 @@ import java.sql.*;
 import java.util.*;
 import java.math.*;
 import java.io.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.util.*;
 import com.idega.util.text.TextSoap;
 import com.idega.projects.golf.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.business.*;
 
-public class MemberDevelopment extends JModuleObject {
+public class MemberDevelopment extends Block {
 
 private int unionID = -1;
 private idegaTimestamp dateBefore;
@@ -69,10 +69,10 @@ private boolean phones = false;
     this.dateAfter = dateAfter;
   }
 
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
 
     String fileSeperator = System.getProperty("file.separator");
-    String filepath = modinfo.getServletContext().getRealPath(fileSeperator+"files"+fileSeperator);
+    String filepath = iwc.getServletContext().getRealPath(fileSeperator+"files"+fileSeperator);
     String fileName = "handicap_report.xls";
 
     try{

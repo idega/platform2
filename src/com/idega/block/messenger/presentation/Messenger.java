@@ -1,8 +1,8 @@
 package com.idega.block.messenger.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Applet;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Applet;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -15,7 +15,7 @@ import com.idega.idegaweb.IWBundle;
  * @version 1.0
  */
 
-public class Messenger extends JModuleObject {
+public class Messenger extends Block {
   private static Applet messenger;
   private IWBundle iwb;
   private IWResourceBundle iwrb;
@@ -29,12 +29,12 @@ public class Messenger extends JModuleObject {
   public Messenger() {
   }
 
-  public void main(ModuleInfo modinfo){
-    //isAdmin = AccessControl.hasEditPermission(this,modinfo);
-    iwb = getBundle(modinfo);
-    iwrb = getResourceBundle(modinfo);
+  public void main(IWContext iwc){
+    //isAdmin = AccessControl.hasEditPermission(this,iwc);
+    iwb = getBundle(iwc);
+    iwrb = getResourceBundle(iwc);
 
-    if( com.idega.block.login.business.LoginBusiness.isLoggedOn(modinfo) ){
+    if( com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc) ){
       if(messenger==null){
         messenger = new Applet();
         messenger.setCodeArchive(com.idega.block.messenger.servlet.ClientServer.MESSENGER_JAR_FILE);
@@ -43,10 +43,10 @@ public class Messenger extends JModuleObject {
 
         messenger.setCodebase(".");
 
-        messenger.setParam(SESSION_ID,modinfo.getSession().getId());
-        messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(modinfo).getID()));
+        messenger.setParam(SESSION_ID,iwc.getSession().getId());
+        messenger.setParam(USER_ID,Integer.toString(com.idega.block.login.business.LoginBusiness.getUser(iwc).getID()));
         messenger.setParam(SERVLET_URL,com.idega.block.messenger.servlet.ClientServer.SERVLET_URL);
-        messenger.setParam(SERVER_ROOT_URL,"http://"+modinfo.getServerName());
+        messenger.setParam(SERVER_ROOT_URL,"http://"+iwc.getServerName());
       }
       add(messenger);
     }

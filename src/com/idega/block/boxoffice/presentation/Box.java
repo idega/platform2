@@ -1,13 +1,13 @@
 package com.idega.block.boxoffice.presentation;
 
 import com.idega.block.IWBlock;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.textObject.Link;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.interfaceobject.HeaderTable;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.Image;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.HeaderTable;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -16,7 +16,7 @@ import com.idega.core.data.ICObjectInstance;
 import com.idega.block.boxoffice.data.*;
 import com.idega.block.boxoffice.business.*;
 
-public class Box extends JModuleObject implements IWBlock {
+public class Box extends Block implements IWBlock {
 
 private int _boxID = -1;
 private boolean _isAdmin = false;
@@ -64,17 +64,17 @@ public Box(String attribute){
 	_attribute = attribute;
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
-    _iwrb = getResourceBundle(modinfo);
-    _iwb = getBundle(modinfo);
+	public void main(IWContext iwc) throws Exception {
+    _iwrb = getResourceBundle(iwc);
+    _iwb = getBundle(iwc);
 
-    _isAdmin = AccessControl.hasEditPermission(this,modinfo);
+    _isAdmin = AccessControl.hasEditPermission(this,iwc);
     //_isAdmin = true;
-    _iLocaleID = ICLocaleBusiness.getLocaleId(modinfo.getCurrentLocale());
+    _iLocaleID = ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale());
 
-    String mode = modinfo.getParameter(BoxBusiness.PARAMETER_MODE);
+    String mode = iwc.getParameter(BoxBusiness.PARAMETER_MODE);
     if ( mode != null ) {
-      doMode(mode,modinfo);
+      doMode(mode,iwc);
     }
 
     BoxEntity box = null;
@@ -85,7 +85,7 @@ public Box(String attribute){
       _myTable.setBorder(0);
 
     if(_boxID <= 0){
-      String sBoxID = modinfo.getParameter(BoxBusiness.PARAMETER_BOX_ID);
+      String sBoxID = iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID);
       if(sBoxID != null)
         _boxID = Integer.parseInt(sBoxID);
       else if(getICObjectInstanceID() > 0){
@@ -305,10 +305,10 @@ public Box(String attribute){
     getParentPage().setStyleDefinition("A."+_name+":hover",_hoverStyle);
   }
 
-  private void doMode(String mode, ModuleInfo modinfo) {
+  private void doMode(String mode, IWContext iwc) {
     if ( mode.equalsIgnoreCase(BoxBusiness.PARAMETER_DETACH) ) {
-      String boxID = modinfo.getParameter(BoxBusiness.PARAMETER_BOX_ID);
-      String boxCategoryID = modinfo.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID);
+      String boxID = iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID);
+      String boxCategoryID = iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID);
       if ( boxID != null && boxCategoryID != null ) {
         try {
           BoxBusiness.detachCategory(Integer.parseInt(boxID),Integer.parseInt(boxCategoryID));

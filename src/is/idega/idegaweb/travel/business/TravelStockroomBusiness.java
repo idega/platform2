@@ -14,7 +14,7 @@ import com.idega.data.EntityControl;
 import java.util.List;
 import java.util.Map;
 import com.idega.util.datastructures.HashtableDoubleKeyed;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.transaction.IdegaTransactionManager;
 import javax.transaction.TransactionManager;
 import java.sql.Date;
@@ -495,20 +495,20 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
-  private static HashtableDoubleKeyed getServiceDayHashtable(ModuleInfo modinfo) {
-      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) modinfo.getSessionAttribute(serviceDayHashtableSessionName);
+  private static HashtableDoubleKeyed getServiceDayHashtable(IWContext iwc) {
+      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) iwc.getSessionAttribute(serviceDayHashtableSessionName);
       if (hash == null) {
         hash =  new HashtableDoubleKeyed();
-        modinfo.setSessionAttribute(serviceDayHashtableSessionName, hash);
+        iwc.setSessionAttribute(serviceDayHashtableSessionName, hash);
       }
 
       return hash;
   }
 
-  public static boolean getIfDay(ModuleInfo modinfo,int productId, int dayOfWeek) {
+  public static boolean getIfDay(IWContext iwc,int productId, int dayOfWeek) {
       boolean returner = false;
 
-      HashtableDoubleKeyed hash = getServiceDayHashtable(modinfo);
+      HashtableDoubleKeyed hash = getServiceDayHashtable(iwc);
       Object obj = hash.get(productId+"_"+dayOfWeek,"");
       if (obj == null) {
         returner = ServiceDay.getIfDay(productId, dayOfWeek);
@@ -520,17 +520,17 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return returner;
   }
 
-  public static boolean getIfDay(ModuleInfo modinfo, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
+  public static boolean getIfDay(IWContext iwc, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
       boolean isDay = false;
       String key1 = Integer.toString(product.getID());
       String key2 = stamp.toSQLDateString();
 
-      HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(modinfo);
+      HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
       Object obj = serviceDayHash.get(key1, key2);
       if (obj == null) {
 
           int dayOfWeek = stamp.getDayOfWeek();
-          boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(modinfo, product.getID(), dayOfWeek);
+          boolean isValidWeekDay = TravelStockroomBusiness.getIfDay(iwc, product.getID(), dayOfWeek);
           Timeframe timeframe = TravelStockroomBusiness.getTimeframe(product);
 
           if (isValidWeekDay) {
@@ -555,29 +555,29 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       return isDay;
   }
 
-  public static HashtableDoubleKeyed getResellerDayHashtable(ModuleInfo modinfo) {
-      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) modinfo.getSessionAttribute(resellerDayHashtableSessionName);
+  public static HashtableDoubleKeyed getResellerDayHashtable(IWContext iwc) {
+      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) iwc.getSessionAttribute(resellerDayHashtableSessionName);
       if (hash == null) {
         hash =  new HashtableDoubleKeyed();
-        modinfo.setSessionAttribute(resellerDayHashtableSessionName, hash);
+        iwc.setSessionAttribute(resellerDayHashtableSessionName, hash);
       }
       return hash;
   }
 
-  public static void removeResellerHashtables(ModuleInfo modinfo) {
-      modinfo.removeSessionAttribute(resellerDayHashtableSessionName);
-      modinfo.removeSessionAttribute(resellerDayOfWeekHashtableSessionName);
+  public static void removeResellerHashtables(IWContext iwc) {
+      iwc.removeSessionAttribute(resellerDayHashtableSessionName);
+      iwc.removeSessionAttribute(resellerDayOfWeekHashtableSessionName);
   }
 
-  public static void removeServiceDayHashtable(ModuleInfo modinfo) {
-    modinfo.removeSessionAttribute(serviceDayHashtableSessionName);
+  public static void removeServiceDayHashtable(IWContext iwc) {
+    iwc.removeSessionAttribute(serviceDayHashtableSessionName);
   }
 
-  private static HashtableDoubleKeyed getResellerDayOfWeekHashtable(ModuleInfo modinfo) {
-      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) modinfo.getSessionAttribute(resellerDayOfWeekHashtableSessionName);
+  private static HashtableDoubleKeyed getResellerDayOfWeekHashtable(IWContext iwc) {
+      HashtableDoubleKeyed hash = (HashtableDoubleKeyed) iwc.getSessionAttribute(resellerDayOfWeekHashtableSessionName);
       if (hash == null) {
         hash =  new HashtableDoubleKeyed();
-        modinfo.setSessionAttribute(resellerDayOfWeekHashtableSessionName, hash);
+        iwc.setSessionAttribute(resellerDayOfWeekHashtableSessionName, hash);
       }
       return hash;
   }
@@ -591,7 +591,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     return returner;
   }
 
-  public static boolean getIfDay(ModuleInfo modinfo, Contract contract, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
+  public static boolean getIfDay(IWContext iwc, Contract contract, Product product, idegaTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException{
       boolean isDay = false;
       String key1 = Integer.toString(contract.getID());
       String key2 = stamp.toSQLDateString();
@@ -600,10 +600,10 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       boolean isValidWeekDay = false;
       boolean isValidServiceDay = false;
 
-      isValidServiceDay = TravelStockroomBusiness.getIfDay(modinfo,product,stamp);
+      isValidServiceDay = TravelStockroomBusiness.getIfDay(iwc,product,stamp);
 
       if (isValidServiceDay) {
-        HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(modinfo);
+        HashtableDoubleKeyed resellerDayOfWeekHash = getResellerDayHashtable(iwc);
         Object object = resellerDayOfWeekHash.get(key1, key2);
         if (object == null) {
             isValidWeekDay = ResellerDay.getIfDay(contract.getResellerId(),contract.getServiceId() , dayOfWeek);
@@ -614,7 +614,7 @@ public class TravelStockroomBusiness extends StockroomBusiness {
       }
 
 
-      HashtableDoubleKeyed resellerDayHash = getResellerDayHashtable(modinfo);
+      HashtableDoubleKeyed resellerDayHash = getResellerDayHashtable(iwc);
       Object obj = resellerDayHash.get(key1, key2);
       if (obj == null) {
         if (isValidWeekDay) {

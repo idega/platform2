@@ -3,14 +3,14 @@
 package com.idega.jmodule.banner.presentation;
 
 import com.idega.jmodule.banner.data.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
 import java.sql.SQLException;
 
 
 
-public class InsertAd extends JModuleObject{
+public class InsertAd extends Block{
 
 	boolean isAdmin;
 	int ad_id;
@@ -27,7 +27,7 @@ public class InsertAd extends JModuleObject{
 		this.ad_id = ad_id;
 	}
 
-	public void main(ModuleInfo modinfo)throws SQLException {
+	public void main(IWContext iwc)throws SQLException {
                 Ad ad;
 		try {
 			ad = new Ad(ad_id);

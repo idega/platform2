@@ -1,6 +1,6 @@
 package com.idega.jmodule.forum.business;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import com.idega.block.*;
 
 /**
@@ -26,15 +26,15 @@ public class ForumProperties extends BlockProperties{
 
 
 
-  public boolean useLogin(ModuleInfo modinfo){
-/*    String url = modinfo.getRequest().getRequestURI();
+  public boolean useLogin(IWContext iwc){
+/*    String url = iwc.getRequest().getRequestURI();
     if(url.startsWith("http://golf1.sidan") || url.startsWith("http://www.golf."))
       return false;
 */
     return true;
   }
 
-  public boolean useEmail(ModuleInfo modinfo) {
+  public boolean useEmail(IWContext iwc) {
     return false;
   }
 

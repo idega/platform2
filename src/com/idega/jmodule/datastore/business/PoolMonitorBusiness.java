@@ -8,9 +8,9 @@ package com.idega.jmodule.datastore.business;
 import java.util.*;
 import com.idega.util.*;
 import com.idega.util.database.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
 
@@ -34,7 +34,7 @@ public class PoolMonitorBusiness implements IWEventListener{
 
 
 
-      public void actionPerformed(ModuleInfo modinfo)throws IWException{
+      public void actionPerformed(IWContext iwc)throws IWException{
 
 
       }

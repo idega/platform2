@@ -2,21 +2,21 @@ package com.idega.block.reports.presentation;
 
 import com.idega.block.reports.data.*;
 import com.idega.block.reports.business.*;
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObjectContainer;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
 import java.sql.SQLException;
 import java.util.Vector;
 import java.util.Collections;
 import java.util.List;
 import com.idega.data.EntityFinder;
-import com.idega.jmodule.object.Editor;
-import com.idega.jmodule.object.Table;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Script;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.Editor;
+import com.idega.presentation.Table;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Script;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 
@@ -97,7 +97,7 @@ public class Reporter extends ReportPresentation{
     iViewCategoryAttributeId = id;
   }
 
-  private void checkCategories(ModuleInfo modinfo){
+  private void checkCategories(IWContext iwc){
     ReportCategoryAttribute RCA = null;
     if(sMainCategoryAttribute != null){
       List L = null;
@@ -139,31 +139,31 @@ public class Reporter extends ReportPresentation{
     }
   }
 
-  protected void control(ModuleInfo modinfo){
-    iwrb = getResourceBundle(modinfo);
+  protected void control(IWContext iwc){
+    iwrb = getResourceBundle(iwc);
     Form form = new Form();
-    checkCategories(modinfo);
-    if(modinfo.getParameter(sAction) != null){
-      sActPrm = modinfo.getParameter(sAction);
+    checkCategories(iwc);
+    if(iwc.getParameter(sAction) != null){
+      sActPrm = iwc.getParameter(sAction);
       try{
         iAction = Integer.parseInt(sActPrm);
         switch(iAction){
           case ACT1:  break;
           case ACT2:  break;
-          case ACT3: doChange(modinfo); break;
-          case ACT4: doDelete(modinfo); break;
+          case ACT3: doChange(iwc); break;
+          case ACT4: doDelete(iwc); break;
         }
       }
       catch(Exception e){
         e.printStackTrace();
       }
     }
-    form.add(doMain(modinfo));
+    form.add(doMain(iwc));
     add(form);
   }
 
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     Table LinkTable = new Table(3,1);
     int last = 3;
     LinkTable.setWidth("100%");
@@ -184,7 +184,7 @@ public class Reporter extends ReportPresentation{
     return LinkTable;
   }
 
-  private ModuleObject doMain(ModuleInfo modinfo){
+  private PresentationObject doMain(IWContext iwc){
     Table T = new Table();
     T.setWidth("100%");
     int a = 1;
@@ -205,7 +205,7 @@ public class Reporter extends ReportPresentation{
     return T;
   }
 
-  private ModuleObject getCategoryReports(int iCategoryId,boolean bEdit){
+  private PresentationObject getCategoryReports(int iCategoryId,boolean bEdit){
     ReportCategory RC = null;
     try {
       RC = new ReportCategory(iCategoryId);
@@ -307,19 +307,19 @@ public class Reporter extends ReportPresentation{
     return L;
   }
 
-  protected void doChange(ModuleInfo modinfo) throws SQLException{
+  protected void doChange(IWContext iwc) throws SQLException{
 
   }
-  protected void doUpdate(ModuleInfo modinfo) throws SQLException{
+  protected void doUpdate(IWContext iwc) throws SQLException{
 
   }
 
-  protected void doDelete(ModuleInfo modinfo) throws SQLException{
+  protected void doDelete(IWContext iwc) throws SQLException{
     String prm = prefix+"chk";
-    int count = Integer.parseInt(modinfo.getParameter(prefix+"count"));
+    int count = Integer.parseInt(iwc.getParameter(prefix+"count"));
     for (int i = 0; i < count; i++) {
-      if(modinfo.getParameter(prm+i)!=null){
-        String sId = modinfo.getParameter(prm+i);
+      if(iwc.getParameter(prm+i)!=null){
+        String sId = iwc.getParameter(prm+i);
         try{
           int id = Integer.parseInt(sId);
           Report R = new Report(id);

@@ -3,8 +3,8 @@ package com.idega.projects.golf.templates;
 import com.idega.jmodule.JSPModule;
 import com.idega.projects.golf.templates.page.GolfersPage;
 import javax.servlet.jsp.JspPage;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Image;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Image;
 
 /**
  * Title:        idegaWeb Classes
@@ -24,7 +24,7 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     return (GolfersPage) this.getPage();
   }
 
-  public void add(ModuleObject objectToAdd){
+  public void add(PresentationObject objectToAdd){
     getGolferPage().add(objectToAdd);
   }
 
@@ -32,7 +32,7 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     getGolferPage().add(stringToAdd);
   }
 
-  public void addFooter(ModuleObject objectToAdd){
+  public void addFooter(PresentationObject objectToAdd){
     getGolferPage().addFooter(objectToAdd);
   }
 
@@ -44,7 +44,7 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     getGolferPage().addLeftTopBanner( stringToAdd);
   }
 
-  public void addLeftTopBanner(ModuleObject objectToAdd){
+  public void addLeftTopBanner(PresentationObject objectToAdd){
     getGolferPage().addLeftTopBanner(objectToAdd);
   }
 
@@ -52,11 +52,11 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     getGolferPage().addRightTopBanner( stringToAdd);
   }
 
-  public void addRightTopBanner(ModuleObject objectToAdd){
+  public void addRightTopBanner(PresentationObject objectToAdd){
     getGolferPage().addRightTopBanner(objectToAdd);
   }
 
-  public void addCenterTopBanner(ModuleObject objectToAdd){
+  public void addCenterTopBanner(PresentationObject objectToAdd){
     getGolferPage().addCenterTopBanner(objectToAdd);
   }
 
@@ -64,7 +64,7 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     getGolferPage().addCenterTopBanner( stringToAdd);
   }
 
-  public void addLeftLogo(ModuleObject objectToAdd){
+  public void addLeftLogo(PresentationObject objectToAdd){
     getGolferPage().addLeftLogo( objectToAdd);
   }
 
@@ -72,7 +72,7 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     getGolferPage().addLeftLogo( stringToAdd);
   }
 
-  public void addLeftBanners(ModuleObject objectToAdd){
+  public void addLeftBanners(PresentationObject objectToAdd){
     getGolferPage().addLeftBanners(objectToAdd);
   }
 
@@ -80,7 +80,7 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     getGolferPage().addLeftBanners( stringToAdd);
   }
 
-  public void addLeftLink(ModuleObject objectToAdd){
+  public void addLeftLink(PresentationObject objectToAdd){
     getGolferPage().addLeftLink(objectToAdd);
   }
 
@@ -88,7 +88,7 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     getGolferPage().addLeftLink(stringToAdd);
   }
 
-  public void addCornerLogo(ModuleObject objectToAdd){
+  public void addCornerLogo(PresentationObject objectToAdd){
     getGolferPage().addCornerLogo(objectToAdd);
   }
 
@@ -96,7 +96,7 @@ public abstract class GolferTemplate extends JSPModule implements JspPage{
     getGolferPage().addCornerLogo(stringToAdd);
   }
 
-  public void addMenuLinks(ModuleObject objectToAdd){
+  public void addMenuLinks(PresentationObject objectToAdd){
     getGolferPage().addMenuLinks(objectToAdd);
   }
 

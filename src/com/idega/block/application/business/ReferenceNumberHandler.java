@@ -1,5 +1,5 @@
 /*
- * $Id: ReferenceNumberHandler.java,v 1.2 2001/07/30 11:46:38 palli Exp $
+ * $Id: ReferenceNumberHandler.java,v 1.3 2001/10/05 07:59:57 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.block.application.business;
 
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.IWContext;
 import com.idega.business.IWEventListener;
 import com.idega.idegaweb.IWException;
 import com.idega.idegaweb.IWBundle;
@@ -33,20 +33,20 @@ public class ReferenceNumberHandler implements IWEventListener {
   /**
    *
    */
-  public void actionPerformed(ModuleInfo modinfo) throws IWException {
-    String ref = modinfo.getParameter("reference");
+  public void actionPerformed(IWContext iwc) throws IWException {
+    String ref = iwc.getParameter("reference");
     CypherText cyph = new CypherText();
-    String cypherKey = getCypherKey(modinfo);
+    String cypherKey = getCypherKey(iwc);
 
     ref = cyph.doDeCypher(ref,cypherKey);
-    modinfo.setSessionAttribute(referenceNumber_,ref);
+    iwc.setSessionAttribute(referenceNumber_,ref);
   }
 
   /**
    *
    */
-  public static String getCypherKey(ModuleInfo modinfo) {
-    IWBundle iwb = modinfo.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+  public static String getCypherKey(IWContext iwc) {
+    IWBundle iwb = iwc.getApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     CypherText cyph = new CypherText();
 
     String cypherKey = iwb.getProperty("cypherKey");
@@ -63,15 +63,15 @@ public class ReferenceNumberHandler implements IWEventListener {
   }
 
   /**
-   * Gets the decyphered reference number from the ModuleInfo and does than
+   * Gets the decyphered reference number from the IWContext and does than
    * delete the sessionAttribute.
    *
-   * @param modinfo The ModuleInfo for the session
+   * @param iwc The IWContext for the session
    * @return
    */
-  public static String getReferenceNumber(ModuleInfo modinfo) {
-    String ref = (String)modinfo.getSessionAttribute(referenceNumber_);
-    modinfo.removeSessionAttribute(referenceNumber_);
+  public static String getReferenceNumber(IWContext iwc) {
+    String ref = (String)iwc.getSessionAttribute(referenceNumber_);
+    iwc.removeSessionAttribute(referenceNumber_);
     return(ref);
   }
 }

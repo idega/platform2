@@ -7,13 +7,13 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.text.data.*;
 import com.idega.jmodule.image.presentation.ImageInserter;
 import com.idega.util.text.*;
-public class TextEditor extends JModuleObject{
+public class TextEditor extends Block{
 
 private boolean isAdmin = false;
 private boolean update = false;
@@ -39,24 +39,24 @@ public TextEditor(boolean isAdmin){
 	this.isAdmin=isAdmin;
 }
 
-	public void main(ModuleInfo modinfo) throws Exception {
+	public void main(IWContext iwc) throws Exception {
 
-                isAdmin=com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+                isAdmin=com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
 
 		if ( isAdmin ) {
 
-			String mode = modinfo.getRequest().getParameter("mode");
-			String action = modinfo.getRequest().getParameter("action");
+			String mode = iwc.getRequest().getParameter("mode");
+			String action = iwc.getRequest().getParameter("action");
 				if ( action == null ) { action = "none"; }
 
 			if ( mode == null ) {
 				mode = "new";
-				newText(modinfo);
+				newText(iwc);
 			}
 
 			else if ( mode.equals("update") ) {
 				update = true;
-				newText(modinfo);
+				newText(iwc);
 			}
 
 			else if ( mode.equals("Vista") ) {
@@ -64,15 +64,15 @@ public TextEditor(boolean isAdmin){
 
 				if ( action.equals("update") ) { update = true; }
 
-				saveText(modinfo);
+				saveText(iwc);
 			}
 
 			else if ( mode.equals("delete") ) {
-				deleteText(modinfo);
+				deleteText(iwc);
 			}
 
 			if ( action.equals("delete") ) {
-				confirmDelete(modinfo);
+				confirmDelete(iwc);
 			}
 
 		}
@@ -94,12 +94,12 @@ public TextEditor(boolean isAdmin){
 
 	}
 
-	public void newText(ModuleInfo modinfo) throws IOException,SQLException {
+	public void newText(IWContext iwc) throws IOException,SQLException {
 
 		int text_id = -1;
 
 		if ( update ) {
-			String text_id2 = modinfo.getRequest().getParameter("text_id");
+			String text_id2 = iwc.getRequest().getParameter("text_id");
 				if ( text_id2 == null ) { text_id2 = "-1"; }
 
 			text_id = Integer.parseInt(text_id2);
@@ -111,7 +111,7 @@ public TextEditor(boolean isAdmin){
 			text = new TextModule(text_id);
 		}
 
-		HttpSession Session = modinfo.getSession();
+		HttpSession Session = iwc.getSession();
 
 		//outerTable = new Table(1,2);
 			outerTable.setCellpadding(2);
@@ -186,16 +186,16 @@ public TextEditor(boolean isAdmin){
 
 	}
 
-	public void saveText(ModuleInfo modinfo) throws IOException,SQLException {
+	public void saveText(IWContext iwc) throws IOException,SQLException {
 
 		boolean check = true;
 
-		HttpServletRequest request = modinfo.getRequest();
-		HttpSession Session = modinfo.getSession();
+		HttpServletRequest request = iwc.getRequest();
+		HttpSession Session = iwc.getSession();
 
 			Session.removeAttribute("image_id");
 
-		String text_id = modinfo.getRequest().getParameter("text_id");
+		String text_id = iwc.getRequest().getParameter("text_id");
 
 		String text_headline = request.getParameter("text_headline");
 			if ( text_headline == null ) { check = false; }
@@ -231,9 +231,9 @@ public TextEditor(boolean isAdmin){
                 outerTable.add(new CloseButton("Loka"),1,2);
 	}
 
-	public void deleteText(ModuleInfo modinfo) throws IOException,SQLException {
+	public void deleteText(IWContext iwc) throws IOException,SQLException {
 
-		String text_id = modinfo.getRequest().getParameter("text_id");
+		String text_id = iwc.getRequest().getParameter("text_id");
 
 		TextModule text = new TextModule(Integer.parseInt(text_id));
 
@@ -259,9 +259,9 @@ public TextEditor(boolean isAdmin){
 
 	}
 
-	public void confirmDelete(ModuleInfo modinfo) throws IOException,SQLException {
+	public void confirmDelete(IWContext iwc) throws IOException,SQLException {
 
-		String text_id = modinfo.getRequest().getParameter("text_id");
+		String text_id = iwc.getRequest().getParameter("text_id");
 
 		TextModule text = new TextModule(Integer.parseInt(text_id));
 

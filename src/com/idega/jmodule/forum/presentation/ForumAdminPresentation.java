@@ -2,9 +2,9 @@ package com.idega.jmodule.forum.presentation;
 
 import com.idega.jmodule.forum.business.*;
 import com.idega.jmodule.forum.data.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import java.sql.*;
 
 
@@ -39,11 +39,11 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
 
   protected boolean UseForumList;
 
-  public ModuleInfo modinfo;
+  public IWContext iwc;
 
   protected boolean isUser;
 
-  protected ModuleObject SomeThreadsModule;
+  protected PresentationObject SomeThreadsModule;
   protected Form ForumEditForm;
   protected int currentState;
   private String currentForumID;
@@ -115,12 +115,12 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
       myList = new ForumList();
   }
 
-  public void initTree(ModuleInfo modinfo) throws Exception{
-    if((AttributeName != null) && (modinfo.getParameter("forum_id") == null)){
+  public void initTree(IWContext iwc) throws Exception{
+    if((AttributeName != null) && (iwc.getParameter("forum_id") == null)){
         int forum_id = service.getDefaultAttributeForumID(AttributeID, AttributeName);
         Tree = new ThreadTree(forum_id);
     }else{
-        Tree = new ThreadTree(modinfo);
+        Tree = new ThreadTree(iwc);
     }
   }
 
@@ -129,7 +129,7 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
   }
 
   public void initEntry() throws SQLException{
-    Entry = new ThreadEntry(modinfo);
+    Entry = new ThreadEntry(iwc);
   }
 
 
@@ -153,12 +153,12 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
   }
 
   protected void addProperState() throws Exception{
-    if (modinfo.getRequest().getParameter("state") == null){
+    if (iwc.getRequest().getParameter("state") == null){
       State1();
     } else {
 
-      if (!(modinfo.getRequest().getParameter("state").equals("same"))){
-        currentState = Integer.parseInt(modinfo.getRequest().getParameter("state"));
+      if (!(iwc.getRequest().getParameter("state").equals("same"))){
+        currentState = Integer.parseInt(iwc.getRequest().getParameter("state"));
       }
 
 
@@ -185,7 +185,7 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
           Link myLink = new Link("Mistókst");  // CloseWindowButton
           myLink.addParameter("state", "3");
           add(myLink);
-          add(getModuleInfo().getParameter("state"));
+          add(getIWContext().getParameter("state"));
           // throw error
           break;
       }
@@ -221,12 +221,12 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
   protected synchronized void State6() throws Exception{
     add("Save");
 
-    if ( getModuleInfo().getParameter("from") != null){
-      if ( getModuleInfo().getParameter("from").equals("FLEdit") ){
-        if (getModuleInfo().getParameter("action").equals("forum_email")){
-            myEmailHandler.addAddressToForumPostlist(modinfo.getParameter("forum_email"),Integer.parseInt(modinfo.getParameter("forum_id")));
+    if ( getIWContext().getParameter("from") != null){
+      if ( getIWContext().getParameter("from").equals("FLEdit") ){
+        if (getIWContext().getParameter("action").equals("forum_email")){
+            myEmailHandler.addAddressToForumPostlist(iwc.getParameter("forum_email"),Integer.parseInt(iwc.getParameter("forum_id")));
         }else{
-          DBWriter.saveForum(modinfo, ForumPresentation.getForumAttributeName(modinfo), ForumPresentation.getForumAttributeValue(modinfo));
+          DBWriter.saveForum(iwc, ForumPresentation.getForumAttributeName(iwc), ForumPresentation.getForumAttributeValue(iwc));
         }
       this.setParentToReload();
       this.close();
@@ -244,8 +244,8 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
 
   protected void initializeForm(){
     ForumEditForm = new Form();
-    if (this.getModuleInfo().getParameter("forum_action") != null)
-      ForumEditForm.add( new HiddenInput("forum_action", this.getModuleInfo().getParameter("forum_action")));
+    if (this.getIWContext().getParameter("forum_action") != null)
+      ForumEditForm.add( new HiddenInput("forum_action", this.getIWContext().getParameter("forum_action")));
 
     ForumEditForm.add(new HiddenInput("state", "6"));
     ForumEditForm.add(new HiddenInput("from", "FLEdit"));
@@ -257,7 +257,7 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
 
   //Overwritten methods begin
 
-  public void add(ModuleObject obj){
+  public void add(PresentationObject obj){
     if (FrameTable == null)
       initFrameTable();
 
@@ -317,8 +317,8 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
     super.checkSettings();
   }
 
-  public ModuleInfo getModuleInfo(){
-    return this.modinfo;
+  public IWContext getIWContext(){
+    return this.iwc;
   }
 
   /**
@@ -335,7 +335,7 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
   public void initAgain()throws Exception{
     updateSettings();
     initList();
-    initTree(modinfo);
+    initTree(iwc);
   }
 
   /**
@@ -352,10 +352,10 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
 
 
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    this.modinfo = modinfo;
+  public void main(IWContext iwc) throws Exception {
+    this.iwc = iwc;
     if (AttributeName != null){
-      String attributeTemp = modinfo.getRequest().getParameter(AttributeName);
+      String attributeTemp = iwc.getRequest().getParameter(AttributeName);
       if(attributeTemp != null){
         int attribute = Integer.parseInt(attributeTemp);
         if(attribute != AttributeID){
@@ -364,7 +364,7 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
         }
       }
     }
-    language = modinfo.getSpokenLanguage();
+    language = iwc.getSpokenLanguage();
     if(language == null){
       language = "IS";
     }
@@ -377,8 +377,8 @@ public abstract class ForumAdminPresentation extends JModuleAdminWindow {
   }
 
 
-  abstract public ModuleObject ForumEdit_Presentation() throws SQLException;
-  abstract public ModuleObject ForumEmail_Presentation() throws SQLException;
+  abstract public PresentationObject ForumEdit_Presentation() throws SQLException;
+  abstract public PresentationObject ForumEmail_Presentation() throws SQLException;
 
 
 

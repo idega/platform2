@@ -5,9 +5,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICLocale;
@@ -57,19 +57,19 @@ public BoxEditorWindow(){
   setStatus(true);
 }
 
-  public void main(ModuleInfo modinfo) throws Exception {
+  public void main(IWContext iwc) throws Exception {
     /**
      * @todo permission
      */
-    _isAdmin = true; //AccessControl.hasEditPermission(this,modinfo);
-    _superAdmin = AccessControl.isAdmin(modinfo);
-    _iwb = getBundle(modinfo);
-    _iwrb = getResourceBundle(modinfo);
+    _isAdmin = true; //AccessControl.hasEditPermission(this,iwc);
+    _superAdmin = AccessControl.isAdmin(iwc);
+    _iwb = getBundle(iwc);
+    _iwrb = getResourceBundle(iwc);
     addTitle(_iwrb.getLocalizedString("box_admin","Box Admin"));
-    Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
+    Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
 
     try {
-      _userID = LoginBusiness.getUser(modinfo).getID();
+      _userID = LoginBusiness.getUser(iwc).getID();
     }
     catch (Exception e) {
       _userID = -1;
@@ -85,7 +85,7 @@ public BoxEditorWindow(){
       _deleteImage.setHorizontalSpacing(4);
       _deleteImage.setVerticalSpacing(3);
 
-    String sLocaleId = modinfo.getParameter(BoxBusiness.PARAMETER_LOCALE_DROP);
+    String sLocaleId = iwc.getParameter(BoxBusiness.PARAMETER_LOCALE_DROP);
 
     int iLocaleId = -1;
     if(sLocaleId!= null){
@@ -98,17 +98,17 @@ public BoxEditorWindow(){
     }
 
     if ( _isAdmin ) {
-      processForm(modinfo, iLocaleId,sLocaleId);
+      processForm(iwc, iLocaleId,sLocaleId);
     }
     else {
       noAccess();
     }
   }
 
-  private void processForm(ModuleInfo modinfo, int iLocaleId, String sLocaleID) {
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_TYPE) != null ) {
+  private void processForm(IWContext iwc, int iLocaleId, String sLocaleID) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_TYPE) != null ) {
       try {
-        _type = Integer.parseInt(modinfo.getParameter(BoxBusiness.PARAMETER_TYPE));
+        _type = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_TYPE));
       }
       catch (NumberFormatException e) {
         _type = -1;
@@ -118,32 +118,32 @@ public BoxEditorWindow(){
       _type = BoxBusiness.LINK;
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_TARGET) != null ) {
-      _target = modinfo.getParameter(BoxBusiness.PARAMETER_TARGET);
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_TARGET) != null ) {
+      _target = iwc.getParameter(BoxBusiness.PARAMETER_TARGET);
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_BOX_ID) != null ) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID) != null ) {
       try {
-        _boxID = Integer.parseInt(modinfo.getParameter(BoxBusiness.PARAMETER_BOX_ID));
+        _boxID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_BOX_ID));
       }
       catch (NumberFormatException e) {
         _boxID = -1;
       }
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE) != null ) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE) != null ) {
       _newObjInst = true;
-      modinfo.setApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
+      iwc.setApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE,BoxBusiness.PARAMETER_TRUE);
     }
 
-    if ( (String) modinfo.getApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE) != null ) {
+    if ( (String) iwc.getApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE) != null ) {
       _newObjInst = true;
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_LINK_ID) != null ) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_LINK_ID) != null ) {
       try {
-        _linkID = Integer.parseInt(modinfo.getParameter(BoxBusiness.PARAMETER_LINK_ID));
-        modinfo.setApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(_linkID));
+        _linkID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_LINK_ID));
+        iwc.setApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(_linkID));
       }
       catch (NumberFormatException e) {
         _linkID = -1;
@@ -151,39 +151,39 @@ public BoxEditorWindow(){
     }
 
     if ( sLocaleID != null ) {
-      saveBoxLink(modinfo,iLocaleId,false);
+      saveBoxLink(iwc,iLocaleId,false);
     }
 
-    if ( (Integer) modinfo.getApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID) != null ) {
+    if ( (Integer) iwc.getApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID) != null ) {
       try {
-        _linkID = ((Integer) modinfo.getApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID)).intValue();
+        _linkID = ((Integer) iwc.getApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID)).intValue();
       }
       catch (NumberFormatException e) {
         _linkID = -1;
       }
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID) != null ) {
       try {
-        _boxCategoryID = Integer.parseInt(modinfo.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
+        _boxCategoryID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID));
       }
       catch (NumberFormatException e) {
         _boxCategoryID = -1;
       }
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_FILE_ID) != null ) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_FILE_ID) != null ) {
       try {
-        _fileID = Integer.parseInt(modinfo.getParameter(BoxBusiness.PARAMETER_FILE_ID));
+        _fileID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_FILE_ID));
       }
       catch (NumberFormatException e) {
         _fileID = -1;
       }
     }
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_PAGE_ID) != null ) {
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_PAGE_ID) != null ) {
       try {
-        _pageID = Integer.parseInt(modinfo.getParameter(BoxBusiness.PARAMETER_PAGE_ID));
+        _pageID = Integer.parseInt(iwc.getParameter(BoxBusiness.PARAMETER_PAGE_ID));
       }
       catch (NumberFormatException e) {
         _pageID = -1;
@@ -196,18 +196,18 @@ public BoxEditorWindow(){
     addLeft(_iwrb.getLocalizedString("locale","Locale")+": ",localeDrop,false);
     addHiddenInput(new HiddenInput(BoxBusiness.PARAMETER_BOX_ID,Integer.toString(_boxID)));
 
-    if ( modinfo.getParameter(BoxBusiness.PARAMETER_MODE) != null ) {
-      if ( modinfo.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_CLOSE) ) {
-        closeEditor(modinfo);
+    if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE) != null ) {
+      if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_CLOSE) ) {
+        closeEditor(iwc);
       }
-      else if ( modinfo.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_SAVE) ) {
-        saveBoxLink(modinfo,iLocaleId,true);
+      else if ( iwc.getParameter(BoxBusiness.PARAMETER_MODE).equalsIgnoreCase(BoxBusiness.PARAMETER_SAVE) ) {
+        saveBoxLink(iwc,iLocaleId,true);
       }
     }
 
     if ( _linkID != -1 ) {
-      if ( modinfo.getParameter(BoxBusiness.PARAMETER_DELETE) != null ) {
-        deleteBoxLink(modinfo);
+      if ( iwc.getParameter(BoxBusiness.PARAMETER_DELETE) != null ) {
+        deleteBoxLink(iwc);
       }
       else {
         _update = true;
@@ -311,12 +311,12 @@ public BoxEditorWindow(){
     addSubmitButton(new SubmitButton(_iwrb.getImage("save.gif"),BoxBusiness.PARAMETER_MODE,BoxBusiness.PARAMETER_SAVE));
   }
 
-  private void saveBoxLink(ModuleInfo modinfo,int iLocaleID,boolean setToClose) {
-    String boxLinkName = modinfo.getParameter(BoxBusiness.PARAMETER_LINK_NAME);
-    String boxLinkURL = modinfo.getParameter(BoxBusiness.PARAMETER_LINK_URL);
-    String categoryID = modinfo.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID);
+  private void saveBoxLink(IWContext iwc,int iLocaleID,boolean setToClose) {
+    String boxLinkName = iwc.getParameter(BoxBusiness.PARAMETER_LINK_NAME);
+    String boxLinkURL = iwc.getParameter(BoxBusiness.PARAMETER_LINK_URL);
+    String categoryID = iwc.getParameter(BoxBusiness.PARAMETER_CATEGORY_ID);
 
-    String localeString = modinfo.getParameter(BoxBusiness.PARAMETER_LOCALE_ID);
+    String localeString = iwc.getParameter(BoxBusiness.PARAMETER_LOCALE_ID);
     int linkID = -1;
 
     if ( categoryID != null ) {
@@ -350,30 +350,30 @@ public BoxEditorWindow(){
 
     if ( localeString != null && boxLinkName != null ) {
       linkID = BoxBusiness.saveLink(_userID,_boxID,_boxCategoryID,_linkID,boxLinkName,_fileID,_pageID,boxLinkURL,_target,Integer.parseInt(localeString));
-      modinfo.setApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(linkID));
+      iwc.setApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID,new Integer(linkID));
     }
 
     if ( setToClose ) {
-      modinfo.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
-      modinfo.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
+      iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
+      iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
       setParentToReload();
       close();
     }
   }
 
-  private void deleteBoxLink(ModuleInfo modinfo) {
-    modinfo.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
-    modinfo.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
+  private void deleteBoxLink(IWContext iwc) {
+    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
+    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
     BoxBusiness.deleteLink(_linkID);
     setParentToReload();
     close();
   }
 
-  private void closeEditor(ModuleInfo modinfo) {
-    modinfo.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
-    modinfo.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
+  private void closeEditor(IWContext iwc) {
+    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_LINK_ID);
+    iwc.removeApplicationAttribute(BoxBusiness.PARAMETER_NEW_OBJECT_INSTANCE);
     if ( this._newObjInst ) {
-      deleteBoxLink(modinfo);
+      deleteBoxLink(iwc);
     }
     setParentToReload();
     close();

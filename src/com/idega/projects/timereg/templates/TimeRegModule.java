@@ -5,7 +5,7 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.projects.timereg.moduleobject.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 import java.sql.*;
 
 public class TimeRegModule extends JSPModule{

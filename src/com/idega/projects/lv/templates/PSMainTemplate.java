@@ -5,10 +5,10 @@ import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.data.*;
 
 public abstract class PSMainTemplate extends JSPModule implements JspPage{
@@ -85,13 +85,13 @@ public String language = "IS";
         tafla.setVerticalAlignment(3,1,"top");
 
 
-    String language2 = getModuleInfo().getRequest().getParameter("language");
-    if (language2==null) language2 = ( String ) getModuleInfo().getSession().getAttribute("language");
+    String language2 = getIWContext().getRequest().getParameter("language");
+    if (language2==null) language2 = ( String ) getIWContext().getSession().getAttribute("language");
     if ( language2 != null) language = language2;
 
-    getModuleInfo().setSpokenLanguage( language );
+    getIWContext().setSpokenLanguage( language );
 
-    getModuleInfo().getSession().setAttribute("language",language);
+    getIWContext().getSession().setAttribute("language",language);
 
 
     String commImage = "/pics/Projectscene/"+language+"/comm.gif";
@@ -159,16 +159,16 @@ public String language = "IS";
 		}
 	}
 
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		tafla.add(Text.getBreak(),2,1);
 	  tafla.add(objectToAdd,2,1);
 	}
 
-        public void addLeft(ModuleObject objectToAdd){
+        public void addLeft(PresentationObject objectToAdd){
 	  tafla.add(objectToAdd,1,1);
 	}
 
-        public void addRight(ModuleObject objectToAdd){
+        public void addRight(PresentationObject objectToAdd){
 		tafla.add(Text.getBreak(),3,1);
 	  tafla.add(objectToAdd,3,1);
 	}

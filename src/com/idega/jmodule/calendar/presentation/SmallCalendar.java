@@ -1,17 +1,17 @@
 package com.idega.jmodule.calendar.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.Block;
+import com.idega.presentation.IWContext;
 import java.sql.SQLException;
 import java.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.Image;
-import com.idega.jmodule.object.Table;
+import com.idega.presentation.text.*;
+import com.idega.presentation.Image;
+import com.idega.presentation.Table;
 import com.idega.util.text.*;
 import com.idega.util.*;
 import com.idega.util.idegaTimestamp;
 
-public class SmallCalendar extends JModuleObject{
+public class SmallCalendar extends Block{
 
   private idegaTimestamp today;
   private idegaTimestamp stamp;
@@ -77,14 +77,14 @@ public class SmallCalendar extends JModuleObject{
     return obj;
   }
 
-  public void make(ModuleInfo modinfo){
+  public void make(IWContext iwc){
     int thismonth =  today.getMonth();
     int stampmonth = stamp.getMonth();
     boolean shadow = (thismonth == stampmonth)?true:false;
         if (shadow) shadow = (today.getYear() == stamp.getYear()) ?true:false;
     int daycount = cal.getLengthOfMonth(stamp.getMonth(),stamp.getYear());
     int daynr = cal.getDayOfWeek(stamp.getYear(),stamp.getMonth(),1);
-    String sMonth = cal.getNameOfMonth(stamp.getMonth(),modinfo).substring(0,3);
+    String sMonth = cal.getNameOfMonth(stamp.getMonth(),iwc).substring(0,3);
     String sYear = String.valueOf(stamp.getYear());
     Text tMonth = new Text(sMonth+" "+sYear);
     tMonth.setFontColor(headerTextColor);
@@ -118,7 +118,7 @@ public class SmallCalendar extends JModuleObject{
     t.setFontSize(1);
     if (this.showNameOfDays) {
       for(int a = 1; a<8;a++){
-        t = new Text(cal.getNameOfDay(a,modinfo).substring(0,1));
+        t = new Text(cal.getNameOfDay(a,iwc).substring(0,1));
         t.setFontColor(textColor);
         t.setFontSize(1);
         T.setAlignment(a,1,"center");
@@ -185,11 +185,11 @@ public class SmallCalendar extends JModuleObject{
     }
 
 
-    public void main(ModuleInfo modinfo){
+    public void main(IWContext iwc){
 
       if (stamp == null) {
-          String month = modinfo.getParameter("month");
-          String year = modinfo.getParameter("year");
+          String month = iwc.getParameter("month");
+          String year = iwc.getParameter("year");
           if(month != null && year != null){
             try {
               int iMonth = Integer.parseInt(month);
@@ -204,7 +204,7 @@ public class SmallCalendar extends JModuleObject{
             stamp = new idegaTimestamp();
       }
 
-      make(modinfo);
+      make(iwc);
 
     }
     public void addNextMonthPrm(Link L,idegaTimestamp idts){

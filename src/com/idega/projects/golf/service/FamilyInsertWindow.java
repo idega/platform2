@@ -1,8 +1,8 @@
 package com.idega.projects.golf.service;
 
 import com.idega.projects.golf.entity.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.*;
 import com.idega.util.text.Name;
 import com.idega.util.text.*;
@@ -11,9 +11,9 @@ import java.sql.Date;
 import java.sql.*;
 import java.io.*;
 
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.text.*;
 import com.idega.projects.golf.*;
 import com.idega.util.*;
 import com.idega.data.*;
@@ -26,7 +26,7 @@ import com.idega.data.*;
  * @version 1.0
  */
 
-public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject.Window{
+public class FamilyInsertWindow extends com.idega.presentation.ui.Window{
 
   private static final String NAME = "1";
   private static final String NAME_AND_MIDDLE = "2";
@@ -70,14 +70,14 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
       uniMemInfo  = new Member(memberId).getUnionMemberInfo(unionId);
   }
 
-  public void main(ModuleInfo modinfo) {
+  public void main(IWContext iwc) {
       this.empty();
-      add(getInputTable(modinfo));
+      add(getInputTable(iwc));
   }
 
-  private void setVariables(ModuleInfo modinfo) {
-      choiseValue = modinfo.getRequest().getParameter(choiseName);
-      findValue = getValue(findName, modinfo);
+  private void setVariables(IWContext iwc) {
+      choiseValue = iwc.getRequest().getParameter(choiseName);
+      findValue = getValue(findName, iwc);
 
       if(findValue != null && (! findValue.equals(""))) {
           //member.setFamilyId(Integer.parseInt(findValue));
@@ -85,14 +85,14 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
 
   }
 
-  public Form getInputTable(ModuleInfo modinfo){
+  public Form getInputTable(IWContext iwc){
       Form form = new Form();
       form.setMethod("get");
       try {
 
 
-        String strStore = modinfo.getRequest().getParameter(STORE_NAME+".x");
-        String strFind = modinfo.getRequest().getParameter(FIND_NAME+".x");
+        String strStore = iwc.getRequest().getParameter(STORE_NAME+".x");
+        String strFind = iwc.getRequest().getParameter(FIND_NAME+".x");
 
         BorderTable hTable = new BorderTable();
 
@@ -113,13 +113,13 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
 
         table.add(buttonTable, 1, 6);
         if(strStore != null) {
-          store(modinfo);
+          store(iwc);
           close();
           setParentToReload();
         }
         else {
           if(strFind != null) {
-            setVariables(modinfo);
+            setVariables(iwc);
             int numRecords = 0;
             List l = find(findValue, choiseValue);
 
@@ -146,8 +146,8 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
   }
 
 
-  private void store(ModuleInfo modinfo) {
-      selectionFamilyValues = modinfo.getRequest().getParameterValues(selectionFamilyName);
+  private void store(IWContext iwc) {
+      selectionFamilyValues = iwc.getRequest().getParameterValues(selectionFamilyName);
       String familyId = selectionFamilyValues[0];
       int nOldFamilyID = this.uniMemInfo.getFamilyId();
 
@@ -171,8 +171,8 @@ public class FamilyInsertWindow extends com.idega.jmodule.object.interfaceobject
       }
   }
 
-  public String getValue(String attribute, ModuleInfo modinfo) {
-      return modinfo.getParameter(attribute);
+  public String getValue(String attribute, IWContext iwc) {
+      return iwc.getParameter(attribute);
   }
 
   private DropdownMenu getChoises(String name) {

@@ -8,7 +8,7 @@ package com.idega.jmodule;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
-import com.idega.jmodule.object.*;
+import com.idega.presentation.*;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -18,13 +18,13 @@ public class ModuleEvent{
 
 HttpServletRequest request;
 HttpServletResponse response;
-ModuleInfo modinfo;
+IWContext iwc;
 
 
-	public ModuleEvent(ModuleInfo modinfo){
-                this.modinfo = modinfo;
-		this.request=modinfo.getRequest();
-		this.response=modinfo.getResponse();
+	public ModuleEvent(IWContext iwc){
+                this.iwc = iwc;
+		this.request=iwc.getRequest();
+		this.response=iwc.getResponse();
 	}
 
 	public ModuleEvent(HttpServletRequest request,HttpServletResponse response){
@@ -44,8 +44,8 @@ ModuleInfo modinfo;
 		return response;
 	}
 
-        public ModuleInfo getModuleInfo(){
-          return this.modinfo;
+        public IWContext getIWContext(){
+          return this.iwc;
         }
 
 }

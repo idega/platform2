@@ -6,12 +6,12 @@ import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import java.text.NumberFormat;
-import com.idega.jmodule.object.ModuleInfo;
-import com.idega.jmodule.object.ModuleObjectContainer;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.ModuleObject;
-import com.idega.jmodule.object.Table;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -28,7 +28,7 @@ import com.idega.block.login.business.LoginBusiness;
  * @version 1.1
  */
 
-public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContainer {
+public class AccountViewer extends com.idega.presentation.PresentationObjectContainer {
 
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.finance";
   protected IWResourceBundle iwrb;
@@ -67,10 +67,10 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     this.iUserId = iUserId;
   }
 
-  public void control( ModuleInfo modinfo ){
-    checkIds(modinfo);
-    idegaTimestamp itFromDate = getFromDate(modinfo);
-    idegaTimestamp itToDate = getToDate(modinfo);
+  public void control( IWContext iwc ){
+    checkIds(iwc);
+    idegaTimestamp itFromDate = getFromDate(iwc);
+    idegaTimestamp itToDate = getToDate(iwc);
     if(isAdmin || isLoggedOn){
       if(listAccount != null){
         if(iAccountId <= 0)
@@ -86,11 +86,11 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     }
   }
 
-  public ModuleObject getMainTable(ModuleInfo modinfo){
+  public PresentationObject getMainTable(IWContext iwc){
     return new Text();
   }
 
-  public ModuleObject getAccountView(int iAccountId,List listAccount,idegaTimestamp FromDate,idegaTimestamp ToDate,boolean showallkeys){
+  public PresentationObject getAccountView(int iAccountId,List listAccount,idegaTimestamp FromDate,idegaTimestamp ToDate,boolean showallkeys){
     Table T = new Table(1,3);
     T.setWidth("100%");
     T.add(getEntrySearchTable(iAccountId,listAccount,FromDate,ToDate),1,2);
@@ -99,7 +99,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     return T;
   }
 
-  public ModuleObject getEntrySearchTable(int iAccountId,List listAccount,idegaTimestamp from,idegaTimestamp to){
+  public PresentationObject getEntrySearchTable(int iAccountId,List listAccount,idegaTimestamp from,idegaTimestamp to){
     Table T = new Table();
     T.setWidth("100%");
     String sFromDate = from.getISLDate(".",true);
@@ -129,7 +129,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     return myForm;
   }
 
-  public ModuleObject getAccountTable(int AccountId){
+  public PresentationObject getAccountTable(int AccountId){
     Account eAccount = null;
     if(AccountId > 0){
       try {
@@ -199,8 +199,8 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     return T;
   }
 
-  private ModuleObject getEntryTable(int iAccountId,idegaTimestamp from,idegaTimestamp to,boolean showallkeys){
-    ModuleObject mo = null;
+  private PresentationObject getEntryTable(int iAccountId,idegaTimestamp from,idegaTimestamp to,boolean showallkeys){
+    PresentationObject mo = null;
     try{
       Account a = new Account(iAccountId);
       mo =  getEntryTable(a, from, to, showallkeys);
@@ -212,7 +212,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     return mo;
   }
 
-  private ModuleObject getEntryTable(Account eAccount,idegaTimestamp from,idegaTimestamp to,boolean showallkeys){
+  private PresentationObject getEntryTable(Account eAccount,idegaTimestamp from,idegaTimestamp to,boolean showallkeys){
     List listEntries = null;
     if(eAccount.getType().equals(Account.typeFinancial)){
       if(showallkeys)
@@ -228,7 +228,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     else return new Text();
   }
 
-  private ModuleObject getPhoneEntryTable(List listEntries){
+  private PresentationObject getPhoneEntryTable(List listEntries){
     int tableDepth = 3;
     int cols = 9;
     if(listEntries != null){
@@ -344,7 +344,7 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     return T;
   }
 
-  private ModuleObject getFinanceEntryTable(List listEntries){
+  private PresentationObject getFinanceEntryTable(List listEntries){
 
     int tableDepth = 3;
     if(listEntries != null){
@@ -429,9 +429,9 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     return T;
   }
 
-  private idegaTimestamp getFromDate(ModuleInfo modinfo){
-    if(modinfo.getParameter(prmFromDate)!=null){
-      String sFromDate = modinfo.getParameter(prmFromDate);
+  private idegaTimestamp getFromDate(IWContext iwc){
+    if(iwc.getParameter(prmFromDate)!=null){
+      String sFromDate = iwc.getParameter(prmFromDate);
       return parseStamp(sFromDate);
     }
     else{
@@ -440,9 +440,9 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     }
   }
 
-  private idegaTimestamp getToDate(ModuleInfo modinfo){
-    if(modinfo.getParameter(prmToDate)!=null){
-      String sToDate = modinfo.getParameter(prmToDate);
+  private idegaTimestamp getToDate(IWContext iwc){
+    if(iwc.getParameter(prmToDate)!=null){
+      String sToDate = iwc.getParameter(prmToDate);
       return parseStamp(sToDate);
     }
     else{
@@ -450,17 +450,17 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
     }
   }
 
-  private void checkIds(ModuleInfo modinfo){
+  private void checkIds(IWContext iwc){
     if(iUserId == -1){
-      if(modinfo.getParameter(prmUserId)!=null){
-        iUserId = Integer.parseInt(modinfo.getParameter(prmUserId));
+      if(iwc.getParameter(prmUserId)!=null){
+        iUserId = Integer.parseInt(iwc.getParameter(prmUserId));
       }
       else if(isLoggedOn){
-        iUserId = LoginBusiness.getUser(modinfo).getID();
+        iUserId = LoginBusiness.getUser(iwc).getID();
       }
     }
-    if( modinfo.getParameter(prmAccountId)!=null ){
-      iAccountId = Integer.parseInt(modinfo.getParameter(prmAccountId));
+    if( iwc.getParameter(prmAccountId)!=null ){
+      iAccountId = Integer.parseInt(iwc.getParameter(prmAccountId));
     }
     if( iUserId != -1 && !isAdmin){
       try {
@@ -493,15 +493,15 @@ public class AccountViewer extends com.idega.jmodule.object.ModuleObjectContaine
       return it;
   }
 
-  public void main( ModuleInfo modinfo ) {
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main( IWContext iwc ) {
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
-      isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
+      isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
-    control(modinfo);
+    control(iwc);
   }
 
   public String getBundleIdentifier(){

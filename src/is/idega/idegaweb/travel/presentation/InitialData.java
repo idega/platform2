@@ -1,11 +1,11 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.textObject.Text;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.core.data.*;
 import com.idega.core.accesscontrol.business.AccessControl;
@@ -38,7 +38,7 @@ public class InitialData extends TravelManager {
   public InitialData() {
   }
 
-  public void add(ModuleObject mo) {
+  public void add(PresentationObject mo) {
     super.add(mo);
   }
 
@@ -46,32 +46,32 @@ public class InitialData extends TravelManager {
     return super.IW_BUNDLE_IDENTIFIER;
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-      super.main(modinfo);
-      initialize(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+      super.main(iwc);
+      initialize(iwc);
 
-      String action = modinfo.getParameter("supplier_action");
+      String action = iwc.getParameter("supplier_action");
       if (action == null) {action = "";}
 
       if (action.equals("")) {
-          displayForm(modinfo);
+          displayForm(iwc);
       }else if (action.equals("create")) {
-          createSupplier(modinfo);
+          createSupplier(iwc);
       }
 
       super.addBreak();
   }
 
-  public void initialize(ModuleInfo modinfo) {
+  public void initialize(IWContext iwc) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
 
       supplier = super.getSupplier();
   }
 
-  public void displayForm(ModuleInfo modinfo) throws SQLException {
+  public void displayForm(IWContext iwc) throws SQLException {
 
-      String action = modinfo.getParameter("admin_action");
+      String action = iwc.getParameter("admin_action");
         if (action == null) action = "";
 
       Form form = new Form();
@@ -87,16 +87,16 @@ public class InitialData extends TravelManager {
         }
         else {
             if (action.equals("")) {
-              sb.add(selectSupplier(modinfo));
+              sb.add(selectSupplier(iwc));
             }
             else if (action.equals("new")) {
               sb.add(getSupplierCreation(-1));
             }
             else if (action.equals("edit")) {
-              sb.add(getSupplierCreation(Integer.parseInt(modinfo.getParameter("SR_SUPPLIER"))));
+              sb.add(getSupplierCreation(Integer.parseInt(iwc.getParameter("SR_SUPPLIER"))));
             }
             else if (action.equals("invalidate")) {
-              String supplier_id = modinfo.getParameter("SR_SUPPLIER");
+              String supplier_id = iwc.getParameter("SR_SUPPLIER");
               if (supplier_id != null)
               try {
                 SupplierManager.invalidateSupplier(new Supplier(Integer.parseInt(supplier_id)));
@@ -105,7 +105,7 @@ public class InitialData extends TravelManager {
                 sb.add("TEMP - henti ekki");
               }
 
-              sb.add(selectSupplier(modinfo));
+              sb.add(selectSupplier(iwc));
             }
         }
 
@@ -116,7 +116,7 @@ public class InitialData extends TravelManager {
   }
 
 
-  public Table selectSupplier(ModuleInfo modinfo) throws SQLException {
+  public Table selectSupplier(IWContext iwc) throws SQLException {
       Table table = new Table();
         table.setBorder(1);
 
@@ -312,22 +312,22 @@ public class InitialData extends TravelManager {
       return table;
   }
 
-  public void createSupplier(ModuleInfo modinfo)  {
+  public void createSupplier(IWContext iwc)  {
       add(Text.getBreak());
 //      javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
 
       try {
-          String name = modinfo.getParameter("supplier_name");
-          String description = modinfo.getParameter("supplier_description");
-          String address = modinfo.getParameter("supplier_address");
-          String phone = modinfo.getParameter("supplier_phone");
-          String fax = modinfo.getParameter("supplier_fax");
-          String email = modinfo.getParameter("supplier_email");
-          String supplier_id = modinfo.getParameter("supplier_id");
+          String name = iwc.getParameter("supplier_name");
+          String description = iwc.getParameter("supplier_description");
+          String address = iwc.getParameter("supplier_address");
+          String phone = iwc.getParameter("supplier_phone");
+          String fax = iwc.getParameter("supplier_fax");
+          String email = iwc.getParameter("supplier_email");
+          String supplier_id = iwc.getParameter("supplier_id");
 
-          String userName = modinfo.getParameter("supplier_user_name");
-          String passOne = modinfo.getParameter("supplier_password_one");
-          String passTwo = modinfo.getParameter("supplier_password_one");
+          String userName = iwc.getParameter("supplier_user_name");
+          String passOne = iwc.getParameter("supplier_password_one");
+          String passTwo = iwc.getParameter("supplier_password_one");
 
 
               boolean isUpdate = false;

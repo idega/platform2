@@ -13,9 +13,9 @@ import java.sql.*;
 import java.util.*;
 import java.io.*;
 import com.idega.util.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.projects.golf.entity.Member;
 import com.idega.projects.golf.entity.UnionMemberInfo;
 
@@ -31,19 +31,19 @@ public class MemberCommenter extends Editor{
   public MemberCommenter(){
   }
 
-  protected void control(ModuleInfo modinfo){
-    String member_id = modinfo.getParameter("member_id");
-    String union_id = modinfo.getParameter("union_id");
+  protected void control(IWContext iwc){
+    String member_id = iwc.getParameter("member_id");
+    String union_id = iwc.getParameter("union_id");
     this.makeView();
     if(member_id != null && union_id != null){
       try{
       eMember = new Member(Integer.parseInt(member_id));
       eUMI = eMember.getUnionMemberInfo(Integer.parseInt(union_id));
-      String comment = modinfo.getParameter("mc_comment")!=null?modinfo.getParameter("mc_comment"):"";
-        if(modinfo.getParameter("adding")!=null || modinfo.getParameter("adding.x")!=null ){
+      String comment = iwc.getParameter("mc_comment")!=null?iwc.getParameter("mc_comment"):"";
+        if(iwc.getParameter("adding")!=null || iwc.getParameter("adding.x")!=null ){
           doAddToComment(eUMI,comment);
         }
-        else if(modinfo.getParameter("shifting")!=null || modinfo.getParameter("shifting.x")!=null ){
+        else if(iwc.getParameter("shifting")!=null || iwc.getParameter("shifting.x")!=null ){
           doShiftComment(eUMI,comment);
         }
         this.addLinks(formatText("Athugasemdir"));
@@ -57,7 +57,7 @@ public class MemberCommenter extends Editor{
       add("enginn valinn");
   }
 
-  protected ModuleObject makeLinkTable(int menuNr){
+  protected PresentationObject makeLinkTable(int menuNr){
     return new Text("");
   }
 
@@ -82,7 +82,7 @@ public class MemberCommenter extends Editor{
       add("Tókst ekki að skrifa í gagnagrunn");
     }
   }
-  private ModuleObject doView(Member member, UnionMemberInfo umi){
+  private PresentationObject doView(Member member, UnionMemberInfo umi){
     Table T = new Table();
     //T.add(formatText("Nafn :"),1,1);
     T.add(formatText(member.getName()),1,1);

@@ -1,11 +1,11 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.JModuleObject;
+import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.business.*;
@@ -50,32 +50,32 @@ public class ServiceDesigner extends TravelManager {
   public ServiceDesigner() {
   }
 
-  public void add(ModuleObject mo) {
+  public void add(PresentationObject mo) {
     super.add(mo);
   }
 
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-      super.main(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+      super.main(iwc);
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
 
       if (supplier != null) {
 
-        String action = modinfo.getParameter(ServiceAction);
+        String action = iwc.getParameter(ServiceAction);
         if (action == null) {action = "";}
 
         if (action.equals("")) {
-            displayForm(modinfo);
+            displayForm(iwc);
         }else if (action.equals("create")) {
-            createService(modinfo);
+            createService(iwc);
         }else if (action.equals(parameterUpdateAction)) {
             add("unimplemented");
         }else if (action.equals(this.PriceCategoryRefresh) ) {
-            priceCategoryCreation(modinfo);
+            priceCategoryCreation(iwc);
         }else if (action.equals(this.PriceCategorySave)) {
-            priceCategorySave(modinfo);
+            priceCategorySave(iwc);
         }
 
 
@@ -87,52 +87,52 @@ public class ServiceDesigner extends TravelManager {
   }
 
 
-  private void displayForm(ModuleInfo modinfo) throws SQLException{
+  private void displayForm(IWContext iwc) throws SQLException{
     /**
      * @todo implement for other types
      */
-    TourDesigner td = new TourDesigner(modinfo);
+    TourDesigner td = new TourDesigner(iwc);
       add(td.getTourDesignerForm());
   }
 
 
-  private void createService(ModuleInfo modinfo) throws SQLException{
+  private void createService(IWContext iwc) throws SQLException{
       if ( this.priceCategoryCreation == null ) {
-        TourDesigner td = new TourDesigner(modinfo);
-          int tourId = td.createTour(modinfo);
-          setService(modinfo,tourId);
+        TourDesigner td = new TourDesigner(iwc);
+          int tourId = td.createTour(iwc);
+          setService(iwc,tourId);
       }
-      priceCategoryCreation(modinfo);
+      priceCategoryCreation(iwc);
 
   }
 
-  private void setService(ModuleInfo modinfo,int serviceId) throws SQLException{
+  private void setService(IWContext iwc,int serviceId) throws SQLException{
       service = new Service(serviceId);
-      modinfo.setSessionAttribute(this.ServiceSessionAttribute, service);
+      iwc.setSessionAttribute(this.ServiceSessionAttribute, service);
   }
 
-  private Service getService(ModuleInfo modinfo) {
+  private Service getService(IWContext iwc) {
     if (service == null) {
-      service = (Service) modinfo.getSessionAttribute(this.ServiceSessionAttribute);
+      service = (Service) iwc.getSessionAttribute(this.ServiceSessionAttribute);
     }
     return service;
 
   }
 
-  private void removeService(ModuleInfo modinfo) {
+  private void removeService(IWContext iwc) {
       service = null;
-      modinfo.removeSessionAttribute(this.ServiceSessionAttribute);
+      iwc.removeSessionAttribute(this.ServiceSessionAttribute);
   }
 
 
-  private void priceCategoryCreation(ModuleInfo modinfo) {
+  private void priceCategoryCreation(IWContext iwc) {
       this.priceCategoryCreation = new Boolean(true);
-      if (this.getService(modinfo) != null) {
+      if (this.getService(iwc) != null) {
 
           ShadowBox sb = new ShadowBox();
             sb.setWidth("90%");
 
-          String sHowMany = modinfo.getParameter("how_many");
+          String sHowMany = iwc.getParameter("how_many");
           if (sHowMany == null) {
             sHowMany = "2";
           }
@@ -229,11 +229,11 @@ public class ServiceDesigner extends TravelManager {
 
   }
 
-  private void priceCategorySave(ModuleInfo modinfo) {
-      String[] priceDiscount = (String[]) modinfo.getParameterValues("price_discount");
-      String[] priceCategoryIds = (String[]) modinfo.getParameterValues("price_category_id");
+  private void priceCategorySave(IWContext iwc) {
+      String[] priceDiscount = (String[]) iwc.getParameterValues("price_discount");
+      String[] priceCategoryIds = (String[]) iwc.getParameterValues("price_category_id");
 
-      Service service = this.getService(modinfo);
+      Service service = this.getService(iwc);
 
       try {
         if (priceDiscount != null) {
@@ -251,7 +251,7 @@ public class ServiceDesigner extends TravelManager {
               }
           }
         }
-        this.removeService(modinfo);
+        this.removeService(iwc);
         this.priceCategoryCreation = null;
 
       }catch (Exception e) {

@@ -26,7 +26,7 @@ public class Floor extends GenericEntity {
     addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
     addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class,4000);
     addAttribute(getBuildingIdColumnName(),"Building",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.building.data.Building.class);
-    addAttribute(getImageIdColumnName(),"Plan",true,true,java.lang.Integer.class,"many-to-one",com.idega.jmodule.object.Image.class);
+    addAttribute(getImageIdColumnName(),"Plan",true,true,java.lang.Integer.class,"many-to-one",com.idega.presentation.Image.class);
 
   }
 

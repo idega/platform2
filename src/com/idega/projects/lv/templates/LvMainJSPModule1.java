@@ -5,8 +5,8 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.jmodule.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
 import com.idega.jmodule.poll.moduleobject.*;
 import java.sql.*;
 import java.io.*;
@@ -191,7 +191,7 @@ public class LvMainJSPModule1 extends JSPModule {
 	}
 
 // ###########  Public - Föll
-	public void add(ModuleObject objectToAdd){
+	public void add(PresentationObject objectToAdd){
 		try{
 			content().add(objectToAdd,1,1);
 		}
@@ -200,7 +200,7 @@ public class LvMainJSPModule1 extends JSPModule {
 		}
 	}
 
-	public void add2(ModuleObject objectToAdd){
+	public void add2(PresentationObject objectToAdd){
 		try{
 			content2().add(objectToAdd,1,1);
 		}
@@ -209,7 +209,7 @@ public class LvMainJSPModule1 extends JSPModule {
 		}
 	}
 
-	public void add3(ModuleObject objectToAdd){
+	public void add3(PresentationObject objectToAdd){
 		try{
 			content3().add(objectToAdd,1,1);
 		}

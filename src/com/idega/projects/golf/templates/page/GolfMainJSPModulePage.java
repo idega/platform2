@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.40 2001/09/20 12:01:38 laddi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.41 2001/10/05 08:04:42 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,9 +17,9 @@ import com.idega.projects.golf.presentation.*;
 import com.idega.projects.golf.moduleobject.Login;
 import com.idega.jmodule.*;
 import com.idega.jmodule.banner.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.jmodule.poll.moduleobject.*;
 import com.idega.jmodule.news.data.*;
 import com.idega.jmodule.forum.data.*;
@@ -55,25 +55,25 @@ public class GolfMainJSPModulePage extends MainPage {
     initCenter();
   }
 
-  protected void User(ModuleInfo modinfo) throws SQLException, IOException {
+  protected void User(IWContext iwc) throws SQLException, IOException {
     this.setTextDecoration("none");
     setTopMargin(5);
     add("top", golfHeader());
-    add("top", Top(modinfo));
+    add("top", Top(iwc));
     add("bottom", golfFooter());
-    add(Left(modinfo), Center(), Right(modinfo));
+    add(Left(iwc), Center(), Right(iwc));
     setWidth(1, Integer.toString(LEFTWIDTH) );
     setContentWidth( "100%");
     setWidth(3, Integer.toString(RIGHTWIDTH) );
   }
 
-  protected Table Top(ModuleInfo modinfo) throws SQLException,IOException{
+  protected Table Top(IWContext iwc) throws SQLException,IOException{
     Table topTable = new Table(3,1);
     topTable.setCellpadding(0);
     topTable.setCellspacing(0);
     topTable.setHeight("90");
     topTable.add(getLogin(),1,1);
-    topTable.add(getHBanner(modinfo),2,1);
+    topTable.add(getHBanner(iwc),2,1);
 
     topTable.add(getHoleView(),3,1);//debug landsmot
     //topTable.add(iwrb.getImage("/banners/small_ad.gif"),3,1);
@@ -92,7 +92,7 @@ public class GolfMainJSPModulePage extends MainPage {
   }
 
 
-  protected Table Left(ModuleInfo modinfo) throws SQLException, IOException {
+  protected Table Left(IWContext iwc) throws SQLException, IOException {
     Table leftTable = new Table(1,14);
     //leftTable.setBorder(1);
     leftTable.setVerticalAlignment("top");
@@ -124,11 +124,11 @@ public class GolfMainJSPModulePage extends MainPage {
 
     HeaderTable sponsorBox = Sponsors();
     //sponsorBox.setCacheable("SponsorBox",86400000);//24 hour
-    leftTable.add(JModuleObject.getCacheableObject(sponsorBox,"SponsorBox",86400000), 1,3);
+    leftTable.add(Block.getCacheableObject(sponsorBox,"SponsorBox",86400000), 1,3);
 
     HeaderTable newsBox = clubNews();
     //newsBox.setCacheable("NewsBox",3600000);//60*60*1000 1 hour
-    leftTable.add(JModuleObject.getCacheableObject(newsBox,"NewsBox",3600000),1,5);
+    leftTable.add(Block.getCacheableObject(newsBox,"NewsBox",3600000),1,5);
 
     TournamentBox tBox = new TournamentBox();
     tBox.setCacheable("TournamentBox",1800000);
@@ -136,9 +136,9 @@ public class GolfMainJSPModulePage extends MainPage {
 
     HeaderTable chatBox = getChat();
     //chatBox.setCacheable("ChatBox",3600000);
-    leftTable.add(JModuleObject.getCacheableObject(chatBox,"ChatBox",3600000),1,9);
+    leftTable.add(Block.getCacheableObject(chatBox,"ChatBox",3600000),1,9);
 
-    BoxReader bLinks = getLinks(modinfo);
+    BoxReader bLinks = getLinks(iwc);
     bLinks.setCacheable("Miscbox",86400000);//1000*60*60*24 = 24 hours
     leftTable.add(bLinks,1,11);
     leftTable.add(idega(),1,13);
@@ -412,9 +412,9 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
 
-		public BoxReader getLinks(ModuleInfo modinfo){
+		public BoxReader getLinks(IWContext iwc){
 
-			BoxReader box_office= new BoxReader("1",isAdmin(modinfo),3);
+			BoxReader box_office= new BoxReader("1",isAdmin(iwc),3);
 				box_office.setBoxBorder(0);
 				box_office.setInnerBoxBorder(0);
 				box_office.setBoxWidth(148);
@@ -456,9 +456,9 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
 
-              com.idega.jmodule.object.Image logo1 = iwrb.getImage("banners/WAGC.gif");
-              com.idega.jmodule.object.Image logo2 = iwrb.getImage("banners/EGA.gif");
-              com.idega.jmodule.object.Image logo3 = iwrb.getImage("banners/RACrest2.gif");
+              com.idega.presentation.Image logo1 = iwrb.getImage("banners/WAGC.gif");
+              com.idega.presentation.Image logo2 = iwrb.getImage("banners/EGA.gif");
+              com.idega.presentation.Image logo3 = iwrb.getImage("banners/RACrest2.gif");
 
 
               Link logo1Link = new Link(logo1,"http://www.wagc.org/");
@@ -552,7 +552,7 @@ public class GolfMainJSPModulePage extends MainPage {
       return table;
     }
 
-        protected Table Right(ModuleInfo modinfo) throws SQLException,IOException{
+        protected Table Right(IWContext iwc) throws SQLException,IOException{
           Table rightTable = new Table(1,11);
           rightTable.setWidth(RIGHTWIDTH);
           rightTable.setCellpadding(0);
@@ -573,23 +573,23 @@ public class GolfMainJSPModulePage extends MainPage {
           HeaderTable proGolfers = getProGolfers();
           //proGolfers.setCacheable("proGolfers",86400000);//24 hour
 
-          rightTable.add(JModuleObject.getCacheableObject(proGolfers,"proGolfers",86400000),1,1);
+          rightTable.add(Block.getCacheableObject(proGolfers,"proGolfers",86400000),1,1);
           //rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
 
 
           HeaderTable poll = getPollVoter();
           //poll.setCacheable("poll",3600000);//1 hour
-          rightTable.add(JModuleObject.getCacheableObject(poll,"poll",3600000),1,3);//1,5
+          rightTable.add(Block.getCacheableObject(poll,"poll",3600000),1,3);//1,5
 
           HeaderTable asses = getGSIAssociates();
           //asses.setCacheable("asses",86400000);//24 hour
-          rightTable.add(JModuleObject.getCacheableObject(asses,"asses",86400000),1,5);//1,7
+          rightTable.add(Block.getCacheableObject(asses,"asses",86400000),1,5);//1,7
 
           HeaderTable gLinks = getGolfLinks();
           //gLinks.setCacheable("gLinks",86400000);//24 hour
-          rightTable.add(JModuleObject.getCacheableObject(gLinks,"gLinks",86400000),1,7);//1,9
+          rightTable.add(Block.getCacheableObject(gLinks,"gLinks",86400000),1,7);//1,9
 
-          JModuleObject yellow = new JModuleObject();
+          Block yellow = new Block();
           yellow.add(getYellowLine());
           yellow.setCacheable("yellow",86400000);//24 hour
           rightTable.add(getYellowLine(),1,9);//1,11
@@ -760,7 +760,7 @@ public class GolfMainJSPModulePage extends MainPage {
       }
 
 
-      protected Table getHBanner(ModuleInfo modinfo) throws SQLException{
+      protected Table getHBanner(IWContext iwc) throws SQLException{
           Table bannerTable = new Table(1,1);
           bannerTable.setAlignment("center");
           bannerTable.setAlignment(1,1,"middle");
@@ -768,7 +768,7 @@ public class GolfMainJSPModulePage extends MainPage {
           bannerTable.setCellspacing(0);
 
 
- 		InsertBanner ib = new InsertBanner(3, isAdmin(modinfo));
+ 		InsertBanner ib = new InsertBanner(3, isAdmin(iwc));
                   ib.setAdminButtonURL("/pics/jmodules/banner/bannerstjori.gif");
 		bannerTable.add(ib,1,1);
           return bannerTable;
@@ -833,23 +833,23 @@ public class GolfMainJSPModulePage extends MainPage {
   }
 
 
-	public void add(ModuleObject objectToAdd) {
+	public void add(PresentationObject objectToAdd) {
   	  Center().add(objectToAdd,1,1);
         }
 
 
 
 
-  public void removeUnionIdSessionAttribute(ModuleInfo modinfo){
-    modinfo.removeSessionAttribute("golf_union_id");
+  public void removeUnionIdSessionAttribute(IWContext iwc){
+    iwc.removeSessionAttribute("golf_union_id");
   }
 
-  public String getUnionID(ModuleInfo modinfo){
-    return (String)modinfo.getSessionAttribute("golf_union_id");
+  public String getUnionID(IWContext iwc){
+    return (String)iwc.getSessionAttribute("golf_union_id");
   }
 
-  public void setUnionID(ModuleInfo modinfo, String union_id){
-    modinfo.setSessionAttribute("golf_union_id", union_id);
+  public void setUnionID(IWContext iwc, String union_id){
+    iwc.setSessionAttribute("golf_union_id", union_id);
   }
 
 
@@ -859,13 +859,13 @@ public class GolfMainJSPModulePage extends MainPage {
 
 
 
-  public Member getMember(ModuleInfo modinfo){
-          return (Member)modinfo.getSession().getAttribute("member_login");
+  public Member getMember(IWContext iwc){
+          return (Member)iwc.getSession().getAttribute("member_login");
   }
 
-  public boolean isAdmin(ModuleInfo modinfo) {
+  public boolean isAdmin(IWContext iwc) {
     try {
-      return com.idega.jmodule.login.business.AccessControl.isAdmin(modinfo);
+      return com.idega.jmodule.login.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException E) {
       E.printStackTrace(System.err);
@@ -879,19 +879,19 @@ public class GolfMainJSPModulePage extends MainPage {
     return false;
   }
 
-  public boolean isDeveloper(ModuleInfo modinfo) {
-    return com.idega.jmodule.login.business.AccessControl.isDeveloper(modinfo);
+  public boolean isDeveloper(IWContext iwc) {
+    return com.idega.jmodule.login.business.AccessControl.isDeveloper(iwc);
   }
 
-  public boolean isClubAdmin(ModuleInfo modinfo) {
-    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(modinfo);
+  public boolean isClubAdmin(IWContext iwc) {
+    return com.idega.jmodule.login.business.AccessControl.isClubAdmin(iwc);
   }
 
-  public boolean isClubWorker(ModuleInfo modinfo) {
+  public boolean isClubWorker(IWContext iwc) {
     boolean ret;
 
     try {
-      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(modinfo);
+      ret = com.idega.jmodule.login.business.AccessControl.isClubWorker(iwc);
     }
     catch(java.sql.SQLException e) {
       e.printStackTrace(System.err);
@@ -901,26 +901,26 @@ public class GolfMainJSPModulePage extends MainPage {
     return(ret);
   }
 
-  public boolean isUser(ModuleInfo modinfo) {
-    return com.idega.jmodule.login.business.AccessControl.isUser(modinfo);
+  public boolean isUser(IWContext iwc) {
+    return com.idega.jmodule.login.business.AccessControl.isUser(iwc);
   }
 
 
 
 
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    isAdmin = isAdmin(modinfo);
+  public void main(IWContext iwc) throws Exception {
+    isAdmin = isAdmin(iwc);
 
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
 
     setLinkColor(iwb.getProperty("link_color","black"));
     setVlinkColor(iwb.getProperty("vlink_color","black"));
     setHoverColor(iwb.getProperty("hover_link_color","#8ab490"));
 
     try {
-     User(modinfo);
+     User(iwc);
     }
     catch(SQLException E) {
       E.printStackTrace(System.err);

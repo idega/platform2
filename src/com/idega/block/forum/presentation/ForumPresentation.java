@@ -2,9 +2,9 @@ package com.idega.block.forum.presentation;
 
 import com.idega.block.forum.business.*;
 import com.idega.block.forum.data.*;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.ui.*;
 import com.idega.util.text.*;
 import java.sql.*;
 import java.util.Locale;
@@ -20,7 +20,7 @@ import com.idega.core.accesscontrol.business.AccessControl;
  */
 
 
-public abstract class ForumPresentation extends JModuleObject {
+public abstract class ForumPresentation extends Block {
 
   protected ForumDBWriter DBWriter;
   private ForumList myList;
@@ -42,11 +42,11 @@ public abstract class ForumPresentation extends JModuleObject {
 
   protected boolean UseForumList;
 
-  public ModuleInfo modinfo;
+  public IWContext iwc;
 
   protected boolean isUser;
 
-  protected ModuleObject SomeThreadsModule;
+  protected PresentationObject SomeThreadsModule;
   protected Form entryForm;
   protected int currentState;
   private String currentForumID;
@@ -60,8 +60,8 @@ public abstract class ForumPresentation extends JModuleObject {
   private boolean UseNameField;
   private boolean saveThread;
 
-//  protected final ModuleObject OpenTreeLink = new Text("Opna Þræði");
-//  protected final ModuleObject CloseTreeLink = new Text("Loka Þraðum");
+//  protected final PresentationObject OpenTreeLink = new Text("Opna Þræði");
+//  protected final PresentationObject CloseTreeLink = new Text("Loka Þraðum");
 
   protected boolean firstTree;
 
@@ -148,8 +148,8 @@ public abstract class ForumPresentation extends JModuleObject {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public void initPermissions(ModuleInfo modinfo)throws Exception{
-    boolean edit = this.hasPermission(AccessControl.getEditPermissionString(),this,getModuleInfo());
+  public void initPermissions(IWContext iwc)throws Exception{
+    boolean edit = this.hasPermission(AccessControl.getEditPermissionString(),this,getIWContext());
     _permissionTo_deleteThread = edit;
     _permissionTo_createForum = edit;
   }
@@ -177,16 +177,16 @@ public abstract class ForumPresentation extends JModuleObject {
 
   public void InitPresentation()throws Exception{
     justSetConnectionAttributes = false;
-/*    DBWriter = (ForumDBWriter)modinfo.getRequest().getSession().getAttribute("ForumDBWriter");
+/*    DBWriter = (ForumDBWriter)iwc.getRequest().getSession().getAttribute("ForumDBWriter");
     if (DBWriter == null){*/
       DBWriter =  new ForumDBWriter();
-/*      modinfo.getRequest().getSession().setAttribute("ForumDBWriter", DBWriter );
+/*      iwc.getRequest().getSession().setAttribute("ForumDBWriter", DBWriter );
     }*/
 /*
-    Error = (ForumError)modinfo.getRequest().getSession().getAttribute("ForumError");
+    Error = (ForumError)iwc.getRequest().getSession().getAttribute("ForumError");
     if (Error == null){
       Error = new ForumError();
-      modinfo.getRequest().getSession().setAttribute("ForumError", Error );
+      iwc.getRequest().getSession().setAttribute("ForumError", Error );
     }
 */
     this.initSomeThreads();
@@ -211,12 +211,12 @@ public abstract class ForumPresentation extends JModuleObject {
     }
   }
 
-  public void initTree(ModuleInfo modinfo) throws Exception{
-    if((AttributeName != null) && (modinfo.getParameter("forum_id") == null)){
+  public void initTree(IWContext iwc) throws Exception{
+    if((AttributeName != null) && (iwc.getParameter("forum_id") == null)){
         int forum_id = service.getDefaultAttributeForumID(AttributeID, AttributeName);
         Tree = new ThreadTree(forum_id);
     }else{
-        Tree = new ThreadTree(modinfo);
+        Tree = new ThreadTree(iwc);
     }
   }
 
@@ -225,16 +225,16 @@ public abstract class ForumPresentation extends JModuleObject {
   }
 
   public void initEntry() throws SQLException{
-    Entry = new ThreadEntry(modinfo);
+    Entry = new ThreadEntry(iwc);
   }
 
   // Ma helst ekki overwrite
   protected void initializeForm(){
     entryForm = new Form();
-    if (modinfo.getParameter("parent_id") != null)
-      entryForm.add(new HiddenInput("parent_id",modinfo.getParameter("parent_id")));
-    if (modinfo.getParameter("forum_id") != null)
-      entryForm.add(new HiddenInput("forum_id",modinfo.getParameter("forum_id")));
+    if (iwc.getParameter("parent_id") != null)
+      entryForm.add(new HiddenInput("parent_id",iwc.getParameter("parent_id")));
+    if (iwc.getParameter("forum_id") != null)
+      entryForm.add(new HiddenInput("forum_id",iwc.getParameter("forum_id")));
 
     entryForm.add(new HiddenInput("state", "6"));
   }
@@ -248,15 +248,15 @@ public abstract class ForumPresentation extends JModuleObject {
 
   protected void addProperState() throws Exception{
 
-    if (modinfo.getParameter("state") == null){
+    if (iwc.getParameter("state") == null){
       State1();
     } else {
 
-      if (!(modinfo.getParameter("state").equals("same"))){
-        currentState = Integer.parseInt(modinfo.getParameter("state"));
+      if (!(iwc.getParameter("state").equals("same"))){
+        currentState = Integer.parseInt(iwc.getParameter("state"));
       }
 
-     if (modinfo.getParameter("state").equals("same") && !(currentState == 2 || currentState == 3)){
+     if (iwc.getParameter("state").equals("same") && !(currentState == 2 || currentState == 3)){
        currentState = 2;
      }
 
@@ -297,12 +297,12 @@ public abstract class ForumPresentation extends JModuleObject {
       State2();
     }else{
       initList();
-      String action = modinfo.getParameter("action");
+      String action = iwc.getParameter("action");
       if (action != null && action.equals("insert")){
         add(call_ForumList_ForumCreation());
       }else{
         add(ForumList_Presentation());
-        this.initTree(modinfo);
+        this.initTree(iwc);
         firstTree = true;
       }
     }
@@ -313,13 +313,13 @@ public abstract class ForumPresentation extends JModuleObject {
     currentState = 2;
     updateCurrentForumName();
     if (Tree == null)
-       this.initTree(this.modinfo);
+       this.initTree(this.iwc);
 
     if(UseForums && currentForum != null)
       add(ForumNameHeader());
 
     add(ThreadTree_Presentation());
-    //Tree.main(this.modinfo);
+    //Tree.main(this.iwc);
     firstTree = false;
   }
 
@@ -327,7 +327,7 @@ public abstract class ForumPresentation extends JModuleObject {
     lastSaved = -7;
     currentState = 3;
 
-    String id = modinfo.getParameter("forum_thread_id");
+    String id = iwc.getParameter("forum_thread_id");
     if (id != null){
       theThread = new ThreadContents(Integer.parseInt(id));
       Contents = theThread.getThreads(false);
@@ -338,15 +338,15 @@ public abstract class ForumPresentation extends JModuleObject {
 
     add(ThreadContents_Presentation());
     if (Tree == null)
-       this.initTree(modinfo);
+       this.initTree(iwc);
     add(ThreadTree_Presentation());
-    //Tree.main(modinfo);
+    //Tree.main(iwc);
     firstTree = false;
   }
 
   protected void State3(int fromDBWriter) throws Exception{
       currentState = 3;
-      Tree.main(modinfo);
+      Tree.main(iwc);
       theThread = new ThreadContents(fromDBWriter);
       Contents = theThread.getThreads(false);
 
@@ -355,9 +355,9 @@ public abstract class ForumPresentation extends JModuleObject {
 
       add(ThreadContents_Presentation());
       if (Tree == null)
-        this.initTree(modinfo);
+        this.initTree(iwc);
       add(ThreadTree_Presentation());
-      //Tree.main(modinfo);
+      //Tree.main(iwc);
       firstTree = false;
   }
 
@@ -383,8 +383,8 @@ public abstract class ForumPresentation extends JModuleObject {
         if(UseForums && currentForum != null)
           add(ForumNameHeader());
 
-        String parent = modinfo.getParameter("parent_id");
-        if(modinfo.getParameter("from").equals("ATLink") && (parent != null)){
+        String parent = iwc.getParameter("parent_id");
+        if(iwc.getParameter("from").equals("ATLink") && (parent != null)){
           theThread = new ThreadContents(Integer.parseInt(parent), false);
           Contents = theThread.getThreads(false);
           add(ThreadContents_Presentation());
@@ -399,7 +399,7 @@ public abstract class ForumPresentation extends JModuleObject {
   // saveThread þarf að vera örugglega orðið false þegar næst er reynt  (Tilraun)
   protected synchronized void State6() throws Exception{
     currentState = 6;
-    String from = modinfo.getParameter("from");
+    String from = iwc.getParameter("from");
     if (from == null)
       from = "";
 
@@ -412,7 +412,7 @@ public abstract class ForumPresentation extends JModuleObject {
 
 
     if (OK && saveThread && !from.equals("DELLink")){
-      lastSaved = DBWriter.saveThread(modinfo, UserName, UserID);
+      lastSaved = DBWriter.saveThread(iwc, UserName, UserID);
       State3(lastSaved);
     }else if(!saveThread && !from.equals("DELLink")){
       if (lastSaved != -7)
@@ -427,7 +427,7 @@ public abstract class ForumPresentation extends JModuleObject {
 
 
     if (from.equals("DELLink")){
-      int delTemp = DBWriter.delThread(modinfo);
+      int delTemp = DBWriter.delThread(iwc);
       if (0 < delTemp)
         State3(delTemp);
       else
@@ -449,7 +449,7 @@ public abstract class ForumPresentation extends JModuleObject {
   }
 
 
-  public ModuleObject getSomeThreads() throws SQLException{
+  public PresentationObject getSomeThreads() throws SQLException{
     if (SomeThreadsModule == null)
       SomeThreadsModule = SomeThreads_Presentation();
     Some.initSomeThreads();
@@ -457,8 +457,8 @@ public abstract class ForumPresentation extends JModuleObject {
   }
 
   private void updateCurrentForumName()throws SQLException{
-    if(modinfo != null){
-      String tempForumID = modinfo.getParameter("forum_id");
+    if(iwc != null){
+      String tempForumID = iwc.getParameter("forum_id");
       if (currentForumID != tempForumID && tempForumID != null){
         currentForumID = tempForumID;
         currentForum = new Forum(Integer.parseInt(currentForumID)).getForumName();
@@ -527,31 +527,31 @@ public abstract class ForumPresentation extends JModuleObject {
   }
 
 
-  abstract protected ModuleObject ForumList_Presentation() throws Exception;
-  abstract protected ModuleObject SomeThreads_Presentation();
-  abstract protected ModuleObject ThreadContents_Presentation()throws Exception;
-  abstract protected ModuleObject ThreadEntry_Presentation(boolean uesNameField) throws Exception;
-  abstract protected ModuleObject ThreadTree_Presentation();
-  abstract protected ModuleObject ForumError_Presentation( String errorType );
-  abstract protected ModuleObject ForumAdministration_Presentation();
-  abstract protected ModuleObject UserRegistration_Presentation();
+  abstract protected PresentationObject ForumList_Presentation() throws Exception;
+  abstract protected PresentationObject SomeThreads_Presentation();
+  abstract protected PresentationObject ThreadContents_Presentation()throws Exception;
+  abstract protected PresentationObject ThreadEntry_Presentation(boolean uesNameField) throws Exception;
+  abstract protected PresentationObject ThreadTree_Presentation();
+  abstract protected PresentationObject ForumError_Presentation( String errorType );
+  abstract protected PresentationObject ForumAdministration_Presentation();
+  abstract protected PresentationObject UserRegistration_Presentation();
   /**
    * to construct SomeThreads 'Some'
    */
   abstract protected void initSomeThreads()throws SQLException;
-  abstract protected ModuleObject ForumNameHeader();
+  abstract protected PresentationObject ForumNameHeader();
 
   /**
    * unimplemented
    */
-  public ModuleObject ForumList_ForumCreation(){
+  public PresentationObject ForumList_ForumCreation(){
     Table myTable = new Table(10,10);
     myTable.setBorder(3);
     myTable.setHorizontalZebraColored("#000000","#FFFFFF");
     return myTable;
   }
 
-  public ModuleObject call_ForumList_ForumCreation(){
+  public PresentationObject call_ForumList_ForumCreation(){
 /*    Window myWindow = getForumList().getForumCreationWindow();
     myWindow.
 
@@ -563,7 +563,7 @@ public abstract class ForumPresentation extends JModuleObject {
 
 
   private void findeCurrentForumName()throws SQLException{
-    String tempID = modinfo.getParameter("forum_id");
+    String tempID = iwc.getParameter("forum_id");
     if (tempID != null)
       currentForum = new Forum(Integer.parseInt(tempID)).getForumName();
   }
@@ -573,8 +573,8 @@ public abstract class ForumPresentation extends JModuleObject {
       findeCurrentForumName();
   }
 
-  public ModuleInfo getModuleInfo(){
-    return this.modinfo;
+  public IWContext getIWContext(){
+    return this.iwc;
   }
 
   /**
@@ -591,7 +591,7 @@ public abstract class ForumPresentation extends JModuleObject {
   public void initAgain()throws Exception{
     updateSettings();
     initList();
-    initTree(modinfo);
+    initTree(iwc);
   }
 
   /**
@@ -607,16 +607,16 @@ public abstract class ForumPresentation extends JModuleObject {
     justSetConnectionAttributes = true;
   }
 
-  public static String getForumAttributeName(ModuleInfo modinfo){
-    if (modinfo != null && modinfo.getSessionAttribute("forumattributename") != null)
-      return (String)modinfo.getSessionAttribute("forumattributename");
+  public static String getForumAttributeName(IWContext iwc){
+    if (iwc != null && iwc.getSessionAttribute("forumattributename") != null)
+      return (String)iwc.getSessionAttribute("forumattributename");
     else
       return null;
   }
 
-  public static Integer getForumAttributeValue(ModuleInfo modinfo){
-    if (modinfo != null && modinfo.getSessionAttribute("forumattributevalue") != null)
-      return (Integer)modinfo.getSessionAttribute("forumattributevalue");
+  public static Integer getForumAttributeValue(IWContext iwc){
+    if (iwc != null && iwc.getSessionAttribute("forumattributevalue") != null)
+      return (Integer)iwc.getSessionAttribute("forumattributevalue");
     else
       return null;
   }
@@ -629,28 +629,28 @@ public abstract class ForumPresentation extends JModuleObject {
 
 
 
-  public void main(ModuleInfo modinfo) throws Exception {
-    this.modinfo = modinfo;
+  public void main(IWContext iwc) throws Exception {
+    this.iwc = iwc;
     if (AttributeName != null){
-      String attributeTemp = modinfo.getParameter(AttributeName);
+      String attributeTemp = iwc.getParameter(AttributeName);
       if (justSetConnectionAttributes){
-        modinfo.setSessionAttribute("forumattributename", AttributeName);
-        modinfo.setSessionAttribute("forumattributevalue", new Integer(AttributeID));
+        iwc.setSessionAttribute("forumattributename", AttributeName);
+        iwc.setSessionAttribute("forumattributevalue", new Integer(AttributeID));
       }
       if(attributeTemp != null){
         int attribute = Integer.parseInt(attributeTemp);
         if(attribute != AttributeID){
           AttributeID = attribute;
-          modinfo.setSessionAttribute("forumattributevalue", new Integer(AttributeID));
+          iwc.setSessionAttribute("forumattributevalue", new Integer(AttributeID));
           initAgain();
         }
       }
     }
 
-    initPermissions(modinfo);
+    initPermissions(iwc);
 
-    language = modinfo.getSpokenLanguage();
-    Locale local = modinfo.getCurrentLocale();
+    language = iwc.getSpokenLanguage();
+    Locale local = iwc.getCurrentLocale();
     if(local.toString().equals("is_IS")){
       language = "IS";
     }else if(local.toString().equals("en")){

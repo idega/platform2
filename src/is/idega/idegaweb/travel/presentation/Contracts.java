@@ -1,8 +1,8 @@
 package is.idega.travel.presentation;
 
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.interfaceobject.*;
-import com.idega.jmodule.object.textObject.*;
+import com.idega.presentation.*;
+import com.idega.presentation.ui.*;
+import com.idega.presentation.text.*;
 import com.idega.idegaweb.*;
 import is.idega.travel.business.TravelStockroomBusiness;
 import java.util.*;
@@ -44,31 +44,31 @@ public class Contracts extends TravelManager {
   public Contracts() {
   }
 
-  public void main(ModuleInfo modinfo) throws SQLException{
-    super.main(modinfo);
-    initialize(modinfo);
+  public void main(IWContext iwc) throws SQLException{
+    super.main(iwc);
+    initialize(iwc);
 
-    String action = modinfo.getParameter(this.sAction);
+    String action = iwc.getParameter(this.sAction);
         if (action == null) action = "";
 
     if (action.equals("")) {
-      mainMenu(modinfo);
+      mainMenu(iwc);
     }else if (action.equals(this.parameterNewReseller)) {
       resellerCreation();
     }else if (action.equals(this.parameterSaveNewReseller)) {
-      saveReseller(modinfo);
+      saveReseller(iwc);
     }else if (action.equals(this.parameterAssignReseller)) {
-      assignReseller(modinfo);
+      assignReseller(iwc);
     }else if (action.equals(this.parameterSaveProductInfo)) {
-      saveProductInfo(modinfo);
-      assignReseller(modinfo);
+      saveProductInfo(iwc);
+      assignReseller(iwc);
     }
 
 
 
   }
 
-  public void initialize(ModuleInfo modinfo) {
+  public void initialize(IWContext iwc) {
       bundle = super.getBundle();
       iwrb = super.getResourceBundle();
       supplier = super.getSupplier();
@@ -77,7 +77,7 @@ public class Contracts extends TravelManager {
 
   }
 
-  public void mainMenu(ModuleInfo modinfo) {
+  public void mainMenu(IWContext iwc) {
       Form form = new Form();
       ShadowBox sb = new ShadowBox();
         sb.add(form);
@@ -258,20 +258,20 @@ public class Contracts extends TravelManager {
       add(sb);
   }
 
-  public void saveReseller(ModuleInfo modinfo)  {
+  public void saveReseller(IWContext iwc)  {
       add(Text.getBreak());
 
       try {
-          String name = modinfo.getParameter("reseller_name");
-          String description = modinfo.getParameter("reseller_description");
-          String address = modinfo.getParameter("reseller_address");
-          String phone = modinfo.getParameter("reseller_phone");
-          String fax = modinfo.getParameter("reseller_fax");
-          String email = modinfo.getParameter("reseller_email");
+          String name = iwc.getParameter("reseller_name");
+          String description = iwc.getParameter("reseller_description");
+          String address = iwc.getParameter("reseller_address");
+          String phone = iwc.getParameter("reseller_phone");
+          String fax = iwc.getParameter("reseller_fax");
+          String email = iwc.getParameter("reseller_email");
 
-          String userName = modinfo.getParameter("reseller_user_name");
-          String passOne = modinfo.getParameter("reseller_password_one");
-          String passTwo = modinfo.getParameter("reseller_password_one");
+          String userName = iwc.getParameter("reseller_user_name");
+          String passOne = iwc.getParameter("reseller_password_one");
+          String passTwo = iwc.getParameter("reseller_password_one");
 //                  tm.begin();
             if (passOne.equals(passTwo)) {
 
@@ -315,7 +315,7 @@ public class Contracts extends TravelManager {
 
                 //add(iwrb.getLocalizedString("travel.reseller_created","Reseller was created"));
                 resellers = null;
-                this.mainMenu(modinfo);
+                this.mainMenu(iwc);
             }else {
                 add("TEMP - PASSWORDS not the same");
 
@@ -328,9 +328,9 @@ public class Contracts extends TravelManager {
       }
   }
 
-  private void assignReseller(ModuleInfo modinfo) throws SQLException {
-    String sResellerId = modinfo.getParameter(this.parameterResellerId);
-    String sProductId = modinfo.getParameter(this.parameterProductId);
+  private void assignReseller(IWContext iwc) throws SQLException {
+    String sResellerId = iwc.getParameter(this.parameterResellerId);
+    String sProductId = iwc.getParameter(this.parameterProductId);
     int productId = -1;
     if (sProductId != null) productId = Integer.parseInt(sProductId);
     int resellerId = -1;
@@ -596,26 +596,26 @@ public class Contracts extends TravelManager {
     add(sb);
   }
 
-  private void saveProductInfo(ModuleInfo modinfo) {
-    String sResellerId = modinfo.getParameter(this.parameterResellerId);
-    String sProductId = modinfo.getParameter(this.parameterProductId);
-    String sContractId = modinfo.getParameter(this.parameterContractId);
+  private void saveProductInfo(IWContext iwc) {
+    String sResellerId = iwc.getParameter(this.parameterResellerId);
+    String sProductId = iwc.getParameter(this.parameterProductId);
+    String sContractId = iwc.getParameter(this.parameterContractId);
 
-    String discount = modinfo.getParameter("discount");
-    String alotment = modinfo.getParameter("alotment");
+    String discount = iwc.getParameter("discount");
+    String alotment = iwc.getParameter("alotment");
 
-    String allDays = modinfo.getParameter("all_days");
-    String mondays = modinfo.getParameter("mondays");
-    String tuesdays = modinfo.getParameter("tuesdays");
-    String wednesdays = modinfo.getParameter("wednesdays");
-    String thursdays = modinfo.getParameter("thursdays");
-    String fridays = modinfo.getParameter("fridays");
-    String saturdays = modinfo.getParameter("saturdays");
-    String sundays = modinfo.getParameter("sundays");
+    String allDays = iwc.getParameter("all_days");
+    String mondays = iwc.getParameter("mondays");
+    String tuesdays = iwc.getParameter("tuesdays");
+    String wednesdays = iwc.getParameter("wednesdays");
+    String thursdays = iwc.getParameter("thursdays");
+    String fridays = iwc.getParameter("fridays");
+    String saturdays = iwc.getParameter("saturdays");
+    String sundays = iwc.getParameter("sundays");
 
-    String activeFrom = modinfo.getParameter("from");
-    String activeTo = modinfo.getParameter("to");
-    String valid = modinfo.getParameter("valid");
+    String activeFrom = iwc.getParameter("from");
+    String activeTo = iwc.getParameter("to");
+    String valid = iwc.getParameter("valid");
 
     javax.transaction.TransactionManager tm = com.idega.transaction.IdegaTransactionManager.getInstance();
 
@@ -650,7 +650,7 @@ public class Contracts extends TravelManager {
 
         if (contractId != -1) {
           contract.update();
-          TravelStockroomBusiness.removeResellerHashtables(modinfo);
+          TravelStockroomBusiness.removeResellerHashtables(iwc);
         }else {
           contract.insert();
         }

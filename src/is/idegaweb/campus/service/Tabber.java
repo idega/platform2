@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.21 2001/10/02 00:13:56 aron Exp $
+ * $Id: Tabber.java,v 1.22 2001/10/05 08:05:43 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,9 +12,9 @@ package is.idegaweb.campus.service;
 import com.idega.core.accesscontrol.business.AccessControl;
 import com.idega.core.user.data.User;
 import com.idega.core.accesscontrol.data.PermissionGroup;
-import com.idega.jmodule.object.*;
-import com.idega.jmodule.object.textObject.*;
-import com.idega.jmodule.object.ModuleInfo;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.presentation.IWContext;
 import com.idega.block.login.business.LoginBusiness;
 import java.util.Hashtable;
 import java.sql.SQLException;
@@ -33,13 +33,13 @@ import java.util.Iterator;
  * @author <a href="mailto:aron@idega.is">aron@idega.is</a>
  * @version 1.0
  */
-public class Tabber extends JModuleObject {
+public class Tabber extends Block {
 
   private String LightColor,MiddleColor,DarkColor;
   private String action;
   private String strAction = TabAction.sAction;
   private User eUser;
-  private ModuleObject Tabs;
+  private PresentationObject Tabs;
   private CampusObject CampObj;
   private Hashtable PermissionHash;
   private boolean isAdmin;
@@ -63,32 +63,32 @@ public class Tabber extends JModuleObject {
     return IW_BUNDLE_IDENTIFIER;
   }
 
-  public ModuleObject getTabs(){
+  public PresentationObject getTabs(){
     return Tabs;
   }
 
-  private void control(ModuleInfo modinfo){
+  private void control(IWContext iwc){
 
     try{
-      eUser = LoginBusiness.getUser(modinfo);
+      eUser = LoginBusiness.getUser(iwc);
 
-     if(modinfo.getParameter(strAction) == null){
-        if ( modinfo.getSessionAttribute(strAction) != null ) {
-          sAct = (String) modinfo.getSessionAttribute(strAction);
+     if(iwc.getParameter(strAction) == null){
+        if ( iwc.getSessionAttribute(strAction) != null ) {
+          sAct = (String) iwc.getSessionAttribute(strAction);
           iAct = Integer.parseInt(sAct);
         }
         else {
           iAct = NOACT;
         }
       }
-    if(modinfo.getParameter(strAction) != null){
-        sAct = modinfo.getParameter(strAction);
+    if(iwc.getParameter(strAction) != null){
+        sAct = iwc.getParameter(strAction);
         iAct = Integer.parseInt(sAct);
-        if ( ((String) modinfo.getSessionAttribute(strAction)) != (sAct) ) {
-          modinfo.setSessionAttribute(strAction,sAct);
+        if ( ((String) iwc.getSessionAttribute(strAction)) != (sAct) ) {
+          iwc.setSessionAttribute(strAction,sAct);
         }
       }
-      if(eUser !=null && getPermissionHash(modinfo)){
+      if(eUser !=null && getPermissionHash(iwc)){
 
         if(PermissionHash.containsValue("administrator") )
           Tabs = AdminTabs();
@@ -235,8 +235,8 @@ public class Tabber extends JModuleObject {
       return LinkTable;
   }
 
-  private boolean getUserAccessGroups(ModuleInfo modinfo)throws SQLException{
-    List group = com.idega.block.login.business.LoginBusiness.getPermissionGroups(modinfo);
+  private boolean getUserAccessGroups(IWContext iwc)throws SQLException{
+    List group = com.idega.block.login.business.LoginBusiness.getPermissionGroups(iwc);
     PermissionHash = new Hashtable();
     //System.err.println("getUserAccessGroups in Tabber");
     if(group != null){
@@ -251,28 +251,28 @@ public class Tabber extends JModuleObject {
     return false;
   }
 
-  private boolean getPermissionHash(ModuleInfo modinfo)throws SQLException{
-    if(modinfo.getParameter("man_perm_hash") != null){
-      PermissionHash = (Hashtable) modinfo.getSession().getAttribute("man_perm_hash");
+  private boolean getPermissionHash(IWContext iwc)throws SQLException{
+    if(iwc.getParameter("man_perm_hash") != null){
+      PermissionHash = (Hashtable) iwc.getSession().getAttribute("man_perm_hash");
       return true;
     }
     else{
-      boolean returner = getUserAccessGroups(modinfo);
-      modinfo.getSession().setAttribute("man_perm_hash",PermissionHash);
+      boolean returner = getUserAccessGroups(iwc);
+      iwc.getSession().setAttribute("man_perm_hash",PermissionHash);
       return returner;
     }
     //return false;
   }
 
-  public void main(ModuleInfo modinfo)  {
-    iwrb = getResourceBundle(modinfo);
-    iwb = getBundle(modinfo);
+  public void main(IWContext iwc)  {
+    iwrb = getResourceBundle(iwc);
+    iwb = getBundle(iwc);
     try{
-      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(modinfo);
+      isAdmin = com.idega.core.accesscontrol.business.AccessControl.isAdmin(iwc);
     }
     catch(SQLException sql){ isAdmin = false;}
     /** @todo fixa Admin*/
-    control(modinfo);
+    control(iwc);
   }
 }// class PriceCatalogueMaker
 
