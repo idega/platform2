@@ -252,7 +252,7 @@ public class Dictionary extends CategoryBlock implements IWBlock {
       table.setCellpaddingAndCellspacing(0);
 
     Image addImage = _iwcb.getImage("shared/create.gif");
-      addImage.setAlt(_iwrb.getLocalizedString("categories","Categories"));
+      addImage.setAlt(_iwrb.getLocalizedString("add_book","Add book"));
     Link addLink = new Link(addImage);
       addLink.addParameter(DictionaryBusiness.PARAMETER_MODE,DictionaryBusiness.PARAMETER_NEW);
       addLink.setWindowToOpen(WordEditor.class);
