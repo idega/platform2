@@ -10,6 +10,9 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.EJBException;
+import javax.ejb.FinderException;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWResourceBundle;
@@ -17,6 +20,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Text;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
@@ -31,38 +35,48 @@ import com.idega.user.data.User;
 public class GroupMemberList extends Block {
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String PARAM_NAME_GROUP_ID = "group_id";
 	
 	private IWResourceBundle _iwrb = null;
 	
 	public void main(IWContext iwc) {
-		setGroupBusiness(iwc);
-		setUserBusiness(iwc);
-		_iwrb = getResourceBundle(iwc);
-		_group = getGroup(iwc, _groupId);
-		_club = getGroup(iwc, _clubId);
-		add(_group.getName());
+		String groupId = iwc.getParameter(PARAM_NAME_GROUP_ID);
+		if(groupId == null || groupId.length()==0) {
+			System.out.println("no group to display players for");
+		}
+		Group group = null;
+		try {
+			group = getGroup(iwc, Integer.parseInt(groupId));
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		String name = group==null?"null":group.getName();
+		Text title = new Text(name + ": ");
+		title.setBold();
+		add(title);
 		addBreak();
-		add(getPlayerList());
+		if(group!=null) {
+			add(getPlayerList(iwc, group));
+		}
 	}
 
-	private PresentationObject getPlayerList() {
-		/*try {
-			users = _userBiz.getUsersInGroup(_group);
-		} catch (RemoteException e) {
+	private PresentationObject getPlayerList(IWContext iwc, Group group) {
+		Table table = new Table();
+		Iterator groupIter; //group.getChildren();
+		try {
+			groupIter = getGroupBusiness(iwc).getUsersDirectlyRelated(group).iterator();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
-		}*/
-
-		Table table = new Table();
-		Iterator groupIter = _group.getChildren();
+		}
 		int row = 1;
 		while(groupIter.hasNext()) {
-			Group group = (Group) groupIter.next();
-			System.out.print("Checking child " + group.getName() + " of group");
-			if(group.isUser()) {
+			Group childGroup = (Group) groupIter.next();
+			System.out.print("Checking child " + childGroup.getName() + " of group (" + childGroup.getPrimaryKey() + ")");
+			if(childGroup.isUser()) {
 				System.out.print(" (is user)");
-				table.add(group.getName(), 1, row++);
+				table.add(childGroup.getName(), 1, row++);
 			}
 			System.out.println();
 		}
@@ -73,7 +87,7 @@ public class GroupMemberList extends Block {
 	private Group getGroup(IWContext iwc, int groupId) {
 		Group group = null;
 		try {
-			group = _groupBiz.getGroupByGroupID(_groupId);
+			group = getGroupBusiness(iwc).getGroupByGroupID(groupId);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -81,7 +95,7 @@ public class GroupMemberList extends Block {
 		return group;
 	}
 	
-	private void setGroupBusiness(IWContext iwc) {
+	private GroupBusiness getGroupBusiness(IWContext iwc) {
 		if(_groupBiz == null) {
 			try {
 				_groupBiz = (GroupBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), GroupBusiness.class);
@@ -90,23 +104,8 @@ public class GroupMemberList extends Block {
 			}
 		}
 		
-	}
-	
-	public void setUserBusiness(IWContext iwc) {
-		if(_userBiz == null) {
-			try {
-				_userBiz = (UserBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), UserBusiness.class);
-			} catch (IBOLookupException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		return _groupBiz;
 	}
 	
 	private GroupBusiness _groupBiz = null;
-	private UserBusiness _userBiz = null;
-	private int _groupId = 338342;
-	private Group _group = null;
-	private int _clubId = 330185; // the club being viewed
-	private Group _club = null;
 }
