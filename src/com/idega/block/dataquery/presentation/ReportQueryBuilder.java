@@ -1621,13 +1621,13 @@ public class ReportQueryBuilder extends Block {
 	private String getDisplay(QueryFieldPart part) {
 		String entity = part.getEntity();
 		String displayName = part.getDisplay();//localizable key
-		String fieldName = part.getName();
+		String fieldName = part.getName();//the real database field name
 		
 		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entity, entity));
 		buffer.append(" -> ")
 		.append(iwrb.getLocalizedString(displayName,displayName))
 		.append(" ( ")
-		.append(iwrb.getLocalizedString(fieldName,fieldName))
+		.append(fieldName)
 		.append(" )");
 		return buffer.toString();
 	}
