@@ -304,6 +304,7 @@ public abstract class BillingThread extends Thread{
 	
 	protected void batchRunLoggerDone(){
 		batchRunLogger.setEnd(IWTimestamp.getTimestampRightNow());
+		batchRunLogger.store();
 	}
 	
 	protected void finalizeBatchRunLogger(){
