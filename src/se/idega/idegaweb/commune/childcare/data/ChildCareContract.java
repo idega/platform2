@@ -1,43 +1,187 @@
+/*
+ * $Id: ChildCareContract.java,v 1.12 2004/09/07 19:21:27 aron Exp $
+ * Created on 6.9.2004
+ *
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package se.idega.idegaweb.commune.childcare.data;
 
+import java.sql.Date;
+import java.util.Collection;
 
-public interface ChildCareContract extends com.idega.data.IDOEntity
-{
- public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getApplication();
- public int getApplicationID();
- public int getCareTime();
- public com.idega.user.data.User getChild();
- public int getChildID();
- public com.idega.block.contract.data.Contract getContract();
- public com.idega.core.file.data.ICFile getContractFile();
- public int getContractFileID();
- public int getContractID();
- public java.sql.Date getCreatedDate();
- public se.idega.idegaweb.commune.childcare.data.EmploymentType getEmploymentType();
- public int getEmploymentTypeId();
- public com.idega.user.data.User getInvoiceReceiver();
- public int getInvoiceReceiverID();
- public com.idega.block.school.data.SchoolClassMember getSchoolClassMember();
- public int getSchoolClassMemberId();
- public java.sql.Date getTerminatedDate();
- public java.sql.Date getValidFromDate();
- public void setApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0);
- public void setApplicationID(int p0);
- public void setCareTime(int p0);
- public void setChild(com.idega.user.data.User p0);
- public void setChildID(int p0);
- public void setContract(com.idega.block.contract.data.Contract p0);
- public void setContractFile(com.idega.core.file.data.ICFile p0);
- public void setContractFileID(int p0);
- public void setContractID(int p0);
- public void setCreatedDate(java.sql.Date p0);
- public void setEmploymentType(int p0);
- public void setInvoiceReceiver(com.idega.user.data.User p0);
- public void setInvoiceReceiverID(int p0);
- public void setInvoiceReceiverID(Integer p0);
- public void setSchoolClassMember(com.idega.block.school.data.SchoolClassMember p0);
- public void setSchoolClassMemberID(int p0);
- public void setTerminatedDate(java.sql.Date p0);
- public void setTerminationDateAsNull(boolean p0);
- public void setValidFromDate(java.sql.Date p0);
+import javax.ejb.FinderException;
+
+import com.idega.block.contract.data.Contract;
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassBMPBean;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberBMPBean;
+import com.idega.core.file.data.ICFile;
+import com.idega.data.GenericEntity;
+import com.idega.data.IDOEntity;
+import com.idega.data.IDOException;
+import com.idega.data.IDOQuery;
+import com.idega.user.data.User;
+import com.idega.util.TimePeriod;
+
+/**
+ * 
+ *  Last modified: $Date: 2004/09/07 19:21:27 $ by $Author: aron $
+ * 
+ * @author <a href="mailto:aron@idega.com">aron</a>
+ * @version $Revision: 1.12 $
+ */
+public interface ChildCareContract extends IDOEntity{
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getCreatedDate
+ */
+public Date getCreatedDate();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getValidFromDate
+ */
+public Date getValidFromDate();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getTerminatedDate
+ */
+public Date getTerminatedDate();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getCareTime
+ */
+public int getCareTime();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getChildID
+ */
+public int getChildID();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getChild
+ */
+public User getChild();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getApplicationID
+ */
+public int getApplicationID();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getApplication
+ */
+public ChildCareApplication getApplication();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getContractID
+ */
+public int getContractID();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getContract
+ */
+public Contract getContract();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getContractFileID
+ */
+public int getContractFileID();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getContractFile
+ */
+public ICFile getContractFile();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getSchoolClassMember
+ */
+public SchoolClassMember getSchoolClassMember();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getSchoolClassMemberId
+ */
+public int getSchoolClassMemberId();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getEmploymentTypeId
+ */
+public int getEmploymentTypeId();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getEmploymentType
+ */
+public EmploymentType getEmploymentType();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getInvoiceReceiverID
+ */
+public int getInvoiceReceiverID();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#getInvoiceReceiver
+ */
+public User getInvoiceReceiver();
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setCreatedDate
+ */
+public void setCreatedDate(Date createdDate);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setValidFromDate
+ */
+public void setValidFromDate(Date validFromDate);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setTerminatedDate
+ */
+public void setTerminatedDate(Date terminatedDate);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setCareTime
+ */
+public void setCareTime(int careTime);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setChildID
+ */
+public void setChildID(int childID);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setChild
+ */
+public void setChild(User child);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setApplicationID
+ */
+public void setApplicationID(int applicationID);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setApplication
+ */
+public void setApplication(ChildCareApplication application);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setContractID
+ */
+public void setContractID(int contractID);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setContract
+ */
+public void setContract(Contract contract);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setContractFileID
+ */
+public void setContractFileID(int contractFileID);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setContractFile
+ */
+public void setContractFile(ICFile contractFile);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setSchoolClassMemberID
+ */
+public void setSchoolClassMemberID(int schoolClassMemberID);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setSchoolClassMember
+ */
+public void setSchoolClassMember(SchoolClassMember schoolClassMember);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setTerminationDateAsNull
+ */
+public void setTerminationDateAsNull(boolean setAsNull);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setEmploymentType
+ */
+public void setEmploymentType(int employmentTypeID);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setInvoiceReceiverID
+ */
+public void setInvoiceReceiverID(int invoiceReciverID);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setInvoiceReceiverID
+ */
+public void setInvoiceReceiverID(Integer invoiceReciverID);
+/**
+ * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#setInvoiceReceiver
+ */
+public void setInvoiceReceiver(User invoiceReciver);
+
 }

@@ -321,8 +321,10 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 	public Integer ejbFindLatestTerminatedContractByChild(int childID, Date date) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID, childID);
-		sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(date);
-		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(date);
+		if(date!=null){
+		    sql.appendAnd().append(COLUMN_VALID_FROM_DATE).appendLessThanOrEqualsSign().append(date);
+			sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendGreaterThanSign().append(date);
+		}
 		sql.appendAnd().append(COLUMN_TERMINATED_DATE).appendIsNotNull();
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return (Integer) idoFindOnePKByQuery(sql);
@@ -340,6 +342,13 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
 		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
 		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	public Collection ejbFindLatestByApplication(int applicationID,int maxNumberOfContracts) throws  FinderException{
+	    IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_APPLICATION_ID, applicationID);
+		sql.appendOrderBy(COLUMN_VALID_FROM_DATE+" desc");
+		return idoFindPKsByQuery(sql,maxNumberOfContracts);
 	}
 
 	public Integer ejbFindFirstContractByApplication(int applicationID) throws FinderException {
@@ -507,5 +516,11 @@ public class ChildCareContractBMPBean extends GenericEntity implements ChildCare
 		query.appendOr().append(COLUMN_TERMINATED_DATE).append(" is null").appendRightParenthesis();
 		
 		return super.idoFindPKsByQuery(query);
+	}
+	
+	public Collection ejbFindAllBySchoolClassMember(SchoolClassMember member)throws FinderException{
+	    IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_SCH_CLASS_MEMBER, member);
+		return idoFindPKsByQuery(sql);
 	}
 }

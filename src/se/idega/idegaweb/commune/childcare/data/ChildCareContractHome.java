@@ -1,3 +1,12 @@
+/*
+ * $Id: ChildCareContractHome.java,v 1.14 2004/09/07 19:21:27 aron Exp $
+ * Created on 6.9.2004
+ *
+ * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
+ */
 package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Date;
@@ -5,38 +14,202 @@ import java.util.Collection;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
+import com.idega.data.IDOException;
+import com.idega.data.IDOHome;
+import com.idega.user.data.User;
+import com.idega.util.TimePeriod;
 
-public interface ChildCareContractHome extends com.idega.data.IDOHome
-{
- public ChildCareContract create() throws javax.ejb.CreateException;
- public ChildCareContract findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
- public java.util.Collection findAll()throws javax.ejb.FinderException;
- public ChildCareContract findApplicationByContract(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findByApplication(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findByChild(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findByChildAndDateRange(com.idega.user.data.User p0,java.sql.Date p1,java.sql.Date p2)throws javax.ejb.FinderException;
- public java.util.Collection findByChildAndProvider(int p0,int p1)throws javax.ejb.FinderException;
- public ChildCareContract findByContractFileID(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findByDateRange(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public java.util.Collection findByDateRangeAndProviderWhereStatusActive(java.sql.Date p0,java.sql.Date p1,com.idega.block.school.data.School p2)throws javax.ejb.FinderException;
- public java.util.Collection findByDateRangeWhereStatusActive(java.sql.Date p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public ChildCareContract findBySchoolClassMember(com.idega.block.school.data.SchoolClassMember p0)throws javax.ejb.FinderException;
- public ChildCareContract findContractByChildAndPeriod(com.idega.user.data.User p0,com.idega.util.TimePeriod p1)throws javax.ejb.FinderException;
- public ChildCareContract findFirstContractByApplication(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findFutureContractsByApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public ChildCareContract findLatestContractByApplication(int p0)throws javax.ejb.FinderException;
- public ChildCareContract findLatestContractByChild(int p0)throws javax.ejb.FinderException;
- public ChildCareContract findLatestTerminatedContractByChild(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public ChildCareContract findValidContractByApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public ChildCareContract findValidContractByChild(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public java.util.Collection findValidContractByProvider(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
- public int getContractsCountByApplication(int p0)throws com.idega.data.IDOException;
- public int getContractsCountByDateRangeAndProvider(java.sql.Date p0,java.sql.Date p1,int p2)throws com.idega.data.IDOException;
- public int getFutureContractsCountByApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
- public int getNumberOfActiveForApplication(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
- public int getNumberOfActiveNotWithProvider(int p0,int p1)throws com.idega.data.IDOException;
- public int getNumberOfTerminatedLaterNotWithProvider(int p0,int p1,java.sql.Date p2)throws com.idega.data.IDOException;
- public Collection findByInvoiceReceiver(Integer invoiceReceiverID)throws FinderException;
- public Collection findByInvoiceReceiverActiveOrFuture(Integer invoiceReceiverID,Date fromDate)throws FinderException;
+/**
+ * 
+ *  Last modified: $Date: 2004/09/07 19:21:27 $ by $Author: aron $
+ * 
+ * @author <a href="mailto:aron@idega.com">aron</a>
+ * @version $Revision: 1.14 $
+ */
+public interface ChildCareContractHome extends IDOHome {
+    public ChildCareContract create() throws javax.ejb.CreateException;
+
+    public ChildCareContract findByPrimaryKey(Object pk)
+            throws javax.ejb.FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByChild
+     */
+    public Collection findByChild(int childID) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByChildAndDateRange
+     */
+    public Collection findByChildAndDateRange(User child, Date startDate,
+            Date endDate) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByChildAndProvider
+     */
+    public Collection findByChildAndProvider(int childID, int providerID)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByApplication
+     */
+    public Collection findByApplication(int applicationID)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindValidContractByApplication
+     */
+    public ChildCareContract findValidContractByApplication(int applicationID,
+            Date date) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindValidContractByProvider
+     */
+    public Collection findValidContractByProvider(int providerID, Date date)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindApplicationByContract
+     */
+    public ChildCareContract findApplicationByContract(int contractID)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindValidContractByChild
+     */
+    public ChildCareContract findValidContractByChild(int childID, Date date)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindContractByChildAndPeriod
+     */
+    public ChildCareContract findContractByChildAndPeriod(User child,
+            TimePeriod period) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindLatestTerminatedContractByChild
+     */
+    public ChildCareContract findLatestTerminatedContractByChild(int childID,
+            Date date) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindLatestContractByChild
+     */
+    public ChildCareContract findLatestContractByChild(int childID)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindLatestContractByApplication
+     */
+    public ChildCareContract findLatestContractByApplication(int applicationID)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindLatestByApplication
+     */
+    public Collection findLatestByApplication(int applicationID,
+            int maxNumberOfContracts) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindFirstContractByApplication
+     */
+    public ChildCareContract findFirstContractByApplication(int applicationID)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindFutureContractsByApplication
+     */
+    public Collection findFutureContractsByApplication(int applicationID,
+            Date date) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbHomeGetNumberOfActiveNotWithProvider
+     */
+    public int getNumberOfActiveNotWithProvider(int childID, int providerID)
+            throws IDOException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbHomeGetNumberOfActiveForApplication
+     */
+    public int getNumberOfActiveForApplication(int applicationID, Date date)
+            throws IDOException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbHomeGetNumberOfTerminatedLaterNotWithProvider
+     */
+    public int getNumberOfTerminatedLaterNotWithProvider(int childID,
+            int providerID, Date date) throws IDOException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbHomeGetFutureContractsCountByApplication
+     */
+    public int getFutureContractsCountByApplication(int applicationID, Date date)
+            throws IDOException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbHomeGetContractsCountByApplication
+     */
+    public int getContractsCountByApplication(int applicationID)
+            throws IDOException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbHomeGetContractsCountByDateRangeAndProvider
+     */
+    public int getContractsCountByDateRangeAndProvider(Date startDate,
+            Date endDate, int providerID) throws IDOException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByContractFileID
+     */
+    public ChildCareContract findByContractFileID(int contractFileID)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByDateRange
+     */
+    public Collection findByDateRange(Date startDate, Date endDate)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByDateRangeAndProviderWhereStatusActive
+     */
+    public Collection findByDateRangeAndProviderWhereStatusActive(
+            Date startDate, Date endDate, School school) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByDateRangeWhereStatusActive
+     */
+    public Collection findByDateRangeWhereStatusActive(Date startDate,
+            Date endDate) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindBySchoolClassMember
+     */
+    public ChildCareContract findBySchoolClassMember(SchoolClassMember placement)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindAll
+     */
+    public Collection findAll() throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByInvoiceReceiver
+     */
+    public Collection findByInvoiceReceiver(Integer invoiceReceiverID)
+            throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindByInvoiceReceiverActiveOrFuture
+     */
+    public Collection findByInvoiceReceiverActiveOrFuture(
+            Integer invoiceReceiverID, Date fromDate) throws FinderException;
+
+    /**
+     * @see se.idega.idegaweb.commune.childcare.data.ChildCareContractBMPBean#ejbFindAllBySchoolClassMember
+     */
+    public Collection findAllBySchoolClassMember(SchoolClassMember member)
+            throws FinderException;
 
 }

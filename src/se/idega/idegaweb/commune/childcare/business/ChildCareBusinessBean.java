@@ -68,6 +68,7 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolUser;
 import com.idega.business.IBOLookup;
@@ -77,11 +78,14 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDORuntimeException;
 import com.idega.data.IDOStoreException;
+import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWPropertyList;
 import com.idega.idegaweb.IWUserContext;
@@ -1211,52 +1215,55 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean alterContract(int childcareContractID, int careTime, Date fromDate, Date endDate, Locale locale, User performer) {
+	public boolean alterContract(int childcareContractID, int careTime, Date fromDate, Date endDate, Locale locale, User performer,int employmentType, int invoiceReceiver, int schoolType, int schoolClass) {
 		try {
-			return alterContract(getChildCareContractArchiveHome().findByPrimaryKey(new Integer(childcareContractID)), careTime, fromDate, endDate, locale, performer);
+			return alterContract(getChildCareContractArchiveHome().findByPrimaryKey(new Integer(childcareContractID)), careTime, fromDate, endDate, locale, performer,employmentType,invoiceReceiver,schoolType,schoolClass);
 		}
 		catch (FinderException fe) {
 			return false;
 		}
 	}
 
-	public boolean alterContract(ChildCareContract childcareContract, int careTime, Date fromDate, Date endDate, Locale locale, User performer) {
+	/**
+	 * Changes childcare contract, care time, start date, end date.
+	 * When change made to those fields a new file is created and old file swapped out
+	 * 
+	 * 
+	 */
+	public boolean alterContract(ChildCareContract childcareContract, int careTime, Date fromDate, Date endDate, Locale locale, User performer,int employmentType, int invoiceReceiver, int schoolType, int schoolClass) {
 		UserTransaction trans = getSessionContext().getUserTransaction();
 		try {
 			trans.begin();
 
-			Contract contract = childcareContract.getContract();
-			contract.removeFileFromContract(childcareContract.getContractFile());
+			if(fromDate==null)
+			    throw new NullPointerException("Argument from date is null");
+			
 
 			ChildCareApplication application = childcareContract.getApplication();
-
-			ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
-			List buffers = pdfHandler.writeToBuffers(getTagMap(application, locale, careTime, new IWTimestamp(fromDate), false), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-
-			ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) buffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
-
-			childcareContract.setCareTime(careTime);
-			childcareContract.setValidFromDate(fromDate);
+			
+			// possible bug found here, allowing null values for start date, which should be possible (aron 06.09.2004)
+			if(fromDate!=null){
+			    childcareContract.setValidFromDate(fromDate);
+			}
 			childcareContract.setTerminatedDate(endDate);
+			
+			if(invoiceReceiver>0)
+			    childcareContract.setInvoiceReceiverID(invoiceReceiver);
+			
+			if(employmentType>0)
+			    childcareContract.setEmploymentType(employmentType);
+			
+			
+			ICFile contractFile = recreateContractFile(childcareContract,locale);
 			childcareContract.setContractFile(contractFile);
 			childcareContract.store();
 
-			contract.setValidFrom(fromDate);
-			contract.setValidTo(endDate);
-			if (endDate != null) {
-				contract.setStatusTerminated();
-			}
-			else {
-				contract.setStatusCreated();
-			}
-			contract.store();
-			contract.addFileToContract(contractFile);
-
+			
 			if (application.getContractId() == childcareContract.getContractID()) {
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
 				application.store();
 			}
-			verifyApplication(application, null, performer);
+			verifyApplication(childcareContract,application, null, performer,schoolType,schoolClass);
 
 			trans.commit();
 		}
@@ -1272,11 +1279,50 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		return true;
 	}
+	
+	
+	/**
+	 *  Update contract with new field values, and recreate file attached to it.
+	 *  The old file is removed from the contract, and replaced with a new one
+	 * @throws IDORemoveRelationshipException
+	 * @throws IWBundleDoesNotExist
+	 * @throws RemoteException
+	 * @throws IDOAddRelationshipException
+	 */
+	public ICFile recreateContractFile(ChildCareContract archive,Locale locale) throws IDORemoveRelationshipException, RemoteException, IWBundleDoesNotExist, IDOAddRelationshipException{
+	    Contract contract = archive.getContract();
+		contract.removeFileFromContract(archive.getContractFile());
+		ITextXMLHandler pdfHandler = new ITextXMLHandler(ITextXMLHandler.PDF);
+		List buffers = pdfHandler.writeToBuffers(getTagMap(archive.getApplication(), locale, archive.getCareTime(), new IWTimestamp(archive.getValidFromDate()), false), getXMLContractPdfURL(getIWApplicationContext().getIWMainApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
 
-	protected void verifyApplication(ChildCareApplication application, SchoolClassMember member, User performer) {
+		ICFile contractFile = pdfHandler.writeToDatabase((MemoryFileBuffer) buffers.get(0), "contract.pdf", pdfHandler.getPDFMimeType());
+		Date endDate = archive.getTerminatedDate();
+		contract.setValidTo(endDate);
+		if (endDate != null) {
+			contract.setStatusTerminated();
+		}
+		else {
+			contract.setStatusCreated();
+		}
+		contract.store();
+		contract.addFileToContract(contractFile);
+		return contractFile;
+	}
+	
+	protected void verifyApplication(ChildCareContract lastContract,ChildCareApplication application, SchoolClassMember member, User performer) {
+	    verifyApplication(lastContract,application,member,performer);
+	}
+
+	protected void verifyApplication(ChildCareContract lastContract,ChildCareApplication application, SchoolClassMember member, User performer,int schoolTypeId,int schoolClassId) {
 		try {
-			ChildCareContract firstContract = getChildCareContractArchiveHome().findFirstContractByApplication(((Integer) application.getPrimaryKey()).intValue());
-			ChildCareContract lastContract = getChildCareContractArchiveHome().findLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());
+		    //Collection archives = getChildCareContractArchiveHome().findLatestByApplication(((Integer) application.getPrimaryKey()).intValue(),2);
+		    //Iterator iter = archives.iterator();
+		    //ChildCareContract lastContract = iter.hasNext()?(ChildCareContract)iter.next():null;
+		    if(lastContract==null)
+		        lastContract = getChildCareContractArchiveHome().findLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());
+			//ChildCareContract firstContract = iter.hasNext()?(ChildCareContract)iter.next():lastContract;
+		    ChildCareContract firstContract = getChildCareContractArchiveHome().findFirstContractByApplication(((Integer) application.getPrimaryKey()).intValue());
+			
 
 			application.setFromDate(firstContract.getValidFromDate());
 			application.setRejectionDate(lastContract.getTerminatedDate());
@@ -1291,16 +1337,27 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				application.setApplicationStatus(getStatusCancelled());
 				changeCaseStatus(application, getCaseStatusCancelled().getStatus(), performer);
 			}
-			SchoolClassMember placement = firstContract.getSchoolClassMember();
-			if (placement != null) {
-				placement.setRegisterDate((new IWTimestamp(application.getFromDate())).getTimestamp());
-				if (application.getRejectionDate() != null) {
-					placement.setRemovedDate((new IWTimestamp(application.getRejectionDate())).getTimestamp());
+			// update school class member with correct dates
+			SchoolClassMember placement = lastContract.getSchoolClassMember();
+			if (placement != null ){
+			    Collection contractPlacements = getChildCareContractArchiveHome().findAllBySchoolClassMember(placement);
+			    // only allow update when only one contract linked to the classmember
+			    // or the one being changed is the first contract
+			    if(contractPlacements.size()==1 || lastContract.getPrimaryKey().equals(firstContract.getPrimaryKey()) ) {
+					placement.setRegisterDate((new IWTimestamp(lastContract.getValidFromDate())).getTimestamp());
+					if (lastContract.getTerminatedDate() != null) {
+						placement.setRemovedDate((new IWTimestamp(lastContract.getTerminatedDate())).getTimestamp());
+					}
+					else {
+						placement.setRemovedDate(null);
+					}
+					if(schoolTypeId>0)
+					    placement.setSchoolTypeId(schoolTypeId);
+					if(schoolClassId>0)
+					    placement.setSchoolClassId(schoolClassId);
+					
+					placement.store();
 				}
-				else {
-					placement.setRegisterDate(null);
-				}
-				placement.store();
 			}
 
 		}
@@ -3284,7 +3341,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			removeInvoiceRecords(childcareContract);
 			childcareContract.remove();
-			verifyApplication(application, member, performer);
+			verifyApplication(null,application, member, performer);
 
 			if (contract != null) {
 				contract.removeAllFiles();

@@ -36,8 +36,8 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean acceptApplication(int p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public boolean acceptApplication(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.util.IWTimestamp p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.User p4) throws java.rmi.RemoteException;
  public void addMissingGrantedChecks() throws java.rmi.RemoteException;
- public boolean alterContract(int p0,int p1,java.sql.Date p2,java.sql.Date p3,java.util.Locale p4,com.idega.user.data.User p5) throws java.rmi.RemoteException;
- public boolean alterContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract p0,int p1,java.sql.Date p2,java.sql.Date p3,java.util.Locale p4,com.idega.user.data.User p5) throws java.rmi.RemoteException;
+ public boolean alterContract(int p0,int p1,java.sql.Date p2,java.sql.Date p3,java.util.Locale p4,com.idega.user.data.User p5, int employmentType, int invoiceReceiver, int schoolType, int schoolClass) throws java.rmi.RemoteException;
+ public boolean alterContract(se.idega.idegaweb.commune.childcare.data.ChildCareContract p0,int p1,java.sql.Date p2,java.sql.Date p3,java.util.Locale p4,com.idega.user.data.User p5, int employmentType, int invoiceReceiver, int schoolType, int schoolClass) throws java.rmi.RemoteException;
  public void alterValidFromDate(int p0,java.sql.Date p1,int p2,java.util.Locale p3,com.idega.user.data.User p4)throws java.rmi.RemoteException,se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException, java.rmi.RemoteException;
  public void alterValidFromDate(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,java.sql.Date p1,int p2,java.util.Locale p3,com.idega.user.data.User p4)throws java.rmi.RemoteException,se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException, java.rmi.RemoteException;
  public boolean assignApplication(int p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3) throws java.rmi.RemoteException;

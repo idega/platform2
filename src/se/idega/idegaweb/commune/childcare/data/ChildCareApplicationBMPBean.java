@@ -328,6 +328,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	public void setContractFileId(Integer id) {
 		setColumn(CONTRACT_FILE_ID,id);	
 	}
+	
+	public void setContractFile(ICFile contractFile) {
+		setColumn(CONTRACT_FILE_ID, contractFile);
+	}
 
 	public void setPrognosis(String prognosis) {
 		setColumn(PROGNOSIS,prognosis);	
