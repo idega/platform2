@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.53 2003/10/29 09:30:39 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.54 2003/11/03 16:01:36 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -814,9 +814,12 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 */
 	public Collection findAllSiblingValues() {
 		ArrayList arr = new ArrayList();
-		for (int i = 0; i <= 9; i++) {
-			arr.add(new Object[]{new Integer(i), ""+i});
-		}
+
+		arr.add(new Object[]{new Integer(1), "1"});
+		arr.add(new Object[]{new Integer(2), "2"});
+		arr.add(new Object[]{new Integer(3), "3"});
+		arr.add(new Object[]{new Integer(4), ">=4"});
+
 		return arr; 
 	}	
 
