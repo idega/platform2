@@ -46,7 +46,7 @@ public class TourBooker extends Booker {
       try {
         booking = new TourBooking(bookingId);
         update = true;
-      }catch (SQLException sql) {
+      }catch (Exception sql) {
         booking = new TourBooking();
         booking.setColumn(booking.getIDColumnName(), bookingId);
       }
@@ -99,6 +99,8 @@ public class TourBooker extends Booker {
       }
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
+    }catch (javax.ejb.EJBException ejb) {
+      ejb.printStackTrace(System.err);
     }
     return bookings;
   }
