@@ -21,6 +21,7 @@ import com.idega.builder.data.IBPage;
 import com.idega.core.user.business.UserBusiness;
 import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
@@ -32,7 +33,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.25 2003/05/08 17:03:46 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.26 2003/05/09 11:26:43 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -837,6 +838,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	public InterfaceObject getStyledInterface(InterfaceObject o) {
 		return super.getStyledInterface(o);
+	}
+	
+	public Image getEditIcon(String toolTip) {
+		return super.getEditIcon(toolTip);
+	}
+	
+	public Image getDeleteIcon(String toolTip) {
+		return super.getDeleteIcon(toolTip);
 	}
 
 	private Table getHelpTextPage1() {
