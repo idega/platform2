@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFormHelper.java,v 1.2 2002/03/18 15:50:44 palli Exp $
+ * $Id: CampusApplicationFormHelper.java,v 1.3 2002/03/18 19:59:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -25,6 +25,7 @@ import is.idega.idegaweb.campus.block.application.data.Applied;
 import is.idega.idegaweb.campus.block.application.data.CampusApplication;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -81,6 +82,8 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
    */
   public static String saveDataToDB(IWContext iwc) {
     Applicant applicant = (Applicant)iwc.getSessionAttribute("applicant");
+    Applicant spouse = (Applicant)iwc.getSessionAttribute("spouse");
+    Vector childs = (Vector) iwc.getSessionAttribute("childs");
     Application application = (Application)iwc.getSessionAttribute("application");
     CampusApplication campusApplication = (CampusApplication)iwc.getSessionAttribute("campusapplication");
     Applied applied1 = (Applied)iwc.getSessionAttribute("applied1");
@@ -94,6 +97,21 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     try {
       t.begin();
       applicant.insert();
+      applicant.addChild(applicant);
+
+      if(spouse !=null){
+        spouse.insert();
+        applicant.addChild(spouse
+        );
+      }
+
+      if(childs!=null && childs.size() > 0){
+        for (int i = 0; i < childs.size(); i++) {
+          Applicant child = (Applicant) childs.get(i);
+          child.insert();
+          applicant.addChild(child);
+        }
+      }
 
       application.setApplicantId(applicant.getID());
       application.insert();
@@ -137,6 +155,8 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
 
       t.commit();
       iwc.removeSessionAttribute("applicant");
+      iwc.removeSessionAttribute("spouse");
+      iwc.removeSessionAttribute("childs");
       iwc.removeSessionAttribute("application");
       iwc.removeSessionAttribute("campusapplication");
       iwc.removeSessionAttribute("applied1");
@@ -180,8 +200,8 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     int spouseStudyEndMo = 0;
     int spouseStudyEndYr = 0;
     String children = iwc.getParameter("children");
-    int income = 0;
-    int spouseIncome = 0;
+    //int income = 0;
+    //int spouseIncome = 0;
     String wantHousingFrom = iwc.getParameter("wantHousingFrom");
     String waitingList = iwc.getParameter("waitingList");
     String furniture = iwc.getParameter("furniture");
@@ -190,6 +210,8 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     String info = iwc.getParameter("info");
 
     CampusApplication application = new CampusApplication();
+    Applicant spouse = new Applicant();
+    Vector childs = new Vector();
 
     try {
       currentResidence = Integer.parseInt(iwc.getParameter("currentResidence"));
@@ -221,11 +243,12 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     }
     catch(java.lang.NumberFormatException e) {}
 
+    /*
     try {
       spouseIncome = Integer.parseInt(iwc.getParameter("spouseIncome"));
     }
     catch(java.lang.NumberFormatException e) {}
-
+    */
     try {
       spouseStudyBeginMo = Integer.parseInt(iwc.getParameter("spouseStudyBeginMo"));
     }
@@ -245,12 +268,12 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
       spouseStudyEndYr = Integer.parseInt(iwc.getParameter("spouseStudyEndYr"));
     }
     catch(java.lang.NumberFormatException e) {}
-
+/*
     try {
       income = Integer.parseInt(iwc.getParameter("income"));
     }
     catch(java.lang.NumberFormatException e) {}
-
+*/
     application.setCurrentResidenceId(currentResidence);
     application.setSpouseOccupationId(spouseOccupation);
     application.setStudyBeginMonth(studyBeginMon);
@@ -260,7 +283,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     application.setFaculty(faculty);
     application.setStudyTrack(studyTrack);
     application.setSpouseName(spouseName);
-    application.setSpouseIncome(spouseIncome);
+    //application.setSpouseIncome(spouseIncome);
     application.setSpouseSSN(spouseSSN);
     application.setSpouseSchool(spouseSchool);
     application.setSpouseStudyTrack(spouseStudyTrack);
@@ -269,7 +292,7 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     application.setSpouseStudyEndMonth(spouseStudyEndMo);
     application.setSpouseStudyEndYear(spouseStudyEndYr);
     application.setChildren(children);
-    application.setIncome(income);
+    //application.setIncome(income);
     idegaTimestamp t = new idegaTimestamp(wantHousingFrom);
     application.setHousingFrom(t.getSQLDate());
     if (waitingList == null)
@@ -284,6 +307,62 @@ public class CampusApplicationFormHelper extends ApplicationFormHelper {
     application.setOtherInfo(info);
     application.setEmail(email);
 
+    // spouse part
+    if(spouseName.length() > 0){
+      StringTokenizer tok = new StringTokenizer(spouseName);
+      String temp = "";
+      if(tok.hasMoreTokens()){
+        temp = tok.nextToken();
+        spouse.setFirstName(temp);
+      }
+      if(tok.hasMoreTokens()){
+        temp = tok.nextToken();
+        spouse.setMiddleName(temp);
+      }
+      if(tok.hasMoreTokens()){
+        temp = tok.nextToken();
+        spouse.setLastName(temp);
+      }
+      else{
+        spouse.setMiddleName("");
+        spouse.setLastName(temp);
+      }
+      spouse.setSSN(spouseSSN);
+      iwc.setSessionAttribute("spouse",spouse);
+    }
+    // Children part
+    if(iwc.isParameterSet("children_count")){
+      int count = Integer.parseInt(iwc.getParameter("children_count"));
+      String name, birth;
+      for (int i = 0; i < count; i++) {
+        Applicant child = new Applicant();
+        name = iwc.getParameter("childname"+i);
+        birth = iwc.getParameter("childbirth"+i);
+        if(name.length() >0){
+          StringTokenizer tok = new StringTokenizer(name);
+          String temp = "";
+          if(tok.hasMoreTokens()){
+            temp = tok.nextToken();
+            child.setFirstName(temp);
+          }
+          if(tok.hasMoreTokens()){
+            temp = tok.nextToken();
+            child.setMiddleName(temp);
+          }
+          if(tok.hasMoreTokens()){
+            temp = tok.nextToken();
+            child.setLastName(temp);
+          }
+          else{
+            child.setMiddleName("");
+            child.setLastName(temp);
+          }
+          child.setSSN(birth);
+          childs.add(child);
+        }
+      }
+      iwc.setSessionAttribute("childs",childs);
+    }
     iwc.setSessionAttribute("campusapplication",application);
   }
 

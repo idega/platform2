@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationForm.java,v 1.16 2002/03/18 15:51:23 palli Exp $
+ * $Id: ApplicationForm.java,v 1.17 2002/03/18 19:59:37 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -32,18 +32,18 @@ import com.idega.presentation.Block;
  * @version 1.0
  */
 public class ApplicationForm extends PresentationObjectContainer {
-  protected static final String APP_GENINFO  = "app_generalInfo";
-  protected static final String APP_FIRST_NAME = "app_firstName";
-  protected static final String APP_MIDDLE_NAME = "app_middleName";
-  protected static final String APP_LAST_NAME = "app_lastName";
-  protected static final String APP_SSN = "app_ssn";
-  protected static final String APP_LEGAL_RESIDENCE = "app_legalResidence";
-  protected static final String APP_RESIDENCE = "app_residence";
-  protected static final String APP_PHONE = "app_residencePhone";
-  protected static final String APP_PO = "app_po";
+  public static final String APP_GENINFO  = "app_generalInfo";
+  public static final String APP_FIRST_NAME = "app_firstName";
+  public static final String APP_MIDDLE_NAME = "app_middleName";
+  public static final String APP_LAST_NAME = "app_lastName";
+  public static final String APP_SSN = "app_ssn";
+  public static final String APP_LEGAL_RESIDENCE = "app_legalResidence";
+  public static final String APP_RESIDENCE = "app_residence";
+  public static final String APP_PHONE = "app_residencePhone";
+  public static final String APP_PO = "app_po";
 
-  protected static final String APP_STATUS = "app_status";
-  protected static final String APP_MUST_FILL_OUT = "app_mustFillOut";
+  public static final String APP_STATUS = "app_status";
+  public static final String APP_MUST_FILL_OUT = "app_mustFillOut";
 
   protected final int _statusEnteringPage = 0;
   protected final int _statusSubject = 1;

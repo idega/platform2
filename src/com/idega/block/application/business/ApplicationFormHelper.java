@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFormHelper.java,v 1.3 2001/10/05 07:59:57 tryggvil Exp $
+ * $Id: ApplicationFormHelper.java,v 1.4 2002/03/18 19:59:37 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,7 @@ import com.idega.block.application.data.Applicant;
 import com.idega.block.application.data.Application;
 import com.idega.util.idegaTimestamp;
 import java.sql.SQLException;
+import com.idega.block.application.presentation.ApplicationForm;
 
 /**
  *
@@ -22,14 +23,14 @@ import java.sql.SQLException;
  */
 public class ApplicationFormHelper {
   public static void saveApplicantInformation(IWContext iwc) {
-    String firstName = iwc.getParameter("firstName");
-    String middleName = iwc.getParameter("middleName");
-    String lastName = iwc.getParameter("lastName");
-    String ssn = iwc.getParameter("ssn");
-    String legalResidence = iwc.getParameter("legalResidence");
-    String residence = iwc.getParameter("residence");
-    String residencePhone = iwc.getParameter("residencePhone");
-    String po = iwc.getParameter("po");
+    String firstName = iwc.getParameter(ApplicationForm.APP_FIRST_NAME);
+    String middleName = iwc.getParameter(ApplicationForm.APP_MIDDLE_NAME);
+    String lastName = iwc.getParameter(ApplicationForm.APP_LAST_NAME);
+    String ssn = iwc.getParameter(ApplicationForm.APP_SSN);
+    String legalResidence = iwc.getParameter(ApplicationForm.APP_LEGAL_RESIDENCE);
+    String residence = iwc.getParameter(ApplicationForm.APP_RESIDENCE);
+    String residencePhone = iwc.getParameter(ApplicationForm.APP_PHONE);
+    String po = iwc.getParameter(ApplicationForm.APP_PO);
 
     Applicant applicant = new Applicant();
     applicant.setFirstName(firstName);

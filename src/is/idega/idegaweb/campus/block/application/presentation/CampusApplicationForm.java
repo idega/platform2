@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationForm.java,v 1.5 2002/03/18 15:50:44 palli Exp $
+ * $Id: CampusApplicationForm.java,v 1.6 2002/03/18 19:59:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,6 +33,7 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.Page;
+import com.idega.presentation.Table;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
@@ -82,6 +83,7 @@ public class CampusApplicationForm extends ApplicationForm {
    *
    */
   protected void control(IWContext iwc) {
+    debugParameters(iwc);
 		_iwb = getBundle(iwc);
     String statusString = iwc.getParameter(APP_STATUS);
     int status = 0;
@@ -382,32 +384,48 @@ public class CampusApplicationForm extends ApplicationForm {
     input6.setName("spouseSchool");
     TextInput input7 = (TextInput)textInputTemplate.clone();
     input7.setName("spouseStudyTrack");
+    /*
     TextInput input8 = (TextInput)textInputTemplate.clone();
     input8.setName("income");
     input8.setLength(10);
     TextInput input9 = (TextInput)textInputTemplate.clone();
     input9.setName("spouseIncome");
     input9.setLength(10);
+    */
     TextInput input10 = (TextInput)textInputTemplate.clone();
     input10.setName("contact");
     input10.setLength(10);
     TextInput input11 = (TextInput)textInputTemplate.clone();
     input11.setName("email");
 
-    TextArea input12 = new TextArea("children");
-    Edit.setStyle(input12);
-    input12.setHeight(4);
-    input12.setWidth(30);
 
-    TextArea input13 = (TextArea)input12.clone();
-    input13.setName("info");
+    int children = 2;
+    Table childrenTable = new Table(2,children);
+    for (int i = 0; i < children; i++) {
+      TextInput childName = new TextInput("childname"+i);
+      TextInput childBirth = new TextInput("childbirth"+i);
+      Edit.setStyle(childName);
+      Edit.setStyle(childBirth);
+      childName.setLength(10);
+      childBirth.setLength(10);
+      childrenTable.add(childName,1,i+1);
+      childrenTable.add(childBirth,2,i+1);
+    }
+    childrenTable.add(new HiddenInput("children_count",String.valueOf(children)));
 
+
+    TextArea input13 = new TextArea("children");
+    Edit.setStyle(input13);
+    input13.setHeight(4);
+    input13.setWidth(30);
+
+    /*
     CheckBox input14 = new CheckBox("waitingList");
     Edit.setStyle(input14);
 
     CheckBox input15 = (CheckBox)input14.clone();
     input15.setName("furniture");
-
+*/
     DateInput input16 = new DateInput("wantHousingFrom");
     input16.setToCurrentDate();
 
@@ -460,8 +478,9 @@ public class CampusApplicationForm extends ApplicationForm {
     t2.add(occSelect,2,row);
     row++;
     t2.add(Edit.formatText(text13),1,row);
-    t2.add(input12,2,row);
+    t2.add(childrenTable,2,row);
     row++;
+    /*
     t2.add(Edit.formatText(text14,true),1,row);
     t2.add(_required,1,row);
     t2.add(input8,2,row);
@@ -469,16 +488,19 @@ public class CampusApplicationForm extends ApplicationForm {
     t2.add(Edit.formatText(text15),1,row);
     t2.add(input9,2,row);
     row++;
+    */
     t2.add(Edit.formatText(text16,true),1,row);
     t2.add(_required,1,row);
     t2.add(input16,2,row);
     row++;
+    /*
     t2.add(Edit.formatText(text17),1,row);
     t2.add(input14,2,row);
     row++;
     t2.add(Edit.formatText(text18),1,row);
     t2.add(input15,2,row);
     row++;
+    */
     t2.add(Edit.formatText(text19),1,row);
     t2.add(input10,2,row);
     row++;

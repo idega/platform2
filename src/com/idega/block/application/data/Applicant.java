@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.12 2002/03/18 15:51:22 palli Exp $
+ * $Id: Applicant.java,v 1.13 2002/03/18 19:59:37 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,7 @@
  */
 package com.idega.block.application.data;
 
-import com.idega.data.GenericEntity;
+import com.idega.data.TreeableEntity;
 import java.sql.SQLException;
 
 /**
@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class Applicant extends GenericEntity {
+public class Applicant extends TreeableEntity {
   private static final String ENTITY_NAME = "app_applicant";
   private static final String FIRST_NAME = "first_name";
   private static final String MIDDLE_NAME = "middle_name";
@@ -30,6 +30,7 @@ public class Applicant extends GenericEntity {
   private static final String PO = "po";
   private static final String MOBILE_PHONE = "mobile_phone";
   private static final String SEND_SMS = "send_sms";
+  private static final String STATUS = "status";
 
   /**
    *
@@ -61,6 +62,7 @@ public class Applicant extends GenericEntity {
     addAttribute(getPOColumnName(),"Post office",true,true,"java.lang.String",255);
     addAttribute(getMobilePhoneColumnName(),"Mobile phone",true,true,"java.lang.String",40);
     addAttribute(getSendSMSColumnName(),"Send SMS",true,true,"java.lang.String",1);
+    addAttribute(getStatusColumnName(),"Status",true,true,"java.lang.String",1);
   }
 
   /**
@@ -152,6 +154,13 @@ public class Applicant extends GenericEntity {
    */
   public static String getSendSMSColumnName() {
     return(SEND_SMS);
+  }
+
+   /**
+   *
+   */
+  public static String getStatusColumnName() {
+    return(STATUS);
   }
 
   /**
