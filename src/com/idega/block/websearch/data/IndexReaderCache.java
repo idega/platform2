@@ -26,8 +26,8 @@ public class IndexReaderCache {
 	public IndexReaderCache() {
 	}
 	public IndexReader getReader(String name) throws IOException {
-			CachedIndex index = // look in cache
-	 (CachedIndex) indexCache.get(name);
+//		 look in cache
+			CachedIndex index = (CachedIndex) indexCache.get(name);
 		if (index != null && // check up-to-date
 		 (index.modified == IndexReader.lastModified(name)))
 			return index.reader; // cache hit
