@@ -1,5 +1,5 @@
 /*
- * $Id: ContractRemoverWindow.java,v 1.1 2004/11/26 14:06:05 aron Exp $
+ * $Id: ContractRemoverWindow.java,v 1.2 2004/12/05 09:54:08 laddi Exp $
  * Created on 24.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -26,15 +26,15 @@ import se.idega.idegaweb.commune.childcare.presentation.ChildCareWindow;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/26 14:06:05 $ by $Author: aron $
+ *  Last modified: $Date: 2004/12/05 09:54:08 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ContractRemoverWindow extends ChildCareWindow {
     
     public static final String PARAMETER_CONTRACT_ID = "cc_cid";
-    private static final String PARAMETER_CLOSE = "cc_crmcl";
+    //private static final String PARAMETER_CLOSE = "cc_crmcl";
     
     
     /* (non-Javadoc)
