@@ -244,6 +244,7 @@ private void finalize(IWContext iwc) throws Exception {
       setCategoryCreation(iwc, true);
       if (this.getService(iwc) != null) {
 
+					Form form = new Form();
 
           Table table = new Table();
             table.setAlignment("center");
@@ -253,15 +254,6 @@ private void finalize(IWContext iwc) throws Exception {
             int row = 1;
 
           Product product = getProductBusiness(iwc).getProduct((Integer)this.service.getPrimaryKey());
-          com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
-          if (product == null ) {
-          	System.out.println("Product == null");	
-          }
-          if (product.getText() != null) {
-            tc.setValue(product.getText());
-          }
-
-          tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
 
           Link tfAdder = new Link(iwrb.getLocalizedImageButton("travel.timeframes","Timeframes"));
             tfAdder.addParameter(TimeframeAdder._parameterProductId, product.getID());
@@ -295,6 +287,12 @@ private void finalize(IWContext iwc) throws Exception {
           table.mergeCells(1,row,3,row);
           table.setRowColor(row, super.backgroundColor);
           ++row;
+					com.idega.block.text.presentation.TextChooser tc = new com.idega.block.text.presentation.TextChooser("le_text_id");
+					if (product.getText() != null) {
+					  tc.setValue(product.getText());
+					}
+			
+					tc.setChooseImage(iwrb.getLocalizedImageButton("travel.extra_info","Extra info"));
           table.add(tc,1,row);
           table.setRowColor(row, super.GRAY);
           table.mergeCells(1,row,3,row);
@@ -317,8 +315,9 @@ private void finalize(IWContext iwc) throws Exception {
           ++row;
 
         ProductPriceDesigner ppd = new ProductPriceDesigner(iwc);
-        add(table);
-        add(ppd.getPriceCategoryForm(iwc, product, ServiceAction, PriceCategorySave));
+        form.add(table);
+        form = ppd.getPriceCategoryForm(iwc, product, ServiceAction, PriceCategorySave, form);
+				add(form);
 
       }else {
         add(iwrb.getLocalizedString("travel.service_not_found","Service not found."));
@@ -329,7 +328,7 @@ private void finalize(IWContext iwc) throws Exception {
 
   private void priceCategorySave(IWContext iwc) {
       String text_id = iwc.getParameter("le_text_id");
-
+			System.out.println("LeTextId = "+text_id);
       Service service = this.getService(iwc);
 
       try {
