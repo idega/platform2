@@ -1,5 +1,5 @@
 /*
- * $Id: AdminMenu.java,v 1.2 2004/09/07 12:32:19 laddi Exp $
+ * $Id: AdminMenu.java,v 1.3 2004/09/07 21:37:09 laddi Exp $
  * Created on 7.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,6 +13,7 @@ import com.idega.builder.app.IBApplication;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.accesscontrol.business.NotLoggedOnException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Block;
@@ -22,20 +23,29 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.user.app.UserApplication;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 
 
 /**
  * 
- *  Last modified: $Date: 2004/09/07 12:32:19 $ by $Author: laddi $
+ *  Last modified: $Date: 2004/09/07 21:37:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AdminMenu extends Block {
 
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
 
 	public void main(IWContext iwc) throws Exception {
+		User user = null;
+		try {
+			user = iwc.getCurrentUser();
+		}
+		catch (NotLoggedOnException nloe) {
+			return;
+		}
+		
 		IWBundle iwb = getBundle(iwc);
 		
 		Table table = new Table();
@@ -61,7 +71,7 @@ public class AdminMenu extends Block {
 		}
 		
 		UserApplication felix = new UserApplication();
-		if (getUserBusiness(iwc).hasTopNodes(iwc.getCurrentUser(), iwc)) {
+		if (getUserBusiness(iwc).hasTopNodes(user, iwc)) {
 			Image felixIcon = iwb.getImage("/shared/felix.gif");
 			
 			Link link = new Link(felixIcon);
