@@ -200,8 +200,6 @@ public class HandicapRegister extends GolfBlock {
 
 		int leik = leikForgjof.getLeikHandicap(slope, course_rating, field_par);
 
-		modinfo.setDefaultFontSize("1");
-
 		Form myForm = new Form();
 		maintainParentReloadURL(modinfo,myForm);
 
