@@ -2829,4 +2829,39 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return null;
 	}
 	
+	public void updateMissingPlacements() {
+		try {
+			Collection applications = getChildCareApplicationHome().findApplicationsWithoutPlacing();
+			Iterator iter = applications.iterator();
+			while (iter.hasNext()) {
+				ChildCareApplication application = (ChildCareApplication) iter.next();
+				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
+				Timestamp endDate = null;
+				if (application.getRejectionDate() != null)
+					endDate = new IWTimestamp(application.getRejectionDate()).getTimestamp();
+				
+				try {
+					Collection contracts = getChildCareContractArchiveHome().findByApplication(((Integer)application.getPrimaryKey()).intValue());
+					SchoolClass group = getSchoolBusiness().getSchoolClassHome().findOneBySchool(application.getProviderId());
+					SchoolClassMember member = getSchoolBusiness().storeSchoolClassMember(application.getChildId(), ((Integer)group.getPrimaryKey()).intValue(), fromDate.getTimestamp(), endDate, -1, null);
+					
+					Iterator iterator = contracts.iterator();
+					while (iterator.hasNext()) {
+						ChildCareContract contract = (ChildCareContract) iterator.next();
+						contract.setSchoolClassMember(member);
+						contract.store();
+					}
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			System.out.println("[ChildCareApplication]: No applications found with missing placements.");
+		}
+	}
 }
