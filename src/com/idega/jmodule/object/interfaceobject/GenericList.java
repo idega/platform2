@@ -117,7 +117,7 @@ public void setList(GenericEntity[] entity){
                                                           stringToDisplay = stamp.getISLDate();
 						        }
                                                 }
-						else if (entity[0].getRelationShipClassName(columnName).equals("")){
+						else if (entity[0].getRelationShipClass(columnName)==null){
                                                     if ( entity[y-1].isNull(columnName)){
                                                         stringToDisplay="";
                                                       }

@@ -1,5 +1,5 @@
 /*
- * $Id: EditableList.java,v 1.3 2001/07/04 20:11:45 tryggvil Exp $
+ * $Id: EditableList.java,v 1.4 2001/07/18 08:32:06 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -62,7 +62,7 @@ protected ModuleObject getComponent(String columnName,int rowIndex){
 	ModuleObject theReturn = null;
 
 		if (getEntity()[rowIndex-1].getStorageClassName(columnName).equals("java.lang.Integer")){
-			if(getEntity()[rowIndex-1].getRelationShipClassName(columnName).equals("")){
+			if(getEntity()[rowIndex-1].getRelationShipClass(columnName)==null){
 				if(getEntity()[rowIndex-1].getStringColumnValue(columnName) != null){
 					IntegerInput tempInput = new IntegerInput(columnName,getEntity()[rowIndex-1].getIntColumnValue(columnName));
 					tempInput.setSize(10);
@@ -77,7 +77,7 @@ protected ModuleObject getComponent(String columnName,int rowIndex){
 			else{
 				if(getEntity()[rowIndex-1].getStringColumnValue(columnName) != null){
 					try{
-						GenericEntity entity = (GenericEntity)Class.forName(getEntity()[rowIndex-1].getRelationShipClassName(columnName)).newInstance();
+						GenericEntity entity = (GenericEntity)getEntity()[rowIndex-1].getRelationShipClass(columnName).newInstance();
 						DropdownMenu tempInput = new DropdownMenu(entity.findAll());
 						tempInput.setName(columnName);
 						tempInput.setSelectedElement(getEntity()[rowIndex-1].getStringColumnValue(columnName));
@@ -89,7 +89,7 @@ protected ModuleObject getComponent(String columnName,int rowIndex){
 				}
 				else{
 					try{
-						GenericEntity entity = (GenericEntity)Class.forName(getEntity()[rowIndex-1].getRelationShipClassName(columnName)).newInstance();
+						GenericEntity entity = (GenericEntity)getEntity()[rowIndex-1].getRelationShipClass(columnName).newInstance();
 						DropdownMenu tempInput = new DropdownMenu(entity.findAll());
 						tempInput.setName(columnName);
 						theReturn = (ModuleObject) tempInput;
