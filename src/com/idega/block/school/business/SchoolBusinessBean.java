@@ -17,7 +17,6 @@ import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.block.school.data.SchoolAreaHome;
 import com.idega.block.school.data.SchoolCategory;
-import com.idega.block.school.data.SchoolCategoryBMPBean;
 import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolClassHome;
