@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.9 2001/08/17 12:55:23 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.10 2001/08/17 13:55:04 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -136,11 +136,13 @@ public class CampusContractWriter{
       ex.printStackTrace();
       returner = false;
     }
-    if(false){
+    if(bEntity){
       try {
         Contract C = new Contract(id);
-        C.setStatusPrinted();
-        C.update();
+        if(C.getStatus().equalsIgnoreCase(C.statusCreated)){
+          C.setStatusPrinted();
+          C.update();
+        }
       }
       catch (SQLException ex) {
         returner = false;
@@ -232,7 +234,9 @@ public class CampusContractWriter{
       H.put(tenant_name,new Chunk(eApplicant.getFullName(),tagFont));
       H.put(tenant_address,new Chunk(eApplicant.getLegalResidence(),tagFont));
       H.put(tenant_id,new Chunk(eApplicant.getSSN(),tagFont));
-      H.put(apartment_name,new Chunk(eApartment.getName(),tagFont));
+      String aname = iwrb.getLocalizedString("apartment","Apartment")+" "+ eApartment.getName();
+
+      H.put(apartment_name,new Chunk(aname,tagFont));
       H.put(apartment_floor, new Chunk(eFloor.getName(),tagFont));
       H.put(apartment_address,new Chunk(eBuilding.getStreet(),tagFont));
       H.put(apartment_campus, new Chunk(eComplex.getName(),tagFont));
@@ -242,6 +246,7 @@ public class CampusContractWriter{
       H.put(contract_starts,new Chunk(dfLong.format(eContract.getValidFrom()),tagFont));
       H.put(contract_ends,new Chunk(dfLong.format(eContract.getValidTo()),tagFont));
       H.put(apartment_rent,new Chunk(nf.format((long)eApartmentType.getRent()),tagFont));
+      /** @todo fixa: */
       H.put(renting_index,new Chunk( "214.9",tagFont));
       return H;
     }

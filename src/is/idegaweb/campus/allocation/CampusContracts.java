@@ -169,25 +169,25 @@ public class CampusContracts extends KeyEditor{
           U = new User(C.getUserId().intValue());
           Ap = new Applicant(C.getApplicantId().intValue());
           A = new Apartment(C.getApartmentId().intValue());
-          if(C.getStatus().equalsIgnoreCase(Contract.statusCreated))
+          //if(C.getStatus().equalsIgnoreCase(Contract.statusCreated))
             T.add(getPDFLink(printImage,C.getID(),Ap.getSSN()),1,row);
-          else if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted))
-            T.add(getSignedLink(registerImage,C.getID()),1,row);
-          T.add(formatText(Ap.getFullName()),2,row);
-          T.add(formatText(Ap.getSSN()),3,row);
-          T.add((getApartmentTable(A)),4,row);
-          T.add(formatText(C.getValidFrom().toString()),5,row);
-          T.add(formatText(C.getValidTo().toString()),6,row);
+          if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted))
+            T.add(getSignedLink(registerImage,C.getID()),2,row);
+          T.add(formatText(Ap.getFullName()),3,row);
+          T.add(formatText(Ap.getSSN()),4,row);
+          T.add((getApartmentTable(A)),5,row);
+          T.add(formatText(C.getValidFrom().toString()),6,row);
+          T.add(formatText(C.getValidTo().toString()),7,row);
           row++;
         }
         catch (SQLException ex) {  ex.printStackTrace(); }
         }
         T.add(headerText(" "),1,1);
-        T.add(headerText(iwrb.getLocalizedString("name","Name")),2,1);
-        T.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),3,1);
-        T.add(headerText(iwrb.getLocalizedString("apartment","Apartment")),4,1);
-        T.add(headerText(iwrb.getLocalizedString("validfrom","Valid from")),5,1);
-        T.add(headerText(iwrb.getLocalizedString("validto","Valid To")),6,1);
+        T.add(headerText(iwrb.getLocalizedString("name","Name")),3,1);
+        T.add(headerText(iwrb.getLocalizedString("ssn","Socialnumber")),4,1);
+        T.add(headerText(iwrb.getLocalizedString("apartment","Apartment")),5,1);
+        T.add(headerText(iwrb.getLocalizedString("validfrom","Valid from")),6,1);
+        T.add(headerText(iwrb.getLocalizedString("validto","Valid To")),7,1);
         T.setHorizontalZebraColored(lightBlue,WhiteColor);
         T.setRowColor(1,blueColor);
         T.setRowColor(row,redColor);

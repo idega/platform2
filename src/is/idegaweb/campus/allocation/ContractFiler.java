@@ -33,7 +33,7 @@ public class ContractFiler extends JModuleObject {
     String filetest = "test.pdf";
     Font titleFont = new Font(Font.HELVETICA, 16, Font.BOLD);
     Font nameFont = new Font(Font.HELVETICA, 10, Font.BOLD);
-    Font tagFont = new Font(Font.COURIER,9,Font.BOLD);
+    Font tagFont = new Font(Font.HELVETICA,9,Font.BOLDITALIC);
     Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
 
     if(prefFilename != null){

@@ -47,16 +47,21 @@ public class CampusAllocator extends KeyEditor{
   private String redColor = "#942829";
   private String blueColor = "#27324B",lightBlue ="#ECEEF0";
   private int iSubjectId = -1;
+  private int dayBuffer = 1;
   private String sGlobalStatus = "S";
   private ListIterator iterator = null;
   private LinkedList linkedlist = null;
   private int iTypeId,iComplexId;
   private Parameter pTypeId = null,pComplexId = null;
   private SystemProperties SysProps = null;
-   private String bottomThickness = "8";
+  private String bottomThickness = "8";
 
   public CampusAllocator(String sHeader) {
     super(sHeader);
+  }
+
+  public void setDayBuffer(int buffer){
+    dayBuffer = buffer;
   }
 
   protected void control(ModuleInfo modinfo){
@@ -460,6 +465,10 @@ public class CampusAllocator extends KeyEditor{
         contractDateTo = new idegaTimestamp();
         contractDateFrom = new idegaTimestamp();
       }
+      if(dayBuffer > 0){
+        contractDateFrom.addDays(dayBuffer);
+      }
+
       dateFrom.setDate(contractDateFrom.getSQLDate());
       dateTo.setDate(contractDateTo.getSQLDate());
       dateFrom.setStyleAttribute("style",styleAttribute);
