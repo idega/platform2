@@ -73,6 +73,8 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	protected static final String COLOR_DARKEST = "#9F9F9F";
 	protected static final String COLOR_MIDDLE = "#DFDFDF";
 	protected static final String COLOR_LIGHTEST = "#EFEFEF";
+	
+	private String helpTextKey = "";
 
 	private IWResourceBundle iwrb;
 	private IWBundle iwb;
@@ -120,6 +122,9 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		table.setVerticalAlignment(1, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2, 1, Table.VERTICAL_ALIGN_TOP);
 		table.setCellpaddingAndCellspacing(0);
+		table.mergeCells(1,1,1,2);
+		table.setStyleClass(1,1,"borderRight");
+		table.setStyleClass("borderAll");
 
 		//add left menu of links
 		Table menuTable = getMenuTable(iwc);
@@ -129,7 +134,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		add(table,iwc);
 
 		//add the main content
-		if (action != null) {
+		if (action != null) {			
 			WorkReportSelector selector = null;
 			
 
@@ -137,54 +142,63 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			if (action.equals(ACTION_WORK_SELECT_REPORT)) {
 				selector = new WorkReportSelector();
 				selectorIsSet = true;
+				helpTextKey = ACTION_WORK_SELECT_REPORT + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_WORK_SELECT_REPORT, "Select report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			if (action.equals(ACTION_EDIT_MEMBER_LIST)) {
 				selector = new WorkReportMemberEditor();
 				selectorIsSet = true;
+				helpTextKey = ACTION_EDIT_MEMBER_LIST + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST, "Edit members"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_MEMBER_LIST, "Edit members"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_EDIT_ACCOUNT)) {
 				selector = new WorkReportAccountEditor();
 				selectorIsSet = true;
+				helpTextKey = ACTION_EDIT_ACCOUNT + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT, "Edit account info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_ACCOUNT, "Edit account info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_EDIT_BOARD)) {
 				selector = new WorkReportBoardMemberEditor();
 				selectorIsSet = true;
+				helpTextKey = ACTION_EDIT_BOARD + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD, "Edit board info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_BOARD, "Edit board info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_EDIT_DIVISION_BOARD)) {
 				selector = new WorkReportDivisionBoardEditor();
 				selectorIsSet = true;
+				helpTextKey = ACTION_EDIT_DIVISION_BOARD + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD, "Edit division info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_EDIT_DIVISION_BOARD, "Edit division info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_SEND_REPORT)) {
 				selector = new WorkReportSender();
 				selectorIsSet = true;
+				helpTextKey = ACTION_SEND_REPORT + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_SEND_REPORT, "Send report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_IMPORT_MEMBERS)) {
 				selector = new WorkReportMemberImporterConfirm();
 				selectorIsSet = true;
+				helpTextKey = ACTION_IMPORT_MEMBERS + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_MEMBERS, "Import members"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_IMPORT_ACCOUNT)) {
 				selector = new WorkReportAccountImporter();
 				selectorIsSet = true;
+				helpTextKey = ACTION_IMPORT_ACCOUNT + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT, "Import account info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_ACCOUNT, "Import account info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_IMPORT_BOARD)) {
 				selector = new WorkReportBoardImporter();
 				selectorIsSet = true;
+				helpTextKey = ACTION_IMPORT_BOARD + "_help";
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_IMPORT_BOARD, "Import board info"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
@@ -198,6 +212,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				WorkReportOverViewStats stats = new WorkReportOverViewStats();
 				stats.setYear(year);
 				menuTable.add(stats,1,15);
+				helpTextKey = ACTION_REPORT_OVERVIEW + "_help";
 				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
@@ -213,12 +228,14 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				WorkReportOverViewStats stats = new WorkReportOverViewStats();
 				stats.setYear(year);
 				menuTable.add(stats,1,15);
+				helpTextKey = ACTION_REPORT_OVERVIEW_CLOSE_VIEW + "_help";
 				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_REPORT_OVERVIEW, "Review work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
 			}
 			else if (action.equals(ACTION_CLOSE_REPORT)) {
 				table.add(new WorkReportCloser(),2,1);	//not a selector
+				helpTextKey = ACTION_CLOSE_REPORT + "_help";
 				selectorIsSet = true;
 				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"));
 				this.addTitle(iwrb.getLocalizedString(ACTION_CLOSE_REPORT, "Close work report"), IWConstants.BUILDER_FONT_STYLE_TITLE);
@@ -291,6 +308,12 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 				selector.setUserType(getUserType());
 				table.add(selector, 2, 1);
 			}
+			if(!action.equals(ACTION_STATISTICS)) {
+				table.add(Text.NON_BREAKING_SPACE,2,1);
+				table.add(getHelpWithGrayImage(helpTextKey,false),2,1);
+			}
+			
+				
 		}
 		if(!selectorIsSet) {
 			addTitle(iwrb.getLocalizedString("workreportwindow.title", "Work Reports"), IWConstants.BUILDER_FONT_STYLE_TITLE);		
@@ -371,7 +394,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 	private Table getMenuTable(IWContext iwc) {
 		String type = getUserType();
 
-		Table menu = new Table(1, 15);
+		Table menu = new Table(2, 15);
 		menu.setWidth(Table.HUNDRED_PERCENT);
 		menu.setCellpadding(3);
 		menu.setCellspacing(0);
@@ -797,10 +820,6 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 		
 		stats.add(b12_7_2,2,14);	
 		stats.addBreak(2,14);
-		
-		
-		
-		
 
 		//B.13
 		LinkContainer createReports = new LinkContainer();
@@ -812,18 +831,20 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			//add to window
 			menu.add(operations, 1, 1);
 			menu.setRowColor(1, COLOR_MIDDLE);
+			menu.add(getHelpWithGrayImage("workreportwindow.operations_help",true),2,1);
 			menu.add(selectReport, 1, 2);
-			
+
 			if(WorkReportConstants.WR_USER_TYPE_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)  || iwc.isSuperAdmin()) {
 				menu.add(uploadReport, 1, 4);
 				menu.setRowColor(4, COLOR_MIDDLE);
+				menu.add(getHelpWithGrayImage("workreportwindow.uploadReport_help",true),2,4);
 				menu.add(uploadList, 1, 5);
 			}
 			
 			menu.add(workOnReport, 1, 6);
 			menu.setRowColor(6, COLOR_MIDDLE);
+			menu.add(getHelpWithGrayImage("workreportwindow.workOnReport_help",true),2,6);
 			menu.add(editList, 1, 7);
-
 			
 			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type) || iwc.isSuperAdmin()) {
 				menu.add(reportsOverview, 1, 8);
@@ -842,6 +863,7 @@ public class WorkReportWindow extends StyledIWAdminWindow {
 			if (!WorkReportConstants.WR_USER_TYPE_CLUB.equals(type)  || iwc.isSuperAdmin()) {
 				menu.add(statistics, 1, 12);
 				menu.setRowColor(12, COLOR_MIDDLE);
+				menu.add(getHelpWithGrayImage("workreportwindow.statistics_help",true),2,12);
 				menu.add(stats, 1, 13);
 			}
 			
