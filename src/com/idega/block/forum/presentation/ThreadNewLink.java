@@ -15,6 +15,8 @@ import com.idega.presentation.Image;
  * @author Anna
  */
 public class ThreadNewLink extends TopicLink {
+	
+	private Image iImage;
 
 	public boolean hasPermission(IWContext iwc) {
 		return iwc.hasPermission(Forum.AddPermission, this);
@@ -25,7 +27,12 @@ public class ThreadNewLink extends TopicLink {
 	}
 
 	public Image getLinkImage(IWBundle bundle) {
-		return bundle.getImage("shared/new.gif");
+		if (iImage != null) {
+			return iImage;
+		}
+		else {
+			return bundle.getImage("shared/new.gif");
+		}
 	}
 
 	public Class getWindowClassToOpen() {
@@ -38,5 +45,9 @@ public class ThreadNewLink extends TopicLink {
 
 	public String getState() {
 		return null;
+	}
+	
+	public void setImage(Image image) {
+		iImage = image;
 	}
 }
