@@ -12,6 +12,8 @@ import com.idega.block.survey.data.SurveyAnswer;
 import com.idega.block.survey.data.SurveyAnswerHome;
 import com.idega.block.survey.data.SurveyEntity;
 import com.idega.block.survey.data.SurveyEntityHome;
+import com.idega.block.survey.data.SurveyParticipant;
+import com.idega.block.survey.data.SurveyParticipantHome;
 import com.idega.block.survey.data.SurveyQuestion;
 import com.idega.block.survey.data.SurveyQuestionHome;
 import com.idega.block.survey.data.SurveyReply;
@@ -22,6 +24,8 @@ import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -38,6 +42,7 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 	private SurveyAnswerHome answerHome;
 	private SurveyQuestionHome questionHome;
 	private SurveyReplyHome surveyReplyHome;
+	private SurveyParticipantHome surveyParticipantHome;
 	
 	public final static char ANSWERTYPE_SINGLE_CHOICE = 's';
 	public final static char ANSWERTYPE_MULTI_CHOICE = 'm';
@@ -56,6 +61,7 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		answerHome = (SurveyAnswerHome)IDOLookup.getHome(SurveyAnswer.class);
 		questionHome = (SurveyQuestionHome)IDOLookup.getHome(SurveyQuestion.class);
 		surveyReplyHome = (SurveyReplyHome)IDOLookup.getHome(SurveyReply.class);		
+		surveyParticipantHome = (SurveyParticipantHome)IDOLookup.getHome(SurveyParticipant.class);		
 	}
 	
 	public SurveyEntity createSurvey(InformationFolder folder, String name, String description, IWTimestamp startTime, IWTimestamp endTime) throws IDOLookupException, CreateException{
@@ -137,7 +143,7 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		
 		if(answer != null){
 			reply.setAnswer(answer);
-		}
+		} 
 		
 		if(answerText != null){
 			if(answerText.length() > SurveyReply.SURVEY_ANSWER_MAX_LENGTH){
@@ -148,6 +154,7 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 				reply.setAnswer(answerText);
 			}
 		}
+		
 		
 		reply.store();
 		
@@ -174,6 +181,26 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		return ans;
 	}
 	
+	
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.survey.business.SurveyBusiness#removeQuestionFromSurvey(com.idega.block.survey.data.SurveyEntity, com.idega.block.survey.data.SurveyQuestion)
+	 */
+	public void removeQuestionFromSurvey(SurveyEntity survey, SurveyQuestion question, User user) throws IDORemoveRelationshipException {
+//		Collection answers = this.getAnswerHome().findQuestionsAnswer(question);
+//		for (Iterator aIter = answers.iterator(); aIter.hasNext();) {
+//			this.removeAnswerFromQuestion(question,(SurveyAnswer)aIter.next(),user);
+//		}	
+		survey.removeQuestion(question);
+		question.setRemoved(user);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.block.survey.business.SurveyBusiness#removeAnswerFromQuestion(com.idega.block.survey.data.SurveyQuestion, com.idega.block.survey.data.SurveyAnswer)
+	 */
+	public void removeAnswer(SurveyAnswer ans, User user) throws IDORemoveRelationshipException {
+		ans.setRemoved(user);
+	}
 
 	/**
 	 * @return
@@ -214,7 +241,26 @@ public class SurveyBusinessBean extends IBOServiceBean implements SurveyBusiness
 		}
 		return surveyReplyHome;
 	}
+	
+	/**
+	 * @return
+	 */
+	public SurveyParticipantHome getSurveyParticipantHome() throws IDOLookupException {
+		if(surveyParticipantHome==null){
+			initializeHomes();
+		}
+		return surveyParticipantHome;
+	}
 
-
+	/* (non-Javadoc)
+	 * @see com.idega.block.survey.business.SurveyBusiness#reportParticipation(com.idega.block.survey.data.SurveyEntity, java.lang.String)
+	 */
+	public SurveyParticipant reportParticipation(SurveyEntity survey, String participant) throws IDOLookupException, CreateException {
+		SurveyParticipant sp = getSurveyParticipantHome().create();
+		sp.setSurvey(survey);
+		sp.setParticipantName(participant);
+		sp.store();
+		return sp;
+	}
 
 }

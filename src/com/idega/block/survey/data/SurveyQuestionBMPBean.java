@@ -1,6 +1,7 @@
 package com.idega.block.survey.data;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,6 +12,8 @@ import javax.ejb.FinderException;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.util.IWTimestamp;
+import com.idega.user.data.User;
 
 
 /**
@@ -25,6 +28,14 @@ import com.idega.data.IDOLookupException;
 public class SurveyQuestionBMPBean extends com.idega.data.GenericEntity implements SurveyQuestion{
 	
 	private HashMap storeMap = new HashMap();
+	public static final String COLUMNNAME_CREATION_LOCALE = "CREATION_LOCALE";	
+
+	private final static String DELETED_COLUMN = "DELETED";
+	private final static String DELETED_BY_COLUMN = "DELETED_BY";
+	private final static String DELETED_WHEN_COLUMN = "DELETED_WHEN";
+	public final static String DELETED = "Y";
+	public final static String NOT_DELETED = "N";
+
 	
 	public SurveyQuestionBMPBean() {
 		super();
@@ -39,6 +50,13 @@ public class SurveyQuestionBMPBean extends com.idega.data.GenericEntity implemen
 //		addAttribute(getColumnNameMultiChoice(), "Multi-Choice",true,true,Boolean.class);
 		addAttribute(getColumnNameAnswerType(), "Answer type",true,true,String.class,1);
 		setNullable(getColumnNameAnswerType(),false);
+		
+		addManyToOneRelationship(COLUMNNAME_CREATION_LOCALE, "Locale id", ICLocale.class);
+
+		addAttribute(DELETED_COLUMN, "Deleted", true, true, String.class, 1);
+		addAttribute(DELETED_BY_COLUMN, "Deleted by", true, true, Integer.class, "many-to-one", User.class);
+		addAttribute(DELETED_WHEN_COLUMN, "Deleted when", true, true, Timestamp.class);
+
 	}
 
 	
@@ -72,7 +90,12 @@ public class SurveyQuestionBMPBean extends com.idega.data.GenericEntity implemen
 	
 	public String getQuestion(ICLocale locale) throws IDOLookupException, FinderException{
 		SurveyQuestionTranslationHome sqtHome = (SurveyQuestionTranslationHome)IDOLookup.getHome(SurveyQuestionTranslation.class);
-		SurveyQuestionTranslation qTR = sqtHome.findQuestionTranslation(this,locale);
+		SurveyQuestionTranslation qTR;
+		try {
+			qTR = sqtHome.findQuestionTranslation(this, locale);
+		} catch (FinderException e) {
+			qTR = sqtHome.findQuestionTranslation(this, this.getCreationLocale());
+		}
 		return qTR.getQuestion();
 	}
 	
@@ -84,11 +107,22 @@ public class SurveyQuestionBMPBean extends com.idega.data.GenericEntity implemen
 		} catch (FinderException e) {
 			qTR = sqtHome.create();
 			qTR.setLocale(locale);
+			if(this.getCreationLocale()== null){
+				this.setCreationLocale(locale);
+			}
 		}
 		
 		qTR.setQuestion(question);
 		
 		storeMap.put(locale,qTR);
+	}
+	
+	public void setCreationLocale(ICLocale locale){
+		setColumn(COLUMNNAME_CREATION_LOCALE,locale);
+	}
+	
+	public ICLocale getCreationLocale(){
+		return (ICLocale)getColumnValue(COLUMNNAME_CREATION_LOCALE);
 	}
 	
 	
@@ -100,6 +134,31 @@ public class SurveyQuestionBMPBean extends com.idega.data.GenericEntity implemen
 			element.setTransletedEntity(this);
 			element.store();
 		}
+	}
+	
+	/**
+	 *
+	 */
+	public void setRemoved(User user){
+		setColumn(DELETED_COLUMN, DELETED);
+		setDeletedWhen(IWTimestamp.getTimestampRightNow());
+		setDeletedBy(user);
+
+		super.store();
+	}
+
+	/**
+	 *
+	 */
+	private void setDeletedBy(User user) {
+		setColumn(DELETED_BY_COLUMN, user);
+	}
+	
+	/**
+	 *
+	 */
+	private void setDeletedWhen(Timestamp when) {
+		setColumn(DELETED_WHEN_COLUMN, when);
 	}
 
 }

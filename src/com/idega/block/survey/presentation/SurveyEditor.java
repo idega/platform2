@@ -15,7 +15,9 @@ import java.util.Locale;
 import java.util.Vector;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
+import javax.ejb.RemoveException;
 
 import com.idega.block.help.presentation.Help;
 import com.idega.block.survey.business.SurveyBusiness;
@@ -29,6 +31,7 @@ import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.block.presentation.FolderBlock;
@@ -123,12 +126,23 @@ public class SurveyEditor extends FolderBlock {
 	public static final String PRM_QUESTION_IDS = "su_q_id";
 	public static final String PRM_ANSWER_IDS = "su_a_id";
 	
+	public static final String PRM_DELETE_QUESTION = "su_del_q";
+	public static final String PRM_DELETE_ANSWER = "su_del_a";
+	
+	public static final String PRM_DELETED_QUESTION = "su_del2_q";
+	public static final String PRM_DELETED_ANSWER = "su_del2_a";
+
+	
 	private boolean _surveyHasBeenLoaded = false;
 	public static final String PRM_SURVEY_LOADED = "su_loaded";
 	
 	private Vector prmVector = new Vector();
 	private HashMap _prmValues = new HashMap();
-	
+	private Vector _delQuestion = new Vector();
+	private Vector _delAnswer = new Vector();
+	private boolean _maintainDelPRM = true;
+	private Vector _deletedQuestion = new Vector();
+	private Vector _deletedAnswer = new Vector();
 	
 	private String messageTextStyle;// = "font-weight: bold;";
 	private String messageTextHighlightStyle ;//= "font-weight: bold;color: #FF0000;";
@@ -182,24 +196,7 @@ public class SurveyEditor extends FolderBlock {
 		
 		Form myForm = new Form();
 		
-		//Edit		
-//		if(this.hasEditPermission()){
-			switch (_state) {
-				case STATE_ONE :
-					add(getHelp("su_help_question_step"));
-					myForm.add(getStateOne());
-					break;
-				case STATE_TWO :
-					add(getHelp("su_help_answer_step"));
-					myForm.add(getStateTwo());
-					break;
-			}			
-//		} else {
-//			//store information temporary while logging in
-//		}
-
 		
-
 		//save to DB
 		if(_action==ACTION_SAVE){
 			
@@ -219,6 +216,26 @@ public class SurveyEditor extends FolderBlock {
 			add(Text.BREAK);
 			add(Text.BREAK);
 		}
+		
+		
+		//Edit		
+//		if(this.hasEditPermission()){
+			switch (_state) {
+				case STATE_ONE :
+					add(getHelp("su_help_question_step"));
+					myForm.add(getStateOne());
+					break;
+				case STATE_TWO :
+					add(getHelp("su_help_answer_step"));
+					myForm.add(getStateTwo());
+					break;
+			}			
+//		} else {
+//			//store information temporary while logging in
+//		}
+
+		
+
 		
 		this.add(myForm);
 		
@@ -256,7 +273,7 @@ public class SurveyEditor extends FolderBlock {
 	 * @param iwc
 	 * @return
 	 */
-	private Object storeSurvey(IWContext iwc) throws IDOAddRelationshipException, CreateException, IDOLookupException, RemoteException, FinderException {
+	private Object storeSurvey(IWContext iwc) throws IDOAddRelationshipException, CreateException, FinderException, IDORemoveRelationshipException, IDOLookupException, EJBException, RemoteException, RemoveException {
 		SurveyBusiness business = (SurveyBusiness)IBOLookup.getServiceInstance(iwc,SurveyBusiness.class);
 		ICLocale locale = ICLocaleBusiness.getICLocale(_iLocale);
 		
@@ -281,9 +298,15 @@ public class SurveyEditor extends FolderBlock {
 					SurveyQuestion question = null;
 					if(NumberOfQuestionIDs <= i){
 						question =  business.createSurveyQuestion(survey,questions[i],locale,type);
+						prmVector.add(new Parameter(PRM_QUESTION_IDS+PRM_MAINTAIN_SUFFIX,question.toString()));
 					} else {
 						question = business.getQuestionHome().findByPrimaryKey(business.getQuestionHome().decode(questionIDs[i]));
-						question =  business.updateSurveyQuestion(survey,question,questions[i],locale,type);
+//						if(questions[i] != null && !"".equals(questions[i])){
+//							business.removeQuestionFromSurvey(survey,question,iwc.getCurrentUser());
+//							prmVector.remove(new Parameter(PRM_QUESTION_IDS+PRM_MAINTAIN_SUFFIX,questionIDs[i]));
+//						} else{
+							question =  business.updateSurveyQuestion(survey,question,questions[i],locale,type);
+//						}
 					}
 					
 					
@@ -296,10 +319,16 @@ public class SurveyEditor extends FolderBlock {
 						for (int j = 0; j < answers.length; j++) {
 							if(answers[j] != null && !"".equals(answers[j])){
 								if(numberOfAnswerIDs <= j){
-									business.createSurveyAnswer(question,(type == ANSWERTYPE_TEXTAREA)?"":answers[j],locale);
+									SurveyAnswer ans = business.createSurveyAnswer(question,(type == ANSWERTYPE_TEXTAREA)?"":answers[j],locale);
+									prmVector.add(new Parameter(PRM_ANSWER_IDS+(i+1)+PRM_MAINTAIN_SUFFIX,ans.toString()));
 								} else {
 									SurveyAnswer ans = business.getAnswerHome().findByPrimaryKey(business.getAnswerHome().decode(answerIDs[j]));
-									business.updateSurveyAnswer(ans,(type == ANSWERTYPE_TEXTAREA)?"":answers[j],locale);
+//									if(answers[j] != null && !"".equals(answers[j]) && type != ANSWERTYPE_TEXTAREA){
+//										prmVector.remove(new Parameter(PRM_ANSWER_IDS+(i+1)+PRM_MAINTAIN_SUFFIX,answerIDs[j]));
+//										business.removeAnswerFromQuestion(question,ans,iwc.getCurrentUser());
+//									} else {
+										business.updateSurveyAnswer(ans,(type == ANSWERTYPE_TEXTAREA)?"":answers[j],locale);
+//									}
 								}								
 							}
 						}
@@ -308,6 +337,21 @@ public class SurveyEditor extends FolderBlock {
 			}
 		}
 		
+		for (Iterator dQuestion = _delQuestion.iterator(); dQuestion.hasNext();) {
+			String dPK = (String)dQuestion.next();
+			SurveyQuestion question = business.getQuestionHome().findByPrimaryKey(business.getQuestionHome().decode(dPK));
+			prmVector.remove(new Parameter(PRM_QUESTION_IDS+PRM_MAINTAIN_SUFFIX,question.toString()));
+			business.removeQuestionFromSurvey(survey,question,iwc.getCurrentUser());
+		}
+		
+		for (Iterator dAns = _delAnswer.iterator(); dAns.hasNext();) {
+			String dPK = (String)dAns.next();
+			SurveyAnswer ans = business.getAnswerHome().findByPrimaryKey(business.getAnswerHome().decode(dPK));
+//TMP	//TODO 
+//			prmVector.add(new Parameter(PRM_ANSWER_IDS+questionNumber+PRM_MAINTAIN_SUFFIX,sAnswerID));
+			business.removeAnswer(ans,iwc.getCurrentUser());
+		}
+		_maintainDelPRM = false;
 		return survey.getPrimaryKey();
 	}
 
@@ -355,6 +399,28 @@ public class SurveyEditor extends FolderBlock {
 	 * 
 	 */
 	private void beforeParameterListIsAdded() {
+		if(_maintainDelPRM){
+			for (Iterator dQuestion = _delQuestion.iterator(); dQuestion.hasNext();) {
+				String dPK = (String)dQuestion.next();
+				prmVector.add(new Parameter(PRM_DELETE_QUESTION,dPK));
+			}
+			
+			for (Iterator dAns = _delAnswer.iterator(); dAns.hasNext();) {
+				String dPK = (String)dAns.next();
+				prmVector.add(new Parameter(PRM_DELETE_ANSWER,dPK));
+			}
+		} else {
+			for (Iterator dQuestion = _delQuestion.iterator(); dQuestion.hasNext();) {
+				String dPK = (String)dQuestion.next();
+				prmVector.add(new Parameter(PRM_DELETED_QUESTION,dPK));
+			}
+			
+			for (Iterator dAns = _delAnswer.iterator(); dAns.hasNext();) {
+				String dPK = (String)dAns.next();
+				prmVector.add(new Parameter(PRM_DELETED_ANSWER,dPK));
+			}
+		}
+		
 		//Number of questions parameter
 		prmVector.add(new Parameter(PRM_NUMBER_OF_QUESTIONS,String.valueOf(_numberOfQuestions)));
 	}
@@ -363,6 +429,7 @@ public class SurveyEditor extends FolderBlock {
 		processSurveyIdPRM(iwc);
 		processActionPRM(iwc);
 		processStatePRM(iwc);
+		processDeleteParameters(iwc);
 		processQuestionAndAnswerPRMs(iwc);
 		processNumberOfQuestionsPRM(iwc);
 		
@@ -371,6 +438,47 @@ public class SurveyEditor extends FolderBlock {
 		}	
 	}
 	
+	/**
+	 * @param iwc
+	 */
+	private void processDeleteParameters(IWContext iwc) {
+		String[] deletedQuestions = iwc.getParameterValues(PRM_DELETED_QUESTION);
+			if(deletedQuestions != null){
+				for (int i = 0; i < deletedQuestions.length; i++) {
+					_deletedQuestion.add(deletedQuestions[i]);
+					prmVector.remove(new Parameter(PRM_QUESTION_IDS+PRM_MAINTAIN_SUFFIX,deletedQuestions[i]));
+				}
+			}
+	
+			String[] deletedAnswers = iwc.getParameterValues(PRM_DELETED_ANSWER);
+			if(deletedAnswers!= null){
+				for (int i = 0; i < deletedAnswers.length; i++) {
+					_deletedAnswer.add(deletedAnswers[i]);
+//					prmVector.add(new Parameter(PRM_ANSWER_IDS+questionNumber+PRM_MAINTAIN_SUFFIX,deletedAnswers[i]));
+				}
+			}
+
+		
+		
+		String[] delQuestions = iwc.getParameterValues(PRM_DELETE_QUESTION);
+		if(delQuestions != null){
+			for (int i = 0; i < delQuestions.length; i++) {
+				if(!_deletedQuestion.contains(delQuestions[i])){
+					_delQuestion.add(delQuestions[i]);
+				}
+			}
+		}
+		
+		String[] delAnswers = iwc.getParameterValues(PRM_DELETE_ANSWER);
+		if(delAnswers!= null){
+			for (int i = 0; i < delAnswers.length; i++) {
+				if(!_deletedAnswer.contains(delAnswers[i])){
+					_delAnswer.add(delAnswers[i]);
+				}
+			}
+		}
+	}
+
 	/**
 	 * @param iwc
 	 */
@@ -678,6 +786,7 @@ public class SurveyEditor extends FolderBlock {
 		String[] questions = (String[])_prmValues.get(PRM_QUESTION);
 		String[] selectedAnsTypes = (String[])_prmValues.get(PRM_ANSWERTYPE);
 		String[] numberOfAnswers = (String[])_prmValues.get(PRM_NUMBER_OF_ANSWERS);		
+		String[] questionIDs = (String[])_prmValues.get(PRM_QUESTION_IDS);
 		
 		for(int i = 1; i <= _numberOfQuestions; i++){
 			String question = null;
@@ -688,7 +797,7 @@ public class SurveyEditor extends FolderBlock {
 				selectedAnsType = selectedAnsTypes[i-1];
 				numberOfAns = numberOfAnswers[i-1];
 			}
-			stateOne.add(getQuestionFieldset(i,question,selectedAnsType,numberOfAns),1,++rowIndex);
+			stateOne.add(getQuestionFieldset(i,question,selectedAnsType,numberOfAns,(questionIDs!=null && questionIDs.length>=i)),1,++rowIndex);
 			
 		}
 		
@@ -721,15 +830,18 @@ public class SurveyEditor extends FolderBlock {
 		String[] questions = (String[])_prmValues.get(PRM_QUESTION);
 		String[] answertypes = (String[])_prmValues.get(PRM_ANSWERTYPE);
 		String[] numberOfAnswers = (String[])_prmValues.get(PRM_NUMBER_OF_ANSWERS);
+		String[] questionIDs = (String[])_prmValues.get(PRM_QUESTION_IDS);
 		if(questions != null && questions.length != 0){
 			_numberOfQuestions =0;
 			for (int i = 0; i < questions.length; i++) {
 				String question = questions[i];
-				if(question!=null && !"".equals(question)){
+				if((questionIDs != null && questionIDs.length > i && _deletedQuestion.contains(questionIDs[i]))){
+					continue;
+				} else if(question!=null && !"".equals(question)){
 					++_numberOfQuestions;
 					char answertype = answertypes[i].charAt(0);
 					int noAnswers = Integer.parseInt(numberOfAnswers[i]);
-					stateTwo.add(getAnswerFieldset(_numberOfQuestions,question,answertype,noAnswers),1,++rowIndex);
+					stateTwo.add(getAnswerFieldset(_numberOfQuestions,question,answertype,noAnswers,(questionIDs!=null && questionIDs.length>i)),1,++rowIndex);
 				}
 			}
 		}
@@ -787,9 +899,9 @@ public class SurveyEditor extends FolderBlock {
 		return t;
 	}
 	
-	private PresentationObject getQuestionFieldset(int no, String question, String selectedAnsType,String numberOfAns){
+	private PresentationObject getQuestionFieldset(int no, String question, String selectedAnsType,String numberOfAns, boolean removable){
 		FieldSet fs = new FieldSet(_iwrb.getLocalizedString("Question","Question")+" "+no);
-		Table qt = new Table(2,3);
+		Table qt = new Table();
 		qt.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
 		
 		//qt.setBorder(1);
@@ -803,14 +915,16 @@ public class SurveyEditor extends FolderBlock {
 		qt.add(getAnswerTypeDropdownMenu(PRM_ANSWERTYPE,selectedAnsType),2,2);
 		qt.add(getLabel(_iwrb.getLocalizedString("Number_of_answers","Number of answers")),1,3);
 		qt.add(getNumberOfAnswersDropdownMenu(PRM_NUMBER_OF_ANSWERS,numberOfAns),2,3);
-		
-		
+		if(removable){
+			qt.add(getLabel(_iwrb.getLocalizedString("Delete","Delete")),1,4);
+			qt.add(getDeleteQuestionCheckBox(no),2,4);
+		}		
 		
 		fs.add(qt);
 		return fs;
 	}
 	
-	private PresentationObject getAnswerFieldset(int no, String questionText, char answerType, int numberOfAnswers){
+	private PresentationObject getAnswerFieldset(int no, String questionText, char answerType, int numberOfAnswers, boolean removable){
 		FieldSet fs = new FieldSet(_iwrb.getLocalizedString("Question","Question")+" "+no);
 		Table qt = new Table();
 		qt.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
@@ -858,6 +972,10 @@ public class SurveyEditor extends FolderBlock {
 				break;
 		}
 		
+		if(removable){
+			qt.add(getLabel(_iwrb.getLocalizedString("Delete","Delete")),1,qt.getRows()+1);
+			qt.add(getDeleteQuestionCheckBox(no),2,qt.getRows());
+		}
 				
 		
 		
@@ -879,6 +997,31 @@ public class SurveyEditor extends FolderBlock {
 		if(check != null){
 			box.setChecked(true);
 		}
+		//setStyle(box);
+		return box;
+	}
+	
+
+	private PresentationObject getDeleteQuestionCheckBox(int  value) {
+		CheckBox box = new CheckBox(PRM_DELETE_QUESTION);
+		
+		String[] questionIDs = (String[])_prmValues.get(PRM_QUESTION_IDS);
+		box.setValue(questionIDs[value-1]);
+		
+		if(questionIDs.length >= value && _delQuestion.contains(questionIDs[value-1])){
+			box.setChecked(true);
+		}
+		//setStyle(box);
+		return box;
+	}
+	
+
+	private PresentationObject getDeleteAnswerCheckBox(Object value) {
+		CheckBox box = new CheckBox(PRM_DELETE_ANSWER);
+		box.setValue(value);
+//		if(check != null){
+//			box.setChecked(true);
+//		}
 		//setStyle(box);
 		return box;
 	}

@@ -17,5 +17,6 @@ public interface SurveyEntity extends com.idega.data.IDOEntity
  public void setEndTime(java.sql.Timestamp p0);
  public void setFolder(com.idega.core.category.data.ICInformationFolder p0);
  public void setName(java.lang.String p0);
+ public void setRemoved(com.idega.user.data.User p0);
  public void setStartTime(java.sql.Timestamp p0);
 }

@@ -40,11 +40,13 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
+import com.idega.presentation.ui.TextInput;
 import com.idega.util.IWTimestamp;
 import com.idega.util.StringHandler;
 import com.idega.util.datastructures.QueueMap;
@@ -70,17 +72,24 @@ public class Survey extends FolderBlock {
 	private Locale _iLocaleID;
 	private IWTimestamp _date;
 	
+	public final static String STYLE = "font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000;";
+	public final static String STYLE_2 = "font-family:arial; font-size:8pt; color:#000000; text-align: justify;";
+	public final static String STYLE_BUTTON = "font-family:arial; font-size:8pt; color:#000000; text-align: center; border: 1 solid #000000;";
+
+	
 	private static final String PRM_SELECTION_PREFIX = "su_q_";
 	private static final String PRM_ANSWER_IN_TEXT_AREA_PREFIX = "su_q_ta_";
 	public final static String PRM_MAINTAIN_SUFFIX = "_mt";
 	
+	public final static String PRM_PARTICIPANT_IDENTIFIER = "su_p_id";
 	
 	public static final String PRM_QUESTIONS = "su_questions";
 	
 	public static final String PRM_ACTION = "su_act";
 	public static final String PRM_LAST_ACTION = "su_last_act";
 	public static final int ACTION_NO_ACTION = 0;
-	public static final int ACTION_SURVEYREPLY = 1;
+	public static final int ACTION_PARTICIPATE = 1;
+	public static final int ACTION_SURVEYREPLY = 2;
 	
 	private int _action = ACTION_NO_ACTION;
 	private int _lastAction = ACTION_NO_ACTION;
@@ -124,7 +133,8 @@ public class Survey extends FolderBlock {
 	private int textAreaRows = 8;
 	
 	private boolean showHelp = true;
-	
+	private boolean showIdentificationState = true;
+	private String _participant = null;
 
 
 	/**
@@ -182,6 +192,11 @@ public class Survey extends FolderBlock {
 		}
 		
 		processAnswerPRM(iwc);
+		
+		_participant = iwc.getParameter(PRM_PARTICIPANT_IDENTIFIER);
+		if(_participant != null){
+			prmVector.add(new Parameter(PRM_PARTICIPANT_IDENTIFIER,_participant));
+		}
 
 	}
 	
@@ -273,26 +288,34 @@ public class Survey extends FolderBlock {
 		} else {
 			if(this.hasEditPermission()){
 				add(getAdminPart());
-			}
-			
-			if(_action == ACTION_SURVEYREPLY && _surveyAnswerDifference.isEmpty()){
-				add(Text.BREAK);
-				add(Text.BREAK);
-				add(getMessageTextObject(_iwrb.getLocalizedString("survey_has_been_replied","Thank you for participating"),false));
-				storeReply(iwc);
-			} else {
 				if(showHelp){
 					add(getHelp("su_help_survey"));
 				}
+			}
+			
+			if(_action == ACTION_NO_ACTION && showIdentificationState){
+				add(getOpenPresentation(iwc));			
 				
-				if(!_surveyAnswerDifference.isEmpty()){
+				
+			} else {
+				if(_action == ACTION_SURVEYREPLY && _surveyAnswerDifference.isEmpty()){
 					add(Text.BREAK);
-					add(getMessageTextObject(_iwrb.getLocalizedString("you_have_not_answered_all_of_the_questions","You have not answered all of the questions."),true));
+					add(Text.BREAK);
+					add(getMessageTextObject(_iwrb.getLocalizedString("survey_has_been_replied","Thank you for participating"),false));
+					storeReply(iwc);
+				} else {
+	
+					
+					if(!_surveyAnswerDifference.isEmpty()){
+						add(Text.BREAK);
+						add(getMessageTextObject(_iwrb.getLocalizedString("you_have_not_answered_all_of_the_questions","You have not answered all of the questions."),true));
+					}
+					
+					add(getSurveyPresentation(iwc));
 				}
-				
-				add(getSurveyPresentation(iwc));
 			}
 		}
+
 	}
 	
 
@@ -313,7 +336,10 @@ public class Survey extends FolderBlock {
 					SurveyAnswer answer = _sBusiness.getAnswerHome().findByPrimaryKey(answerPKAndText[0]);
 					_sBusiness.createSurveyReply(_currentSurvey,question,participantKey,answer,(String)answerPKAndText[1]);
 				}
-			}	 	
+			}
+			if(_participant != null){
+				_sBusiness.reportParticipation(_currentSurvey,_participant);	 	
+			}
 		}
 	}
 
@@ -400,7 +426,98 @@ public class Survey extends FolderBlock {
 			add(getQuestionTextObject(_iwrb.getLocalizedString("no_survey_defined","No survey defined"),false));
 		}
 		
+		for (Iterator iter = prmVector.iterator(); iter.hasNext();) {
+			myForm.add((Parameter)iter.next());
+		}
+		
 		return myForm;
+	}
+	
+	
+	/**
+	 * @param iwc
+	 * @return
+	 */
+	private PresentationObject getOpenPresentation(IWContext iwc) {
+		Form myForm = new Form();		
+		
+		if(_currentSurvey != null){
+			Table surveyTable = new Table();
+//			surveyTable.setWidth("100%");
+			surveyTable.setCellspacing(0);
+			surveyTable.setCellpadding(4);
+			
+			//TODO Should be the survey description
+			myForm.add(_iwrb.getLocalizedString("introduction","Here you can put your e-mail"));
+			
+			
+			surveyTable.add(getLabel(_iwrb.getLocalizedString("identitfier","e-mail")),1,1);
+			surveyTable.add(getIdentifierTextInput(PRM_PARTICIPANT_IDENTIFIER,null),2,1);
+			surveyTable.setNoWrap(1,1);
+			
+			if(surveyTable.getColumns()>=2){
+				surveyTable.setColumnVerticalAlignment(1,Table.VERTICAL_ALIGN_TOP);
+				surveyTable.setColumnVerticalAlignment(2,Table.VERTICAL_ALIGN_TOP);
+				surveyTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_RIGHT);
+				surveyTable.setColumnAlignment(1,Table.HORIZONTAL_ALIGN_LEFT);
+			}
+			
+			SubmitButton submit = new SubmitButton(_iwrb.getLocalizedString("forward","  Forward  "),PRM_ACTION,String.valueOf(ACTION_PARTICIPATE));
+			submit.setStyleAttribute(style_submitbutton);
+			surveyTable.add(submit,2,2);
+			surveyTable.setAlignment(2,2,Table.HORIZONTAL_ALIGN_RIGHT);
+				
+
+			myForm.add(surveyTable);		
+		} else {
+			add(getQuestionTextObject(_iwrb.getLocalizedString("no_survey_defined","No survey defined"),false));
+		}
+		
+		for (Iterator iter = prmVector.iterator(); iter.hasNext();) {
+			myForm.add((Parameter)iter.next());
+		}
+		
+		return myForm;
+	}
+
+	/**
+	 * @param string
+	 * @return
+	 */
+	private Text getLabel(String string) {
+		Text t = new Text(string+": ");
+		setStyle(t);
+		return t;
+	}
+	
+	/**
+	 * @param string
+	 * @param ans
+	 * @return
+	 */
+	private PresentationObject getIdentifierTextInput(String name, String displayText) {
+		TextInput i = new TextInput(name);
+		
+		i.setSize(25);
+		setStyle(i);
+		if(displayText != null){
+			i.setValue(displayText);
+		}
+		return i;
+	}
+	
+	public void setStyle(PresentationObject obj){
+		if(obj instanceof Text){
+			this.setStyle((Text)obj);
+		} else if(obj instanceof GenericButton) {
+			obj.setMarkupAttribute("style",STYLE_BUTTON);
+		} else {
+			obj.setMarkupAttribute("style",STYLE);
+		}
+	}
+
+	public void setStyle(Text obj){
+		obj.setMarkupAttribute("style",STYLE_2);
 	}
 	
 	
@@ -729,6 +846,12 @@ public class Survey extends FolderBlock {
 	public void setToShowHelp(boolean value){
 		showHelp = value;
 	}
+	
+	public void setToShowIdentificationState(boolean value){
+		showIdentificationState = value;
+	}
+	
+	
 	
 	public void setMessageTextStyle(String style) {
 		messageTextStyle = style;
