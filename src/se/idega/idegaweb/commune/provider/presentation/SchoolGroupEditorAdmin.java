@@ -97,7 +97,7 @@ public class SchoolGroupEditorAdmin extends SchoolGroupEditor {
 	 * form for centralized administrators (BUN)
 	 */
 	
-	protected Form getNavigationForm() throws RemoteException {
+	protected Form getNavigationForm(boolean showStudyPaths) throws RemoteException {
 		Form form = new Form();
 		form.add(getNavigationTable(_iwc, true, true));
 		

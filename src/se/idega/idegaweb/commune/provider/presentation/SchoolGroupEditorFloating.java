@@ -27,7 +27,7 @@ public class SchoolGroupEditorFloating extends SchoolGroupEditorAdmin {
 		table.setHeight(2, 12);
 		table.setHeight(4, 12);
 
-		table.add(getNavigationForm(), 1, 1);		
+		table.add(getNavigationForm(false), 1, 1);		
 		
 		if (_provider != null){
 			table.add(getGroupTable(), 1, 3);
