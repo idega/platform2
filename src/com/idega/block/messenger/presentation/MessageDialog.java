@@ -8,6 +8,8 @@ import java.net.URL;
 import com.idega.block.messenger.data.Message;
 import com.idega.presentation.awt.ImageLabel;
 import java.applet.AudioClip;
+import java.util.Date;
+import java.util.Calendar;
 
 /**
  * Title:        com.idega.block.messenger.presentation
@@ -31,6 +33,7 @@ public class MessageDialog extends Frame implements ActionListener{
   ImageLabel logo;
   ActionListener listener;
   AudioClip alertSound;
+  Label status = new Label("  ");
 
   public MessageDialog(String title, Message message) {
     this(title,message,null);
@@ -60,8 +63,6 @@ public class MessageDialog extends Frame implements ActionListener{
     //panel.setSize(330,270);
     senderNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
     senderNameLabel.setForeground(Color.darkGray);
-
-    //debugsenderNameLabel.setText("Unknown sender");
     senderNameLabel.setText(message.getSenderName());
 
     senderNameLabel.setBounds(new Rectangle(6, 59, 365, 20));
@@ -93,7 +94,13 @@ public class MessageDialog extends Frame implements ActionListener{
     panel.add(replyMessage, null);
     panel.add(messageArea, null);
     panel.add(senderNameLabel, null);
-   // panel.add(sendButton, null);
+
+    senderNameLabel.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
+    senderNameLabel.setForeground(Color.darkGray);
+    status.setBounds(new Rectangle(6, 260, 365, 20));
+
+    panel.add(status,null);
+
   }
   protected void processWindowEvent(WindowEvent e) {
     if (e.getID() == WindowEvent.WINDOW_CLOSING) {
@@ -121,9 +128,14 @@ public class MessageDialog extends Frame implements ActionListener{
   public void addMessage(Message msg){
     this.message = msg;
     senderNameLabel.setText(message.getSenderName()+" - instant message");
+    Date date = Calendar.getInstance().getTime();
+
     messageArea.append(message.getSenderName()+" says:\n");
     messageArea.append("   "+message.getMessage()+"\n");
     if(alertSound!=null) alertSound.play();
+        //setStatus("Last message received at "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds());
+        repaint();
+
 
   }
 
@@ -154,6 +166,14 @@ public class MessageDialog extends Frame implements ActionListener{
     lastMessageString = "";
   }
 
+  public void setStatus(String text){
+    status.setFont(new java.awt.Font("Arial", Font.PLAIN, 12));
+    status.setForeground(Color.darkGray);
+
+    status.setText(text);
+    status.repaint();
+  }
+
   public void setLogoImage(Image image){
     this.logo = new ImageLabel(image);
   }
@@ -173,6 +193,8 @@ public class MessageDialog extends Frame implements ActionListener{
     int iHeight = this.getBounds().height-(184);
     messageArea.setBounds(6, 82,iWidth,iHeight);
     replyMessage.setBounds(6, messageArea.getBounds().height + 105 ,iWidth,29);
+    status.setBounds(6, replyMessage.getBounds().y + 23 ,iWidth,15);
+
     super.paint(g);
   }
 
