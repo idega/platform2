@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.43 2003/01/10 10:33:25 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.44 2003/01/11 08:00:22 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
+import se.idega.idegaweb.commune.account.citizen.data.CitizenAccount;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.util.PIDChecker;
@@ -31,11 +32,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/01/10 10:33:25 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/11 08:00:22 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -81,7 +82,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 	final static String MOVING_IN_DATE_DEFAULT = "Inflyttningsdatum";
 	final static String MOVING_IN_DATE_KEY = "caa_moving_in_date";
 	final static String MOVING_TO_NACKA_DEFAULT = "Jag flyttar till Nacka kommun";
-	final static String MOVING_TO_NACKA_KEY = "caa_moving_to_nacka";
 	final static String NO_DEFAULT = "Nej";
 	final static String NO_KEY = "caa_no";
 	final static String PHONE_HOME_DEFAULT = "Telefon (hem)";
@@ -91,7 +91,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 	final static String PROPERTY_TYPE_DEFAULT = "Fastighetsbeteckning (endast villa)";
 	final static String PROPERTY_TYPE_KEY = "caa_property_type";
 	private final static String PUT_CHILDREN_IN_NACKA_DEFAULT = "Jag vill ha plats för mitt barn i en skola i Nacka kommun";
-	final static String PUT_CHILDREN_IN_NACKA_KEY = "caa_put_children_in_nacka";
 	final static String SSN_DEFAULT = "Personnummer";
 	final static String SSN_KEY = "caa_ssn";
 	private final static String STREET_DEFAULT = "Gatuadress";
@@ -268,9 +267,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.mergeCells(1, row, 3, row);
 		table.add(getHeader(APPLICATION_REASON_KEY, APPLICATION_REASON_DEFAULT), 1, row++);
 		table.mergeCells(1, row, 3, row);
-		table.add(getRadioButton(APPLICATION_REASON_KEY, MOVING_TO_NACKA_KEY, MOVING_TO_NACKA_DEFAULT, true), 1, row++);
+		table.add(getRadioButton(APPLICATION_REASON_KEY, CitizenAccount.MOVING_TO_NACKA_KEY, MOVING_TO_NACKA_DEFAULT, true), 1, row++);
 		table.mergeCells(1, row, 3, row);
-		table.add(getRadioButton(APPLICATION_REASON_KEY, PUT_CHILDREN_IN_NACKA_KEY, PUT_CHILDREN_IN_NACKA_DEFAULT, false), 1, row++);
+		table.add(getRadioButton(APPLICATION_REASON_KEY, CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY, PUT_CHILDREN_IN_NACKA_DEFAULT, false), 1, row++);
 
 		table.setHeight(row++, 12);
 
@@ -365,9 +364,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 		}
 
 		final String applicationReason = iwc.getParameter(APPLICATION_REASON_KEY);
-		if (applicationReason.equals(MOVING_TO_NACKA_KEY)) {
+		if (applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY)) {
 			// applicant is moving to Nacka
-			final Text movingToNackaHeader = getLocalizedHeader(MOVING_TO_NACKA_KEY, MOVING_TO_NACKA_DEFAULT);
+			final Text movingToNackaHeader = getLocalizedHeader(CitizenAccount.MOVING_TO_NACKA_KEY, MOVING_TO_NACKA_DEFAULT);
 			table.setHeight(row++, 6);
 			table.mergeCells(1, row, 3, row);
 			table.add(movingToNackaHeader, 1, row++);
@@ -393,9 +392,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 			table.add(getHeader(LANDLORD_ADDRESS_KEY, LANDLORD_ADDRESS_DEFAULT), 1, row);
 			table.add(getSingleInput(iwc, LANDLORD_ADDRESS_KEY, 20, false), 3, row++);
 		}
-		else if (applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
+		else if (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY)) {
 			// applicant wants to put children in Nacka
-			final Text putChildrenInNackaHeader = getLocalizedHeader(PUT_CHILDREN_IN_NACKA_KEY, PUT_CHILDREN_IN_NACKA_DEFAULT);
+			final Text putChildrenInNackaHeader = getLocalizedHeader(CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY, PUT_CHILDREN_IN_NACKA_DEFAULT);
 			table.setHeight(row++, 6);
 			table.mergeCells(1, row, 3, row);
 			table.add(putChildrenInNackaHeader, 1, row++);
@@ -447,9 +446,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 		}
 
 		final String applicationReason = iwc.getParameter(APPLICATION_REASON_KEY);
-		if (applicationReason.equals(MOVING_TO_NACKA_KEY)) {
+		if (applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY)) {
 			stringParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY, PROPERTY_TYPE_KEY, LANDLORD_NAME_KEY, LANDLORD_PHONE_KEY, LANDLORD_ADDRESS_KEY }));
-		} else if (applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
+		} else if (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY)) {
 			stringParameterNames.add(CURRENT_KOMMUN_KEY);
 		}
 
@@ -520,7 +519,7 @@ public class CitizenAccountApplication extends CommuneBlock {
             }
 
             if (null != applicationId
-                && applicationReason.equals(MOVING_TO_NACKA_KEY)) {
+                && applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY)) {
                 final String movingInAddress
                         = parameters.get (MOVING_IN_ADDRESS_KEY).toString ();
                 final String movingInDate
@@ -540,7 +539,7 @@ public class CitizenAccountApplication extends CommuneBlock {
                          housingType, propertyType, landlordName, landlordPhone,
                          landlordAddress);                    
             } else if (null != applicationId
-                       && applicationReason.equals(PUT_CHILDREN_IN_NACKA_KEY)) {
+                       && applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY)) {
                 business.insertPutChildren (applicationId, parameters.get
                                             (CURRENT_KOMMUN_KEY).toString ());
             }

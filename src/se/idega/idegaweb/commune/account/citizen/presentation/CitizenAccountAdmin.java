@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.14 2002/12/23 08:52:28 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.15 2003/01/11 08:00:22 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -30,11 +30,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/12/23 08:52:28 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/11 08:00:22 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -209,12 +209,12 @@ public class CitizenAccountAdmin extends CommuneBlock {
 				final String applicationReason = localize(applicant.getApplicationReason(), "?");
 				table.add(getSmallText(applicationReason), 3, row++);
 
-                if (applicant.getApplicationReason().equals (CitizenAccountApplication.PUT_CHILDREN_IN_NACKA_KEY)) {
+                if (applicant.getApplicationReason().equals (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY)) {
                     table.add(getSmallHeader(localize(CitizenAccountApplication.CURRENT_KOMMUN_KEY, CitizenAccountApplication.CURRENT_KOMMUN_DEFAULT)), 1, row);
                     final CitizenApplicantPutChildren capc = business.findCitizenApplicantPutChildren (id);
                     table.add(getSmallText(capc.getCurrentKommun ()), 3, row++);
                 } else if (applicant.getApplicationReason().equals
-                           (CitizenAccountApplication.MOVING_TO_NACKA_KEY)) {
+                           (CitizenAccount.MOVING_TO_NACKA_KEY)) {
                     final CitizenApplicantMovingTo camt
                             = business.findCitizenApplicantMovingTo (id);
                     table.add(getSmallHeader(localize(CitizenAccountApplication.MOVING_IN_ADDRESS_KEY, CitizenAccountApplication.MOVING_IN_ADDRESS_DEFAULT)), 1, row);

@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.43 2003/01/10 19:18:54 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.44 2003/01/11 08:00:22 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -35,11 +35,11 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2003/01/10 19:18:54 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/11 08:00:22 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.43 $
+ * @version $Revision: 1.44 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -396,9 +396,15 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
         final IWTimestamp timestamp = birthDate != null
                 ? new IWTimestamp (birthDate.getTime ()) : null;
         final CommuneUserBusiness userBusiness = getUserBusiness ();
-        final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
+        final boolean notNackaResident
+                = applicant.getApplicationReason().equals (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY);
+        System.err.println ("¤¤¤ notNackaResident=" + notNackaResident);
+        final User user = notNackaResident ?
+                userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
+                (firstName, "", lastName, ssn, gender, timestamp)
+                : userBusiness.createCitizenByPersonalIDIfDoesNotExist
                 (firstName, "", lastName, ssn, gender, timestamp);
-                 
+        
         try {
             String streetName = applicant.getStreet ();
             String postalCode = applicant.getZipCode ();

@@ -8,6 +8,9 @@ import javax.ejb.*;
 import se.idega.idegaweb.commune.account.data.AccountApplication;
 
 public interface CitizenAccount extends IDOEntity, Case, AccountApplication {
+	final static String PUT_CHILDREN_IN_NACKA_KEY = "caa_put_children_in_nacka";
+	final static String MOVING_TO_NACKA_KEY = "caa_moving_to_nacka";
+
     String getCaseCodeDescription () throws RemoteException;
     String getCaseCodeKey () throws RemoteException;
 
