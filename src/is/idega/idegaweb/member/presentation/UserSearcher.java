@@ -165,15 +165,15 @@ public class UserSearcher extends Block {
 			//e.printStackTrace();
 			message = iwrb.getLocalizedString("usrch.no_user_found", "No user found");
 		}
-		Table T = new Table();
-		T.add(presentateCurrentUserSearch(iwc), 1, 1);
+		Table T = new Table();		
+		T.add(presentateCurrentUserSearch(iwc), 1, 2);
 		if (!skipResultsForOneFound || hasManyUsers) {
-			T.add(presentateFoundUsers(iwc), 1, 2);
+			T.add(presentateFoundUsers(iwc), 1, 3);
 		}
 		if (message != null) {
 			Text tMessage = new Text(message);
 			tMessage.setStyleAttribute("color:red");
-			T.add(tMessage, 1, 3);
+			T.add(tMessage, 1, 1);
 		}
 		if (OwnFormContainer) {
 			Form form = new Form();
