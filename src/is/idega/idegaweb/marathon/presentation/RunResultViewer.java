@@ -44,38 +44,31 @@ import com.idega.util.IWColor;
 public class RunResultViewer extends Block {
 
 	private static final String STYLENAME_INTERFACE = "interface";
-
-	private static final int COLUMN_COUNT = 7;
-
-	private static final String HEADLINE_BACKGROUND_COLOR = "454545";
-
+	private static final String HEADLINE_BACKGROUND_COLOR = "#ACACAC";
 	private static final String HEADLINE_COLOR = "FFFFFF";
+	private static final String DARK_COLOR = "#E9E9E9";
+	private static final String LIGHT_COLOR = "#FFFFFF";
 
+	private static final int COLUMN_COUNT = 13;
 	private static final int HEADLINE_SIZE = 12;
 
 	private static String _groupYear;
-
 	private static String _groupDistance;
 
 	private Group distance;
-
 	private Group year;
 
 	private Map _runToRunnerMap = null;
-
 	private Collator _collator;
-
 	private IWContext _iwc;
-
 	private IWResourceBundle iwrb;
 
 	private RunBusiness _runBiz;
-
 	private GroupBusiness _groupBiz;
 
 	private String runPK;
-
 	private Group run;
+	private int sortBy = IWMarathonConstants.RYSDD_TOTAL;
 
 	private SelectorUtility util;
 
@@ -94,6 +87,10 @@ public class RunResultViewer extends Block {
 			return;
 		}
 
+		if (iwc.isParameterSet(IWMarathonConstants.PARAMETER_SORT_BY)) {
+			sortBy = Integer.parseInt(iwc.getParameter(IWMarathonConstants.PARAMETER_SORT_BY));
+		}
+		
 		if (iwc.isParameterSet(IWMarathonConstants.GROUP_TYPE_RUN_YEAR)) {
 			try {
 				year = getGroupBiz().getGroupByGroupID(Integer.parseInt(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN_YEAR)));
@@ -119,41 +116,93 @@ public class RunResultViewer extends Block {
 		}
 
 		Form form = new Form();
-		Table table = new Table();
-
 		form.add(getYearsDropdown());
 		form.add(getDistanceDropdown());
 		form.add(getSortDropdown());
 		form.add(new Break(2));
 
+		Table table = new Table();
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		table.setColumns(COLUMN_COUNT);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		
 		if (distance != null) {
-			try {
-				List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
-				sortRunnerGroups(runGroups);
-				Iterator runGroupIter = runGroups.iterator();
-				int row = 1;
-				while (runGroupIter.hasNext()) {
-					Group runGroup = (Group) runGroupIter.next();
-					row = insertRunGroupIntoTable(table, row, runGroup);
-
-					List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
-					List runs = getRunsForRunners(runners);
-					sortRuns(runs);
-					Iterator runIter = runs.iterator();
-					int num = 1;
-					while (runIter.hasNext()) {
-						Run run = (Run) runIter.next();
-						row = insertRunIntoTable(table, row, run, num);
-						num++;
-					}
+				switch (sortBy) {
+					case IWMarathonConstants.RYSDD_TOTAL:
+						getTotalResults(table);
+						break;
+					case IWMarathonConstants.RYSDD_GROUPS:
+						getGroupResults(table);
+						break;
+					case IWMarathonConstants.RYSDD_GROUPS_COMP:
+						
+						break;
 				}
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
+		
+		for (int a = 2; a < COLUMN_COUNT; a = a + 2) {
+			table.setWidth(a, 2);
+			table.setColumnColor(2, "#FFFFFF");
+		}
+		
 		form.add(table);
 		add(form);
+	}
+	
+	private void getTotalResults(Table table) {
+		try {
+			List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
+			List runs = new ArrayList();
+			Iterator runGroupIter = runGroups.iterator();
+			
+			int row = 1;
+			while (runGroupIter.hasNext()) {
+				Group runGroup = (Group) runGroupIter.next();
+				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
+				runs.addAll(getRunsForRunners(runners));
+			}
+
+			sortRuns(runs);
+			Iterator runIter = runs.iterator();
+			int num = 1;
+			while (runIter.hasNext()) {
+				Run run = (Run) runIter.next();
+				row = insertRunIntoTable(table, row, run, num);
+				num++;
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void getGroupResults(Table table) {
+		try {
+			List runGroups = new ArrayList(getGroupBiz().getChildGroups(distance));
+			sortRunnerGroups(runGroups);
+			Iterator runGroupIter = runGroups.iterator();
+			
+			int row = 1;
+			while (runGroupIter.hasNext()) {
+				Group runGroup = (Group) runGroupIter.next();
+				row = insertRunGroupIntoTable(table, row, runGroup);
+	
+				List runners = new ArrayList(getGroupBiz().getUsers(runGroup));
+				List runs = getRunsForRunners(runners);
+				sortRuns(runs);
+				Iterator runIter = runs.iterator();
+				int num = 1;
+				while (runIter.hasNext()) {
+					Run run = (Run) runIter.next();
+					row = insertRunIntoTable(table, row, run, num);
+					num++;
+				}
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private DropdownMenu getYearsDropdown() throws RemoteException {
@@ -189,9 +238,9 @@ public class RunResultViewer extends Block {
 
 	private DropdownMenu getSortDropdown() throws RemoteException {
 		DropdownMenu sort = new DropdownMenu(IWMarathonConstants.PARAMETER_SORT_BY);
-		sort.addMenuElement(IWMarathonConstants.PARAMETER_TOTAL, iwrb.getLocalizedString(IWMarathonConstants.RYSDD_TOTAL, "Total result list"));
-		sort.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS, iwrb.getLocalizedString(IWMarathonConstants.RYSDD_GROUPS, "Groups"));
-		sort.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION, iwrb.getLocalizedString(IWMarathonConstants.RYSDD_GROUPS_COMP, "Group competition"));
+		sort.addMenuElement(IWMarathonConstants.PARAMETER_TOTAL, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_TOTAL, "Total result list"));
+		sort.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_GROUPS, "Groups"));
+		sort.addMenuElement(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION, iwrb.getLocalizedString(IWMarathonConstants.PARAMETER_GROUPS_COMPETITION, "Group competition"));
 		sort.setToSubmit();
 		sort.keepStatusOnAction();
 
@@ -260,14 +309,25 @@ public class RunResultViewer extends Block {
 	private int insertRunIntoTable(Table table, int row, Run run, int num) {
 		User user = (User) _runToRunnerMap.get(run);
 		table.add(getRunnerRowText(Integer.toString(num)), 1, row);
+
 		String runTime = getTimeStringFromMillis(run.getRunTime());
-		table.add(getRunnerRowText(runTime), 2, row);
+		table.add(getRunnerRowText(runTime), 3, row);
+
 		String chipTime = getTimeStringFromMillis(run.getChipTime());
-		table.add(getRunnerRowText(chipTime), 3, row);
-		table.add(getRunnerRowText(user.getName()), 4, row);
-		table.add(getRunnerRowText(Integer.toString(user.getDateOfBirth().getYear())), 5, row);
-		table.add(getRunnerRowText(run.getUserNationality()), 6, row);
-		table.add(getRunnerRowText(run.getRunGroupName()), 7, row);
+
+		table.add(getRunnerRowText(chipTime), 5, row);
+		table.add(getRunnerRowText(user.getName()), 7, row);
+		table.add(getRunnerRowText(Integer.toString(user.getDateOfBirth().getYear())), 9, row);
+		table.add(getRunnerRowText(run.getUserNationality()), 11, row);
+		table.add(getRunnerRowText(run.getRunGroupName()), 13, row);
+		
+		if (num % 2 == 0) {
+			table.setRowColor(row, LIGHT_COLOR);
+		}
+		else {
+			table.setRowColor(row, DARK_COLOR);
+		}
+		
 		return ++row;
 	}
 
@@ -299,7 +359,8 @@ public class RunResultViewer extends Block {
 		name.setFontFace(Text.FONT_FACE_ARIAL);
 		name.setFontSize(HEADLINE_SIZE);
 		name.setFontColor(HEADLINE_COLOR);
-		table.add(name, 1, row);
+		table.add(name, 1, row++);
+		table.setHeight(row, 2);
 		return ++row;
 	}
 
