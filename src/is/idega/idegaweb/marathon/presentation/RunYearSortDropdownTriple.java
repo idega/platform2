@@ -8,7 +8,6 @@ import is.idega.idegaweb.marathon.util.IWMarathonConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.InterfaceObject;
 
@@ -33,23 +32,29 @@ public class RunYearSortDropdownTriple extends InterfaceObject{
         t.setCellpadding(0);
         t.setCellspacing(0);
         t.add(runYearDD,1,1);
-        t.add(Text.NON_BREAKING_SPACE,1,1);
-        t.add(sortDD,1,1);
+        t.add(sortDD,2,1);
         add(t);
         
     }
-	  	/* (non-Javadoc)
-	  	 * @see com.idega.presentation.PresentationObject#isContainer()
-	  	 */
-	  	public boolean isContainer() {
-	  		return false;
-	  	}
-	  	/* (non-Javadoc)
-	  	 * @see com.idega.presentation.ui.InterfaceObject#handleKeepStatus(com.idega.presentation.IWContext)
-	  	 */
-	  	public void handleKeepStatus(IWContext iwc) {
-	  	}
 
+	public String getBundleIdentifier() {
+		return IWMarathonConstants.IW_BUNDLE_IDENTIFIER;
+	}
 
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.ui.InterfaceObject#isContainer()
+	 */
+	public boolean isContainer() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.idega.presentation.ui.InterfaceObject#handleKeepStatus(com.idega.presentation.IWContext)
+	 */
+	public void handleKeepStatus(IWContext iwc) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
