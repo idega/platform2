@@ -23,13 +23,13 @@ public class Building extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
-    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
-    addAttribute(getImageIdColumnName(),"Photo",true,true,"java.lang.Integer");
-    addAttribute(getComplexIdColumnName(),"Complex",true,true,"java.lang.Integer");
-    addAttribute(getStreetColumnName(),"Street",true,true,"java.lang.String");
-    addAttribute(getStreetNumberColumnName(),"Streetnumber",true,true,"java.lang.Integer");
-    addAttribute(getSerieColumnName(),"Serie",true,true,"java.lang.String",2);
+    addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
+    addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class);
+    addAttribute(getImageIdColumnName(),"Photo",true,true,java.lang.Integer.class);
+    addAttribute(getComplexIdColumnName(),"Complex",true,true,java.lang.Integer.class,"many-to-one",Complex.class);
+    addAttribute(getStreetColumnName(),"Street",true,true,java.lang.String.class);
+    addAttribute(getStreetNumberColumnName(),"Streetnumber",true,true,java.lang.Integer.class);
+    addAttribute(getSerieColumnName(),"Serie",true,true,java.lang.String.class,2);
     super.setMaxLength("info",4000);
   }
 

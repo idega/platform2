@@ -25,15 +25,15 @@ public class Apartment extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
-    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
-    addAttribute(getFloorIdColumnName(),"Floor",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.Floor");
-    addAttribute(getApartmentTypeColumnName(),"ApartmentType",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.ApartmentType");
-    addAttribute(getRentableColumnName(),"Leigjanleg",true,true,"java.lang.Boolean");
-    addAttribute(getImageIdColumnName(),"Mynd",true,true,"java.lang.Integer");
-    addAttribute(getUnavailableUntilColumnName(),"Frosin",true,true,"java.sql.Date");
-    addAttribute(getSerieColumnName(),"Serie",true,true,"java.lang.String",2);
-    addAttribute(getStatusColumnName(),"Status",true,true,"java.lang.String");
+    addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
+    addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class);
+    addAttribute(getFloorIdColumnName(),"Floor",true,true,java.lang.Integer.class,"many-to-one",Floor.class);
+    addAttribute(getApartmentTypeColumnName(),"ApartmentType",true,true,java.lang.Integer.class,"many-to-one",ApartmentType.class);
+    addAttribute(getRentableColumnName(),"Leigjanleg",true,true,java.lang.Boolean.class);
+    addAttribute(getImageIdColumnName(),"Mynd",true,true,java.lang.Integer.class);
+    addAttribute(getUnavailableUntilColumnName(),"Frosin",true,true,java.sql.Date.class);
+    addAttribute(getSerieColumnName(),"Serie",true,true,java.lang.String.class,2);
+    addAttribute(getStatusColumnName(),"Status",true,true,java.lang.String.class);
     setMaxLength("info",5000);
     setMaxLength(getStatusColumnName(),1);
   }

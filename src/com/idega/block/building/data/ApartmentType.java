@@ -23,22 +23,22 @@ public class ApartmentType extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getApartmentCategoryIdColumnName(),"Category",true,true,"java.lang.Integer","many-to-one","com.idega.block.building.data.ApartmentCategory");
-    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
-    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String",4000);
-    addAttribute(getExtraInfoColumnName(),"Extra_Info",true,true,"java.lang.String",4000);
-    addAttribute(getImageIdColumnName(),"Photo",true,true,"java.lang.Integer");
-    addAttribute(getFloorPlanIdColumnName(),"Plan",true,true,"java.lang.Integer");
-    addAttribute(getRoomCountColumnName(),"Room Count",true,true,"java.lang.Integer");
-    addAttribute(getAreaColumnName(),"Area",true,true,"java.lang.Float");
-    addAttribute(getKitchenColumnName(),"Kitchen",true,true,"java.lang.Boolean");
-    addAttribute(getBathroomColumnName(),"Bath",true,true,"java.lang.Boolean");
-    addAttribute(getStorageColumnName(),"Storage",true,true,"java.lang.Boolean");
-    addAttribute(getBalconyColumnName(),"Balcony",true,true,"java.lang.Boolean");
-    addAttribute(getStudyColumnName(),"Study",true,true,"java.lang.Boolean");
-    addAttribute(getLoftColumnName(),"Loft",true,true,"java.lang.Boolean");
-    addAttribute(getRentColumnName(),"Rent",true,true,"java.lang.Integer");
-    addAttribute(getFurnitureColumnName(),"Furniture",true,true,"java.lang.Boolean");
+    addAttribute(getApartmentCategoryIdColumnName(),"Category",true,true,java.lang.Integer.class,"many-to-one",ApartmentCategory.class);
+    addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
+    addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class,4000);
+    addAttribute(getExtraInfoColumnName(),"Extra_Info",true,true,java.lang.String.class,4000);
+    addAttribute(getImageIdColumnName(),"Photo",true,true,java.lang.Integer.class);
+    addAttribute(getFloorPlanIdColumnName(),"Plan",true,true,java.lang.Integer.class);
+    addAttribute(getRoomCountColumnName(),"Room Count",true,true,java.lang.Integer.class);
+    addAttribute(getAreaColumnName(),"Area",true,true,java.lang.Float.class);
+    addAttribute(getKitchenColumnName(),"Kitchen",true,true,java.lang.Boolean.class);
+    addAttribute(getBathroomColumnName(),"Bath",true,true,java.lang.Boolean.class);
+    addAttribute(getStorageColumnName(),"Storage",true,true,java.lang.Boolean.class);
+    addAttribute(getBalconyColumnName(),"Balcony",true,true,java.lang.Boolean.class);
+    addAttribute(getStudyColumnName(),"Study",true,true,java.lang.Boolean.class);
+    addAttribute(getLoftColumnName(),"Loft",true,true,java.lang.Boolean.class);
+    addAttribute(getRentColumnName(),"Rent",true,true,java.lang.Integer.class);
+    addAttribute(getFurnitureColumnName(),"Furniture",true,true,java.lang.Boolean.class);
     super.setMaxLength(getInfoColumnName(),4000);
   }
 
