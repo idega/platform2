@@ -317,6 +317,9 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			DateInput date = (DateInput)getStyledInterface(new DateInput(PARAM_DATE + "_" + i));
 			if (application != null)
 				date.setDate(application.getFromDate());
+			else {
+				date.setEarliestPossibleDate(stamp.getDate(), localize("child_care.no_date_back_in_time", "You cannot set a date back in time"));
+			}
 		//	else Nacka doesn't want the dates to be set by default
 		//		date.setToCurrentDate();
 			if (isAdmin)
@@ -412,34 +415,47 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t var dateDayTwo = ").append("findObj('").append(PARAM_DATE + "_2_day").append("');");
 		buffer.append("\n\t var dateDayThree = ").append("findObj('").append(PARAM_DATE + "_3_day").append("');");
 		buffer.append("\n\t var dateDayFour = ").append("findObj('").append(PARAM_DATE + "_4_day").append("');");
+
+		buffer.append("\n\t var dateMonthOne = ").append("findObj('").append(PARAM_DATE + "_1_month").append("');");
+		buffer.append("\n\t var dateMonthTwo = ").append("findObj('").append(PARAM_DATE + "_2_month").append("');");
+		buffer.append("\n\t var dateMonthThree = ").append("findObj('").append(PARAM_DATE + "_3_month").append("');");
+		buffer.append("\n\t var dateMonthFour = ").append("findObj('").append(PARAM_DATE + "_4_month").append("');");
+		
+		buffer.append("\n\t var dateYearOne = ").append("findObj('").append(PARAM_DATE + "_1_year").append("');");
+		buffer.append("\n\t var dateYearTwo = ").append("findObj('").append(PARAM_DATE + "_2_year").append("');");
+		buffer.append("\n\t var dateYearThree = ").append("findObj('").append(PARAM_DATE + "_3_year").append("');");
+		buffer.append("\n\t var dateYearFour = ").append("findObj('").append(PARAM_DATE + "_4_year").append("');");
 		
 		if (!hasActivePlacement) {
-			buffer.append("\n\t if (dropFive.selectedIndex > 0) {\n\t\t five = dropFive.options[dropFive.selectedIndex].value;\n\t\t length++;\n\t }");
+			buffer.append("\n\t if (dropFive.selectedIndex > 0) {\n\t\t five = dropFive.options[dropFive.selectedIndex].value;\n\t\t length++;\n\t ");
 			buffer.append("\n\t var dateDayFive = ").append("findObj('").append(PARAM_DATE + "_5_day").append("');");
+			buffer.append("\n\t var dateMonthFive = ").append("findObj('").append(PARAM_DATE + "_5_month").append("');");
+			buffer.append("\n\t var dateYearFive = ").append("findObj('").append(PARAM_DATE + "_5_year").append("');");
+			buffer.append("\n\t }");
 		}
 	
-		buffer.append("\n\t if(one > 0 && dateDayOne.selectedIndex <= 0){");
+		buffer.append("\n\t if(one > 0 && dateDayOne.selectedIndex <= 0 || dateMonthOne.selectedIndex <= 0 || dateYearOne.selectedIndex <= 0){");
 		String message = localize("must_set_date", "Please set the date.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
-		buffer.append("\n\t else if(two > 0 && dateDayTwo.selectedIndex <= 0){");
+		buffer.append("\n\t else if(two > 0 && dateDayTwo.selectedIndex <= 0 || dateMonthTwo.selectedIndex <= 0 || dateYearTwo.selectedIndex <= 0){");
 		message = localize("must_set_date", "Please set the date.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
-		buffer.append("\n\t else if(three > 0 && dateDayThree.selectedIndex <= 0){");
+		buffer.append("\n\t else if(three > 0 && dateDayThree.selectedIndex <= 0 || dateMonthThree.selectedIndex <= 0 || dateYearThree.selectedIndex <= 0){");
 		message = localize("must_set_date", "Please set the date.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
-		buffer.append("\n\t else if(four > 0 && dateDayFour.selectedIndex <= 0){");
+		buffer.append("\n\t else if(four > 0 && dateDayFour.selectedIndex <= 0 || dateMonthFour.selectedIndex <= 0 || dateYearFour.selectedIndex <= 0){");
 		message = localize("must_set_date", "Please set the date.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
 		if (!hasActivePlacement){
-		buffer.append("\n\t else if(five > 0 && dateDayFive.selectedIndex <= 0){");
+		buffer.append("\n\t else if(five > 0 && dateDayFive.selectedIndex <= 0 || dateMonthFive.selectedIndex <= 0 || dateYearFive.selectedIndex <= 0){");
 		message = localize("must_set_date", "Please set the date.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t\t return false;");
