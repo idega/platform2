@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/20 12:35:09 $ by $Author: staffan $
+ * Last modified: $Date: 2003/05/20 12:47:20 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -245,14 +245,13 @@ public class ViewpointForm extends CommuneBlock {
                                                          DESCRIPTION1_DEFAULT));
 		final Text text2 = new Text (getLocalizedString (DESCRIPTION2_KEY,
                                                          DESCRIPTION2_DEFAULT));
-		final RadioGroup radioGroup = new RadioGroup (PARAM_CATEGORY);
+		final DropdownMenu categoryDropdown = (DropdownMenu) getStyledInterface
+                (new DropdownMenu (PARAM_CATEGORY));
 		final TopCategory [] categories
                 = getViewpointBusiness (context).findAllTopCategories ();
 		for (int i = 0; i < categories.length; i++) {
 			final String id = categories[i].getPrimaryKey().toString();
-			radioGroup.addRadioButton (id, getSmallText
-                                       (categories[i].getName ()));
-			radioGroup.setSelected (id);
+			categoryDropdown.addMenuElement (id, categories [i].getName ());
 		}
 		final SubmitButton submit = getSubmitButton
                 (SHOWSUBCATEGORIESFORM_ACTION, CONTINUE_KEY, CONTINUE_DEFAULT);
@@ -268,7 +267,8 @@ public class ViewpointForm extends CommuneBlock {
 		table.setHeight (row++, 12);
 		table.add (getLocalizedHeader (ENTERTOPCATEGORY_KEY,
                                        ENTERTOPCATEGORY_DEFAULT), 1, row++);
-		table.add (radioGroup, 1, row++);
+		table.setHeight (row++, 12);
+		table.add (categoryDropdown, 1, row++);
 		table.setHeight (row++, 12);
 		table.add (submit, 1, row++);
 		form.add (table);
