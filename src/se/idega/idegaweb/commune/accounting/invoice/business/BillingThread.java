@@ -66,7 +66,6 @@ public abstract class BillingThread extends Thread{
 	protected IWTimestamp startPeriod;
 	protected IWTimestamp endPeriod;
 	protected IWContext iwc;
-	private IWTimestamp time;
 	protected IWTimestamp startTime, endTime;
 	protected Date currentDate = new Date( System.currentTimeMillis());
 	protected SchoolCategory category = null;
@@ -275,7 +274,7 @@ public abstract class BillingThread extends Thread{
 	protected void calculateTime(Date start, Date end){
 		startTime = new IWTimestamp(start);
 		startTime.setAsDate();
-		time = new IWTimestamp(startPeriod);
+        IWTimestamp time = new IWTimestamp(startPeriod);
 		time.setAsDate();
 		if(!startTime.isLaterThan(time)){
 			startTime = time;
@@ -284,7 +283,10 @@ public abstract class BillingThread extends Thread{
 		endTime = new IWTimestamp(endPeriod);
 		endTime.setAsDate();
 		if(end!=null){
-			time = new IWTimestamp(end);
+            // Since end of period is set to the day after the last day, also
+            // broken month placements must have endtime the day after the last.
+            // Calculation of 'months' and 'days' below is based on that.
+			time = new IWTimestamp(end.getTime () + (24 * 60 * 60 * 1000));
 			if(!endTime.isEarlierThan(time)){
 				endTime = time;
 			}
