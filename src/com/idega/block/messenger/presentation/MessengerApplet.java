@@ -100,7 +100,7 @@ public class MessengerApplet extends Applet implements ActionListener{
     add(userPanel);*/
 
   }
-
+/*
   public void run(){
 
     while(runThread){
@@ -115,7 +115,7 @@ public class MessengerApplet extends Applet implements ActionListener{
       }
     }
   }
-
+*/
     /**
    * Display the list of Messages <br>
    *
@@ -460,7 +460,7 @@ public class MessengerApplet extends Applet implements ActionListener{
 
     cycler.start();
 
-    run();
+   // run();
 
 
 
