@@ -688,7 +688,7 @@ public abstract class ContractFinder {
     try {
       List L = EntityFinder.getInstance().findAllByColumn(ContractBMPBean.getStaticInstance(Contract.class),ContractBMPBean.getUserIdColumnName(),user);
       if(L!= null)
-        contract = (Contract) L.get(0);
+        contract = (Contract) L.get(L.size()-1);
     }
     catch (SQLException ex) {
       ex.printStackTrace();
@@ -697,9 +697,30 @@ public abstract class ContractFinder {
     return contract;
   }
 
+	/**
+	 * 
+	 */
+	public static Contract findValidContractByUser(int user){
+		Contract contract = null;
+		try {
+			List L = EntityFinder.getInstance().findAllByColumn(ContractBMPBean.getStaticInstance(Contract.class),ContractBMPBean.getUserIdColumnName(),user,ContractBMPBean.getRentedColumnName(),'Y');
+			if(L!= null)
+				contract = (Contract) L.get(L.size()-1);
+		}
+		catch (SQLException ex) {
+			ex.printStackTrace();
+			contract = findByUser(user);
+		}
+		return contract;
+	}
+
   public static Contract findByUser(User user){
     return findByUser(user.getID());
   }
+
+	public static Contract findValidContractByUser(User user){
+		return findValidContractByUser(user.getID());
+	}
 
   public static java.sql.Date getLastContractDateForApartment(int apartmentId)throws SQLException{
     return getLastContractDateForApartment(apartmentId,2);

@@ -147,7 +147,7 @@ public class TenantsProfile extends Block {
 
 
       try {
-        _contract = ContractFinder.findByUser(_userID);
+        _contract = ContractFinder.findValidContractByUser(_userID);
       }
       catch(Exception e) {
         _contract = null;
