@@ -45,6 +45,7 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
       return shome.findAllSchoolTypes();
     }
     catch(Exception ex){
+      ex.printStackTrace();
       return new java.util.Vector();
     }
   }
@@ -55,6 +56,7 @@ public class SchoolTypeBusinessBean extends IBOServiceBean implements SchoolType
       return shome.findAllByCategory(Category);
     }
     catch(Exception ex){
+      ex.printStackTrace();
       return new java.util.Vector();
     }
   }

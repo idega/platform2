@@ -44,6 +44,18 @@ public class SchoolAreaBusinessBean extends IBOServiceBean implements SchoolArea
       return shome.findAllSchoolAreas();
     }
     catch(Exception ex){
+      ex.printStackTrace();
+      return new java.util.Vector();
+    }
+  }
+
+   public Collection findAllSchoolAreasByType(int type_id)  {
+    try{
+      SchoolAreaHome shome = (SchoolAreaHome) IDOLookup.getHome(SchoolArea.class);
+      return shome.findAllBySchoolType(type_id);
+    }
+    catch(Exception ex){
+      ex.printStackTrace();
       return new java.util.Vector();
     }
   }

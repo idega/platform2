@@ -47,6 +47,18 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
       return shome.findAllSchools();
     }
     catch(Exception ex){
+      ex.printStackTrace();
+      return new java.util.Vector();
+    }
+  }
+
+  public Collection findAllSchoolsByAreaAndType(int area,int type){
+    try{
+      SchoolHome shome = (SchoolHome) IDOLookup.getHome(School.class);
+      return shome.findAllByAreaAndType(area,type);
+    }
+    catch(Exception ex){
+      ex.printStackTrace();
       return new java.util.Vector();
     }
   }
@@ -111,8 +123,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
           return map;
         }
       }
-      catch(Exception e){
-
+      catch(Exception ex){
+        ex.printStackTrace();
       }
       return null;
     }

@@ -137,11 +137,6 @@ public class SchoolBMPBean extends GenericEntity implements School {
     return super.idoFindPKsBySQL("select * from "+SCHOOL+" where "+SCHOOLAREA+" = "+areaId);
   }
 
-  public Collection ejbFindAllBySchoolAreaAndType(int areaId,int typeId)throws javax.ejb.FinderException{
-    String select = "select s.* from "+SCHOOL+" s,sch_school_sch_school_type m where m.sch_school_type_id = "+typeId+" and m.sch_school_id = s.sch_school_id and "+SCHOOLAREA+" = "+areaId;
-    return super.idoFindPKsBySQL(select);
-  }
-
   public Collection ejbFindAllSchools()throws javax.ejb.FinderException{
     return super.idoFindAllIDsBySQL();
   }
@@ -165,5 +160,20 @@ public class SchoolBMPBean extends GenericEntity implements School {
 
   public Collection findRelatedSchoolTypes()throws com.idega.data.IDORelationshipException{
     return super.idoGetRelatedEntities(SchoolType.class);
+  }
+
+  public Collection ejbFindAllByAreaAndType(int area,int type) throws javax.ejb.FinderException{
+    StringBuffer sql = new StringBuffer("select s.* ");
+    sql.append(" from sch_school_area a, sch_school s, sch_school_type t, sch_school_sch_school_type m ");
+    sql.append(" where a.sch_school_area_id = s.sch_school_area_id ");
+    sql.append(" and t.sch_school_type_id = m.sch_school_type_id ");
+    sql.append(" and s.sch_school_id = m.sch_school_id ");
+    sql.append(" and t.sch_school_type_id = ");
+    sql.append( type);
+    sql.append(" and a.sch_school_area_id = ");
+    sql.append(area);
+
+    return super.idoFindPKsBySQL(sql.toString());
+
   }
 }
