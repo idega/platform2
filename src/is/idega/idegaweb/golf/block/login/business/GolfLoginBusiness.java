@@ -3,7 +3,7 @@
 *Copyright 2000 idega.is All Rights Reserved.
 */
 
-package is.idega.idegaweb.golf.login.business;
+package is.idega.idegaweb.golf.block.login.business;
 
 
 import is.idega.idegaweb.golf.block.login.business.LoginBusiness;

@@ -9,7 +9,7 @@ package is.idega.idegaweb.golf.block.login.presentation;
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
 import is.idega.idegaweb.golf.block.login.business.LoginBusiness;
 import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;

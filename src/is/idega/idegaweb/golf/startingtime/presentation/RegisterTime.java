@@ -6,7 +6,7 @@ import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
 import is.idega.idegaweb.golf.entity.MemberHome;
 import is.idega.idegaweb.golf.entity.StartingtimeFieldConfig;
-import is.idega.idegaweb.golf.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.startingtime.business.TeeTimeBusiness;
 import is.idega.idegaweb.golf.templates.page.JmoduleWindowModuleWindow;
 

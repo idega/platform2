@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.11 2004/04/13 13:00:31 gummi Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.12 2004/04/13 14:03:12 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -12,7 +12,7 @@ package is.idega.idegaweb.golf.templates.page;
 import is.idega.idegaweb.golf.block.boxoffice.presentation.BoxReader;
 import is.idega.idegaweb.golf.block.poll.presentation.BasicPollVoter;
 import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.login.presentation.GolfLogin;
+import is.idega.idegaweb.golf.block.login.presentation.*;login.presentation.GolfLogin;
 import is.idega.idegaweb.golf.presentation.ClubNewsBox;
 import is.idega.idegaweb.golf.tournament.presentation.TournamentBox;
 

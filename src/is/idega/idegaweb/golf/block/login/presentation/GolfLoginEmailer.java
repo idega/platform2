@@ -2,11 +2,11 @@
 *Copyright 2000-2002 idega.is All Rights Reserved.
 */
 
-package is.idega.idegaweb.golf.login.presentation;
+package is.idega.idegaweb.golf.block.login.presentation;
 
 import is.idega.idegaweb.golf.entity.LoginTable;
 import com.idega.util.SendMail;
-import is.idega.idegaweb.golf.login.business.*;
+import is.idega.idegaweb.golf.block.login.business.*;
 import is.idega.idegaweb.golf.entity.Member;
 import com.idega.presentation.*;
 import com.idega.presentation.ui.*;

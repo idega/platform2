@@ -3,10 +3,10 @@
 *Copyright 2000-2001 idega.is All Rights Reserved.
 */
 
-package is.idega.idegaweb.golf.login.presentation;
+package is.idega.idegaweb.golf.block.login.presentation;
 
 import is.idega.idegaweb.golf.entity.Member;
-import is.idega.idegaweb.golf.login.business.GolfLoginBusiness;
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
