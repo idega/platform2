@@ -12,7 +12,7 @@ import com.idega.block.messenger.business.*;
 
 public class ClientServer extends IWCoreServlet{
   public static String MESSENGER_JAR_FILE = "messenger.jar";
-  public static String MESSENGER_APPLET_CLASS = "com.idega.block.messenger.presentation.IdegaClient";
+  public static String MESSENGER_APPLET_CLASS = "com.idega.block.messenger.presentation.MessengerApplet";
   public static String SERVLET_URL = "servlet/ClientServer";
 
 
