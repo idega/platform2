@@ -7,10 +7,11 @@ import javax.servlet.jsp.JspPage;
 import com.idega.idegaweb.IWBundle;
 import com.idega.projects.nat.business.NatBusiness;
 import com.idega.idegaweb.IWResourceBundle;
+import is.idega.travel.presentation.*;
 
 public class TravelManager extends JModuleObject {
 
-    private static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
+    public static String IW_BUNDLE_IDENTIFIER="is.idega.travel";
     private IWBundle bundle;
     private IWResourceBundle iwrb;
     Table table = new Table(1,2);
@@ -52,22 +53,25 @@ public class TravelManager extends JModuleObject {
         Image iContracts = iwrb.getImage("buttons/contracts.gif");
         Image iInitialData = iwrb.getImage("buttons/initial_data.gif");
 
-        Link lDesign = new Link(iDesign,"design.jsp");
+
+        Link lDesign = new Link(iDesign,ServiceDesigner.class);
           lDesign.addParameter("manager_action","lDesign");
-        Link lMyTrip = new Link(iMyTrip,"my_trips.jsp");
+        Link lMyTrip = new Link(iMyTrip,ServiceOverview.class);
           lMyTrip.addParameter("manager_action","lMyTrip");
-        Link lOverview = new Link(iOverview,"booking_overview.jsp");
+        Link lOverview = new Link(iOverview,BookingOverview.class);
           lOverview.addParameter("manager_action","lOverview");
-        Link lBooking = new Link(iBooking,"booking.jsp");
+        Link lBooking = new Link(iBooking,Booking.class);
           lBooking.addParameter("manager_action","lBooking");
-        Link lStatistics = new Link(iStatistics,"statistics.jsp");
+        Link lStatistics = new Link(iStatistics,Statistics.class);
           lStatistics.addParameter("manager_action","lStatistics");
-        Link lDailyReport = new Link(iDailyReport,"daily_report.jsp");
+        Link lDailyReport = new Link(iDailyReport,DailyReport.class);
           lDailyReport.addParameter("manager_action","lDailyReport");
-        Link lContracts = new Link(iContracts,"contracts.jsp");
+        Link lContracts = new Link(iContracts,"/contracts.jsp");
           lContracts.addParameter("manager_action","lContracts");
-        Link lInitialData = new Link(iInitialData,"initial_data.jsp");
+        Link lInitialData = new Link(iInitialData,InitialData.class);
           lInitialData.addParameter("manager_action","lInitialData");
+//        Link lInitialData = new Link(iInitialData,"initial_data.jsp");
+//          lInitialData.addParameter("manager_action","lInitialData");
 
         table.add(lDesign,1,1);
         table.add(lMyTrip,1,1);
