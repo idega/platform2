@@ -13,6 +13,9 @@ import com.idega.data.*;
  */
 
 public class AccountPhoneEntry extends GenericEntity {
+  public static final String statusUnread = "U";
+  public static final String statusRead = "R";
+  public static final String statusBilled = "B";
 
   public AccountPhoneEntry() {
     super();
@@ -23,6 +26,7 @@ public class AccountPhoneEntry extends GenericEntity {
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameAccountId(),"Account", true, true, Integer.class,"many-to-one",com.idega.block.finance.data.Account.class);
+    addAttribute(getColumnNameAccountEntryId(),"Account_entry",true,true,Integer.class,"many-to-one",com.idega.block.finance.data.AccountEntry.class);
     addAttribute(getColumnNameCashierId(),"Cashier",true,true,Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
     addAttribute(getColumnNameMainNumber(),"main number",true,true,String.class);
     addAttribute(getColumnNameSubNumber(),"sub number",true,true,String.class);
@@ -33,10 +37,12 @@ public class AccountPhoneEntry extends GenericEntity {
     addAttribute(getColumnNameDuration(),"duration",true,true,Integer.class);
     addAttribute(getColumnNamePrice(),"price",true,true,Float.class);
     addAttribute(getColumnNameLastUpdated(),"Last updated",true,true,java.sql.Timestamp.class);
+    addAttribute(getColumnNameStatus(),"status",true,true,String.class);
   }
 
   public static String getEntityTableName(){ return "FIN_PHONE_ENTRY"; }
   public static String getColumnNameAccountId(){ return "FIN_ACCOUNT_ID"; }
+  public static String getColumnNameAccountEntryId(){ return "FIN_ACC_ENTRY_ID"; }
   public static String getColumnNameCashierId(){ return "FIN_CASHIER_ID"; }
   public static String getColumnNameMainNumber(){ return "MAIN_NUMBER"; }
   public static String getColumnNameSubNumber(){ return "SUB_NUMBER"; }
@@ -47,6 +53,7 @@ public class AccountPhoneEntry extends GenericEntity {
   public static String getColumnNameDuration(){ return "DURATION";}
   public static String getColumnNamePrice(){ return "TOTAL_PRICE"; }
   public static String getColumnNameLastUpdated(){ return "LAST_UPDATED"; }
+  public static String getColumnNameStatus(){ return "STATUS"; }
 
   public String getEntityName() {
     return getEntityTableName();
@@ -59,6 +66,16 @@ public class AccountPhoneEntry extends GenericEntity {
   }
   public void setAccountId(int account_id){
     setColumn(getColumnNameAccountId(), account_id);
+  }
+
+  public int getAccountEntryId(){
+    return getIntColumnValue(getColumnNameAccountEntryId());
+  }
+  public void setAccountEntryId(Integer account_id){
+    setColumn(getColumnNameAccountEntryId(), account_id);
+  }
+  public void setAccountEntryId(int account_id){
+    setColumn(getColumnNameAccountEntryId(), account_id);
   }
 
   public int getCashierId(){
@@ -136,6 +153,20 @@ public class AccountPhoneEntry extends GenericEntity {
   }
   public int getNightDuration(){
     return getIntColumnValue(getColumnNameNightDuration());
+  }
+
+  public String getStatus(){
+    return getStringColumnValue(getColumnNameStatus());
+  }
+  public void setStatus(String status) throws IllegalStateException {
+    if ((status.equalsIgnoreCase(statusUnread)) ||
+        (status.equalsIgnoreCase(statusRead)) ||
+        (status.equalsIgnoreCase(statusBilled))){
+      setColumn(getColumnNameStatus(),status);
+      setLastUpdated(com.idega.util.idegaTimestamp.getTimestampRightNow());
+    }
+    else
+      throw new IllegalStateException("Undefined state : " + status);
   }
 
 }

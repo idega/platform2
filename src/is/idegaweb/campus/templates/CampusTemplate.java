@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTemplate.java,v 1.5 2001/07/24 16:07:07 palli Exp $
+ * $Id: CampusTemplate.java,v 1.6 2001/08/14 23:44:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,6 +43,7 @@ public abstract class CampusTemplate extends MainTemplate{
     login.setStyle("font-family: Verdana; font-size: 8pt; border: 1 solid #000000");
     login.setInputLength(14);
     login.setSubmitButtonAlignment("right");
+
 
 
     ReferenceNumber ref = new ReferenceNumber();

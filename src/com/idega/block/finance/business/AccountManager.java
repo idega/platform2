@@ -45,6 +45,16 @@ public class AccountManager {
     return A;
   }
 
+  public static List listOfAccounts(int iUserId,String sType){
+    List A = null;
+    try{
+      Account a = new Account();
+       A = EntityFinder.findAllByColumn(a,a.getUserIdColumnName(),String.valueOf(iUserId),a.getTypeColumnName(),sType);
+    }
+    catch(Exception e){A=null;}
+    return A;
+  }
+
   public static List listOfAccounts(){
     List A = null;
     try{

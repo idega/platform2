@@ -93,6 +93,7 @@ public class SysPropsSetter extends ModuleObjectContainer{
     DropdownMenu TI = intDrp("contract_years",10);
     TextInput adminEmail = new TextInput("admin_email");
     TextInput emailHost = new TextInput("email_host");
+    DropdownMenu groups = new DropdownMenu(com.idega.core.user.business.UserBusiness.listOfGroups(),"def_group");
     int row = 1;
     T.add(formatText("Contract date"),1,row);
     T.add(DI,3,row);
@@ -112,6 +113,14 @@ public class SysPropsSetter extends ModuleObjectContainer{
     }
     T.add(TI,3,row);
     row++;
+    T.add(formatText("Default group"),1,row);
+    int groupId = SysProps.getDefaultGroup();
+    if(groupId > 0){
+      add("group_id"+String.valueOf(groupId));
+      groups.setSelectedElement(String.valueOf(groupId));
+    }
+    T.add(groups,3,row);
+    row++;
     T.add(formatText("Admin Email"),1,row);
     T.add(adminEmail,3,row);
     row++;
@@ -128,6 +137,7 @@ public class SysPropsSetter extends ModuleObjectContainer{
     String contractYears = modinfo.getParameter("contract_years");
     String adminEmail = modinfo.getParameter("admin_email");
     String emailHost = modinfo.getParameter("email_host");
+    String defaultGroup = modinfo.getParameter("def_group");
     SystemProperties SysProps = seekProperties();
     if(SysProps !=null){
       if(contractDate.length() == 10){
@@ -148,6 +158,9 @@ public class SysPropsSetter extends ModuleObjectContainer{
       }
       if(!"".equals(emailHost)){
         SysProps.setEmailHost(emailHost);
+      }
+      if(!"".equals(defaultGroup)){
+        SysProps.setDefaultGroup(Integer.parseInt(defaultGroup));
       }
       try {
         SysProps.update();

@@ -20,11 +20,12 @@ public class SystemProperties extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getColumnNameContractYears(),"Contract Years",true,true,"java.lang.Integer");
-    addAttribute(getColumnNameContractDate(),"Contract Date",true,true,"java.sql.Date");
-    addAttribute(getColumnNameCypherKey(),"Cypher Key",true,true,"java.lang.String",4000);
-    addAttribute(getColumnNameCypherKey(),"Admin email",true,true,"java.lang.String",1000);
-    addAttribute(getColumnNameCypherKey(),"email host",true,true,"java.lang.String",1000);
+    addAttribute(getColumnNameContractYears(),"Contract Years",true,true,java.lang.Integer.class);
+    addAttribute(getColumnNameContractDate(),"Contract Date",true,true,java.sql.Date.class);
+    addAttribute(getColumnNameCypherKey(),"Cypher Key",true,true,java.lang.String.class,4000);
+    addAttribute(getColumnNameCypherKey(),"Admin email",true,true,java.lang.String.class,1000);
+    addAttribute(getColumnNameCypherKey(),"email host",true,true,java.lang.String.class,1000);
+    addAttribute(getColumnNameDefaultGroup(),"default group",true,true,java.lang.Integer.class);
   }
   public String getEntityName() {
     return getEntityTableName();
@@ -36,6 +37,7 @@ public class SystemProperties extends GenericEntity {
   public static String getColumnNameCypherKey(){return "CYPHERKEY";}
   public static String getColumnNameAdminEmail(){return "ADMIN_EMAIL";}
   public static String getColumnNameEmailHost(){return "EMAIL_HOST";}
+  public static String getColumnNameDefaultGroup(){return "DEFAULT_GROUP";}
 
   public void setContractYears(int years){
     setColumn(getColumnNameContractYears(),years);
@@ -61,8 +63,14 @@ public class SystemProperties extends GenericEntity {
   public String getAdminEmail(){
     return getStringColumnValue(getColumnNameAdminEmail());
   }
-   public void setEmailHost(String host){
+  public void setEmailHost(String host){
     setColumn(getColumnNameEmailHost(),host);
+  }
+  public int getDefaultGroup(){
+    return getIntColumnValue(getColumnNameDefaultGroup());
+  }
+  public void setDefaultGroup(int host){
+    setColumn(getColumnNameDefaultGroup(),host);
   }
   public String getEmailHost(){
     return getStringColumnValue(getColumnNameEmailHost());

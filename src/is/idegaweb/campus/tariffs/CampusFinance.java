@@ -1,5 +1,5 @@
 /*
- * $Id: CampusFinance.java,v 1.3 2001/07/23 10:00:00 aron Exp $
+ * $Id: CampusFinance.java,v 1.4 2001/08/14 23:44:16 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -14,6 +14,8 @@ import com.idega.jmodule.object.Table;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.block.finance.presentation.*;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 
 /**
  *
@@ -22,8 +24,11 @@ import com.idega.block.finance.presentation.*;
  */
 public class CampusFinance extends KeyEditor{
 
-  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
+  protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5,ACT6 = 6;
   private final String strAction = "fin_action";
+   private final static String IW_BUNDLE_IDENTIFIER="is.idegaweb.campus.finance";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
 
   public CampusFinance(String sHeader) {
@@ -56,12 +61,16 @@ public class CampusFinance extends KeyEditor{
     Link Link5 = new Link("Álagning","/finance/assessment.jsp");
     Link5.setFontColor(this.DarkColor);
     Link5.addParameter(this.strAction,String.valueOf(this.ACT5));
+    Link Link6 = new Link("Símagjöld","/finance/phone.jsp");
+    Link6.setFontColor(this.DarkColor);
+    Link6.addParameter(this.strAction,String.valueOf(this.ACT6));
     if(isAdmin){
       LinkTable.add(Link1,1,1);
       LinkTable.add(Link2,1,2);
       LinkTable.add(Link3,1,3);
       LinkTable.add(Link4,1,4);
       LinkTable.add(Link5,1,5);
+      LinkTable.add(Link6,1,6);
     }
     return LinkTable;
   }

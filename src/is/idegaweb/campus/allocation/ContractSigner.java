@@ -21,6 +21,7 @@ import com.idega.block.finance.data.Account;
 import com.idega.block.login.business.LoginCreator;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.core.user.data.User;
+import com.idega.core.data.GenericGroup;
 import com.idega.core.accesscontrol.data.LoginTable;
 import java.util.List;
 import com.idega.jmodule.server.mail.SendMail;
@@ -89,11 +90,15 @@ public class ContractSigner extends ModuleObjectContainer{
     int iContractId = Integer.parseInt( modinfo.getParameter("signed_id"));
     try {
       Contract eContract = new Contract(iContractId);
+      User eUser = new User(eContract.getUserId().intValue());
       idegaTimestamp from = new idegaTimestamp(eContract.getValidFrom());
       idegaTimestamp to = new idegaTimestamp(eContract.getValidTo());
       Applicant eApplicant = new Applicant(eContract.getApplicantId().intValue());
       List lEmails = UserBusiness.listOfUserEmails(eContract.getUserId().intValue());
-      List lAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue());
+      List lFinanceAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),Account.typeFinancial);
+      List lPhoneAccounts = AccountManager.listOfAccounts(eContract.getUserId().intValue(),Account.typePhone);
+      List lGroups = UserBusiness.listOfGroups();
+      List lUserGroups = eUser.getAllGroups();
       LoginTable loginTable = LoginDBHandler.findUserLogin(eContract.getUserId().intValue());
       Table T = new Table();
 
@@ -102,63 +107,88 @@ public class ContractSigner extends ModuleObjectContainer{
       CloseButton close = new CloseButton(iwrb.getLocalizedString("close","Close"));
       PrintButton PB = new PrintButton(iwrb.getLocalizedString("print","Print"));
       TextInput email = new TextInput("new_email");
-      CheckBox accountCheck = new CheckBox("new_account");
+      CheckBox accountCheck = new CheckBox("new_fin_account");
       accountCheck.setChecked(true);
+      CheckBox phoneAccountCheck = new CheckBox("new_phone_account");
+      phoneAccountCheck.setChecked(true);
       CheckBox loginCheck = new CheckBox("new_login");
       loginCheck.setChecked(true);
-
-      T.add(boldText(iwrb.getLocalizedString("name","Name")+" : "),1,2);
-      T.add(eApplicant.getFullName(),2,2);
-      T.add(boldText(iwrb.getLocalizedString("ssn","SocialNumber")+" : "),1,3);
-      T.add(eApplicant.getSSN(),2,3);
-      T.add(boldText(iwrb.getLocalizedString("apartment","Apartment")+" : "),1,4);
-      T.add(formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,4);
-      T.add(boldText(iwrb.getLocalizedString("contractdate","Contract date")+" :"),1,5);
-      T.add(formatText(from.getLocaleDate(modinfo)+" "+to.getLocaleDate(modinfo)),2,5);
-      T.add(boldText(iwrb.getLocalizedString("email","Email")+" : "),1,6);
+      DropdownMenu groupDrp = new DropdownMenu(lGroups,"user_group");
+      int row = 2;
+      T.add(boldText(iwrb.getLocalizedString("name","Name")+" : "),1,row);
+      T.add(eApplicant.getFullName(),2,row);
+      row++;
+      T.add(boldText(iwrb.getLocalizedString("ssn","SocialNumber")+" : "),1,row);
+      T.add(eApplicant.getSSN(),2,row);
+      row++;
+      T.add(boldText(iwrb.getLocalizedString("apartment","Apartment")+" : "),1,row);
+      T.add(formatText(getApartmentString(new Apartment(eContract.getApartmentId().intValue()))),2,row);
+      row++;
+      T.add(boldText(iwrb.getLocalizedString("contractdate","Contract date")+" :"),1,row);
+      T.add(formatText(from.getLocaleDate(modinfo)+" "+to.getLocaleDate(modinfo)),2,row);
+      row++;
+      T.add(boldText(iwrb.getLocalizedString("email","Email")+" : "),1,row);
       if(lEmails !=null){
-        T.add(formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,6);
+        T.add(formatText( ((Email)lEmails.get(0)).getEmailAddress()),2,row);
       }
       else{
-        T.add(email,2,6);
+        T.add(email,2,row);
       }
-      if(lAccounts == null){
-        T.add(accountCheck,2,8);
-        T.add(boldText(iwrb.getLocalizedString("new_account","New finance account")),2,8);
+      row++;
+      T.add(boldText(iwrb.getLocalizedString("group","Group")+" : "),1,row);
+      if(lUserGroups !=null){
+        groupDrp.setSelectedElement( String.valueOf( ((GenericGroup)lUserGroups.get(0)).getID() ) );
+      }
+      T.add(groupDrp,2,row);
+      row++;row++;
+      if(lFinanceAccounts == null){
+        T.add(accountCheck,2,row);
+        T.add(boldText(iwrb.getLocalizedString("fin_account","New finance account")),2,row);
       }
       else{
-        int len = lAccounts.size();
+        int len = lFinanceAccounts.size();
         for (int i = 0; i < len; i++) {
-          T.add(boldText(iwrb.getLocalizedString("fin_account","Account")+" : "),1,8);
-          T.add(formatText( ((Account)lAccounts.get(i)).getName() +" "),2,8);
-
+          T.add(boldText(iwrb.getLocalizedString("fin_account","Finance account")+" : "),1,row);
+          T.add(formatText( ((Account)lFinanceAccounts.get(i)).getName() +" "),2,row);
         }
       }
-      if(loginTable != null ){
-        T.add(boldText(iwrb.getLocalizedString("login","Login")+" : "),1,9);
-        T.add(formatText(loginTable.getUserLogin()),2,9);
-        T.add(boldText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,10);
-        if(passwd != null)
-          T.add(formatText(passwd),2,10);
-
-
+      row++;
+      if(lPhoneAccounts == null){
+        T.add(phoneAccountCheck,2,row);
+        T.add(boldText(iwrb.getLocalizedString("phone_account","New phone account")),2,row);
       }
       else{
-        T.add(loginCheck,2,9);
-        T.add(boldText(iwrb.getLocalizedString("new_login","New login")),2,9);
+        int len = lPhoneAccounts.size();
+        for (int i = 0; i < len; i++) {
+          T.add(boldText(iwrb.getLocalizedString("phone_account","Phone account")+" : "),1,row);
+          T.add(formatText( ((Account)lPhoneAccounts.get(i)).getName() +" "),2,row);
+        }
       }
-
+      row++;
+      if(loginTable != null ){
+        T.add(boldText(iwrb.getLocalizedString("login","Login")+" : "),1,row);
+        T.add(formatText(loginTable.getUserLogin()),2,row);
+        row++;
+        T.add(boldText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,row);
+        if(passwd != null)
+          T.add(formatText(passwd),2,row++);
+      }
+      else{
+        T.add(loginCheck,2,row);
+        T.add(boldText(iwrb.getLocalizedString("new_login","New login")),2,row);
+      }
+      row++;
       HiddenInput HI = new HiddenInput("signed_id",String.valueOf(eContract.getID()));
       if(eContract.getStatus().equalsIgnoreCase(eContract.statusSigned))
-        T.add(save,2,12);
+        T.add(save,2,row);
       else
-        T.add(signed,2,12);
+        T.add(signed,2,row);
       if(print){
-        T.add(PB,2,12);
+        T.add(PB,2,row);
       }
-      T.add(close,2,12);
+      T.add(close,2,row);
 
-      T.add(HI,1,7);
+      T.add(HI,1,row);
       Form F = new Form();
       F.add(T);
       return F;
@@ -177,8 +207,10 @@ public class ContractSigner extends ModuleObjectContainer{
     int id = Integer.parseInt(modinfo.getParameter("signed_id"));
     String sEmail = modinfo.getParameter("new_email");
     String sSendMail = modinfo.getParameter("send_mail");
-    String sAccount = modinfo.getParameter("new_account");
+    String sFinAccount = modinfo.getParameter("new_fin_account");
+    String sPhoneAccount = modinfo.getParameter("new_phone_account");
     String sCreateLogin = modinfo.getParameter("new_login");
+    String sUserGroup = modinfo.getParameter("user_group");
     Contract eContract = null;
 
       try {
@@ -197,8 +229,13 @@ public class ContractSigner extends ModuleObjectContainer{
       if(sEmail !=null && sEmail.trim().length() >0){
         UserBusiness.addNewUserEmail(iUserId,sEmail);
       }
-      if(sAccount != null){
-        AccountManager.makeNewFinanceAccount(iUserId,String.valueOf(iUserId),"",1);
+      if(sFinAccount != null){
+        String prefix = iwrb.getLocalizedString("finance","Finance");
+        AccountManager.makeNewFinanceAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",1);
+      }
+      if(sPhoneAccount != null){
+        String prefix = iwrb.getLocalizedString("phone","Phone");
+        AccountManager.makeNewPhoneAccount(iUserId,prefix+" - "+String.valueOf(iUserId),"",1);
       }
       if(sCreateLogin != null){
         try {
@@ -219,8 +256,15 @@ public class ContractSigner extends ModuleObjectContainer{
             passwd = null;
             print = false;
           }
+
+          if(sUserGroup!= null){
+            int gid = Integer.parseInt(sUserGroup);
+            GenericGroup gg = new GenericGroup(gid);
+            gg.addTo(eUser);
+          }
         }
         catch (SQLException ex) {
+          ex.printStackTrace();
         }
       }
 
