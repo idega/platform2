@@ -25,12 +25,19 @@ public class JModuleObject extends ModuleObjectContainer{
   private static final String concatter = "_";
   private static final String newline = "\n";
 
+  public static boolean usingNewAcessControlSystem=false;
+
   public JModuleObject(){
 
   }
 
   public boolean isAdministrator(ModuleInfo modinfo)throws Exception{
-    return AccessControl.isAdmin(modinfo);
+    if(usingNewAcessControlSystem){
+      return com.idega.core.accesscontrol.business.AccessControl.hasAdminPermission(this,modinfo);
+    }
+    else{
+      return AccessControl.isAdmin(modinfo);
+    }
   }
 
   /**
