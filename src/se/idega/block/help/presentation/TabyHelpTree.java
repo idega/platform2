@@ -1,5 +1,5 @@
 /*
- * $Id: TabyHelpTree.java,v 1.2 2004/01/09 20:35:45 malin Exp $
+ * $Id: TabyHelpTree.java,v 1.3 2004/01/10 12:59:23 malin Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -140,19 +140,22 @@ public class TabyHelpTree extends Block {
 			child12 = new HelpNode(13,"se.idega.idegaweb.commune","My messages");
 			child13 = new HelpNode(14,"se.idega.idegaweb.commune","My errands");
 			
-			citizen = new HelpNode(15,"se.idega.idegaweb.commune","Citizen account");
+			/*citizen = new HelpNode(15,"se.idega.idegaweb.commune","Citizen account");
 			schoolChoice = new HelpNode(16,"se.idega.idegaweb.commune","School selection");
 			other = new HelpNode(17,"se.idega.idegaweb.commune","Other");
-			
-			citizen.addChild(child1);
+			*/
+			/*citizen.addChild(child1);
 			citizen.addChild(child2);
 			citizen.addChild(child3);
 			citizen.addChild(child4);
 			citizen.addChild(child14);
 			citizen.addChild(child15);
+			*/
+			child3.addChild(child12);
+			child3.addChild(child13);
+
 			
-			
-			schoolChoice.addChild(child5);
+			/*schoolChoice.addChild(child5);
 			schoolChoice.addChild(child6);
 			schoolChoice.addChild(child7);
 			schoolChoice.addChild(child8);
@@ -166,6 +169,7 @@ public class TabyHelpTree extends Block {
 			top.addChild(citizen);
 			top.addChild(schoolChoice);
 			top.addChild(other);
+			*/
 		}
 		else {
 			HelpNode citizenTop = new HelpNode(1,"se.idega.idegaweb.commune","Hjälp - Medborgare");
