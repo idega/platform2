@@ -57,11 +57,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/29 13:53:28 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/02 07:44:15 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.90 $
+ * @version $Revision: 1.91 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -709,8 +709,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 			final MemberFamilyLogic familyBusiness = (MemberFamilyLogic)
 					IBOLookup.getServiceInstance (getIWApplicationContext(),
 																				MemberFamilyLogic.class);
+			System.err.println ("### custodian=" + header.getCustodian ());
 			final Collection children = familyBusiness.getChildrenInCustodyOf
 					(header.getCustodian ());
+			System.err.println ("### children=" + children);
 			final SchoolClassMemberHome placementHome = (SchoolClassMemberHome)
 					IDOLookup.getHome (SchoolClassMember.class);
 			final SchoolCategory category =  header.getSchoolCategory ();
@@ -721,6 +723,8 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 					final Collection childsPlacements = placementHome
 							.findAllByUserAndPeriodAndSchoolCategory
 							(child, period, category);
+					System.err.println ("### placements=" + childsPlacements + " ("
+															+ child + ")");
 					if (null != childsPlacements) {
 						allPlacements.addAll (childsPlacements);
 					}
