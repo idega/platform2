@@ -8,6 +8,8 @@ package com.idega.block.beanshell.presentation;
 
 import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import bsh.EvalError;
 import bsh.TargetError;
@@ -56,6 +58,7 @@ public class BeanShellScript extends Block {
 	private IWBundle bundle;
 	private String scriptInBundleFileName;
 	private String fileNameWithPath;
+	private List parametersToMaintain;
 	
 	
 	public BeanShellScript() {
@@ -149,6 +152,11 @@ public class BeanShellScript extends Block {
 
 	private void addEditorAndRunScript(IWContext iwc, BSHEngine engine) throws RemoteException {
 		Form editorForm = new Form();
+		
+		if(parametersToMaintain!=null && !parametersToMaintain.isEmpty()){
+			editorForm.maintainParameters(parametersToMaintain);
+		}
+		
 		Table table = new Table(1,3);
 		
 		TextArea scriptArea = new TextArea(PARAM_SCRIPT_STRING,( (scriptString!=null)? scriptString : ""));
@@ -208,6 +216,18 @@ public class BeanShellScript extends Block {
 	
 	public void setScriptFileNameAndUseDefaultBundle(String fileName){
 		setBundleAndScriptFileName(null,fileName);
+	}
+
+
+	/**
+	 * Adds the parameter name to a list of parameters to maintain over requests.
+	 * @param parameter
+	 */
+	public void addParameterToMaintain(String parameter) {
+		if(parametersToMaintain==null){
+			parametersToMaintain = new ArrayList();
+		}
+		parametersToMaintain.add(parameter);
 	}
 	
 	
