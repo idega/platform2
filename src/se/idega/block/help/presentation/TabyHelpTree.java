@@ -1,5 +1,5 @@
 /*
- * $Id: TabyHelpTree.java,v 1.5 2004/01/11 15:46:58 laddi Exp $
+ * $Id: TabyHelpTree.java,v 1.6 2004/01/22 23:06:02 tryggvil Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,8 +11,8 @@ package se.idega.block.help.presentation;
 
 import com.idega.block.help.data.HelpNode;
 import com.idega.block.help.presentation.DisplayHelp;
-import com.idega.block.help.presentation.Help;
 import com.idega.block.help.presentation.HelpTreeViewer;
+import com.idega.idegaweb.help.presentation.Help;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
