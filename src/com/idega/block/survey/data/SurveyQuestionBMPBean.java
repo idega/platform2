@@ -11,7 +11,6 @@ import javax.ejb.FinderException;
 import com.idega.core.localisation.data.ICLocale;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.data.IDORelationshipException;
 
 
 /**
