@@ -46,6 +46,10 @@ public class CampusDaemonBundleStarter implements IWBundleStartable, ActionListe
 				getCampusService(bundle.getApplication().getIWApplicationContext()).getContractService().endExpiredContracts();
 				IWTimestamp oneYearBack = IWTimestamp.RightNow();
 				oneYearBack.addYears(-1);
+				System.out.println("[Campus Daemon - "+IWTimestamp.RightNow().toString()+" ] - Garbage oneyear old ended contracts");
+				campusService.getContractService().garbageEndedContracts(oneYearBack.getDate());
+				System.out.println("[Campus Daemon - "+IWTimestamp.RightNow().toString()+" ] - Garbage oneyear old resigned contracts");
+				campusService.getContractService().garbageResignedContracts(oneYearBack.getDate());
 				System.out.println("[Campus Daemon - "+IWTimestamp.RightNow().toString()+" ] - Finalize oneyear old garbage contracts");
 				campusService.getContractService().finalizeGarbageContracts(oneYearBack.getDate());
 			}
@@ -55,6 +59,8 @@ public class CampusDaemonBundleStarter implements IWBundleStartable, ActionListe
 			x.printStackTrace();
 		}
 		reconfigureInterval();
+		
+		System.out.println("Campus Daemon will be started again in "+timer.getInterval() +" milliseconds");
 	}
 	
 	private void reconfigureInterval(){
@@ -68,6 +74,7 @@ public class CampusDaemonBundleStarter implements IWBundleStartable, ActionListe
 		long startwait = IWTimestamp.getMilliSecondsBetween(now,new IWTimestamp(now.getYear(),now.getMonth(),now.getDay(),23,59,59));
 		startwait += (60*60*1000);
 		return startwait;
+		//return 5000;
 	}
 	
 	/**
