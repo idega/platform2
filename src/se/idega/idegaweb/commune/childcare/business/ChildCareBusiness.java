@@ -50,6 +50,10 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public char getStatusParentsAccept() throws java.rmi.RemoteException;
  public char getStatusReady() throws java.rmi.RemoteException;
  public char getStatusSentIn() throws java.rmi.RemoteException;
+ public char getStatusMoved() throws java.rmi.RemoteException;
+ public char getStatusRejected() throws java.rmi.RemoteException;
+ public char getStatusNewChoice() throws java.rmi.RemoteException;
+ public char getStatusNotAnswered() throws java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByProvider(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByProvider(com.idega.block.school.data.School p0) throws java.rmi.RemoteException;
  public java.util.Collection getUnhandledApplicationsByProvider(int p0) throws java.rmi.RemoteException;
@@ -63,7 +67,7 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public boolean hasApplications(int childID) throws java.rmi.RemoteException;
  public boolean hasBeenPlacedWithOtherProvider(int p0,int p1)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String p2,int p3,int p4,java.lang.String p5,java.lang.String p6,boolean p7) throws java.rmi.RemoteException;
- public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,int p3,int p4,java.lang.String p5,java.lang.String p6,boolean p7) throws java.rmi.RemoteException;
+ public boolean insertApplications(com.idega.user.data.User p0,int[] p1,java.lang.String[] p2,String p3,int p4,int p5,java.lang.String p6,java.lang.String p7,boolean p8) throws java.rmi.RemoteException;
  public void moveToGroup(int p0,int p1,int p2)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void parentsAgree(se.idega.idegaweb.commune.childcare.data.ChildCareApplication p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException, java.rmi.RemoteException;
  public void parentsAgree(int p0,com.idega.user.data.User p1,java.lang.String p2,java.lang.String p3)throws java.rmi.RemoteException, java.rmi.RemoteException;

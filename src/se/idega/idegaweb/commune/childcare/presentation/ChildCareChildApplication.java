@@ -27,6 +27,7 @@ import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SelectDropdownDouble;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 import com.idega.user.data.User;
 import com.idega.util.PersonalIDFormatter;
 
@@ -48,6 +49,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private final static String PARAM_DATE = "cca_date";
 	private final static String PARAM_AREA = "cca_area";
 	private final static String PARAM_PROVIDER = "cca_provider";
+	private final static String PARAM_MESSAGE = "cca_message";
 
 	private final static String PROVIDERS = "cca_providers";
 	private final static String NAME = "cca_name";
@@ -146,11 +148,12 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
 				dates[i] = iwc.isParameterSet(PARAM_DATE + "_" + (i + 1)) ? iwc.getParameter(PARAM_DATE + "_" + (i + 1)) : null;
 			}
+			String message = iwc.getParameter(PARAM_MESSAGE);
 
 			String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
-			String message = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
+			String body = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
-			done = getBusiness().insertApplications(iwc.getCurrentUser(), providers, dates, getSession().getCheckID(), getSession().getChildID(), subject, message, false);
+			done = getBusiness().insertApplications(iwc.getCurrentUser(), providers, dates, message, getSession().getCheckID(), getSession().getChildID(), subject, body, false);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -179,6 +182,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		String provider = localize(PARAM_PROVIDER, "Provider");
 		String from = localize(CARE_FROM, "From") + ":";
+		String message = null;
 		Text providerText = null;
 		Text fromText = getSmallHeader(from);
 
@@ -187,8 +191,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		for (int i = 1; i < 6; i++) {
 			try {
 				application = getBusiness().getApplication(getSession().getChildID(), i);
-				if (application != null)
+				if (application != null) {
 					areaID = application.getProvider().getSchoolAreaId();
+					message = application.getMessage();
+				}
 			}
 			catch (RemoteException re) {
 				application = null;
@@ -212,6 +218,16 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 			inputTable.setHeight(row++, 6);
 		}
+		
+		TextArea messageArea = (TextArea) getStyledInterface(new TextArea(PARAM_MESSAGE));
+		messageArea.setRows(4);
+		messageArea.setWidth(Table.HUNDRED_PERCENT);
+		if (message != null)
+			messageArea.setContent(message);
+
+		inputTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+		inputTable.add(getSmallHeader(localize("child_care.message","Message")), 1, row);
+		inputTable.add(messageArea, 3, row++);
 
 		inputTable.setWidth(1, 100);
 		inputTable.setWidth(2, 8);

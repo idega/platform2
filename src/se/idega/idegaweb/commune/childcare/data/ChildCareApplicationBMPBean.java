@@ -484,6 +484,14 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
+	public Integer ejbFindNewestApplication(int providerID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
+		sql.appendOrderBy(QUEUE_ORDER+" desc");
+		System.out.println(sql.toString());
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
 	public Collection ejbFindApplicationByChildAndNotInStatus(int childID, String[] caseStatus) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).append(" c, proc_case p");

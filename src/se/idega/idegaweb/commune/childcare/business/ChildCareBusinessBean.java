@@ -81,7 +81,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	private final static char STATUS_CONTRACT = 'D';
 	private final static char STATUS_READY = 'E';
 	private final static char STATUS_CANCELLED = 'F';
-
+	private final static char STATUS_MOVED = 'W';
+	private final static char STATUS_NEW_CHOICE = 'X';
+	private final static char STATUS_NOT_ANSWERED = 'Y';
+	private final static char STATUS_REJECTED = 'Z';
+	
 	private ChildCareApplicationHome getChildCareApplicationHome() throws RemoteException {
 		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 	}
@@ -106,6 +110,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public ChildCareApplication getApplication(int childID, int choiceNumber) throws RemoteException {
 		try {
 			return getChildCareApplicationHome().findApplicationByChildAndChoiceNumber(childID, choiceNumber);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
+	public ChildCareApplication getNewestApplication(int providerID) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().findNewestApplication(providerID);
 		}
 		catch (FinderException fe) {
 			return null;
@@ -149,10 +162,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		for (int a = 0; a < dates.length; a++) {
 			dates[a] = date;
 		}
-		return insertApplications(user, provider, dates, checkId, childId, subject, message, freetimeApplication);
+		return insertApplications(user, provider, dates, null, checkId, childId, subject, message, freetimeApplication);
 	}
 	
-	public boolean insertApplications(User user, int provider[], String[] dates, int checkId, int childId, String subject, String message, boolean freetimeApplication) {
+	public boolean insertApplications(User user, int provider[], String[] dates, String message, int checkId, int childId, String subject, String body, boolean freetimeApplication) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -178,6 +191,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							appl.setOwner(user);
 						appl.setProviderId(providerID);
 						appl.setFromDate(fromDate.getDate());
+						if (message != null)
+							appl.setMessage(message);
 						appl.setChildId(childId);
 						appl.setQueueDate(now.getDate());
 						appl.setMethod(1);
@@ -192,7 +207,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							caseBiz.changeCaseStatus(appl, getCaseStatusInactive().getStatus(), user);
 						else {
 							caseBiz.changeCaseStatus(appl, getCaseStatusOpen().getStatus(), user);
-							sendMessageToParents(appl, subject, message);
+							sendMessageToParents(appl, subject, body);
 							updateQueue(appl);
 						}
 					}
@@ -200,7 +215,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 
 			/**
-			 * @todo Bæta við að breyta stöðu á tékkanum sem var notaður
+			 * @todo Change status of check when used.
 			 */
 
 			/*if (!freetimeApplication) {
@@ -271,6 +286,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					appl = (ChildCareApplication) iter.next();
 					appl.setQueueOrder(queueOrder++);
 					appl.store();
+				}
+			}
+			else {
+				ChildCareApplication newestApplication = getNewestApplication(application.getProviderId());
+				if (newestApplication != null) {
+					queueOrder = newestApplication.getQueueOrder();
+					application.setQueueOrder(++queueOrder);
+					application.store();
 				}
 			}
 		}
@@ -539,7 +562,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 			IWTimestamp now = new IWTimestamp();
 			application.setRejectionDate(now.getDate());
-			application.setApplicationStatus('Z');
+			application.setApplicationStatus(getStatusRejected());
 			caseBiz.changeCaseStatus(application, getCaseStatusDenied().getStatus(), user);
 			sendMessageToParents(application, subject, message);
 
@@ -1467,6 +1490,34 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	 */
 	public char getStatusCancelled() {
 		return STATUS_CANCELLED;
+	}
+	
+	/**
+	 * @return char
+	 */
+	public char getStatusMoved() {
+		return STATUS_MOVED;
+	}
+	
+	/**
+	 * @return char
+	 */
+	public char getStatusRejected() {
+		return STATUS_REJECTED;
+	}
+	
+	/**
+	 * @return char
+	 */
+	public char getStatusNotAnswered() {
+		return STATUS_NOT_ANSWERED;
+	}
+	
+	/**
+	 * @return char
+	 */
+	public char getStatusNewChoice() {
+		return STATUS_NEW_CHOICE;
 	}
 	
 	public int getQueueTotalByProvider(int providerID) throws RemoteException {
