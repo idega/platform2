@@ -63,6 +63,8 @@ public class ServiceViewer extends Block {
   private String height;
   private String color1;
   private String color2;
+  private Link link;
+  private Text text;
 
   private void init(IWContext iwc) {
     iwb = this.getBundle(iwc);
@@ -71,6 +73,11 @@ public class ServiceViewer extends Block {
     tsb = TravelStockroomBusiness.getNewInstance();
     cal = new idegaCalendar();
     dayOfWeekName = new String[8];
+    if(link==null){
+      link = new Link();
+      link.setAsImageButton(true);/**@todo localize*/
+    }
+    if(text==null) text = new Text();
 
     dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
     dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,iwc).substring(0,3);
@@ -86,7 +93,7 @@ public class ServiceViewer extends Block {
     handleEvents(iwc);
   }
 
- public void handleEvents(IWContext iwc) throws Exception {
+ private void handleEvents(IWContext iwc) throws Exception {
     String sService = iwc.getParameter(IW_TRAVEL_SERVICE_ID);
     String sSupplier= iwc.getParameter(IW_TRAVEL_SUPPLIER_ID);
 
@@ -111,11 +118,11 @@ public class ServiceViewer extends Block {
       add(getServiceInfoTable(iwc));
     }
     else{
-      add(getServiceListTable());
+      add(getServiceListTable(iwc));
     }
   }
 
-  public String getServiceDepartures(Service serv){
+  private String getServiceDepartures(Service serv){
     StringBuffer depart = new StringBuffer();
     try {
       int[] dagur = ServiceDay.getDaysOfWeek(serv.getID());
@@ -126,8 +133,10 @@ public class ServiceViewer extends Block {
       }
 
       idegaTimestamp stamp = new idegaTimestamp(serv.getDepartureTime());
-      //depart.append(stamp.getHour());
-      //depart.append(stamp.getMinute());
+      depart.append(stamp.getHour());
+      depart.append(":");
+      depart.append(stamp.getMinute());
+
     }
     catch (Exception ex) {
       ex.printStackTrace(System.err);
@@ -136,7 +145,7 @@ public class ServiceViewer extends Block {
     return depart.toString();
   }
 
-  public String getServiceDurationString(Service serv){
+  private String getServiceDurationString(Service serv){
     String duration;
 
     idegaTimestamp stamp = new idegaTimestamp(serv.getDepartureTime());
@@ -159,10 +168,12 @@ public class ServiceViewer extends Block {
     return duration;
   }
 
-  private Table getServiceListTable(){
-    Table content = new Table();
-
+  private Table getServiceListTable(IWContext iwc){
     List prodlist;
+    Table content = new Table();
+    if( (color1!=null) && (color2!=null) ){
+      content.setHorizontalZebraColored(color1,color2);
+    }
 
     if( (dateFrom!=null) && (dateTo!=null) ){
       prodlist = ProductBusiness.getProducts(supplier.getID(),dateFrom,dateTo);
@@ -170,7 +181,6 @@ public class ServiceViewer extends Block {
     else{
       prodlist = ProductBusiness.getProducts(supplier.getID());
     }
-
 
     if( prodlist!=null ){
       Iterator iter = prodlist.iterator();
@@ -186,15 +196,39 @@ public class ServiceViewer extends Block {
         try{
           serv = tsb.getService(prod);
         //number
-          content.add(prod.getNumber(),x,y);
+          Text number = (Text) text.clone();
+          number.setText(prod.getNumber());
+          number.setBold(true);
+          content.add(number,x,y);
         //description
-          content.add(ProductBusiness.getProductName(prod),++x,y);
+          Text desc = (Text) text.clone();
+          desc.setText(ProductBusiness.getProductName(prod));
+          content.add(desc,++x,y);
+
         //active days
-          content.add(getServiceDepartures(serv),++x,y);
+          Text days = (Text) text.clone();
+          days.setText(getServiceDepartures(serv));
+          content.add(days,++x,y);
         //timeframe - trip length
-          content.add(getServiceDurationString(serv),++x,y);
+          Text duration = (Text) text.clone();
+          duration.setText(getServiceDurationString(serv));
+          content.add(duration,++x,y);
         //Price
-          content.add(getServicePrice(serv),++x,y);
+          Text price = (Text) text.clone();
+          price.setText(getServicePrice(serv));
+          content.add(price,++x,y);
+        //Info and buy buttons
+          Link more = (Link)link.clone();
+          more.setWindowToOpen(ServiceViewer.class);
+          more.addParameter(IW_TRAVEL_SERVICE_ID,prod.getID());
+          more.setText("more");
+          content.add(more,++x,y);
+
+          Link buy = LinkGenerator.getLink(iwc,prod.getID());
+          buy.setText("buy");
+          content.add(buy,++x,y);
+
+
         }
         catch(Exception ex){
           ex.printStackTrace(System.err);
@@ -208,59 +242,24 @@ public class ServiceViewer extends Block {
     return content;
   }
 
-
-  private String getServicePrice(Service service){
-    StringBuffer price = new StringBuffer();
-    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
-    Currency currency;
-
-    for (int j = 0; j < prices.length; j++) {
-      try {
-        if (j<0) price.append(Text.BREAK);
-        currency = new Currency(prices[j].getCurrencyId());
-        price.append(prices[j].getPriceCategory().getName());
-        price.append(Text.NON_BREAKING_SPACE);
-        price.append(TextSoap.decimalFormat(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID(),prices[j].getCurrencyId(),idegaTimestamp.getTimestampRightNow()),2));
-        price.append(Text.NON_BREAKING_SPACE);
-        price.append(currency.getCurrencyAbbreviation());
-
-      }catch (Exception e) {
-        price.append("rangt upp sett");
-        e.printStackTrace(System.err);
-      }
-
-      /*if (prices[j].getPriceType() != ProductPrice.PRICETYPE_DISCOUNT) {
-        priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
-      }*/
-    }
-    return price.toString();
-  }
-
-
-    //Product[] prods = ProductBusiness.getProducts(supplier.getID(),dateFrom,dateTo);
-
-
-    /*tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
-    tfToText.setText(iwrb.getLocalizedString("travel.to","to"));
-    timeframeText.setText(iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
-*/
-
-
-  public Table getServiceInfoTable(IWContext iwc){
-    Table content = new Table(1,3);
+  private Table getServiceInfoTable(IWContext iwc){
+    Table content = new Table(1,4);
     try {
       int i = 1;
       Product product = new Product(service.getID());
-      content.add(product.getNumber()+" - "+ProductBusiness.getProductName(product),1,i);
+      //number
+      Text numberAndName = (Text) text.clone();
+      numberAndName.setText(product.getNumber()+" - "+ProductBusiness.getProductName(product));
+      numberAndName.setBold(true);
+      content.add(numberAndName,1,i);
+      //description
       //content.add(new TextReader(TextFinder.getLocalizedText(product,product.getID(),ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale())).getBody()),1,2);//insert a textreader
       content.add(ProductBusiness.getProductDescription(product),1,++i);/** @todo insert a textreader**/
       content.add("META DATA",1,++i);
 
-
-
       Link buy = LinkGenerator.getLink(iwc,service.getID());
       buy.setAsImageButton(true);
-      content.add(buy,1,3);
+      content.add(buy,1,++i);
     }
     catch (Exception ex) {
       ex.printStackTrace(System.err);
@@ -300,12 +299,46 @@ public class ServiceViewer extends Block {
    this.height = height;
   }
 
+  public void setTextPrototype(Text text){
+   this.text = text;
+  }
+
+  public void setLinkPrototype(Link link){
+   this.link = link;
+  }
+
   public void setZebraColors(String color1, String color2){
    this.color1 = color1;
    this.color2 = color2;
   }
 
 
+  private String getServicePrice(Service service){
+    StringBuffer price = new StringBuffer();
+    ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
+    Currency currency;
+
+    for (int j = 0; j < prices.length; j++) {
+      try {
+        if (j<0) price.append(Text.BREAK);
+        currency = new Currency(prices[j].getCurrencyId());
+        price.append(prices[j].getPriceCategory().getName());
+        price.append(Text.NON_BREAKING_SPACE);
+        price.append(TextSoap.decimalFormat(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID(),prices[j].getCurrencyId(),idegaTimestamp.getTimestampRightNow()),2));
+        price.append(Text.NON_BREAKING_SPACE);
+        price.append(currency.getCurrencyAbbreviation());
+
+      }catch (Exception e) {
+        price.append("rangt upp sett");
+        e.printStackTrace(System.err);
+      }
+
+      /*if (prices[j].getPriceType() != ProductPrice.PRICETYPE_DISCOUNT) {
+        priceText.addToText(Text.NON_BREAKING_SPACE+"("+prices[j].getPrice()+"%)");
+      }*/
+    }
+    return price.toString();
+  }
 
 /*
   public Table getProductInfoTable(IWContext iwc, IWResourceBundle iwrb, Product product) throws SQLException, ServiceNotFoundException, TimeframeNotFoundException {
