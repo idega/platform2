@@ -71,6 +71,7 @@ public class ProductCatalog extends CategoryBlock{
   boolean _allowMulitpleCategories = true;
 
   private Class _layoutClass = ProductCatalogLayoutSingleFile.class;
+  private AbstractProductCatalogLayout layout = null;
 
   public ProductCatalog() {
     super.setCacheable(CACHE_KEY, 999999999);
@@ -96,7 +97,6 @@ public class ProductCatalog extends CategoryBlock{
 
     this._currentLocale = iwc.getCurrentLocale();
     this._currentLocaleId = ICLocaleBusiness.getLocaleId(_currentLocale);
-
     this._hasEditPermission = this.hasEditPermission();
 
     IWBundle  coreBundle = iwc.getApplication().getCoreBundle();
@@ -105,6 +105,13 @@ public class ProductCatalog extends CategoryBlock{
     iEdit   = coreBundle.getImage("shared/edit.gif");
     iDetach = coreBundle.getImage("shared/detach.gif");
 
+    try {
+      layout = (AbstractProductCatalogLayout) this._layoutClass.newInstance();
+    }catch (IllegalAccessException iae) {
+      iae.printStackTrace(System.err);
+    }catch (InstantiationException ie) {
+      ie.printStackTrace(System.err);
+    }
 
     try {
       String sCurrentPage = iwc.getParameter(this._VIEW_PAGE);
@@ -133,7 +140,7 @@ public class ProductCatalog extends CategoryBlock{
         add(detachLink);
       }
 
-      AbstractProductCatalogLayout layout = (AbstractProductCatalogLayout) this._layoutClass.newInstance();
+      layout = (AbstractProductCatalogLayout) this._layoutClass.newInstance();
 
       List productCategories = new Vector();
       try {
@@ -414,7 +421,7 @@ public class ProductCatalog extends CategoryBlock{
   }
 
 
-  Product getSelectedProduct(IWContext iwc) {
+  static Product getSelectedProduct(IWContext iwc) {
     String sProductId = iwc.getParameter(ProductBusiness.PRODUCT_ID);
     if (sProductId != null) {
       try {
@@ -452,9 +459,13 @@ public class ProductCatalog extends CategoryBlock{
       Collections.sort(products, new ProductComparator(orderBy, this._currentLocaleId));
     }
   }
-/*
+
   protected String getCacheState(IWContext iwc, String cacheStatePrefix) {
-    return cacheStatePrefix+getICObjectInstanceID();
+    Product prod =getSelectedProduct(iwc);
+    if (prod == null) {
+      return cacheStatePrefix+getICObjectInstanceID();
+    }else {
+      return cacheStatePrefix+getICObjectInstanceID()+prod.getID();
+    }
   }
-  */
 }
