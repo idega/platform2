@@ -226,17 +226,7 @@ private boolean _showCollection;
 
   public boolean deleteBlock(int ICObjectInstanceId) {
     PollEntity poll = PollFinder.getObjectInstanceFromID(ICObjectInstanceId);
-    if ( poll != null ) {
-      try {
-        poll.delete();
-        return true;
-      }
-      catch (SQLException e) {
-        e.printStackTrace(System.err);
-      }
-    }
-
-    return false;
+    return PollBusiness.deletePoll(poll);
   }
 
   public String getBundleIdentifier(){

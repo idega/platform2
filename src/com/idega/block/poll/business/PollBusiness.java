@@ -460,6 +460,20 @@ public static final String _PARAMETER_CLOSE = "close";
     return _pollAnswerID;
   }
 
+  public static boolean deletePoll(PollEntity poll) {
+    try {
+      if ( poll != null ) {
+        poll.delete();
+        return true;
+      }
+      return false;
+    }
+    catch (SQLException e) {
+      e.printStackTrace(System.err);
+      return false;
+    }
+  }
+
   public static void deletePollQuestion(int pollQuestionID) {
     try {
       Connection Conn = null;
