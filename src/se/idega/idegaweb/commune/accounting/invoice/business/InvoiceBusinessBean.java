@@ -7,6 +7,8 @@ import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
+import com.idega.block.school.data.SchoolType;
+import com.idega.block.school.data.SchoolYear;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
@@ -33,6 +35,8 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
+//import se.idega.idegaweb.commune.accounting.business.AccountingUtil;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRun;
 import se.idega.idegaweb.commune.accounting.invoice.data.BatchRunHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
@@ -44,12 +48,15 @@ import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
+//import se.idega.idegaweb.commune.accounting.posting.business.PostingException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.PostingDetail;
 import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
+//import se.idega.idegaweb.commune.accounting.school.data.Provider;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 
@@ -58,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/02/06 16:23:05 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/10 12:33:55 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.100 $
+ * @version $Revision: 1.101 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -796,20 +803,7 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		 final String doublePosting,
 		 final String regSpecTypeName) throws RemoteException, CreateException {
 		final char status = 'P';
-		PaymentHeader paymentHeader;
-		final PaymentHeaderHome paymentHeaderHome = getPaymentHeaderHome ();
-		try {
-			paymentHeader	= paymentHeaderHome
-					.findBySchoolCategoryAndSchoolAndPeriodAndStatus
-					(school, schoolCategory, new CalendarMonth (period), status + "");
-		} catch (FinderException e) {
-			paymentHeader = paymentHeaderHome.create ();
-			paymentHeader.setSchool (school);
-			paymentHeader.setSchoolCategory (schoolCategory);
-			paymentHeader.setPeriod (period);
-			paymentHeader.setStatus (status);
-			paymentHeader.store ();
-		}
+		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader(school, schoolCategory, period, status);
 		final PaymentRecord paymentRecord = getPaymentRecordHome ().create ();
 		paymentRecord.setCreatedBy (null != createdBy ? createdBy : "");
 		paymentRecord.setDateCreated (dateCreated);
@@ -841,6 +835,27 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		paymentRecord.store ();
 		return paymentRecord;
 	}	
+
+	private PaymentHeader findOrElseCreatePaymentHeader
+		(final School school, final SchoolCategory schoolCategory,
+		 final Date period, final char status)
+		throws RemoteException, CreateException {
+		PaymentHeader paymentHeader;
+		final PaymentHeaderHome paymentHeaderHome = getPaymentHeaderHome ();
+		try {
+			paymentHeader	= paymentHeaderHome
+					.findBySchoolCategoryAndSchoolAndPeriodAndStatus
+					(school, schoolCategory, new CalendarMonth (period), status + "");
+		} catch (FinderException e) {
+			paymentHeader = paymentHeaderHome.create ();
+			paymentHeader.setSchool (school);
+			paymentHeader.setSchoolCategory (schoolCategory);
+			paymentHeader.setPeriod (period);
+			paymentHeader.setStatus (status);
+			paymentHeader.store ();
+		}
+		return paymentHeader;
+	}
 
 	public SchoolClassMember [] getSchoolClassMembers
 		(final InvoiceHeader header) {
@@ -878,6 +893,97 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				(new SchoolClassMember [0]);
 	}
 	
+	public PaymentRecord createVatPaymentRecord
+		(final PaymentRecord previousPaymentRecord,
+		 final PostingDetail postingDetail, final float months, final School school,
+		 final SchoolType schoolType, final SchoolYear schoolYear) 
+		throws CreateException, IDOLookupException {
+		throw new UnsupportedOperationException ();
+		/*
+		Regulation vatRuleRegulation = previousPaymentRecord.getVATRuleRegulation();
+		if (null == vatRuleRegulation) return null;
+		
+		//Get the payment header
+		final PaymentHeader paymentHeader = findOrElseCreatePaymentHeader (school, schoolType.getCategory (), null /* correct this date, 'P');
+		PaymentRecord paymentRecord;
+		Provider provider = new Provider (school);
+		RegulationSpecType regSpecType = vatRuleRegulation.getRegSpecType ();
+		String ruleSpecType = regSpecType.getRegSpecType ();
+		//String ruleSpecType = RegSpecConstant.MOMS;
+		//RegulationSpecType regSpecType;
+		String[] postingStrings=null;
+		//float amount = postingDetail.getAmount();
+		//float vatPercent = postingDetail.getVATPercent();
+		//float vatPercentage = vatPercent/100;
+		float newTotalVATAmount = AccountingUtil.roundAmount(postingDetail.getVATAmount()*months);				
+		
+		try {
+			//regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(ruleSpecType);
+			int regSpecTypeId= ((Number)regSpecType.getPrimaryKey()).intValue();
+			int schoolYearId = -1;
+			if(schoolYear!=null){
+				schoolYearId = ((Number)schoolYear.getPrimaryKey()).intValue();
+			}
+			postingStrings = getPostingBusiness().getPostingStrings(category,schoolType,regSpecTypeId,provider,startPeriod.getDate(),schoolYearId);
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (PostingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		
+		String ownPosting = postingStrings[0];
+		String doublePosting = postingStrings[1];
+		
+		//Update or create the payment record
+		//String ruleText = postingDetail.getTerm();
+		//String ruleSpecType = postingDetail.getRuleSpecType();
+		
+		String paymentText = vatRuleRegulation.getName();
+		//float newamount=previousPaymentRecord.getTotalAmountVAT();
+		float vatAmount=0;
+		//float vatPercent=0;
+		
+		try {
+			PaymentRecordHome prechome = (PaymentRecordHome) IDOLookup.getHome(PaymentRecord.class);
+			paymentRecord = prechome.findByPostingStringsAndVATRuleRegulationAndPaymentTextAndMonth(ownPosting,doublePosting,null,paymentText,month);
+			
+			//paymentRecord.setPlacements(paymentRecord.getPlacements()+1);
+			
+			paymentRecord.setTotalAmount(AccountingUtil.roundAmount(paymentRecord.getTotalAmount()+newTotalVATAmount));
+			paymentRecord.setTotalAmountVAT(vatAmount);
+			paymentRecord.store();
+		} catch (FinderException e1) {
+			//It didn't exist, so we create it
+			paymentRecord = (PaymentRecord) IDOLookup.create(PaymentRecord.class);
+			//Set all the values for the payment record
+			paymentRecord.setPaymentHeaderId(((Integer)paymentHeader.getPrimaryKey()).intValue());
+			if(categoryPosting.getProviderAuthorization()){
+				paymentRecord.setStatus(ConstantStatus.BASE);
+			} else {
+				paymentRecord.setStatus(ConstantStatus.PRELIMINARY);
+			}
+			paymentRecord.setPeriod(startPeriod.getDate());
+			paymentRecord.setPaymentText(paymentText);
+			paymentRecord.setDateCreated(currentDate);
+			paymentRecord.setCreatedBy(BATCH_TEXT);
+			paymentRecord.setPlacements(0);
+			paymentRecord.setPieceAmount(0);
+			paymentRecord.setTotalAmount(newTotalVATAmount);
+			paymentRecord.setTotalAmountVAT(vatAmount);
+			paymentRecord.setRuleSpecType(ruleSpecType);
+			paymentRecord.setOwnPosting(ownPosting);
+			paymentRecord.setDoublePosting(doublePosting);
+			//paymentRecord.setVATRuleRegulation(postingDetail.getVatRuleRegulationId());
+			//paymentRecord.setOrderId (postingDetail.getOrderID());
+			paymentRecord.store();
+			}
+			return paymentRecord;*/
+	}
+
 	public RegulationSpecType [] getAllRegulationSpecTypes ()
 		throws RemoteException {
 		try {
@@ -892,12 +998,12 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	}
 	
 	public Collection getAllVATRuleRegulations() throws RemoteException{
-		return this.getRegulationsBusiness().findAllVATRuleRegulations();
+		return getRegulationsBusiness().findAllVATRuleRegulations();
 	}
 	
 	public Regulation getVATRuleRegulation (int primaryKey) throws RemoteException {
 		//try {
-			Regulation regulation = this.getRegulationsBusiness().findRegulation(primaryKey);
+			Regulation regulation = getRegulationsBusiness().findRegulation(primaryKey);
 			return regulation;
 		///} catch (FinderException e) {
 		//	return null;
