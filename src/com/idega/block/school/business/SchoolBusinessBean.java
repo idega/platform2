@@ -3,6 +3,9 @@ package com.idega.block.school.business;
 import com.idega.block.school.data.*;
 import com.idega.data.IDOLookup;
 import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 import com.idega.business.IBOServiceBean;
 
 /**
@@ -59,8 +62,8 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
               String keycode,
               String latitude,
               String longitude,
-              int type_id,
-              int area_id
+              int area_id,
+              int[] type_ids
       ) throws java.rmi.RemoteException{
 
       SchoolHome shome = (SchoolHome) IDOLookup.getHome(School.class);
@@ -87,12 +90,30 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
       newSchool.setSchoolLongitude(longitude);
       newSchool.setSchoolName(name);
       newSchool.setSchoolPhone(phone);
-      newSchool.setSchoolTypeId(type_id);
       newSchool.setSchoolZipArea(ziparea);
       newSchool.setSchoolZipCode(zipcode);
-
       newSchool.store();
+
+      newSchool.addSchoolTypesRemoveOther(type_ids);
     }
 
+    public Map getSchoolRelatedSchoolTypes(School school){
+      try{
+        Collection types = school.findRelatedSchoolTypes();
+        if(types!=null && !types.isEmpty()){
+          HashMap map = new HashMap(types.size());
+          Iterator iter = types.iterator();
+          SchoolType type;
+          while(iter.hasNext()){
+            type = (SchoolType) iter.next();
+            map.put((Integer)type.getPrimaryKey(),type);
+          }
+          return map;
+        }
+      }
+      catch(Exception e){
 
+      }
+      return null;
+    }
 }

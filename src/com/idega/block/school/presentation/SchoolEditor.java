@@ -11,9 +11,10 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
 import com.idega.util.text.TextFormat;
-import com.idega.block.school.data.School;
+import com.idega.block.school.data.*;
 import com.idega.block.school.business.*;
 import java.util.Collection;
+import java.util.Map;
 import com.idega.business.IBOLookup;
 /**
  * <p>Title: </p>
@@ -79,7 +80,7 @@ public class SchoolEditor extends Block {
       String name = iwc.getParameter("sch_name");
       String address = iwc.getParameter("sch_address");
       String info = iwc.getParameter("sch_info");
-      String type = iwc.getParameter("sch_type_id");
+      //String type = iwc.getParameter("sch_type_id");
       String area = iwc.getParameter("sch_area_id");
       String zipcode = iwc.getParameter("sch_zip_code");
       String ziparea = iwc.getParameter("sch_zip_area");
@@ -87,14 +88,22 @@ public class SchoolEditor extends Block {
       String keycode = iwc.getParameter("sch_keycode");
       String lon = iwc.getParameter("sch_lon");
       String lat = iwc.getParameter("sch_lat");
+      String[] type_ids = iwc.getParameterValues("sch_type_ids");
+      int[] types = null;
+      if(type_ids!=null && type_ids.length > 0){
+        types = new int[type_ids.length];
+        for (int i = 0; i < type_ids.length; i++) {
+          types[i] = Integer.parseInt(type_ids[i]);
+        }
+
+      }
       int areaId = -1,typeId = -1,sid = -1;
       if(id!=null)
         sid = Integer.parseInt(id);
       if(area!=null)
         areaId = Integer.parseInt(area);
-      if(type!=null)
-        typeId = Integer.parseInt(type);
-      sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,typeId,areaId);
+
+      sabBean.storeSchool(sid,name,info,address,zipcode,ziparea,phone,keycode,lat,lon,areaId,types);
     }
   }
 
@@ -132,7 +141,9 @@ public class SchoolEditor extends Block {
     School school ;
     col = 1;
     while(iter.hasNext()){
-      school = (School) iter.next();
+      Object obj = iter.next();
+      System.err.println("Object class "+obj.getClass().getName());
+      school = (School)obj;
       try{
       Link L = new Link(tFormat.format("edit"));
       L.addParameter("sch_school_id",((Integer)school.getPrimaryKey()).intValue());
@@ -155,7 +166,7 @@ public class SchoolEditor extends Block {
   }
 
   public PresentationObject getInputTable(IWContext iwc,School ent)throws java.rmi.RemoteException{
-    Table T = new Table(3,14);
+    Table T = new Table(3,15);
     T.mergeCells(1,1,3,1);
 
     TextInput inputName = new TextInput("sch_name");
@@ -170,10 +181,13 @@ public class SchoolEditor extends Block {
     TextInput inputLAT = new TextInput("sch_lat");
     DropdownMenu drpType = new DropdownMenu(getSchoolTypes(iwc),"sch_type_id");
     DropdownMenu drpArea = new DropdownMenu(getSchoolAreas(iwc),"sch_area_id");
-
+    Map schooltypes = null;
     int Id = -1;
     if(ent!=null){
+
       try{
+      schooltypes = getSchoolRelatedSchoolTypes(iwc,ent);
+
       Id = ((Integer)ent.getPrimaryKey()).intValue();
       inputName.setContent(ent.getSchoolName());
       inputAddress.setContent(ent.getSchoolAddress());
@@ -193,8 +207,8 @@ public class SchoolEditor extends Block {
     }
 
     int row = 1;
-    T.add(tFormat.format(iwrb.getLocalizedString("school_area","SchoolArea"),tFormat.TITLE),1,row++);
-    T.add(tFormat.format(iwrb.getLocalizedString("type","Type")),1,row++);
+
+    //T.add(tFormat.format(iwrb.getLocalizedString("type","Type")),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("area","Area")),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("name","Name")),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("address","Address")),1,row++);
@@ -205,10 +219,11 @@ public class SchoolEditor extends Block {
     T.add(tFormat.format(iwrb.getLocalizedString("keycode","Keycode")),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("latitude","Latitude")),1,row++);
     T.add(tFormat.format(iwrb.getLocalizedString("longitude","Longitude")),1,row++);
+    T.add(tFormat.format(iwrb.getLocalizedString("school_area","SchoolArea"),tFormat.TITLE),1,row++);
 
     row = 2;
-    T.add(drpType,3,row++);
-    T.add(drpArea,3,row++);
+    //T.add(drpType,3,row++);
+
     T.add(inputName,3,row++);
     T.add(inputAddress,3,row++);
     T.add(inputZipCode,3,row++);
@@ -218,6 +233,35 @@ public class SchoolEditor extends Block {
     T.add(inputKeyCode,3,row++);
     T.add(inputLAT,3,row++);
     T.add(inputLON,3,row++);
+    T.add(drpArea,3,row++);
+
+
+    Table typeTable = new Table();
+    int row2 = 1;
+    Collection types = getSchoolTypes(iwc);
+    if(types!=null && !types.isEmpty()){
+      java.util.Iterator iter = types.iterator();
+      boolean hasMap = schooltypes!=null;
+      SchoolType type;
+      CheckBox chk = new CheckBox("sch_type_ids");
+      CheckBox tjk;
+      Integer primaryKey;
+      while(iter.hasNext()){
+        type = (SchoolType) iter.next();
+        primaryKey = (Integer) type.getPrimaryKey();
+        tjk = (CheckBox) chk.clone();
+        tjk.setValue(primaryKey.intValue());
+        if(hasMap && schooltypes.containsKey(primaryKey)){
+          tjk.setChecked(true);
+        }
+        typeTable.add(tjk,1,row2);
+        typeTable.add(type.getSchoolTypeName(),2,row2);
+        row2++;
+      }
+
+    }
+
+    T.add(typeTable,1,13);
 
 
     T.add(new SubmitButton(iwrb.getLocalizedImageButton("save","Save"),"sch_save_school","true"),3,14);
@@ -230,6 +274,11 @@ public class SchoolEditor extends Block {
     }
 
     return T;
+  }
+
+  private Map getSchoolRelatedSchoolTypes(IWContext iwc,School school)throws java.rmi.RemoteException{
+    SchoolBusiness sbuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc,SchoolBusiness.class);
+    return sbuiz.getSchoolRelatedSchoolTypes(school);
   }
 
   private Collection getSchoolTypes(IWContext iwc)throws java.rmi.RemoteException{
