@@ -7,7 +7,6 @@ import com.idega.block.media.presentation.SimpleFileChooser;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.inet.pool.a;
 
 /**
  * Description: This is a super class for the different importers of workreports.<br>
