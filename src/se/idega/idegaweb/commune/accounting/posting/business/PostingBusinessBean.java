@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.34 2003/11/17 12:19:59 roar Exp $
+ * $Id: PostingBusinessBean.java,v 1.35 2003/11/17 12:49:53 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,6 +17,7 @@ import java.util.Iterator;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingFieldHome;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
@@ -25,8 +26,17 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingString;
 import se.idega.idegaweb.commune.accounting.posting.data.PostingStringHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
+import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTypeHome;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
+import com.idega.block.school.data.SchoolCategory;
+import com.idega.block.school.data.SchoolType;
+import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -712,6 +722,68 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 		}
 		return ret;
 	}
+	
+	/**
+	 * Does the search in the postings
+	 * @param iwc
+	 * @param category
+	 * @param type
+	 * @param reg
+	 * @param provider
+	 * @param date
+	 * @return the Posting strings as String[]
+	 */
+	public String[] getPostingStrings(IWContext iwc, SchoolCategory category, SchoolType type, Regulation reg, Provider provider, Date date) throws PostingException{
+		
+
+		String ownPosting = null, doublePosting = null;
+		if (reg != null){
+			int regSpecType = new Integer("" + reg.getRegSpecType().getPrimaryKey()).intValue();
+		
+			try{
+				Commune commune = provider.getSchool().getCommune();
+				CommuneBelongingTypeHome home = (CommuneBelongingTypeHome) IDOLookup.getHome(CommuneBelongingType.class);
+				CommuneBelongingType cbt = commune.getIsDefault() ? home.findHomeCommune() : home.findNoHomeCommune();
+							
+				ExportDataMapping categoryPosting = (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).
+					findByPrimaryKeyIDO(category.getPrimaryKey());				
+				//Set the posting strings
+				PostingBusiness postingBusiness = (PostingBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), PostingBusiness.class);
+		
+				PostingParameters parameters;
+				parameters = postingBusiness.getPostingParameter(date, ((Integer) type.getPrimaryKey()).intValue(), regSpecType, provider.getSchool().getManagementTypeId(), ((Integer) cbt.getPrimaryKey()).intValue());
+		
+				ownPosting = parameters.getPostingString();
+				ownPosting = postingBusiness.generateString(ownPosting, provider.getOwnPosting(), date);
+				ownPosting = postingBusiness.generateString(ownPosting, categoryPosting.getAccount(), date);
+				postingBusiness.validateString(ownPosting,date);
+		
+				doublePosting = parameters.getDoublePostingString();
+				doublePosting = postingBusiness.generateString(doublePosting, provider.getDoublePosting(), date);
+				doublePosting = postingBusiness.generateString(doublePosting, categoryPosting.getCounterAccount(), date);
+				postingBusiness.validateString(doublePosting,date);
+			}catch(NullPointerException ex){
+				ex.printStackTrace();
+				throw new PostingException("TODO...", ex.getMessage()); 
+			}catch(RemoteException ex){
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}catch(FinderException ex){			
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}catch(PostingException ex){
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}catch(MissingMandatoryFieldException ex){
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}catch(PostingParametersException ex){
+				ex.printStackTrace();
+				throw new PostingException("", ex.getMessage()); 				
+			}
+		}
+		return new String[] {ownPosting, doublePosting};
+	}	
 
 	
 
@@ -732,5 +804,7 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	protected ActivityTypeHome getActivityTypeHome() throws RemoteException {
 		return (ActivityTypeHome) com.idega.data.IDOLookup.getHome(ActivityType.class);
 	}
+	
+	
 
 }
