@@ -95,6 +95,10 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
 	public boolean getIfDay(IWContext p0, int p1, int p2)throws RemoteException, RemoteException {
 		return true;
 	}
+/*
+	public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException{
+		return getIfDay(iwc, product, timeframes, stamp, false, true);		
+	}*/
 
   public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp, boolean includePast, boolean fixTimeframe) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException {
 			

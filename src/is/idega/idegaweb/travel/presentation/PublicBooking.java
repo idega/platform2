@@ -277,12 +277,12 @@ public class PublicBooking extends Block  {
 //            form.setOnSubmit("this.form."+BookingForm.sAction+".value = \""+BookingForm.parameterSaveBooking+"\"");
 //            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
         }else if (action.equals(BookingForm.parameterSaveBooking)) {
-            form = bf.getFormMaintainingAllParameters(true, false);
+            form = bf.getFormMaintainingAllParameters(iwc, true, false);
             form.maintainParameter(this.parameterProductId);
 //            form.addParameter( BookingForm.sAction, this.parameterBookingVerified);
             form.add(bf.getVerifyBookingTable(iwc, product));
         }else if (action.equals(this.parameterBookingVerified)) {
-            form = bf.getFormMaintainingAllParameters(true, false);
+            form = bf.getFormMaintainingAllParameters(iwc, true, false);
             form.maintainParameter(this.parameterProductId);
             form.add(doBooking(iwc));
         }

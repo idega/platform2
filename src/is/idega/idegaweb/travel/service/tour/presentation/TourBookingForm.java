@@ -376,10 +376,10 @@ public class TourBookingForm extends BookingForm{
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
 
-                  pPriceText = new ResultOutput("thePrice"+i,"0");
+                  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
                     pPriceText.setSize(8);
 
-                  pPriceMany = new TextInput("priceCategory"+i ,"0");
+                  pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
                     pPriceMany.setSize(5);
 
                   if (i == pricesLength) {
@@ -397,7 +397,7 @@ public class TourBookingForm extends BookingForm{
                     ++row;
                   }
                   if (i >= pricesLength) {
-                    pPriceMany.setName("miscPriceCategory"+(i-pricesLength));
+                    pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
                   }
 
                   if (_booking != null) {
@@ -412,7 +412,7 @@ public class TourBookingForm extends BookingForm{
                           totalCount += currentCount;
                           totalSum += currentSum;
                           pPriceMany.setContent(Integer.toString(currentCount));
-                          pPriceText = new ResultOutput("thePrice"+i,Integer.toString(currentSum));
+                          pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
                             pPriceText.setSize(8);
                         }
                       }
@@ -928,10 +928,10 @@ public class TourBookingForm extends BookingForm{
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
 
-                  pPriceText = new ResultOutput("thePrice"+i,"0");
+                  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
                     pPriceText.setSize(8);
 
-                  pPriceMany = new TextInput("priceCategory"+i ,"0");
+                  pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
                     pPriceMany.setSize(5);
 
                   if (i == pricesLength) {
@@ -951,7 +951,7 @@ public class TourBookingForm extends BookingForm{
                     ++row;
                   }
                   if (i >= pricesLength) {
-                    pPriceMany.setName("miscPriceCategory"+(i-pricesLength));
+                    pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
                   }
 
                   if (_booking != null) {
@@ -965,7 +965,7 @@ public class TourBookingForm extends BookingForm{
                           totalCount += currentCount;
                           totalSum += currentSum;
                           pPriceMany.setContent(Integer.toString(currentCount));
-                          pPriceText = new ResultOutput("thePrice"+i,Integer.toString(currentSum));
+                          pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
                             pPriceText.setSize(8);
                         }
                       }
@@ -1275,10 +1275,10 @@ public class TourBookingForm extends BookingForm{
     return form;
   }
 
- public Form getFormMaintainingAllParameters() {
-    return getFormMaintainingAllParameters(true);
+ public Form getFormMaintainingAllParameters(IWContext iwc) {
+    return getFormMaintainingAllParameters(iwc, true);
  }
- public Form getFormMaintainingAllParameters(boolean withBookingAction) {
+ public Form getFormMaintainingAllParameters(IWContext iwc, boolean withBookingAction) {
     Form form = new Form();
       form.maintainParameter("surname");
       form.maintainParameter("lastname");
@@ -1308,14 +1308,23 @@ public class TourBookingForm extends BookingForm{
       if (withBookingAction) {
         form.maintainParameter(this.BookingAction);
       }
+      
+			String sOnline = iwc.getParameter(this.parameterOnlineBooking);
+			boolean onlineOnly = false;
+			if (sOnline != null && sOnline.equals("true")) {
+				onlineOnly = true;
+			}else if (sOnline != null && sOnline.equals("false")) {
+				onlineOnly = false;
+			}
 
-      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, false);
+
+      ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(this._productId, onlineOnly);
       for (int i = 0; i < pPrices.length; i++) {
-        form.maintainParameter("priceCategory"+i);
+        form.maintainParameter("priceCategory"+pPrices[i].getID());
       }
-      ProductPrice[] misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(this._productId, -1, -1, false);
+      ProductPrice[] misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(this._productId, -1, -1, onlineOnly);
       for (int i = 0; i < misc.length; i++) {
-        form.maintainParameter("miscPriceCategory"+i);
+        form.maintainParameter("miscPriceCategory"+pPrices[i].getID());
       }
       form.maintainParameter(this.parameterFromDate);
 //      form.maintainParameter(this.parameterManyDays);
@@ -1369,7 +1378,7 @@ public class TourBookingForm extends BookingForm{
     int current = 0;
     for (int i = 0; i < pPrices.length; i++) {
       try {
-        current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+        current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
       }catch (NumberFormatException n) {
         current = 0;
       }
@@ -1447,25 +1456,22 @@ public class TourBookingForm extends BookingForm{
 
 
   }
-
+/*
   public Form getErrorForm(IWContext iwc, int error) {
     switch (error) {
       case TourBookingForm.errorTooMany :
-        return getTooManyForm(iwc);
+        return super.getTooManyForm(iwc);
       default:
         return null;
     }
 
-  }
+  }*/
 
 
-
+/*
   private Form getTooManyForm(IWContext iwc) {
-    /**
-     * @todo gera fínna (þeas meira fínt)
-     */
 
-    Form form = getFormMaintainingAllParameters(false);
+    Form form = getFormMaintainingAllParameters(iwc, false);
       Table table = new Table();
         form.add(table);
       int row = 1;
@@ -1498,7 +1504,7 @@ public class TourBookingForm extends BookingForm{
       }
 
     return form;
-  }
+  }*/
 
 
   /**
@@ -1642,7 +1648,7 @@ public class TourBookingForm extends BookingForm{
         int[] manys = new int[pPrices.length];
         int[] manyMiscs = new int[misc.length];
         for (int i = 0; i < manys.length; i++) {
-          many = iwc.getParameter("priceCategory"+i);
+          many = iwc.getParameter("priceCategory"+pPrices[i].getID());
           if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
             manys[i] = Integer.parseInt(many);
             iMany += Integer.parseInt(many);
@@ -1651,7 +1657,7 @@ public class TourBookingForm extends BookingForm{
           }
         }
         for (int i = 0; i < manyMiscs.length; i++) {
-          many = iwc.getParameter("miscPriceCategory"+i);
+          many = iwc.getParameter("miscPriceCategory"+misc[i].getID());
           if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
             manyMiscs[i] = Integer.parseInt(many);
           }else {
@@ -1923,7 +1929,7 @@ public class TourBookingForm extends BookingForm{
       return -1;
     }
   }
-
+/*
 public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	throws RemoteException, SQLException {
 	  String depAddr  = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
 	 int productId = product.getID();
@@ -1965,7 +1971,7 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 	
 //	}
 	return price;
-}
+}*/
 
   public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
     if (_reseller != null) {
@@ -2195,9 +2201,9 @@ public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	th
 
         try {
           if (i >= pricesLength) {
-            current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+(i-pricesLength)));
+            current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+pPrices[i].getID()));
           }else {
-            current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+            current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
             total += current;
           }
         }catch (NumberFormatException n) {

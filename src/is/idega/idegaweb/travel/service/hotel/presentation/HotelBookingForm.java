@@ -375,10 +375,10 @@ public class HotelBookingForm extends BookingForm {
                 pPriceCatNameText = (Text) theText.clone();
                   pPriceCatNameText.setText(category.getName());
 
-                pPriceText = new ResultOutput("thePrice"+i,"0");
+                pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
                   pPriceText.setSize(8);
 
-                pPriceMany = new TextInput("priceCategory"+i ,"0");
+                pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
                   pPriceMany.setSize(5);
 
                 if (i == pricesLength) {
@@ -396,7 +396,7 @@ public class HotelBookingForm extends BookingForm {
                   ++row;
                 }
                 if (i >= pricesLength) {
-                  pPriceMany.setName("miscPriceCategory"+(i-pricesLength));
+                  pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
                 }
 
                 if (_booking != null) {
@@ -427,7 +427,7 @@ public class HotelBookingForm extends BookingForm {
                         totalCount += currentCount;
                         totalSum += currentSum;
                         pPriceMany.setContent(Integer.toString(currentCount));
-                        pPriceText = new ResultOutput("thePrice"+i,Integer.toString(currentSum));
+                        pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
                           pPriceText.setSize(8);
                       }
                     }
@@ -916,10 +916,10 @@ public class HotelBookingForm extends BookingForm {
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
 
-                  pPriceText = new ResultOutput("thePrice"+i,"0");
+                  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
                     pPriceText.setSize(8);
 
-                  pPriceMany = new TextInput("priceCategory"+i ,"0");
+                  pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
                     pPriceMany.setSize(5);
 
                   if (i == pricesLength) {
@@ -939,7 +939,7 @@ public class HotelBookingForm extends BookingForm {
                     ++row;
                   }
                   if (i >= pricesLength) {
-                    pPriceMany.setName("miscPriceCategory"+(i-pricesLength));
+                    pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
                   }
 
                   if (_booking != null) {
@@ -953,7 +953,7 @@ public class HotelBookingForm extends BookingForm {
                           totalCount += currentCount;
                           totalSum += currentSum;
                           pPriceMany.setContent(Integer.toString(currentCount));
-                          pPriceText = new ResultOutput("thePrice"+i,Integer.toString(currentSum));
+                          pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
                             pPriceText.setSize(8);
                         }
                       }
@@ -1464,9 +1464,9 @@ public class HotelBookingForm extends BookingForm {
 
         try {
           if (i >= pricesLength) {
-            current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+(i-pricesLength)));
+            current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+pPrices[i].getID()));
           }else {
-            current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+            current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
             total += current;
           }
         }catch (NumberFormatException n) {
@@ -1476,7 +1476,7 @@ public class HotelBookingForm extends BookingForm {
         try {
           if (i == 0)
           currency = ((com.idega.block.trade.data.CurrencyHome)com.idega.data.IDOLookup.getHomeLegacy(Currency.class)).findByPrimaryKeyLegacy(pPrices[i].getCurrencyId());
-          price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), timeframeId, -1);
+	      	price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), timeframeId, -1);
         }catch (SQLException sql) {
         }catch (NumberFormatException n) {}
 
@@ -1618,7 +1618,7 @@ public class HotelBookingForm extends BookingForm {
     int current = 0;
     for (int i = 0; i < pPrices.length; i++) {
       try {
-        current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+        current = Integer.parseInt(iwc.getParameter("priceCategory"+pPrices[i].getID()));
       }catch (NumberFormatException n) {
         current = 0;
       }
