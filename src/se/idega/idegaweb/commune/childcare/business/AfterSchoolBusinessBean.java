@@ -185,12 +185,14 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Af
 
 		try {
 			trans.begin();
-			CaseStatus first = getCaseStatus("PREL");
-			CaseStatus other = getCaseStatus(super.getCaseStatusInactive().getStatus());
+			CaseStatus first = super.getCaseStatusPreliminary();
+			CaseStatus other = super.getCaseStatusInactive();
 			AfterSchoolChoice choice = null;
 			for (int i = 0; i < caseCount; i++) {
-				choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, stamp.getTimestamp(), i == 0 ? first : other, choice, placementDate, season);
-				returnList.add(choice);
+				if (providerIDs[i] != null) {
+					choice = createAfterSchoolChoice(user, childId, providerIDs[i], new Integer(i + 1), message, stamp.getTimestamp(), i == 0 ? first : other, choice, placementDate, season);
+					returnList.add(choice);
+				}
 			}
 			trans.commit();
 
