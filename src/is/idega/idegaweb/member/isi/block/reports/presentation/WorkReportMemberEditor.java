@@ -49,6 +49,7 @@ import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.Parameter;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 
@@ -346,6 +347,13 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     browser.setLeadingEntity(WorkReportDivisionBoard.class);
     browser.setAcceptUserSettingsShowUserSettingsButton(false,false);
     browser.setUseEventSystem(false);
+    // set parameters
+    List parameters = getParametersToMaintain();
+    Iterator para = parameters.iterator();
+    while (para.hasNext())  {
+      Parameter parameter = (Parameter) para.next();
+      browser.addMandatoryParameter(parameter);
+    }
     if( entities!=null && !entities.isEmpty()) browser.setDefaultNumberOfRows(entities.size());
     // switch off the internal form of the browser
     browser.setUseExternalForm(true);
