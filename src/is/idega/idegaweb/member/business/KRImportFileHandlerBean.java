@@ -350,21 +350,31 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements KRImportF
 	    Group memberGroup;
 		try {
 			memberGroup = groupBiz.getGroupByGroupID(group);
+			memberGroup.addGroup(user);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	    
-	    memberGroup.addGroup(user);
+	    
     }
     
     //user.store();
 
     /**
-    * Main group relation
-    */
-	//adda i retta gruppu
-	
+    * setja i idkenndur lika
+    */	
+    Group memberGroup;
+     
+    try {
+			memberGroup = groupBiz.getGroupByGroupID(29);//idkenndur group idid
+			memberGroup.addGroup(user);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+	}
+		
     //nackaGroup.addUser(user);
 
     //finished with this user
