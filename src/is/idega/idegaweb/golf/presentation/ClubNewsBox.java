@@ -24,7 +24,7 @@ import com.idega.jmodule.news.data.NewsCategoryAttributes;
 
 public class ClubNewsBox extends Block {
 
-  IWResourceBundle iwrb;
+
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
   public ClubNewsBox() {
@@ -36,12 +36,12 @@ public class ClubNewsBox extends Block {
 
   public void main(IWContext iwc)throws Exception{
       setCacheable("NewsBox",3600000);//60*60*1000 1 hour
-      iwrb = getBundle(iwc).getResourceBundle(iwc);
-      add(clubNews());
+      add(clubNews(iwc));
   }
 
-  protected HeaderTable clubNews() throws Exception{
+  protected HeaderTable clubNews(IWContext iwc) throws Exception{
 
+    IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
     HeaderTable headerTable = new HeaderTable();
     headerTable.setWidth(148);
     headerTable.setBorderColor("#8ab490");

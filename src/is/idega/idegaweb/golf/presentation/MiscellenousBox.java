@@ -20,7 +20,6 @@ import com.idega.jmodule.boxoffice.presentation.BoxReader;
 
 public class MiscellenousBox extends Block {
 
-  IWResourceBundle iwrb;
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
   public MiscellenousBox(){
@@ -46,13 +45,13 @@ public class MiscellenousBox extends Block {
 
   public void main(IWContext iwc)throws Exception{
       setCacheable("Miscbox",86400000);//24 hours
-      iwrb = getBundle(iwc).getResourceBundle(iwc);
+
       add(getLinks(iwc));
   }
 
 
   public BoxReader getLinks(IWContext iwc){
-
+          IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
           BoxReader box_office= new BoxReader("1",isAdminForGolf(iwc),3);
                   box_office.setBoxBorder(0);
                   box_office.setInnerBoxBorder(0);

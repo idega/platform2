@@ -22,7 +22,7 @@ import com.idega.jmodule.forum.data.ForumThread;
 
 public class ForumsBox extends Block {
 
-  IWResourceBundle iwrb;
+
   private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
 
   public ForumsBox() {
@@ -34,11 +34,11 @@ public class ForumsBox extends Block {
 
   public void main(IWContext iwc)throws Exception{
       setCacheable("GolfForums",3600000);//60*60*1000 1 hour
-      iwrb = getBundle(iwc).getResourceBundle(iwc);
-      add(getChat());
+      add(getChat(iwc));
   }
 
-  protected HeaderTable getChat() throws Exception {
+  protected HeaderTable getChat(IWContext iwc) throws Exception {
+    IWResourceBundle iwrb = getBundle(iwc).getResourceBundle(iwc);
     HeaderTable table = new HeaderTable();
     table.setBorderColor("#8ab490");
     table.setHeadlineSize(1);
