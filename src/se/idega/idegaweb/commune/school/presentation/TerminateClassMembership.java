@@ -36,10 +36,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2004/03/29 09:17:35 $ by $Author: staffan $
+ * Last modified: $Date: 2004/04/06 10:12:26 $ by $Author: malin $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -67,6 +67,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	private static final String MEMBERSHIPOF_DEFAULT = "Placeringen av ";
 	private static final String MEMBERSHIPOF_KEY = PREFIX + "membershipOf";
 	private static final String ONLY_UNENDED_PLACEMENTS_SEARCHABLE_KEY = PREFIX + "only_unended_placements_searchable";
+	private static final String ONLY_MOVING_TO_OTHER_MUNICIP_KEY = PREFIX + "only_moving_to_other_municip";
 	private static final String PROVIDERNOTFOUND_DEFAULT
 		= "Anordnare ej funnen i databas";
 	private static final String PROVIDERNOTFOUND_KEY
@@ -82,7 +83,7 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 	private static final String TERMINATEMEMBERSHIP_DEFAULT
 		= "Avsluta placering";
 	private static final String TERMINATEMEMBERSHIP_KEY
-		= PREFIX + "terminateMembership";
+		= PREFIX + "terminateMembership"; 
 	private static final String TERMINATIONDATE_DEFAULT = "Avslutningsdatum";
 	private static final String TERMINATIONDATE_KEY
 		= PREFIX + "terminationDate";
@@ -305,9 +306,14 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
 		searchForm.add (searcher);
 		table.add (searchForm, 1, 1);
 		if (null == foundUser) {
-			final String message = localize (ONLY_UNENDED_PLACEMENTS_SEARCHABLE_KEY,
+			final String message1 = localize (ONLY_MOVING_TO_OTHER_MUNICIP_KEY,
+																			ONLY_MOVING_TO_OTHER_MUNICIP_KEY);
+			final String message2 = localize (ONLY_UNENDED_PLACEMENTS_SEARCHABLE_KEY,
 																			 ONLY_UNENDED_PLACEMENTS_SEARCHABLE_KEY);
-			table.add (getSmallText (message), 1, 2);
+			
+			
+			table.add (getSmallText ("- " + message1), 1, 2);
+			table.add (getSmallText ("- " + message2), 1, 3);
 		} else {
 			// exactly one user found - display user and termination form
 			final Table terminateTable = new Table ();
