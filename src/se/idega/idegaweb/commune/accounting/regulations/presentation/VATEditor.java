@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.20 2003/09/08 15:48:04 anders Exp $
+ * $Id: VATEditor.java,v 1.21 2003/09/09 09:02:47 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -37,10 +37,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/09/08 15:48:04 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/09 09:02:47 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -414,6 +414,10 @@ public class VATEditor extends AccountingBlock {
 		list.setLocalizedHeader(KEY_EDIT, "Redigera", 6);
 		list.setLocalizedHeader(KEY_DELETE, "Ta bort", 7);
 
+		list.setColumnWidth(2, "27%");
+		list.setColumnWidth(6, "60");
+		list.setColumnWidth(7, "60");
+		
 		if (vatRegulations != null) {
 			Iterator iter = vatRegulations.iterator();
 			while (iter.hasNext()) {

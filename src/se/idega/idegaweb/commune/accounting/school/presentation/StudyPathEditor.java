@@ -1,5 +1,5 @@
 /*
- * $Id: StudyPathEditor.java,v 1.2 2003/09/09 07:37:57 laddi Exp $
+ * $Id: StudyPathEditor.java,v 1.3 2003/09/09 09:01:35 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -33,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.school.business.StudyPathException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/09 07:37:57 $ by $Author: laddi $
+ * Last modified: $Date: 2003/09/09 09:01:35 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class StudyPathEditor extends AccountingBlock {
 
@@ -270,6 +270,10 @@ public class StudyPathEditor extends AccountingBlock {
 		list.setLocalizedHeader(KEY_EDIT, "Redigera", 3);
 		list.setLocalizedHeader(KEY_DELETE, "Ta bort", 4);
 
+		list.setColumnWidth(2, "66%");
+		list.setColumnWidth(3, "60");
+		list.setColumnWidth(4, "60");
+
 		if (studyPaths != null) {
 			Iterator iter = studyPaths.iterator();
 			while (iter.hasNext()) {
@@ -327,7 +331,7 @@ public class StudyPathEditor extends AccountingBlock {
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
 		table.add(getLocalizedLabel(KEY_STUDY_PATH_CODE, "Kod"), 1, 1);
-		table.add(getTextInput(PARAMETER_STUDY_PATH_CODE, studyPathCode, 40), 2, 1);
+		table.add(getTextInput(PARAMETER_STUDY_PATH_CODE, studyPathCode, 50), 2, 1);
 		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Beskrivning"), 1, 2);
 		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 200), 2, 2);
 
