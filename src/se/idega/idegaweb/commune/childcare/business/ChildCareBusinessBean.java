@@ -10,13 +10,22 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import com.idega.block.process.business.CaseBusinessBean;
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.School;
 import com.idega.data.IDOLookup;
 import com.idega.transaction.IdegaTransactionManager;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
+import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+import se.idega.idegaweb.commune.childcare.check.data.Check;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplicationHome;
+import se.idega.idegaweb.commune.message.business.MessageBusiness;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
@@ -29,14 +38,6 @@ import javax.transaction.TransactionManager;
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
 	public boolean insertApplications(User user, int type, int provider[], String date[], int checkId, int childId, boolean agree) {
-//		System.out.println("user = " + user);
-//		System.out.println("type = " + type);
-//		System.out.println("provider = " + provider);
-//		System.out.println("date = " + date);
-//		System.out.println("checkId = " + checkId);
-//		System.out.println("childId = " + childId);
-//		System.out.println("agree = " + agree);
-
 		TransactionManager t = IdegaTransactionManager.getInstance();
 
 		try {
@@ -74,6 +75,31 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			/**
 			 * @todo Bæta við að breyta stöðu á tékkanum sem var notaður
 			 */
+			
+			CheckBusiness checkBiz = (CheckBusiness)getServiceInstance(CheckBusiness.class);
+			Check check = checkBiz.getCheck(checkId);
+//			check.setStatus(this.getcases)
+//			check.store();
+
+			SchoolBusiness schoolBiz = (SchoolBusiness)getServiceInstance(SchoolBusiness.class);
+			School prov = schoolBiz.getSchool(new Integer(provider[0]));
+			UserBusiness userBiz = (UserBusiness)getServiceInstance(UserBusiness.class);
+System.out.println("Getting users for group " + prov.getHeadmasterGroupId());
+			Collection users = userBiz.getUsersInGroup(prov.getHeadmasterGroupId());
+	
+			if (users != null) {
+				System.out.println("Users not null");
+				MessageBusiness messageBiz = (MessageBusiness)getServiceInstance(MessageBusiness.class);
+				Iterator it = users.iterator();
+				while (it.hasNext()) {
+					User providerUser = (User)it.next();
+					System.out.println("Sending message to user " + providerUser.getName());
+					messageBiz.createUserMessage(providerUser,"New application","You have new mail");
+				}				
+			}
+			else 
+				System.out.println("Got no users for group " + prov.getHeadmasterGroupId());
+			
 			t.commit();
 		}
 		catch(Exception e) {
