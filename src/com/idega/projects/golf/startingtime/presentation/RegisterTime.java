@@ -46,8 +46,9 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
   private DropdownMenu unionDropdown;
   private Form myForm = null;
   private Table frameTable;
+  private int maxPerMemberPerDay = 1;
   private int maxCountInGroups = 4;
-  private int maxPerOwnerPerDay = 8;
+  private int maxPerOwnerPerDay = 4;
 
   private idegaTimestamp currentDay;
   private String currentField;
@@ -55,6 +56,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
   private String currentMember;
   private StartingtimeFieldConfig fieldInfo;
   private Text templText;
+  private static String closeParameterString = "window_close";
 
 
   public RegisterTime() {
@@ -237,7 +239,7 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
 
               myTable.mergeCells(4, i+2, 6, i+2);
               myTable.add(insertButton(new Image(btnSkraUrl),"", modinfo.getRequestURI(), "post", myForm), 4, i+2);
-              myTable.add(new CloseButton(new Image(btnCancelUrl)), 4, i+2);
+              myTable.add(new SubmitButton(new Image(btnCancelUrl),closeParameterString, "true"), 4, i+2);
               myTable.setAlignment(4, i+2, "right");
               frameTable.empty();
               frameTable.add(myTable);
@@ -265,7 +267,8 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
           int numPlayers = sentSecureNums.length;
           boolean ones = false;
           boolean fullGroup = false;
-          boolean fullQuota = false;
+          boolean fullOwnerQuota = false;
+          boolean fullMemberQuota = false;
 
           if(sentSecureNums != null){
             for (int j = 0; j < sentSecureNums.length; j++) {
@@ -291,8 +294,11 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
                         fullGroup = true;
                       }else if(business.countOwnersEntries(Integer.parseInt(this.currentMember),this.currentField,this.currentDay) >= maxPerOwnerPerDay ){
                         illegal.add(k++,new Integer(j));
-                        fullQuota = true;
-                      }else /*if(business.countMembersEntries){}else*/{
+                        fullOwnerQuota = true;
+                      }else if(business.countMembersEntries(tempMemb.getID(),this.currentField,this.currentDay) >= maxPerMemberPerDay){
+                        illegal.add(k++,new Integer(j));
+                        fullMemberQuota = true;
+                      }else{
                         business.setStartingtime(Integer.parseInt(lines[j]), this.currentDay, this.currentField, Integer.toString(tempMemb.getID()),this.currentMember, tempMemb.getName(), Float.toString(tempMemb.getHandicap()), GolfCacher.getCachedUnion(tempMemb.getMainUnionID()).getAbbrevation(), playerCard[j], playerCardNo[j]);
                         ones = true;
                       }
@@ -351,17 +357,27 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
                   frameTable.add(Error);
                 }
 
-                if(fullQuota){
-                  Text Quota = (Text)templText.clone();
-                  Quota.setText("Hefur ekki réttindi til að skrá fleiri á þessum velli í dag");
+                if(fullOwnerQuota){
+                  Text ownerQuota = (Text)templText.clone();
+                  ownerQuota.setText("Hefur ekki réttindi til að skrá fleiri á þessum velli í dag");
                   frameTable.add(Text.getBreak());
-                  frameTable.add(Quota);
+                  frameTable.add(ownerQuota);
 
                   Text comment = (Text)templText.clone();
-                  comment.setText("Hafðu samband við klúbbinn ef þú vilt skrá fleiri");
+                  comment.setText("Hafið samband við klúbbinn ef skrá á fleiri");
                   frameTable.add(Text.getBreak());
                   frameTable.add(comment);
-                } else {
+                } else if(fullMemberQuota){
+                  Text memberQuota = (Text)templText.clone();
+                  memberQuota.setText("Ekki má skrá sama mann oftar en einu sinni á dag í netskráningu");
+                  frameTable.add(Text.getBreak());
+                  frameTable.add(memberQuota);
+
+                  Text comment = (Text)templText.clone();
+                  comment.setText("Hafið samband við klúbbinn til að klára þessa skráningu");
+                  frameTable.add(Text.getBreak());
+                  frameTable.add(comment);
+                }else{
                   Text comment = (Text)templText.clone();
                   comment.setText("Reynið aftur eða hafið samband við klúbbinn");
                   frameTable.add(Text.getBreak());
@@ -498,65 +514,73 @@ public class RegisterTime extends JmoduleWindowModuleWindow {
 
 public void main(ModuleInfo modinfo) throws Exception {
     super.main(modinfo);
-    String date = modinfo.getSession().getAttribute("date").toString();
-    //String field_id = modinfo.getSession().getAttribute("field_id").toString();
-    currentField = modinfo.getSession().getAttribute("field_id").toString();
-    currentUnion = modinfo.getSession().getAttribute("union_id").toString();
 
 
-    boolean keepOn = true;
-
-    try{
-      currentMember = Integer.toString(com.idega.projects.golf.login.business.LoginBusiness.getMember(modinfo).getID());
-      currentDay = new idegaTimestamp(date);
-    }catch(Exception e){
-      keepOn = false;
-      this.noPermission();
-    }
-
-
-
-//    if(modinfo.getParameter(saveParameterString+".x") != null || modinfo.getParameter(saveParameterString) != null){
-//      this.handleFormInfo(modinfo);
-//    }
-
-    if(keepOn){
-      TournamentDay tempTD = new TournamentDay();
-//      List Tournaments = EntityFinder.findAll(new Tournament(),"select tournament.* from tournament,tournament_day where tournament_day.tournament_id=tournament.tournament_id and tournament_day.day_date = '"+currentDay.toSQLDateString()+"' and tournament.field_id = " + currentField );
-      List TournamentRounds = EntityFinder.findAll(new TournamentRound(),"select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '"+currentDay.toSQLDateString()+" 00:00' and tournament_round.round_date <= '"+currentDay.toSQLDateString()+" 23:59' and tournament.field_id = " + currentField );
-
-      if(TournamentRounds != null ){
-          List Tournaments = new Vector();
-          for (int i = 0; i < TournamentRounds.size(); i++) {
-            Tournaments.add(i,((TournamentRound)TournamentRounds.get(i)).getTournament());
-          }
-
-          fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
-          lineUpTournamentDay(modinfo, Tournaments );
-      }else{
-        myForm.maintainParameter("secure_num");
-        myForm.maintainParameter("line");
-        int skraMargaInt = 0;
-        String skraMarga = modinfo.getParameter("skraMarga");
-
-        int line = Integer.parseInt( modinfo.getParameter("line"));
-        int check = business.countEntriesInGroup(line, currentField, currentDay);
-
-        if( check > 3){
-          setErroResponse(myForm, false);
-        }
-        else{
-          if( modinfo.getParameter("secure_num") != null){
-            handleFormInfo(modinfo);
-          }else{
-            fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
-            skraMargaInt = Integer.parseInt(skraMarga);
-            lineUpTable(skraMargaInt, modinfo);
-          }
-        }
-      }
+    if(modinfo.getParameter(closeParameterString+".x") != null || modinfo.getParameter(closeParameterString) != null){
+      this.close();
     }else{
-      this.noPermission();
+
+
+      String date = modinfo.getSession().getAttribute("date").toString();
+      //String field_id = modinfo.getSession().getAttribute("field_id").toString();
+      currentField = modinfo.getSession().getAttribute("field_id").toString();
+      currentUnion = modinfo.getSession().getAttribute("union_id").toString();
+
+
+      boolean keepOn = true;
+
+      try{
+        currentMember = Integer.toString(com.idega.projects.golf.login.business.LoginBusiness.getMember(modinfo).getID());
+        currentDay = new idegaTimestamp(date);
+      }catch(Exception e){
+        keepOn = false;
+        this.noPermission();
+      }
+
+
+
+  //    if(modinfo.getParameter(saveParameterString+".x") != null || modinfo.getParameter(saveParameterString) != null){
+  //      this.handleFormInfo(modinfo);
+  //    }
+
+      if(keepOn){
+        TournamentDay tempTD = new TournamentDay();
+  //      List Tournaments = EntityFinder.findAll(new Tournament(),"select tournament.* from tournament,tournament_day where tournament_day.tournament_id=tournament.tournament_id and tournament_day.day_date = '"+currentDay.toSQLDateString()+"' and tournament.field_id = " + currentField );
+        List TournamentRounds = EntityFinder.findAll(new TournamentRound(),"select tournament_round.* from tournament,tournament_round where tournament_round.tournament_id=tournament.tournament_id and tournament_round.round_date >= '"+currentDay.toSQLDateString()+" 00:00' and tournament_round.round_date <= '"+currentDay.toSQLDateString()+" 23:59' and tournament.field_id = " + currentField );
+
+        if(TournamentRounds != null ){
+            List Tournaments = new Vector();
+            for (int i = 0; i < TournamentRounds.size(); i++) {
+              Tournaments.add(i,((TournamentRound)TournamentRounds.get(i)).getTournament());
+            }
+
+            fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
+            lineUpTournamentDay(modinfo, Tournaments );
+        }else{
+          myForm.maintainParameter("secure_num");
+          myForm.maintainParameter("line");
+          int skraMargaInt = 0;
+          String skraMarga = modinfo.getParameter("skraMarga");
+
+          int line = Integer.parseInt( modinfo.getParameter("line"));
+          int check = business.countEntriesInGroup(line, currentField, currentDay);
+
+          if( check > 3){
+            setErroResponse(myForm, false);
+          }
+          else{
+            if( modinfo.getParameter("secure_num") != null){
+              handleFormInfo(modinfo);
+            }else{
+              fieldInfo = business.getFieldConfig( Integer.parseInt(currentField) , currentDay );
+              skraMargaInt = Integer.parseInt(skraMarga);
+              lineUpTable(skraMargaInt, modinfo);
+            }
+          }
+        }
+      }else{
+        this.noPermission();
+      }
     }
   } // method main() ends
 

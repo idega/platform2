@@ -177,6 +177,10 @@ public class StartService{
     return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE owner_id = '" + owner_id + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toString() + "'");
   }
 
+  public int countMembersEntries( int member_id, String field_id, idegaTimestamp date )throws SQLException{
+    return this.startTime.getNumberOfRecords("SELECT count(*) FROM " + startTime.getEntityName() + " WHERE member_id = '" + member_id + "' AND field_id = '" + field_id + "' AND startingtime_date = '" + date.toString() + "'");
+  }
+
   public Startingtime getStartingtime(int member_id, idegaTimestamp date )throws SQLException{
     GenericEntity[] time = this.startTime.findAllByColumn("member_id",Integer.toString(member_id),"startingtime_date",date.toString());
     if(time != null && time.length > 0){
