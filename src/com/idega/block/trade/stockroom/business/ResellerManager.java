@@ -10,7 +10,7 @@ import com.idega.core.data.*;
 import com.idega.util.CypherText;
 import com.idega.data.SimpleQuerier;
 
-import is.idega.travel.data.Contract;
+import is.idega.idegaweb.travel.data.Contract;
 
 /**
  * Title:        idegaWeb TravelBooking
