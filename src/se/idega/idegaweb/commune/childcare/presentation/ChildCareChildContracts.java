@@ -9,6 +9,7 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClass;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
@@ -117,6 +118,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			table.setCellpaddingRight(table.getColumns(), row, 12);
 		}
 		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
+		table.add(getLocalizedSmallHeader("child_care.group","Group"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.created","Created"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.terminated","Terminated"), column++, row);
@@ -124,6 +126,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		
 		ChildCareContract contract;
 		School provider;
+		SchoolClass group;
 		IWTimestamp created;
 		IWTimestamp validFrom;
 		IWTimestamp terminated = null;
@@ -149,6 +152,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			contract = (ChildCareContract) iter.next();
 			provider = contract.getApplication().getProvider();
 			created = new IWTimestamp(contract.getCreatedDate());
+			group = contract.getSchoolClassMember().getSchoolClass();
 			if (contract.getValidFromDate() != null)
 				validFrom = new IWTimestamp(contract.getValidFromDate());
 			else
@@ -192,6 +196,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			}
 	
 			table.add(getText(provider.getSchoolName(), isActive), column++, row);
+			table.add(getText(group.getName(), isActive), column++, row);
 			table.add(getText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
 			if (validFrom != null)
 				table.add(getText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isActive), column++, row);
