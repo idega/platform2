@@ -70,8 +70,23 @@ public class GroupApplicationTab extends UserTab {
   }
   
   public void initFieldContents() {
-   
+  	//GroupApplicationBusiness appBiz = getGroupApplicationBusiness();
+  	
+  	//getuserbusiness
+  	//getgroupbusiness
+  	//na i userinn
+  	//find fall til ad finna applications
+  	//find fall til ad finna alla hopa undir parenti umsoknarhopsins
 
+	//birta status applicationsins
+	//hopavalid
+	//user commentid
+	//admin commentid
+	
+  	
+  	//appBiz.getGroupApplicationHome().findAllApplications();//by user
+  	
+   
     this.empty();
     
     frameTable = new Table(1,1);
@@ -93,8 +108,8 @@ public class GroupApplicationTab extends UserTab {
   public void lineUpFields() {
   }
   
-	private GroupApplicationBusiness getGroupApplicationBusiness(IWApplicationContext iwac) throws RemoteException {
-		return (GroupApplicationBusiness) IBOLookup.getServiceInstance(iwac, GroupApplicationBusiness.class);	
+	private GroupApplicationBusiness getGroupApplicationBusiness() throws RemoteException {
+		return (GroupApplicationBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), GroupApplicationBusiness.class);	
 	}
 	
 	/**
