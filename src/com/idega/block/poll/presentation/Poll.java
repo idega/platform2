@@ -139,7 +139,9 @@ private int _layout = RADIO_BUTTON_VIEW;
   }
 
   private Link getAdminPart(int pollID,boolean newObjInst,boolean newWithAttribute) {
-    Link adminLink = new Link(_iwb.getImage("shared/edit.gif"));
+    Image editImage = _iwrb.getLocalizedImageButton("edit","Edit");
+    //Link adminLink = new Link(_iwb.getImage("shared/edit.gif"));
+    Link adminLink = new Link(editImage);
       adminLink.setWindowToOpen(PollAdminWindow.class,this.getICObjectInstanceID());
       adminLink.addParameter(PollAdminWindow.prmID,pollID);
       if(newObjInst)
@@ -269,7 +271,8 @@ private int _layout = RADIO_BUTTON_VIEW;
 
   private Table getLinkView(IWContext iwc,LocalizedText locText,PollQuestion pollQuestion) {
     setStyles();
-    Image olderPollsImage = _iwrb.getImage("older_polls.gif");
+    //Image olderPollsImage = _iwrb.getImage("older_polls.gif");
+    Image olderPollsImage = _iwrb.getLocalizedImageButton("older_polls","Older polls");
 
     Table pollTable = new Table();
       pollTable.setCellpadding(3);
