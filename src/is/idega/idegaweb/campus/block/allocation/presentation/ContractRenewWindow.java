@@ -1,36 +1,41 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
 
-import is.idega.idegaweb.campus.block.allocation.business.*;
-import is.idega.idegaweb.campus.presentation.Edit;
-import is.idega.idegaweb.campus.block.allocation.data.*;
+import is.idega.idegaweb.campus.block.allocation.business.ContractBusiness;
+import is.idega.idegaweb.campus.block.allocation.business.ContractFinder;
+import is.idega.idegaweb.campus.block.allocation.data.Contract;
+import is.idega.idegaweb.campus.block.allocation.data.ContractBMPBean;
+import is.idega.idegaweb.campus.block.allocation.data.ContractHome;
 import is.idega.idegaweb.campus.data.SystemProperties;
+import is.idega.idegaweb.campus.presentation.Edit;
+
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.util.List;
+
+import com.idega.block.application.data.Applicant;
+import com.idega.block.application.data.ApplicantHome;
+import com.idega.block.building.business.BuildingCacher;
+import com.idega.core.data.GenericGroup;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
+import com.idega.core.user.data.UserHome;
+import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObjectContainer;
-import com.idega.presentation.ui.*;
-import com.idega.presentation.text.*;
-import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.building.business.BuildingCacher;
-import com.idega.block.building.data.*;
-import com.idega.block.application.data.Applicant;
-
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.DataTable;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
 import com.idega.util.IWTimestamp;
-import java.sql.SQLException;
-
-import com.idega.core.contact.data.Email;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.block.finance.business.AccountManager;
-import com.idega.block.finance.data.Account;
-import com.idega.core.accesscontrol.business.LoginCreator;
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-import com.idega.core.user.data.User;
-import com.idega.core.data.GenericGroup;
-import com.idega.core.accesscontrol.data.LoginTable;
-import java.util.List;
-import com.idega.util.SendMail;
 
 /**
  * Title:   idegaclasses
@@ -63,6 +68,7 @@ public class ContractRenewWindow extends Window{
   private IWTimestamp lastDate = null;
   private int iContractId = -1;
   private boolean save = false;
+  private String errMsg = "";
 
   /*
     Blár litur í topp # 27324B
@@ -82,12 +88,14 @@ public class ContractRenewWindow extends Window{
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     init(iwc);
-    if(iwc.isParameterSet("save") || iwc.isParameterSet("save.x")){
+    if(iwc.isParameterSet("save") ){
       save = doSaveContract(iwc);
       if(save)
         add(Edit.formatText(iwrb.getLocalizedString("new_contract_was_made","New contract was made")));
       else{
         add(Edit.formatText(iwrb.getLocalizedString("new_contract_could_not_be_made","New contract could not be made")));
+        add(Text.getBreak());
+        add(Edit.formatText(errMsg));
         add(getEditTable(iwc));
       }
     }
@@ -100,9 +108,9 @@ public class ContractRenewWindow extends Window{
     iContractId = Integer.parseInt( iwc.getParameter(prmContractId));
    if(iContractId > 0 && !save){
       try{
-      eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
-      eApplicant = ((com.idega.block.application.data.ApplicantHome)com.idega.data.IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
-      contractUser  = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
+      eContract = ((ContractHome)IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(iContractId);
+      eApplicant = ((ApplicantHome)IDOLookup.getHomeLegacy(Applicant.class)).findByPrimaryKeyLegacy(eContract.getApplicantId().intValue());
+      contractUser  = ((UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(eContract.getUserId().intValue());
       newContracts = ContractFinder.listOfApplicantContracts(eApplicant.getID(),ContractBMPBean.statusCreated);
       java.sql.Date d= ContractFinder.getLastContractDateForApartment(eContract.getApartmentId().intValue());
       lastDate = d!=null?new IWTimestamp(d):new IWTimestamp();
@@ -130,7 +138,7 @@ public class ContractRenewWindow extends Window{
     T.setWidth("100%");
     T.addTitle(iwrb.getLocalizedString("contract_renewal","Contract renewal"));
     T.addButton(new CloseButton(iwrb.getImage("close.gif")));
-    T.addButton(new SubmitButton(iwrb.getImage("save.gif"),"save"));
+    
 
     int row = 1;
     int col = 1;
@@ -138,6 +146,7 @@ public class ContractRenewWindow extends Window{
     try{
 
       if(newContracts ==null || newContracts.isEmpty()){
+      	T.addButton(new SubmitButton(iwrb.getImage("save.gif"),"save"));
         boolean isContractUser = contractUser.getID() == eUser.getID();
 
         if(contractUser !=null){
@@ -153,30 +162,47 @@ public class ContractRenewWindow extends Window{
           row++;
 
           IWTimestamp today = IWTimestamp.RightNow();
-          IWTimestamp[] stamps = ContractBusiness.getContractStampsForApartment(eContract.getApartmentId().intValue());
-
+          IWTimestamp fromDate = new IWTimestamp(eContract.getValidFrom());
+          IWTimestamp toDate = new IWTimestamp(eContract.getValidTo());
+          
+          T.add(Edit.formatText(iwrb.getLocalizedString("status_changed","Status changed")),1,row);
+          DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,iwc.getCurrentLocale());
+          T.add(Edit.formatText(df.format(eContract.getStatusDate())),2,row);
+          row++;
+          T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),1,row);
+          T.add(Edit.formatText(ContractBusiness.getLocalizedStatus(iwrb,eContract.getStatus())),2,row);
+          row++;
+          DateFormat df2 = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
+          T.add(Edit.formatText(iwrb.getLocalizedString("current_valid_from","Current valid from")),1,row);
+          T.add(Edit.formatText(df2.format(fromDate.getDate())),2,row);
+          row++;
+          T.add(Edit.formatText(iwrb.getLocalizedString("current_valid_to","Current valid to")),1,row);
+          T.add(Edit.formatText(df2.format(toDate.getDate())),2,row);
+          row++;
 
           DateInput from = new DateInput("from_date",true);
           from.setYearRange(today.getYear()-3,today.getYear()+7);
-          if(lastDate.isLaterThan(stamps[0])){
+          if(lastDate.isLaterThan(fromDate)){
             from.setDate(lastDate.getSQLDate());
           }
           else{
-            from.setDate(stamps[0].getSQLDate());
+            from.setDate(fromDate.getSQLDate());
           }
+          from.keepStatusOnAction(true);
           Edit.setStyle(from);
 
-          T.add(Edit.formatText(iwrb.getLocalizedString("valid_from","Valid from")),1,row);
+          T.add(Edit.formatText(iwrb.getLocalizedString("new_start_date","New start date")),1,row);
           T.add(from,2,row);
           row++;
 
           DateInput to = new DateInput("to_date",true);
           to.setYearRange(today.getYear()-3,today.getYear()+7);
 
-            to.setDate(stamps[1].getSQLDate());
+            to.setDate(toDate.getSQLDate());
+            to.keepStatusOnAction(true);
           Edit.setStyle(to);
 
-          T.add(Edit.formatText(iwrb.getLocalizedString("valid_to","Valid to")),1,row);
+          T.add(Edit.formatText(iwrb.getLocalizedString("new_end_date","New end date")),1,row);
           T.add(to,2,row);
           row++;
 
@@ -184,6 +210,20 @@ public class ContractRenewWindow extends Window{
             T.add(Edit.formatText(iwrb.getLocalizedString("end_old_contract","End old contract")),1,row);
             CheckBox endOldContract = new CheckBox("end_old_contr","true");
             T.add(endOldContract,2,row);
+            row++;
+            T.add(Edit.formatText(iwrb.getLocalizedString("sync_dates","Synchronize dates")),1,row);
+            CheckBox syncDates= new CheckBox("sync_dates","true");
+            T.add(syncDates,2,row);
+            T.add(Edit.formatText(iwrb.getLocalizedString("sets_enddate_same_as_movingdate ","Sets the end date same as moving date below")),2,row);
+            row++;
+            DateInput moving = new DateInput("moving_date",true);
+            moving.setYearRange(today.getYear()-3,today.getYear()+7);
+              moving.setDate(today.getSQLDate());
+              moving.keepStatusOnAction();
+            Edit.setStyle(moving);
+            T.add(Edit.formatText(iwrb.getLocalizedString("moving_date","Moving date")),1,row);
+            T.add(moving,2,row);
+            row++;
           }
         }
         else
@@ -205,9 +245,9 @@ public class ContractRenewWindow extends Window{
     try{
 
       int id = iContractId;
-      Contract eContract = ((is.idega.idegaweb.campus.block.allocation.data.ContractHome)com.idega.data.IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
+      Contract eContract = ((ContractHome)IDOLookup.getHomeLegacy(Contract.class)).findByPrimaryKeyLegacy(id);
 
-      IWTimestamp from = null,to = null;
+      IWTimestamp from = null,to = null,move = null;
       String sfrom = iwc.getParameter("from_date");
       if(sfrom!=null && sfrom.length() == 10)
        from = new IWTimestamp(sfrom);
@@ -215,14 +255,27 @@ public class ContractRenewWindow extends Window{
       if(to_date!=null && to_date.length() == 10)
         to = (new IWTimestamp(to_date));
       boolean endOld = iwc.isParameterSet("end_old_contr");
+      boolean syncDates = iwc.isParameterSet("sync_dates");
+      String move_date = iwc.getParameter("moving_date");
+      if(move_date!=null && move_date.length() == 10)
+         move = (new IWTimestamp(move_date));
+      if(move==null){
+      	
+      }
 
       if(endOld)
-        ContractBusiness.endContract(eContract.getID(),new IWTimestamp(eContract.getValidTo()),"",false);
+        eContract = ContractBusiness.endContract(eContract.getID(),move,"",syncDates);
 
 //      if(eContract.getStatus().equals(ContractBMPBean.statusSigned) && !endOld)
 //        return false;
       if(from !=null && to !=null)
-        return ContractBusiness.makeNewContract(iwc,contractUser,eApplicant,eContract.getApartmentId().intValue(),from,to);
+      	if(from.isLaterThan(new IWTimestamp(eContract.getValidTo()))){
+      		return ContractBusiness.makeNewContract(iwc,contractUser,eApplicant,eContract.getApartmentId().intValue(),from,to);
+      	}
+      	else{
+      		this.errMsg = iwrb.getLocalizedString("contracts_overlap","Contracts overlap");
+      		return false;
+      	}
       else
         System.err.println("no dates in renewal");
     }

@@ -87,8 +87,7 @@ import com.idega.util.SendMail;
 
 
 public class ContractSigner extends PresentationObjectContainer{
-
-
+/*
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
 
@@ -123,7 +122,7 @@ public class ContractSigner extends PresentationObjectContainer{
     Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
 
   */
-
+/*
 
 
   public ContractSigner() {
@@ -443,7 +442,7 @@ public class ContractSigner extends PresentationObjectContainer{
    *  returns id of login
 
    */
-
+/*
   private void doSignContract(IWContext iwc){
 
 
@@ -565,6 +564,6 @@ public class ContractSigner extends PresentationObjectContainer{
     control(iwc);
 
   }
-
+*/
 }
 
