@@ -47,18 +47,21 @@ public class CitizenEditor extends UserEditor {
 		setShowMiddleNameInput(false);
 		setAllowPersonalIdEdit(false);
 		setBundleIdentifer(CommuneBlock.IW_BUNDLE_IDENTIFIER);
+		setShowSeperators(true);
 		
 	}
 	/* (non-Javadoc)
 	 * @see is.idega.idegaweb.member.presentation.UserEditor#presentateUserRelations(com.idega.presentation.IWContext)
 	 */
 	protected void presentateUserRelations(IWContext iwc) throws RemoteException {
+		
 		Table relationsTable = new Table();
 		//relationsTable.setBorder(1);
 		//relationsTable.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
 		relationsTable.setCellspacing(4);
 		if (user != null) {
+			addSeperator(iwrb.getLocalizedString("mbe.user_relations","User relations"));
 			//CommuneUserBusiness userService = getCommuneUserService(iwc);
 			MemberFamilyLogic familyService = getFamilyService(iwc);
 			//partner handling
@@ -277,68 +280,79 @@ public class CitizenEditor extends UserEditor {
 		try {
 			int pageID = getParentPageID();
 			Integer thisPageID = pageID>0 ?new Integer(pageID):null;
-			Table bTable = new Table(3,2);
+			Table bTable = new Table(9,2);
+			
 			MemberFamilyLogic logic = getFamilyService(iwc);
 			Integer userID = (Integer) user.getPrimaryKey();
+			Image addImage = iwb.getImage("shared/edit.gif", 12, 12);
+			bTable.setWidth(3,10);
+			bTable.setWidth(6,10);
+			
 			//Image regSpouse = iwrb.getLocalizedImageButton("mbe.register_spouse","Register spouse");
 			//regSpouse.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_spouse","Try to attach a spouse relationship to user"));
 			//Link spouseLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getSpouseRelationType(),regSpouse);
 			SubmitButton spouseButton =
 				getConnectorButton(
-					iwc,
+					iwc,addImage,
 					iwrb.getLocalizedString("mbe.register_spouse", "Register spouse"),
 					userID,
 					logic.getSpouseRelationType(),
 					null,thisPageID);
 			bTable.add(spouseButton,1,1);
+			bTable.add(getText(iwrb.getLocalizedString("mbe.register_spouse", "Register spouse")),2,1);
 			SubmitButton mateButton =
 				getConnectorButton(
-					iwc,
+					iwc,addImage,
 					iwrb.getLocalizedString("mbe.register_mate", "Register mate"),
 					userID,
 					logic.getCohabitantRelationType(),
 					null,thisPageID);
 			bTable.add(mateButton,1,2);
+			bTable.add(getText(iwrb.getLocalizedString("mbe.register_mate", "Register mate")),2,2);
 			//Image regCustodian = iwrb.getLocalizedImageButton("mbe.register_custodian","Register custodian");
 			//regCustodian.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_custodian","Try to attach a custodian relationship to user"));
 			//Link custodianLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getChildRelationType(),regCustodian);
 			//buttonTable.add(custodianLink, col++, row);
 			SubmitButton parentButton =
 				getConnectorButton(
-					iwc,
+					iwc,addImage,
 					iwrb.getLocalizedString("mbe.register_parent", "Register parent"),
 					userID,
 					logic.getChildRelationType(),
 					logic.getParentRelationType(),thisPageID);
-			bTable.add(parentButton,2,1);
+			bTable.add(parentButton,4,1);
+			bTable.add(getText(iwrb.getLocalizedString("mbe.register_parent", "Register parent")),5,1);
 			SubmitButton custodianButton =
 				getConnectorButton(
-					iwc,
+					iwc,addImage,
 					iwrb.getLocalizedString("mbe.register_custodian", "Register custodian"),
 					userID,
 					logic.getChildRelationType(),
 					logic.getCustodianRelationType(),thisPageID);
-			bTable.add(custodianButton,2,2);
+			bTable.add(custodianButton,4,2);
+			bTable.add(getText(iwrb.getLocalizedString("mbe.register_custodian", "Register custodian")),5,2);
 			//Image regChild = iwrb.getLocalizedImageButton("mbe.register_child","Register child");
 			//regChild.setToolTip(iwrb.getLocalizedString("mbe.tooltip.register_child","Try to attach a child relationship to user"));
 			//Link childLink = getConnectorLink((Integer) user.getPrimaryKey(),logic.getCustodianRelationType(),regChild);
 			//buttonTable.add(childLink, col++, row);
 			SubmitButton childButton =
 				getConnectorButton(
-					iwc,
+					iwc,addImage,
 					iwrb.getLocalizedString("mbe.register_parential_child", "Register parential child"),
 					userID,
 					logic.getParentRelationType(),
 					logic.getChildRelationType(),thisPageID);
-			bTable.add(childButton,3,1);
+			bTable.add(childButton,7,1);
+			bTable.add(getText(iwrb.getLocalizedString("mbe.register_parential_child", "Register parential child")),8,1);
 			SubmitButton custodyChildButton =
 				getConnectorButton(
-					iwc,
+					iwc,addImage,
 					iwrb.getLocalizedString("mbe.register_custody_child", "Register custody child"),
 					userID,
 					logic.getCustodianRelationType(),
 					logic.getChildRelationType(),thisPageID);
-			bTable.add(custodyChildButton,3,2);
+			bTable.add(custodyChildButton,7,2);
+			bTable.add(getText(iwrb.getLocalizedString("mbe.register_custody_child", "Register custody child")),8,2);
 			addButton(bTable);
 		}
 		catch (RemoteException e) {
@@ -423,7 +437,7 @@ public class CitizenEditor extends UserEditor {
 	 * @see is.idega.idegaweb.member.presentation.UserEditor#isValidPersonalID(java.lang.String)
 	 */
 	protected boolean isValidPersonalID(String string) {
-		return PIDChecker.getInstance().isValid(string);
+		return PIDChecker.getInstance().isValid(string,true);
 	}
 
 	protected CommuneBusiness getCommuneBusiness(IWContext iwc) {
