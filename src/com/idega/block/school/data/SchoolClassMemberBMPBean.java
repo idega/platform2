@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2004/07/01 12:16:59 $ by $Author: laddi $
- * @version $Revision: 1.119 $
+ *         Last modified: $Date: 2004/07/02 07:44:37 $ by $Author: laddi $
+ * @version $Revision: 1.120 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -349,7 +349,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		if (schoolYearID != -1) {
 			query.addCriteria(new MatchCriteria(student, SCHOOL_YEAR, MatchCriteria.EQUALS, schoolYearID));
 		}
-		MatchCriteria nullTermination = new MatchCriteria(terminationDate, true);
+		MatchCriteria nullTermination = new MatchCriteria(terminationDate, false);
 		MatchCriteria termintationAfter = new MatchCriteria(terminationDate, MatchCriteria.GREATEREQUAL, stamp.getDate());
 		JoinCriteria terminationEqualsSeason = new JoinCriteria(terminationDate, seasonEndDate);
 		query.addCriteria(new OR(nullTermination, new OR(termintationAfter, terminationEqualsSeason)));
