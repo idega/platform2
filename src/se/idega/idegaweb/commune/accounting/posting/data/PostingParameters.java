@@ -22,6 +22,6 @@ public interface PostingParameters extends com.idega.data.IDOEntity
  public void setDoublePostingString(java.lang.String p0);
  public void setPeriodeFrom(java.sql.Date p0);
  public void setPeriodeTo(java.sql.Date p0);
- public void setPostingStriong(java.lang.String p0);
+ public void setPostingString(java.lang.String p0);
  public void setRegSpecType(int p0);
 }

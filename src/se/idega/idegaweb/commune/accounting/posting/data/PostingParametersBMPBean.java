@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.9 2003/08/28 12:54:33 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.10 2003/08/28 18:34:53 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.9 2003/08/28 12:54:33 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.10 2003/08/28 18:34:53 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -109,7 +109,7 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	}
 	
 	public String getPostingString() {return (String) getStringColumnValue(COLUMN_OWN_POSTING_STRING);}
-	public void setPostingStriong(String data) {setColumn(COLUMN_OWN_POSTING_STRING, data); }
+	public void setPostingString(String data) {setColumn(COLUMN_OWN_POSTING_STRING, data); }
 
 	public String getDoublePostingString() {return (String) getStringColumnValue(COLUMN_DOUBLE_POSTING_STRING);}
 	public void setDoublePostingString(String data) {setColumn(COLUMN_DOUBLE_POSTING_STRING, data); }

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.4 2003/08/25 15:31:57 anders Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.5 2003/08/28 18:35:31 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package se.idega.idegaweb.commune.accounting.regulations.business;
 import java.util.Collection;
 import java.rmi.RemoteException;
 import javax.ejb.FinderException;
+import java.util.Iterator;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
@@ -50,6 +51,34 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}	
 
 	/**
+	 * Gets all Activity types (keys) as a comma separated string
+	 * @return String of activity types
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
+	 * @author Kjell
+	 */
+	public String getActivityTypesAsString() {
+		String ret = "";
+		try {
+			ActivityTypeHome home = getActivityTypeHome();
+			Collection col = home.findAllActivityTypes();
+			Iterator iter = col.iterator();
+			while(iter.hasNext())  {
+				ActivityType ah = (ActivityType) iter.next();
+				ret += ah.getTextKey();
+				if(iter.hasNext()) {
+					ret += ", ";
+				}
+			}
+			return ret;				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null; 
+		} 
+	}	
+
+
+	/**
 	 * Gets all Commune belonging types
 	 * @return collection of Commune belonging types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType 
@@ -64,6 +93,33 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		} catch (FinderException e) {
 			return null;
 		}
+	}	
+
+	/**
+	 * Gets all Commune Belongings types (keys) as a comma separated string
+	 * @return String of activity types
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
+	 * @author Kjell
+	 */
+	public String getCommuneBelongingsAsString() {
+		String ret = "";
+		try {
+			CommuneBelongingTypeHome home = getCommuneBelongingTypeHome();
+			Collection col = home.findAllCommuneBelongingTypes();
+			Iterator iter = col.iterator();
+			while(iter.hasNext())  {
+				CommuneBelongingType cbt = (CommuneBelongingType) iter.next();
+				ret += cbt.getTextKey();
+				if(iter.hasNext()) {
+					ret += ", ";
+				}
+			}
+			return ret;				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null; 
+		} 
 	}	
 
 	/**
@@ -84,6 +140,33 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}	
 
 	/**
+	 * Gets all Company Types (keys) as a comma separated string
+	 * @return String of activity types
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
+	 * @author Kjell
+	 */
+	public String getCompanyTypesAsString() {
+		String ret = "";
+		try {
+			CompanyTypeHome home = getCompanyTypeHome();
+			Collection col = home.findAllCompanyTypes();
+			Iterator iter = col.iterator();
+			while(iter.hasNext())  {
+				CompanyType ct = (CompanyType) iter.next();
+				ret += ct.getTextKey();
+				if(iter.hasNext()) {
+					ret += ", ";
+				}
+			}
+			return ret;				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null; 
+		} 
+	}	
+
+	/**
 	 * Gets all Regulation specification types
 	 * @return collection of Regulation specification types
 	 * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType 
@@ -99,6 +182,34 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			return null;
 		}
 	}	
+
+	/**
+	 * Gets all Regulation Spec Types (keys) as a comma separated string
+	 * @return String of activity types
+	 * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType 
+	 * @author Kjell
+	 */
+	public String getRegulationSpecTypesAsString() {
+		String ret = "";
+		try {
+			RegulationSpecTypeHome home = getRegulationSpecTypeHome();
+			Collection col = home.findAllRegulationSpecTypes();
+			Iterator iter = col.iterator();
+			while(iter.hasNext())  {
+				RegulationSpecType rst = (RegulationSpecType) iter.next();
+				ret += rst.getTextKey();
+				if(iter.hasNext()) {
+					ret += ", ";
+				}
+			}
+			return ret;				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null; 
+		} 
+	}	
+
 
 	/**
 	 * Gets all payment flow types.
