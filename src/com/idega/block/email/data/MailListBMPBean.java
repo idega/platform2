@@ -36,13 +36,13 @@ public class MailListBMPBean extends com.idega.data.GenericEntity implements com
 
 
 
-  private final static String TABLE_NAME = "em_list";
+  private final static String TABLE_NAME = "EM_LIST";
 
-  private final static String NAME = "name";
+  private final static String NAME = "NAME";
 
-  private final static String DESCRIPTION = "description";
+  private final static String DESCRIPTION = "DESCRIPTION";
 
-  private final static String CREATED = "created_date";
+  private final static String CREATED = "CREATED_DATE";
 
 
 
