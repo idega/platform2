@@ -95,11 +95,7 @@ public class PIDChecker {
 	 * @return A trimmed down version of the ssn.
 	 */
 	private String trimSSN(String personalID) {
-		StringBuffer localSSN = new StringBuffer(personalID);
-		int i = personalID.indexOf('-');
-		if (i != -1) {
-			localSSN.deleteCharAt(i);
-		}
+		String localSSN = trim(personalID);
 
 		if (localSSN.length() == 12)
 			personalID = localSSN.substring(2);
@@ -107,6 +103,20 @@ public class PIDChecker {
 			personalID = localSSN.toString();
 
 		return personalID;
+	}
+	
+	/**
+	 * A method that removes all minus signs from the ssn.
+	 * 
+	 * @return A trimmed down version of the ssn.
+	 */
+	public String trim(String personalID) {
+		StringBuffer localSSN = new StringBuffer(personalID);
+		int i = personalID.indexOf('-');
+		if (i != -1) {
+			localSSN.deleteCharAt(i);
+		}
+		return localSSN.toString();
 	}
 
 	/**
@@ -182,6 +192,7 @@ public class PIDChecker {
 	 */
 	public Date getDateFromPersonalID(String personalID) {
 		if (isValid(personalID, true)) {
+			personalID = trimSSN(personalID);
 			int year = 0;
 			int month = 0;
 			int day = 0;
