@@ -1281,7 +1281,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     TransactionManager tm = IdegaTransactionManager.getInstance();
     try {
       tm.begin();
-      if (createWorkReportBoardDataWithoutAnyChecks(workReportId, clubId, groupBusiness) &&
+      if (createWorkReportBoardDataWithoutAnyChecks(workReportId, year, clubId, groupBusiness) &&
           createWorkReportMemberDataWithoutAnyChecks(workReportId, clubId, groupBusiness)) {
         // mark the sucessfull creation
         workReport.setCreationFromDatabaseDone(true);
@@ -1311,7 +1311,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
   }
    
-  private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int clubId, GroupBusiness groupBusiness)  {
+  private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int clubId, GroupBusiness groupBusiness)  {
     Map idExistingMemberMap = new HashMap();
     // find all existing work report members
     Collection existingWorkReportBoardMembers = getAllWorkReportBoardMembersForWorkReportId(workReportId);
@@ -1398,7 +1398,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
         // that is referenced by the current group
         if (isDivision) {
           // get league
-          league = getLeagueFromClubDivision(group);
+          league = getLeagueFromClubDivision(group, year);
           // get users
           users = getBoardUsersFromClubDivision(group, groupBusiness);
         }
@@ -1448,13 +1448,13 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     }
   }
   
-  private WorkReportGroup getLeagueFromClubDivision(Group clubDivision) {
+  private WorkReportGroup getLeagueFromClubDivision(Group clubDivision, int year) {
     WorkReportGroup league = null;
     String leagueIdAsString = clubDivision.getMetaData(IWMemberConstants.META_DATA_DIVISION_LEAGUE_CONNECTION);
     if (leagueIdAsString != null) {
       try {
         Integer leagueId = new Integer(leagueIdAsString);
-        league = getWorkReportGroupHome().findByPrimaryKey(leagueId);
+        league = getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(leagueId.intValue(), year);
       }
       catch (NumberFormatException formatEx)  {
         System.err.println("[workReportBusiness] league id ( " + leagueIdAsString + " ) is not a number. Message is: " +
