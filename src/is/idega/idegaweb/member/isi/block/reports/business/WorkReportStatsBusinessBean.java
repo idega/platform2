@@ -2435,7 +2435,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	/*
 	 * Report B12.4.1 and B12.4.2 of the ISI Specs rolled into one report.
 	 */
-	public ReportableCollection getYearlyAccountsStatisticComparisonForClubs(final Integer year
+	public ReportableCollection getYearlyAccountsStatistic(final Integer year
 																			 , final Integer comparingYear
 																			 ,Collection regionalUnionsFilter
 																			 ,Collection clubsFilter
@@ -2534,6 +2534,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		//get the data
 		Collection reports = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionsFilter, clubsFilter);
 		List leagueGroupIDList = getGroupIdListFromLeagueGroupCollection(year, leaguesFilter, true);
+		
+		//gera map sem heldur utan um allstölur fyrir öll félög sem ekki hafa hæsta flokk
+		//gera map fyrir öll félög með hæsta flokk
 		Map recordsMapKeyedByLeagueIdentifierAndClubsName = new TreeMap();
 		
 		
@@ -2541,6 +2544,18 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		try {
 			while (iter.hasNext()) {
 				WorkReport report = (WorkReport) iter.next();
+				int reportId = ((Integer)report.getPrimaryKey()).intValue();
+				WorkReport comparingReport=null;
+				int comparingReportId = -1;
+				try {
+					comparingReport = getWorkReportBusiness().getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(report.getGroupId().intValue(),comparingYear.intValue());
+					comparingReportId = ((Integer)comparingReport.getPrimaryKey()).intValue();
+				}
+				catch (FinderException e1) {
+					//no report that year
+				}
+				
+				
 				String regionalUnionIdentifier = getRegionalUnionIdentifier(report);
 				String groupName = report.getGroupNumber() + " " + report.getGroupName();
 				
@@ -2554,11 +2569,22 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					}
 					
 					String leagueIdentifier = getLeagueIdentifier(league);
+					int wrGroupId = ((Integer)league.getPrimaryKey()).intValue();
+					WorkReportGroup comparingLeague=null;
+					int comparingWrGroupId = -1;
+					try {
+						comparingLeague = getWorkReportBusiness().getWorkReportGroupHome().findWorkReportGroupByGroupIdAndYear(league.getGroupId().intValue(),comparingYear.intValue());
+						comparingWrGroupId =  ((Integer)comparingLeague.getPrimaryKey()).intValue();
+					}
+					catch (FinderException e2) {
+						//no league that year or data missing
+					}
+					
 						
 					String mapKey = leagueIdentifier+groupName;
 					//add the data					
 					//fetch the stats or initialize
-					ReportableData regData = (ReportableData) recordsMapKeyedByLeagueIdentifierAndClubsName.get(regionalUnionIdentifier);
+					ReportableData regData = (ReportableData) recordsMapKeyedByLeagueIdentifierAndClubsName.get(mapKey);
 					if(regData==null){//initialize
 						regData = new ReportableData();
 						regData.addData(leagueString, leagueIdentifier);
@@ -2585,9 +2611,55 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 					
 					//getWorkReportBusiness().getWorkReportClubAccountRecordHome().
 					
+					//Amounts for selected year
+					//income is account key collection
+					Collection incomeKeys = getWorkReportBusiness().getWorkReportAccountKeyHome().findIncomeAccountKeysWithoutSubKeys();
+					int incomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,incomeKeys);
+					addToIntegerCount(income,regData,incomeTotal);
+					//expenses is account key collection
+					Collection expensesKeys = getWorkReportBusiness().getWorkReportAccountKeyHome().findExpensesAccountKeysWithoutSubKeys();
+					int expensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(reportId,wrGroupId,expensesKeys);
+					addToIntegerCount(expenses,regData,expensesTotal);
+					//income minus expenses
+					addToIntegerCount(incomeMinusExpenses,regData,incomeTotal - expensesTotal);
+					//rollingMoney FIN_85000
+					int rollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_85000");
+					addToIntegerCount(rollingMoney,regData,rollingMoneyTotal);
+					//rigidMoney FIN_81000
+					int rigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_81000");
+					addToIntegerCount(rigidMoney,regData,rigidMoneyTotal);
+					//debts FIN_92000
+					int debtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(reportId,wrGroupId,"FIN_92000");
+					addToIntegerCount(debts,regData,debtsTotal);
+					//rollingmoney minus debts
+					addToIntegerCount(rollingMoneyMinusDebts,regData,rollingMoneyTotal-debtsTotal);
 					
+					//Amounts for comparingYear
+					if(comparingReportId!=-1 && comparingWrGroupId!=-1){//just zero's otherwise
+						//income is account key collection
+						int comparingIncomeTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingReportId,comparingWrGroupId,incomeKeys);
+						addToIntegerCount(comparingIncome,regData,comparingIncomeTotal);
+						//expenses is account key collection
+						int comparingExpensesTotal = getWorkReportBusiness().getTotalAmmountOfAccountRecordsByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyCollection(comparingReportId,comparingWrGroupId,expensesKeys);
+						addToIntegerCount(comparingExpenses,regData,comparingExpensesTotal);
+						//income minus expenses
+						addToIntegerCount(comparingIncomeMinusExpenses,regData,comparingIncomeTotal - comparingExpensesTotal);
+						//rollingMoney FIN_85000
+						int comparingRollingMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_85000");
+						addToIntegerCount(comparingRollingMoney,regData,comparingRollingMoneyTotal);
+						//rigidMoney FIN_81000
+						int comparingRigidMoneyTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_81000");
+						addToIntegerCount(comparingRigidMoney,regData,comparingRigidMoneyTotal);
+						//debts FIN_92000
+						int comparingDebtsTotal = getWorkReportBusiness().getAmmountOfAccountRecordByWorkReportIdWorkReportGroupIdAndWorkReportAccountKeyName(comparingReportId,comparingWrGroupId,"FIN_92000");
+						addToIntegerCount(comparingDebts,regData,comparingDebtsTotal);
+						//rollingmoney minus debts
+						addToIntegerCount(comparingRollingMoneyMinusDebts,regData,comparingRollingMoneyTotal-comparingDebtsTotal);
+					}
 					
+					recordsMapKeyedByLeagueIdentifierAndClubsName.put(mapKey,regData);
 					
+					//decide to what sum row we want to add this records stats
 					
 					
 					//TODO ADD EXTRA SUMMARY FIELDS
@@ -2605,12 +2677,22 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			}
 		}
 		catch (IDOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
 			e.printStackTrace();
 		}
 		
+		reportCollection.addAll(recordsMapKeyedByLeagueIdentifierAndClubsName.values());
 		
-		return null;
+		ReportableField[] sortFields = new ReportableField[] {leagueString,regionalUnionAbbreviation,clubName};
+		Comparator comparator = new FieldsComparator(sortFields);
+		Collections.sort(reportCollection, comparator);
+
+		return reportCollection;
 	}
 	
 	
