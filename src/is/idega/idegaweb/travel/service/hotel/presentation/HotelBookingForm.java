@@ -774,7 +774,8 @@ public class HotelBookingForm extends BookingForm {
               emailText.setText(star);
               emailText.addToText(iwrb.getLocalizedString("travel.email","e-mail"));
           Text telNumberText = (Text) theText.clone();
-              telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
+          			telNumberText.setText(star);
+              telNumberText.addToText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
           Text cityText = (Text) theText.clone();
               cityText.setText(star);
               cityText.addToText(iwrb.getLocalizedString("travel.city_sm","city"));
@@ -1367,6 +1368,10 @@ public class HotelBookingForm extends BookingForm {
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
       table.add(getBoldTextWhite(telephoneNumber),2,row);
+      if (telephoneNumber.length() < 1) {
+	    		valid = false;
+	    		table.add(star, 2, row);
+	    }
 
 			if (pickupId != null) {
 				try {
@@ -1459,7 +1464,10 @@ public class HotelBookingForm extends BookingForm {
 
 
       if (inquiry == null) {
-	    		valid = insertCreditcardBookingVerification(iwc, row, table, errorColor);
+    		boolean	tmpvalid = insertCreditcardBookingVerification(iwc, row, table, errorColor);
+    		if (tmpvalid == false) {
+    			valid = false;
+    		}
 	    		row += 5;
       }else {
         debug("inquiry");

@@ -131,6 +131,7 @@ public abstract class BookingForm extends TravelManager{
   public static String parameterPickupInf= "bookingPicInf";
   public static String parameterPriceCategoryKey = "pcatkey";
   public static  String parameterCountToCheck = "bf_c2chk";
+  public static String PARAMETER_REFERENCE_NUMBER = "rNum";
 
   public static String sAction = "bookingFormAction";
   public static String parameterSaveBooking = "bookingFormSaveBooking";
@@ -890,6 +891,7 @@ public abstract class BookingForm extends TravelManager{
               emailText.setText(star);
               emailText.addToText(iwrb.getLocalizedString("travel.email","e-mail"));
           Text telNumberText = (Text) theText.clone();
+          			telNumberText.addToText(star);
               telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));
           Text cityText = (Text) theText.clone();
               cityText.setText(star);
@@ -1343,6 +1345,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
       form.maintainParameter(parameterFromDate);
       form.maintainParameter(this.parameterOnlineBooking);
       form.maintainParameter(PARAMETER_CODE);
+      form.maintainParameter(this.PARAMETER_REFERENCE_NUMBER);
 			if (withSAction) {
 	      form.maintainParameter(this.sAction);
 			}
@@ -1688,7 +1691,8 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
         String fromDate = iwc.getParameter(this.parameterFromDate);
         String manyDays = iwc.getParameter(this.parameterManyDays);
       //TEMP ENDS
-
+        
+      String refNum = iwc.getParameter(this.PARAMETER_REFERENCE_NUMBER);
 /*
       try {
         _stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
@@ -1806,7 +1810,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 							//_fromDate.addDays(1);
 						}
 						
-						bookingIds[i] = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code);
+						bookingIds[i] = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code, refNum);
 						if (iPickupId > 0) {
 								getBooker(iwc).setPickup(bookingIds[i], iPickupId, pickupInfo);
 						}
@@ -1824,7 +1828,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
             
             if (tempBookingsSize < 2 && betw < 2) {
             	/** Single booking */
-              bookingIds[0] = getBooker(iwc).updateBooking(iBookingId, _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code);
+              bookingIds[0] = getBooker(iwc).updateBooking(iBookingId, _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code, refNum);
             	if (iPickupId > 0) {
                 getBooker(iwc).setPickup(bookingIds[0], iPickupId, pickupInfo);
             	}
@@ -1844,7 +1848,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 										_fromDate.addDays(1);
 									}
 									gBooking = (GeneralBooking) tempBookings.get(j);
-									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code);
+									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code, refNum);
 									if (iPickupId > 0) {
 											getBooker(iwc).setPickup(bookingIds[j], iPickupId, pickupInfo);
 									}
@@ -1867,7 +1871,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 										_fromDate.addDays(1);
 									}
 									gBooking = (GeneralBooking) tempBookings.get(j);
-									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code);
+									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code, refNum);
 									if (iPickupId > 0) {
 											getBooker(iwc).setPickup(bookingIds[j], iPickupId, pickupInfo);
 									}
@@ -1884,7 +1888,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 										_fromDate.addDays(1);
 									}
 									gBooking = (GeneralBooking) tempBookings.get(j);
-									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code);
+									bookingIds[j] = getBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code, refNum);
 									if (iPickupId > 0) {
 											getBooker(iwc).setPickup(bookingIds[j], iPickupId, pickupInfo);
 									}
@@ -1895,7 +1899,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 									if (j != 0) {
 										_fromDate.addDays(1);
 									}
-									bookingIds[j] = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code);
+									bookingIds[j] = getBooker(iwc).Book(_service.getID(),country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.getUserId(), iAddressId, comment, code, refNum);
 									if (iPickupId > 0) {
 											getBooker(iwc).setPickup(bookingIds[j], iPickupId, pickupInfo);
 									}
@@ -2563,6 +2567,10 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.telephone_number","Telephone number")),1,row);
       table.add(getBoldTextWhite(telephoneNumber),2,row);
+      if (telephoneNumber.length() < 1) {
+      		valid = false;
+      		table.add(star, 2, row);
+      }
 
 /*      ++row;
       table.setAlignment(1,row,"right");
@@ -2645,7 +2653,10 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 
 
       if (inquiry == null) {
-	    		valid = insertCreditcardBookingVerification(iwc, row, table, errorColor);
+	    		boolean	tmpvalid = insertCreditcardBookingVerification(iwc, row, table, errorColor);
+	    		if (tmpvalid == false) {
+	    			valid = false;
+	    		}
 	    		row += 5;
       }else {
         debug("inquiry");
