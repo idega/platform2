@@ -10,7 +10,7 @@ import com.idega.idegaweb.*;
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.business.*;
 
-public class TournamentBox extends ModuleObjectContainer{
+public class TournamentBox extends JModuleObject{
 
 private String header;
 private String headerT;
