@@ -79,18 +79,18 @@ public class ReportElement extends XMLElement {
 	}
 	
 	public void setIsPrintRepeatedValues(boolean value){
-		this.setAttribute(ATTRIBUTE_IS_PRINT_REPEATED_VALUES,Boolean.toString(value));
+		this.setAttribute(ATTRIBUTE_IS_PRINT_REPEATED_VALUES,String.valueOf(value));
 	}
 	
 	public void setIsRemoveLineWhenBlank(boolean value){
-		this.setAttribute(ATTRIBUTE_IS_REMOVE_LINE_WHEN_BLANK,Boolean.toString(value));
+		this.setAttribute(ATTRIBUTE_IS_REMOVE_LINE_WHEN_BLANK,String.valueOf(value));
 	}
 	
 	public void setIsPrintInFirstWholeBand(boolean value){
-		this.setAttribute(ATTRIBUTE_IS_PRINT_IN_FIRST_WHOLE_BAND,Boolean.toString(value));
+		this.setAttribute(ATTRIBUTE_IS_PRINT_IN_FIRST_WHOLE_BAND,String.valueOf(value));
 	}
 	
 	public void setIsPrintWhenDetailOverflows(boolean value){
-		this.setAttribute(ATTRIBUTE_IS_PRINT_WHEN_DETAIL_OVERFLOWS,Boolean.toString(value));
+		this.setAttribute(ATTRIBUTE_IS_PRINT_WHEN_DETAIL_OVERFLOWS,String.valueOf(value));
 	}
 }

@@ -35,7 +35,7 @@ public class Font extends XMLElement {
 	}
 	
 	public void setIsUnderline(boolean value){
-		this.setAttribute(ATTRIBUTE_IS_UNDERLINE, Boolean.toString(value));
+		this.setAttribute(ATTRIBUTE_IS_UNDERLINE, String.valueOf(value));
 	}
 
 }

@@ -43,7 +43,7 @@ abstract class AbstractBandContainer extends XMLElement {
 	}
 	
 	public void setIsSplitAllowed(boolean value){
-		_band.setAttribute(ATTRIBUTE_IS_SPLIT_ALLOWED,Boolean.toString(value));
+		_band.setAttribute(ATTRIBUTE_IS_SPLIT_ALLOWED,String.valueOf(value));
 	}
 	
 	public XMLElement addContent(String text){

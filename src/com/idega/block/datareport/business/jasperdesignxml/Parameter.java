@@ -45,7 +45,7 @@ public class Parameter extends XMLElement {
 	}
 	
 	public void setIsForPrompting(boolean value){
-		setAttribute(ATTRIBUTE_IS_FOR_PROMPTING,Boolean.toString(value));
+		setAttribute(ATTRIBUTE_IS_FOR_PROMPTING,String.valueOf(value));
 	}
 
 }

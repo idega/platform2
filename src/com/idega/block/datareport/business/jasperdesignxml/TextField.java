@@ -48,7 +48,7 @@ public class TextField extends XMLElement {
 	}
 	
 	public void setIsStretchWithOverflow(boolean value){
-		this.setAttribute(ATTRIBUTE_IS_STRETCH_WITH_OVERFLOW, Boolean.toString(value));
+		this.setAttribute(ATTRIBUTE_IS_STRETCH_WITH_OVERFLOW, String.valueOf(value));
 	}
 	
 	public void setEvaluationTimeAsNow(){
@@ -72,7 +72,7 @@ public class TextField extends XMLElement {
 	}
 	
 	public void setIsBlankWhenNull(boolean value){
-		this.setAttribute(ATTRIBUTE_IS_BLANK_WHEN_NULL, Boolean.toString(value));
+		this.setAttribute(ATTRIBUTE_IS_BLANK_WHEN_NULL, String.valueOf(value));
 	}
 
 	public void setHyperlinkTypeAsNone(){

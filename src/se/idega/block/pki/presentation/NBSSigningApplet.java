@@ -437,7 +437,7 @@ public class NBSSigningApplet extends PresentationObjectContainer {
 
 
 //	public void setScriptable(boolean value){
-//		appletParameterMap.put(PARM_SCRIPTABLE,Boolean.toString(value));
+//		appletParameterMap.put(PARM_SCRIPTABLE,String.valueOf(value));
 //	}
 	
 	public void setButtonColor(String color1, String color2){
