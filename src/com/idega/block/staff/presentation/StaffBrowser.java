@@ -10,6 +10,8 @@ package com.idega.block.staff.presentation;
  */
 
 import com.idega.builder.data.IBPage;
+
+import java.util.Iterator;
 import java.util.List;
 import java.util.Collections;
 import com.idega.presentation.text.Text;
@@ -32,6 +34,7 @@ import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.data.Phone;
 import com.idega.core.data.PhoneType;
 import com.idega.user.data.Group;
+import com.idega.util.GenericGroupComparator;
 import com.idega.util.IWTimestamp;
 import com.idega.util.GenericUserComparator;
 import com.idega.util.text.TextStyler;
@@ -112,6 +115,8 @@ public class StaffBrowser extends Block implements IWBlock {
 	private boolean _showDivisionHeader = true;
 
 	private String extraAlignment = Table.HORIZONTAL_ALIGN_CENTER;
+	private boolean _sortAlphabetically = true;
+	private boolean _sortGroupsAlphabetically = true;
 
 	public StaffBrowser() {
 		setDefaultValues();
@@ -186,11 +191,13 @@ public class StaffBrowser extends Block implements IWBlock {
 		int column = 1;
 
 		if (users != null) {
-			GenericUserComparator comparator = new GenericUserComparator(GenericUserComparator.NAME);
-			Collections.sort(users, comparator);
-			for (int a = 0; a < users.size(); a++) {
+			if (_sortAlphabetically)
+				Collections.sort(users, new GenericUserComparator(iwc.getCurrentLocale(),GenericUserComparator.NAME));
+			
+			Iterator iter = users.iterator();
+			while (iter.hasNext()) {
 				column = 1;
-				holder = StaffFinder.getStaffHolder((User) users.get(a), _localeID);
+				holder = StaffFinder.getStaffHolder((User) iter.next(), _localeID);
 
 				userLink = getStaffLink(holder.getName(), holder.getUserID());
 				userName = getStaffText(holder.getName());
@@ -255,12 +262,15 @@ public class StaffBrowser extends Block implements IWBlock {
 
 	private void getDivisionStaff(IWContext iwc) {
 		List groups = StaffFinder.getAllGroups(iwc);
+		if (_sortGroupsAlphabetically)
+			Collections.sort(groups, new GenericGroupComparator(iwc.getCurrentLocale()));
 		boolean showDivision = true;
 		
 		Text divisionText = null;
 		if (groups != null) {
-			for (int a = 0; a < groups.size(); a++) {
-				GenericGroup group = (GenericGroup) groups.get(a);
+			Iterator iterator = groups.iterator();
+			while (iterator.hasNext()) {
+				GenericGroup group = (GenericGroup) iterator.next();
 				
 				if (_group != null) {
 					showDivision = false;
@@ -922,4 +932,20 @@ public class StaffBrowser extends Block implements IWBlock {
 	public void setExtraColumnsAlignment(String alignment) {
 		extraAlignment = alignment;
 	}
+	/**
+	 * Sets the _sortAlphabetically.
+	 * @param sortAlphabetically The _sortAlphabetically to set
+	 */
+	public void setSortAlphabetically(boolean sortAlphabetically) {
+		this._sortAlphabetically = sortAlphabetically;
+	}
+
+	/**
+	 * Sets the _sortGroupsAlphabetically.
+	 * @param sortGroupsAlphabetically The _sortGroupsAlphabetically to set
+	 */
+	public void setSortGroupsAlphabetically(boolean sortGroupsAlphabetically) {
+		this._sortGroupsAlphabetically = sortGroupsAlphabetically;
+	}
+
 }
