@@ -5,8 +5,6 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
 import se.idega.idegaweb.commune.accounting.regulations.business.MissingConditionTypeException;
