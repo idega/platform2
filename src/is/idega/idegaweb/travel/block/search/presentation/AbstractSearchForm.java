@@ -206,8 +206,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 	}
 	
 	public void _main(IWContext iwc) throws Exception {
-		super._main(iwc);
 		handleSubmit(iwc);
+		super._main(iwc);
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -487,8 +487,8 @@ public abstract class AbstractSearchForm extends TravelBlock{
 				break;
 			case STATE_SHOW_SEARCH_RESULTS :
 				try {
-					Collection coll = getAndHandleResults();
 					if (!isAlwaysSearchForm) {
+						Collection coll = getAndHandleResults();
 						handleResults(coll);
 					} else {
 						setupSearchForm();
