@@ -259,8 +259,8 @@ public class RunResultViewer extends Block {
 				int num = 1;
 				int count = 0;
 				while (runIter.hasNext()) {
+					Run run = (Run) runIter.next();
 					if (count < 3) {
-						Run run = (Run) runIter.next();
 						num = runs.indexOf(run);
 						row = insertRunIntoTable(table, row, run, num, count+1);
 					}
