@@ -103,8 +103,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	  		fullName.append(firstName).append(" ").append(middleName).append(" ").append(lastName);
 
 			user.setFullName(fullName.toString());
-      		user.setGender( (Integer)gender.getPrimaryKey() );
-      		user.setDateOfBirth(dateOfBirth.getDate());
+      		if(gender!=null) user.setGender( (Integer)gender.getPrimaryKey() );
+      		if(dateOfBirth!=null) user.setDateOfBirth(dateOfBirth.getDate());
       		user.store();
 			
 			
