@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -18,6 +19,7 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
 import se.idega.idegaweb.commune.childcare.check.data.GrantedCheck;
+import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.school.business.SchoolBusiness;
@@ -347,10 +349,27 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				catch (Exception e) {
 					checkID = -1;
 				}*/
+				Date[] queueDates = new Date[_valProvider.length];
+				String[] valDates = new String[_valProvider.length];
+				
+				Collection applications = business.getApplicationsForChild(Integer.parseInt(childId));
+				loop:
+				for (int i = 0; i < _valProvider.length; i++){
+					Iterator apps = applications.iterator();
+					while(apps.hasNext()){
+						ChildCareApplication app = (ChildCareApplication) apps.next();
+						if (app.getProviderId() == _valProvider[i]){
+							queueDates[i] = app.getQueueDate();
+							valDates[i] = _valDate;
+							continue loop;
+						}
+					}
+				}
+								
 				String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
 				String message = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
-				done = business.insertApplications(_user, _valProvider, _valDate, checkID, new Integer(childId).intValue(), subject, message, false);
+				done = business.insertApplications(_user, _valProvider, valDates, null, checkID, new Integer(childId).intValue(), subject, message, true, true, queueDates, null);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
