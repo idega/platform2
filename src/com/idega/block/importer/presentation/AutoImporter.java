@@ -43,6 +43,16 @@ public class AutoImporter extends com.idega.presentation.Block {
 	private IWResourceBundle iwrb;
 	private String errorMessage = "";
 
+
+	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.importer";
+	
+	/**
+	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
+	 */
+	public String getBundleIdentifier() {
+		return IW_BUNDLE_IDENTIFIER;
+	}
+	
 	public void main(IWContext iwc) throws Exception{
 		_iwc = iwc;
 		iwrb = this.getResourceBundle(iwc);
