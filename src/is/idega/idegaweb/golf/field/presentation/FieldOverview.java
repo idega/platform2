@@ -3,7 +3,6 @@
  */
 package is.idega.idegaweb.golf.field.presentation;
 
-import is.idega.idegaweb.golf.block.text.presentation.TextReader;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.FieldImage;
@@ -14,6 +13,7 @@ import is.idega.idegaweb.golf.entity.TeeColorHome;
 import is.idega.idegaweb.golf.entity.TeeImage;
 import is.idega.idegaweb.golf.handicap.presentation.HandicapTable;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.presentation.GolfImage;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -21,6 +21,7 @@ import java.sql.SQLException;
 
 import javax.ejb.FinderException;
 
+import com.idega.block.text.presentation.TextReader;
 import com.idega.core.builder.data.ICPage;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
@@ -260,7 +261,7 @@ public class FieldOverview extends GolfBlock {
 		FieldImage[] fieldImage = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", String.valueOf(field.getID()));
 
 		if (fieldImage.length != 0) {
-			Image fieldMynd = new Image(fieldImage[0].getImageId());
+			Image fieldMynd = new Image(fieldImage[0].getImageID());
 			fieldMynd.setVerticalSpacing(6);
 			fieldMynd.setHorizontalSpacing(6);
 
@@ -270,9 +271,10 @@ public class FieldOverview extends GolfBlock {
 		TextReader fieldText = null;
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", "0");
 		if (hole_text.length > 0) {
-			fieldText = new TextReader("" + hole_text[0].getTextId());
+			fieldText = new TextReader(hole_text[0].getTextID());
 			fieldText.displayHeadline(false);
 			fieldText.setEnableDelete(false);
+			fieldText.setCacheable(false);
 		}
 
 		contentTable.setCellpadding(0);
@@ -409,7 +411,7 @@ public class FieldOverview extends GolfBlock {
 
 		if (teeImage.length != 0) {
 
-			Image teeMynd = new Image(teeImage[0].getImageId());
+			Image teeMynd = new Image(teeImage[0].getImageID());
 
 			outerTable.add(teeMynd, 1, row);
 
@@ -420,9 +422,10 @@ public class FieldOverview extends GolfBlock {
 		TextReader fieldText = null;
 		HoleText[] hole_text = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("field_id", "" + field.getID(), "hole_number", hole_number);
 		if (hole_text.length > 0) {
-			fieldText = new TextReader("" + hole_text[0].getTextId());
+			fieldText = new TextReader(hole_text[0].getTextID());
 			fieldText.displayHeadline(false);
 			fieldText.setEnableDelete(false);
+			fieldText.setCacheable(false);
 		}
 
 		if (fieldText != null) {

@@ -5,8 +5,6 @@ package is.idega.idegaweb.golf.field.presentation;
 
 import is.idega.idegaweb.golf.block.image.data.ImageEntity;
 import is.idega.idegaweb.golf.block.image.data.ImageEntityHome;
-import is.idega.idegaweb.golf.block.text.data.TextModule;
-import is.idega.idegaweb.golf.block.text.presentation.TextReader;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.FieldHome;
 import is.idega.idegaweb.golf.entity.FieldImage;
@@ -27,6 +25,9 @@ import java.sql.SQLException;
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 
+import com.idega.block.media.presentation.ImageInserter;
+import com.idega.block.text.data.TxText;
+import com.idega.block.text.presentation.TextReader;
 import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -113,7 +114,7 @@ public class FieldEditor extends GolfWindow {
 			TextInput text_input;
 			Link link;
 			Link image_link;
-			String image_id = this.checkForImage(modinfo);
+			int imageID = this.checkForImage(modinfo);
 
 			Form form = new Form();
 
@@ -135,21 +136,14 @@ public class FieldEditor extends GolfWindow {
 			row++;
 			table.mergeCells(1, row, 23, row);
 			table.setAlignment(1, row, "center");
-			if (image_id != null) {
-				form.add(new HiddenInput("field_image_id", image_id));
-			}
+			
+			ImageInserter imageInsert = new ImageInserter();
+			imageInsert.setHiddenInputName("field_image_id");
+			imageInsert.setHasUseBox(false);
+			table.add(imageInsert, 1, row);
 
-			if (image_id != null) {
-				table.add(new com.idega.presentation.Image(Integer.parseInt(image_id)), 1, row);
-				table.add("<br>", 1, row);
-			}
-
-			Window gluggi = new Window("Ný mynd", 500, 400, "/news/insertimage.jsp?submit=new");
-			gluggi.setResizable(true);
-			Link linkur = new Link(gluggi);
-			table.add(linkur, 1, row);
-
-			if (image_id != null) {
+			if (imageID != -1) {
+				imageInsert.setImageId(imageID);
 				table.add("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", 1, row);
 				Link henda = new Link("Henda mynd");
 				henda.addParameter("action", "delete_field_image");
@@ -299,58 +293,39 @@ public class FieldEditor extends GolfWindow {
 
 			}
 
-			/*Table rightTable = new Table();
+			Table rightTable = new Table();
 			int text_id = getHoleTextId(modinfo, 0);
-			if (text_id == -1) {
-				//              text_id = updateHoleText(modinfo);
-				//              updateHoleText(modinfo,true);
-				//              rightTable.add(new SubmitButton("crap","Bæta við texta"),1,1);
-			}
 			if (text_id != -1) {
-				TextReader reader = new TextReader(Integer.toString(text_id));
+				TextReader reader = new TextReader(text_id);
 				reader.setEnableDelete(false);
+				reader.setCacheable(false);
 				rightTable.add(reader, 1, 1);
-			}*/
+			}
 
 			add(form);
-			//add(rightTable);
-
+			add(rightTable);
 		}
 
-		protected String checkForImage(IWContext modinfo) throws SQLException {
-			String returner = null;
+		protected int checkForImage(IWContext modinfo) throws SQLException {
+			int returner = -1;
 
-			String image_id = (String) modinfo.getSessionAttribute("image_id");
+			FieldImage[] images = null;
+			images = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", "" + this.field_id);
+			if (images.length > 0) {
+				returner = images[0].getImageID();
 
-			if (image_id == null) {
-				FieldImage[] images = null;
-				images = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", "" + this.field_id);
-				if (images.length > 0) {
-					returner = "" + images[0].getImageId();
-
-				}
-			}
-			else {
-				returner = image_id + "";
 			}
 
 			return returner;
 		}
 
-		protected String checkForTeeImage(IWContext modinfo, String hole_number) throws SQLException {
-			String returner = null;
+		protected int checkForTeeImage(IWContext modinfo, String hole_number) throws SQLException {
+			int returner = -1;
 
-			String image_id = (String) modinfo.getSessionAttribute("image_id");
-
-			if (image_id == null) {
-				TeeImage[] images = null;
-				images = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumn("hole_number", hole_number, "field_id", "" + this.field_id);
-				if (images.length > 0) {
-					returner = "" + images[0].getImageId();
-				}
-			}
-			else {
-				returner = image_id + "";
+			TeeImage[] images = null;
+			images = (TeeImage[]) ((TeeImage) IDOLookup.instanciateEntity(TeeImage.class)).findAllByColumn("hole_number", hole_number, "field_id", "" + this.field_id);
+			if (images.length > 0) {
+				returner = images[0].getImageID();
 			}
 
 			return returner;
@@ -369,7 +344,7 @@ public class FieldEditor extends GolfWindow {
 				String temp_hole_name = "";
 
 				int row = 1;
-				String image_id = this.checkForTeeImage(modinfo, hole_number);
+				int imageID = this.checkForTeeImage(modinfo, hole_number);
 
 				Table contentTable = new Table(2, 1);
 				contentTable.setWidth("100%");
@@ -403,16 +378,13 @@ public class FieldEditor extends GolfWindow {
 				//                  form.add(new HiddenInput("field_image_id",image_id));
 				//                }
 
-				if (image_id != null) {
-					table.add(new com.idega.presentation.Image(Integer.parseInt(image_id)), 1, row);
-					table.add("<br>", 1, row);
-				}
+				ImageInserter imageInsert = new ImageInserter();
+				imageInsert.setHiddenInputName("hole_image_id");
+				imageInsert.setHasUseBox(false);
+				table.add(imageInsert, 1, row);
 
-				Window gluggi = new Window("Ný mynd", 500, 400, "/news/insertimage.jsp?submit=new");
-				gluggi.setResizable(true);
-				Link linkur = new Link(gluggi);
-				table.add(linkur, 1, row);
-				if (image_id != null) {
+				if (imageID != -1) {
+					imageInsert.setImageId(imageID);
 					table.add("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;", 1, row);
 					Link henda = new Link("Henda mynd");
 					henda.addParameter("hole_number", hole_number);
@@ -429,14 +401,8 @@ public class FieldEditor extends GolfWindow {
 						++row;
 						table.add(tee_color[i].getName(), 1, row);
 						table.add("" + tee[j].getTeeLength(), 2, row);
-						if (image_id != null) {
-							TeeImage teeImg = (TeeImage) IDOLookup.instanciateEntity(TeeImage.class);
-						}
 
 						if (i == 0) {
-							//                      CR = tee[i].getCourseRating();
-							//                      slope = tee[i].getSlope();
-
 							par = tee[i].getPar();
 							handicap = (int) tee[i].getHandicap();
 							temp_hole_name = tee[i].getName();
@@ -480,22 +446,21 @@ public class FieldEditor extends GolfWindow {
 				if (!hole_number.equals("1")) {
 					table.mergeCells(1, 11, 2, 11);
 					Link previous = new Link("Fyrri hola");
-					previous.addParameter("action", "view");
-					previous.addParameter("home_number", (Integer.parseInt(hole_number) - 1));
+					previous.addParameter("action", "view_hole");
+					previous.addParameter("hole_number", (Integer.parseInt(hole_number) - 1));
 					table.add(previous, 1, 11);
 				}
 				if (!hole_number.equals("18")) {
 					table.mergeCells(6, 11, 7, 11);
 					table.setAlignment(6, 11, "right");
 					Link next = new Link("Næsta hola");
-					next.addParameter("action", "view");
-					next.addParameter("home_number", (Integer.parseInt(hole_number) + 1));
+					next.addParameter("action", "view_hole");
+					next.addParameter("hole_number", (Integer.parseInt(hole_number) + 1));
 					table.add(next, 6, 11);
 				}
 
 				table.add(new HiddenInput("hole_number", hole_number), 6, row);
 				table.add(new HiddenInput("action", "update_tee"), 6, row);
-				if (image_id != null) table.add(new HiddenInput("hole_image_id", image_id), 6, row);
 
 				contentTable.add(form, 1, 1);
 				//     add(form);
@@ -503,8 +468,9 @@ public class FieldEditor extends GolfWindow {
 				Table rightTable = new Table();
 				int text_id = getHoleTextId(modinfo, Integer.parseInt(hole_number));
 				if (text_id != -1) {
-					TextReader reader = new TextReader(Integer.toString(text_id));
+					TextReader reader = new TextReader(text_id);
 					reader.setEnableDelete(false);
+					reader.setCacheable(false);
 					rightTable.add(reader, 1, 1);
 				}
 
@@ -522,21 +488,25 @@ public class FieldEditor extends GolfWindow {
 		private int updateHoleText(IWContext modinfo, int hole_number) throws SQLException {
 			int returner = -1;
 
-			System.out.println("updateHoleText, Hole_number = " + hole_number);
-
 			if (hole_number != -1) {
-				System.out.println("updateHoleText, hole_number != null");
-				TextModule text = (TextModule) IDOLookup.createLegacy(TextModule.class);
-				text.insert();
+				TxText text = (TxText) IDOLookup.createLegacy(TxText.class);
+				text.store();
 
 				returner = text.getID();
 
 				try {
-					HoleText holeText = ((HoleTextHome) IDOLookup.getHomeLegacy(HoleText.class)).create();
-					holeText.setTextId(returner);
-					holeText.setHoleNumber(hole_number);
-					holeText.setFieldId(this.field_id);
-					holeText.insert();
+					HoleText[] hole_texts = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("FIELD_ID", "" + this.field_id, "hole_number", "" + hole_number);
+					if (hole_texts.length > 0) {
+						hole_texts[0].setTextID(returner);
+						hole_texts[0].store();
+					}
+					else {
+						HoleText holeText = ((HoleTextHome) IDOLookup.getHomeLegacy(HoleText.class)).create();
+						holeText.setTextID(returner);
+						holeText.setHoleNumber(hole_number);
+						holeText.setFieldId(this.field_id);
+						holeText.store();
+					}
 				}
 				catch (CreateException ce) {
 					throw new SQLException(ce.getMessage());
@@ -552,7 +522,7 @@ public class FieldEditor extends GolfWindow {
 			try {
 				HoleText[] hole_texts = (HoleText[]) ((HoleText) IDOLookup.instanciateEntity(HoleText.class)).findAllByColumn("FIELD_ID", "" + this.field_id, "hole_number", "" + hole_number);
 				if (hole_texts.length > 0) {
-					returner = hole_texts[0].getTextId();
+					returner = hole_texts[0].getTextID();
 				}
 			}
 			catch (Exception e) {
@@ -576,7 +546,8 @@ public class FieldEditor extends GolfWindow {
 				if (images != null) {
 					if (images.length > 0) {
 						for (int i = 0; i < images.length; i++) {
-							images[i].setImageId(Integer.parseInt(hole_image_id));
+							images[i].setImageID(Integer.parseInt(hole_image_id));
+							images[i].store();
 						}
 					}
 					else {
@@ -584,8 +555,8 @@ public class FieldEditor extends GolfWindow {
 							TeeImage tee_image = ((TeeImageHome) IDOLookup.getHomeLegacy(TeeImage.class)).create();
 							tee_image.setHoleNumber(Integer.parseInt(hole_number));
 							tee_image.setFieldId(this.field_id);
-							tee_image.setImageId(Integer.parseInt(hole_image_id));
-							tee_image.insert();
+							tee_image.setImageID(Integer.parseInt(hole_image_id));
+							tee_image.store();
 						}
 						catch (CreateException ce) {
 							throw new SQLException(ce.getMessage());
@@ -605,10 +576,7 @@ public class FieldEditor extends GolfWindow {
 
 			}
 
-			modinfo.removeAttribute("image_id");
-
 			viewHole(modinfo);
-
 		}
 
 		protected void deleteTeeImage(IWContext modinfo) throws SQLException, FinderException {
@@ -621,23 +589,13 @@ public class FieldEditor extends GolfWindow {
 				if (images != null) {
 					if (images.length > 0) {
 						for (int i = 0; i < images.length; i++) {
-
-							try {
-								ImageEntity mynd = ((ImageEntityHome) IDOLookup.getHomeLegacy(ImageEntity.class)).findByPrimaryKey(images[i].getID());
-								mynd.delete();
-							}
-							catch (Exception e) {
-							}
-
 							images[i].delete();
 						}
 					}
 				}
 			}
 
-			modinfo.removeAttribute("image_id");
 			viewHole(modinfo);
-
 		}
 
 		protected void deleteFieldImage(IWContext modinfo) throws SQLException {
@@ -647,24 +605,13 @@ public class FieldEditor extends GolfWindow {
 			if (images != null) {
 				if (images.length > 0) {
 					for (int i = 0; i < images.length; i++) {
-
-						try {
-							ImageEntity mynd = ((ImageEntityHome) IDOLookup.getHomeLegacy(ImageEntity.class)).findByPrimaryKey(images[i].getID());
-							mynd.delete();
-						}
-						catch (Exception e) {
-						}
-
 						images[i].delete();
 					}
 				}
 			}
 
-			modinfo.removeAttribute("image_id");
 			add("augnablik...");
 			getParentPage().setToRedirect(modinfo.getRequest().getRequestURI());
-			//action(modinfo);
-
 		}
 
 		protected void update(IWContext modinfo) throws SQLException, FinderException {
@@ -694,14 +641,14 @@ public class FieldEditor extends GolfWindow {
 			if (field_image_id != null) {
 				FieldImage[] field_image = (FieldImage[]) ((FieldImage) IDOLookup.instanciateEntity(FieldImage.class)).findAllByColumn("field_id", this.field_id);
 				if (field_image.length > 0) {
-					field_image[0].setImageId(Integer.parseInt(field_image_id));
+					field_image[0].setImageID(Integer.parseInt(field_image_id));
 					field_image[0].update();
 				}
 				else {
 					try {
 						FieldImage f_i = ((FieldImageHome) IDOLookup.getHomeLegacy(FieldImage.class)).create();
 						f_i.setFieldId(this.field_id);
-						f_i.setImageId(Integer.parseInt(field_image_id));
+						f_i.setImageID(Integer.parseInt(field_image_id));
 						f_i.insert();
 					}
 					catch (CreateException ce) {
@@ -709,7 +656,6 @@ public class FieldEditor extends GolfWindow {
 					}
 				}
 			}
-			modinfo.removeAttribute("image_id");
 
 			boolean alright = false;
 			boolean color_0 = false;
