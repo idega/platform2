@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/02/20 14:48:50 $ by $Author: laddi $
- * @version $Revision: 1.94 $
+ * Last modified: $Date: 2004/02/23 14:23:14 $ by $Author: laddi $
+ * @version $Revision: 1.95 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -422,12 +422,12 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public Integer ejbFindLatestByUserAndSchool(int userID, int schoolID, Collection schoolTypes) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
-		sql.appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID);
-		sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID);
-		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
-		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendWhereEquals(" mb." + MEMBER, userID);
+		sql.appendAndEquals("cl." + SchoolClassBMPBean.SCHOOL, schoolID);
+		sql.appendAnd().appendLeftParenthesis().append("cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().append(true).appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).appendIsNull().appendRightParenthesis();
+		sql.appendAndEquals(" mb." + SCHOOLCLASS, "cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		if (schoolTypes != null) {
-			sql.appendAnd().append(this.SCHOOL_TYPE).appendInCollection(schoolTypes);
+			sql.appendAnd().append("mb." + this.SCHOOL_TYPE).appendInCollection(schoolTypes);
 		}
 		
 		sql.appendOrderBy(REGISTER_DATE + " desc");
