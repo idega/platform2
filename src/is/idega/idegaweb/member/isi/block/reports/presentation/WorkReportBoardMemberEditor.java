@@ -123,7 +123,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     // does the user want to save a new entry?
     if (iwc.isParameterSet(SUBMIT_SAVE_NEW_ENTRY_KEY))  {
       WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
-      WorkReportBoardMember member = createWorkReportBoardMember(getYear());
+      WorkReportBoardMember member = createWorkReportBoardMember();
       Iterator iterator = fieldList.iterator();
       while (iterator.hasNext())  {
         String field = (String) iterator.next();
@@ -348,7 +348,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
     return converter;
   }    
   
-  private WorkReportBoardMember createWorkReportBoardMember(int year)  {
+  private WorkReportBoardMember createWorkReportBoardMember()  {
     WorkReportBoardMember workReportBoardMember = null;
     try {
       workReportBoardMember =
@@ -361,6 +361,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
       e.printStackTrace(System.err);
     }
     workReportBoardMember.setReportId(getWorkReportId());
+    workReportBoardMember.store();
     return workReportBoardMember;
   }
   

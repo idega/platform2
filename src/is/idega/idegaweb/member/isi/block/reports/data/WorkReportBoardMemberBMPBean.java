@@ -247,12 +247,6 @@ public class WorkReportBoardMemberBMPBean extends GenericEntity implements WorkR
 		return getStringColumnValue(COLUMN_NAME_STATUS);
 	}
 	
-  /** primary key is immediately needed after creation for defining the relationship to a league */
-	protected boolean doInsertInCreate() {
-    return true;
-  }
-	
-	
 	/* (non-Javadoc)
 	 * @see javax.ejb.EJBLocalObject#remove()
 	 */
