@@ -19,10 +19,10 @@ import com.idega.io.MemoryOutputStream;
 /**
  * Document generator class that creates reports.
  * <p>
- * Last modified: $Date: 2003/04/23 10:46:09 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/03 08:30:27 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @see com.idega.block.reports.data.Report
  * @see se.idega.idegaweb.commune.report.business.Fetcher
  */
@@ -79,8 +79,7 @@ public class ReportGenerator implements MediaWritable
         final MemoryOutputStream reportStream = new MemoryOutputStream (report);
         final int columnCount = data != null && data.length > 0
                 ? data [0].length : 0;
-        reportStream.write (new String (reportInfo.getName ()
-                                        + "\n\n").getBytes ());
+        reportStream.write ((reportInfo.getName () + "\n\n").getBytes ());
 
         final String [] headers = reportInfo.getHeaders ();
         for (int col = 0; col < headers.length; col++) {

@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationListEditor.java,v 1.22 2004/01/06 14:03:14 tryggvil Exp $
+ * $Id: RegulationListEditor.java,v 1.23 2004/02/03 08:30:27 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -45,10 +45,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.RegulationExcep
 /**
  * RegulationListEditor is an idegaWeb block that edits a Regulation 
  * <p>
- * $Id: RegulationListEditor.java,v 1.22 2004/01/06 14:03:14 tryggvil Exp $
+ * $Id: RegulationListEditor.java,v 1.23 2004/02/03 08:30:27 staffan Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class RegulationListEditor extends AccountingBlock {
 
@@ -705,7 +705,7 @@ public class RegulationListEditor extends AccountingBlock {
 
 			if(condition.getDataParameter().length() != 0) {
 				args[0] = condition.getDataParameter();
-				partypes[0] = new String().getClass();
+				partypes[0] = String.class;
 			} else {
 				partypes = null;
 				args = null;

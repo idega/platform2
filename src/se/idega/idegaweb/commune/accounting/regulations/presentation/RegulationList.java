@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationList.java,v 1.17 2004/01/02 11:01:35 sigtryggur Exp $
+ * $Id: RegulationList.java,v 1.18 2004/02/03 08:30:27 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -39,10 +39,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationBMPBean#
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ConditionBMPBean#
  * <p>
- * $Id: RegulationList.java,v 1.17 2004/01/02 11:01:35 sigtryggur Exp $
+ * $Id: RegulationList.java,v 1.18 2004/02/03 08:30:27 staffan Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class RegulationList extends AccountingBlock {
 
@@ -335,7 +335,7 @@ public class RegulationList extends AccountingBlock {
 		fromDate.setLength(10);
 		toDate.setLength(10);
 		table.add(fromDate, 1, 1);
-		table.add(new String("-"), 2, 1);
+		table.add("-", 2, 1);
 		table.add(toDate, 3, 1);
 		return table;
 	}

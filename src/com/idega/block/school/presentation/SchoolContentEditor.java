@@ -366,7 +366,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 //		this.addRight("Box", box, true);
 		
 		this.addHiddenInput( new HiddenInput(PARAMETER_SCHOOL_ID, _school.getPrimaryKey().toString() ));
-		this.addRight(new String(""));
+		this.addRight("");
 		this.addSubmitButton(new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE));
 	}
 
@@ -568,7 +568,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 			//this.addRight("Box", box, true);
 		
 			this.addHiddenInput( new HiddenInput(PARAMETER_SCHOOL_ID, _school.getPrimaryKey().toString() ));
-			this.addRight(new String(""));
+			this.addRight("");
 			this.addSubmitButton(new SubmitButton(_iwrb.getLocalizedString("school.save", "Save"), PARAMETER_ACTION, ACTION_UPDATE));
 		}
 
