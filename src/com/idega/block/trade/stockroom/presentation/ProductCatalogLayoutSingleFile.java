@@ -23,10 +23,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
   }
 
   public PresentationObject getCatalog(ProductCatalog productCatalog, IWContext iwc, List productCategories) {
-
-    Form form = new Form();
     Table table = new Table();
-      form.add(table);
       table.setWidth("100%");
 
     int row = 0;
@@ -46,81 +43,81 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 
     for (int i = 0; i < productCategories.size(); i++) {
       if (i != 0){
-        ++row;
-        table.add(productCatalog.getCategoryText(Text.NON_BREAKING_SPACE), 1,row);
+	++row;
+	table.add(productCatalog.getCategoryText(Text.NON_BREAKING_SPACE), 1,row);
       }
       ++row;
       try {
-        pCat = (ICCategory) productCategories.get(i);
-        if (productCatalog._showCategoryName) {
-          table.mergeCells(1, row, 2, row);
-          table.add(productCatalog.getCategoryText(pCat.getName()), 1,row);
-        }
+	pCat = (ICCategory) productCategories.get(i);
+	if (productCatalog._showCategoryName) {
+	  table.mergeCells(1, row, 2, row);
+	  table.add(productCatalog.getCategoryText(pCat.getName()), 1,row);
+	}
 
-        if (productCatalog._hasEditPermission) {
-          configCategory = productCatalog.getProductCategoryEditorLink(pCat);
-          table.add(configCategory, 3,row);
-          table.setAlignment(3, row, "right");
-        }
+	if (productCatalog._hasEditPermission) {
+	  configCategory = productCatalog.getProductCategoryEditorLink(pCat);
+	  table.add(configCategory, 3,row);
+	  table.setAlignment(3, row, "right");
+	}
 
-        if (!productCatalog._showCategoryName && !productCatalog._hasEditPermission) {
-          --row;
-        }
+	if (!productCatalog._showCategoryName && !productCatalog._hasEditPermission) {
+	  --row;
+	}
 
-        catProducts = ProductBusiness.getProducts(pCat);//.getInstance().findRelated(pCat, Product.class);
-        productCatalog.sortList(catProducts);
-        for (int j = 0; j < catProducts.size(); j++) {
-          ++row;
-          table.mergeCells(1, row, 3, row);
-          try {
-            product = (Product) catProducts.get(j);
-            fileId = product.getFileId();
+	catProducts = ProductBusiness.getProducts(pCat);//.getInstance().findRelated(pCat, Product.class);
+	productCatalog.sortList(catProducts);
+	for (int j = 0; j < catProducts.size(); j++) {
+	  ++row;
+	  table.mergeCells(1, row, 3, row);
+	  try {
+	    product = (Product) catProducts.get(j);
+	    fileId = product.getFileId();
 
-            if (productCatalog._useAnchor) {
-              table.add(productCatalog.getAnchor(product.getID()),1,row);
-            }
+	    if (productCatalog._useAnchor) {
+	      table.add(productCatalog.getAnchor(product.getID()),1,row);
+	    }
 
-            if (productCatalog._hasEditPermission) {
-              table.add(productCatalog.getProductEditorLink(product), 1, row);
-              table.add(Text.NON_BREAKING_SPACE);
-            }
-            table.add(productCatalog.getNamePresentationObject(product), 1, row);
+	    if (productCatalog._hasEditPermission) {
+	      table.add(productCatalog.getProductEditorLink(product), 1, row);
+	      table.add(Text.NON_BREAKING_SPACE);
+	    }
+	    table.add(productCatalog.getNamePresentationObject(product), 1, row);
 
-            if (productCatalog._showThumbnail) {
-              if (fileId != -1) {
-                image = new Image(fileId);
-                table.add(image, 4, row);
-              }
-            }
+	    if (productCatalog._showThumbnail) {
+	      if (fileId != -1) {
+		image = new Image(fileId);
+		table.add(image, 4, row);
+	      }
+	    }
 
-            if (productCatalog._showTeaser) {
-              teaser = ProductBusiness.getProductTeaser(product, productCatalog._currentLocaleId);
-              if (!teaser.equals("")) {
-                ++row;
-                table.setWidth(2, row, "100%");
-                table.mergeCells(2, row, 3, row);
-                table.add(productCatalog.getText(teaser), 2,row);
-              }
-            }
+	    if (productCatalog._showTeaser) {
+	      teaser = ProductBusiness.getProductTeaser(product, productCatalog._currentLocaleId);
+	      if (!teaser.equals("")) {
+		++row;
+		table.setWidth(2, row, "100%");
+		table.mergeCells(2, row, 3, row);
+		table.add(productCatalog.getText(teaser), 2,row);
+	      }
+	    }
 
-            if (productCatalog._showDescription) {
-              description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
-              if (!description.equals("")) {
-                ++row;
-                table.setWidth(2, row, "100%");
-                table.mergeCells(2, row, 3, row);
-                table.add(productCatalog.getText(description), 2,row);
-              }
-            }
+	    if (productCatalog._showDescription) {
+	      description = ProductBusiness.getProductDescription(product, productCatalog._currentLocaleId);
+	      if (!description.equals("")) {
+		++row;
+		table.setWidth(2, row, "100%");
+		table.mergeCells(2, row, 3, row);
+		table.add(productCatalog.getText(description), 2,row);
+	      }
+	    }
 
-          }catch (Exception e) {
-            e.printStackTrace(System.err);
-          }
-        }
+	  }catch (Exception e) {
+	    e.printStackTrace(System.err);
+	  }
+	}
 
 
       }catch (Exception e) {
-        e.printStackTrace(System.err);
+	e.printStackTrace(System.err);
       }
     }
 
@@ -128,7 +125,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 //    add(getPagesTable(totalPages));
     //add(form);
 
-    return form;
+    return table;
   }
 
 }
