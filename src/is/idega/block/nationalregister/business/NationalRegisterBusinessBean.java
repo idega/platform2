@@ -408,7 +408,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserAssignableFromGroupToGroup(com.idega.user.data.User, com.idega.user.data.Group, com.idega.user.data.Group)
 	 */
-	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) {
+	public String isUserAssignableFromGroupToGroup(User user, Group sourceGroup, Group targetGroup) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -416,7 +416,7 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 	/* (non-Javadoc)
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#isUserSuitedForGroup(com.idega.user.data.User, com.idega.user.data.Group)
 	 */
-	public String isUserSuitedForGroup(User user, Group targetGroup) {
+	public String isUserSuitedForGroup(User user, Group targetGroup) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
 	}
