@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.71 2003/11/25 17:13:48 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.72 2003/11/26 12:05:42 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1506,7 +1506,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				regSpecTypeID = -1;
 			}
 
-			Collection reg = home.findRegulations(period, period, conditionType, flowID, condTypeID, regSpecTypeID);
+			Collection reg = home.findRegulations(period, period, operation, flowID, condTypeID, regSpecTypeID);
 			if (reg != null && !reg.isEmpty()) {
 				List match = new Vector();
 				Iterator it = reg.iterator();
