@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModule.java,v 1.8 2001/05/10 14:26:24 laddi Exp $
+ * $Id: GolfMainJSPModule.java,v 1.9 2001/05/15 15:40:53 gimmi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -408,7 +408,8 @@ public class GolfMainJSPModule extends MainSideJSPModule {
         poll.setNumberOfShownPolls(3);
         poll.setHeadlineLeft();
         poll.setAdminButtonURL("/pics/poll/pollstjori.gif");
-        poll.setSubmitButtonURL("/pics/formtakkar/vote.gif");
+        poll.setSubmitButtonURL("/pics/formtakks/kjosa.gif");
+        poll.setOtherPollsImage(new Image("/pics/formtakks/fyrrikannanir.gif","Fyrri kannanir"));
 
         HeaderTable pollTable = new HeaderTable();
             pollTable.setBorderColor("#8ab490");
