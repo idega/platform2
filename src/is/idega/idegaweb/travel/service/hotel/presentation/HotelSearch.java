@@ -167,6 +167,7 @@ public class HotelSearch extends AbstractSearchForm {
 			addAreaCodeInput();
 		} else {
 			try {
+				addInputLine(new String[]{definedProduct.getSupplier().getName()}, new PresentationObject[]{}, true);
 				addInputLine(new String[]{definedProduct.getProductName(iwc.getCurrentLocaleId())}, new PresentationObject[]{}, true);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
