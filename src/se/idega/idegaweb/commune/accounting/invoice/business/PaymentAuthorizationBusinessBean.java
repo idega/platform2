@@ -1,5 +1,5 @@
 /*
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.2 2004/03/22 10:55:58 roar Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.3 2004/03/23 12:08:45 roar Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -10,36 +10,36 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
 import java.sql.Date;
+import java.util.Collection;
+import java.util.Iterator;
 
-import com.idega.business.IBOServiceBean;
-import com.idega.business.IBOLookup;
-import com.idega.data.IDOLookup;
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.business.SchoolUserBusiness;
-import com.idega.block.school.data.School;
-import com.idega.presentation.IWContext;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.User;
-
-
+import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecordHome;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeader;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentHeaderHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.ConstantStatus;
+
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.business.SchoolUserBusiness;
+import com.idega.block.school.data.School;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOServiceBean;
+import com.idega.data.IDOLookup;
+import com.idega.presentation.IWContext;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 
 
 /**
  * This business handles the logic for Payment authorisation
  * 
  * <p>
- * $Id: PaymentAuthorizationBusinessBean.java,v 1.2 2004/03/22 10:55:58 roar Exp $
+ * $Id: PaymentAuthorizationBusinessBean.java,v 1.3 2004/03/23 12:08:45 roar Exp $
  *
  * @author Kelly
  */
@@ -84,6 +84,22 @@ public class PaymentAuthorizationBusinessBean extends IBOServiceBean implements 
 		}
 	}
 
+	public boolean hasAuthorizablePayments(User user) {
+		boolean ret = false;
+		try {
+			School provider = getCommuneUserBusiness().getProviderForUser(user);
+			int providerID = Integer.parseInt(provider.getPrimaryKey().toString());
+			Collection payments = getPaymentHeaderHome().
+					findByStatusAndSchoolId(ConstantStatus.BASE, providerID);
+			if (! payments.isEmpty()) {
+				ret = true;
+			}
+							
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
 
 	public String getProviderNameForUser(User user) {
 		String name = ""; 

@@ -5,4 +5,5 @@ public interface PaymentAuthorizationBusiness extends com.idega.business.IBOServ
 {
  public void authorizePayments(com.idega.user.data.User p0) throws java.rmi.RemoteException;
  public java.lang.String getProviderNameForUser(com.idega.user.data.User p0) throws java.rmi.RemoteException;
+ public boolean hasAuthorizablePayments(com.idega.user.data.User p0);
 }
