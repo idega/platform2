@@ -61,91 +61,49 @@ import com.idega.user.data.UserHome;
 public class SchoolUserEditor extends Block {
 
 	TextFormat _tFormat;
-
 	IWResourceBundle _iwrb;
-
 	IWBundle _iwb;
-
 	protected School _school;
-
 	public final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.school";
-
 	String PARAMETER_ACTION = "sue_act";
-
 	String ACTION_UPDATE_DEPM = "sue_up_dep";
-
 	String ACTION_VIEW_SCHOOL = "sue_pvs";
-
 	String ACTION_UPDATE = "sue_up_usrs";
-
 	String ACTION_VIEW_SCHOOL_DEPM = "sue_pvsd";
-
-	//String PARAMETER_SCHOOL_ID = "sue_sId";
+//String PARAMETER_SCHOOL_ID = "sue_sId";
 	public static String PARAMETER_TOPIC_EDITOR = "sue_to_edi";
-
 	public static String PARAMETER_TOPIC_DEPM = "sue_to_dep";
-
 	public static String PARAMETER_TOPIC_PERSON = "sue_to_per";
-
 	String PARAMETER_SCHOOL_ID = SchoolContentBusinessBean.PARAMETER_SCHOOL_ID;
-
 	private String PARAMETER_SCHOOL_USER_NAME = "sue_un";
-
 	private String PARAMETER_SCHOOL_USER_TELEPHONE = "sue_utf";
-
 	//private String PARAMETER_SCHOOL_USER_CELLPHONE = "sue_ucf";
 	private String PARAMETER_SCHOOL_USER_MOBILEPHONE = "sue_umf";
-
 	private String PARAMETER_SCHOOL_USER_EMAIL = "sue_uem";
-
 	private String PARAMETER_SCHOOL_USER_ID = "sue_uid";
-
 	private String PARAMETER_SCHOOL_USER_TYPE = "sue_sut";
-
 	private String PARAMETER_SCHOOL_DEPARTMENT = "sch_dep";
-
 	private String PARAMETER_SCHOOL_DEPARTMENT_PHONE = "sch_dep_ph";
-
 	private String PARAMETER_SCHOOL_DEPARTMENT_ID = "sue_did";
-
 	private String PARAMETER_SCHOOL_DEPARTMENT_ID_DROP = "sue_did_dr";
-
 	private String PARAMETER_SCHOOL_SHOW_CONTACT = "sue_show_cont";
-
 	private String PARAMETER_SCHOOL_SHOW_CONTACT_EDIT = "sue_show_cont_edi";
-
 	private String PARAMETER_SCHOOL_MAIN_HEADMASTER = "sue_main_headm";
-
 	private boolean PARAMETER_SCHOOL_HIGHSCHOOL = false;
-
 	private String PARAMETER_EDIT_USER = "sue_eds";
-
 	private String PARAMETER_DELTE_USER = "sue_dls";
-
 	private String PARAMETER_EDIT_SCH_DEP = "sue_edsd";
-
 	private String PARAMETER_DELETE_SCH_DEP = "sue_dlsd";
-
 	private static final String PARAMETER_IS_ECONOMICAL_RESP = "sue_is_economical_responsible";
-
 	private Text TEXT_NORMAL;
-
 	private Text TEXT_TITLE;
-
 	private String INPUT_STYLE;
-
 	private int userToEdit = -1;
-
 	private int depmToEdit = -1;
-
 	private List parameterNames;
-
 	private List parameterValues;
-
 	private Collection schoolTypeIds;
-
 	private int mobilePhoneType = PhoneType.MOBILE_PHONE_ID;
-
 	private boolean _highSchoolCategory = false;
 
 	public String getBundleIdentifier() {
@@ -164,7 +122,7 @@ public class SchoolUserEditor extends Block {
 		else {
 			schools = getSchoolBusiness(iwc).findAllSchoolsByType(schoolTypeIds);
 		}
-		//  	Collection schools = getSchoolBusiness(iwc).findAllSchools();
+
 		Table table = new Table();
 		int row = 0;
 
