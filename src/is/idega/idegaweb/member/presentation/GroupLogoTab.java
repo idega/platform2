@@ -8,9 +8,12 @@
  */
 package is.idega.idegaweb.member.presentation;
 
+import com.idega.block.help.presentation.Help;
 import com.idega.block.media.presentation.ImageInserter;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
@@ -29,6 +32,9 @@ public class GroupLogoTab extends UserGroupTab {
 
 	private static final String TAB_NAME = "usr_imag_tab_name";
 	private static final String DEFAULT_TAB_NAME = "Image";
+	
+	private static final String MEMBER_HELP_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private static final String HELP_TEXT_KEY = "group_logo_tab";
 	
 	/*	this is the order methods are executed
 			initializeFieldNames();
@@ -90,7 +96,7 @@ public class GroupLogoTab extends UserGroupTab {
 	public void lineUpFields() {
 		this.resize(1, 1);
 
-		Table imageTable = new Table(1, 3);
+		Table imageTable = new Table(1, 4);
 		imageTable.setWidth("100%");
 		imageTable.setCellpadding(0);
 		imageTable.setCellspacing(0);
@@ -100,6 +106,8 @@ public class GroupLogoTab extends UserGroupTab {
 		imageTable.add(removeImageField, 1, 3);
 		imageTable.add(Text.getNonBrakingSpace(),1,3);
 		imageTable.add(removeImageText,1,3);
+		Help help = getHelpButton();
+		imageTable.add(help,1,4);
 		this.add(imageTable, 1, 1);
 	}
 
@@ -178,6 +186,17 @@ public class GroupLogoTab extends UserGroupTab {
 			System.err.println(
 				"GroupLogoTab error initFieldContents, groupId : " + getGroupId());
 		}
+	}
+	public Help getHelpButton() {
+		IWContext iwc = IWContext.getInstance();
+		IWBundle iwb = getBundle(iwc);
+		Help help = new Help();
+		Image helpImage = iwb.getImage("help.gif");
+		help.setHelpTextBundle( MEMBER_HELP_BUNDLE_IDENTIFIER);
+		help.setHelpTextKey(HELP_TEXT_KEY);
+		help.setImage(helpImage);
+		return help;
+		
 	}
 
 	public String getBundleIdentifier() {
