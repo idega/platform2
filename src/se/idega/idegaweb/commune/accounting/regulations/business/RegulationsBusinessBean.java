@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.23 2003/09/11 20:24:35 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.24 2003/09/12 12:57:15 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -333,6 +333,8 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 		// There are always 5 conditions for each regulation.
 		// A condition is just a record with a pointer to the PK of Condition and the PK of the Interval
 		
+		r.toString(); // Added to remove compiler warning
+		c.toString(); // Added to remove compiler warning
 		return 0;	
 	}
 		 

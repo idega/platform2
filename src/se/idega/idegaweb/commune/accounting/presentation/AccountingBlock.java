@@ -420,16 +420,19 @@ public abstract class AccountingBlock extends CommuneBlock {
 	}
 	
 	protected boolean isOperationalFieldChildcareSelected(IWContext iwc){
+		iwc.toString(); // Added to remove compiler warning
 		//TODO: Implement
 		return true;
 	}
 	
 	protected boolean isOperationalFieldElementarySchoolSelected(IWContext iwc){
+		iwc.toString(); // Added to remove compiler warning
 		//TODO: Implement
 		return false;
 	}
 	
 	protected boolean isOperationalFieldHighSchoolSelected(IWContext iwc){
+		iwc.toString(); // Added to remove compiler warning
 		//TODO: Implement
 		return false;
 	}
