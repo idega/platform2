@@ -109,7 +109,7 @@ private boolean phones = false;
           memberList = union.getMembersInUnion();
       }
 
-      Collections.sort(memberList,new GenericMemberComparator(GenericMemberComparator.FIRSTLASTMIDDLE));
+      //Collections.sort(memberList,new GenericMemberComparator(GenericMemberComparator.FIRSTLASTMIDDLE));
 
       if ( memberList != null ) {
         for ( int a = 0; a < memberList.size(); a++ ) {
