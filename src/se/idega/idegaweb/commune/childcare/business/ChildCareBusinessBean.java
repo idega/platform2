@@ -34,6 +34,7 @@ import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
@@ -1712,10 +1713,26 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		map.put(peer.getAlias(), peer);
      
+
+		boolean hasBankId = false;
+		try{
+			hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner().getID());
+		}catch(SQLException ex){
+			//ignore
+		}
+		//todo (roar) remove code
+		System.out.println("hasBankId:" + hasBankId);
+		
+	
+		     
 		peer = new XmlPeer(ElementTags.CHUNK, "careTime");
 		if (application.getCareTime() != -1 && !isChange)
 			peer.setContent(String.valueOf(application.getCareTime()));
-		else
+		else if (hasBankId){
+			//todo (roar) remove code
+			System.out.println("Adding care-time tag");
+			peer.setContent("<care-time/>");
+		} else
 			peer.setContent("....");
 		map.put(peer.getAlias(), peer);
      
