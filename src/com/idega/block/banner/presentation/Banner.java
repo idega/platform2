@@ -67,7 +67,7 @@ public Banner(String attribute){
       if(sBannerID != null)
         _bannerID = Integer.parseInt(sBannerID);
       else if(getICObjectInstanceID() > 0){
-        _bannerID = BannerFinder.getObjectInstanceID(getICObjectInstance());
+        _bannerID = BannerFinder.getRelatedEntityId(getICObjectInstance());
         if(_bannerID <= 0 ){
           BannerBusiness.saveBanner(_bannerID,getICObjectInstanceID(),null);
           _newObjInst = true;
@@ -76,7 +76,7 @@ public Banner(String attribute){
     }
 
     if ( _newObjInst ) {
-      _bannerID = BannerFinder.getObjectInstanceID(new ICObjectInstance(getICObjectInstanceID()));
+      _bannerID = BannerFinder.getRelatedEntityId(new ICObjectInstance(getICObjectInstanceID()));
     }
 
     if(_bannerID > 0) {

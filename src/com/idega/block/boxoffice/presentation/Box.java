@@ -111,7 +111,7 @@ public Box(String attribute){
       if(sBoxID != null)
         _boxID = Integer.parseInt(sBoxID);
       else if(getICObjectInstanceID() > 0){
-        _boxID = BoxFinder.getObjectInstanceID(getICObjectInstance());
+        _boxID = BoxFinder.getRelatedEntityId(getICObjectInstance());
         if(_boxID <= 0 ){
           BoxBusiness.saveBox(_boxID,getICObjectInstanceID(),null);
           _newObjInst = true;
@@ -120,7 +120,7 @@ public Box(String attribute){
     }
 
     if ( _newObjInst ) {
-      _boxID = BoxFinder.getObjectInstanceID(new ICObjectInstance(getICObjectInstanceID()));
+      _boxID = BoxFinder.getRelatedEntityId(new ICObjectInstance(getICObjectInstanceID()));
     }
 
     if(_boxID > 0) {

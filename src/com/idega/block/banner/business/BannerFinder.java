@@ -6,6 +6,7 @@ import com.idega.core.data.ICFile;
 import java.sql.SQLException;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.data.ICObjectInstance;
+import com.idega.core.business.ICObjectBusiness;
 import java.util.List;
 
 /**
@@ -52,38 +53,6 @@ public class BannerFinder {
     }
   }
 
-  public static int getObjectInstanceID(ICObjectInstance eObjectInstance){
-    try {
-      List L = EntityFinder.findRelated(eObjectInstance,new BannerEntity());
-      if(L!= null){
-        return ((BannerEntity) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -2;
-
-    }
-  }
-
-  public static int getObjectInstanceIdFromID(int bannerID){
-    try {
-      BannerEntity banner = new BannerEntity(bannerID);
-      List L = EntityFinder.findRelated(banner,new ICObjectInstance());
-      if(L!= null){
-        return ((ICObjectInstance) L.get(0)).getID();
-      }
-      else
-        return -1;
-    }
-    catch (SQLException ex) {
-      ex.printStackTrace();
-      return -1;
-
-    }
-  }
 
   public static List getAdsInBanner(BannerEntity banner,int userID) {
     try {
@@ -156,4 +125,48 @@ public class BannerFinder {
       return null;
     }
   }
+
+  // BEGIN COPY PASTE CRAP
+
+  /**@todo make some sence into this crap**/
+  public static BannerEntity getObjectInstanceFromID(int ICObjectInstanceID){
+    try {
+     ICObjectInstance ICObjInst = new ICObjectInstance(ICObjectInstanceID);
+     List L = EntityFinder.findRelated(ICObjInst,BannerEntity.getStaticInstance(BannerEntity.class));
+     if(L!= null){
+       return (BannerEntity) L.get(0);
+     }
+     else
+       return null;
+    }
+    catch (SQLException ex) {
+     ex.printStackTrace();
+     return null;
+    }
+
+  }
+
+
+  public static int getRelatedEntityId(ICObjectInstance eObjectInstance){
+    ICObjectBusiness bis = ICObjectBusiness.getInstance();
+    return bis.getRelatedEntityId(eObjectInstance,BannerEntity.class);
+  }
+
+  public static int getObjectInstanceIdFromID(int bannerID){
+    try {
+      BannerEntity banner = new BannerEntity(bannerID);
+      List L = EntityFinder.findRelated(banner,new ICObjectInstance());
+      if(L!= null){
+        return ((ICObjectInstance) L.get(0)).getID();
+      }
+      else
+        return -1;
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return -1;
+
+    }
+  }
+
 }
