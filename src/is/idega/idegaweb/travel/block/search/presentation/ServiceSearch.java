@@ -125,7 +125,7 @@ public class ServiceSearch extends Block {
 				Integer.parseInt(currentSF);
 				currentSF = IWMainApplication.decryptClassName(currentSF);
 			} catch (NumberFormatException n) {
-				System.out.println("Cannot decrypt class name = "+currentSF);
+				//System.out.println("Cannot decrypt class name = "+currentSF);
 			}
 			AbstractSearchForm ss = null;
 			if (currentSF != null) {
