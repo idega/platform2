@@ -83,8 +83,10 @@ public class WorkReportAccountEditor extends WorkReportSelector {
   private static final String EXPENSES = "expenses";
   private static final String ASSET = "asset";
   private static final String DEBT = "debt";
+  private static final String EMPTY_COLUMN = "empty_column";
   
   private List specialFieldList;
+  private Map specialFieldColorMap;
   
   private boolean editable = true;
   
@@ -101,7 +103,26 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       specialFieldList.add(WorkReportConstants.NOT_EDITABLE_FIN_NAMES[i]);
     }
   }   
-
+  
+  {
+    specialFieldColorMap = new HashMap();
+    // green
+    specialFieldColorMap.put(WorkReportConstants.INCOME_SUM_KEY, "#8AE588");
+    specialFieldColorMap.put(WorkReportConstants.ASSET_SUM_KEY, "#8AE588");
+    // red
+    specialFieldColorMap.put(WorkReportConstants.EXPENSES_SUM_KEY,"#F89A8D");
+    specialFieldColorMap.put(WorkReportConstants.DEBT_SUM_KEY,"#F89A8D");
+    // blue
+    for (int i = 0; i < WorkReportConstants.NOT_EDITABLE_FIN_NAMES.length; i++) {
+      specialFieldColorMap.put(WorkReportConstants.NOT_EDITABLE_FIN_NAMES[i],"#A1C2FA");
+    }
+    // yellow
+    specialFieldColorMap.put(WorkReportConstants.INCOME_EXPENSES_SUM_KEY,"#FAFA46");    
+    // black
+    specialFieldColorMap.put(EMPTY_COLUMN, "#0000");
+    specialFieldColorMap.put(OKAY_BUTTON, "#0000");
+  }
+  
   private List fieldList = new ArrayList();
       
   private HashMatrix leagueKeyMatrix = new HashMatrix();
@@ -362,11 +383,15 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     fieldList.add(LEAGUE_NAME);
     addKeys(incomeKeys,INCOME);
     fieldList.add(WorkReportConstants.INCOME_SUM_KEY);
+    fieldList.add(EMPTY_COLUMN);
     addKeys(expensesKeys,EXPENSES);
     fieldList.add(WorkReportConstants.EXPENSES_SUM_KEY);
+    fieldList.add(EMPTY_COLUMN);
     fieldList.add(WorkReportConstants.INCOME_EXPENSES_SUM_KEY);
+    fieldList.add(EMPTY_COLUMN);
     addKeys(assetKeys,ASSET);
     fieldList.add(WorkReportConstants.ASSET_SUM_KEY);
+    fieldList.add(EMPTY_COLUMN);
     addKeys(debtKeys,DEBT);
     fieldList.add(WorkReportConstants.DEBT_SUM_KEY);
 
@@ -439,25 +464,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     Table mainTable = new Table(1,2);
     mainTable.add(browser, 1,1);
     if (editable) {
-      // add buttons
-//      PresentationObject newEntryButton = (ACTION_SHOW_NEW_ENTRY.equals(action)) ? 
-//        getSaveNewEntityButton(resourceBundle) : getCreateNewEntityButton(resourceBundle);
-//      PresentationObject deleteEntriesButton = getDeleteEntriesButton(resourceBundle);
-      PresentationObject cancelButton = getCancelButton(resourceBundle);
-      // add buttons
-      Table buttonTable = new Table(2,1);
-//      buttonTable.add(newEntryButton,1,1);
-//      buttonTable.add(deleteEntriesButton,2,1);
-      buttonTable.add(cancelButton, 1,1);
       if (! workReport.isAccountPartDone()) {
-        buttonTable.add(getFinishButton(resourceBundle), 2, 1);
+        mainTable.add(getFinishButton(resourceBundle), 1, 2);
       }
       else {
         Text text = new Text(resourceBundle.getLocalizedString("wr_account_editor_account_part_finished", "Account part has been finished."));
         text.setBold();
-        buttonTable.add(text, 2 , 1);
+        mainTable.add(text,1,2);
       }
-      mainTable.add(buttonTable,1,2);
     }
     return mainTable;
   }
@@ -482,34 +496,6 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     specialFieldAccountKeyIdsPlus.put(accountArea, plus);
   }
   
-//  private PresentationObject getCreateNewEntityButton(IWResourceBundle resourceBundle) {
-//    String createNewEntityText = resourceBundle.getLocalizedString("wr_account_editor_create_new_entry", "New entry");
-//    SubmitButton button = new SubmitButton(createNewEntityText, SUBMIT_CREATE_NEW_ENTRY_KEY, "dummy_value");
-//    button.setAsImageButton(true);
-//    return button;
-//  }
-
-//  private PresentationObject getSaveNewEntityButton(IWResourceBundle resourceBundle)  {
-//    String saveNewEntityText = resourceBundle.getLocalizedString("wr_div_board_member_editor_save_new_entry", "Save");
-//    SubmitButton button = new SubmitButton(saveNewEntityText, SUBMIT_SAVE_NEW_ENTRY_KEY, "dummy_value");
-//    button.setAsImageButton(true);
-//    return button;
-//  }    
-//  
-//  private PresentationObject getDeleteEntriesButton(IWResourceBundle resourceBundle)  {
-//    String deleteEntityText = resourceBundle.getLocalizedString("wr_account_editor_remove_entries", "Remove");
-//    SubmitButton button = new SubmitButton(deleteEntityText, SUBMIT_DELETE_ENTRIES_KEY, "dummy_value");
-//    button.setAsImageButton(true);
-//    return button;
-//  }    
- 
-  private PresentationObject getCancelButton(IWResourceBundle resourceBundle)  {
-    String cancelText = resourceBundle.getLocalizedString("wr_account_editor_cancel", "Cancel");
-    SubmitButton button = new SubmitButton(cancelText, SUBMIT_CANCEL_KEY, "dummy_value");
-    button.setAsImageButton(true);
-    return button;
-  }     
-  
   private PresentationObject getFinishButton(IWResourceBundle resourceBundle) {
     String finishText = resourceBundle.getLocalizedString("wr_account_editor_finish", "Finish");
     SubmitButton button = new SubmitButton(finishText, SUBMIT_FINISH_KEY, "dummy_value");
@@ -530,12 +516,14 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     // switch off the internal form of the browser
     browser.setUseExternalForm(true);
     // define converter
-    CheckBoxConverter checkBoxConverter = new CheckBoxConverter();
     WorkReportAccountInputConverter textEditorConverter = new WorkReportAccountInputConverter(form, resourceBundle);
     EntityToPresentationObjectConverter textConverter = new WorkReportAccountTextConverter();
+    EditOkayButtonConverter okayConverter = new EditOkayButtonConverter();
+    EntityToPresentationObjectConverter emptyConverter = new EmptyConverter();
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
+    okayConverter.maintainParameters(this.getParametersToMaintain());
+    
     // define if converters should be editable
-    checkBoxConverter.setEditable(editable);
     textEditorConverter.setEditable(editable);
     // textConverter does not offer any input fields
     // define path short keys and map corresponding converters
@@ -544,20 +532,28 @@ public class WorkReportAccountEditor extends WorkReportSelector {
     while (fieldListIterator.hasNext()) {
       String fieldName = fieldListIterator.next().toString();
       browser.setMandatoryColumn(i++, fieldName);
-      EntityToPresentationObjectConverter converter =
-        (specialFieldList.contains(fieldName)) ? textConverter : textEditorConverter;
+      browser.setAlignmentForColumn(fieldName, Table.HORIZONTAL_ALIGN_RIGHT);
+      EntityToPresentationObjectConverter converter;
+      if (EMPTY_COLUMN.equals(fieldName)) {
+        converter = emptyConverter;
+      }
+      else if (specialFieldList.contains(fieldName))  {
+        converter = textConverter;
+      }
+      else {
+        converter = textEditorConverter;
+      } 
       browser.setEntityToPresentationConverter(fieldName, converter);
     }
-    browser.setMandatoryColumn(i++, CHECK_BOX);
-    browser.setEntityToPresentationConverter(CHECK_BOX, checkBoxConverter);
     browser.setMandatoryColumn(i++, OKAY_BUTTON);
-    browser.setEntityToPresentationConverter(OKAY_BUTTON, new EditOkayButtonConverter());
-    browser.setCellpadding(2);
+    browser.setEntityToPresentationConverter(OKAY_BUTTON, okayConverter);
+    browser.setCellpadding(4);
     browser.setCellspacing(0);
-    browser.setBorder(0);
+    browser.setBorder(2);
     browser.setColorForEvenRows("#EFEFEF");
     browser.setColorForOddRows("#FFFFFF");
     browser.setColorForHeader("#DFDFDF");
+    browser.setColorForColumns(specialFieldColorMap);
     return browser;
   }
   
@@ -1051,9 +1047,28 @@ public class WorkReportAccountEditor extends WorkReportSelector {
         IWContext iwc) {
       String name = path.getShortKey();
       String value = ((EntityRepresentation) entity).getColumnValue(name).toString();
-      return new Text(value);
+      Text text =  new Text(value);
+      text.setBold();
+      return text;
     }
     
+  }
+
+  class EmptyConverter implements EntityToPresentationObjectConverter {
+    public PresentationObject getHeaderPresentationObject (
+        EntityPath entityPath,
+        EntityBrowser browser,
+        IWContext iwc) {
+      return new Text(" ");   
+    }
+      
+    public PresentationObject getPresentationObject(
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc) {
+      return new Text(" ");
+    }
   }
 
 } 

@@ -339,10 +339,15 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         while (leagues.hasNext()) {
           WorkReportGroup league = (WorkReportGroup) leagues.next();
           String leagueName = league.getName();
-          leaguesList.add(leagueName);
-          Integer count = (Integer) leagueCountMap.get(leagueName);
-          count = (count == null) ? null : new Integer( (count.intValue()) + 1 );
-          leagueCountMap.put(leagueName, count);
+          if (! WorkReportConstants.MAIN_BOARD_GROUP_NAME.equals(leagueName)) {
+            leaguesList.add(leagueName);
+            Integer count = (Integer) leagueCountMap.get(leagueName);
+            // if count is equal to null something is wrong: connection between work report and work report group is
+            // missing. So usually count is equal to null should never occur.
+            // Also: REMOVE the league that represents the main board
+            count = (count == null) ? new Integer(1) : new Integer( (count.intValue()) + 1 );
+            leagueCountMap.put(leagueName, count);
+          }
         }
         Integer memberId = (Integer) member.getPrimaryKey();
         memberLeaguesMap.put(memberId, leaguesList);
@@ -479,7 +484,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       "okay", new EditOkayButtonConverter(),
       CHECK_BOX, checkBoxConverter,
       NAME, null,
-      PERSONAL_ID, socialSecurityNumberEditorConverter,
+      PERSONAL_ID, null,
       STREET_NAME, textEditorConverter,
       POSTAL_CODE_ID, dropDownPostalCodeConverter};
     EntityBrowser browser = new EntityBrowser();
