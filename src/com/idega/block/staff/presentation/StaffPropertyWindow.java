@@ -21,6 +21,8 @@ import com.idega.core.user.presentation.UserPhoneTab;
 public class StaffPropertyWindow extends UserPropertyWindow{
 
   public static final String PARAMETERSTRING_USER_ID = "ic_user_id";
+  
+  public static final String SESSION_ADDRESS = "st_staff_property_window";
 
   public StaffPropertyWindow(){
     super();
@@ -28,7 +30,7 @@ public class StaffPropertyWindow extends UserPropertyWindow{
   }
 
   public String getSessionAddressString(){
-    return "st_staff_property_window";
+    return SESSION_ADDRESS;
   }
 
   public void initializePanel( IWContext iwc, TabbedPropertyPanel panel){
