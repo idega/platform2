@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.68 2005/01/19 08:11:06 anders Exp $
+ * $Id: SchoolClassMemberHomeImpl.java,v 1.69 2005/01/26 14:56:47 anders Exp $
  * Created on 29.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/19 08:11:06 $ by $Author: anders $
+ * Last modified: $Date: 2005/01/26 14:56:47 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.68 $
+ * @version $Revision: 1.69 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -412,6 +412,20 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+	
+	public Collection findBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolAndLog(schoolID, schoolClassID, schoolCategory, date);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	public Collection findBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date, boolean showNotYetActive) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolAndLog(schoolID, schoolClassID, schoolCategory, date, showNotYetActive);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 
 	public Collection findBySchoolChildcare(int schoolID, int schoolClassID, Date date, boolean showNotYetActive) throws FinderException{
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
@@ -419,6 +433,7 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+	
 	public Collection findBySchoolChildcare(int schoolID, int schoolClassID, String schoolCategory, Date date, boolean showNotYetActive) throws FinderException{
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolChildcare(schoolID, schoolClassID, schoolCategory, date, showNotYetActive);

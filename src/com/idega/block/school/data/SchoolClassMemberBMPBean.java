@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/01/25 08:55:39 $ by $Author: anders $
- * @version $Revision: 1.129 $
+ *         Last modified: $Date: 2005/01/26 14:56:47 $ by $Author: anders $
+ * @version $Revision: 1.130 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1055,8 +1055,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
             return idoFindPKsByQuery(query);
         } catch (IDORelationshipException e) {
             throw new FinderException(e.getMessage());
-        }
-        
+        }        
 	}
 
 	public Collection ejbFindBySchool(int schoolID, int schoolClassID, Date date, boolean showNotYetActive) throws FinderException {
@@ -1080,6 +1079,62 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE).appendGreaterThanOrEqualsSign().append(date).appendOr().append(REMOVED_DATE).append(" is null").appendRightParenthesis();
 		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
 		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
+	public Collection ejbFindBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date) throws FinderException {
+		return _ejbFindBySchoolAndLog(schoolID, schoolClassID, schoolCategory, date, null);
+	}
+	
+	public Collection ejbFindBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date, boolean showNotYetActive) throws FinderException {
+		return _ejbFindBySchoolAndLog(schoolID, schoolClassID, schoolCategory, date, new Boolean(showNotYetActive));
+	}
+
+	private Collection _ejbFindBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date, Boolean showNotYetActive) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelect();
+		sql.append("distinct m.*, u.*");
+		sql.appendFrom();
+		sql.append("sch_class_member m left join sch_class_member_log l ");
+		sql.append("on m.sch_class_member_id=l.sch_class_member_id,");
+		sql.append("sch_school_class c,");
+		sql.append("sch_school_type t,");
+		sql.append("ic_user u");
+		sql.appendWhereEquals("m.sch_school_type_id", "t.sch_school_type_id");
+		sql.appendAndEquals("m.sch_school_class_id", "c.sch_school_class_id");
+		sql.appendAndEquals("m.ic_user_id", "u.ic_user_id");
+		sql.appendAndEquals("c.school_id", schoolID).appendAnd();
+		sql.appendLeftParenthesis().appendEqualsQuoted("c.valid", "Y");
+		sql.appendOr().append("c.valid is null").appendRightParenthesis();
+		if (schoolCategory != null) {
+			sql.appendAndEqualsQuoted("t.school_category", schoolCategory);
+		}
+		if (schoolClassID != -1) {
+			sql.appendAnd();
+			sql.appendLeftParenthesis().appendLeftParenthesis();
+			sql.appendEquals("m.sch_school_class_id", schoolClassID).appendAnd();
+			sql.appendLeftParenthesis();
+			sql.appendEquals("l.sch_school_class_id", schoolClassID).appendOr();
+			sql.append("l.sch_school_class_id is null").appendRightParenthesis();
+			sql.appendRightParenthesis().appendOr();
+			sql.appendEquals("l.sch_school_class_id", schoolClassID);
+			sql.appendRightParenthesis();
+			sql.appendAnd().appendLeftParenthesis().append("l.start_date").appendLessThanOrEqualsSign().append(date);
+			sql.appendOr().append("l.start_date is null").appendRightParenthesis();
+			sql.appendAnd().appendLeftParenthesis().append("l.end_date").appendGreaterThanOrEqualsSign().append(date);
+			sql.appendOr().append("l.end_date is null").appendRightParenthesis();
+		}
+		if (showNotYetActive != null) {
+			if (showNotYetActive.booleanValue()) {
+				sql.appendAnd().append("m.register_date").appendGreaterThanSign().append(date);
+			} else {
+				sql.appendAnd().append("m.register_date").appendLessThanOrEqualsSign().append(date);
+			}
+		}
+		sql.appendAnd().appendLeftParenthesis();
+		sql.append("m.removed_date").appendGreaterThanSign().append(date);
+		sql.appendOr().append("m.removed_date is null").appendRightParenthesis();
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+		return super.idoFindPKsByQuery(sql);
 	}
 
 	public Collection ejbFindBySchoolChildcare(int schoolID, int schoolClassID, Date date, boolean showNotYetActive) throws FinderException {

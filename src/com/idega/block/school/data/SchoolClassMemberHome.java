@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberHome.java,v 1.68 2005/01/19 08:11:06 anders Exp $
+ * $Id: SchoolClassMemberHome.java,v 1.69 2005/01/26 14:56:47 anders Exp $
  * Created on 29.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/19 08:11:06 $ by $Author: anders $
+ * Last modified: $Date: 2005/01/26 14:56:47 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.68 $
+ * @version $Revision: 1.69 $
  */
 public interface SchoolClassMemberHome extends IDOHome {
 
@@ -297,6 +297,16 @@ public interface SchoolClassMemberHome extends IDOHome {
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindBySchool
 	 */
 	public Collection findBySchool(int schoolID, int schoolClassID, String schoolCategory, Date date, boolean showNotYetActive) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindBySchoolAndLog
+	 */
+	public Collection findBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date) throws FinderException;
+
+	/**
+	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindBySchoolAndLog
+	 */
+	public Collection findBySchoolAndLog(int schoolID, int schoolClassID, String schoolCategory, Date date, boolean showNotYetActive) throws FinderException;
 
 	/**
 	 * @see com.idega.block.school.data.SchoolClassMemberBMPBean#ejbFindBySchoolChildcare
