@@ -842,6 +842,8 @@ private Form getCategoryEditForm(){
     TextInput catagoryInput = new TextInput(catagoriTextInputName,((ImageCatagory)catagories.get(i)).getImageCatagoryName());
     catagoryInput.setLength(textInputLenth);
     contentTable.add(catagoryInput,1,i+2);
+    contentTable.add(new HiddenInput("ids",Integer.toString(((ImageCatagory)catagories.get(i)).getID())),1,i+2);
+
     contentTable.setHeight(i+1,"30");
     contentTable.add(new CheckBox(deleteTextInputName, Integer.toString(((ImageCatagory)catagories.get(i)).getID())),3,i+2);
   }
@@ -872,11 +874,12 @@ private Form getCategoryEditForm(){
   buttonTable.setWidth(3,1,"60");
   buttonTable.setAlignment(2,1,"left");
   buttonTable.setAlignment(3,1,"right");
-  buttonTable.setVerticalAlignment(2,1,"top");
+  buttonTable.setVerticalAlignment(2,1,"bottom");
+  buttonTable.setVerticalAlignment(3,1,"bottom");
 
   SubmitButton savebutton = new SubmitButton(save);
-  Link cancelLink = new Link(cancel);
-  buttonTable.add(cancelLink,2,1);
+  //Link cancelLink = new Link(cancel);
+  //buttonTable.add(cancelLink,2,1);
   buttonTable.add(savebutton,3,1);
 
   frameTable.add(buttonTable,1,2);

@@ -247,13 +247,14 @@ public void makeDefaultSizes(){
 
 
     public static void storeEditForm(ModuleInfo modinfo){
-/*      String submButtonValue = modinfo.getParameter("catagory_edit_form");
-      if(submButtonValue != null && "save".equalsIgnoreCase(submButtonValue)){
-*/        String catagoriTextInputName = "catagory";  // same as in ImageViewer getEditForm
+        String catagoriTextInputName = "catagory";  // same as in ImageViewer getEditForm
         String deleteTextInputName = "delete";      // same as in ImageViewer getEditForm
+        String idees = "ids";      // same as in ImageViewer getEditForm
 
         String[] catagoryName = modinfo.getParameterValues(catagoriTextInputName);
         String[] deleteValue = modinfo.getParameterValues(deleteTextInputName);
+        String[] ids = modinfo.getParameterValues(idees);
+
         ImageCatagory catagory = new ImageCatagory();
 
         //change
@@ -264,6 +265,37 @@ public void makeDefaultSizes(){
   //        }
   //
   //      }
+
+         //debug this is experimental code NOT failsafe!
+        try {
+          int k = ids.length;
+          ImageCatagory temp;
+          for (int i = 0; i < catagoryName.length; i++) {
+            if (catagoryName[i] != null && !"".equals(catagoryName[i]) ) {
+              String tempName = catagoryName[i];
+
+              if( i >= k ){//insert
+                temp = new ImageCatagory();
+                temp.setParentId(-1);
+                temp.setImageCatagoryName(tempName);
+                temp.insert();
+              }
+              else{//updates
+                temp = new ImageCatagory(Integer.parseInt(ids[i]));
+                if( !temp.getName().equalsIgnoreCase(tempName) ){
+                   temp.setImageCatagoryName(tempName);
+                   temp.update();
+                }
+              }
+
+            }
+          }
+        }
+        catch (Exception ex) {
+          ex.printStackTrace(System.err);
+          System.err.println("ImageBusiness : error in storeEditForm");
+        }
+
 
         //delete
         try {
@@ -280,20 +312,7 @@ public void makeDefaultSizes(){
           System.err.println("ImageBusiness : error in storeEditForm");
         }
 
-        try {
-          for (int i = 0; i < catagoryName.length; i++) {
-            if (catagoryName[i] != null && !"".equals(catagoryName[i]) ) {
-              ImageCatagory temp = new ImageCatagory();
-              temp.setParentId(-1);
-              temp.setImageCatagoryName(catagoryName[i]);
-              temp.insert();
-            }
-          }
-        }
-        catch (Exception ex) {
-          ex.printStackTrace(System.err);
-          System.err.println("ImageBusiness : error in storeEditForm");
-        }
+
 
 //}
     }
