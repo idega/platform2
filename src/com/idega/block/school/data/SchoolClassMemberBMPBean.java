@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/19 12:20:27 $ by $Author: goranb $
- * @version $Revision: 1.72 $
+ * Last modified: $Date: 2003/11/23 22:02:40 $ by $Author: goranb $
+ * @version $Revision: 1.73 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -228,9 +228,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append(userID)
 		.appendAnd()
 		
+		.appendLeftParenthesis()
 		.append(REMOVED_DATE)
 		.appendGreaterThanOrEqualsSign()
 		.append(REGISTER_DATE)
+		.appendOr()
+		.append(REMOVED_DATE)
+		.appendIsNull()
+		.appendRightParenthesis()
 		
 		.append(" ORDER BY " + REGISTER_DATE + " DESC");
 		
