@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.21 2003/09/12 00:16:21 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.22 2003/09/18 15:37:34 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -43,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.21 2003/09/12 00:16:21 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.22 2003/09/18 15:37:34 anders Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -201,7 +201,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 			return true;
 	}
 
-	private void generateStrings(IWContext iwc) {
+	public void generateStrings(IWContext iwc) {
 
 		_theOwnString = "";
 		_theDoubleString = "";
@@ -209,7 +209,14 @@ public class PostingParameterListEditor extends AccountingBlock {
 		try {
 			int index = 1;
 			PostingBusiness pBiz = getPostingBusiness(iwc);
-			Collection fields = pBiz.getAllPostingFieldsByDate(parseDate(iwc.getParameter(PARAM_PERIODE_FROM)));
+			Date date = null;
+			String dateString = iwc.getParameter(PARAM_PERIODE_FROM);
+			if (dateString == null) {
+				date = new Date(System.currentTimeMillis()); 
+			} else {
+				date = parseDate(dateString);
+			}
+			Collection fields = pBiz.getAllPostingFieldsByDate(date);
 			Iterator iter = fields.iterator();
 			while (iter.hasNext()) {
 				PostingField field = (PostingField) iter.next();
@@ -222,7 +229,19 @@ public class PostingParameterListEditor extends AccountingBlock {
 		}
 	}
 
+	/**
+	 * Returns the own posting string.
+	 */
+	public String getOwnPosting() {
+		return _theOwnString;
+	}
 
+	/**
+	 * Returns the double posting string.
+	 */
+	public String getDoublePosting() {
+		return _theDoubleString;
+	}
 
 	private void closeMe(IWContext iwc) {
 		iwc.forwardToIBPage(getParentPage(), _responsePage);
@@ -320,46 +339,6 @@ public class PostingParameterListEditor extends AccountingBlock {
 
 		Table table = new Table();
 		Table selectors = new Table();
-		Table accounts = new Table();
-		ListTable list1 = null;
-		ListTable list2 = null;
-		
-		try {
-			int index = 1;
-			PostingBusiness pBiz = getPostingBusiness(iwc);
-			Date defaultDate;
-			if (pp == null) {
-				defaultDate = new Date(System.currentTimeMillis());
-			} else  {
-				defaultDate = pp.getPeriodeFrom();
-			}
-			Collection fields = pBiz.getAllPostingFieldsByDate(defaultDate);
-			int size = fields.size();
-			list1 = new ListTable(this, size);
-			list2 = new ListTable(this, size);
-			Iterator iter = fields.iterator();
-			int readPointer = 0;
-			while (iter.hasNext()) {
-				PostingField field = (PostingField) iter.next();
-				list1.setHeader(field.getFieldTitle(), index);
-				list2.setHeader(field.getFieldTitle(), index);
-
-				int fieldLength = field.getLen();
-				String theData1 = "";
-				String theData2 = "";
-				if (pp != null) {
-					theData1 = pBiz.extractField(pp.getPostingString(),readPointer, fieldLength, field);
-				theData2 = pBiz.extractField(pp.getDoublePostingString(),readPointer, fieldLength, field);
-				}
-				readPointer += fieldLength;
-				
-				list1.add(getTextInput(PARAM_OWN_STRING+"_"+index, theData1, 60, field.getLen()));
-				list2.add(getTextInput(PARAM_DOUBLE_STRING+"_"+index, theData2, 60, field.getLen()));
-				index++;
-			}
-			
-		} catch (RemoteException e) {
-		}
 
 		try {
 			int actPK = 0;
@@ -404,18 +383,76 @@ public class PostingParameterListEditor extends AccountingBlock {
 			super.add(new ExceptionWrapper(e, this));
 		}	
 
-		accounts.add(getLocalizedText(KEY_HEADER_OWN_ENTRY, "Egen kontering"), 1, 1);
-		accounts.add(list1, 1, 2);
-		accounts.add(getLocalizedText(KEY_HEADER_DOUBLE_ENTRY, "Mot kontering"), 1, 3);
-		accounts.add(list2, 1, 4);
 		
 		table.add(getLocalizedLabel(KEY_CONDITIONS, "Villkor"), 1, 1);
 		table.add(selectors, 1, 2);
-		table.add(accounts, 1, 3);
+		String postingString = null;
+		String doublePostingString = null;
+		if (pp != null) {
+			postingString = pp.getPostingString();
+			doublePostingString = pp.getDoublePostingString();
+		}
+		table.add(getPostingParameterForm(iwc, pp, postingString, doublePostingString), 1, 3);
 		
 		return table;
 	}
 
+	
+	/*
+	 * Returns the posting form with selectors edit fields 
+	 * for "own entry" account as well as "double entry" accounts
+	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
+	 */
+	protected Table getPostingParameterForm(IWContext iwc, PostingParameters pp, String postingString, String doublePostingString) {
+		Table accounts = new Table();
+		ListTable list1 = null;
+		ListTable list2 = null;
+		
+		try {
+			int index = 1;
+			PostingBusiness pBiz = getPostingBusiness(iwc);
+			Date defaultDate;
+			if (pp == null) {
+				defaultDate = new Date(System.currentTimeMillis());
+			} else  {
+				defaultDate = pp.getPeriodeFrom();
+			}
+			Collection fields = pBiz.getAllPostingFieldsByDate(defaultDate);
+			int size = fields.size();
+			list1 = new ListTable(this, size);
+			list2 = new ListTable(this, size);
+			Iterator iter = fields.iterator();
+			int readPointer = 0;
+			while (iter.hasNext()) {
+				PostingField field = (PostingField) iter.next();
+				list1.setHeader(field.getFieldTitle(), index);
+				list2.setHeader(field.getFieldTitle(), index);
+
+				int fieldLength = field.getLen();
+				String theData1 = "";
+				String theData2 = "";
+				if (postingString != null) {
+					theData1 = pBiz.extractField(postingString,readPointer, fieldLength, field);
+					theData2 = pBiz.extractField(doublePostingString,readPointer, fieldLength, field);
+				}
+				readPointer += fieldLength;
+				
+				list1.add(getTextInput(PARAM_OWN_STRING+"_"+index, theData1, 60, field.getLen()));
+				list2.add(getTextInput(PARAM_DOUBLE_STRING+"_"+index, theData2, 60, field.getLen()));
+				index++;
+			}
+			
+		} catch (RemoteException e) {
+		}
+
+
+		accounts.add(getLocalizedText(KEY_HEADER_OWN_ENTRY, "Egen kontering"), 1, 1);
+		accounts.add(list1, 1, 2);
+		accounts.add(getLocalizedText(KEY_HEADER_DOUBLE_ENTRY, "Mot kontering"), 1, 3);
+		accounts.add(list2, 1, 4);
+				
+		return accounts;
+	}
 
 	/*
 	 * Retrives from business the current posting data that is pointed out by PARAM_EDIT_ID.
@@ -425,7 +462,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
 	 * @return PostingParameter loaded with data
 	 */
-	private PostingParameters getThisPostingParameter(IWContext iwc) {
+	protected PostingParameters getThisPostingParameter(IWContext iwc) {
 		PostingBusiness pBiz;
 		PostingParameters pp = null;
 		try {
