@@ -1,5 +1,6 @@
 package is.idega.idegaweb.campus.block.allocation.presentation;
 
+import com.idega.block.media.business.MediaBusiness;
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Link;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Hashtable;
 import com.lowagie.text.*;
 import java.io.*;
-import com.idega.block.media.servlet.MediaServlet;
+
 
 
 	public class ContractFilerWindow extends Window{
@@ -84,7 +85,7 @@ import com.idega.block.media.servlet.MediaServlet;
 			}
 
 			if(fileId > 0){
-				String url = MediaServlet.getMediaURL(fileId);
+				String url = MediaBusiness.getMediaURL(fileId,iwc.getApplication());
 				/*System.err.println("Contract file url"+url);
 				Link L = new Link("pdf");
 				L.setURL("/servlet/MediaServlet");
