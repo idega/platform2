@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.16 2003/09/02 12:17:13 anders Exp $
+ * $Id: VATEditor.java,v 1.17 2003/09/02 14:57:01 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -18,6 +18,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.text.Link;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -35,10 +36,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/09/02 12:17:13 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 14:57:01 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -48,8 +49,8 @@ public class VATEditor extends AccountingBlock {
 	private final static int ACTION_NEW = 3;
 	private final static int ACTION_OPEN = 4;
 	private final static int ACTION_SAVE = 5;
-	private final static int ACTION_DELETE_CONFIRM = 6;
-	private final static int ACTION_DELETE = 7;
+//	private final static int ACTION_DELETE_CONFIRM = 6;
+	private final static int ACTION_DELETE = 6;
 	
 	private final static String PP = "cacc_vat_"; // Parameter prefix 
 
@@ -62,12 +63,13 @@ public class VATEditor extends AccountingBlock {
 	private final static String PARAMETER_PAYMENT_FLOW_TYPE_ID = PP + "payment_flow_type_id";
 	private final static String PARAMETER_PROVIDER_TYPE_ID = PP + "provider_type_id";
 	private final static String PARAMETER_VAT_REGULATION_ID = PP + "vat_regulation_id";
+	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
 	private final static String PARAMETER_SEARCH = PP + "search";
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
 	private final static String PARAMETER_CANCEL = PP + "cancel";
-	private final static String PARAMETER_DELETE_CONFIRM = PP + "delete_confirm";
-	private final static String PARAMETER_DELETE = PP + "delete";
+//	private final static String PARAMETER_DELETE_CONFIRM = PP + "delete_confirm";
+//	private final static String PARAMETER_DELETE = PP + "delete";
 	private final static String PARAMETER_EDIT = PP + "edit";
 	
 	private final static String KP = "vat_editor."; // key prefix 
@@ -90,9 +92,11 @@ public class VATEditor extends AccountingBlock {
 	private final static String KEY_NEW = KP + "new";
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_CANCEL = KP + "cancel";
+//	private final static String KEY_DELETE = KP + "delete";
+//	private final static String KEY_DELETE_YES = KP + "delete_yes";
+//	private final static String KEY_DELETE_CONFIRM_MESSAGE = KP + "delete_confirm_message";
 	private final static String KEY_DELETE = KP + "delete";
-	private final static String KEY_DELETE_YES = KP + "delete_yes";
-	private final static String KEY_DELETE_CONFIRM_MESSAGE = KP + "delete_confirm_message";
+	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
 
@@ -123,9 +127,9 @@ public class VATEditor extends AccountingBlock {
 				case ACTION_SAVE:
 					handleSaveAction(iwc);
 					break;
-				case ACTION_DELETE_CONFIRM:
-					handleDeleteConfirmAction(iwc);
-					break;
+//				case ACTION_DELETE_CONFIRM:
+//					handleDeleteConfirmAction(iwc);
+//					break;
 				case ACTION_DELETE:
 					handleDeleteAction(iwc);
 					break;
@@ -151,9 +155,9 @@ public class VATEditor extends AccountingBlock {
 			action = ACTION_NEW;
 		} else if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			action = ACTION_SAVE;
-		} else if (iwc.isParameterSet(PARAMETER_DELETE_CONFIRM)) {
-			action = ACTION_DELETE_CONFIRM;
-		} else if (iwc.isParameterSet(PARAMETER_DELETE)) {
+//		} else if (iwc.isParameterSet(PARAMETER_DELETE_CONFIRM)) {
+//			action = ACTION_DELETE_CONFIRM;
+		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
 			action = ACTION_DELETE;
 		} else if (iwc.isParameterSet(PARAMETER_VAT_REGULATION_ID)) {
 			action = ACTION_OPEN;
@@ -171,6 +175,7 @@ public class VATEditor extends AccountingBlock {
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getSearchList(iwc, false));
 		app.setButtonPanel(getButtonPanel());
+		app.addHiddenInput(PARAMETER_DELETE_ID, "-1");
 		add(app);
 	}
 
@@ -183,6 +188,7 @@ public class VATEditor extends AccountingBlock {
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getSearchList(iwc, true));
 		app.setButtonPanel(getButtonPanel());
+		app.addHiddenInput(PARAMETER_DELETE_ID, "-1");
 		add(app);
 	}
 
@@ -277,6 +283,7 @@ public class VATEditor extends AccountingBlock {
 	/*
 	 * Handles the delete confirm action for this block.
 	 */	
+/*
 	private void handleDeleteConfirmAction(IWContext iwc) {		
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_DELETE_CONFIRM, "Ta bort momssats");
@@ -322,6 +329,7 @@ public class VATEditor extends AccountingBlock {
 		app.addHiddenInput(PARAMETER_VAT_REGULATION_ID, getParameter(iwc, PARAMETER_VAT_REGULATION_ID));
 		add(app);
 	}
+	*/
 
 	/*
 	 * Handles the delete action for this block.
@@ -330,7 +338,7 @@ public class VATEditor extends AccountingBlock {
 		String errorMessage = null;
 		try {
 			VATBusiness vb = getVATBusiness(iwc);
-			vb.deleteVATRegulation(getIntParameter(iwc, PARAMETER_VAT_REGULATION_ID));
+			vb.deleteVATRegulation(getIntParameter(iwc, PARAMETER_DELETE_ID));
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 		} catch (VATException e) {
@@ -417,22 +425,20 @@ public class VATEditor extends AccountingBlock {
 				textKey = vr.getProviderType().getTextKey();
 				list.add(textKey, textKey);
 
-				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
+				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna momssats")));
 				edit.addParameter(PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString());
 				list.add(edit);
 
-				Link delete = new Link(getDeleteIcon(localize(KEY_BUTTON_DELETE, "Ta bort")));
-				delete.addParameter(PARAMETER_DELETE_CONFIRM, "true");
-				delete.addParameter(PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString());
-				list.add(delete);
-
-//				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_DELETE, "Radera")));
-//				delete.setDescription(localize(KEY_BUTTON_DELETE, "Klicka här för att ta bort momssats"));
+//				Link delete = new Link(getDeleteIcon(localize(KEY_BUTTON_DELETE, "Ta bort")));
 //				delete.addParameter(PARAMETER_DELETE_CONFIRM, "true");
 //				delete.addParameter(PARAMETER_VAT_REGULATION_ID, vr.getPrimaryKey().toString());
-//				delete.setValueOnClick(PARAMETER_DELETE_ID, vr.getPrimaryKey().toString());
-//				delete.setSubmitConfirm(localize(KEY_DELETE_CONFIRM, "Vill du verkligen ta bort denna momssats?"));
 //				list.add(delete);
+
+				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_DELETE, "Radera")));
+				delete.setDescription(localize(KEY_BUTTON_DELETE, "Klicka här för att ta bort denna momssats"));
+				delete.setValueOnClick(PARAMETER_DELETE_ID, vr.getPrimaryKey().toString());
+				delete.setSubmitConfirm(localize(KEY_DELETE_CONFIRM, "Vill du verkligen ta bort denna momssats?"));
+				list.add(delete);
 			}
 		}
 
