@@ -108,15 +108,6 @@ public class TenantsHabitants extends Block implements Campus{
         _orderID = HabitantsComparator.NAME;
       }
 
-      Table myTable = new Table(1,2);
-        myTable.setWidth("100%");
-      myTable.add(getLinkTable(),1,1);
-      myTable.add(getTenantsTable(iwc),1,2);
-
-      image = myTable.getTransparentCell(iwc);
-        image.setHeight(6);
-
-      add(myTable);
     }
     else {
       _isPublic = true;
