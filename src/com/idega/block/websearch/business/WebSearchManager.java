@@ -5,6 +5,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import com.idega.block.websearch.data.*;
@@ -50,17 +51,19 @@ public final class WebSearchManager {
 	 * Creation date: (11/7/99 7:30:26 PM)
 	 */
 	public static void parseConfigXML(String configURI) {
-		System.out.println("Loading and parsing WebSearchManager config XML");
-		System.out.println(configURI);
+		//System.out.println("Loading and parsing WebSearchManager config XML");
+		//System.out.println(configURI);
 		try {
 			SAXBuilder builder = new SAXBuilder(false);
 			Document doc = builder.build(configURI);
 			Element root = doc.getRootElement();
-			// Get types 
+			
+			// Get indexes 
 			List indexElements = root.getChildren("index");
+			
 			// Iterate elements Elements and add to Types
 			for (int i = 0; i < indexElements.size(); i++) {
-				Element indexElement = (Element)indexElements.get(i);
+			   Element indexElement = (Element)indexElements.get(i);
 				// add new index to indexes HashMap
                String name = indexElement.getChild("name").getTextTrim();
                String indexURI = indexElement.getChild("indexURI").getTextTrim();
@@ -84,14 +87,27 @@ public final class WebSearchManager {
                indexes.put(name, webSearchIndex);		
 			}
 		
-		} catch (JDOMException e) {
+		} /*catch (JDOMException e) {
 			if (e.getRootCause() != null) {
 				e.getRootCause().printStackTrace();
 			} else {
 				e.printStackTrace();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			}}*/
+		catch (Exception e) {
+			//e.printStackTrace();
+			System.out.println("WebSearch: Error reading config file, pointing index to http://localhost by default");
+			String localhost = new String("http://localhost/");
+			
+			String indexURI = LinkParser.getRealPath(configURI, "../search/main", File.separator);
+			String[] seeds = {localhost};
+			String[] scopes = {localhost};
+
+			
+			WebSearchIndex webSearchIndex =  new WebSearchIndex(indexURI, seeds, scopes);
+               
+            indexes.put("main", webSearchIndex);
+               
+               
 		}
 	}
 }
