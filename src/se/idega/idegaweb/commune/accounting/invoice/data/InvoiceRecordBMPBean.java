@@ -1,19 +1,19 @@
 package se.idega.idegaweb.commune.accounting.invoice.data;
 
-import java.sql.Date;
-import java.util.Collection;
-
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolClassMemberBMPBean;
 import com.idega.block.school.data.SchoolType;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.user.data.User;
+import com.idega.user.data.UserBMPBean;
 import com.idega.util.IWTimestamp;
+import java.sql.Date;
+import java.util.Collection;
+import javax.ejb.FinderException;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 
 /**
  * This is the data bean for the "faktureringsrad", "fakturarad" och "detaljutbetalningspost" 
@@ -286,11 +286,24 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 
 	public Collection ejbFindByInvoiceHeader(InvoiceHeader invoiceHeader)
 		throws FinderException {
-		IDOQuery sql = idoQuery ();
-		sql.appendSelectAllFrom (this);
-		sql.appendWhereEquals (COLUMN_INVOICE_HEADER, invoiceHeader);
-		sql.appendOrderBy (COLUMN_ORDER_ID);
-		return idoFindPKsByQuery (sql);
+        final String R_ = "r."; // sql alias for invoice record
+        final String U_ = "u."; // sql alias for user
+        final String M_ = "m."; // sql alias for schoolclassmember
+        final String [] tableNames =
+						{ getTableName (), UserBMPBean.TABLE_NAME,
+							SchoolClassMemberBMPBean.SCHOOLCLASSMEMBER };
+        final String [] tableAliases = { "r", "u", "m" };
+				final IDOQuery sql = idoQuery ();
+        sql.appendSelect().append (R_).appendStar ();
+				sql.appendFrom (tableNames, tableAliases);
+				sql.appendWhereEquals (R_ + COLUMN_INVOICE_HEADER, invoiceHeader);
+				sql.appendAndEquals (R_ + COLUMN_SCHOOL_CLASS_MEMBER_ID,
+														 M_ + SchoolClassMemberBMPBean.SCHOOLCLASSMEMBERID);
+				sql.appendAndEquals (M_ + SchoolClassMemberBMPBean.MEMBER,
+														 U_ + User.FIELD_USER_ID);
+				sql.appendOrderBy (new String []
+					{ U_ + User.FIELD_DATE_OF_BIRTH + " desc", R_ + COLUMN_ORDER_ID });
+				return idoFindPKsByQuery (sql);
 	}
 
 	public Collection ejbFindByPaymentRecord (PaymentRecord paymentRecord)
