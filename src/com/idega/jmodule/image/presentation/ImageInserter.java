@@ -20,19 +20,25 @@ import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.jmodule.image.data.*;
 import com.idega.jmodule.image.business.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 
 public class ImageInserter extends JModuleObject{
 
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.image";
 private int imageId = -1;
 private String imSessionImageName =null;
 private String sHiddenInputName = null;
-private String defaultImageURL = "/pics/news/x.gif";
 private String adminURL = "/image/insertimage.jsp";
-private String nameOfWindow = "Ný Mynd";
-private String sUseBoxString = "Nota mynd: ";
+private String nameOfWindow;
+private String sUseBoxString;
 private int maxImageWidth = 140;
 private boolean hasUseBox = true;
 private boolean selected = false;
+
+private IWBundle iwb;
+private IWResourceBundle iwrb;
 
 public ImageInserter(){
   this.imSessionImageName="image_id";
@@ -58,6 +64,11 @@ public ImageInserter(int imageId, String imSessionImageName) {
 
   public void main(ModuleInfo modinfo)throws Exception{
 
+      iwb = getBundle(modinfo);
+      iwrb = getResourceBundle(modinfo);
+
+      nameOfWindow = iwrb.getLocalizedString("new_image","New image");
+      sUseBoxString = iwrb.getLocalizedString("use_image","Use image");
       String imageSessionId = (String) modinfo.getSession().getAttribute(imSessionImageName);
 
       if ( imageSessionId != null ) {
@@ -67,7 +78,7 @@ public ImageInserter(int imageId, String imSessionImageName) {
 
       Image image;
         if ( imageId == -1 ) {
-          image = new Image(defaultImageURL);
+          image = iwrb.getImage("picture.gif",iwrb.getLocalizedString("new_image","New image"),138,90);
         }
         else {
           image = new Image(imageId);
@@ -85,12 +96,19 @@ public ImageInserter(int imageId, String imSessionImageName) {
       CheckBox insertImage = new CheckBox("insertImage","Y");
         insertImage.setChecked(selected);
 
-      Text imageText = new Text(sUseBoxString);
+      Text imageText = new Text(sUseBoxString+":&nbsp;");
         imageText.setFontSize(1);
 
+      Table borderTable = new Table(1,1);
+        borderTable.setWidth("100%");
+        borderTable.setCellspacing(1);
+        borderTable.setCellpadding(0);
+        borderTable.setColor("#000000");
+        borderTable.add(imageAdmin);
+
       Table imageTable = new Table(1,2);
-        imageTable.setAlignment(1,2,"center");
-        imageTable.add(imageAdmin,1,1);
+        imageTable.setAlignment(1,2,"right");
+        imageTable.add(borderTable,1,1);
         if(hasUseBox){
           imageTable.add(imageText,1,2);
           imageTable.add(insertImage,1,2);
@@ -115,12 +133,9 @@ public ImageInserter(int imageId, String imSessionImageName) {
   public void setHiddenInputName(String name){
     sHiddenInputName = name;
   }
+
   public String getHiddenInputName(){
     return sHiddenInputName;
-  }
-
-  public void setDefaultImageURL(String defaultImageURL){
-    this.defaultImageURL = defaultImageURL;
   }
 
   public void setMaxImageWidth(int maxWidth){
@@ -138,7 +153,12 @@ public ImageInserter(int imageId, String imSessionImageName) {
   public void setImSessionImageName(String imSessionImageName) {
     this.imSessionImageName=imSessionImageName;
   }
+
   public String getImSessionImageName() {
     return this.imSessionImageName;
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 }

@@ -141,7 +141,7 @@ public void main(ModuleInfo modinfo)throws Exception{
 
   adminWindow = new Window("AdminWindow",NewsEditor.class,com.idega.jmodule.object.Page.class);
     adminWindow.setWidth(570);
-    adminWindow.setHeight(550);  boolean byDate=false;
+    adminWindow.setHeight(470);  boolean byDate=false;
 
   News[] news = new News[1];
 

@@ -15,35 +15,23 @@ import com.idega.data.*;
 import com.idega.util.text.*;
 import javax.servlet.http.*;
 import com.idega.util.text.TextSoap;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 
 
 public class NewsEditor extends JModuleObject{
 
-
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.news";
 private String Error;
 private boolean isAdmin=false;
 
-
-
-private String language = "IS";
-private String[] Lang = {"Fréttastjóri","Fyrirsögn", "Frétt", "Flokkur","Höfundur", "Heimild", "Fjöldi sýnilegra daga", "Mynd"};
-private String[] IS = {"Fréttastjóri","Fyrirsögn", "Frétt", "Flokkur","Höfundur", "Heimild", "Fjöldi sýnilegra daga", "Mynd"};
-private String[] EN = {"News Editor","Headline", "News", "Category","Author", "Source", "Number of visible days", "Image"};
-
-
-
-private Text headlinestring;
-private Text newsstring;
-private Text categorystring;
-private Text authorstring;
-private Text sourcestring;
-private Text daysshownstring;
-private Text imagestring;
 private String sEditor,sHeadline,sNews,sCategory,sAuthor,sSource,sDaysShown,sImage;
 
 private String attributeName = "union_id";
-//private int attributeId = -1;
 private int attributeId = 3;
+private IWBundle iwb;
+private IWResourceBundle iwrb;
 
   public NewsEditor(){
 
@@ -52,18 +40,55 @@ private int attributeId = 3;
     this.isAdmin=isAdmin;
   }
 
-  private void setSpokenLanguage(ModuleInfo modinfo){
+  public void main(ModuleInfo modinfo)throws Exception{
+    this.isAdmin=AccessControl.hasEditPermission(this,modinfo);
+    iwb = getBundle(modinfo);
+    iwrb = getResourceBundle(modinfo);
 
-    String language2 = modinfo.getParameter("language");
-    if (language2==null) language2 = ( String ) modinfo.getSession().getAttribute("language");
-    if ( language2 != null) language = language2;
-    if (language.equalsIgnoreCase("IS")){
-      Lang = IS;
-    }
-    else{
-      Lang = EN;
-    }
+    String mode = modinfo.getParameter("mode");
+    this.sHeadline = iwrb.getLocalizedString("headline","Headline");
+    this.sNews = iwrb.getLocalizedString("news","News");;
+    this.sCategory = iwrb.getLocalizedString("category","Category");;
+    this.sAuthor = iwrb.getLocalizedString("author","Author");;
+    this.sSource = iwrb.getLocalizedString("source","Source");;
+    this.sDaysShown = iwrb.getLocalizedString("visible_days","Number of days visible");;
+    this.sImage = iwrb.getLocalizedString("image","Image");;
+    this.sEditor = iwrb.getLocalizedString("news_editor","News Editor");;
 
+    this.getParentPage().setAllMargins(0);
+    this.getParentPage().setTitle(sEditor);
+
+    Text textTemplate = new Text();
+      textTemplate.setFontSize(Text.FONT_SIZE_7_HTML_1);
+      textTemplate.setBold();
+      textTemplate.setFontFace(Text.FONT_FACE_VERDANA);
+
+    try{
+      //check to see if we are doing anything special
+      if( mode != null){
+        if( mode.equals("save")){
+          if( storeNews(modinfo) )
+            add(feedBack(true));
+          else
+            add(feedBack(false));
+        }
+        else if( mode.equals("delete") ){
+          deleteNews(modinfo.getParameter("news_id"));
+        }
+      }
+
+      //else we are either writing something new or we are updating something we have selected
+      else{
+        if(isAdmin){
+        add(editorTable(modinfo));
+        }
+        else add(new Text("<center><b>"+iwrb.getLocalizedString("login_first","Login first!")+"</b></center>") );
+      }
+    }
+    catch(Exception e){
+      add(new Text("villa : "+e.getMessage()) );
+      e.printStackTrace(System.err);//something went wrong
+    }
   }
 
   public void setConnectionAttributes(String attributeName, int attributeId) {
@@ -86,61 +111,6 @@ private int attributeId = 3;
   return values;
   }
 
-  public void main(ModuleInfo modinfo)throws Exception{
-    this.isAdmin=AccessControl.hasEditPermission(this,modinfo);
-    setSpokenLanguage(modinfo);
-    String mode = modinfo.getParameter("mode");
-    this.sHeadline = Lang[1];
-    this.sNews = Lang[2];
-    this.sCategory = Lang[3];
-    this.sAuthor = Lang[4];
-    this.sSource = Lang[5];
-    this.sDaysShown = Lang[6];
-    this.sImage = Lang[7];
-    this.sEditor = Lang[0];
-
-    this.getParentPage().setAllMargins(0);
-    this.getParentPage().setTitle(sEditor);
-
-    headlinestring = new Text("<b>"+Lang[1]+"</b>");
-    newsstring = new Text("<b>"+Lang[2]+"</b>");
-    categorystring = new Text("<b>"+Lang[3]+"</b>");
-    authorstring = new Text("<b>"+Lang[4]+"</b>");
-    sourcestring = new Text("<b>"+Lang[5]+"</b>");
-    daysshownstring = new Text("<b>"+Lang[6]+"</b>");
-    imagestring = new Text("<b>"+Lang[7]+"</b>");
-
-    try{
-      //check to see if we are doing anything special
-      if( mode != null){
-        if( mode.equals("update") ){
-          //add(drawBrowseTable());
-        }
-        else if( mode.equals("save")){
-          if( storeNews(modinfo) )
-            add(feedBack(true));
-          else
-            add(feedBack(false));
-        }
-        else if( mode.equals("delete") ){
-          deleteNews(modinfo.getParameter("news_id"));
-        }
-      }
-
-      //else we are either writing something new or we are updating something we have selected
-      else{
-        if(isAdmin){
-        add(editorTable(modinfo));
-        }
-        else add(new Text("<center><b></b>Login First!</b></center>") );
-      }
-    }
-    catch(Exception e){
-      add(new Text("villa : "+e.getMessage()) );
-      e.printStackTrace(System.err);//something went wrong
-    }
-  }
-
   public void deleteNews(String news_id) throws SQLException{
     News news = new News(Integer.parseInt(news_id));
     news.delete();
@@ -150,50 +120,69 @@ private int attributeId = 3;
   }
 
   public Text getHeaderText(String s){
-    Text T = new Text(s);
-    T.setBold();
-    return T;
+    Text textTemplate = new Text(s);
+      textTemplate.setFontSize(Text.FONT_SIZE_7_HTML_1);
+      textTemplate.setBold();
+      textTemplate.setFontFace(Text.FONT_FACE_VERDANA);
+    return textTemplate;
   }
 
 
-  public Table editorTable(ModuleInfo modinfo)throws SQLException, IOException{
+  public Form editorTable(ModuleInfo modinfo)throws SQLException, IOException{
 
-    Table mainTable = new Table(1, 2);
+    Table mainTable = new Table(2, 2);
       mainTable.setWidth("100%");
       mainTable.setHeight("100%");
+      mainTable.setCellpadding(0);
+      mainTable.setCellspacing(0);
+      mainTable.mergeCells(1,1,2,1);
+      mainTable.setBorder(0);
+      mainTable.setRowVerticalAlignment(2,"top");
+      mainTable.setWidth(1,2,"392");
+      mainTable.setWidth(2,2,"178");
 
-    Table topToolTable = new Table(1,1);
+    Table topTable = new Table(2,1);
+      topTable.setCellpadding(0);
+      topTable.setCellspacing(0);
+      topTable.setAlignment(2,1,"right");
+      topTable.setWidth("100%");
 
-    Text tEditor = new Text(sEditor);
+    Image idegaweb = iwb.getImage("shared/idegaweb.gif","idegaWeb",90,25);
+      topTable.add(idegaweb,1,1);
+    Text tEditor = new Text(sEditor+"&nbsp;&nbsp;");
       tEditor.setBold();
       tEditor.setFontColor("#FFFFFF");
       tEditor.setFontSize("3");
+      topTable.add(tEditor,2,1);
 
-    topToolTable.add(tEditor,1,1);
-    topToolTable.setColor("4d6476");
-    topToolTable.setWidth("100%");
-
-    Table mainPanel = new Table(2,4);
-    Table sideToolTable = new Table(1,11);
+    Table mainPanel = new Table(1,2);
+      mainPanel.setAlignment("center");
+      mainPanel.setCellpadding(8);
+      //mainPanel.setWidth("100%");
+    Table sideToolTable = new Table(1,6);
+      sideToolTable.setAlignment("center");
+      //sideToolTable.setWidth("100%");
+      sideToolTable.setCellpadding(8);
 
     Form myForm = new Form();
 
 
     boolean update=false;
-    myForm.add(mainPanel);
-    mainTable.add(topToolTable,1,1);
-    mainTable.add(myForm,1,2);
+    mainTable.add(topTable,1,1);
+    mainTable.add(mainPanel,1,2);
+    myForm.add(mainTable);
 
     mainPanel.add(getHeaderText(sHeadline),1,1);
-    mainPanel.add(getHeaderText(sNews),1,3);
-    mainPanel.add(sideToolTable,2,1);
+    mainPanel.add(Text.getBreak(),1,1);
+    mainPanel.add(getHeaderText(sNews),1,2);
+    mainPanel.add(Text.getBreak(),1,2);
+    mainTable.add(sideToolTable,2,2);
 
-    mainTable.setColor("#EFEFEF");
+    mainTable.setColor(1,1,"#0E2456");
+    mainTable.setColor(1,2,"#FFFFFF");
+    mainTable.setColor(2,2,"#EFEFEF");
     mainPanel.setVerticalAlignment(1,1,"top");
     mainPanel.setVerticalAlignment(1,2,"top");
-    mainPanel.setVerticalAlignment(1,3,"top");
-    mainPanel.setVerticalAlignment(1,4,"top");
-    mainPanel.mergeCells(2,1,2,4);
 
     String news_id = modinfo.getParameter("news_id");
     String category_id = modinfo.getParameter("category_id");
@@ -209,35 +198,38 @@ private int attributeId = 3;
     else
       newsHidden = new HiddenInput("news_id","-1");
 
-    mainPanel.add(newsHidden,1,4);
+    mainPanel.add(newsHidden,1,2);
 
-    TextArea headlineArea;
+    TextInput headlineArea;
     if(update) {
       String theheadline = news.getHeadline();
       if( theheadline!=null )
-        headlineArea = insertTextArea("NewsHeader",theheadline, 0, 40);
+        headlineArea = insertEditBox("NewsHeader",theheadline);
       else
-        headlineArea = insertTextArea("NewsHeader","", 0, 40);
+        headlineArea = insertEditBox("NewsHeader");
     }
     else
-      headlineArea = insertTextArea("NewsHeader","", 0, 40);
+      headlineArea = insertEditBox("NewsHeader");
+      headlineArea.setSize(50);
+      headlineArea.setMaxlength(255);
 
-    mainPanel.add(headlineArea,1,2);
+    mainPanel.add(headlineArea,1,1);
 
     TextArea newsArea;
     if(update) {
       String thenewstext=news.getText();
       if ( thenewstext!=null)
-        newsArea = insertTextArea("NewsText",thenewstext,25, 45);
+        newsArea = insertTextArea("NewsText",thenewstext,22, 65);
       else
-        newsArea = insertTextArea("NewsText","",25, 45);
+        newsArea = insertTextArea("NewsText","",22, 65);
     }
     else
-      newsArea = insertTextArea("NewsText","",25, 45);
+      newsArea = insertTextArea("NewsText","",22, 65);
 
-    mainPanel.add(newsArea,1,4);
+    mainPanel.add(newsArea,1,2);
 
     DropdownMenu newsCategoryMenu = new DropdownMenu("category_id");
+    newsCategoryMenu.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
 
     String attName = NewsCategoryAttribute.getAttributeNameColumnName();
     String attId = NewsCategoryAttribute.getAttributeIdColumnName();
@@ -267,7 +259,8 @@ private int attributeId = 3;
       newsCategoryMenu.setSelectedElement("-1" );
     newsCategoryMenu.keepStatusOnAction();
     sideToolTable.add(getHeaderText(sCategory),1,1);
-    sideToolTable.add(newsCategoryMenu,1,2);
+    sideToolTable.add(Text.getBreak(),1,1);
+    sideToolTable.add(newsCategoryMenu,1,1);
 
     TextInput authorBox;
 
@@ -280,8 +273,9 @@ private int attributeId = 3;
     }
     else
       authorBox = insertEditBox("author");
-    sideToolTable.add(getHeaderText(sAuthor),1,3);
-    sideToolTable.add(authorBox,1,4);
+    sideToolTable.add(getHeaderText(sAuthor),1,2);
+    sideToolTable.add(Text.getBreak(),1,2);
+    sideToolTable.add(authorBox,1,2);
 
     TextInput sourceBox;
 
@@ -294,19 +288,23 @@ private int attributeId = 3;
     }
     else
       sourceBox = insertEditBox("source");
-    sideToolTable.add(getHeaderText(sSource),1,5);
-    sideToolTable.add(sourceBox,1,6);
+    sideToolTable.add(getHeaderText(sSource),1,3);
+    sideToolTable.add(Text.getBreak(),1,3);
+    sideToolTable.add(sourceBox,1,3);
 
     DropdownMenu counterMenu = counterDropdown( "daysShown", 1, 30);
-    counterMenu.addMenuElement("-1", "óákveðið" );
+    counterMenu.addMenuElement("-1", iwrb.getLocalizedString("undetermined","Undetermined") );
+    counterMenu.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
 
     if(update)
       counterMenu.setSelectedElement(""+news.getDaysShown());
     else
       counterMenu.setSelectedElement("-1");
-    sideToolTable.add(getHeaderText(sDaysShown),1,7);
-    sideToolTable.add(counterMenu,1,8);
-    sideToolTable.add(getHeaderText(sImage), 1, 9);
+    sideToolTable.add(getHeaderText(sDaysShown),1,4);
+    sideToolTable.add(Text.getBreak(),1,4);
+    sideToolTable.add(counterMenu,1,4);
+    sideToolTable.add(getHeaderText(sImage), 1, 5);
+    sideToolTable.add(Text.getBreak(),1,5);
 
     ImageInserter imageInsert = new ImageInserter();
       imageInsert.setSelected(false);
@@ -321,14 +319,13 @@ private int attributeId = 3;
         }
       }
 
-    sideToolTable.add(imageInsert, 1, 10);
-    SubmitButton mySubmit = new SubmitButton(new Image("/pics/jmodules/news/"+language+"/save.gif"));
+    sideToolTable.add(imageInsert, 1, 5);
+    SubmitButton mySubmit = new SubmitButton(iwrb.getImage("save.gif"));
     HiddenInput submitInput = new HiddenInput("mode","save");
-    sideToolTable.setAlignment(1,11,"right");
-    sideToolTable.add(submitInput, 1,11);
-    sideToolTable.add(mySubmit, 1,11);
-    mainPanel.setVerticalAlignment(2,1,"top");
-    return mainTable;
+    sideToolTable.setAlignment(1,6,"center");
+    sideToolTable.add(submitInput, 1,6);
+    sideToolTable.add(mySubmit, 1,6);
+    return myForm;
   }
 
   public boolean storeNews(ModuleInfo modinfo)throws SQLException, IOException{
@@ -409,6 +406,7 @@ private int attributeId = 3;
 
   public TextArea insertTextArea(String TextAreaName, String text, int Height, int Width){
     TextArea textArea =  new TextArea(TextAreaName);
+    textArea.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
     textArea.setHeight(Height);
     textArea.setWidth(Width);
     textArea.setContent(text);
@@ -418,6 +416,7 @@ private int attributeId = 3;
 
   public TextArea insertTextArea(String TextAreaName, int Height, int Width){
     TextArea textArea =  new TextArea(TextAreaName);
+    textArea.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
     textArea.setHeight(Height);
     textArea.setWidth(Width);
     textArea.keepStatusOnAction();
@@ -426,6 +425,7 @@ private int attributeId = 3;
 
   public TextInput insertEditBox(String name, String text){
     TextInput myInput = new TextInput(name);
+    myInput.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
     myInput.setContent(text);
     myInput.keepStatusOnAction();
     return myInput;
@@ -433,6 +433,7 @@ private int attributeId = 3;
 
   public TextInput insertEditBox(String name){
     TextInput myInput = new TextInput(name);
+    myInput.setAttribute("style","font-family:arial; font-size:8pt; color:#000000; text-align: justify; border: 1 solid #000000");
     myInput.keepStatusOnAction();
     return myInput;
   }
@@ -555,6 +556,10 @@ private int attributeId = 3;
       System.err.print("VendorError:  " + E.getErrorCode());
     }
     return myDropdown;
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
 }
