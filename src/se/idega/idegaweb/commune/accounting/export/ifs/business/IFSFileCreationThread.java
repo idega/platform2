@@ -1007,7 +1007,7 @@ public class IFSFileCreationThread extends Thread {
 								String amount = format.format(am);
 								bWriter.write(amount);
 								// Antal, pris,
-								bWriter.write("0000000000001");
+								bWriter.write("000000000000001");
 								bWriter.write(amount.substring(2, 14));
 								// moms, filler
 								bWriter.write(empty.substring(0, 2));
