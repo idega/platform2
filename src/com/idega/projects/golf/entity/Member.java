@@ -4,6 +4,7 @@ package com.idega.projects.golf.entity;
 
 //import java.util.*;
 import java.sql.*;
+import java.util.Vector;
 
 public class Member extends com.idega.data.genericentity.Member {
 
@@ -226,13 +227,17 @@ public class Member extends com.idega.data.genericentity.Member {
       }
     }
 
-    if ( union.length == 0 ) {
-      Union[] unionMember = (Union[]) this.findRelated(new Union());
-      if ( unionMember.length > 0 ) {
-        skilari = unionMember[0].getID();
+    try{
+      if ( union.length == 0 ) {
+        Union[] unionMember = (Union[]) this.findRelated(new Union());
+        if ( unionMember.length > 0 ) {
+          skilari = unionMember[0].getID();
+        }
       }
     }
-
+    catch(SQLException ex){
+      ex.printStackTrace();
+    }
     return skilari;
   }
 
@@ -290,8 +295,24 @@ public class Member extends com.idega.data.genericentity.Member {
   //public void addTo(Union union,String MemberShip type){
   //}
 
+
+  /**
+   * @todo needs to be updated and tested, using union_member_info instead of union_member
+   */
   public Union[] getUnions()throws SQLException{
-    Union union = new Union();
+
+    Union union = (Union)Union.getStaticInstance();
+    /**
+     * New implementation should be:
+     *
+
+    UnionMemberInfo[] unioninfos = (UnionMemberInfo[]) UnionMemberInfo.getStaticInstance("com.idega.projects.golf.entity.UnionMemberInfo").findAll("select * from union_member_info where member_id = "+this.getID());
+    Vector vect = new Vector();
+    for (int i = 0; i < unioninfos.length; i++) {
+      vect.add(new Union(unioninfos[i].getUnionID()));
+    }
+    return (Union[])vect.toArray(new Union[0]);
+    */
     return (Union[]) this.findRelated(union);
     //return (Union[])union.findAll("select * from "+union.getEntityName()+" where "+this.getIDColumnName()+"='"+this.getID()+"' ");
   }
