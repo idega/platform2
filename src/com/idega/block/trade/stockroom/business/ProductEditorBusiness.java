@@ -151,6 +151,8 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	  if (rCats != null && rCats.size() > 0) {
 	    for (int i = 0; i < rCats.size(); i++) {
 	      icCat = (Category) rCats.get(i);
+	      if ( cats == null )
+		catSel.addMenuElement(icCat.getID(),icCat.getName());
 	      catSel.setSelectedElement(Integer.toString(icCat.getID()));
 	    }
 	  }
