@@ -413,9 +413,15 @@ private String color_2 = null;
             Text spurn = new  Text((String) answers.elementAt(i));
               spurn.setFontSize(1);
               question.setFontFace(font_face);
-            Text percent = new Text( Integer.toString( (current_hits *100)/(total)  )+"%");
-              percent.setFontSize(1);
-              question.setFontFace(font_face);
+            Text percent;
+            if (total > 0) {
+              percent = new Text( Integer.toString( (current_hits *100)/(total)  )+"%");
+            }
+            else {
+              percent = new Text("0%");
+            }
+            percent.setFontSize(1);
+            question.setFontFace(font_face);
 
             myTable.add(spurn,2,row);
             if (showVotes) {
