@@ -1,6 +1,7 @@
 package is.idega.idegaweb.golf.tournament.presentation;
 
 import is.idega.idegaweb.golf.block.login.business.AccessControl;
+import is.idega.idegaweb.golf.block.login.business.GolfLoginBusiness;
 import is.idega.idegaweb.golf.entity.Field;
 import is.idega.idegaweb.golf.entity.Member;
 import is.idega.idegaweb.golf.entity.MemberBMPBean;
@@ -51,8 +52,11 @@ public class RegistrationForMembers extends GolfBlock {
 	public static final String PRM_TOURNAMENT_ID = "tournament_id";
 	public static final String PRM_ACTION = "action";
 	public static final String VAL_ACTION_OPEN = "open";
+	private final static String PRM_TEETIME_GROUP_NUMBER = "teeGrNum";
+	private final static String SUFFIX_TENTH_TEE = "_";
 
   CloseButton closeButton = new CloseButton();
+
 
   public void main(IWContext modinfo) throws Exception {
   	IWResourceBundle iwrb = getResourceBundle();
@@ -88,6 +92,11 @@ public class RegistrationForMembers extends GolfBlock {
                       register(modinfo, iwrb);
                   }else if (action.equals("directRegistrationMembersChosen")) {
                       finalizeDirectRegistration(modinfo,iwrb);
+                      if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
+                      	directRegistrationConfirmMessageWML(modinfo);
+                      } else {
+                      	getDirectRegistrationTable(modinfo,iwrb);
+                      }
                   }
               }
               else {
@@ -152,7 +161,11 @@ public class RegistrationForMembers extends GolfBlock {
           if (subAction == null) {
             try {
             		if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
-            			getDirectRegistrationTableWML(modinfo,iwrb);
+            			if (modinfo.getParameter(PRM_TEETIME_GROUP_NUMBER) != null) {
+            				getAvailableGroups(modinfo);
+                     }else {
+                     		getDirectRegistrationTableWML(modinfo,iwrb);
+                     }
               	} else {
               		getDirectRegistrationTable(modinfo,iwrb);
               	}
@@ -280,8 +293,29 @@ public class RegistrationForMembers extends GolfBlock {
           if (groups.size() != 0)  {
           	if(modinfo.isClientHandheld() || IWConstants.MARKUP_LANGUAGE_WML.equals(modinfo.getMarkupLanguage())){
           		Form form = new Form();
-	                form.maintainParameter("action");
-	                form.maintainParameter("subAction");
+          		    form.maintainParameter("subAction");
+          		    String gr = modinfo.getParameter(PRM_TEETIME_GROUP_NUMBER);
+          		    if(gr!=null){
+	                		form.maintainParameter(PRM_TEETIME_GROUP_NUMBER);
+	                		form.addParameter("action","directRegistrationMembersChosen");
+	                		String tournament_round = modinfo.getParameter("tournament_round");
+
+	                		form.addParameter("member_id",GolfLoginBusiness.getMember(modinfo).getPrimaryKey().toString());
+//	                		form.addParameter("tournament_group",);
+	                		int index = gr.indexOf(SUFFIX_TENTH_TEE);
+	                		if(index!=-1){
+	                			form.addParameter("starting_time",gr.substring(0,index-1));
+		                		form.addParameter("starting_tee",10);
+	                		}else{
+	                			form.addParameter("starting_time",gr);
+		                		form.addParameter("starting_tee",1);	
+	                		}
+	                		
+	                		form.maintainParameter("tournament_round");
+	                		
+	                }else{
+	                	 	form.maintainParameter("action");
+	                }
 	
 	            DropdownMenu groupsMenu = new DropdownMenu(groups);
 	
@@ -425,15 +459,11 @@ public class RegistrationForMembers extends GolfBlock {
 //        TournamentStartingtimeList form = getTournamentBusiness(modinfo).getStartingtimeTable(tournament,tournament_round_id,false,true,false,true);
 //        form.setSubmitButtonParameter("action", "open");
     	
-    		
-        Paragraph p = new Paragraph();
-        p.add(new Text(localize("temp.not_ready","It is not possible to register to this type of tournament at the moment.")));
-        add(p);
-    	
         Form form = new Form();
         form.addParameter("action", "open");
+        form.addParameter("tournament_round",tRounds[0].getPrimaryKey().toString());
         
-        DropdownMenu teetimes = getAvailableGrupNumsDropdownMenu(modinfo,"group_num",tournament,tRounds[0]);
+        DropdownMenu teetimes = getAvailableGrupNumsDropdownMenu(modinfo,PRM_TEETIME_GROUP_NUMBER,tournament,tRounds[0]);
         Label l = new Label(localize("start.choose_teetime","Choose teetime"),teetimes);
         SubmitButton button = new SubmitButton(localize("tournament.register","Register"));
         
@@ -1008,7 +1038,6 @@ public void finalizeDirectRegistration(IWContext modinfo, IWResourceBundle iwrb)
         }
     }
 
-    getDirectRegistrationTable(modinfo,iwrb);
 }
 
 
@@ -1047,7 +1076,7 @@ public DropdownMenu getAvailableGrupNumsDropdownMenu(IWContext iwc, String dropd
 				menu.addMenuElement(grupNum, extraZero.format(start.getHour()) + ":" + extraZero.format(start.getMinute()) + "&nbsp;&nbsp; ("+localize("tournament.tee","Tee")+" 1)");
 			}
 			if(!isFull_10[grupNum-1]){
-				menu.addMenuElement(grupNum + "_", extraZero.format(start.getHour()) + ":" + extraZero.format(start.getMinute()) + "&nbsp;&nbsp;  ("+localize("tournament.tee","Tee")+" 10)");
+				menu.addMenuElement(grupNum + SUFFIX_TENTH_TEE, extraZero.format(start.getHour()) + ":" + extraZero.format(start.getMinute()) + "&nbsp;&nbsp;  ("+localize("tournament.tee","Tee")+" 10)");
 			}
 		}
 		else {
@@ -1060,6 +1089,10 @@ public DropdownMenu getAvailableGrupNumsDropdownMenu(IWContext iwc, String dropd
 	return menu;
 }
 
-
+public void directRegistrationConfirmMessageWML(IWContext iwc){
+    Paragraph p = new Paragraph();
+    p.add(new Text(localize("temp.registered","You have been registered")));
+    add(p);
+}
 
 }
