@@ -108,8 +108,16 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 					table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column, row);
 				column++;
 				if (application.getApplicationStatus() == getBusiness().getStatusCancelled() || (application.getApplicationStatus() == getBusiness().getStatusNotAnswered() && application.getQueueDate() != null)) {
-					activateApplication = new SubmitButton(getDeleteIcon(localize("child_care.activate_application", "Click to reactivate application")));
-					activateApplication.setDescription(localize("child_care.activate_application", "Click to reactivate application"));
+					String description = null;
+					if (application.getApplicationStatus() == getBusiness().getStatusNotAnswered()) {
+						description = localize("child_care.activate_application", "Click to reactivate application");
+					}
+					else if (application.getApplicationStatus() == getBusiness().getStatusCancelled()) {
+						description = localize("child_care.reactivate_placement", "Click to reactivate placement");
+					}
+					
+					activateApplication = new SubmitButton(getDeleteIcon(description));
+					activateApplication.setDescription(description);
 					activateApplication.setValueOnClick(PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString());
 					activateApplication.setSubmitConfirm(localize("school.confirm_activation","Are you sure you want to reactivate this application?"));
 					table.add(activateApplication, column, row++);
