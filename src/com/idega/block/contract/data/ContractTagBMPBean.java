@@ -1,6 +1,6 @@
 /*
 
- * $Id: ContractTagBMPBean.java,v 1.3 2003/06/10 17:05:32 roar Exp $
+ * $Id: ContractTagBMPBean.java,v 1.4 2003/06/11 11:33:21 roar Exp $
 
  *
 
@@ -61,15 +61,17 @@ public class ContractTagBMPBean extends com.idega.data.GenericEntity implements 
 
     addAttribute(getIDColumnName());
 
-		addAttribute(getColumnNameCategoryId(),"Category",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.contract.data.ContractCategory.class);
+	addAttribute(getColumnNameCategoryId(),"Category",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.contract.data.ContractCategory.class);
 
     addAttribute(getColumnNameName(), "Name", true, true, java.lang.String.class);
 
     addAttribute(getColumnNameInfo(), "Info", true, true, java.lang.String.class);
 
-		addAttribute(getColumnNameInUse(), "In use", true, true, java.lang.Boolean.class);
+	addAttribute(getColumnNameInUse(), "In use", true, true, java.lang.Boolean.class);
 
-		addAttribute(getColumnNameInList(), "In list", true, true, java.lang.Boolean.class);
+	addAttribute(getColumnNameInList(), "In list", true, true, java.lang.Boolean.class);
+		
+	addAttribute(getColumnNameType(), "Type", true, true, java.lang.String.class);		
 
   }
 
@@ -86,6 +88,8 @@ public class ContractTagBMPBean extends com.idega.data.GenericEntity implements 
 	public static String getColumnNameInUse(){return "IN_USE";}
 
 	public static String getColumnNameInList(){return "IN_LIST";}
+	
+	public static String getColumnNameType(){return "TYPE";}
 
 
 
@@ -162,6 +166,19 @@ public class ContractTagBMPBean extends com.idega.data.GenericEntity implements 
 	  return getIntegerColumnValue(getColumnNameCategoryId());
 
 	}
+	
+	public Class getType(){
+		try{
+			return Class.forName(getStringColumnValue(getColumnNameType()));
+		}catch(ClassNotFoundException ex){
+			
+		}
+		return null;
+	}
+	
+	public void setType(Class type){
+		setColumn(getColumnNameType(), type.getName());
+	}	
 
 	public Collection ejbFindAllByCategory(int catID) throws FinderException {
 		return super.idoFindPKsByQuery(
