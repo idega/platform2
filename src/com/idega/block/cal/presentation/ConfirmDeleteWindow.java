@@ -146,7 +146,7 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     Text confirmText = new Text(iwrb.getLocalizedString("confirm_delete","Are you sure you want to delete this calendar entry?"));
     this.formatText(confirmText,true);
     if(typeOfObject.equals(CalendarEntryCreator.ENTRY)) {
-    	t.add(radioTable,1,3);
+    	t.add(radioTable,1,1);
     }
     else {
     	t.add(confirmText,1,1);
