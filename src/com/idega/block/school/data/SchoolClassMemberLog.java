@@ -1,6 +1,6 @@
 /*
- * $Id: SchoolClassMemberLog.java,v 1.4 2005/02/17 11:43:56 laddi Exp $
- * Created on 17.2.2005
+ * $Id: SchoolClassMemberLog.java,v 1.5 2005/03/07 17:02:19 laddi Exp $
+ * Created on 7.3.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
  *
@@ -10,17 +10,15 @@
 package com.idega.block.school.data;
 
 import java.sql.Date;
-
-
 import com.idega.data.IDOEntity;
 import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/17 11:43:56 $ by $Author: laddi $
+ * Last modified: $Date: 2005/03/07 17:02:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface SchoolClassMemberLog extends IDOEntity {
 
@@ -123,5 +121,4 @@ public interface SchoolClassMemberLog extends IDOEntity {
 	 * @see com.idega.block.school.data.SchoolClassMemberLogBMPBean#setEndDate
 	 */
 	public void setEndDate(Date endDate);
-
 }
