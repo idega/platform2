@@ -1370,95 +1370,103 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     // get year and group id from work report
     WorkReportBoardMemberHome membHome = getWorkReportBoardMemberHome();
     WorkReport workReport = getWorkReportById(workReportId);
-    // has the data already been created?
-    if (workReport.isCreationFromDatabaseDone())  {
-      return true;
-    }
-    // get the corresponding group 
-    int groupId = workReport.getGroupId().intValue();
-    // get group business
-    GroupBusiness groupBusiness;
-    try {
-      groupBusiness = getGroupBusiness();
-    }
-    catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportBusiness]: Can't retrieve GroupBusiness. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness.");
-    }
-
-    // do we have to create the data at all?
-    boolean isLeague;
-    boolean isRegionalUnion;
-    try {
-      Group group = groupBusiness.getGroupByGroupID(groupId);
-      String groupType = group.getGroupType();
-      isLeague = IWMemberConstants.GROUP_TYPE_LEAGUE.equals(groupType);
-      isRegionalUnion = IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(groupType);
-      // !! assumption: leagues and regional unions use the member system !!
-      if (! ( isLeague ||
-              isRegionalUnion ||
-              isClubUsingTheMemberSystem(group)))  {
-        // the group does not use the member system. The data has to be imported by a file.
-        // returns true because this is not an error.
-        return true;
-      }
-    }
-    catch (FinderException finderException) {
-      System.err.println("[WorkReportBusiness]: Can't find group. Message is: "
-        + finderException.getMessage());
-      return false;
-    }
-    catch (RemoteException ex) {
-      System.err.println(
-        "[WorkReportBusiness]: Can't retrieve WorkReportBusiness. Message is: "
-          + ex.getMessage());
-      ex.printStackTrace(System.err);
-      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve WorkReportBusiness.");
-    }
-    // update leagues
-    int year = workReport.getYearOfReport().intValue();
-    createOrUpdateLeagueWorkReportGroupsForYear(year);
-    //
-    // start transaction
-    //
-    TransactionManager tm = IdegaTransactionManager.getInstance();
-    try {
-      tm.begin();
-      
-      boolean boardDataCreated = 
-        createWorkReportBoardDataWithoutAnyChecks(workReportId, year, groupId, groupBusiness);
-      boolean memberDataCreated = (isLeague || isRegionalUnion) ? 
-        true : createWorkReportMemberDataWithoutAnyChecks(workReportId, groupId, groupBusiness);
-      if ( boardDataCreated && memberDataCreated ) {
-        // mark the sucessfull creation
-        workReport.setCreationFromDatabaseDone(true);
-        workReport.store();
-        tm.commit();
-        return true;
-      }
-      else {
-        tm.rollback();
-        return false;
-      }
-    }
-    catch (Exception ex)  {
-      System.err.println("[WorkReportBusiness]: Couldn't create work report data. Message is: " + 
-        ex.getMessage());
-      ex.printStackTrace(System.err);
-      try {
-        tm.rollback();
-        return false;
-      }
-      catch (SystemException sysEx) {
-        System.err.println("[WorkReportBusiness]: Couldn't rollback. Message is: " + 
-          sysEx.getMessage());
-        sysEx.printStackTrace(System.err);
-        return false;
-      }
-    }
+    
+	if(canWeUpdateWorkReportDataFromDatabase(workReport.getYearOfReport().intValue())){
+	    // has the data already been created?
+	    if (workReport.isCreationFromDatabaseDone())  {
+	      return true;
+	    }
+	    
+	    
+	    // get the corresponding group 
+	    int groupId = workReport.getGroupId().intValue();
+	    // get group business
+	    GroupBusiness groupBusiness;
+	    try {
+	      groupBusiness = getGroupBusiness();
+	    }
+	    catch (RemoteException ex) {
+	      System.err.println(
+	        "[WorkReportBusiness]: Can't retrieve GroupBusiness. Message is: "
+	          + ex.getMessage());
+	      ex.printStackTrace(System.err);
+	      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve GroupBusiness.");
+	    }
+	
+	    // do we have to create the data at all?
+	    boolean isLeague;
+	    boolean isRegionalUnion;
+	    try {
+	      Group group = groupBusiness.getGroupByGroupID(groupId);
+	      String groupType = group.getGroupType();
+	      isLeague = IWMemberConstants.GROUP_TYPE_LEAGUE.equals(groupType);
+	      isRegionalUnion = IWMemberConstants.GROUP_TYPE_REGIONAL_UNION.equals(groupType);
+	      // !! assumption: leagues and regional unions use the member system !!
+	      if (! ( isLeague ||
+	              isRegionalUnion ||
+	              isClubUsingTheMemberSystem(group)))  {
+	        // the group does not use the member system. The data has to be imported by a file.
+	        // returns true because this is not an error.
+	        return true;
+	      }
+	    }
+	    catch (FinderException finderException) {
+	      System.err.println("[WorkReportBusiness]: Can't find group. Message is: "
+	        + finderException.getMessage());
+	      return false;
+	    }
+	    catch (RemoteException ex) {
+	      System.err.println(
+	        "[WorkReportBusiness]: Can't retrieve WorkReportBusiness. Message is: "
+	          + ex.getMessage());
+	      ex.printStackTrace(System.err);
+	      throw new RuntimeException("[WorkReportBusiness]: Can't retrieve WorkReportBusiness.");
+	    }
+	    // update leagues
+	    int year = workReport.getYearOfReport().intValue();
+	    createOrUpdateLeagueWorkReportGroupsForYear(year);
+	    //
+	    // start transaction
+	    //
+	    TransactionManager tm = IdegaTransactionManager.getInstance();
+	    try {
+	      tm.begin();
+	      
+	      boolean boardDataCreated = 
+	        createWorkReportBoardDataWithoutAnyChecks(workReportId, year, groupId, groupBusiness);
+	      boolean memberDataCreated = (isLeague || isRegionalUnion) ? 
+	        true : createWorkReportMemberDataWithoutAnyChecks(workReportId, groupId, groupBusiness);
+	      if ( boardDataCreated && memberDataCreated ) {
+	        // mark the sucessfull creation
+	        workReport.setCreationFromDatabaseDone(true);
+	        workReport.store();
+	        tm.commit();
+	        return true;
+	      }
+	      else {
+	        tm.rollback();
+	        return false;
+	      }
+	    }
+	    catch (Exception ex)  {
+	      System.err.println("[WorkReportBusiness]: Couldn't create work report data. Message is: " + 
+	        ex.getMessage());
+	      ex.printStackTrace(System.err);
+	      try {
+	        tm.rollback();
+	        return false;
+	      }
+	      catch (SystemException sysEx) {
+	        System.err.println("[WorkReportBusiness]: Couldn't rollback. Message is: " + 
+	          sysEx.getMessage());
+	        sysEx.printStackTrace(System.err);
+	        return false;
+	      }
+	    }
+	    
+	}
+	
+	return true;
   }
    
   private boolean createWorkReportBoardDataWithoutAnyChecks(int workReportId, int year, int groupId, GroupBusiness groupBusiness)  {
