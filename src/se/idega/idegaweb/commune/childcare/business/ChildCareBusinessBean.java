@@ -1289,7 +1289,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 			PDFTemplateWriter pdfWriter = new PDFTemplateWriter();
 			int fileID = pdfWriter.writeToDatabase(getTagMap(application, locale, validFrom, !changeStatus), getXMLContractURL(getIWApplicationContext().getApplication().getBundle(se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER), locale));
-			int contractID = ContractBusiness.createContract(application.getChildId(), 2, validFrom, null, "C", null);
+			//TODO Change to a more appropriate method call
+			int contractID = ContractBusiness.createContract(application.getChildId(), 2, validFrom, null, "C", (Map)null);
 
 			application.setContractId(contractID);
 			application.setContractFileId(fileID);
