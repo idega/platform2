@@ -1,5 +1,5 @@
 /*
- * $Id: GolfMainJSPModulePage.java,v 1.32 2001/08/09 18:50:37 eiki Exp $
+ * $Id: GolfMainJSPModulePage.java,v 1.33 2001/08/09 19:02:18 eiki Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -118,7 +118,7 @@ public class GolfMainJSPModulePage extends MainPage {
     // uncomment this and change for different tournaments
    // leftTable.add(getHoleView(),1,1);
 
-    leftTable.addBreak(1,1);
+    //leftTable.addBreak(1,1);
     leftTable.add(Languages(),1,2);
 
     HeaderTable sponsorBox = Sponsors();
@@ -469,7 +469,7 @@ public class GolfMainJSPModulePage extends MainPage {
       table.setHeadlineColor("#FFFFFF");
       table.setHeadlineLeft();
       table.setWidth(148);
-      table.setHeaderText(iwrb.getLocalizedString("golferpage.header_table_name","Afreks kylfingar"));
+      table.setHeaderText(iwrb.getLocalizedString("golferpage.header_table_name","Pro golfers"));
       //this should be automated
       Table golfers = new Table(1,1);
 
@@ -500,9 +500,16 @@ public class GolfMainJSPModulePage extends MainPage {
           rightTable.setVerticalAlignment(1,10,"top");
 
           rightTable.setColumnAlignment(1, "center");
-          rightTable.add(getProGolfers(),1,1);
+          HeaderTable proGolfers = getProGolfers();
+          proGolfers.setCacheable("proGolfers",86400000);//24 hour
+
+          rightTable.add(proGolfers,1,1);
           //rightTable.add(new Flash("http://clarke.idega.is/golfnews.swt?text="+java.net.URLEncoder.encode(iwrb.getLocalizedString("template.international_golf_news","International golf news")),148,288),1,3);
-          rightTable.add(getPollVoter(),1,3);//1,5
+
+
+          HeaderTable poll = getPollVoter();
+          poll.setCacheable("poll",3600000);//1 hour
+          rightTable.add(poll,1,3);//1,5
 
           HeaderTable asses = getGSIAssociates();
           asses.setCacheable("asses",86400000);//24 hour
@@ -510,8 +517,11 @@ public class GolfMainJSPModulePage extends MainPage {
 
           HeaderTable gLinks = getGolfLinks();
           gLinks.setCacheable("gLinks",86400000);//24 hour
-
           rightTable.add(gLinks,1,7);//1,9
+
+          JModuleObject yellow = new JModuleObject();
+          add(getYellowLine());
+          yellow.setCacheable("yellow",86400000);//24 hour
           rightTable.add(getYellowLine(),1,9);//1,11
 
 
