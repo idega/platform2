@@ -56,8 +56,8 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
 
     try {
       rootGroup = this.getRootCitizenGroup();
-      newUser = this.getUserBusiness().createUser(firstname,middlename,lastname,personalID,gender,dateOfBirth);
-      rootGroup.addGroup(newUser);
+      newUser = this.getUserBusiness().createUser(firstname,middlename,lastname,personalID,gender,dateOfBirth,rootGroup);
+      //rootGroup.addGroup(newUser);
     }
     catch (Exception ex) {
       throw new com.idega.data.IDOCreateException(ex);
@@ -90,6 +90,9 @@ public class CommuneUserBusinessBean extends IBOServiceBean implements CommuneUs
       user.setFullName(fullName.toString());
       user.setGender( (Integer) gender.getPrimaryKey() );
       user.setDateOfBirth(dateOfBirth.getDate());
+      
+      //Sets the user in the correct primary group (Commune Root Users)
+      user.setPrimaryGroup(getRootCitizenGroup());
       
       user.store();
     }
