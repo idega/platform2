@@ -1,6 +1,6 @@
 package com.idega.block.school.data;
 
-import javax.ejb.*;
+import com.idega.data.IDOAddRelationshipException;
 
 public interface School extends com.idega.data.IDOEntity
 {
@@ -43,4 +43,5 @@ public interface School extends com.idega.data.IDOEntity
  public void setSchoolPhone(java.lang.String p0) throws java.rmi.RemoteException;
  public java.lang.String getSchoolName() throws java.rmi.RemoteException;
  public void addSchoolYears(int[] p0) throws java.rmi.RemoteException;
+public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException;
 }

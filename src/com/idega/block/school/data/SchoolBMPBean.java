@@ -181,6 +181,10 @@ public class SchoolBMPBean extends GenericEntity implements School {
 
     }
   }
+  
+  public void addSchoolYear(SchoolYear year) throws IDOAddRelationshipException{
+      super.idoAddTo(year);
+  }
 
   public void addSchoolYearsRemoveOther(int[] ids){
     try{
