@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.53 2001/12/05 17:05:53 palli Exp $
+ * $Id: NewsReader.java,v 1.54 2001/12/10 20:56:40 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -59,6 +59,8 @@ public class NewsReader extends Block implements IWBlock {
   private int numberOfExpandedNews = 3;
   private int numberOfCollectionNews = 5;
   private int iSpaceBetween = 1;
+  private int iSpaceBetweenNews = 30;
+  private int iSpaceBetweenNewsAndBody = 10;
   private int cellPadding = 0;
   private int cellSpacing = 0;
   private int viewPageId = -1;
@@ -77,6 +79,8 @@ public class NewsReader extends Block implements IWBlock {
   private boolean enableDelete=true;
   private boolean viewNews = true;
   private boolean newobjinst = false;
+  private boolean showBackText = true;
+  private boolean showMoreText = true;
   private String outerTableWidth = "100%";
   private String sObjectAlign = "center";
   private String headlineImageURL;
@@ -84,6 +88,8 @@ public class NewsReader extends Block implements IWBlock {
   private String secondTableColor = null;
   private String dateAlign = "left";
   private Image headlineImage = null;
+  private Image backImage = null;
+  private Image moreImage = null;
 
   private Hashtable objectsBetween = null;
   private Text textProxy = new Text();
@@ -146,9 +152,9 @@ public class NewsReader extends Block implements IWBlock {
   }
 */
   private void init(){
-		//headlineProxy.setFontStyle(TextStyler.getStyle(null,Text.FONT_FACE_STYLE_BOLD,null,"10",null));
-		//informationProxy.setFontStyle(TextStyler.getStyle(null,null,"666666",null,null));
-		//textProxy.setFontStyle(TextStyler.getDefaultStyle());
+    //headlineProxy.setFontStyle(TextStyler.getStyle(null,Text.FONT_FACE_STYLE_BOLD,null,"10",null));
+    //informationProxy.setFontStyle(TextStyler.getStyle(null,null,"666666",null,null));
+    //textProxy.setFontStyle(TextStyler.getDefaultStyle());
     headlineProxy.setBold();
     informationProxy.setFontColor("#666666");
     textProxy.setFontSize(1);
@@ -161,10 +167,10 @@ public class NewsReader extends Block implements IWBlock {
   }
 	/** @todo take out when instanceId handler is used */
 	private String getInstanceIDString(IWContext iwc){
-		if(viewPageId > 0 || iwc.isParameterSet(prmFromPage))
-			return "";
-		else
-			return String.valueOf(getICObjectInstanceID());
+          if(viewPageId > 0 || iwc.isParameterSet(prmFromPage))
+            return "";
+          else
+            return String.valueOf(getICObjectInstanceID());
 	}
 
 	private Parameter getFromPageParameter(){
@@ -173,23 +179,23 @@ public class NewsReader extends Block implements IWBlock {
 
 	private void checkFromPage(Link link){
 	  if(viewPageId > 0)
-			link.addParameter(getFromPageParameter());
+            link.addParameter(getFromPageParameter());
 	}
 
   private void control(IWContext iwc){
     Locale locale = iwc.getCurrentLocale();
-		 String sNewsId = null;
-		if(viewNews)
+    String sNewsId = null;
+    if(viewNews)
       sNewsId = iwc.getParameter(prmMore+getInstanceIDString(iwc));
     NewsCategory newsCategory = null;
-		String prm = prmListCategory+getInstanceIDString(iwc);
-		boolean info = false;
-		if(iwc.isParameterSet(prm)){
-		  if(iwc.getParameter(prm).equalsIgnoreCase("true"))
-				info = true;
-			else
-				info = false;
-		}
+    String prm = prmListCategory+getInstanceIDString(iwc);
+    boolean info = false;
+    if(iwc.isParameterSet(prm)){
+      if(iwc.getParameter(prm).equalsIgnoreCase("true"))
+        info = true;
+      else
+        info = false;
+    }
 
     if(iCategoryId <= 0){
       String sCategoryId = iwc.getParameter(prmNewsCategoryId );
@@ -221,8 +227,8 @@ public class NewsReader extends Block implements IWBlock {
           T.add(getCategoryList(newsCategory,locale,iwc),1,1);
         }
         else{
-					String cprm = prmCollection+getInstanceIDString(iwc);
-					T.add(publishNews(iwc,newsCategory,locale,iwc.isParameterSet(cprm)),1,1);
+          String cprm = prmCollection+getInstanceIDString(iwc);
+          T.add(publishNews(iwc,newsCategory,locale,iwc.isParameterSet(cprm)),1,1);
         }
       }
     }
@@ -238,21 +244,21 @@ public class NewsReader extends Block implements IWBlock {
     T.setCellspacing(2);
     T.setBorder(0);
 
-		IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
+    IWBundle core = iwc.getApplication().getBundle(IW_CORE_BUNDLE_IDENTIFIER);
     if(iCategoryId > 0){
       Link ne = new Link(core.getImage("/shared/create.gif"));
       ne.setWindowToOpen(NewsEditorWindow.class);
       ne.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
       T.add(ne,1,1);
-		  T.add(T.getTransparentCell(iwc),1,1);
+      T.add(T.getTransparentCell(iwc),1,1);
       Link list = new Link(iwb.getImage("/shared/info.gif"));
-			checkFromPage(list);
+      checkFromPage(list);
       if(!info)
         list.addParameter(prmListCategory+getInstanceIDString(iwc),"true");
-			else
-				list.addParameter(prmListCategory+getInstanceIDString(iwc),"false");
+      else
+        list.addParameter(prmListCategory+getInstanceIDString(iwc),"false");
       T.add(list,1,1);
-		  T.add(T.getTransparentCell(iwc),1,1);
+      T.add(T.getTransparentCell(iwc),1,1);
       Link change = new Link(core.getImage("/shared/edit.gif"));
       change.setWindowToOpen(NewsEditorWindow.class);
       change.addParameter(NewsEditorWindow.prmCategory,iCategoryId);
@@ -260,7 +266,7 @@ public class NewsReader extends Block implements IWBlock {
       T.add(change,1,1);
 
       if ( enableDelete ) {
-				T.add(T.getTransparentCell(iwc),1,1);
+        T.add(T.getTransparentCell(iwc),1,1);
         Link delete = new Link(core.getImage("/shared/delete.gif"));
         delete.setWindowToOpen(NewsEditorWindow.class);
         delete.addParameter(NewsEditorWindow.prmDelete,iCategoryId);
@@ -341,8 +347,8 @@ public class NewsReader extends Block implements IWBlock {
 
     Text tFrom = formatText(df.format((java.util.Date)from.getTimestamp()),false);
     Text tTo = formatText(df.format((java.util.Date)to.getTimestamp()),false);
-		tFrom.setBold();
-		tTo.setBold();
+    tFrom.setBold();
+    tTo.setBold();
 		// Unpublished
     if(from.isLaterThan(now)){
       tFrom.setFontColor("#FFDE00");
@@ -363,7 +369,6 @@ public class NewsReader extends Block implements IWBlock {
     newsInfo = setInformationAttributes(newsInfo);
     headLine = setHeadlineAttributes(headLine);
 
-
     Table infoTable = new Table();
       infoTable.add(hLetters,1,1);
       infoTable.add(tLetters ,2,1);
@@ -374,13 +379,12 @@ public class NewsReader extends Block implements IWBlock {
       infoTable.add(hTo,3,2);
       infoTable.add(tTo,4,2);
 
-
     T.add(newsInfo,1,1);
     T.add(headLine,1,2);
     T.add(infoTable,1,3);
 
     Link moreLink = new Link(iwrb.getImage("more.gif"));
-		checkFromPage(moreLink);
+    checkFromPage(moreLink);
     moreLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
     T.add(moreLink, 1, 4);
     if(isAdmin){
@@ -397,24 +401,24 @@ public class NewsReader extends Block implements IWBlock {
   }
 
   private PresentationObject publishNews(IWContext iwc ,NewsCategory newsCategory,Locale locale,boolean collection){
-		List L = null;
-		if(iLayout == COLLECTION_LAYOUT || collection){
-		  L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),numberOfCollectionNews,locale);
-		}
-		else{
+    List L = null;
+    if(iLayout == COLLECTION_LAYOUT || collection){
+      L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),numberOfCollectionNews,locale);
+    }
+    else{
       L = NewsFinder.listOfNewsHelpersInCategory(newsCategory.getID(),numberOfDisplayedNews,locale );
-		}
+  }
     NewsTable T = new NewsTable(NewsTable.NEWS_SITE_LAYOUT ,cellPadding,cellSpacing,firstTableColor,secondTableColor);
-		int count = NewsFinder.countNewsInCategory(newsCategory.getID());
-//		System.err.println(" news count "+count);
+    int count = NewsFinder.countNewsInCategory(newsCategory.getID());
+    //System.err.println(" news count "+count);
     boolean useDividedTable = iLayout == NEWS_SITE_LAYOUT ? true:false;
     if(L!=null){
       int len = L.size();
       Integer I;
       NewsHelper newsHelper;
       for (int i = 0; i < len; i++) {
-				if (numberOfExpandedNews == i)
-					collection = true;
+      if (numberOfExpandedNews == i)
+        collection = true;
         newsHelper = (NewsHelper) L.get(i);
         I = new Integer(i);
         if(objectsBetween != null && objectsBetween.containsKey(I)){
@@ -426,26 +430,20 @@ public class NewsReader extends Block implements IWBlock {
         }
         T.add(getNewsTable(newsHelper,newsCategory,locale ,false,collection,iwc),useDividedTable,"left");
       }
-			// news collection
-			if(showNewsCollectionButton){
-			  if(len < count && !collection){
-				  Link collectionLink = new Link(iwrb.getImage("collection.gif"));
-					checkFromPage(collectionLink);
-				  collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
-				  collectionLink.addParameter(prmCollection+getInstanceIDString(iwc),"true");
-				  T.add(collectionLink);
-			  }
-			  else if(collection){
-					T.add(new BackButton(iwrb.getImage("back.gif")));
-					/*
-					Link nonCollectionLink = new Link(iwrb.getImage("back.gif"));
-					nonCollectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
-					nonCollectionLink.addParameter(prmCollection+getInstanceIDString(iwc),"false");
-			    T.add(nonCollectionLink);
-					*/
-				}
-			}
-			// Finish objectsbetween
+      // news collection
+      if(showNewsCollectionButton){
+        if(len < count && !collection){
+          Link collectionLink = new Link(iwrb.getImage("collection.gif"));
+          checkFromPage(collectionLink);
+          collectionLink.addParameter(prmNewsCategoryId,newsCategory.getID());
+          collectionLink.addParameter(prmCollection+getInstanceIDString(iwc),"true");
+          T.add(collectionLink);
+        }
+        else if(collection){
+          T.add(new BackButton(iwrb.getImage("back.gif")));
+        }
+      }
+      // Finish objectsbetween
       if(objectsBetween != null && objectsBetween.size() > 0){
         Vector V = new Vector(objectsBetween.values());
         Collections.reverse(V);
@@ -468,144 +466,189 @@ public class NewsReader extends Block implements IWBlock {
     T.setCellspacing(0);
     T.setBorder(0);
     T.setWidth("100%");
-
+    int row = 1;
     ContentHelper contentHelper = newsHelper.getContentHelper();
     NwNews news = newsHelper.getNwNews();
     LocalizedText locText = contentHelper.getLocalizedText(locale);
 
-		if(iLayout == SINGLE_LINE_LAYOUT)
-			showOnlyDates = true;
+    if(iLayout == SINGLE_LINE_LAYOUT)
+      showOnlyDates = true;
 
-		String sNewsBody = "";
+    String sNewsBody = "";
     String sHeadline = "";
 
-		if(locText!=null){
+    if(locText!=null){
       sHeadline = locText.getHeadline();
     }
+    // shortening headlinestext
+    if(!showAll && numberOfHeadlineLetters > -1 && sHeadline.length() >= numberOfHeadlineLetters ){
+      sHeadline=sHeadline.substring(0,numberOfHeadlineLetters)+"...";
+    }
 
-		// shortening headlinestext
-		if(!showAll && numberOfHeadlineLetters > -1 && sHeadline.length() >= numberOfHeadlineLetters ){
-			sHeadline=sHeadline.substring(0,numberOfHeadlineLetters)+"...";
-		}
-
-		Text headLine = new Text(sHeadline);
+    Text headLine = new Text(sHeadline);
 
     Text newsInfo = getInfoText(news,newsHelper.getContentHelper().getContent(), newsCategory.getName(),locale,showOnlyDates,showTime,showTimeFirst);
-		newsInfo = setInformationAttributes(newsInfo);
-		headLine = setHeadlineAttributes(headLine);
+    newsInfo = setInformationAttributes(newsInfo);
+    headLine = setHeadlineAttributes(headLine);
 
 
-		// Check if using single_line_layout
-		if(iLayout != SINGLE_LINE_LAYOUT){
+    // Check if using single_line_layout
+    if(iLayout != SINGLE_LINE_LAYOUT){
+      T.add(newsInfo,1,row);
+      row++;
 
-			T.add(newsInfo,1,1);
+      //////// HEADLINE PART ////////////////
 
-			if(locText!=null && !collection){
-        sNewsBody =  locText.getBody();
-
-				// shortening newstext
-				if(!showAll && sNewsBody.length() >= numberOfLetters){
-					sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
-				}
-
-				sNewsBody = NewsFormatter.formatNews(sNewsBody,String.valueOf(textSize));
-
-				Text newsBody = new Text(sNewsBody);
-				newsBody = setTextAttributes(newsBody);
-
-				if(showImages){
-					//if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
-					List files = newsHelper.getContentHelper().getFiles();
-					if(files!=null){
-						try{
-						Table imageTable = new Table(1, 2);
-						ICFile imagefile = (ICFile)files.get(0);
-						int imid = imagefile.getID();
-						String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
-
-						Image newsImage = new Image(imid);
-						if(att != null)
-							newsImage.setAttributes(getAttributeMap(att));
-
-						  T.add(newsImage,1,3);
-						}
-						catch(SQLException ex){
-							ex.printStackTrace();
-						}
-					}
-				}
-
-			  T.add(newsBody,1,3);
-			}
-			if( showAll ) {
-				T.add(new BackButton(iwrb.getImage("back.gif")), 1, 4);
-			}
-			//  add news
-			if(!showAll && showMoreButton){
-				Link moreLink = new Link(iwrb.getImage("more.gif"));
-				checkFromPage(moreLink);
-				moreLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
-				if(viewPageId > 0)
-					moreLink.setPage(viewPageId);
-				T.add(moreLink, 1, 4);
-			}
-
-			if ( alignWithHeadline ){
-				if(headlineImage !=null) {
-				  headlineImage.setHorizontalSpacing(3);
-                                  	T.add(headlineImage, 1, 2);
-                                }
-				if(headlineImageURL!=null)
-					T.add(iwb.getImage(headlineImageURL), 1, 2);
+      if ( alignWithHeadline ){
+        if(headlineImage !=null) {
+          headlineImage.setHorizontalSpacing(3);
+            T.add(headlineImage, 1, row);
+        }
+        if(headlineImageURL!=null)
+          T.add(iwb.getImage(headlineImageURL), 1, row);
       }
 
+      if ( headlineAsLink ) {
+        Link headlineLink = new Link(headLine);
+        checkFromPage(headlineLink);
+        headlineLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
+        if(viewPageId > 0)
+          headlineLink.setPage(viewPageId);
+        T.add(headlineLink, 1,row);
+      }
+      else {
+        T.add(headLine, 1, row);
+      }
+      row++;
+      T.setHeight(row,String.valueOf(iSpaceBetweenNewsAndBody));
+      row++;
+      /////////// BODY PART //////////
 
-			if ( headlineAsLink ) {
-				Link headlineLink = new Link(headLine);
-				checkFromPage(headlineLink);
-				headlineLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
-				if(viewPageId > 0)
-					headlineLink.setPage(viewPageId);
-				T.add(headlineLink, 1, 2);
-			}
-			else {
-				T.add(headLine, 1, 2);
-			}
-			if(isAdmin){
-				T.add(getNewsAdminPart(news,iwc),1,4);
-			}
-		}
-		// if single line view
-		else{
-			int headlineCol = 3;
-			int dateCol = 1;
-			if(dateAlign.toLowerCase().equals("right")){
-			  headlineCol = 1;
-				dateCol = 3;
-			}
+      if(locText!=null && !collection){
+        sNewsBody =  locText.getBody();
 
-			T.add(newsInfo,dateCol,1);
-			T.setAlignment(headlineCol,1,"left");
-			T.setAlignment(4,1,"right");
-			T.setWidth(headlineCol,1,"100%");
-			T.setWidth(dateCol,1,"45");
-			T.add("&nbsp;&nbsp",2,1);
-		  if ( headlineAsLink ) {
-				Link headlineLink = new Link(headLine);
-				checkFromPage(headlineLink);
-				headlineLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
-				if(viewPageId > 0)
-					headlineLink.setPage(viewPageId);
-				T.add(headlineLink, headlineCol, 1);
-			}
-			else {
-				T.add(headLine, headlineCol, 1);
-			}
-			if(isAdmin){
-			  T.add(getNewsAdminPart(news,iwc),4,1);
-			}
-		}
+        // shortening newstext
+        if(!showAll && sNewsBody.length() >= numberOfLetters){
+          sNewsBody=sNewsBody.substring(0,numberOfLetters)+"...";
+        }
+
+        sNewsBody = NewsFormatter.formatNews(sNewsBody,String.valueOf(textSize));
+
+        Text newsBody = new Text(sNewsBody);
+        newsBody = setTextAttributes(newsBody);
+
+        //////////// IMAGE PART ///////////
+        if(showImages){
+          //if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
+          List files = newsHelper.getContentHelper().getFiles();
+          if(files!=null){
+            try{
+              //Table imageTable = new Table(1, 2);
+              ICFile imagefile = (ICFile)files.get(0);
+              int imid = imagefile.getID();
+              String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
+
+              Image newsImage = new Image(imid);
+              if(att != null)
+                newsImage.setAttributes(getAttributeMap(att));
+                T.add(newsImage,1,row);
+              }
+              catch(SQLException ex){
+                ex.printStackTrace();
+              }
+            }
+          }
+
+          T.add(newsBody,1,row);
+        }
+      row++;
+
+      /////////  BACK LINK ////////////////
+
+      if( showAll ) {
+        if(backImage!=null){
+          T.add(new BackButton(backImage), 1, row);
+          T.add(Text.getNonBrakingSpace(), 1, row);
+        }
+        if(showBackText){
+          Text tBack = new Text(iwrb.getLocalizedString("back","Back"));
+          tBack =  setInformationAttributes(tBack);
+          T.add(tBack, 1, row);
+        }
+      }
+
+      ////////// MORE LINK ///////////////
+
+      if(!showAll && showMoreButton){
+        if(moreImage !=null){
+          T.add(getMoreLink(moreImage,news.getID(),iwc), 1, row);
+          T.add(Text.getNonBrakingSpace(), 1, row);
+        }
+        if(showMoreText){
+          Text tMore = new Text(iwrb.getLocalizedString("more","More"));
+          tMore =  setInformationAttributes(tMore);
+          T.add(getMoreLink(tMore,news.getID(),iwc), 1, row);
+        }
+      }
+
+      //////////// ADMIN PART /////////////////////
+      if(isAdmin){
+        T.add(getNewsAdminPart(news,iwc),1,row);
+      }
+      row++;
+      T.setHeight(row++,String.valueOf(iSpaceBetweenNews));
+    }
+      //////////// SINGLE LINE VIEW ///////////////
+      // if single line view
+    else{
+        int headlineCol = 3;
+        int dateCol = 1;
+        if(dateAlign.toLowerCase().equals("right")){
+          headlineCol = 1;
+          dateCol = 3;
+        }
+
+        T.add(newsInfo,dateCol,1);
+        T.setAlignment(headlineCol,1,"left");
+        T.setAlignment(4,1,"right");
+        T.setWidth(headlineCol,1,"100%");
+        T.setWidth(dateCol,1,"45");
+        T.add(Text.getNonBrakingSpace(2),2,1);
+        if ( headlineAsLink ) {
+          Link headlineLink = new Link(headLine);
+          checkFromPage(headlineLink);
+          headlineLink.addParameter(prmMore+getInstanceIDString(iwc),news.getID());
+          if(viewPageId > 0)
+            headlineLink.setPage(viewPageId);
+          T.add(headlineLink, headlineCol, 1);
+        }
+        else {
+          T.add(headLine, headlineCol, 1);
+      }
+      if(isAdmin){
+        T.add(getNewsAdminPart(news,iwc),4,1);
+      }
+    }
+    //T.setBorder(1);
     return T;
+  }
+
+  private Link getMoreLink(PresentationObject obj,int newsId,IWContext iwc){
+    Link moreLink = new Link(obj);
+    checkFromPage(moreLink);
+    moreLink.addParameter(prmMore+getInstanceIDString(iwc),newsId);
+    if(viewPageId > 0)
+      moreLink.setPage(viewPageId);
+    return moreLink;
+  }
+
+   private Link getBackLink(PresentationObject obj,int newsId,IWContext iwc){
+    Link moreLink = new Link(obj);
+    checkFromPage(moreLink);
+    moreLink.addParameter(prmMore+getInstanceIDString(iwc),newsId);
+    if(viewPageId > 0)
+      moreLink.setPage(viewPageId);
+    return moreLink;
   }
 
   private PresentationObject getNewsAdminPart(NwNews news,IWContext iwc){
@@ -621,9 +664,9 @@ public class NewsReader extends Block implements IWBlock {
       //links.setAlignment(1,1,"left");
       //links.setAlignment(2,1,"right");
       links.setCellpadding(0);
-			links.setCellspacing(0);
+      links.setCellspacing(0);
       links.add(newsEdit,1,1);
-			links.add(links.getTransparentCell(iwc),2,1);
+      links.add(links.getTransparentCell(iwc),2,1);
       links.add(newsDelete,3,1);
     return links;
   }
@@ -709,60 +752,59 @@ public class NewsReader extends Block implements IWBlock {
     return tempText;
   }
 
-	public void setInformationFontSize(int size){
-	  getInformationProxy().setFontSize(size);
-	}
+  public void setInformationFontSize(int size){
+    getInformationProxy().setFontSize(size);
+  }
 
-	public void setHeadlineFontSize(int size){
-	  getHeadlineProxy().setFontSize(size);
-	}
+  public void setHeadlineFontSize(int size){
+    getHeadlineProxy().setFontSize(size);
+  }
 
-	public void setTextFontSize(int size){
-	  getTextProxy().setFontSize(size);
-	}
+  public void setTextFontSize(int size){
+    getTextProxy().setFontSize(size);
+  }
 
-	public void setInformationFontColor(String color){
-	  getInformationProxy().setFontColor(color);
-	}
+  public void setInformationFontColor(String color){
+    getInformationProxy().setFontColor(color);
+  }
 
-	public void setHeadlineFontColor(String color){
-		getHeadlineProxy().setFontColor(color);
-	}
+  public void setHeadlineFontColor(String color){
+    getHeadlineProxy().setFontColor(color);
+  }
 
-	public void setTextFontColor(String color){
-	  getTextProxy().setFontColor(color);
-	}
+  public void setTextFontColor(String color){
+    getTextProxy().setFontColor(color);
+  }
 
-	public void setInformationFontFace(String face){
-	  getInformationProxy().setFontFace(face);
-	}
+  public void setInformationFontFace(String face){
+    getInformationProxy().setFontFace(face);
+  }
 
-	public void setHeadlineFontFace(String face){
-		getHeadlineProxy().setFontFace(face);
-	}
+  public void setHeadlineFontFace(String face){
+    getHeadlineProxy().setFontFace(face);
+  }
 
-	public void setTextFontFontFace(String face){
-	  getTextProxy().setFontFace(face);
-	}
+  public void setTextFontFontFace(String face){
+    getTextProxy().setFontFace(face);
+  }
 
+  public void setInformationFontStyle(String style){
+    getInformationProxy().setFontStyle(style);
+  }
 
-	public void setInformationFontStyle(String style){
-	  getInformationProxy().setFontStyle(style);
-	}
+  public void setHeadlineFontStyle(String face){
+          getHeadlineProxy().setFontStyle(face);
+  }
 
-	public void setHeadlineFontStyle(String face){
-		getHeadlineProxy().setFontStyle(face);
-	}
-
-	public void setTextFontFontStyle(String face){
-	  getTextProxy().setFontStyle(face);
-	}
+  public void setTextFontFontStyle(String face){
+    getTextProxy().setFontStyle(face);
+  }
 
   public void setNumberOfLetters(int numberOfLetters){
     this.numberOfLetters = Math.abs(numberOfLetters);
   }
 
-	public void setNumberOfHeadlineLetters(int numberOfLetters){
+  public void setNumberOfHeadlineLetters(int numberOfLetters){
     this.numberOfHeadlineLetters = Math.abs(numberOfLetters);
   }
   //debug this changes the number of news displayed..that is the date alone is failing
@@ -771,14 +813,14 @@ public class NewsReader extends Block implements IWBlock {
     this.numberOfDisplayedNews = Math.abs(numberOfDisplayedNews);
   }
 
-	public void setNumberOfCollectionNews(int numberOfCollectionNews){
+  public void setNumberOfCollectionNews(int numberOfCollectionNews){
     this.limitNumberOfNews = true;
     this.numberOfCollectionNews = Math.abs(numberOfCollectionNews);
   }
 
-	public void setToViewNews(boolean viewNews){
-	  this.viewNews = viewNews;
-	}
+  public void setToViewNews(boolean viewNews){
+    this.viewNews = viewNews;
+  }
 
   public void setAdmin(boolean isAdmin){
     this.isAdmin=isAdmin;
@@ -789,26 +831,30 @@ public class NewsReader extends Block implements IWBlock {
   public void setWidth(String width){
     this.outerTableWidth = width;
   }
-
-	public void setBackgroundColor(String color){
-	  firstTableColor = color;
-	}
-
-	public void setZebraColored(String firstColor,String secondColor){
-	  firstTableColor = firstColor;
-		secondTableColor = secondColor ;
-	}
-	public void setCellPadding(int cellpad){
-	  this.cellPadding = cellpad;
-	}
-	public void setCellSpacing(int cellspace){
-	  this.cellSpacing = cellspace;
-	}
+  public void setBackgroundColor(String color){
+    firstTableColor = color;
+  }
+  public void setZebraColored(String firstColor,String secondColor){
+    firstTableColor = firstColor;
+    secondTableColor = secondColor ;
+  }
+  public void setCellPadding(int cellpad){
+    this.cellPadding = cellpad;
+  }
+  public void setCellSpacing(int cellspace){
+    this.cellSpacing = cellspace;
+  }
   public void showNewsCollectionButton(boolean showNewsCollectionButton){
     this.showNewsCollectionButton = showNewsCollectionButton;
   }
   public void setNumberOfExpandedNews(int numberOfExpandedNews){
     this.numberOfExpandedNews = Math.abs(numberOfExpandedNews);
+  }
+  public void setShowBackText(boolean showText){
+    this.showBackText = showText;
+  }
+  public void setShowMoreText(boolean moreText){
+    this.showMoreText = moreText;
   }
   public void setShowImages(boolean showImages) {
     this.showImages=showImages;
@@ -827,30 +873,44 @@ public class NewsReader extends Block implements IWBlock {
     this.showHeadlineImage=true;
     this.showMoreButton=false;
   }
-	public void setHeadlineImage(Image image) {
+  public void setHeadlineImage(Image image) {
     this.headlineImage=image;
-		this.alignWithHeadline=true;
+    this.alignWithHeadline=true;
+  }
+  public void setBackImage(Image image) {
+    this.backImage=image;
+  }
+  public void setMoreImage(Image image) {
+    this.moreImage=image;
   }
   public void setHeadlineImageURL(String headlineImageURL) {
     this.headlineImageURL=headlineImageURL;
-		this.alignWithHeadline=true;
+    this.alignWithHeadline=true;
   }
   public void setShowOnlyDates(boolean showOnlyDates) {
     this.showOnlyDates=showOnlyDates;
   }
-	public void setDateAlign(String alignment) {
+  public void setDateAlign(String alignment) {
     this.dateAlign=alignment;
   }
 
-	public void setViewPage(com.idega.builder.data.IBPage page){
-		viewPageId = page.getID();
-	}
+  public void setViewPage(com.idega.builder.data.IBPage page){
+    viewPageId = page.getID();
+  }
 
-	public void setShowTime(boolean showTime) {
+  public void setShowTime(boolean showTime) {
     this.showTime=showOnlyDates;
   }
 
-	public void setShowTimeFirst(boolean showTimeFirst) {
+  public void setSpaceBetweenNews(int pixels){
+    this.iSpaceBetweenNews = pixels;
+  }
+
+  public void setSpaceBetweenTitleAndBody(int pixels){
+    this.iSpaceBetweenNewsAndBody = pixels;
+  }
+
+  public void setShowTimeFirst(boolean showTimeFirst) {
     this.showTimeFirst=showTimeFirst;
   }
   public String getBundleIdentifier(){
@@ -882,53 +942,57 @@ public class NewsReader extends Block implements IWBlock {
     try {
       obj = (NewsReader)super.clone();
 
-			// integers :
-			obj.numberOfLetters = numberOfLetters;
-			obj.numberOfHeadlineLetters = numberOfHeadlineLetters;
-			obj.numberOfDisplayedNews = numberOfDisplayedNews;
-			obj.numberOfExpandedNews = numberOfExpandedNews;
-			obj.numberOfCollectionNews = numberOfCollectionNews;
-			obj.iSpaceBetween = iSpaceBetween;
-			obj.cellPadding = cellPadding;
-			obj.cellSpacing = cellSpacing;
-			obj.viewPageId = viewPageId;
-			obj.textSize = textSize;
+        // integers :
+        obj.numberOfLetters = numberOfLetters;
+        obj.numberOfHeadlineLetters = numberOfHeadlineLetters;
+        obj.numberOfDisplayedNews = numberOfDisplayedNews;
+        obj.numberOfExpandedNews = numberOfExpandedNews;
+        obj.numberOfCollectionNews = numberOfCollectionNews;
+        obj.iSpaceBetween = iSpaceBetween;
+        obj.cellPadding = cellPadding;
+        obj.cellSpacing = cellSpacing;
+        obj.viewPageId = viewPageId;
+        obj.textSize = textSize;
 
-			// booleans:
-			obj.backbutton = backbutton;
-			obj.showAll = showAll;
-			obj.showImages = showImages;
-			obj.showOnlyDates = showOnlyDates;
-			obj.showTime = showTime;
-			obj.showTimeFirst = showTimeFirst;
-			obj.headlineAsLink = headlineAsLink;
-			obj.showHeadlineImage = showHeadlineImage;
-			obj.showMoreButton = showMoreButton;
-			obj.alignWithHeadline = alignWithHeadline;
-			obj.limitNumberOfNews = limitNumberOfNews;
-			obj.enableDelete=enableDelete;
-			obj.viewNews = viewNews;
-			obj.newobjinst = newobjinst;
-			// Strings :
-			obj.outerTableWidth = outerTableWidth;
-			obj.sObjectAlign = sObjectAlign;
-			obj.headlineImageURL = headlineImageURL;
-			obj.dateAlign = dateAlign;
+        // booleans:
+        obj.backbutton = backbutton;
+        obj.showAll = showAll;
+        obj.showImages = showImages;
+        obj.showOnlyDates = showOnlyDates;
+        obj.showTime = showTime;
+        obj.showTimeFirst = showTimeFirst;
+        obj.headlineAsLink = headlineAsLink;
+        obj.showHeadlineImage = showHeadlineImage;
+        obj.showMoreButton = showMoreButton;
+        obj.alignWithHeadline = alignWithHeadline;
+        obj.limitNumberOfNews = limitNumberOfNews;
+        obj.enableDelete=enableDelete;
+        obj.viewNews = viewNews;
+        obj.newobjinst = newobjinst;
+        obj.showBackText = showBackText;
+        obj.showMoreText = showMoreText;
+        // Strings :
+        obj.outerTableWidth = outerTableWidth;
+        obj.sObjectAlign = sObjectAlign;
+        obj.headlineImageURL = headlineImageURL;
+        obj.dateAlign = dateAlign;
 
-			obj.headlineImage = headlineImage;
+        obj.headlineImage = headlineImage;
+        obj.backImage = backImage;
+        obj.moreImage = moreImage;
 
-			// Nullable :
-			if(firstTableColor !=null)
-				obj.firstTableColor = firstTableColor;
-			if(secondTableColor != null)
-				obj.secondTableColor = secondTableColor;
-			if(objectsBetween != null)
-				obj.objectsBetween = objectsBetween;
+        // Nullable :
+        if(firstTableColor !=null)
+          obj.firstTableColor = firstTableColor;
+        if(secondTableColor != null)
+          obj.secondTableColor = secondTableColor;
+        if(objectsBetween != null)
+          obj.objectsBetween = objectsBetween;
 
-			// Text proxies :
-			obj.textProxy = textProxy;
-			obj.headlineProxy  = headlineProxy;
-			obj.informationProxy  = informationProxy;
+        // Text proxies :
+        obj.textProxy = textProxy;
+        obj.headlineProxy  = headlineProxy;
+        obj.informationProxy  = informationProxy;
 
     }
     catch(Exception ex) {
