@@ -151,6 +151,7 @@ public class ContentBusiness{
       }
       else if(!ctUpdate){
         eContent.setCreated(idegaTimestamp.getTimestampRightNow());
+        if(iUserId > 0)
         eContent.setUserId(iUserId);
         eContent.insert();
         locText.setCreated(idegaTimestamp.getTimestampRightNow());
