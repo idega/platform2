@@ -58,6 +58,7 @@ public class ProductCatalog extends CategoryBlock{
   boolean _showDescription = false;
   boolean _showNumber = false;
   boolean _showPrice = false;
+  boolean _showCurrency = false;
   boolean _useAnchor = false;
   boolean _expandSelectedOnly = false;
   int _orderProductsBy = -1;
@@ -274,6 +275,10 @@ public class ProductCatalog extends CategoryBlock{
 
   public void setShowPrice(boolean showPrice) {
     this._showPrice = showPrice;
+  }
+
+  public void setShowCurrency(boolean showCurrency) {
+    this._showCurrency = showCurrency;
   }
 
   public void setShowNumber(boolean showNumber) {

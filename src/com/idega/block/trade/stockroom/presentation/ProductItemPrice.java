@@ -1,5 +1,7 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import java.sql.SQLException;
+import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.presentation.text.*;
 import com.idega.block.trade.stockroom.data.*;
@@ -17,6 +19,7 @@ import com.idega.presentation.*;
 public class ProductItemPrice extends ProductItem {
 
   private String defaultText = "Product Price";
+  private boolean showCurrency = false;
 
   public ProductItemPrice() { }
 
@@ -31,11 +34,21 @@ public class ProductItemPrice extends ProductItem {
       ProductPrice pPrice = StockroomBusiness.getPrice(_product);
       if (pPrice != null) {
         text.setText(Integer.toString((int) pPrice.getPrice()));
+        if (this.showCurrency) {
+          try {
+            text.addToText(Text.NON_BREAKING_SPACE);
+            text.addToText(new Currency(pPrice.getCurrencyId()).getName());
+          }catch (SQLException sql) {}
+        }
       }else {
         text.setText("0");
       }
     }
     add(text);
+  }
+
+  public void setShowCurrency(boolean show) {
+    this.showCurrency = show;
   }
 
 }

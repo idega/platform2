@@ -1,5 +1,6 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.block.trade.data.Currency;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.data.*;
@@ -160,6 +161,10 @@ public class ProductCatalogLayoutProductList extends AbstractProductCatalogLayou
         if (_productCatalog._showPrice) {
           if (price != 0) {
             table.add(_productCatalog.getText(Integer.toString((int) price)), 3, row);
+            if (_productCatalog._showCurrency)  {
+              table.add(_productCatalog.getText(Text.NON_BREAKING_SPACE), 3, row);
+              table.add(new Currency(pPrice.getCurrencyId()).getName(), 3, row);
+            }
           }else {
             table.add(_productCatalog.getText("0"), 3, row);
           }

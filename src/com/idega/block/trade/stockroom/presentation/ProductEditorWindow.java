@@ -1,10 +1,11 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.block.trade.business.CurrencyHolder;
+import java.util.*;
 import com.idega.block.text.business.TextFormatter;
 import com.idega.util.text.TextSoap;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.localisation.business.ICLocaleBusiness;
-import java.util.Locale;
 import com.idega.block.trade.business.CurrencyBusiness;
 import com.idega.util.idegaTimestamp;
 import com.idega.block.trade.stockroom.data.ProductPrice;
@@ -29,10 +30,12 @@ import com.idega.presentation.text.*;
 
 public class ProductEditorWindow extends IWAdminWindow {
   private static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.trade";
-  public static final String PRODUCT_ID = "prod_edit_prod_id";
+//  public static final String PRODUCT_ID = "prod_edit_prod_id";
+  public static final String PRODUCT_ID = ProductBusiness.PRODUCT_ID;
 
   private static final String ACTION = "prod_edit_action";
   private static final String PAR_CLOSE = "prod_edit_close";
+  private static final String PAR_CURRENCY = "prod_edit_currency";
   private static final String PAR_DELETE = "prod_edit_del";
   private static final String PAR_DEL_VERIFIED = "prod_edit_del_verified";
   private static final String PAR_DESCRIPTION = "prod_edit_description";
@@ -48,6 +51,7 @@ public class ProductEditorWindow extends IWAdminWindow {
   private IWBundle bundle;
 
   private Product _product = null;
+  private DropdownMenu _currencies = null;
   private int _productId = -1;
   private int iLocaleID = -1;
 
@@ -103,7 +107,9 @@ public class ProductEditorWindow extends IWAdminWindow {
         _product = ProductBusiness.getProduct(_productId);
       }
     }catch (Exception e) {
-      e.printStackTrace(System.err);
+      //e.printStackTrace(System.err);
+      _productId = -1;
+      _product = null;
     }
 
     Locale currentLocale = iwc.getCurrentLocale(),chosenLocale;
@@ -119,6 +125,18 @@ public class ProductEditorWindow extends IWAdminWindow {
       chosenLocale = currentLocale;
       iLocaleID = ICLocaleBusiness.getLocaleId(chosenLocale);
     }
+
+    _currencies = new DropdownMenu(this.PAR_CURRENCY);
+    List currencyList = CurrencyBusiness.getCurrencyList();
+    Iterator iter = currencyList.iterator();
+    while (iter.hasNext()) {
+      CurrencyHolder holder = (CurrencyHolder) iter.next();
+      _currencies.addMenuElement(holder.getCurrencyID(), holder.getCurrencyName());
+    }
+    String currCurr = getBundle(iwc).getProperty("iw_default_currency", "USD");
+    if (currCurr != null)
+    _currencies.setSelectedElement(Integer.toString(CurrencyBusiness.getCurrencyHolder(currCurr).getCurrencyID()));
+//    _currencies.setSelectedElement(currCurr);
 
   }
 
@@ -158,6 +176,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       ProductPrice pPrice = StockroomBusiness.getPrice(_product);
       if (pPrice != null) {
         price.setContent(Integer.toString((int) pPrice.getPrice()));
+        _currencies.setSelectedElement(Integer.toString(pPrice.getCurrencyId()));
       }else {
         price.setContent("0");
       }
@@ -175,7 +194,21 @@ public class ProductEditorWindow extends IWAdminWindow {
     super.addLeft(iwrb.getLocalizedString("name","Name"), name, true);
     super.addLeft(iwrb.getLocalizedString("teaser","Teaser"), teaser, true);
     super.addLeft(iwrb.getLocalizedString("description","Description"), description, true);
-    super.addLeft(iwrb.getLocalizedString("price","Price"), price, true);
+
+    Table priceTable = new Table(2, 2);
+      Text priceText = new Text(iwrb.getLocalizedString("price","Price"));
+      Text currText = new Text(iwrb.getLocalizedString("currency","Currency"));
+        //super.formatText(priceText);
+        super.setStyle(price);
+//        super.formatText(currText);
+        super.setStyle(_currencies);
+
+    priceTable.add(super.formatText(iwrb.getLocalizedString("price","Price")), 1, 1);
+    priceTable.add(price, 1, 2);
+    priceTable.add(super.formatText(iwrb.getLocalizedString("currency","Currency")), 2, 1);
+    priceTable.add(_currencies, 2, 2);
+
+    super.addLeft(priceTable, false);
 
 
     super.addRight(iwrb.getLocalizedString("image","Image"), imageInserter, false);
@@ -204,6 +237,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     String teaser = iwc.getParameter(PAR_TEASER);
     String price = iwc.getParameter(PAR_PRICE);
     String image = iwc.getParameter(PAR_IMAGE);
+    String currency = iwc.getParameter(PAR_CURRENCY);
 
     Integer fileId = null;
     try {
@@ -225,7 +259,7 @@ public class ProductEditorWindow extends IWAdminWindow {
           _productId = ProductBusiness.createProduct(fileId, name, number, description, true, iLocaleID);
           _product = ProductBusiness.getProduct(_productId);
           ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
-          if (setPrice(price)) {
+          if (setPrice(price, currency)) {
             return true;
           }else {
             super.addLeft(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
@@ -247,7 +281,7 @@ public class ProductEditorWindow extends IWAdminWindow {
 
           ProductBusiness.updateProduct(this._productId, fileId, name, number, description, true, iLocaleID);
           ProductBusiness.setProductTeaser(_product, iLocaleID, teaser);
-          if (setPrice(price)) {
+          if (setPrice(price, currency)) {
             return true;
           }else {
             super.addLeft(iwrb.getLocalizedString("price_not_saved","Price was not saved"));
@@ -262,7 +296,7 @@ public class ProductEditorWindow extends IWAdminWindow {
     return false;
   }
 
-  private boolean setPrice(String price) {
+  private boolean setPrice(String price, String currencyId) {
     try {
       ProductPrice pPri = StockroomBusiness.getPrice(_product);
       int oldP = 0;
@@ -277,13 +311,14 @@ public class ProductEditorWindow extends IWAdminWindow {
           pPrice.setPriceType(ProductPrice.PRICETYPE_PRICE);
           pPrice.setProductId(_productId);
           pPrice.setPriceDate(idegaTimestamp.getTimestampRightNow());
-          pPrice.setCurrencyId(CurrencyBusiness.getCurrencyHolder(CurrencyBusiness.defaultCurrency).getCurrencyID());
+          pPrice.setCurrencyId(Integer.parseInt(currencyId));
         pPrice.insert();
         return true;
       }else {
         return true;
       }
     }catch (Exception e) {
+      e.printStackTrace(System.err);
       return false;
     }
   }
