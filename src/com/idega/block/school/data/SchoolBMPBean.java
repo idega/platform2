@@ -70,7 +70,7 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 
 	/** Anders 15 Sep 2003 */
 	public final static String ORGANIZATION_NUMBER = "organization_number";
-	public final static String EXTRA_PROVIDER_ID = "termination_date";
+	public final static String EXTRA_PROVIDER_ID = "extra_provider_id";
 	public final static String TERMINATION_DATE = "termination_date";
 	public final static String COUNTRY = "country"; // Not connected to commune
 	public final static String CENTRALIZED_ADMINISTRATION = "centralized_administration";	
