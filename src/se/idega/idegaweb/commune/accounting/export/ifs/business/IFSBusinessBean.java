@@ -988,9 +988,9 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 								bWriter.write(empty.substring(0, 6));
 								//Tecken
 //								am = iRec.getAmount();
-								if (am < 0)
-									bWriter.write('-');
-								else
+//								if (am < 0)
+//									bWriter.write('-');
+//								else
 									bWriter.write(' ');
 								//Belopp
 	//							am = Math.abs(am);

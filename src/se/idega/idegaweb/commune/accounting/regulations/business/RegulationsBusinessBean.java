@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.85 2003/12/08 11:38:58 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.86 2003/12/08 15:23:14 palli Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -1642,7 +1642,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				}
 				if (d != null) {
 					ret = new PostingDetail();
-					ret.setAmount(d.getAmount()-total_sum);
+					ret.setAmount(Math.abs(d.getAmount()-total_sum));
 					ret.setRuleSpecType(d.getRuleSpecType());
 					ret.setTerm(reg.getName());
 					//				ret.setVat(32.0f);
@@ -1652,7 +1652,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 			else if (type.equals("cacc_sp_calc_type.syskon")) {
 				float amount = reg.getDiscount() * total_sum / 100;
 				ret = new PostingDetail();
-				ret.setAmount(amount);
+				ret.setAmount(Math.abs(amount));
 				ret.setRuleSpecType(reg.getLocalizationKey());
 				ret.setTerm(reg.getName());
 				//				ret.setVat(32.0f);
@@ -1706,7 +1706,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 							float amount = income * perc / 100;
 							if (amount < total_sum) {
 								ret = new PostingDetail();
-								ret.setAmount(amount - total_sum);
+								ret.setAmount(Math.abs(amount - total_sum));
 								ret.setRuleSpecType(reg.getRegSpecType().getLocalizationKey());
 								ret.setTerm(reg.getName());
 								//			ret.setVat(32.0f);
