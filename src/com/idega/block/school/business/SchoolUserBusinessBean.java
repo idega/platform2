@@ -63,7 +63,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	}
 
 	public void setUserGroups(School school, User user, int userType) throws RemoteException, FinderException {
-		/* code of death, fix later... */
+		// code of death, fix later... 
 		if (userType == USER_TYPE_HEADMASTER || userType == USER_TYPE_ASSISTANT_HEADMASTER || userType == USER_TYPE_WEB_ADMIN) {
 			getSchoolBusiness().addHeadmaster(school, user);
 		}
@@ -102,8 +102,8 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 	
 	public Collection getHeadmasters(School school) throws RemoteException, FinderException{
 		Collection coll = getSchoolUserHome().findBySchoolAndType(school, USER_TYPE_HEADMASTER);	
-
-		/** Backwards compatability */
+/*
+		// Backwards compatability 
 		if ( coll == null || coll.size() < 1 ) {
 			int headmasterId = school.getHeadmasterUserId();
 			if (headmasterId > 0) {
@@ -121,14 +121,14 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				}
 			}
 		}
-
+*/
 		return coll;
 	}
 
 	public Collection getAssistantHeadmasters(School school) throws RemoteException, FinderException{
 		Collection coll = getSchoolUserHome().findBySchoolAndType(school, USER_TYPE_ASSISTANT_HEADMASTER);	
-
-		/** Backwards compatability */
+/*
+		// Backwards compatability 
 		if ( coll == null || coll.size() < 1 ) {
 			int ahgi = school.getAssistantHeadmasterGroupId();
 			if (ahgi > 0) {
@@ -158,14 +158,14 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				}
 			}
 		}
-
+*/
 		return coll;
 	}
 	
 	public Collection getWebAdmins(School school) throws RemoteException, FinderException{
 		Collection coll = getSchoolUserHome().findBySchoolAndType(school, USER_TYPE_WEB_ADMIN);	
-		
-		/** backwards compatability */
+/*		
+		// backwards compatability 
 		if ( coll == null || coll.size() < 1 ) {
 			int hgi = school.getHeadmasterGroupId();
 			if (hgi > 0) {
@@ -196,7 +196,7 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				}
 			}
 		}
-		
+*/		
 		return coll;
 	}
 
@@ -213,7 +213,8 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				coll.add(new Integer(sUser.getSchoolId()));	
 			}
 			return coll;
-		}else {
+		}
+		/*else {
 //			System.out.println("[SchoolUserBusinessBean] : trying to backwards.....");
 			Collection schools =
 				((SchoolBusiness) IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class))
@@ -238,7 +239,8 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			
 			return getSchools(user);
 			
-		}
+		}*/
+		return null;
 	}
 
 
