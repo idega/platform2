@@ -86,6 +86,7 @@ private boolean phones = false;
       data.append("Kennitala"); data.append("\t");
       data.append("Fæðingardagur"); data.append("\t");
       data.append("Kyn"); data.append("\t");
+      data.append("Virkur/Óvirkur"); data.append("\t");
       data.append("Forgjöf fyrir"); data.append("\t");
       data.append("Forgjöf eftir");data.append("\t");
       data.append("Mismunur"); data.append("\t");
@@ -211,6 +212,24 @@ private boolean phones = false;
             }
 
             try {
+              UnionMemberInfo umi = member.getUnionMemberInfo(unionID);
+              if ( umi != null ) {
+                s = umi.getMemberStatus();
+                if ( s.equalsIgnoreCase("A") ) {
+                  s = "Virkur";
+                }
+                else {
+                  s = "Óvirkur";
+                }
+                data.append(s);
+              }
+              data.append("\t");
+            }
+            catch ( Exception e ) {
+              e.printStackTrace(System.err);
+            }
+
+            try {
               s = TextSoap.singleDecimalFormat((double)handicapBefore); // HandicapBefore
               s = s.replace('.',',');
               data.append(s);
@@ -234,13 +253,13 @@ private boolean phones = false;
               s = TextSoap.singleDecimalFormat((double)difference); // Difference
               s = s.replace('.',',');
               data.append(s);
-              data.append("\t");
+              data.append("\n");
             }
             catch ( Exception e ) {
               e.printStackTrace(System.err);
             }
 
-            if ( phones ) {
+            /*if ( phones ) {
               try {
                 Phone[] phones = member.getPhone();
                 for ( int z = 0; z < phones.length; z++ ) {
@@ -260,7 +279,7 @@ private boolean phones = false;
               catch ( Exception e ) {
                 e.printStackTrace(System.err);
               }
-            }
+            }*/
 
             c = data.toString().toCharArray();
             out.write(c);
