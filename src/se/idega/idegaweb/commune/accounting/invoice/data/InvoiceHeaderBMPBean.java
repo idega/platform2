@@ -58,6 +58,9 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public String getSchoolCategoryID() {
 		return getStringColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
 	}
+	public SchoolCategory getSchoolCategory() {
+		return (SchoolCategory) getColumnValue(COLUMN_SCHOOL_CATEGORY_ID);
+	}
 	public Date getPeriod() {
 		return getDateColumnValue(COLUMN_PERIOD);
 	}
@@ -96,7 +99,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
 	public void setSchoolCategoryID(String i) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, i);
 	}
-	public void setSchoolCategoryID(SchoolCategory sc) {
+	public void setSchoolCategory (SchoolCategory sc) {
 		setColumn(COLUMN_SCHOOL_CATEGORY_ID, sc);
 	}
 	public void setPeriod(Date d) {

@@ -23,7 +23,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.lowagie.text.Chunk;
@@ -80,10 +79,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/28 07:24:05 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/28 09:21:30 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.64 $
+ * @version $Revision: 1.65 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -101,6 +100,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String CHECK_PERIOD_DEFAULT = "Checkperiod";
     private static final String CHECK_PERIOD_KEY = PREFIX + "check_period";
     private static final String CHECK_START_PERIOD_KEY = PREFIX + "check_start_period";
+    private static final String CHOOSE_CHILDREN_DEFAULT = "Välj barn";
+    private static final String CHOOSE_CHILDREN_KEY = PREFIX + "choose_children";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_DEFAULT = "Det gick inte att at bort fakturaunderlaget eller någon av dess fakturarader";
     private static final String COULD_NOT_REMOVE_INVOICE_COMPILATION_OR_RECORDS_KEY = PREFIX + "could_not_remove_invoice_compilation_or_records";
     private static final String COULD_NOT_REMOVE_INVOICE_RECORD_DEFAULT = "Kunde inte ta bort fakturarad";
@@ -110,6 +111,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String CREATE_INVOICE_COMPILATION_KEY = PREFIX + "create_invoice_compilation";
     private static final String CREATE_INVOICE_RECORD_DEFAULT = "Skapa fakturarad";
     private static final String CREATE_INVOICE_RECORD_KEY = PREFIX + "create_invoice_record";
+    private static final String CUSTODIAN_DEFAULT = "Vårdnadshavare";
+    private static final String CUSTODIAN_KEY = PREFIX + "custodian";
     private static final String DATE_ADJUSTED_DEFAULT = "Justeringsdag";
     private static final String DATE_ADJUSTED_KEY = PREFIX + "date_adjusted";
     private static final String DATE_CREATED_DEFAULT = "Skapandedag";
@@ -120,8 +123,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String DOUBLE_POSTING_KEY = PREFIX + "double_posting";
     private static final String EDIT_INVOICE_RECORD_DEFAULT = "Ändra fakturarad";
     private static final String EDIT_INVOICE_RECORD_KEY = PREFIX + "edit_invoice_record";
-    private static final String CUSTODIAN_DEFAULT = "Vårdnadshavare";
-    private static final String CUSTODIAN_KEY = PREFIX + "custodian";
     private static final String EDIT_ROW_DEFAULT = "Ändra rad";
     private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
     private static final String END_PERIOD_DEFAULT = "T o m ";
@@ -183,6 +184,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     private static final String PLACEMENT_START_PERIOD_KEY = PREFIX + "placement_start_period";
     private static final String PROVIDER_DEFAULT = "Anordnare";
     private static final String PROVIDER_KEY = PREFIX + "provider";
+    private static final String CONTRACT_DEFAULT = "Kontrakt";
+    private static final String CONTRACT_KEY = PREFIX + "contract";
     private static final String REGULATION_SPEC_TYPE_DEFAULT = "Regelspec.typ";
     private static final String REGULATION_SPEC_TYPE_KEY = PREFIX + "regulation_spec_type";
     private static final String REMARK_DEFAULT = "Anmärkning";
@@ -386,7 +389,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         long millis1 = date1.getTime ();
         long millis2 = date2.getTime ();
         long millisDiff = millis2 - millis1;
-        return 0 < millisDiff ? (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
+        return 0 <= millisDiff
+                ? 1 + (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
     }
 
     private void newRecord (final IWContext context)
@@ -569,7 +573,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         inputs.put (HEADER_KEY, localize (CREATE_INVOICE_RECORD_KEY,
                                           CREATE_INVOICE_RECORD_DEFAULT));
         inputs.put (RULE_TEXT_KEY, getRuleTextDropdown (header));
-        inputs.put (PROVIDER_KEY, getProviderDropdown (context, header));
+        inputs.put (PLACEMENT_KEY, getPlacementDropdown (context, header));
         renderRecordDetailsOrForm (context, inputs);
     }
 
@@ -641,7 +645,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         final String providerName = getProviderName
                 (context, record.getProviderId (),
                  record.getSchoolClassMemberId ());
-        inputs.put (PROVIDER_KEY, getSmallText (providerName));
+        inputs.put (PLACEMENT_KEY, getSmallText (providerName));
         renderRecordDetailsOrForm (context, inputs);
     }
 
@@ -659,6 +663,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         if (null != placement) {
             addSmallText (details, IN_CUSTODY_OF_KEY,
                           getUserInfo (placement.getStudent ()));
+            addSmallText (details, PLACEMENT_KEY, getProviderName (placement));
         }
         addSmallText (details, AMOUNT_KEY, (long) record.getAmount ());
         addSmallText (details, VAT_AMOUNT_KEY, (long) record.getAmountVAT ());
@@ -683,9 +688,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                             record.getPeriodStartPlacement ());
         addSmallPeriodText (details, PLACEMENT_END_PERIOD_KEY,
                             record.getPeriodEndPlacement ());
-        addSmallText (details, PROVIDER_KEY, getProviderName
-                      (context, record.getProviderId (),
-                       record.getSchoolClassMemberId ()));
         final RegulationSpecType regSpecType = record.getRegSpecType ();
         if (null != regSpecType) {
             final String typeName = regSpecType.getRegSpecType ();
@@ -758,16 +760,11 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.mergeCells (1, row, table.getColumns (), row);
         table.add (getSubmitButton (ACTION_SHOW_NEW_COMPILATION_FORM,
                                     NEW_KEY, NEW_DEFAULT), 1, row);
-        final Form form = new Form ();
-        form.setOnSubmit("return checkInfoForm()");
-        form.add (table);
-        final Table outerTable = createTable (1);
-        outerTable.add (form, 1, 1);
-        add (createMainTable (INVOICE_COMPILATION_LIST_KEY,
-                              INVOICE_COMPILATION_LIST_DEFAULT,  outerTable));
+        createForm (context, table, INVOICE_COMPILATION_LIST_KEY,
+                    INVOICE_COMPILATION_LIST_DEFAULT);
     }
 
-    /**
+	/**
      * Shows one invoice compilation.
 	 *
 	 * @param context session data like user info etc.
@@ -833,14 +830,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM, NEW_KEY,
                                     NEW_DEFAULT), 1, row);
         addCancelButton (table, 1, row);
-        final Form form = new Form ();
-        form.maintainParameter (INVOICE_COMPILATION_KEY);
-        form.setOnSubmit("return checkInfoForm()");
-        form.add (table);
-        final Table outerTable = createTable (1);
-        outerTable.add (form, 1, 1);
-        add (createMainTable (INVOICE_COMPILATION_KEY,
-                              INVOICE_COMPILATION_DEFAULT, outerTable));
+        createForm (context, table, INVOICE_COMPILATION_KEY,
+                    INVOICE_COMPILATION_DEFAULT);
     }
 
     private void deleteCompilation (final IWContext context)
@@ -1014,13 +1005,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                         ACTION_SHOW_NEW_COMPILATION_FORM), 1, row);
         }
         addCancelButton (table, 1, row);
-        final Form form = new Form ();
-        form.setOnSubmit("return checkInfoForm()");
-        form.add (table);
-        final Table outerTable = createTable (1);
-        outerTable.add (form, 1, 1);
-        add (createMainTable (CREATE_INVOICE_COMPILATION_KEY,
-                              CREATE_INVOICE_COMPILATION_DEFAULT,  outerTable));
+        createForm (context, table, CREATE_INVOICE_COMPILATION_KEY,
+                    CREATE_INVOICE_COMPILATION_DEFAULT);
     }
 
     private void newCompilation (final IWContext context)
@@ -1073,9 +1059,9 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         addPresentation (table, presentationObjects, IN_CUSTODY_OF_KEY, col++,
                          row);
         col = 1; row++;
-        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
+        addSmallHeader (table, col++, row, CONTRACT_KEY, CONTRACT_DEFAULT, ":");
         table.mergeCells (col, row, table.getColumns (), row);
-        addPresentation (table, presentationObjects, PROVIDER_KEY, col++, row);
+        addPresentation (table, presentationObjects, PLACEMENT_KEY, col++, row);
         col = 1; row++;
         addSmallHeader (table, col++, row, PLACEMENT_KEY, PLACEMENT_DEFAULT,
                         ":");
@@ -1174,15 +1160,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         table.mergeCells (col, row, table.getColumns (), row);
         addPresentation (table, presentationObjects, ACTION_KEY, 1, row);
         addCancelButton (table, 1, row);
-        final Form form = new Form ();
-        form.maintainParameter (INVOICE_COMPILATION_KEY);
-        form.maintainParameter (INVOICE_RECORD_KEY);
-        form.setOnSubmit("return checkInfoForm()");
-        form.add (table);
-        final Table outerTable = createTable (1);
-        outerTable.add (form, 1, 1);
-        add (createMainTable (presentationObjects.get (HEADER_KEY).toString (),
-                              outerTable));
+        createForm (context, table,
+                    presentationObjects.get (HEADER_KEY).toString ());
     }
 
     private void addCancelButton (final Table table, final int col,
@@ -1556,66 +1535,30 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return dropdown;
     }
 
-    private PresentationObject getProviderDropdown
+    private PresentationObject getPlacementDropdown
         (final IWContext context, final InvoiceHeader header) {
+
         PresentationObject result = getSmallText ("");
         try {
             // get business objects
             final SchoolBusiness schoolBusiness = (SchoolBusiness) IBOLookup
                     .getServiceInstance (context, SchoolBusiness.class);
-            final MemberFamilyLogic familyBusiness
-                    = (MemberFamilyLogic) IBOLookup.getServiceInstance
-                    (context, MemberFamilyLogic.class);
-
+            
             // get home objects
-            final SchoolCategoryHome categoryHome
-                    = schoolBusiness.getSchoolCategoryHome ();
             final SchoolClassMemberHome placementHome
                     = schoolBusiness.getSchoolClassMemberHome ();
+            
+            final UserHome userHome = (UserHome) IDOLookup.getHome(User.class);
+            final User child = userHome.findByPrimaryKey
+                    (new Integer (context.getParameter (IN_CUSTODY_OF_KEY)));
+            final SchoolCategory category =  header.getSchoolCategory ();
 
-            // get school class members
-            final List placements = new ArrayList ();
-            try {
-                final User custodian = header.getCustodian ();
-                final Collection children
-                        = familyBusiness.getChildrenInCustodyOf (custodian);
-                final SchoolCategory category = categoryHome.findByPrimaryKey
-                        (header.getSchoolCategoryID ());
-                for (Iterator i = children.iterator (); i.hasNext ();) {
-                    final User child = (User) i.next ();
-                    try {
-                        final SchoolClassMember placement
-                                = placementHome.findLatestByUserAndSchCategory
-                                (child, category);
-                        placements.add (placement);
-                    } catch (FinderException e) {
-                        // this kid is not placed, it's ok to ignore him/her
-                    }
-                }
-            } catch (FinderException e) {
-                // this person doesn't have any kids
-            }
-
-            if (placements.isEmpty ()) {
-                final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
-                        (new DropdownMenu (PROVIDER_KEY));
-                final String schoolCategoryId = header.getSchoolCategoryID ();
-                final SchoolBusiness business = (SchoolBusiness) IBOLookup
-                        .getServiceInstance (context, SchoolBusiness.class);
-                final Collection schools
-                        = business.findAllSchoolsByCategory (schoolCategoryId);
-                for (Iterator i = schools.iterator (); i.hasNext ();) {
-                    final School school = (School) i.next ();
-                    final String primaryKey
-                            = school.getPrimaryKey ().toString ();
-                    final String name = school.getName ();
-                    dropdown.addMenuElement (primaryKey, name);
-                }
-                result = dropdown;
-            } else if (1 == placements.size ()) {
+            final Collection placements = placementHome
+                    .findAllByUserAndSchoolCategory (child, category);
+            if (1 == placements.size ()) {
                 final Table table = createTable (1);
                 final SchoolClassMember placement
-                        = (SchoolClassMember) placements.get (0);
+                        = (SchoolClassMember) placements.iterator ().next ();
                 table.add (new HiddenInput
                            (PLACEMENT_KEY, placement.getPrimaryKey () + ""), 1,
                            1);
@@ -1772,6 +1715,33 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             result.append (value);
         }
         return result.toString ();
+	}
+
+    private void createForm
+        (final IWContext context, final Table table, final String key,
+         final String defaultHeader)
+        throws RemoteException {
+        createForm (context, table, localize (key, defaultHeader));
+    }
+
+    private void createForm
+        (final IWContext context, final Table table, final String header)
+        throws RemoteException {
+		final Form form = new Form ();
+        form.setOnSubmit("return checkInfoForm()");
+        form.add (table);
+        form.maintainParameter (INVOICE_COMPILATION_KEY);
+        form.maintainParameter (INVOICE_RECORD_KEY);
+        if (context.isParameterSet (ACTION_KEY)) {
+            table.add (new HiddenInput
+                       (LAST_ACTION_KEY, context.getParameter (ACTION_KEY)),
+                       1, 1);
+        } else if (context.isParameterSet (LAST_ACTION_KEY)) {
+            form.maintainParameter (LAST_ACTION_KEY);
+        }
+        final Table outerTable = createTable (1);
+        outerTable.add (form, 1, 1);
+        add (createMainTable (header, outerTable));
 	}
 
 	/**
@@ -2192,13 +2162,16 @@ public class InvoiceCompilationEditor extends AccountingBlock {
          final InvoiceRecord record) throws RemoteException {
         final DropdownMenu dropdown = (DropdownMenu)
                 getStyledInterface (new DropdownMenu (IN_CUSTODY_OF_KEY));
-
+        dropdown.addMenuElement ("", localize (CHOOSE_CHILDREN_KEY,
+                                               CHOOSE_CHILDREN_DEFAULT));
         try {
-            Object currentChildId
-                    = null != record && 0 < record.getSchoolClassMemberId ()
-                    ? record.getSchoolClassMember ().getStudent ()
-                    .getPrimaryKey ()
-                    : null;
+            Object currentChildId = getIntegerParameter (context,
+                                                         IN_CUSTODY_OF_KEY);
+            if (null == currentChildId && null != record
+                && 0 < record.getSchoolClassMemberId ()) {
+                currentChildId = record.getSchoolClassMember ().getStudent ()
+                    .getPrimaryKey ();
+            }
             final MemberFamilyLogic familyBusiness = (MemberFamilyLogic)
                     IBOLookup.getServiceInstance (context,
                                                   MemberFamilyLogic.class);
@@ -2212,6 +2185,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     dropdown.setSelectedElement (key + "");
                 }
             }
+            dropdown.setOnChange ("this.form.submit()");
         } catch (FinderException fe) {
             // no problem - return empty dropdown
         } catch (Exception e) {
