@@ -29,7 +29,6 @@ public class UserAgentStatistics extends GenericEntity {
     addAttribute(getIDColumnName());
     addAttribute(getColumnNameUserAgent(),"User agent string",true,true,String.class,500);
     addAttribute(getColumnNameSessions(),"Number of users with this agent",true,true,Integer.class);
-    addAttribute(getColumnNameLocaleId(),"Locale",true,true, Integer.class,"many-to-one",ICLocale.class);
     addAttribute(getColumnNameDate(),"Date of record",true,true, Timestamp.class);
   }
 
@@ -39,7 +38,6 @@ public class UserAgentStatistics extends GenericEntity {
 
   public static String getEntityTableName(){ return "TR_USER_AGENT_STATISTICS";}
   public static String getColumnNameUserAgent(){return "IB_USER_AGENT";}
-  public static String getColumnNameLocaleId(){return "IC_LOCALE_ID";}
   public static String getColumnNameSessions(){return "SESSIONS";}
   public static String getColumnNameDate(){return "MODIFICATION_DATE";}
 
@@ -49,10 +47,6 @@ public class UserAgentStatistics extends GenericEntity {
 
   public int getSessions(){
     return getIntColumnValue(getColumnNameSessions());
-  }
-
-  public int getLocale(){
-    return getIntColumnValue(getColumnNameLocaleId());
   }
 
   public Timestamp getDate(){
@@ -65,10 +59,6 @@ public class UserAgentStatistics extends GenericEntity {
 
   public void setSessions(int sessionHits){
     setColumn(getColumnNameSessions(), sessionHits);
-  }
-
-  public void setLocale(int locale){
-    setColumn(getColumnNameLocaleId(), locale);
   }
 
   public void setModificationDate(Timestamp date){

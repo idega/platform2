@@ -1,18 +1,25 @@
 package is.idega.idegaweb.tracker.business;
 
+import is.idega.idegaweb.tracker.data.*;
+
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWCacheManager;
-import is.idega.idegaweb.tracker.data.*;
+import com.idega.data.GenericEntity;
+import com.idega.data.EntityBulkUpdater;
 import com.idega.builder.business.BuilderLogic;
 import com.idega.builder.data.IBDomain;
 import com.idega.builder.data.IBPage;
 import com.idega.util.idegaTimestamp;
 import com.idega.core.localisation.business.ICLocaleBusiness;
+
+import java.util.Locale;
 import java.util.Map;
 import java.util.Hashtable; //synchronized
 import java.util.HashMap;//unsynchronized
 import java.util.ArrayList;//unsynchronized
 import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Title:        is.idega.idegaweb.tracker.business.TrackerBusiness
@@ -35,7 +42,6 @@ public class TrackerBusiness {
   private static Map pages;
   private static Map referers;
   private static Map agents;
-  private static Map domain;
   private static Map pageSessions;
   private static Map pageHits;
 
@@ -43,6 +49,8 @@ public class TrackerBusiness {
   private static int totalSessions = 0;
 
   private static String domainName;
+
+  private static boolean notWritingToDB = true;
 
   public TrackerBusiness() {
   }
@@ -75,11 +83,13 @@ public class TrackerBusiness {
   }
 
   public static void runThroughTheStatsMachine(IWContext iwc){
-    init(iwc);
-    handlePageStats(iwc);
-    //handleDomainStats(iwc);
-    handleReferrerStats(iwc);
-    handleUserAgentStats(iwc);
+    if( notWritingToDB ){
+      init(iwc);
+      handlePageStats(iwc);
+      //handleDomainStats(iwc);
+      handleReferrerStats(iwc);
+      handleUserAgentStats(iwc);
+    }
   }
 
   public static void handlePageStats(IWContext iwc){
@@ -92,7 +102,7 @@ public class TrackerBusiness {
       PageStatistics page = new PageStatistics();/**@todo clone this?**/
       page.setPageId(pageId);
       page.setPreviousPageId(pageId);/**@todo this shit here**/
-      page.setLocale(ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale()));
+      page.setLocale(iwc.getCurrentLocaleId());
       page.setUserId(iwc.getUserId());
       page.setModificationDate(idegaTimestamp.getTimestampRightNow());
       page.setGenerationTime(200);/**@todo this shit here**/
@@ -115,9 +125,6 @@ public class TrackerBusiness {
 
   }
 
-  public static void handleDomainStats(IWContext iwc){
-    // bara utreikningar og insert
-  }
 
   public static void handleReferrerStats(IWContext iwc){
     String referer = iwc.getReferer();
@@ -211,7 +218,74 @@ public class TrackerBusiness {
   }
 
 
+//********** save to database functions **************//
 
+  public static void saveStatsToDB(){
+    notWritingToDB = false;//stop updating for a while
+/*
+    saveMapToDB(pages);
+    saveMapToDB(referers);
+    saveMapToDB(agents);
+
+    pageSessions;
+    pageHits;
+
+
+    domain;
+    totalHits;
+    totalSessions;
+
+
+*/
+
+    notWritingToDB = true;//start updating again
+  }
+
+
+  private static void saveMapToDB(Map stats){
+    if( stats!=null ){
+     EntityBulkUpdater bulk = new EntityBulkUpdater();
+
+      try {
+        Iterator iter = stats.keySet().iterator();
+        while (iter.hasNext()) {
+          GenericEntity item = (GenericEntity) iter.next();
+          bulk.add(item,EntityBulkUpdater.insert);
+        }
+        bulk.execute();
+      }
+      catch (Exception ex) {
+       ex.printStackTrace(System.err);
+      }
+    }
+
+  }
+
+
+  private static void calculateAndInsertTotalPageAndDomainStats(IWContext iwc){
+    HashMap totalPage = new HashMap();
+    HashMap totalDomain = new HashMap();
+
+
+    Vector locales = (Vector) iwc.getApplication().getAvailableLocales();
+    Iterator iter = locales.iterator();
+
+
+    while (iter.hasNext()) {
+      Locale item = (Locale)iter.next();
+      int localeId = ICLocaleBusiness.getLocaleId(item);
+      PageTotalStatistics stats = new PageTotalStatistics();//virkar ekki svona
+      DomainStatistics stats2 = new DomainStatistics();
+
+      totalPage.put(new Integer(localeId),stats);
+      totalDomain.put(new Integer(localeId),stats2);
+    }
+
+
+
+
+
+  }
 
 
 
