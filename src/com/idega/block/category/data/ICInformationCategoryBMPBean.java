@@ -10,14 +10,14 @@ import java.util.List;
 import javax.ejb.FinderException;
 
 import com.idega.core.business.ICTreeNodeLeafComparator;
-import com.idega.core.component.data.*;
+import com.idega.core.component.data.ICObject;
+import com.idega.core.component.data.ICObjectInstance;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityControl;
 import com.idega.data.EntityFinder;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
-import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.TreeableEntityBMPBean;
 import com.idega.util.IWTimestamp;
 
