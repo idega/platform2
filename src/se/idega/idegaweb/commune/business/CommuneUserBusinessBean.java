@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
+import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
@@ -21,6 +22,10 @@ import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBORuntimeException;
+import com.idega.core.accesscontrol.data.LoginInfo;
+import com.idega.core.accesscontrol.data.LoginInfoHome;
+import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.accesscontrol.data.LoginTableHome;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.business.AddressBusiness;
@@ -30,6 +35,7 @@ import com.idega.core.location.data.CountryHome;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOCreateException;
 import com.idega.data.IDOFinderException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplicationSettings;
@@ -43,8 +49,6 @@ import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
-import com.idega.user.data.GroupType;
-import com.idega.user.data.GroupTypeHome;
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.util.IWTimestamp;
@@ -60,13 +64,16 @@ import com.idega.util.text.TextSoap;
 public class CommuneUserBusinessBean extends UserBusinessBean implements CommuneUserBusiness {
 
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
-	private final String ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
+	private final String ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
 	private final String ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME = "protected_citizen_group_id";
 	private final String ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME = "customer_choice_group_id";
+	private final String ROOT_CITIZEN_DECEASED_ID_PARAMETER_NAME = "citizen_deceased_group_id";
+	
 	private Group rootCitizenGroup;
-	private Group rootSpecialCitizenGroup;
+	private Group rootOtherCommuneCitizenGroup;
 	private Group rootProtectedCitizenGroup;
 	private Group rootCustomerChoiceGroup;
+	private Group rootDeceasedCitizensGroup;
 
 	/**
 	 * Creates a new citizen with a firstname,middlename, lastname and personalID where middlename and personalID can be null.<br>
@@ -116,10 +123,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Finds and updates or Creates a new citizen with a firstname,middlename, lastname and personalID.<br>
 	 * Also adds the citizen to the Commune Root Group.
 	 */
-	public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID) throws CreateException, RemoteException {
-		return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
+	public User createOrUpdateCitizenByPersonalID(String firstName, String middleName, String lastName, String personalID) throws CreateException, RemoteException {
+		return createOrUpdateCitizenByPersonalID(firstName, middleName, lastName, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
 	}
-	public User createCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException, RemoteException {
+	/**
+	 * Finds and updates or Creates a new citizen with a firstname,middlename, lastname and personalID.<br>
+	 * Also adds the citizen to the Commune Root Group.
+	 */	
+	public User createOrUpdateCitizenByPersonalID(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException, RemoteException {
 		User user = null;
 		try {
 			final UserHome home = getUserHome();
@@ -160,7 +171,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	public User createSpecialCitizen(final String firstname, final String middlename, final String lastname, final String personalID, final Gender gender, final IWTimestamp dateOfBirth) throws CreateException, RemoteException {
 		User newUser = null;
 		try {
-			newUser = createUser(firstname, middlename, lastname, personalID, gender, dateOfBirth, getRootSpecialCitizenGroup());
+			newUser = createUser(firstname, middlename, lastname, personalID, gender, dateOfBirth, getRootOtherCommuneCitizensGroup());
 		}
 		catch (final Exception e) {
 			e.printStackTrace();
@@ -175,7 +186,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * Commune Special Citizen Root Group (people who don't live in Nacka).
 	 */
 	public User createSpecialCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID) throws CreateException, RemoteException {
-		return createCitizenByPersonalIDIfDoesNotExist(firstName, middleName, lastName, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
+		return createOrUpdateCitizenByPersonalID(firstName, middleName, lastName, personalID, getGenderFromPin(personalID), getBirthDateFromPin(personalID));
 	}
 	public User createSpecialCitizenByPersonalIDIfDoesNotExist(String firstName, String middleName, String lastName, String personalID, Gender gender, IWTimestamp dateOfBirth) throws CreateException, RemoteException {
 		User user = null;
@@ -270,11 +281,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		else {
 			System.err.println("trying to store Commune Root group");
-			/**@todo this seems a wrong way to do things**/
-			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
-			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootCitizenGroup = groupBusiness.createGroup("Commune Citizens", "The Commune Root Group.", type.getGeneralGroupTypeString());
+			rootCitizenGroup = groupBusiness.createGroup("Commune Citizens", "The Root Group for all Citizens of the Commune");
 			settings.setProperty(ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME, rootCitizenGroup.getPrimaryKey());
 		}
 		return rootCitizenGroup;
@@ -284,28 +292,26 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	 * citizens not living in the commune, read from imports. throws a
 	 * CreateException if it failed to locate or create the group.
 	 */
-	public Group getRootSpecialCitizenGroup() throws CreateException, FinderException, RemoteException {
+	public Group getRootOtherCommuneCitizensGroup() throws CreateException, FinderException, RemoteException {
 		//create the default group
-		if (rootSpecialCitizenGroup != null)
-			return rootSpecialCitizenGroup;
+		if (rootOtherCommuneCitizenGroup != null)
+			return rootOtherCommuneCitizenGroup;
 
 		final IWApplicationContext iwc = getIWApplicationContext();
 		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
-		String groupId = settings.getProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME);
+		String groupId = settings.getProperty(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME);
 		if (groupId != null) {
 			final GroupHome groupHome = getGroupHome();
-			rootSpecialCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+			rootOtherCommuneCitizenGroup = groupHome.findByPrimaryKey(new Integer(groupId));
 		}
 		else {
-			System.err.println("trying to store Commune Special Citizen Root group");
-			/**@todo this seems a wrong way to do things**/
-			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
-			final GroupType type = typeHome.create();
+			System.out.println("Trying to store OtherCommuneCitizens Root group");
 			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootSpecialCitizenGroup = groupBusiness.createGroup("Commune Special Citizens", "The Commune Special Citizen Root Group.", type.getGeneralGroupTypeString());
-			settings.setProperty(ROOT_SPECIAL_CITIZEN_GROUP_ID_PARAMETER_NAME, rootSpecialCitizenGroup.getPrimaryKey());
+			rootOtherCommuneCitizenGroup = groupBusiness.createGroup("Non-Commune Citizens", "The Root Group for all Citizens in other Communes.");
+			
+			settings.setProperty(ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME, rootOtherCommuneCitizenGroup.getPrimaryKey());
 		}
-		return rootSpecialCitizenGroup;
+		return rootOtherCommuneCitizenGroup;
 	}
 	
 	/**
@@ -330,11 +336,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			//final GroupHome groupHome = getGroupHome();
 
 			System.err.println("trying to store Customer Choice Root group");
-			/**@todo this seems a wrong way to do things**/
-			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
-			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootCustomerChoiceGroup = groupBusiness.createGroup("Kundvalsgruppen", "Kundvalsgruppen", type.getGeneralGroupTypeString());
+			rootCustomerChoiceGroup = groupBusiness.createGroup("Kundvalsgruppen", "Kundvalsgruppen");
 			settings.setProperty(ROOT_CUSTOMER_CHOICE_GROUP_ID_PARAMETER_NAME, rootCustomerChoiceGroup.getPrimaryKey());
 		}
 		return rootCustomerChoiceGroup;
@@ -359,18 +362,41 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		else {
 			System.err.println("trying to store Commune Protected Citizen Root group");
-			/**@todo this seems a wrong way to do things**/
-			final GroupTypeHome typeHome = (GroupTypeHome) getIDOHome(GroupType.class);
-			final GroupType type = typeHome.create();
 			final GroupBusiness groupBusiness = getGroupBusiness();
-			rootProtectedCitizenGroup = groupBusiness.createGroup("Commune Protected Citizens", "The Commune Protected Citizen Root Group.", type.getGeneralGroupTypeString());
+			rootProtectedCitizenGroup = groupBusiness.createGroup("Commune Protected Citizens", "The Commune Protected Citizen Root Group.");
 			settings.setProperty(ROOT_PROTECTED_CITIZEN_GROUP_ID_PARAMETER_NAME, rootProtectedCitizenGroup.getPrimaryKey());
+		}
+		return rootProtectedCitizenGroup;
+	}
+	
+	/**
+	 * Gets or creates (if not available) and returns the default usergroup for
+	 * which all citizens are moved to when they get deceased.
+	 * CreateException if it failed to locate or create the group.
+	 */
+	public Group getRootDeceasedCitizensGroup() throws CreateException, FinderException, RemoteException {
+		//create the default group
+		if (rootDeceasedCitizensGroup != null)
+			return rootDeceasedCitizensGroup;
+
+		final IWApplicationContext iwc = getIWApplicationContext();
+		final IWMainApplicationSettings settings = iwc.getApplicationSettings();
+		String groupId = settings.getProperty(ROOT_CITIZEN_DECEASED_ID_PARAMETER_NAME);
+		if (groupId != null) {
+			final GroupHome groupHome = getGroupHome();
+			rootDeceasedCitizensGroup = groupHome.findByPrimaryKey(new Integer(groupId));
+		}
+		else {
+			System.err.println("trying to store Citizen Deceased Root group");
+			final GroupBusiness groupBusiness = getGroupBusiness();
+			rootDeceasedCitizensGroup = groupBusiness.createGroup("Deceased Citizens", "The Commune Deceased Citizen Root Group.");
+			settings.setProperty(ROOT_CITIZEN_DECEASED_ID_PARAMETER_NAME, rootDeceasedCitizensGroup.getPrimaryKey());
 		}
 		return rootProtectedCitizenGroup;
 	}
 
 	/**
-	* Returns or creates (if not available) the default usergroup all provider(childcare) administors have as their primary group.
+	* Returns or creates (if not available) the default usergroup all ChildCare(provider) administors have as their primary group.
 	* @throws CreateException if it failed to create the group.
 	* @throws FinderException if it failed to locate the group.
 	*/
@@ -395,7 +421,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 				getUserBusiness().getGroupBusiness().createGroup(
 					"Provider Administrators",
 					"The Commune Root Provider Administrators Group.",
-					type.getGeneralGroupTypeString());
+					typeHome.getGeneralGroupTypeString());
 			bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
 		}
 		return rootGroup;
@@ -427,7 +453,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 						getUserBusiness().getGroupBusiness().createGroup(
 							"School Administrators",
 							"The Commune Root School Administrators Group.",
-							type.getGeneralGroupTypeString());
+							typeHome.getGeneralGroupTypeString());
 					bundle.setProperty(ROOT_SCHOOL_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
 				}
 				return rootGroup;
@@ -449,10 +475,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		else {
 			System.err.println("trying to store Commune administrators Root group");
-			/**@todo this seems a wrong way to do things**/
-			GroupTypeHome typeHome = (GroupTypeHome) this.getIDOHome(GroupType.class);
-			GroupType type = typeHome.create();
-			rootGroup = getGroupBusiness().createGroup("Commune Administrators", "The Commune Administrators Root Group.", type.getGeneralGroupTypeString());
+			rootGroup = getGroupBusiness().createGroup("Commune Administrators", "The Commune Administrators Root Group.");
 			bundle.setProperty(ROOT_COMMUNE_ADMINISTRATORS_GROUP, rootGroup.getPrimaryKey().toString());
 		}
 		return rootGroup;
@@ -632,7 +655,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		Group rootSpecialGroup = null;
 		try {
-			rootSpecialGroup = getRootSpecialCitizenGroup();
+			rootSpecialGroup = getRootOtherCommuneCitizensGroup();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -650,6 +673,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		rootGroup.removeUser(user,currentUser,time);
 		
 		rootSpecialGroup.addGroup(user,time);
+		user.setPrimaryGroup(rootSpecialGroup);
+		user.store();
 
 		/*	transaction.commit();
 		}
@@ -686,7 +711,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		Group rootSpecialGroup = null;
 		try {
-			rootSpecialGroup = getRootSpecialCitizenGroup();
+			rootSpecialGroup = getRootOtherCommuneCitizensGroup();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -703,7 +728,8 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
     }
 		rootSpecialGroup.removeUser(user,currentUser,time);
 		rootGroup.addGroup(user,time);
-		
+		user.setPrimaryGroup(rootGroup);
+		user.store();
 		
 		
 		/*
@@ -757,7 +783,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		}
 		Group rootSpecialGroup = null;
 		try {
-			rootSpecialGroup = getRootSpecialCitizenGroup();
+			rootSpecialGroup = getRootOtherCommuneCitizensGroup();
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -775,7 +801,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		rootGroup.removeUser(user, currentUser,time);
 		
 		rootProtectedGroup.addGroup(user,time);
-		
+		user.setPrimaryGroup(rootProtectedGroup);
 		return true;
 		
 	}
@@ -1007,15 +1033,14 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			userStatusService.setUserAsDeceased(userID,deceasedDate);
 			// remove custodian relations
 			MemberFamilyLogic familyService = getMemberFamilyLogic();
-			User currentUser = getUser(userID);
+			User deceasedUser = getUser(userID);
 			try {
-				Collection custodyChildren = familyService.getChildrenInCustodyOf(currentUser);
+				Collection custodyChildren = familyService.getChildrenInCustodyOf(deceasedUser);
 				if(custodyChildren!=null && !custodyChildren.isEmpty()){
 					for (Iterator iter = custodyChildren.iterator(); iter.hasNext();) {
 						User child = (User) iter.next();
-						System.out.println("removing custodian "+currentUser.getName()+" for "+child.getName());
-						familyService.removeAsCustodianFor(currentUser,child);
-						
+						System.out.println("removing deceased custodian "+deceasedUser.getName()+" for "+child.getName());
+						familyService.removeAsCustodianFor(deceasedUser,child);
 					}
 				}
 			}
@@ -1025,6 +1050,83 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			catch (RemoveException e1) {
 				e1.printStackTrace();
 			}
+			Group deceasedGroup;
+			try {
+				deceasedGroup = this.getRootDeceasedCitizensGroup();
+				deceasedGroup.addGroup(deceasedUser);
+				deceasedUser.setPrimaryGroup(deceasedGroup);
+			}
+			catch (CreateException e2) {
+				e2.printStackTrace();
+			}
+			catch (FinderException e2) {
+				e2.printStackTrace();
+			}
+			
+			//Try to move the citizen from these groups but it is not certain that he is a member
+			try{
+				//HACK to get the current user:
+				User currentPerformingUser = IWContext.getInstance().getCurrentUser();
+				this.getRootCitizenGroup().removeUser(deceasedUser,currentPerformingUser);
+			}
+			catch(Exception e){
+			}
+			try{
+				//HACK to get the current user:
+				User currentPerformingUser = IWContext.getInstance().getCurrentUser();
+				this.getRootOtherCommuneCitizensGroup().removeUser(deceasedUser,currentPerformingUser);
+			}
+			catch(Exception e){
+			}
+			
+			//Try to remove phones and emails from user if he has any
+			try {
+				deceasedUser.removeAllPhones();
+			}
+			catch (IDORemoveRelationshipException e3) {
+				log("Failed removing phones from deceased user : "+deceasedUser.getName());
+			}
+			try {
+				deceasedUser.removeAllEmails();
+			}
+			catch (IDORemoveRelationshipException e4) {
+				log("Failed removing emails from deceased user : "+deceasedUser.getName());
+			}
+			
+			//Remove the users login:
+			LoginTableHome loginHome = (LoginTableHome)getIDOHome(LoginTable.class);
+			Collection coll;
+			try {
+				coll = loginHome.findLoginsForUser(deceasedUser);
+				Iterator iter = coll.iterator();
+				while(iter.hasNext()){
+					LoginTable login = (LoginTable)iter.next();
+					//Try to disable account:
+					try{
+						LoginInfoHome liHome = (LoginInfoHome)getIDOHome(LoginInfo.class);
+						LoginInfo loginInfo = liHome.findByPrimaryKey(login.getPrimaryKey());
+						loginInfo.setAccountEnabled(false);
+						loginInfo.store();
+					}
+					catch(Exception e){
+					}
+					//Try to remove login:					
+					try {
+						login.remove();
+					}
+					catch (EJBException e6) {
+						e6.printStackTrace();
+					}
+					catch (RemoveException e6) {					
+						log("Failed removing login:"+login.getUserLogin()+" from deceased user : "+deceasedUser.getName());
+					}
+				}
+			}
+			catch (FinderException e5) {
+				e5.printStackTrace();
+			}
+
+			
 			return true;
 		}
 		catch (RemoteException e) {

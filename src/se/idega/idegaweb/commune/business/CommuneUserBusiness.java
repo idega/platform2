@@ -15,8 +15,8 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
 {
  public com.idega.user.data.User createCitizen(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.Gender p4,com.idega.util.IWTimestamp p5)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.User createCitizen(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.user.data.User createCitizenByPersonalIDIfDoesNotExist(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.Gender p4,com.idega.util.IWTimestamp p5)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
- public com.idega.user.data.User createCitizenByPersonalIDIfDoesNotExist(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.user.data.User createOrUpdateCitizenByPersonalID(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3,com.idega.user.data.Gender p4,com.idega.util.IWTimestamp p5)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
+ public com.idega.user.data.User createOrUpdateCitizenByPersonalID(java.lang.String p0,java.lang.String p1,java.lang.String p2,java.lang.String p3)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.User createCommuneAdministrator(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.User createProviderAdministrator(java.lang.String p0,java.lang.String p1,java.lang.String p2,com.idega.block.school.data.School p3)throws javax.ejb.FinderException,javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
  public com.idega.user.data.User createSchoolAdministrator(java.lang.String p0,java.lang.String p1,java.lang.String p2,com.idega.block.school.data.School p3)throws javax.ejb.FinderException,javax.ejb.CreateException,java.rmi.RemoteException, java.rmi.RemoteException;
@@ -46,7 +46,7 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
  public java.util.Collection getChildrenForUser(User user) throws RemoteException;
  public is.idega.idegaweb.member.business.MemberFamilyLogic getMemberFamilyLogic() throws RemoteException;
  public boolean getIfUserAddressesMatch(com.idega.core.location.data.Address userAddress, com.idega.core.location.data.Address userAddressToCompare) throws RemoteException;
- public Group getRootSpecialCitizenGroup() throws CreateException, FinderException, RemoteException;
+ public Group getRootOtherCommuneCitizensGroup() throws CreateException, FinderException, RemoteException;
  public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	 String firstName,
 	 String middleName,
@@ -109,9 +109,16 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	/**
 	 * Sets the specified user as deceased and takes all actions needed
 	 * be handled here
-	 * @param userID
+	 * @param userID for user who is deceased
 	 * @param deceasedDate
 	 * @return true if successfull
 	 */
 	public boolean setUserAsDeceased(Integer userID,java.util.Date deceasedDate)throws RemoteException;
+	
+	/**
+	 * Gets or creates (if not available) and returns the default usergroup for
+	 * which all citizens are moved to when they get deceased.
+	 * CreateException if it failed to locate or create the group.
+	 */
+	public Group getRootDeceasedCitizensGroup() throws CreateException, FinderException, RemoteException;
 }
