@@ -108,8 +108,10 @@ public class GroupApplicationTab extends UserTab {
 				
 				add( groupSelection );	
 				
+				
 				add( "User comment: "+app.getUserComment());
 				addBreak();
+				
 				add("Admin comment: "+app.getAdminComment());
 				
 			}
@@ -120,7 +122,6 @@ public class GroupApplicationTab extends UserTab {
 	  	//find fall til ad finna applications
 	  	//find fall til ad finna alla hopa undir parenti umsoknarhopsins
 	
-		//birta status applicationsins
 		//hopavalid
 		//user commentid
 		//admin commentid
@@ -136,8 +137,8 @@ public class GroupApplicationTab extends UserTab {
 	    
 	   // getGroupApplicationBusiness(this.getIWApplicationContext()).
 	    
-	    frameTable.add(groupSelection);
-	    this.add(frameTable);
+	    //frameTable.add(groupSelection);
+	    //this.add(frameTable);
 	  	
   	}
   	catch ( Exception e ){
