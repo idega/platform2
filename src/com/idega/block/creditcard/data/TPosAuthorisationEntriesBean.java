@@ -65,6 +65,7 @@ public interface TPosAuthorisationEntriesBean extends com.idega.data.IDOEntity,c
  public void setMerchantNrOtherServices(java.lang.String p0);
  public void setMerchantNrSubmission(java.lang.String p0);
  public void setPan(java.lang.String p0);
+ public void setParentID(int id);
  public void setPosNr(java.lang.String p0);
  public void setPosSerialNr(java.lang.String p0);
  public void setPrintData(java.lang.String p0);
