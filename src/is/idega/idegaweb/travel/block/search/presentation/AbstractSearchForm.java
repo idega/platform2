@@ -642,7 +642,7 @@ public abstract class AbstractSearchForm extends Block{
 					if (productAvailability != null) {
 						supplier = sHome.findByPrimaryKey(product.getSupplierId());
 						bus = getSearchBusiness(iwc).getServiceHandler().getServiceBusiness(product);
-						addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true);
+						addresses = getSearchBusiness(iwc).getServiceHandler().getProductBusiness().getDepartureAddresses(product, stamp, true, getPriceCategoryKey());
 	
 						Table table = new Table();
 						table.setWidth("100%");
