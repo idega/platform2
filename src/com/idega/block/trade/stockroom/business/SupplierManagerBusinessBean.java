@@ -355,13 +355,15 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
         //pGroup = (Group) listi.get(listi.size()-1);
       }
     }
-    coll = getGroupBusiness().getGroupHome().findGroupsByNameAndDescription(supplier.getName()+permissionGroupNameExtention, description);
-    if (coll != null) {
-      if (!coll.isEmpty()) {
-      	Iterator iter = coll.iterator();
-      	pGroup = (Group) iter.next();
-        //pGroup = (Group) listi.get(listi.size()-1);
-      }
+    if (coll == null || coll.isEmpty()) {
+	    coll = getGroupBusiness().getGroupHome().findGroupsByNameAndDescription(supplier.getName()+permissionGroupNameExtention, description);
+	    if (coll != null) {
+	      if (!coll.isEmpty()) {
+	      	Iterator iter = coll.iterator();
+	      	pGroup = (Group) iter.next();
+	        //pGroup = (Group) listi.get(listi.size()-1);
+	      }
+	    }
     }
 //    if (listi == null) {
 //      listi = EntityFinder.findAllByColumn((Group) com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticInstance(PermissionGroup.class), com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getNameColumnName(), supplier.getName()+permissionGroupNameExtention, com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getGroupDescriptionColumnName(), description);
@@ -387,14 +389,16 @@ public class SupplierManagerBusinessBean extends IBOServiceBean  implements Supp
       }
     }
     
-    coll = ssgh.findGroupsByName(supplier.getName()); 
-	  if (coll != null) {
-	    if (!coll.isEmpty()) {
-	    	Iterator iter = coll.iterator();
-	    	sGroup = (SupplierStaffGroup) iter.next();
-	//      sGroup = (SupplierStaffGroup) listi.get(listi.size()-1);
-	    }
-	  }   
+    if (coll == null || coll.isEmpty()) {
+	    coll = ssgh.findGroupsByName(supplier.getName()); 
+		  if (coll != null) {
+		    if (!coll.isEmpty()) {
+		    	Iterator iter = coll.iterator();
+		    	sGroup = (SupplierStaffGroup) iter.next();
+		//      sGroup = (SupplierStaffGroup) listi.get(listi.size()-1);
+		    }
+		  }   
+    }
 //    if (listi == null) {
 //      listi = EntityFinder.findAllByColumn((SupplierStaffGroup) com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getStaticInstance(SupplierStaffGroup.class), com.idega.block.trade.stockroom.data.SupplierStaffGroupBMPBean.getNameColumnName(), supplier.getName());
 //      if (listi != null)
