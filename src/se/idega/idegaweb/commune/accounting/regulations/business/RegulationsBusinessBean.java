@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.20 2003/09/11 14:33:12 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.21 2003/09/11 15:53:25 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,7 +47,8 @@ import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationT
 import se.idega.idegaweb.commune.accounting.regulations.data.SpecialCalculationTypeHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRuleHome;
-
+import se.idega.idegaweb.commune.accounting.regulations.data.YesNo;
+import se.idega.idegaweb.commune.accounting.regulations.data.YesNoHome;
 
 
 
@@ -623,7 +624,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	}	
 
 	/**
-	 * Finds all sibling values
+	 * Finds all hour values
 	 * These are not put in an entity bean since Lotta Ringborg 
 	 * tells me they shall be fixed and never changed.
 	 * @return Collection of hour intervals
@@ -639,6 +640,25 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 		return arr; 
 	}	
+
+	/**
+	 * Gets a yes/no to use in the regulation framework.
+	 * @return Yes no collection
+	 * @see se.idega.idegaweb.commune.accounting.regulations.presentation.RegulationListEditor#
+	 * @see getAllOperations
+	 * @author Kelly
+	 */
+	public Collection getYesNo() {
+		try {
+			YesNoHome home = getYesNoHome();
+			return home.findAllYesNoValues();				
+		} catch (RemoteException e) {
+			return null;
+		} catch (FinderException e) {
+			return null;
+		}
+	}	
+
 
 	/**
 	 * Finds all Max Amounts
@@ -737,6 +757,15 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 	 * parts of the system. This could be placed in a bean later...
 	 * As of now I just set the values here.
 	 * 
+	 * Values are:
+	 * 
+	 * Operation ID
+	 * Real term (initial localized value)
+	 * Localization key
+	 * Class where the collection can be retrieved
+	 * Method to get the collection
+	 * Method to get the data in the bean (If blank it means the data is just a collection of objects []
+	 * 
 	 * @return collection of ConditionHolders
 	 * @see se.idega.idegaweb.commune.accounting.regulations.business.ConditionHolder#
 	 * @see se.idega.idegaweb.commune.accounting.regulations.presentation.RegulationListEditor#
@@ -807,6 +836,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"findAllAgeRegulations",
 					"getAgeInterval")
 			);
+
+			arr.add(new ConditionHolder(
+					RuleTypeConstant.CONDITION_ID_AGE_INTERVAL, 
+					"Stadsbidragsberättigad", 
+					LP + "stadsbidragsberattigad", 
+					"se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness", 
+					"getYesNo",
+					"getLocalizationKey")
+			);
+
 			
 	/*
 			arr.add(new ConditionHolder(
@@ -888,6 +927,10 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 
 	protected VATRuleHome getVATRuleHome() throws RemoteException {
 		return (VATRuleHome) com.idega.data.IDOLookup.getHome(VATRule.class);
+	}	
+
+	protected YesNoHome getYesNoHome() throws RemoteException {
+		return (YesNoHome) com.idega.data.IDOLookup.getHome(YesNo.class);
 	}	
 
 	protected SpecialCalculationTypeHome getSpecialCalculationTypeHome() throws RemoteException {
