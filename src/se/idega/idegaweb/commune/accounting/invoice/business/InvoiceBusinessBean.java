@@ -55,11 +55,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/01/06 14:03:15 $ by $Author: tryggvil $
+ * Last modified: $Date: 2004/01/06 16:04:17 $ by $Author: thomas $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.76 $
+ * @version $Revision: 1.77 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -111,12 +111,10 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 	 * 
 	 * @param month
 	 */
-	public void removePreliminaryInvoice(Date dateInMonth, String category) throws RemoveException {
+	public void removePreliminaryInvoice(CalendarMonth month, String category) throws RemoveException {
 		PaymentRecord paymentRecord;
 		Iterator headerIter;
-		InvoiceHeader header;
-		CalendarMonth month = new CalendarMonth(dateInMonth);
-		
+		InvoiceHeader header;		
 		try {
 			SchoolCategory schoolCategory =
 					((SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class)).findByPrimaryKey(category);
