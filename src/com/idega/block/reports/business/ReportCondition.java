@@ -17,7 +17,7 @@ import java.sql.SQLException;
   private String sJoin="",sOperator="",sVariable="";
   private String[] sOps,sVars;
   private String sCondition="";
-  private boolean bCondition,bSelect;
+  private boolean bCondition,bSelect,bField = false;
 
   public ReportCondition(ReportItem Item) {
    this.Item = Item;
@@ -33,11 +33,14 @@ import java.sql.SQLException;
     }
   }
   private void init(){
-    StringBuffer sb = new StringBuffer(this.Item.getMainTable());
-    sb.append(".");
-    sb.append(this.Item.getField());
-    this.sJoin = sb.toString();
-    this.sOps = this.Item.getOps();
+    if(Item.getField()!= null){
+      bField = true;
+      StringBuffer sb = new StringBuffer(this.Item.getMainTable());
+      sb.append(".");
+      sb.append(this.Item.getField());
+      this.sJoin = sb.toString();
+      this.sOps = this.Item.getOps();
+    }
     this.bCondition = false;
     this.bSelect   = false;
   }
@@ -49,7 +52,7 @@ import java.sql.SQLException;
   }
   public String getCondition(){
     StringBuffer sb = new StringBuffer("");
-    if(bCondition){
+    if(bCondition && bField){
       int len = this.Item.getOps().length;
       for (int i = 0; i < len; i++) {
         sb.append(this.sJoin);

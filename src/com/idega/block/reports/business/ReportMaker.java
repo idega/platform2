@@ -2,6 +2,7 @@ package com.idega.block.reports.business;
 
 import com.idega.block.reports.data.*;
 import java.util.Vector;
+import java.util.StringTokenizer;
 import java.sql.*;
 import com.idega.util.database.ConnectionBroker;
 
@@ -30,6 +31,13 @@ public class ReportMaker {
     return v;
   }
 
+  public Vector makeReport(Vector conds,ReportCondition RCx){
+    conds.addElement(RCx);
+    String sql = worker(conds);
+    Vector v = this.searchInDatabase(sql);
+    return v;
+  }
+
   public String makeSQL(Vector conds){
     return worker(conds);
   }
@@ -47,11 +55,15 @@ public class ReportMaker {
       cond = (ReportCondition) conds.elementAt(i);
       item = cond.getItem();
       if(cond.isSelect()){
-      if(!vSelect.contains(item.getMainTable()+"."+item.getField()))
-        vSelect.addElement(item.getMainTable()+"."+item.getField());
+      if(item.getField()!= null){
+        if(!vSelect.contains(item.getMainTable()+"."+item.getField()))
+          vSelect.addElement(item.getMainTable()+"."+item.getField());
+        }
       }
-      if(!vTables.contains(item.getMainTable()))
-        vTables.addElement(item.getMainTable());
+      if(item.getMainTable()!=  null){
+        if(!vTables.contains(item.getMainTable()))
+          vTables.addElement(item.getMainTable());
+      }
 
       String[] sa = item.getJoinTable();
       if(sa != null){
@@ -62,8 +74,12 @@ public class ReportMaker {
       }
       String sJoin = item.getJoin();
       if(sJoin.length() > 1){
-        if(!vJoin.contains(sJoin))
-          vJoin.addElement(sJoin);
+        StringTokenizer ST = new StringTokenizer(sJoin,",;");
+        while(ST.hasMoreTokens()){
+          String join = ST.nextToken();
+          if(!vJoin.contains(join))
+            vJoin.addElement(join);
+        }
       }
       String c = cond.getCondition();
       if(c != null && c.length() > 0 && !vWhere.contains(c))

@@ -60,7 +60,6 @@ public class ReportEntityHandler {
     }
   }
 
-
   public static ReportCondition[] getConditions(int iCategory){
     ReportItem[] RI = findReportItems(iCategory);
     ReportCondition[] RC = new ReportCondition[RI.length];
