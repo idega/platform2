@@ -86,7 +86,13 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 
 	public int createCheck(int childCareType, int workSituation1, int workSituation2, String motherTongueMotherChild, String motherTongueFatherChild, String motherTongueParents, int childId, int method, int amount, int checkFee, User user, String notes, boolean checkRule1, boolean checkRule2, boolean checkRule3, boolean checkRule4, boolean checkRule5) throws CreateException,RemoteException {
 		CheckHome home = (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
-		Check check = home.create();
+		Check check = null;
+		try {
+			check = home.findCheckForChild(childId);
+		}
+		catch (FinderException fe) {
+			check = home.create();
+		}
 		check.setChildCareType(childCareType);
 		check.setWorkSituation1(workSituation1);
 		check.setWorkSituation2(workSituation2);
@@ -113,7 +119,13 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 
 	public Check createCheck(int childId, int method, int amount, int checkFee, User user) throws CreateException,RemoteException {
 		CheckHome home = (CheckHome) com.idega.data.IDOLookup.getHome(Check.class);
-		Check check = home.create();
+		Check check = null;
+		try {
+			check = home.findCheckForChild(childId);
+		}
+		catch (FinderException fe) {
+			check = home.create();
+		}
 		check.setChildId(childId);
 		check.setMethod(method);
 		check.setAmount(amount);
@@ -371,5 +383,27 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		
 		grantedCheck.store();
 		return ((Integer)grantedCheck.getPrimaryKey()).intValue();
-	}		
+	}
+	
+	public boolean hasGrantedCheck(User child) throws RemoteException {
+		try {
+			GrantedCheckHome home = (GrantedCheckHome) com.idega.data.IDOLookup.getHome(GrantedCheck.class);
+			Collection checks = home.findChecksByUser(child);
+			if (checks.size() > 0)
+				return true;
+			return false;
+		}
+		catch (FinderException fe) {
+			return false;
+		}
+	}
+	
+	public Check getCheckForChild(User child) throws RemoteException {
+		try {
+			return getCheckHome().findCheckForChild(((Integer)child.getPrimaryKey()).intValue());
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
 }

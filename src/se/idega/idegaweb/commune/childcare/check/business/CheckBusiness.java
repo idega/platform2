@@ -35,4 +35,6 @@ public interface CheckBusiness extends com.idega.business.IBOService, CaseBusine
  public int hasChildApprovedCheck(com.idega.user.data.User user, int childID) throws java.rmi.RemoteException;
  public int createGrantedCheck(com.idega.user.data.User child) throws CreateException,java.rmi.RemoteException;
  public int createGrantedCheck(se.idega.idegaweb.commune.childcare.check.data.Check check) throws CreateException,java.rmi.RemoteException; 
+ public boolean hasGrantedCheck(com.idega.user.data.User child) throws java.rmi.RemoteException;
+ public se.idega.idegaweb.commune.childcare.check.data.Check getCheckForChild(com.idega.user.data.User child) throws java.rmi.RemoteException;
 }

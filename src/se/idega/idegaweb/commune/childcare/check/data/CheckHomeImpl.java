@@ -55,6 +55,13 @@ public java.util.Collection findNonApprovedChecks()throws javax.ejb.FinderExcept
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public Check findCheckForChild(int p0)throws javax.ejb.FinderException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object id = ((CheckBMPBean)entity).ejbFindCheckForChild(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(id);
+}
+
  public Check findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (Check) super.findByPrimaryKeyIDO(pk);
  }

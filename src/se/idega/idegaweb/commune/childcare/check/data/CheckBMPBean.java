@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.childcare.check.data;
 import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
+import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 import java.rmi.RemoteException;
@@ -271,5 +272,11 @@ public class CheckBMPBean extends AbstractCaseBMPBean implements Check, Case {
 	 */
 	public Collection ejbFindAllCasesByStatus(CaseStatus caseStatus) throws FinderException, RemoteException {
 		return super.ejbFindAllCasesByStatus(caseStatus.getStatus());
+	}
+	
+	public Integer ejbFindCheckForChild(int childID) throws FinderException {
+		IDOQuery query = new IDOQuery();
+		query.appendSelectAllFrom(this).appendWhereEquals(COLUMN_CHILD_ID,childID);
+		return (Integer) super.idoFindOnePKByQuery(query);
 	}
 }
