@@ -13,6 +13,7 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public int getChildId();
  public int getChoiceNumber();
  public com.idega.block.contract.data.Contract getContract();
+ public com.idega.core.file.data.ICFile getContractFile();
  public int getContractFileId();
  public int getContractId();
  public java.lang.String getExtraContractMessage();
@@ -45,8 +46,10 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setChild(com.idega.user.data.User p0);
  public void setChildId(int p0);
  public void setChoiceNumber(int p0);
+ public void setContractFileId(java.lang.Integer p0);
  public void setContractFileId(int p0);
  public void setContractId(int p0);
+ public void setContractId(java.lang.Integer p0);
  public void setExtraContractMessage(java.lang.String p0);
  public void setExtraContractMessageOther(java.lang.String p0);
  public void setFromDate(java.sql.Date p0);

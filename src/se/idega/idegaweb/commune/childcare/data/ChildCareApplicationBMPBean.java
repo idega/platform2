@@ -188,6 +188,10 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return getIntColumnValue(CONTRACT_FILE_ID);	
 	}
 	
+	public ICFile getContractFile() {
+		return (ICFile) getColumnValue(CONTRACT_FILE_ID);	
+	}
+	
 	public String getPrognosis() {
 		return getStringColumnValue(PROGNOSIS);	
 	}
@@ -302,7 +306,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		setColumn(CONTRACT_ID,id);	
 	}
 
+	public void setContractId(Integer id) {
+		setColumn(CONTRACT_ID,id);	
+	}
+
 	public void setContractFileId(int id) {
+		setColumn(CONTRACT_FILE_ID,id);	
+	}
+
+	public void setContractFileId(Integer id) {
 		setColumn(CONTRACT_FILE_ID,id);	
 	}
 
