@@ -8,6 +8,8 @@ import com.idega.util.*;
 import com.idega.jmodule.object.textObject.*;
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.interfaceobject.*;
+import com.idega.core.localisation.presentation.ICLocalePresentation;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.block.text.data.*;
 import com.idega.block.text.business.*;
 import com.idega.core.user.data.User;
@@ -27,13 +29,19 @@ public class TextEditorWindow extends IWAdminWindow{
   private boolean save = false;
   private int iUserId = -1;
   private static String prmAttribute = "txe.attribute";
-  private static String prmTextId = "txe.textid";
-  private static String prmHeadline = "txep.headline",prmBody = "txep.headline",
-    prmImageId = "txep.imageid",prmLocale = "txep.localedrp",
-    prmTxTextId = "txep.txtextid",prmLocalizedTextId = "txep.loctextid",prmUseImage = "txep.useimage";
+  public static String prmTextId = "txep.txtextid";
+  public static String prmDelete = "txep.txdeleteid";
+  public static String prmLocale = "txep.localedrp";
+  public static String prmObjInstId = "txep.icobjinstid";
+  private static String prmHeadline = "txep.headline",prmBody = "txep.body",
+    prmImageId = "txep.imageid",
+    prmTxTextId = "txep.txtextid",prmLocalizedTextId = "txep.loctextid",
+    prmUseImage = "txep.useimage",prmOldLocale = "txep.oldlocale";
   private static String prmMode = "txep.mode",prmAction = "txep.action";
-  private static String actNone = "txea.none",actDelete = "txea.delete",actSave = "txea.save",actUpdate = "txea.update";
-  private static String modeNew = "txem.new",modeUpdate ="txem.update",modeSave = "txem.save",modeDelete = "txea.delete";
+  private static String actNone = "txea.none",actDelete = "txea.delete",
+    actSave = "txea.save",actUpdate = "txea.update" ,actNew = "txea.new";
+  private static String modeNew = "txem.new",modeUpdate ="txem.update",
+    modeSave = "txem.save",modeDelete = "txea.delete";
   private TextHelper textHelper;
 
   private IWBundle iwb;
@@ -42,34 +50,44 @@ public class TextEditorWindow extends IWAdminWindow{
   public TextEditorWindow(){
     setWidth(570);
     setHeight(430);
+    setUnMerged();
   }
 
-  public void control(ModuleInfo modinfo)throws Exception{
+  private void control(ModuleInfo modinfo)throws Exception{
+    boolean doView = true;
     Locale currentLocale = modinfo.getCurrentLocale(),chosenLocale;
-    java.util.Enumeration e= modinfo.getParameterNames();
-    while(e.hasMoreElements())
-      System.err.println(e.nextElement());
+
     String sLocaleId = modinfo.getParameter(prmLocale);
+
+    int iLocaleId = -1;
     if(sLocaleId!= null){
-      int iLocaleId = Integer.parseInt(sLocaleId);
+      iLocaleId = Integer.parseInt(sLocaleId);
       chosenLocale = TextFinder.getLocale(iLocaleId);
     }
     else{
       chosenLocale = currentLocale;
+      iLocaleId = ICLocaleBusiness.getLocaleId(chosenLocale);
     }
+
+    add(sLocaleId+ " ");
 
     if ( isAdmin ) {
       String sAction;
 
     String sTextId = null,sAttribute = null;
     String sLocTextId = modinfo.getParameter(prmLocalizedTextId);
-    if(modinfo.getParameter(prmTextId) != null){
-      sTextId = modinfo.getParameter(prmTextId);
+    if(modinfo.getParameter(prmTxTextId) != null){
+      sTextId = modinfo.getParameter(prmTxTextId);
       add(sTextId);
     }
     else if(modinfo.getParameter(prmAttribute)!=null){
       sAttribute = modinfo.getParameter(actSave);
     }
+    else if(modinfo.getParameter(prmDelete)!=null){
+      confirmDelete(modinfo);
+      doView = false;
+    }
+
 
     if(modinfo.getParameter(actSave)!=null || modinfo.getParameter(actSave+".x")!=null ){
       saveText(modinfo,sTextId,sLocTextId);
@@ -77,7 +95,11 @@ public class TextEditorWindow extends IWAdminWindow{
     else if(modinfo.getParameter( actDelete )!=null || modinfo.getParameter(actDelete+".x")!=null){
       deleteText(modinfo,sTextId,sLocTextId);
     }
-    doViewText(sTextId,sAttribute,chosenLocale);
+    else if(modinfo.getParameter( actNew ) != null || modinfo.getParameter(actNew+".x")!= null){
+      sTextId = null;sAttribute = null;
+    }
+    if(doView)
+      doViewText(sTextId,sAttribute,chosenLocale,iLocaleId);
     }
     else {
       noAccess();
@@ -85,42 +107,44 @@ public class TextEditorWindow extends IWAdminWindow{
 
   }
 
-  public void doViewText(String sTextId,String sAttribute,Locale locale){
+  private void doViewText(String sTextId,String sAttribute,Locale locale,int iLocaleId){
     TextHelper textHelper = null;
     if(sTextId != null){
 
       int iTextId = Integer.parseInt(sTextId);
-      textHelper = TextFinder.getTextHelper(iTextId,locale);
+      if(iLocaleId > 0)
+        textHelper = TextFinder.getTextHelper(iTextId,iLocaleId);
+      else
+        textHelper = TextFinder.getTextHelper(iTextId,locale);
     }
     else if(sAttribute != null){
-      textHelper = TextFinder.getTextHelper(sAttribute,locale);
+      textHelper = TextFinder.getTextHelper(sAttribute,iLocaleId);
     }
     LocalizedText LocTx = null;
     TxText  TxTx = null;
     if(textHelper != null){
-      LocTx = textHelper.getLocalizedText(locale);
+      LocTx = textHelper.getLocalizedText();
       TxTx = textHelper.getTxText();
+      if(LocTx == null)
+      System.err.println("Loctex is null");
 
     }
     else
       System.err.println("texthelper ekki null");
-    addLocalizedTextFields(LocTx,TxTx);
+    addLocalizedTextFields(LocTx,TxTx,iLocaleId);
   }
 
-  public void addLocalizedTextFields(LocalizedText locText,TxText txText){
+  private void addLocalizedTextFields(LocalizedText locText,TxText txText, int iLocaleId){
     boolean hasTxText = ( txText != null ) ? true: false;
     boolean hasLocalizedText = ( locText != null ) ? true: false;
-    if(hasTxText) System.err.println("text ekki null");
-    if(hasLocalizedText) System.err.println("loctext ekki null");
 
     TextInput tiHeadline = new TextInput(prmHeadline);
     tiHeadline.setLength(40);
     tiHeadline.setMaxlength(255);
     List L = TextFinder.listOfLocales();
-    DropdownMenu LocaleDrop = new DropdownMenu();
-    if(L!= null){
-       LocaleDrop = new DropdownMenu(L);
-    }
+    DropdownMenu LocaleDrop = ICLocalePresentation.getLocaleDropdownIdKeyed(prmLocale);
+    LocaleDrop.setToSubmit();
+    LocaleDrop.setSelectedElement(Integer.toString(iLocaleId));
 
     TextArea taBody = new TextArea(prmBody,65,22);
     if ( hasLocalizedText ) {
@@ -131,9 +155,10 @@ public class TextEditorWindow extends IWAdminWindow{
         taBody.setContent(locText.getBody());
       }
       addHiddenInput(new HiddenInput(prmLocalizedTextId,String.valueOf(locText.getID())));
+      add(" "+locText.getID());
     }
 
-    if( hasLocalizedText )
+    if( hasTxText )
       addHiddenInput(new HiddenInput(prmTxTextId,Integer.toString(txText.getID())));
 
     SubmitButton save = new SubmitButton(iwrb.getImage("save.gif"),actSave);
@@ -153,15 +178,14 @@ public class TextEditorWindow extends IWAdminWindow{
     addLeft(iwrb.getLocalizedString("body","Text"),taBody,true);
     addRight(iwrb.getLocalizedString("image","Image"),imageInsert,true);
     addSubmitButton(save);
-    addHiddenInput(new HiddenInput(prmMode,modeSave));
   }
 
-  public void noAccess() throws IOException,SQLException {
+  private void noAccess() throws IOException,SQLException {
     addLeft(iwrb.getLocalizedString("no_access","Login first!"));
     this.addSubmitButton(new CloseButton(iwrb.getLocalizedString("close","Closee")));
   }
 
-  public void confirmDelete(ModuleInfo modinfo) throws IOException,SQLException {
+  private void confirmDelete(ModuleInfo modinfo) throws IOException,SQLException {
     TextModule text = TextBusiness.getTextModule(modinfo);
     String textHeadline = text.getTextHeadline();
 
@@ -179,7 +203,7 @@ public class TextEditorWindow extends IWAdminWindow{
     }
   }
 
-  public void saveText(ModuleInfo modinfo,String sTxTextId,String sLocalizedTextId){
+  private void saveText(ModuleInfo modinfo,String sTxTextId,String sLocalizedTextId){
     String sHeadline = modinfo.getParameter( prmHeadline );
     String sBody = modinfo.getParameter(prmBody );
     String sImageId = modinfo.getParameter(prmImageId);
@@ -193,12 +217,11 @@ public class TextEditorWindow extends IWAdminWindow{
       boolean bUseImage = sUseImage!= null?true:false;
       TextBusiness.saveText(iTxTextId,iLocalizedTextId,sHeadline,"",sBody,iImageId,bUseImage,iLocaleId,iUserId);
     }
-    TextBusiness.saveText(modinfo,update);
-    //setParentToReload();
-    //close();
+    setParentToReload();
+    close();
   }
 
-  public void deleteText(ModuleInfo modinfo,String sTxTextId,String sLocalizedTextId ) {
+  private void deleteText(ModuleInfo modinfo,String sTxTextId,String sLocalizedTextId ) {
     TextBusiness.deleteText(modinfo);
     setParentToReload();
     close();

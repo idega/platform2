@@ -9,6 +9,7 @@ import java.util.Hashtable;
 import java.sql.SQLException;
 import java.util.Locale;
 import com.idega.core.business.ICLocaleBusiness;
+import com.idega.core.data.ICObjectInstance;
 /**
  * Title:
  * Description:
@@ -132,8 +133,7 @@ public class TextFinder {
     if(L!= null){
       LTX = (LocalizedText) L.get(0);
     }
-    else
-      System.err.println("not found");
+
     return LTX;
   }
 
@@ -141,6 +141,23 @@ public class TextFinder {
     int Lid = getLocaleId(locale);
     return getLocalizedText(iTxTextId,Lid);
   }
+
+  public static int getObjectInstanceTextId(ICObjectInstance eObjectInstance){
+    try {
+      List L = EntityFinder.findRelated(eObjectInstance ,new TxText());
+      if(L!= null){
+        return ((TxText) L.get(0)).getID();
+      }
+      else
+        return -1;
+    }
+    catch (SQLException ex) {
+      ex.printStackTrace();
+      return -2;
+
+    }
+  }
+
 /*
    public static LocalizedText listOfLocalizedText(int iTxTextId,int iLocaleId){
     LocalizedText LTX = null;

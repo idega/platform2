@@ -36,6 +36,7 @@ public class TxText extends GenericEntity{
     addAttribute(getColumnNameImageId(), "image_id", true, true, java.lang.Integer.class);
     addAttribute(getColumnNameAttribute(), "attribute", true, true, java.lang.String.class);
     this.addManyToManyRelationShip(LocalizedText.class,"TX_TEXT_TX_LOCALIZED_TEXT");
+    this.addManyToManyRelationShip(com.idega.core.data.ICObjectInstance.class,"TX_TEXT_IC_OBJECT_INSTANCE");
   }
 
 
