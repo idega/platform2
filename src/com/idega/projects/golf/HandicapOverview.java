@@ -95,7 +95,7 @@ private String headerTextColor = "#FFFFFF";
 
 		String[] dates = getDates(modinfo);
 
-		Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' order by scorecard_date");
+		Scorecard[] scoreCards = (Scorecard[]) (new Scorecard()).findAll("select * from scorecard where member_id='"+member_id+"' and scorecard_date>='"+dates[0]+"' and scorecard_date<='"+(dates[1]+" 23:59:59.0")+"' and scorecard_date is not null order by scorecard_date");
 
 		myTable = new Table();
 			myTable.setWidth("100%");

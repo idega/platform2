@@ -69,6 +69,7 @@ private int numberOfGolfers = 10;
 
     TournamentResults results = new TournamentResults(tournament_id,gender[a]);
       results.setShowHeader(false);
+      results.setNumberOfGolfers(3);
 
     genderTable.add(genderText,1,1);
     genderTable.add(results,1,2);
