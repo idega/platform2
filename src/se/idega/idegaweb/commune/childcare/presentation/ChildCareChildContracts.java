@@ -388,8 +388,9 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		if (!getBusiness().hasFutureContracts(applicationId)) {
 			removeContracts.setDisabled(true);			
 		} else {
-			Date earliestPossibleRemoveDate = getEarliestPossibleContractRemoveDate();
-			if (getBusiness().getNumberOfFutureContracts(applicationId, new java.sql.Date(earliestPossibleRemoveDate.getTime())) > 0) {
+			java.sql.Date earliestPossibleRemoveDate = new java.sql.Date(getEarliestPossibleContractRemoveDate().getTime());
+			if (getBusiness().getNumberOfFutureContracts(applicationId, earliestPossibleRemoveDate) > 0 ||
+					getBusiness().hasFutureLogs(applicationId, earliestPossibleRemoveDate)) {
 				removeContracts.setSingleSubmitConfirm(localize("child_care.submit_contract_delete", "Are you sure you want to remove future contracts for this application?"));
 			} else {
 				removeContracts.setOnSubmit("javascript:alert('" + localize("child_care.only_admin_delete_future_contract", "Earliest possible date to remove contract is") + 
