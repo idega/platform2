@@ -782,6 +782,30 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 			return null;
 		}
 	}
+	
+	public User getCustodianForChild(int childID) throws RemoteException {
+		return getCustodianForChild(getUser(childID));
+	}
+	
+	public User getCustodianForChild(User child) throws RemoteException {
+		User performer = null;
+		Collection parents = getParentsForChild(child);
+		if (parents != null) {
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				User parent = (User) iter.next();
+				if (hasCitizenAccount(parent)) {
+					performer = parent;
+					break;	
+				}
+				if (!iter.hasNext()) {
+					performer = parent;
+				}
+			}
+		}
+		
+		return performer;
+	}
 
 	public Collection getChildrenForUser(User user) throws RemoteException {
 		try {

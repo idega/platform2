@@ -84,4 +84,20 @@ public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	public boolean isRootCommuneAdministrator(User user) throws RemoteException;
 	public boolean hasBankLogin(int userID) throws RemoteException;
 	public boolean hasBankLogin(User user) throws RemoteException;
+
+	/**
+	 * Returns a custodian for this child.  If a custodian has an account that custodian is returned.
+	 * @param childID
+	 * @return
+	 * @throws RemoteException
+	 */
+	public User getCustodianForChild(int childID) throws RemoteException;
+	
+	/**
+	 * Returns a custodian for this child.  If a custodian has an account that custodian is returned.
+	 * @param child
+	 * @return
+	 * @throws RemoteException
+	 */
+	public User getCustodianForChild(User child) throws RemoteException;
 }
