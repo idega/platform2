@@ -3,11 +3,6 @@ package se.idega.idegaweb.commune.childcare.data;
 
 public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega.block.process.data.Case
 {
-
- public final static String FIELD_CHILD_ID = "child_id";
- public final static String FIELD_FROM_DATE = "from_date";
- public final static String FIELD_REJECTION_DATE = "rejection_date";
-	
  public char getApplicationStatus();
  public int getCareTime();
  public java.lang.String getCaseCodeDescription();
@@ -27,8 +22,8 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public java.lang.String getMessage();
  public int getMethod();
  public java.sql.Date getOfferValidUntil();
+ public java.lang.String getPreSchool();
  public java.lang.String getPresentation();
- public java.lang.String getPreSchool(); 
  public java.lang.String getPrognosis();
  public com.idega.block.school.data.School getProvider();
  public int getProviderId();
@@ -55,8 +50,8 @@ public interface ChildCareApplication extends com.idega.data.IDOEntity,com.idega
  public void setMessage(java.lang.String p0);
  public void setMethod(int p0);
  public void setOfferValidUntil(java.sql.Date p0);
- public void setPresentation(java.lang.String p0);
  public void setPreSchool(java.lang.String p0);
+ public void setPresentation(java.lang.String p0);
  public void setPrognosis(java.lang.String p0);
  public void setProvider(com.idega.block.school.data.School p0);
  public void setProviderId(int p0);

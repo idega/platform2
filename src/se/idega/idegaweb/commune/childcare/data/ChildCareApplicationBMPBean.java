@@ -483,6 +483,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 			return idoFindPKsBySQL(sql.toString(), numberOfEntries, startingEntry);
 	}	
 	
+	public Collection ejbFindApplicationsWithoutPlacing() throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).append(" c, comm_childcare_archive a");
+		sql.appendWhereEquals("c."+getIDColumnName(), "a.application_id");
+		sql.appendAnd().append("a.sch_class_member_id").appendIsNull();
+
+		return idoFindPKsByQuery(sql);
+	}	
+	
 	public Integer ejbFindApplicationByChildAndChoiceNumber(User child, int choiceNumber) throws FinderException {
 		return ejbFindApplicationByChildAndChoiceNumber(((Integer)child.getPrimaryKey()).intValue(), choiceNumber);
 	}
