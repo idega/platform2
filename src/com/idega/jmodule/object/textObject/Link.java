@@ -218,14 +218,15 @@ public void addParameter(String parameterName,int parameterValue){
    addParameter(parameterName,Integer.toString(parameterValue));
 }
 
-public void setOnEvent(String eventType,String eventString){
-  String value = this.getAttribute(eventType);
-  if(value==null){
+private void setOnEvent(String eventType,String eventString){
+ //temp
+ // String value = this.getAttribute(eventType);
+ // if(value==null){
     setAttribute(eventType,eventString);
-  }
-  else{
-    setAttribute(eventType,value+";"+eventString);
-  }
+  //}
+  //else{
+ //   setAttribute(eventType,value+";"+eventString);
+ // }
 }
 
 public void setOnFocus(String s){
