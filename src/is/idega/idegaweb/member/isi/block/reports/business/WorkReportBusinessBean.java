@@ -390,7 +390,6 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 		catch (FinderException e) {
-			e.printStackTrace();
 			return 0;
 		}
 		
