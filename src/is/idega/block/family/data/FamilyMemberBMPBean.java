@@ -1,5 +1,5 @@
 /*
- * $Id: FamilyMemberBMPBean.java,v 1.3 2004/09/06 14:39:16 gimmi Exp $ Created on 27.8.2004
+ * $Id: FamilyMemberBMPBean.java,v 1.4 2004/09/06 20:30:25 gimmi Exp $ Created on 27.8.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
  * 
@@ -24,10 +24,10 @@ import com.idega.user.data.UserBMPBean;
 
 /**
  * 
- * Last modified: $Date: 2004/09/06 14:39:16 $ by $Author: gimmi $
+ * Last modified: $Date: 2004/09/06 20:30:25 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 
@@ -93,11 +93,15 @@ public class FamilyMemberBMPBean extends GenericEntity implements FamilyMember{
 		return this.idoFindPKsBySQL(sql.toString());
 	}
 
-	public Integer ejbFindForUser(User user) throws FinderException {
-		String userPK = user.getPrimaryKey().toString();
-		IDOQuery query = idoQueryGetSelect();
-		query.appendWhereEqualsQuoted(COLUMN_USER, userPK);
-		return (Integer) idoFindOnePKByQuery(query);
+	public Object ejbFindForUser(User user) throws FinderException {
+		Table table = new Table(this);
+		Column userCol = new Column(table, COLUMN_USER);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(userCol, MatchCriteria.EQUALS, user.getPrimaryKey()));
+		
+		return idoFindOnePKBySQL(query.toString());
 	}
 	
 	public Object ejbFindBySSN(String ssn) throws IDORelationshipException, FinderException {
