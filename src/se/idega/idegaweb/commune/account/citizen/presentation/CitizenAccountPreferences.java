@@ -609,8 +609,13 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 		drawForm(iwc);
 		if (errorMessage == null) {
-			add(new Break());
-			add(getLocalizedText(KEY_PREFERENCES_SAVED, DEFAULT_PREFERENCES_SAVED));
+			if (getParentPage() != null) {
+				getParentPage().setAlertOnLoad(localize(KEY_PREFERENCES_SAVED, DEFAULT_PREFERENCES_SAVED));
+			}
+			else {
+				add(new Break());
+				add(getLocalizedText(KEY_PREFERENCES_SAVED, DEFAULT_PREFERENCES_SAVED));
+			}
 		}
 	}
 
