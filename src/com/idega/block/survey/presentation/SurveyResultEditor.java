@@ -127,7 +127,7 @@ public class SurveyResultEditor extends Block {
 			add(fs);
 			
 			Form myForm = new Form();
-			Legend legend2 = new Legend(_survey.getName()+" - "+_iwrb.getLocalizedString("random_participants", "Randam participants"));
+			Legend legend2 = new Legend(_survey.getName()+" - "+_iwrb.getLocalizedString("random_participants", "Random participants:"));
 			FieldSet fs2 = new FieldSet(legend2);
 			fs2.setWidth("450");
 			fs2.add(displayParticipants(iwc));
