@@ -20,17 +20,16 @@ import com.idega.presentation.text.Text;
 public class CommuneBlock extends com.idega.presentation.Block {
   public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
-  private final static String COMMUNE_STYLE = "commune_";
-  private final static String STYLENAME_TEXT = COMMUNE_STYLE+"Text";
-  private final static String STYLENAME_SMALL_TEXT = COMMUNE_STYLE+"SmallText";
-  private final static String STYLENAME_HEADER = COMMUNE_STYLE+"Header";
-  private final static String STYLENAME_SMALL_HEADER = COMMUNE_STYLE+"SmallHeader";
-  private final static String STYLENAME_LINK = COMMUNE_STYLE+"Link";
-  private final static String STYLENAME_LIST_HEADER = COMMUNE_STYLE+"ListHeader";
-  private final static String STYLENAME_LIST_TEXT = COMMUNE_STYLE+"ListText";
-  private final static String STYLENAME_LIST_LINK = COMMUNE_STYLE+"ListLink";
-  private final static String STYLENAME_ERROR_TEXT = COMMUNE_STYLE+"ErrorText";
-  private final static String STYLENAME_SMALL_ERROR_TEXT = COMMUNE_STYLE+"SmallErrorText";
+  private final static String STYLENAME_TEXT = "Text";
+  private final static String STYLENAME_SMALL_TEXT = "SmallText";
+  private final static String STYLENAME_HEADER = "Header";
+  private final static String STYLENAME_SMALL_HEADER = "SmallHeader";
+  private final static String STYLENAME_LINK = "Link";
+  private final static String STYLENAME_LIST_HEADER = "ListHeader";
+  private final static String STYLENAME_LIST_TEXT = "ListText";
+  private final static String STYLENAME_LIST_LINK = "ListLink";
+  private final static String STYLENAME_ERROR_TEXT = "ErrorText";
+  private final static String STYLENAME_SMALL_ERROR_TEXT = "SmallErrorText";
  
   private final static String DEFAULT_BACKGROUND_COLOR = "#f0f0f0";
   private final static String DEFAULT_TEXT_FONT_STYLE = "font-weight:plain;";
@@ -167,9 +166,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getText(String s){
-    Text t = new Text(s);
-    t.setFontClass(this.STYLENAME_TEXT);
-    return t;
+    return setStyle(s,this.STYLENAME_TEXT);
   }
 
   public Text getLocalizedText(String s, String d){
@@ -177,9 +174,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getSmallText(String s){
-    Text t = new Text(s);
-    t.setFontClass(this.STYLENAME_SMALL_TEXT);
-    return t;
+    return setStyle(s,this.STYLENAME_SMALL_TEXT);
   }
 
   public Text getLocalizedSmallText(String s, String d){
@@ -187,9 +182,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getHeader(String s){
-    Text header = new Text(s);
-    header.setFontClass(this.STYLENAME_HEADER);
-    return header;
+    return setStyle(s,this.STYLENAME_HEADER);
   }
 
   public Text getLocalizedHeader(String s, String d){
@@ -197,9 +190,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getSmallHeader(String s){
-    Text header = new Text(s);
-    header.setFontClass(this.STYLENAME_SMALL_HEADER);
-    return header;
+    return setStyle(s,this.STYLENAME_SMALL_HEADER);
   }
 
   public Text getLocalizedSmallHeader(String s, String d){
@@ -207,9 +198,7 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Link getLink(String s){
-    Link l = new Link(s);
-    l.setStyle(this.STYLENAME_LINK);
-    return l;
+    return setStyle(new Link(s),this.STYLENAME_LINK);
   }
 
   public Link getLocalizedLink(String s, String d){
@@ -217,15 +206,11 @@ public class CommuneBlock extends com.idega.presentation.Block {
   }
 
   public Text getErrorText(String s){
-    Text t = new Text(s);
-    t.setFontClass(this.STYLENAME_ERROR_TEXT);
-    return t;
+    return setStyle(s,this.STYLENAME_ERROR_TEXT);
   }
 
   public Text getSmallErrorText(String s){
-    Text t = new Text(s);
-    t.setFontClass(this.STYLENAME_SMALL_ERROR_TEXT);
-    return t;
+    return setStyle(s,this.STYLENAME_SMALL_ERROR_TEXT);
   }
 
   public IBPage getResponsePage(){
