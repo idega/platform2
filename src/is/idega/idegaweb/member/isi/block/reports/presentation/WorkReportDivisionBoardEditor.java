@@ -26,6 +26,7 @@ import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
+import com.idega.block.entity.presentation.converters.DropDownPostalCodeConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.data.EntityRepresentation;
@@ -254,6 +255,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     TextEditorConverter textEditorConverter = new TextEditorConverter(form);
     textEditorConverter.maintainParameters(this.getParametersToMaintain());
     EntityToPresentationObjectConverter leagueDropDownMenuConverter = getConverterForLeague(resourceBundle, form);
+    EntityToPresentationObjectConverter dropDownPostalCodeConverter = getConverterForPostalCode(form);
     
     // define path short keys and map corresponding converters
     Object[] columns = {
@@ -332,7 +334,17 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     converter.setOptionProvider(optionProvider); 
     converter.maintainParameters(getParametersToMaintain());
     return converter;
-  }    
+  }  
+  
+  /**
+   * converter for postal code column
+   */
+  private EntityToPresentationObjectConverter getConverterForPostalCode(Form form) {
+    DropDownPostalCodeConverter dropDownPostalCodeConverter = new DropDownPostalCodeConverter(form);
+    dropDownPostalCodeConverter.setCountry("Iceland");
+    dropDownPostalCodeConverter.maintainParameters(getParametersToMaintain());
+    return dropDownPostalCodeConverter;
+  }     
 
   /** business method: delete WorkReportBoardMembers.
    * @param ids - List of primaryKeys (Integer)
