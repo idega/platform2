@@ -1,5 +1,5 @@
 /*
- * $Id: MeetingReport.java,v 1.9 2004/12/20 10:47:30 anna Exp $ Created on
+ * $Id: MeetingReport.java,v 1.10 2004/12/21 14:01:57 laddi Exp $ Created on
  * 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,10 +14,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import javax.ejb.CreateException;
-import javax.ejb.FinderException;
 
 import se.agura.applications.meeting.fee.data.MeetingFeeFormula;
-import se.agura.applications.meeting.fee.data.MeetingFeeInfo;
 
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -32,7 +30,6 @@ import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.user.app.UserApplication;
-import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -41,7 +38,7 @@ import com.idega.util.PersonalIDFormatter;
  * Last modified: 24.11.2004 13:46:01 by: anna
  * 
  * @author <a href="mailto:anna@idega.com">anna </a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class MeetingReport extends MeetingFeeBlock {
 
