@@ -8,7 +8,6 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.builder.data.IBPage;
 import com.idega.data.IDOLookup;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
@@ -17,26 +16,24 @@ import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
-import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
-import com.idega.user.data.User;
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
  */
-public class ManagerListView extends CommuneBlock {
+public class ManagerGroupListView extends CommuneBlock {
 	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 	private final static int ACTION_VIEW_MANAGER_LIST = 2;
 	private final static int ACTION_VIEW_MANAGER = 3;
 
-	final static String PARAM_MANAGER_ID = ManagerView.PARAM_MANAGER_ID;
-	final static String PARAM_MANAGER_GROUP_ID=ManagerGroupListView.PARAM_MANAGER_GROUP_ID;
+	//final static String PARAM_MANAGER_ID = ManagerView.PARAM_MANAGER_ID;
+	final static String PARAM_MANAGER_GROUP_ID="comm_manvw_gr_id";
 	
 	private Table mainTable = null;
-	private int managerPageID = -1;
-	private int groupID;
+	private int managerListPageID = -1;
+	private int topGroupID;
 
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
@@ -69,7 +66,7 @@ public class ManagerListView extends CommuneBlock {
 		if(iwc.isParameterSet(PARAM_MANAGER_GROUP_ID)){
 			try{
 				int i = Integer.parseInt(iwc.getParameter(PARAM_MANAGER_GROUP_ID));
-				groupID=i;
+				topGroupID=i;
 			}
 			catch(NumberFormatException ne){
 			}
@@ -77,7 +74,7 @@ public class ManagerListView extends CommuneBlock {
 	}
 	
 	public Object clone(){
-		ManagerListView view = (ManagerListView)super.clone();
+		ManagerGroupListView view = (ManagerGroupListView)super.clone();
 		if(mainTable!=null){
 			view.mainTable=(Table)mainTable.clone();
 		}
@@ -96,7 +93,7 @@ public class ManagerListView extends CommuneBlock {
 	}
 	private int parseAction(IWContext iwc) {
 		int action = ACTION_VIEW_MANAGER_LIST;
-		if(iwc.isParameterSet(PARAM_MANAGER_ID)){
+		if(iwc.isParameterSet(PARAM_MANAGER_GROUP_ID)){
 		  action = ACTION_VIEW_MANAGER;
 		}
 		return action;
@@ -107,11 +104,11 @@ public class ManagerListView extends CommuneBlock {
 		add(new Break(2));
 		//if (iwc.isLoggedOn()) {
 			//Collection users = getCommuneUserBusiness(iwc).getAllCommuneAdministrators();
-			Group topGroup = getGroup();
-			Collection users = getGroupBusiness(iwc).getUsersDirectlyRelated(topGroup);
-			if (users != null & !users.isEmpty()) {
+			Group topGroup = getTopGroup();
+			Collection groups = topGroup.getChildGroups();
+			if (groups != null & !groups.isEmpty()) {
 				Form f = new Form();
-				ColumnList messageList = new ColumnList(3);
+				ColumnList messageList = new ColumnList(2);
 				f.add(messageList);
 				messageList.setBackroundColor("#e0e0e0");
 				messageList.setHeader(localize("managerlistview.name", "Name"), 1);
@@ -120,23 +117,22 @@ public class ManagerListView extends CommuneBlock {
 
 				//CheckBox deleteCheck = null;
 				boolean isRead = false;
-				if (users != null) {
-					Iterator iter = users.iterator();
+				if (groups != null) {
+					Iterator iter = groups.iterator();
 					while (iter.hasNext()) {
 						try {
-							User user = (User) iter.next();
-							Text tUserName = getSmallText(user.getName());
+							Group group = (Group) iter.next();
+							Text tUserName = getSmallText(group.getName());
 							Link lUserName = new Link(tUserName);
 							userName = lUserName;
-							if(managerPageID!=-1){
-								lUserName.setPage(managerPageID);
+							if(managerListPageID!=-1){
+								lUserName.setPage(managerListPageID);
 							}
-							lUserName.addParameter(PARAM_MANAGER_ID,user.getPrimaryKey().toString());
+							lUserName.addParameter(PARAM_MANAGER_GROUP_ID,group.getPrimaryKey().toString());
 							messageList.add(userName);
-							Text tEmail = getSmallText("-");
-							add(tEmail);
-							Text tPhone = getSmallText("-");
-							add(tPhone);
+							Text tDesc = getSmallText(group.getDescription());
+							messageList.add(tDesc);
+
 						} catch (Exception e) {
 							add(e);
 							e.printStackTrace();
@@ -150,6 +146,19 @@ public class ManagerListView extends CommuneBlock {
 				add(getSmallText(localize("managerlistview.no_managers", "No managers")));
 			}
 		//}
+	}
+	/**
+	 * Returns the top group to display groups under.
+	 * @return Group
+	 */
+	private Group getTopGroup() {
+		try{
+			GroupHome gHome = (GroupHome)IDOLookup.getHome(Group.class);
+			return gHome.findByPrimaryKey(new Integer(getTopGroupID()));
+		}
+		catch(Exception e){
+			throw new RuntimeException(e.getMessage());	
+		}
 	}
 	
 	
@@ -263,53 +272,35 @@ public class ManagerListView extends CommuneBlock {
 	}	
 	
 	
-	public void setManagerViewPage(IBPage page) {
-		setManagerViewPage(page.getID());
+	public void setManagerListViewPage(IBPage page) {
+		setManagerListViewPage(page.getID());
 	}
-	public void setManagerViewPage(int ib_page_id) {
-		managerPageID = ib_page_id;
+	public void setManagerListViewPage(int ib_page_id) {
+		managerListPageID = ib_page_id;
 	}
-	public int getManagerViewPage() {
-		return managerPageID;
+	public int getManagerListViewPage() {
+		return managerListPageID;
 	}
 	/**
 	 * Returns the groupID.
 	 * @return int
 	 */
-	public int getGroupID() {
-		return groupID;
+	public int getTopGroupID() {
+		return topGroupID;
 	}
+	
+	
+	public void setTopGroup(Group group){
+		int groupID = ((Integer)group.getPrimaryKey()).intValue();
+		setTopGroupID(groupID);
+	}	
 
 	/**
 	 * Sets the groupID.
 	 * @param groupID The groupID to set
 	 */
-	public void setGroupID(int groupID) {
-		this.groupID = groupID;
-	}
-
-	  	public void setGroup(Group group){
-	  		int groupID = ((Integer)group.getPrimaryKey()).intValue();
-	  		setGroupID(groupID);
-	  	}
-
-	  	/**
-	  	 * Returns the top group to display users under.
-	  	 * @return Group
-	  	 */
-	  	private Group getGroup() {
-	  		try{
-	  			GroupHome gHome = (GroupHome)IDOLookup.getHome(Group.class);
-	  			return gHome.findByPrimaryKey(new Integer(getGroupID()));
-	  		}
-	  		catch(Exception e){
-	  			throw new RuntimeException(e.getMessage());
-	  		}
-	  	}
-
-
-	protected GroupBusiness getGroupBusiness(IWApplicationContext iwac)throws Exception{
-		return (GroupBusiness)com.idega.business.IBOLookup.getServiceInstance(iwac,GroupBusiness.class);
+	public void setTopGroupID(int groupID) {
+		this.topGroupID = groupID;
 	}
 
 }

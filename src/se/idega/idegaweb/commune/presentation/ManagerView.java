@@ -1,15 +1,5 @@
 package se.idega.idegaweb.commune.presentation;
-import java.rmi.RemoteException;
-
-import se.idega.idegaweb.commune.business.CommuneCaseBusiness;
-
-import com.idega.block.process.business.CaseBusiness;
-import com.idega.block.process.data.Case;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.user.business.GroupBusiness;
-import com.idega.user.business.UserBusiness;
-import com.idega.user.data.Group;
-import com.idega.user.data.User;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -17,6 +7,10 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
 import com.idega.presentation.text.Text;
+import com.idega.user.business.GroupBusiness;
+import com.idega.user.business.UserBusiness;
+import com.idega.user.data.Group;
+import com.idega.user.data.User;
 /**
  * @author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
  * @version 1.0
