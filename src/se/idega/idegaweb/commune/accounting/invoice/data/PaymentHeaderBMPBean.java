@@ -17,6 +17,7 @@ import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
+import com.idega.util.CalendarMonth;
 import com.idega.util.IWTimestamp;
 import com.idega.util.TimePeriod;
 
@@ -343,5 +344,19 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return idoFindPKsBySQL(sql.toString());
 	}
 
-
+	protected IDOQuery idoQueryFindByMonth(CalendarMonth month){
+		Date start = month.getFirstDateOfMonth();
+		Date end = month.getLastDateOfMonth();
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.appendWhere(COLUMN_PERIOD).appendGreaterThanOrEqualsSign().append(start);
+		query.appendAnd().append(COLUMN_PERIOD).appendLessThanOrEqualsSign().append(end);
+		return query;
+	}
+	
+	public Collection ejbFindByMonthAndSchoolCategory(CalendarMonth month, SchoolCategory schoolCategory) throws FinderException {
+		IDOQuery query = idoQueryFindByMonth(month);
+		query.appendAndEqualsQuoted(COLUMN_SCHOOL_CATEGORY_ID, (String)schoolCategory.getPrimaryKey());
+		return idoFindPKsByQuery(query);
+	}
 }

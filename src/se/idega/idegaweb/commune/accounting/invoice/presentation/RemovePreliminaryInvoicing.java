@@ -123,6 +123,7 @@ public class RemovePreliminaryInvoicing  extends AccountingBlock{
 */			
 			
 			invoiceBusiness.removePreliminaryInvoice(month, schoolCategory);
+			invoiceBusiness.removePreliminaryPayment(month, schoolCategory);
 			add(this.localize(PREFIX+"records_removed","Records have been removed."));
 			
 			
