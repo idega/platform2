@@ -268,7 +268,7 @@ private Table _myTable;
         school.setFontStyle(_headlineStyle);
       Text schoolText = new Text("");
         if ( staffInfo != null )
-          titleText.setText(staffInfo.getSchool());
+          schoolText.setText(staffInfo.getSchool());
         schoolText.setFontStyle(_textStyle);
 
       if ( _showSchool ) {
@@ -281,7 +281,7 @@ private Table _myTable;
         education.setFontStyle(_headlineStyle);
       Text educationText = new Text("");
         if ( staffInfo != null )
-          titleText.setText(staffInfo.getEducation());
+          educationText.setText(staffInfo.getEducation());
         educationText.setFontStyle(_textStyle);
 
       if ( _showEducation ) {
@@ -294,7 +294,7 @@ private Table _myTable;
         area.setFontStyle(_headlineStyle);
       Text areaText = new Text("");
         if ( staffInfo != null )
-          titleText.setText(staffInfo.getArea());
+          areaText.setText(staffInfo.getArea());
         areaText.setFontStyle(_textStyle);
 
       if ( _showArea ) {
