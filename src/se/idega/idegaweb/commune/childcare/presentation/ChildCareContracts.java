@@ -259,8 +259,8 @@ public class ChildCareContracts extends ChildCareBlock {
 								table.add(getInformationIcon(localize("child_care.to_many_future_contracts","To many future contracts")),column,row);
 						}
 						
-						if (student.getRemovedDate() == null)
-							table.add(delete, column++, row);
+						//if (student.getRemovedDate() == null)
+						//	table.add(delete, column++, row);
 						
 						
 						row++;
@@ -309,7 +309,7 @@ public class ChildCareContracts extends ChildCareBlock {
 				localized = localize("child_care.change_group", "Change group");
 			else
 				localized = localize("child_care.create_group", "Create group");
-			if (showCreateGroupBtn){
+			/*if (showCreateGroupBtn){
 				GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
 				createGroup.setWindowToOpen(ChildCareWindow.class);
 				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
@@ -317,6 +317,7 @@ public class ChildCareContracts extends ChildCareBlock {
 				table.setHeight(1, row++, "10");
 				table.add(createGroup, 1, row++);
 			}
+			*/
 			add(table);		
 		}
 		else {
