@@ -5,6 +5,7 @@ import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.block.tpos.business.TPosException;
+import com.idega.util.idegaTimestamp;
 
 /**
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
@@ -29,6 +30,8 @@ public class TPosClient {
   private String _locationId = null;
   private String _posId = null;
   private String _receivePasswd = null;
+
+  private int amountMultiplier = 100;
 
   /**
    *
@@ -165,7 +168,7 @@ public class TPosClient {
 
     _client.setProperty(TPOS3Client.PN_PAN,cardnumber);
     _client.setProperty(TPOS3Client.PN_EXPIRE, yearExpires+monthExpires);
-    amount *= 100;
+    amount *= amountMultiplier;
     String stringAmount = Integer.toString((int)amount);
     _client.setProperty(TPOS3Client.PN_AMOUNT,stringAmount);
     _client.setProperty(TPOS3Client.PN_CURRENCY,currency);
@@ -213,7 +216,78 @@ public class TPosClient {
     return("-1");
   }
 
-/*  private String doRefund(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType) throws TPosException {
+  public String getAmount() {
+    return Integer.toString(Integer.parseInt(_client.getProperty(TPOS3Client.PN_AMOUNT)) / amountMultiplier);
+  }
+
+  public String getCardBrandName() {
+    return _client.getProperty(TPOS3Client.PN_CARDBRANDNAME);
+  }
+
+  public String getCardCharacter() {
+    return _client.getProperty(TPOS3Client.PN_CARDCHARACTER);
+  }
+
+  public String getAuthorisationCode() {
+    return _client.getProperty(TPOS3Client.PN_AUTHORISATIONCODE);
+  }
+
+  public String getAutorIdentifyRSP() {
+    return _client.getProperty(TPOS3Client.PN_AUTHORIDENTIFYRSP);
+  }
+
+  public String getCardTypeName() {
+    return _client.getProperty(TPOS3Client.PN_CARDTYPENAME);
+  }
+
+  public String getCurrency() {
+    return _client.getProperty(TPOS3Client.PN_CURRENCY);
+  }
+
+  public String getDate() {
+    return _client.getProperty(TPOS3Client.PN_DATE);
+  }
+
+  public String getTime() {
+    return _client.getProperty(TPOS3Client.PN_TIME);
+  }
+
+  public String getExpire() {
+    return _client.getProperty(TPOS3Client.PN_EXPIRE);
+  }
+
+  public String getPan() {
+    return _client.getProperty(TPOS3Client.PN_PAN);
+  }
+
+  public String getCCNumber() {
+    return getPan();
+  }
+  /**
+   * Created from getDate() and getTime()
+   */
+  public idegaTimestamp getIdegaTimestamp() {
+    idegaTimestamp stamp = new idegaTimestamp();
+    try {
+      String date = getDate();
+      String time = getTime();
+
+      stamp.setYear(Integer.parseInt(date.substring(0,4)));
+      stamp.setMonth(Integer.parseInt(date.substring(4,6)));
+      stamp.setDate(Integer.parseInt(date.substring(6,8)));
+      stamp.setHour(Integer.parseInt(time.substring(0,2)));
+      stamp.setMinute(Integer.parseInt(time.substring(2,4)));
+      stamp.setSecond(Integer.parseInt(time.substring(4,6)));
+    }catch (Exception e) {
+      stamp = idegaTimestamp.RightNow();
+    }
+
+    return stamp;
+  }
+
+
+
+  /*  private String doRefund(String cardnumber, String monthExpires, String yearExpires, double amount, String currency, String transactionType) throws TPosException {
     _client.setProperty(TPOS3Client.PN_USERID, "IDE");
     _client.setProperty(TPOS3Client.PN_PASSWORD, "IDE");
     _client.setProperty(TPOS3Client.PN_MERCHANTID, "IDE");

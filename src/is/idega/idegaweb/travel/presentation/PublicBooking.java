@@ -19,6 +19,7 @@ import com.idega.block.trade.data.Currency;
 import is.idega.idegaweb.travel.service.tour.presentation.TourBookingForm;
 
 import com.idega.block.trade.stockroom.business.ProductPriceException;
+import com.idega.block.tpos.presentation.*;
 import java.sql.SQLException;
 /**
  * Title:        idegaWeb TravelBooking
@@ -654,7 +655,6 @@ public class PublicBooking extends Block  {
           if (i == 0)
           currency = new Currency(pPrices[i].getCurrencyId());
           price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
-          price *= Integer.parseInt(manyDays);
         }catch (SQLException sql) {
         }catch (NumberFormatException n) {}
 
@@ -672,6 +672,7 @@ public class PublicBooking extends Block  {
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.price","Price")),1,row);
+      price *= Integer.parseInt(manyDays);
       table.add(getBoldTextWhite(this.df.format(price) + " "),2,row);
       if (currency != null)
       table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
@@ -755,6 +756,7 @@ public class PublicBooking extends Block  {
       boolean success = false;
       String heimild = "";
 
+      com.idega.block.tpos.business.TPosClient t = null;
       try {
         float price = 0;
         int total = 0;
@@ -787,7 +789,7 @@ public class PublicBooking extends Block  {
 
 
         System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
-        com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
+        t = new com.idega.block.tpos.business.TPosClient(iwc);
         System.err.println("price : "+price);
         heimild = t.doSale(ccNumber,ccMonth,ccYear,price,"ISK");
         //System.out.println("heimild = " + heimild);
@@ -885,13 +887,26 @@ public class PublicBooking extends Block  {
           table.add(Text.BREAK);
           table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.if_unable_to_print","If you are unable to print the voucher, write the reference number down else proceed to printing the voucher.")));
 
+
+
           Link printVoucher = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_voucher","Print voucher")));
             printVoucher.addParameter(VoucherWindow.parameterBookingId, bookingId);
             printVoucher.setWindowToOpen(VoucherWindow.class);
 
-          table.add(printVoucher,1,2);
+          if (t != null) {
+            com.idega.block.tpos.presentation.Receipt r = new com.idega.block.tpos.presentation.Receipt(t, supplier);
+            iwc.setSessionAttribute(ReceiptWindow.RECEIPT_SESSION_NAME, r);
+
+            Link printCCReceipt = new Link(getBoldTextWhite(iwrb.getLocalizedString("travel.print_cc_receipt","Print creditcard receipt")));
+              printCCReceipt.setWindowToOpen(ReceiptWindow.class);
+            table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, 1,2);
+            table.add(printCCReceipt, 1, 2);
+          }
+
+          table.add(printVoucher,1,3);
           table.setAlignment(1,1,"left");
           table.setAlignment(1,2,"right");
+          table.setAlignment(1,3,"right");
         }catch (Exception e) {
           table.add(getBoldTextWhite(iwrb.getLocalizedString("travel.booking_not_successful_try_again_later","Booking not successful. Please try again later.")));
           e.printStackTrace(System.err);
