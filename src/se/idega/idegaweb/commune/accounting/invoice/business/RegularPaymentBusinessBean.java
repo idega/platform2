@@ -14,9 +14,6 @@ import javax.ejb.FinderException;
 
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegSpecConstant;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
-import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecTypeHome;
 
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolCategory;
@@ -48,7 +45,7 @@ public class RegularPaymentBusinessBean extends IBOServiceBean implements Regula
 		RegulationSpecTypeHome rstHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
 		int lagPrimary = ((Integer)rstHome.findByRegulationSpecType(RegSpecConstant.LAGINKOMSTSKYDD).getPrimaryKey()).intValue();
 		RegularPaymentEntryHome home =(RegularPaymentEntryHome) IDOLookup.getHome(RegularPaymentEntry.class);
-		return home.findRegularInvoicesForPeriodeAbdCategory(date,cat.getCategory(),lagPrimary);
+		return home.findRegularPaymentForPeriodeAndCategory(date,cat.getCategory(),lagPrimary);
 */
 		return new ArrayList();
 	}

@@ -841,6 +841,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				return null;
 			}
 		
+			public int getUserID() {
+				return -1;
+			}
+		
 			public RegulationSpecType getRegSpecType() {
 				return _reg != null ? _reg.getRegSpecType() : null;
 			}

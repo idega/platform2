@@ -14,6 +14,7 @@ public class PostingDetail {
 	private float vat;
 	private int vatRegulationID;
 	private String ruleSpecType;
+	private int orderID;
 	
 	public PostingDetail(){
 	}
@@ -81,6 +82,14 @@ public class PostingDetail {
 
 	public void setRuleSpecType(String i) {
 		ruleSpecType = i;
+	}
+
+	public int getOrderID() {
+		return orderID;
+	}
+
+	public void setOrderID(int i) {
+		orderID = i;
 	}
 
 }

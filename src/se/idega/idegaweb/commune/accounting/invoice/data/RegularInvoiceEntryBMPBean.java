@@ -61,11 +61,11 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		addAttribute(COLUMN_DOUBLE_POSTING, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_NOTE, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_VAT, "", true, true, java.lang.Float.class);
-		addAttribute(COLUMN_VAT_RULE_ID, "", true, true, java.lang.Integer.class, 1);
+//		addAttribute(COLUMN_VAT_RULE_ID, "", true, true, java.lang.Integer.class, 1);
 		addAttribute(COLUMN_AMOUNT, "", true, true, java.lang.Float.class);
-		addAttribute(COLUMN_SCHOOL_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "", true, true, java.lang.Integer.class);
-		addAttribute(COLUMN_USER_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_SCHOOL_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "", true, true, java.lang.Integer.class);
+//		addAttribute(COLUMN_USER_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PLACING, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_TO, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_FROM, "", true, true, java.sql.Date.class);
@@ -73,7 +73,7 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 		addAttribute(COLUMN_EDIT_DATE, "", true, true, java.sql.Date.class);
 		addAttribute(COLUMN_CREATED_NAME, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_CREATED_DATE, "", true, true, java.sql.Date.class);
-		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.String.class);
+//		addAttribute(COLUMN_SCHOOL_CATEGORY_ID, "", true, true, java.lang.String.class);
 
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
@@ -123,6 +123,13 @@ public class RegularInvoiceEntryBMPBean extends GenericEntity implements Regular
 	 */
 	public User getUser() {
 		return (User) getColumnValue(COLUMN_USER_ID);
+	}
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getUser()
+	 */
+	public int getUserID() {
+		return getIntColumnValue(COLUMN_USER_ID);
 	}
 
 

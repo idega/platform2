@@ -16,7 +16,6 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
 import com.idega.block.school.data.School;
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOQuery;
 import com.idega.user.data.User;
 
 /**

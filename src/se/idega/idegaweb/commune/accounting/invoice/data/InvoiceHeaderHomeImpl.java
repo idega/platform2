@@ -20,6 +20,13 @@ public InvoiceHeader findByCustodian(com.idega.user.data.User p0)throws javax.ej
 	return this.findByPrimaryKey(pk);
 }
 
+public InvoiceHeader findByCustodianID(int p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((InvoiceHeaderBMPBean)entity).ejbFindByCustodianID(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public java.util.Collection findByCustodianOrChild(java.lang.String p0,com.idega.user.data.User p1,java.util.Collection p2,java.util.Date p3,java.util.Date p4)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((InvoiceHeaderBMPBean)entity).ejbFindByCustodianOrChild(p0,p1,p2,p3,p4);

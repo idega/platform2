@@ -198,7 +198,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 										+ "\n  provider "+ provider.getSchool().getName()
 										+ "\n  Date "+ currentDate.toString()
 										);
-								String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate);
+								String[] postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, schoolClassMember.getSchoolYear().getName());
 //								dispTime("about to create payment record");
 								createPaymentRecord(postingDetail, postings[0], postings[1]);
 //								dispTime("created payment record");
@@ -229,7 +229,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 														regulation = (Regulation) regulationForTypeIter.next();
 														postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 														regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-														postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate);
+														postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,schoolClassMember.getSchoolYear().getName());
 														createPaymentRecord(postingDetail, postings[0], postings[1]);
 														System.out.println("created payment info for oppen verksamhet " + schoolClassMember.getStudent().getName());
 													}
@@ -261,7 +261,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 													regulation = (Regulation) regulationForTypeIter.next();
 													postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 													regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
-													postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate);
+													postings = getPostingBusiness().getPostingStrings(category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate, schoolClassMember.getSchoolYear().getName());
 													createPaymentRecord(postingDetail, postings[0], postings[1]);
 													System.out.println("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName());
 													}
@@ -323,7 +323,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 											postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, currentDate, conditions);
 											regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 											postings = getPostingBusiness().getPostingStrings(
-												category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate);
+												category, schoolClassMember.getSchoolType(), ((Integer) regSpecType.getPrimaryKey()).intValue(), provider, currentDate,schoolClassMember.getSchoolYear().getName());
 											createPaymentRecord(postingDetail, postings[0], postings[1]);
 											log.info("Payment record created "+postingDetail.getTerm());
 										}

@@ -1,5 +1,5 @@
 /*
- * $Id: PostingBusinessBean.java,v 1.46 2003/12/03 18:02:09 joakim Exp $
+ * $Id: PostingBusinessBean.java,v 1.47 2003/12/07 20:24:09 joakim Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -782,7 +782,6 @@ public class PostingBusinessBean extends com.idega.business.IBOServiceBean imple
 	}
 
 	public String[] getPostingStrings(SchoolCategory category, SchoolType type, int regSpecType, Provider provider, Date date, String schoolYear) throws PostingException{
-		
 		if (type == null){
 			throw new PostingException("postingException.missing_school_tpe", "No school type found");
 		} else if (category == null){

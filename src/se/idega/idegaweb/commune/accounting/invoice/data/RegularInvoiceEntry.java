@@ -20,6 +20,7 @@ public interface RegularInvoiceEntry extends com.idega.data.IDOEntity
  public int getSchoolId();
  public java.sql.Date getTo();
  public com.idega.user.data.User getUser();
+ public int getUserID();
  public float getVAT();
  public se.idega.idegaweb.commune.accounting.regulations.data.VATRule getVatRule();
  public int getVatRuleId();

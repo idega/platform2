@@ -318,12 +318,15 @@ public class InvoiceChildcareThread extends BillingThread{
 						}
 					}
 					//Make sure that the sum is not less than 0
+					log.info("Total sum is:"+totalSum);
 					if(totalSum<0){
 						if(subvention!=null){
+							log.info("Sum too low, changing subvention from "+subvention.getAmount()+"...to "+subvention.getAmount()+totalSum);
 							subvention.setAmount(subvention.getAmount()+totalSum);
 							subvention.store();
 						} else {
-							createNewErrorMessage(errorRelated.toString(),"invoice.noSubventionFound");
+							log.info("Sum too low, but no subvention found. Creating error message");
+							createNewErrorMessage(errorRelated.toString(),"invoice.noSubventionFoundAndSumLessThanZero");
 						}
 					}
 				}catch (NullPointerException e1) {
@@ -398,7 +401,7 @@ public class InvoiceChildcareThread extends BillingThread{
 	 * for the Regular payments
 	 */
 	private void regularInvoice(){
-		User custodian;
+		int custodianID;
 		InvoiceHeader invoiceHeader;
 		RegularInvoiceEntry regularInvoiceEntry=null;
 		try {
@@ -407,16 +410,16 @@ public class InvoiceChildcareThread extends BillingThread{
 			while(regularInvoiceIter.hasNext()){
 				try{
 					regularInvoiceEntry = (RegularInvoiceEntry)regularInvoiceIter.next();
-					custodian = regularInvoiceEntry.getUser();
+					custodianID = regularInvoiceEntry.getUserID();
 					try{
-						invoiceHeader = getInvoiceHeaderHome().findByCustodian(custodian);
+						invoiceHeader = getInvoiceHeaderHome().findByCustodianID(custodianID);
 					} catch (FinderException e) {
 						//No header was found so we have to create it
 						invoiceHeader = getInvoiceHeaderHome().create();
 						//Fill in all the field available at this times
 						invoiceHeader.setSchoolCategory(category);
 						invoiceHeader.setPeriod(startPeriod.getDate());
-						invoiceHeader.setCustodian(custodian);
+						invoiceHeader.setCustodianId(custodianID);
 						invoiceHeader.setDateCreated(currentDate);
 						invoiceHeader.setCreatedBy(BATCH_TEXT);
 						invoiceHeader.setOwnPosting(categoryPosting.getAccount());
@@ -474,6 +477,34 @@ public class InvoiceChildcareThread extends BillingThread{
 		}
 	}
 
+	/**
+	 * Creates all the invoice headers, invoice records, payment headers and payment records
+	 * for the Regular payments
+	 */
+	/*
+	protected void regularPayment() {
+		PostingDetail postingDetail = null;
+
+		try {
+			Iterator regularPaymentIter = getRegularPaymentBusiness().findRegularPaymentsForPeriodeAndCategory(startPeriod.getDate(), category).iterator();
+			//Go through all the regular payments
+			while (regularPaymentIter.hasNext()) {
+				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
+				postingDetail = new PostingDetail(regularPaymentEntry);
+				createPaymentRecord(postingDetail, regularPaymentEntry.getOwnPosting(), regularPaymentEntry.getDoublePosting());
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			if (postingDetail != null) {
+				createNewErrorMessage(postingDetail.getTerm(), "payment.DBSetupProblem");
+			}
+			else {
+				createNewErrorMessage("payment.severeError", "payment.DBSetupProblem");
+			}
+		}
+	}
+*/
 	/**
 	 * Code to set all the sibling order used to calculate the sibling discount for each contract.
 	 * At the moment there is no sibling order column in the User object, so this function is not used.
@@ -725,13 +756,14 @@ public class InvoiceChildcareThread extends BillingThread{
 		invoiceRecord.setAmount(postingDetail.getAmount()*months);
 		invoiceRecord.setAmountVAT(postingDetail.getVat()*months);
 		invoiceRecord.setVATType(postingDetail.getVatRegulationID());
-        RegulationSpecTypeHome regSpecTypeHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
-        try {
-            RegulationSpecType regSpecType = regSpecTypeHome.findByRegulationSpecType(postingDetail.getRuleSpecType());
-            invoiceRecord.setRegSpecType(regSpecType);
-        } catch (Exception e) {
-            e.printStackTrace ();
-        }
+		invoiceRecord.setOrderId(postingDetail.getOrderID());
+		RegulationSpecTypeHome regSpecTypeHome = (RegulationSpecTypeHome) IDOLookup.getHome(RegulationSpecType.class);
+		try {
+		    RegulationSpecType regSpecType = regSpecTypeHome.findByRegulationSpecType(postingDetail.getRuleSpecType());
+		    invoiceRecord.setRegSpecType(regSpecType);
+		} catch (Exception e) {
+		    e.printStackTrace ();
+		}
 
 		//Set the posting strings
 		invoiceRecord.setOwnPosting(ownPosting);

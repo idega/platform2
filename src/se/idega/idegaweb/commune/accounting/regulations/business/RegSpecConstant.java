@@ -12,7 +12,7 @@ public class RegSpecConstant {
 	public static final String LOWINCOME_PROTECTION="regspec.laginkomstskydd";
 	public static final String SIBLING_REBATE ="regspec.syskonrabatt";
 	public static final String MAXLIMIT ="regspec.maxtaxa";
-	public static final String SUBVENTION ="regspec.subvention";
+	public static final String SUBVENTION ="z_cacc_reg_spec.grundsubvention";
 	public static final String RESOURCE = "cacc_main_rule.resurs";
 	public static final String CHECKTAXA ="z_cacc_reg_spec.checktaxa";
 	public static final String LAGINKOMSTSKYDD =	"cacc_reg_spec_type.laginkomstskydd";
