@@ -409,8 +409,11 @@ public class ReportGenerator extends Block {
 								if (iHandler != null) {
 									obj = iHandler.getResultingObject(prmValues, iwc);
 									String displayNameOfValue = iHandler.getDisplayNameOfValue(obj, iwc);
-									if (displayNameOfValue != null && !isHidden) {
+									if (displayNameOfValue != null) {
 										_parameterMap.put(clDesc.getName(), displayNameOfValue);
+									}
+									if (isHidden) {
+										_parameterMap.remove(clDesc.getName());
 									}
 								}
 								else {
@@ -423,6 +426,9 @@ public class ReportGenerator extends Block {
 
 								if (!isHidden) {
 									_parameterMap.put(_prmLablePrefix + clDesc.getName(), clDesc.getLocalizedName(currentLocale) + ":");
+								}
+								else {
+									_parameterMap.remove(_prmLablePrefix + clDesc.getName());
 								}
 								//							switch (index) {
 								//								case 0:
