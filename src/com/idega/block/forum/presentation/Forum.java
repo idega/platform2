@@ -242,6 +242,9 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 		table.setColumnAlignment(3, "center");
 	}
 
+	/** Override to add below topic in ForumTreads view*/
+	protected int addBelowTopic(IWContext iwc, ICCategory cat, Table table, int row) {return row;}
+
 	private void getForumThreads(IWContext iwc, Table table) {
 		int row = 1;
 
@@ -264,6 +267,8 @@ public class Forum extends CategoryBlock implements IWBlock, StatefullPresentati
 				table.add(topicText, 1, row++);
 				table.setBackgroundImage(1, row++, _iwb.getImage("shared/dotted.gif"));
 			}
+			
+			row = addBelowTopic(iwc, topic, table, row);
 
 			if (thread != null && thread.isValid()) {
 				table.add(getThreadHeaderTable(thread, iwc), 1, row++);
