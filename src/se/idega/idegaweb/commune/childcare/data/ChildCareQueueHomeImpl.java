@@ -74,5 +74,10 @@ public int getTotalCount(java.lang.String[] p0,boolean p1)throws com.idega.data.
 	return theReturn;
 }
 
-
+public Integer[] getDistinctNotExportedChildIds()throws com.idega.data.IDOException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Integer theReturn[] = ((ChildCareQueueBMPBean)entity).ejbHomeGetDistinctNotExportedChildIds();
+	this.idoCheckInPooledEntity(entity);
+	return theReturn;
+}
 }

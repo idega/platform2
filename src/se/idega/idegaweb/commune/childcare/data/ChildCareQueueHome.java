@@ -13,5 +13,6 @@ public interface ChildCareQueueHome extends com.idega.data.IDOHome
  public int getNumberInQueue(int p0,java.sql.Date p1)throws com.idega.data.IDOException;
  public int getNumberOfNotExported(int p0)throws com.idega.data.IDOException;
  public int getTotalCount(java.lang.String[] p0,boolean p1)throws com.idega.data.IDOException;
+ public Integer[] getDistinctNotExportedChildIds()throws com.idega.data.IDOException;
 
 }

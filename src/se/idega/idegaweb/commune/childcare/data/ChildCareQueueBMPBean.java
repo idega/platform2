@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.10 2003/05/01 14:48:46 laddi Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.11 2003/05/22 20:07:11 palli Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -11,6 +11,9 @@ package se.idega.idegaweb.commune.childcare.data;
 
 import java.sql.Date;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.ejb.FinderException;
 
@@ -270,5 +273,36 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 				sql.appendAndEquals(EXPORTED, "'Y'");
 		}
 		return super.idoGetNumberOfRecords(sql);
+	}
+	
+	public Integer[] ejbHomeGetDistinctNotExportedChildIds() throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendAndEqualsQuoted(EXPORTED, "N");
+		
+		Collection col = null;
+		
+		try {
+			 col = super.idoFindPKsByQuery(sql);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		
+		HashMap childIds = new HashMap();
+		if (col != null) {
+			for (Iterator iter = col.iterator();iter.hasNext();) {
+				ChildCareQueue q = (ChildCareQueue)iter.next();
+				childIds.put(new Integer(q.getChildId()),null);
+			}
+		}
+		
+		Set keys = childIds.keySet();
+		if (keys != null)
+			return (Integer[])childIds.keySet().toArray();
+		else
+			return null;
 	}
 }
