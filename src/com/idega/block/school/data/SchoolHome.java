@@ -14,13 +14,13 @@ public interface SchoolHome extends com.idega.data.IDOHome
  public java.util.Collection findAllByAreaTypeManagementCommune(int p0,int p1,java.lang.String p2,int p3)throws javax.ejb.FinderException;
  public java.util.Collection findAllByCategory(com.idega.block.school.data.SchoolCategory p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolArea(int p0)throws javax.ejb.FinderException;
- public java.util.Collection findAllBySchoolGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
+ public java.util.Collection findAllBySchoolGroup(com.idega.user.data.Group p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolName(java.lang.String p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolType(java.util.Collection p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllBySchoolType(int p0)throws javax.ejb.FinderException;
  public java.util.Collection findAllCentralizedAdministrated()throws javax.ejb.FinderException;
  public java.util.Collection findAllCentralizedAdministratedByType(java.util.Collection p0)throws javax.ejb.FinderException;
- public java.util.Collection findAllInHomeCommuneByCategory(com.idega.block.school.data.SchoolCategory p0)throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException,javax.ejb.CreateException;
+ public java.util.Collection findAllInHomeCommuneByCategory(com.idega.block.school.data.SchoolCategory p0)throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException;
  public java.util.Collection findAllPrivate()throws com.idega.data.IDOLookupException,javax.ejb.EJBException,javax.ejb.FinderException;
  public java.util.Collection findAllSchools()throws javax.ejb.FinderException;
  public java.util.Collection findAllSchoolsByCategoryIncludingTerminated(java.lang.String p0)throws javax.ejb.FinderException;

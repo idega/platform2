@@ -17,6 +17,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public int getAssistantHeadmasterGroupId();
  public boolean getCentralizedAdministration();
  public com.idega.core.location.data.Commune getCommune();
+ public int getCommuneId();
  public java.lang.Object getCommunePK();
  public com.idega.core.location.data.Country getCountry();
  public int getCountryId();
@@ -26,7 +27,7 @@ public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegac
  public int getHeadmasterUserId();
  public java.util.Collection getImages()throws com.idega.data.IDORelationshipException;
  public boolean getInvisibleForCitizen();
- public com.idega.block.text.data.LocalizedText getLocalizedText(int p0)throws com.idega.data.IDORelationshipException,java.rmi.RemoteException;
+ public com.idega.block.text.data.LocalizedText getLocalizedText(int p0)throws com.idega.data.IDORelationshipException;
  public com.idega.block.school.data.SchoolManagementType getManagementType();
  public java.lang.String getManagementTypeId();
  public java.lang.String getMapUrl();

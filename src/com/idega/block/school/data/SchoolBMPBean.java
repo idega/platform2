@@ -170,6 +170,9 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 	public Commune getCommune() {
 		return (Commune) getColumnValue(COMMUNE);
 	}
+	public int getCommuneId() {
+		return this.getIntColumnValue(COMMUNE);
+	}
 	public void setCommunePK(Object pk) {
 		this.setColumn(COMMUNE, pk);
 	}
