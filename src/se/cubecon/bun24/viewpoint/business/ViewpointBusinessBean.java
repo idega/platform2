@@ -6,16 +6,17 @@ import com.idega.business.IBOLookup;
 import com.idega.data.*;
 import com.idega.user.data.*;
 import java.rmi.RemoteException;
+import java.util.*;
 import javax.ejb.*;
 import se.cubecon.bun24.viewpoint.data.*;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
 /**
- * Last modified: $Date: 2003/05/26 08:01:14 $ by $Author: staffan $
+ * Last modified: $Date: 2003/06/02 11:59:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -193,6 +194,20 @@ public class ViewpointBusinessBean extends CaseBusinessBean
        final SubCategoryHome subCategoryHome
                = (SubCategoryHome) IDOLookup.getHome (SubCategory.class);
        return subCategoryHome.findSubCategories (topCategoryId);
+    }
+
+    public Group [] findAllHandlingGroups () throws RemoteException,
+                                                    FinderException {
+       final SubCategoryHome subCategoryHome
+               = (SubCategoryHome) IDOLookup.getHome (SubCategory.class);
+       final SubCategory [] categories
+               = subCategoryHome.findAllSubCategories ();
+       final Map groups = new HashMap ();
+       for (int i = 0; i < categories.length; i++) {
+           final Group group = categories [i].getHandlerGroup ();
+           groups.put (group.getPrimaryKey (), group);
+       }
+       return (Group []) groups.values ().toArray (new Group [groups.size ()]);
     }
 
 	public SubCategory findSubCategory (final int subCategoryID)

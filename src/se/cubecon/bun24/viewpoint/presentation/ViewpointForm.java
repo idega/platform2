@@ -28,10 +28,10 @@ import se.idega.util.PIDChecker;
  * broker when deciding who should be able to manage the viewpoint and send an
  * answer.
  * <p>
- * Last modified: $Date: 2003/05/26 07:46:57 $ by $Author: staffan $
+ * Last modified: $Date: 2003/06/02 11:59:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.42 $
+ * @version $Revision: 1.43 $
  * @see com.idega.business
  * @see com.idega.presentation
  * @see com.idega.presentation.text
@@ -51,6 +51,7 @@ public class ViewpointForm extends CommuneBlock {
     public final static String PARAM_SSN = "vp_ssn";
 	public final static String PARAM_VIEWPOINT_ID = "vp_viewpoint_id";
 	public final static String PARAM_ROAD_ID = "vp_road_id";
+	public final static String PARAM_GROUP_ID = "vp_group_id";
 	public final static String PARAM_NAME = "vp_name";
 	public final static String PARAM_EMAIL = "vp_email";
 
@@ -129,6 +130,7 @@ public class ViewpointForm extends CommuneBlock {
 	private final static String FROMCITIZEN_DEFAULT = "Från medborgare";
 	private final static String GROUPNAME_KEY = "viewpoint.groupName";
 	private final static String GROUPNAME_DEFAULT = "Gruppnamn";
+	private final static String GROUPID_KEY = "viewpoint.groupId";
 	private final static String IACCEPTTOHANDLETHISVIEWPOINT_KEY
         = "viewpoint.iAcceptToHandleThisViewpoint";
 	private final static String IACCEPTTOHANDLETHISVIEWPOINT_DEFAULT
@@ -498,14 +500,15 @@ public class ViewpointForm extends CommuneBlock {
 
 	private void showAnswerForm(final IWContext context) throws RemoteException,
                                                             FinderException {
+        // 1. find viewpoint
 		final ViewpointBusiness viewpointBusiness
                 = getViewpointBusiness (context);
 		final int viewpointId
                 = Integer.parseInt (context.getParameter (PARAM_VIEWPOINT_ID));
 		final Viewpoint viewpoint
                 = viewpointBusiness.findViewpoint (viewpointId);
-		final Form form = new Form();
-		form.add(new HiddenInput (PARAM_VIEWPOINT_ID, viewpointId + ""));
+
+        // 2. add answer form
 		final TextArea textArea = new TextArea (PARAM_ANSWER);
 		textArea.setColumns (40);
 		textArea.setRows (10);
@@ -519,6 +522,8 @@ public class ViewpointForm extends CommuneBlock {
         final Table buttonTable = new Table ();
 		buttonTable.add (answerButton, 1, 1);
 		buttonTable.add (cancelButton, 2, 1);
+
+        // 3. add forward form
         final SubmitButton forwardButton = getSubmitButton
                 (SHOWFORWARDFORM_ACTION, FORWARD_KEY, FORWARD_DEFAULT);
         final Table table = createViewpointTable (viewpoint, context);
@@ -531,12 +536,36 @@ public class ViewpointForm extends CommuneBlock {
 		table.setHeight (row++, 24);
 		table.add (getLocalizedHeader
                    (FORWARDTO_KEY, FORWARDTO_DEFAULT.toUpperCase ()), 1, row++);
-        final String [][] labels = {/*{ LOGINNAME_KEY, LOGINNAME_DEFAULT },
-                                      { SSN_KEY, SSN_DEFAULT }, */
-            { GROUPNAME_KEY, GROUPNAME_DEFAULT }};
-        table.add (getRadioButtonTable (FORWARDTO_KEY, labels), 1, row++);
+        final Table radioButtonTable = new Table (3, 2);
+        final RadioButton button1 = getRadioButton (FORWARDTO_KEY,
+                                                   GROUPNAME_KEY);
+        button1.setSelected ();
+        final TextInput textInput = (TextInput) getStyledInterface
+                (new TextInput (GROUPNAME_KEY));
+        textInput.setLength (40);
+        radioButtonTable.add (button1, 1, 1);
+        final String headerText = getLocalizedString (GROUPNAME_KEY,
+                                                      GROUPNAME_DEFAULT);
+        radioButtonTable.add (getSmallHeader (headerText + ":"), 2, 1);
+        radioButtonTable.add (textInput, 3, 1);
+
+        final RadioButton button2 = getRadioButton (FORWARDTO_KEY, GROUPID_KEY);
+        radioButtonTable.add (button2, 1, 2);
+		final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                (new DropdownMenu (PARAM_GROUP_ID));
+        Group [] groups = viewpointBusiness.findAllHandlingGroups ();
+        for (int i = 0; i < groups.length; i++) {
+            dropdown.addMenuElement (groups [i].getPrimaryKey ().toString (),
+                                     groups [i].getName ());
+        }
+        radioButtonTable.add (dropdown, 2, 2);
+        table.add (radioButtonTable, 1, row++);
 		table.setHeight (row++, 12);
 		table.add (forwardButton, 1, row++);
+
+        // 4. create actual form object
+		final Form form = new Form();
+		form.add(new HiddenInput (PARAM_VIEWPOINT_ID, viewpointId + ""));
 		form.add (table);
 		add (form);
 	}
@@ -610,6 +639,13 @@ public class ViewpointForm extends CommuneBlock {
                 // Group name entered
                 final String groupName = context.getParameter (GROUPNAME_KEY);
                 final Group receiver = getGroupByName (context, groupName);
+                viewpointBusiness.registerHandler (viewpointId, receiver);
+                receiverName = receiver.getName ();
+            } else if (null != forwardType
+                       && forwardType.equals (GROUPID_KEY)) {
+                // Group id entered
+                final String groupId = context.getParameter (PARAM_GROUP_ID);
+                final Group receiver = getGroupById (context, groupId);
                 viewpointBusiness.registerHandler (viewpointId, receiver);
                 receiverName = receiver.getName ();
             } else {
@@ -697,13 +733,27 @@ public class ViewpointForm extends CommuneBlock {
         Link homeLink = null;
         try {
             homeLink = getStartPageLink (context);
-            if (null != forwardType && forwardType.equals (GROUPNAME_KEY)) {
-                // Group name entered
-                final String groupName = context.getParameter (GROUPNAME_KEY);
-                final Group group = getGroupByName (context, groupName);
-                final RadioButton groupRadioButton = getRadioButton
-                        (FORWARDTO_KEY,  GROUPNAME_KEY);
-                form.maintainParameter (GROUPNAME_KEY);
+            if (null != forwardType && (forwardType.equals (GROUPNAME_KEY)
+                                        ||  forwardType.equals (GROUPID_KEY))) {
+                Group group = null;
+                String groupName = null;
+                RadioButton groupRadioButton = null;
+                if (forwardType.equals (GROUPNAME_KEY)) {
+                    // Group name entered
+                    groupName = context.getParameter (GROUPNAME_KEY);
+                    group = getGroupByName (context, groupName);
+                    groupRadioButton = getRadioButton (FORWARDTO_KEY,
+                                                       GROUPNAME_KEY);
+                    form.maintainParameter (GROUPNAME_KEY);
+                } else {
+                    // Group id entered
+                    group = getGroupById
+                            (context, context.getParameter (PARAM_GROUP_ID));
+                    groupName = group.getName ();
+                    groupRadioButton = getRadioButton (FORWARDTO_KEY,
+                                                       GROUPID_KEY);
+                    form.maintainParameter (PARAM_GROUP_ID);
+                }
                 final GroupBusiness groupBusiness
                         = (GroupBusiness) IBOLookup.getServiceInstance
                         (context, GroupBusiness.class);
@@ -825,6 +875,24 @@ public class ViewpointForm extends CommuneBlock {
                                            + ". Tänk på att skillnaden på"
                                            + " versaler och gemener är"
                                            + " signifikant.");
+            }
+        }
+        return result;
+    }
+
+    private Group getGroupById (final IWContext context, final String id)
+        throws FinderException {
+        Group result = null;
+        try {
+            final GroupBusiness groupBusiness = (GroupBusiness)
+                    IBOLookup.getServiceInstance (context, GroupBusiness.class);
+            result = groupBusiness.getGroupByGroupID
+                    (new Integer (id).intValue ());
+        } catch (RemoteException dummy) {
+            // nothing, since algorithm is in finally clause
+        } finally {
+            if (null == result) {
+                throw new FinderException ("Hittade inte gruppen med id " + id);
             }
         }
         return result;

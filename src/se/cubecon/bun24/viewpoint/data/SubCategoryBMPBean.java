@@ -7,10 +7,10 @@ import javax.ejb.FinderException;
 import com.idega.user.data.*;
 
 /**
- * Last modified: $Date: 2003/04/02 17:55:51 $ by $Author: laddi $
+ * Last modified: $Date: 2003/06/02 11:59:24 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
 
@@ -141,6 +141,12 @@ public class SubCategoryBMPBean extends GenericEntity implements SubCategory {
         throws FinderException, RemoteException {
         final String sql = "select * from " + ENTITY_NAME + " where "
                 + COLUMN_TOPCATEGORY_ID + " = '" + topCategoryId + "'";
+        return idoFindPKsBySQL (sql);
+    }
+    
+    public Collection ejbFindAllSubCategories () throws FinderException,
+                                                        RemoteException {
+        final String sql = "select * from " + ENTITY_NAME;
         return idoFindPKsBySQL (sql);
     }
     
