@@ -20,6 +20,7 @@ import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
 import com.idega.user.data.Group;
 
 /**
@@ -60,7 +61,7 @@ public class SchoolViewer extends Block {
 				link.addParameter( getSchoolContentBusiness( iwc ).getParameterSchoolId() , school.getPrimaryKey().toString() );
 				table.add ( link, 1, row );
 				if (getSchoolBusiness(iwc).hasEditPermission(iwc.getCurrentUser(), school)) {
-					table.add( SchoolContentEditor.getLink(school) , 2, row);
+					table.add( SchoolContentEditor.getLink(school, new Text(_iwrb.getLocalizedString("content_editor","Content Editor"))) , 2, row);
 				}
 			}
 		}
