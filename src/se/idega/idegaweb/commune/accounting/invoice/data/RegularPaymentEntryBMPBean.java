@@ -8,9 +8,10 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
 import java.util.Collection;
+
 import javax.ejb.FinderException;
 
-
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
 
 import com.idega.block.school.data.School;
@@ -34,6 +35,7 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	private static final String COLUMN_VAT_REG_ID = "vat_reg_id";
 	private static final String COLUMN_AMOUNT = "amount";
 	private static final String COLUMN_SCHOOL_ID = "school_id";
+	private static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type";
 	private static final String COLUMN_USER_ID = "user_id";
 	private static final String COLUMN_PLACING = "placing";
 	private static final String COLUMN_TO = "periode_to";
@@ -54,6 +56,7 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		addAttribute(COLUMN_VAT_REG_ID, "", true, true, java.lang.Integer.class, 1);
 		addAttribute(COLUMN_AMOUNT, "", true, true, java.lang.Float.class);
 		addAttribute(COLUMN_SCHOOL_ID, "", true, true, java.lang.Integer.class);
+		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_USER_ID, "", true, true, java.lang.Integer.class);
 		addAttribute(COLUMN_PLACING, "", true, true, java.lang.String.class);
 		addAttribute(COLUMN_TO, "", true, true, java.sql.Date.class);
@@ -61,6 +64,7 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 
 		addManyToOneRelationship(COLUMN_USER_ID, User.class);
 		addManyToOneRelationship(COLUMN_SCHOOL_ID, School.class);
+		addManyToOneRelationship(COLUMN_REG_SPEC_TYPE_ID, RegulationSpecType.class);				
 	}
 	
 
@@ -111,6 +115,21 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 	 */
 	public int getUserId() {
 		return getIntColumnValue(COLUMN_USER_ID);
+	}
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getRegSpecType()
+	 */
+	public RegulationSpecType getRegSpecType() {
+		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE_ID);
+	}
+
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#getRegSpecType()
+	 */
+	public int getRegSpecTypeId() {
+		return getIntColumnValue(COLUMN_REG_SPEC_TYPE_ID);
 	}
 
 	/* (non-Javadoc)
@@ -252,6 +271,20 @@ public class RegularPaymentEntryBMPBean extends GenericEntity implements Regular
 		}
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setRegSpecType(se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType)
+	 */
+	public void setRegSpecType(RegulationSpecType regType) {
+		setColumn(COLUMN_REG_SPEC_TYPE_ID, regType);
+	}
+
+	/* (non-Javadoc)
+	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setRegSpecTypeId(int)
+	 */
+	public void setRegSpecTypeId(int regTypeId){
+		setColumn(COLUMN_REG_SPEC_TYPE_ID, regTypeId);		
+	}
 	
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry#setProvider(com.idega.block.school.data.School)
