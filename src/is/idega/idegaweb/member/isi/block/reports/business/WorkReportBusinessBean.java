@@ -718,6 +718,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 
 		String accKey = null;
 
+		/**
+		 * @todo hehe, put this into one submethod and then call if for each set of rows. Silly silly silly
+		 */
+
 		//Get the revenue part
 		for (currRow++; currRow < 8; currRow++) {
 			HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
@@ -763,7 +767,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			}
 		}
 
-		//Get the revenue part
+		//Get the expenses part
 		for (currRow = 11; currRow < 26; currRow++) {
 			HSSFRow row = (HSSFRow)accEntries.getRow(currRow);
 			HSSFCell cell = row.getCell((short)1);
