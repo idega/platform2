@@ -2,15 +2,28 @@ package com.idega.projects.golf;
 
 import com.idega.projects.golf.entity.*;
 import com.idega.projects.golf.*;
+import java.sql.SQLException;
 import com.idega.projects.golf.business.TournamentController;
 
 public class UpdateHandicap {
 
+
+
     public static void update(int member_id) {
+        try {
+            Member member = new Member(member_id);
+            UpdateHandicap.update(member);
+        }
+        catch (SQLException sql) {
+            sql.printStackTrace(System.err);
+        }
+    }
+
+    public static void update(Member member) {
 
       try {
+            int member_id = member.getID();
 
-            Member member = new Member(member_id);
             MemberInfo memberInfo = new MemberInfo(member_id);
             TournamentRound round;
             TournamentRound[] rounds;
@@ -108,7 +121,6 @@ public class UpdateHandicap {
                             heildarpunktar *= 2;
                     }
 
-                    System.err.println(leik+": "+heildarpunktar);
                     scorecard[m].setTotalPoints(heildarpunktar);
 
                     if ( tournamentRoundID == 1 ) {
