@@ -85,7 +85,7 @@ public class ContractEditor extends ChildCareBlock {
 				displayContracts(iwc);
 			}
 		} else {
-			add(" No application selected ");
+			add(localize("child_care.no_application_selected"," No application selected "));
 		}
 		add(Text.getBreak());
 		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("child_care.select_new_application","Select new application")));
@@ -590,7 +590,7 @@ public class ContractEditor extends ChildCareBlock {
 			table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 		else{
-		    table.add(getSmallErrorText("no contract for application"),1,row);
+		    table.add(getSmallErrorText(localize("child_care.no_contract_for_applicaiton","no contract for application")),1,row);
 		    table.mergeCells(1,row,table.getColumns(),row);
 		}
 		
