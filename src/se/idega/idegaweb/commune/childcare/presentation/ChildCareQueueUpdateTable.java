@@ -26,7 +26,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareQueueUpdateTable
  * @author <a href="mailto:joakim@idega.is">Joakim</a>
- * @version $Id: ChildCareQueueUpdateTable.java,v 1.7 2004/01/12 09:21:30 gimmi Exp $
+ * @version $Id: ChildCareQueueUpdateTable.java,v 1.6 2004/01/12 09:20:31 gimmi Exp $
  * @since 12.2.2003 
  */
 public class ChildCareQueueUpdateTable extends CommuneBlock {
@@ -204,7 +204,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	 * @param layoutTbl
 	 * @throws RemoteException
 	 */
-	private void createPagePhase1(IWContext iwc, Table layoutTbl) {
+	private void createPagePhase1(IWContext iwc, Table layoutTbl) throws RemoteException {
 		Collection choices = findChoices(iwc);
 		if (choices.size() == 0) {
 			layoutTbl.add(new Text("No choices have been made for this person."));
