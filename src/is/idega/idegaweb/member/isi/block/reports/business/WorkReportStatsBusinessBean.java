@@ -2,6 +2,7 @@ package is.idega.idegaweb.member.isi.block.reports.business;
 
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.ClubTypeDropDownMenu;
 import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.WorkReportStatusDropDownMenu;
 import is.idega.idegaweb.member.isi.block.reports.presentation.inputhandler.YesNoDropDownMenu;
@@ -9,6 +10,7 @@ import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,10 +31,12 @@ import com.idega.block.datareport.util.ReportableData;
 import com.idega.block.datareport.util.ReportableField;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOSessionBean;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.Group;
+import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -3575,8 +3579,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	Collection leagueFilter,
 	Collection regionalUnionFilter,
 	Collection clubFilter,
+	String playersOrMembers,
 	String gender,
-	Integer birthYear) throws RemoteException {
+	Integer birthYear,
+	Collection postalCodes,
+	String order) throws RemoteException {
 
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -3614,7 +3621,106 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
 		reportCollection.addField(email);
 
+		Collection members = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionFilter, clubFilter);
+		List leagueGroupIDList = getGroupIdListFromLeagueGroupCollection(year, leagueFilter, false);
 
+		Iterator iter = members.iterator();
+		while (iter.hasNext()) {
+			WorkReport report = (WorkReport) iter.next();
+			try {
+				Collection leagues = report.getLeagues();
+				Iterator iterator = leagues.iterator();
+				while (iterator.hasNext()) {
+					WorkReportGroup league = (WorkReportGroup) iterator.next();
+					
+					if (!leagueGroupIDList.contains(league.getGroupId()) ) {
+						continue; //don't process this one, go to next
+					}
+					
+					try {
+						Collection users = null;
+						if (playersOrMembers.equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)) {
+							users = getWorkReportBusiness().getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdAndWorkReportGroup(((Integer) report.getPrimaryKey()).intValue(), league);
+						}
+						else if (playersOrMembers.equals(IWMemberConstants.GROUP_TYPE_CLUB_MEMBER)) {
+							users = getWorkReportBusiness().getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdOrderedByMemberName(((Integer) report.getPrimaryKey()).intValue());
+						}
+						
+						if (users != null) {
+							Iterator itor = users.iterator();
+							while (itor.hasNext()) {
+								WorkReportMember element = (WorkReportMember) itor.next();
+								if (birthYear != null && birthYear.intValue() > 0) {
+									if (birthYear.intValue() != element.getAge()) {
+										continue;
+									}
+								}
+								if (gender != null) {
+									if (gender.equalsIgnoreCase("m") && element.isFemale()) {
+										continue;
+									}
+									else if (gender.equalsIgnoreCase("f") && element.isMale()) {
+										continue;
+									}
+								}
+								
+								PostalCode code = null;
+								try {
+									code = element.getPostalCode();
+								}
+								catch (SQLException e1) {
+									code = null;
+								}
+								
+								if (postalCodes != null && !postalCodes.isEmpty()) {
+									if (code != null) {
+										if (!postalCodes.contains(code.getPostalCode())) {
+											continue;
+										}
+									}
+									else {
+										continue;
+									}
+								}
+								
+								ReportableData regData = new ReportableData();
+								regData.addData(personName, element.getName());
+								regData.addData(phone, element.getHomePhone());
+								regData.addData(address, element.getStreetName());
+								if (code != null) {
+									regData.addData(postalCode, code.getPostalCode());
+								}
+								regData.addData(email, element.getEmail());
+								reportCollection.add(regData);
+							}
+						}
+					}
+					catch (FinderException fe) {
+						fe.printStackTrace();
+					}
+				}
+			}
+			catch (IDOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		ReportableField[] sortFields = null;
+		if (order.equals(IWMemberConstants.ORDER_BY_NAME)) {
+			sortFields = new ReportableField[] {personName, address, postalCode};
+		}
+		else if (order.equals(IWMemberConstants.ORDER_BY_ADDRESS)) {
+			sortFields = new ReportableField[] {address, postalCode, personName};
+		}
+		else if (order.equals(IWMemberConstants.ORDER_BY_POSTAL_CODE)) {
+			sortFields = new ReportableField[] {postalCode, address, personName};
+		}
+		
+		if (sortFields != null) {
+			Comparator comparator = new FieldsComparator(sortFields);
+			Collections.sort(reportCollection, comparator);
+		}
+		
 		//finished return the collection
 		return reportCollection;
 	}
@@ -3627,8 +3733,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	Collection leagueFilter,
 	Collection regionalUnionFilter,
 	Collection clubFilter,
+	String playersOrMembers,
 	String gender,
-	Integer birthYear) throws RemoteException {
+	Integer birthYear,
+	Collection postalCodes,
+	String order) throws RemoteException {
 
 		//initialize stuff
 		initializeBundlesIfNeeded();
@@ -3662,9 +3771,105 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Email"), currentLocale);
 		reportCollection.addField(email);
 		
+		Collection members = getWorkReportBusiness().getWorkReportsByYearRegionalUnionsAndClubs(year.intValue(), regionalUnionFilter, clubFilter);
+		List leagueGroupIDList = getGroupIdListFromLeagueGroupCollection(year, leagueFilter, false);
 
+		Iterator iter = members.iterator();
+		while (iter.hasNext()) {
+			WorkReport report = (WorkReport) iter.next();
+			try {
+				Collection leagues = report.getLeagues();
+				Iterator iterator = leagues.iterator();
+				while (iterator.hasNext()) {
+					WorkReportGroup league = (WorkReportGroup) iterator.next();
+					
+					if (!leagueGroupIDList.contains(league.getGroupId()) ) {
+						continue; //don't process this one, go to next
+					}
+					
+					try {
+						Collection users = null;
+						if (playersOrMembers.equals(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER)) {
+							users = getWorkReportBusiness().getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdAndWorkReportGroup(((Integer) report.getPrimaryKey()).intValue(), league);
+						}
+						else if (playersOrMembers.equals(IWMemberConstants.GROUP_TYPE_CLUB_MEMBER)) {
+							users = getWorkReportBusiness().getWorkReportMemberHome().findAllWorkReportMembersByWorkReportIdOrderedByMemberName(((Integer) report.getPrimaryKey()).intValue());
+						}
+						
+						if (users != null) {
+							Iterator itor = users.iterator();
+							while (itor.hasNext()) {
+								WorkReportMember element = (WorkReportMember) itor.next();
+								if (birthYear != null && birthYear.intValue() > 0) {
+									if (birthYear.intValue() != element.getAge()) {
+										continue;
+									}
+								}
+								if (gender != null) {
+									if (gender.equalsIgnoreCase("m") && element.isFemale()) {
+										continue;
+									}
+									else if (gender.equalsIgnoreCase("f") && element.isMale()) {
+										continue;
+									}
+								}
+								
+								PostalCode code = null;
+								try {
+									code = element.getPostalCode();
+								}
+								catch (SQLException e1) {
+									code = null;
+								}
+								
+								if (postalCodes != null && !postalCodes.isEmpty()) {
+									if (code != null) {
+										if (!postalCodes.contains(code.getPostalCode())) {
+											continue;
+										}
+									}
+									else {
+										continue;
+									}
+								}
+								
+								ReportableData regData = new ReportableData();
+								regData.addData(personName, element.getName());
+								regData.addData(address, element.getStreetName());
+								if (code != null) {
+									regData.addData(postalCode, code.getPostalCode());
+								}
+								regData.addData(email, element.getEmail());
+								reportCollection.add(regData);
+							}
+						}
+					}
+					catch (FinderException fe) {
+						fe.printStackTrace();
+					}
+				}
+			}
+			catch (IDOException e) {
+				e.printStackTrace();
+			}
+		}
 		
-
+		ReportableField[] sortFields = null;
+		if (order.equals(IWMemberConstants.ORDER_BY_NAME)) {
+			sortFields = new ReportableField[] {personName, address, postalCode};
+		}
+		else if (order.equals(IWMemberConstants.ORDER_BY_ADDRESS)) {
+			sortFields = new ReportableField[] {address, postalCode, personName};
+		}
+		else if (order.equals(IWMemberConstants.ORDER_BY_POSTAL_CODE)) {
+			sortFields = new ReportableField[] {postalCode, address, personName};
+		}
+		
+		if (sortFields != null) {
+			Comparator comparator = new FieldsComparator(sortFields);
+			Collections.sort(reportCollection, comparator);
+		}
+		
 		//finished return the collection
 		return reportCollection;
 	}
