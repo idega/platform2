@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountChangePassword.java,v 1.3 2005/03/29 06:00:45 laddi Exp $ Created on
+ * $Id: CitizenAccountChangePassword.java,v 1.4 2005/04/05 10:26:36 laddi Exp $ Created on
  * 24.3.2005
  * 
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -192,45 +192,46 @@ public class CitizenAccountChangePassword extends CommuneBlock {
 			if (!LoginDBHandler.verifyPassword(login, currentPassword)) {
 				throw new Exception(localize(KEY_PASSWORD_INVALID, DEFAULT_PASSWORD_INVALID));
 			}
+
+			// Validate new password
+			if (!newPassword1.equals("") || !newPassword2.equals("")) {
+				if (newPassword1.equals("")) {
+					throw new Exception(localize(KEY_PASSWORD_EMPTY, DEFAULT_PASSWORD_EMPTY));
+				}
+				if (newPassword2.equals("")) {
+					throw new Exception(localize(KEY_PASSWORD_REPEATED_EMPTY, DEFAULT_PASSWORD_REPEATED_EMPTY));
+				}
+				if (!newPassword1.equals(newPassword2)) {
+					throw new Exception(localize(KEY_PASSWORDS_NOT_SAME, DEFAULT_PASSWORDS_NOT_SAME));
+				}
+				if (newPassword1.length() < MIN_PASSWORD_LENGTH) {
+					throw new Exception(localize(KEY_PASSWORD_TOO_SHORT, DEFAULT_PASSWORD_TOO_SHORT));
+				}
+				for (int i = 0; i < newPassword1.length(); i++) {
+					char c = newPassword1.charAt(i);
+					boolean isPasswordCharOK = false;
+					if ((c >= 'a') && (c <= 'z')) {
+						isPasswordCharOK = true;
+					} else if ((c >= 'A') && (c <= 'Z')) {
+						isPasswordCharOK = true;
+					} else if ((c >= '0') && (c <= '9')) {
+						isPasswordCharOK = true;
+					} else if ((c == 'Œ') || (c == 'Š') || (c == 'š')) {
+						isPasswordCharOK = true;
+					} else if ((c == '') || (c == '€') || (c == '…')) {
+						isPasswordCharOK = true;
+					}
+					if (!isPasswordCharOK) {
+						throw new Exception(localize(KEY_PASSWORD_CHAR_ILLEGAL, DEFAULT_PASSWORD_CHAR_ILLEGAL));
+					}
+				}
+				updatePassword = true;
+			}
 		}
 		catch (Exception e) {
 			errorMessage = e.getMessage();
 		}
 
-		// Validate new password
-		if (!newPassword1.equals("") || !newPassword2.equals("")) {
-			if (newPassword1.equals("")) {
-				throw new Exception(localize(KEY_PASSWORD_EMPTY, DEFAULT_PASSWORD_EMPTY));
-			}
-			if (newPassword2.equals("")) {
-				throw new Exception(localize(KEY_PASSWORD_REPEATED_EMPTY, DEFAULT_PASSWORD_REPEATED_EMPTY));
-			}
-			if (!newPassword1.equals(newPassword2)) {
-				throw new Exception(localize(KEY_PASSWORDS_NOT_SAME, DEFAULT_PASSWORDS_NOT_SAME));
-			}
-			if (newPassword1.length() < MIN_PASSWORD_LENGTH) {
-				throw new Exception(localize(KEY_PASSWORD_TOO_SHORT, DEFAULT_PASSWORD_TOO_SHORT));
-			}
-			for (int i = 0; i < newPassword1.length(); i++) {
-				char c = newPassword1.charAt(i);
-				boolean isPasswordCharOK = false;
-				if ((c >= 'a') && (c <= 'z')) {
-					isPasswordCharOK = true;
-				} else if ((c >= 'A') && (c <= 'Z')) {
-					isPasswordCharOK = true;
-				} else if ((c >= '0') && (c <= '9')) {
-					isPasswordCharOK = true;
-				} else if ((c == 'Œ') || (c == 'Š') || (c == 'š')) {
-					isPasswordCharOK = true;
-				} else if ((c == '') || (c == '€') || (c == '…')) {
-					isPasswordCharOK = true;
-				}
-				if (!isPasswordCharOK) {
-					throw new Exception(localize(KEY_PASSWORD_CHAR_ILLEGAL, DEFAULT_PASSWORD_CHAR_ILLEGAL));
-				}
-			}
-			updatePassword = true;
-		}
 
 		if (errorMessage != null) {
 			add(getErrorText(" " + errorMessage));
