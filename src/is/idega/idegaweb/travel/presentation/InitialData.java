@@ -35,6 +35,7 @@ import com.idega.presentation.ui.BackButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.LocationInput;
 import com.idega.presentation.ui.PasswordInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
@@ -517,6 +518,7 @@ public class InitialData extends TravelManager {
 		table.setColumnAlignment(1,"right");
 		table.setColumnAlignment(2,"left");
 		table.setBorder(0);
+		table.setWidth("600"); 
 		
 		int row = 0;
 		Supplier lSupplier = null;
@@ -577,6 +579,20 @@ public class InitialData extends TravelManager {
 		passwordText.setText(iwrb.getLocalizedString("travel.password","Password"));
 		passwordText.addToText(":");
 		
+		Text newZipExplainedText = (Text) theText.clone();
+		newZipExplainedText.setFontColor(super.BLACK);
+		newZipExplainedText.setText(iwrb.getLocalizedString("travel.new_zip_code_explained", "If the city or zipcode you are looking for is not in the list above, please select the country and type name of the city and zipcode in the fields below."));
+
+		Text cityText = (Text) theText.clone();
+		cityText.setFontColor(super.BLACK);
+		cityText.setText(iwrb.getLocalizedString("travel.city", "City"));
+		cityText.addToText(":");
+
+		Text zipText = (Text) theText.clone();
+		zipText.setFontColor(super.BLACK);
+		zipText.setText(iwrb.getLocalizedString("travel.zip", "Zip"));
+		zipText.addToText(":");
+		
 		int inputSize = 40;
 		String inputSizeStr = "260";
 		
@@ -588,15 +604,18 @@ public class InitialData extends TravelManager {
 		TextInput address = new TextInput("supplier_address");
 		address.setSize(inputSize);
 		
-		DropdownMenu postalCode = new DropdownMenu("supplier_postal_code");
-		PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
-		Collection allPostalCodes = pch.findAllOrdererByCode();
-		Iterator iter = allPostalCodes.iterator();
-		PostalCode pc;
-		while (iter.hasNext()) {
-			pc = (PostalCode) iter.next();
-			postalCode.addMenuElement(pc.getPrimaryKey().toString(), pc.getPostalCode()+" "+pc.getName());
-		}
+		LocationInput locInp = new LocationInput("supplier_country", "supplier_city", "supplier_postal_code");
+		TextInput newCity = new TextInput("supp_new_city");
+		TextInput newZip = new TextInput("supp_new_zip");
+//		DropdownMenu postalCode = new DropdownMenu("supplier_postal_code");
+//		PostalCodeHome pch = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+//		Collection allPostalCodes = pch.findAllOrdererByCode();
+//		Iterator iter = allPostalCodes.iterator();
+//		PostalCode pc;
+//		while (iter.hasNext()) {
+//			pc = (PostalCode) iter.next();
+//			postalCode.addMenuElement(pc.getPrimaryKey().toString(), pc.getPostalCode()+" "+pc.getName());
+//		}
 		TextInput phone = new TextInput("supplier_phone");
 		phone.setSize(inputSize);
 		TextInput fax = new TextInput("supplier_fax");
@@ -629,7 +648,8 @@ public class InitialData extends TravelManager {
 				}
 				int iPostalCodeId = addr.getPostalCodeID();
 				if (iPostalCodeId != -1){
-					postalCode.setSelectedElement(iPostalCodeId);
+					locInp.setSelectedPostalCode(new Integer(iPostalCodeId));
+//					postalCode.setSelectedElement(iPostalCodeId);
 				}
 			}
 			
@@ -698,8 +718,17 @@ public class InitialData extends TravelManager {
 		
 		++row;
 		table.add(postalText,1,row);
-		table.add(postalCode,2,row);
+		table.add(locInp,2,row);
+//		table.add(postalCode,2,row);
+		table.addBreak(2, row);
+		table.add(newZipExplainedText, 2, row);
+		table.addBreak(2, row);
+		table.add(cityText, 2, row);
+		table.add(newCity, 2, row);
+		table.add(zipText, 2, row);
+		table.add(newZip, 2,row);
 		table.setAlignment(1,row,"left");
+		table.setVerticalAlignment(1,row,"top");
 		table.setAlignment(2,row,"left");
 		table.setRowColor(row,super.GRAY);
 		
@@ -797,6 +826,21 @@ public class InitialData extends TravelManager {
 			String userName = iwc.getParameter("supplier_user_name");
 			String passOne = iwc.getParameter("supplier_password_one");
 			String passTwo = iwc.getParameter("supplier_password_two");
+			
+			String countryID = iwc.getParameter("supplier_country");
+			String newCity = iwc.getParameter("supp_new_city");
+			String newZip = iwc.getParameter("supp_new_zip");
+			
+			if (countryID != null && newCity != null && newZip != null && !"".equals(newCity.trim()) && !"".equals(newZip.trim())) {
+				PostalCodeHome pcHome = (PostalCodeHome) IDOLookup.getHome(PostalCode.class);
+				PostalCode pc = pcHome.create();
+				pc.setName(newCity);
+				pc.setPostalCode(newZip);
+				pc.setCountryID(Integer.parseInt(countryID));
+				pc.store();
+				
+				postalCode = pc.getPrimaryKey().toString();
+			}
 			
 			int iPostalCode = -1;
 			try {
