@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderEditor.java,v 1.24 2003/10/27 10:22:54 anders Exp $
+ * $Id: ProviderEditor.java,v 1.25 2003/10/30 16:31:14 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,64 +9,60 @@
  */
 package se.idega.idegaweb.commune.accounting.school.presentation;
 
+import java.rmi.RemoteException;
+import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
-import java.rmi.RemoteException;
-import java.sql.Date;
 
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.ExceptionWrapper;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.CountryDropdownMenu;
-
-import com.idega.core.builder.data.ICPage;
-
-import com.idega.core.location.data.Commune;
-import com.idega.core.location.data.CommuneHome;
-import com.idega.core.location.data.Country;
-import com.idega.core.location.data.CountryHome;
+import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
+import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
+import se.idega.idegaweb.commune.accounting.presentation.ListTable;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
+import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
+import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
+import se.idega.idegaweb.commune.accounting.school.business.ProviderException;
+import se.idega.idegaweb.commune.accounting.school.data.Provider;
+import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsType;
+import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsTypeHome;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolManagementType;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolYear;
-import com.idega.block.school.data.SchoolManagementType;
-
-import se.idega.idegaweb.commune.accounting.school.data.Provider;
-import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsType;
-import se.idega.idegaweb.commune.accounting.school.data.ProviderStatisticsTypeHome;
-import se.idega.idegaweb.commune.accounting.school.business.ProviderBusiness;
-import se.idega.idegaweb.commune.accounting.school.business.ProviderException;
-
-import se.idega.idegaweb.commune.accounting.regulations.data.ProviderType;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
-
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.presentation.ApplicationForm;
-import se.idega.idegaweb.commune.accounting.presentation.ListTable;
-import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
-
-import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersException;
+import com.idega.core.builder.data.ICPage;
+import com.idega.core.location.data.Commune;
+import com.idega.core.location.data.CommuneHome;
+import com.idega.core.location.data.Country;
+import com.idega.core.location.data.CountryHome;
+import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CountryDropdownMenu;
+import com.idega.presentation.ui.DateInput;
+import com.idega.presentation.ui.DropdownMenu;
+import com.idega.presentation.ui.GenericButton;
+import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextArea;
 
 
 /** 
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/10/27 10:22:54 $ by $Author: anders $
+ * Last modified: $Date: 2003/10/30 16:31:14 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public class ProviderEditor extends AccountingBlock {
 
@@ -117,14 +113,14 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_TITLE_ADD = KP + "title_add";
 	private final static String KEY_TITLE_EDIT = KP + "title_edit";
 	private final static String KEY_TITLE_DELETE = KP + "title_delete";
+//	private final static String KEY_OPERATIONAL_FIELD = KP + "operational_field";
 	private final static String KEY_NAME = KP + "name";
 	private final static String KEY_ADDRESS = KP + "address";
 	private final static String KEY_ZIP_CODE = KP+ "zip_code";
 	private final static String KEY_ZIP_AREA = KP + "zip_area";
 	private final static String KEY_PHONE = KP + "phone";
 	private final static String KEY_INFO = KP + "info";
-	private final static String KEY_OPERATIONS = KP + "operations";
-	
+	private final static String KEY_OPERATIONS = KP + "operations";	
 	private final static String KEY_SCHOOL_AREA = KP + "school_area";
 	private final static String KEY_ORGANIZATION_NUMBER = KP + "organization_number";
 	private final static String KEY_EXTRA_PROVIDER_ID = KP + "extra_provider_id";
@@ -153,6 +149,16 @@ public class ProviderEditor extends AccountingBlock {
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
 
+	private boolean _useCancelButton = true;
+	
+	public boolean getUseCancelButton() {
+		return _useCancelButton;
+	}
+	
+	public void setUseCancelButton(boolean b) {
+		_useCancelButton = b;
+	}
+	
 	/**
 	 * @see com.idega.presentation.Block#main()
 	 */
@@ -198,7 +204,7 @@ public class ProviderEditor extends AccountingBlock {
 			action = ACTION_NEW;
 		} else if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			action = ACTION_SAVE;
-		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
+		} else if (getIntParameter(iwc, PARAMETER_DELETE_ID) > 0) {
 			action = ACTION_DELETE;
 		} else if (iwc.isParameterSet(PARAMETER_SCHOOL_ID)) {
 			action = ACTION_OPEN;
@@ -213,7 +219,7 @@ public class ProviderEditor extends AccountingBlock {
 	private void handleDefaultAction(IWContext iwc) {
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Providers");
-		app.setSearchPanel(getButtonPanel(iwc));
+		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getProviderList(iwc));
 		add(app);
 	}
@@ -417,12 +423,24 @@ public class ProviderEditor extends AccountingBlock {
 	/*
 	 * Returns the search panel for this block.
 	 */
-//	private Table getSearchPanel() {
-//		Table table = new Table();
-//		table.add(getLocalizedLabel(KEY_MAIN_ACTIVITY, "Huvudverksamhet"), 1, 1);
-//		table.add(getLocalizedText(KEY_UPPER_SECONDARY_SCHOOL, "Gymnasieskola"), 2, 1);
-//		return table;
-//	}
+	private Table getSearchPanel(IWContext iwc) {
+		Table table = new Table();
+//		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
+		table.add(new OperationalFieldsMenu(), 1, 1);
+		table.add(getLocalizedButton(PARAMETER_NEW, KEY_NEW, "New"), 2, 1);
+		if (_useCancelButton) {
+			try {
+				ICPage homePage = iwc.getCurrentUser().getHomePage();
+				if (homePage == null) {
+					homePage = iwc.getCurrentUser().getPrimaryGroup().getHomePage();
+				}
+				GenericButton cancelButton = new GenericButton(PARAM_CANCEL, localize(KEY_CANCEL, "Cancel"));
+				cancelButton.setPageToOpen(homePage);			
+				table.add(cancelButton, 3, 1);
+			} catch (Exception e) {}
+		}
+		return table;
+	}	
 	
 	/*
 	 * Returns the list of providers.
@@ -432,7 +450,8 @@ public class ProviderEditor extends AccountingBlock {
 
 		try {
 			ProviderBusiness pb = getProviderBusiness(iwc);			
-			providers = pb.findAllSchools();
+			String operationalField = getSession().getOperationalField();
+			providers = pb.findAllSchoolsByOperationalField(operationalField);
 		} catch (RemoteException e) {
 			Table t = new Table();
 			t.add(new ExceptionWrapper(e), 1, 1);
@@ -504,18 +523,18 @@ public class ProviderEditor extends AccountingBlock {
 	/*
 	 * Returns the default button panel for this block.
 	 */
-	private ButtonPanel getButtonPanel(IWContext iwc) {
-		ButtonPanel bp = new ButtonPanel(this);
-		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "New");
-		try {
-			ICPage homePage = iwc.getCurrentUser().getHomePage();
-			if (homePage == null) {
-				homePage = iwc.getCurrentUser().getPrimaryGroup().getHomePage();
-			}
-			bp.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Cancel", homePage);
-		} catch (Exception e) {}
-		return bp;
-	}
+//	private ButtonPanel getButtonPanel(IWContext iwc) {
+//		ButtonPanel bp = new ButtonPanel(this);
+//		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "New");
+//		try {
+//			ICPage homePage = iwc.getCurrentUser().getHomePage();
+//			if (homePage == null) {
+//				homePage = iwc.getCurrentUser().getPrimaryGroup().getHomePage();
+//			}
+//			bp.addLocalizedButton(PARAM_CANCEL, KEY_CANCEL, "Cancel", homePage);
+//		} catch (Exception e) {}
+//		return bp;
+//	}
 	
 	/*
 	 * Returns the application form for creating or editing a provider.
