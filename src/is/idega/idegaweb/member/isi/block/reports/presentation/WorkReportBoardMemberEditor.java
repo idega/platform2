@@ -77,6 +77,7 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
   
   { 
     fieldList = new ArrayList();
+    fieldList.add(LEAGUE);
     fieldList.add(STATUS);
     fieldList.add(NAME);
     fieldList.add(PERSONAL_ID);
