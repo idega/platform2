@@ -165,7 +165,7 @@ public class ProductCatalog extends CategoryBlock{
 	}
       }
 
-      if ( productCategories.size() == 0 ) {
+      if ( productCategories.size() == 0 || !_useParameterCategory ) {
 	try {
 	  productCategories = (List) getCategories();
 	  if (productCategories == null) {
