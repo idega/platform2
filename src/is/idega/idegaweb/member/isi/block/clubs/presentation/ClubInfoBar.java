@@ -33,8 +33,12 @@ import com.idega.user.data.Group;
 public class ClubInfoBar extends Block {
 	
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
+	private String pageId = null;
 	
 	public void main(IWContext iwc) {
+	    
+		pageId = iwc.getParameter(ClubPageIncluder.PARAM_CALLING_PAGE_ID);
+		
 		_collator = Collator.getInstance(iwc.getLocale());
 		Group club = getClub(iwc);
 		if(club==null) {
@@ -76,7 +80,11 @@ public class ClubInfoBar extends Block {
 		Iterator playerGroupIter = playerGroups.iterator();
 		while(playerGroupIter.hasNext()) {
 			Group playerGroup = (Group) playerGroupIter.next();
+		
 			Link link = new Link(playerGroup.getName());
+			if(pageId!=null) {
+			  link.setPage(Integer.parseInt(pageId));
+			}
 			link.addParameter(IWMemberConstants.REQUEST_PARAMETER_SELECTED_GROUP_ID,playerGroup.getPrimaryKey().toString());
 			topLevelMenu.add(link);
 		}

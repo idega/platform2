@@ -3,6 +3,11 @@
 */
 package is.idega.idegaweb.member.isi.block.clubs.presentation;
 
+import java.rmi.RemoteException;
+
+import com.idega.core.builder.business.BuilderService;
+import com.idega.core.builder.business.BuilderServiceFactory;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Page;
@@ -19,13 +24,11 @@ public class ClubPageIncluder extends PageIncluder {
 
     public static String BUNDLE_PROPERTY_ROOT_CLUB_ID = "ROOT_CLUB_ID";
     public static String PARAM_ROOT_CLUB_ID = "RO_CL_ID";
+    public static String PARAM_CALLING_PAGE_ID = "CL_PA_ID";
 	public static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.member.isi";
     
 	private Page parentPage;
-	private String coolMenuScript = "coolmenus4.js";
-	private String menuStyleScript = "coolStyle.css";
-	private String coolMenuSrc;
-	private String menuStyleSrc;
+	private String menuStyleSrc = "cssmenu/CSSMultiLevelMenu.css";
 	
     public ClubPageIncluder() {
         super();
@@ -39,9 +42,6 @@ public class ClubPageIncluder extends PageIncluder {
     	super.main(iwc);
     	
     	parentPage = this.getParentPage();
-		coolMenuSrc = scriptSource(coolMenuScript, iwc);
-		menuStyleSrc = scriptSource(menuStyleScript, iwc);
-		parentPage.addJavascriptURL(coolMenuSrc);
 		parentPage.addStyleSheetURL(menuStyleSrc);
     }
     
@@ -74,8 +74,18 @@ public class ClubPageIncluder extends PageIncluder {
                 }
               }
               //add the extra parameters
+            //the division id
             finalUrl.append(PARAM_ROOT_CLUB_ID).append("=").append(groupId);
             
+            //the page the includer is currently on
+            IWApplicationContext iwac = iwc.getIWMainApplication().getIWApplicationContext();
+            BuilderService bs;
+            try {
+                bs = BuilderServiceFactory.getBuilderService(iwac);
+                finalUrl.append(PARAM_CALLING_PAGE_ID).append("=").append(bs.getCurrentPageId(iwc));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         
         return finalUrl.toString();
