@@ -7,6 +7,7 @@ import com.idega.projects.golf.*;
 import com.idega.projects.golf.templates.*;
 import com.idega.jmodule.*;
 import com.idega.jmodule.object.*;
+import com.idega.projects.golf.templates.page.*;
 
 
 public class MainPageJSPModule extends PageJSPModule{

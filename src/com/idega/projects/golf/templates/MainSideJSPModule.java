@@ -6,6 +6,7 @@ import javax.servlet.jsp.*;
 import com.idega.projects.golf.*;
 import com.idega.jmodule.*;
 import com.idega.jmodule.object.*;
+import com.idega.projects.golf.templates.page.*;
 
 
 public class MainSideJSPModule extends PageJSPModule{

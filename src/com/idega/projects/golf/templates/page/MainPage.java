@@ -1,4 +1,4 @@
-package com.idega.projects.golf.templates;
+package com.idega.projects.golf.templates.page;
 
 import com.idega.jmodule.object.*;
 import com.idega.jmodule.object.textObject.*;

@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
+import java.text.DecimalFormat;
 
 /**
  * Title:        Golf
@@ -53,6 +54,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
   private String currentField;
   private String currentUnion;
   private StartingtimeFieldConfig fieldInfo;
+  private DecimalFormat hadycapFormat;
 
   private static String saveParameterString = "STsave";
   private static String timeParameterString  = "STtime";
@@ -81,6 +83,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     this.add(Text.getBreak());
     this.add(myForm);
     business = new StartService();
+    hadycapFormat = new DecimalFormat("###.0");
   }
 
   public void lineUpTable(ModuleInfo modinfo) throws SQLException {
@@ -188,7 +191,6 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     int lastGroup = -1;
     boolean insert = true;
     int[] freeGroups = new int[groupCount];
-    System.err.println("freeGroups: "+freeGroups.length);
     List takenTimes = business.getStartingtimeTableEntries(this.currentDay,this.currentField);
     if(takenTimes != null){
       for (int i = 0; i < takenTimes.size(); i++) {
@@ -202,11 +204,9 @@ public class AdminRegisterTime extends ModuleObjectContainer {
           if(lastGroup == tempGroupNum){
             groupCounter++;
             if(groupCounter == countInGroups){
-  //            System.err.println("tempGroupNum: "+tempGroupNum);
               freeGroups[tempGroupNum-1] = 1;
             }
             if(groupCounter > countInGroups){
-  //            System.err.println("yfirfullt holl : "+tempGroupNum);
               illegalTimes.insertElementAt(tempStart,illegalTimesIndex++);
               //continue;
               insert = false;
@@ -223,7 +223,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
           startTable.add(tempStart.getPlayerName(),2,line);
           startTable.add(tempStart.getClubName(),3,line);
           if(tempStart.getHandicap()>= 0){
-            startTable.add(Float.toString(tempStart.getHandicap()),4,line);
+            startTable.add(hadycapFormat.format((double)tempStart.getHandicap()),4,line);
           }else{
             startTable.add("-",4,line);
           }
@@ -317,7 +317,6 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     }
 
     int illegal = illegalTimes.size();
-    System.err.println("illegal = " + illegal);
     if(illegal > 0){
       illegalTable = new Table(5,illegal);
       illegalTable.setAlignment("center");
@@ -351,7 +350,7 @@ public class AdminRegisterTime extends ModuleObjectContainer {
         illegalTable.add(tempStart.getPlayerName(),2,i);
         illegalTable.add(tempStart.getClubName(),3,i);
         if(tempStart.getHandicap()>= 0){
-          illegalTable.add(Float.toString(tempStart.getHandicap()),4,i);
+          illegalTable.add(hadycapFormat.format((double)tempStart.getHandicap()),4,i);
         }else{
           illegalTable.add("-",4,i);
         }
@@ -441,19 +440,12 @@ public class AdminRegisterTime extends ModuleObjectContainer {
     String[] sentUnions = modinfo.getParameterValues(unionParameterString);
     String[] sentHandycaps = modinfo.getParameterValues(handycapParameterString);
 
-//    if(sentTimes != null)
-//      System.err.println( timeParameterString+" : " + sentTimes.length );
-//    if(sentLastGroups != null)
-//      System.err.println( lastGroupParameterString+" : " + sentLastGroups.length );
-//    if(sentDeletes != null)
-//      System.err.println( deleteParameterString+" : " + sentDeletes.length );
 
 
     if(sentTimes != null){
       for (int i = 0; i < sentTimes.length; i++) {
         if(!sentTimes[i].equals(sentLastGroups[i]) || sentTimes[i].equals("-") ){
           try{
-            System.err.println("");
             Startingtime tempSt = new Startingtime(Integer.parseInt(sentStartIDs[i]));
             tempSt.setGroupNum(Integer.parseInt(sentTimes[i]));
             tempSt.update();
