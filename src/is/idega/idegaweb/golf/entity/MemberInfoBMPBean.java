@@ -17,6 +17,7 @@ public class MemberInfoBMPBean extends GenericEntity implements MemberInfo{
     addAttribute("history", "Saga", true, true, "java.lang.String",20000);
     
     addIndex("IDX_MINFO_1", "member_id");
+    hasAutoIncrement(false);
   }
 
 	public String getEntityName(){
