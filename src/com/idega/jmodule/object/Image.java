@@ -129,7 +129,15 @@ private void getImage(ModuleInfo modinfo) throws SQLException{
   }
 
   if( useCaching ){
-    Cache cachedImage = (Cache) IWCacheManager.getInstance(iwma).getCachedBlobObject("com.idega.block.media.data.ImageEntity",imageId,iwma);
+    Cache cachedImage;
+
+     if( usesOldImageTables ){
+      cachedImage = (Cache) IWCacheManager.getInstance(iwma).getCachedBlobObject("com.idega.block.media.data.ImageEntity",imageId,iwma);
+     }
+     else{
+      cachedImage = (Cache) IWCacheManager.getInstance(iwma).getCachedBlobObject("com.idega.jmodule.image.data.ImageEntity",imageId,iwma);
+     }
+
     if( cachedImage != null ){
       //debug
       if( usesOldImageTables ){
