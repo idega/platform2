@@ -77,7 +77,7 @@ public class NewsReader extends Block implements IWBlock{
 	private boolean newobjinst = false;
 	private String outerTableWidth = "100%";
 	private String sObjectAlign = "center";
-  private String headlineImageURL = "/nanar2.gif";
+  private String headlineImageURL;
 	private String firstTableColor = null;
 	private String secondTableColor = null;
 	private String dateAlign = "left";
