@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.business;
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.NoChildrenFound;
 import is.idega.block.family.business.NoCustodianFound;
+
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -9,14 +10,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
+
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.user.data.Citizen;
 import se.idega.idegaweb.commune.user.data.CitizenHome;
+
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.School;
@@ -47,6 +51,7 @@ import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.NoEmailFoundException;
 import com.idega.user.business.NoPhoneFoundException;
+import com.idega.user.business.UserBusiness;
 import com.idega.user.business.UserBusinessBean;
 import com.idega.user.data.Gender;
 import com.idega.user.data.GenderHome;
@@ -65,7 +70,7 @@ import com.idega.util.text.TextSoap;
  * @author AguraIT and idega
  * @version 1.0
  */
-public class CommuneUserBusinessBean extends UserBusinessBean implements CommuneUserBusiness {
+public class CommuneUserBusinessBean extends UserBusinessBean implements CommuneUserBusiness,UserBusiness {
 
 	private final String ROOT_CITIZEN_GROUP_ID_PARAMETER_NAME = "commune_id";
 	private final String ROOT_OTHER_COMMUNE_CITIZEN_GROUP_ID_PARAMETER_NAME = "special_citizen_group_id";
@@ -1246,4 +1251,23 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		Name name = new Name(user.getFirstName(), user.getMiddleName(), user.getLastName());
 		return name.getName(this.getIWMainApplication().getSettings().getDefaultLocale(), comma);
 	}
+	
+	/**
+	 * Gets mail address for user for receiving printed letters
+	 * If no secondary address is found the primary address is returned
+     * @param user
+     * @return
+     * @throws RemoteException
+     * @throws NoUserAddressException
+     */
+    public Address getSnailMailAddress(User user) throws RemoteException, NoUserAddressException {
+        int userID = ((Integer) user.getPrimaryKey()).intValue();
+        Address addr = getUserAddressByAddressType(userID, getAddressHome().getAddressType2());
+        if (addr == null || "".equals(addr.getStreetAddress())) 
+            addr = getUsersMainAddress(user);
+        if (addr == null  || "".equals(addr.getStreetAddress())) 
+            throw new NoUserAddressException(user);
+        return addr;
+    }
+
 }
