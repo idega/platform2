@@ -216,11 +216,21 @@ public class ProviderAccountBusinessBean
 	 */
 	protected User createProviderAdministratorForApplication(AccountApplication theCase,School school) throws CreateException, RemoteException
 	{
-		String firstName = theCase.getApplicantName().substring(0, theCase.getApplicantName().indexOf(" "));
-		String lastName =
-			theCase.getApplicantName().substring(
-				theCase.getApplicantName().lastIndexOf(" ") + 1,
-				theCase.getApplicantName().length());
+		String firstName = null;
+		String lastName = null;
+		String applicantName = "";
+		try{
+			applicantName = theCase.getApplicantName();
+			firstName = theCase.getApplicantName().substring(0,applicantName.indexOf(" "));	
+			lastName = applicantName.substring(
+				applicantName.lastIndexOf(" ") + 1,
+				applicantName.length());
+		}
+		catch(Exception e){
+			//Catches the case when there is no last name (only one name specified)
+			firstName = applicantName;
+			lastName = "";
+		}
 		User user = null;
 		try{
 			user = getUserBusiness().createProviderAdministrator(firstName, null, lastName, school);
