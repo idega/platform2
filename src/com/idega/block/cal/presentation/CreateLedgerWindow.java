@@ -19,6 +19,7 @@ import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.User;
 import com.idega.user.presentation.GroupChooser;
@@ -44,18 +45,21 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	private static String dateFieldParameterName = "date";
 	private static String saveButtonParameterName = "submit";
 	private static String saveButtonParameterValue = "save";
+	private static String nameFieldParameterName = "createLedgerWindow.name";
 	
 	//display texts 
 	private Text coachText;
 	private Text otherCoachesText;
 	private Text groupText;
 	private Text dateText;
+	private Text nameText;
 	
 	//fields
 	private Text coachNameField;
 	private GroupChooser otherCoachesNameField;
   private GroupChooser groupNameField;
   private DatePicker fromDatePickerField;
+  private TextInput nameField;
   
   //buttons
   private SubmitButton saveButton;
@@ -94,6 +98,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		otherCoachesText = new Text(iwrb.getLocalizedString(otherCoachesFieldParameterName,"Other coaches"));
 		groupText = new Text(iwrb.getLocalizedString(groupFieldParameterName,"Group"));
 		dateText = new Text(iwrb.getLocalizedString(dateFieldParameterName,"Start Date"));
+		nameText = new Text(iwrb.getLocalizedString(nameFieldParameterName,"Name"));
 	}
 	/**
 	 * initializes the fields in the form of the window
@@ -102,6 +107,8 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	protected void initializeFields() {
 		IWContext iwc = IWContext.getInstance();
 		IWResourceBundle iwrb = getResourceBundle(iwc);
+		
+		nameField = new TextInput(nameFieldParameterName);
 		
 		//The user logged in is set as the main coach for the ledger
 		if(iwc.isLoggedOn()) {
@@ -130,18 +137,20 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		mainTable.setCellspacing(0);
 		mainTable.setCellpadding(5);
 		mainTable.setStyleClass(mainTableStyle);
-		mainTable.add(coachText,1,1);
-		mainTable.add(coachNameField,2,1);
-		mainTable.add(otherCoachesText,1,2);
-		mainTable.add(otherCoachesNameField,2,2);
-		mainTable.add(groupText,1,3);
-		mainTable.add(groupNameField,2,3);
-		mainTable.add(dateText,1,4);
-		mainTable.add(fromDatePickerField,1,4);
-		mainTable.setAlignment(2,5,"right");
-		mainTable.add(saveButton,2,5);
-		mainTable.add(Text.NON_BREAKING_SPACE,2,5);
-		mainTable.add(closeButton,2,5);
+		mainTable.add(nameText,1,1);
+		mainTable.add(nameField,2,1);
+		mainTable.add(coachText,1,2);
+		mainTable.add(coachNameField,2,2);
+		mainTable.add(otherCoachesText,1,3);
+		mainTable.add(otherCoachesNameField,2,3);
+		mainTable.add(groupText,1,4);
+		mainTable.add(groupNameField,2,4);
+		mainTable.add(dateText,1,5);
+		mainTable.add(fromDatePickerField,1,5);
+		mainTable.setAlignment(2,6,"right");
+		mainTable.add(saveButton,2,6);
+		mainTable.add(Text.NON_BREAKING_SPACE,2,6);
+		mainTable.add(closeButton,2,6);
 				
 		form.add(mainTable);
 	}
@@ -150,7 +159,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 	 * @param iwc - the context
 	 * @throws Exception
 	 */
-	public void saveLedger(IWContext iwc,Page parentPage, int groupID,String coachName,int coachGroupID) throws Exception{
+	public void saveLedger(IWContext iwc,Page parentPage,String name,int groupID,String coachName,int coachGroupID) throws Exception{
 		String bClass = null;
 		try {
 			bClass = iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getProperty(BUNDLE_KEY_LEDGER_VARIATIONS_HANDLER_CLASS);
@@ -175,7 +184,7 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 
 		String date = iwc.getParameter(dateFieldParameterName);
 		
-		ledgerVariationsHandler.saveLedger(iwc,parentPage,groupID,coachName,coachGroupID,date);		
+		ledgerVariationsHandler.saveLedger(iwc,parentPage,name,groupID,coachName,coachGroupID,date);		
 	}
 	
 	public void main(IWContext iwc) throws Exception {
@@ -202,12 +211,14 @@ public class CreateLedgerWindow extends StyledIWAdminWindow {
 		coachGroupID = new Integer(coachGroupIDString);	
 		String coach = iwc.getParameter(coachFieldParameterName);
 		
+		String name = iwc.getParameter(nameFieldParameterName);
+		
 		lineUp(iwc);
 		add(form,iwc);
 		Page parentPage = getParentPage();
 		String save = iwc.getParameter("submit");
 		if(save != null && !save.equals("")) {
-			saveLedger(iwc,parentPage,groupID.intValue(),coach,coachGroupID.intValue());	
+			saveLedger(iwc,parentPage,name,groupID.intValue(),coach,coachGroupID.intValue());	
 //			close();
 //			setOnLoad("window.opener.parent.location.reload()");
 			

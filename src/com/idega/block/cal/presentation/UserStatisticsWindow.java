@@ -20,6 +20,7 @@ import com.idega.idegaweb.presentation.StyledIWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.PrintButton;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.User;
@@ -57,6 +58,7 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 	private String dateField;
 	
 	private PrintButton printButton;
+	private CloseButton closeButton;
 	
 	private Table table = null;
 	
@@ -143,6 +145,8 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 		dateField = new IWTimestamp(getCalendarBusiness(iwc).getLedger(lID.intValue()).getDate()).getDateString("dd. MMMMMMMM yyyy");
 		
 		printButton = new PrintButton(iwb.getImage("print.gif"));
+		
+		closeButton = new CloseButton(iwrb.getLocalizedString("user_stats_window.close", "Close"));
 	}
 	public void lineUp(IWContext iwc, int ledID, Collection users) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -218,7 +222,9 @@ public class UserStatisticsWindow extends StyledIWAdminWindow{
 			}			
 			row++;
 		}	
-		table.add(underTable,1,2);	
+		table.add(underTable,1,2);
+		table.setAlignment(1,3,"right");
+		table.add(closeButton,1,3);
 	}
 	/**
 	 * 

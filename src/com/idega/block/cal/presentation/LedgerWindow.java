@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -413,22 +414,17 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				catch (Exception ex) {
 					ex.printStackTrace(System.err);
 				}
+				Collections.sort(entryList,new Comparator() {
+					public int compare(Object arg0, Object arg1) {
+						return ((CalendarEntry) arg0).getDate().compareTo(((CalendarEntry) arg1).getDate());
+					}				
+				});
 				
-				List timeList = new ArrayList();
-
-				Iterator entryIter = entryList.iterator();
-				
-				
-				while(entryIter.hasNext()) {					
-					entry = (CalendarEntry) entryIter.next();
-						IWTimestamp date = new IWTimestamp(entry.getDate());	
-						timeList.add(date);						
-				}				
-				Collections.sort(timeList);
 				int column = 2;
-				Iterator timeIter = timeList.iterator();
-				while(timeIter.hasNext()) {
-					IWTimestamp date = (IWTimestamp) timeIter.next();
+				Iterator entryIter = entryList.iterator();
+				while(entryIter.hasNext()) {
+					entry = (CalendarEntry) entryIter.next();
+					IWTimestamp date = new IWTimestamp(entry.getDate());
 					String dateString = date.getDateString("dd/MM");
 					attendanceDateTable.setWidth(column,1,40);
 					attendanceDateTable.add(dateString,column,1);					
@@ -458,14 +454,17 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				}catch(Exception ex) {
 					ex.printStackTrace(System.err);
 				}
+				Iterator entryIter = entryList.iterator();
 								
-				int h = 0;
-				for(int i = 1; i<=entryList.size(); i++) {
+				int column = 1;
+				while(entryIter.hasNext()) {
+					
+					CalendarEntry entry = (CalendarEntry) entryIter.next();
 
 					//the userID + underscore + the number of the column is set as the name
 					//of the TextInput - done to make each TextInput name expicit
 					String mark = "";
-					TextInput input = new TextInput(user.getPrimaryKey().toString() + "_" + i);
+					TextInput input = new TextInput(user.getPrimaryKey().toString() + "_" + entry.getDate().toString());
 					input.setMaxlength(1);
 
 					input.setWidth("20");
@@ -473,7 +472,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					Integer userID = (Integer) user.getPrimaryKey();
 					AttendanceEntity attendance = null;
 					try {
-						attendance = getCalendarBusiness(iwc).getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entryList.get(h++));
+						attendance = getCalendarBusiness(iwc).getAttendanceByUserIDandEntry(userID.intValue(),entry);
 						if(attendance != null) {
 							mark = attendance.getAttendanceMark();
 						}							
@@ -483,8 +482,9 @@ public class LedgerWindow extends StyledIWAdminWindow{
 					if(mark != null && !mark.equals("")) {
 						input.setValue(mark);
 					}	
-					attendanceMarkTable.setWidth(i,1,40);
-					attendanceMarkTable.add(input,i,1);						
+					attendanceMarkTable.setWidth(column,1,40);
+					attendanceMarkTable.setAlignment(column,1,"center");
+					attendanceMarkTable.add(input,column++,1);						
 				}
 				return attendanceMarkTable;
 
@@ -672,7 +672,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 		return entityBrowser;
 	}
 	
-	public void removeUsersFromLedger(Collection userIds, int ledID, IWContext iwc) {
+	public List removeUsersFromLedger(Collection userIds, int ledID, IWContext iwc) {
 		ArrayList notRemovedUsers = new ArrayList();
 		Iterator iterator = userIds.iterator();
 		while (iterator.hasNext()) {
@@ -688,7 +688,7 @@ public class LedgerWindow extends StyledIWAdminWindow{
 				notRemovedUsers.add(userIDString);
 			}		
 		}
-//		return notRemovedUsers;
+		return notRemovedUsers;
 	}
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
@@ -747,11 +747,11 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			if(userIds != null) {
 				removeUsersFromLedger(Arrays.asList(userIds),ledgerID.intValue(),iwc);
 			}
+			
 		}
 
 		String save = iwc.getParameter(saveButtonParameterName);
 		if(save != null) {
-			int userColumns = entries.size();
 			CalBusiness biz = getCalendarBusiness(iwc);
 			User user = null;
 			Iterator userIter = users.iterator();
@@ -767,12 +767,13 @@ public class LedgerWindow extends StyledIWAdminWindow{
 			}
 
 			while(userIter.hasNext()) {
-				int h = 0;
 				user = (User) userIter.next();
 				
-				for(int j = 1; j<=userColumns;j++) {
+				Iterator entryIter = entries.iterator();
+				while(entryIter.hasNext()) {
+					CalendarEntry entry = (CalendarEntry) entryIter.next();
 					Integer userID = (Integer) user.getPrimaryKey();
-					String mark = iwc.getParameter(userID.toString() + "_" + j);
+					String mark = iwc.getParameter(userID.toString() + "_" + entry.getDate().toString());
 					if(mark != null) {
 						if(mark.equals("")) {
 							Text emptyWarning = new Text(iwrb.getLocalizedString("ledgerWindow.emptyCellWarning","There is a empty cell, to you want to go on?"));
@@ -784,19 +785,19 @@ public class LedgerWindow extends StyledIWAdminWindow{
 						boolean match = Pattern.matches(b.toString(), mark);
 						if(match) {
 							//if the attendance mark exists in the database the marking is updated
-							if(biz.getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entries.get(h)) != null) {
-								AttendanceEntity attendance = biz.getAttendanceByUserIDandEntry(userID.intValue(),(CalendarEntry) entries.get(h));
+							if(biz.getAttendanceByUserIDandEntry(userID.intValue(),entry) != null) {
+								AttendanceEntity attendance = biz.getAttendanceByUserIDandEntry(userID.intValue(),entry);
 								Integer attendanceID = (Integer) attendance.getPrimaryKey();
-								biz.updateAttendance(attendanceID.intValue(),userID.intValue(),ledgerID.intValue(),(CalendarEntry) entries.get(h++),mark);
+								biz.updateAttendance(attendanceID.intValue(),userID.intValue(),ledgerID.intValue(),entry,mark);
 							}
 							//if no attendance mark exists, a new one is created
 							else {
-								biz.saveAttendance(userID.intValue(),ledgerID.intValue(),(CalendarEntry) entries.get(h++),mark);
+								biz.saveAttendance(userID.intValue(),ledgerID.intValue(),entry,mark);
 							}							
 						}
 						else {
-							setAlertOnLoad(mark + " is not a mark!");
-							h++;
+							setAlertOnLoad(mark + iwrb.getLocalizedString("ledger_window.is_not_mark_warning"," is not a mark!"));
+							//h++
 						}
 					}																		
 				}//end for							

@@ -55,9 +55,16 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
       }
       else{
         String id = iwc.getParameter(PRM_DELETE_ID);
+        String modifyOneOrMany = iwc.getParameter(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName);
         try {
         	if(entryOrLedger.equals(CalendarEntryCreator.ENTRY)) {
-        		getCalendarBusiness(iwc).deleteEntry(Integer.parseInt(id));
+        		if(modifyOneOrMany.equals(CalendarEntryCreator.oneValue)) {
+        			getCalendarBusiness(iwc).deleteEntry(Integer.parseInt(id));
+        		}
+        		else if(modifyOneOrMany.equals(CalendarEntryCreator.manyValue)) {
+        			getCalendarBusiness(iwc).deleteEntryGroup(Integer.parseInt(id));
+        		}
+        		
         	}
         	else if(entryOrLedger.equals(LedgerWindow.LEDGER)) {
         		getCalendarBusiness(iwc).deleteLedger(Integer.parseInt(id));
@@ -72,7 +79,7 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
         l.addParameter(PRM_DELETE_ID, "");
         l.addParameter(PRM_DELETED,"yes");
         close();
-        setOnLoad("window.opener.close()"); 
+//       setOnLoad("window.opener.close()"); 
         String script = "window.opener." + l.getWindowToOpenCallingScript(iwc);
         setOnLoad(script);
                 
@@ -89,6 +96,7 @@ public class ConfirmDeleteWindow extends StyledIWAdminWindow{
     f.maintainParameter(PRM_DELETE);
     f.maintainParameter(PRM_DELETE_ID);
     f.maintainParameter(PRM_ENTRY_OR_LEDGER);
+    f.maintainParameter(CalendarEntryCreator.modifyOneOrManyRadioButtonParameterName);
     
     
     f.add(t);

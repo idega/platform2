@@ -4,8 +4,10 @@
 package com.idega.block.cal.presentation;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import com.idega.block.cal.business.CalBusiness;
 import com.idega.block.cal.data.CalendarEntry;
@@ -23,15 +25,16 @@ import com.idega.presentation.ui.DatePicker;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.ResetButton;
 import com.idega.presentation.ui.SelectOption;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.TimeInput;
-import com.idega.presentation.ui.Window;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.data.User;
 import com.idega.user.presentation.GroupChooser;
 import com.idega.util.IWTimestamp;
 
@@ -41,7 +44,7 @@ import com.idega.util.IWTimestamp;
  * Company: Idega Software <br>
  * @author <a href="mailto:birna@idega.is">Birna Iris Jonsdottir</a>
  */
-public class CalendarEntryCreator extends Window{
+public class CalendarEntryCreator extends Form{
 	
 	private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.cal";
 	public final static String ENTRY = "entry";
@@ -72,18 +75,25 @@ public class CalendarEntryCreator extends Window{
 	public static String creatorViewParameterName = "creatorView";
 	public static String ledgerFieldParameterName = "ledger";
 	public static String locationFieldParameterName = "location";
-	public static String createNewEntry = "calendarEntry.create_new";
+	public static String createNewEntryParameterName = "calendarEntry.create_new";
+	public static String changeEntryParameterName = "calendarEntry.change_entry";
 	public static String noLedgerFieldParameterName = "noLedger";
+	public static String modifyOneOrManyRadioButtonParameterName = "oneOrManyRadioButton";
+	public static String modifyOneRadioButtonParameterName = "oneRadioButton";
+	public static String modifyManyRadioButtonParameterName = "manyRadioButton";
+	public static String oneValue = "one";
+	public static String manyValue = "many";
 	
 	private String mainTableStyle = "main";
 	private String borderAllWhite = "borderAllWhite";
 	private String borderBottomStyle = "borderBottom";
 	private String styledLinkBox = "styledLinkBox";
+	private String styledLink = "styledLink";
 	private String boldText = "bold";
 	private String headlineFont = "headline";
 	
-	
-	
+	private String oneOrMany = "one";
+		
 	//texts
 	private Text headlineText;
 	private Text typeText;
@@ -104,6 +114,9 @@ public class CalendarEntryCreator extends Window{
 	private Text ledgerText;
 	private Text locationText;
 	private Text createNewText;
+	private Text changeEntryText;
+	private Text modifyOneText;
+	private Text modifyManyText;
 	
 	//fields
 	private TextInput headlineField;
@@ -131,31 +144,20 @@ public class CalendarEntryCreator extends Window{
 	private HiddenInput hiddenYear;
 	private HiddenInput hiddenMonth;
 	private HiddenInput hiddenDay;
+	private HiddenInput hiddenOneMany;
 	private DropdownMenu ledgerField;
 	private TextInput locationField;
-	
-	//view fields
-	private Text viewHeadline;
-	private Text viewType;
-	private Text viewRepeat;
-	private Text viewDayFrom;
-	private Text viewDayTo;
-	private Text viewTimeFrom;
-	private Text viewTimeTo;
-	private Text viewAttendees;
-	private Text viewDescription;
-	private Text viewLedger;
-	private Text viewLocation;
-	private Link change;
-		
+	private Link newEntryLink;
+	private RadioButton modifyOneRadioButton;
+	private RadioButton modifyManyRadioButton;
+			
 	private CalBusiness calBiz;
 	private boolean insertPracticeOnly;
 	
 	private boolean displayingTimeConflict = false;
 	
 	private String entryIDString = "";
-	private boolean entryUpdated = false;
-	private Form form;
+//	private Form form;
 		
 	/**
 	 * initializes text
@@ -199,9 +201,14 @@ public class CalendarEntryCreator extends Window{
 		ledgerText.setStyleClass(boldText);
 		locationText = new Text(iwrb.getLocalizedString(locationFieldParameterName, "Location"));
 		locationText.setStyleClass(boldText);
-		createNewText = new Text(iwrb.getLocalizedString(createNewEntry, "Create new entry"));
+		createNewText = new Text(iwrb.getLocalizedString(createNewEntryParameterName, "Create new entry"));
 		createNewText.setStyleClass(headlineFont);
-		
+		changeEntryText = new Text(iwrb.getLocalizedString(changeEntryParameterName, "Change entry"));
+		changeEntryText.setStyleClass(headlineFont);
+		modifyOneText = new Text(iwrb.getLocalizedString(modifyOneRadioButtonParameterName, "Delete/Change a single entry"));
+		modifyOneText.setStyleClass(boldText);
+		modifyManyText = new Text(iwrb.getLocalizedString(modifyManyRadioButtonParameterName, "Delete/Change group of entries"));
+		modifyManyText.setStyleClass(boldText);
 	}
 	/**
 	 * initialized fields
@@ -242,7 +249,7 @@ public class CalendarEntryCreator extends Window{
 		while(typeIter.hasNext()) {
 			CalendarEntryType type = (CalendarEntryType) typeIter.next();
 			if(!insertPracticeOnly) {
-				typeField.addMenuElement(type.getName(),type.getName());
+				typeField.addMenuElement(type.getName(),iwrb.getLocalizedString("calendarEntry."+type.getName(),type.getName()));
 			}
 			else {
 				if(type.getName().equals(practiceFieldParameterName)) {
@@ -254,10 +261,17 @@ public class CalendarEntryCreator extends Window{
 		ledgerField = new DropdownMenu(ledgerFieldParameterName);
 		ledgerField.addMenuElement(-1,iwrb.getLocalizedString(noLedgerFieldParameterName,"No ledger"));
 		
+		User user = iwc.getCurrentUser();
+		Integer userID = (Integer) user.getPrimaryKey();
+		int userGroupID = user.getPrimaryGroupID();
+
 		Iterator ledgerIter = calBiz.getAllLedgers().iterator();
 		while(ledgerIter.hasNext()) {
 			CalendarLedger ledger = (CalendarLedger) ledgerIter.next();
-			ledgerField.addMenuElement(ledger.getLedgerID(),ledger.getName());
+			if(userID.intValue() == ledger.getCoachID() || userGroupID == ledger.getCoachGroupID()) {
+				ledgerField.addMenuElement(ledger.getLedgerID(),ledger.getName());
+			}
+			
 		}
 		locationField = new TextInput(locationFieldParameterName);
 		
@@ -300,7 +314,7 @@ public class CalendarEntryCreator extends Window{
 		timeFromField = new TimeInput(timeFromFieldParameterName);
 		//the default from time is set to the current time
 		timeFromField.setHour(stamp.getHour());
-		timeFromField.setMinute(stamp.getMinute());
+		timeFromField.setMinute(0);
 		timeToField = new TimeInput(timeToFieldParameterName);
 		//the default to time is set one hour later than the current time
 		if(stamp.getHour() == 23) {
@@ -309,7 +323,9 @@ public class CalendarEntryCreator extends Window{
 		else {
 			timeToField.setHour(stamp.getHour() + 1);
 		}		
-		timeToField.setMinute(stamp.getMinute());
+		timeToField.setMinute(0);
+		
+		
 		
 		attendeesField = new GroupChooser(attendeesFieldParameterName);
 
@@ -318,25 +334,34 @@ public class CalendarEntryCreator extends Window{
 		save = new SubmitButton(iwrb.getLocalizedString("save", "Save"),saveButtonParameterName,saveButtonParameterValue);
 		reset = new ResetButton(iwrb.getLocalizedString("reset", "Reset"));
 		
-		hiddenEntryID = new HiddenInput(entryIDParameterName,iwc.getParameter(entryIDParameterName));		
-		hiddenView = new HiddenInput(CalendarParameters.PARAMETER_VIEW,iwc.getParameter(CalendarParameters.PARAMETER_VIEW));
-		hiddenYear =new HiddenInput(CalendarParameters.PARAMETER_YEAR,new Integer(stamp.getYear()).toString());//iwc.getParameter(CalendarParameters.PARAMETER_YEAR));
-		hiddenMonth = new HiddenInput(CalendarParameters.PARAMETER_MONTH,new Integer(stamp.getMonth()).toString());//iwc.getParameter(CalendarParameters.PARAMETER_MONTH));
-		hiddenDay = new HiddenInput(CalendarParameters.PARAMETER_DAY,new Integer(stamp.getDay()).toString());//iwc.getParameter(CalendarParameters.PARAMETER_DAY));
-		
-		
+		hiddenEntryID = new HiddenInput(entryIDParameterName,iwc.getParameter(entryIDParameterName));
+		hiddenView = new HiddenInput(CalendarParameters.PARAMETER_VIEW,view);
+		hiddenYear =new HiddenInput(CalendarParameters.PARAMETER_YEAR,new Integer(stamp.getYear()).toString());
+		hiddenMonth = new HiddenInput(CalendarParameters.PARAMETER_MONTH,new Integer(stamp.getMonth()).toString());
+		hiddenDay = new HiddenInput(CalendarParameters.PARAMETER_DAY,new Integer(stamp.getDay()).toString());
+				
 		//if some entry is selected, data is printed in the fields
-		if(entryIDString != null && !entryIDString.equals("") && !entryUpdated) {
+		if(entryIDString != null && !entryIDString.equals("")) {
+			
+			modifyOneRadioButton = new RadioButton(modifyOneOrManyRadioButtonParameterName,oneValue);
+			modifyOneRadioButton.setSelected();
+			modifyManyRadioButton = new RadioButton(modifyOneOrManyRadioButtonParameterName,manyValue);
+						
+			newEntryLink = new Link(iwrb.getLocalizedString("new_entry","New Entry"));
+			newEntryLink.addParameter(entryIDParameterName,"");
+			newEntryLink.addParameter(CalendarParameters.PARAMETER_VIEW,view);
+			newEntryLink.setStyleClass(styledLink);
 			
 			deleteLink = new Link(iwrb.getLocalizedString("delete","Delete"));
 			deleteLink.setWindowToOpen(ConfirmDeleteWindow.class);
+			deleteLink.setToFormSubmit(this,true);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE_ID, entryIDString);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_DELETE, CalendarParameters.PARAMETER_TRUE);
 			deleteLink.addParameter(ConfirmDeleteWindow.PRM_ENTRY_OR_LEDGER,ENTRY);
+			deleteLink.addParameter(modifyOneOrManyRadioButtonParameterName,"many");
 			deleteLink.addParameter(CalendarView.ACTION,"");
 			deleteLink.setAsImageButton(true,true);
 						
-			
 			headlineField.setContent(entry.getName());
 			typeField.setSelectedElement(entry.getEntryType());
 			repeatField.setSelectedElement(entry.getRepeat());
@@ -400,16 +425,15 @@ public class CalendarEntryCreator extends Window{
 	 * lines up the gui - for editing entries
 	 * @return form containing the gui table
 	 */
-	public Form lineUpEdit(IWContext iwc) {
-		form = new Form();
+	public Table lineUpEdit(IWContext iwc) {
 		Table table = new Table();
 		table.setStyleClass(mainTableStyle);
 		table.setCellspacing(0);
 		table.setCellpadding(2);
-		table.mergeCells(1,1,4,1);
+//		table.mergeCells(1,1,4,1);
 //		table.setAlignment(1,1,"center");
 		table.setStyleClass(1,1,borderBottomStyle);
-		table.add(createNewText,1,1);
+		
 		table.add(headlineText,1,2);
 		table.add(headlineField,1,3);
 		table.add(typeText,1,4);
@@ -438,18 +462,24 @@ public class CalendarEntryCreator extends Window{
 		table.add(reset,4,20);
 		String entryIDString = iwc.getParameter(entryIDParameterName);
 		if(entryIDString != null && !entryIDString.equals("")) {
+			table.add(changeEntryText,1,1);
+			table.add(newEntryLink,4,1);
+			table.add(modifyOneRadioButton,1,20);
+			table.add(Text.NON_BREAKING_SPACE,1,20);
+			table.add(modifyOneText,1,20);
+			table.add(Text.BREAK,1,20);
+			table.add(modifyManyRadioButton,1,20);
+			table.add(Text.NON_BREAKING_SPACE,1,20);
+			table.add(modifyManyText,1,20);
 			table.add(Text.NON_BREAKING_SPACE,4,20);
 			table.add(deleteLink,4,20);
-			form.add(hiddenEntryID);
+		}
+		else {
+			table.add(createNewText,1,1);
 		}
 		//the hidden inputs are added to maintain parameters
-		 
-		form.add(hiddenView);
-		form.add(hiddenYear);
-		form.add(hiddenMonth);
-		form.add(hiddenDay);
-		form.add(table);
-		return form;
+
+		return table;
 	}
 	/**
 	 * Saves an entry to the calendar. Either updates it or creates a new one. 
@@ -473,7 +503,10 @@ public class CalendarEntryCreator extends Window{
 		String entryLedger = iwc.getParameter(ledgerFieldParameterName);
 		String entryDescription = iwc.getParameter(descriptionFieldParameterName);
 		String entryLocation = iwc.getParameter(locationFieldParameterName);
+		String entryModifyOneOrMany = iwc.getParameter(modifyOneOrManyRadioButtonParameterName);
 		String entryID = iwc.getParameter(entryIDParameterName);
+			
+		User user = iwc.getCurrentUser();
 		
 		if(entryAttendees == null || entryAttendees.equals(""))
 			entryAttendees = "";
@@ -507,23 +540,42 @@ public class CalendarEntryCreator extends Window{
 			parentPage.setAlertOnLoad(iwrb.getLocalizedString("calEntryCreator.from_date_before_led_start_date_message","The from day is before the ledgers start day!"));
 			displayingTimeConflict = true;
 		}
-			
-								
 		else {
 			if(entryID != null && !entryID.equals("")) {
-				calBus.updateEntry(entryID,entryHeadline, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation);
-				entryUpdated = true;
+				CalendarEntry entry = calBus.getEntry(Integer.parseInt(entryID));
+				List entries = null;
+				if(entryModifyOneOrMany.equals(manyValue)) {
+					entries = new ArrayList(calBus.getEntriesByEntryGroupID(entry.getEntryGroupID()));
+					Iterator entryIter = entries.iterator();
+					while(entryIter.hasNext()) {
+						CalendarEntry currentEntry = (CalendarEntry) entryIter.next();
+						int currentEntryID = currentEntry.getEntryID();
+						calBus.updateEntry(currentEntryID,entryHeadline, user, entryType, entryRepeat, currentEntry.getDate().toString(),entryTimeHour, entryTimeMinute, currentEntry.getEndDate().toString(), entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation, entryModifyOneOrMany );
+						
+					}
+				}
+				else {
+					calBus.updateEntry(Integer.parseInt(entryID),entryHeadline, user, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation, entryModifyOneOrMany );				
+				}
+				
+				
+				
 				
 			}
 			else {
-				calBus.createNewEntry(entryHeadline, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation);			
+				calBus.createNewEntry(entryHeadline, user, entryType, entryRepeat, entryDate,entryTimeHour, entryTimeMinute, entryEndDate, entryEndTimeHour, entryEndTimeMinute, entryAttendees, entryLedger, entryDescription, entryLocation);			
 			}
 		}
-			
 	}
 	public void main(IWContext iwc) {
 		initializeTexts(iwc);
-		initializeFields(iwc);		
+		initializeFields(iwc);
+				
+		add(hiddenView);
+		add(hiddenYear);
+		add(hiddenMonth);
+		add(hiddenDay);
+		add(hiddenEntryID);
 
 		add(lineUpEdit(iwc));
 	}
