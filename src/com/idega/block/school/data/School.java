@@ -1,7 +1,9 @@
 package com.idega.block.school.data;
 
+import com.idega.data.MetaDataCapable;
 
-public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegacyEntity
+
+public interface School extends com.idega.data.IDOEntity,com.idega.data.IDOLegacyEntity, MetaDataCapable
 {
  public void addImage(com.idega.core.file.data.ICFile p0)throws com.idega.data.IDORelationshipException;
  public void addSchoolType(com.idega.block.school.data.SchoolType p0)throws com.idega.data.IDOAddRelationshipException;

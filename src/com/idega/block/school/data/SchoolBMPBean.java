@@ -29,6 +29,7 @@ import com.idega.data.IDOLookupException;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDORelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
+import com.idega.data.MetaDataCapable;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
@@ -42,7 +43,7 @@ import com.idega.user.data.User;
  * @version 1.0
  */
 
-public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEntity {
+public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEntity, MetaDataCapable {
 
 	public final static String SCHOOL = "sch_school";
 	public final static String NAME = "school_name";
@@ -120,7 +121,8 @@ public class SchoolBMPBean extends GenericEntity implements School, IDOLegacyEnt
 		this.addAttribute(EXTRA_PROVIDER_ID, "user supplied provider id", true, true, String.class, 20);
 		this.addAttribute(TERMINATION_DATE, "termination date", true, true, Date.class);
 		addManyToOneRelationship(COUNTRY, Country.class);
-		this.addAttribute(CENTRALIZED_ADMINISTRATION, "has provider centralized administration", true, true, Boolean.class);		
+		this.addAttribute(CENTRALIZED_ADMINISTRATION, "has provider centralized administration", true, true, Boolean.class);
+		this.addMetaDataRelationship();
 	}
 	public String getEntityName() {
 		return SCHOOL;
