@@ -352,7 +352,7 @@ public class Forum extends CategoryBlock implements IWBlock {
     link.addParameter(ForumBusiness.PARAMETER_TOPIC_ID,thread.getTopicID());
     link.addParameter(ForumBusiness.PARAMETER_STATE,ForumBusiness.FORUM_THREADS);
     link.addParameter(ForumBusiness.PARAMETER_THREAD_ID,thread.getID());
-    link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
+    //link.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID,_objectID);
 
     return link;
   }
