@@ -153,7 +153,7 @@ public class ReportGenerator extends Block {
 	
 	private int calculateTextFieldWidthForString(String str){
 		int fontSize = 9;
-		return (int) (str.length()*fontSize*0.55);
+		return (int) (str.length()*fontSize*0.6);
 	}
 	
 	private void generateLayout(IWContext iwc) throws IOException, JRException{

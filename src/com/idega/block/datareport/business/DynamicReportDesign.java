@@ -52,12 +52,13 @@ public class DynamicReportDesign {
 	private int _detailHeight = 12;
 	private int _columnHeaderHeight = 16;
 	
-	private int _reportTitleHeight = 45;
+	private int _reportTitleHeight = 40;
 	
 	private int _headerParametersXCoordinate = 0;
 	private int _headerParametersMaxXCoordinate = -1;
 	private int _headerParametersYCoordinate = 0;
 	private int _headerParametersHeight = 16;
+	private int _extraspaceBetweenParameterGroupsInHeader = 10;
 	private int _pageHeaderHeight = 20;
 	
 	
@@ -130,7 +131,7 @@ public class DynamicReportDesign {
 				rElement.setIsPrintWhenDetailOverflows(false);
 			tField1.addContent(rElement);
 				TextElement tElement = new TextElement();
-				tElement.setTextAlignmentAsLeft();
+				tElement.setTextAlignmentAsCenter();
 				tElement.setVerticalAlignmentAsTop();
 				tElement.setLineSpacingAsSingle();
 					Font tElementFont = new Font();
@@ -383,6 +384,7 @@ public class DynamicReportDesign {
 		
 		addParameterToPageHeader(prmLableName,prmLableWidth, String.class,true);
 		addParameterToPageHeader(prmValueName,prmValueWidth, prmValueClass,false);
+		_headerParametersXCoordinate += _extraspaceBetweenParameterGroupsInHeader;
 	}
 	
 	
