@@ -104,11 +104,13 @@ public class FileCreationCheckList extends AccountingBlock {
 
 		table.add(getLocalizedLabel(KEY_HEADER_START_TIME, "Start time"), 1, 4);
 		if (header != null)
-			table.add(header.getEventStartTime().toString(), 2, 4);
+			if (header.getEventStartTime() != null)
+				table.add(header.getEventStartTime().toString(), 2, 4);
 
 		table.add(getLocalizedLabel(KEY_HEADER_END_TIME, "End time"), 1, 5);
 		if (header != null)
-			table.add(header.getEventEndTime().toString(), 2, 5);
+			if (header.getEventEndTime() != null)
+				table.add(header.getEventEndTime().toString(), 2, 5);
 		
 		return table;
 	}
