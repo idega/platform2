@@ -120,16 +120,18 @@ public class ChildCareAdmin extends ChildCareBlock {
 		applicationTable.setWidth(Table.HUNDRED_PERCENT);
 		applicationTable.setCellpadding(getCellpadding());
 		applicationTable.setCellspacing(getCellspacing());
-		applicationTable.setColumns(6);
+		applicationTable.setColumns(7);
 		applicationTable.setRowColor(1, getHeaderColor());
 		int row = 1;
 		int column = 1;
+		int number =1;
 		int queueOrder = -1;
 		int netOrder = -1;
 		boolean showComment = false;
 		boolean showPriority = false;
 		boolean showMessage = false;
 			
+		applicationTable.add(getLocalizedSmallHeader("child_care.number","No"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.name","Name"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		applicationTable.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row);
@@ -150,6 +152,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 			HorizontalRule hr;
 			boolean hasOtherPlacing = false;
 			boolean hasMessage = false;
+			
 				
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
@@ -202,6 +205,10 @@ public class ChildCareAdmin extends ChildCareBlock {
 				if (getResponsePage() != null)
 					link.setPage(getResponsePage());
 	
+				//enumerated list
+				applicationTable.add(Integer.toString(number), column++, row);
+				number++;
+				
 				if (hasMessage) {
 					showMessage = true;
 					applicationTable.add(getSmallErrorText("*"), column, row);
@@ -216,7 +223,8 @@ public class ChildCareAdmin extends ChildCareBlock {
 				}
 				if (showComment || showPriority || showMessage)
 					applicationTable.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
-					
+				
+				
 				applicationTable.add(link, column++, row);
 				applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				applicationTable.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
@@ -230,11 +238,12 @@ public class ChildCareAdmin extends ChildCareBlock {
 				else 
 					applicationTable.add(getSmallText("-"), column, row++);
 			}
-			applicationTable.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setColumnAlignment(1, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 			applicationTable.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
+			applicationTable.setColumnAlignment(7, Table.HORIZONTAL_ALIGN_CENTER);
 		}
 		
 		applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
