@@ -303,7 +303,7 @@ public class AssessmentBusinessBean extends IBOServiceBean implements Assessment
     catch(Exception e){
        try {
             transaction.rollback();
-
+			System.out.println("Assessment transaction rollback");
           }
           catch(Exception ex) {
             ex.printStackTrace();

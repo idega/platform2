@@ -145,12 +145,13 @@ public class AccountTariffer extends Finance {
 		}
 		if(t_ids.size()>0){
 			String[] tariffIds = (String[]) t_ids.toArray(new String[0]);
+			System.err.println("trying assessTariffsToAcount("+tariffIds.toString()+","+iAccountId+","+Pd.toString()+","+discount+","+iGroupId+","+iCategoryId);
 			assBuiz.assessTariffsToAccount(tariffIds,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
 		}
 		
 	  }
       else if(iwc.isParameterSet(prmTariffCheck)){
-        //System.err.println("using tariffs");
+        System.err.println("using tariffs checks");
         String[] tariff_ids = iwc.getParameterValues(prmTariffCheck);
         assBuiz.assessTariffsToAccount(tariff_ids,iAccountId,Pd.getSQLDate(),discount,iGroupId,iCategoryId);
       }
