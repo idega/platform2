@@ -30,6 +30,7 @@ public class ProductCatalog extends CategoryBlock{
   private static final String _VIEW_PAGE = "prod_cat_view_page";
   private static final String _ORDER_BY ="prod_cat_order_by";
 
+
   private int productsPerPage = 10;
   private int currentPage = 1;
   private int orderBy = ProductComparator.NUMBER;
@@ -89,6 +90,10 @@ public class ProductCatalog extends CategoryBlock{
   }
 
   private void catalog(IWContext iwc) {
+    idegaCatalog(iwc);
+  }
+
+  private void toEMM(IWContext iwc) {
 /*    debug("Getting products..."+idegaTimestamp.RightNow().toString());
     List products = ProductBusiness.getProducts();
     int manyProducts = products.size();
@@ -136,7 +141,6 @@ public class ProductCatalog extends CategoryBlock{
     }
 */
 
-    idegaCatalog(iwc);
   }
 
   private void idegaCatalog(IWContext iwc) {

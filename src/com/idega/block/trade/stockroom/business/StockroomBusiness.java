@@ -79,6 +79,28 @@ public class StockroomBusiness /* implements SupplyManager */ {
     return getPrice(productPriceId, productId, priceCategoryId, currencyId,time, -1, -1);
   }
 
+  public static float getPrice(Product product) {
+    ProductPrice pPrice = (ProductPrice) ProductPrice.getStaticInstance(ProductPrice.class);
+    StringBuffer buffer = new StringBuffer();
+      buffer.append("SELECT * FROM "+ProductPrice.getProductPriceTableName());
+      buffer.append(" WHERE ");
+      buffer.append(pPrice.getColumnNameProductId() +" = "+product.getID());
+      buffer.append(" AND ");
+      buffer.append(pPrice.getColumnNamePriceCategoryId() +" is null");
+      buffer.append(" ORDER BY "+pPrice.getColumnNamePriceDate()+" DESC");
+
+    try {
+      List prices = EntityFinder.getInstance().findAll(ProductPrice.class, buffer.toString());
+      if (prices.size() > 0) {
+        return ((ProductPrice)prices.get(0)).getPrice();
+      }
+    }catch (IDOFinderException ido) {
+      ido.printStackTrace(System.err);
+    }
+
+    return 0;
+  }
+
   public static float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, int timeframeId, int addressId) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/

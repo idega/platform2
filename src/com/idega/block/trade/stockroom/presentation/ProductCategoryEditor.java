@@ -30,18 +30,23 @@ public class ProductCategoryEditor extends IWAdminWindow {
 
   private static final String _action = "pr_cat_editor_action";
   private static final String _parameterSaveCategory = "pr_cat_view_cat";
+  private static final String _parameterClose = "pr_cat_close";
   private static final String _parameterProductIn = "pr_cat_pr_in";
   private static final String _parameterProductOut = "pr_cat_pr_out";
 
   private static final String _parameterSelectedCategory = SELECTED_CATEGORY;
+  private int maxWidth = 50;
+  private int height = 10;
+
 
   int _selectedCategory = -1;
   ProductCategory _productCategory = null;
   List _categories = null;
 
   public ProductCategoryEditor() {
-    super.setWidth(800);
-    super.setHeight(400);
+    super.setWidth(600);
+    super.setHeight(460);
+    super.setUnMerged();
   }
 
   public void main(IWContext iwc) {
@@ -51,6 +56,9 @@ public class ProductCategoryEditor extends IWAdminWindow {
       String action = iwc.getParameter(_action);
       if (action == null) {
         viewCategory(iwc);
+      }else if (action.equals(_parameterClose)) {
+        super.setParentToReload();
+        super.close();
       }else {
         saveAssignment(iwc);
       }
@@ -80,27 +88,76 @@ public class ProductCategoryEditor extends IWAdminWindow {
 
   private void viewCategory(IWContext iwc) {
     try {
-      List products = ProductBusiness.getProducts(_productCategory);//EntityFinder.getInstance().findRelated(_productCategory, Product.class);
+      List products = ProductBusiness.getProducts(_productCategory);
       List allProducts = ProductBusiness.getProducts();
       allProducts.removeAll(products);
 
       SelectionDoubleBox sdb = new SelectionDoubleBox(this._parameterProductOut, this._parameterProductIn);
-        sdb.getLeftBox().addMenuElements(allProducts);
+
+/*      if (maxWidth > 0) {
+        String name = "";
+        Product prod;
+
+        for (int i = 0; i < allProducts.size(); i++) {
+          prod = (Product) allProducts.get(i);
+          name = ProductBusiness.getProductName(prod);
+          if (name.length() > maxWidth) {
+            name = name.substring(0, maxWidth)+"...";
+          }
+          sdb.getLeftBox().addMenuElement(prod.getID(), name);
+        }
+
+        for (int i = 0; i < products.size(); i++) {
+          prod = (Product) allProducts.get(i);
+          name = ProductBusiness.getProductName(prod);
+          if (name.length() > maxWidth) {
+            name = name.substring(0, maxWidth)+"...";
+          }
+          sdb.getRightBox().addMenuElement(prod.getID(), name);
+        }
+
+      }else {
+*/        sdb.getLeftBox().addMenuElements(allProducts);
         sdb.getRightBox().addMenuElements(products);
-        sdb.getRightBox().selectAllOnSubmit();
+//      }
+
+      sdb.getRightBox().selectAllOnSubmit();
+      sdb.getLeftBox().setHeight(height);
+      sdb.getRightBox().setHeight(height);
+
 
       SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"), this._action, this._parameterSaveCategory);
+      SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"), this._action, this._parameterClose);
 
-      Form form = new Form();
+//      Form form = new Form();
       Table table = new Table();
-        form.add(table);
-        form.maintainParameter(this.SELECTED_CATEGORY);
+//        form.add(table);
+//        table.setBorder(1);
 
-      table.add(sdb,1, 1);
-      table.add(save,1, 2);
-      table.setAlignment(1, 2, "right");
+      super.addHiddenInput(new HiddenInput(this.SELECTED_CATEGORY, Integer.toString(this._selectedCategory)));
+//        form.maintainParameter(this.SELECTED_CATEGORY);
 
-      add(form);
+      sdb.addToScripts(this.getParentPage().getAssociatedScript());
+
+
+      super.addLeft(iwrb.getLocalizedString("available_products","Available products"), sdb.getLeftBox(), true);
+      super.addLeft(iwrb.getLocalizedString("add_selected","Add selected")+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, sdb.getRightButton(), false);
+      super.addLeft(iwrb.getLocalizedString("remove_selected","Remove selected")+Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE, sdb.getLeftButton(), false);
+      super.addLeft(iwrb.getLocalizedString("selected_products","Selected products"), sdb.getRightBox(), true);
+
+      /*
+      Table intTable = new Table();
+      Text remSelected = new Text(iwrb.getLocalizedString("remove_selected","Remove selected"));
+      Text addSelected = new Text(iwrb.getLocalizedString("add_selected","Add selected"));
+      GenericButton  rightBtn = sdb.getRightButton();
+      GenericButton  leftBtn = sdb.getLeftButton();
+        remSelected.setStyle(super.STYLE);
+        addSelected.setStyle(super.STYLE);
+      */
+
+      super.addSubmitButton(close);
+      super.addSubmitButton(save);
+
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
@@ -140,4 +197,5 @@ public class ProductCategoryEditor extends IWAdminWindow {
 
     return text;
   }
+
 }

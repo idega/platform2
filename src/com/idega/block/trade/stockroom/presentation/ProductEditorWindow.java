@@ -1,5 +1,8 @@
 package com.idega.block.trade.stockroom.presentation;
 
+import com.idega.block.trade.business.CurrencyBusiness;
+import com.idega.util.idegaTimestamp;
+import com.idega.block.trade.stockroom.data.ProductPrice;
 import java.sql.SQLException;
 import com.idega.block.media.presentation.ImageInserter;
 import com.idega.block.trade.stockroom.business.*;
@@ -44,7 +47,6 @@ public class ProductEditorWindow extends IWAdminWindow {
     setUnMerged();
     setWidth(500);
     setTitle("Product Editor");
-    setName("Product Editor");
   }
 
 
@@ -121,6 +123,7 @@ public class ProductEditorWindow extends IWAdminWindow {
       if (imageId != -1) {
         imageInserter = new ImageInserter(imageId, PAR_IMAGE);
       }
+      price.setContent(Integer.toString((int) StockroomBusiness.getPrice(_product)));
     }
     imageInserter.setHasUseBox(false);
 
@@ -161,22 +164,52 @@ public class ProductEditorWindow extends IWAdminWindow {
         try {
           _productId = ProductBusiness.createProduct(fileId, name, number, description, true);
           _product = ProductBusiness.getProduct(_productId);
-          debug("Insert : id "+_productId);
-          return true;
+          if (setPrice(price)) {
+            return true;
+          }else {
+            return false;
+          }
+
         }catch (Exception e) {
           e.printStackTrace(System.err);
         }
       }else {
         try {
-          debug("Update : id "+_productId);
           ProductBusiness.updateProduct(this._productId, fileId, name, number, description, true);
-          return true;
+          if (setPrice(price)) {
+            return true;
+          }else {
+            return false;
+          }
         }catch (Exception e) {
           e.printStackTrace(System.err);
         }
       }
     }
 
+    return false;
+  }
+
+  private boolean setPrice(String price) {
+    try {
+      int oldP = (int) StockroomBusiness.getPrice(_product);
+      int newP = Integer.parseInt(price);
+      if (oldP != newP) {
+        ProductPrice pPrice = new ProductPrice();
+          pPrice.setIsValid(true);
+          pPrice.setPrice(Float.parseFloat(price));
+          pPrice.setPriceType(ProductPrice.PRICETYPE_PRICE);
+          pPrice.setProductId(_productId);
+          pPrice.setPriceDate(idegaTimestamp.getTimestampRightNow());
+          pPrice.setCurrencyId(CurrencyBusiness.getCurrencyHolder(CurrencyBusiness.defaultCurrency).getCurrencyID());
+        pPrice.insert();
+        return true;
+      }else {
+        return true;
+      }
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
     return false;
   }
 
