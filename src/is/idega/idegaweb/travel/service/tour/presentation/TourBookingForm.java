@@ -304,177 +304,8 @@ public class TourBookingForm extends BookingForm{
             table.add(new HiddenInput(parameterManyDays, Integer.toString(bookingsJa.size())), 1, row);
           }
 */
-          Text pPriceCatNameText;
-          ResultOutput pPriceText;
-          TextInput pPriceMany;
-          PriceCategory category;
-          Text txtPrice;
-          Text txtPerPerson = (Text) theText.clone();
-            txtPerPerson.setText(iwrb.getLocalizedString("travel.per_person","per person"));
 
-          Text totalText = (Text) theBoldText.clone();
-            totalText.setText(iwrb.getLocalizedString("travel.total","Total"));
-          ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
-            TotalPassTextInput.setSize(5);
-          ResultOutput TotalTextInput = new ResultOutput("total","0");
-            TotalTextInput.setSize(8);
-
-          ++row;
-          table.add(Text.NON_BREAKING_SPACE, 1,row);
-
-          BookingEntry[] entries = null;
-          ProductPrice pPri = null;
-          int totalCount = 0;
-          int totalSum = 0;
-          int currentSum = 0;
-          int currentCount = 0;
-          if (_booking != null) {
-            entries = getTourBooker(iwc).getBookingEntries(_booking);
-          }
-
-          ++row;
-          Table pTable = new Table();
-            pTable.setBorder(1);
-          int pWidthLeft = 60;
-          int pWidthCenter = 75;
-          int pWidthRight = 75;
-
-          pTable = new Table(3,1);
-            pTable.setWidth(1, Integer.toString(pWidthLeft));
-            pTable.setWidth(2, Integer.toString(pWidthCenter));
-            pTable.setWidth(3, Integer.toString(pWidthRight));
-            pTable.setCellpaddingAndCellspacing(0);
-          table.add(pTable, 2, row+1);
-
-          Text count = (Text) super.theSmallBoldText.clone();
-            count.setText(iwrb.getLocalizedString("travel.number_of_seats","No.of seats"));
-          Text unitPrice = (Text) super.theSmallBoldText.clone();
-            unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price per seat"));
-          Text amount = (Text) super.theSmallBoldText.clone();
-            amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
-
-          pTable.add(count, 1, 1);
-          pTable.add(unitPrice, 2, 1);
-          pTable.add(amount, 3, 1);
-
-          int pricesLength = prices.length;
-          int miscLength = misc.length;
-          ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
-          for (int i = 0; i < pricesLength; i++) {
-            pPrices[i] = prices[i];
-          }
-          for (int i = 0; i < miscLength; i++) {
-            pPrices[i+pricesLength] = misc[i];
-          }
-
-          for (int i = 0; i < pPrices.length; i++) {
-              try {
-                  ++row;
-                  category = pPrices[i].getPriceCategory();
-                  int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
-//                  String currency = CurrencyBusiness.  pPrices[i].getCurrencyId()
-      //              pPrices[i].getPrice();
-                  pPriceCatNameText = (Text) theText.clone();
-                    pPriceCatNameText.setText(category.getName());
-
-                  pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
-                    pPriceText.setSize(8);
-
-                  pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
-                    pPriceMany.setSize(5);
-
-                  if (i == pricesLength) {
-                    Text tempTexti = (Text) theBoldText.clone();
-                      tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
-//                    table.mergeCells(1, row, 2, row);
-                    table.add(tempTexti, 1, row);
-                    ++row;
-                  }else if (i == 0) {
-                    Text tempTexti = (Text) theBoldText.clone();
-                      tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
-                      tempTexti.setUnderline(true);
-//                    table.mergeCells(1, row, 2, row);
-                    table.add(tempTexti, 1, row);
-                    ++row;
-                  }
-                  if (i >= pricesLength) {
-                    pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
-                  }
-
-                  if (_booking != null) {
-                    if (entries != null) {
-                      for (int j = 0; j < entries.length; j++) {
-                        if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
-                          pPri = entries[j].getProductPrice();
-                          currentCount = entries[j].getCount();
-                          price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
-                          currentSum = (int) (currentCount * price);
-
-                          totalCount += currentCount;
-                          totalSum += currentSum;
-                          pPriceMany.setContent(Integer.toString(currentCount));
-                          pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
-                            pPriceText.setSize(8);
-                        }
-                      }
-                    }
-                  }
-
-                  pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
-//                  pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
-                  TotalPassTextInput.add(pPriceMany);
-                  TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
- //                 TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
-
-
-
-                  table.add(pPriceCatNameText, 1,row);
-
-                  txtPrice = (Text) theText.clone();
-                    txtPrice.setText(Integer.toString(price));
-      //                  table.add(Text.NON_BREAKING_SPACE,2,row);
-
-                  pTable = new Table(4,1);
-                    pTable.setWidth(1, Integer.toString(pWidthLeft));
-                    pTable.setWidth(2, Integer.toString(pWidthCenter));
-                    pTable.setWidth(3, Integer.toString(pWidthRight));
-                    pTable.setCellpaddingAndCellspacing(0);
-                    pTable.add(pPriceMany,1,1);
-                    pTable.add(txtPrice,2,1);
-                    pTable.add(pPriceText, 3,1);
-
-
-      //                    pTable.add();
-                  table.add(pTable, 2, row);
-
-              }catch (SQLException sql) {
-                sql.printStackTrace(System.err);
-              }catch (FinderException fe) {
-                fe.printStackTrace(System.err);
-              }
-          }
-
-          ++row;
-          table.mergeCells(1,row,4,row);
-//          table.add(pTable, 1, row);
-          ++row;
-
-          table.add(totalText,1,row);
-
-          if (_booking != null) {
-            TotalPassTextInput.setContent(Integer.toString(totalCount));
-            TotalTextInput.setContent(Integer.toString(totalSum * bookingDays));
-          }
-          pTable = new Table(3,1);
-            pTable.setWidth(1, Integer.toString(pWidthLeft));
-            pTable.setWidth(2, Integer.toString(pWidthCenter));
-            pTable.setWidth(3, Integer.toString(pWidthRight));
-            pTable.setCellpaddingAndCellspacing(0);
-
-          pTable.add(TotalPassTextInput,1,1);
-          pTable.add(TotalTextInput,3,1);
-          table.add(pTable, 2, row);
-           table.add(new HiddenInput("available",Integer.toString(available)),2,row);
+					row = insertBookingTable(iwc, table, row, prices, misc, bookingDays, tFrame.getID(), addressId, iwrb.getLocalizedString("travel.number_of_seats","No.of seats"), iwrb.getLocalizedString("travel.price_per_seat","Price per seat"));
 
           ++row;
           table.add(Text.NON_BREAKING_SPACE,1, row);
@@ -595,6 +426,183 @@ public class TourBookingForm extends BookingForm{
 
       return form;
   }
+
+	public int insertBookingTable(IWContext iwc, Table table, int row, ProductPrice[] prices, ProductPrice[] misc, int bookingDays, int timeframeId, int addressId, String numberOfString, String pricePerString) throws RemoteException, FinderException {
+		 Text pPriceCatNameText;
+		 ResultOutput pPriceText;
+		 TextInput pPriceMany;
+		 PriceCategory category;
+		 Text txtPrice;
+	//	 Text txtPerPerson = (Text) theText.clone();
+	//	   txtPerPerson.setText(pricePerString);
+//
+		 Text totalText = (Text) theBoldText.clone();
+		   totalText.setText(iwrb.getLocalizedString("travel.total","Total"));
+		 ResultOutput TotalPassTextInput = new ResultOutput("total_pass","0");
+		   TotalPassTextInput.setSize(5);
+		 ResultOutput TotalTextInput = new ResultOutput("total","0");
+		   TotalTextInput.setSize(8);
+
+		 ++row;
+		 table.add(Text.NON_BREAKING_SPACE, 1,row);
+
+		 BookingEntry[] entries = null;
+		 ProductPrice pPri = null;
+		 int totalCount = 0;
+		 int totalSum = 0;
+		 int currentSum = 0;
+		 int currentCount = 0;
+		 if (_booking != null) {
+		   entries = getTourBooker(iwc).getBookingEntries(_booking);
+		 }
+
+		 ++row;
+		 Table pTable = new Table();
+		   pTable.setBorder(1);
+		 int pWidthLeft = 60;
+		 int pWidthCenter = 75;
+		 int pWidthRight = 75;
+
+		 pTable = new Table(3,1);
+		   pTable.setWidth(1, Integer.toString(pWidthLeft));
+		   pTable.setWidth(2, Integer.toString(pWidthCenter));
+		   pTable.setWidth(3, Integer.toString(pWidthRight));
+		   pTable.setCellpaddingAndCellspacing(0);
+		 table.add(pTable, 2, row+1);
+
+		 Text count = (Text) super.theSmallBoldText.clone();
+		   count.setText(numberOfString);
+		 Text unitPrice = (Text) super.theSmallBoldText.clone();
+		   unitPrice.setText(pricePerString);
+		 Text amount = (Text) super.theSmallBoldText.clone();
+		   amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
+
+		 pTable.add(count, 1, 1);
+		 pTable.add(unitPrice, 2, 1);
+		 pTable.add(amount, 3, 1);
+
+		 int pricesLength = prices.length;
+		 int miscLength = misc.length;
+		 ProductPrice[] pPrices = new ProductPrice[pricesLength+miscLength];
+		 for (int i = 0; i < pricesLength; i++) {
+		   pPrices[i] = prices[i];
+		 }
+		 for (int i = 0; i < miscLength; i++) {
+		   pPrices[i+pricesLength] = misc[i];
+		 }
+
+		 for (int i = 0; i < pPrices.length; i++) {
+			 try {
+				 ++row;
+				 category = pPrices[i].getPriceCategory();
+				 int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
+//				   String currency = CurrencyBusiness.  pPrices[i].getCurrencyId()
+	 //              pPrices[i].getPrice();
+				 pPriceCatNameText = (Text) theText.clone();
+				   pPriceCatNameText.setText(category.getName());
+
+				 pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),"0");
+				   pPriceText.setSize(8);
+
+				 pPriceMany = new TextInput("priceCategory"+pPrices[i].getID() ,"0");
+				   pPriceMany.setSize(5);
+
+				 if (i == pricesLength) {
+				   Text tempTexti = (Text) theBoldText.clone();
+					 tempTexti.setText(iwrb.getLocalizedString("travel.miscellaneous_services","Miscellaneous services"));
+//					 table.mergeCells(1, row, 2, row);
+				   table.add(tempTexti, 1, row);
+				   ++row;
+				 }else if (i == 0) {
+				   Text tempTexti = (Text) theBoldText.clone();
+					 tempTexti.setText(iwrb.getLocalizedString("travel.basic_prices","Basic prices"));
+					 tempTexti.setUnderline(true);
+//					 table.mergeCells(1, row, 2, row);
+				   table.add(tempTexti, 1, row);
+				   ++row;
+				 }
+				 if (i >= pricesLength) {
+				   pPriceMany.setName("miscPriceCategory"+pPrices[i].getID());
+				 }
+
+				 if (_booking != null) {
+				   if (entries != null) {
+					 for (int j = 0; j < entries.length; j++) {
+					   if (entries[j].getProductPrice().getPriceCategoryID() == pPrices[i].getPriceCategoryID()) {
+						 pPri = entries[j].getProductPrice();
+						 currentCount = entries[j].getCount();
+						 price = (int) getTravelStockroomBusiness(iwc).getPrice(pPri.getID(), _productId,pPri.getPriceCategoryID(),pPri.getCurrencyId(),IWTimestamp.getTimestampRightNow(), timeframeId, addressId);
+						 currentSum = (int) (currentCount * price);
+
+						 totalCount += currentCount;
+						 totalSum += currentSum;
+						 pPriceMany.setContent(Integer.toString(currentCount));
+						 pPriceText = new ResultOutput("thePrice"+pPrices[i].getID(),Integer.toString(currentSum));
+						   pPriceText.setSize(8);
+					   }
+					 }
+				   }
+				 }
+
+				 pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
+//				   pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
+				 TotalPassTextInput.add(pPriceMany);
+				 TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
+//                 TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
+
+
+
+				 table.add(pPriceCatNameText, 1,row);
+
+				 txtPrice = (Text) theText.clone();
+				   txtPrice.setText(Integer.toString(price));
+	 //                  table.add(Text.NON_BREAKING_SPACE,2,row);
+
+				 pTable = new Table(4,1);
+				   pTable.setWidth(1, Integer.toString(pWidthLeft));
+				   pTable.setWidth(2, Integer.toString(pWidthCenter));
+				   pTable.setWidth(3, Integer.toString(pWidthRight));
+				   pTable.setCellpaddingAndCellspacing(0);
+				   pTable.add(pPriceMany,1,1);
+				   pTable.add(txtPrice,2,1);
+				   pTable.add(pPriceText, 3,1);
+
+
+	 //                    pTable.add();
+				 table.add(pTable, 2, row);
+
+			 }catch (SQLException sql) {
+			   sql.printStackTrace(System.err);
+			 }catch (FinderException fe) {
+			   fe.printStackTrace(System.err);
+			 }
+		 }
+
+		 ++row;
+		 table.mergeCells(1,row,4,row);
+//		   table.add(pTable, 1, row);
+		 ++row;
+
+		 table.add(totalText,1,row);
+
+		 if (_booking != null) {
+		   TotalPassTextInput.setContent(Integer.toString(totalCount));
+		   TotalTextInput.setContent(Integer.toString(totalSum * bookingDays));
+		 }
+		 pTable = new Table(3,1);
+		   pTable.setWidth(1, Integer.toString(pWidthLeft));
+		   pTable.setWidth(2, Integer.toString(pWidthCenter));
+		   pTable.setWidth(3, Integer.toString(pWidthRight));
+		   pTable.setCellpaddingAndCellspacing(0);
+
+		 pTable.add(TotalPassTextInput,1,1);
+		 pTable.add(TotalTextInput,3,1);
+		 table.add(pTable, 2, row);
+		  table.add(new HiddenInput("available",Integer.toString(available)),2,row);
+	
+		return row;	
+	}
+
 
   public Form getPublicBookingForm(IWContext iwc, Product product) throws RemoteException, FinderException {
     int bookings = getTourBooker(iwc).getBookingsTotalCount(_productId, this._stamp);
