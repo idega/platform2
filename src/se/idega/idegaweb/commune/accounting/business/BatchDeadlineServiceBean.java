@@ -1,5 +1,5 @@
 /*
- * $Id: BatchDeadlineServiceBean.java,v 1.2 2004/11/25 12:02:00 aron Exp $
+ * $Id: BatchDeadlineServiceBean.java,v 1.3 2004/11/25 12:05:08 aron Exp $
  * Created on 12.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -24,10 +24,10 @@ import com.idega.util.TimePeriod;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/25 12:02:00 $ by $Author: aron $
+ *  Last modified: $Date: 2004/11/25 12:05:08 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class BatchDeadlineServiceBean extends IBOServiceBean  implements BatchDeadlineService{
     
@@ -79,13 +79,11 @@ public class BatchDeadlineServiceBean extends IBOServiceBean  implements BatchDe
      */
     public int getCurrentDeadlineDay(){
         try {
-            BatchDeadlineHome deadlineHome = (BatchDeadlineHome)IDOLookup.getHome(BatchDeadline.class);
-            return deadlineHome.findCurrent().getDeadlineDay();
-        } catch (IDOLookupException e) {
-            e.printStackTrace();
-        } catch (FinderException e) {
-           
+            return getCurrentDeadline().getDeadlineDay();
         }
+        catch(NullPointerException e){
+          e.printStackTrace();   
+        	}
         return -1;
     }
     
