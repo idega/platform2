@@ -487,7 +487,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		int row = 1;
 
 		String message = MessageFormat.format(localize("child_care.reject_application_message", "We have rejection your application for {0} for a placing in our childcare.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
-		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_OFFER_MESSAGE, message));
+		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_REJECT_MESSAGE, message));
 		textArea.setWidth(Table.HUNDRED_PERCENT);
 		textArea.setRows(7);
 		textArea.setAsNotEmpty(localize("child_care.rejected_message_required","You must fill in the message."));
