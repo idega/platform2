@@ -1,128 +1,141 @@
 package is.idega.idegaweb.campus.block.phone.data;
 
-
-
 import java.sql.SQLException;
+import java.util.Collection;
 
-
-
-
+import javax.ejb.FinderException;
 
 /**
-
+ * 
  * Title:
-
+ * 
  * Description:
-
- * Copyright:    Copyright (c) 2000-2001 idega.is All Rights Reserved
-
- * Company:      idega
-
-  *@author <a href="mailto:aron@idega.is">Aron Birkir</a>
-
+ * 
+ * Copyright: Copyright (c) 2000-2001 idega.is All Rights Reserved
+ * 
+ * Company: idega
+ * 
+ * @author <a href="mailto:aron@idega.is">Aron Birkir </a>
+ * 
  * @version 1.1
-
+ *  
  */
 
+public class CampusPhoneBMPBean extends com.idega.data.GenericEntity implements
+		is.idega.idegaweb.campus.block.phone.data.CampusPhone {
 
+	public CampusPhoneBMPBean() {
 
-public class CampusPhoneBMPBean extends com.idega.data.GenericEntity implements is.idega.idegaweb.campus.block.phone.data.CampusPhone {
+	}
 
+	public CampusPhoneBMPBean(int id) throws SQLException {
 
+		super(id);
 
-  public CampusPhoneBMPBean() {
+	}
 
-  }
+	public void initializeAttributes() {
 
-  public CampusPhoneBMPBean(int id) throws SQLException{
+		addAttribute(getIDColumnName());
 
-    super(id);
+		addAttribute(getColumnNamePhoneNumber(), "Phone number", true, true,
+				String.class);
 
-  }
+		addAttribute(getColumnNameApartmentId(), "Apartment", true, true,
+				Integer.class, "one-to-one",
+				com.idega.block.building.data.Apartment.class);
 
-  public void initializeAttributes() {
+		addAttribute(getColumnNameDateInstalled(), "Installed", true, true,
+				java.sql.Date.class);
 
-    addAttribute(getIDColumnName());
+		addAttribute(getColumnNameDateResigned(), "Resigned", true, true,
+				java.sql.Date.class);
 
-    addAttribute(getColumnNamePhoneNumber(),"Phone number",true,true,String.class);
+	}
 
-    addAttribute(getColumnNameApartmentId(),"Apartment",true,true,Integer.class,"one-to-one",com.idega.block.building.data.Apartment.class);
+	public String getEntityName() {
 
-    addAttribute(getColumnNameDateInstalled(),"Installed",true,true,java.sql.Date.class);
+		return getEntityTableName();
 
-    addAttribute(getColumnNameDateResigned(),"Resigned",true,true,java.sql.Date.class);
+	}
 
-  }
+	public static String getEntityTableName() {
+		return "CAM_PHONE";
+	}
 
-  public String getEntityName() {
+	public static String getColumnNamePhoneNumber() {
+		return "PHONE_NUMBER";
+	}
 
-    return getEntityTableName();
+	public static String getColumnNameApartmentId() {
+		return "BU_APARTMENT_ID";
+	}
 
-  }
+	public static String getColumnNameDateInstalled() {
+		return "DATE_INSTALLED";
+	}
 
+	public static String getColumnNameDateResigned() {
+		return "DATE_RESIGNED";
+	}
 
+	public void setPhoneNumber(String number) {
 
-  public static String getEntityTableName(){return "CAM_PHONE";}
+		setColumn(getColumnNamePhoneNumber(), number);
 
-  public static String getColumnNamePhoneNumber(){return "PHONE_NUMBER";}
+	}
 
-  public static String getColumnNameApartmentId(){return "BU_APARTMENT_ID";}
+	public String getPhoneNumber() {
 
-  public static String getColumnNameDateInstalled(){return "DATE_INSTALLED";}
+		return getStringColumnValue(getColumnNamePhoneNumber());
 
-  public static String getColumnNameDateResigned(){return "DATE_RESIGNED";}
+	}
 
+	public int getApartmentId() {
 
+		return getIntColumnValue(getColumnNameApartmentId());
 
+	}
 
+	public void setApartmentId(int id) {
 
-  public void setPhoneNumber(String number){
+		setColumn(getColumnNameApartmentId(), id);
 
-    setColumn(getColumnNamePhoneNumber(),number);
+	}
 
-  }
+	public void setDateInstalled(java.sql.Date date) {
 
-  public String getPhoneNumber(){
+		setColumn(getColumnNameDateInstalled(), date);
 
-    return getStringColumnValue(getColumnNamePhoneNumber());
+	}
 
-  }
+	public java.sql.Date getDateInstalled() {
 
-  public int getApartmentId(){
+		return ((java.sql.Date) getColumnValue(getColumnNameDateInstalled()));
 
-    return getIntColumnValue(getColumnNameApartmentId());
+	}
 
-  }
+	public void setDateResigned(java.sql.Date date) {
 
-  public void setApartmentId(int id){
+		setColumn(getColumnNameDateResigned(), date);
 
-    setColumn(getColumnNameApartmentId(),id);
+	}
 
-  }
+	public java.sql.Date getDateResigned() {
 
-  public void setDateInstalled(java.sql.Date date){
+		return ((java.sql.Date) getColumnValue(getColumnNameDateResigned()));
 
-    setColumn(getColumnNameDateInstalled(),date);
+	}
 
-  }
+	public Collection ejbFindAll() throws FinderException {
+		return super.idoFindPKsByQuery(idoQueryGetSelect());
+	}
 
-  public java.sql.Date getDateInstalled(){
-
-    return((java.sql.Date)getColumnValue(getColumnNameDateInstalled()));
-
-  }
-
-  public void setDateResigned(java.sql.Date date){
-
-    setColumn(getColumnNameDateResigned(),date);
-
-  }
-
-  public java.sql.Date getDateResigned(){
-
-    return((java.sql.Date)getColumnValue(getColumnNameDateResigned()));
-
-  }
+	public Collection ejbFindByPhoneNumber(String number)
+			throws FinderException {
+		return idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(
+				getColumnNamePhoneNumber(), number));
+	}
 
 }
 

@@ -1,17 +1,25 @@
 package is.idega.idegaweb.campus.block.phone.business;
 
 import is.idega.idegaweb.campus.block.phone.data.CampusPhone;
+import is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome;
 import is.idega.idegaweb.campus.data.AccountPhone;
+import is.idega.idegaweb.campus.data.AccountPhoneHome;
 
+import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.finance.data.Account;
 import com.idega.block.finance.data.AccountHome;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.util.IWTimestamp;
 /**
  * Title:
@@ -25,15 +33,8 @@ import com.idega.util.IWTimestamp;
 public abstract class PhoneFinder {
 	public final static int NAME = 0, SSN = 1, APARTMENT = 2, FLOOR = 3, BUILDING = 4, COMPLEX = 5, CATEGORY = 6, TYPE = 7;
 
-	public static List listOfPhones() {
-		try {
-			return EntityFinder.getInstance().findAll(CampusPhone.class);
-		}
-		catch (Exception e) {
-			return (null);
-		}
-	}
-
+	
+/*
 	public static Map mapOfPhonesByPhoneNumber() {
 		List L = listOfPhones();
 		if (L != null) {
@@ -48,7 +49,8 @@ public abstract class PhoneFinder {
 		else
 			return null;
 	}
-
+	*/
+/*
 	public static List listOfPhonesInUse() {
 		StringBuffer sql = new StringBuffer("select pho.* ");
 		sql.append(" from cam_phone pho,cam_contract con ");
@@ -63,39 +65,9 @@ public abstract class PhoneFinder {
 			return null;
 		}
 	}
-
-	public static List listOfAccountPhones() {
-		try {
-			return EntityFinder.getInstance().findAll(AccountPhone.class);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
-	public static List listOfAccountPhones(IWTimestamp from) {
-		StringBuffer sql = new StringBuffer("Select a.* from ");
-		sql.append(is.idega.idegaweb.campus.data.AccountPhoneBMPBean.getEntityTableName());
-		sql.append(" a ");
-		if (from != null) {
-			sql.append(" where a.");
-			sql.append(is.idega.idegaweb.campus.data.AccountPhoneBMPBean.getColumnNameValidTo());
-			sql.append(" >= '");
-			sql.append(from.getDate());
-			sql.append("'");
-		}
-		//System.err.println(sql.toString());
-		try {
-			return EntityFinder.getInstance().findAll(AccountPhone.class, sql.toString());
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
-	public static List listOfAccountWithPhoneNumber() {
+*/
+	
+	public static Collection listOfAccountWithPhoneNumber() {
 		StringBuffer sql = new StringBuffer("Select a.* from ");
 		sql.append(com.idega.block.finance.data.AccountBMPBean.getEntityTableName());
 		sql.append(" a ,");
@@ -112,7 +84,7 @@ public abstract class PhoneFinder {
 		}
 	}
 
-	public static List listOfAccountWithPhoneNumber(IWTimestamp from) {
+	public static Collection listOfAccountWithPhoneNumber(IWTimestamp from) {
 		StringBuffer sql = new StringBuffer("Select a.* from ");
 		sql.append(com.idega.block.finance.data.AccountBMPBean.getEntityTableName());
 		sql.append(" a ,");
@@ -134,10 +106,14 @@ public abstract class PhoneFinder {
 			return null;
 		}
 	}
+	
+	public static AccountPhoneHome getAccountPhoneHome() throws RemoteException{
+		return (AccountPhoneHome) IDOLookup.getHome(AccountPhone.class);
+	}
 
-	public static Map mapOfAccountIdsByPhoneNumber()throws java.rmi.RemoteException {
+	public static Map mapOfAccountIdsByPhoneNumber()throws java.rmi.RemoteException,FinderException {
 		Hashtable H = null;
-		List L = listOfAccountPhones();
+		Collection L = getAccountPhoneHome().findAll();
 		if (L != null) {
 			H = new Hashtable(L.size());
 			Iterator I = L.iterator();
@@ -150,9 +126,9 @@ public abstract class PhoneFinder {
 		return H;
 	}
 
-	public static Map mapOfAccountsByPhoneNumber() throws java.rmi.RemoteException {
+	public static Map mapOfAccountsByPhoneNumber() throws java.rmi.RemoteException,FinderException {
 		Hashtable H = null;
-		List L = listOfAccountPhones();
+		Collection L = getAccountPhoneHome().findAll();
 		Map M = mapOfAccountsWithPhoneNumber();
 		if (L != null && M != null) {
 			H = new Hashtable(L.size());
@@ -170,9 +146,9 @@ public abstract class PhoneFinder {
 		return H;
 	}
 
-	public static Map mapOfAccountPhoneListsByPhoneNumber(IWTimestamp from)throws java.rmi.RemoteException {
+	public static Map mapOfAccountPhoneListsByPhoneNumber(IWTimestamp from)throws java.rmi.RemoteException,FinderException {
 		Hashtable H = null;
-		List L = listOfAccountPhones();
+		Collection L = getAccountPhoneHome().findAll();
 		if (L != null) {
 			H = new Hashtable(L.size());
 			Iterator I = L.iterator();
@@ -194,9 +170,10 @@ public abstract class PhoneFinder {
 		return H;
 	}
 
-	public static Map mapOfAccountsListsByPhoneNumber(IWTimestamp from) throws java.rmi.RemoteException {
+	/*
+	public static Map mapOfAccountsListsByPhoneNumber(IWTimestamp from) throws java.rmi.RemoteException,FinderException {
 		Hashtable H = null;
-		List L = listOfAccountPhones(from);
+		Collection L = getAccountPhoneHome().findValid(from.getDate());
 		Map M = mapOfAccountsWithPhoneNumber(from);
 		if (L != null && M != null) {
 			H = new Hashtable(L.size());
@@ -224,10 +201,10 @@ public abstract class PhoneFinder {
 		}
 		return H;
 	}
-
+*/
 	public static Map mapOfAccountsWithPhoneNumber() throws java.rmi.RemoteException {
 		Hashtable H = null;
-		List L = listOfAccountWithPhoneNumber();
+		Collection L = listOfAccountWithPhoneNumber();
 		if (L != null) {
 			H = new Hashtable(L.size());
 			Iterator I = L.iterator();
@@ -239,7 +216,7 @@ public abstract class PhoneFinder {
 		}
 		return H;
 	}
-
+/*
 	public static Map mapOfAccountsWithPhoneNumber(IWTimestamp from) throws java.rmi.RemoteException {
 		Hashtable H = null;
 		List L = listOfAccountWithPhoneNumber(from);
@@ -254,7 +231,8 @@ public abstract class PhoneFinder {
 		}
 		return H;
 	}
-
+*/
+	/*
 	public static Map mapOfPhonesInUse() {
 		Hashtable H = null;
 		List L = listOfPhonesInUse();
@@ -270,7 +248,8 @@ public abstract class PhoneFinder {
 		}
 		return H;
 	}
-
+*/
+	/*
 	public static Map mapOfPhonesInContractByPhoneNumber() {
 		List L = listOfPhones();
 		if (L != null) {
@@ -285,7 +264,8 @@ public abstract class PhoneFinder {
 		else
 			return null;
 	}
-
+*/
+	/*
 	private static String getOrderString(int type) {
 		String order = null;
 		switch (type) {
@@ -319,13 +299,13 @@ public abstract class PhoneFinder {
 		}
 		return order;
 	}
-
-	public static Map mapOfPhones(List listOfPhones) {
+*/
+	public static Map mapOfPhones(Collection listOfPhones) {
 		if (listOfPhones != null) {
 			int len = listOfPhones.size();
 			Hashtable H = new Hashtable(len);
-			for (int i = 0; i < len; i++) {
-				CampusPhone P = (CampusPhone) listOfPhones.get(i);
+			for (Iterator iter = listOfPhones.iterator(); iter.hasNext();) {
+				CampusPhone P = (CampusPhone) iter.next();
 				H.put((Integer)P.getPrimaryKey(), P);
 			}
 			return H;
@@ -334,12 +314,12 @@ public abstract class PhoneFinder {
 			return null;
 	}
 
-	public static Map mapOfPhonesByApartmentId(List listOfPhones) {
+	public static Map mapOfPhonesByApartmentId(Collection listOfPhones) {
 		if (listOfPhones != null) {
 			int len = listOfPhones.size();
 			Hashtable H = new Hashtable(len);
-			for (int i = 0; i < len; i++) {
-				CampusPhone P = (CampusPhone) listOfPhones.get(i);
+			for (Iterator iter = listOfPhones.iterator(); iter.hasNext();) {
+				CampusPhone P = (CampusPhone) iter.next();
 				H.put(new Integer(P.getApartmentId()), P);
 			}
 			return H;
@@ -347,7 +327,7 @@ public abstract class PhoneFinder {
 		else
 			return null;
 	}
-
+/*
 	public static List listOfPhones(String sComplexId, String sBuildingId, String sFloorId, String sType, String sCategory, int iOrder) {
 
 		StringBuffer sql = new StringBuffer("select pho.* ");
@@ -394,8 +374,8 @@ public abstract class PhoneFinder {
 			return null;
 		}
 	}
-	
-	public static List listOfPhoneContracts(String phoneNumber){
+*/	
+	public static Collection listOfPhoneContracts(String phoneNumber){
 		StringBuffer sql = new StringBuffer("select c.* from cam_contract c,cam_phone p");
 		sql.append(" where p.bu_apartment_id = c.bu_apartment_id ");
 		sql.append(" and p.phone_number = '");
@@ -408,6 +388,21 @@ public abstract class PhoneFinder {
 		catch (Exception ex) {
 			return null;
 		}
+	}
+
+	/**
+	 * @return
+	 */
+	public static Collection listOfPhones() {
+		try {
+			return ((CampusPhoneHome)IDOLookup.getHome(CampusPhone.class)).findAll();
+		} catch (IDOLookupException e) {
+			
+			e.printStackTrace();
+		} catch (FinderException e) {
+	
+		}
+		return null;
 	}
 
 }

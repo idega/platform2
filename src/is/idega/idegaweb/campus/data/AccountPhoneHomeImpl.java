@@ -1,5 +1,6 @@
 package is.idega.idegaweb.campus.data;
 
+import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
@@ -56,6 +57,25 @@ public class AccountPhoneHomeImpl extends com.idega.data.IDOFactory implements A
 	public Collection findByPhoneNumber(String number) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((AccountPhoneBMPBean)entity).ejbFindByPhoneNumber(number);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.data.AccountPhoneHome#findAll()
+	 */
+	public Collection findAll() throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AccountPhoneBMPBean)entity).ejbFindAll();
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.data.AccountPhoneHome#findValid(java.sql.Date)
+	 */
+	public Collection findValid(Date toDate) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AccountPhoneBMPBean)entity).ejbFindValid(toDate);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}

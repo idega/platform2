@@ -1,7 +1,7 @@
 package is.idega.idegaweb.campus.block.phone.data;
 
 
-public interface CampusPhone extends com.idega.data.IDOLegacyEntity
+public interface CampusPhone extends com.idega.data.IDOEntity
 {
  public int getApartmentId();
  public java.sql.Date getDateInstalled();

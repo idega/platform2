@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.ejb.FinderException;
 import javax.transaction.TransactionManager;
 
 import com.idega.block.finance.data.Account;
@@ -127,11 +128,11 @@ public class PhoneFileHandler {
 		return new IWTimestamp(st.toString());
 	}
 
-	public void process(File PhoneFile) throws java.rmi.RemoteException {
+	public void process(File PhoneFile) throws java.rmi.RemoteException,FinderException {
 		process3(PhoneFile);
 	}
 
-	public void process3(File PhoneFile) throws java.rmi.RemoteException {
+	public void process3(File PhoneFile) throws java.rmi.RemoteException,FinderException {
 		Map M = PhoneFinder.mapOfAccountPhoneListsByPhoneNumber(null);
 		Map M2 = PhoneFinder.mapOfAccountsWithPhoneNumber();
 		DateFormat  df = DateFormat.getDateInstance(DateFormat.SHORT,new Locale("is","IS"));

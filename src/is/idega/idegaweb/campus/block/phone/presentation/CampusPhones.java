@@ -323,7 +323,7 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
               }
               // if new entity
               else{
-                CampusPhone P = ((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHomeLegacy(CampusPhone.class)).createLegacy();
+                CampusPhone P = ((is.idega.idegaweb.campus.block.phone.data.CampusPhoneHome)com.idega.data.IDOLookup.getHome(CampusPhone.class)).create();
                 P.setPhoneNumber(sNumber);
                 P.setApartmentId(iAPId.intValue());
                 P.setDateInstalled(IWTimestamp.RightNow().getDate());

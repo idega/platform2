@@ -6,8 +6,8 @@ import is.idega.idegaweb.campus.presentation.CampusBlock;
 
 import java.rmi.RemoteException;
 import java.text.DateFormat;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.ejb.FinderException;
@@ -22,7 +22,6 @@ import com.idega.presentation.Table;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.util.TextFormat;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 
@@ -40,7 +39,7 @@ public class PhoneContracts extends CampusBlock {
 
   private DateFormat df;
   private UserBusiness ub;
-  private TextFormat tf;
+  
 
   protected boolean isAdmin = false;
 
@@ -99,20 +98,20 @@ public class PhoneContracts extends CampusBlock {
   	if(phoneNumbers!=null){
   		ApartmentViewHome avh =(ApartmentViewHome)IDOLookup.getHome(ApartmentView.class);
   		for (int i = 0; i < phoneNumbers.length; i++) {
-			List contracts = PhoneFinder.listOfPhoneContracts(phoneNumbers[i]);
+			Collection contracts = PhoneFinder.listOfPhoneContracts(phoneNumbers[i]);
 			
 		  	if(contracts!=null){
 		  		Contract contract;
 		  		User user;
 		  		Iterator iter = contracts.iterator();
-		  		T.add(tf.format( phoneNumbers[i],tf.HEADER),1,row++);
+		  		T.add(getHeader( phoneNumbers[i]),1,row++);
 		  		while(iter.hasNext()){
 		  			try {
 						contract = (Contract) iter.next();
 						user = (User) ub.getUser(contract.getUserId().intValue());
-						T.add(tf.format(user.getName()),2,row);
-						T.add(tf.format(df.format(contract.getValidFrom())+" - "+df.format(contract.getValidTo())),3,row);
-						T.add(tf.format(avh.findByPrimaryKey(contract.getApartmentId()).getApartmentString(" ")),4,row);
+						T.add(getText(user.getName()),2,row);
+						T.add(getText(df.format(contract.getValidFrom())+" - "+df.format(contract.getValidTo())),3,row);
+						T.add(getText(avh.findByPrimaryKey(contract.getApartmentId()).getApartmentString(" ")),4,row);
 						row++;
 					}
 					catch (FinderException e) {
@@ -132,7 +131,6 @@ public class PhoneContracts extends CampusBlock {
     isAdmin = iwc.hasEditPermission(this);
     df = DateFormat.getDateInstance(DateFormat.SHORT,iwc.getCurrentLocale());
     ub = (UserBusiness)IBOLookup.getServiceInstance(iwc,UserBusiness.class);
-    tf = TextFormat.getInstance();
     control(iwc);
   }
 
