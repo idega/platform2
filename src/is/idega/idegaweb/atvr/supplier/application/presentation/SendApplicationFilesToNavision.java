@@ -10,16 +10,16 @@
 package is.idega.idegaweb.atvr.supplier.application.presentation;
 
 import com.idega.core.user.data.User;
+import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.SubmitButton;
 
 import is.idega.idegaweb.atvr.supplier.application.business.NewProductApplicationBusiness;
 import is.idega.idegaweb.atvr.supplier.application.data.NewProductApplication;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,11 +30,12 @@ import java.util.Iterator;
  * @author <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class NewProductApplicationAdmin extends Block {
+public class SendApplicationFilesToNavision extends Block {
 	private final static String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.atvr";
 
 	protected final static String PARAM_FORM_SUBMIT = "npaa_submit";
-	protected final static String PARAM_CHECKBOX = "npaa_checkbox";
+
+	protected final static String FILE_LOCATION_PARAMETER = "npaa_file_location";
 
 	public void main(IWContext iwc) {
 		control(iwc);
@@ -42,18 +43,34 @@ public class NewProductApplicationAdmin extends Block {
 
 	private void control(IWContext iwc) {
 		if (iwc.isParameterSet(PARAM_FORM_SUBMIT))
-			confirmApplications(iwc);
+			sendApplications(iwc);
 		showApplications(iwc);
 	}
-
-	private void confirmApplications(IWContext iwc) {
-		String values[] = iwc.getParameterValues(PARAM_CHECKBOX);
-		
-		if (values != null && values.length > 0) {
-			for (int i = 0; i < values.length; i++) {
-				System.out.println("values["+i+"] = " + values[i]);	
-			}	
+	
+	private void sendApplications(IWContext iwc) {
+		try {
+			Collection col = getApplicationBusiness(iwc).getAllApplications();
+			
+			if (col != null) {
+				IWBundle bundle = getBundle(iwc);
+				String fileLocation = bundle.getProperty(FILE_LOCATION_PARAMETER);
+				if (fileLocation == null || fileLocation.equals("")) {
+					add("Engin skráarstaðsetning skilgreind í bundle");
+					return;	
+				}
+				
+			}
+			
+			add("Skrá send");
+			
+			return;
 		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}		
 	}
 
 	private void showApplications(IWContext iwc) {
@@ -62,45 +79,44 @@ public class NewProductApplicationAdmin extends Block {
 			if (col != null) {
 				int size = col.size();
 
-				Table t = new Table(5, size + 3);
-				t.add("Tegund", 2, 1);
-				t.add("Lýsing", 3, 1);
-				t.add("Umsókn frá", 4, 1);
-				t.add("Dags. umsóknar", 5, 1);
+				Table t = new Table(4, size + 3);
+				t.add("Tegund", 1, 1);
+				t.add("Lýsing", 2, 1);
+				t.add("Umsókn frá", 3, 1);
+				t.add("Dags. umsóknar", 4, 1);
 
 				int i = 2;
 				Iterator it = col.iterator();
 				while (it.hasNext()) {
 					NewProductApplication appl = (NewProductApplication) it.next();
-					CheckBox check = new CheckBox(PARAM_CHECKBOX);
-					check.setValue(((Integer)appl.getPrimaryKey()).intValue());
-					t.add(check, 1, i);
+//					CheckBox check = new CheckBox();
+//					t.add(check, 1, i);
 					String type = appl.getApplicationType();
 					if (type.equals("0"))
-						t.add(new Link("Reynsla"), 2, i);
+						t.add("Reynsla", 1, i);
 					else if (type.equals("1"))
-						t.add(new Link("Sérlisti"), 2, i);
+						t.add("Sérlisti", 1, i);
 					else if (type.equals("2"))
-						t.add(new Link("Mánaðarfl."), 2, i);
+						t.add("Mánaðarfl.", 1, i);
 					else if (type.equals("3"))
-						t.add(new Link("Tóbak"), 2, i);
+						t.add("Tóbak", 1, i);
 
-					t.add(appl.getDescription(), 3, i);
+					t.add(appl.getDescription(), 2, i);
 					User supplier = appl.getSupplier();
-					t.add(supplier.getName(), 4, i);
-					t.add(appl.getApplicationSent().toString(), 5, i);
+					t.add(supplier.getName(), 3, i);
+					t.add(appl.getApplicationSent().toString(), 4, i);
 					i++;
 				}
 
-				SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Stadfesta");
+				SubmitButton submit = new SubmitButton(PARAM_FORM_SUBMIT, "Senda í skrá");
 				submit.setAsImageButton(true);
-				t.setAlignment(5, size + 3, "Right");
-				t.add(submit, 5, size + 3);
+				t.setAlignment(4, size + 3, "Right");
+				t.add(submit, 4, size + 3);
 
 				add(t);
 			}
 			else {
-				this.add("Engar nýjar umsóknir");
+				this.add("Engar ósendar umsóknir");
 			}
 			return;
 		}
