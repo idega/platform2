@@ -431,7 +431,8 @@ public class WorkReportAccountEditor extends WorkReportSelector {
       public int compare(Object first, Object second) {
         String firstName = ((WorkReportGroup) first).getShortName();
         String secondName = ((WorkReportGroup) second).getShortName();
-        return firstName.compareTo(secondName);
+        // that is nonsense but the data in the database is crap
+        return (firstName != null) ? (firstName.compareTo(secondName)) : true;
       }
     };
     // sort leagues
