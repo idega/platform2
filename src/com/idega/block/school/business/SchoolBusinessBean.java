@@ -2706,4 +2706,14 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			}
 		}
 	}
+	
+	public boolean hasActivePlacement(int studentId, int schoolId, SchoolCategory category) {
+		SchoolClassMember placement = null;
+		try {
+			SchoolClassMemberHome home = getSchoolClassMemberHome();
+			placement = home.findActiveByStudentSchoolAndCategory(studentId, schoolId, getCategoryElementarySchool());
+		} catch (FinderException e) {}
+		return placement != null;
+	}
+
 }
