@@ -1,6 +1,8 @@
 
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.idegaweb.presentation.BusyBar;
+import is.idega.idegaweb.travel.service.business.ServiceHandler;
 import javax.ejb.FinderException;
 import java.util.*;
 import com.idega.business.IBOLookup;
@@ -31,6 +33,7 @@ import is.idega.idegaweb.travel.service.tour.data.*;
 import is.idega.idegaweb.travel.service.tour.business.*;
 import is.idega.idegaweb.travel.service.tour.presentation.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
+import javax.ejb.*;
 /**
  * Title:        idegaWeb TravelBooking
  * Description:
@@ -213,7 +216,7 @@ public class BookingOverview extends TravelManager {
 
 
   public Table getTopTable(IWContext iwc) throws RemoteException{
-      Table topTable = new Table(5,2);
+      Table topTable = new Table(5,3);
         topTable.setBorder(0);
         topTable.setWidth("90%");
 
@@ -224,7 +227,6 @@ public class BookingOverview extends TravelManager {
       DropdownMenu trip = new DropdownMenu();
         if (supplier != null) {
           trip = getProductBusiness(iwc).getDropdownMenuWithProducts(iwc, supplier.getID());
-          // new DropdownMenu(ProductBusiness.getProducts(supplier.getID()));
         }else if (reseller != null){
           trip = getContractBusiness(iwc).getDropdownMenuWithProducts(iwc, reseller.getID());
         }
@@ -238,9 +240,9 @@ public class BookingOverview extends TravelManager {
 
 
       DateInput active_from = new DateInput("active_from");
-          active_from.setDate(fromStamp.getSQLDate());
+          active_from.setDate(fromStamp.getDate());
       DateInput active_to = new DateInput("active_to");
-          active_to.setDate(toStamp.getSQLDate());
+          active_to.setDate(toStamp.getDate());
 
       Text tfFromText = (Text) theText.clone();
           tfFromText.setText(iwrb.getLocalizedString("travel.from","from"));
@@ -275,7 +277,18 @@ public class BookingOverview extends TravelManager {
 
 
       topTable.setAlignment(5,2,"right");
-      topTable.add(new SubmitButton(iwrb.getImage("buttons/get.gif")),5,2);
+      SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/get.gif"));
+      topTable.add(submit,5,2);
+
+      BusyBar bb = new BusyBar("waiting");
+      bb.setInterfaceObject(submit);
+//      bb.setWidth("200");
+//      bb.setHeight("50");
+      topTable.mergeCells(1, 3, 5, 3);
+      topTable.setAlignment(1, 3, Table.HORIZONTAL_ALIGN_CENTER);
+      topTable.add(bb, 1, 3);
+
+
 
       return topTable;
   }
@@ -307,249 +320,90 @@ public class BookingOverview extends TravelManager {
 
   public Table getContentTable(IWContext iwc) throws Exception {
       Table table = new Table();
-        table.setCellspacing(1);
-        table.setCellpadding(4);
-        table.setColor(super.WHITE);
-        table.setWidth("90%");
+      table.setWidth("95%");
+      table.setAlignment(Table.HORIZONTAL_ALIGN_CENTER);
 
-      int row = 1;
       if (_productId != -1) {
 
-          boolean viewAll = false;
           int productId = _productId;
-          if (productId == Integer.parseInt(this.parameterViewAll) ) viewAll = true;
 
-          Text dateText = (Text) theText.clone();
-              dateText.setText(iwrb.getLocalizedString("travel.date_sm","date"));
-          Text nameText = (Text) theText.clone();
-              nameText.setText(iwrb.getLocalizedString("travel.product_name_sm","name of product"));
-          Text countText = (Text) theText.clone();
-              countText.setText(iwrb.getLocalizedString("travel.count_sm","count"));
-          Text assignedText = (Text) theText.clone();
-              assignedText.setText(iwrb.getLocalizedString("travel.assigned_small_sm","assigned"));
-          Text inqText = (Text) theText.clone();
-              inqText.setText(iwrb.getLocalizedString("travel.inqueries_sm","inquiries"));
-          Text bookedText = (Text) theText.clone();
-              bookedText.setText(iwrb.getLocalizedString("travel.booked_sm","booked"));
-          Text availableText = (Text) theText.clone();
-              availableText.setText(iwrb.getLocalizedString("travel.available_small_sm","avail."));
-
-
-          Text dateTextBold = (Text) theSmallBoldText.clone();
-          Text nameTextBold = (Text) theSmallBoldText.clone();
-          Text countTextBold = (Text) theSmallBoldText.clone();
-          Text assignedTextBold = (Text) theSmallBoldText.clone();
-          Text inqTextBold = (Text) theSmallBoldText.clone();
-          Text bookedTextBold = (Text) theSmallBoldText.clone();
-          Text availableTextBold = (Text) theSmallBoldText.clone();
-
-          table.add(dateText,1,row);
-          table.add(nameText,2,row);
-          table.add(countText,3,row);
-          table.add(assignedText,4,row);
-          table.add(inqText,5,row);
-          table.add(bookedText,6,row);
-          table.add(availableText,7,row);
-          table.add("&nbsp;",8,row);
-
-          table.setRowColor(row, super.backgroundColor);
-
-          List products;
-          Product prod;
-          int supplierId = 0;
-          if (supplier != null)
-            supplierId = supplier.getID();
-          IWCalendar cal = new IWCalendar();
-          int dayOfWeek;
-          boolean upALine = false;
-
-          Service service;
-//          Tour tour;
-
-          int iCount = 0;
-          int iBooked =0;
-          int iInquery=0;
-          int iAvailable=0;
-          int iAssigned=0;
-
-          String theColor = super.GRAY;
-
-          IWTimestamp tempStamp = new IWTimestamp(fromStamp);
-          ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
-          ServiceDay sDay = sDayHome.create();
-
-          toStamp.addDays(1);
-          while (toStamp.isLaterThan(tempStamp)) {
-              dayOfWeek = cal.getDayOfWeek(tempStamp.getYear(), tempStamp.getMonth(), tempStamp.getDay());
-              try {
-                  if (viewAll) {
-                    products = getProductBusiness(iwc).getProducts(supplierId, tempStamp);
-                  }
-                  else {
-                    products = new Vector();
-                      products.add(getProductBusiness(iwc).getProduct(productId));
-                  }
-              }catch (FinderException sql) {
-                sql.printStackTrace(System.err);
-                products = getProductBusiness(iwc).getProducts(supplierId, tempStamp);
-              }
-              upALine = false;
-              ++row;
-              dateTextBold = (Text) theSmallBoldText.clone();
-                  dateTextBold.setText(tempStamp.getLocaleDate(iwc));
-                  dateTextBold.setFontColor(super.BLACK);
-              table.add(dateTextBold,1,row);
-              table.setRowColor(row, super.GRAY);
-
-              boolean bContinue= false;
-
-              for (int i = 0; i < products.size(); i++) {
-                  try {
-                    prod = (Product) products.get(i);
-                      if (supplier != null) {
-                        bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,prod,tempStamp);
-                      }else if (reseller != null) {
-                        bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,contract,prod,tempStamp);
-                      }
-                      if (bContinue) {
-                          iCount = 0;
-                          iBooked =0;
-                          iInquery=0;
-                          iAvailable=0;
-                          iAssigned=0;
-                          service = getTravelStockroomBusiness(iwc).getService(prod);
-                          //tour = getTourBusiness(iwc).getTour(prod);
-
-                          if (supplier != null) {
-                            sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
-                            if (sDay != null) {
-                              iCount = sDay.getMax();
-                              if (iCount < 1) {
-                                //iCount = tour.getTotalSeats();
-                              }
-                            }else {
-                              //iCount = tour.getTotalSeats();
-                            }
-
-                            //iCount = tour.getTotalSeats();
-                            iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
-                            iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
-
-                            int resellerBookings = getBooker(iwc).getNumberOfBookingsByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
-                            if (iAssigned != 0) {
-                              iAssigned = iAssigned - resellerBookings;
-                            }
-
-                            iInquery = getInquirer(iwc).getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
-                            //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
-                            iAvailable = iCount - iBooked - iAssigned;
-                          }else if (reseller != null) {
-                            iCount = contract.getAlotment();
-                            iBooked = getBooker(iwc).getNumberOfBookingsByReseller(reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
-                            iAssigned = 0;
-
-                            iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(),tempStamp,reseller.getID(), true);
-                            iAvailable = iCount - iBooked - iAssigned -iInquery;
-                            iCount = iCount -iBooked;
-                          }
-//                          countTextBold.setText(Integer.toString(iCount));
-
-
-                          nameTextBold  = (Text) theSmallBoldText.clone();
-                            nameTextBold.setText(service.getName(super.getTravelSessionManager(iwc).getLocaleId() ));
-
-                          assignedTextBold = (Text) theSmallBoldText.clone();
-                            assignedTextBold.setText(Integer.toString(iAssigned));
-                          countTextBold = (Text) super.theSmallBoldText.clone();
-                            countTextBold.setText(Integer.toString(iCount));
-                          inqTextBold = (Text) theSmallBoldText.clone();
-                            inqTextBold.setText(Integer.toString(iInquery));
-                          bookedTextBold = (Text) theSmallBoldText.clone();
-                            bookedTextBold.setText(Integer.toString(iBooked));
-                          availableTextBold = (Text) theSmallBoldText.clone();
-                            availableTextBold.setText(Integer.toString(iAvailable));
-
-                            nameTextBold.setFontColor(super.BLACK);
-                            countTextBold.setFontColor(super.BLACK);
-                            assignedTextBold.setFontColor(super.BLACK);
-                            inqTextBold.setFontColor(super.BLACK);
-                            bookedTextBold.setFontColor(super.BLACK);
-                            availableTextBold.setFontColor(super.BLACK);
-
-                          Link btnNanar = new Link(iwrb.getImage("buttons/closer.gif"));
-                            btnNanar.addParameter(closerLookDateParameter,tempStamp.toSQLDateString());
-                            btnNanar.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, prod.getID());
-                          Link btnBook = new Link(iwrb.getImage("buttons/book.gif"), is.idega.idegaweb.travel.presentation.Booking.class);
-                            btnBook.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, prod.getID());
-                            btnBook.addParameter("year",tempStamp.getYear());
-                            btnBook.addParameter("month",tempStamp.getMonth());
-                            btnBook.addParameter("day",tempStamp.getDay());
-
-                          table.add(nameTextBold,2,row);
-                          table.add(assignedTextBold,4,row);
-                          table.add(inqTextBold,5,row);
-                          table.add(bookedTextBold,6,row);
-                          if (iCount > 0) {
-                            table.add(countTextBold,3,row);
-                            table.add(availableTextBold,7,row);
-                          }
-/*
-                          table.setColor(1,row,theColor);
-                          table.setColor(2,row,theColor);
-                          table.setColor(3,row,theColor);
-                          table.setColor(4,row,theColor);
-                          table.setColor(5,row,theColor);
-                          table.setColor(6,row,theColor);
-                          table.setColor(7,row,theColor);
-*/
-                          table.add(btnNanar,8,row);
-                          if (supplier != null) {
-                            table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
-                            table.add(btnBook,8,row);
-                          } else if (reseller != null) {
-                            if (!getTravelStockroomBusiness(iwc).getIfExpired(contract, tempStamp))
-                              table.add(btnBook,8,row);
-                          }
-                          table.setRowColor(row,theColor);
-                          if (iInquery > 0) {
-                            table.setColor(5,row,super.YELLOW);
-                          }
-                          ++row;
-                          upALine = true;
-                      }
-                  }catch (SQLException sql) {
-                    sql.printStackTrace(System.err);
-                  }catch (ServiceNotFoundException snfe) {
-                    snfe.printStackTrace(System.err);
-                  }/*catch (TourNotFoundException tnfe) {
-                    tnfe.printStackTrace(System.err);
-                  }*/catch (TimeframeNotFoundException tfnfe) {
-                    tfnfe.printStackTrace(System.err);
-                  }
-              }
-              if (upALine) --row;
-
-              tempStamp.addDays(1);
-
+          Collection products = null;
+          ProductHome pHome = (ProductHome) IDOLookup.getHome(Product.class);
+          try {
+            if (productId == Integer.parseInt(this.parameterViewAll)) {
+              products = pHome.getProductsOrderedByProductCategory(supplier.getID(), this.fromStamp, this.toStamp );
+//              products = pHome.getProductsOrderedByProductCategory(supplier.getID());
+//              products = getProductBusiness(iwc).getProducts(supplier.getID());
+            }
+            else {
+              products = new Vector();
+              products.add(pHome.findByPrimaryKey(new Integer(productId)));
+            }
+          }catch (FinderException sql) {
+            sql.printStackTrace(System.err);
+            products  = new Vector();
+//            products = getProductBusiness(iwc).getProducts(supplier.getID());
           }
-          toStamp.addDays(-1);
 
+          is.idega.idegaweb.travel.service.presentation.BookingOverview bo = null;
+          if (product == null) {
+            int productsSize = products.size();
+            Collection cats;
+            Product prod;
+            ProductCategoryHome pCatHome = (ProductCategoryHome) IDOLookup.getHome(ProductCategory.class);
+            Collection tempProducts = new Vector();;
+            int newCat = -1;
+            int oldCat = -1;
+            String catName = "";
+            String oldCatName = "";
+            boolean getTable = false;
 
+            Iterator iter = products.iterator();
+            while (iter.hasNext()) {
+              getTable = false;
+              prod = pHome.findByPrimaryKey(iter.next());
+              cats = super.getProductCategoryFactory(iwc).getProductCategory(prod);
+              Iterator iter2 = cats.iterator();
+              if (iter2.hasNext()) {
+                ProductCategory pCat = (ProductCategory) iter2.next();
+                catName = pCat.getName();
+                newCat = pCat.getID();
+                if ( newCat != oldCat ) {
+                  if (oldCat != -1) {
+                    System.err.println("Adding table 1");
+                    table.add(getHeaderText(getProductCategoryFactory(iwc).getProductCategoryTypeDefaultName(oldCatName)));
+                    table.addBreak();
+                    table.add(bo.getBookingOverviewTable(iwc, tempProducts));
+                    table.addBreak();
+                    table.addBreak();
+                    tempProducts = new Vector();
+                    System.err.println("Creating tempProdutcs");
+//                    getTable = true;
+                  }
+                  bo = super.getServiceHandler(iwc).getBookingOverview(iwc, prod);
+                }
+                oldCat = newCat;
+                oldCatName = catName;
 
-          table.setWidth(3,cellWidth);
-          table.setWidth(4,cellWidth);
-          table.setWidth(5,cellWidth);
-          table.setWidth(6,cellWidth);
-          table.setWidth(7,cellWidth);
-
-          table.setColumnAlignment(1,"left");
-          table.setColumnAlignment(2,"left");
-          table.setColumnAlignment(3,"center");
-          table.setColumnAlignment(4,"center");
-          table.setColumnAlignment(5,"center");
-          table.setColumnAlignment(6,"center");
-          table.setColumnAlignment(7,"center");
-          table.setColumnAlignment(8,"right");
+                if (!iter.hasNext()){
+                  getTable = true;
+                }
+                System.err.println("Adding product to tempProducts");
+                tempProducts.add(prod);
+              }
+              if (getTable) {
+                System.err.println("Adding table 2");
+                table.add(getHeaderText(getProductCategoryFactory(iwc).getProductCategoryTypeDefaultName(catName)));
+                table.add(bo.getBookingOverviewTable(iwc, tempProducts));
+                tempProducts = new Vector();
+              }
+            }
+          }else {
+            bo = super.getServiceHandler(iwc).getBookingOverview(iwc, product);
+            table = bo.getBookingOverviewTable(iwc, products);
+          }
+          //////////////////////
+//          table = getBookingOverviewTable(iwc, productId);
 
 
       }
@@ -558,6 +412,252 @@ public class BookingOverview extends TravelManager {
       }
       return table;
 
+  }
+
+  private Table getBookingOverviewTable(IWContext iwc, int productId) throws CreateException, RemoteException, FinderException {
+    boolean viewAll = false;
+    if (productId == Integer.parseInt(this.parameterViewAll) ) viewAll = true;
+
+    Table table = new Table();
+    table.setCellspacing(1);
+    table.setCellpadding(4);
+    table.setColor(super.WHITE);
+    table.setWidth("90%");
+    int row = 1;
+
+    Text dateText = (Text) theText.clone();
+    dateText.setText(iwrb.getLocalizedString("travel.date_sm","date"));
+    Text nameText = (Text) theText.clone();
+    nameText.setText(iwrb.getLocalizedString("travel.product_name_sm","name of product"));
+    Text countText = (Text) theText.clone();
+    countText.setText(iwrb.getLocalizedString("travel.count_sm","count"));
+    Text assignedText = (Text) theText.clone();
+    assignedText.setText(iwrb.getLocalizedString("travel.assigned_small_sm","assigned"));
+    Text inqText = (Text) theText.clone();
+    inqText.setText(iwrb.getLocalizedString("travel.inqueries_sm","inquiries"));
+    Text bookedText = (Text) theText.clone();
+    bookedText.setText(iwrb.getLocalizedString("travel.booked_sm","booked"));
+    Text availableText = (Text) theText.clone();
+    availableText.setText(iwrb.getLocalizedString("travel.available_small_sm","avail."));
+
+
+    Text dateTextBold = (Text) theSmallBoldText.clone();
+    Text nameTextBold = (Text) theSmallBoldText.clone();
+    Text countTextBold = (Text) theSmallBoldText.clone();
+    Text assignedTextBold = (Text) theSmallBoldText.clone();
+    Text inqTextBold = (Text) theSmallBoldText.clone();
+    Text bookedTextBold = (Text) theSmallBoldText.clone();
+    Text availableTextBold = (Text) theSmallBoldText.clone();
+
+    table.add(dateText,1,row);
+    table.add(nameText,2,row);
+    table.add(countText,3,row);
+    table.add(assignedText,4,row);
+    table.add(inqText,5,row);
+    table.add(bookedText,6,row);
+    table.add(availableText,7,row);
+    table.add("&nbsp;",8,row);
+
+    table.setRowColor(row, super.backgroundColor);
+
+    List products;
+    Product prod;
+    int supplierId = 0;
+    if (supplier != null)
+      supplierId = supplier.getID();
+    IWCalendar cal = new IWCalendar();
+    int dayOfWeek;
+    boolean upALine = false;
+
+    Service service;
+    //          Tour tour;
+
+    int iCount = 0;
+    int iBooked =0;
+    int iInquery=0;
+    int iAvailable=0;
+    int iAssigned=0;
+
+    String theColor = super.GRAY;
+
+    IWTimestamp tempStamp = new IWTimestamp(fromStamp);
+    ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+    ServiceDay sDay = sDayHome.create();
+
+    toStamp.addDays(1);
+    while (toStamp.isLaterThan(tempStamp)) {
+      dayOfWeek = cal.getDayOfWeek(tempStamp.getYear(), tempStamp.getMonth(), tempStamp.getDay());
+      try {
+        if (viewAll) {
+          products = getProductBusiness(iwc).getProducts(supplierId, tempStamp);
+        }
+        else {
+          products = new Vector();
+          products.add(getProductBusiness(iwc).getProduct(productId));
+        }
+      }catch (FinderException sql) {
+        sql.printStackTrace(System.err);
+        products = getProductBusiness(iwc).getProducts(supplierId, tempStamp);
+      }
+      upALine = false;
+      ++row;
+      dateTextBold = (Text) theSmallBoldText.clone();
+      dateTextBold.setText(tempStamp.getLocaleDate(iwc));
+      dateTextBold.setFontColor(super.BLACK);
+      table.add(dateTextBold,1,row);
+      table.setRowColor(row, super.GRAY);
+
+      boolean bContinue= false;
+
+      for (int i = 0; i < products.size(); i++) {
+        try {
+          prod = (Product) products.get(i);
+          if (supplier != null) {
+            bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,prod,tempStamp);
+          }else if (reseller != null) {
+            bContinue = getTravelStockroomBusiness(iwc).getIfDay(iwc,contract,prod,tempStamp);
+          }
+          if (bContinue) {
+            iCount = 0;
+            iBooked =0;
+            iInquery=0;
+            iAvailable=0;
+            iAssigned=0;
+            service = getTravelStockroomBusiness(iwc).getService(prod);
+            //tour = getTourBusiness(iwc).getTour(prod);
+
+            if (supplier != null) {
+              sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
+              if (sDay != null) {
+                iCount = sDay.getMax();
+                if (iCount < 1) {
+                  //iCount = tour.getTotalSeats();
+                }
+              }else {
+                //iCount = tour.getTotalSeats();
+              }
+
+              //iCount = tour.getTotalSeats();
+              iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+              iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
+
+              int resellerBookings = getBooker(iwc).getNumberOfBookingsByResellers(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+              if (iAssigned != 0) {
+                iAssigned = iAssigned - resellerBookings;
+              }
+
+              iInquery = getInquirer(iwc).getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), tempStamp, true);//getInqueredSeats(service.getID() ,tempStamp, true);
+              //iInquery = Inquirer.getInqueredSeats(service.getID() ,tempStamp, true);
+              iAvailable = iCount - iBooked - iAssigned;
+            }else if (reseller != null) {
+              iCount = contract.getAlotment();
+              iBooked = getBooker(iwc).getNumberOfBookingsByReseller(reseller.getID() ,((Integer) service.getPrimaryKey()).intValue(), tempStamp);
+              iAssigned = 0;
+
+              iInquery = getInquirer(iwc).getInquiryHome().getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(),tempStamp,reseller.getID(), true);
+              iAvailable = iCount - iBooked - iAssigned -iInquery;
+              iCount = iCount -iBooked;
+            }
+            //                          countTextBold.setText(Integer.toString(iCount));
+
+
+            nameTextBold  = (Text) theSmallBoldText.clone();
+            nameTextBold.setText(service.getName(super.getTravelSessionManager(iwc).getLocaleId() ));
+
+            assignedTextBold = (Text) theSmallBoldText.clone();
+            assignedTextBold.setText(Integer.toString(iAssigned));
+            countTextBold = (Text) super.theSmallBoldText.clone();
+            countTextBold.setText(Integer.toString(iCount));
+            inqTextBold = (Text) theSmallBoldText.clone();
+            inqTextBold.setText(Integer.toString(iInquery));
+            bookedTextBold = (Text) theSmallBoldText.clone();
+            bookedTextBold.setText(Integer.toString(iBooked));
+            availableTextBold = (Text) theSmallBoldText.clone();
+            availableTextBold.setText(Integer.toString(iAvailable));
+
+            nameTextBold.setFontColor(super.BLACK);
+            countTextBold.setFontColor(super.BLACK);
+            assignedTextBold.setFontColor(super.BLACK);
+            inqTextBold.setFontColor(super.BLACK);
+            bookedTextBold.setFontColor(super.BLACK);
+            availableTextBold.setFontColor(super.BLACK);
+
+            Link btnNanar = new Link(iwrb.getImage("buttons/closer.gif"));
+            btnNanar.addParameter(closerLookDateParameter,tempStamp.toSQLDateString());
+            btnNanar.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, prod.getID());
+            Link btnBook = new Link(iwrb.getImage("buttons/book.gif"), is.idega.idegaweb.travel.presentation.Booking.class);
+            btnBook.addParameter(is.idega.idegaweb.travel.presentation.Booking.parameterProductId, prod.getID());
+            btnBook.addParameter("year",tempStamp.getYear());
+            btnBook.addParameter("month",tempStamp.getMonth());
+            btnBook.addParameter("day",tempStamp.getDay());
+
+            table.add(nameTextBold,2,row);
+            table.add(assignedTextBold,4,row);
+            table.add(inqTextBold,5,row);
+            table.add(bookedTextBold,6,row);
+            if (iCount > 0) {
+              table.add(countTextBold,3,row);
+              table.add(availableTextBold,7,row);
+            }
+    /*
+                              table.setColor(1,row,theColor);
+                              table.setColor(2,row,theColor);
+                              table.setColor(3,row,theColor);
+                              table.setColor(4,row,theColor);
+                              table.setColor(5,row,theColor);
+                              table.setColor(6,row,theColor);
+                              table.setColor(7,row,theColor);
+    */
+            table.add(btnNanar,8,row);
+            if (supplier != null) {
+              table.add(Text.NON_BREAKING_SPACE+Text.NON_BREAKING_SPACE,8,row);
+              table.add(btnBook,8,row);
+            } else if (reseller != null) {
+              if (!getTravelStockroomBusiness(iwc).getIfExpired(contract, tempStamp))
+                table.add(btnBook,8,row);
+            }
+            table.setRowColor(row,theColor);
+            if (iInquery > 0) {
+              table.setColor(5,row,super.YELLOW);
+            }
+                ++row;
+                upALine = true;
+          }
+        }catch (SQLException sql) {
+          sql.printStackTrace(System.err);
+        }catch (ServiceNotFoundException snfe) {
+          snfe.printStackTrace(System.err);
+        }/*catch (TourNotFoundException tnfe) {
+                        tnfe.printStackTrace(System.err);
+        }*/catch (TimeframeNotFoundException tfnfe) {
+          tfnfe.printStackTrace(System.err);
+        }
+      }
+      if (upALine) --row;
+
+      tempStamp.addDays(1);
+
+    }
+    toStamp.addDays(-1);
+
+
+
+    table.setWidth(3,cellWidth);
+    table.setWidth(4,cellWidth);
+    table.setWidth(5,cellWidth);
+    table.setWidth(6,cellWidth);
+    table.setWidth(7,cellWidth);
+
+    table.setColumnAlignment(1,"left");
+    table.setColumnAlignment(2,"left");
+    table.setColumnAlignment(3,"center");
+    table.setColumnAlignment(4,"center");
+    table.setColumnAlignment(5,"center");
+    table.setColumnAlignment(6,"center");
+    table.setColumnAlignment(7,"center");
+    table.setColumnAlignment(8,"right");
+
+    return table;
   }
 
 

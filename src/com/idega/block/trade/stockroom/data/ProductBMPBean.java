@@ -1,19 +1,17 @@
 package com.idega.block.trade.stockroom.data;
 
+import java.rmi.*;
+import java.sql.*;
 import java.util.*;
-import java.rmi.RemoteException;
-import javax.ejb.FinderException;
-import com.idega.block.text.data.LocalizedText;
-import com.idega.data.*;
-import com.idega.core.data.*;
-import com.idega.block.trade.stockroom.business.*;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import com.idega.util.IWTimestamp;
+
+import javax.ejb.*;
+
 import com.idega.block.text.business.*;
-import com.idega.block.text.data.TxText;
-import com.idega.block.trade.stockroom.data.Timeframe;
-import com.idega.block.trade.stockroom.business.TimeframeComparator;
+import com.idega.block.text.data.*;
+import com.idega.block.trade.stockroom.business.*;
+import com.idega.core.data.*;
+import com.idega.data.*;
+import com.idega.util.*;
 
 /**
  *  Title: IW Trade Description: Copyright: Copyright (c) 2001 Company: idega.is
@@ -27,15 +25,10 @@ import com.idega.block.trade.stockroom.business.TimeframeComparator;
 
 public class ProductBMPBean extends com.idega.data.GenericEntity implements com.idega.block.trade.stockroom.data.Product {
 
-  /**
-   *  Description of the Field
-   */
   public final static int DISCOUNT_TYPE_ID_AMOUNT = 0;
-  /**
-   *  Description of the Field
-   */
   public final static int DISCOUNT_TYPE_ID_PERCENT = 1;
 
+  private final int FILTER_NOT_CONNECTED_TO_CATEGORY = 0;
   /**
    *  Constructor for the Product object
    */
@@ -84,7 +77,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
    * deprecated
    */
   public int getID() {
-    return ((Integer) getPrimaryKey()).intValue();
+    return ((Integer) this.getPrimaryKey()).intValue();
   }
 
   /**
@@ -304,10 +297,23 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
    */
   private Timeframe[] getTimeframesOrdered( int orderBy ) throws SQLException {
     if ( orderBy != -1 ) {
-      List tFrames = EntityFinder.findRelated( this, com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance( Timeframe.class ) );
-      TimeframeComparator comparator = new TimeframeComparator( TimeframeComparator.FROMDATE );
-      Collections.sort( tFrames, comparator );
-      return ( Timeframe[] ) tFrames.toArray( new Timeframe[]{} );
+      try {
+        Collection coll = this.idoGetRelatedEntities(Timeframe.class);
+        TimeframeHome tHome = (TimeframeHome) IDOLookup.getHome(Timeframe.class);
+//      List tFrames = EntityFinder.findRelated( this, com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance( Timeframe.class ) );
+        List tFrames = new Vector();
+        Iterator iter = coll.iterator();
+        while (iter.hasNext()) {
+          Timeframe item = tHome.findByPrimaryKey(iter.next());
+          tFrames.add(item);
+        }
+        TimeframeComparator comparator = new TimeframeComparator( TimeframeComparator.FROMDATE );
+        Collections.sort( tFrames, comparator );
+        return ( Timeframe[] ) tFrames.toArray( new Timeframe[]{} );
+      }catch (Exception e) {
+        e.printStackTrace(System.err);
+        throw new SQLException(e.getMessage());
+      }
     } else {
       return ( Timeframe[] ) this.findRelated( com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance( Timeframe.class ) );
     }
@@ -552,6 +558,18 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     }
   }
 
+  public Collection ejbHomeGetProductsOrderedByProductCategory(int supplierId) throws FinderException {
+    return ejbHomeGetProductsOrderedByProductCategory(supplierId, null, null);
+  }
+
+  public Collection ejbHomeGetProductsOrderedByProductCategory(int supplierId, IWTimestamp stamp) throws FinderException {
+    return ejbHomeGetProductsOrderedByProductCategory(supplierId, stamp, null);
+  }
+
+  public Collection ejbHomeGetProductsOrderedByProductCategory(int supplierId, IWTimestamp from, IWTimestamp to) throws FinderException {
+    return ejbHomeGetProducts(supplierId, -1, from, to, ProductCategoryBMPBean.getEntityTableName()+"."+ProductCategoryBMPBean.getColumnName());
+  }
+
   public Collection ejbHomeGetProducts(int supplierId) throws FinderException {
     String pTable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
 
@@ -568,11 +586,24 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
 
 
   public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to) throws FinderException{
+    return ejbHomeGetProducts(supplierId, productCategoryId, from, to, null);
+  }
+
+  public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy) throws FinderException{
+    return ejbHomeGetProducts(supplierId, productCategoryId, from, to, orderBy, -1, -1);
+  }
+
+  public int ejbHomeGetProductFilterNotConnectedToAnyProductCategory() {
+    return FILTER_NOT_CONNECTED_TO_CATEGORY;
+  }
+
+  public Collection ejbHomeGetProducts(int supplierId, int productCategoryId ,IWTimestamp from, IWTimestamp to, String orderBy, int localeId, int filter) throws FinderException{
     Collection coll;
 
     Timeframe timeframe = (Timeframe) com.idega.block.trade.stockroom.data.TimeframeBMPBean.getStaticInstance(Timeframe.class);
     Product product = (Product) com.idega.block.trade.stockroom.data.ProductBMPBean.getStaticInstance(Product.class);
     ProductCategory pCat = (ProductCategory) com.idega.block.trade.stockroom.data.ProductCategoryBMPBean.getStaticInstance(ProductCategory.class);
+    LocalizedText locText = (LocalizedText) LocalizedTextBMPBean.getStaticInstance(LocalizedText.class);
     Product prod = null;
     //Service tService = (Service) is.idega.idegaweb.travel.data.ServiceBMPBean.getStaticInstance(Service.class);
 
@@ -580,15 +611,22 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     String Ttable = com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeTableName();
     String Ptable = com.idega.block.trade.stockroom.data.ProductBMPBean.getProductEntityName();
     String catMiddle = EntityControl.getManyToManyRelationShipTableName(ProductCategory.class,Product.class);
+    String catTable = pCat.getEntityName();
+
+    String locMiddleTable = EntityControl.getManyToManyRelationShipTableName(Product.class, LocalizedText.class);
+    String locTxtTable = LocalizedTextBMPBean.getEntityTableName();
+
 
     StringBuffer timeframeSQL = new StringBuffer();
       timeframeSQL.append("SELECT distinct "+Ptable+".* FROM "+Ptable);
       if (from != null && to != null) {
         timeframeSQL.append(", "+Ttable+", "+middleTable);
       }
-      if (productCategoryId != -1) {
-        timeframeSQL.append(", "+catMiddle);
+      if (localeId != -1) {
+        timeframeSQL.append(", "+locMiddleTable+", "+locTxtTable);
       }
+
+      timeframeSQL.append(", "+catMiddle+", "+catTable);
       timeframeSQL.append(" WHERE ");
       timeframeSQL.append(Ptable+"."+com.idega.block.trade.stockroom.data.ProductBMPBean.getColumnNameIsValid()+" = 'Y'");
       if (from != null && to != null) {
@@ -597,10 +635,12 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
         timeframeSQL.append(" AND ");
         timeframeSQL.append(Ptable+"."+this.getIDColumnName()+" = "+middleTable+"."+this.getIDColumnName());
       }
+      timeframeSQL.append(" AND ");
+      timeframeSQL.append(Ptable+"."+this.getIDColumnName()+" = "+catMiddle+"."+this.getIDColumnName());
 
+      timeframeSQL.append(" AND ");
+      timeframeSQL.append(catMiddle+"."+pCat.getIDColumnName() +" = "+catTable+"."+pCat.getIDColumnName());
       if (productCategoryId != -1) {
-        timeframeSQL.append(" AND ");
-        timeframeSQL.append(Ptable+"."+this.getIDColumnName()+" = "+catMiddle+"."+this.getIDColumnName());
         timeframeSQL.append(" AND ");
         timeframeSQL.append(catMiddle+"."+pCat.getIDColumnName() +" = "+productCategoryId);
       }
@@ -611,7 +651,7 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
     if (tempProducts != null)
     if (tempProducts.size() > 0) {
       timeframeSQL.append(" AND ");
-      timeframeSQL.append(middleTable+"."+this.getIDColumnName()+" in (");
+      timeframeSQL.append(Ptable+"."+this.getIDColumnName()+" in (");
       Iterator iter = tempProducts.iterator();
       Object item;
       int counter = 0;
@@ -638,10 +678,33 @@ public class ProductBMPBean extends com.idega.data.GenericEntity implements com.
       timeframeSQL.append(")");
     }
 
-    if (from != null && to != null) {
+    if (localeId != -1) {
+      timeframeSQL.append(" AND ")
+          .append(locMiddleTable+"."+locText.getIDColumnName()+ " = "+locTxtTable+"."+locText.getIDColumnName())
+          .append(" AND ")
+          .append(locMiddleTable+"."+this.getIdColumnName()+" = "+Ptable+"."+this.getIdColumnName())
+          .append(" AND ")
+          .append(locTxtTable+"."+LocalizedTextBMPBean.getColumnNameLocaleId()+" = "+localeId);
+    }
+
+    /**
+     * @todo bæta við filter supporti
+    switch (filter) {
+      case FILTER_NOT_CONNECTED_TO_CATEGORY :
+        break;
+      default:
+        break;
+    }
+     */
+
+
+    if (orderBy != null) {
+      timeframeSQL.append(" ORDER BY "+orderBy);
+    }else if (from != null && to != null) {
       timeframeSQL.append(" ORDER BY "+com.idega.block.trade.stockroom.data.TimeframeBMPBean.getTimeframeFromColumnName());
     }
 
+    System.out.println(timeframeSQL.toString());
     coll = this.idoFindPKsBySQL(timeframeSQL.toString());
 //    products = EntityFinder.getInstance().findAll(Product.class,timeframeSQL.toString());
     return coll;

@@ -101,10 +101,14 @@ public class ProductPriceBMPBean extends com.idega.data.GenericEntity implements
       try {
         CurrencyHome cHome = (CurrencyHome) IDOLookup.getHome(Currency.class);
         Currency currency = cHome.findByPrimaryKey(currId);
-        CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(currency.getCurrencyAbbreviation());
-        this.setCurrencyId(holder.getCurrencyID());
-        this.store();
-        System.out.println("[ProductPriceBMPBean] Backwards compatability : changing currencyId from 1 to "+holder.getCurrencyID());
+        CurrencyHolder holder = CurrencyBusiness.getCurrencyHolder(currency.getCurrencyName());
+        if (holder != null) {
+          System.out.println("[ProductPriceBMPBean] Backwards compatability : changing currencyId from 1 to "+holder.getCurrencyID());
+          this.setCurrencyId(holder.getCurrencyID());
+          this.store();
+        }else {
+          System.out.println("[ProductPriceBMPBean] Cannot execute Backwards compatability : currencyHolder == null");
+        }
       }catch (Exception e) {
         e.printStackTrace(System.err);
       }

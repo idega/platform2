@@ -225,7 +225,6 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
           }
 
           float pr = getPrice(-1, productId,cat.getParentId(),currencyId,time, timeframeId, addressId);
-          System.err.println("Parent price : "+pr);
           return pr*((100-disc) /100);
         }else{
           throw new ProductPriceException("No Price Was Found");
@@ -447,5 +446,5 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 			}
 		}
 	}
-	
+
 }

@@ -153,6 +153,8 @@ public class CategoryWindow extends IWAdminWindow {
 	    //System.err.println("saving category :"+iCategoryId+" icoid :"+iObjectInstanceId);
 
           if(iCategoryId <= 0 && sName.length() >0){
+            if (sOrder == null) System.out.println(" sOrder == null");
+            if (CategoryBusiness.getInstance() == null) System.out.println(" CategoryBusiness == null");
             iCategoryId = CategoryBusiness.getInstance().saveCategory(iCategoryId,sName,sDesc,Integer.parseInt(sOrder),iObjectInstanceId,sType,multi).getID();
           }
           else {

@@ -17,6 +17,7 @@ import is.idega.idegaweb.travel.presentation.*;
 import is.idega.idegaweb.travel.service.hotel.presentation.*;
 import is.idega.idegaweb.travel.service.presentation.*;
 import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
+import is.idega.idegaweb.travel.service.presentation.BookingOverview;
 import is.idega.idegaweb.travel.service.tour.presentation.*;
 
 /**
@@ -105,8 +106,40 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
     }
 
     TourOverview tOverview = new TourOverview(iwc);
-
     return tOverview;
+  }
+
+  public BookingOverview getBookingOverview(IWContext iwc, Product product) throws RemoteException, FinderException{
+    if (product != null) {
+
+      Collection coll = getProductCategoryFactory().getProductCategory(product);
+      Iterator iter = coll.iterator();
+      /**
+       * Only supports Products with ONE ProductCategory
+       */
+      if (iter.hasNext()) {
+        ProductCategory pCat = (ProductCategory) iter.next();
+        String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
+        if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
+          System.out.println("Returning BookingOverview for TOUR");
+          return new TourBookingOverview(iwc);
+        }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
+          System.out.println("Cannot find BookingOverview for ProductCategory HOTEL, returning form for TOUR");
+          return new TourBookingOverview(iwc);
+        }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
+          System.out.println("Cannot find BookingOverview for ProductCategory FISHING, returning form for TOUR");
+          return new TourBookingOverview(iwc);
+        }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
+          System.out.println("Cannot find BookingOverview for ProductCategory PRODUCT, returning form for TOUR");
+          return new TourBookingOverview(iwc);
+        }
+      }
+      TourBookingOverview tbOverview = new TourBookingOverview(iwc);
+      return tbOverview;
+    }else {
+      return new AbstractBookingOverview(iwc);
+    }
+
   }
 
   public Voucher getVoucher(Booking booking) throws Exception {

@@ -1,30 +1,21 @@
 package is.idega.idegaweb.travel.service.tour.presentation;
-import is.idega.idegaweb.travel.business.ServiceNotFoundException;
-import is.idega.idegaweb.travel.business.TimeframeNotFoundException;
-import is.idega.idegaweb.travel.data.Service;
-import is.idega.idegaweb.travel.data.ServiceDay;
-import is.idega.idegaweb.travel.data.ServiceDayHome;
-import is.idega.idegaweb.travel.service.presentation.AbstractServiceOverview;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Vector;
+import java.rmi.*;
+import java.sql.*;
+import java.util.*;
 
-import com.idega.block.trade.data.Currency;
-import com.idega.block.trade.stockroom.business.ProductPriceException;
-import com.idega.block.trade.stockroom.data.Product;
-import com.idega.block.trade.stockroom.data.ProductPrice;
-import com.idega.block.trade.stockroom.data.Timeframe;
-import com.idega.block.trade.stockroom.data.TravelAddress;
-import com.idega.core.data.Address;
-import com.idega.data.IDOFinderException;
-import com.idega.data.IDOLookup;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Image;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
-import com.idega.util.IWTimestamp;
-import com.idega.util.text.TextSoap;
+
+import com.idega.block.trade.data.*;
+import com.idega.block.trade.stockroom.business.*;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.core.data.*;
+import com.idega.data.*;
+import com.idega.presentation.*;
+import com.idega.presentation.text.*;
+import com.idega.util.*;
+import com.idega.util.text.*;
+import is.idega.idegaweb.travel.business.*;
+import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.service.presentation.*;
 
 /**
  * <p>Title: idegaWeb TravelBooking</p>

@@ -40,7 +40,6 @@ public abstract class AbstractServiceOverview extends TravelManager implements S
   }
 
   public void main(IWContext iwc) throws RemoteException{
-//    super.main(iwc);
     super.initializer(iwc);
     this.initialize(iwc);
   }
@@ -61,75 +60,9 @@ public abstract class AbstractServiceOverview extends TravelManager implements S
   }
 
 
+
 }
 
 
-/**
- * @todo Implementa fyrir timabil
 
-  public Table getTopTable(IWContext iwc) {
-      Table topTable = new Table(4,2);
-        topTable.setBorder(0);
-        topTable.setWidth("90%");
-
-      DateInput active_from = new DateInput("active_from");
-          IWTimestamp fromStamp = getFromIdegaTimestamp(iwc);
-          active_from.setDate(fromStamp.getSQLDate());
-      DateInput active_to = new DateInput("active_to");
-          IWTimestamp toStamp = getToIdegaTimestamp(iwc);
-          active_to.setDate(toStamp.getSQLDate());
-
-      Text tfFromText = (Text) theText.clone();
-          tfFromText.setText(_iwrb.getLocalizedString("travel.from","from"));
-      Text tfToText = (Text) theText.clone();
-          tfToText.setText(_iwrb.getLocalizedString("travel.to","to"));
-
-
-      Text timeframeText = (Text) theText.clone();
-          timeframeText.setText(_iwrb.getLocalizedString("travel.timeframe_only","Timeframe"));
-          timeframeText.addToText(":");
-
-      topTable.setColumnAlignment(1,"right");
-      topTable.setColumnAlignment(2,"left");
-      topTable.add(timeframeText,1,1);
-      topTable.add(tfFromText,1,1);
-      topTable.add(active_from,2,1);
-      topTable.add(tfToText,2,1);
-      topTable.add(active_to,2,1);
-      topTable.mergeCells(2,1,4,1);
-//    topTable.mergeCells(2,2,4,2);
-
-
-
-      topTable.setAlignment(4,2,"right");
-      topTable.add(new SubmitButton("TEMP-Sækja"),4,2);
-
-      return topTable;
-  }
-
-  public IWTimestamp getFromIdegaTimestamp(IWContext iwc) {
-      IWTimestamp stamp = null;
-      String from_time = iwc.getParameter(PARAMETER_FROM);
-      if (from_time!= null) {
-          stamp = new IWTimestamp(from_time);
-      }
-      else {
-          stamp = IWTimestamp.RightNow();
-      }
-      return stamp;
-  }
-
-  public IWTimestamp getToIdegaTimestamp(IWContext iwc) {
-      IWTimestamp stamp = null;
-      String from_time = iwc.getParameter(PARAMETER_TO);
-      if (from_time!= null) {
-          stamp = new IWTimestamp(from_time);
-      }
-      else {
-          stamp = IWTimestamp.RightNow();
-          stamp.addDays(15);
-      }
-      return stamp;
-  }
-*/
 

@@ -34,58 +34,14 @@ import is.idega.idegaweb.travel.service.tour.data.*;
  */
 
 public class TourBookingForm extends BookingForm{
-//  IWResourceBundle iwrb;
-//  Supplier supplier;
 
-//  private Product _product;
-//  private Service _service;
   private Tour _tour;
-//  private Contract _contract;
-//  private IWTimestamp _stamp;
   private TourBooking _booking;
-//  private Reseller _reseller;
 
-//  private int _productId;
-//  private int _resellerId;
-
-/*  int available = is.idega.idegaweb.travel.presentation.Booking.available;
-  int availableIfNoLimit = is.idega.idegaweb.travel.presentation.Booking.availableIfNoLimit;
-
-  public static String BookingAction = is.idega.idegaweb.travel.presentation.Booking.BookingAction;
-  private String BookingParameter = is.idega.idegaweb.travel.presentation.Booking.BookingParameter;
-  public static String parameterBookingId = is.idega.idegaweb.travel.presentation.Booking.parameterBookingId;
-  public static String parameterUpdateBooking = "bookingUpdateBooking";
-  private static String parameterBookAnyway = "bookingBookAnyway";
-  public static String parameterInquiry = "bookingInquiry";
-  private static String parameterSendInquery = "bookingSendInquery";
-  private static String parameterSupplierId = "bookingSupplierId";
-  public static String parameterDepartureAddressId = BookingForm.parameterDepartureAddressId;
-  public static String parameterCCNumber = "CCNumber";
-  public static String parameterCCMonth  = "CCMonth";
-  public static String parameterCCYear   = "CCYear";
-
-  public static String sAction = "bookingFormAction";
-  public static String parameterSaveBooking = "bookingFormSaveBooking";
-
-  public static String parameterFromDate = "bookingFromDate";
-  public static String parameterManyDays = "bookingManyDays";
-  private String parameterOnlineBooking = "pr_onl_bking";
-
-
-  public static final int errorTooMany = -1;
-  public static final int inquirySent = -10;
-  public List errorDays = new Vector();
-  private boolean _useInquiryForm = false;
-*/
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
     super(iwc, product);
     setTour(iwc, product);
-//    setProduct(iwc, product);
-//    iwrb = super.getResourceBundle(iwc);
-//    supplier = super.getSupplier();
-//    _reseller = super.getReseller();
-//    setTimestamp(iwc);
   }
 
   private void setTour(IWContext iwc, Product product) throws RemoteException{
@@ -96,18 +52,7 @@ public class TourBookingForm extends BookingForm{
       fe.printStackTrace(System.err);
     }
   }
-/*
-  private void setTimestamp(IWContext iwc) {
-    String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
-    String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-    String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
-    if (day != null && month != null && year != null) {
-      _stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
-    }else {
-      _stamp = new IWTimestamp(IWTimestamp.RightNow());
-    }
-  }
-*/
+
   public Form getBookingForm(IWContext iwc) throws RemoteException, FinderException {
       Form form = new Form();
       Table table = new Table();
@@ -655,27 +600,6 @@ public class TourBookingForm extends BookingForm{
       throw new FinderException(tnfe.getMessage());
     }
   }
-/*
-  private Form getInquiryForm(IWContext iwc, Product product, IWTimestamp stamp) {
-    Form form = new Form();
-    Table table = new Table();
-      table.setCellpadding(0);
-      table.setCellspacing(6);
-      table.setBorder(0);
-      table.setWidth("100%");
-    form.add(table);
-
-    if (stamp != null) {
-      form.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
-      form.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
-      form.addParameter(CalendarBusiness.PARAMETER_DAY,stamp.getDay());
-    }
-
-    int row = 1;
-    table.add(getText("Hmm gera bóku, is_valid = false... senda inquiry ... fattaru.... jamm besta leiðin og eina"), 1, row);
-
-    return form;
-  }*/
 
   private Form getPublicBookingFormPrivate(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, ServiceNotFoundException, TimeframeNotFoundException, FinderException {
     Form form = new Form();
@@ -1316,36 +1240,7 @@ public class TourBookingForm extends BookingForm{
                   //table.setBorder(1);
     return form;
   }
-/*
-  private DropdownMenu getDropdownMenuWithUsers(List users, String name) {
-    DropdownMenu usersDrop = new DropdownMenu("ic_user");
-    User usr = null;
 
-    if (!users.contains(super.user)) {
-      users.add(0, super.user);
-    }
-
-    for (int i = 0; i < users.size(); i++) {
-      if (users.get(i) ==null) {
-        if (i != (users.size() -1)) {
-          usr = (User) users.get(i+1);
-          try {
-            if (ResellerManager.getReseller(usr) != null) {
-              usersDrop.addMenuElement(-1, ResellerManager.getReseller(usr).getName());
-            }
-          }catch (SQLException sql) {
-            sql.printStackTrace(System.err);
-          }
-        }
-      }else {
-        usr =  (User) users.get(i);
-        usersDrop.addMenuElement(usr.getID(), usr.getName());
-      }
-    }
-
-    return usersDrop;
-  }
-*/
  public Form getFormMaintainingAllParameters() {
     return getFormMaintainingAllParameters(true);
  }
@@ -1988,35 +1883,7 @@ public class TourBookingForm extends BookingForm{
     }
   }
 
-/**
- * @todo Finish update
- * @todo Check booking
- */
 
-/*
-  private void setProduct(IWContext iwc, Product product) {
-    _product = product;
-    try {
-      _productId = product.getID();
-      _service = getTravelStockroomBusiness(iwc).getService(product);
-      try {
-        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
-      }catch (FinderException sql) {
-        sql.printStackTrace(System.err);
-      }
-    }catch (NullPointerException np) {
-      System.err.println("TourBookingForm : Product == null, probably expired session");
-    }catch (Exception e) {
-      e.printStackTrace(System.err);
-    }
-  }
-*/
-/*
-  public void setReseller(Reseller reseller) {
-    _reseller = reseller;
-    _resellerId = reseller.getID();
-  }
-*/
   public void setBooking(Booking booking) throws RemoteException, FinderException {
     this._booking = ((is.idega.idegaweb.travel.service.tour.data.TourBookingHome)com.idega.data.IDOLookup.getHome(TourBooking.class)).findByPrimaryKey(booking.getPrimaryKey());
   }

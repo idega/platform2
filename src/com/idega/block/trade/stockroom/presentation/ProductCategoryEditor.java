@@ -1,20 +1,22 @@
 package com.idega.block.trade.stockroom.presentation;
 
-import com.idega.block.presentation.CategoryWindow;
-import java.rmi.RemoteException;
-import com.idega.business.IBOLookup;
-import javax.transaction.*;
-import com.idega.transaction.IdegaTransactionManager;
-import com.idega.data.EntityFinder;
-import java.sql.SQLException;
-import com.idega.block.trade.stockroom.data.*;
-import com.idega.block.trade.stockroom.business.*;
+import com.idega.core.localisation.business.ICLocaleBusiness;
+import java.rmi.*;
 import java.util.*;
+
+import javax.transaction.*;
+
+import com.idega.block.presentation.*;
+import com.idega.block.trade.stockroom.business.*;
+import com.idega.block.trade.stockroom.data.*;
+import com.idega.business.*;
+import com.idega.data.*;
+import com.idega.development.presentation.*;
+import com.idega.idegaweb.*;
+import com.idega.presentation.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
-import com.idega.idegaweb.*;
-import com.idega.idegaweb.presentation.IWAdminWindow;
-import com.idega.presentation.*;
+import com.idega.transaction.*;
 
 /**
  * Title:        idegaWeb TravelBooking
@@ -36,6 +38,11 @@ public class ProductCategoryEditor extends CategoryWindow {
   private static final String _parameterClose = "pr_cat_close";
   private static final String _parameterProductIn = "pr_cat_pr_in";
   private static final String _parameterProductOut = "pr_cat_pr_out";
+  private static final String _parameterProductFilter = "pr_cat_filt";
+  private static final String _parameterProductFilterUnusedOnly = "pr_cat_filt_unsd";
+  private static final String _parameterProductFilterAllProducts = "pr_cat_filt_all";
+
+  private static final String _parameterLocale = "pr_cat_loc";
 
   private static final String _parameterSelectedCategory = SELECTED_CATEGORY;
   private int maxWidth = 50;
@@ -94,32 +101,45 @@ public class ProductCategoryEditor extends CategoryWindow {
 
   private void viewCategory(IWContext iwc) throws RemoteException {
     try {
+      String sFilter = iwc.getParameter(this._parameterProductFilter);
+      String sLocale = iwc.getParameter(this._parameterLocale);
+      int iFilter = -1;
+      int iLocale = -1;
+      if (sFilter != null) iFilter = Integer.parseInt(sFilter);
+      if (sLocale != null) {
+        if ( sLocale.equals("-1") ){
+          iLocale = -1;
+        }else {
+          iLocale = ICLocaleBusiness.getLocaleId(ICLocaleBusiness.getLocaleFromLocaleString(sLocale));
+        }
+      }
+
+
+//      products = ( List ) ((ProductHome) IDOLookup.getHome(Product.class)).getProducts(-1, _productCategory.getID(), null, null, null, iLocale, iFilter);
+      // HEF VALIN PRODUCT ÖLL Í LISTANUM... (ekkert filterað eða neitt)
       List products = getProductBusiness(iwc).getProducts(_productCategory);
-      List allProducts = getProductBusiness(iwc).getProducts();
+/** @todo skoða betur, er öruggt að casta yfir i list ? */
+      List allProducts = ( List ) ((ProductHome) IDOLookup.getHome(Product.class)).getProducts(-1, -1, null, null, null, iLocale, iFilter);
+//      List allProducts = getProductBusiness(iwc).getProducts();
+
       allProducts.removeAll(products);
-
-      /*ProductComparator compare = new ProductComparator();
-      compare.sortBy(compare.NAME);
-
-      Collections.sort(allProducts, compare);
-      Collections.sort(products, compare);*/
 
       SelectionDoubleBox sdb = new SelectionDoubleBox(this._parameterProductOut, this._parameterProductIn);
 
+      /** @todo Sortera productin */
       Product product;
       Iterator iter = allProducts.iterator();
       while (iter.hasNext()) {
-        product = (Product) iter.next();
+        product = getProductHome().findByPrimaryKey(iter.next());
+//        product = (Product) iter.next();
         sdb.getLeftBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), product.getProductName(localeId));
       }
       iter = products.iterator();
       while (iter.hasNext()) {
+//        product = getProductHome().findByPrimaryKey(iter.next());
         product = (Product) iter.next();
         sdb.getRightBox().addMenuElement(((Integer) product.getPrimaryKey()).intValue(), product.getProductName(localeId));
       }
-      //sdb.getLeftBox().addMenuElements(allProducts);
-      //sdb.getRightBox().addMenuElements(products);
-
       sdb.getRightBox().selectAllOnSubmit();
       sdb.getLeftBox().setHeight(height);
       sdb.getRightBox().setHeight(height);
@@ -128,6 +148,29 @@ public class ProductCategoryEditor extends CategoryWindow {
 
       SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("save","Save"), this._action, this._parameterSaveCategory);
       SubmitButton close = new SubmitButton(iwrb.getLocalizedImageButton("close","Close"), this._action, this._parameterClose);
+      SubmitButton refresh = new SubmitButton(iwrb.getLocalizedImageButton("refresh","Refresh"));
+
+      DropdownMenu filter = new DropdownMenu(this._parameterProductFilter);
+      filter.addMenuElement(-1,iwrb.getLocalizedString("trade.all_products","All products"));
+      filter.addMenuElement(getProductHome().getProductFilterNotConnectedToAnyProductCategory() ,iwrb.getLocalizedString("trade.unused_products_only","Unused products only"));
+      if (sFilter != null) {
+        filter.setSelectedElement(sFilter);
+      }
+
+      DropdownMenu loc = Localizer.getAvailableLocalesDropdown(iwc.getApplication(), _parameterLocale);
+      loc.addMenuElementFirst("-1", iwrb.getLocalizedString("all_locales","All locales"));
+      if (sLocale != null) {
+        loc.setSelectedElement(sLocale);
+      }else {
+        loc.setSelectedElement("-1");
+      }
+      if (sLocale != null) {
+      }
+
+//      super.addRight(iwrb.getLocalizedString("trade.product_filter","Product filter"), filter, false, true);
+      super.addRight(iwrb.getLocalizedString("locales","Locales"), loc, true, true);
+      super.addRight("", refresh, false);
+
 
       Table table = new Table();
 
@@ -189,4 +232,7 @@ public class ProductCategoryEditor extends CategoryWindow {
     return (ProductBusiness) IBOLookup.getServiceInstance(iwac, ProductBusiness.class);
   }
 
+  private ProductHome getProductHome() throws RemoteException{
+    return (ProductHome) IDOLookup.getHome(Product.class) ;
+  }
 }
