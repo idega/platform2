@@ -1,8 +1,8 @@
 /*
  * Created on 4.3.2004
- *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * 
+ * To change the template for this generated file go to Window - Preferences -
+ * Java - Code Generation - Code and Comments
  */
 package is.idega.idegaweb.golf.tournament.presentation;
 
@@ -21,27 +21,27 @@ public abstract class TournamentBlock extends GolfBlock {
 	private GolfTournamentAdminDialog dialog;
 
 	protected String PARAMETER_CLASS_NAME = "clsName";
-	
+
 	public void add(PresentationObject mo) {
 		getDialog().add(mo);
 	}
-	
+
 	public void add(String string) {
 		super.add(string);
 		getDialog().add(string);
 	}
-	
+
 	public void setAdminView(String view) {
-    getDialog().setTournamentAdminView(view);
+		getDialog().setTournamentAdminView(view);
 	}
-	
+
 	public GolfTournamentAdminDialog getDialog() {
 		if (dialog == null) {
 			dialog = new GolfTournamentAdminDialog();
 		}
 		return dialog;
 	}
-	
+
 	public int getTournamentID(IWContext modinfo) {
 		String tId = (String) modinfo.getSessionAttribute(SESSION_PARAMETER_TOURNAMENT_ID);
 		if (tId != null) {
@@ -53,28 +53,26 @@ public abstract class TournamentBlock extends GolfBlock {
 		}
 		return -1;
 	}
-	
+
 	public void setTournamentID(IWContext modinfo, String tournamentID) {
 		modinfo.setSessionAttribute(SESSION_PARAMETER_TOURNAMENT_ID, tournamentID);
 	}
 
 	protected abstract boolean tournamentMustBeSet();
-	
+
 	public void _main(IWContext modinfo) throws Exception {
 		int tID = getTournamentID(modinfo);
 
-    if ( tID < 1 && tournamentMustBeSet()) {
-    	System.out.println("ClassCalling is "+getClassName());
-      getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentSelector.class)+"&"+PARAMETER_CLASS_NAME+"="+getClassName());
-    } else {
-    	super.add(getDialog());
-    	super._main(modinfo);
-    }
-	}	
-/*
-	public Tournament getTournament(ModuleInfo modinfo) throws SQLExceptionrn new Tournament(tID);
+		if (tID < 1 && tournamentMustBeSet()) {
+			System.out.println("ClassCalling is " + getClassName());
+			getParentPage().setToRedirect(modinfo.getIWMainApplication().getObjectInstanciatorURI(TournamentSelectorWindow.class) + "&" + PARAMETER_CLASS_NAME + "=" + getClassName());
+		} else {
+			super.add(getDialog());
+			super._main(modinfo);
 		}
-		return null;
 	}
-*/	
+	/*
+	 * public Tournament getTournament(ModuleInfo modinfo) throws SQLExceptionrn
+	 * new Tournament(tID); } return null; }
+	 */
 }

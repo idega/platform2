@@ -23,6 +23,7 @@ import is.idega.idegaweb.golf.entity.Tournament;
 import is.idega.idegaweb.golf.entity.TournamentRound;
 import is.idega.idegaweb.golf.entity.Union;
 import is.idega.idegaweb.golf.presentation.GolfBlock;
+import is.idega.idegaweb.golf.templates.page.GolfWindow;
 import is.idega.idegaweb.golf.tournament.business.TournamentController;
 import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
@@ -43,18 +44,24 @@ public class TournamentNavigation extends GolfBlock {
 		setAreResults(modinfo, false);
 
 		if (isAdmin() || isClubAdmin()) {
-			Window window = new Window("TournamentAdmin", "tournamentadmin.jsp");
-			window.setWidth(850);
-			window.setHeight(600);
-			window.setResizable(true);
+//			Window window = new GolfWindow("TournamentAdmin",850,600);//, "tournamentadmin.jsp");
+//			window.add(new TournamentAdministrator());
+			//window.setWidth(850);
+			//window.setHeight(600);
+//			window.setResizable(true);
 
 			Paragraph par = new Paragraph();
 			par.setAlign("left");
 			add(par);
-			Form form1 = new Form(window);
-			SubmitButton Button1 = new SubmitButton(iwrb.getImage("tournament/tournamentmanager.gif"));
-			form1.add(Button1);
-			par.add(form1);
+//			Form form1 = new Form(window);
+//			SubmitButton Button1 = new SubmitButton(iwrb.getImage("tournament/tournamentmanager.gif"));
+//			form1.add(Button1);
+//			par.add(form1);
+			
+			Link link = new Link(iwrb.getImage("tournament/tournamentmanager.gif"));
+			link.setWindowToOpen(TournamentAdministratorWindow.class);
+			par.add(link);
+			
 		}
 
 		Form form = new Form();

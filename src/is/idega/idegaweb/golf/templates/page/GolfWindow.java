@@ -13,6 +13,8 @@ import com.idega.presentation.ui.Window;
 public class GolfWindow extends Window {
 
   private Table tafla;
+  
+  private Class _golfClassToInstanciate = null;
 
   //8ab490
   public String header_color = "#F2BC00";
@@ -95,6 +97,10 @@ public class GolfWindow extends Window {
     tafla.add(objectToAdd, 1, 2);
   }
   
+  public void empty() {
+  	tafla.emptyCell(1,2);
+  }
+  
   public void setContentHorizontalAlignment(String align) {
   	tafla.setAlignment(1,2,align);
   }
@@ -157,6 +163,16 @@ public class GolfWindow extends Window {
 
   public String getBundleIdentifier() {
     return IW_BUNDLE_IDENTIFIER;
+  }
+  
+  public void initializeInMain(IWContext iwc) throws InstantiationException, IllegalAccessException {
+  	if(_golfClassToInstanciate != null) {
+  		this.add(_golfClassToInstanciate.newInstance());
+  	}
+  }
+  
+  public void setGolfClassToInstanciate(Class c) {
+  	_golfClassToInstanciate = c;
   }
 
   public void main(IWContext modinfo) throws Exception {
