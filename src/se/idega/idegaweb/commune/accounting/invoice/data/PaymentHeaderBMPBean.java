@@ -292,7 +292,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		sql.appendAndEquals("prop.provider_type_id", "t.provider_type_id");
 		sql.appendAndEqualsQuoted("t.localization_key","cacc_provider_type.commune");
 		
-		System.out.println("sql = " + sql.toString());
+		//System.out.println("sql = " + sql.toString());
 		
 		return idoFindPKsBySQL(sql.toString());
 	}
@@ -315,7 +315,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		sql.appendAndEquals("prop.provider_type_id", "t.provider_type_id");
 		sql.appendAndEqualsQuoted("t.localization_key","cacc_provider_type.private");
 		
-		System.out.println("sql = " + sql.toString());
+		//System.out.println("sql = " + sql.toString());
 		
 		return idoFindPKsBySQL(sql.toString());
 	}
