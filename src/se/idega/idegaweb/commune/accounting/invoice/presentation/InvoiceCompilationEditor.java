@@ -89,10 +89,10 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2004/01/29 10:39:19 $ by $Author: staffan $
+ * Last modified: $Date: 2004/02/03 13:31:34 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.125 $
+ * @version $Revision: 1.126 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -951,10 +951,10 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.mergeCells (1, row, table.getColumns (), row);            
 		table.add (getInvoiceRecordListTable (context, business, header), 1,
 							 row++);
+		table.add (new HiddenInput (INVOICE_COMPILATION_KEY,
+																"" + header.getPrimaryKey ()), 1, row);
 		table.setHeight (row++, 12);
 		table.mergeCells (1, row, table.getColumns (), row);
-		table.add (new HiddenInput (INVOICE_COMPILATION_KEY,
-																"" + header.getPrimaryKey ()));
 		table.add (getSubmitButton (ACTION_SHOW_NEW_RECORD_FORM, NEW_KEY,
 																NEW_DEFAULT), 1, row);
 		addCancelButton (table, 1, row, ACTION_SHOW_COMPILATION_LIST);

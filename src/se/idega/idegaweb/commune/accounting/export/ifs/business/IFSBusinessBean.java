@@ -42,7 +42,6 @@ import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
-import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -344,7 +343,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			// Eg geri rad fyrir ad herna fyrir nedan komi kodinn sem breytir
 			// status
 			// ur L i e-d annad.
-			result = getCheckAmountBusiness().sendCheckAmountLists(IWContext.getInstance(), schoolCategory);
+			result = getCheckAmountBusiness().sendCheckAmountLists(user,schoolCategory);
 
 			//copy files from folder A to folder B. Must get folder info from
 			// ExportMappingBean!!!
