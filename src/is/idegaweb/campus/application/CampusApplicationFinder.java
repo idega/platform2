@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApplicationFinder.java,v 1.4 2001/07/11 14:35:48 aron Exp $
+ * $Id: CampusApplicationFinder.java,v 1.5 2001/07/11 16:33:14 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -154,6 +154,8 @@ public abstract class CampusApplicationFinder {
       return(null);
     }
   }
+
+
 }
 
 
