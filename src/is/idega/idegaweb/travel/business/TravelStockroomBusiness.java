@@ -140,14 +140,14 @@ public class TravelStockroomBusiness extends StockroomBusiness {
 
 
 
-  public int createService(int supplierId, Integer fielId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int[] pickupPlaceIds) throws Exception{
+  public int createService(int supplierId, Integer fileId, String serviceName, String serviceDescription, boolean isValid, int[] addressIds, Timestamp departure, Timestamp arrival, int[] pickupPlaceIds) throws Exception{
 
 
     TransactionManager transaction = IdegaTransactionManager.getInstance();
     try{
       transaction.begin();
 
-      int id = super.createProduct(supplierId,fielId,serviceName,serviceDescription,isValid);
+      int id = super.createProduct(supplierId,fileId,serviceName,serviceDescription,isValid);
       Service service = new Service();
       service.setID(id);
 
