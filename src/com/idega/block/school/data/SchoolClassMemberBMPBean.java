@@ -27,8 +27,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/10/21 18:40:33 $ by $Author: staffan $
- * @version $Revision: 1.53 $
+ * Last modified: $Date: 2003/10/22 09:34:01 $ by $Author: staffan $
+ * @version $Revision: 1.54 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -475,8 +475,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
                                   "t." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
                 .appendAndEqualsQuoted ("t." + SchoolTypeBMPBean.SCHOOLCATEGORY,
                                         operationalField)
-                .appendAnd ()
-                .append ("m." + REMOVED_DATE + " is not null")
+                .appendAndIsNull ("m." + REMOVED_DATE)
                 .appendAnd ()
                 .appendLeftParenthesis ();
         

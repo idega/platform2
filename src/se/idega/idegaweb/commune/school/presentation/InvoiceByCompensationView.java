@@ -19,17 +19,17 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2003/10/21 18:40:21 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/22 09:33:32 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
  */
 public class InvoiceByCompensationView extends AccountingBlock {
     private static final String PREFIX = "CompByInv_";
-
+    
     private static final String BACK_DEFAULT = "Tillbaka";
     private static final String BACK_KEY = PREFIX + "back";
     private static final String CANCEL_DEFAULT = "Avbryt";
@@ -65,17 +65,17 @@ public class InvoiceByCompensationView extends AccountingBlock {
         = "Felaktigt datumformat";
     private static final String WRONGDATEFORMAT_KEY
         = PREFIX + "wrongDateFormat";
-
+    
     private static final String ACTION_KEY = PREFIX + "action";
     private static final String ACTION_SAVE_KEY = PREFIX + "actionSave";
     private static final String ACTION_SHOWUSER_KEY = PREFIX + "actionShowUser";
-
-
+    
+    
     private static final SimpleDateFormat dateFormatter
         = new SimpleDateFormat ("yyyy-MM-dd");
     private static final SimpleDateFormat shortDateFormatter
         = new SimpleDateFormat ("yyyyMMdd");
-
+    
 	/**
 	 * Init is the event handler of InvoiceByCompensationForm.
 	 *
@@ -83,15 +83,16 @@ public class InvoiceByCompensationView extends AccountingBlock {
 	 */
 	public void init (final IWContext context) {
 		setResourceBundle (getResourceBundle(context));
-
+        
 		try {
             if (context.isParameterSet (ACTION_KEY)
                 && ACTION_SHOWUSER_KEY.equals (context.getParameter
                                                (ACTION_KEY))) {
-                showUser (context);
+                showStudent (context);
             } else if (context.isParameterSet (ACTION_KEY)
-                && ACTION_SAVE_KEY.equals (context.getParameter (ACTION_KEY))) {
-                updateUser (context);
+                       && ACTION_SAVE_KEY.equals (context.getParameter
+                                                  (ACTION_KEY))) {
+                updateStudent (context);
             } else {
                 showInvoiceByCompensationList (context);
             }
@@ -109,7 +110,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
             add ("Det inträffade ett fel. Försök igen senare.");
 		}
 	}
-
+    
 	/**
 	 * Displays table with all school members that have invoice interval is set
 	 *
@@ -119,25 +120,25 @@ public class InvoiceByCompensationView extends AccountingBlock {
 	 */
     private void showInvoiceByCompensationList (final IWContext context)
         throws RemoteException, FinderException {
-
+        
         // set up header row
         final String [][] columnNames =
                 {{ SSN_KEY, SSN_DEFAULT }, { NAME_KEY, NAME_DEFAULT },
                  { PROVIDER_KEY, PROVIDER_DEFAULT },
                  { INVOICEINTERVAL_KEY, INVOICEINTERVAL_DEFAULT },
                  { LATESTINVOICEDATE_KEY, LATESTINVOICEDATE_DEFAULT }};
-        final Table memberTable = new Table();
-        memberTable.setCellpadding(getCellpadding());
-        memberTable.setCellspacing(getCellspacing());
-        memberTable.setWidth(Table.HUNDRED_PERCENT);
-        memberTable.setColumns (columnNames.length);
-        memberTable.setRowColor(1, getHeaderColor());
+        final Table studentTable = new Table();
+        studentTable.setCellpadding(getCellpadding());
+        studentTable.setCellspacing(getCellspacing());
+        studentTable.setWidth(Table.HUNDRED_PERCENT);
+        studentTable.setColumns (columnNames.length);
+        studentTable.setRowColor(1, getHeaderColor());
         for (int i = 0; i < columnNames.length; i++) {
-            memberTable.add(getSmallHeader(localize (columnNames [i][0],
-                                                     columnNames [i][1])),
-                            i + 1, 1);
+            studentTable.add(getSmallHeader(localize (columnNames [i][0],
+                                                      columnNames [i][1])),
+                             i + 1, 1);
         }
-
+        
         // get some business objects
         final SchoolCommuneBusiness communeBusiness = (SchoolCommuneBusiness)
                 IBOLookup.getServiceInstance (context,
@@ -146,49 +147,68 @@ public class InvoiceByCompensationView extends AccountingBlock {
                 = communeBusiness.getSchoolBusiness ();
         final SchoolClassHome classHome = schoolBusiness.getSchoolClassHome ();
         final SchoolHome schoolHome = schoolBusiness.getSchoolHome ();
-
-        // search the database for members to display
+        
+        // search the database for students to display
         final String operationalField = getSession ().getOperationalField ();
-        final SchoolClassMember [] members = communeBusiness
+        final SchoolClassMember [] students = communeBusiness
                 .getCurrentMembersWithInvoiceInterval (operationalField);
-
-        // display each member
-        for (int i = 0; i < members.length; i++) {
-            int col = 1;
+        
+        // display each student
+        for (int i = 0; i < students.length; i++) {
+			final SchoolClassMember student = students [i];
             int row = i + 2;
-            memberTable.setRowColor(row, (row % 2 == 0) ? getZebraColor1()
-                              : getZebraColor2());
-            final SchoolClassMember member = members [i];
-            final User student = member.getStudent ();
-            final String ssn = student.getPersonalID ();
-            final Link ssnLink = getSmallLink (ssn);
-            final Object memberId = member.getPrimaryKey ();
-            final String studentName = student.getFirstName () + " "
-                    + student.getLastName ();
-            final String schoolName
-                    = getSchoolNameFromMember (member, classHome, schoolHome);
-            final String intervalKey = member.getInvoiceInterval ();
-            final String intervalString = localize (intervalKey, intervalKey);
-            ssnLink.addParameter (ACTION_KEY, ACTION_SHOWUSER_KEY);
-            ssnLink.addParameter (MEMBERID_KEY, memberId.toString ());
-            ssnLink.addParameter (SSN_KEY, ssn);
-            ssnLink.addParameter (NAME_KEY, studentName);
-            ssnLink.addParameter (SCHOOL_KEY, schoolName);
-            memberTable.add (ssnLink, col++, row);
-            memberTable.add (new Text(studentName), col++, row);
-            memberTable.add (new Text(schoolName), col++, row);
-            memberTable.add (new Text(intervalString), col++, row);
-            final Date latestInvoiceDate = member.getLatestInvoiceDate ();
-            if (null != latestInvoiceDate) {
-                memberTable.add (new Text(dateFormatter.format
-                                          (latestInvoiceDate)), col++, row);
-            }
+			showStudentInTableRow (studentTable, classHome, schoolHome, student,
+                                   row);
         }
-
+        
         // add to output
-        add (createMainTable (memberTable));
+        add (createMainTable (studentTable));
     }
-
+    
+    /**
+     * Display information about one particular student on a row in a provided
+     * table.
+     *
+     * @param studentTable table to put row in
+     * @param classHome home object for school class entities
+     * @param schoolHome home class for school entities
+     * @param student student to display
+     * @param row the table row to use
+     * @param FinderException if one of the entities are missing
+     */
+	private void showStudentInTableRow
+        (final Table studentTable, final SchoolClassHome classHome,
+         final SchoolHome schoolHome, final SchoolClassMember student,
+         int row) throws FinderException {
+		int col = 1;
+		studentTable.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
+                                  : getZebraColor2 ());
+		final User user = student.getStudent ();
+		final String ssn = user.getPersonalID ();
+		final Link ssnLink = getSmallLink (ssn);
+		final Object studentId = student.getPrimaryKey ();
+		final String userName = user.getFirstName () + " "
+		        + user.getLastName ();
+		final String schoolName
+		        = getSchoolNameFromStudent (student, classHome, schoolHome);
+		final String intervalKey = student.getInvoiceInterval ();
+		final String intervalString = localize (intervalKey, intervalKey);
+		ssnLink.addParameter (ACTION_KEY, ACTION_SHOWUSER_KEY);
+		ssnLink.addParameter (MEMBERID_KEY, studentId.toString ());
+		ssnLink.addParameter (SSN_KEY, ssn);
+		ssnLink.addParameter (NAME_KEY, userName);
+		ssnLink.addParameter (SCHOOL_KEY, schoolName);
+		studentTable.add (ssnLink, col++, row);
+		studentTable.add (new Text(userName), col++, row);
+		studentTable.add (new Text(schoolName), col++, row);
+		studentTable.add (new Text(intervalString), col++, row);
+		final Date latestInvoiceDate = student.getLatestInvoiceDate ();
+		if (null != latestInvoiceDate) {
+		    studentTable.add (new Text(dateFormatter.format
+                                       (latestInvoiceDate)), col++, row);
+		}
+	}
+    
 	/**
 	 * Displays user info form, where latest invoice date can be modified
 	 *
@@ -196,8 +216,8 @@ public class InvoiceByCompensationView extends AccountingBlock {
      * @exception FinderException if the school class member wasn't found
      * @exception RemoteException if something fails in business layer
 	 */
-    private void showUser (final IWContext context) throws RemoteException,
-                                                           FinderException {
+    private void showStudent (final IWContext context) throws RemoteException,
+                                                              FinderException {
         // get some business objects
         final SchoolCommuneBusiness communeBusiness = (SchoolCommuneBusiness)
                 IBOLookup.getServiceInstance (context,
@@ -206,59 +226,27 @@ public class InvoiceByCompensationView extends AccountingBlock {
                 = communeBusiness.getSchoolBusiness ();
         final SchoolClassMemberHome memberHome
                 = schoolBusiness.getSchoolClassMemberHome ();
-
+        
         // get student info
-        final Integer memberId
+        final Integer studentId
                 = new Integer (context.getParameter (MEMBERID_KEY));
-        final SchoolClassMember member = memberHome.findByPrimaryKey (memberId);
+        final SchoolClassMember student
+                = memberHome.findByPrimaryKey (studentId);
         final String ssn = context.getParameter (SSN_KEY);
         final String studentName = context.getParameter (NAME_KEY);
         final String schoolName = context.getParameter (SCHOOL_KEY);
-        final Date latestInvoiceDate = member.getLatestInvoiceDate ();
-        final String intervalKey = member.getInvoiceInterval ();
+        final Date latestInvoiceDate = student.getLatestInvoiceDate ();
+        final String intervalKey = student.getInvoiceInterval ();
         final String intervalString = localize (intervalKey, intervalKey);
-
+        
         // display student info
-        final Table studentTable = new Table ();
-        studentTable.setCellpadding (getCellpadding ());
-        studentTable.setCellspacing (getCellspacing ());
-        studentTable.setColumns (2);
-        final String [][] cells =
-                {{ SSN_KEY, SSN_DEFAULT,  ssn },
-                 { NAME_KEY, NAME_DEFAULT, studentName },
-                 { PROVIDER_KEY, PROVIDER_DEFAULT, schoolName },
-                 { INVOICEINTERVAL_KEY, INVOICEINTERVAL_DEFAULT,
-                   intervalString }};
-        final TextInput textInput = (TextInput) getStyledInterface
-                (new TextInput (LATESTINVOICEDATE_KEY));
-        textInput.setLength (10);
-		textInput.setContent (null == latestInvoiceDate
-                              ? shortDateFormatter.format (new Date ())
-                              : shortDateFormatter.format (latestInvoiceDate));
-        int row = 1;
-        for (int i = 0; i < cells.length; i++) {
-            studentTable.add (getSmallHeader (localize (cells [i][0],
-                                                        cells [i][1]) + ":"), 1,
-                              row);
-            studentTable.add(new Text (cells [i][2]), 2, row++);
-        }
-        studentTable.add (getSmallHeader (localize (LATESTINVOICEDATE_KEY,
-                                                    LATESTINVOICEDATE_DEFAULT)
-                                          + ":"), 1, row);
-        studentTable.add (textInput, 2, row++);
+        final Table studentTable = getStudentInfoTable
+                (ssn,  studentName, schoolName, latestInvoiceDate,
+                 intervalString);
         
         // display buttons
-        final Table  buttonTable = new Table ();
-        buttonTable.setCellpadding (getCellpadding ());
-        buttonTable.setCellspacing (getCellspacing ());
-        buttonTable.setColumns (2);
-        buttonTable.add (getButton (new SubmitButton
-                                    (localize (SAVE_KEY, SAVE_DEFAULT),
-                                     ACTION_KEY, ACTION_SAVE_KEY)), 1, 1);
-		buttonTable.add (getButton (new SubmitButton (CANCEL_KEY, localize
-                                                      (CANCEL_KEY,
-                                                       CANCEL_DEFAULT))), 2, 1);
-
+        final Table buttonTable = getSaveButtonTable ();
+        
         // put output together and publish
         final Table mainTable = new Table ();
         mainTable.setCellpadding (getCellpadding ());
@@ -273,7 +261,68 @@ public class InvoiceByCompensationView extends AccountingBlock {
         add (createMainTable (formTable));
     }
 
-
+    /**
+     * Creates a table with save and cancel buttons
+     *
+     * @return table with save and cancel button
+     */
+	private Table getSaveButtonTable () {
+        final Table buttonTable = new Table ();
+		buttonTable.setCellpadding (getCellpadding ());
+		buttonTable.setCellspacing (getCellspacing ());
+		buttonTable.setColumns (2);
+		buttonTable.add (getButton (new SubmitButton
+		                            (localize (SAVE_KEY, SAVE_DEFAULT),
+		                             ACTION_KEY, ACTION_SAVE_KEY)), 1, 1);
+		buttonTable.add (getButton (new SubmitButton (CANCEL_KEY, localize
+		                                              (CANCEL_KEY,
+		                                               CANCEL_DEFAULT))), 2, 1);
+        return buttonTable;
+	}
+    
+    /**
+     * Creates a table with information about this student
+     *
+     * @param ssn social security number (personal id) for this person
+     * @param studentName display name for this person
+     * @param schoolName name of the school that this person is member of
+     * @param latestInvoiceDate last time this person was invoiced
+     * @param intervalString key for term, year etc.
+     */
+	private Table getStudentInfoTable
+        (final String ssn, final String studentName, final String schoolName,
+         final Date latestInvoiceDate, final String intervalString) {
+        final Table studentTable = new Table ();
+		studentTable.setCellpadding (getCellpadding ());
+		studentTable.setCellspacing (getCellspacing ());
+		studentTable.setColumns (2);
+		final String [][] cells =
+		        {{ SSN_KEY, SSN_DEFAULT,  ssn },
+		         { NAME_KEY, NAME_DEFAULT, studentName },
+		         { PROVIDER_KEY, PROVIDER_DEFAULT, schoolName },
+		         { INVOICEINTERVAL_KEY, INVOICEINTERVAL_DEFAULT,
+		           intervalString }};
+		final TextInput textInput = (TextInput) getStyledInterface
+		        (new TextInput (LATESTINVOICEDATE_KEY));
+		textInput.setLength (10);
+		textInput.setContent (null == latestInvoiceDate
+		                      ? shortDateFormatter.format (new Date ())
+		                      : shortDateFormatter.format (latestInvoiceDate));
+		int row = 1;
+		for (int i = 0; i < cells.length; i++) {
+		    studentTable.add (getSmallHeader (localize (cells [i][0],
+		                                                cells [i][1]) + ":"), 1,
+		                      row);
+		    studentTable.add(new Text (cells [i][2]), 2, row++);
+		}
+		studentTable.add (getSmallHeader (localize (LATESTINVOICEDATE_KEY,
+		                                            LATESTINVOICEDATE_DEFAULT)
+		                                  + ":"), 1, row);
+		studentTable.add (textInput, 2, row++);
+        return studentTable;
+	}
+    
+    
 	/**
 	 * Updates latest invoice date
 	 *
@@ -281,7 +330,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
      * @exception FinderException if the school class member wasn't found
      * @exception RemoteException if something fails in business layer
 	 */
-    private void updateUser (final IWContext context) throws RemoteException,
+    private void updateStudent (final IWContext context) throws RemoteException,
                                                              FinderException   {
         // get some business objects
         final SchoolCommuneBusiness communeBusiness = (SchoolCommuneBusiness)
@@ -291,25 +340,27 @@ public class InvoiceByCompensationView extends AccountingBlock {
                 = communeBusiness.getSchoolBusiness ();
         final SchoolClassMemberHome memberHome
                 = schoolBusiness.getSchoolClassMemberHome ();
-
+        
         // get student info
-        final Integer memberId
+        final Integer studentId
                 = new Integer (context.getParameter (MEMBERID_KEY));
-        final SchoolClassMember member = memberHome.findByPrimaryKey (memberId);
+        final SchoolClassMember student
+                = memberHome.findByPrimaryKey (studentId);
         final String latestInvoiceDate
                 = context.getParameter (LATESTINVOICEDATE_KEY);
         final Date date = getDateFromString (latestInvoiceDate);
-
+        
         if (null != date) {
-            member.setLatestInvoiceDate (new java.sql.Timestamp
-                                         (date.getTime ()));
-            member.store ();
+            student.setLatestInvoiceDate (new java.sql.Timestamp
+                                          (date.getTime ()));
+            student.store ();
         }
+
         // display output
         final Table table = new Table ();
         table.setCellpadding (getCellpadding ());
         table.setCellspacing (getCellspacing ());
-
+        
         if (null != date) {
             table.add (new Text (localize (LATESTINVOICEDATE_KEY,
                                            LATESTINVOICEDATE_DEFAULT) + 
@@ -325,7 +376,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
         table.add (getSmallLink (localize (BACK_KEY, BACK_DEFAULT)), 1, 3);
         add (createMainTable (table));
     }
-
+    
 	/**
 	 * Returns a styled table with content placed properly
 	 *
@@ -341,10 +392,11 @@ public class InvoiceByCompensationView extends AccountingBlock {
         mainTable.setColumns (1);
         mainTable.setRowColor (1, getHeaderColor ());
         mainTable.setRowAlignment(1, Table.HORIZONTAL_ALIGN_CENTER) ;
-
-        mainTable.add (getSmallHeader (localize (COMPENSATIONBYINVOICE_KEY,
-                                                COMPENSATIONBYINVOICE_DEFAULT)),
-                      1, 1);
+        
+        mainTable.add (getSmallHeader
+                       (localize (COMPENSATIONBYINVOICE_KEY,
+                                  COMPENSATIONBYINVOICE_DEFAULT)),
+                       1, 1);
         final Table innerTable = new Table ();
         innerTable.setColumns (2);
         innerTable.add (getSmallHeader (localize (MAINACTIVITY_KEY,
@@ -357,26 +409,26 @@ public class InvoiceByCompensationView extends AccountingBlock {
         mainTable.add (content, 1, 3);
         return mainTable;
     }
-
+    
 	/**
 	 * Returns name of the school that the school class member is member of
 	 *
-	 * @param member The person that is member of a school class
+	 * @param student The person that is member of a school class
 	 * @param classHome home object of school class beans
 	 * @param schoolHome home object of school beans
      * @return String with school name
      * @exception FinderException if the school class wasn't found
 	 */
-    static private String getSchoolNameFromMember
-        (final SchoolClassMember member, final SchoolClassHome classHome,
+    static private String getSchoolNameFromStudent
+        (final SchoolClassMember student, final SchoolClassHome classHome,
          final SchoolHome schoolHome) throws FinderException {
-        final Integer classId = new Integer (member.getSchoolClassId ());
+        final Integer classId = new Integer (student.getSchoolClassId ());
         final SchoolClass schoolClass = classHome.findByPrimaryKey(classId);
         final Integer schoolId = new Integer (schoolClass.getSchoolId ());
         final School school = schoolHome.findByPrimaryKey (schoolId);
         return school.getName ();
     }
-
+    
     private static Date getDateFromString (final String rawInput) {
         final StringBuffer digitOnlyInput = new StringBuffer();
         for (int i = 0; i < rawInput.length(); i++) {
@@ -387,7 +439,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
         if (digitOnlyInput.length() == 6) {
             digitOnlyInput.insert(0, 20);
         }
-
+        
         if (digitOnlyInput.length() != 8) {
             return null;
         }
