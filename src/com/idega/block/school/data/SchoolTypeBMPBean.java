@@ -31,7 +31,6 @@ public class SchoolTypeBMPBean extends GenericEntity implements SchoolType{
     this.addAttribute(LOC_KEY,"Localization key",String.class);
     
     addManyToOneRelationship(SCHOOLCATEGORY, SchoolCategory.class);
-    setNullable(SCHOOLCATEGORY, false);
   }
 
   public String getEntityName() {
