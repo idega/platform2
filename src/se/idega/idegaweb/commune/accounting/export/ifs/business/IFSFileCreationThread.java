@@ -231,15 +231,18 @@ public class IFSFileCreationThread extends Thread {
 				fileName5.append("n24_attestlista_knd_bom_");
 				StringBuffer fileName6 = new StringBuffer(folder);
 				fileName6.append("n24_avvikelselista_knd_bom_");
+				StringBuffer fileName7 = new StringBuffer(folder);
+				fileName7.append("n24_kommun_bom_");
 				fileName1.append(now.getDateString("yyMMdd_HHmm"));
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 				fileName3.append(now.getDateString("yyMMdd_HHmm"));
 				fileName4.append(now.getDateString("yyMMdd_HHmm"));
 				fileName5.append(now.getDateString("yyMMdd_HHmm"));
 				fileName6.append(now.getDateString("yyMMdd_HHmm"));
+				fileName7.append(now.getDateString("yyMMdd_HHmm"));
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName7.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -258,12 +261,15 @@ public class IFSFileCreationThread extends Thread {
 				fileName2.append("n24_ifs_lev_gsk_");
 				StringBuffer fileName4 = new StringBuffer(folder);
 				fileName4.append("n24_attestlista_lev_gsk_");
+				StringBuffer fileName7 = new StringBuffer(folder);
+				fileName7.append("n24_kommun_gsk_");
 				fileName1.append(now.getDateString("yyMMdd_HHmm"));
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 				fileName4.append(now.getDateString("yyMMdd_HHmm"));
+				fileName7.append(now.getDateString("yyMMdd_HHmm"));
 
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName7.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -276,11 +282,14 @@ public class IFSFileCreationThread extends Thread {
 				fileName2.append("n24_ifs_lev_gym_");
 				StringBuffer fileName4 = new StringBuffer(folder);
 				fileName4.append("n24_attestlista_lev_gym_");
+				StringBuffer fileName7 = new StringBuffer(folder);
+				fileName7.append("n24_kommun_bom_");
 				fileName1.append(now.getDateString("yyMMdd_HHmm"));
 				fileName2.append(now.getDateString("yyMMdd_HHmm"));
 				fileName4.append(now.getDateString("yyMMdd_HHmm"));
+				fileName7.append(now.getDateString("yyMMdd_HHmm"));
 				try {
-					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), _schoolCategory, now, _paymentDate);
+					createPaymentFiles(fileName1.toString(), fileName2.toString(), fileName4.toString(), fileName7.toString(), _schoolCategory, now, _paymentDate);
 				}
 				catch (IOException e5) {
 					e5.printStackTrace();
@@ -293,7 +302,7 @@ public class IFSFileCreationThread extends Thread {
 		header.store();
 	}
 
-	private void createPaymentFiles(String fileName1, String fileName2, String fileName3, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate) throws IOException {
+	private void createPaymentFiles(String fileName1, String fileName2, String fileName3, String fileName4, String schoolCategory, IWTimestamp executionDate, IWTimestamp paymentDate) throws IOException {
 		String localizedSchoolCategoryName = _iwac.getApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(_currentLocale).getLocalizedString("school_category."+_schoolCategory);
 		Collection phInCommune = null;
 		try {
@@ -321,6 +330,7 @@ public class IFSFileCreationThread extends Thread {
 		phAll.addAll(phInCommune);
 		try {
 			createPaymentSigningFilesExcel(phAll, fileName3 + ".xls", "Utbetalningsattestlista "+localizedSchoolCategoryName+", "+executionDate.getDateString("yyyy-MM-dd"));
+			createPaymentSigningFilesExcel(phInCommune, fileName4 + ".xls", "Utbetalningsattestlista "+localizedSchoolCategoryName+", egna kommunala anordnare, "+executionDate.getDateString("yyyy-MM-dd"));
 		}
 		catch (IOException e3) {
 			e3.printStackTrace();
