@@ -33,7 +33,6 @@ public class IPDeleteProjectWindow extends IBAdminWindow{
   public IPDeleteProjectWindow() {
     setWidth(300);
     setHeight(200);
-    this.setStatus(true);
   }
 
   public void main(IWContext iwc){

@@ -15,6 +15,7 @@ import com.idega.util.datastructures.HashtableMultivalued;
 import com.idega.business.GenericState;
 
 import java.util.List;
+import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -39,7 +40,7 @@ public abstract class AbstractContentList extends Block {
   protected int cellspacing = 0;
   protected int cellpadding = 0;
   protected boolean linesBeetween = true;
-  protected boolean bottomLine = true;
+  protected boolean bottomLine = false;
   protected boolean topLine = false;
 
   protected String sebracolor1 = "#FFFFFF";
@@ -49,6 +50,8 @@ public abstract class AbstractContentList extends Block {
 
   protected String width = "181";
   protected String rowHeight = "20";
+
+  protected Vector rowColors = null;
 
 
   public synchronized Object clone(){
@@ -82,6 +85,7 @@ public abstract class AbstractContentList extends Block {
 
   public AbstractContentList() {
     super();
+    rowColors = new Vector();
     table = new Table();
     this.add(table);
   }
@@ -114,6 +118,11 @@ public abstract class AbstractContentList extends Block {
 
   public void setSelectedColor(String color){
     selectedColor = color;
+  }
+
+  public void setRowColor(int row, String color){
+    rowColors.add(Integer.toString(row));
+    rowColors.add(color);
   }
 
 
@@ -178,11 +187,19 @@ public abstract class AbstractContentList extends Block {
     table.setCellpadding(this.cellpadding);
     table.setCellspacing(this.cellspacing);
     table.setLinesBetween(linesBeetween);
-    //table.setBottomLine(bottomLine);
+    table.setBottomLine(bottomLine);
     table.setTopLine(topLine);
     table.setLineColor(lineColor);
     table.setWidth(this.width);
-    //table.setBorder(1);
+
+    Iterator iter = rowColors.iterator();
+    while (iter.hasNext()) {
+      String row = (String)iter.next();
+      if(iter.hasNext()){
+        String color = (String)iter.next();
+        table.setRowColor(Integer.parseInt(row),color);
+      }
+    }
 
 
     for (int i = 1; i <= table.getRows(); i++) {
@@ -225,6 +242,10 @@ public abstract class AbstractContentList extends Block {
 
   public void setExtraRowsAtEnding(int numberOfRows){
     extraRowsAfter = numberOfRows;
+  }
+
+  public void setLinesBetween(boolean value){
+    linesBeetween = value;
   }
 
 

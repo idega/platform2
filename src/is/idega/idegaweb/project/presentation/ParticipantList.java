@@ -80,14 +80,20 @@ public class ParticipantList extends AbstractContentList {
 
 
   private Link getAddAndRemoveGroupLink(IWContext iwc) throws Exception{
-    Link addLink = new Link("  Add/Remove Group  ");
+    Link addLink = new Link("  Add/Remove group  ");
+    addLink.setFontFace(Text.FONT_FACE_ARIAL);
+    addLink.setFontSize(Text.FONT_SIZE_7_HTML_1);
+    addLink.setBold();
     addLink.setWindowToOpen(ParticipantList.GroupGroupSetter.class);
     addLink.addParameter(GroupGroupSetter.PARAMETER_GROUP_ID,this.getGroupId(iwc));
     return addLink;
   }
 
   private Link getAddAndRemoveUserLink(IWContext iwc) throws Exception{
-    Link addLink = new Link("  Add/Remove User  ");
+    Link addLink = new Link("  Add/Remove user  ");
+    addLink.setFontFace(Text.FONT_FACE_ARIAL);
+    addLink.setFontSize(Text.FONT_SIZE_7_HTML_1);
+    addLink.setBold();
     addLink.setWindowToOpen(ParticipantList.UserGroupSetter.class);
     addLink.addParameter(GroupGroupSetter.PARAMETER_GROUP_ID,this.getGroupId(iwc));
     return addLink;
@@ -95,11 +101,13 @@ public class ParticipantList extends AbstractContentList {
 
 
   public void main(IWContext iwc) throws Exception {
-    this.addAtBeginning(Text.getBreak());
-    this.addAtBeginning(new Text(this.getGroupName(),true,false,true));
+    Text tBreak = (Text)Text.getBreak().clone();
+    tBreak.setFontSize(Text.FONT_SIZE_7_HTML_1);
+    this.addAtBeginning(tBreak);
+    //this.addAtBeginning(new Text(this.getGroupName(),true,false,true));
     super.main(iwc);
     this.add(getAddAndRemoveGroupLink(iwc));
-    this.add(Text.getBreak());
+    this.add(Text.getNonBrakingSpace(5));
     this.add(getAddAndRemoveUserLink(iwc));
   }
 
@@ -141,16 +149,24 @@ public class ParticipantList extends AbstractContentList {
   }
 
   public void initColumns(IWContext iwc) throws java.lang.Exception {
-    this.setColumns(5);
-    this.setWidth("527");
+    this.setColumns(10);
+    this.setWidth("688");
     this.setExtraRowsAtBeginning(1);
 
+    this.setRowColor(1,"#CCCC66");
+    this.setLinesBetween(false);
+    this.setSebraColor("#F4F4DB","#FFFFFF");
 
-    this.setColumnWidth(1,"200");
-    this.setColumnWidth(2,"47");
-    this.setColumnWidth(3,"50");
-    this.setColumnWidth(4,"50");
-    this.setColumnWidth(5,"180");
+    this.setColumnWidth(1,"4");
+    this.setColumnWidth(2,"220");
+    this.setColumnWidth(3,"4");
+    this.setColumnWidth(4,"100");
+    this.setColumnWidth(5,"4");
+    this.setColumnWidth(6,"69");
+    this.setColumnWidth(7,"4");
+    this.setColumnWidth(8,"69");
+    this.setColumnWidth(9,"4");
+    this.setColumnWidth(10,"210");
 
   }
 
@@ -158,24 +174,29 @@ public class ParticipantList extends AbstractContentList {
     if(item == null){
       if(beforeEntities && (rowIndex == 1)){
         Text text = new Text();
+        text.setFontFace(Text.FONT_FACE_ARIAL);
+        text.setFontColor("#FFFFFF");
+        text.setFontSize(Text.FONT_SIZE_7_HTML_1);
         text.setBold();
 
         switch (colIndex) {
-          case 1:
-            text.setText("Nafn");
-            break;
           case 2:
-            text.setText("");
-            break;
-          case 3:
-            text.setText("Sími");
+            text.setText("Name");
             break;
           case 4:
+            text.setText("Organisation");
+            break;
+          case 6:
+            text.setText("Phone");
+            break;
+          case 8:
             text.setText("Fax");
             break;
-          case 5:
-            text.setText("Tölvupóstur");
+          case 10:
+            text.setText("e-mail");
             break;
+          default:
+            return null;
         }
         return text;
 
@@ -188,25 +209,27 @@ public class ParticipantList extends AbstractContentList {
         StaffHolder staffHolder = (StaffHolder)item;
 
         switch (colIndex) {
-          case 1:
+          case 2:
             text.setText(staffHolder.getName());
             break;
-          case 2:
+          case 4:
             text.setText("");
             break;
-          case 3:
+          case 6:
             if(staffHolder.getWorkPhone() != null){
               text.setText(staffHolder.getWorkPhone());
             }
             break;
-          case 4:
+          case 8:
             text.setText("fax");
             break;
-          case 5:
+          case 10:
             if(staffHolder.getEmail() != null){
             text.setText(staffHolder.getEmail());
             }
             break;
+          default:
+            return null;
         }
         return text;
     }
