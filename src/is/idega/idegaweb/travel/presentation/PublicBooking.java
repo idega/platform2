@@ -298,7 +298,7 @@ public class PublicBooking extends Block  {
       Text priceText = getBoldText("");
       Text currencyText = getBoldText("");
 
-      nameTextBold.setText(ProductBusiness.getProductName(product, iwc.getCurrentLocaleId()));
+      nameTextBold.setText(ProductBusiness.getProductNameWithNumber(product, true, iwc.getCurrentLocaleId()));
       supplierTextBold.setText(supplier.getName());
       departureFromTextBold.setText(depAddress.getName());
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
