@@ -89,6 +89,14 @@ public class IWApplicationComponent extends Page {
         iwacTable.add(emptyCell,3,2);
   }
 
+  public void setAlignment(String alignment) {
+    iwacTable.setAlignment(2,2,alignment);
+  }
+
+  public void setVerticalAlignment(String alignment) {
+    iwacTable.setVerticalAlignment(2,2,alignment);
+  }
+
   static IWApplicationComponent getAppCompInstance(Class componentClass,ModuleInfo modinfo){
     try{
       return (IWApplicationComponent)componentClass.newInstance();
