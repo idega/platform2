@@ -77,4 +77,6 @@ public interface AccountEntry extends com.idega.data.IDOEntity,com.idega.block.f
  public void setNotificationAndPaymentFee2(double fee);
  public double getOtherCost();
  public void setOtherCost(double otherCost);
+ public String getInvoiceStatus();
+ public void setInvoiceStatus(String status);
 }

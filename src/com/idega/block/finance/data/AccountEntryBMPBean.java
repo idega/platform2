@@ -68,6 +68,7 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
     addAttribute(getColumnNameNotificationAndPaymentFee1(), "not pay fee1", true, true, Double.class);
     addAttribute(getColumnNameNotificationAndPaymentFee2(), "not pay fee2", true, true, Double.class);
     addAttribute(getColumnNameOtherCost(), "other cost", true, true, Double.class);
+    addAttribute(getColumnNameInvoiceStatus(), "invoice status", true, true, String.class);
   }
 
   public static String getEntityTableName(){ return "FIN_ACC_ENTRY"; }
@@ -100,6 +101,7 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   public static String getColumnNameNotificationAndPaymentFee1() { return "NOT_PAY_FEE1"; }
   public static String getColumnNameNotificationAndPaymentFee2() { return "NOT_PAY_FEE2"; }
   public static String getColumnNameOtherCost() { return "OTHER_COST"; }
+  public static String getColumnNameInvoiceStatus() { return "INVOICE_STATUS"; }
   
   public String getEntityName() {
     return getEntityTableName();
@@ -296,6 +298,12 @@ public class AccountEntryBMPBean extends com.idega.data.GenericEntity implements
   }
   public void setOtherCost(double otherCost) {
   		setColumn(getColumnNameOtherCost(), otherCost);
+  }
+  public String getInvoiceStatus() {
+  		return getStringColumnValue(getColumnNameInvoiceStatus());
+  }
+  public void setInvoiceStatus(String status) {
+  		setColumn(getColumnNameInvoiceStatus(), status);
   }
 
   public void setStatus(String status) throws IllegalStateException {
