@@ -127,6 +127,8 @@ public class NationalRegisterBusinessBean extends IBOServiceBean implements Nati
 				gender = home.getFemaleGender();
 
 			User user = userBiz.createUserByPersonalIDIfDoesNotExist(name,ssn,gender,t);
+			user.setDisplayName(name);
+			user.store();
 
 			Country country = ((CountryHome)getIDOHome(Country.class)).findByIsoAbbreviation("IS");
 			
