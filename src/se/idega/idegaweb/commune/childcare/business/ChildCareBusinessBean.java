@@ -1317,7 +1317,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	protected void verifyApplication(ChildCareContract lastContract,ChildCareApplication application, SchoolClassMember member, User performer)throws RemoteException {
-	    verifyApplication(lastContract,application,member,performer);
+	    verifyApplication(lastContract,application,member,performer,-1,-1);
 	}
 
 	protected void verifyApplication(ChildCareContract lastContract,ChildCareApplication application, SchoolClassMember member, User performer,int schoolTypeId,int schoolClassId)throws RemoteException {
