@@ -1,6 +1,5 @@
 package com.idega.block.datareport.presentation;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,16 +15,10 @@ import java.util.Vector;
 
 import javax.ejb.FinderException;
 
-import com.idega.block.dataquery.business.QueryGenerationException;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
-import com.idega.block.dataquery.data.QueryResult;
-import com.idega.block.dataquery.data.sql.InputDescription;
-import com.idega.block.dataquery.data.sql.SQLQuery;
-import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
-import com.idega.block.datareport.data.DesignBox;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
 import com.idega.block.entity.data.EntityPath;
 import com.idega.block.entity.data.EntityPathValueContainer;
@@ -51,15 +44,11 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 import com.idega.util.StringAlphabeticalComparator;
-
-import dori.jasper.engine.JRException;
-import dori.jasper.engine.JasperPrint;
 
 
 /**
@@ -91,7 +80,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   // not really used
   public static final String CLOSE_KEY = "close_key";
   
-  public static final String DESIGN_LAYOUT_KEY = "design_layout_key";
+  public static final String DESIGN_LAYOUT_KEY = QueryResultViewer.DESIGN_CHOOSER_KEY;
   public static final String NAME_KEY = "name_key";
   public static final String GROUP_NAME_KEY = "group_name_key";
   public static final String IS_PRIVATE_KEY = "is_private_key";
@@ -105,10 +94,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   
 	public static final String IW_BUNDLE_IDENTIFIER = "com.idega.block.dataquery";
 	
-	private static final String REPORT_HEADLINE_KEY = "ReportTitle";
+	//private static final String REPORT_HEADLINE_KEY = "ReportTitle";
 	
-	public static final String USER_ACCESS_VARIABLE = "user_access_variable";
-	public static final String GROUP_ACCESS_VARIABLE = "group_access_variable";
+
 	
 	// sets the investigation level of the query builder (-1 means, that the query builder is shown in the simple mode)
 	private static final int SIMPLE_MODE = -1; 
@@ -126,9 +114,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	private boolean isAdmin = false;
 	
 	// values of the parameter map
-	private static final String CURRENT_QUERY_ID = "current_query_id";
-	private static final String CURRENT_LAYOUT_ID = "current_layout_id";
-	private static final String CURRENT_OUTPUT_FORMAT = "current_output_format";
+	private static final String CURRENT_QUERY_ID = QueryResultViewer.QUERY_ID_KEY;
+	private static final String CURRENT_LAYOUT_ID = QueryResultViewer.DESIGN_ID_KEY;
+	private static final String CURRENT_OUTPUT_FORMAT = QueryResultViewer.OUTPUT_FORMAT_KEY;
 	
 	public void setShowOnlyOneQueryWithId(int showOnlyOneQueryWithId)	{
 		this.showOnlyOneQueryWithId = showOnlyOneQueryWithId;
@@ -154,7 +142,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
     IWResourceBundle resourceBundle = getResourceBundle(iwc);
     String action = parseAction(iwc);
     if (SHOW_SINGLE_QUERY.equals(action) || SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action))	{
-    	getSingleQueryView(bundle, resourceBundle, action, iwc);
+    	//getSingleQueryView(bundle, resourceBundle, action, iwc);
     }
     else {
     	getListOfQueries(bundle, resourceBundle, iwc);
@@ -176,6 +164,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		if (iwc.isParameterSet(DELETE_ITEMS_KEY))	{
 			List idsToDelete = CheckBoxConverter.getResultByParsing(iwc, DELETE_KEY);
 			deleteQueries(idsToDelete);
+			return "";
 		}
 		// check html, pdf and excel buttons
 		EntityPathValueContainer executeContainer = ButtonConverter.getResultByParsing(iwc);
@@ -316,7 +305,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	} 
   	Table table = new Table(1,2);
   	table.add(browser, 1,1);
-  	table.add(getButtonBar(resourceBundle), 1,2);
+  	table.add(getButtonBar(resourceBundle, iwc), 1,2);
   	form.add(table);
   	add(form);
   }
@@ -367,7 +356,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	return publicFolderName;
 }
 
-	private PresentationObject getButtonBar(IWResourceBundle resourceBundle)	{
+	private PresentationObject getButtonBar(IWResourceBundle resourceBundle, IWContext iwc)	{
 		Table table = new Table(5,1);
 		// new button for query builder (simple mode)
 		String simpleModeText = resourceBundle.getLocalizedString("ro_create_simple_mode", "New (simple mode)");
@@ -380,7 +369,21 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
-  	SubmitButton delete = new SubmitButton(deleteText, DELETE_ITEMS_KEY, DELETE_ITEMS_KEY);
+  	SubmitButton delete = new SubmitButton(DELETE_ITEMS_KEY, deleteText);
+  	// change target
+  	String click = getRemoveTargetScript(ReportOverviewWindow.class);
+  	delete.setOnClick(click);
+//  	//Window window = Window.getStaticInstance(QueryResultViewerWindow.class);
+//  	String windowId = IWMainApplication.getEncryptedClassName(QueryResultViewerWindow.class);
+//  	//openwindow('','id12031745','0','0','0','0','0','0','1','1','1024','768')
+//  	//openwindow('','"+ id +"','0','0','0','0','0','0','1','1','1024','768')
+//  	delete.setOnClick("findObj('"
+//  			+ Page.IW_FRAME_CLASS_PARAMETER
+//				+ "').value='"
+//				+  windowId 
+//				+ "'; this.form.target='resultViewer'; openwindow('','resultViewer','0','0','0','0','0','0','1','1','1024','768');");
+//  	//this.form.submit()");
+  	
   	delete.setAsImageButton(true);
   	// close button
   	String closeText = resourceBundle.getLocalizedString("ro_cancel", "Cancel");
@@ -423,12 +426,13 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		browser.setArtificialCompoundId("report_overview", null);
 		browser.setLeadingEntityIsUndefined();
 		// browser.setShowAllEntities("", queryRepresentations);
-		browser.setEntities("", queryRepresentations, 10);
+		browser.setEntities("", queryRepresentations, 2);
 		// some design features
 		browser.setCellpadding(2);
 		// define some converters
 		// drop down menu converter
 		DropDownMenuConverter dropDownLayoutConverter = new DropDownMenuConverter(form);
+		dropDownLayoutConverter.setAddEntryForNonExistingValue(false);
 		dropDownLayoutConverter.setOptionProvider(getLayoutOptionProvider());
 		dropDownLayoutConverter.setShowAlwaysDropDownMenu(true);
 		// edit query converter
@@ -441,7 +445,12 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		ButtonConverter htmlConverter = new ButtonConverter(bundle.getImage("/shared/txt.gif"));
 		ButtonConverter pdfConverter = new ButtonConverter(bundle.getImage("/shared/pdf.gif"));
 		ButtonConverter excelConverter = new ButtonConverter(bundle.getImage("/shared/xls.gif"));
-
+		// change target
+		String click = getChangeTargetScript(QueryResultViewerWindow.class);
+		htmlConverter.setOnClick(click);
+		pdfConverter.setOnClick(click);
+		excelConverter.setOnClick(click);
+		
 		browser.setMandatoryColumnWithConverter(1, DELETE_KEY, new DeleteCheckBox(DELETE_KEY));
 		browser.setMandatoryColumn(2, NAME_KEY);
 		browser.setMandatoryColumn(3, GROUP_NAME_KEY);
@@ -484,6 +493,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 				}
 				return optionMap;
 			}
+			
+
+				
 		};
 		return optionProvider;
 	}			
@@ -491,293 +503,132 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	
     
   
-	private void getSingleQueryView(IWBundle bundle, IWResourceBundle resourceBundle, String action, IWContext iwc)	throws RemoteException {
-		String errorMessage = null;
-		QueryService queryService = getQueryService();
-		int currentQueryId = ((Integer) parameterMap.get(CURRENT_QUERY_ID)).intValue();
-    QueryHelper queryHelper = queryService.getQueryHelper(currentQueryId);
-    QueryToSQLBridge bridge = getQueryToSQLBridge(); 
-    SQLQuery query = null;
-    try {
-    	query = bridge.createQuerySQL(queryHelper, iwc);
-    }
-    catch (QueryGenerationException ex) {
-			String message =
-				"[ReportOverview]: Can't generate query.";
-			System.err.println(message + " Message is: " + ex.getMessage());
-			ex.printStackTrace(System.err);
-			errorMessage = resourceBundle.getLocalizedString("ro_query_could_not_be_created", "Query could not be created");
-		}
-		// execute query if the query was successfully created
-		if (errorMessage == null) { 
-			//
-			// query is dynamic
-			//
-	    if (query.isDynamic()) {
-	    	Map identifierValueMap = query.getIdentifierValueMap();
-	    	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
-	    	boolean calculateAccess = false;
-	    	boolean containsOnlyAccessVariable = 
-	    		(	(calculateAccess = identifierValueMap.containsKey(USER_ACCESS_VARIABLE))  || 
-	    			(calculateAccess = identifierValueMap.containsKey(GROUP_ACCESS_VARIABLE))) && 
-	    			(identifierValueMap.size() == 1);
-	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action) &&
-	    			! containsOnlyAccessVariable) {
-	    		// show input fields
-					showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
-	    	}
-	    	else {
-	    		// get the values of the input fields
-	    		Map modifiedValues = getModifiedIdentiferValueMapByParsingRequest(identifierValueMap, iwc);
-	    		if (calculateAccess) {
-	    			setAccessCondition(modifiedValues, iwc);
-	    		}
-	    		query.setIdentifierValueMap(modifiedValues);
-	    		// show result of query
-	    		List executedSQLStatements = new ArrayList();
-	    		errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
-	    		
-	    		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
-	    			addExecutedSQLQueries(executedSQLStatements);
-	    		}
-	    		
-	    		//little debugging/logging
-	    		StringBuffer queryExecuted = new StringBuffer();
-				if(executedSQLStatements!=null && !executedSQLStatements.isEmpty()){
-					Iterator iterator = executedSQLStatements.iterator();
-					while (iterator.hasNext())	{
-						queryExecuted.append( (String) iterator.next());
-						queryExecuted.append("\n");
-					}
-				}
-					
-	    		debug(queryExecuted.toString());
-	    			    			
-	     		// show again the input fields
-	     		if (errorMessage != null)	{
-	     			addErrorMessage(errorMessage);
-	     		}
-	     		if ( ! containsOnlyAccessVariable) {
-	    			showInputFields(query, modifiedValues,  identifierInputDescriptionMap, resourceBundle, iwc);
-	     		}
-	     		else {
-	     			getListOfQueries(bundle, resourceBundle, iwc);
-	     		}	
-	    	}
-	    	//
-	    	// good bye - query is dynamic
-	    	//
-	    	return;
-	    }
-	    //
-	    // query is not dynamic
-	    //
-	    else {
-	    	List executedSQLStatements = new ArrayList();
-	    	errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
-	    	addExecutedSQLQueries(executedSQLStatements);
-	    }
-		}
-		// show list if query is not dynamic and if an error occurred
-		if (errorMessage != null) {
-			addErrorMessage(errorMessage);
-		}
-		getListOfQueries(bundle, resourceBundle, iwc);
-	}
+//	private void getSingleQueryView(IWBundle bundle, IWResourceBundle resourceBundle, String action, IWContext iwc)	throws RemoteException {
+//		String errorMessage = null;
+//		QueryService queryService = getQueryService();
+//		int currentQueryId = ((Integer) parameterMap.get(CURRENT_QUERY_ID)).intValue();
+//    QueryHelper queryHelper = queryService.getQueryHelper(currentQueryId);
+//    QueryToSQLBridge bridge = getQueryToSQLBridge(); 
+//    SQLQuery query = null;
+//    try {
+//    	query = bridge.createQuerySQL(queryHelper, iwc);
+//    }
+//    catch (QueryGenerationException ex) {
+//			String message =
+//				"[ReportOverview]: Can't generate query.";
+//			System.err.println(message + " Message is: " + ex.getMessage());
+//			ex.printStackTrace(System.err);
+//			errorMessage = resourceBundle.getLocalizedString("ro_query_could_not_be_created", "Query could not be created");
+//		}
+//		// execute query if the query was successfully created
+//		if (errorMessage == null) { 
+//			//
+//			// query is dynamic
+//			//
+//	    if (query.isDynamic()) {
+//	    	Map identifierValueMap = query.getIdentifierValueMap();
+//	    	Map identifierInputDescriptionMap = query.getIdentifierInputDescriptionMap();
+//	    	boolean calculateAccess = false;
+//	    	boolean containsOnlyAccessVariable = 
+//	    		(	(calculateAccess = identifierValueMap.containsKey(USER_ACCESS_VARIABLE))  || 
+//	    			(calculateAccess = identifierValueMap.containsKey(GROUP_ACCESS_VARIABLE))) && 
+//	    			(identifierValueMap.size() == 1);
+//	    	if (SHOW_SINGLE_QUERY_CHECK_IF_DYNAMIC.equals(action) &&
+//	    			! containsOnlyAccessVariable) {
+//	    		// show input fields
+//					showInputFields(query, identifierValueMap,  identifierInputDescriptionMap, resourceBundle, iwc);
+//	    	}
+//	    	else {
+//	    		// get the values of the input fields
+//	    		Map modifiedValues = getModifiedIdentiferValueMapByParsingRequest(identifierValueMap, iwc);
+//	    		if (calculateAccess) {
+//	    			setAccessCondition(modifiedValues, iwc);
+//	    		}
+//	    		query.setIdentifierValueMap(modifiedValues);
+//	    		// show result of query
+//	    		List executedSQLStatements = new ArrayList();
+//	    		errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
+//	    		
+//	    		if("true".equals(getBundle(iwc).getProperty(ADD_QUERY_SQL_FOR_DEBUG,"false"))){
+//	    			addExecutedSQLQueries(executedSQLStatements);
+//	    		}
+//	    		
+//	    		//little debugging/logging
+//	    		StringBuffer queryExecuted = new StringBuffer();
+//				if(executedSQLStatements!=null && !executedSQLStatements.isEmpty()){
+//					Iterator iterator = executedSQLStatements.iterator();
+//					while (iterator.hasNext())	{
+//						queryExecuted.append( (String) iterator.next());
+//						queryExecuted.append("\n");
+//					}
+//				}
+//					
+//	    		debug(queryExecuted.toString());
+//	    			    			
+//	     		// show again the input fields
+//	     		if (errorMessage != null)	{
+//	     			addErrorMessage(errorMessage);
+//	     		}
+//	     		if ( ! containsOnlyAccessVariable) {
+//	    			showInputFields(query, modifiedValues,  identifierInputDescriptionMap, resourceBundle, iwc);
+//	     		}
+//	     		else {
+//	     			getListOfQueries(bundle, resourceBundle, iwc);
+//	     		}	
+//	    	}
+//	    	//
+//	    	// good bye - query is dynamic
+//	    	//
+//	    	return;
+//	    }
+//	    //
+//	    // query is not dynamic
+//	    //
+//	    else {
+//	    	List executedSQLStatements = new ArrayList();
+//	    	errorMessage = executeQueries(query, bridge, executedSQLStatements, resourceBundle, iwc);
+//	    	addExecutedSQLQueries(executedSQLStatements);
+//	    }
+//		}
+//		// show list if query is not dynamic and if an error occurred
+//		if (errorMessage != null) {
+//			addErrorMessage(errorMessage);
+//		}
+//		getListOfQueries(bundle, resourceBundle, iwc);
+//	}
 	
-	private void addErrorMessage(String errorMessage)	{
-		Text text = new Text(errorMessage);
-	  text.setBold();
-	  text.setFontColor("#FF0000");
-	  add(text);
-	  add(Text.getBreak());
-	}
-	
-	private void addExecutedSQLQueries(List executedSQLStatements) {
-		Iterator iterator = executedSQLStatements.iterator();
-		while (iterator.hasNext())	{
-			String statement = (String) iterator.next();
-			Text text = new Text(statement);
-			text.setBold();
-	  	text.setFontColor("#FF0000");
-	  	add(text);
-	  	add(Text.getBreak());
-		}
-	}
-		
-	
-	private void showInputFields(SQLQuery query, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
-    String name = query.getName();
-    PresentationObject presentationObject = getInputFields(name, identifierValueMap, identifierInputDescriptionMap, resourceBundle, iwc);
-    Form form = new Form();
-    addParametersToForm(form);
-    form.add(presentationObject);
-    add(form);
-	}
+//	private void addErrorMessage(String errorMessage)	{
+//		Text text = new Text(errorMessage);
+//	  text.setBold();
+//	  text.setFontColor("#FF0000");
+//	  add(text);
+//	  add(Text.getBreak());
+//	}
+//	
+//	private void addExecutedSQLQueries(List executedSQLStatements) {
+//		Iterator iterator = executedSQLStatements.iterator();
+//		while (iterator.hasNext())	{
+//			String statement = (String) iterator.next();
+//			Text text = new Text(statement);
+//			text.setBold();
+//	  	text.setFontColor("#FF0000");
+//	  	add(text);
+//	  	add(Text.getBreak());
+//		}
+//	}
+//
 
 	
-	private String executeQueries(SQLQuery query, QueryToSQLBridge bridge, List executedSQLQueries, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
-		QueryResult queryResult = bridge.executeQueries(query, executedSQLQueries);
-		// check if everything is fine
-		if (queryResult == null || queryResult.isEmpty())	{
-			// nothing to do
-			return resourceBundle.getLocalizedString("ro_result_of_query_is_empty", "Result of query is empty");
-		}
-		// get design
-		JasperReportBusiness reportBusiness = getReportBusiness();
-		DesignBox designBox = getDesignBox(query, reportBusiness, resourceBundle, iwc);
-    // synchronize design and result
-    Map designParameters = new HashMap();
-    designParameters.put(REPORT_HEADLINE_KEY, query.getName());
-    JasperPrint print = reportBusiness.printSynchronizedReport(queryResult, designParameters, designBox);
-    if (print == null) {
-    	return resourceBundle.getLocalizedString("ro_could_not_use_layout", "Layout can't be used");
-    }
-    // create html report
-    String uri;
-    String format = (String) parameterMap.get(CURRENT_OUTPUT_FORMAT);
-    if (PDF_KEY.equals(format)) {
-    	uri = reportBusiness.getPdfReport(print, "report");
-    }
-    else if (EXCEL_KEY.equals(format))	{
-    	uri = reportBusiness.getExcelReport(print, "report");
-    }
-    else {
-    	uri = reportBusiness.getHtmlReport(print, "report");
-    }
-    // open an extra window with scrollbars
-    //getParentPage().setOnLoad("window.open('" + uri + "' , 'newWin', 'width=600,height=400,scrollbars=yes')");
-	//openwindow(Address,Name,ToolBar,Location,Directories,Status,Menubar,Titlebar,Scrollbars,Resizable,Width,Height)
-    getParentPage().setOnLoad(" openwindow('" + uri + "','IdegaWeb Generated Report','0','0','0','0','0','1','1','1','800','600') ");
-    return null;
-	}
+
     
-	private DesignBox getDesignBox(SQLQuery query, JasperReportBusiness reportBusiness, IWResourceBundle resourceBundle, IWContext iwc) {
-    int designId = ((Integer) parameterMap.get(CURRENT_LAYOUT_ID)).intValue();
-    DesignBox design = null;
-    try {
-    	if (designId > 0) {  
-    		design = reportBusiness.getDesignBox(designId);
-    	}
-    	else {
-    		design = reportBusiness.getDynamicDesignBox(query, resourceBundle, iwc);
-    	}
-    }
-    catch (IOException ioEx) {
-    	logError("[ReportQueryOverview] Couldn't retrieve design.");
-    	log(ioEx);
-    }
-    catch (JRException jrEx) {
-    	logError("[ReportQueryOverview] Couldn't retrieve design.");
-    	log(jrEx);
-    }
-    return design;
-	}
+
     	
-   // parsing of the request      	
-	private Map getModifiedIdentiferValueMapByParsingRequest(Map identifierValueMap, IWContext iwc)	{
-		Map result = new HashMap();
-		Iterator iterator = identifierValueMap.keySet().iterator();
-		while (iterator.hasNext()) {
-			String key = (String) iterator.next();
-			if (iwc.isParameterSet(key))	{
-				String[] value = iwc.getParameterValues(key);
-				// change to collection-based API
-				result.put(key, Arrays.asList(value));
-			}
-			else {
-				result.put(key, "");
-			}
-		}
-		return result;
-	}
+
 			
 
-	private void setAccessCondition(Map identifierValueMap, IWContext iwc) throws RemoteException {
-		List groupIds = new ArrayList();
-		int userId = iwc.getCurrentUserId();
-		UserBusiness userBusiness = getUserBusiness();
-		GroupBusiness groupBusiness = getGroupBusiness();
-		User user = userBusiness.getUser(userId);
-		Collection topGroupNodes = userBusiness.getUsersTopGroupNodesByViewAndOwnerPermissions(user,iwc);
-		Iterator iterator = topGroupNodes.iterator();
-		while ( iterator.hasNext())	{
-			Group topGroup = (Group) iterator.next();
-			Collection childGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(topGroup, new ArrayList(), true);
-			Iterator childGroupsIterator = childGroups.iterator();
-			while (childGroupsIterator.hasNext())	{
-				Group group = (Group) childGroupsIterator.next();
-				groupIds.add(group.getPrimaryKey());
-			}
-		}
-		// create the where condition for user view
-		StringBuffer userBuffer = new StringBuffer("(select related_ic_group_id from ic_group_relation where ic_group_id in ");
-		Iterator groupIdsIterator = groupIds.iterator();
-		StringBuffer buffer = new StringBuffer("( ");
-		String separator = "";
-		while (groupIdsIterator.hasNext()) {
-			buffer.append(separator);
-			Object groupId = groupIdsIterator.next();
-			buffer.append(groupId.toString());
-			separator = " , ";
-		}
-		buffer.append(" )");
-		userBuffer.append(buffer).append(" and group_relation_status = 'ST_ACTIVE')");
-		identifierValueMap.put(USER_ACCESS_VARIABLE, userBuffer.toString());
-		// create the where condition for group view
-		identifierValueMap.put(GROUP_ACCESS_VARIABLE, buffer.toString());
-	}
-		
-				    	
+
     	
     	
-  private PresentationObject getInputFields(String queryName, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
-
-  	// create a nice headline for the confused user
-  	String currentQuery = resourceBundle.getLocalizedString("ro_current_query", "Current Query");
-  	StringBuffer buffer = new StringBuffer(currentQuery);
-  	buffer.append(": ").append(queryName);
-  	Text text = new Text(buffer.toString());
-  	text.setBold();
-  	add(text);
-
-  	Table table = new Table (2, identifierValueMap.size() + 1);
-  	Iterator iterator = identifierValueMap.entrySet().iterator();
-  	int i = 1;
-  	while (iterator.hasNext())	{
-  		Map.Entry entry = (Map.Entry) iterator.next();
-  		String key = (String) entry.getKey();
-  		if (! USER_ACCESS_VARIABLE.equals(key) && 
-  				!GROUP_ACCESS_VARIABLE.equals(key)) {
-	  		InputDescription inputDescription = (InputDescription) identifierInputDescriptionMap.get(key);
-	  		Object object = identifierValueMap.get(key);
-	  		String value = null;
-	  		if (object instanceof Collection) {
-	  			Iterator objectIterator = ((Collection) object).iterator();
-	  			//TODO thi remove hack, extend interface of inputhandler
-	  			while (objectIterator.hasNext()) {
-	  				value = (String) objectIterator.next();
-	  			}
-	  		}
-	  		else {
-	  			value = (String) object;
-	  		}
-	  		String inputHandlerClass = inputDescription.getInputHandler();
-	  		String description = inputDescription.getDescription();
-	  		InputHandler inputHandler = getInputHandler(inputHandlerClass);
-	  		PresentationObject input = (inputHandler != null) ? inputHandler.getHandlerObject(key, value, iwc) : new TextInput(key, value);
-	  		table.add(description, 1, i);
-	  		table.add(input, 2, i++);
-  		}
-  	}
-  	String okayText = resourceBundle.getLocalizedString("ro_okay", "ok");
-  	SubmitButton okayButton = new SubmitButton(okayText, VALUES_COMMITTED_KEY, "default_value");
-  	okayButton.setAsImageButton(true);
-  	PresentationObject goBack = getGoBackButton(resourceBundle);
-   	table.add(goBack, 1, i);
-  	table.add(okayButton, 1, i);
-  	return table;
-  }
  
 	private PresentationObject getGoBackButton(IWResourceBundle resourceBundle)	{
   	String goBackText = resourceBundle.getLocalizedString("ro_back_to_list", "Back to list");
@@ -920,25 +771,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
     }
   }
  
-	public UserBusiness getUserBusiness()	{
-		try {
-			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
-		}
-		catch (RemoteException ex)	{
-      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
-		}
-	}
-
-	public GroupBusiness getGroupBusiness()	{
-		try {
-			return (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
-		}
-		catch (RemoteException ex)	{
-      System.err.println("[ReportOverview]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
-      throw new RuntimeException("[ReportOverview]: Can't retrieve GroupBusiness");
-		}
-	}
 
   
   // a representation of the query
@@ -968,6 +800,10 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			else if (IS_PRIVATE_KEY.equals(columnName)) {
 				return isPrivate ? "X" : "";
 			}
+			else if (DESIGN_LAYOUT_KEY.equals(columnName)) {
+				//no preselection!
+				return null;
+			}
 			return name;
 		}
   
@@ -980,6 +816,41 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
  		}
  		
   }
+  
+//  class PrintQueryConverter implements EntityToPresentationObjectConverter {
+//  	
+//  	Image image;
+//  	
+//  	public PrintQueryConverter(Link link) {
+//  		this.image = image;
+//  	}
+//  	
+//		public PresentationObject getHeaderPresentationObject(
+//			EntityPath entityPath,
+//			EntityBrowser browser,
+//			IWContext iwc) {
+//			return browser.getDefaultConverter().getHeaderPresentationObject(entityPath, browser, iwc);
+//		}
+//
+//		/* (non-Javadoc)
+//	 	* @see com.idega.block.entity.business.EntityToPresentationObjectConverter#getPresentationObject(java.lang.Object, com.idega.block.entity.data.EntityPath, com.idega.block.entity.presentation.EntityBrowser, com.idega.presentation.IWContext)
+//	 	*/
+//		public PresentationObject getPresentationObject(
+//			Object entity,
+//			EntityPath path,
+//			EntityBrowser browser,
+//			IWContext iwc) {
+//			Link link = new Link();
+//			link.setImage(image);
+//			EntityRepresentation idoEntity = (EntityRepresentation) entity;
+//			// add id of query
+//			String primaryKey = idoEntity.getPrimaryKey().toString();
+//			link.addParameter(QueryResultViewer.QUERY_ID_KEY, primaryKey);
+//			// add id of cho
+//			link.addParameter(QueryResultViewer.DESIGN_ID_KEY, parameterMap.get(DESIGN_LAYOUT_KEY));
+//			String outputFormat = path.getShortKey();
+//			link.addParameter(QueryResultViewer.OUTPUT_FORMAT_KEY, outputFormat);
+			
   
   // link to query builder converter
   class  EditQueryConverter implements EntityToPresentationObjectConverter	{
@@ -1063,7 +934,51 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	  	return Text.emptyString();
 	  }
   }
+	public UserBusiness getUserBusiness()	{
+		try {
+			return (UserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), UserBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      System.err.println("[ReportOverview]: Can't retrieve UserBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve UserBusiness");
+		}
+	}
 
+	public GroupBusiness getGroupBusiness()	{
+		try {
+			return (GroupBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), GroupBusiness.class);
+		}
+		catch (RemoteException ex)	{
+      System.err.println("[ReportOverview]: Can't retrieve GroupBusiness. Message is: " + ex.getMessage());
+      throw new RuntimeException("[ReportOverview]: Can't retrieve GroupBusiness");
+		}
+	}
+	
+	private String getChangeTargetScript(Class windowClass) {
+  //	String windowId = IWMainApplication.getEncryptedClassName(windowClass);
+  	// note: the name "newTarget" is not important and arbitrary
+//  	StringBuffer buffer = new StringBuffer("findObj('");
+//  	buffer.append(Page.IW_FRAME_CLASS_PARAMETER);
+//  	buffer.append("').value='");
+//		buffer.append(windowId); 
+  	StringBuffer buffer = new StringBuffer();
+		buffer.append("this.form.target='newTarget'; openwindow('','newTarget','0','0','0','0','0','0','1','1','1024','768');");
+		return buffer.toString();
+	}
+
+	private String getRemoveTargetScript(Class windowClass) {
+  //	String windowId = IWMainApplication.getEncryptedClassName(windowClass);
+  	// note: the name "newTarget" is not important and arbitrary
+//  	StringBuffer buffer = new StringBuffer("findObj('");
+//  	buffer.append(Page.IW_FRAME_CLASS_PARAMETER);
+//  	buffer.append("').value='");
+//		buffer.append(windowId); 
+  	StringBuffer buffer = new StringBuffer();
+		buffer.append("this.form.target=window.name;");
+		return buffer.toString();
+	}
+
+	
 }
 
 

@@ -1,6 +1,7 @@
 package com.idega.block.datareport.presentation;
 
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
+import com.idega.block.entity.presentation.converter.ButtonConverter;
 import com.idega.idegaweb.IWConstants;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.presentation.StyledIWAdminWindow;
@@ -50,6 +51,15 @@ public class ReportOverviewWindow extends StyledIWAdminWindow {
     else if (iwc.isParameterSet(ReportQueryBuilder.SHOW_WIZARD))	{
     	ReportQueryBuilder queryBuilder = new ReportQueryBuilder();
     	add(queryBuilder,iwc);
+    }
+    else if (iwc.isParameterSet(ReportQueryOverview.DELETE_ITEMS_KEY)) {
+	   	ReportQueryOverview overview = new ReportQueryOverview();
+    	add(overview,iwc);
+    }
+    else if (iwc.isParameterSet(QueryResultViewer.EXECUTE_QUERY_KEY) || ButtonConverter.getResultByParsing(iwc).isValid()) {
+    	addTitle(iwrb.getLocalizedString("ro_report_viewer", "ReportGeneratorViewer"), IWConstants.BUILDER_FONT_STYLE_TITLE);
+    	QueryResultViewer result = new QueryResultViewer();
+    	add(result, iwc);
     }
     else {
 	   	ReportQueryOverview overview = new ReportQueryOverview();
