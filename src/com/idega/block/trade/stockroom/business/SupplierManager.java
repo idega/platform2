@@ -13,7 +13,7 @@ import com.idega.block.trade.stockroom.data.*;
 
 public class SupplierManager {
 
-  public void SupplierManager(){
+  public SupplierManager(){
   }
 
   public int createSupplier(String name, String description, int group_id)throws Exception{
