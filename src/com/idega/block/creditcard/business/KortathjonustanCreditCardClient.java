@@ -13,15 +13,25 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntries;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntriesHome;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWApplicationContext;
+import com.idega.idegaweb.IWBundle;
+import com.idega.presentation.IWContext;
+import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 
 public class KortathjonustanCreditCardClient implements CreditCardClient
 {
+  private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.creditcard";
+
 	private String HOST_NAME;// 									= "test.kortathjonustan.is";
 	private int HOST_PORT	;//										= 8443;
 	String strKeystore;// = "/demoFolder/testkeys.jks";
@@ -99,12 +109,13 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 	// Test indicator
 	private boolean bTestServer = false;
 	private CreditCardTransaction cct = null;
+	private static Logger logger;
 
-	public KortathjonustanCreditCardClient(String host, int port, String keystoreLocation, String keystorePass, CreditCardMerchant merchant) {
-		this(host, port, keystoreLocation, keystorePass, merchant.getLocation(), merchant.getUser(), merchant.getPassword(), merchant.getTerminalID(), merchant.getMerchantID());
+	public KortathjonustanCreditCardClient(IWApplicationContext iwc, String host, int port, String keystoreLocation, String keystorePass, CreditCardMerchant merchant) {
+		this(iwc, host, port, keystoreLocation, keystorePass, merchant.getLocation(), merchant.getUser(), merchant.getPassword(), merchant.getTerminalID(), merchant.getMerchantID());
 	}
 	
-	public KortathjonustanCreditCardClient(String host, int port, String keystoreLocation, String keystorePass, String site, String user, String password, String acceptorTerminalID, String acceptorIdentification) {
+	public KortathjonustanCreditCardClient(IWApplicationContext iwc, String host, int port, String keystoreLocation, String keystorePass, String site, String user, String password, String acceptorTerminalID, String acceptorIdentification) {
 		HOST_NAME = host;
 		HOST_PORT = port;
 		strKeystore = keystoreLocation;
@@ -115,7 +126,34 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 		PASSWORD = password;
 		ACCEPTOR_TERM_ID = acceptorTerminalID;
 		ACCEPTOR_IDENTIFICATION = acceptorIdentification;
+		init(iwc);
 	}	
+
+	private void init(IWApplicationContext iwc) {
+		
+		logger = null;
+		if (logger == null ) {
+			IWBundle bundle = iwc.getIWMainApplication().getBundle(getBundleIdentifier());
+	    logger = Logger.getLogger(this.getClass().getName());
+	
+	    FileUtil.getFileSeparator();
+	    
+			try {
+				//Handler fh = new FileHandler("/Users/kortathjonustan.log");
+				Handler fh = new FileHandler(bundle.getPropertiesRealPath()+"/kortathjonustan.log");
+				logger.addHandler(fh);
+				logger.setLevel(Level.ALL);
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger = null;
+			}
+		}
+    
+	}
+
+  public String getBundleIdentifier() {
+    return (IW_BUNDLE_IDENTIFIER);
+  }
 
 	private int getAmountWithExponents(double amount) {
 		int amountMultiplier = (int) Math.pow(10, Double.parseDouble(strCurrencyExponent));
@@ -159,72 +197,71 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 	}
 	
 	public String doSale(String nameOnCard, String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String referenceNumber) throws CreditCardAuthorizationException {
-		IWTimestamp stamp = IWTimestamp.RightNow();
-		strName = nameOnCard;
-		strCCNumber = cardnumber;
-		strCCExpire = yearExpires+monthExpires;
-		strCCVerify = ccVerifyNumber;
-		setCurrencyAndAmount(currency, amount);
-		strCurrentDate = getDateString(stamp);
-		strReferenceNumber = referenceNumber;
+		try {
+			IWTimestamp stamp = IWTimestamp.RightNow();
+			strName = nameOnCard;
+			strCCNumber = cardnumber;
+			strCCExpire = yearExpires+monthExpires;
+			strCCVerify = ccVerifyNumber;
+			setCurrencyAndAmount(currency, amount);
+			strCurrentDate = getDateString(stamp);
+			strReferenceNumber = referenceNumber;
+	
+			StringBuffer logText = new StringBuffer();
+			
+			Hashtable returnedProperties = getFirstResponse();
+			String authCode = null;
+			if (returnedProperties != null) {
+				logText.append("Authorization successful");
+				Hashtable returnedCaptureProperties = finishTransaction(returnedProperties);
+				if (returnedCaptureProperties != null && returnedCaptureProperties.get(PROPERTY_APPROVAL_CODE).toString() != null) {
+					//System.out.println("Approval Code = "+returnedCaptureProperties.get(PROPERTY_APPROVAL_CODE).toString());
+					authCode = returnedCaptureProperties.get(PROPERTY_APPROVAL_CODE).toString();//returnedCaptureProperties;
 
-		
-		Hashtable returnedProperties = getFirstResponse();
-		String authCode = null;
-		if (returnedProperties != null) {
-			Hashtable returnedCaptureProperties = finishTransaction(returnedProperties);
-			if (returnedCaptureProperties != null && returnedCaptureProperties.get(PROPERTY_APPROVAL_CODE).toString() != null) {
-				//System.out.println("Approval Code = "+returnedCaptureProperties.get(PROPERTY_APPROVAL_CODE).toString());
-				authCode = returnedCaptureProperties.get(PROPERTY_APPROVAL_CODE).toString();//returnedCaptureProperties;
-				try {
-
-					KortathjonustanAuthorisationEntriesHome authHome = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
-					KortathjonustanAuthorisationEntries auth = authHome.create();
-
-					String tmpCardNum = CreditCardBusinessBean.encodeCreditCardNumber(cardnumber);
+					logText.append("\nCapture successful").append("\nAuthorization Code = "+authCode);
+					logText.append("\nAction Code = "+returnedCaptureProperties.get(PROPERTY_ACTION_CODE).toString());
 					
-					auth.setAmount(Double.parseDouble(strAmount));
-					auth.setAuthorizationCode(authCode);
-					auth.setBrandName(returnedCaptureProperties.get(PROPERTY_CARD_BRAND_NAME).toString());
-					auth.setCardExpires(strCCExpire);
-					auth.setCardNumber(tmpCardNum);
-					auth.setCurrency(currency);
-					auth.setDate(stamp.getDate());
-					auth.setErrorNumber(returnedCaptureProperties.get(PROPERTY_ERROR_CODE).toString());
-					auth.setErrorText(returnedCaptureProperties.get(PROPERTY_ERROR_TEXT).toString());
-					auth.setTransactionType(KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_SALE);
-					auth.setServerResponse(returnedCaptureProperties.get(PROPERTY_TOTAL_RESPONSE).toString());
-					//System.out.println("Response length = "+returnedCaptureProperties.get(PROPERTY_TOTAL_RESPONSE).toString().length());
-					auth.store();
-				
-					
-					//  TODO setja store inn aftur
-					/*
-					CreditCardBusiness cBus = (CreditCardBusiness) IBOLookup.getServiceInstance(IWContext.getInstance(), CreditCardBusiness.class);
-					
-					System.out.println("amount     = "+amount);
-					System.out.println("authCode   = "+authCode);
-					System.out.println("brand        = "+returnedCaptureProperties.get(PROPERTY_CARD_BRAND_NAME));
-					System.out.println("strCCExpire = "+strCCExpire);
-					System.out.println("CardNumb  = "+CreditCardBusinessBean.encodeCreditCardNumber(cardnumber)+" ("+cardnumber+", "+cBus.verifyCreditCardNumber(cardnumber, auth)+")");
-					System.out.println("Currency     = "+currency);
-					System.out.println("Date          = "+stamp.getDate());
-					System.out.println("ErrorNum    = "+returnedCaptureProperties.get(PROPERTY_ERROR_CODE));
-					System.out.println("ErrorText    = "+returnedCaptureProperties.get(PROPERTY_ERROR_TEXT));
-					System.out.println("Type          = "+KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_SALE);
-					System.out.println("Response   = "+returnedCaptureProperties.get(PROPERTY_TOTAL_RESPONSE));
-					*/			
+					try {
+	
+						KortathjonustanAuthorisationEntriesHome authHome = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntries.class);
+						KortathjonustanAuthorisationEntries auth = authHome.create();
+	
+						String tmpCardNum = CreditCardBusinessBean.encodeCreditCardNumber(cardnumber);
+						
+						auth.setAmount(Double.parseDouble(strAmount));
+						auth.setAuthorizationCode(authCode);
+						auth.setBrandName(returnedCaptureProperties.get(PROPERTY_CARD_BRAND_NAME).toString());
+						auth.setCardExpires(strCCExpire);
+						auth.setCardNumber(tmpCardNum);
+						auth.setCurrency(currency);
+						auth.setDate(stamp.getDate());
+						auth.setErrorNumber(returnedCaptureProperties.get(PROPERTY_ERROR_CODE).toString());
+						auth.setErrorText(returnedCaptureProperties.get(PROPERTY_ERROR_TEXT).toString());
+						auth.setTransactionType(KortathjonustanAuthorisationEntries.AUTHORIZATION_TYPE_SALE);
+						auth.setServerResponse(returnedCaptureProperties.get(PROPERTY_TOTAL_RESPONSE).toString());
+						auth.store();
+	
+						logger.info(logText.toString());
 
-
-				} catch (Exception e) {
-		      System.err.println("Unable to save entry to database");
-		      throw new CreditCardAuthorizationException(e);
+					} catch (Exception e) {
+			      System.err.println("Unable to save entry to database");
+			      throw new CreditCardAuthorizationException(e);
+					}
 				}
 			}
+		
+		
+			
+			return authCode;
+		} catch (CreditCardAuthorizationException e) {
+			StringBuffer logText = new StringBuffer();
+			logText.append("Authorization FAILED");
+			logText.append("\nError           = "+e.getErrorMessage());
+			logText.append("\nNumber        = "+e.getErrorNumber());
+			logText.append("\nDisplay error = "+e.getDisplayError());
+			logger.info(logText.toString());
+			throw e;
 		}
-		
-		
-		return authCode;
 	}
 	
 	public String doRefund(String cardnumber, String monthExpires, String yearExpires, String ccVerifyNumber, double amount, String currency, String captureProperties) throws CreditCardAuthorizationException {
@@ -235,9 +272,22 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 		setCurrencyAndAmount(currency, amount);
 		strCurrentDate = getDateString(stamp);
 
-		Hashtable properties = doRefund(getAmountWithExponents(amount), parseResponse(captureProperties));
 		try {
+			StringBuffer logText = new StringBuffer();
+			Hashtable properties = doRefund(getAmountWithExponents(amount), parseResponse(captureProperties));
+		
+			logText.append("\nRefund successful").append("\nAuthorization Code = "+properties.get(PROPERTY_APPROVAL_CODE));
+			logText.append("\nAction Code = "+properties.get(PROPERTY_ACTION_CODE).toString());
+			logger.info(logText.toString());
 			return properties.get(PROPERTY_APPROVAL_CODE).toString();
+		} catch (CreditCardAuthorizationException e) {
+			StringBuffer logText = new StringBuffer();
+			logText.append("Authorization FAILED");
+			logText.append("\nError           = "+e.getErrorMessage());
+			logText.append("\nNumber        = "+e.getErrorNumber());
+			logText.append("\nDisplay error = "+e.getDisplayError());
+			logger.info(logText.toString());
+			throw e;
 		} catch (NullPointerException n) {
 			throw new CreditCardAuthorizationException(n);
 		}
@@ -266,7 +316,7 @@ public class KortathjonustanCreditCardClient implements CreditCardClient
 			String keystore = "/demoFolder/testkeys.jks";
 			String keystorePass = "changeit";
 
-		KortathjonustanCreditCardClient client = new KortathjonustanCreditCardClient(host, port, keystore, keystorePass, SITE, USER, PASSWORD, ACCEPTOR_TERM_ID, ACCEPTOR_IDENTIFICATION);
+		KortathjonustanCreditCardClient client = new KortathjonustanCreditCardClient(IWContext.getInstance(), host, port, keystore, keystorePass, SITE, USER, PASSWORD, ACCEPTOR_TERM_ID, ACCEPTOR_IDENTIFICATION);
 		try {
 			String tmp = client.doSale("Gr’mur Steri", strCCNumber, strCCExpire.substring(2, 4), strCCExpire.substring(0, 2), strCCVerify, 1, "ISK", strReferenceNumber );
 			

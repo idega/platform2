@@ -103,7 +103,7 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 				String keystore = getBundle().getProperty(PROPERTY_KORTATHJONUSTAN_KEYSTORE);
 				String keystorePass =  getBundle().getProperty(PROPERTY_KORTATHJONUSTAN_KEYSTORE_PASS);
 				
-				return new KortathjonustanCreditCardClient(hostName, Integer.parseInt(hostPort), keystore, keystorePass, merchant);
+				return new KortathjonustanCreditCardClient(getIWApplicationContext(), hostName, Integer.parseInt(hostPort), keystore, keystorePass, merchant);
 			}
 		}
 		return null;
