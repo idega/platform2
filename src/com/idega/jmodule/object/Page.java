@@ -1,5 +1,5 @@
 /*
- * $Id: Page.java,v 1.22 2001/09/19 12:39:49 gummi Exp $
+ * $Id: Page.java,v 1.23 2001/09/24 10:32:29 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,24 +23,25 @@ import com.idega.idegaweb.IWMainApplication;
 *@version 1.2
 */
 public class Page extends ModuleObjectContainer {
-  private String title;
-  private Script theAssociatedScript;
-  private boolean zeroWait = false;
-  private String redirectInfo;
-  private boolean doReload = false;
-  private String linkColor = "#000000";
-  private String visitedColor = "#000000";
-  private String hoverColor = "#000000";
-  private String textDecoration = "underline";
-  private String pageStyleFont = Text.FONT_FACE_ARIAL;
-  private String pageStyleFontSize = Text.FONT_SIZE_7_STYLE_TAG;
-  private String pageStyleFontStyle = Text.FONT_FACE_STYLE_NORMAL;
-  private String styleSheetURL = "/style/style.css";
-  private boolean addStyleSheet = false;
-  private Hashtable frameProperties;
-  private boolean isTemplate_ = false;
-  private boolean isPage_ = true;
-  private boolean isDraft_ = false;
+  private String _title;
+  private Script _theAssociatedScript;
+  private boolean _zeroWait = false;
+  private String _redirectInfo;
+  private boolean _doReload = false;
+  private String _linkColor = "#000000";
+  private String _visitedColor = "#000000";
+  private String _hoverColor = "#000000";
+  private String _textDecoration = "underline";
+  private String _pageStyleFont = Text.FONT_FACE_ARIAL;
+  private String _pageStyleFontSize = Text.FONT_SIZE_7_STYLE_TAG;
+  private String _pageStyleFontStyle = Text.FONT_FACE_STYLE_NORMAL;
+  private String _styleSheetURL = "/style/style.css";
+  private boolean _addStyleSheet = false;
+  private Hashtable _frameProperties;
+  private boolean _isTemplate = false;
+  private boolean _isPage = true;
+  private boolean _isDraft = false;
+  private boolean _isExtendingTemplate = false;
 
 
   private static Page NULL_CLONE_PAGE = new Page();
@@ -102,22 +103,22 @@ public class Page extends ModuleObjectContainer {
    */
   public void setHoverColor(String color) {
     setAttribute("alink",color);
-    this.hoverColor = color;
+    _hoverColor = color;
   }
 
   /**
    *
    */
   public void setTextDecoration(String textDecoration) {
-    this.textDecoration = textDecoration;
+    _textDecoration = textDecoration;
   }
 
   /**
    *
    */
   public void setStyleSheetURL(String styleSheetURL) {
-    this.addStyleSheet = true;
-    this.styleSheetURL = styleSheetURL;
+    _addStyleSheet = true;
+    _styleSheetURL = styleSheetURL;
   }
 
   /**
@@ -125,7 +126,7 @@ public class Page extends ModuleObjectContainer {
    */
   public void setVlinkColor(String color) {
     setAttribute("vlink",color);
-    this.visitedColor = color;
+    _visitedColor = color;
   }
 
   /**
@@ -133,49 +134,49 @@ public class Page extends ModuleObjectContainer {
    */
   public void setLinkColor(String color) {
     setAttribute("link",color);
-    this.linkColor = color;
+    _linkColor = color;
   }
 
   /**
    *
    */
-  public void setPageFontFace(String TextFontFace) {
-    this.pageStyleFont = TextFontFace;
+  public void setPageFontFace(String textFontFace) {
+    _pageStyleFont = textFontFace;
   }
 
   /**
    *
    */
-  public void setPageFontSize(String TextFontSize) {
-    this.pageStyleFont = TextFontSize;
+  public void setPageFontSize(String textFontSize) {
+    _pageStyleFont = textFontSize;
   }
 
   /**
    *
    */
-  public void setPageFontStyle (String TextFontStyle) {
-    this.pageStyleFontStyle = TextFontStyle;
+  public void setPageFontStyle (String textFontStyle) {
+    _pageStyleFontStyle = textFontStyle;
   }
 
   /**
    *
    */
   public String getPageFontFace() {
-    return this.pageStyleFont;
+    return(_pageStyleFont);
   }
 
   /**
    *
    */
   public String getPageFontSize() {
-    return this.pageStyleFont;
+    return(_pageStyleFont);
   }
 
   /**
    *
    */
   public String getPageFontStyle () {
-    return this.pageStyleFontStyle;
+    return(_pageStyleFontStyle);
   }
 
   /**
@@ -234,15 +235,15 @@ public class Page extends ModuleObjectContainer {
    *
    */
   public void setAssociatedScript(Script myScript) {
-    theAssociatedScript = myScript;
+    _theAssociatedScript = myScript;
   }
 
   /*
    *
    */
   private void initializeAssociatedScript() {
-    if(theAssociatedScript == null) {
-      theAssociatedScript = new Script();
+    if(_theAssociatedScript == null) {
+      _theAssociatedScript = new Script();
     }
   }
 
@@ -251,7 +252,7 @@ public class Page extends ModuleObjectContainer {
    */
   public Script getAssociatedScript() {
     initializeAssociatedScript();
-    return this.theAssociatedScript;
+    return _theAssociatedScript;
   }
 
   /**
@@ -343,14 +344,14 @@ public class Page extends ModuleObjectContainer {
    *
    */
   public void setToReload() {
-    doReload = true;
+    _doReload = true;
   }
 
   /**
    *
    */
   public void setToRedirect(String URL) {
-    zeroWait = true;
+    _zeroWait = true;
     setToRedirect(URL,0);
   }
 
@@ -358,14 +359,14 @@ public class Page extends ModuleObjectContainer {
    *
    */
   public void setToRedirect(String URL,int secondInterval) {
-    redirectInfo = "" + secondInterval + " ;URL=" + URL;
+    _redirectInfo = "" + secondInterval + " ;URL=" + URL;
   }
 
   /**
    *
    */
   public String getRedirectInfo() {
-    return redirectInfo;
+    return _redirectInfo;
   }
 
   /*
@@ -374,17 +375,17 @@ public class Page extends ModuleObjectContainer {
   protected void prepareClone(ModuleObject newObjToCreate) {
    super.prepareClone(newObjToCreate);
    Page newPage = (Page)newObjToCreate;
-   newPage.title = this.title;
-   Script newScript = (Script)this.theAssociatedScript;
+   newPage._title = _title;
+   Script newScript = (Script)_theAssociatedScript;
    if(newScript!=null){
-    newPage.theAssociatedScript = (Script)newScript.clone();
+    newPage._theAssociatedScript = (Script)newScript.clone();
    }
-   newPage.zeroWait = this.zeroWait;
-   newPage.redirectInfo = this.redirectInfo;
-   newPage.doReload = this.doReload;
-   newPage.linkColor = this.linkColor;
-   newPage.visitedColor = this.visitedColor;
-   newPage.hoverColor = this.hoverColor;
+   newPage._zeroWait = _zeroWait;
+   newPage._redirectInfo = _redirectInfo;
+   newPage._doReload = _doReload;
+   newPage._linkColor = _linkColor;
+   newPage._visitedColor = _visitedColor;
+   newPage._hoverColor = _hoverColor;
   }
 
 
@@ -406,19 +407,19 @@ public class Page extends ModuleObjectContainer {
     Page obj = null;
     try {
       obj = (Page)super.clone(modinfo, askForPermission);
-      if (this.theAssociatedScript != null) {
-        obj.theAssociatedScript = (Script)this.theAssociatedScript.clone();
+      if (_theAssociatedScript != null) {
+        obj._theAssociatedScript = (Script)_theAssociatedScript.clone();
       }
-      obj.title = this.title;
-      obj.zeroWait = this.zeroWait;
-      obj.redirectInfo = this.redirectInfo;
-      obj.doReload = this.doReload;
-      obj.linkColor = this.linkColor;
-      obj.visitedColor = this.visitedColor;
-      obj.hoverColor = this.hoverColor;
-      obj.textDecoration = this.textDecoration;
-      obj.styleSheetURL = this.styleSheetURL;
-      obj.addStyleSheet = this.addStyleSheet;
+      obj._title = _title;
+      obj._zeroWait = _zeroWait;
+      obj._redirectInfo = _redirectInfo;
+      obj._doReload = _doReload;
+      obj._linkColor = _linkColor;
+      obj._visitedColor = _visitedColor;
+      obj._hoverColor = _hoverColor;
+      obj._textDecoration = _textDecoration;
+      obj._styleSheetURL = _styleSheetURL;
+      obj._addStyleSheet = _addStyleSheet;
 
     }
     catch(Exception ex) {
@@ -465,7 +466,7 @@ public class Page extends ModuleObjectContainer {
    *
    */
   public void main(ModuleInfo modinfo) throws Exception {
-    if (doReload) {
+    if (_doReload) {
       if(modinfo.getSession().getAttribute("idega_special_reload") != null) {
         modinfo.getSession().removeAttribute("idega_special_reload");
       }
@@ -513,8 +514,8 @@ public class Page extends ModuleObjectContainer {
     if (getLanguage().equals("HTML")) {
       if(!isInsideOtherPage){
         println(getStartTag());
-        if(zeroWait) {
-          this.setDoPrint(false);
+        if(_zeroWait) {
+          setDoPrint(false);
         }
         println("\n<head>");
         if (getAssociatedScript() != null) {
@@ -523,11 +524,19 @@ public class Page extends ModuleObjectContainer {
 
         println(getMetaInformation(modinfo));
         println("<title>"+getTitle()+"</title>");
-        if (addStyleSheet) {
-          println("<link rel=\"stylesheet\" href=\""+styleSheetURL+"\" type=\"text/css\">\n");
+        if (_addStyleSheet) {
+          println("<link rel=\"stylesheet\" href=\""+_styleSheetURL+"\" type=\"text/css\">\n");
         }
         else {
-          println("<STYLE TYPE=\"text/css\">\n<!--\n	A:link {color:"+linkColor+"; text-decoration:"+textDecoration+";}\n	A:visited {color:"+visitedColor+"; text-decoration:"+textDecoration+";}\n	A:hover {color:"+hoverColor+"; text-decoration:"+textDecoration+";}\n	body {  font-family: "+ pageStyleFont +"; font-size: "+pageStyleFontSize+"; font-style: "+pageStyleFontStyle+ ";}\n   -->\n</STYLE>");
+          println("<STYLE TYPE=\"text/css\">\n<!--\n	A:link {color:" + _linkColor +
+                  "; text-decoration:" + _textDecoration +
+                  ";}\n	A:visited {color:" + _visitedColor +
+                  "; text-decoration:" + _textDecoration +
+                  ";}\n	A:hover {color:" + _hoverColor +
+                  "; text-decoration:" + _textDecoration +
+                  ";}\n	body {  font-family: " + _pageStyleFont +
+                  "; font-size: " + _pageStyleFontSize +
+                  "; font-style: " + _pageStyleFontStyle + ";}\n   -->\n</STYLE>");
         }
         println("</head>\n<body  "+getAttributeString()+" >\n");
       }
@@ -707,47 +716,61 @@ public class Page extends ModuleObjectContainer {
    * Sets this page to be a template page
    */
   public void setIsTemplate() {
-    isTemplate_ = true;
-    isPage_ = false;
-    isDraft_ = false;
+    _isTemplate = true;
+    _isPage = false;
+    _isDraft = false;
   }
 
   /**
    * Sets this page to be a "normal" page
    */
   public void setIsPage() {
-    isTemplate_ = false;
-    isPage_ = true;
-    isDraft_ = false;
+    _isTemplate = false;
+    _isPage = true;
+    _isDraft = false;
   }
 
   /**
    * Sets this page to be a draft
    */
   public void setIsDraft() {
-    isTemplate_ = false;
-    isPage_ = false;
-    isDraft_ = true;
+    _isTemplate = false;
+    _isPage = false;
+    _isDraft = true;
   }
 
   /**
    *
    */
   public boolean getIsTemplate(){
-    return isTemplate_;
+    return(_isTemplate);
   }
 
   /**
    *
    */
   public boolean getIsPage(){
-    return isPage_;
+    return(_isPage);
   }
 
   /**
    *
    */
   public boolean getIsDraft(){
-    return isDraft_;
+    return(_isDraft);
+  }
+
+  /**
+   *
+   */
+  public void setIsExtendingTemplate() {
+    _isExtendingTemplate = true;
+  }
+
+  /**
+   *
+   */
+  public boolean getIsExtendingTemplate() {
+    return(_isExtendingTemplate);
   }
 }
