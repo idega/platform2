@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.115 2003/05/03 00:38:38 tryggvil Exp $
+ * $Id: NewsReader.java,v 1.116 2003/05/19 12:23:15 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -86,6 +86,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   private boolean showBackButton = false;
   private boolean showAll = false;
   private boolean showImages = true;
+  private boolean showImagesInOverview = true;
   private boolean showOnlyDates = false;
   private boolean showTime = true;
   private boolean showInfo = true;
@@ -634,7 +635,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
       row++;
       /////////// BODY PART //////////
       if(showTeaserText  && sTeaser.length()> 0 && !showAll){
-				if(showImages){
+				if(showImages && showImagesInOverview){
 					T.add(getNewsImage(newsHelper, sHeadline),1,row);
 					//if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
 				}
@@ -659,7 +660,8 @@ public class NewsReader extends CategoryBlock implements Builderaware {
         newsBody = setTextAttributes(newsBody);
 
         //////////// IMAGE PART ///////////
-        if(showImages){
+        if( showImages ){
+        	if(!showAll && showImagesInOverview)
         	T.add(getNewsImage(newsHelper, sHeadline),1,row);
           //if (news.getImageId()!= -1 && showImages && news.getIncludeImage()){
 	      }
@@ -997,6 +999,9 @@ public class NewsReader extends CategoryBlock implements Builderaware {
   public void setShowImages(boolean showImages) {
     this.showImages=showImages;
   }
+  public void setShowImagesInOverview(boolean showImages) {
+	 this.showImagesInOverview=showImages;
+   }
   public void setShowMoreButton(boolean showMoreButton) {
     this.showMoreButton=showMoreButton;
   }
