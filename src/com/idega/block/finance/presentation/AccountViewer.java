@@ -20,7 +20,6 @@ import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DataTable;
-import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
@@ -113,7 +112,6 @@ public class AccountViewer extends Finance {
 		T.setWidth(Table.HUNDRED_PERCENT);
 		String sFromDate = getDateString(from);
 		String sToDate = getDateString(to);
-		Form myForm = new Form();
 		//DropdownMenu drpAccounts = new DropdownMenu(accounts,prmAccountId);
 		//drpAccounts.setToSubmit();
 		//drpAccounts.setAttribute("style",styleAttribute);
@@ -146,8 +144,8 @@ public class AccountViewer extends Finance {
 		T.setWidth(col, row, "100%");
 		//myForm.add(new
 		// HiddenInput(IWMainApplication.classToInstanciateParameter,"com.idega.block.finance.presentation.AccountViewer"));
-		myForm.add(T);
-		return myForm;
+		
+		return T;
 	}
 	public PresentationObject getAccountTable(FinanceAccount eAccount, Collection accounts)
 			throws java.rmi.RemoteException {
