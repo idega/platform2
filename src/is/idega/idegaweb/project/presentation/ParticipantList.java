@@ -1,38 +1,35 @@
 package is.idega.idegaweb.project.presentation;
 
-import java.util.List;
-import com.idega.core.business.UserGroupBusiness;
-import com.idega.core.user.business.UserBusiness;
-import com.idega.business.GenericEntityComparator;
-import java.util.Collections;
-import java.util.Vector;
-import com.idega.core.user.data.User;
-import com.idega.presentation.IWContext;
-import com.idega.data.GenericEntity;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.Image;
-import com.idega.core.user.data.User;
 import com.idega.block.staff.business.StaffFinder;
 import com.idega.block.staff.business.StaffHolder;
-import is.idega.idegaweb.project.business.ProjectBusiness;
+import com.idega.block.staff.presentation.StaffPropertyWindow;
+import com.idega.business.GenericEntityComparator;
+import com.idega.core.business.UserGroupBusiness;
 import com.idega.core.data.GenericGroup;
-import com.idega.presentation.ui.Window;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.Table;
-import com.idega.presentation.ui.SelectionDoubleBox;
-import com.idega.presentation.ui.SelectionBox;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.text.Link;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.CloseButton;
+import com.idega.core.user.business.UserBusiness;
+import com.idega.core.user.data.User;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.block.staff.presentation.StaffPropertyWindow;
-
-import java.util.Iterator;
-import java.util.Set;
+import com.idega.presentation.IWContext;
+import com.idega.presentation.Image;
+import com.idega.presentation.Page;
+import com.idega.presentation.PresentationObject;
+import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.CloseButton;
+import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.SelectionBox;
+import com.idega.presentation.ui.SelectionDoubleBox;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.Window;
+import is.idega.idegaweb.project.business.ProjectBusiness;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -46,8 +43,8 @@ import java.util.HashSet;
 
 public class ParticipantList extends AbstractContentList {
 
-  int groupId = -1;
-
+  private int groupId = -1;
+  private boolean _editPermission = false;
 
   public ParticipantList() {
     super();
@@ -130,6 +127,7 @@ public class ParticipantList extends AbstractContentList {
 
 
   public void main(IWContext iwc) throws Exception {
+    _editPermission = (iwc.hasEditPermission(this) || this.isOwnerOfProject(iwc));
     Text tBreak = (Text)Text.getBreak().clone();
     tBreak.setFontSize(Text.FONT_SIZE_7_HTML_1);
     this.addAtBeginning(tBreak);
@@ -139,7 +137,7 @@ public class ParticipantList extends AbstractContentList {
 
     //this.addAtBeginning(new Text(this.getGroupName(),true,false,true));
     super.main(iwc);
-    if(iwc.hasEditPermission(this)){
+    if(_editPermission){
       Table table = new Table(8,1);
       table.setHorizontalAlignment("left");
       table.setCellpadding(0);
@@ -157,6 +155,24 @@ public class ParticipantList extends AbstractContentList {
       table.add(getAddAndRemoveUserLink(iwc, iwrb),8,1);
 
       this.add(table);
+    }
+  }
+
+  /**
+   * @todo reimplement
+   */
+  public boolean isOwnerOfProject(IWContext iwc){
+    Page p = this.getParentPage();
+    if(p != null){
+      try {
+        return iwc.getAccessController().isOwner(p,iwc);
+      }
+      catch (Exception ex) {
+        System.err.println(ex.getMessage());
+        return false;
+      }
+    } else {
+      return false;
     }
   }
 

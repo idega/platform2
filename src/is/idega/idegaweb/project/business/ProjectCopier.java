@@ -26,6 +26,8 @@ public class ProjectCopier extends IDOCopier {
     instance1.setDatasource(fromDatasource);
     GenericEntity instance2 = new com.idega.core.accesscontrol.data.LoginTable();
     instance2.setDatasource(fromDatasource);
+    GenericEntity instance2b = new com.idega.core.accesscontrol.data.LoginInfo();
+    instance2b.setDatasource(fromDatasource);
     GenericEntity instance3 = new com.idega.core.data.ICObjectInstance();
     instance3.setDatasource(fromDatasource);
     GenericEntity instance4 = new com.idega.core.accesscontrol.data.ICPermission();
