@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationFinder.java,v 1.9 2001/08/01 11:50:29 aron Exp $
+ * $Id: ApplicationFinder.java,v 1.10 2001/08/01 12:14:04 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -90,7 +90,7 @@ public class ApplicationFinder {
         sql.append(" order by ");
         sql.append( order);
       }
-      System.err.println(sql.toString());
+      //System.err.println(sql.toString());
       return(EntityFinder.findAll(a,sql.toString()));
     }
     catch(SQLException e){
@@ -134,7 +134,7 @@ public class ApplicationFinder {
     Vector V = null;
     if(lApplications != null){
       int len = lApplications.size();
-      System.err.println("applications length :"+len);
+      //System.err.println("applications length :"+len);
       Hashtable H = new Hashtable(len);
       for (int i = 0; i < len; i++) {
         Application application = (Application) lApplications.get(i);
@@ -143,7 +143,7 @@ public class ApplicationFinder {
 
       if(lApplicants != null){
         int iLen = lApplicants.size();
-         System.err.println("applicant length :"+iLen);
+         //System.err.println("applicant length :"+iLen);
         Application application;
         Applicant applicant;
         ApplicationHolder AH;
