@@ -494,7 +494,7 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	
 	public Collection ejbFindApplicationsWithoutPlacing() throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).append(" c, comm_childcare_archive a");
+		sql.appendSelect().append(" distinct c.* ").appendFrom().append(getEntityName()).append(" c, comm_childcare_archive a");
 		sql.appendWhereEquals("c."+getIDColumnName(), "a.application_id");
 		sql.appendAnd().append("a.sch_class_member_id").appendIsNull();
 
