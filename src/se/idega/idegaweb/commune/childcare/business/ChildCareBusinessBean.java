@@ -370,7 +370,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		SchoolClassMember member = null;
 		try {
 			member = getSchoolBusiness().getSchoolClassMemberHome().findLatestByUserAndSchool(((Integer) member.getPrimaryKey()).intValue(), providerID);
-			if (member.getNeedsSpecialAttention())
+			if (member != null && member.getNeedsSpecialAttention())
 				return true;
 		}
 		catch (FinderException e) {
