@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.7 2001/06/28 13:07:38 palli Exp $
+ * $Id: DateInput.java,v 1.8 2001/06/28 15:10:55 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -61,6 +61,7 @@ public DateInput(String name){
   super.add(theYear);
   super.add(theWholeDate);
 
+  doSomeShit();
   //doSomeShit("Dagur", "Mánuður", "Ár");
 
 }
@@ -80,11 +81,11 @@ public DateInput(String name, boolean inShort){
 
   this.inShort=inShort;
   //doSomeShit("D", "M", "Y");
-
+  doSomeShit();
 }
 
-
-private void doSomeShit(String strDay, String strMonth, String strYear) {
+private void doSomeShit(){
+//private void doSomeShit(String strDay, String strMonth, String strYear) {
 
 
 
@@ -99,7 +100,7 @@ private void doSomeShit(String strDay, String strMonth, String strYear) {
 
 
 
-	theYear.addMenuElement("",strYear);
+	//theYear.addMenuElement("",strYear);
 
         idegaTimestamp stamp = idegaTimestamp.RightNow();
         int currentYear = stamp.getYear();
@@ -125,7 +126,7 @@ private void doSomeShit(String strDay, String strMonth, String strYear) {
 	theMonth.addMenuElement("12","desember");
         */
 
-        theMonth.addMenuElement("",strMonth);
+        //theMonth.addMenuElement("",strMonth);
 	theMonth.addMenuElement("01","jan");
 	theMonth.addMenuElement("02","feb");
 	theMonth.addMenuElement("03","mar");
@@ -139,7 +140,7 @@ private void doSomeShit(String strDay, String strMonth, String strYear) {
 	theMonth.addMenuElement("11","nóv");
 	theMonth.addMenuElement("12","des");
 
-	theDay.addMenuElement("",strDay);
+	//theDay.addMenuElement("",strDay);
 	theDay.addMenuElement("01","1");
 	theDay.addMenuElement("02","2");
 	theDay.addMenuElement("03","3");
@@ -339,11 +340,15 @@ public void main(ModuleInfo modinfo)throws Exception{
     yearString = iwrb.getLocalizedString(YEAR_KEY_S);
   }
 
-  doSomeShit(dayString,monthString,yearString);
+
+  theDay.addMenuElementFirst("",dayString);
+  theMonth.addMenuElementFirst("",monthString);
+  theYear.addMenuElementFirst("",yearString);
+  //doSomeShit(dayString,monthString,yearString);
 }
 
 
-public void print(ModuleInfo modinfo)throws IOException{
+public void print(ModuleInfo modinfo)throws Exception{
 
   if(fromYear < toYear){
     for (int i=fromYear;i<=toYear;i++){
