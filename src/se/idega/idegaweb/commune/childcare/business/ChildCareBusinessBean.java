@@ -71,6 +71,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.io.ITextXMLHandler;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.user.data.User;
+import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.TextSoap;
@@ -1740,7 +1741,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	public String getXMLContractURL(IWBundle iwb, Locale locale){
-		return "file://"+ iwb.getResourcesRealPath(locale)+"/childcare_contract.xml";
+		return iwb.getResourcesRealPath(locale) + FileUtil.getFileSeparator() + "childcare_contract.xml";
 	}
 	
 	/*public String getBundleIdentifier() {
