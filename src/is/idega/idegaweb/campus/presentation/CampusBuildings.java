@@ -17,6 +17,7 @@ public class CampusBuildings extends Block {
 
   public void main(IWContext iwc){
     BuildingViewer fin = new BuildingViewer();
+    fin.setApartmentTypeWindowClass(CampusTypeWindow.class);
     add(fin);
   }
 

@@ -211,7 +211,9 @@ public class FinanceFinder  {
 
   public static List listOfTariffsByAttribute(String attribute){
      try{
+      EntityFinder.debug = true;
       List L =  EntityFinder.findAllByColumn(new Tariff(),Tariff.getColumnAttribute(),attribute);
+      EntityFinder.debug = false;
       return L;
       }
       catch(SQLException e){
@@ -455,6 +457,7 @@ public class FinanceFinder  {
             else{
               t.setName(TK.getName());
               t.setInfo(TK.getInfo());
+              System.err.println("putting: "+acckey+" "+t.getName()+" "+t.getPrice());
               tar.put(tarkey,t)  ;
             }
           }

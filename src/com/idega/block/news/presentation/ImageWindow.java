@@ -31,6 +31,8 @@ public class ImageWindow extends Window{
   }
 
   public void main(IWContext iwc){
+    if(iwc.isParameterSet(prmInfo))
+      info = iwc.getParameter(prmInfo);
     if(iwc.isParameterSet(prmImageId)){
       try {
         int id = Integer.parseInt(iwc.getParameter(prmImageId));
