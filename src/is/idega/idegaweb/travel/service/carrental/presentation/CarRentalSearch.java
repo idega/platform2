@@ -73,11 +73,11 @@ public class CarRentalSearch extends AbstractSearchForm {
 		IWTimestamp tomorrow = new IWTimestamp(now);
 		tomorrow.addDays(1);
 		
-		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE);
+		DateInput fromDate = new DateInput(PARAMETER_FROM_DATE, true);
 		fromDate.setDate(now.getDate());
 		now.addDays(1);
 
-		DateInput toDate = new DateInput(PARAMETER_TO_DATE);
+		DateInput toDate = new DateInput(PARAMETER_TO_DATE, true);
 		toDate.setDate(now.getDate());
 
 		TextInput manyDays = new TextInput(PARAMETER_MANY_DAYS);
