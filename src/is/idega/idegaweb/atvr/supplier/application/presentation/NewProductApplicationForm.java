@@ -44,6 +44,8 @@ public class NewProductApplicationForm extends Block {
 	private final static String PARAM_FORM_TYPE = "npa_type";
 	private final static String PARAM_FORM_CATEGORY = "npa_cat";
 	private final static String PARAM_FORM_SUBMIT = "npa_submit";
+	private final static String PARAM_FORM_SUBMIT_X = "npa_submit.x";
+	private final static String PARAM_FORM_SUBMIT_Y = "npa_submit.y";
 
 	private final static String PARAM_DESC = "npa_desc";
 	private final static String PARAM_DESC2 = "npa_desc2";
@@ -64,7 +66,7 @@ public class NewProductApplicationForm extends Block {
 	}
 
 	private void control(IWContext iwc) {
-		if (iwc.getParameter(PARAM_FORM_SUBMIT) == null) 
+		if (iwc.getParameter(PARAM_FORM_SUBMIT) == null && iwc.getParameter(PARAM_FORM_SUBMIT_X) == null && iwc.getParameter(PARAM_FORM_SUBMIT_Y) == null) 
 			showForm(iwc);
 		else
 			submitForm(iwc);
