@@ -237,7 +237,7 @@ public class BuildingMaker extends JModuleObject{
       if(imageid != -1){
         this.addImage(new Image(imageid));
         try {
-          com.idega.data.genericentity.Image im = new com.idega.data.genericentity.Image(imageid);
+          com.idega.jmodule.image.data.ImageEntity im = new com.idega.jmodule.image.data.ImageEntity(imageid);
           ImageProperties ip = new ImageProperties(im.getImageName(),im.getContentType(),"","",0);
           ip.setId(imageid);
           modinfo.getSession().setAttribute("bm_ip",ip);
