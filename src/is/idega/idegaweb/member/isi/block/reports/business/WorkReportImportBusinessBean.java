@@ -549,7 +549,15 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean impleme
 			Iterator it = clubs.iterator();
 			while (it.hasNext()) {
 				Group club = (Group) it.next();
+				
+				try {
+					getWorkReportBusiness().getOrCreateWorkReportIdForGroupIdByYear(((Integer)club.getPrimaryKey()).intValue(),year,false);
+				}
+				catch (EJBException e4) {
+					e4.printStackTrace();
+				}
 
+				
 				try {
 					export = getWorkReportExportFileHome().create();
 				}

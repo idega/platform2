@@ -328,7 +328,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	 * @param yearStamp
 	 * @return The id of the WorkReport for this club and year.
 	 */
-	public int getOrCreateWorkReportIdForGroupIdByYear(int groupId, int year, boolean updateReport) throws RemoteException {
+	public int getOrCreateWorkReportIdForGroupIdByYear(int groupId, int year, boolean createData) throws RemoteException {
 		WorkReport report = null;
 		Group club = null;
 		int wrId  = -1;
@@ -363,14 +363,16 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			//UPDATE ALWAYS UNLESS IS READ ONLY
 			wrId = ((Integer)report.getPrimaryKey()).intValue();
 			
-			if (!isWorkReportReadOnly(wrId)) {
+			if (!isWorkReportReadOnly(wrId) ) {
 				createOrUpdateLeagueWorkReportGroupsForYear(year);
 				
 				if(!justCreated ) {
 					updateAndStoreWorkReport(report);
 				}
 				
-				createWorkReportData(wrId);
+				if(createData){
+					createWorkReportData(wrId);
+				}
 			}
 			
 		}
@@ -1515,7 +1517,7 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	if(canWeUpdateWorkReportDataFromDatabase(workReport.getYearOfReport().intValue())){
 	    // has the data already been created?
 	    /*
-	     //TODO Eiki temp solution
+	     //TODO Eiki temp solution because the member list should update until the work reports are closed
 	     if (workReport.isCreationFromDatabaseDone())  {
 	      return true;
 	    }

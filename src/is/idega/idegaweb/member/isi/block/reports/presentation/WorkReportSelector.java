@@ -99,7 +99,7 @@ public class WorkReportSelector extends ClubSelector {
 				
 				
 				if(paramWorkReportId==null){	
-					workReportId = reportBiz.getOrCreateWorkReportIdForGroupIdByYear(getClubId(),year, false);
+					workReportId = reportBiz.getOrCreateWorkReportIdForGroupIdByYear(getClubId(),year, true);
 					iwc.setSessionAttribute(WorkReportConstants.WR_SESSION_PARAM_WORK_REPORT_ID,Integer.toString(workReportId));
 				}
 				else{
