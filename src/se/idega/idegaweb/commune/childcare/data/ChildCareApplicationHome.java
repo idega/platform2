@@ -18,8 +18,8 @@ public interface ChildCareApplicationHome extends com.idega.data.IDOHome
  public java.util.Collection findAllCasesByUserAndStatus(com.idega.user.data.User p0,java.lang.String p1)throws javax.ejb.FinderException;
  public java.util.Collection findAllChildCasesByProvider(int p0)throws javax.ejb.FinderException,java.rmi.RemoteException;
  public java.util.Collection findApplicationByChild(int p0)throws javax.ejb.FinderException;
- public ChildCareApplication findApplicationByChildAndChoiceNumber(com.idega.user.data.User p0,int p1)throws javax.ejb.FinderException;
  public ChildCareApplication findApplicationByChildAndChoiceNumber(int p0,int p1)throws javax.ejb.FinderException;
+ public ChildCareApplication findApplicationByChildAndChoiceNumber(com.idega.user.data.User p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationByChildAndNotInStatus(int p0,java.lang.String[] p1)throws javax.ejb.FinderException;
  public ChildCareApplication findApplicationByChildAndProvider(int p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndDate(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
@@ -28,6 +28,7 @@ public interface ChildCareApplicationHome extends com.idega.data.IDOHome
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String[] p1,int p2,int p3)throws javax.ejb.FinderException;
  public java.util.Collection findApplicationsByProviderAndStatus(int p0,java.lang.String p1,int p2,int p3)throws javax.ejb.FinderException;
  public ChildCareApplication findNewestApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
+ public ChildCareApplication findOldestApplication(int p0,java.sql.Date p1)throws javax.ejb.FinderException;
  public int getNumberOfApplications(int p0,java.lang.String[] p1)throws com.idega.data.IDOException;
  public int getNumberOfApplications(int p0,java.lang.String[] p1,int p2,java.sql.Date p3,java.sql.Date p4)throws com.idega.data.IDOException;
  public int getNumberOfApplications(int p0,java.lang.String p1)throws com.idega.data.IDOException;

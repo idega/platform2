@@ -498,7 +498,15 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
 		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(date);
-		sql.appendOrderBy(QUEUE_ORDER+" desc");
+		sql.appendOrderBy(QUEUE_DATE+" desc, "+QUEUE_ORDER+" desc");
+		return (Integer) idoFindOnePKByQuery(sql);
+	}
+	
+	public Integer ejbFindOldestApplication(int providerID, Date date) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
+		sql.appendAnd().append(QUEUE_DATE).appendGreaterThanSign().append(date);
+		sql.appendOrderBy(QUEUE_DATE+", "+QUEUE_ORDER);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	

@@ -77,7 +77,7 @@ import com.lowagie.text.xml.XmlPeer;
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness {
 
 	private final static String CASE_CODE_KEY = "MBANBOP";
-	private final static char STATUS_SENT_IN = 'A';
+	public final static char STATUS_SENT_IN = 'A';
 	private final static char STATUS_PRIORITY = 'B';
 	private final static char STATUS_ACCEPTED = 'C';
 	private final static char STATUS_PARENTS_ACCEPT = 'D';
@@ -126,6 +126,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public ChildCareApplication getNewestApplication(int providerID, Date date) throws RemoteException {
 		try {
 			return getChildCareApplicationHome().findNewestApplication(providerID, date);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+	
+	private ChildCareApplication getOldestApplication(int providerID, Date date) throws RemoteException {
+		try {
+			return getChildCareApplicationHome().findOldestApplication(providerID, date);
 		}
 		catch (FinderException fe) {
 			return null;
@@ -336,9 +345,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			else {
 				ChildCareApplication newestApplication = getNewestApplication(application.getProviderId(), application.getQueueDate());
-				if (newestApplication != null) {
-					queueOrder = newestApplication.getQueueOrder();
-					application.setQueueOrder(++queueOrder);
+				ChildCareApplication oldestApplication = getOldestApplication(application.getProviderId(), application.getQueueDate());
+				if (newestApplication != null && oldestApplication != null) {
+					queueOrder = (newestApplication.getQueueOrder() + oldestApplication.getQueueOrder()) / 2;
+					application.setQueueOrder(queueOrder);
+					application.store();
+				}
+				else if (newestApplication == null && oldestApplication != null){
+					queueOrder = oldestApplication.getQueueOrder() - 10;
+					application.setQueueOrder(queueOrder);
+					application.store();
+				}
+				else if (newestApplication != null && oldestApplication == null){
+					queueOrder = newestApplication.getQueueOrder() + 10;
+					application.setQueueOrder(queueOrder);
 					application.store();
 				}
 				else {

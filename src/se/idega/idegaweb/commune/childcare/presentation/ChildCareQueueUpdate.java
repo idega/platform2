@@ -466,17 +466,17 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		Date[] queueDates = new Date[choice.length];
 		boolean[] hasPriority = new boolean[choice.length];
 		
-		/*IWTimestamp startDate = new IWTimestamp(1, 6, 2003);
-		boolean isEarlier = false;
+		//IWTimestamp startDate = new IWTimestamp(1, 6, 2003);
+		//boolean isEarlier = false;
 		for (int a = 0; a < choice.length; a++) {
 			String date = iwc.getParameter(PARAMETER_DATE+"_"+(a+1));
-			IWTimestamp stamp = new IWTimestamp(date);
+			//IWTimestamp stamp = new IWTimestamp(date);
 			dates[a] = date;
-			if (stamp.isEarlierThan(startDate))
-				isEarlier = true;
+			//if (stamp.isEarlierThan(startDate))
+				//isEarlier = true;
 		}
 		
-		if (isEarlier) {
+		/*if (isEarlier) {
 			Table table = new Table(1, 3);
 			table.setCellpaddingAndCellspacing(0);
 			table.setHeight(2, 12);
