@@ -536,7 +536,7 @@ public class QueryHelper {
 		if (!hasConditions())
 			return false;
 		else {
-			for (Iterator iter = listOfFields.iterator(); iter.hasNext();) {
+			for (Iterator iter = listOfConditions.iterator(); iter.hasNext();) {
 				QueryConditionPart element = (QueryConditionPart) iter.next();
 				if (element.encode().equals(condition.encode()))
 					return true;
