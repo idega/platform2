@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareContractHome;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2004/03/04 14:45:29 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/09 14:57:10 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.119 $
+ * @version $Revision: 1.120 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -828,8 +828,9 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 				= getInvoiceRecordHome ().findByPrimaryKey (recordId);
 
 		// count some values to store in record
-		final Integer numberOfDays
-				= new Integer (dayDiff (checkStartPeriod, checkEndPeriod));
+		final int dayDiff = null != checkStartPeriod && null != checkEndPeriod
+				? 1 + AccountingUtil.getDayDiff (checkStartPeriod, checkEndPeriod) : 0;
+		final Integer numberOfDays = new Integer (0 > dayDiff ? 0 : dayDiff);
 		if (null == providerId && null != placementId) {
 			// unknown provider - find it from the placement
 			final SchoolBusiness schoolBusiness = getSchoolBusiness ();
@@ -1102,15 +1103,6 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		return new Date (System.currentTimeMillis ());
 	}
 
-	private int dayDiff (final Date date1, final Date date2) {
-		if (null == date1 || null == date2) return 0;
-		long millis1 = date1.getTime ();
-		long millis2 = date2.getTime ();
-		long millisDiff = millis2 - millis1;
-		return 0 <= millisDiff
-				? 1 + (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
-	}
-	
 	private RegulationSpecTypeHome getRegulationSpecTypeHome ()
 		throws RemoteException {
 		return (RegulationSpecTypeHome)
