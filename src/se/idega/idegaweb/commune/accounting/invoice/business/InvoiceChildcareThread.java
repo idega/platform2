@@ -183,7 +183,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					String employment = "";
 					EmploymentType employmentType = contract.getEmploymentType();
 					if(employmentType!= null){
-						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,(Integer)employmentType.getPrimaryKey()));
+						conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_EMPLOYMENT,employmentType.getPrimaryKey()));
 						employment = employmentType.getLocalizationKey();
 					}
 
