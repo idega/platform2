@@ -1,8 +1,9 @@
 package com.idega.block.staff.presentation;
 
 import com.idega.presentation.Table;
-import com.idega.jmodule.image.presentation.ImageInserter;
-import com.idega.jmodule.image.presentation.ImageEditorWindow;
+import com.idega.block.media.presentation.ImageInserter;
+//import com.idega.jmodule.image.presentation.ImageInserter;
+//import com.idega.jmodule.image.presentation.ImageEditorWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 import com.idega.block.staff.business.StaffBusiness;
