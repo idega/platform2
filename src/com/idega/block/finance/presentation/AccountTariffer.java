@@ -288,7 +288,7 @@ public class AccountTariffer extends Finance {
         T.add(new HiddenInput(prmTariffIds,tariff.getPrimaryKey().toString()));
         row++;
       }
-      T.getContentTable().setColumnAlignment(col,"right");
+      T.getContentTable().setColumnAlignment(col-1,"right");
       T.getContentTable().setAlignment(1,col,"left");
     }
     return T;
