@@ -427,9 +427,20 @@ public class Box extends Block implements Builderaware {
 							table.add(fileSize, column++, linkRow);
 							
 							if (_showMimeType) {
-								Image mimetype = _iwb.getImage(_DEFAULT_ICON_PREFIX+file.getMimeType()+_DEFAULT_ICON_SUFFIX);
+								String mimeType = file.getMimeType();
+								mimeType = mimeType.replace('\\','_');
+								mimeType = mimeType.replace('/','_');
+								mimeType = mimeType.replace(':','_');
+								mimeType = mimeType.replace('*','_');
+								mimeType = mimeType.replace('?','_');
+								mimeType = mimeType.replace('<','_');
+								mimeType = mimeType.replace('>','_');
+								mimeType = mimeType.replace('|','_');
+								mimeType = mimeType.replace('\"','_');
+ 
+								Image mime = _iwb.getImage(_DEFAULT_ICON_PREFIX+mimeType+_DEFAULT_ICON_SUFFIX);
 								table.setWidth(column++, linkRow, 12);
-								table.add(mimetype, column++, linkRow);
+								table.add(mime, column++, linkRow);
 							}
 						}
 
