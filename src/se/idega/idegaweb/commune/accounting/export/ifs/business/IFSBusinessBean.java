@@ -209,7 +209,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			header.store();
 
 			//Create files in folder A. Must get folder info from ExportMappingBean!!!
-			ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
 
 
 			trans.commit();
@@ -261,7 +261,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			}
 
 			//Delete files in folder A. Must get folder info from ExportMappingBean!!!
-			ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
 			
 			trans.commit();
 		}
@@ -300,7 +300,7 @@ public class IFSBusinessBean extends IBOServiceBean implements IFSBusiness {
 			log.store();
 			
 			//copy files from folder A to folder B. Must get folder info from ExportMappingBean!!!
-			ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
+			//ExportDataMapping mapping = getExportBusiness().getExportDataMapping(schoolCategory);
 			
 			trans.commit();
 		}

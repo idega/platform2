@@ -30,10 +30,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.*;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/07 15:33:57 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/09 12:11:12 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -248,7 +248,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 
     private void newRecord (final IWContext context)
         throws RemoteException, javax.ejb.CreateException {
-        final String operationalField = getSession ().getOperationalField ();
+        //final String operationalField = getSession ().getOperationalField ();
         final User currentUser = context.getCurrentUser ();
         final Integer amount = getIntegerParameter (context, AMOUNT_KEY);
         final Date checkEndPeriod = getPeriodParameter (context,

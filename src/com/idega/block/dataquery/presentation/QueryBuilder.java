@@ -660,7 +660,7 @@ public class QueryBuilder extends Block {
 			select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
 			select.setHeight("20");
 			select.setWidth("300");
-			ICTreeNode rootNode;
+			//ICTreeNode rootNode;
 
 /// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	  	User currentUser = iwc.getCurrentUser();
@@ -690,7 +690,7 @@ public class QueryBuilder extends Block {
 	  	catch (Exception ex) {
 	  		parentGroups = new ArrayList();
 	  	}
-	  	List queryRepresentations = new ArrayList();
+	  	//List queryRepresentations = new ArrayList();
 	  	Iterator parentGroupsIterator = parentGroups.iterator();
 			while (parentGroupsIterator.hasNext()) {
 	  		Group group = (Group) parentGroupsIterator.next();
