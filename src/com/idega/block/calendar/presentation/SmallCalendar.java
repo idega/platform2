@@ -26,6 +26,7 @@ private boolean useNextAndPreviousLinks = true;
 private boolean daysAreLinks = false;
 private boolean showNameOfDays = true;
 private boolean _highlight = false;
+private boolean LINE_VIEW = false;
 
 private String textColor = "#000000";
 private String highlightedText = "#660000";
@@ -162,16 +163,20 @@ public SmallCalendar() {
     Text t = new Text();
     t.setFontColor(textColor);
     t.setFontSize(1);
-    if (this.showNameOfDays) {
-      for( int a = 1; a < 8; a++ ){
-	t = new Text(cal.getDayName(a,iwc.getCurrentLocale(),IWCalendar.LONG).substring(0,1).toUpperCase());
-	t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; font-weight: bold; color: "+dayTextColor+"; font-size: 10px; text-decoration: none;");
-	T.setAlignment(a,1,"center");
-	T.add(t,a,1);
-      }
-
-      if( dayCellColor != null) T.setRowColor(1,dayCellColor);
-
+	if (this.showNameOfDays) {
+		int weekdays =( LINE_VIEW?daycount+daynr:8) ;
+		int weekday = 1;
+		for( int a = 1; a < weekdays; a++ ){
+			weekday = a%7;
+			if(weekday==0)
+				weekday = 7;
+			t = new Text(cal.getDayName(weekday,iwc.getCurrentLocale(),IWCalendar.LONG).substring(0,1).toUpperCase());
+			t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; font-weight: bold; color: "+dayTextColor+"; font-size: 10px; text-decoration: none;");
+			T.setAlignment(a,1,"center");
+			T.add(t,a,1);
+      	}
+      	if( dayCellColor != null) 
+      		T.setRowColor(1,dayCellColor);
     }
 
     int n = 1;
@@ -184,15 +189,15 @@ public SmallCalendar() {
     int year = stamp.getYear();
 
     if ( dayColors != null ) {
-      Enumeration enum = dayColors.keys();
-      while (enum.hasMoreElements()) {
-	String dayString = (String) enum.nextElement();
-	if ( inThisMonth(dayString,year,month) ) {
-	  IWTimestamp newStamp = new IWTimestamp(dayString);
-	  int[] XY = getXYPos(newStamp.getYear(),newStamp.getMonth(),newStamp.getDay());
-	  T.setColor(XY[0],XY[1],getDayColor(dayString));
-	}
-      }
+    	Enumeration enum = dayColors.keys();
+      	while (enum.hasMoreElements()) {
+			String dayString = (String) enum.nextElement();
+			if ( inThisMonth(dayString,year,month) ) {
+	  			IWTimestamp newStamp = new IWTimestamp(dayString);
+	  			int[] XY = getXYPos(newStamp.getYear(),newStamp.getMonth(),newStamp.getDay());
+	  			T.setColor(XY[0],XY[1],getDayColor(dayString));
+			}
+      	}
     }
 
     Link theLink;
@@ -200,65 +205,68 @@ public SmallCalendar() {
     int newYPos = -1;
 
     while ( n <= daycount ) {
-      t = new Text(String.valueOf(n));
-      dayColor = textColor;
-      if ( getDayFontColor(getDateString(year,month,n)) != null ) {
-	dayColor = getDayFontColor(getDateString(year,month,n));
-	t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; font-weight: bold; text-decoration: none;");
+    	t = new Text(String.valueOf(n));
+      	dayColor = textColor;
+      	if ( getDayFontColor(getDateString(year,month,n)) != null ) {
+			dayColor = getDayFontColor(getDateString(year,month,n));
+			t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; font-weight: bold; text-decoration: none;");
       }
       else {
-	if ( today.getYear() == year && today.getMonth() == month && today.getDay() == n ) {
-	  dayColor = dayTextColor;
-	  t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; font-weight: bold; text-decoration: none;");
-	}
-	else {
-	  t.setFontStyle("font-family: Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; text-decoration: none;");
-	}
+			if ( today.getYear() == year && today.getMonth() == month && today.getDay() == n ) {
+	  			dayColor = dayTextColor;
+	  			t.setFontStyle("font-family: Verdana,Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; font-weight: bold; text-decoration: none;");
+			}
+			else {
+	  			t.setFontStyle("font-family: Arial, Helvetica, sans-serif; color: "+dayColor+"; font-size: 10px; text-decoration: none;");
+			}
       }
       T.setAlignment(xpos,ypos,"center");
 
       if ( (todayColor!=null) && ( (n == today.getDay()) && shadow)){
-	T.setColor(xpos,ypos,todayColor);
+		T.setColor(xpos,ypos,todayColor);
       }
 
       if ( _highlight ) {
-	if ( n == stamp.getDay() && month == stamp.getMonth() && year == stamp.getYear() ) {
-	  T.setColor(xpos,ypos,selectedColor);
-	}
+			if ( n == stamp.getDay() && month == stamp.getMonth() && year == stamp.getYear() ) {
+	  			T.setColor(xpos,ypos,selectedColor);
+			}
       }
 
       if (daysAreLinks) {
-	theLink = getLink();
-	  theLink.setPresentationObject(t);
-	  if ( _page != null ) {
-	    theLink.setPage(_page);
-	  }
-	  theLink.addParameter(CalendarBusiness.PARAMETER_DAY,n);
-	  theLink.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
-	  theLink.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
-	  theLink.setFontColor(textColor);
-	  theLink.setFontSize(1);
-	  for (int i = 0; i < parameterName.size(); i++) {
-	    theLink.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
-	  }
-	T.add(theLink,xpos,ypos);
+		theLink = getLink();
+	  	theLink.setPresentationObject(t);
+	  	if ( _page != null ) {
+	    	theLink.setPage(_page);
+	  	}
+	  	theLink.addParameter(CalendarBusiness.PARAMETER_DAY,n);
+	  	theLink.addParameter(CalendarBusiness.PARAMETER_MONTH,stamp.getMonth());
+	  	theLink.addParameter(CalendarBusiness.PARAMETER_YEAR,stamp.getYear());
+	  	theLink.setFontColor(textColor);
+	  	theLink.setFontSize(1);
+	  	for (int i = 0; i < parameterName.size(); i++) {
+	    	theLink.addParameter((String) parameterName.get(i), (String) parameterValue.get(i));
+	  	}
+		T.add(theLink,xpos,ypos);
       }
       else {
-	T.add(t,xpos,ypos);
+		T.add(t,xpos,ypos);
       }
 
-      xpos = xpos % 7 + 1;
-      if(xpos == 1)
-	ypos++;
+	  if(LINE_VIEW)
+	   	xpos++;
+	  else
+      	xpos = xpos % 7 + 1;
+      if(xpos == 1 && !LINE_VIEW)
+			ypos++;
       n++;
     }
 
     if( inactiveCellColor != null ){
       for ( int a = 1; a <= T.getRows(); a++ ) {
-	for ( int b = 1; b <= T.getColumns(); b++ ) {
-	  if ( T.getColor(b,a) == null )
-	    T.setColor(b,a,inactiveCellColor);
-	}
+		for ( int b = 1; b <= T.getColumns(); b++ ) {
+	  		if ( T.getColor(b,a) == null )
+	    	T.setColor(b,a,inactiveCellColor);
+		}
       }
     }
 
@@ -533,6 +541,10 @@ public SmallCalendar() {
 
   public void setTarget(String target){
     _target = target;
+  }
+  
+  public void setAsLineView(boolean line){
+  	this.LINE_VIEW = line;
   }
 
   private Link getLink(){

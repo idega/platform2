@@ -52,6 +52,7 @@ private String _actionDay = "#660000";
 private IBPage _page;
 private boolean _showMonth = false;
 private boolean _showMonthButton = false;
+private boolean _asLineView = false;
 
 private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.calendar";
 protected IWResourceBundle _iwrb;
@@ -63,6 +64,7 @@ private String PrePermission = "pref";
 private int iUserId = -1;
 
 public Calendar(){
+	//_stamp = IWTimestamp.getTimestampRightNow();
 }
 
 public Calendar(IWTimestamp timestamp){
@@ -187,13 +189,13 @@ public Calendar(IWTimestamp timestamp){
     }
     else {
 			if(_daysAhead != null || _daysBack !=null )
-			  entries = CalendarFinder.getInstance().listOfWeekEntries(_stamp,_daysAhead.intValue() ,_daysBack.intValue(),getCategoryIds());
+			  	entries = CalendarFinder.getInstance().listOfWeekEntries(_stamp,_daysAhead.intValue() ,_daysBack.intValue(),getCategoryIds());
 			else
-        entries = CalendarFinder.getInstance().listOfNextEntries(getCategoryIds());
-      if ( entries != null) {
-	      if ( entries.size() > _numberOfShown )
+        		entries = CalendarFinder.getInstance().listOfNextEntries(getCategoryIds());
+      		if ( entries != null) {
+	     	 	if ( entries.size() > _numberOfShown )
 				  numberOfShown = _numberOfShown;
-	      else
+	      		else
 				  numberOfShown = entries.size();
       }
     }
@@ -318,6 +320,7 @@ public Calendar(IWTimestamp timestamp){
 
   private void drawMonth(IWContext iwc) {
     SmallCalendar cal = getCalendar(_stamp);
+    cal.setAsLineView(_asLineView);
     cal.setICObjectInstanceID(this.getICObjectInstanceID());
 
     if ( _width != null ) {
@@ -408,13 +411,19 @@ public Calendar(IWTimestamp timestamp){
       calendar.setICObjectInstanceID(this.getICObjectInstanceID());
       calendar.setOnlySelectedHighlighted(true);
       calendar.useNextAndPreviousLinks(false);
+      calendar.setAsLineView(_asLineView);
 
       yearTable.add(calendar,xpos,ypos);
       yearTable.setRowVerticalAlignment(ypos,"top");
 
-      xpos = xpos % 3 + 1;
-      if(xpos == 1)
+	  if(!_asLineView){
+      	xpos = xpos % 3 + 1;
+      	if(xpos == 1)
 	      ypos++;
+	  }
+	  else{
+	  	 ypos++;
+	  }
     }
 
     add(yearTable);
@@ -510,6 +519,10 @@ public Calendar(IWTimestamp timestamp){
 
   public void setActiveDayColor(String color) {
     _actionDay = color;
+  }
+  
+  public void setAsLineView(boolean line){
+  	_asLineView = line;
   }
 
   public void setDate(int year,int month,int day) {

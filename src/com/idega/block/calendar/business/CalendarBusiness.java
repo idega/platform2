@@ -64,9 +64,12 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
 		if (day != null) {
 			stamp.setDay(Integer.parseInt(day));
-		}else {
+		}
+		// removed dubius behavior A
+		/*else {
 			stamp.setDay(1);
 		}
+		*/
 		if (month != null) {
 			stamp.setMonth(Integer.parseInt(month));
 		}
@@ -313,7 +316,7 @@ public static final String PARAMETER_VIEW = PARAMETER_CALENDAR + "_view";
 
     LocalizedText text = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       text.setLocaleId(TextFinder.getLocaleId(new Locale("is","IS")));
-      text.setHeadline("idega hf. stofnað");
+      text.setHeadline("idega hf. stofna?");
 
     LocalizedText text2 = ((com.idega.block.text.data.LocalizedTextHome)com.idega.data.IDOLookup.getHomeLegacy(LocalizedText.class)).createLegacy();
       text2.setLocaleId(TextFinder.getLocaleId(Locale.ENGLISH));
