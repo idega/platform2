@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.19 2001/08/27 20:37:37 gummi Exp $
+ * $Id: ModuleObject.java,v 1.20 2001/09/03 10:59:45 haffi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -28,6 +28,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.data.EntityFinder;
 import com.idega.exception.ICObjectNotInstalledException;
+import com.idega.jmodule.object.interfaceobject.Form;
 
 
 /**
@@ -361,6 +362,21 @@ public class ModuleObject extends Object implements Cloneable {
       obj = obj.getParentObject();
     }
     return returnPage;
+  }
+
+  /**
+   * @return The enclosing Form object
+   */
+  public Form getParentForm() {
+    Form returnForm = null;
+    ModuleObject obj = getParentObject();
+    while (obj != null) {
+      if (obj instanceof Form) {
+        returnForm = (Form)obj;
+      }
+      obj = obj.getParentObject();
+    }
+    return returnForm;
   }
 
   public void main(ModuleInfo modinfo) throws Exception {

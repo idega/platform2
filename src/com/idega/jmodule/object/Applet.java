@@ -7,6 +7,12 @@ public class Applet extends ModuleObject{
 private StringBuffer params= new StringBuffer();
 private boolean usePlugin = false;
 
+  public Applet(){
+    setName(this.getID());
+    setWidth(0);
+    setHeight(0);
+  }
+
   public Applet(String appletClass){
     setAppletClass(appletClass);
     setName(this.getID());

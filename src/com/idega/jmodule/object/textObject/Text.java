@@ -149,6 +149,10 @@ public void setBold(){
 	bold=true;
 }
 
+public void setBold(boolean bold){
+  this.bold=bold;
+}
+
 public void setItalic(){
 	italic=true;
 }

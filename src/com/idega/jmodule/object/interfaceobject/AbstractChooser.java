@@ -4,6 +4,8 @@ import com.idega.jmodule.object.ModuleObjectContainer;
 import com.idega.jmodule.object.ModuleInfo;
 import com.idega.jmodule.object.ModuleObject;
 import com.idega.jmodule.object.Table;
+import com.idega.jmodule.object.textObject.Link;
+import com.idega.jmodule.object.Image;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -35,6 +37,8 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
   static final String SCRIPT_SUFFIX_PARAMETER="iw_chooser_suffix";
 
   private boolean addForm=true;
+  private Form form = null;
+  private Image buttonImage = null;
 
   public AbstractChooser() {
   }
@@ -51,7 +55,6 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
 
 
   public void main(ModuleInfo modinfo){
-    Form form = null;
     IWBundle bundle = getBundle(modinfo);
     if(addForm){
       form = new Form();
@@ -61,11 +64,8 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
     }
     else{
       add(getTable(modinfo,bundle));
-      form = null;
+      form = this.getParentForm();
     }
-    form.addParameter(CHOOSER_SELECTION_PARAMETER,getChooserParameter());
-    form.addParameter(SCRIPT_PREFIX_PARAMETER,"window.opener.document."+form.getID()+".");
-    form.addParameter(SCRIPT_SUFFIX_PARAMETER,"value");
 
   }
 
@@ -77,8 +77,27 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
     table.add(value);
     table.add(new Parameter(VALUE_PARAMETER_NAME,value.getName()));
     //GenericButton button = new GenericButton("chooserbutton",bundle.getResourceBundle(modinfo).getLocalizedString(chooserText,"Choose"));
-    SubmitButton button = new SubmitButton("Choose");
+    if(addForm){
+      SubmitButton button = new SubmitButton("Choose");
+      table.add(button,2,1);
+      form.addParameter(CHOOSER_SELECTION_PARAMETER,getChooserParameter());
+      form.addParameter(SCRIPT_PREFIX_PARAMETER,"window.opener.document."+form.getID()+".");
+      form.addParameter(SCRIPT_SUFFIX_PARAMETER,"value");
+    }
+    else{
+      Link link;
+      if( buttonImage == null ) link = new Link("Choose");
+      else link = new Link(buttonImage);
 
+      link.setWindowToOpen(getChooserWindowClass());
+      link.addParameter(CHOOSER_SELECTION_PARAMETER,getChooserParameter());
+      //debug skiiiiiiiiiiiiiiiiiiiitamix getParentForm ekki að virka??
+      link.addParameter(SCRIPT_PREFIX_PARAMETER,"window.opener.document."+getParentObject().getParentObject().getID()+".");
+      link.addParameter(SCRIPT_SUFFIX_PARAMETER,"value");
+      link.addParameter(DISPLAYSTRING_PARAMETER_NAME,input.getName());
+      link.addParameter(VALUE_PARAMETER_NAME,value.getName());
+      table.add(link,2,1);
+    }
 
     //button.setOnClick("chooser = "+Window.getCallingScriptString(getChooserWindowClass()));
     //button.setOnClick(DISPLAYSTRING_PARAMETER_NAME+" = this.form."+DISPLAYSTRING_PARAMETER_NAME+"");
@@ -88,9 +107,14 @@ public abstract class AbstractChooser extends ModuleObjectContainer{
 
     table.add(input,1,1);
     table.add(new Parameter(DISPLAYSTRING_PARAMETER_NAME,input.getName()));
-    table.add(button,2,1);
     return table;
   }
 
+  public void addForm(boolean addForm){
+   this.addForm = addForm;
+  }
 
+  public void setChooseButtonImage(Image buttonImage){
+   this.buttonImage = buttonImage;
+  }
 }

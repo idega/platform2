@@ -126,7 +126,7 @@ public QuoteReader(String quote_id){
 
 		else {
 
-			myTable.resize(1,1);
+			//myTable.resize(1,1);
 			myTable.setAlignment(1,1,"center");
 
 			myTable.addText("No quotes in database...");

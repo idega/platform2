@@ -358,4 +358,18 @@ public class SmallCalendar extends JModuleObject{
         int[] returner = {x,y};
         return returner;
     }
+
+  public Object clone() {
+    SmallCalendar obj = null;
+    try {
+      obj = (SmallCalendar)super.clone();
+      if (this.T != null) {
+        obj.T=(Table)this.T.clone();
+      }
+    }
+    catch(Exception ex) {
+      ex.printStackTrace(System.err);
+    }
+    return obj;
+  }
 }

@@ -38,6 +38,11 @@ private Class windowClass;
 private boolean maintainAllGlobalParameters = false;
 
 private static final String TARGET_ATTRIBUTE = "target";
+public static final String TARGET_NEW_WINDOW = "_new";
+public static final String TARGET_BLANK_WINDOW = "_blank";
+public static final String TARGET_PARENT_WINDOW = "_parent";
+public static final String TARGET_TOP_WINDOW = "_top";
+
 
 public Link(){
   this("");
@@ -156,9 +161,13 @@ public Link(ModuleObject mo,String classToInstanciate,String template){
 
 
 public Link(String displayText,Class classToInstanciate){
-       this(displayText,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
+  this(displayText,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
 }
 
+public Link(String displayText,Class classToInstanciate, String target){
+  this(displayText,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
+  setTarget(target);
+}
 
 
 public Link(String displayText,String classToInstanciate,String template){
@@ -401,12 +410,16 @@ public void setText(String text){
    }
 }
 
+
 public void addToText(String text){
    if (ObjectType.equals("Text")){
       ((Text)obj).addToText(text);
    }
 }
 
+public void setTextOnLink(String text){
+   setText(text);
+}
 
 public void setObject(ModuleObject object){
    obj=object;
@@ -745,6 +758,7 @@ public void print(ModuleInfo modinfo)throws Exception{
     //this.setOnClick(Window.getCallingScriptString(windowClass,true));
     addParameter(Page.IW_FRAME_CLASS_PARAMETER,windowClass.getName());
   }
+
 
 }
 

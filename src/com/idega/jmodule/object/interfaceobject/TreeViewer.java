@@ -63,6 +63,8 @@ private Table getTable(){
     if(mainTable==null){
       mainTable = new Table(tableColumns,tableRows);
       mainTable.setResizable(true);
+      mainTable.setCellpadding(0);
+      mainTable.setCellspacing(0);
     }
     return mainTable;
 }

@@ -30,14 +30,15 @@ private final static String IW_BUNDLE_IDENTIFIER="com.idega.block.image";
 private int imageId = -1;
 private String imSessionImageName =null;
 private String sHiddenInputName = null;
-private String adminURL = "/image/insertimage.jsp";
+//private String adminURL = "/image/insertimage.jsp";
+private String adminURL = null;
 private String nameOfWindow;
 private String sUseBoxString;
 private int maxImageWidth = 140;
 private boolean hasUseBox = true;
 private boolean selected = false;
 private boolean openInWindow = false;
-private Class windowClass = null;
+private Class windowClass = ImageEditorWindow.class;
 
 private IWBundle iwb;
 private IWResourceBundle iwrb;
@@ -99,13 +100,13 @@ public ImageInserter(Class WindowToOpen) {
         image.setNoImageLink();
 
       Link imageAdmin = null;
-      if(windowClass== null){
-        Window insertNewsImageWindow = new Window(nameOfWindow,ImageBusiness.IM_BROWSER_WIDTH,ImageBusiness.IM_BROWSER_HEIGHT,adminURL);
-        imageAdmin = new Link(image,insertNewsImageWindow);
-      }
-      else{
+      if(adminURL == null){
         imageAdmin = new Link(image);
         imageAdmin.setWindowToOpen(windowClass);
+      }
+      else{
+        Window insertNewsImageWindow = new Window(nameOfWindow,ImageBusiness.IM_BROWSER_WIDTH,ImageBusiness.IM_BROWSER_HEIGHT,adminURL);
+        imageAdmin = new Link(image,insertNewsImageWindow);
       }
       imageAdmin.addParameter("submit","new");
       imageAdmin.addParameter("im_image_session_name",imSessionImageName);
