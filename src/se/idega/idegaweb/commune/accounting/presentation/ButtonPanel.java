@@ -1,5 +1,5 @@
 /*
- * $Id: ButtonPanel.java,v 1.1 2003/08/19 10:22:15 anders Exp $
+ * $Id: ButtonPanel.java,v 1.2 2003/08/19 19:13:10 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -25,10 +25,10 @@ import com.idega.presentation.text.Text;
  * A class for button panels in Check & Peng application forms.
  * 
  * <p>
- * Last modified: $Date: 2003/08/19 10:22:15 $
+ * Last modified: $Date: 2003/08/19 19:13:10 $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see ApplicationForm
  */
 public class ButtonPanel extends AccountingBlock {
@@ -51,27 +51,13 @@ public class ButtonPanel extends AccountingBlock {
 	/**
 	 * Adds a button to the panel.
 	 * The buttoms are added from left to right.
-	 * @param label the text label for the button
 	 * @param parameter the form parameter name for the button
-	 */
-	public void addButton(String label, String parameter) {
-		SubmitButton button = new SubmitButton(label, parameter);
-		button.setAsImageButton(true);
-		table.add(button, buttonColumn , 1);
-		buttonColumn++;
-		table.setWidth(buttonColumn * COLUMN_WIDTH);
-	}
-
-	/**
-	 * Adds a button to the panel.
-	 * The buttoms are added from left to right.
 	 * @param label the text label for the button
-	 * @param parameter the form parameter name for the button
-	 * @param value the parameter value for the button
 	 */
-	public void addButton(String label, String parameter, String value) {
-		SubmitButton button = new SubmitButton(label, parameter, value);
+	public void addButton(String parameter, String label) {
+		GenericButton button = new GenericButton(parameter, label);
 		button.setAsImageButton(true);
+		button = getButton(button);
 		table.add(button, buttonColumn , 1);
 		buttonColumn++;
 		table.setWidth(buttonColumn * COLUMN_WIDTH);
