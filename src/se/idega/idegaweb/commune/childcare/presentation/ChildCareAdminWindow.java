@@ -496,6 +496,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		ChildCarePrognosis prognosis = getBusiness().getPrognosis(getSession().getChildCareID());
 
+		table.add(getSmallHeader(localize("child_care.prognosis_information","Enter the prognosis information for your childcare.")));
+		
 		TextInput threeMonths = (TextInput) getStyledInterface(new TextInput(PARAMETER_THREE_MONTHS_PROGNOSIS));
 		threeMonths.setLength(3);
 		threeMonths.setAsNotEmpty(localize("child_care.three_months_prognosis_required","You must fill in the three months prognosis."));
