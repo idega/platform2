@@ -773,7 +773,7 @@ public class RunRegistration extends Block {
 				}
 		
 				if (userID > 0) {
-					runBiz.saveRun(userID, run, distance, year, nationality, tshirt, chipNumber, groupName, bestTime, goalTime, iwc.getCurrentLocale());
+					runBiz.saveRun(userID, run, distance, year, nationality, tshirt, chip, chipNumber, groupName, bestTime, goalTime, iwc.getCurrentLocale());
 				}
 		
 				message = iwrb.getLocalizedString("registration_received", "Your registration has been received.");
