@@ -1083,7 +1083,9 @@ public class ReportQueryBuilder extends Block {
 			StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entityName, entityName));
 			buffer.append(" -> ");
 			buffer.append(iwrb.getLocalizedString(fieldName, fieldName));
-			buffer.append(' ');
+			buffer.append(" (");
+			buffer.append(fieldName);
+			buffer.append(") ");
 			if (part.isDescendant()) {
 				buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
 			}
@@ -1098,22 +1100,21 @@ public class ReportQueryBuilder extends Block {
 		int row = 1;
 		table.add(getMsgText(iwrb.getLocalizedString("field_id","Id")), 2, row);
 		table.setColor(2,row, "#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 3, row);
+//		table.add(getMsgText(iwrb.getLocalizedString("field_entity", "Entity")), 3, row);
+//		table.setColor(3,row,"#dfdfdf");
+		table.add(getMsgText(iwrb.getLocalizedString("field_name", "Name")), 3, row);
 		table.setColor(3,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_name", "Name")), 4, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_operator", "Operator")), 4, row);
 		table.setColor(4,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_operator", "Operator")), 5, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 5, row);
 		table.setColor(5,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_pattern", "Pattern")), 6, row);
+		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 6, row);
 		table.setColor(6,row,"#dfdfdf");
-		table.add(getMsgText(iwrb.getLocalizedString("field_description", "Description")), 7, row);
-		table.setColor(7,row,"#dfdfdf");
-		table.setColor(8,row,"#dfdfdf");
 		if (hasTemplatePermission) {
 //			table.add(getMsgText(iwrb.getLocalizedString("field_lock", "Lock")), 8, row);
 //			table.setColor(8,row,"#dfdfdf");
-			table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")), 9 ,row);
-			table.setColor(9 ,row,"#dfdfdf");
+			table.add(getMsgText(iwrb.getLocalizedString("field_dynamic","Dynamic")), 8 ,row);
+			table.setColor(8 ,row,"#dfdfdf");
 		}
 
 		row++;
@@ -1126,12 +1127,12 @@ public class ReportQueryBuilder extends Block {
 				QueryFieldPart field = (QueryFieldPart) mapOfFields.get(part.getField());
 				InputHandler fieldInputHandler = null;
 				if (field != null) {
-					table.add(iwrb.getLocalizedString(field.getEntity(), field.getEntity()), 3, row);
-					table.add(field.getName(), 4, row);
+					//table.add(iwrb.getLocalizedString(field.getEntity(), field.getEntity()), 3, row);
+					table.add(getDisplay(field), 3, row);
 					fieldInputHandler = getInputHandler(field);
 				}
 				table.add(part.getId(), 2, row);
-				table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 5, row);
+				table.add(iwrb.getLocalizedString("conditions." + part.getType(), part.getType()), 4, row);
 				// display the pattern
 				if (part.hasMoreThanOnePattern()) {
 					Collection patternColl = part.getPatterns();
@@ -1147,7 +1148,7 @@ public class ReportQueryBuilder extends Block {
 							log(e);
 							display = "";
 						}
-						table.add(display, 6, row);
+						table.add(display, 5, row);
 					}
 					else {
 						StringBuffer buffer = new StringBuffer();
@@ -1159,7 +1160,7 @@ public class ReportQueryBuilder extends Block {
 								buffer.append(" , ");
 							}
 						}
-						table.add(buffer.toString(), 6, row);
+						table.add(buffer.toString(), 5, row);
 					}
 				}
 				else {
@@ -1176,24 +1177,24 @@ public class ReportQueryBuilder extends Block {
 							log(e);
 							display = "";
 						}
-						table.add(display, 6, row);
+						table.add(display, 5, row);
 					}
 					else {
-						table.add(singlePattern, 6, row);
+						table.add(singlePattern, 5, row);
 					}
 				}
-				table.add(part.getDescription(), 7, row);
+				table.add(part.getDescription(), 6, row);
 				
 								
 				if (hasTemplatePermission){ 
 //LOCK					if(	part.isLocked()) 
 //LOCK						table.add("x", 8, row);
 					if(part.isDynamic())
-						table.add("x",9,row);
-					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	8,	row);
+						table.add("x",8,row);
+					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	7,	row);
 				}
 				else if(!(part.isLocked() || part.isDynamic())){
-					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	8,	row);
+					table.add(new SubmitButton(iwrb.getLocalizedImageButton("drop", "drop"), PARAM_DROP, part.encode()),	7,	row);
 				}
 				row++;
 			}
@@ -1219,16 +1220,16 @@ public class ReportQueryBuilder extends Block {
 		if (inputWidget == null) {
 			inputWidget = new TextInput(PARAM_CONDITION);
 		}
-		table.add(chosenFields, 4, row);
-		table.add(equators, 5, row);
-		table.add(inputWidget, 6, row);
+		table.add(chosenFields, 3, row);
+		table.add(equators, 4, row);
+		table.add(inputWidget, 5, row);
 		TextInput description = new TextInput(PARAM_COND_DESCRIPTION);
-		table.add(description, 7, row);
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 8, row);
+		table.add(description, 6, row);
+		table.add(new SubmitButton(iwrb.getLocalizedImageButton("add", "Add"), PARAM_ADD), 7, row);
 		if(hasTemplatePermission){
 		
 			CheckBox dynamic = new CheckBox(PARAM_DYNAMIC);
-			table.add(dynamic,9,row);
+			table.add(dynamic,8,row);
 		}
 		
 		// boolean expression
@@ -1242,14 +1243,14 @@ public class ReportQueryBuilder extends Block {
 		TextInput textInput = new TextInput(PARAM_BOOLEAN_EXPRESSION, booleanExpression);
 		textInput.setLength(100);
 		row++;
-		table.mergeCells(4, row, 7, row);
-		table.add(textInput, 4 , row); 
-		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),8 ,row);
+		table.mergeCells(3, row, 6, row);
+		table.add(textInput, 3 , row); 
+		table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set expression", "Set expression"), PARAM_SET_EXPRESSION, PARAM_SET_EXPRESSION),7 ,row);
 		row++;
-		table.mergeCells(4, row, 7, row);
+		table.mergeCells(3, row, 6, row);
 		StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString("Example", "Example"));
 		buffer.append(": ( Cond1 or Cond2 ) and ( Cond3 or ( not Cond4 ) )");
-		table.add(buffer.toString(), 4, row);
+		table.add(buffer.toString(), 3, row);
 		
 		// add input handler chooser
 		if (expertMode) {
@@ -1259,9 +1260,9 @@ public class ReportQueryBuilder extends Block {
 				inputHandlerChooser.setField(fieldPart.getName());
 				inputHandlerChooser.setEntity(fieldPart.getEntity());
 			}
-			table.mergeCells(4, row, 7, row);
-			table.add(inputHandlerChooser, 4, row);
-			table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set handler", "Set handler"), PARAM_SET_HANDLER, PARAM_SET_HANDLER),8 ,row);
+			table.mergeCells(3, row, 6, row);
+			table.add(inputHandlerChooser, 3, row);
+			table.add(new SubmitButton(iwrb.getLocalizedImageButton("Set handler", "Set handler"), PARAM_SET_HANDLER, PARAM_SET_HANDLER),7 ,row);
 		}
 		return table;
 	}
@@ -1486,6 +1487,7 @@ public class ReportQueryBuilder extends Block {
 		QueryService service = getQueryService(iwc);
 		Map drpMap = new HashMap();
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
+		drp.setWidth("200");
 
 		if (helper.hasPreviousQuery())	{
 			List previousQueries = helper.previousQueries();
