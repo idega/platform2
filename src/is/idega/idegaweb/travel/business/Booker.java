@@ -94,6 +94,8 @@ public class Booker {
         booking.setUserId(userId);
         booking.setOwnerId(ownerId);
       booking.update();
+      /** @todo fixa þetta getInstance() crap */
+      removeBookingPriceApplication(IWContext.getInstance(), booking);
     }
 
     GeneralBooking temp = new GeneralBooking(booking.getID());
