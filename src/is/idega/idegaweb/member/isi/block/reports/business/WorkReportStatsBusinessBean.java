@@ -1158,9 +1158,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		regionalUnionFiffName.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_name", "Reg.U."), currentLocale);
 		reportCollection.addField(regionalUnionFiffName);
 
-		ReportableField regionalUnionPopulation = new ReportableField("regionalUnionPopulation", String.class);
+		/*ReportableField regionalUnionPopulation = new ReportableField("regionalUnionPopulation", String.class);
 		regionalUnionPopulation.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.regional_union_population", "Reg.U."), currentLocale);
-		reportCollection.addField(regionalUnionPopulation);
+		reportCollection.addField(regionalUnionPopulation);*/
 		
 		ReportableField menUnderAge = new ReportableField("menUnderAge", Integer.class);
 		menUnderAge.setLocalizedName(_iwrb.getLocalizedString("WorkReportStatsBusiness.menUnderAgeLimitLastYear"+age, "all -"+age), currentLocale);
