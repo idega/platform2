@@ -39,7 +39,11 @@ public class MessageListener implements Runnable{
       try {
         if( dialogs != null ){
           int length = dialogs.size();
+          System.out.println("IN THREAD before loop");
           for (int i = 0; i < length; i++) {
+
+            System.out.println("IN THREAD INSIDE loop");
+
             client.getMessagesFromDialog((MessageDialog)dialogs.elementAt(i));
           }
         }
