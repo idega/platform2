@@ -54,7 +54,7 @@ public class ServiceDesigner extends TravelManager {
   public static String NAME_OF_FORM = "service_designer_form";
   public static String NAME_OF_PRICE_CATEGORY_FORM = "service_price_category_form";
 
-  private Boolean priceCategoryCreation;
+//  private Boolean priceCategoryCreation;
   private String sessionNameServiceId = "tourDesignerSessionTourId";
 
 
@@ -103,6 +103,20 @@ public class ServiceDesigner extends TravelManager {
       super.addBreak();
   }
 
+  private void setCategoryCreation(IWContext iwc, boolean isCreation) {
+    if (isCreation) {
+      iwc.setSessionAttribute("sd_isCategoryCreation", new Boolean(isCreation));
+    }else {
+      iwc.removeSessionAttribute("sd_isCategoryCreation");
+    }
+  }
+
+  public boolean isCategoryCreation(IWContext iwc) {
+    Object obj = iwc.getSessionAttribute("sd_isCategoryCreation");
+    if (obj == null) return false;
+    else return true;
+  }
+
 
   private void displayForm(IWContext iwc) throws Exception{
     /**
@@ -121,6 +135,7 @@ public class ServiceDesigner extends TravelManager {
 
     if (id != null) {
       add(td.getTourDesignerForm(iwc, Integer.parseInt(id)));
+      setCategoryCreation(iwc, false);
       setSessionServiceId(iwc, Integer.parseInt(id));
     }else {
       add(td.getTourDesignerForm(iwc));
@@ -130,7 +145,7 @@ public class ServiceDesigner extends TravelManager {
 
   private void createService(IWContext iwc) throws Exception{
 
-      if ( this.priceCategoryCreation == null ) {
+      if ( !isCategoryCreation(iwc) ) {
         TourDesigner td = new TourDesigner(iwc);
           int tourId = td.createTour(iwc);
           setService(iwc,tourId);
@@ -162,7 +177,7 @@ public class ServiceDesigner extends TravelManager {
 
 
   private void priceCategoryCreation(IWContext iwc) throws SQLException {
-      this.priceCategoryCreation = new Boolean(true);
+      setCategoryCreation(iwc, true);
       if (this.getService(iwc) != null) {
 
           Form form = new Form();
@@ -330,8 +345,8 @@ public class ServiceDesigner extends TravelManager {
           add(Text.BREAK);
           add(form);
       }else {
-        add("TEMP SERVICE ER NULL");
-        this.priceCategoryCreation = null;
+        add("SERVICE ER NULL");
+        setCategoryCreation(iwc, false);
       }
 
   }
@@ -391,7 +406,7 @@ public class ServiceDesigner extends TravelManager {
           }
         }
         this.removeService(iwc);
-        this.priceCategoryCreation = null;
+        this.setCategoryCreation(iwc, false);
 
         saveSuccessful();
 
