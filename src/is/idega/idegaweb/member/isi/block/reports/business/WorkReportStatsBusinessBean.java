@@ -101,6 +101,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String LOCALIZED_MEMBERS_MULTI_DIVISION = "WorkReportStatsBusiness.multi_division_members";
 	private static final String LOCALIZED_PLAYERS_SINGLE_DIVISION = "WorkReportStatsBusiness.single_division_players";
 	private static final String LOCALIZED_PLAYERS_MULTI_DIVISION = "WorkReportStatsBusiness.multi_division_players";
+	private static final String LOCALIZED_PERSON_NAME = "WorkReportStatsBusiness.person_name";
+	private static final String LOCALIZED_PHONE = "WorkReportStatsBusiness.phone";
+	private static final String LOCALIZED_ADDRESS = "WorkReportStatsBusiness.address";
+	private static final String LOCALIZED_POSTALCODE = "WorkReportStatsBusiness.postalcode";
+	private static final String LOCALIZED_EMAIL = "WorkReportStatsBusiness.email";
+	
 	
 	// names of reportable fields
 	private static final String FIELD_NAME_COMPARING_YEAR = "comparing_year";
@@ -160,6 +166,11 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 	private static final String FIELD_NAME_MEMBERS_MULTI_DIVISION = "member_multi_division";
 	private static final String FIELD_NAME_PLAYERS_SINGLE_DIVISION = "players_single_division";
 	private static final String FIELD_NAME_PLAYERS_MULTI_DIVISION = "players_multi_division";
+	private static final String FIELD_NAME_PERSON_NAME = "person_name";
+	private static final String FIELD_NAME_PHONE = "phone";
+	private static final String FIELD_NAME_ADDRESS = "address";
+	private static final String FIELD_NAME_POSTALCODE = "postalcode";
+	private static final String FIELD_NAME_EMAIL = "email";
 	
 	
 	/**
@@ -3536,6 +3547,94 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableField multiDivisionPlayers = new ReportableField(FIELD_NAME_PLAYERS_MULTI_DIVISION, String.class);
 		multiDivisionPlayers.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PLAYERS_MULTI_DIVISION, "Multi Division Players"), currentLocale);
 		reportCollection.addField(multiDivisionPlayers);
+		
+		
+		//finished return the collection
+		return reportCollection;
+	}
+
+	/*
+	 * Report B12.7.1 of the ISI Specs
+	 */
+	public ReportableCollection sevenDotOne () throws RemoteException {
+
+		//initialize stuff
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+
+		//PARAMETES
+
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+
+		//PARAMETERS that are also FIELDS
+		
+		ReportableField personName = new ReportableField(FIELD_NAME_PERSON_NAME, String.class);
+		personName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSON_NAME, "Name"), currentLocale);
+		reportCollection.addField(personName);
+
+		ReportableField phone = new ReportableField(FIELD_NAME_PHONE, String.class);
+		phone.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PHONE, "Phone"), currentLocale);
+		reportCollection.addField(phone);
+		
+		ReportableField address = new ReportableField(FIELD_NAME_ADDRESS, String.class);
+		address.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ADDRESS, "Address"), currentLocale);
+		reportCollection.addField(address);
+		
+		ReportableField postalCode = new ReportableField(FIELD_NAME_POSTALCODE, String.class);
+		postalCode.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTALCODE, "Multi Division Players"), currentLocale);
+		reportCollection.addField(postalCode);
+		
+		ReportableField email = new ReportableField(FIELD_NAME_EMAIL, String.class);
+		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Single Division Players"), currentLocale);
+		reportCollection.addField(email);
+		
+		
+		//finished return the collection
+		return reportCollection;
+	}
+	
+	/*
+	 * Report B12.7.2 of the ISI Specs
+	 */
+	public ReportableCollection sevenDotTwo () throws RemoteException {
+
+		//initialize stuff
+		initializeBundlesIfNeeded();
+		ReportableCollection reportCollection = new ReportableCollection();
+		Locale currentLocale = this.getUserContext().getCurrentLocale();
+
+		//PARAMETES
+
+		//Add extra...because the inputhandlers supply the basic header texts
+		reportCollection.addExtraHeaderParameter(
+				"workreportreport",
+				_iwrb.getLocalizedString("WorkReportStatsBusiness.label", "Current date"),
+				"label",
+				IWTimestamp.getTimestampRightNow().toGMTString());
+
+		//PARAMETERS that are also FIELDS
+		
+		ReportableField personName = new ReportableField(FIELD_NAME_PERSON_NAME, String.class);
+		personName.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_PERSON_NAME, "Name"), currentLocale);
+		reportCollection.addField(personName);
+		
+		ReportableField address = new ReportableField(FIELD_NAME_ADDRESS, String.class);
+		address.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ADDRESS, "Address"), currentLocale);
+		reportCollection.addField(address);
+		
+		ReportableField postalCode = new ReportableField(FIELD_NAME_POSTALCODE, String.class);
+		postalCode.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_POSTALCODE, "Multi Division Players"), currentLocale);
+		reportCollection.addField(postalCode);
+		
+		ReportableField email = new ReportableField(FIELD_NAME_EMAIL, String.class);
+		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Single Division Players"), currentLocale);
+		reportCollection.addField(email);
 		
 		
 		//finished return the collection
