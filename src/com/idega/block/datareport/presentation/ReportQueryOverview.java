@@ -1,7 +1,6 @@
 package com.idega.block.datareport.presentation;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +15,9 @@ import javax.ejb.FinderException;
 
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QueryToSQLBridge;
+import com.idega.block.dataquery.data.QueryConstants;
+import com.idega.block.dataquery.data.UserQuery;
+import com.idega.block.dataquery.data.UserQueryHome;
 import com.idega.block.dataquery.presentation.ReportQueryBuilder;
 import com.idega.block.datareport.business.JasperReportBusiness;
 import com.idega.block.entity.business.EntityToPresentationObjectConverter;
@@ -63,7 +65,6 @@ public class ReportQueryOverview extends Block {
   // special init parameters
   // replaced by parameters in class QueryBuilder
 
-public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM_QUERY_FOLDER_ID;
 	public static final String SET_ID_OF_DESIGN_FOLDER_KEY = ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID;
   
   public static final String DELETE_KEY = "delete_key";
@@ -72,6 +73,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   public static final String HTML_KEY = "html_key";
   public static final String EDIT_QUERY_SIMPLE_MODE_KEY = "edit_simple_mode_key";
   public static final String EDIT_QUERY_EXPERT_MODE_KEY ="edit_expert_mode_key";
+  public static final String EDIT_NEW_QUERY = "edit_new_query"; 
+  public static final String UPLOAD_QUERY = "upload_query";
+  public static final String UPLOAD_LAYOUT = "upload_layout";
 
   public static final String DELETE_ITEMS_KEY = "delete_items_key";
   
@@ -101,13 +105,13 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	
 	// sets the investigation level of the query builder (0,1,2,3... means that the query builder is shown in the expert mode)
 	// be careful: high numbers need much performance and time!
-	private static final int EXPERT_MODE = 3;
+	public static final int EXPERT_MODE = 3;
 
-	private ICFile designFolder;
+	protected ICFile designFolder;
 	
 	private int showOnlyOneQueryWithId = -1;
 	
-	private Map parameterMap = new HashMap();
+	protected Map parameterMap = new HashMap();
 	
 	private boolean isAdmin = false;
 	
@@ -147,13 +151,9 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
     }
   }
 
-	private String parseAction(IWContext iwc)	throws FinderException{
+	private String parseAction(IWContext iwc)	throws FinderException, RemoteException{
 		String action = "";
 		// get the file id of the query folder
-		if (iwc.isParameterSet(SET_ID_OF_QUERY_FOLDER_KEY))	{
-			String queryFolderKey = iwc.getParameter(SET_ID_OF_QUERY_FOLDER_KEY);
-			parameterMap.put(SET_ID_OF_QUERY_FOLDER_KEY, queryFolderKey);
-		}
 		if (iwc.isParameterSet(SET_ID_OF_DESIGN_FOLDER_KEY))	{
 			String designFolderKey = iwc.getParameter(SET_ID_OF_DESIGN_FOLDER_KEY);
 			parameterMap.put(SET_ID_OF_DESIGN_FOLDER_KEY, designFolderKey);
@@ -161,7 +161,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		}
 		if (iwc.isParameterSet(DELETE_ITEMS_KEY))	{
 			List idsToDelete = CheckBoxConverter.getResultByParsing(iwc, DELETE_KEY);
-			deleteQueries(idsToDelete);
+			deleteQueries(idsToDelete, iwc);
 			return "";
 		}
 		// check html, pdf and excel buttons
@@ -229,11 +229,11 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		return action;
 	}
 
-	public static Collection getQueries(IWContext iwc) throws RemoteException {
+	public static Collection getQueries(IWContext iwc) throws RemoteException, FinderException {
 		return ReportQueryOverview.getQueries(iwc, -1);
 	}
 	
-  private static Collection getQueries(IWContext iwc , int showOnlyOneQueryWithId) throws RemoteException {
+  private static Collection getQueries(IWContext iwc , int showOnlyOneQueryWithId) throws RemoteException, FinderException {
   	User currentUser = iwc.getCurrentUser();
   	GroupBusiness groupBusiness = getGroupBusiness(iwc);
   	UserBusiness userBusiness = getUserBusiness(iwc);
@@ -261,39 +261,21 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	catch (Exception ex) {
   		parentGroups = new ArrayList();
   	}
-  	
-  	//List queryRepresentations = new ArrayList();
   	//To keep them ordered alphabetically
-	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+  	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
 		// add own queries
-	  String topGroupName = topGroup.getName();
- 		String usersPrivateFolderName = getPrivateQueryFolderNameForGroup(topGroup);
- 		ICFile usersPrivateFolderFile = getFile(usersPrivateFolderName);
- 		if (usersPrivateFolderFile != null) {
- 			getQueriesFromFolder(usersPrivateFolderFile, queryRepresentations, topGroupName, true, true, showOnlyOneQueryWithId);
- 		}
- 		String usersPublicFolderName = getPublicQueryFolderNameForGroup(topGroup);
- 		ICFile usersPublicFolderFile = getFile(usersPublicFolderName);
- 		if (usersPublicFolderFile != null) {
- 			getQueriesFromFolder(usersPublicFolderFile, queryRepresentations, topGroupName, false, true, showOnlyOneQueryWithId);
- 		} 		
+		getQueriesFromGroup(queryRepresentations, topGroup, true, true, showOnlyOneQueryWithId);
+		getQueriesFromGroup(queryRepresentations, topGroup, false, true, showOnlyOneQueryWithId);
 		// add public queries
   	Iterator parentGroupsIterator = parentGroups.iterator();
   	while (parentGroupsIterator.hasNext()) {
   		Group group = (Group) parentGroupsIterator.next();
-  		String groupName = group.getName();
-  		
-  		String publicFolderName = getPublicQueryFolderNameForGroup(group);
-  		ICFile folderFile = getFile(publicFolderName);
-  		
-  		if (folderFile != null) {
-  			getQueriesFromFolder(folderFile, queryRepresentations, groupName, false, false, showOnlyOneQueryWithId);
-  		}
+  		getQueriesFromGroup(queryRepresentations, group, false, false, showOnlyOneQueryWithId);
   	}
   	return queryRepresentations.values();
   }
   	
-  private void getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException {
+  private void getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc) throws RemoteException, FinderException {
   	Collection queries = ReportQueryOverview.getQueries(iwc, showOnlyOneQueryWithId);
   	Form form = new Form();
   	form.setName("list_form");
@@ -315,18 +297,52 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	add(form);
   }
   	
-  private static void getQueriesFromFolder(ICFile folderFile, TreeMap queryRepresentations, String groupName, boolean isPrivate, boolean belongsToUser, int showOnlyOneQueryWithId) { 
+//  private static void getQueriesFromFolder(ICFile folderFile, TreeMap queryRepresentations, String groupName, boolean isPrivate, boolean belongsToUser, int showOnlyOneQueryWithId) { 
+//			// bad implementation:
+//			// if the children list is empty null is returned. 
+//			//TODO: thi: change the implementation
+//			Iterator iterator = folderFile.getChildren();
+//			if (iterator == null) {
+//				iterator = (new ArrayList(0)).iterator();
+//			}
+//			while (iterator.hasNext())	{
+//				ICTreeNode node = (ICTreeNode) iterator.next();
+//				int id = node.getNodeID();
+//				String name = node.getNodeName();
+//				int countOfSameName = 2;
+//				
+//				boolean alreadyAddedKey = queryRepresentations.containsKey(name);
+//				if(alreadyAddedKey){
+//					String newName = name;
+//					while(alreadyAddedKey){
+//						//probably crappy code its 4am and i dead tired - Eiki
+//						//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
+//						newName = new String(name+countOfSameName);
+//						alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
+//						countOfSameName++;
+//					}
+//					name = newName;
+//				}
+//				// show only the query with a specified id if desired 
+//				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
+//					QueryRepresentation representation = new QueryRepresentation(id, name, groupName, isPrivate, belongsToUser);
+//					queryRepresentations.put(name,representation);
+//				}
+//			}  
+//  	}
+  private static void getQueriesFromGroup(TreeMap queryRepresentations, Group group, boolean isPrivate, boolean belongsToUser, int showOnlyOneQueryWithId) throws FinderException { 
 			// bad implementation:
 			// if the children list is empty null is returned. 
 			//TODO: thi: change the implementation
-			Iterator iterator = folderFile.getChildren();
-			if (iterator == null) {
-				iterator = (new ArrayList(0)).iterator();
-			}
+  		String groupName = group.getName();
+  		UserQueryHome userQueryHome = getUserQueryHome();
+  		String permission = (isPrivate) ? QueryConstants.PERMISSION_PRIVATE_QUERY : QueryConstants.PERMISSION_PUBLIC_QUERY;
+  		Collection userQueries = userQueryHome.findByGroupAndPermission(group, permission);
+			Iterator iterator = userQueries.iterator();
 			while (iterator.hasNext())	{
-				ICTreeNode node = (ICTreeNode) iterator.next();
-				int id = node.getNodeID();
-				String name = node.getNodeName();
+				UserQuery userQuery = (UserQuery) iterator.next();
+				int id = ((Integer) userQuery.getPrimaryKey()).intValue();
+				String name = userQuery.getName();
 				int countOfSameName = 2;
 				
 				boolean alreadyAddedKey = queryRepresentations.containsKey(name);
@@ -349,27 +365,55 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 			}  
   	}
 
-	private static String getPrivateQueryFolderNameForGroup(Group group) {
-	String privateFolderName = new StringBuffer(group.getPrimaryKey().toString()).append("_").append("private").toString();
-	return privateFolderName;
-}
  
-	private static String getPublicQueryFolderNameForGroup(Group group) {
-	String publicFolderName = new StringBuffer(group.getPrimaryKey().toString()).append("_").append("public").toString();
-	return publicFolderName;
-}
-
 	private PresentationObject getButtonBar(IWResourceBundle resourceBundle)	{
-		Table table = new Table(5,1);
+		Table table = new Table(7,1);
 		// new button for query builder (simple mode)
 		String simpleModeText = resourceBundle.getLocalizedString("ro_create_simple_mode", "New (simple mode)");
 		Link simpleModeLink = new Link(simpleModeText);
 
 		simpleModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(SIMPLE_MODE));
-		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		simpleModeLink.addParameter(ReportQueryOverview.EDIT_NEW_QUERY, ReportQueryOverview.EDIT_NEW_QUERY);
+		//simpleModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
 		simpleModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 		simpleModeLink.setAsImageButton(true);
 		
+  	int column = 1;
+  	table.add(simpleModeLink,column++,1);
+  	if (isAdmin) {
+	  	// new button for query builder (expert mode)
+			String expertModeText = resourceBundle.getLocalizedString("ro_create_expert_mode", "New (expert mode)");
+			Link expertModeLink = new Link(expertModeText);
+	
+			expertModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(EXPERT_MODE));
+			expertModeLink.addParameter(ReportQueryOverview.EDIT_NEW_QUERY, ReportQueryOverview.EDIT_NEW_QUERY);
+		//	expertModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+			expertModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+			expertModeLink.setAsImageButton(true);
+			
+	  	table.add(expertModeLink,column++,1);
+  	}
+  	
+		// new button for query builder (simple mode)
+		String uploadQueryText = resourceBundle.getLocalizedString("ro_upload_query", "Upload query");
+		Link uploadQueryLink = new Link(uploadQueryText);
+		uploadQueryLink.addParameter(ReportQueryOverview.UPLOAD_QUERY, ReportQueryOverview.UPLOAD_QUERY);
+		//uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+		uploadQueryLink.setAsImageButton(true);
+		
+		table.add(uploadQueryLink, column++, 1);
+
+		// new button for query builder (simple mode)
+		String uploadLayoutText = resourceBundle.getLocalizedString("ro_upload_layout", "Upload layout");
+		Link uploadLayoutLink = new Link(uploadLayoutText);
+		uploadLayoutLink.addParameter(ReportQueryOverview.UPLOAD_LAYOUT, ReportQueryOverview.UPLOAD_LAYOUT);
+		//uploadQueryLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+		uploadLayoutLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
+		uploadLayoutLink.setAsImageButton(true);
+		
+		table.add(uploadLayoutLink, column++, 1);
+
 		// delete button
 		String deleteText = resourceBundle.getLocalizedString("ro_delete", "Delete");
   	SubmitButton delete = new SubmitButton(DELETE_ITEMS_KEY, deleteText);
@@ -384,20 +428,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	close.addParameter(CLOSE_KEY, CLOSE_KEY);
   	close.setAsImageButton(true);
   	close.setOnClick("window.close()");
-  	int column = 1;
-  	table.add(simpleModeLink,column++,1);
-  	if (isAdmin) {
-	  	// new button for query builder (expert mode)
-			String expertModeText = resourceBundle.getLocalizedString("ro_create_expert_mode", "New (expert mode)");
-			Link expertModeLink = new Link(expertModeText);
-	
-			expertModeLink.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(EXPERT_MODE));
-			expertModeLink.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
-			expertModeLink.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID, parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
-			expertModeLink.setAsImageButton(true);
-			
-	  	table.add(expertModeLink,column++,1);
-  	}
+
   	table.add(delete,column++,1);
   	table.add(close, column++,1);
   	// special button if only one query was shown
@@ -564,48 +595,22 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
     }
   }     
   
-  private static ICFile getFile(String name)	{
-  	try {
-      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = home.findByFileName(name);
-      return file;
-    }
-    catch(RemoteException ex){
-      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
-    }
-    catch (FinderException ex) {
-			return null;
-		}
-  }	
-
-	private void deleteQueries(List idsToDelete)	{
+	private void deleteQueries(List idsToDelete, IWContext iwc) throws RemoteException	{
+		User currentUser = iwc.getCurrentUser();
 		Iterator iterator = idsToDelete.iterator();
+		QueryService queryService = getQueryService(iwc);
 		while (iterator.hasNext())	{
 			Integer id = (Integer) iterator.next();
-			try {
-				ICFile file = getFile(id);
-				file.delete();
-			}
-			catch (FinderException ex) {
-				String message =
-					"[ReportOverview]: Can't find file with id " + id ;
-				System.err.println(message + " Message is: " + ex.getMessage());
-				ex.printStackTrace(System.err);
-			}
-			catch (SQLException sqlEx)	{
-				String message =
-					"[ReportOverview]: Can't delete file with id " + id ;
-				System.err.println(message + " Message is: " + sqlEx.getMessage());
-				sqlEx.printStackTrace(System.err);
-			}
+			queryService.removeUserQuery(id, currentUser);
 		}
 	}
+	
 
 	// some get service methods
 
-  public QueryService getQueryService() {
+  public static QueryService getQueryService(IWContext iwc) {
     try {
-      return (QueryService) IBOLookup.getServiceInstance( getIWApplicationContext() ,QueryService.class);
+      return (QueryService) IBOLookup.getServiceInstance( iwc.getApplicationContext() ,QueryService.class);
     }
     catch (RemoteException ex)  {
       System.err.println("[ReportOverview]: Can't retrieve QueryService. Message is: " + ex.getMessage());
@@ -671,7 +676,7 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 				Link link = new Link(display);
 				link.addParameter(ReportQueryBuilder.SHOW_WIZARD, Integer.toString(searchDepth));
 				link.addParameter(ReportQueryBuilder.PARAM_QUERY_ID, idoEntity.getPrimaryKey().toString());
-				link.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
+			//	link.addParameter(ReportQueryBuilder.PARAM_QUERY_FOLDER_ID, parameterMap.get(SET_ID_OF_QUERY_FOLDER_KEY).toString());
 				link.addParameter(ReportQueryBuilder.PARAM_LAYOUT_FOLDER_ID,parameterMap.get(SET_ID_OF_DESIGN_FOLDER_KEY).toString());
 				link.setAsImageButton(true);
 				return link;
@@ -698,6 +703,21 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 	  	return Text.emptyString();
 	  }
   }
+  
+  public static UserQueryHome getUserQueryHome(){
+  	UserQueryHome userQueryHome; 
+    try{
+      userQueryHome = (UserQueryHome)IDOLookup.getHome(UserQuery.class);
+    }
+    catch(RemoteException rme){
+      throw new RuntimeException(rme.getMessage());
+    }
+    return userQueryHome;
+  }
+  
+  
+  
+  
 	public static UserBusiness getUserBusiness(IWContext iwc)	{
 		try {
 			return (UserBusiness) IBOLookup.getServiceInstance(iwc.getApplicationContext(), UserBusiness.class);
@@ -733,20 +753,6 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 		return buffer.toString();
 	}
 
-//	private String getRemoveTargetScript() {//(Class windowClass) {
-//  //	String windowId = IWMainApplication.getEncryptedClassName(windowClass);
-//  	// note: the name "newTarget" is not important and arbitrary
-////  	StringBuffer buffer = new StringBuffer("findObj('");
-////  	buffer.append(Page.IW_FRAME_CLASS_PARAMETER);
-////  	buffer.append("').value='");
-////		buffer.append(windowId); 
-//  	StringBuffer buffer = new StringBuffer();
-//		buffer.append("this.form.target=window.name;");
-//		return buffer.toString();
-//	}
-
-	
-	
 	
 	// a representation of the query
 	private static class QueryRepresentation implements EntityRepresentation {
