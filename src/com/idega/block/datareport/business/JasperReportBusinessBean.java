@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.idega.block.dataquery.data.QueryResult;
 import com.idega.block.dataquery.data.QueryResultField;
+import com.idega.block.dataquery.data.sql.DirectSQLStatement;
 import com.idega.block.dataquery.data.sql.InputDescription;
 import com.idega.block.dataquery.data.sql.SQLQuery;
 import com.idega.block.dataquery.data.xml.QueryFieldPart;
@@ -354,8 +355,8 @@ public class JasperReportBusinessBean extends IBOServiceBean implements JasperRe
   	while (iterator.hasNext()) {
   		Map.Entry entry = (Map.Entry) iterator.next();
   		String identifier = entry.getKey().toString();
-  		if ( ! (ReportQueryOverview.USER_ACCESS_VARIABLE.equals(identifier) ||
-  				ReportQueryOverview.GROUP_ACCESS_VARIABLE.equals(identifier))) {
+  		if ( ! (DirectSQLStatement.USER_ACCESS_VARIABLE.equals(identifier) ||
+  				DirectSQLStatement.GROUP_ACCESS_VARIABLE.equals(identifier))) {
 	   		InputDescription inputDescription = (InputDescription) entry.getValue();
 	  		List inputValues = (List) identifierValueMap.get(identifier);
 	  		// get handler

@@ -20,6 +20,8 @@ import com.idega.util.StringHandler;
 public class DirectSQLStatement implements DynamicExpression {
 	
 	static public final String UNIQUE_IDENTIFIER = "UNIQUE_IDENTIFIER"; 
+	public static final String USER_ACCESS_VARIABLE = "user_access_variable";
+	public static final String GROUP_ACCESS_VARIABLE = "group_access_variable";
 	
 	private String sqlStatement;
 	
