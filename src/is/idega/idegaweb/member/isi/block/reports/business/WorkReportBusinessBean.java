@@ -1207,10 +1207,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       boolean isCommittee = false;
       boolean isDivision = false; 
       if (IWMemberConstants.GROUP_TYPE_CLUB_COMMITTEE_MAIN.equals(groupType)) { 
-        isDivision = true;
+        isCommittee = true;
       }
       else if (IWMemberConstants.GROUP_TYPE_CLUB_DIVISION.equals(groupType)) {
-        isCommittee = true;
+        isDivision = true;
       }
       //
       // create work report bord members 
