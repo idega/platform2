@@ -13,7 +13,7 @@ public class SchoolClassMemberHomeImpl extends com.idega.data.IDOFactory impleme
  }
 
 
-public java.util.Collection findAllBySeasonAndInvoiceInterval(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
+public java.util.Collection findAllBySeasonAndInvoiceInterval(int p0,String p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindAllBySeasonAndInvoiceInterval(p0,p1);
 	this.idoCheckInPooledEntity(entity);

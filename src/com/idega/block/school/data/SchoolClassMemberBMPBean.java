@@ -235,9 +235,9 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return idoFindPKsBySQL(sql.toString());
 	}
 	
-	public Collection ejbFindAllBySeasonAndInvoiceInterval(int seasonID, int invoiceInterval) throws FinderException, RemoteException {
+	public Collection ejbFindAllBySeasonAndInvoiceInterval(int seasonID, String invoiceInterval) throws FinderException, RemoteException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
+		sql.appendSelectAllFrom(getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
 		sql.appendWhere().append(" mb." + INVOICE_INTERVAL).appendEqualSign().append(invoiceInterval);
 		sql.appendAnd();
 		sql.append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID);
