@@ -1,12 +1,11 @@
 
-package com.idega.user.business;
+package com.idega.user.presentation;
 
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
 
 import com.idega.presentation.IWContext;
-import com.idega.user.presentation.GroupTreeNode;
 
 
 /**
