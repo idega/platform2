@@ -32,10 +32,10 @@ public class BankInvoiceFileManager implements BankFileManager{
 	/* (non-Javadoc)
 	 * @see com.idega.block.finance.business.BankFileManager#getAccountBook(int)
 	 */
-	public int getAccountBook(int invoiceNumber) {
-		AccountEntry ae = getAccountEntry(invoiceNumber);
-		if(ae != null) {
-			return ae.getAccountBook();
+	public int getAccountBook(int groupId) {
+		BankInfo bi = getBankInfo(groupId);
+		if(bi != null) {
+			return bi.getAccountBook();
 		}else {
 			return 66;
 		}
@@ -46,7 +46,7 @@ public class BankInvoiceFileManager implements BankFileManager{
 	public String getAmount(int invoiceNumber) {
 		AccountEntry ae = getAccountEntry(invoiceNumber);
 		if(ae != null) {
-			return String.valueOf(ae.getTotal());
+			return String.valueOf(((int)ae.getTotal()*10)*10);
 		}else {
 			return "";
 		}
@@ -87,9 +87,9 @@ public class BankInvoiceFileManager implements BankFileManager{
 		}
 	}
 	public String getClaimantName(int groupId) {
-		Group g = getGroupByGroupId(groupId);
-		if(g != null) {
-			return g.getName();
+		BankInfo bi = getBankInfo(groupId);
+		if(bi != null) {
+			return bi.getClaimantsName();
 		}
 		else {
 			return "";
@@ -208,7 +208,7 @@ public class BankInvoiceFileManager implements BankFileManager{
 		AccountEntry ae = getAccountEntry(invoiceNumber);
 		if(ae != null) {
 			Date date = ae.getDueDate();
-			cal.setTime(date);
+			if(date != null)	cal.setTime(date);
 			return cal; 
 		}else {
 			return null;
@@ -272,7 +272,7 @@ public class BankInvoiceFileManager implements BankFileManager{
 		AccountEntry ae = getAccountEntry(invoiceNumber);
 		if(ae != null) {
 			Date date = ae.getFinalDueDate();
-			cal.setTime(date);
+			if(date != null)	cal.setTime(date);
 			return cal; 
 		}
 		return null;
