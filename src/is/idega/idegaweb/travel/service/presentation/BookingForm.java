@@ -2109,7 +2109,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 			}
 		}
 	}
-
+	
 	protected int getProductPriceID(IWContext iwc, ProductPrice pPrice, IWTimestamp stamp, Timeframe[] timeframes, int iAddressId, boolean onlineOnly, String key) throws RemoteException, ProductPriceException {
 		if (timeframes == null || timeframes.length < 2) {
 			return pPrice.getID();
@@ -2239,8 +2239,6 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
     }
   }
 
-
-  // ALL BELOW ARE IMPLEMENTED
   protected void setProduct(IWContext iwc, Product product) {
     _product = product;
     try {
@@ -2277,15 +2275,6 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
   		}
   	}
     
-    /*
-    if (day != null && month != null && year != null) {
-      _stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
-    }else if (day == null && month != null && year != null) {
-      _stamp = new IWTimestamp(1, Integer.parseInt(month), Integer.parseInt(year));
-    }else {
-      _stamp = new IWTimestamp(IWTimestamp.RightNow());
-    }
-    */
   }
 
   protected DropdownMenu getDropdownMenuWithUsers(List users, String name) throws RemoteException{
@@ -2342,31 +2331,7 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
 	  String sBookingId = iwc.getParameter(this.parameterBookingId);
 
 		++row;
-/*
-	if (supplier != null) {
-	  table.add(iwrb.getLocalizedString("travel.too_many_book_anyway","Too many. Do you wish to book anyway ?"), 1, row);
-	  ++row;
-			  table.setRowColor(row, super.GRAY);
-	  table.add(new BackButton(iwrb.getLocalizedString("back","Back")), 1, row);
-	  table.add(Text.NON_BREAKING_SPACE, 1, row);
-	  table.add(new SubmitButton(iwrb.getLocalizedString("travel.book_anyway","Book anyway"),this.BookingAction, this.parameterBookAnyway), 1, row);
-	  if (sBookingId == null) {
-		  table.add(Text.NON_BREAKING_SPACE, 1, row);
-		  table.add(new SubmitButton(iwrb.getLocalizedString("travel.send_inquiry","Send inquiry"),this.BookingAction, this.parameterSendInquery), 1, row);
-	  }
-	}else if (_reseller != null) {
-	  if (sBookingId == null) {
-		  table.add(iwrb.getLocalizedString("travel.too_many_send_inquiry","Too many. Do you wish to send an inquiry ?"), 1, row);
-				  ++row;
-				  table.setRowColor(row, super.GRAY);
-		  table.add(new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.BookingAction, this.parameterSendInquery), 1, row);
-		  table.add(new BackButton(iwrb.getImage("buttons/no.gif")), 1, row);
-	  }else {
-				  table.setRowColor(row, super.GRAY);
-				  table.add(new BackButton(iwrb.getLocalizedString("back","Back")), 1, row);
-	  }
-	}
-	*/	
+
 		table.setRowColor(row, super.GRAY);
 		table.add(new BackButton(iwrb.getLocalizedString("back","Back")), 1, row);
 		
@@ -3107,7 +3072,14 @@ public Form getFormMaintainingAllParameters(IWContext iwc) {
     table.setAlignment(1,row,"right");
     table.setAlignment(2,row,"left");
     table.add(txtCVC,1,row);
-    table.add(getBoldTextWhite(ccCVC), 2, row);
+    Text txtCVCStars = getTextWhite("");
+    if (ccCVC != null) {
+    			for (int i = 0; i < ccCVC.length(); i++) {
+    				txtCVCStars.addToText("*");
+    			}
+    			table.add(txtCVCStars, 2, row);
+    }
+    //table.add(getBoldTextWhite(ccCVC), 2, row);
     
 	    	if (ccNumber.length() < 13 || ccNumber.length() > 19) {
 	    		txtNumber.setFontColor(errorColor);
