@@ -1,6 +1,7 @@
 package com.idega.block.creditcard.data;
 
 import java.sql.Date;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
@@ -189,4 +190,20 @@ public class KortathjonustanAuthorisationEntriesBMPBean extends GenericEntity im
 		}
 		return null;
 	}
+	
+	public Collection ejbFindRefunds(IWTimestamp from, IWTimestamp to) throws FinderException {
+		to.addDays(1);
+
+		Table table = new Table(this);
+		Column date = new Column(COLUMN_DATE);
+		Column code = new Column(COLUMN_TRANSACTION_TYPE);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(code, MatchCriteria.EQUALS, this.AUTHORIZATION_TYPE_REFUND));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.GREATEREQUAL, from.getDate().toString()));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.LESSEQUAL, to.getDate().toString()));
+		System.out.println(query.toString());
+		return this.idoFindIDsBySQL(query.toString());
+	}	
 }

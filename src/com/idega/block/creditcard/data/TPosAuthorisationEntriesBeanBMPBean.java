@@ -1,5 +1,5 @@
 /*
- *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.2 2004/08/11 00:36:05 gimmi Exp $
+ *  $Id: TPosAuthorisationEntriesBeanBMPBean.java,v 1.3 2004/08/19 10:56:03 gimmi Exp $
  *
  *  Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -12,6 +12,7 @@ package com.idega.block.creditcard.data;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import javax.ejb.FinderException;
 
@@ -1194,5 +1195,24 @@ public class TPosAuthorisationEntriesBeanBMPBean extends GenericEntity implement
 	public String getExtraField() {
 		// NOT USED
 		return null;
+	}
+	
+	public Collection ejbFindRefunds(IWTimestamp from, IWTimestamp to) throws FinderException {
+		to.addDays(1);
+
+		String fromDate = from.getDateString("yyyyMMdd");
+		String toDate = to.getDateString("yyyyMMdd");
+
+		Table table = new Table(this);
+		Column date = new Column(ENTRY_DATE);
+		Column code = new Column(AUTHORISATION_CODE);
+		
+		SelectQuery query = new SelectQuery(table);
+		query.addColumn(new WildCardColumn(table));
+		query.addCriteria(new MatchCriteria(code, MatchCriteria.EQUALS, "T5"));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.GREATEREQUAL, fromDate));
+		query.addCriteria(new MatchCriteria(date, MatchCriteria.LESSEQUAL, toDate));
+		
+		return this.idoFindIDsBySQL(query.toString());
 	}
 }

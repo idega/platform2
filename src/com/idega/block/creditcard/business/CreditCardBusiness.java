@@ -1,7 +1,10 @@
 package com.idega.block.creditcard.business;
 
+import java.util.Collection;
+import javax.ejb.FinderException;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.data.IDOLookupException;
 import com.idega.util.IWTimestamp;
 
 
@@ -31,5 +34,6 @@ public interface CreditCardBusiness extends com.idega.business.IBOService
  public boolean getUseCVC(CreditCardClient client);
  public boolean getUseCVC(CreditCardMerchant merchant);
  public boolean getUseCVC(Supplier supplier, IWTimestamp stamp);
+	public Collection getAllRefunds(IWTimestamp from, IWTimestamp to, int clientType) throws IDOLookupException, FinderException;
 
 }

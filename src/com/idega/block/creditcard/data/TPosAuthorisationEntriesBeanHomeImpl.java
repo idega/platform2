@@ -1,5 +1,7 @@
 package com.idega.block.creditcard.data;
 
+import java.util.Collection;
+import javax.ejb.FinderException;
 import com.idega.util.IWTimestamp;
 
 
@@ -21,6 +23,14 @@ public TPosAuthorisationEntriesBean findByAuthorisationIdRsp(java.lang.String p0
 	this.idoCheckInPooledEntity(entity);
 	return this.findByPrimaryKey(pk);
 }
+
+public Collection findRefunds(IWTimestamp from, IWTimestamp to) throws FinderException {
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((TPosAuthorisationEntriesBeanBMPBean)entity).ejbFindRefunds(from, to);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 
  public TPosAuthorisationEntriesBean findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (TPosAuthorisationEntriesBean) super.findByPrimaryKeyIDO(pk);

@@ -4,13 +4,13 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
-
 import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.transaction.TransactionManager;
-
 import com.idega.block.creditcard.data.CreditCardAuthorizationEntry;
 import com.idega.block.creditcard.data.CreditCardMerchant;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntries;
+import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntriesBMPBean;
 import com.idega.block.creditcard.data.KortathjonustanAuthorisationEntriesHome;
 import com.idega.block.creditcard.data.KortathjonustanMerchant;
 import com.idega.block.creditcard.data.KortathjonustanMerchantHome;
@@ -42,6 +42,9 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
   private final static String PROPERTY_KORTATHJONUSTAN_HOST_PORT = "kortathjonustan_host_port";
   private final static String PROPERTY_KORTATHJONUSTAN_KEYSTORE = "kortathjonustan_keystore";
   private final static String PROPERTY_KORTATHJONUSTAN_KEYSTORE_PASS = "kortathjonustan_keystore_pass";
+  
+  public final static int CLIENT_TYPE_TPOS = 1;
+  public final static int CLIENT_TYPE_KORTATHJONUSTAN = 2;
 
   public String getBundleIdentifier() {
   		return IW_BUNDLE_IDENTIFIER;
@@ -362,5 +365,17 @@ public class CreditCardBusinessBean extends IBOServiceBean implements CreditCard
 		return getUseCVC(getCreditCardMerchant(supplier, stamp));
 	}
 
+	public Collection getAllRefunds(IWTimestamp from, IWTimestamp to, int clientType) throws IDOLookupException, FinderException {
+		Collection coll = new Vector();
+		if (clientType == CLIENT_TYPE_TPOS) {
+			TPosAuthorisationEntriesBeanHome home = (TPosAuthorisationEntriesBeanHome) IDOLookup.getHome(TPosAuthorisationEntriesBean.class);
+			coll = home.findRefunds(from, to);
+		}
+		else if (clientType == CLIENT_TYPE_KORTATHJONUSTAN) {
+			KortathjonustanAuthorisationEntriesHome home = (KortathjonustanAuthorisationEntriesHome) IDOLookup.getHome(KortathjonustanAuthorisationEntriesBMPBean.class);
+			coll = home.findRefunds(from, to);
+		}
+		return coll;
+	}
 
 }
