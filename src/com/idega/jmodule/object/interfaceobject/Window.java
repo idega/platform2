@@ -93,6 +93,10 @@ public Window(String name,Class classToInstanciate,Class template){
 	this(name,400,400,IWMainApplication.getObjectInstanciatorURL(classToInstanciate,template));
 }
 
+public Window(String name,Class classToInstanciate){
+	this(name,400,400,IWMainApplication.getObjectInstanciatorURL(classToInstanciate));
+}
+
 private void setSettings(){
         setID();
 	setToolbar(false);
@@ -341,7 +345,7 @@ public void setBackgroundImage(Image backgroundImage){
 
 public boolean doPrint(ModuleInfo modinfo){
 	boolean returnBoole;
-	if (modinfo.getRequest().getParameter("idegaspecialrequesttype") == null){
+	if (modinfo.getParameter("idegaspecialrequesttype") == null){
 	/*no special request*/
 		/*Check if there is a parent object*/
 		if (getParentObject() == null){
@@ -353,7 +357,7 @@ public boolean doPrint(ModuleInfo modinfo){
 			returnBoole = false;
 		}
 	}
-	else if (modinfo.getRequest().getParameter("idegaspecialrequesttype").equals("window") && modinfo.getRequest().getParameter("idegaspecialrequestname").equals(this.getName()) ){
+	else if (modinfo.getParameter("idegaspecialrequesttype").equals("window") && modinfo.getParameter("idegaspecialrequestname").equals(this.getName()) ){
 		returnBoole = true;
 	}
 	else{
