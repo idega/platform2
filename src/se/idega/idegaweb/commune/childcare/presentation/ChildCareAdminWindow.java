@@ -141,6 +141,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	public static final String PARAMETER_SHOW_PRE_SCHOOL = "cc_show_preschool";
 
+	public static final String PARAMETER_CANCEL_CONTRACT_DIRECTLY = "cc_cancel_contract_directly";
+	
 	// private static final String PROPERTY_RESTRICT_DATES =
 	// "child_care_restrict_alter_date";
 
@@ -350,6 +352,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		form.maintainParameter(PARAMETER_SHOW_PARENTAL);
 		form.maintainParameter(PARAMETER_SHOW_EMPLOYMENT_DROP);
 		form.maintainParameter(PARAMETER_SHOW_PRE_SCHOOL);
+		form.maintainParameter(PARAMETER_CANCEL_CONTRACT_DIRECTLY);
 		form.setStyleAttribute("height:100%");
 
 		Table table = new Table(3, 5);
@@ -2192,6 +2195,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				String body = localize("child_care.cancel_contract_body", "Your contract for {0} at {1} has been terminated because of {2}. The termination will be active on {3}.");
 	
 				getBusiness().cancelContract(application, reason, date, reasonMessage, subject, MessageFormat.format(body, arguments), iwc.getCurrentUser());
+				if (iwc.isParameterSet(PARAMETER_CANCEL_CONTRACT_DIRECTLY)) {
+					getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
+				}
 				getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 				getParentPage().close();
 			}

@@ -36,6 +36,7 @@ public class ChildCareContracts extends ChildCareBlock {
 	private int allowedFutureContracts = 2;
 	private boolean showEmplDrop = true;
 	private boolean showCreateGroupBtn = true;
+	private boolean _alwaysShowDeleteContract = true;
 	
 	protected static final int STATUS_ACTIVE = 1;
 	protected static final int STATUS_NOT_YET_ACTIVE = 2;
@@ -272,6 +273,9 @@ public class ChildCareContracts extends ChildCareBlock {
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_SHOW_PARENTAL, String.valueOf(showParentalRadio));
 						}
+						if (_alwaysShowDeleteContract) {
+							delete.addParameter(ChildCareAdminWindow.PARAMETER_CANCEL_CONTRACT_DIRECTLY, String.valueOf(true));
+						}
 						
 						if (!isCancelled){						
 							
@@ -338,7 +342,7 @@ public class ChildCareContracts extends ChildCareBlock {
 									table.add(getInformationIcon(localize("child_care.to_many_future_contracts","To many future contracts")),column,row);
 							}
 							
-							if (student.getRemovedDate() == null && application.getApplicationStatus() == getBusiness().getStatusParentTerminated() || application.getApplicationStatus() == getBusiness().getStatusWaiting())
+							if (student.getRemovedDate() == null && (_alwaysShowDeleteContract || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) || application.getApplicationStatus() == getBusiness().getStatusWaiting())
 								table.add(delete, column++, row);
 							
 							if (parentCancelled) {
@@ -802,5 +806,13 @@ public class ChildCareContracts extends ChildCareBlock {
 	
 	public void setShowEmploymentDropDown(boolean show){
 		showEmplDrop = show;
+	}
+	
+	public void setAlwaysShowDeleteContract(boolean b) {
+		_alwaysShowDeleteContract = b;
+	}
+	
+	public boolean getAlwaysShowDeleteContract() {
+		return _alwaysShowDeleteContract;
 	}
 }
