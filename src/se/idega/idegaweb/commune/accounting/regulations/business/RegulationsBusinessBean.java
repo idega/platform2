@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.103 2003/12/30 11:50:04 palli Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.104 2003/12/30 14:32:14 palli Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -627,7 +627,7 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 				boolean match = true;
 				while (i.hasNext() && match) {
 					Condition regCond = (Condition) i.next();
-					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_RESOURCE)) {
+					if (regCond.getConditionID() == Integer.parseInt(RuleTypeConstant.CONDITION_ID_STADSBIDRAG)) {
 						int id = regCond.getIntervalID();
 						try {
 							YesNo yesNo = getYesNoHome().findYesNoValue(id);
