@@ -41,8 +41,8 @@ import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -65,11 +65,11 @@ import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
 
 /**
- * Last modified: $Date: 2004/03/08 12:39:10 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/09 16:34:51 $ by $Author: staffan $
  *
  * @author <a href="mailto:gimmi@idega.is">Grimur Jonsson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.28 $
+ * @version $Revision: 1.29 $
  */
 public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmountBusiness, InvoiceStrings {
 	private final static Font SANSSERIF_FONT
@@ -257,12 +257,11 @@ public class CheckAmountBusinessBean extends IBOServiceBean implements CheckAmou
 		(User currentUser, School school)
 		throws IBOLookupException, RemoteException, FinderException {
 		SchoolUserBusiness sub = getSchoolUserBusiness ();
-		Collection headmasters = sub.getHeadmasters(school);
-		Collection assheadmasters = sub.getAssistantHeadmasters(school);
-		Collection users = new ArrayList();
-		users.addAll(headmasters);
-		users.addAll(assheadmasters);
-		Collection emailReceivers = new ArrayList();
+		Collection users = new HashSet();
+		users.addAll(sub.getHeadmasters(school));
+		users.addAll(sub.getAssistantHeadmasters(school));
+		users.addAll(sub.getEconomicalResponsibles(school));
+		Collection emailReceivers = new HashSet();
 		if (users.size() > 0) {
 			for (Iterator i = users.iterator(); i.hasNext();) {
 				final User user = (User) i.next();

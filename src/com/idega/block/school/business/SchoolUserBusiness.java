@@ -32,6 +32,7 @@ public interface SchoolUserBusiness extends com.idega.business.IBOService
  public java.util.Collection getUsersByDepartm(com.idega.block.school.data.School p0,int p1,int p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection getUsersByDepartm(com.idega.block.school.data.School p0,int p1)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection getUsersByMainHeadMaster(com.idega.block.school.data.School p0,int p1,boolean p2)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
+	java.util.Collection getEconomicalResponsibles(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public java.util.Collection getWebAdmins(com.idega.block.school.data.School p0)throws java.rmi.RemoteException,javax.ejb.FinderException, java.rmi.RemoteException;
  public void removeUser(com.idega.block.school.data.School p0,com.idega.user.data.User p1,int p2,com.idega.user.data.User p3)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;
  public void removeUser(com.idega.block.school.data.School p0,com.idega.user.data.User p1,com.idega.user.data.User p2)throws javax.ejb.FinderException,java.rmi.RemoteException,javax.ejb.RemoveException, java.rmi.RemoteException;

@@ -34,6 +34,13 @@ public java.util.Collection findBySchoolAndMainHeadmaster(com.idega.block.school
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public java.util.Collection findBySchoolAndIsEconomicalResponsible(com.idega.block.school.data.School p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchoolAndIsEconomicalResponsible(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
 public java.util.Collection findBySchoolAndType(com.idega.block.school.data.School p0,int p1)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolUserBMPBean)entity).ejbFindBySchoolAndType(p0,p1);

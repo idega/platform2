@@ -197,6 +197,17 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 		return getUsers(school, USER_TYPE_WEB_ADMIN);	
 	}
 
+	public Collection getEconomicalResponsibles(School school) throws RemoteException, FinderException{
+		Collection schUsers = getSchoolUserHome().findBySchoolAndIsEconomicalResponsible(school);
+		Collection users = new Vector();
+		Iterator iter = schUsers.iterator();
+		while (iter.hasNext()) {
+			SchoolUser sUser = (SchoolUser)iter.next();
+			users.add(sUser.getUser());
+		}
+		return users;
+	}
+
 	/**
 	 * Gets the Users of a aspecific type for School school
 	 * @return A collection of com.idega.user.data.User entites

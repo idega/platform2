@@ -127,6 +127,16 @@ public class SchoolUserBMPBean extends GenericEntity implements SchoolUser{
 		return coll;
 	}
 
+	public Collection ejbFindBySchoolAndIsEconomicalResponsible (School school)
+		throws FinderException {
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (TABLE_NAME);
+		sql.appendWhereEquals (COLUMN_NAME_SCHOOL_ID, school);
+		sql.appendAndIsNotNull (COLUMN_NAME_ECONOMY_RESP);
+		sql.appendAndEquals (COLUMN_NAME_ECONOMY_RESP, true);
+		return idoFindIDsBySQL (sql.toString());
+	}
+
 	/**
 	 * Returns a Collection of SchoolUsers
 	 * @param school School
