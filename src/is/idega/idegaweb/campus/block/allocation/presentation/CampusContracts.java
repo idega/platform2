@@ -329,7 +329,7 @@ public class CampusContracts extends Block{
             T.add(getReSignLink(resignImage,C.getID()),col,row);
           col++;
           if(C.getStatus().equalsIgnoreCase(Contract.statusPrinted) || C.getStatus().equalsIgnoreCase(Contract.statusSigned)  )
-            T.add(getSignedLink(registerImage,C.getID()),col,row);
+            T.add(getSignedLink(registerImage,C.getID(),isAdmin),col,row);
           col++;
           T.add(Edit.formatText(Ap.getFullName()),col++,row);
           T.add(Edit.formatText(Ap.getSSN()),col++,row);
@@ -439,7 +439,7 @@ public class CampusContracts extends Block{
 
 
 
-  public Link getSignedLink(PresentationObject MO,int contractId){
+  public static Link getSignedLink(PresentationObject MO,int contractId,boolean isAdmin){
     Link L = new Link(MO);
     L.setWindowToOpen(ContractSignWindow.class);
     L.addParameter("signed_id",contractId);

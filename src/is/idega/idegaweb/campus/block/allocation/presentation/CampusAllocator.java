@@ -407,7 +407,7 @@ public class CampusAllocator extends Block implements Campus{
           Frame.add(formatText(A.getMobilePhone()),col++,row);
           Frame.add(formatText(A.getResidencePhone()),col++,row);
           if(ifLong && con_id > 0)
-            Frame.add(CampusContracts.getSignedLink(registerImage,con_id),col,row);
+            Frame.add(CampusContracts.getSignedLink(registerImage,con_id,isAdmin),col,row);
             //Frame.add(getPDFLink(iwb.getImage("print.gif"),A.getID()),col,row);
 
           if(redColorSet)
