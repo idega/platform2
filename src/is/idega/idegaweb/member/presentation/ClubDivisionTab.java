@@ -318,9 +318,7 @@ public class ClubDivisionTab extends UserGroupTab {
                         connection, getGroupId(), clubName, iwc);
             }
 
-            group
-                    .setMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD,
-                            board);
+            group.setMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD,board);
 
             group.store();
         } catch (RemoteException e) {
