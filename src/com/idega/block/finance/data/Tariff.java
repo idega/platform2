@@ -21,15 +21,15 @@ public class Tariff extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(),"Heiti",true,true,"java.lang.String");
-    addAttribute(getPriceColumnName(), "Verð", true, true, "java.lang.Integer");
-    addAttribute(getInfoColumnName(),"Athugasemd",true,true,"java.lang.String",4000);
-    addAttribute(getAccountKeyIdColumnName(),"Bókhaldsliður",true,true,"java.lang.Integer","one-to-many","com.idega.block.finance.data.AccountKey");
-    addAttribute(getFromdateColumnName(),"Upphafsdags",true,true,"java.sql.Timestamp");
-    addAttribute(getToDateColumnName(),"Lokadags",true,true,"java.sql.Timestamp");
-    addAttribute(getAttributeColumnName(),"",true,true,"java.lang.String");
-    addAttribute(getUseIndexColumnName(),"Gild",true,true,"java.lang.Boolean");
-    addAttribute(getInUseColumnName(),"In Use",true,true,"java.lang.Boolean");
+    addAttribute(getNameColumnName(),"Heiti",true,true,java.lang.String.class);
+    addAttribute(getPriceColumnName(), "Verð", true, true, java.lang.Float.class);
+    addAttribute(getInfoColumnName(),"Athugasemd",true,true,java.lang.String.class,4000);
+    addAttribute(getAccountKeyIdColumnName(),"Bókhaldsliður",true,true,java.lang.Integer.class,"one-to-many",com.idega.block.finance.data.AccountKey.class);
+    addAttribute(getFromdateColumnName(),"Upphafsdags",true,true,java.sql.Timestamp.class);
+    addAttribute(getToDateColumnName(),"Lokadags",true,true,java.sql.Timestamp.class);
+    addAttribute(getAttributeColumnName(),"",true,true,java.lang.String.class);
+    addAttribute(getUseIndexColumnName(),"Gild",true,true,java.lang.Boolean.class);
+    addAttribute(getInUseColumnName(),"In Use",true,true,java.lang.Boolean.class);
 
   }
   public static String getTariffEntityName(){return "FIN_TARIFF";}
@@ -58,13 +58,13 @@ public class Tariff extends GenericEntity {
   public void setTariffAttribute(String attribute){
     setColumn(getAttributeColumnName(), attribute);
   }
-  public int getPrice(){
-    return getIntColumnValue(getPriceColumnName());
+  public float getPrice(){
+    return getFloatColumnValue(getPriceColumnName());
   }
-  public void setPrice(int price){
+  public void setPrice(float price){
     setColumn(getPriceColumnName(),price);
   }
-  public void setPrice(Integer price){
+  public void setPrice(Float price){
     setColumn(getPriceColumnName(),price);
   }
   public String getInfo(){

@@ -18,10 +18,10 @@ public class AssessmentRound extends GenericEntity{
 
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
-    addAttribute(getRoundStampColumnName(),"Round stamp",true,true,"java.sql.Timestamp");
-    addAttribute(getTotalsColumnName(), "Totals", true, true, "java.lang.Integer");
-    addAttribute(getStatusColumnName(),"Status",true,true,"java.lang.Integer",1);
+    addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
+    addAttribute(getRoundStampColumnName(),"Round stamp",true,true,java.sql.Timestamp.class);
+    addAttribute(getTotalsColumnName(), "Totals", true, true, java.lang.Float.class);
+    addAttribute(getStatusColumnName(),"Status",true,true,java.lang.String.class,1);
 
   }
 
@@ -55,15 +55,15 @@ public class AssessmentRound extends GenericEntity{
     setColumn(getRoundStampColumnName(), round_stamp);
   }
 
-  public int getTotals(){
-    return getIntColumnValue(getTotalsColumnName());
+  public float getTotals(){
+    return getFloatColumnValue(getTotalsColumnName());
   }
 
-  public void setTotals(Integer totals){
+  public void setTotals(Float totals){
     setColumn(getTotalsColumnName(), totals);
   }
 
-  public void setTotals(int totals){
+  public void setTotals(float totals){
     setColumn(getTotalsColumnName(), totals);
   }
 
@@ -93,12 +93,14 @@ public class AssessmentRound extends GenericEntity{
     setName(name);
     setStatusAssessed();
     setRoundStamp(idegaTimestamp.getTimestampRightNow());
+    setTotals(0);
   }
 
   public void setAsSent(String name){
     setName(name);
     setStatusSent();
     setRoundStamp(idegaTimestamp.getTimestampRightNow());
+
   }
 
   public void setAsReceived(String name){

@@ -155,7 +155,7 @@ public class TariffEditor extends KeyEditor{
         for (int i = 0;i < count;i++){
           T.add(formatText( String.valueOf(i+1)),1,i+2);
           T.add(formatText(tariffs[i].getName()),2,i+2);
-          T.add(formatText(tariffs[i].getPrice()),3,i+2);
+          T.add(formatText(String.valueOf(tariffs[i].getPrice())),3,i+2);
           T.add(formatText(tariffs[i].getInfo()),4,i+2);
           try{
             T.add(formatText(new AccountKey(tariffs[i].getAccountKeyId()).getName()),5,i+2);
@@ -311,7 +311,7 @@ public class TariffEditor extends KeyEditor{
           else{
             tariff.setName(sName);
             tariff.setInfo(sInfo);
-            tariff.setPrice(Integer.parseInt(sPrice));
+            tariff.setPrice(Float.parseFloat(sPrice));
             tariff.setAccountKeyId(Integer.parseInt(sAK));
             tariff.setUseFromDate(dFrom.getTimestamp());
             tariff.setUseToDate(dTo.getTimestamp());
@@ -327,7 +327,7 @@ public class TariffEditor extends KeyEditor{
             tariff = new Tariff();
             tariff.setName(sName);
             tariff.setInfo(sInfo);
-            tariff.setPrice(Integer.parseInt(sPrice));
+            tariff.setPrice(Float.parseFloat(sPrice));
             tariff.setAccountKeyId(Integer.parseInt(sAK));
             tariff.setUseFromDate(dFrom.getTimestamp());
             tariff.setUseToDate(dTo.getTimestamp());

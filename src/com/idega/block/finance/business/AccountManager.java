@@ -7,6 +7,8 @@ import com.idega.core.user.data.User;
 import java.sql.SQLException;
 import com.idega.data.EntityFinder;
 import java.util.List;
+import java.util.Vector;
+import java.util.Hashtable;
 /**
  * Title:        AccountManager
  * Description:
@@ -41,6 +43,126 @@ public class AccountManager {
     }
     catch(Exception e){A=null;}
     return A;
+  }
+
+  public static List listOfAccounts(){
+    List A = null;
+    try{
+       A = EntityFinder.findAll(new Account());
+    }
+    catch(Exception e){A=null;}
+    return A;
+  }
+
+  public static List listOfAccountEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+    StringBuffer sql = new StringBuffer("select * from ");
+    sql.append(AccountEntry.getEntityTableName());
+    sql.append(" where ");
+    sql.append(AccountEntry.getAccountIdColumnName());
+    sql.append(" = ");
+    sql.append(iAccountId);
+    sql.append(" and ");
+    sql.append(AccountEntry.getLastUpdatedColumnName());
+    sql.append(" >= '");
+    sql.append(from.getSQLDate());
+    sql.append("' and ");
+    sql.append(AccountEntry.getLastUpdatedColumnName());
+    sql.append(" <= '");
+    sql.append(to.getSQLDate());
+    sql.append(" 23:59:59'");
+    System.err.println(sql.toString());
+    List A = null;
+    try{
+       A = EntityFinder.findAll(new AccountEntry(),sql.toString());
+    }
+    catch(Exception e){A=null;}
+    return A;
+  }
+
+  public static List listOfAccountKeys(){
+    try {
+      return EntityFinder.findAll(new AccountKey());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  public static List listOfTariffKeys(){
+    try {
+      return EntityFinder.findAll(new TariffKey());
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+  public static Hashtable hashOfAccountKeys(){
+    List L = listOfAccountKeys();
+    if(L != null){
+      int len = L.size();
+      Hashtable H = new Hashtable(len);
+      for (int i = 0; i < len; i++) {
+        AccountKey AK = (AccountKey) L.get(i);
+        H.put(new Integer(AK.getID()),AK);
+      }
+      return H;
+    }
+    else
+      return null;
+  }
+
+  public static Hashtable hashOfTariffKeys(){
+    List L = listOfTariffKeys();
+    if(L != null){
+      int len = L.size();
+      Hashtable H = new Hashtable(len);
+      for (int i = 0; i < len; i++) {
+        TariffKey AK = (TariffKey) L.get(i);
+        H.put(new Integer(AK.getID()),AK);
+      }
+      return H;
+    }
+    else
+      return null;
+  }
+
+  public static List listOfKeySortedEntries(int iAccountId,idegaTimestamp from,idegaTimestamp to){
+    Hashtable acckeys = hashOfAccountKeys();
+    Hashtable takeys = hashOfTariffKeys();
+    if(acckeys != null && takeys != null){
+      List entries = listOfAccountEntries(iAccountId,from,to);
+      if(entries != null){
+        int len = entries.size();
+        Hashtable hash = new Hashtable(len);
+        AccountEntry AE;
+        for (int i = 0; i < len; i++) {
+          AE = (AccountEntry) entries.get(i);
+          Integer AEid = new Integer(AE.getAccountKeyId());
+          if(acckeys.containsKey(AEid)){
+            AccountKey AK = (AccountKey) acckeys.get(AEid);
+            Integer AKid = new Integer(AK.getTariffKeyId());
+            TariffKey TK = (TariffKey) takeys.get(AKid);
+            // have to add amounts
+            if(hash.containsKey(AKid)){
+              AccountEntry a = (AccountEntry)hash.get(AKid);
+              a.setPrice(a.getPrice()+AE.getPrice());
+            }
+            else{
+              AE.setName(TK.getName());
+              AE.setInfo(TK.getInfo());
+              hash.put(AKid,AE);
+            }
+          }
+        }
+        Vector V = new Vector(hash.values());
+        return V;
+      }
+      else
+        return null;
+    }
+    else
+      return null;
   }
 
   public  static Account makeNewAccount(int iUserId, String sName,String sExtra, int iCashierId){

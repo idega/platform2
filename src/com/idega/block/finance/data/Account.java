@@ -33,19 +33,19 @@ public class Account extends GenericEntity {
   }
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getUserIdColumnName(), "User", true, true, "java.lang.Integer","many-to-one","com.idega.core.user.data.User");
-    addAttribute(getCashierIdColumnName(),"Gjaldkeri",true,true,"java.lang.Integer","many-to-one","com.idega.block.finance.data.Cashier");
-    addAttribute(getNameColumnName(),"Name",true,true,"java.lang.String");
-    addAttribute(getLastUpdatedColumnName(),"Changed",true,true,"java.sql.Timestamp");
-    addAttribute(getBalanceColumnName(),"Balance",true,true,"java.lang.Integer");
-    addAttribute(getCreationDateColumnName(),"Created",true,true,"java.sql.Timestamp");
-    addAttribute(getInfoColumnName(),"Info",true,true,"java.lang.String");
-    addAttribute(getValidColumnName(),"Valid",true,true,"java.lang.Boolean");
+    addAttribute(getUserIdColumnName(), "User", true, true, java.lang.Integer.class,"many-to-one",com.idega.core.user.data.User.class);
+    addAttribute(getCashierIdColumnName(),"Gjaldkeri",true,true,java.lang.Integer.class,"many-to-one",com.idega.block.finance.data.Cashier.class);
+    addAttribute(getNameColumnName(),"Name",true,true,java.lang.String.class);
+    addAttribute(getLastUpdatedColumnName(),"Changed",true,true,java.sql.Timestamp.class);
+    addAttribute(getBalanceColumnName(),"Balance",true,true,java.lang.Float.class);
+    addAttribute(getCreationDateColumnName(),"Created",true,true,java.sql.Timestamp.class);
+    addAttribute(getInfoColumnName(),"Info",true,true,java.lang.String.class);
+    addAttribute(getValidColumnName(),"Valid",true,true,java.lang.Boolean.class);
 
   }
 
   public String getEntityName(){
-          return getEntityTableName();
+    return getEntityTableName();
   }
 
   public static String getEntityTableName(){ return "FIN_ACCOUNT";}
@@ -57,6 +57,10 @@ public class Account extends GenericEntity {
   public static String getCreationDateColumnName(){ return "CREATION_DATE";}
   public static String getInfoColumnName(){ return "EXTRA_INFO";}
   public static String getValidColumnName(){ return "VALID";}
+  public static String getTypeColumnName(){return "TYPE";}
+
+  public static String typeFinancial = "FINANCE";
+  public static String typePhone = "PHONE";
 
   public int getUserId(){
           return getIntColumnValue(getUserIdColumnName());
@@ -88,13 +92,13 @@ public class Account extends GenericEntity {
   public void setCashierId(int cashier_id){
     setColumn(getCashierIdColumnName(), cashier_id);
   }
-  public int getBalance(){
-    return getIntColumnValue(getBalanceColumnName());
+  public float getBalance(){
+    return getFloatColumnValue(getBalanceColumnName());
   }
-  public void setBalance(Integer balance){
+  public void setBalance(Float balance){
     setColumn(getBalanceColumnName(), balance);
   }
-  public void setBalance(int balance){
+  public void setBalance(float balance){
     setColumn(getBalanceColumnName(), balance);
   }
   public Timestamp getCreationDate(){
@@ -109,16 +113,19 @@ public class Account extends GenericEntity {
   public void setExtraInfo(String extra_info){
     setColumn(getInfoColumnName(), extra_info);
   }
-  public void addKredit(int amount){
+  public void addKredit(float amount){
     this.setBalance(this.getBalance()-amount);
   }
-  public void addKredit(Integer amount){
+  public void addKredit(Float amount){
      this.setBalance(this.getBalance()-amount.intValue());
   }
-  public void addDebet(int amount){
+  public void addDebet(float amount){
     this.setBalance(this.getBalance()+amount);
   }
-  public void addDebet(Integer amount){
+  public void addDebet(Float amount){
+    this.setBalance(this.getBalance()+amount.intValue());
+  }
+  public void addAmount(Float amount){
     this.setBalance(this.getBalance()+amount.intValue());
   }
   public void setValid(boolean valid){
@@ -126,5 +133,17 @@ public class Account extends GenericEntity {
   }
   public boolean getValid(){
     return getBooleanColumnValue(getValidColumnName());
+  }
+  public void setType(String type){
+    setColumn(getTypeColumnName(),type);
+  }
+  public String getType(){
+    return getStringColumnValue(getTypeColumnName());
+  }
+  public void setTypeFinancial(){
+    setType(typeFinancial);
+  }
+  public void setTypePhone(){
+    setType(typePhone);
   }
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: Tabber.java,v 1.9 2001/07/16 22:07:31 gummi Exp $
+ * $Id: Tabber.java,v 1.10 2001/08/13 09:58:09 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -173,7 +173,7 @@ public class Tabber extends JModuleObject {
       Link Link1 = new Link(new Image(iAct == ACT20?"/pics/tabs/"+lang+"/apartment.gif":"/pics/tabs/"+lang+"/apartment1.gif"),"/index2.jsp");
       Link1.addParameter(strAction,ACT20);
 
-      Link Link2 = new Link(new Image(iAct == ACT21?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"),"/index2.jsp");
+      Link Link2 = new Link(new Image(iAct == ACT21?"/pics/tabs/"+lang+"/financial.gif":"/pics/tabs/"+lang+"/financial1.gif"),"/tenant/accountview.jsp");
       Link2.addParameter(strAction,ACT21);
 
       Link Link3 = new Link(new Image(iAct == ACT22?"/pics/tabs/"+lang+"/residents.gif":"/pics/tabs/"+lang+"/residents1.gif"),"/index2.jsp");

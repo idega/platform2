@@ -1,5 +1,5 @@
 /*
- * $Id: CampusContractWriter.java,v 1.4 2001/08/10 16:32:22 aron Exp $
+ * $Id: CampusContractWriter.java,v 1.5 2001/08/13 09:58:00 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -119,6 +119,61 @@ public class CampusContractWriter{
     catch (SQLException ex) {
       returner = false;
     }
+    return returner;
+  }
+
+   public static boolean writeTestPDF(IWResourceBundle iwrb,String realpath){
+    boolean returner = false;
+    try {
+
+        String file = realpath;
+        FileOutputStream fos = new FileOutputStream(file);
+        Document document = new Document(PageSize.A4, 50, 50, 50, 50);
+        PdfWriter.getInstance(document, fos);
+        document.addAuthor("Idegaweb Campus");
+        document.addSubject("");
+        document.open();
+
+        Font chapterFont = new Font(Font.HELVETICA, 16, Font.BOLD);
+        Font nameFont = new Font(Font.HELVETICA, 10, Font.BOLD);
+        Font textFont = new Font(Font.HELVETICA, 8, Font.NORMAL);
+        Font filledFont = new Font(Font.HELVETICA,8,Font.BOLD);
+        filledFont.setStyle("underline");
+
+        Paragraph cTitle = new Paragraph("Húsaleigusamningur Stúdentagarða " , chapterFont);
+        Chapter chapter = new Chapter(cTitle, 1);
+        chapter.setNumberDepth(0);
+        List L = listOfTexts();
+        if(L!=null){
+          int len = L.size();
+          for (int i = 0; i < len; i++) {
+            ContractText CT = (ContractText) L.get(i);
+            Paragraph name = new Paragraph(CT.getName(),nameFont);
+            name.setAlignment(Element.ALIGN_LEFT);
+            String sText = CT.getText();
+            Paragraph text = new Paragraph(sText,textFont);
+            text.setAlignment(Element.ALIGN_LEFT);
+            chapter.add(name);
+            chapter.add(text);
+          }
+        }
+        document.add(chapter);
+        document.close();
+        try {
+          fos.close();
+        }
+        catch (Exception ex) {
+          ex.printStackTrace();
+        }
+
+        returner = true;
+
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+      returner = false;
+    }
+
     return returner;
   }
 

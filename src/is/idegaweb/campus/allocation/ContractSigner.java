@@ -134,11 +134,14 @@ public class ContractSigner extends ModuleObjectContainer{
 
         }
       }
-      if(loginTable != null && passwd != null && login != null){
+      if(loginTable != null ){
         T.add(boldText(iwrb.getLocalizedString("login","Login")+" : "),1,9);
         T.add(formatText(loginTable.getUserLogin()),2,9);
         T.add(boldText(iwrb.getLocalizedString("passwd","Passwd")+" : "),1,10);
-        T.add(formatText(passwd),2,10);
+        if(passwd != null)
+          T.add(formatText(passwd),2,10);
+
+
       }
       else{
         T.add(loginCheck,2,9);
@@ -177,16 +180,18 @@ public class ContractSigner extends ModuleObjectContainer{
     String sAccount = modinfo.getParameter("new_account");
     String sCreateLogin = modinfo.getParameter("new_login");
     Contract eContract = null;
-    if(modinfo.getParameter("sign")!=null){
+
       try {
         eContract = new Contract(id);
+        if(modinfo.getParameter("sign")!=null){
         eContract.setStatusSigned();
         eContract.update();
+        }
       }
       catch (SQLException ex) {
 
       }
-    }
+
     if(eContract != null){
       int iUserId = eContract.getUserId().intValue();
       if(sEmail !=null && sEmail.trim().length() >0){

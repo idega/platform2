@@ -45,6 +45,7 @@ public class ContractTextSetter extends KeyEditor{
     iwrb = getResourceBundle(modinfo);
 
     if(isAdmin){
+      add(getPDFLink(new Image("/pics/print.gif")));
       if(modinfo.getParameter("save")!=null){
         updateForm(modinfo);
         add(getHomeLink());
@@ -63,6 +64,7 @@ public class ContractTextSetter extends KeyEditor{
         add(getHomeLink());
         add(getMainTable());
       }
+
     }
     else
       add("Hefur ekki réttindi");
@@ -100,6 +102,7 @@ public class ContractTextSetter extends KeyEditor{
     Table T = new Table();
 
     T.add(getNewLink(),1,1);
+
     int row = 2;
     DropdownMenu intDrop = getIntegerDrop("ordinal",1,100);
     TextInput name = null;
@@ -245,6 +248,15 @@ public class ContractTextSetter extends KeyEditor{
     Link newLink = new Link("Nýtt");
     newLink.addParameter("new_text","new");
     return newLink;
+  }
+
+  public Link getPDFLink(ModuleObject MO){
+    Window W = new Window("PDF","/allocation/contractfile.jsp");
+    W.setResizable(true);
+    W.setMenubar(true);
+    Link L = new Link(MO,W);
+    L.addParameter("test","test");
+    return L;
   }
 
   private DropdownMenu getIntegerDrop(String name,int from, int to){
