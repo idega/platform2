@@ -423,7 +423,7 @@ public class DesignDocument extends XMLDocument {
 		XMLOutput xmlOutput = new XMLOutput("  ", true);
 		xmlOutput.setLineSeparator(System.getProperty("line.separator"));
 		xmlOutput.setTextNormalize(true);
-		xmlOutput.setEncoding("iso-8859-1");
+		xmlOutput.setEncoding("UTF-8");
 
 		try {
 			xmlOutput.output(this, outputStream);
