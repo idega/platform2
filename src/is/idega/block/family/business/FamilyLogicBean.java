@@ -654,6 +654,18 @@ public class FamilyLogicBean extends IBOServiceBean implements FamilyLogic{
 		familyMember.store();
 	}
 	
+	public void updateFamilyForUser(String familyNr, User user) throws RemoteException, CreateException {
+		FamilyMemberHome familyMemberHome = getFamilyMemberHome();
+		FamilyMember fMember = null;
+		try {
+			fMember = familyMemberHome.findForUser(user);
+			fMember.setFamilyNr(familyNr);
+			fMember.store();
+		} catch (FinderException f) {
+			setFamilyForUser(familyNr, user);
+		}
+	}
+	
 	public FamilyData getFamily(String familyNr) throws RemoteException, FinderException {
 		FamilyData familyData = new FamilyData();
 		FamilyMemberHome familyMemberHome = getFamilyMemberHome();

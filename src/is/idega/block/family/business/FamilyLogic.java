@@ -1,5 +1,5 @@
 /*
- * $Id: FamilyLogic.java,v 1.3 2004/09/01 11:14:49 joakim Exp $
+ * $Id: FamilyLogic.java,v 1.4 2004/09/04 23:37:31 gimmi Exp $
  * Created on 31.8.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/01 11:14:49 $ by $Author: joakim $
+ *  Last modified: $Date: 2004/09/04 23:37:31 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public interface FamilyLogic {
 
@@ -250,6 +250,8 @@ public interface FamilyLogic {
 	public void setFamilyForUser(String familyiNr, User user) throws RemoteException, CreateException,
 			java.rmi.RemoteException;
 
+
+	public void updateFamilyForUser(String familyNr, User user) throws RemoteException, CreateException;
 	/**
 	 * @see is.idega.block.family.business.FamilyLogicBean#getFamily
 	 */
