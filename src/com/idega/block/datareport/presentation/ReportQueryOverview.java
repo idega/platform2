@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.Vector;
 
 import javax.ejb.FinderException;
 
@@ -51,6 +53,7 @@ import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.StringAlphabeticalComparator;
 
 import dori.jasper.engine.JasperPrint;
 import dori.jasper.engine.design.JasperDesign;
@@ -226,6 +229,8 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
 
 	
   private void  getListOfQueries(IWBundle bundle, IWResourceBundle resourceBundle, IWContext iwc ) throws RemoteException {
+  //TODO Implement private queries
+  	
   	User currentUser = iwc.getCurrentUser();
   	GroupBusiness groupBusiness = getGroupBusiness();
   	UserBusiness userBusiness = getUserBusiness();
@@ -254,14 +259,19 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	catch (Exception ex) {
   		parentGroups = new ArrayList();
   	}
-  	List queryRepresentations = new ArrayList();
+  	
+  	//List queryRepresentations = new ArrayList();
+  	//To keep them ordered alphabetically
+	TreeMap queryRepresentations = new TreeMap(new StringAlphabeticalComparator(iwc.getCurrentLocale()));
+	
   	Iterator parentGroupsIterator = parentGroups.iterator();
-		while (parentGroupsIterator.hasNext()) {
+  	while (parentGroupsIterator.hasNext()) {
   		Group group = (Group) parentGroupsIterator.next();
   		String groupName = group.getName();
-  		String groupId = group.getPrimaryKey().toString();
-  		StringBuffer buffer = new StringBuffer(groupId).append("_").append("public");
-  		ICFile folderFile = getFile(buffer.toString());
+  		
+  		String publicFolderName = getPublicQueryFolderNameForGroup(group);
+  		ICFile folderFile = getFile(publicFolderName);
+  		
   		if (folderFile != null) {
   			// bad implementation:
   			// if the children list is empty null is returned. 
@@ -270,20 +280,38 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   			if (iterator == null) {
   				iterator = (new ArrayList(0)).iterator();
   			}
-				while (iterator.hasNext())	{
+  			while (iterator.hasNext())	{
   				ICTreeNode node = (ICTreeNode) iterator.next();
   				int id = node.getNodeID();
   				String name = node.getNodeName();
+				int countOfSameName = 2;
+				
+				boolean alreadyAddedKey = queryRepresentations.containsKey(name);
+				if(alreadyAddedKey){
+					String newName = name;
+					while(alreadyAddedKey){
+						//probably crappy code its 4am and i dead tired - Eiki
+						//query with the same name, cannot add to map directly until I change the key name a little to avoid overwrites
+						newName = new String(name+countOfSameName);
+						alreadyAddedKey = queryRepresentations.containsKey(newName);//if not we use that name	
+						countOfSameName++;
+					}
+					name = newName;
+				}
+  				
+				
   				// show only the query with a specified id if desired 
   				if (showOnlyOneQueryWithId == -1 || id == showOnlyOneQueryWithId)	{
   					QueryRepresentation representation = new QueryRepresentation(id, name, groupName);
-  					queryRepresentations.add(representation);
+  					queryRepresentations.put(name,representation);
   				}
-				}
+  			}
   		}
   	}
+  	
+  	
   	Form form = new Form();
-  	EntityBrowser browser = getBrowser(queryRepresentations, bundle, resourceBundle, form);
+  	EntityBrowser browser = getBrowser(new Vector(queryRepresentations.values()), bundle, resourceBundle, form);
   	addParametersToBrowser(browser);
   	addParametersToForm(form);
   	if (showOnlyOneQueryWithId != -1)	{
@@ -301,6 +329,11 @@ public static final String SET_ID_OF_QUERY_FOLDER_KEY = ReportQueryBuilder.PARAM
   	add(form);
   }
   	
+	protected String getPublicQueryFolderNameForGroup(Group group) {
+	String publicFolderName = new StringBuffer(group.getPrimaryKey().toString()).append("_").append("public").toString();
+	return publicFolderName;
+}
+
 	private PresentationObject getButtonBar(IWResourceBundle resourceBundle, IWContext iwc )	{
 		Table table = new Table(5,1);
 		// new button for query builder (simple mode)
