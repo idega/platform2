@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.1 2002/08/24 15:41:50 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.2 2002/08/24 16:15:57 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -223,9 +223,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
   public  boolean deleteAllocation(int iContractId){
     try {
       Contract eContract =  getContractHome().findByPrimaryKey(iContractId);
-      User eUser = getUserService().getUser(eContract.getUserId().intValue());
+      getUserService().deleteUser(eContract.getUserId().intValue());
       eContract.remove();
-      eUser.remove();
 
       return true;
     }
