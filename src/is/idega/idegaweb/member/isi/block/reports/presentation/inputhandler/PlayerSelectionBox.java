@@ -20,20 +20,17 @@ import com.idega.user.data.Group;
  */
 public class PlayerSelectionBox extends GroupSelectionBox implements InputHandler {
 	public PlayerSelectionBox(String name) {
-		super(name,IWMemberConstants.GROUP_TYPE_CLUB_DIVISION);
-		System.out.println("psb");
+		super(name,IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 	}
 
 	public PlayerSelectionBox() {
 		super();
-		System.out.println("psb2");
 		setGroupType(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 		setName(IWMemberConstants.GROUP_TYPE_CLUB_PLAYER);
 	}
 	
 	//only allow this league to select itself
 	protected Collection getGroups(IWContext iwc) throws RemoteException {
-		System.out.println("getGroups");
 		Integer groupID = setUserTypeAndReturnGroupId(iwc);
 		Group club = null;
 		if (groupID != null){
