@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/14 17:32:51 $ by $Author: goranb $
- * @version $Revision: 1.70 $
+ * Last modified: $Date: 2003/11/17 10:30:55 $ by $Author: goranb $
+ * @version $Revision: 1.71 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -51,8 +51,8 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	public final static String COMPENSATION_BY_AGREEMENT = "comp_by_agreement";
 	public static final String STUDY_PATH = "study_path";
 	private final static String PK = "school_class_member.invoice_interval.";
-	private final static String KEY_INVOICE_INTERVAL_VALUE_TERM = PK + "month";
-	private final static String KEY_INVOICE_INTERVAL_VALUE_MONTH = PK + "term";
+	private final static String KEY_INVOICE_INTERVAL_VALUE_TERM = PK + "term";
+	private final static String KEY_INVOICE_INTERVAL_VALUE_MONTH = PK + "month";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_QUARTER = PK + "quarter";
 	private final static String KEY_INVOICE_INTERVAL_VALUE_YEAR = PK + "year";
 	
@@ -897,9 +897,11 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 										KEY_INVOICE_INTERVAL_VALUE_YEAR	};
 										
 		Vector typeVec = new Vector();
+		
 		for (int i = 0; i < typeArr.length; i++) {
-			typeVec.addElement(typeArr[i]);
+			typeVec.add(i, typeArr[i]);
 		}
+		
 		return typeVec;	 	
 	 }
 
