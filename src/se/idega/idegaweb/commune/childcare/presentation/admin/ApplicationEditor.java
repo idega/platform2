@@ -120,6 +120,9 @@ public class ApplicationEditor extends ChildCareBlock {
 			table.add(new HiddenInput(PARAMETER_APPLICATION_ID, application.getPrimaryKey().toString()), 1, row);
 			DropdownMenu menu = getDropdownForStatus(application.getApplicationStatus());
 			TextInput orderNumber = new TextInput(PARAMETER_CHOICE_NUMBER);
+			if (application.getChoiceNumber() > -1) {
+				orderNumber.setContent(Integer.toString(application.getChoiceNumber()));
+			}
 			orderNumber.setSize(3);
 			
 			
