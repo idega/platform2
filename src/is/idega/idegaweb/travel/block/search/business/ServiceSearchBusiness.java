@@ -1,5 +1,9 @@
 package is.idega.idegaweb.travel.block.search.business;
 
+import com.idega.block.trade.stockroom.data.Product;
+import com.idega.presentation.IWContext;
+import com.idega.util.IWTimestamp;
+
 
 public interface ServiceSearchBusiness extends com.idega.business.IBOService
 {
@@ -23,4 +27,6 @@ public interface ServiceSearchBusiness extends com.idega.business.IBOService
  public boolean isUserInPermissionGroup(is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine p0,com.idega.core.user.data.User p1) throws java.rmi.RemoteException;
  public java.util.Collection sortProducts(java.util.Collection p0,com.idega.block.trade.stockroom.data.PriceCategory p1,com.idega.util.IWTimestamp p2, int searchMethod) throws java.rmi.RemoteException;
  public is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine storeEngine(java.lang.Object p0,java.lang.String p1,java.lang.String p2) throws java.rmi.RemoteException;
+ public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to) throws Exception;
+
 }

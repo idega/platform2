@@ -319,39 +319,9 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 			while (iter.hasNext() && from != null && to != null) {
 				try {
 					product =  pHome.findByPrimaryKey(iter.next());
-					//System.out.println("Checking product = "+product.getProductName(iwc.getCurrentLocaleId()));
-					bf = getServiceHandler().getBookingForm(iwc, product);
-					addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
-					addressId = -1;
-					timeframeId = -1;
-					timeframe = getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
-					if (timeframe != null) {
-						timeframeId = timeframe.getID();
-					}
-					prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
-
-					if (prices != null && prices.length > 0) { 
-						/** Not inserting product without proper price categories */
-						tmp = new IWTimestamp(from);
-						productIsValid = true;
-						while ( tmp.isEarlierThan(to) && productIsValid) {
-							/** Checking if day is available */
-							productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
-							
-							if (productIsValid) {
-								productIsValid = !bf.isFullyBooked(iwc, product, tmp);
-							}
-							if (productIsValid) {
-								productIsValid = !bf.isUnderBooked(iwc, product, tmp);
-							}
-							//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
-							//productIsValid = bus.getIfDay(iwc, product, tmp);
-							tmp.addDays(1);
-						}
-						if (productIsValid) {
-							map.put(product.getPrimaryKey(), new Boolean(productIsValid));
-						}
-						
+					productIsValid = getIsProductValid(iwc, product, from, to);
+					if (productIsValid) {
+						map.put(product.getPrimaryKey(), new Boolean(productIsValid));
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -362,6 +332,72 @@ public class ServiceSearchBusinessBean extends IBOServiceBean implements Service
 		return new HashMap();
 	}
 
+	public boolean getIsProductValid(IWContext iwc, Product product, IWTimestamp from, IWTimestamp to) throws Exception {
+		IWTimestamp tmp;
+		Collection addresses;
+		int addressId;
+		int timeframeId;
+		Timeframe timeframe;
+		BookingForm bf;
+		ProductPrice[] prices;
+		boolean productIsValid	 = true;
+		//System.out.println("Checking product = "+product.getProductName(iwc.getCurrentLocaleId()));
+		bf = getServiceHandler().getBookingForm(iwc, product);
+		addresses = getServiceHandler().getProductBusiness().getDepartureAddresses(product, from, true);
+		addressId = -1;
+		timeframeId = -1;
+		timeframe = getServiceHandler().getProductBusiness().getTimeframe(product, from, addressId);
+		if (timeframe != null) {
+			timeframeId = timeframe.getID();
+		}
+		prices = ProductPriceBMPBean.getProductPrices(product.getID(), timeframeId, addressId, new int[] {PriceCategoryBMPBean.PRICE_VISIBILITY_PUBLIC, PriceCategoryBMPBean.PRICE_VISIBILITY_BOTH_PRIVATE_AND_PUBLIC}, bf.getPriceCategorySearchKey());
+
+		if (prices != null && prices.length > 0) { 
+			/** Not inserting product without proper price categories */
+			tmp = new IWTimestamp(from);
+			productIsValid = true;
+			while ( tmp.isEarlierThan(to) && productIsValid) {
+				/** Checking if day is available */
+				productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
+				
+				if (productIsValid) {
+					productIsValid = !bf.isFullyBooked(iwc, product, tmp);
+				}
+				if (productIsValid) {
+					productIsValid = !bf.isUnderBooked(iwc, product, tmp);
+				}
+				//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
+				//productIsValid = bus.getIfDay(iwc, product, tmp);
+				tmp.addDays(1);
+			}
+			
+		}
+		return productIsValid;
+	}
+
+	public boolean isProductValid(Product product, IWTimestamp from, IWTimestamp to) throws Exception{
+		IWTimestamp tmp = new IWTimestamp(from);
+		boolean productIsValid = true;
+		BookingForm bf = getServiceHandler().getBookingForm((IWContext) getIWApplicationContext(), product);
+		while ( tmp.isEarlierThan(to) && productIsValid) {
+			/** Checking if day is available */
+			productIsValid = getServiceHandler().getServiceBusiness(product).getIfDay((IWContext) getIWApplicationContext(), product, product.getTimeframes(), tmp, false, true);
+			
+			if (productIsValid) {
+				productIsValid = !bf.isFullyBooked((IWContext) getIWApplicationContext(), product, tmp);
+			}
+			if (productIsValid) {
+				productIsValid = !bf.isUnderBooked((IWContext) getIWApplicationContext(), product, tmp);
+			}
+			//productIsValid = (bf.checkBooking(iwc, false, false, false) >= 0);
+			//productIsValid = bus.getIfDay(iwc, product, tmp);
+			tmp.addDays(1);
+		}
+		return productIsValid;
+		//return getServiceHandler().getServiceBusiness(product).getIfDay(iwc, product, product.getTimeframes(), tmp, false, true);
+	}
+
+	
 	private Collection getProductInstanceCollection(Collection pks) {
 		Collection coll = new Vector();
 		try {
