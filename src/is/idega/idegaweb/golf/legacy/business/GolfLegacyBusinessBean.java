@@ -188,6 +188,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 			
 			Collection hTexts = hth.findAll();
 			for (Iterator iter = hTexts.iterator(); iter.hasNext();) {
+				System.out.println("iterating");
 				HoleText ht = (HoleText) iter.next();
 				TextModule oldText = ht.getOldText();
 				if(ht.getTextID()<1 && oldText != null) {
@@ -230,6 +231,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 			
 			Collection fImages = fih.findAll();
 			for (Iterator iter = fImages.iterator(); iter.hasNext();) {
+				System.out.println("iterating");
 				FieldImage fi = (FieldImage) iter.next();
 				ImageEntity oldImage = fi.getOldImage();
 				if(fi.getImageID()<1 && oldImage != null) {
@@ -284,6 +286,7 @@ public class GolfLegacyBusinessBean extends IBOServiceBean implements GolfLegacy
 			
 			Collection fImages = fih.findAll();
 			for (Iterator iter = fImages.iterator(); iter.hasNext();) {
+				System.out.println("iterating");
 				TeeImage fi = (TeeImage) iter.next();
 				ImageEntity oldImage = fi.getOldImage();
 				if(fi.getImageID()<1 && oldImage != null) {
