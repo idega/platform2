@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.9 2001/06/14 20:28:57 gummi Exp $
+ * $Id: ModuleObject.java,v 1.10 2001/06/27 00:33:15 tryggvil Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -33,8 +33,10 @@ import com.idega.idegaweb.IWResourceBundle;
  *@version 1.2
  */
 public class ModuleObject extends Object implements Cloneable {
-    private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb";
-  private HttpServletRequest Request;
+  //private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb";
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.core";
+
+   private HttpServletRequest Request;
   private HttpServletResponse Response;
   private PrintWriter out;
   private String interfaceStyle;
