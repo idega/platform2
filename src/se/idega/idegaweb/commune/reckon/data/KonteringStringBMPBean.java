@@ -1,5 +1,5 @@
 /*
- * $Id: KonteringStringBMPBean.java,v 1.2 2003/07/15 09:56:37 joakim Exp $
+ * $Id: KonteringStringBMPBean.java,v 1.3 2003/07/16 17:03:02 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 
 /**
@@ -22,7 +23,8 @@ import com.idega.data.IDOQuery;
  * @author Joakim
  * @see KonteringField
  */
-public class KonteringStringBMPBean extends GenericEntity implements KonteringString
+//public class KonteringStringBMPBean extends GenericEntity implements KonteringString
+public class KonteringStringBMPBean extends GenericEntity implements KonteringString, IDOLegacyEntity
 {
 	private static final String ENTITY_NAME = "cp_kontering_string";
 

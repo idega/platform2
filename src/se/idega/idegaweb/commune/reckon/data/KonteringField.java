@@ -7,15 +7,15 @@ public interface KonteringField extends com.idega.data.IDOEntity
  public boolean getIsMandatory();
  public int getJustification();
  public int getKonteringStringId();
- public int getLength();
- public int getOrder();
+ public int getLen();
+ public int getOrderNr();
  public char getPadChar();
  public void initializeAttributes();
  public void setFieldTitle(java.lang.String p0);
  public void setIsMandatory(boolean p0);
  public void setJustification(int p0);
  public void setKonteringStringId(int p0);
- public void setLength(int p0);
- public void setOrder(int p0);
+ public void setLen(int p0);
+ public void setOrderNr(int p0);
  public void setPadChar(char p0);
 }
