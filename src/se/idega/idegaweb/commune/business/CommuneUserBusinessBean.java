@@ -332,7 +332,7 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 		try {
 			Group rootGroup = getRootSchoolAdministratorGroup();
 			// if user is a SchoolAdministrator
-			if (user.hasRelationTo(rootGroup)) {
+			if (user.getPrimaryGroup().equals(rootGroup)) {
 				Collection schools = ((SchoolBusiness)IBOLookup.getServiceInstance(this.getIWApplicationContext(), SchoolBusiness.class)).getSchoolHome().findAllBySchoolGroup(user);
 				if (!schools.isEmpty()) {
 					Iterator iter = schools.iterator();
