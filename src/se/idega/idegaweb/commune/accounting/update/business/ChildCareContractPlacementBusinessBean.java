@@ -44,7 +44,7 @@ public class ChildCareContractPlacementBusinessBean extends IBOServiceBean imple
 			Iterator iter = applications.iterator();
 			while (iter.hasNext()) {
 				ChildCareApplication application = (ChildCareApplication) iter.next();
-				System.out.println("[ContractSchoolPlacementUpdate]: Updating application " + counter + " of " + size + " (ID=" + application.getPrimaryKey() + ")");
+				System.out.println("[ContractSchoolPlacementUpdate]: Updating application " + counter++ + " of " + size + " (ID=" + application.getPrimaryKey() + ")");
 				
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
 				Timestamp endDate = null;
