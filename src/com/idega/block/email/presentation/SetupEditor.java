@@ -534,7 +534,7 @@ public class SetupEditor extends Block {
   				T.add(getAccountLink(topicID,-1,"X"),3,row);
   			}
   			emailCount = MailFinder.getInstance().getListEmailsCount(topic.getListId());
-  			T.add((getSubscribersLink(topicID,String.valueOf(emailCount))),4,row);
+  			T.add((getSubscribersLink(topic.getListId(),String.valueOf(emailCount))),4,row);
   			welcomes = MailFinder.getInstance().getEmailLetters(topicID,MailLetter.TYPE_SUBSCRIPTION);
   			if(welcomes!=null && !welcomes.isEmpty()){
   				welcome = (MailLetter) welcomes.iterator().next();
