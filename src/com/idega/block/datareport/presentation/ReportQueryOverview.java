@@ -391,7 +391,7 @@ public class ReportQueryOverview extends Block {
 		browser.setMandatoryColumnWithConverter(6, PDF_KEY, pdfConverter);
 		browser.setMandatoryColumnWithConverter(7, EXCEL_KEY, excelConverter);
 		
-		browser.setMandatoryColumnWithConverter(8, EDIT_QUERY_KEY, editQueryConverter);
+//		browser.setMandatoryColumnWithConverter(8, EDIT_QUERY_KEY, editQueryConverter);
 		return browser;
 	}		
   		
