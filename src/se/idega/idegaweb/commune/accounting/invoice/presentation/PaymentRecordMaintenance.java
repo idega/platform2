@@ -75,11 +75,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/12 09:28:54 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/12 09:55:36 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.66 $
+ * @version $Revision: 1.67 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1894,7 +1894,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		return school;
 	}
 	
-	private long roundAmount (final float f) {
+	long roundAmount (final float f) {
 		return se.idega.idegaweb.commune.accounting.business.AccountingUtil.roundAmount (f);
 	}
 	
@@ -1924,7 +1924,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				(context, SchoolUserBusiness.class);	
 	}
 	
-	private SchoolBusiness getSchoolBusiness
+	SchoolBusiness getSchoolBusiness
 		(final IWContext context) throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance
 				(context, SchoolBusiness.class);	
@@ -1942,7 +1942,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				(context, PostingBusiness.class);	
 	}
 	
-	private InvoiceBusiness getInvoiceBusiness
+	InvoiceBusiness getInvoiceBusiness
 		(final IWContext context) throws RemoteException {
 		return (InvoiceBusiness) IBOLookup.getServiceInstance
 				(context, InvoiceBusiness.class);	
