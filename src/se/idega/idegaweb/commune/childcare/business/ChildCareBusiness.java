@@ -149,4 +149,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public SchoolChoiceBusiness getSchoolChoiceBusiness() throws RemoteException;
  public AfterSchoolBusiness getAfterSchoolBusiness() throws RemoteException;
  public boolean isAfterSchoolApplication(com.idega.block.process.data.Case application) throws RemoteException;
+ public java.util.Collection findAllEmploymentTypes() throws java.rmi.RemoteException;
 }

@@ -48,6 +48,8 @@ import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
+import se.idega.idegaweb.commune.childcare.data.EmploymentType;
+import se.idega.idegaweb.commune.childcare.data.EmploymentTypeHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
@@ -56,7 +58,6 @@ import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
 import com.idega.block.contract.data.ContractTagHome;
-
 import com.idega.block.pdf.ITextXMLHandler;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
@@ -76,6 +77,7 @@ import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.io.MemoryFileBuffer;
@@ -83,7 +85,6 @@ import com.idega.user.data.User;
 import com.idega.util.FileUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
-//import com.idega.util.text.TextSoap;
 import com.lowagie.text.ElementTags;
 import com.lowagie.text.xml.XmlPeer;
 
@@ -2778,4 +2779,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		return false;
 	}
+	
+	public Collection findAllEmploymentTypes() {
+		try {
+			EmploymentTypeHome home = (EmploymentTypeHome) IDOLookup.getHome(EmploymentType.class);
+			
+			return home.findAll();
+		}
+		catch (IDOLookupException e) {
+			e.printStackTrace();
+		}
+		catch(FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 }

@@ -21,4 +21,7 @@ public class RuleTypeConstant {
 	public final static String CONDITION_ID_STUDY_PATH = "9";
 	public final static String CONDITION_ID_MAX_AMOUNT = "10";
 	public final static String CONDITION_ID_COMMUNE = "11";
+	
+	//Added 27.10.2003 - Palli
+	public final static String CONDITION_ID_EMPLOYMENT = "12";
 }
