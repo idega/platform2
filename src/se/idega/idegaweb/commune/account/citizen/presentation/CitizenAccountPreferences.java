@@ -316,17 +316,17 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		}
 		String valueMessagesViaEmail = iwc.getParameter(PARAMETER_MESSAGES_VIA_EMAIL);
 		
-		Text tEmail = getSmallText(localize(KEY_EMAIL, DEFAULT_EMAIL));
-		Text tLogin = getSmallText(localize(KEY_LOGIN, DEFAULT_LOGIN));
-		Text tCurrentPassword = getSmallText(localize(KEY_CURRENT_PASSWORD, DEFAULT_CURRENT_PASSWORD));
-		Text tNewPassword = getSmallText(localize(KEY_NEW_PASSWORD, DEFAULT_NEW_PASSWORD));
-		Text tNewPasswordRepeated = getSmallText(localize(KEY_NEW_PASSWORD_REPEATED, DEFAULT_NEW_PASSWORD_REPEATED));
-		Text tPhoneHome = getSmallText(localize(KEY_PHONE_HOME, DEFAULT_PHONE_HOME));
-		Text tPhoneWork = getSmallText(localize(KEY_PHONE_WORK, DEFAULT_PHONE_WORK));
+		Text tEmail = getSmallHeader(localize(KEY_EMAIL, DEFAULT_EMAIL));
+		Text tLogin = getSmallHeader(localize(KEY_LOGIN, DEFAULT_LOGIN));
+		Text tCurrentPassword = getSmallHeader(localize(KEY_CURRENT_PASSWORD, DEFAULT_CURRENT_PASSWORD));
+		Text tNewPassword = getSmallHeader(localize(KEY_NEW_PASSWORD, DEFAULT_NEW_PASSWORD));
+		Text tNewPasswordRepeated = getSmallHeader(localize(KEY_NEW_PASSWORD_REPEATED, DEFAULT_NEW_PASSWORD_REPEATED));
+		Text tPhoneHome = getSmallHeader(localize(KEY_PHONE_HOME, DEFAULT_PHONE_HOME));
+		Text tPhoneWork = getSmallHeader(localize(KEY_PHONE_WORK, DEFAULT_PHONE_WORK));
 		Text tCOAddressSelect = getSmallText(" " + localize(KEY_CO_ADDRESS_SELECT, DEFAULT_CO_ADDRESS_SELECT) + ":");
-		Text tCOStreetAddress = getSmallText(localize(KEY_CO_STREET_ADDRESS, DEFAULT_CO_STREET_ADDRESS));
-		Text tCOPostalCode = getSmallText(localize(KEY_CO_POSTAL_CODE, DEFAULT_CO_POSTAL_CODE));
-		Text tCOCity = getSmallText(localize(KEY_CO_CITY, DEFAULT_CO_CITY));
+		Text tCOStreetAddress = getSmallHeader(localize(KEY_CO_STREET_ADDRESS, DEFAULT_CO_STREET_ADDRESS));
+		Text tCOPostalCode = getSmallHeader(localize(KEY_CO_POSTAL_CODE, DEFAULT_CO_POSTAL_CODE));
+		Text tCOCity = getSmallHeader(localize(KEY_CO_CITY, DEFAULT_CO_CITY));
 		Text tMessagesViaEmail = getSmallText(" " + localize(KEY_MESSAGES_VIA_EMAIL, DEFAULT_MESSAGES_VIA_EMAIL));
 //		TextInput tiLogin = (TextInput) getStyledInterface(new TextInput(PARAMETER_LOGIN));		
 		TextInput tiEmail = (TextInput) getStyledInterface(new TextInput(PARAMETER_EMAIL));
