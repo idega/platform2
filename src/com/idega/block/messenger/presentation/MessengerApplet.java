@@ -64,7 +64,7 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
   //private Image offscreenImage;
   //private Graphics offscr;
 
-  private long checkTimer = 5000;
+  private long checkTimer = 3000;
   private long threadSleep = 50;
 
   private Packet packetToServlet;
@@ -152,14 +152,10 @@ public class MessengerApplet extends Applet implements Runnable, ActionListener{
 
         messageDialog = createAMessageDialog(false,aMessage);
 
-        messageDialog.addMessage(aMessage);
-        messageDialog.setVisible(true);
+      }
 
-      }
-      else {
-        messageDialog.addMessage(aMessage);
-        messageDialog.setVisible(true);
-      }
+      messageDialog.addMessage(aMessage);
+      messageDialog.setVisible(true);
 
     }
   }
