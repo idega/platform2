@@ -393,7 +393,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		Map errorMessages = new HashMap();
 		checkNotNull(iwc, RegulationSearchPanel.PAR_PLACING, errorMessages, ERROR_PLACING_NULL, "Placing must be set");
 				
-		if (iwc.isLoggedOn()){
+		if (! iwc.isLoggedOn()){
 			errorMessages.put(ERROR_NO_USER_SESSION, localize(ERROR_NO_USER_SESSION, "Not logged in."));
 			return;
 		}
