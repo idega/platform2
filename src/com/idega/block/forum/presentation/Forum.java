@@ -51,6 +51,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	private int _threadID = -1;
 	private boolean _isAdmin = false;
 	private boolean _hasAddPermission = true;
+	private boolean _hasDeletePermission = false;
 	private String _attribute;
 	private int _iLocaleID;
 
@@ -125,6 +126,10 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		return stateHandler.getPresentationState(this, iwuc);
 	}
 
+	public boolean hasDeletePermission(IWContext iwc) {
+		return iwc.hasEditPermission(this);
+	}
+	
 	public void main(IWContext iwc) throws Exception {
 		_iwrb = getResourceBundle(iwc);
 		_iwb = getBundle(iwc);
@@ -136,6 +141,7 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 		_objectID = getICObjectInstanceID();
 
 		getParameters(iwc);
+		_hasDeletePermission = hasDeletePermission(iwc);
 		forumBusiness = new ForumBusiness();
 
 		_myTable = new Table();
@@ -625,8 +631,8 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 			table.add(edit, column++, 1);
 		}
 
-		if (_isAdmin) {
-			Image deleteImage = _iwb.getImage("shared/delete.gif");
+		if (_hasDeletePermission) {
+			Image deleteImage  = _iwb.getImage("shared/delete.gif");
 			deleteImage.setHorizontalSpacing(2);
 			deleteImage.setAlignment(Image.ALIGNMENT_ABSOLUTE_MIDDLE);
 			table.add(deleteImage, column, 1);
@@ -946,6 +952,13 @@ public class Forum extends CategoryBlock implements Builderaware, StatefullPrese
 	 */
 	public void setThreadPage(IBPage page) {
 		_threadPage = page;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getTopicID() {
+		return _topicID;
 	}
 
 } // Class Forum
