@@ -373,10 +373,8 @@ public class WorkReportOverViewCloseView extends Block {
 
 				String shortKey = path.getShortKey();
 				if(HAS_MEMBERS.equals(shortKey) ) {		
-					Collection members = getWorkReportBusiness(iwc).getAllWorkReportMembersForWorkReportIdAndWorkReportGroupId(wrId, wrGroup);
-					hasData = (members!=null && !members.isEmpty());
-					
-					
+					int count = getWorkReportBusiness(iwc).getCountOfPlayersByWorkReportAndWorkReportGroup(getWorkReportBusiness(iwc).getWorkReportById(wrId),wrGroup);
+					hasData = (count>0);
 				}
 				else if(HAS_ACCOUNT.equals(shortKey) ) {
 					Collection records = getWorkReportBusiness(iwc).getWorkReportClubAccountRecordHome().findAllRecordsByWorkReportIdAndWorkReportGroupId(wrId,wrGroupId);

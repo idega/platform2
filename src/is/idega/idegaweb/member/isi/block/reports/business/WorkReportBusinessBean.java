@@ -1037,6 +1037,29 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
       return ListUtil.getEmptyList();
     }
   }
+  
+  /**
+   * Gets all WorkReportDivisionBoard for the specified WorkReport and year. Compares the year and if they don't match
+   * it gets the correct workreport.
+   * @param workReportId
+   * @return a collection of WorkReportDivisionBoard
+   */ 
+  public Collection getAllWorkReportDivisionBoardForWorkReportIdAndYear(int workReportId, int year){
+	try {
+		if(year>0){
+			WorkReport report = getWorkReportHome().findWorkReportByGroupIdAndYearOfReport(getWorkReportById(workReportId).getGroupId().intValue(),year);
+			workReportId = ((Integer)report.getPrimaryKey()).intValue();
+		}
+		
+		
+		return getWorkReportDivisionBoardHome().findAllWorkReportDivisionBoardByWorkReportId(workReportId);
+	  
+	  
+	}
+	catch (FinderException e) {
+	  return ListUtil.getEmptyList();
+	}
+  }
  
   /**
    * Gets work report group.
