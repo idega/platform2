@@ -14,6 +14,7 @@ import java.io.*;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.util.LocaleUtil;
+import java.util.WeakHashMap;
 
 /**
 *@author <a href="mailto:tryggvi@idega.is">Tryggvi Larusson</a>
@@ -25,6 +26,8 @@ public class ModuleInfo extends Object{
 private HttpServletRequest Request;
 private HttpServletResponse Response;
 private static String LOCALE_ATTRIBUTE="idegaweb_locale";
+
+private static String WEAK_HASHMAP_KEY ="idegaweb_weak_hashmap";
 
 //private HttpSession session;
 private String language; //Variable to set the language i.e. HTML
@@ -635,6 +638,25 @@ public void setCurrentLocale(Locale locale){
   this.setSessionAttribute(LOCALE_ATTRIBUTE,locale);
 }
 
+/**
+ * Sets the object with Weak reference so that it could be garbagecollected anytime
+ */
+public void setSessionAttributeWeak(String attributeName,Object attributeValue){
+  getWeakHashMap().put(attributeName,attributeValue);
+}
+
+public Object getSessionAttributeWeak(String propertyName){
+  return getWeakHashMap().get(propertyName);
+}
+
+private WeakHashMap getWeakHashMap(){
+  WeakHashMap map = (WeakHashMap)getSessionAttribute(WEAK_HASHMAP_KEY);
+  if(map==null){
+    map = new WeakHashMap();
+    setSessionAttribute(WEAK_HASHMAP_KEY,map);
+  }
+  return map;
+}
 
 }
 
