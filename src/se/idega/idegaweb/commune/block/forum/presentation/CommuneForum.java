@@ -146,7 +146,6 @@ public class CommuneForum extends Forum {
 					if (isModerator || iwc.hasEditPermission(this)) {
 						table.setColumns(7);
 						Link editTopic = new Link(_iwcb.getImage("shared/edit.gif"));
-						editTopic.setAsImageButton(true);
 						editTopic.setWindowToOpen(CommuneForumTopicWindow.class);
 						editTopic.addParameter(CommuneForumTopicEditor.PARAMETER_TOPIC_ID, topic.getID());
 						table.add(editTopic, 7, row);
