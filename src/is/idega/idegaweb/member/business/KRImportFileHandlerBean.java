@@ -237,8 +237,11 @@ public class KRImportFileHandlerBean extends IBOServiceBean implements ImportFil
           user.addAddress(address);
         }
         
-        
-        
+        /*
+         * Need to add a cashier which should be the admin of the club. and a categoryid
+         * com.idega.block.finance.business.AccountManager
+        public static Account makeNewFinanceAccount(int iUserId, String sName,String sExtra, int iCashierId,int iCategoryId)throws Exception{       
+        */
         if( rootGroup!=null)
         	rootGroup.addGroup(user);
 
