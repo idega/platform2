@@ -354,12 +354,14 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
 	        if(item.getGroupType().equals(SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE)){
 	        		System.out.println("StockroomBusiness : itemType == "+SupplierStaffGroupBMPBean.GROUP_TYPE_VALUE);
 	        		try {
+		        		System.out.println("StockroomBusiness : in try");
 	        			Collection coll = sHome.findAllByGroupID(item.getID());
+		        		System.out.println("StockroomBusiness : int try 2");
 	        			if (coll != null && !coll.isEmpty()) {
-	  	          	System.out.println("StockroomBusiness : coll != null && !coll.isEmpty()");
+	  	          		System.out.println("StockroomBusiness : coll != null && !coll.isEmpty()");
 	        				return ((Supplier) coll.iterator().next()).getID();
 	        			} else {
-	  	          	System.out.println("StockroomBusiness : coll i ruglinu");
+	  	          		System.out.println("StockroomBusiness : coll i ruglinu");
 	        			}
 	        		} catch (FinderException fe) {
 	        			
