@@ -48,8 +48,8 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
     InputStream myInputStream = null;
 
     while(RS.next()){
-    contentType = RS.getString("content_type");
-    myInputStream = RS.getBinaryStream("image_value");
+      contentType = RS.getString("content_type");
+      myInputStream = RS.getBinaryStream("image_value");
     }
 
 
@@ -74,11 +74,12 @@ public void doPost( HttpServletRequest _req, HttpServletResponse _res) throws IO
 
 
     //  if(cacheImagesToFiles) cacheImageToFile(imageId);
+    output.flush();
+    output.close();
+    myInputStream.close();
 
-   //   output.flush();
-      output.close();
-      myInputStream.close();
     }
+
 
     Stmt.close();
     RS.close();
