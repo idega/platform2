@@ -67,6 +67,11 @@ public interface RunBusiness extends com.idega.business.IBOService{
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunObjByUserIDandDistanceID
 	 */
 	public Run getRunObjByUserIDandDistanceID(int userID, int distanceID) throws java.rmi.RemoteException;
+	
+	/**
+	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunObjByGroupId(String)
+	 */
+	public Group getRunGroupByGroupId(Integer groupId) throws java.rmi.RemoteException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.business.RunBusinessBean#getRunnersByDistance

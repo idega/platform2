@@ -6,7 +6,6 @@ package is.idega.idegaweb.marathon.business;
 import is.idega.idegaweb.marathon.data.Run;
 import is.idega.idegaweb.marathon.data.RunHome;
 import is.idega.idegaweb.marathon.util.IWMarathonConstants;
-
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.text.MessageFormat;
@@ -18,11 +17,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBOServiceBean;
@@ -46,6 +43,7 @@ import com.idega.presentation.IWContext;
 import com.idega.user.business.GroupBusiness;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.Group;
+import com.idega.user.data.GroupHome;
 import com.idega.user.data.User;
 import com.idega.util.Age;
 import com.idega.util.IWTimestamp;
@@ -496,6 +494,19 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			log(e);
 		}
 		 
+		return null;
+	}
+	public Group getRunGroupByGroupId(Integer groupId) {
+		try {
+			GroupHome groupHome = (GroupHome) getIDOHome(Group.class);
+			return groupHome.findByPrimaryKey(groupId);
+		}
+		catch (RemoteException e) {
+			log(e);
+		}
+		catch (FinderException e) {
+			log(e);
+		}
 		return null;
 	}
 	public Run getRunObjByUserAndGroup(int userID, int groupID) {

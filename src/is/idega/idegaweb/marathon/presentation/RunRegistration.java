@@ -21,6 +21,7 @@ import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
+import com.idega.presentation.remotescripting.RemoteScriptHandler;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.BackButton;
@@ -163,7 +164,13 @@ public class RunRegistration extends Block {
 	private Text disagreeText;
 
 	//fields step one
-	private RunDistanceDropdownDouble runDisDropdownField;
+	private DropdownMenu runDropdown = null;
+	
+	private DropdownMenu distanceDropdown = null;
+	
+	private RemoteScriptHandler rsh = null;
+	
+//	private RunDistanceDropdownDouble runDisDropdownField;
 
 	private TextInput nameField;
 
@@ -228,7 +235,7 @@ public class RunRegistration extends Block {
 
 	private Link backBlue;
 
-	private Form f;
+//	private Form f;
 
 	private IWResourceBundle iwrb;
 
@@ -239,7 +246,7 @@ public class RunRegistration extends Block {
 	private RadioButton disagreeField;
 	
 	boolean isIcelandic = false;
-
+	
 	public RunRegistration() {
 		super();
 	}
@@ -303,14 +310,57 @@ public class RunRegistration extends Block {
 		iwrb = getResourceBundle(iwc);
 
 		//step one fields begin
-		runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
+		
+		runDropdown = new DropdownMenu(IWMarathonConstants.GROUP_TYPE_RUN);
+		RunBusiness runBiz = getRunBiz(iwc);
+		Collection runs = runBiz.getRuns();
+		runDropdown.addMenuElement("-1", iwrb.getLocalizedString("run_year_ddd.select_run","Select run..."));
+		if(runs != null) {
+			runDropdown.addMenuElements(runs);
+		}
+		IWTimestamp ts = IWTimestamp.RightNow();
+    Integer y = new Integer(ts.getYear());
+    String yearString = y.toString();
+    
+		distanceDropdown = new DropdownMenu(IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE);
+		if(IWMarathonConstants.GROUP_TYPE_RUN != null) {
+			String runIdString = iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN);
+			runDropdown.setSelectedElement(runIdString);
+			if(runs != null) {
+				if(runIdString != null && runIdString != "") {
+					Group run = (Group) runBiz.getRunGroupByGroupId(Integer.valueOf(runIdString));
+					if(run != null) {
+						Collection distances = runBiz.getDistancesMap(run,yearString);
+						if(distances != null) {
+							distanceDropdown.addMenuElement("-1", iwrb.getLocalizedString("run_year_ddd.select_distance","Select distance..."));
+							distanceDropdown.addMenuElements(distances);
+						}
+					}
+				}
+				
+				
+			}
+		}
+		rsh = new RemoteScriptHandler(runDropdown, distanceDropdown);
+		try {
+			rsh.setRemoteScriptCollectionClass(RunInputCollectionHandler.class);
+		}
+		catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		
+/*		runDisDropdownField = (RunDistanceDropdownDouble) getStyleObject(new RunDistanceDropdownDouble(), STYLENAME_INTERFACE);
 		runDisDropdownField.setPrimaryLabel(primaryDDLable);
 		runDisDropdownField.setSecondaryLabel(secondaryDDLable);
 		if (iwc.isParameterSet(IWMarathonConstants.GROUP_TYPE_RUN)) {
 			runDisDropdownField.setSelectedValues(iwc.getParameter(IWMarathonConstants.GROUP_TYPE_RUN), "");
 		}
 		runDisDropdownField.getSecondaryDropdown().setAsNotEmpty(iwrb.getLocalizedString("run_reg.select_run_and_distance", "You have to select a run and distance"), "-1");
-
+*/
 		nameField = (TextInput) getStyleObject(new TextInput(IWMarathonConstants.PARAMETER_NAME), STYLENAME_INTERFACE);
 		nameField.setAsAlphabeticText(iwrb.getLocalizedString("run_reg.name_err_msg", "Your name may only contain alphabetic characters"));
 		nameField.setAsNotEmpty(iwrb.getLocalizedString("run_reg.name_not_empty", "Name field cannot be empty"));
@@ -453,13 +503,18 @@ public class RunRegistration extends Block {
 		backBlue.setAsBackLink();
 	}
 
-	private void stepOne(IWContext iwc) {
+	private void stepOne(IWContext iwc, Form f) {
 		Table t = new Table();
+		f.add(t);
 		t.setColumns(2);
 		t.setCellpadding(0);
 		t.setCellspacing(0);
 		t.setWidth(Table.HUNDRED_PERCENT);
-		f.add(t);
+		
+/*		CurrencyCalculator cc = new CurrencyCalculator();
+		cc.setUseRemoteScripting(true);
+		t.add(cc);*/
+		
 		int row = 1;
 		int column = 1;
 		int formRow = -1;
@@ -478,7 +533,10 @@ public class RunRegistration extends Block {
 		t.add(redStar, column, row++);
 		t.setHeight(row++, 3);
 		t.mergeCells(column, row, t.getColumns(), row);
-		t.add(runDisDropdownField, column, row++);
+		t.add(runDropdown,column,row);
+		t.add(distanceDropdown,column,row);
+		add(rsh);
+//		t.add(runDisDropdownField, column, row++);
 
 		t.setHeight(row++, 12);
 
@@ -613,7 +671,7 @@ public class RunRegistration extends Block {
 		f.keepStatusOnAction();
 	}
 
-	private void stepTwo(IWContext iwc) {
+	private void stepTwo(IWContext iwc, Form f) {
 		Table t = new Table();
 		t.setCellpadding(0);
 		t.setCellspacing(0);
@@ -725,7 +783,7 @@ public class RunRegistration extends Block {
 		f.add(t);
 	}
 
-	private void commitRegistration(IWContext iwc) throws RemoteException {
+	private void commitRegistration(IWContext iwc, Form f) throws RemoteException {
 		RunBusiness runBiz = getRunBiz(iwc);
 
 		//user info
@@ -773,6 +831,7 @@ public class RunRegistration extends Block {
 		int userID = -1;
 		
 		Table t = new Table();
+		add(t);
 		t.setCellpadding(0);
 		t.setCellspacing(0);
 		t.setWidth(Table.HUNDRED_PERCENT);
@@ -909,27 +968,28 @@ public class RunRegistration extends Block {
 			t.add(Text.getNonBrakingSpace(), 1, row);
 			t.add(backGreen, 1, row++);
 		}
-		add(t);
+		
 	}
 	
 	public void main(IWContext iwc) throws Exception {
-		f = new Form();
+		Form f = new Form();
+		add(f);
 		isIcelandic = iwc.getCurrentLocale().equals(LocaleUtil.getIcelandicLocale());
 		initializeTexts(iwc);
 		initializeFields(iwc);
 
 		switch (parseAction(iwc)) {
 			case ACTION_STEP_ONE:
-				stepOne(iwc);
+				stepOne(iwc,f);
 				break;
 			case ACTION_STEP_TWO:
-				stepTwo(iwc);
+				stepTwo(iwc,f);
 				break;
 			case ACTION_SAVE:
-				commitRegistration(iwc);
+				commitRegistration(iwc,f);
 				break;
 		}
-		add(f);
+		
 	}
 
 	private int parseAction(IWContext iwc) {
