@@ -52,6 +52,7 @@ public interface TournamentBusiness extends com.idega.business.IBOService
  public is.idega.idegaweb.golf.entity.TournamentRoundParticipants[] getTournamentRoundParticipants(java.lang.String p0,java.lang.String p1,java.lang.String p2)throws java.sql.SQLException, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Tournament[] getTournamentToday()throws java.lang.Exception, java.rmi.RemoteException;
  public is.idega.idegaweb.golf.entity.Tournament[] getTournaments(com.idega.util.IWTimestamp p0)throws java.lang.Exception, java.rmi.RemoteException;
+ public is.idega.idegaweb.golf.entity.Tournament[] getTournaments(com.idega.util.IWTimestamp p0, com.idega.util.IWTimestamp p1)throws java.lang.Exception, java.rmi.RemoteException;
  public java.util.List getUnionTournamentGroups(com.idega.presentation.IWContext p0)throws java.sql.SQLException, java.rmi.RemoteException;
  public java.util.List getUnionTournamentGroups(is.idega.idegaweb.golf.entity.Union p0)throws java.sql.SQLException, java.rmi.RemoteException;
  public boolean hasMemberStartingtime(is.idega.idegaweb.golf.entity.Tournament p0,is.idega.idegaweb.golf.entity.TournamentRound p1,is.idega.idegaweb.golf.entity.Member p2) throws java.rmi.RemoteException;

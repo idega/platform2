@@ -99,6 +99,12 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 		Tournament[] tourns = (Tournament[]) tournament.findAll("select * from tournament where start_time>= '" + stamp.toSQLDateString() + "' AND start_time<'" + next.toSQLDateString() + "' order by start_time");
 		return tourns;
 	}
+	
+	public Tournament[] getTournaments(IWTimestamp fromStamp, IWTimestamp toStamp) throws Exception {
+		Tournament tournament = (Tournament) IDOLookup.instanciateEntity(Tournament.class);
+		Tournament[] tourns = (Tournament[]) tournament.findAll("select * from tournament where start_time>= '" + fromStamp.toSQLDateString() + "' AND start_time<='" + toStamp.toSQLDateString() + "' order by start_time");
+		return tourns;
+	}
 
 	public Tournament[] getTournamentToday() throws Exception {
 		return getTournaments(IWTimestamp.RightNow());
@@ -778,14 +784,14 @@ public class TournamentBusinessBean extends IBOServiceBean implements Tournament
 				s.printStackTrace(System.err);
 				Tournament[] tour = (Tournament[]) member.findRelated(theTournament);
 				if (tour.length > 0) {
-					//add("<br>Meðlimur : \""+member.getName()+"\" er þegar skráð/ur í
-					// mótið");
+					//add("<br>Meï¿½limur : \""+member.getName()+"\" er ï¿½egar skrï¿½ï¿½/ur ï¿½
+					// mï¿½tiï¿½");
 					returner = 1;
 				}
 			}
 			catch (SQLException sq) {
 				sq.printStackTrace(System.err);
-				//add("<br>Meðlimur : \""+member.getName()+"\" skráðist ekki í mótið");
+				//add("<br>Meï¿½limur : \""+member.getName()+"\" skrï¿½ï¿½ist ekki ï¿½ mï¿½tiï¿½");
 				returner = 2;
 			}
 		}
