@@ -71,6 +71,7 @@ public class ProductCatalog extends CategoryBlock{
   int _orderProductsBy = -1;
   boolean _addCategoryID = false;
   int _spaceBetween = 0;
+  int _iconSpacing = 4;
 
   Locale _currentLocale = null;
   int _currentLocaleId = -1;
@@ -536,5 +537,9 @@ public class ProductCatalog extends CategoryBlock{
 
   public void setSpaceBetween(int spaceBetween) {
     _spaceBetween = spaceBetween;
+  }
+
+  public void setIconSpacing(int iconSpacing) {
+    _iconSpacing = iconSpacing;
   }
 }

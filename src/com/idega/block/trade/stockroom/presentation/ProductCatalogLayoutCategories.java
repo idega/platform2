@@ -41,7 +41,7 @@ public class ProductCatalogLayoutCategories extends AbstractProductCatalogLayout
 	pCat = (ICCategory) productCategories.get(i);
 
 	if ( productCatalog._iconImage != null ) {
-	  productCatalog._iconImage.setVerticalSpacing(4);
+	  productCatalog._iconImage.setVerticalSpacing(productCatalog._iconSpacing);
 	  table.add(productCatalog._iconImage,column++,row);
 	  table.add(spacer,column++,row);
 	}
