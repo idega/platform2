@@ -22,15 +22,15 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/09 08:01:57 $ by $Author: staffan $
+ * Last modified: $Date: 2003/10/09 08:55:40 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
  */
-public class TerminateClassMembership extends CommuneBlock {
+public class TerminateClassMembership extends SchoolCommuneBlock {
     private static final String PREFIX = "TermClassMemb_";
     
     private static final String ADDRESS_DEFAULT = "Adress";
@@ -45,6 +45,9 @@ public class TerminateClassMembership extends CommuneBlock {
     private static final String ISTERMINATED_KEY = PREFIX + "isTerminated";
     private static final String NOTES_DEFAULT = "Kommentar";
     private static final String NOTES_KEY = PREFIX + "notes";
+    private static final String NOUSERFOUND_KEY = PREFIX + "noUserFound";
+    private static final String NOUSERFOUND_DEFAULT
+        = "Inga träffar på valda sökvillkor";
     public static final String MEMBER_KEY = PREFIX + "member";
     private static final String MEMBERSHIPOF_DEFAULT = "Placeringen av ";
     private static final String MEMBERSHIPOF_KEY = PREFIX + "membershipOf";
@@ -63,6 +66,10 @@ public class TerminateClassMembership extends CommuneBlock {
     private static final String TERMINATIONDATE_DEFAULT = "Avslutningsdatum";
     private static final String TERMINATIONDATE_KEY
         = PREFIX + "terminationDate";
+    private static final String TOOMANYSTUDENTSFOUND_DEFAULT
+        = "För många träffar för att visas. Försök begränsa sökningen.";
+    private static final String TOOMANYSTUDENTSFOUND_KEY
+        = PREFIX + "tooManyStudentsFound";
     private static final String WRONGDATEFORMAT_DEFAULT
         = "Felaktigt datumformat";
     private static final String WRONGDATEFORMAT_KEY
@@ -72,8 +79,8 @@ public class TerminateClassMembership extends CommuneBlock {
     
     private static final SimpleDateFormat shortDateFormatter
         = new SimpleDateFormat ("yyyyMMdd");
-    private static int MAX_FOUND_USER_COLS = 1;
-    private static int MAX_FOUND_USER_ROWS = 20;
+    private static int MAX_FOUND_USER_COLS = 20;
+    private static int MAX_FOUND_USER_ROWS = 1;
     private static int MAX_FOUND_USERS
         = MAX_FOUND_USER_COLS * MAX_FOUND_USER_ROWS;
 
@@ -82,7 +89,7 @@ public class TerminateClassMembership extends CommuneBlock {
 	 *
 	 * @param context session data like user info etc.
 	 */
-	public void main(final IWContext context) {
+	public void init (final IWContext context) {
         try {
             if (context.isParameterSet (ACTION_TERMINATE_KEY)) {
                 add (createMainTable (getTerminateMembershipTable (context)));
@@ -240,17 +247,21 @@ public class TerminateClassMembership extends CommuneBlock {
                 if (null != student && null == student.getRemovedDate ()) {
                     if (MAX_FOUND_USERS <= students.size ()) {
                         // too many students found
+                        displayRedText (TOOMANYSTUDENTSFOUND_KEY,
+                                        TOOMANYSTUDENTSFOUND_DEFAULT);
                         throw new FinderException ();
                     }
                     students.add (user);
                 }
+            }
+            if (!usersFound.isEmpty () && students.isEmpty ()) {
+                displayRedText (NOUSERFOUND_KEY, NOUSERFOUND_DEFAULT);
             }
         } catch (FinderException e) {
             // no students found or too many students found
         }
         searcher.setUsersFound (students);
     }
-
 
     /**
      * Creates a table with address, school name etc. for this student
@@ -416,4 +427,11 @@ public class TerminateClassMembership extends CommuneBlock {
 	private String getLocalizedString(final String key, final String value) {
 		return getResourceBundle().getLocalizedString(key, value);
 	}
+
+    private void displayRedText (final String key, final String defaultString) {
+        final Text text
+                = new Text ('\n' + localize (key, defaultString) + '\n');
+        text.setFontColor ("#ff0000");
+        add (text);
+    }
 }
