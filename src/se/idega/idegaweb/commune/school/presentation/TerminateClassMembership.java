@@ -18,6 +18,18 @@ import javax.servlet.http.HttpSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
 
+/**
+ * TerminateClassMembership is an IdegaWeb block were the user can terminate a
+ * membership in a school class. 
+ * <p>
+ * Last modified: $Date: 2003/09/03 14:29:09 $ by $Author: staffan $
+ *
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.2 $
+ * @see com.idega.block.school.data.SchoolClassMember
+ * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
+ * @see javax.ejb
+ */
 public class TerminateClassMembership extends UserEditor {
     private static final String PREFIX = "TermClassMemb_";
 
@@ -31,11 +43,19 @@ public class TerminateClassMembership extends UserEditor {
         = PREFIX + "currentMembership";
     private static final String ISTERMINATED_DEFAULT = " har avslutats";
     private static final String ISTERMINATED_KEY = PREFIX + "isTerminated";
+    private static final String NOCURRENTMEMBERSHIP_DEFAULT
+        = "Personen har inte någon aktuell placering";
+    private static final String NOCURRENTMEMBERSHIP_KEY
+        = PREFIX + "noCurrentMembership";
     private static final String NOTES_DEFAULT = "Kommentar";
     private static final String NOTES_KEY = PREFIX + "notes";
-    private static final String MEMBER_KEY = PREFIX + "member";
+    public static final String MEMBER_KEY = PREFIX + "member";
     private static final String MEMBERSHIPOF_DEFAULT = "Placeringen av ";
     private static final String MEMBERSHIPOF_KEY = PREFIX + "membershipOf";
+    private static final String PROVIDERNOTFOUND_DEFAULT
+        = "Anordnare ej funnen i databas";
+    private static final String PROVIDERNOTFOUND_KEY
+        = PREFIX + "providerNotFound";
     private static final String SCHOOLCLASS_DEFAULT = "klass";
     private static final String SCHOOLCLASS_KEY = PREFIX + "schoolClass";
     private static final String SCHOOLYEAR_DEFAULT = "skolår";
@@ -47,6 +67,10 @@ public class TerminateClassMembership extends UserEditor {
     private static final String TERMINATIONDATE_DEFAULT = "Avslutningsdatum";
     private static final String TERMINATIONDATE_KEY
         = PREFIX + "terminationDate";
+    private static final String WRONGDATEFORMAT_DEFAULT
+        = "Felaktigt datumformat";
+    private static final String WRONGDATEFORMAT_KEY
+        = PREFIX + "wrongDateFormat";
 
     private static final String ACTION_KEY = PREFIX + "action";
     private static final String ACTION_TERMINATE_KEY
@@ -108,21 +132,27 @@ public class TerminateClassMembership extends UserEditor {
                 session.getAttribute (MEMBER_KEY);
         final Date date = getDateFromString (context.getParameter
                                              (TERMINATIONDATE_KEY));
-        final Timestamp timestamp = new  Timestamp (date.getTime ()); 
-
-        // terminate membership
-        member.setNotes (context.getParameter (NOTES_KEY));
-        member.setRemovedDate (timestamp);
-        member.store ();
-
-        // put confirmation output
         final Table table = new Table ();
-        table.add (new Text (localize (MEMBERSHIPOF_KEY, MEMBERSHIPOF_DEFAULT)
-                             + member.getStudent ().getFirstName ()
-                             + " " + member.getStudent ().getLastName ()
-                             + localize (ISTERMINATED_KEY,
-                                         ISTERMINATED_DEFAULT)), 1, 1);
-		table.setHeight (2, 12);
+        if (null == date) {
+            final Text text = new Text (localize (WRONGDATEFORMAT_KEY,
+                                                  WRONGDATEFORMAT_DEFAULT));
+            text.setFontColor ("#ff0000");
+            table.add (text, 1, 1);
+        } else {
+            // terminate membership
+            member.setNotes (context.getParameter (NOTES_KEY));
+            member.setRemovedDate (new  Timestamp (date.getTime ()));
+            member.store ();
+            
+            // put confirmation output
+            table.add (new Text (localize (MEMBERSHIPOF_KEY,
+                                           MEMBERSHIPOF_DEFAULT)
+                                 + member.getStudent ().getFirstName ()
+                                 + " " + member.getStudent ().getLastName ()
+                                 + localize (ISTERMINATED_KEY,
+                                             ISTERMINATED_DEFAULT)), 1, 1);
+        }
+        table.setHeight (2, 12);
         table.add (getSmallLink (localize (BACK_KEY, BACK_DEFAULT)), 1, 3);
         add (table);
     }
@@ -136,16 +166,53 @@ public class TerminateClassMembership extends UserEditor {
 	protected void presentateUserInfo (final IWContext context)
         throws RemoteException {
 
-        // create interface objects
-        final Text addressHeader = new Text (localize (ADDRESS_KEY,
-                                                       ADDRESS_DEFAULT) + ":");
-        addressHeader.setBold ();
-        final Text address = new Text (getAddressStringFromUser (user));
+        // get business objects
         final SchoolCommuneBusiness communeBusiness = (SchoolCommuneBusiness)
                 IBOLookup.getServiceInstance (context,
                                               SchoolCommuneBusiness.class);
         final SchoolClassMember student
                 = communeBusiness.getCurrentSchoolClassMembership (user);
+
+        // store student in session
+        final HttpSession session = context.getSession ();
+        session.setAttribute (MEMBER_KEY, student);
+
+        if (null != student) {
+            addToMainPart (getMembershipFormTable (student, communeBusiness));
+        } else {
+            // no active membership found
+            addToMainPart (new Text (localize (NOCURRENTMEMBERSHIP_KEY,
+                                               NOCURRENTMEMBERSHIP_DEFAULT)));
+        }
+	}
+	
+	protected void presentateButtonRegister (IWContext dummy) {
+        // nothing
+    }
+
+	/**
+	 * Implementation of polymorf method for stating teh action in a button
+	 *
+	 * @param context session data
+	 */
+    protected void presentateButtonSave (IWContext context) {
+        if (null != context.getSession ().getAttribute (MEMBER_KEY)) {
+            addButton (getButton (new SubmitButton
+                                  (localize (TERMINATEMEMBERSHIP_KEY,
+                                             TERMINATEMEMBERSHIP_DEFAULT),
+                                   ACTION_KEY, ACTION_TERMINATE_KEY)));
+        }
+    }
+
+    private Table getMembershipFormTable
+        (final SchoolClassMember student,
+         final SchoolCommuneBusiness communeBusiness) throws RemoteException {
+
+        // create interface objects
+        final Text addressHeader = new Text (localize (ADDRESS_KEY,
+                                                       ADDRESS_DEFAULT) + ":");
+        addressHeader.setBold ();
+        final Text address = new Text (getAddressStringFromUser (user));
         final Text memberHeader = new Text
                 (localize (CURRENTMEMBERSHIP_KEY, CURRENTMEMBERSHIP_DEFAULT));
         memberHeader.setBold ();
@@ -181,27 +248,8 @@ public class TerminateClassMembership extends UserEditor {
         table.add (terminationDateInput, 2, row++);
         table.add (notesHeader, 1, row);
         table.add (notesInput, 2, row++);
-		addToMainPart (table);
 
-        // store student in session
-        final HttpSession session = context.getSession ();
-        session.setAttribute (MEMBER_KEY, student);
-	}
-	
-	protected void presentateButtonRegister (IWContext dummy) {
-        // nothing
-    }
-
-	/**
-	 * Implementation of polymorf method for stating teh action in a button
-	 *
-	 * @param dummy not used
-	 */
-    protected void presentateButtonSave (IWContext dummy) {
-        addButton (getButton (new SubmitButton
-                              (localize (TERMINATEMEMBERSHIP_KEY,
-                                         TERMINATEMEMBERSHIP_DEFAULT),
-                               ACTION_KEY, ACTION_TERMINATE_KEY)));
+        return table;
     }
 
 	/**
@@ -261,7 +309,7 @@ public class TerminateClassMembership extends UserEditor {
                     + localize (SCHOOLCLASS_KEY, SCHOOLCLASS_DEFAULT) + " "
                     + schoolClass.getName ();
         } catch (final FinderException e) {
-            return "Skola ej funnen i databas";
+            return localize (PROVIDERNOTFOUND_KEY, PROVIDERNOTFOUND_DEFAULT);
         }
     }
 
