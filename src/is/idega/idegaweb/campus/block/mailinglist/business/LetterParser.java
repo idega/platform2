@@ -1,10 +1,12 @@
 package is.idega.idegaweb.campus.block.mailinglist.business;
+import com.idega.idegaweb.IWApplicationContext;
 import com.idega.util.IWTimestamp;
 import com.idega.util.LocaleUtil;
 import com.idega.util.text.ContentParsable;
-import is.idega.idegaweb.campus.block.allocation.data.Contract;
+
 import is.idega.idegaweb.campus.block.application.business.ReferenceNumberFinder;
-import com.idega.idegaweb.IWApplicationContext;
+
+import java.util.StringTokenizer;
 /**
  *  Title: Description: Copyright: Copyright (c) 2001 Company:
  *
@@ -123,7 +125,7 @@ public class LetterParser implements ContentParsable {
                   return IWTimestamp.RightNow().getLocaleDate(LocaleUtil.getIcelandicLocale());
               }
             }
-
+            
             // Apartment section
             if(holder.getApartmentHolder() !=null){
               if (tag.equals(aprt_name)) {
@@ -141,7 +143,12 @@ public class LetterParser implements ContentParsable {
               } else if (tag.equals(camp_info)) {
                   return holder.getApartmentHolder().getComplex().getInfo();
               } else if (tag.equals(type_name)) {
-                  return holder.getApartmentHolder().getApartmentType().getInfo();
+              		String type = holder.getApartmentHolder().getApartmentType().getName();
+              		if (type != null) {
+              			StringTokenizer tok = new StringTokenizer(type);
+              			return tok.nextToken();	
+              		}
+                  return holder.getApartmentHolder().getApartmentType().getName();
               } else if (tag.equals(type_desc)) {
                   return holder.getApartmentHolder().getApartmentType().getInfo();
               } else if (tag.equals(type_area)) {
