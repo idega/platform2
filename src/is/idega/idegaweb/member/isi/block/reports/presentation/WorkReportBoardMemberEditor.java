@@ -306,16 +306,15 @@ public class WorkReportBoardMemberEditor extends WorkReportSelector {
    * Converter for league column 
    */
   private EntityToPresentationObjectConverter getConverterForLeague(final IWResourceBundle resourceBundle, Form form) {
-    DropDownMenuConverter converter = new DropDownMenuConverter(form);
-//      protected Object getValue(
-//        Object entity,
-//        EntityPath path,
-//        EntityBrowser browser,
-//        IWContext iwc)  {
-//          int i = browser.getCurrentIndexOfEntities();
-//          WorkReportBoardMemberHelper helper = (WorkReportBoardMemberHelper) orderedHelperList.get(i);
-//          return helper.getLeague();
-        
+    DropDownMenuConverter converter = new DropDownMenuConverter(form) {
+      protected Object getValue(
+        Object entity,
+        EntityPath path,
+        EntityBrowser browser,
+        IWContext iwc)  {
+          return ((EntityRepresentation) entity).getColumnValue(LEAGUE);
+        }
+      }        
 
         
     OptionProvider optionProvider = new OptionProvider() {
