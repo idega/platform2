@@ -281,43 +281,47 @@ public class PublicBooking extends Block  {
 
   private Form leftBottom(IWContext iwc) {
     try {
-      BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
-//      TourBookingForm tbf = new TourBookingForm(iwc, product);
-      CalendarHandler ch  = new CalendarHandler(iwc);
-        ch.setProduct(product);
-
-      boolean legalDay = bf.getIsDayVisible(iwc);
-      boolean fullyBooked = bf.isFullyBooked( iwc, product, stamp);
-//      legalDay = getTravelStockroomBusiness(iwc).getIfDay(iwc, product, stamp);
-
-      Form form = new Form();
-				form.maintainParameter(PARAMETER_REFERRAL_URL);
-
-      if (legalDay && !fullyBooked) {
-        String action = iwc.getParameter(BookingForm.sAction);
-//        String tbfAction = iwc.getParameter(BookingForm.sAction);
-//        if (tbfAction == null || !tbfAction.equals(BookingForm.parameterSaveBooking)) {//
-//	        System.out.println("action a = '"+action+"'");
-//          action = "";
-//        }
-        if (action == null || action.equals("")) {
-            form = bf.getPublicBookingForm(iwc, product);
-            form.maintainParameter(this.parameterProductId);
-//            form.setOnSubmit("this.form."+BookingForm.sAction+".value = \""+BookingForm.parameterSaveBooking+"\"");
-//            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
-        }else if (action.equals(BookingForm.parameterSaveBooking)) {
-            form = bf.getFormMaintainingAllParameters(iwc, true, false);
-            form.maintainParameter(this.parameterProductId);
-//            form.addParameter( BookingForm.sAction, this.parameterBookingVerified);
-            form.add(bf.getVerifyBookingTable(iwc, product));
-        }else if (action.equals(this.parameterBookingVerified)) {
-            form = bf.getFormMaintainingAllParameters(iwc, true, false);
-            form.maintainParameter(this.parameterProductId);
-            form.add(doBooking(iwc));
-        }
-      }else {
-          form.add(getNoSeatsAvailable(iwc));
-      }
+    	Form form = new Form();
+    	form.maintainParameter(PARAMETER_REFERRAL_URL);
+    	if (product.getIsValid() ) {
+	      BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
+	//      TourBookingForm tbf = new TourBookingForm(iwc, product);
+	      CalendarHandler ch  = new CalendarHandler(iwc);
+	        ch.setProduct(product);
+	
+	      boolean legalDay = bf.getIsDayVisible(iwc);
+	      boolean fullyBooked = bf.isFullyBooked( iwc, product, stamp);
+	//      legalDay = getTravelStockroomBusiness(iwc).getIfDay(iwc, product, stamp);
+	
+	
+	      if (legalDay && !fullyBooked) {
+	        String action = iwc.getParameter(BookingForm.sAction);
+	//        String tbfAction = iwc.getParameter(BookingForm.sAction);
+	//        if (tbfAction == null || !tbfAction.equals(BookingForm.parameterSaveBooking)) {//
+	//	        System.out.println("action a = '"+action+"'");
+	//          action = "";
+	//        }
+	        if (action == null || action.equals("")) {
+	            form = bf.getPublicBookingForm(iwc, product);
+	            form.maintainParameter(this.parameterProductId);
+	//            form.setOnSubmit("this.form."+BookingForm.sAction+".value = \""+BookingForm.parameterSaveBooking+"\"");
+	//            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
+	        }else if (action.equals(BookingForm.parameterSaveBooking)) {
+	            form = bf.getFormMaintainingAllParameters(iwc, true, false);
+	            form.maintainParameter(this.parameterProductId);
+	//            form.addParameter( BookingForm.sAction, this.parameterBookingVerified);
+	            form.add(bf.getVerifyBookingTable(iwc, product));
+	        }else if (action.equals(this.parameterBookingVerified)) {
+	            form = bf.getFormMaintainingAllParameters(iwc, true, false);
+	            form.maintainParameter(this.parameterProductId);
+	            form.add(doBooking(iwc));
+	        }
+	      }else {
+	          form.add(getNoSeatsAvailable(iwc));
+	      }
+    	} else {
+    		form.add(getDisabledProduct(iwc));
+    	}
 
       return form;
     }catch (Exception e) {
@@ -327,6 +331,21 @@ public class PublicBooking extends Block  {
   }
 
 
+  public Table getDisabledProduct(IWContext iwc) {
+  	Table table = new Table();
+  	table.setCellpadding(0);
+  	table.setCellspacing(6);
+
+  	Text notAvailSeats = new Text();
+  	notAvailSeats.setFontStyle(TravelManager.theTextStyle);
+  	notAvailSeats.setFontColor(TravelManager.WHITE);
+  	notAvailSeats.setText(iwrb.getLocalizedString("travel.product_is_disabled ","This product has been disabled."));
+
+  	table.add(notAvailSeats);
+
+  	return table;
+  }
+  
   public Table getNoSeatsAvailable(IWContext iwc) {
     Table table = new Table();
       table.setCellpadding(0);
