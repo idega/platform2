@@ -221,6 +221,11 @@ public class Importer extends Block {
 		        String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
 		        Text fileStatus = new Text(path+" : "+status);
 		        fileStatus.setBold();
+		        
+		        /*if(status){
+		        	getImportBusiness(iwc).updateImportRecord(getImportBusiness(iwc));
+		        	
+		        }*/
 		
 		        table.addBreak(1,2);
 		        table.add(fileStatus,1,2);
