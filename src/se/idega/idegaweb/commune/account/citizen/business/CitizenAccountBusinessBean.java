@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.29 2002/11/20 11:50:59 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.30 2002/11/20 14:24:02 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -351,7 +351,6 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean i
         final CommuneUserBusiness userBusiness = getUserBusiness ();
         final User user = userBusiness.createCitizenByPersonalIDIfDoesNotExist
                 (firstName, "", lastName, ssn, gender, timestamp);
-
                  
 	try {
 		 Email email = ((EmailHome) IDOLookup.getHome(Email.class)).create();

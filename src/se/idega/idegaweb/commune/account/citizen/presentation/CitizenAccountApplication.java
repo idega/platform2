@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.37 2002/11/20 11:50:59 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.38 2002/11/20 14:24:02 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+import se.idega.util.PIDChecker;
 
 /**
  * CitizenAccountApplication is an IdegaWeb block that inputs and handles
@@ -28,11 +29,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2002/11/20 11:50:59 $ by $Author: staffan $
+ * Last modified: $Date: 2002/11/20 14:24:02 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.37 $
+ * @version $Revision: 1.38 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -555,39 +556,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 		table.add(getSingleInput(iwc, PHONE_WORK_KEY, 20, true), 3, 4);
 	}
 
-    /*
-	private DropdownMenu getGenderDropdownInput(final IWContext iwc) {
-        return getGenderDropdownInput (iwc, "");
-	}
-
-	private DropdownMenu getGenderDropdownInput(final IWContext iwc,
-                                                final String postFix) {
-		DropdownMenu dropdown = (DropdownMenu) getStyledInterface
-                (new DropdownMenu(GENDER_KEY));
-		try {
-			final CitizenAccountBusiness business = (CitizenAccountBusiness)
-                    IBOLookup.getServiceInstance (iwc,
-                                                  CitizenAccountBusiness.class);
-			final Gender[] genders = business.getGenders();
-			for (int i = 0; i < genders.length; i++) {
-				final String nameInDb = genders[i].getName();
-				final String name = localize("caa_" + nameInDb, nameInDb);
-				final String id = genders[i].getPrimaryKey().toString();
-				dropdown.addMenuElementFirst(id, name);
-			}
-			if (iwc.isParameterSet(GENDER_KEY + postFix)) {
-				dropdown.setSelectedElement(iwc.getParameter(GENDER_KEY
-                                                             + postFix));
-			}
-
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		return dropdown;
-	}
-    */
-
 	private Table getRadioButton(final String name, final String value, String defaultValue, boolean selected) {
 		Table table = new Table(3, 1);
 		table.setCellpadding(0);
@@ -633,7 +601,6 @@ public class CitizenAccountApplication extends CommuneBlock {
 	private static boolean getBooleanParameter(final IWContext iwc, final String key) {
 		final String value = iwc.getParameter(key);
 		return value != null && value.equals(YES_KEY);
-
 	}
 
 	private static int getIntParameter(final IWContext iwc, final String key) {
@@ -660,7 +627,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 			final int century = inputYear + 2000 > currentYear ? 19 : 20;
 			digitOnlyInput.insert(0, century);
 		}
-		if (digitOnlyInput.length() != 12) {
+        final PIDChecker pidChecker = PIDChecker.getInstance ();
+		if (digitOnlyInput.length() != 12
+            || !pidChecker.isValid (digitOnlyInput.toString ())) {
 			return null;
 		}
 		final int year = new Integer(digitOnlyInput.substring(0, 4)).intValue();
