@@ -104,6 +104,13 @@ public java.util.Collection findByStudent(com.idega.user.data.User p0)throws jav
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public SchoolClassMember findByStudentAndClassAndSeason(int p0,int p1,int p2)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((SchoolClassMemberBMPBean)entity).ejbFindByStudentAndClassAndSeason(p0,p1,p2);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public java.util.Collection findByStudentAndSchool(int p0,int p1)throws javax.ejb.FinderException,java.rmi.RemoteException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((SchoolClassMemberBMPBean)entity).ejbFindByStudentAndSchool(p0,p1);
