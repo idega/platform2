@@ -1090,11 +1090,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			try {
 				User child = application.getChild();
 				Collection siblings = getUserBusiness().getMemberFamilyLogic().getSiblingsFor(application.getChild());
+				String[] statuses = { String.valueOf(getStatusSentIn()), String.valueOf(getStatusAccepted()), String.valueOf(getStatusParentsAccept()), String.valueOf(getStatusContract()), String.valueOf(getStatusReady()), String.valueOf(getStatusParentTerminated()), String.valueOf(getStatusWaiting()) };
 				Iterator iter = siblings.iterator();
 				while (iter.hasNext()) {
 					User sibling = (User) iter.next();
 					if (((Integer) child.getPrimaryKey()).intValue() != ((Integer) sibling.getPrimaryKey()).intValue()) {
-						ChildCareApplication siblingApp = this.getApplicationForChildAndProvider(((Integer) sibling.getPrimaryKey()).intValue(), application.getProviderId());
+						ChildCareApplication siblingApp = this.getApplicationForChildAndProviderinStatus(((Integer) sibling.getPrimaryKey()).intValue(), application.getProviderId(), statuses);
 						if (siblingApp != null) {
 							siblingApp.setHasQueuePriority(true);
 							siblingApp.store();
@@ -2458,6 +2459,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public ChildCareApplication getApplicationForChildAndProviderinStatus(int childID, int providerID) {
 		try {
 			String[] statuses = { String.valueOf(getStatusReady()), String.valueOf(getStatusParentTerminated()), String.valueOf(getStatusWaiting()), String.valueOf(getStatusCancelled()) };
+			return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
+	}
+
+	public ChildCareApplication getApplicationForChildAndProviderinStatus(int childID, int providerID, String[] statuses) {
+		try {
 			return getChildCareApplicationHome().findApplicationByChildAndProviderAndStatus(childID, providerID, statuses);
 		}
 		catch (FinderException fe) {
