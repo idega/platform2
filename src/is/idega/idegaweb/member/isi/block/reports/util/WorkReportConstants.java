@@ -19,5 +19,14 @@ public class WorkReportConstants extends IWMemberConstants{
 	public static final String WR_STATUS_NO_REPORT = "NO_REPORT";
 	public static final String WR_STATUS_SHOULD_BE_BANNED = "SHOULD_BE_BANNED";
 	
+	public static final String WR_USER_TYPE_CLUB = "CLUB";
+	public static final String WR_USER_TYPE_REGIONAL_UNION = "REGIONAL_UNION";
+	public static final String WR_USER_TYPE_UNION = "UNION";
+	public static final String WR_USER_TYPE_FEDERATION = "FEDERATION";
+	public static final String WR_USER_TYPE_LEAGUE = "LEAGUE";
+	
+	
+	
+	
 
 }
