@@ -279,7 +279,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		IWTimestamp stamp = new IWTimestamp();
 		stamp.addDays(14);
+		IWTimestamp tomorrow = new IWTimestamp();
+		tomorrow.addDays(1);
 		DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_OFFER_VALID_UNTIL));
+		dateInput.setEarliestPossibleDate(tomorrow.getDate(), localize("child_care.cant_choose_earlier_date", "You can't choose a date back in time."));
 		dateInput.setDate(stamp.getDate());
 
 		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until")+":"), 1, row++);
