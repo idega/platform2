@@ -1373,9 +1373,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
     
 	if(canWeUpdateWorkReportDataFromDatabase(workReport.getYearOfReport().intValue())){
 	    // has the data already been created?
-	    if (workReport.isCreationFromDatabaseDone())  {
+	    /*
+	     //TODO Eiki temp solution
+	     if (workReport.isCreationFromDatabaseDone())  {
 	      return true;
 	    }
+	    */
 	    
 	    
 	    // get the corresponding group 
