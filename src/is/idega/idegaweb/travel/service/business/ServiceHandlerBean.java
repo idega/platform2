@@ -1,6 +1,8 @@
 package is.idega.idegaweb.travel.service.business;
 
+import is.idega.idegaweb.travel.service.carrental.business.CarRentalBusiness;
 import is.idega.idegaweb.travel.service.carrental.presentation.*;
+import is.idega.idegaweb.travel.service.fishing.business.FishingBusiness;
 import is.idega.idegaweb.travel.service.fishing.presentation.*;
 import com.idega.data.IDOLookup;
 import java.rmi.*;
@@ -14,13 +16,17 @@ import com.idega.block.trade.stockroom.data.*;
 import com.idega.business.*;
 import com.idega.presentation.*;
 import com.idega.util.*;
+
+import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
 import is.idega.idegaweb.travel.data.*;
 import is.idega.idegaweb.travel.interfaces.Booking;
 import is.idega.idegaweb.travel.presentation.*;
+import is.idega.idegaweb.travel.service.hotel.business.HotelBusiness;
 import is.idega.idegaweb.travel.service.hotel.presentation.*;
 import is.idega.idegaweb.travel.service.presentation.*;
 import is.idega.idegaweb.travel.service.presentation.ServiceOverview;
 import is.idega.idegaweb.travel.service.presentation.BookingOverview;
+import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
 import is.idega.idegaweb.travel.service.tour.presentation.*;
 
 /**
@@ -189,6 +195,37 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
     return new TourVoucher(booking);
   }
 
+	public TravelStockroomBusiness getServiceBusiness(Product product) throws RemoteException, FinderException {
+    if (product != null) {
+
+      Collection coll = getProductCategoryFactory().getProductCategory(product);
+      Iterator iter = coll.iterator();
+      /**
+       * Only supports Products with ONE ProductCategory
+       */
+      if (iter.hasNext()) {
+        ProductCategory pCat = (ProductCategory) iter.next();
+        String categoryType = getProductCategoryFactory().getProductCategoryType(pCat);
+        if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_TOUR)) {
+          System.out.println("Returning Business for TOUR");
+          return (TourBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), TourBusiness.class);
+        }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_HOTEL)) {
+          System.out.println("Returning Business for HOTEL");
+          return (HotelBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), HotelBusiness.class);
+        }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_FISHING)) {
+          System.out.println("Returning Business for FISHING");
+          return (FishingBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), FishingBusiness.class);
+        }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_PRODUCT)) {
+          System.out.println("Returning Business for PRODUCT");
+          return (TravelStockroomBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), TravelStockroomBusiness.class);
+        }else if (categoryType.equals(ProductCategoryFactoryBean.CATEGORY_TYPE_CAR_RENTAL)) {
+          System.out.println("Returning Business for CAR RENTAL");
+          return (CarRentalBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), CarRentalBusiness.class);
+        }
+      }
+    }
+	  return (TravelStockroomBusiness) IBOLookup.getServiceInstance( getIWApplicationContext(), TravelStockroomBusiness.class);
+	}
 
   private ProductCategoryFactory getProductCategoryFactory() throws RemoteException{
     return (ProductCategoryFactory) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductCategoryFactory.class);

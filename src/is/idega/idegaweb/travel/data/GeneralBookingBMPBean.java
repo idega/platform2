@@ -382,7 +382,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
             sql.append(" b."+getBookingDateColumnName()+" like '%"+stamp.toSQLDateString()+"%'");
         many = SimpleQuerier.executeStringQuery(sql.toString());
 
-        if (many != null) {
+        if (many != null && many.length > 0) {
           if (many[0] != null)
             returner = Integer.parseInt(many[0]);
         }
@@ -485,7 +485,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
             sql.append(" )");
 
 
-//            System.err.println(sql.toString());
+//            System.out.println(sql.toString());
         many = SimpleQuerier.executeStringQuery(sql.toString());
 //        many = SimpleQuerier.executeStringQuery(sql.toString(),conn);
 
@@ -546,7 +546,7 @@ public class GeneralBookingBMPBean extends com.idega.data.GenericEntity implemen
     sql.append("b."+getIsValidColumnName()+" = 'Y'");
     if (fromStamp != null && toStamp == null) {
       sql.append(" and ");
-      sql.append("b."+dateColumn+" containing '"+fromStamp.toSQLDateString()+"'");
+      sql.append("b."+dateColumn+" like '"+fromStamp.toSQLDateString()+"%'");
     }else if (fromStamp != null && toStamp != null) {
       sql.append(" and ");
       sql.append("b."+dateColumn+" >= '"+fromStamp.toSQLDateString()+"'");

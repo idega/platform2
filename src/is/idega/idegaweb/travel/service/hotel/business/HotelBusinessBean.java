@@ -3,13 +3,22 @@ package is.idega.idegaweb.travel.service.hotel.business;
 import javax.ejb.FinderException;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
+
+import java.rmi.RemoteException;
 import java.sql.*;
+import java.util.List;
+import java.util.Vector;
 
 
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.data.*;
+import com.idega.presentation.IWContext;
 import com.idega.util.*;
+import com.idega.util.datastructures.HashtableDoubleKeyed;
+
 import is.idega.idegaweb.travel.business.*;
+import is.idega.idegaweb.travel.data.ServiceDay;
+import is.idega.idegaweb.travel.data.ServiceDayHome;
 import is.idega.idegaweb.travel.service.business.*;
 
 
@@ -71,11 +80,74 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
     product.removeAllFrom(TravelAddress.class);
     product.removeAllFrom(Timeframe.class);
 
-    this.removeExtraPrices(product);
 
 
     return productId;
   }
+  
+  public void finalizeHotelCreation(Product product) throws FinderException, RemoteException{
+    this.removeExtraPrices(product);
+  }
 
+
+	public boolean getIfDay(IWContext p0, int p1, int p2)throws RemoteException, RemoteException {
+		return true;
+	}
+
+  public boolean getIfDay(IWContext iwc, Product product, Timeframe[] timeframes, IWTimestamp stamp, boolean includePast, boolean fixTimeframe) throws ServiceNotFoundException, TimeframeNotFoundException, RemoteException {
+      boolean isDay = false;
+      String key1 = Integer.toString(product.getID());
+      String key2 = stamp.toSQLDateString();
+
+      HashtableDoubleKeyed serviceDayHash = getServiceDayHashtable(iwc);
+      Object obj = null;
+      if (obj == null) {
+	      if (!includePast) {
+	        IWTimestamp now = IWTimestamp.RightNow();
+	        IWTimestamp tNow = new IWTimestamp(now.getDay(), now.getMonth(), now.getYear());
+	        if (!tNow.isLaterThan(stamp)) {
+	        	isDay = true;
+	        }
+	      }else {
+	          isDay = true;
+	      }
+      }
+      else {
+        isDay = ((Boolean) obj).booleanValue();
+      }
+      return isDay;
+  }
+
+	public List getDepartureDays(IWContext iwc,	Product product,	IWTimestamp fromStamp,	IWTimestamp toStamp,	boolean showPast)	throws FinderException, RemoteException, RemoteException {
+    List returner = new Vector();
+		IWTimestamp stamp = new IWTimestamp(fromStamp);	
+		IWTimestamp now = new IWTimestamp(IWTimestamp.RightNow());
+		now.setMinute(0);
+		now.setHour(0);
+		now.setSecond(0);
+		now.setMilliSecond(0);
+		while (toStamp.isLaterThan( stamp)) {
+			if (stamp.isLaterThanOrEquals(now)) {
+				returner.add(new IWTimestamp(stamp));
+			}
+			stamp.addDays(1);
+		}
+		if (toStamp.isLaterThanOrEquals(now)) {
+			returner.add(toStamp);
+		}
+
+
+    return returner;
+	}
+
+	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
+		Hotel hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(product.getPrimaryKey());
+		int returner = hotel.getNumberOfUnits();
+		if (returner > 0) {
+			return returner;
+		}else {
+			return super.getMaxBookings(product, stamp);
+		}
+	}
 
 }

@@ -189,7 +189,6 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   }
 
 
-
   public void setTimeframe(IWTimestamp from, IWTimestamp to, boolean yearly) throws SQLException {
     setTimeframe(-1,from,to,yearly);
   }
@@ -332,7 +331,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     return returner;
   }
 
-  private HashtableDoubleKeyed getServiceDayHashtable(IWContext iwc) {
+  protected HashtableDoubleKeyed getServiceDayHashtable(IWContext iwc) {
       HashtableDoubleKeyed hash = (HashtableDoubleKeyed) iwc.getSessionAttribute(serviceDayHashtableSessionName);
       if (hash == null) {
         hash =  new HashtableDoubleKeyed();
@@ -1125,6 +1124,55 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
     }
     return new int[]{arrivalAddress.getID()};
   }
+  
+    public void removeDepartureDaysApplication(IWApplicationContext iwac, Product product) throws RemoteException{
+    Enumeration enum = iwac.getApplication().getAttributeNames();
+    String name;
+    while (enum.hasMoreElements()) {
+      name = (String) enum.nextElement();
+      if (name.indexOf("prodDepDays"+product.getPrimaryKey().toString()+"_") != -1) {
+        iwac.removeApplicationAttribute(name);
+      }
+    }
+  }
+
+	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
+		try {
+			if (stamp != null) {
+			  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+			  ServiceDay sDay;
+				sDay = sDayHome.create();
+			  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+			  if (sDay != null) {
+			    return sDay.getMax();
+			  }
+		  }
+			return 0;
+
+		} catch (CreateException e) {
+			return 0;
+		}
+	
+	
+	}
+	public int getMinBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException{
+		try {
+			if (stamp != null) {
+			  ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
+			  ServiceDay sDay;
+				sDay = sDayHome.create();
+			  sDay = sDay.getServiceDay(product.getID() , stamp.getDayOfWeek());
+			  if (sDay != null) {
+			    return sDay.getMin();
+			  }
+		  }
+			return 0;
+
+		} catch (CreateException e) {
+			return 0;
+		}
+	}
+
 
   private ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);

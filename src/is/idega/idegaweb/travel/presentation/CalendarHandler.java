@@ -18,6 +18,8 @@ import java.sql.SQLException;
 import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.business.*;
 import is.idega.idegaweb.travel.data.*;
+import is.idega.idegaweb.travel.service.presentation.BookingForm;
+
 import com.idega.block.trade.stockroom.data.*;
 import is.idega.idegaweb.travel.service.tour.data.Tour;
 import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
@@ -49,7 +51,7 @@ public class CalendarHandler extends TravelManager {
 
   private Product _product;
   private Service _service;
-  private Tour _tour;
+//  private Tour _tour;
   private Timeframe[] _timeframes;
   private Contract _contract;
   private Reseller _reseller;
@@ -338,13 +340,18 @@ public class CalendarHandler extends TravelManager {
 
       List depDays = this.getDepartureDays(iwc, _showPast);
 
-      int seats = 0;
-      int minSeats = 0;
 
-      if (_tour != null) {
+    TravelStockroomBusiness tsb = super.getServiceHandler(iwc).getServiceBusiness( this._product);
+		int seats = tsb.getMaxBookings( _product, null);
+		int minSeats = tsb.getMinBookings( _product, null);
+//      int seats = 0;
+//      int minSeats = 0;
+
+/*
+ * Er thetta FullyBooked dotariid ??      if (_tour != null) {
         seats = _tour.getTotalSeats();
       }
-
+*/
 
 
 
@@ -352,6 +359,7 @@ public class CalendarHandler extends TravelManager {
         if (_contract != null) {
           for (int i = 0; i < depDays.size(); i++) {
             temp = (IWTimestamp) depDays.get(i);
+            
             if (!getTravelStockroomBusiness(iwc).getIfExpired(_contract, temp))
             try {
             if (getTravelStockroomBusiness(iwc).getIfDay(iwc,_contract,_product,temp)) {
@@ -502,14 +510,14 @@ public class CalendarHandler extends TravelManager {
       _service = getTravelStockroomBusiness(IWContext.getInstance()).getService(product);
       _timeframes = _product.getTimeframes();
 //      _timeframe = product.getTimeframe();
-      try {
-        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).findByPrimaryKey(_product.getPrimaryKey());
-      }catch (FinderException fe) {}
+//      try {
+//        _tour = ((is.idega.idegaweb.travel.service.tour.data.TourHome)com.idega.data.IDOLookup.getHome(Tour.class)).findByPrimaryKey(_product.getPrimaryKey());
+//      }catch (FinderException fe) {}
     }catch (Exception e) {
       e.printStackTrace();
     }
   }
-
+/*
   public void setTour(Tour tour) throws RemoteException{
     this._tour = tour;
     try {
@@ -519,7 +527,7 @@ public class CalendarHandler extends TravelManager {
     }catch (FinderException s) {
       s.printStackTrace(System.err);
     }
-  }
+  }*/
 
   public void setContract(Contract contract) {
     _contract = contract;
@@ -617,34 +625,33 @@ public class CalendarHandler extends TravelManager {
 
   public List getDepartureDays(IWContext iwc, boolean showPast) throws RemoteException, FinderException {
     List depDays = new Vector();
+    
+    TravelStockroomBusiness tsb = super.getServiceHandler(iwc).getServiceBusiness( this._product);
+    return tsb.getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
+    
     /**
      * @todo skoða betur, er bara tomt rugl
-     */
       if (_tour != null) {
-//        for (int i = 0; i < _timeframes.length; i++) {
           if (_tour.getNumberOfDays() > 1) {
-/*            if (_timeframes[i].getIfYearly()) {
-debug("reppetan 1");
-              depDays.addAll(TourBusiness.getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast));
-            }else {
-debug("reppetan 2");
-*/
               depDays.addAll(getTourBusiness(iwc).getDepartureDays(iwc, _tour, _fromStamp, _toStamp, showPast));
-//            }
           }else {
-//debug("reppetan 3");
             depDays = getTourBusiness(iwc).getDepartureDays(iwc,_tour, _fromStamp, _toStamp, showPast);
           }
-//        }
       }else {
-//debug("reppetan 4");
           depDays = getTravelStockroomBusiness(iwc).getDepartureDays(iwc, _product, _fromStamp, _toStamp, showPast);
       }
 
     return depDays;
+    */
+
   }
+  
+  
+
+
 
   private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
+//  	super.getServiceHandler(iwac).
     return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
   }
 

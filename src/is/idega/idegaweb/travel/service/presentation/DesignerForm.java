@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.service.presentation;
 
+import com.idega.block.trade.stockroom.data.Product;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Form;
 import java.rmi.RemoteException;
@@ -15,6 +16,7 @@ import javax.ejb.FinderException;
 
 public interface DesignerForm {
   public int handleInsert(IWContext iwc) throws RemoteException;
+  public void finalizeCreation(IWContext iwc, Product product) throws RemoteException, FinderException;
   public Form getDesignerForm( IWContext iwc ) throws RemoteException, FinderException;
   public Form getDesignerForm( IWContext iwc, int serviceId ) throws RemoteException, FinderException;
 }

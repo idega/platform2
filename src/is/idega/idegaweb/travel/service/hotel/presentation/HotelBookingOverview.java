@@ -113,6 +113,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
       ServiceDay sDay = sDayHome.create();
 
       toStamp.addDays(1);
+      System.out.println("Reppis... in hotelbooking overview");
       while (toStamp.isLaterThan(tempStamp)) {
         dayOfWeek = cal.getDayOfWeek(tempStamp.getYear(), tempStamp.getMonth(), tempStamp.getDay());
 
@@ -136,7 +137,7 @@ public class HotelBookingOverview extends AbstractBookingOverview {
             try {
               hotel = ((HotelHome) IDOLookup.getHome(Hotel.class)).findByPrimaryKey(prod.getPrimaryKey());
             }catch (FinderException ex) {
-
+							System.err.println("[HotelBookingOvervie] Cannot find hotel from product ("+prod.getPrimaryKey()+")");
             }
 
             if (_supplier != null) {
@@ -153,13 +154,13 @@ public class HotelBookingOverview extends AbstractBookingOverview {
               service = getTravelStockroomBusiness(iwc).getService(prod);
 
               if (_supplier != null) {
+              	
                 iCount = hotel.getNumberOfUnits();
-/*
-                sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
-                if (sDay != null) {
-                  iCount = sDay.getMax();
-                }
-*/
+//                sDay = sDay.getServiceDay(((Integer) service.getPrimaryKey()).intValue(), tempStamp.getDayOfWeek());
+//                if (sDay != null) {
+//                  iCount = sDay.getMax();
+//                }
+                
                 iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), tempStamp);
                 iAssigned = getAssigner(iwc).getNumberOfAssignedSeats(prod, tempStamp);
 

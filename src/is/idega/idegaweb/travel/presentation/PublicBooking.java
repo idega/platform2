@@ -25,7 +25,6 @@ import com.idega.block.trade.stockroom.business.*;
 import is.idega.idegaweb.travel.data.*;
 import com.idega.block.trade.data.Currency;
 
-import is.idega.idegaweb.travel.service.tour.presentation.TourBookingForm;
 import is.idega.idegaweb.travel.service.presentation.BookingForm;
 import is.idega.idegaweb.travel.service.business.ServiceHandler;
 
@@ -261,24 +260,27 @@ public class PublicBooking extends Block  {
 
       if (legalDay) {
 
-        String action = iwc.getParameter(this.sAction);
+        String action = iwc.getParameter(BookingForm.sAction);
 
-        String tbfAction = iwc.getParameter(BookingForm.sAction);
-        if (tbfAction == null || !tbfAction.equals(BookingForm.parameterSaveBooking)) {
-          action = "";
-        }
-
-        System.err.println("action = "+action);
+//        String tbfAction = iwc.getParameter(BookingForm.sAction);
+//        if (tbfAction == null || !tbfAction.equals(BookingForm.parameterSaveBooking)) {//
+//	        System.out.println("action a = "+action);
+//          action = "";
+//        }
+        String gimmi = iwc.getParameter( "Gimmi" );
+        System.out.println("Gimmi = "+gimmi);
+        System.out.println("action b = "+action);
         if (action == null || action.equals("")) {
             form = bf.getPublicBookingForm(iwc, product, stamp);
             form.maintainParameter(this.parameterProductId);
-            form.addParameter(this.sAction,this.parameterSubmitBooking);
-        }else if (action.equals(this.parameterSubmitBooking)) {
-            form = bf.getFormMaintainingAllParameters();
+            form.addParameter(BookingForm.sAction,BookingForm.parameterSaveBooking);
+        }else if (action.equals(BookingForm.parameterSaveBooking)) {
+            form = bf.getFormMaintainingAllParameters(false);
             form.maintainParameter(this.parameterProductId);
+//            form.addParameter( BookingForm.sAction, this.parameterBookingVerified);
             form.add(bf.getVerifyBookingTable(iwc, product));
         }else if (action.equals(this.parameterBookingVerified)) {
-            form = bf.getFormMaintainingAllParameters();
+            form = bf.getFormMaintainingAllParameters(false);
             form.maintainParameter(this.parameterProductId);
             form.add(doBooking(iwc));
         }
@@ -324,10 +326,9 @@ public class PublicBooking extends Block  {
 
   private Table doBooking(IWContext iwc) throws RemoteException{
     Table table = new Table();
-      String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
-      String ccMonth  = iwc.getParameter(TourBookingForm.parameterCCMonth);
-      String ccYear   = iwc.getParameter(TourBookingForm.parameterCCYear);
-      String depAddr  = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
+      String ccNumber = iwc.getParameter(BookingForm.parameterCCNumber);
+      String ccMonth  = iwc.getParameter(BookingForm.parameterCCMonth);
+      String ccYear   = iwc.getParameter(BookingForm.parameterCCYear);
 
       Text display = getBoldTextWhite("");
       boolean success = false;
@@ -339,47 +340,11 @@ public class PublicBooking extends Block  {
 
       TransactionManager tm = IdegaTransactionManager.getInstance();
       try {
+		    BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
         tm.begin();
 
-        float price = 0;
-        int total = 0;
-        int current = 0;
-        Currency currency = null;
+				float price = bf.getOrderPrice(iwc, product, stamp);
 
-        int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
-
-        ProductPrice[] pPrices = {};
-        ProductPrice[] misc = {};
-        Timeframe tFrame = getProductBusiness(iwc).getTimeframe(this.product, stamp, Integer.parseInt(depAddr));
-        if (tFrame != null) {
-          pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
-          misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
-        }
-
-        for (int j = 0; j < days; j++) {
-
-          for (int i = 0; i < pPrices.length; i++) {
-            try {
-              current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
-            }catch (NumberFormatException n) {
-              current = 0;
-            }
-            total += current;
-            price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
-          }
-
-          for (int i = 0; i < misc.length; i++) {
-            try {
-              current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+i));
-            }catch (NumberFormatException n) {
-              current = 0;
-            }
-            price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,this.productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
-          }
-
-        }
-
-        BookingForm bf = getServiceHandler(iwc).getBookingForm(iwc, product);
 //        TourBookingForm tbf = new TourBookingForm(iwc,product);
         int bookingId = bf.handleInsert(iwc);
         gBooking = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingId));
@@ -620,6 +585,8 @@ public class PublicBooking extends Block  {
 
     return table;
   }
+
+
 
   protected TravelStockroomBusiness getTravelStockroomBusiness(IWApplicationContext iwac) throws RemoteException {
     return (TravelStockroomBusiness) IBOLookup.getServiceInstance(iwac, TravelStockroomBusiness.class);

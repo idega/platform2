@@ -137,7 +137,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
           tour.store();
 
 
-          this.removeDepartureDaysApplication(this.getIWApplicationContext(), tour);
+          this.removeDepartureDaysApplication(this.getIWApplicationContext(), product);
           setActiveDays(serviceId, activeDays);
 
 
@@ -242,7 +242,9 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
   /**
    * return a date if the inserted date is part of a tour
    */
-  private IWTimestamp getDepartureDateForDate(IWContext iwc, Tour tour, IWTimestamp stamp) throws RemoteException{
+  private IWTimestamp getDepartureDateForDate(IWContext iwc, Product product, IWTimestamp stamp) throws RemoteException, FinderException{
+		Tour tour = ( (TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+
     IWTimestamp returnStamp = null;
 
     IWTimestamp stamp1 = null;
@@ -256,7 +258,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       temp2.addDays(-1 * numberOfDays);
 
 
-    List days = getDepartureDays(iwc, tour, temp1, temp2, true);
+    List days = getDepartureDays(iwc, product, temp1, temp2, true);
 
     if ( numberOfDays > 1) {
       for (int i = 0; i < days.size(); i++) {
@@ -298,11 +300,11 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     return returnStamp;
   }
 
-  public boolean getIfDay(IWContext iwc, Contract contract, Tour tour, IWTimestamp stamp) {
+  public boolean getIfDay(IWContext iwc, Contract contract, Product product, IWTimestamp stamp) {
     try {
-      IWTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
+      IWTimestamp temp = getDepartureDateForDate(iwc, product, stamp);
       if (temp == null) {
-        return getIfDay(iwc, contract, getProductBusiness().getProduct((Integer) tour.getPrimaryKey()), stamp);
+        return super.getIfDay(iwc, contract, product, stamp);
       }else {
         return (stamp.equals(temp));
       }
@@ -313,12 +315,12 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     }
   }
 
-  public boolean getIfDay(IWContext iwc, Tour tour, IWTimestamp stamp, boolean includePast) {
+  public boolean getIfDay(IWContext iwc, Product product, IWTimestamp stamp, boolean includePast) {
     try {
-      IWTimestamp temp = getDepartureDateForDate(iwc, tour, stamp);
+      IWTimestamp temp = getDepartureDateForDate(iwc, product, stamp);
       if (temp == null) {
-        Product product = getProductBusiness().getProduct((Integer) tour.getPrimaryKey());
-        return getIfDay(iwc, product, product.getTimeframes(), stamp, includePast, true);
+//        Product product = getProductBusiness().getProduct((Integer) tour.getPrimaryKey());
+        return super.getIfDay(iwc, product, product.getTimeframes(), stamp, includePast, true);
       }else {
         return (stamp.equals(temp));
       }
@@ -328,36 +330,25 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
     }
   }
 
-  public List getDepartureDays(IWContext iwc, Tour tour) {
-    return getDepartureDays(iwc, tour, true);
+
+  public List getDepartureDays(IWContext iwc, Product product) {
+    return getDepartureDays(iwc, product, true);
   }
 
-  public List getDepartureDays(IWContext iwc, Tour tour, boolean showPast) {
-    return getDepartureDays(iwc, tour, null, null, showPast);
+  public List getDepartureDays(IWContext iwc, Product product, boolean showPast) {
+    return getDepartureDays(iwc, product, null, null, showPast);
   }
 
-  public void removeDepartureDaysApplication(IWApplicationContext iwac, Tour tour) throws RemoteException{
-    Enumeration enum = iwac.getApplication().getAttributeNames();
-    String name;
-    while (enum.hasMoreElements()) {
-      name = (String) enum.nextElement();
-      if (name.indexOf("tourDepDays"+tour.getPrimaryKey().toString()+"_") != -1) {
-        iwac.removeApplicationAttribute(name);
-      }
-    }
-  }
-
-
-  public List getDepartureDays(IWContext iwc, Tour tour, IWTimestamp fromStamp, IWTimestamp toStamp, boolean showPast) {
+  public List getDepartureDays(IWContext iwc, Product product, IWTimestamp fromStamp, IWTimestamp toStamp, boolean showPast) {
     List returner = new Vector();
-
     try {
-      Product product = getProductBusiness().getProduct((Integer) tour.getPrimaryKey());
+    	Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+//      Product product = getProductBusiness().getProduct((Integer) tour.getPrimaryKey());
       Service service = ((is.idega.idegaweb.travel.data.ServiceHome)com.idega.data.IDOLookup.getHome(Service.class)).findByPrimaryKey(tour.getPrimaryKey());
       Timeframe[] frames = product.getTimeframes();
       Timeframe tempFrame = (Timeframe) IDOLookup.create(Timeframe.class);
 
-      String applicationString = "tourDepDays"+tour.getPrimaryKey().toString()+"_"+fromStamp+"_"+toStamp+"_"+showPast;
+      String applicationString = "prodDepDays"+tour.getPrimaryKey().toString()+"_"+fromStamp+"_"+toStamp+"_"+showPast;
 
       List tempList = (List) iwc.getApplicationAttribute(applicationString);
       if (tempList != null) {
@@ -365,9 +356,9 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       }else {
 //        System.err.println("TourBusiness : getDepartDays : "+fromStamp+ " - " +toStamp);
         for (int i = 0; i < frames.length; i++) {
-          //System.err.println("------------------------------------------------");
-          //System.err.println("-----------------------"+i+"------------------------");
-          //System.err.println("------------------------------------------------");
+//          System.err.println("------------------------------------------------");
+//          System.err.println("-----------------------"+i+"------------------------");
+//          System.err.println("------------------------------------------------");
 
           boolean yearly = frames[i].getIfYearly();
 
@@ -404,8 +395,8 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 
           int daysBetween = IWTimestamp.getDaysBetween(from, to);
 
-          to = new IWTimestamp(from);
-            to.addDays(daysBetween);
+//WTF          to = new IWTimestamp(from);
+//            to.addDays(daysBetween);
           yearsBetween = to.getYear() - toY;
 //          System.err.println("tFrom : "+tFrom.toSQLDateString());
 //          System.err.println("tTo   : "+tTo.toSQLDateString());
@@ -428,12 +419,12 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
         tempFrame.setTo(tTo.getTimestamp());
 
           while (to.isLaterThan(stamp)) {
-            //System.err.println("Stamp : "+stamp.toSQLDateString());
+//            System.err.println("Stamp : "+stamp.toSQLDateString());
             temp = getNextAvailableDay(iwc, tour, product,tempFrame, stamp);
 //            temp = getNextAvailableDay(iwc, tour, product,frames[i], stamp);
             if (temp != null) {
               if (getStockroomBusiness().isInTimeframe(tFrom, tTo, temp, yearly)) {
-                //System.err.println("TEMP : "+temp.toSQLDateString()+" .... yearsBetween : "+yearsBetween+" ... yearly ("+yearly+")");
+//                System.err.println("TEMP : "+temp.toSQLDateString()+" .... yearsBetween : "+yearsBetween+" ... yearly ("+yearly+")");
                 if (yearly) {
                   temp.addYears(-yearsBetween);
                 }
@@ -496,7 +487,7 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
 
       while (teljari++ < nod) {
         stamp.addDays(1);
-        if (getIfDay(iwc,product, timeframes, stamp, false, true)) {
+        if (this.getIfDay(iwc,product, timeframes, stamp, false, true)) {
           /** @todo breytti false i true..... skoda takk */
           found = true;
           break;
@@ -513,6 +504,28 @@ public class TourBusinessBean extends TravelStockroomBusinessBean implements Tou
       return null;
     }
   }
+
+	public int getMaxBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
+		Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+		int returner = tour.getTotalSeats();
+		if (returner > 0) {
+			return returner;
+		}else {
+			return super.getMaxBookings(product, stamp);
+		}
+	}
+
+
+	public int getMinBookings(Product product, IWTimestamp stamp) throws RemoteException, FinderException {
+		Tour tour = ((TourHome) IDOLookup.getHome(Tour.class)).findByPrimaryKey(product.getPrimaryKey());
+		int returner = tour.getMinimumSeats();
+		if (returner > 0) {
+			return returner;
+		}else {
+			return super.getMinBookings(product, stamp);
+		}
+	}
+
 
   protected ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);

@@ -234,6 +234,10 @@ public class FishingDesigner extends TravelManager implements DesignerForm {
     return returner;
   }
 
+  public void finalizeCreation(IWContext iwc, Product product) throws RemoteException, FinderException {
+  }
+
+
   public Form getDesignerForm( IWContext iwc ) throws RemoteException, FinderException {
     return getDesignerForm(iwc, -1);
   }

@@ -162,6 +162,10 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     return returner;
   }
 
+  public void finalizeCreation(IWContext iwc, Product product) throws RemoteException, FinderException {
+  		getHotelBusiness(iwc).finalizeHotelCreation(product);
+  }
+
   public Form getDesignerForm( IWContext iwc ) throws RemoteException, FinderException {
     return getDesignerForm(iwc, -1);
   }
@@ -308,5 +312,9 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     }
     return form;
   }
+
+	private HotelBusiness getHotelBusiness(IWContext iwc) throws RemoteException {
+		return (HotelBusiness) IBOLookup.getServiceInstance(iwc, HotelBusiness.class);	
+	}
 
 }

@@ -1239,11 +1239,11 @@ public abstract class BookingForm extends TravelManager{
       form.maintainParameter(this.parameterCCMonth);
       form.maintainParameter(this.parameterCCYear);
       form.maintainParameter(this.parameterDepartureAddressId);
-      form.maintainParameter(this.sAction);
       form.maintainParameter(this.parameterInquiry);
       form.maintainParameter(parameterFromDate);
       form.maintainParameter(this.parameterOnlineBooking);
       if (withBookingAction) {
+	      form.maintainParameter(this.sAction);
         form.maintainParameter(this.BookingAction);
       }
 
@@ -2237,5 +2237,40 @@ public abstract class BookingForm extends TravelManager{
     return super.getTravelStockroomBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp);
   }
 
+public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	throws RemoteException, SQLException {
+	 int productId = product.getID();
+	float price = 0;
+	int total = 0;
+	int current = 0;
+	Currency currency = null;
+	
+	
+	ProductPrice[] pPrices = {};
+	ProductPrice[] misc = {};
+	  pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), -1, -1, true);
+	  misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), -1, -1, true);
+	
+	
+	  for (int i = 0; i < pPrices.length; i++) {
+	    try {
+	      current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+	    }catch (NumberFormatException n) {
+	      current = 0;
+	    }
+	    total += current;
+	    price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), -1, -1);
+	  }
+	
+	  for (int i = 0; i < misc.length; i++) {
+	    try {
+	      current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+i));
+	    }catch (NumberFormatException n) {
+	      current = 0;
+	    }
+	    price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), -1, -1);
+	  }
+	
+	return price;
+}
 
 }

@@ -7,6 +7,7 @@ import java.util.*;
 import javax.ejb.*;
 
 import com.idega.block.calendar.business.*;
+import com.idega.block.trade.data.Currency;
 import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.business.*;
@@ -624,7 +625,8 @@ public class TourBookingForm extends BookingForm{
 
       boolean isDay = true;
 
-      isDay = getTourBusiness(iwc).getIfDay(iwc, _tour, stamp, false);
+
+      isDay = getTourBusiness(iwc).getIfDay(iwc, _product, stamp, false);
 /*
       if (isDay) {
         if (_tour.getTotalSeats() > 0)
@@ -1888,12 +1890,54 @@ public class TourBookingForm extends BookingForm{
     }
   }
 
+public float getOrderPrice(IWContext iwc, Product product, IWTimestamp stamp)	throws RemoteException, SQLException {
+	  String depAddr  = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
+	 int productId = product.getID();
+	float price = 0;
+	int total = 0;
+	int current = 0;
+	Currency currency = null;
+	
+	int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
+	
+	ProductPrice[] pPrices = {};
+	ProductPrice[] misc = {};
+	Timeframe tFrame = getProductBusiness(iwc).getTimeframe(product, stamp, Integer.parseInt(depAddr));
+	if (tFrame != null) {
+	  pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
+	  misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
+	}
+	
+	for (int j = 0; j < days; j++) {
+	
+	  for (int i = 0; i < pPrices.length; i++) {
+	    try {
+	      current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+	    }catch (NumberFormatException n) {
+	      current = 0;
+	    }
+	    total += current;
+	    price += current * getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID() ,productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
+	  }
+	
+	  for (int i = 0; i < misc.length; i++) {
+	    try {
+	      current = Integer.parseInt(iwc.getParameter("miscPriceCategory"+i));
+	    }catch (NumberFormatException n) {
+	      current = 0;
+	    }
+	    price += current * getTravelStockroomBusiness(iwc).getPrice(misc[i].getID() ,productId,misc[i].getPriceCategoryID(), misc[i].getCurrencyId() ,IWTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
+	  }
+	
+	}
+	return price;
+}
 
   public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
     if (_reseller != null) {
-      return getTourBusiness(iwc).getIfDay(iwc, _contract, _tour, _stamp);
+      return getTourBusiness(iwc).getIfDay(iwc, _contract, _product, _stamp);
     }else {
-      return getTourBusiness(iwc).getIfDay(iwc, _tour, _stamp, false);
+      return getTourBusiness(iwc).getIfDay(iwc, _product, _stamp, false);
     }
 
   }

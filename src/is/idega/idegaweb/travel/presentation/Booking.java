@@ -755,7 +755,11 @@ public class Booking extends TravelManager {
 //            iBooked = getBooker(iwc).getNumberOfBookings(((Integer) service.getPrimaryKey()).intValue(), this.stamp);
             iInquery = getInquirer(iwc).getInqueredSeats(((Integer) service.getPrimaryKey()).intValue(), this.stamp, true);
 
-            try {
+//            try {
+					    TravelStockroomBusiness tsb = super.getServiceHandler(iwc).getServiceBusiness( this.product);
+					    iCount = tsb.getMaxBookings( product, stamp);
+					    iMin = tsb.getMinBookings( product, stamp);
+/*
               ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
               ServiceDay sDay = sDayHome.create();
 
@@ -765,7 +769,7 @@ public class Booking extends TravelManager {
                 iCount = sDay.getMax();
                 iMin = sDay.getMin();
               }
-/*                if (tour != null) {
+                if (tour != null) {
                   if (iCount < 1) {
                     iCount = tour.getTotalSeats();
                   }
@@ -779,12 +783,12 @@ public class Booking extends TravelManager {
                 iMin = tour.getMinimumSeats();
               }
 */
-            }catch (Exception e) {
-              e.printStackTrace(System.err);
+//            }catch (Exception e) {
+//              e.printStackTrace(System.err);
 //              if (tour != null) {
 //                iCount = tour.getTotalSeats();
 //              }
-            }
+//            }
 
             if (supplier != null) {
               if (iCount >0) {

@@ -788,6 +788,11 @@ public class TourDesigner extends TravelManager implements DesignerForm{
     return serviceId;
   }
 
+  public void finalizeCreation(IWContext iwc, Product product) throws RemoteException, FinderException {
+//  		getTourBusiness(iwc).finalizeHotelCreation(product);
+  }
+
+
   private TourBusiness getTourBusiness(IWApplicationContext iwac) throws RemoteException {
     return (TourBusiness) IBOLookup.getServiceInstance(iwac, TourBusiness.class);
   }

@@ -119,6 +119,7 @@ public class ServiceDesigner extends TravelManager {
         }
 
         String action = iwc.getParameter(ServiceAction);
+        System.out.println("action = "+action);
         if (action == null) {action = "";}
 
         if (action.equals("")) {
@@ -131,6 +132,7 @@ public class ServiceDesigner extends TravelManager {
             priceCategoryCreation(iwc);
         }else if (action.equals(this.PriceCategorySave)) {
             priceCategorySave(iwc);
+						finalize(iwc);
         }
 
 
@@ -140,6 +142,16 @@ public class ServiceDesigner extends TravelManager {
 
       super.addBreak();
   }
+
+private void finalize(IWContext iwc) throws Exception {
+	Service service = getService(iwc);
+	if (service != null) {
+		Product product = getProductBusiness(iwc).getProduct((Integer)service.getPrimaryKey());
+    DesignerForm df = getServiceHandler(iwc).getDesignerForm(iwc, productCategory);
+    df.finalizeCreation( iwc, product );
+	}
+}
+
 
   private void setCategoryCreation(IWContext iwc, boolean isCreation) {
     if (isCreation) {

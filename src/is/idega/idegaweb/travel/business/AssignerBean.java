@@ -88,7 +88,7 @@ public class AssignerBean extends IBOServiceBean implements Assigner{
           many = SimpleQuerier.executeStringQuery(sql.toString());
         }
 
-        if (many != null) {
+        if (many != null && many.length > 0) {
           if (many[0] != null)
           returner += Integer.parseInt(many[0]);
         }

@@ -55,12 +55,16 @@ public class HotelBookingForm extends BookingForm {
     boolean isExpired = false;
     if (_reseller != null) {
       return isExpired = getHotelBusiness(iwc).getIfExpired(_contract, _stamp);
+    } else {
+    	IWTimestamp now = IWTimestamp.RightNow();
+    	now.addDays(-1);
+    	
+    	return now.isLaterThanOrEquals(_stamp);
     }
-    return false;
   }
 
   public boolean getIsDayVisible(IWContext iwc) throws RemoteException, SQLException, TimeframeNotFoundException, ServiceNotFoundException {
-    return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp);
+    return getHotelBusiness(iwc).getIfDay(iwc,_product, _product.getTimeframes(), _stamp, false, false);
   }
 
 
@@ -305,9 +309,9 @@ public class HotelBookingForm extends BookingForm {
         table.add(pTable, 2, row);
 
         Text count = (Text) super.theSmallBoldText.clone();
-          count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
+          count.setText(iwrb.getLocalizedString("travel.number_of_seats","Number of seats"));
         Text unitPrice = (Text) super.theSmallBoldText.clone();
-          unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
+          unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price pr. seat"));
         Text amount = (Text) super.theSmallBoldText.clone();
           amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
 
@@ -691,7 +695,7 @@ public class HotelBookingForm extends BookingForm {
           Text depPlaceText = (Text) theText.clone();
               depPlaceText.setText(iwrb.getLocalizedString("travel.departure_place","Departure place"));
           Text fromText = (Text) theText.clone();
-              fromText.setText(iwrb.getLocalizedString("travel.from","From"));
+              fromText.setText(iwrb.getLocalizedString("travel.date_of_arrival","Date of arrival"));
           Text manyDaysText = (Text) theText.clone();
               manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_nights","Number of days"));
           Text commentText = (Text) theText.clone();
@@ -769,10 +773,14 @@ public class HotelBookingForm extends BookingForm {
 
           ++row;
 
-          Text count = (Text) super.theSmallBoldText.clone();
-            count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
-          Text unitPrice = (Text) super.theSmallBoldText.clone();
-            unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
+	        Text count = (Text) super.theSmallBoldText.clone();
+	          count.setText(iwrb.getLocalizedString("travel.number_of_seats","Number of seats"));
+	        Text unitPrice = (Text) super.theSmallBoldText.clone();
+	          unitPrice.setText(iwrb.getLocalizedString("travel.price_per_seat","Price pr. seat"));
+//          Text count = (Text) super.theSmallBoldText.clone();
+//            count.setText(iwrb.getLocalizedString("travel.number_of_units","Units"));
+//          Text unitPrice = (Text) super.theSmallBoldText.clone();
+//            unitPrice.setText(iwrb.getLocalizedString("travel.unit_price","Unit price"));
           Text amount = (Text) super.theSmallBoldText.clone();
             amount.setText(iwrb.getLocalizedString("travel.total_amount","Total amount"));
           Text space = (Text) super.theSmallBoldText.clone();
@@ -1333,15 +1341,6 @@ public class HotelBookingForm extends BookingForm {
         table.add(getBoldTextWhite(currency.getCurrencyAbbreviation()),2,row);
       }
 
-//      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
-      SubmitButton yes = new SubmitButton(iwrb.getLocalizedString("yes","Yes"));
-//        yes.setOnSubmit("this.form."+yes.getName()+".disabled = true");
-      table.add(new HiddenInput(super.sAction, PublicBooking.parameterBookingVerified),2,row);
-        yes.setOnClick("this.form.submit()");
-        yes.setOnClick("this.form."+yes.getName()+".disabled = true");
-      Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
-          no.setAttribute("onClick","history.go(-1)");
-
 
       if (inquiry == null) {
         ++row;
@@ -1405,11 +1404,24 @@ public class HotelBookingForm extends BookingForm {
         debug("INQUIRY");
       }
 
+//      SubmitButton yes = new SubmitButton(iwrb.getImage("buttons/yes.gif"),this.sAction, this.parameterBookingVerified);
+      SubmitButton yes = new SubmitButton(iwrb.getLocalizedString("yes","Yes"));
+//        yes.setOnSubmit("this.form."+yes.getName()+".disabled = true");
+//      table.add("[HotelBookingForm] adding "+super.sAction+" as "+PublicBooking.parameterBookingVerified, 2, row);
+//        yes.setOnClick("this.form.submit()");
+  //      yes.setOnClick("this.form."+yes.getName()+".disabled = true");
+
+      Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
+//          no.setAttribute("onClick","history.go(-1)");
+
       ++row;
       table.setAlignment(1,row,"left");
       table.setAlignment(2,row,"right");
       table.add(no,1,row);
       if (valid) {
+//	      table.add(new HiddenInput(this.sAction, "Test jamms"),2,row);
+	      table.add(new HiddenInput(this.sAction, PublicBooking.parameterBookingVerified),2,row);
+	      table.add(new HiddenInput("Gimmi", "Test"),2,row);
         table.add(yes,2,row);
       }
 

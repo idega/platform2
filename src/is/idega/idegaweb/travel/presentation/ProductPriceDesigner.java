@@ -317,6 +317,8 @@ public class ProductPriceDesigner extends TravelWindow {
 
     table.setRowColor(row,TravelManager.GRAY);
     table.setAlignment(3,row,"right");
+System.out.println("FORM_ACTION = "+FORM_ACTION);
+System.out.println("FORM_ACTION_SAVE = "+FORM_ACTION_SAVE);
     table.add(new SubmitButton(iwrb.getImage("/buttons/save.gif"),this.FORM_ACTION, this.FORM_ACTION_SAVE),3,row);
 
     add(Text.BREAK);
