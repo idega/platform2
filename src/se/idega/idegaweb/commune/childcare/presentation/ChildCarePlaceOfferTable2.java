@@ -62,14 +62,15 @@ class ChildCarePlaceOfferTable2 extends Table{
 			String name = app.getProvider().getName();
 				
 			String offerText = "";
-			boolean offer = app.getStatus().equalsIgnoreCase(ChildCareCustomerApplicationTable.STATUS_BVJD); /**@TODO: is this correct status?*/
-			//The granted application (offer) is the first in the iterati
+			boolean offer = app.getStatus().equalsIgnoreCase(ChildCareCustomerApplicationTable.STATUS_PREL) && app.getApplicationStatus() == _page.childCarebusiness.getStatusParentsAccept(); 
 			if (offer) {
-					//The granted application (offer) is the first in the iteratin.
-					//offerChoiceNr will therefore be set when the other applications are handled.
+					//The granted application (offer) is the first in the iteration.
+					//offerChoiceNr will therefore have its value set when the other applications are handled.
 					offerText = GRANTED + app.getFromDate(); 
 					offerChoiceNr = app.getChoiceNumber();
 			}
+			System.out.println("ChoiceNr: " + app.getChoiceNumber());
+			System.out.println("offerChoiceNr: " + offerChoiceNr);
 			
 			//No row is disabled if the first choice on the list is offered
 			boolean disable = app.getChoiceNumber() > offerChoiceNr && offerChoiceNr != 1;
@@ -78,7 +79,9 @@ class ChildCarePlaceOfferTable2 extends Table{
 			String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
 	
 			resetOtherScript += addToTable(row, id, app.getChoiceNumber() + ": " + name 
-			//+ " (nodeId:" + app.getNodeID() + ")"
+				+ " (Id:" + app.getNodeID()   //DEBUG
+				+ " - " + app.getStatus()   //DEBUG
+				+ " - " + app.getApplicationStatus() + ")"   //DEBUG			
 				, offerText, prognosis, offer, disable, selectOne);
 	
 			row++;
@@ -132,18 +135,18 @@ class ChildCarePlaceOfferTable2 extends Table{
 			rb1.setAttribute("disabled");
 			rb2.setAttribute("disabled");
 		} else {
-			rb1.setAttribute("checked");
+			rb2.setAttribute("checked");
 		}
 		
 		String partlyResetRadioScript = "";	
 		if (!disable && !offer){
 			add(rb1, 4, row);
 			add(rb2, 5, row);
-			partlyResetRadioScript = "\nif (id != '" + rb1.getID() + "') { document.getElementById('" + rb1.getID() + "').checked = true; }";
+			partlyResetRadioScript = "\nif (id != '" + rb2.getID() + "') { document.getElementById('" + rb2.getID() + "').checked = true; }";
 		}
 		
 		if (selectOne){
-			rb2.setOnClick("resetRadio('" + rb1.getID() + "')");
+			rb1.setOnClick("resetRadio('" + rb2.getID() + "')");
 		}
 
 		if (row % 2 == 0)

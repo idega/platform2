@@ -29,7 +29,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.19 2003/04/16 16:52:02 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.20 2003/04/23 13:27:43 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -37,15 +37,18 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	private final static String[] SUBMIT = new String[]{"ccot_submit", "Next"};
 	private final static String[] CANCEL = new String[]{"ccot_cancel", "Cancel"};
+	private final static String[] SUBMIT_ALERT_2 = new String[]{"ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards."};
+
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
 	
 //	public final static String STATUS_UBEH = "UBEH";
 	public final static String STATUS_BVJD = "BVJD";
+	public final static String STATUS_PREL = "PREL";
 	
 	private String CHILD_ID = CitizenChildren.getChildIDParameterName();	
 	
-
+	ChildCareBusiness childCarebusiness = null;
 
 	
 
@@ -53,22 +56,30 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
+		childCarebusiness = getChildCareBusiness(iwc);
 				
 		Form form = new Form();
 		Table layoutTbl = new Table(3, 5);
 		//layoutTbl.mergeCells(1, 1, 2, 1); //merging upper two cells
 
-		
+		Collection applications = findApplications(iwc); 
+				
 		switch(parseAction(iwc)){
 			case CCConstants.ACTION_SUBMIT_1: 
-				iwc.setSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS, getAcceptedStatus(iwc));
-				createPagePhase2(iwc, layoutTbl); 
+//				iwc.setSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS, getAcceptedStatus(iwc));
+				handleAcceptStatus(iwc, getAcceptedStatus(iwc));  
+				applications = findApplications(iwc); 
+			    if (hasOffer(applications)) {
+					createPagePhase1(layoutTbl, applications); 			    	
+			    } else {
+					createPagePhase2(layoutTbl, applications);
+			    } 
 				break;
 			
-			case CCConstants.ACTION_SUBMIT_CONFIRM:
+/*			case CCConstants.ACTION_SUBMIT_CONFIRM:
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl)); 				
 				break;
-				
+*/				
 			case CCConstants.ACTION_CANCEL_1: 
 				/**@todo: What should happen here? */ 
 			    iwc.forwardToIBPage(getParentPage(), getEndPage());
@@ -76,21 +87,25 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				
 			case CCConstants.ACTION_SUBMIT_2: 
 //				iwc.setSessionAttribute(CCConstants.SESSION_KEEP_IN_QUEUE, getKeepInQueue(iwc));
-				handleAcceptStatus(iwc, (List) iwc.getSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS));				
+//				handleAcceptStatus(iwc, (List) iwc.getSessionAttribute(CCConstants.SESSION_ACCEPTED_STATUS));				
 				handleKeepQueueStatus(iwc, getKeepInQueue(iwc));
-				iwc.forwardToIBPage(getParentPage(), getEndPage());
+				if (getEndPage() != null){
+					iwc.forwardToIBPage(getParentPage(), getEndPage());
+				}
 //				createSubmitPage(iwc, layoutTbl);
 				break;
 				
 			case CCConstants.ACTION_CANCEL_2: 
 				/**@todo: What should happen here? */ 
-				iwc.forwardToIBPage(getParentPage(), getEndPage());
+				if (getEndPage() != null){
+					iwc.forwardToIBPage(getParentPage(), getEndPage());
+				}
 				break;
 
 			case CCConstants.ACTION_REQUEST_INFO: 
 				/**@todo: How do i 'connect' to the message editor block? */ 
 			    ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(iwc.getParameter(CCConstants.APPID));
-			    getChildCareBusiness(iwc).sendMessageToProvider(application, "Requst for information", "Requesting information...", application.getOwner()); //TODO: find a better text 
+			    getChildCareBusiness(iwc).sendMessageToProvider(application, "Requst for information", "Requesting information...", application.getOwner()); //TODO: internationalize 
 			    createRequestInfoConfirmPage(layoutTbl); 
 
 				
@@ -110,7 +125,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 			default: 
 				/**@todo: What should happen here? */ 
-				form.setOnSubmit(createPagePhase1(iwc, layoutTbl)); 		
+				form.setOnSubmit(createPagePhase1(layoutTbl, applications)); 		
 				
 
 		}
@@ -196,7 +211,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			String[] status = (String[]) i.next(); 
 			if (status[0] != null){
 				if (status[1] != null && status[1].equals(CCConstants.NO)){
-					getChildCareBusiness(iwc).rejectOffer(new Integer(status[0]).intValue(), iwc.getCurrentUser());
+					
+					getChildCareBusiness(iwc).removeFromQueue(new Integer(status[0]).intValue(), iwc.getCurrentUser());
+//					getChildCareBusiness(iwc).rejectOffer(new Integer(status[0]).intValue(), iwc.getCurrentUser());
 					//ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(status[0]);
 					//application.setStatus(CaseBMPBean.STATE_DELETED);
 				}
@@ -211,28 +228,33 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	 * @throws RemoteException
 	 */
 	private void handleAcceptStatus(IWContext iwc, List l) throws RemoteException {
+	
+		
 		Iterator i = l.iterator();
+		int acceptedChoiceNumber = 10;
+		
 		while(i.hasNext()){
 			AcceptedStatus status = (AcceptedStatus) i.next(); 
 			
 			if (status.isDefined()){
-				ChildCareApplication application = getChildCareBusiness(iwc).getApplicationByPrimaryKey(status._appid);
+				ChildCareApplication application = childCarebusiness.getApplicationByPrimaryKey(status._appid);
 		
 				if(status.equals(CCConstants.YES)) {
-					System.out.println("Accepting application.");
+//					System.out.println("Accepting application.");
 					getChildCareBusiness(iwc).parentsAgree(
 					    Integer.valueOf(status._appid).intValue(), 
 						application.getOwner(),
 						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT), 
 						getAcceptedMessage(iwc, application)
 						); 
+						acceptedChoiceNumber = status.getChoiceNumber();
 						
 				} else if(status.equals(CCConstants.NO_NEW_DATE)) {
 					getChildCareBusiness(iwc).rejectOfferWithNewDate(
 					    Integer.valueOf(status._appid).intValue(), 
 					    application.getOwner(),
 					    status._date);
-//						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), /**@TODO: Change text */
+//						localize(CCConstants.TEXT_OFFER_REJECTED_SUBJECT), 
 //						getRejectedMessage(iwc, application),
 //						localize(CCConstants.TEXT_OFFER_ACCEPTED_SUBJECT),
 //						getAcceptedMessage(iwc, application),
@@ -252,6 +274,18 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				}					
 			}
 		}
+		
+//		Removing other applications... 	
+		//if (true) {	
+			  Collection applications = findApplications(iwc); 
+			  Iterator allaps = applications.iterator();
+			  while(allaps.hasNext()){
+				  ChildCareApplication app = (ChildCareApplication) allaps.next();
+				  if (app.getChoiceNumber() > acceptedChoiceNumber){
+					  childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner()); 
+				  }
+			  }
+		//}
 	}
 
 
@@ -291,8 +325,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				iwc.getParameter(CCConstants.ACCEPT_OFFER + i),
 				iwc.getParameter(CCConstants.NEW_DATE + i + "_day"),
 				iwc.getParameter(CCConstants.NEW_DATE + i + "_month"),
-				iwc.getParameter(CCConstants.NEW_DATE + i + "_year")
-			));
+				iwc.getParameter(CCConstants.NEW_DATE + i + "_year"),
+				i));
 			i++;
 		}
 		
@@ -302,10 +336,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	private class AcceptedStatus{
 		String _appid, _status; 
 		Date _date;
+		int _choiceNumber;
 		
-		AcceptedStatus(String appId, String status, String day, String month, String year){
+		AcceptedStatus(String appId, String status, String day, String month, String year, int choiceNumber){
 			_appid = appId;
 			_status = status;
+			_choiceNumber = choiceNumber;
 	
 			if (day != null && month != null && year != null) {
 				try{
@@ -318,7 +354,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				}catch(NumberFormatException ex){
 					_date = new Date(0); 
 				}catch(IllegalArgumentException ex){
-					_date = new Date(0); /**@TODO: IS THIS OK?*/
+					_date = new Date(0); 
 				}			
 			}
 		}	
@@ -344,6 +380,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 		boolean isDefined(){
 			return _status != null;
+		}
+		
+		int getChoiceNumber(){
+			return _choiceNumber;
 		}
 	}
 	
@@ -389,21 +429,29 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		layoutTbl.setAlignment(1, 2, "right");
 	}
 			
-	private String createPagePhase1(IWContext iwc, Table layoutTbl) throws RemoteException{
-		Collection applications = findApplications(iwc);
+	/**
+	 * Construct the html for the first table
+	 * @param iwc
+	 * @param layoutTbl
+	 * @return
+	 * @throws RemoteException
+	 */
+	private String createPagePhase1(Table layoutTbl, Collection applications) throws RemoteException{
 		if (applications.size() == 0){
-			layoutTbl.add(new Text("No application found"));
+			layoutTbl.add(new Text("No application found")); //TODO format better
 			return "";
 				
 		
 		}else{
 			Table appTable = new ChildCarePlaceOfferTable1(
-				this, sortApplications(applications, false));
+				this, sortApplications(applications, false)); //sorted by order number
 	
 			SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_1).toString());
+		
 	//		submitBtn.setName(SUBMIT[0] + PAGE_1);
 			submitBtn.setAsImageButton(true);
-//			submitBtn.setSubmitConfirm("Are you sure you want to submit?");
+			
+//			submitBtn.setSubmitConfirm(localize(SUBMIT_ALERT_1));			
 	
 			SubmitButton cancelBtn = new SubmitButton(localize(CANCEL), CCConstants.ACTION, new Integer(CCConstants.ACTION_CANCEL_1).toString());
 	//		cancelBtn.setName(CANCEL[0] + PAGE_1);
@@ -421,14 +469,14 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		
 	}
 	
-	private void createPagePhase2(IWContext iwc, Table layoutTbl) throws RemoteException{
+	private void createPagePhase2(Table layoutTbl, Collection applications) throws RemoteException{
 		Table appTable = new ChildCarePlaceOfferTable2(
-			this, sortApplications(findApplications(iwc), true));
+			this, sortApplications(applications, true));
 						
 		SubmitButton submitBtn = new SubmitButton(localize(SUBMIT), CCConstants.ACTION, new Integer(CCConstants.ACTION_SUBMIT_2).toString());
 //		submitBtn.setName(SUBMIT[0] + PAGE_2);
 		submitBtn.setAsImageButton(true);
-		submitBtn.setSubmitConfirm("Are you sure you want to submit?");
+		submitBtn.setSubmitConfirm(localize(SUBMIT_ALERT_2));			
 		
 
 		SubmitButton cancelBtn = new SubmitButton(localize(CANCEL), CCConstants.ACTION, new Integer(CCConstants.ACTION_CANCEL_2).toString());
@@ -473,12 +521,29 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		return applications;
 	}
 
+	private boolean hasOffer(Collection applications) throws RemoteException{
+		
+		Iterator i = applications.iterator();
+		
+		while (i.hasNext()) {
+			ChildCareApplication app = (ChildCareApplication) i.next();
+			
+			String caseStatus = app.getStatus();
+			char appStatus = app.getApplicationStatus();
+			System.out.println("STATUS: " + app.getNodeID() + " - " + caseStatus + "/" + appStatus);
+			if (caseStatus.equals(ChildCareCustomerApplicationTable.STATUS_BVJD) 
+				&& appStatus != childCarebusiness.getStatusAccepted())
+			    return true;	
+			    
+		}
+		return false;		
+	}
 	/**
 	 * Method getChildCareBusiness.
 	 * @param iwc
 	 * @return ChildCareBusiness
 	 */
-	private ChildCareBusiness getChildCareBusiness(IWContext iwc) {
+	ChildCareBusiness getChildCareBusiness(IWContext iwc) {
 		try {
 			return (ChildCareBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);
 		} catch (RemoteException e) {

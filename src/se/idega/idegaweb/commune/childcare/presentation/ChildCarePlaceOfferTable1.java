@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.SortedSet;
 
+
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 
 import com.idega.presentation.Script;
@@ -25,6 +26,9 @@ class ChildCarePlaceOfferTable1 extends Table{
 	private static Text HEADER_NO;
 
 	private static String GRANTED;
+	
+	private final static String[] SUBMIT_ALERT_1 = new String[]{"ccot_alert_1", "Do you want to commit your choice? This can not be undone afterwards."};
+	
 
 	private static boolean _initializeStatics = false;
 	
@@ -64,35 +68,39 @@ class ChildCarePlaceOfferTable1 extends Table{
 		System.out.println("Applications: " + applications);
 		Iterator i = applications.iterator();
 		int row = 2;
-		boolean disable = false;
+		boolean offerPresented = false; //To avoid more than the first offer to be presented with accept/reject possibilities
 		String validateDateScript = "";
+		
 		while (i.hasNext()) {
 			ChildCareApplication app = ((ComparableApp) i.next()).getApplication();
 			app.getChoiceNumber();
-			
 			String id = ((Integer) app.getPrimaryKey()).toString();
-				
 			String name = app.getProvider().getName();
-				
 			String offerText = "";
-			boolean offer = app.getStatus().equalsIgnoreCase(ChildCareCustomerApplicationTable.STATUS_BVJD); /**@TODO: is this correct status?*/
+			
+			//Only first offer should be presented with possibility to accept / reject
+		    boolean offer = app.getStatus().equalsIgnoreCase(ChildCareCustomerApplicationTable.STATUS_BVJD); 
+
 			if (offer) {
-					offerText = GRANTED + app.getFromDate(); 
+				offerText = GRANTED + app.getFromDate(); 
 			}
-					
 			String prognosis = app.getPrognosis() != null ? app.getPrognosis() : "";
-	
+			
+			//Adding row to the table
 			validateDateScript += addToTable(row, id, app.getChoiceNumber() + ": " + name 
-				//+ " (nodeId:" + app.getNodeID() + ")"
-				, offerText, prognosis, offer, disable);
+			+ " (Id:" + app.getNodeID()   //DEBUG
+			+ " - " + app.getStatus()   //DEBUG
+			+ " - " + app.getApplicationStatus() + ")"   //DEBUG
+				, offerText, prognosis, offer && ! offerPresented, offerPresented || app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected());
+				
+			if (offer){
+				offerPresented = true;
+			}
 				
 			if (i.hasNext()){
 				validateDateScript += " || ";
 			}
 	
-			if (offer){
-				disable = true;
-			}
 			
 			row++;
 			
@@ -102,8 +110,8 @@ class ChildCarePlaceOfferTable1 extends Table{
 		
 		Script script = new Script("javascript");
 		script.setFunction("validateDates", validateDateScript);
-		_onSubmitHandler = "return validateDates()";
-		
+		_onSubmitHandler = "if (!validateDates()) return false; else return confirm('"+ _page.localize(SUBMIT_ALERT_1) +"')";
+	
 		page.add(script);
 
 		
@@ -121,7 +129,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 	 * @param status
 	 * @param prognosis
 	 */
-	private String addToTable(int row, String id, String name, String status, String prognosis, boolean offer, boolean disable) {
+	private String addToTable(int row, String id, String name, String status, String prognosis, boolean presentOffer, boolean disable) {
 		int index = row - 1; //row=2 for first row because of heading is in row 1
 		add(new HiddenInput(CCConstants.APPID + index, id)); 
 		String textColor = disable ? "gray":"black";
@@ -150,18 +158,7 @@ class ChildCarePlaceOfferTable1 extends Table{
 		reqBtn.setName(REQUEST_INFO[0]);
 		reqBtn.setAsImageButton(true);
 			
-		RadioButton rb1 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.YES);
-		RadioButton rb2 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO_NEW_DATE);
-		RadioButton rb3 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO);
-	/*	rb1.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
-		rb2.setOnChange(CCConstants.NEW_DATE + index + ".disabled=false;");
-		rb3.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
-	*/	
-		rb1.setSelected();
-		DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
-		date.setStyleAttribute("style", _page.getSmallTextFontStyle());
-		
-		System.out.println("DATE ID" + date.getIDForDay());
+
 		
 //		System.out.println("DATE ID" + date.getID());		
 			
@@ -180,11 +177,25 @@ class ChildCarePlaceOfferTable1 extends Table{
 
 		String validateDateScript = "false";
 					
-		if (offer){
-			
+		if (presentOffer){
+			RadioButton rb1 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.YES);
+			RadioButton rb2 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO_NEW_DATE);
+			RadioButton rb3 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO);
+		/*	rb1.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
+			rb2.setOnChange(CCConstants.NEW_DATE + index + ".disabled=false;");
+			rb3.setOnChange(CCConstants.NEW_DATE + index + ".disabled=true;"); //NewDate" + index + ".value=''
+		*/	
+			rb1.setSelected();
+			DateInput date = (DateInput) _page.getStyledInterface(new DateInput(CCConstants.NEW_DATE + index, true));
+			date.setStyleAttribute("style", _page.getSmallTextFontStyle());
+		
+//			System.out.println("DATE ID" + date.getIDForDay());
+						
 			add(rb1, 5, row);
 			add(rb2, 6, row);
+			add(new Text("<NOBR>"), 6, row);
 			add(date, 6, row);
+			add(new Text("</NOBR>"), 6, row);
 			add(rb3, 7, row);
 			validateDateScript = "(document.getElementById('" + rb2.getID() + "').checked && " +
 				"(document.getElementById('" + date.getIDForDay() + "').value == '00' || " +
@@ -229,6 +240,5 @@ class ChildCarePlaceOfferTable1 extends Table{
 		add(HEADER_NO, 7, 1);
 	}
 	
-
 	
 }
