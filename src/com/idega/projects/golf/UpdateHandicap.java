@@ -63,12 +63,12 @@ public class UpdateHandicap {
             double tournamentHandicap = 0;
 
             Scorecard[] scorecard = (Scorecard[]) (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and ( scorecard_date > '"+stampur.toSQLDateString()+"' or scorecard_date is null ) order by scorecard_date");
-            if ( scorecard.length > 0 ) {
+            //if ( scorecard.length > 0 ) {
               Scorecard[] scorecardsBefore = (Scorecard[]) Scorecard.getStaticInstance("com.idega.projects.golf.entity.Scorecard").findAll("select * from scorecard where member_id = "+member_id+" and scorecard_date < '"+stampur.toSQLDateString()+"' order by scorecard_date desc");
               if ( scorecardsBefore.length > 0 ) {
                 grunn = (double) scorecardsBefore[0].getHandicapAfter();
               }
-            }
+            //}
 
             grunn = Double.parseDouble(TextSoap.singleDecimalFormat(grunn));
 
