@@ -2,6 +2,8 @@ package is.idega.idegaweb.member.presentation;
 
 import java.rmi.RemoteException;
 import java.util.Hashtable;
+import java.util.StringTokenizer;
+
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOLegacyEntity;
 
@@ -14,6 +16,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
+import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.IntegerInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.RadioGroup;
@@ -28,36 +31,46 @@ import com.idega.user.presentation.UserGroupTab;
  */
 public class GroupAgeGenderTab extends UserGroupTab {
   
+  // field
   private CheckBox maleField;
   private CheckBox femaleField;
   
   private IntegerInput lowerAgeLimitField;
   private IntegerInput upperAgeLimitField;
+  private CheckBox ageLimitIsStringentConditionField;
+  private DateInput keyDateForAgeField; 
   
   private Text lowerAgeTooSmallField;
   private Text upperAgeTooLargeField;
   private Text lowerAgeGreaterThanUpperAgeField;
   
+  // text
   private Text femaleText;
   private Text maleText;
   private Text lowerAgeLimitText;
   private Text upperAgeLimitText;
+  private Text ageLimitIsStringentConditionText;
+  private Text keyDateForAgeText;
   
+  // error text
   private String lowerAgeTooSmallError = "Lower age limit is too small";
   private String upperAgeTooLargeError = "Upper age limit is too large";
   private String lowerAgeGreaterThanUpperAgeError = "Lower age is greater than upper age";
   
+  // special error variables
   private boolean lowerAgeTooSmall = false;
   private boolean upperAgeTooLarge = false;
   private boolean lowerAgeGreaterThanUpperAge = false;
   
   
-  // field names
+  // field name
   private String maleFieldName;
   private String femaleFieldName;
   
   private String lowerAgeLimitFieldName;
   private String upperAgeLimitFieldName;
+  private String ageLimitIsStringentConditionFieldName;
+  private String keyDateForAgeFieldName;
   
   private String lowerAgeTooSmallFieldName;
   private String upperAgeTooLargeFieldName;
@@ -83,6 +96,8 @@ public class GroupAgeGenderTab extends UserGroupTab {
     femaleFieldName = "female";
     lowerAgeLimitFieldName = "lowerAgeLimitField";
     upperAgeLimitFieldName = "upperAgeLimitField";
+    ageLimitIsStringentConditionFieldName = "ageLimitIsStringentConditionFieldName";
+    keyDateForAgeFieldName = "keyDateForAgeFieldName";
     lowerAgeTooSmallFieldName = "lowerAgeTooSmallField";
     upperAgeTooLargeFieldName = "upperAgeTooLargeField";
     lowerAgeGreaterThanUpperAgeFieldName = "lowerAgeGreaterThanUpperAgeField";
@@ -96,6 +111,9 @@ public class GroupAgeGenderTab extends UserGroupTab {
     fieldValues.put(femaleFieldName, new Boolean(false));
     fieldValues.put(lowerAgeLimitFieldName, new Integer(0));
     fieldValues.put(upperAgeLimitFieldName, new Integer(0));
+    fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(false));
+    fieldValues.put(keyDateForAgeFieldName, ""); 
+    // error fields
     fieldValues.put(lowerAgeTooSmallFieldName, "");
     fieldValues.put(upperAgeTooLargeFieldName, "");
     fieldValues.put(lowerAgeGreaterThanUpperAgeFieldName, ""); 
@@ -109,9 +127,20 @@ public class GroupAgeGenderTab extends UserGroupTab {
     maleField.setChecked(((Boolean)fieldValues.get(maleFieldName)).booleanValue());
     lowerAgeLimitField.setContent(((Integer) fieldValues.get(lowerAgeLimitFieldName)).toString());
     upperAgeLimitField.setContent(((Integer) fieldValues.get(upperAgeLimitFieldName)).toString());
+
+    ageLimitIsStringentConditionField.setChecked(((Boolean) fieldValues.get(ageLimitIsStringentConditionFieldName)).booleanValue());
+    StringTokenizer keyDate = new StringTokenizer((String)fieldValues.get(keyDateForAgeFieldName)," -");  
+
+    if(keyDate.hasMoreTokens()){
+      keyDateForAgeField.setMonth(keyDate.nextToken());
+    }
+    if(keyDate.hasMoreTokens()){
+      keyDateForAgeField.setDay(keyDate.nextToken());
+    }
+    // error fields
     lowerAgeTooSmallField.setText((String) fieldValues.get(lowerAgeTooSmallFieldName));
     upperAgeTooLargeField.setText((String) fieldValues.get(upperAgeTooLargeFieldName));
-    lowerAgeGreaterThanUpperAgeField.setText((String) fieldValues.get(lowerAgeGreaterThanUpperAgeFieldName)); 
+    lowerAgeGreaterThanUpperAgeField.setText((String) fieldValues.get(lowerAgeGreaterThanUpperAgeFieldName));
 	}
 	/**
 	 * @see com.idega.user.presentation.UserGroupTab#initializeFields()
@@ -135,6 +164,14 @@ public class GroupAgeGenderTab extends UserGroupTab {
     lowerAgeLimitField.setAsNotEmpty(notEmpty);
     upperAgeLimitField.setAsNotEmpty(notEmpty);
     
+    ageLimitIsStringentConditionField = new CheckBox(ageLimitIsStringentConditionFieldName);
+    
+    keyDateForAgeField = new DateInput(keyDateForAgeFieldName);
+    // do not show the year
+    keyDateForAgeField.setToShowYear(false);
+
+    
+    // error fields
     lowerAgeTooSmallField = new Text();
     lowerAgeTooSmallField.setFontColor("#FF0000");
     
@@ -150,16 +187,18 @@ public class GroupAgeGenderTab extends UserGroupTab {
 	 */
 	public void initializeTexts() {
     IWContext iwc = getEventIWContext();
-    femaleText = new Text("Female:");
-    maleText = new Text("Male:");
+    femaleText = new Text("female members");
+    maleText = new Text("male members");
     lowerAgeLimitText = new Text("Lower age limit:");
     upperAgeLimitText = new Text("Upper age limit:");
+    ageLimitIsStringentConditionText = new Text("Age limits are stringent conditions");
+    keyDateForAgeText = new Text("Key date for age:");
 	}
 	/**
 	 * @see com.idega.user.presentation.UserGroupTab#lineUpFields()
 	 */
 	public void lineUpFields() {
-    Table table = new Table(2,7);
+    Table table = new Table(2,9);
     table.add(femaleText,1, 1);
     table.add(femaleField,2,1);
     table.add(maleText,1,2);
@@ -168,9 +207,14 @@ public class GroupAgeGenderTab extends UserGroupTab {
     table.add(lowerAgeLimitField,2,3);
     table.add(upperAgeLimitText,1,4);
     table.add(upperAgeLimitField,2,4);
-    table.add(lowerAgeTooSmallField,1,5);
-    table.add(upperAgeTooLargeField,1,6);
-    table.add(lowerAgeGreaterThanUpperAgeField,1,7);
+    table.add(keyDateForAgeText,1,5);
+    table.add(keyDateForAgeField,2,5);
+    table.add(ageLimitIsStringentConditionText,1,6);
+    table.add(ageLimitIsStringentConditionField,2,6);
+    // error fields
+    table.add(lowerAgeTooSmallField,1,7);
+    table.add(upperAgeTooLargeField,1,8);
+    table.add(lowerAgeGreaterThanUpperAgeField,1,9);
     add(table);
 	}
 	/**
@@ -183,11 +227,22 @@ public class GroupAgeGenderTab extends UserGroupTab {
       String male = iwc.getParameter(maleFieldName);
       String lowerAgeLimit = iwc.getParameter(lowerAgeLimitFieldName);
       String upperAgeLimit = iwc.getParameter(upperAgeLimitFieldName);
+      String ageLimitIsStringentCondition = iwc.getParameter(ageLimitIsStringentConditionFieldName);
+      
+      String keyDate = iwc.getParameter(keyDateForAgeFieldName);
+      // only store key date if month and day is set by the user
+      // that is e.g: "1 - 01 - 11"
+      if ( (keyDate != null) && (keyDate.indexOf("-") != keyDate.lastIndexOf("-")) )   {
+        int i = keyDate.indexOf("-");
+        keyDate = keyDate.substring(++i);
+        fieldValues.put(keyDateForAgeFieldName, keyDate);
+      }
+      
+      fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition != null));
       
       fieldValues.put(femaleFieldName, new Boolean(female != null));
       fieldValues.put(maleFieldName, new Boolean(male != null));
-      
-
+ 
       if(lowerAgeLimit != null){
         fieldValues.put(lowerAgeLimitFieldName, new Integer(lowerAgeLimit));
       }
