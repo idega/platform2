@@ -80,14 +80,14 @@ public abstract class GolfBlock extends Block {
 	public final static String STYLENAME_INTERFACE_BUTTON = "InterfaceButton";
 	public final static String STYLENAME_CHECKBOX = "CheckBox";
 	public final static String STYLENAME_TEMPLATE_LINK = "TemplateLink";
-	private final static String STYLENAME_TEMPLATE_LINK2 = "TemplateLink2";
-	private final static String STYLENAME_TEMPLATE_LINK3 = "TemplateLink3";
+	public final static String STYLENAME_TEMPLATE_LINK2 = "TemplateLink2";
+	public final static String STYLENAME_TEMPLATE_LINK3 = "TemplateLink3";
 	private final static String STYLENAME_TEMPLATE_LINK_SELECTED = "TemplateSelectedLink";
 	private final static String STYLENAME_TEMPLATE_SUBLINK = "TemplateSubLink";
 	private final static String STYLENAME_TEMPLATE_SUBLINK_SELECTED = "TemplateSelectedSubLink";
 	private final static String STYLENAME_TEMPLATE_HEADER = "TemplateHeader";
 	public final static String STYLENAME_TEMPLATE_HEADER2 = "TemplateHeader2";
-	private final static String STYLENAME_TEMPLATE_HEADER_LINK = "TemplateHeaderLink";
+	public final static String STYLENAME_TEMPLATE_HEADER_LINK = "TemplateHeaderLink";
 	private final static String STYLENAME_TEMPLATE_SMALL_HEADER = "TemplateSmallHeader";
 
 	private final static String DEFAULT_BACKGROUND_COLOR = "#ffffff";
