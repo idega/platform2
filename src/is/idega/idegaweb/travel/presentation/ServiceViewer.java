@@ -39,7 +39,7 @@ import java.util.List;
 
 public class ServiceViewer extends Block {
 
-  public static final String IW_BUNDLE_IDENTIFIER = "is.idegaweb.travel";
+  public static final String IW_BUNDLE_IDENTIFIER = "is.idega.travel";
   public static final String IW_TRAVEL_SERVICE_ID = "iw_tr_serv_id";
   public static final String IW_TRAVEL_SUPPLIER_ID = "iw_tr_suppl_id";
 
@@ -123,8 +123,8 @@ public class ServiceViewer extends Block {
       }
 
       idegaTimestamp stamp = new idegaTimestamp(serv.getDepartureTime());
-      depart.append(stamp.getHour());
-      depart.append(stamp.getMinute());
+      //depart.append(stamp.getHour());
+      //depart.append(stamp.getMinute());
     }
     catch (Exception ex) {
       ex.printStackTrace(System.err);
@@ -178,7 +178,6 @@ public class ServiceViewer extends Block {
 
        while( (iter!=null) && iter.hasNext() ) {
         Product prod = (Product) iter.next();
-
         try{
           serv = tsb.getService(prod);
         //number
@@ -190,13 +189,14 @@ public class ServiceViewer extends Block {
         //timeframe - trip length
           content.add(getServiceDurationString(serv),++x,y);
         //Price
-          content.add(getServicePrice(),++x,y);
+          content.add(getServicePrice(serv),++x,y);
         }
         catch(Exception ex){
           ex.printStackTrace(System.err);
         }
 
         y++;
+        x = 1;
       }
     }
 
@@ -204,14 +204,17 @@ public class ServiceViewer extends Block {
   }
 
 
-  private String getServicePrice(){
+  private String getServicePrice(Service service){
     StringBuffer price = new StringBuffer();
     ProductPrice[] prices = ProductPrice.getProductPrices(service.getID(), false);
     Currency currency;
 
     for (int j = 0; j < prices.length; j++) {
       try {
+        if (j<0) price.append(Text.BREAK);
         currency = new Currency(prices[j].getCurrencyId());
+        price.append(prices[j].getPriceCategory().getName());
+        price.append(Text.NON_BREAKING_SPACE);
         price.append(TextSoap.decimalFormat(tsb.getPrice(prices[j].getID(),service.getID(),prices[j].getPriceCategoryID(),prices[j].getCurrencyId(),idegaTimestamp.getTimestampRightNow()),2));
         price.append(Text.NON_BREAKING_SPACE);
         price.append(currency.getCurrencyAbbreviation());
@@ -261,6 +264,10 @@ public class ServiceViewer extends Block {
 
   public void setSupplier(Supplier supplier){
     this.supplier = supplier;
+  }
+
+  public void setService(Service service) {
+    this.service = service;
   }
 
   public void setDateFrom(idegaTimestamp dateFrom){
