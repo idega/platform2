@@ -187,6 +187,8 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherOne.setLastNameLength(nameInputLength);
 		searcherOne.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
 		searcherOne.addMonitoredSearchIdentifier("two");
+		searcherOne.setShowResetButton(false);
+		searcherOne.setShowMultipleResetButton(true);
 		UserSearcher searcherTwo = new UserSearcher();
 		searcherTwo.setShowMiddleNameInSearch(false);
 		searcherTwo.setOwnFormContainer(false);
@@ -199,7 +201,6 @@ public class HouseHoldViewer extends AccountingBlock {
 		searcherTwo.setLastNameLength(nameInputLength);
 		searcherTwo.setConstrainToUniqueSearch(constrainSearchToUniqueIdentifier);
 		searcherTwo.addClearButtonIdentifiers("one");
-		searcherTwo.setShowMultipleResetButton(true);
 		searcherTwo.addMonitoredSearchIdentifier("one");
 		String prmTwo = UserSearcher.getUniqueUserParameterName("two");
 		String prmOne = UserSearcher.getUniqueUserParameterName("one");
