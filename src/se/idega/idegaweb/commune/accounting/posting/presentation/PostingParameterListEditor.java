@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.15 2003/08/28 18:35:59 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.16 2003/09/02 23:40:22 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -43,10 +43,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.15 2003/08/28 18:35:59 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.16 2003/09/02 23:40:22 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -58,10 +58,14 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private final static String KEY_SAVE = "posting_parm_edit.save";
 	private final static String KEY_CANCEL = "posting_parm_edit.cancel";
 
-	private final static String KEY_ACTIVITY_HEADER = "posting_parm_edit.activity_header";
-	private final static String KEY_REGSPEC_HEADER = "regulation_specification_header";
-	private final static String KEY_COMPANY_TYPE_HEADER = "posting_parm_edit.company_type_header";
-	private final static String KEY_COM_BEL_HEADER = "posting_parm_edit.com_bel_header";
+	private final static String KEY_ACTIVITY_HEADER_ONE = "posting_parm_edit.activity_headerone";
+	private final static String KEY_ACTIVITY_HEADER_TWO = "posting_parm_edit.activity_headertwo";
+	private final static String KEY_REGSPEC_HEADER_ONE = "regulation_specification_headerone";
+	private final static String KEY_REGSPEC_HEADER_TWO = "regulation_specification_headertwo";
+	private final static String KEY_COMPANY_TYPE_HEADER_ONE = "posting_parm_edit.company_type_headerone";
+	private final static String KEY_COMPANY_TYPE_HEADER_TWO = "posting_parm_edit.company_type_headertwo";
+	private final static String KEY_COM_BEL_HEADER_ONE = "posting_parm_edit.com_bel_headerone";
+	private final static String KEY_COM_BEL_HEADER_TWO = "posting_parm_edit.com_bel_headertwo";
 
 	private final static String KEY_HEADER = "posting_parm_edit.header";
 	private final static String KEY_HEADER_OWN_ENTRY = "posting_parm_edit.header_own_entry";
@@ -353,24 +357,32 @@ public class PostingParameterListEditor extends AccountingBlock {
 		}
 
 		try {
+			int actPK = 0;
+			int regPK = 0;
+			int comPK = 0;
+			int comBelPK = 0;
+			if(pp != null) {
+				actPK = Integer.parseInt(pp.getActivity() != null ? 
+						pp.getActivity().getPrimaryKey().toString() : "0");	
+				regPK = Integer.parseInt(pp.getRegSpecType() != null ? 
+						pp.getRegSpecType().getPrimaryKey().toString() : "0");
+				comPK = Integer.parseInt(pp.getCompanyType() != null ? 
+						pp.getCompanyType().getPrimaryKey().toString() : "0");
+				comBelPK = Integer.parseInt(pp.getCommuneBelonging() != null ? 
+						pp.getCommuneBelonging().getPrimaryKey().toString() : "0");
+				
+			}
 			selectors.add(getLocalizedLabel(KEY_ACTIVITY, "Verksamhet"), 1, 1);
-			selectors.add(activitySelector(iwc, PARAM_SELECTOR_ACTIVITY, 
-				Integer.parseInt(pp != null ? pp.getActivity().getPrimaryKey().toString() : "0")), 2, 1);
+			selectors.add(activitySelector(iwc, PARAM_SELECTOR_ACTIVITY, actPK), 2, 1);
 						
 			selectors.add(getLocalizedLabel(KEY_REG_SPEC, "Regelspec.typ"), 1, 2);
-			selectors.add(regSpecSelector(iwc, PARAM_SELECTOR_REGSPEC, 
-											Integer.parseInt(pp != null ? 
-											pp.getRegSpecType().getPrimaryKey().toString() : "0")), 2, 2);
+			selectors.add(regSpecSelector(iwc, PARAM_SELECTOR_REGSPEC, regPK), 2, 2);
 	
 			selectors.add(getLocalizedLabel(KEY_COMPANY_TYPE, "Bolagstyp"), 1, 3);
-			selectors.add(companyTypeSelector(iwc, PARAM_SELECTOR_COMPANY_TYPE, 
-											Integer.parseInt(pp != null ? 
-											pp.getCompanyType().getPrimaryKey().toString() : "0")), 2, 3);
+			selectors.add(companyTypeSelector(iwc, PARAM_SELECTOR_COMPANY_TYPE, comPK), 2, 3);
 	
 			selectors.add(getLocalizedLabel(KEY_COMMUNE_BELONGING, "Kommuntillhörighet:"), 1, 4);
-			selectors.add(communeBelongingSelector(iwc, PARAM_SELECTOR_COM_BELONGING, 
-											Integer.parseInt(pp != null ? 
-											pp.getCommuneBelonging().getPrimaryKey().toString() : "0")), 2, 4);
+			selectors.add(communeBelongingSelector(iwc, PARAM_SELECTOR_COM_BELONGING, comBelPK), 2, 4);
 		} catch (Exception e) {
 			super.add(new ExceptionWrapper(e, this));
 		}	
@@ -427,12 +439,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private DropdownMenu activitySelector(IWContext iwc, String name, int refIndex) throws Exception {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(
 					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllActivityTypes(), 
-					"getTextKey"));
-		menu.addMenuElementFirst("0", localize(KEY_ACTIVITY_HEADER, "Välj Aktivitet"));
+					"getLocalizationKey"));
+		menu.addMenuElementFirst("0", localize(KEY_ACTIVITY_HEADER_TWO, "Ingen"));
+		menu.addMenuElementFirst("0", localize(KEY_ACTIVITY_HEADER_ONE, "Välj Verksamhet"));
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
-
+	
 	/*
 	 * Generates a DropDownSelector for Regulation specifications that is collected 
 	 * from the regulation framework. 
@@ -446,8 +459,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private DropdownMenu regSpecSelector(IWContext iwc, String name, int refIndex) throws Exception {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(
 					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllRegulationSpecTypes(), 
-					"getTextKey"));
-		menu.addMenuElementFirst("0", localize(KEY_REGSPEC_HEADER, "Välj Regelspec. typ"));
+					"getLocalizationKey"));
+		menu.addMenuElementFirst("0", localize(KEY_REGSPEC_HEADER_TWO, "Ingen"));
+		menu.addMenuElementFirst("0", localize(KEY_REGSPEC_HEADER_ONE, "Välj Regelspec. typ"));
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
@@ -465,8 +479,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private DropdownMenu companyTypeSelector(IWContext iwc, String name, int refIndex) throws Exception {
 			DropdownMenu menu = (DropdownMenu) getStyledInterface(
 					getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllCompanyTypes(), 
-					"getTextKey"));
-		menu.addMenuElementFirst("0", localize(KEY_COMPANY_TYPE_HEADER, "Välj Bolagstyp"));
+					"getLocalizationKey"));
+		menu.addMenuElementFirst("0", localize(KEY_COMPANY_TYPE_HEADER_TWO, "Ingen"));
+		menu.addMenuElementFirst("0", localize(KEY_COMPANY_TYPE_HEADER_ONE, "Välj Bolagstyp"));
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
@@ -484,8 +499,9 @@ public class PostingParameterListEditor extends AccountingBlock {
 	private DropdownMenu communeBelongingSelector(IWContext iwc, String name, int refIndex) throws Exception {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(
 				getDropdownMenuLocalized(name, getRegulationsBusiness(iwc).findAllCommuneBelongingTypes(), 
-				"getTextKey"));
-		menu.addMenuElementFirst("0", localize(KEY_COM_BEL_HEADER, "Välj Kommuntillhörighet"));
+				"getLocalizationKey"));
+		menu.addMenuElementFirst("0", localize(KEY_COM_BEL_HEADER_TWO, "Ingen"));
+		menu.addMenuElementFirst("0", localize(KEY_COM_BEL_HEADER_ONE, "Välj Kommuntillhörighet"));
 		menu.setSelectedElement(refIndex);
 		return menu;
 	}
@@ -497,3 +513,5 @@ public class PostingParameterListEditor extends AccountingBlock {
 		return (PostingBusiness) com.idega.business.IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
 	}
 }
+
+

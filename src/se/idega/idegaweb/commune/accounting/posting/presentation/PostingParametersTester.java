@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersTester.java,v 1.4 2003/08/29 00:52:34 kjell Exp $
+ * $Id: PostingParametersTester.java,v 1.5 2003/09/02 23:40:22 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -30,7 +30,7 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingParametersEx
  * PostingParametersTest is an idegaWeb block that is used to test the Posting parameters retrieval 
  *  
  * <p>
- * $Id: PostingParametersTester.java,v 1.4 2003/08/29 00:52:34 kjell Exp $
+ * $Id: PostingParametersTester.java,v 1.5 2003/09/02 23:40:22 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
  * @version $Version$
@@ -126,7 +126,7 @@ public class PostingParametersTester extends AccountingBlock {
 					PARAM_FIELD_ACTIVITY, 
 					iwc.isParameterSet(PARAM_FIELD_ACTIVITY) ?
 					iwc.getParameter(PARAM_FIELD_ACTIVITY) : ""), 2, 2);
-			table.add(getSmallText("keys: " +rBiz.getActivityTypesAsString()), 3, 2);
+//			table.add(getSmallText("keys: " +rBiz.getActivityTypesAsString()), 3, 2);
 	
 	
 	
@@ -135,7 +135,7 @@ public class PostingParametersTester extends AccountingBlock {
 					PARAM_FIELD_REGSPEC, 
 					iwc.isParameterSet(PARAM_FIELD_REGSPEC) ?
 					iwc.getParameter(PARAM_FIELD_REGSPEC) : ""), 2, 3);
-			table.add(getSmallText("keys: "+rBiz.getRegulationSpecTypesAsString()), 3, 3);
+//			table.add(getSmallText("keys: "+rBiz.getRegulationSpecTypesAsString()), 3, 3);
 	
 	
 						 
@@ -144,7 +144,7 @@ public class PostingParametersTester extends AccountingBlock {
 					PARAM_FIELD_COMPANY_TYPE, 
 					iwc.isParameterSet(PARAM_FIELD_COMPANY_TYPE) ?
 					iwc.getParameter(PARAM_FIELD_COMPANY_TYPE) : ""), 2, 4);
-			table.add(getSmallText("keys: "+rBiz.getCompanyTypesAsString()), 3, 4);
+//			table.add(getSmallText("keys: "+rBiz.getCompanyTypesAsString()), 3, 4);
 	
 	
 			table.add(getLocalizedLabel("posting_test_com_bel_type", "Kommuntillhörighet"),1 ,5);
@@ -152,7 +152,7 @@ public class PostingParametersTester extends AccountingBlock {
 					PARAM_FIELD_COM_BELONGING, 
 					iwc.isParameterSet(PARAM_FIELD_COM_BELONGING) ?
 					iwc.getParameter(PARAM_FIELD_COM_BELONGING) : ""), 2, 5);
-			table.add(getSmallText("keys: "+rBiz.getCommuneBelongingsAsString()), 3, 5);
+//			table.add(getSmallText("keys: "+rBiz.getCommuneBelongingsAsString()), 3, 5);
 	
 			table.add(getLocalizedButton(PARAM_BUTTON_SEARCH, "posting_test_search", "Sök"), 2, 6);
 		} catch (Exception e) {
@@ -173,10 +173,10 @@ public class PostingParametersTester extends AccountingBlock {
 			pp = (PostingParameters) 
 				pBiz.getPostingParameter(
 						parseDate(iwc.getParameter(PARAM_FIELD_DATE)),
-						iwc.getParameter(PARAM_FIELD_ACTIVITY),
-						iwc.getParameter(PARAM_FIELD_REGSPEC),
-						iwc.getParameter(PARAM_FIELD_COMPANY_TYPE),
-						iwc.getParameter(PARAM_FIELD_COM_BELONGING)
+						Integer.parseInt(iwc.getParameter(PARAM_FIELD_ACTIVITY)),
+						Integer.parseInt(iwc.getParameter(PARAM_FIELD_REGSPEC)),
+						Integer.parseInt(iwc.getParameter(PARAM_FIELD_COMPANY_TYPE)),
+						Integer.parseInt(iwc.getParameter(PARAM_FIELD_COM_BELONGING))
 				);
 			
 		} catch (PostingParametersException e) {

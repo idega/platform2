@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.14 2003/08/28 18:35:59 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.15 2003/09/02 23:40:22 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -47,10 +47,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.14 2003/08/28 18:35:59 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.15 2003/09/02 23:40:22 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -231,22 +231,26 @@ public class PostingParameterList extends AccountingBlock {
 					if(p.getActivity() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
-						list.add(p.getActivity().getTextKey(), p.getActivity().getTextKey());
+						list.add(p.getActivity().getLocalizationKey(), 
+								p.getActivity().getLocalizationKey());
 					}
 					if(p.getRegSpecType() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
-						list.add(p.getRegSpecType().getTextKey(), p.getRegSpecType().getTextKey());
+						list.add(p.getRegSpecType().getLocalizationKey(), 
+								p.getRegSpecType().getLocalizationKey());
 					}
 					if(p.getCompanyType() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
-						list.add(p.getCompanyType().getTextKey(), p.getCompanyType().getTextKey());
+						list.add(p.getCompanyType().getLocalizationKey(), 
+								p.getCompanyType().getLocalizationKey());
 					}
 					if(p.getCommuneBelonging() == null) {
 						list.add(KEY_DEFAULT_BLANK, "");					
 					} else {
-						list.add(p.getCommuneBelonging().getTextKey(), p.getCommuneBelonging().getTextKey());
+						list.add(p.getCommuneBelonging().getLocalizationKey(), 
+								p.getCommuneBelonging().getLocalizationKey());
 					}
 		
 
