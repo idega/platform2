@@ -116,6 +116,7 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
 
     cat.isNetbookingCategory(isNetbooking);
     cat.setSupplierId(supplierId);
+    cat.setCountAsPerson(true);
 
     cat.insert();
 
@@ -294,13 +295,39 @@ public class TravelStockroomBusinessBean extends StockroomBusinessBean implement
   public PriceCategory[] getPriceCategories(int supplierId) {
     PriceCategory[] returner = {};
     try {
-      returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAllByColumn(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameSupplierId(),Integer.toString(supplierId), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid(), "Y");
+      StringBuffer sql = new StringBuffer();
+        sql.append("Select * from ")
+           .append(PriceCategoryBMPBean.getPriceCategoryTableName())
+           .append(" where ")
+           .append(PriceCategoryBMPBean.getColumnNameSupplierId())
+           .append(" = ")
+           .append(Integer.toString(supplierId))
+           .append(" and ")
+           .append(PriceCategoryBMPBean.getColumnNameIsValid())
+           .append(" = 'Y' and (")
+           .append(PriceCategoryBMPBean.getColumnNameCountAsPerson())
+           .append(" = 'Y' or ")
+           .append(PriceCategoryBMPBean.getColumnNameCountAsPerson())
+           .append(" is null )");
+
+      returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAll(sql.toString());
+
     }catch (SQLException sql) {
       sql.printStackTrace(System.err);
     }
     return returner;
   }
 
+  public PriceCategory[] getMiscellaneousServices(int supplierId) {
+    PriceCategory[] returner = {};
+    try {
+      returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAllByColumn(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameSupplierId(),Integer.toString(supplierId), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid(), "Y",com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameCountAsPerson(), "N" );
+//      returner = (PriceCategory[]) com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getStaticInstance(PriceCategory.class).findAllByColumn(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameSupplierId(),Integer.toString(supplierId), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.getColumnNameIsValid(), "Y");
+    }catch (SQLException sql) {
+      sql.printStackTrace(System.err);
+    }
+    return returner;
+  }
 
   private HashtableDoubleKeyed getServiceDayHashtable(IWContext iwc) {
       HashtableDoubleKeyed hash = (HashtableDoubleKeyed) iwc.getSessionAttribute(serviceDayHashtableSessionName);

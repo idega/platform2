@@ -52,6 +52,7 @@ public class InitialData extends TravelManager {
   private static String parameterViewResellerInfo = "resellerViewInfo";
   private static String parameterViewHotelPickup = "parameteViewHotelPickup";
   private static String parameterViewPriceCategories = "parameteViewPriceCategories";
+  private static String parameterViewMiscellaneousServices = "parameteMicsServ";
   private static String parameterCreditCardRefund = "parameterCreditcardRefund";
   private static String parameterTPosProperties = "parTPosProp";
   private static String parameterUsers = "parameterUsers";
@@ -73,6 +74,7 @@ public class InitialData extends TravelManager {
   }
 
   public void main(IWContext iwc) throws Exception{
+      super.debugParameters(iwc);
       super.main(iwc);
       initialize(iwc);
 
@@ -117,6 +119,7 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterSettings, iwrb.getLocalizedString("travel.settings","Settings"));
         menu.addMenuElement(this.parameterViewHotelPickup, iwrb.getLocalizedString("travel.hotel_pickup_places","Hotel pick-up places"));
         menu.addMenuElement(this.parameterViewPriceCategories, iwrb.getLocalizedString("travel.price_categories","Price categories"));
+        menu.addMenuElement(this.parameterViewMiscellaneousServices, iwrb.getLocalizedString("travel.misc_services","Miscellaneous services"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
         menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
         menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
@@ -125,7 +128,7 @@ public class InitialData extends TravelManager {
         menu.addMenuElement(this.parameterSettings, iwrb.getLocalizedString("travel.settings","Settings"));
         menu.addMenuElement(this.parameterUsers, iwrb.getLocalizedString("travel.users","Users"));
         menu.addMenuElement(this.parameterVoucher, iwrb.getLocalizedString("travel.vouchers","Vouchers"));
-    }else {
+    }else if (super.isTravelAdministrator(iwc)) {
         menu.addMenuElement("", iwrb.getLocalizedString("travel.supplier_information","Supplier information"));
         menu.addMenuElement(this.parameterCreditCardRefund, iwrb.getLocalizedString("travel.credidcard","Creditcard"));
         menu.addMenuElement(this.parameterTPosProperties, iwrb.getLocalizedString("travel.tpos_properties","TPos Properties"));
@@ -167,6 +170,16 @@ public class InitialData extends TravelManager {
             }else if (selected.equals(this.parameterViewPriceCategories)) {
               try {
                 PriceCategoryDesigner pcd = new PriceCategoryDesigner(iwc);
+                  pcd.handleInsert(iwc);
+                form = pcd.getPriceCategoriesForm(supplier.getID());
+              }catch (Exception e) {
+                e.printStackTrace(System.err);
+                form = new Form();
+              }
+            }else if (selected.equals(this.parameterViewMiscellaneousServices)) {
+              try {
+                PriceCategoryDesigner pcd = new PriceCategoryDesigner(iwc);
+                  pcd.setMiscellaneousServices(true);
                   pcd.handleInsert(iwc);
                 form = pcd.getPriceCategoriesForm(supplier.getID());
               }catch (Exception e) {

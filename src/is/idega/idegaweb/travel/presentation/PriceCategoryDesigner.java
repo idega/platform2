@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.presentation;
 
+import com.idega.data.IDOLookup;
 import java.rmi.RemoteException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -25,10 +26,12 @@ public class PriceCategoryDesigner extends TravelManager {
   private Supplier supplier;
   private TravelStockroomBusiness tsb;
 
-  private static String parameterSavePriceCategories = "parameterSavePriceCategories";
-  private static String parameterPriceCategoryId = "parameterPriceCategoryId";
+  private static String parameterSavePriceCategories = "p_sv_pcs";
+  private static String parameterPriceCategoryId = "p_pr_cId";
+  private String parameterMiscellaneousServices = "p_mc_sr";
 
-  private static String sAction = "actionForPCD";
+  private static String sAction = "a_pcd";
+  private boolean miscellaneousServices = false;
 
   public PriceCategoryDesigner(IWContext iwc) throws Exception {
     super.main(iwc);
@@ -56,7 +59,12 @@ public class PriceCategoryDesigner extends TravelManager {
       table.setColor(super.WHITE);
       table.setCellspacing(1);
 
-      PriceCategory[] categories = tsb.getPriceCategories(supplierId);
+    PriceCategory[] categories = {};
+    if (this.miscellaneousServices) {
+      categories = tsb.getMiscellaneousServices(supplierId);
+    }else {
+      categories = tsb.getPriceCategories(supplierId);
+    }
       Text nameTxt = (Text) theText.clone();
         nameTxt.setFontColor(super.WHITE);
         nameTxt.setBold();
@@ -87,8 +95,12 @@ public class PriceCategoryDesigner extends TravelManager {
 
       table.add(nameTxt,2,row);
       table.add(onlineTxt,3,row);
-      table.add(typeTxt,4,row);
-      table.add(discOfTxt,5,row);
+      if (this.miscellaneousServices) {
+        table.mergeCells(3, row, 5, row);
+      }else {
+        table.add(typeTxt,4,row);
+        table.add(discOfTxt,5,row);
+      }
       table.add(deleteTxt,6,row);
       table.setRowColor(row,super.backgroundColor);
 
@@ -131,8 +143,14 @@ public class PriceCategoryDesigner extends TravelManager {
         table.add(numberTxt,1,row);
         table.add(nameInp,2,row);
         table.add(online,3,row);
-        table.add(ddOne,4,row);
-        table.add(ddTwo,5,row);
+        if ( this.miscellaneousServices ) {
+          table.add(new HiddenInput(ddOne.getName(), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE), 3, row);
+          table.add(new HiddenInput(ddTwo.getName(), "-1"), 3, row);
+          table.mergeCells(3, row, 5 ,row);
+        }else {
+          table.add(ddOne,4,row);
+          table.add(ddTwo,5,row);
+        }
         table.add(delete,6,row);
         table.setRowColor(row,super.GRAY);
       }
@@ -152,8 +170,14 @@ public class PriceCategoryDesigner extends TravelManager {
         table.add(numberTxt,1,row);
         table.add(nameInp,2,row);
         table.add(online,3,row);
-        table.add(ddOne,4,row);
-        table.add(ddTwo,5,row);
+        if (this.miscellaneousServices) {
+          table.add(new HiddenInput(ddOne.getName(), com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE), 3, row);
+          table.add(new HiddenInput(ddTwo.getName(), "-1"), 3, row);
+          table.mergeCells(3, row, 5, row);
+        }else {
+          table.add(ddOne,4,row);
+          table.add(ddTwo,5,row);
+        }
         table.setRowColor(row,super.GRAY);
       }
       ++row;
@@ -182,6 +206,8 @@ public class PriceCategoryDesigner extends TravelManager {
     String[] parent = iwc.getParameterValues("priceCategoryParent");
 
 
+    PriceCategoryHome pCatHome = (PriceCategoryHome) IDOLookup.getHomeLegacy(PriceCategory.class);
+    PriceCategory pCat;
     try {
       for (int i = 0; i < catIds.length; i++) {
         if (catIds[i].equals("-1")) {   //NEW
@@ -201,10 +227,16 @@ public class PriceCategoryDesigner extends TravelManager {
             }else if (type[i].equals(com.idega.block.trade.stockroom.data.PriceCategoryBMPBean.PRICETYPE_PRICE)) {
               priceCategoryId = tsb.createPriceCategory(supplier.getID(), names[i], "",type[i], "", bOnline);
             }
+
+            if (this.miscellaneousServices) {
+              pCat = pCatHome.findByPrimaryKeyLegacy(priceCategoryId);
+              pCat.setCountAsPerson(false);
+              pCat.update();
+            }
           }
         }else {   //UPDATE
           String del = iwc.getParameter("priceCategoryToDelete_"+catIds[i]);
-          PriceCategory pCat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(Integer.parseInt(catIds[i]));
+          pCat = pCatHome.findByPrimaryKeyLegacy(Integer.parseInt(catIds[i]));
           if (del != null) {
             pCat.delete();
           }else {
@@ -229,13 +261,13 @@ public class PriceCategoryDesigner extends TravelManager {
         }
       }
 
-
-
-
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
   }
 
+  public void setMiscellaneousServices(boolean misc) {
+    this.miscellaneousServices = misc;
+  }
 
 }

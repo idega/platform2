@@ -1,5 +1,6 @@
 package is.idega.idegaweb.travel.business;
 
+import com.idega.block.trade.stockroom.data.PriceCategory;
 import com.idega.block.trade.stockroom.business.StockroomBusiness;
 import javax.ejb.*;
 
@@ -46,4 +47,5 @@ public interface TravelStockroomBusiness extends com.idega.business.IBOService, 
  public void setTimeframe(com.idega.util.idegaTimestamp p0,com.idega.util.idegaTimestamp p1,boolean p2)throws java.sql.SQLException, java.rmi.RemoteException;
  public void setTimeframe(int p0,com.idega.util.idegaTimestamp p1,com.idega.util.idegaTimestamp p2,boolean p3)throws java.sql.SQLException, java.rmi.RemoteException;
  public int updateService(int p0,int p1,java.lang.Integer p2,java.lang.String p3,java.lang.String p4,java.lang.String p5,boolean p6,int[] p7,java.sql.Timestamp p8,java.sql.Timestamp p9,int p10)throws java.lang.Exception, java.rmi.RemoteException;
+ public PriceCategory[] getMiscellaneousServices(int supplierId);
 }

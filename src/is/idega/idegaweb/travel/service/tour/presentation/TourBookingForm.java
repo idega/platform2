@@ -375,7 +375,7 @@ public class TourBookingForm extends TravelManager {
                   ++row;
                   category = pPrices[i].getPriceCategory();
                   int price = (int) getTravelStockroomBusiness(iwc).getPrice(pPrices[i].getID(), _service.getID(),pPrices[i].getPriceCategoryID(),pPrices[i].getCurrencyId(),idegaTimestamp.getTimestampRightNow(), tFrame.getID(), addressId);
-    //              pPrices[i].getPrice();
+      //              pPrices[i].getPrice();
                   pPriceCatNameText = (Text) theText.clone();
                     pPriceCatNameText.setText(category.getName());
 
@@ -418,7 +418,7 @@ public class TourBookingForm extends TravelManager {
 
                   txtPrice = (Text) theText.clone();
                     txtPrice.setText(Integer.toString(price));
-//                  table.add(Text.NON_BREAKING_SPACE,2,row);
+      //                  table.add(Text.NON_BREAKING_SPACE,2,row);
 
                   pTable = new Table(4,1);
                     pTable.setWidth(1, Integer.toString(pWidthLeft));
@@ -430,7 +430,7 @@ public class TourBookingForm extends TravelManager {
                     pTable.add(pPriceText, 3,1);
 
 
-//                    pTable.add();
+      //                    pTable.add();
 
                   table.add(pTable, 2, row);
 
@@ -1602,16 +1602,25 @@ public class TourBookingForm extends TravelManager {
       int lbookingId = -1;
 
       boolean displayFormInternal = false;
+      PriceCategory pCat;
 
       try {
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
+            pCat = pPrices[i].getPriceCategory();
             many = iwc.getParameter("priceCategory"+i);
-            if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
+            System.err.println("count yes ? = "+pCat.getCountAsPerson());
+            if (pCat.getCountAsPerson()) {
+              if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
                 manys[i] = Integer.parseInt(many);
                 iMany += Integer.parseInt(many);
-            }else {
+              }else {
                 manys[i] = 0;
+              }
+            }else {
+              if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
+                manys[i] = Integer.parseInt(many);
+              }
             }
         }
 
@@ -1626,17 +1635,6 @@ public class TourBookingForm extends TravelManager {
           paymentType = Integer.parseInt(sPaymentType);
         }catch (NumberFormatException nfe) {}
         int bookingType = Booking.BOOKING_TYPE_ID_ONLINE_BOOKING;
-
-        /*
-        if (ccNumber != null) {
-          paymentType = Booking.PAYMENT_TYPE_ID_CREDIT_CARD;
-        }else {
-          if (supplier != null) {
-            paymentType = Booking.PAYMENT_TYPE_ID_NO_PAYMENT;
-          }else if (_reseller != null) {
-            paymentType = Booking.PAYMENT_TYPE_ID_VOUCHER;
-          }
-        }*/
 
         if (supplier != null) {
           bookingType = Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING;
