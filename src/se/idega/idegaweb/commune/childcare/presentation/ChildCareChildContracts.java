@@ -154,7 +154,6 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			contracts = getBusiness().getContractsByChild(getChildID(iwc));
 			//contracts = getBusiness().getContractsByChild(getSession().getUserID());
 
-		IWTimestamp stamp = new IWTimestamp();
 		Iterator iter = contracts.iterator();
 		while (iter.hasNext()) {
 			column = 1;
@@ -162,17 +161,20 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			provider = contract.getApplication().getProvider();
 			created = new IWTimestamp(contract.getCreatedDate());
 			member = contract.getSchoolClassMember();
-			try {
-				log = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, stamp.getDate());
-				group = log.getSchoolClass();
+			if (contract.getValidFromDate() != null) {
+				validFrom = new IWTimestamp(contract.getValidFromDate());
+				try {
+					log = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDate(member, validFrom.getDate());
+					group = log.getSchoolClass();
+				}
+				catch (FinderException fe) {
+					group = member.getSchoolClass();
+				}
 			}
-			catch (FinderException fe) {
+			else {
+				validFrom = null;
 				group = member.getSchoolClass();
 			}
-			if (contract.getValidFromDate() != null)
-				validFrom = new IWTimestamp(contract.getValidFromDate());
-			else
-				validFrom = null;
 			if (contract.getTerminatedDate() != null)
 				terminated = new IWTimestamp(contract.getTerminatedDate());
 			else
