@@ -6,6 +6,7 @@ package se.idega.idegaweb.commune.childcare.business;
 
 
 import is.idega.block.family.business.NoCustodianFound;
+
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -28,14 +29,17 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.care.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.business.CareConstants;
@@ -55,6 +59,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
+
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
@@ -91,8 +96,6 @@ import com.idega.data.IDORuntimeException;
 import com.idega.data.IDOStoreException;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWPropertyList;
-import com.idega.idegaweb.IWUserContext;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -110,12 +113,7 @@ import com.lowagie.text.xml.XmlPeer;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness,CaseBusiness {
-
-	public static final String PROPERTIES_CHILD_CARE = "child_care";
-	public static final String PROPERTY_MAX_MONTHS_IN_QUEUE = "max_months_in_queue";
-	public static final String PROPERTY_DAYS_TO_REPLY = "days_to_reply";
-
-	private final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
+    
 	private static String PROP_OUTSIDE_SCHOOL_AREA = "not_in_commune_school_area";
 
 	final int DBV_WITH_PLACE = 0;
@@ -130,7 +128,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
     private static final String PLACEMENT_HELPER = "PlacementHelper";
     
 	public String getBundleIdentifier() {
-		return se.idega.idegaweb.commune.presentation.CommuneBlock.IW_BUNDLE_IDENTIFIER;
+		return Constants.IW_BUNDLE_IDENTIFIER;
+		
 	}
 
 	private ChildCareApplicationHome getChildCareApplicationHome() {
@@ -714,7 +713,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	private Collection getApplicationsInQueueBeforeDate(int providerID, Date beforeDate) throws FinderException {
+	public Collection getApplicationsInQueueBeforeDate(int providerID, Date beforeDate) throws FinderException {
 		String[] caseStatus = { getCaseStatusOpen().getStatus()};
 		return getChildCareApplicationHome().findApplicationsByProviderAndBeforeDate(providerID, beforeDate, caseStatus);
 	}
@@ -741,79 +740,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (IDOException ie) {
 			return false;
 		}
-	}
-	
-	public boolean cleanQueue(int providerID, User performer, IWUserContext iwuc) {
-	    final int providID = providerID;
-	    final User perf = performer;
-	    final IWUserContext iw = iwuc;
-	    if (iwuc.getSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING) == null) {
-		    new Thread () {
-				public void run () {
-				    try {
-                        cleanQueueInThread( providID,  perf,  iw);
-                    } catch (FinderException e) {
-                        e.printStackTrace();
-                    }
-				}
-			}.start ();
-			return true;
-	    }
-	    else
-	        return false;
-	    
-	}
-
-	public boolean cleanQueueInThread(int providerID, User performer, IWUserContext iwuc) throws FinderException {
-		iwuc.setSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING, "TRUE");
-		IWPropertyList properties = getIWApplicationContext().getSystemProperties().getProperties(PROPERTIES_CHILD_CARE);
-		int monthsInQueue = Integer.parseInt(properties.getProperty(PROPERTY_MAX_MONTHS_IN_QUEUE, "6"));
-		int daysToReply = Integer.parseInt(properties.getProperty(PROPERTY_DAYS_TO_REPLY, "30"));
-
-		IWTimestamp beforeDate = new IWTimestamp();
-		beforeDate.addMonths(-monthsInQueue);
-
-		IWTimestamp stamp = new IWTimestamp();
-		Collection applications = getApplicationsInQueueBeforeDate(providerID, beforeDate.getDate());
-
-		UserTransaction transaction = getSessionContext().getUserTransaction();
-		try {
-			transaction.begin();
-
-			IWTimestamp lastReplyDate = new IWTimestamp();
-			lastReplyDate.addDays(daysToReply);
-
-			String subject = getLocalizedString("child_care.clean_queue_subject", "Old application in queue");
-			String body = getLocalizedString("child_care.clean_queue_body", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
-			String letterBody = getLocalizedString("child_care.clean_queue_body_letter", "Your application for {0}, {2},Êto {1}Êhas been in the queue for 6 months.  You now have until {3}Êto update your choices in the childcare overview.  After that, the choices will be removed from our queue. \n\nBest regards,\n{1}");
-
-			Iterator iter = applications.iterator();
-			while (iter.hasNext()) {
-				ChildCareApplication application = (ChildCareApplication) iter.next();
-				if (!hasOutstandingOffers(application.getChildId(), application.getCode()) && hasActiveApplications(application.getChildId(), application.getCaseCode().getCode(), stamp.getDate())) {
-					application.setLastReplyDate(lastReplyDate.getDate());
-					changeCaseStatus(application, getCaseStatusPending().getStatus(), performer);
-
-					sendMessageToParents(application, subject, body, letterBody, true); 
-				}
-			}
-
-			transaction.commit();
-			iwuc.removeSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING);
-			return true;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			try {
-				transaction.rollback();
-			}
-			catch (SystemException ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		iwuc.removeSessionAttribute(ChildCareConstants.CLEAN_QUEUE_RUNNING);
-		return false;
 	}
 
 	public boolean hasActiveApplications(int childID, String caseCode, Date activeDate) {
@@ -3846,7 +3772,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			String caseStatus[] = { getCaseStatusOpen().getStatus(), getCaseStatusContract().getStatus()};
-			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+			IWBundle iwb = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 			int areaID = Integer.parseInt(iwb.getProperty(PROP_OUTSIDE_SCHOOL_AREA, "-1"));
 
 			return home.findApplicationsInSchoolAreaByStatus(areaID, caseStatus, 1);
@@ -4312,4 +4238,5 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		
 		}
+		
 }

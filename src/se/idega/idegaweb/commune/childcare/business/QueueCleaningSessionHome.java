@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareBusinessHome.java 1.1 25.11.2004 aron Exp $
+ * $Id: QueueCleaningSessionHome.java,v 1.1 2004/11/25 10:44:06 aron Exp $
  * Created on 25.11.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -12,18 +12,17 @@ package se.idega.idegaweb.commune.childcare.business;
 
 
 
-
 import com.idega.business.IBOHome;
 
 /**
  * 
- *  Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: aron $
+ *  Last modified: $Date: 2004/11/25 10:44:06 $ by $Author: aron $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
  * @version $Revision: 1.1 $
  */
-public interface ChildCareBusinessHome extends IBOHome {
-    public ChildCareBusiness create() throws javax.ejb.CreateException,
+public interface QueueCleaningSessionHome extends IBOHome {
+    public QueueCleaningSession create() throws javax.ejb.CreateException,
             java.rmi.RemoteException;
 
 }

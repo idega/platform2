@@ -7,8 +7,10 @@ import java.util.Iterator;
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareConstants;
+import se.idega.idegaweb.commune.childcare.business.QueueCleaningSession;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 
+import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.HorizontalRule;
@@ -86,7 +88,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 	private void parseAction(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_CLEAN_QUEUE)) {
 			try {
-				_queueCleaned = new Boolean(getBusiness().cleanQueue(getSession().getChildCareID(), iwc.getCurrentUser(), iwc));
+			    QueueCleaningSession cleaningSession = (QueueCleaningSession)IBOLookup.getSessionInstance(iwc,QueueCleaningSession.class);
+			    _queueCleaned = new Boolean(cleaningSession.cleanQueue(getSession().getChildCareID(),iwc.getCurrentUser()));
+				//_queueCleaned = new Boolean(getBusiness().cleanQueue(getSession().getChildCareID(), iwc.getCurrentUser(), iwc));
 			}
 			catch (Exception fe) {
 				//Nothing found and everyone is happy about that :D
