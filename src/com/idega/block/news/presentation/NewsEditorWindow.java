@@ -340,7 +340,7 @@ private IWResourceBundle iwrb;
     String sDesc = iwrb.getLocalizedString("description","Description");
 		String sMoveCat = iwrb.getLocalizedString("movenews","Move news to");
 
-		List L = NewsFinder.listOfNewsCategories();
+		List L = NewsFinder.listOfValidNewsCategories();
 		DropdownMenu catDrop = new DropdownMenu(L,prmCategory);
 		catDrop.addMenuElementFirst("-1",sCategory);
 		catDrop.setToSubmit();

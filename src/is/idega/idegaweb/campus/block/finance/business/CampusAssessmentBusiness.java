@@ -288,12 +288,12 @@ public class CampusAssessmentBusiness  {
                 AE.update();
                 totals += totalAmount;
                 eFinanceAccount.setBalance(eFinanceAccount.getBalance()+AE.getPrice());
-                System.err.print(eFinanceAccount.getBalance());
-                System.err.print("+"+AE.getPrice());
+                //System.err.print(eFinanceAccount.getBalance());
+                //System.err.print("+"+AE.getPrice());
                 eFinanceAccount.setLastUpdated(idegaTimestamp.getTimestampRightNow());
 
                 eFinanceAccount.update();
-                System.err.println("="+eFinanceAccount.getBalance());
+                //System.err.println("="+eFinanceAccount.getBalance());
                 iAccountCount++;
               }
               else{

@@ -1,5 +1,5 @@
 /*
- * $Id: ContractFinder.java,v 1.2 2001/11/08 15:48:44 aron Exp $
+ * $Id: ContractFinder.java,v 1.3 2001/11/14 16:04:35 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -412,7 +412,7 @@ public abstract class ContractFinder {
       sql.append(" and bu_aprt_type_id = ");
       sql.append(iApartmentTypeId);
     }
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     try{
       return  EntityFinder.findAll(new Contract(),sql.toString());
     }
@@ -454,7 +454,7 @@ public abstract class ContractFinder {
       sql.append(" and bu_aprt_type_id = ");
       sql.append(iApartmentTypeId);
     }
-    System.err.println(sql.toString());
+    //System.err.println(sql.toString());
     try{
       List L = null;
       if(entity == CONTRACT)

@@ -348,6 +348,26 @@ public class NewsFinder {
     }
   }
 
+	public static List listOfValidNewsCategories(){
+    try {
+      return EntityFinder.findAllByColumn(new NewsCategory(),NewsCategory.getValidColumnName(),"Y");
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+	public static List listOfInValidNewsCategories(){
+    try {
+      return EntityFinder.findAllByColumn(new NewsCategory(),NewsCategory.getValidColumnName(),"N");
+    }
+    catch (SQLException ex) {
+      return null;
+    }
+  }
+
+
+
   public static int getObjectInstanceIdFromNewsCategoryId(int iCategoryId){
     try {
       NewsCategory nw = new NewsCategory(iCategoryId);

@@ -80,7 +80,7 @@ public abstract class PhoneFinder {
     sql.append(" a ,");
     sql.append(AccountPhone.getEntityTableName());
     sql.append(" p where a.fin_account_id = p.fin_account_id");
-    System.err.println (sql.toString());
+    //System.err.println (sql.toString());
     try {
       return EntityFinder.findAll(new Account(),sql.toString());
     }

@@ -83,7 +83,7 @@ public class PhoneFileHandler {
         }
 
 
-        System.err.println(sb.toString());
+        //System.err.println(sb.toString());
         count--;
         linecount++;
       }
@@ -273,7 +273,7 @@ public class PhoneFileHandler {
   }
 
   public void processFile(String fileName){
-    System.err.println(fileName);
+    //System.err.println(fileName);
     if(fileName != null){
       try {
         File phoneFile = new File(fileName);

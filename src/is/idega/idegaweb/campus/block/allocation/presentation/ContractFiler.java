@@ -68,7 +68,7 @@ public class ContractFiler extends Block {
           add("failed");
       }
       else if(iwc.getParameter(prmManyIds)!=null){
-        System.err.println(prmManyIds);
+        //System.err.println(prmManyIds);
         String values = iwc.getParameter(prmManyIds);
         StringTokenizer st = new StringTokenizer(values,prmSeperator);
         int[] ids = new int[st.countTokens()];

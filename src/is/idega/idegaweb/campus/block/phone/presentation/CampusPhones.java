@@ -329,12 +329,12 @@ public class CampusPhones extends PresentationObjectContainer implements IWEvent
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
     isAdmin = iwc.hasEditPermission(this);
     control(iwc);
-    System.err.println("test is main");
+    //System.err.println("test is main");
   }
 
 
   public void actionPerformed(IWContext iwc)throws IWException{
-    System.err.println("test is actionPerformed");
+    //System.err.println("test is actionPerformed");
     update(iwc);
   }
 }

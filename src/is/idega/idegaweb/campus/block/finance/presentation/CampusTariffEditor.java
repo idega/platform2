@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTariffEditor.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: CampusTariffEditor.java,v 1.2 2001/11/14 16:04:35 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -356,7 +356,7 @@ public class CampusTariffEditor extends PresentationObjectContainer{
             if( !stamp.equals(ixdate.getTimestamp())){
               iPrice = iPrice * getAddFactor(ti.getNewValue(),ti.getOldValue());
             }
-            System.err.println(stamp.toString() +" "+ixdate.toString());
+            //System.err.println(stamp.toString() +" "+ixdate.toString());
           }
           else
             iPrice = iPrice * getAddFactor(ti.getNewValue(),ti.getOldValue());

@@ -51,7 +51,7 @@ public class ApartmentContracts {
         idegaTimestamp date = new idegaTimestamp(C.getValidTo());
         if(nextDate != null && date.isLaterThan(nextDate)){
           nextDate = date;
-          System.err.println(date.toString());
+          //System.err.println(date.toString());
         }
     //}
   }

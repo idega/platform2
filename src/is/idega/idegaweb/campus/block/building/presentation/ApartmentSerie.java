@@ -85,7 +85,7 @@ public class ApartmentSerie extends PresentationObjectContainer {
           prefix  = name.substring(0,3);
         }
         A.setSerie(prefix+postfix);
-        System.err.println(A.getSerie());
+        //System.err.println(A.getSerie());
         try {
           A.update();
         }
