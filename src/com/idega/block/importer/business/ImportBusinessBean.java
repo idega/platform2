@@ -1,12 +1,16 @@
 package com.idega.block.importer.business;
 
-import com.idega.util.text.TextSoap;
-import com.idega.business.IBOLookup;
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import com.idega.block.importer.data.ImportFile;
+
+import javax.ejb.FinderException;
+
+import com.idega.block.importer.data.*;
 import com.idega.business.IBOServiceBean;
+import com.idega.user.business.GroupBusiness;
 import com.idega.user.data.Group;
+import com.sun.tools.javac.v8.code.ClassWriter;
 
 /**
  * <p>Title: IdegaWeb classes</p>
@@ -22,83 +26,97 @@ public class ImportBusinessBean extends IBOServiceBean implements ImportBusiness
   public ImportBusinessBean() {
   }
 
-  public ImportFileHandler getHandlerForImportFile(Class importFileClass) throws RemoteException{
-    return (ImportFileHandler)getServiceInstance(importFileClass);
+/**
+ * @see com.idega.block.importer.business.ImportBusiness#getImportHandlers()
+ */
+  public Collection getImportHandlers() throws RemoteException{
+  	
+  	Collection col = null;
+	try {
+		col = ((ImportHandlerHome) this.getIDOHome(ImportHandler.class)).findAllImportHandlers();
+	}
+	catch (FinderException e) {
+	}
+  	
+    return  col;
   }
 
-  public ImportFileHandler getHandlerForImportFile(String importFileClassName)  throws RemoteException, ClassNotFoundException{
-    return getHandlerForImportFile(Class.forName( TextSoap.findAndReplace(importFileClassName,".data.",".business.")+"Handler"));
-  }
-
-  public boolean importRecords(ImportFile file) throws RemoteException{
-    try{
-      boolean status = false;
-      ImportFileHandler handler = getHandlerForImportFile(file.getClass().getName());
-      handler.setImportFile(file);
-      /**@todo temporary workaround**/
-      //((NackaImportFileHandler)handler).setOnlyImportRelations(true);
-      //((NackaImportFileHandler)handler).setStartRecord(52000);
-      //((NackaImportFileHandler)handler).setImportRelations(false);
-      status = handler.handleRecords();
-
-      /*Collection col = file.getRecords();
-      if( col == null ) return false;
-      status = handler.handleRecords(col);*/
-
-
-
-      return status;
-    }
-    catch(NoRecordsException ex){
-     ex.printStackTrace();
-     return false;
-    }
-    catch(ClassNotFoundException ex){
-     ex.printStackTrace();
-     return false;
-    }
+/**
+ * @see com.idega.block.importer.business.ImportBusiness#getImportFileTypes()
+ */
+  public Collection getImportFileTypes() throws RemoteException {
+  	Collection col = null;
+	try {
+		col = ((ImportFileClassHome) this.getIDOHome(ImportFileClass.class)).findAllImportFileClasses();
+		
+	}
+	catch (FinderException e) {
+	}
+  	
+    return  col;
   }
   
-   public boolean importRecords(Group group, ImportFile file) throws RemoteException{
-    try{
-      boolean status = false;
-      //ImportFileHandler handler = getHandlerForImportFile(file.getClass().getName());
-      
-      try{
-      	
-     /* is.idega.idegaweb.member.business.KRImportFileHandlerBean handler = new is.idega.idegaweb.member.business.KRImportFileHandlerBean();
-      handler.setImportFile(file);
-      handler.setRootGroup(group);
-      
-      /**@todo temporary workaround**/
-      //((NackaImportFileHandler)handler).setOnlyImportRelations(true);
-      //((NackaImportFileHandler)handler).setStartRecord(52000);
-      //((NackaImportFileHandler)handler).setImportRelations(false);
-      
-      //status = handler.handleRecords();
 
 
-      }
-      catch(Exception e){
-      	e.printStackTrace();
-      	//status=false;	
-      }
-      /*Collection col = file.getRecords();
-      if( col == null ) return false;
-      status = handler.handleRecords(col);*/
+	/**
+	 * @see com.idega.block.importer.business.ImportBusiness#importRecords(String, String, String, Integer)
+	 */
+	public boolean importRecords(String handlerClass,String fileClass,String filePath,Integer groupId)throws RemoteException {
+	    try{
+	      boolean status = false;
+	      
+	      	
+	      ImportFileHandler handler = (ImportFileHandler)Class.forName(handlerClass).newInstance();
+	      ImportFile file = (ImportFile)Class.forName(fileClass).newInstance();
+	      
+	      file.setFile(new File(filePath));
+	      	      
+	      handler.setImportFile(file);
+	      handler.setRootGroup(getGroupBusiness().getGroupByGroupID(groupId.intValue()));
+	  	      
+	      status = handler.handleRecords();
+		
+	      return status;
+	    }
+	    catch(NoRecordsException ex){
+	     ex.printStackTrace();
+	     return false;
+	    }
+	    catch(Exception ex){
+	     ex.printStackTrace();
+	     return false;
+	    }
+	}
 
-
-
-      return status;
-    }
-    catch(NoRecordsException ex){
-     ex.printStackTrace();
-     return false;
-    }
-    catch(Exception ex){
-     ex.printStackTrace();
-     return false;
-    }
-  }
+	/**
+	 * @see com.idega.block.importer.business.ImportBusiness#importRecords(String, String, String)
+	 */
+	public boolean importRecords(String handlerClass,String fileClass,String filePath)throws RemoteException {
+		try{
+	      boolean status = false;
+	      ImportFileHandler handler = (ImportFileHandler)Class.forName(handlerClass).newInstance();
+	      ImportFile file = (ImportFile)Class.forName(fileClass).newInstance();
+	      
+	      file.setFile(new File(filePath));
+	      	      
+	      handler.setImportFile(file);
+	  	      
+	      status = handler.handleRecords();
+	      	
+	      return status;
+	    }
+	    catch(NoRecordsException ex){
+	     ex.printStackTrace();
+	     return false;
+	    }
+	    catch(Exception ex){
+	     ex.printStackTrace();
+	     return false;
+	    }
+	}
+	
+	public GroupBusiness getGroupBusiness() throws Exception{
+    	return (GroupBusiness) this.getServiceInstance(GroupBusiness.class);
+  	}
 
 }

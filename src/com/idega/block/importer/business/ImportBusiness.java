@@ -1,12 +1,40 @@
 package com.idega.block.importer.business;
 
+import java.util.Collection;
 import javax.ejb.*;
 
 public interface ImportBusiness extends com.idega.business.IBOService
 {
- public com.idega.block.importer.business.ImportFileHandler getHandlerForImportFile(java.lang.String p0) throws java.rmi.RemoteException,java.lang.ClassNotFoundException;
- public com.idega.block.importer.business.ImportFileHandler getHandlerForImportFile(java.lang.Class p0) throws java.rmi.RemoteException;
- public boolean importRecords(com.idega.block.importer.data.ImportFile p0) throws java.rmi.RemoteException;
- public boolean importRecords(com.idega.user.data.Group group, com.idega.block.importer.data.ImportFile p0) throws java.rmi.RemoteException;
-  
+/**
+ * Method getImportHandlers used to get a list of all import handlers registered in the database.
+ * @return A Collection of ImportHandler Beans or null if none was found.
+ * @throws RemoteException
+ */
+ public Collection getImportHandlers() throws java.rmi.RemoteException;
+/**
+ * Method getImportFileTypes used to get a list of all import file types registered in the database.
+ * @return A Collection of ImportFileClass Beans or null if none was found.
+ * @throws RemoteException
+ */
+ public Collection getImportFileTypes() throws java.rmi.RemoteException;
+
+	/**
+	 * Method importRecords.
+	 * @param handlerClass
+	 * @param fileClass
+	 * @param filePath
+	 * @param groupId
+	 * @return boolean
+	 */
+	boolean importRecords(String handlerClass,String fileClass,String filePath,Integer groupId) throws java.rmi.RemoteException;
+	
+	/**
+	 * Method importRecords.
+	 * @param handlerClass
+	 * @param fileClass
+	 * @param filePath
+	 * @return boolean
+	 */
+	boolean importRecords(String handlerClass,String fileClass,String filePath) throws java.rmi.RemoteException;
+
 }
