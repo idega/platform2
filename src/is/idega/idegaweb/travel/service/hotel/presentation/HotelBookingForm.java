@@ -363,7 +363,6 @@ public class HotelBookingForm extends BookingForm {
         for (int i = 0; i < miscLength; i++) {
           pPrices[i+pricesLength] = misc[i];
         }
-        	System.out.println("[HotelBookingForm] in here 10 length : "+pPrices.length);
 
         for (int i = 0; i < pPrices.length; i++) {
             try {
