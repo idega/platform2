@@ -59,7 +59,7 @@ public class NewsLetter extends CategoryBlock {
 
   private int viewType = DROP;
   private String _inputStyle = "";
-  private int _inputLength = 18;
+  private int _inputLength = 0;
   private boolean _submitBelow = false;
   private boolean _submitBelowTopics = false;
   private String _spaceBetween = "2";
@@ -201,7 +201,9 @@ public class NewsLetter extends CategoryBlock {
       T.setColor(_bgColor);
       TextInput email = new TextInput("nl_email");
       email.setStyleAttribute(_inputStyle);
-      email.setLength(_inputLength);
+      if(_inputLength != 0) {
+      		email.setLength(_inputLength);
+      }
       email.setContent(iwrb.getLocalizedString("enter_email_here","Enter e-mail here"));
       email.setOnFocus("this.value=''");
 			SubmitButton send,cancel;
