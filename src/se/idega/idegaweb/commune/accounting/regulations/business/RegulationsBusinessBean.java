@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.39 2003/10/09 11:13:22 kjell Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.40 2003/10/09 12:00:13 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -987,8 +987,16 @@ public class RegulationsBusinessBean extends com.idega.business.IBOServiceBean i
 					"getYesNo",
 					"getLocalizationKey")
 			);
-
 			
+			arr.add(new ConditionHolder(
+				RuleTypeConstant.CONDITION_ID_STUDY_PATH, 
+				"Studieväg", 
+				LP + "studievag", 
+				"se.idega.idegaweb.commune.accounting.school.business.StudyPathBusiness", 
+				"findAllStudyPaths",
+				"getDescription")
+			);
+
 	/*
 			arr.add(new ConditionHolder(
 					"8", 
