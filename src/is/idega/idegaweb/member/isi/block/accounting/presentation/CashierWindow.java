@@ -424,6 +424,9 @@ public class CashierWindow extends StyledIWAdminWindow {
 			}
 		}
 		
+		if (iwc.isSuperAdmin())
+			return true;
+		
 		User currentUser = iwc.getCurrentUser();
 		if (currentUser == null) {
 			Text errorText = new Text(_iwrb.getLocalizedString("isi_acc_no_user", "There is no user logged in. Please log in and try again."));
