@@ -229,14 +229,7 @@ public class RunResultViewer extends Block {
 
 	private void getGroupCompetitionResults(Table table, int row) {
 		try {
-			List groups = new ArrayList(getGroupBiz().getChildGroups(distance));
-			List runs = new ArrayList();
-			Iterator runGroupIter = groups.iterator();
-			while (runGroupIter.hasNext()) {
-				Group runGroup = (Group) runGroupIter.next();
-				Collection runners = getRunBiz().getRunnersByDistance(distance, runGroup);
-				runs.addAll(runners);
-			}
+			List runs = new ArrayList(getRunBiz().getRunnersByDistance(distance, null));
 			
 			Map runGroups = new HashMap();
 			RunGroupMap map = new RunGroupMap();
