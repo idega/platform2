@@ -3,6 +3,7 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.ArrayList;
@@ -11,12 +12,14 @@ import java.util.Iterator;
 
 import javax.ejb.RemoveException;
 
+import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.ChildCareContractArchive;
 import se.idega.idegaweb.commune.presentation.CitizenChildren;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
+import com.idega.block.contract.data.Contract;
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
 import com.idega.builder.data.IBPage;
@@ -25,6 +28,7 @@ import com.idega.core.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -37,13 +41,13 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.45 2003/06/23 11:17:28 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.46 2003/06/30 21:03:02 roar Exp $
  * @since 12.2.2003 
  */
 
 public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
-	private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, NO_PLACEMENT = { "ccot_no_placement", "Detta barn har ingen placering" }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information." };
+	private final static String[] SUBMIT = { "ccot_submit", "Next" }, CANCEL = { "ccot_cancel", "Cancel" }, SUBMIT_ALERT_2 = { "ccot_alert_2", "Do you want to commit your choice? This can not be undone afterwards." }, NO_PLACEMENT = { "ccot_no_placement", "Detta barn har ingen placering" }, PLACED_AT = { "ccot_placed_at", "Placerad hos" }, PERSONAL_ID = { "ccot_personal_id", "Personal id" }, NAME = { "ccot_name", "Name" }, REQUEST_CONFIRM = { "ccot_request_sent_confirm", "Your request has been sent." }, NO_APPLICATION = { "ccot_no_application", "No application found" }, NEW_CARETIME = { "ccot_new_caretime", "New caretime" }, END_CARETIME = { "ccot_end_caretime", "Avsluta kontrakt" }, REQUEST_SUBJECT = { "ccot_request_subject", "Request for queue information" }, REQUEST_MESSAGE1 = { "ccot_request_message1", "Parents of" }, REQUEST_MESSAGE2 = 	{ "ccot_request_message2", "are requesting queue information." }, SIGN_TOOLTIP = new String[] {"ccot_sign_tooltip", "Sign contract"};
 
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
@@ -463,6 +467,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 	}
 
 	private Table getPlacedAtSchool(IWContext iwc, boolean hasActiveApplication) throws RemoteException {
+		hasActiveApplication = ! hasActiveApplication; //UNUSED! TODO: REMOVE THIS PARAMETER
+		
 		Table layoutTbl = new Table();
 		layoutTbl.setCellpadding(0);
 		layoutTbl.setCellspacing(0);
@@ -489,11 +495,35 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			layoutTbl.add(getSmallText(acceptedApplication.getProvider().getSchoolName()), 3, row++);
 			layoutTbl.add(getSmallHeader(localize("child_care.placement_date", "Placement date") + ":"), 1, row);
 			layoutTbl.add(getSmallText(fromDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row++);
+
+			boolean hasBankId = false;
+			try{
+				hasBankId = new NBSLoginBusinessBean().hasBankLogin(acceptedApplication.getOwner().getID());
+			}catch(SQLException ex){
+				//ignore
+			}
+			if (hasBankId){
+				Collection contracts = childCarebusiness.getContractsByApplication(acceptedApplication.getNodeID());
+				Iterator i = contracts.iterator();
+				while (i.hasNext()){
+					Contract c = ((ChildCareContractArchive) i.next()).getContract();
+					System.out.println("CONTRACT: " + c.getPrimaryKey());
+					if (! c.isSigned()){
+						Link signBtn = new Link(localize(SIGN_TOOLTIP));
+						signBtn.setWindowToOpen(ChildCareWindowBig.class);
+						signBtn.addParameter(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_SIGN_CONTRACT);
+						signBtn.setParameter(ChildCareAdminWindow.PARAMETER_CONTRACT_ID, c.getPrimaryKey().toString());
+						signBtn.setAsImageButton(true);
+						layoutTbl.setHeight(row++, 6);						
+						layoutTbl.add(signBtn, 3, row++);
+					}
+				}
+			}			
 		}
 	
 		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getActiveApplicationByChild(Integer.parseInt(childId)); 
 		
-		if (hasActiveApplication) {
+		if (activeApplication != null) {
 			ChildCareContractArchive archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
 			School school = activeApplication.getProvider();
 
