@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationCategory.java,v 1.1 2001/06/15 01:31:03 palli Exp $
+ * $Id: ApplicationSubject.java,v 1.1 2001/06/21 16:20:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,23 +18,26 @@ import java.sql.Date;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class ApplicationCategory extends GenericEntity {
-  private static String name_ = "app_allocation";
-  private static String description_ = "description";
-  private static String created_ = "created";
+public class ApplicationSubject extends GenericEntity {
+  public static final String name_ = "app_subject";
+  public static final String description_ = "description";
+  public static final String created_ = "created";
+  public static final String expires_ = "expires";
 
-  public ApplicationCategory() {
+  public ApplicationSubject() {
     super();
   }
 
-  public ApplicationCategory(int id) throws SQLException {
+  public ApplicationSubject(int id) throws SQLException {
     super(id);
   }
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(description_,"Um hvað er sótt",true,true,"java.lang.String");
-    addAttribute(created_,"Hvenær búið til",true,true,"java.sql.Date");
+    addAttribute(description_,"Description",true,true,"java.lang.String");
+    addAttribute(created_,"Created",true,true,"java.sql.Date");
+    addAttribute(expires_,"Expires",true,true,"java.sql.Date");
+    setMaxLength(description_,255);
   }
 
   public String getEntityName() {
@@ -56,4 +59,13 @@ public class ApplicationCategory extends GenericEntity {
   public Date getCreated() {
     return((Date)getColumnValue(created_));
   }
+
+  public void setExpires(Date date) {
+    setColumn(expires_,date);
+  }
+
+  public Date getExpires() {
+    return((Date)getColumnValue(expires_));
+  }
+
 }

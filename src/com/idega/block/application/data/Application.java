@@ -1,5 +1,5 @@
 /*
- * $Id: Application.java,v 1.1 2001/06/15 01:31:03 palli Exp $
+ * $Id: Application.java,v 1.2 2001/06/21 16:20:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -19,12 +19,12 @@ import java.sql.Timestamp;
  * @version 1.0
  */
 public class Application extends GenericEntity {
-  private static String name_ = "app_application";
-  private static String applicationCategoryId_ = "app_allocation_id";
-  private static String applicationStatusId_ = "app_appl_status";
-  private static String applicantId_ = "app_applicant_id";
-  private static String submitted_ = "submitted";
-  private static String statusChanged_ = "status_changed";
+  public static final String name_ = "app_application";
+  public static final String applicationSubjectId_ = "app_subject_id";
+  public static final String applicationStatusId_ = "app_appl_status";
+  public static final String applicantId_ = "app_applicant_id";
+  public static final String submitted_ = "submitted";
+  public static final String statusChanged_ = "status_changed";
 
   public Application() {
     super();
@@ -36,27 +36,27 @@ public class Application extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(applicationCategoryId_,"Tegund umsóknar",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.ApplicationCategory");
-    addAttribute(applicationStatusId_,"Staða umsóknar",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.ApplicationStatus");
-    addAttribute(applicantId_,"Umsækjandi",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
-    addAttribute(submitted_,"Hvenær var umsókn send inn",true,true,"java.sql.Timestamp");
-    addAttribute(statusChanged_,"Hvenær var stöðu umsóknar breytt",true,true,"java.sql.Timestamp");
+    addAttribute(applicationSubjectId_,"Application subject",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.ApplicationCategory");
+    addAttribute(applicationStatusId_,"Application status",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.ApplicationStatus");
+    addAttribute(applicantId_,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
+    addAttribute(submitted_,"Submitted",true,true,"java.sql.Timestamp");
+    addAttribute(statusChanged_,"Status changed",true,true,"java.sql.Timestamp");
   }
 
   public String getEntityName() {
     return(name_);
   }
 
-  public void setApplicationCategoryId(int id) {
-    setColumn(applicationCategoryId_,id);
+  public void setApplicationSubjectId(int id) {
+    setColumn(applicationSubjectId_,id);
   }
 
-  public void setApplicationCategoryId(Integer id) {
-    setColumn(applicationCategoryId_,id);
+  public void setApplicationSubjectId(Integer id) {
+    setColumn(applicationSubjectId_,id);
   }
 
   public Integer getApplicationCategoryId() {
-    return((Integer)getColumnValue(applicationCategoryId_));
+    return((Integer)getColumnValue(applicationSubjectId_));
   }
 
   public void setApplicationStatusId(int id) {

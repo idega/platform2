@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingListType.java,v 1.2 2001/06/21 16:21:18 palli Exp $
+ * $Id: SpouseOccupation.java,v 1.1 2001/06/21 16:21:18 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,33 +17,33 @@ import java.sql.SQLException;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class WaitingListType extends GenericEntity {
-  public static final String name_ = "cam_wl_type";
+public class SpouseOccupation extends GenericEntity {
+  public static final String name_ = "cam_curr_res";
   public static final String description_ = "description";
 
-  public WaitingListType() {
+  public SpouseOccupation() {
     super();
   }
 
-  public WaitingListType(int id) throws SQLException {
+  public SpouseOccupation(int id) throws SQLException {
     super(id);
   }
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(description_,"Description",true,true,"java.lang.String");
-    setMaxLength(description_,255);
+    super.setMaxLength(description_,255);
   }
 
   public String getEntityName() {
     return(name_);
   }
 
-  public void setDescription(String description) {
-    setColumn(description_,description);
-  }
-
   public String getDescription() {
     return((String)getColumnValue(description_));
+  }
+
+  public void setDescription(String description) {
+    setColumn(description_,description);
   }
 }

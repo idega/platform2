@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationStatus.java,v 1.1 2001/06/15 01:31:03 palli Exp $
+ * $Id: ApplicationStatus.java,v 1.2 2001/06/21 16:20:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,8 +18,8 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class ApplicationStatus extends GenericEntity {
-  private static String name_ = "app_appl_status";
-  private static String description_ = "description";
+  public static final String name_ = "app_appl_status";
+  public static final String description_ = "description";
 
   public ApplicationStatus() {
     super();
@@ -32,6 +32,7 @@ public class ApplicationStatus extends GenericEntity {
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
     addAttribute(description_,"Lýsing á stöðu umsóknar",true,true,"java.lang.String");
+    setMaxLength(description_,255);
   }
 
   public String getEntityName() {

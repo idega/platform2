@@ -1,5 +1,5 @@
 /*
- * $Id: WaitingList.java,v 1.2 2001/06/15 10:59:39 palli Exp $
+ * $Id: WaitingList.java,v 1.3 2001/06/21 16:21:18 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,11 +18,12 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class WaitingList extends GenericEntity {
-  private static String name_ = "app_waiting_list";
-  private static String apartmentTypeId_ = "bu_apartment_type_id";
-  private static String applicantId_ = "app_applicant_id";
-  private static String waitingListTypeId_ = "app_wl_type_id";
-  private static String order_ = "ordered";
+  public static final String name_ = "cam_waiting_list";
+  public static final String complexId_ = "bu_complex_id";
+  public static final String apartmentTypeId_ = "bu_apartment_type_id";
+  public static final String applicantId_ = "app_applicant_id";
+  public static final String waitingListTypeId_ = "app_wl_type_id";
+  public static final String order_ = "ordered";
 
   public WaitingList() {
     super();
@@ -34,14 +35,23 @@ public class WaitingList extends GenericEntity {
 
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(apartmentTypeId_,"Tegund íbúðar sem beðið er eftir",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.ApartmentType");
-    addAttribute(applicantId_,"Umsækjandi",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
-    addAttribute(waitingListTypeId_,"Tegund biðlista",true,true,"java.lang.Integer","one-to-many","is.idegaweb.campus.entity.WaitingListType");
-    addAttribute(order_,"Hvar á biðlista er umsækjandi",true,true,"java.lang.Integer");
+    addAttribute(complexId_,"Complex",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.Complex");
+    addAttribute(apartmentTypeId_,"Apartment type",true,true,"java.lang.Integer","one-to-many","com.idega.block.building.data.ApartmentType");
+    addAttribute(applicantId_,"Applicant",true,true,"java.lang.Integer","one-to-many","com.idega.block.application.data.Applicant");
+    addAttribute(waitingListTypeId_,"Waiting list type",true,true,"java.lang.Integer","one-to-many","is.idegaweb.campus.entity.WaitingListType");
+    addAttribute(order_,"Order",true,true,"java.lang.Integer");
   }
 
   public String getEntityName() {
     return(name_);
+  }
+
+  public void setComplexId(int id) {
+    setColumn(complexId_,id);
+  }
+
+  public Integer getComplexId() {
+    return((Integer)getColumnValue(complexId_));
   }
 
   public void setApartmentTypeId(int id) {

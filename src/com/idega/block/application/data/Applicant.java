@@ -1,5 +1,5 @@
 /*
- * $Id: Applicant.java,v 1.1 2001/06/15 01:31:03 palli Exp $
+ * $Id: Applicant.java,v 1.2 2001/06/21 16:20:46 palli Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -18,15 +18,15 @@ import java.sql.SQLException;
  * @version 1.0
  */
 public class Applicant extends GenericEntity {
-  private static String name_ = "app_applicant";
-  private static String firstName_ = "first_name";
-  private static String middleName_ = "middle_name";
-  private static String lastName_ = "lastName";
-  private static String ssn_ = "ssn";
-  private static String legalResidence_ = "legal_residence";
-  private static String residence_ = "residence";
-  private static String residencePhone_ = "residence_phone";
-  private static String po_ = "po";
+  public static final String name_ = "app_applicant";
+  public static final String firstName_ = "first_name";
+  public static final String middleName_ = "middle_name";
+  public static final String lastName_ = "lastName";
+  public static final String ssn_ = "ssn";
+  public static final String legalResidence_ = "legal_residence";
+  public static final String residence_ = "residence";
+  public static final String residencePhone_ = "residence_phone";
+  public static final String po_ = "po";
 
   public Applicant() {
     super();
@@ -37,14 +37,22 @@ public class Applicant extends GenericEntity {
   }
   public void initializeAttributes() {
     addAttribute(getIDColumnName());
-    addAttribute(firstName_,"Fornafn",true,true,"java.lang.String");
-    addAttribute(middleName_,"Millinafn",true,true,"java.lang.String");
-    addAttribute(lastName_,"Eftirnafn",true,true,"java.lang.String");
-    addAttribute(ssn_,"Kennitala",true,true,"java.lang.String");
-    addAttribute(legalResidence_,"Lögheimili",true,true,"java.lang.String");
-    addAttribute(residence_,"Aðsetur",true,true,"java.lang.String");
-    addAttribute(residencePhone_,"Sími",true,true,"java.lang.Integer");
-    addAttribute(po_,"Póstnúmer",true,true,"java.lang.String");
+    addAttribute(firstName_,"First name",true,true,"java.lang.String");
+    addAttribute(middleName_,"Middle name",true,true,"java.lang.String");
+    addAttribute(lastName_,"Last name",true,true,"java.lang.String");
+    addAttribute(ssn_,"Social security number",true,true,"java.lang.String");
+    addAttribute(legalResidence_,"Legal residence",true,true,"java.lang.String");
+    addAttribute(residence_,"Residence",true,true,"java.lang.String");
+    addAttribute(residencePhone_,"Telephone",true,true,"java.lang.String");
+    addAttribute(po_,"Post office",true,true,"java.lang.String");
+    setMaxLength(firstName_,255);
+    setMaxLength(middleName_,255);
+    setMaxLength(lastName_,255);
+    setMaxLength(ssn_,20);
+    setMaxLength(legalResidence_,255);
+    setMaxLength(residence_,255);
+    setMaxLength(residencePhone_,40);
+    setMaxLength(po_,255);
   }
   public String getEntityName() {
     return(name_);

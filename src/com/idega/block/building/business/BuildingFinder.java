@@ -157,7 +157,18 @@ public class BuildingFinder {
     return rt;
   }
 
-  public static int getComplexIdFromTypeId(int id){
+  public static ApartmentType[] findApartmentTypesForCategory(int categoryId) {
+    ApartmentType aprtType[] = null;
+    try {
+      aprtType = (ApartmentType[])new ApartmentType().findAllByColumn(ApartmentType.getApartmentCategoryIdColumnName(),categoryId);
+    }
+    catch(SQLException e) {
+    }
+
+    return(aprtType);
+  }
+
+  public static int getComplexIdFromTypeId(int id) {
     StringBuffer sql = new StringBuffer("select distinct ");
     sql.append(Complex.getNameTableName());
     sql.append(".* from ");
