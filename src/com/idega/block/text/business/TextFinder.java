@@ -318,12 +318,15 @@ public class TextFinder {
    return ICLocaleBusiness.getLocaleId(locale);
   }
 
+  /**
+   * @deprecated Use <code>getLocaleReturnIcelandicLocaleIfnotFound(iLocaleId)</code> instead. 
+   * @see com.idega.core.localisation.business.ICLocaleBusiness#getLocaleReturnIcelandicLocaleIfNotFound(int)
+   * @param iLocaleId
+   * @return 
+   */
   public static Locale getLocale(int iLocaleId){
-    Locale L = ICLocaleBusiness.getLocale(iLocaleId);
-    if(L==null)
-      L = new Locale("is","IS");
-    return L;
-  }
+  	return ICLocaleBusiness.getLocaleReturnIcelandicLocaleIfNotFound(iLocaleId);
+    }
 
 
 
