@@ -16,10 +16,8 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.block.importer.business.AlreadyCreatedException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -32,7 +30,6 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
-
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
@@ -1348,4 +1345,13 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness {
      * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#rejectApplication
      */
 	public boolean rejectApplication(int applicationId, String subject, String body, User user)  throws RemoteException;
+	
+    public boolean rejectApplication(ChildCareApplication application, String subject, String message, User user) throws java.rmi.RemoteException;
+	
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) throws java.rmi.RemoteException;
+	
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter)  throws java.rmi.RemoteException;
+    
+
+
 }

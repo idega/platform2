@@ -1,5 +1,5 @@
 /*
- * $Id: PlacementBusinessBean.java,v 1.1 2004/10/15 14:45:13 thomas Exp $
+ * $Id: PlacementBusinessBean.java,v 1.2 2004/10/18 16:36:44 thomas Exp $
  * Created on Oct 15, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -14,17 +14,29 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
+import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import se.cubecon.bun24.viewpoint.business.ViewpointBusiness;
+import se.cubecon.bun24.viewpoint.data.SubCategory;
 import se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
+import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
+import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
 import se.idega.idegaweb.commune.care.resource.business.ResourceBusiness;
 import se.idega.idegaweb.commune.care.resource.data.ResourceClassMember;
+import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
+import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.school.business.CentralPlacementBusiness;
 import se.idega.idegaweb.commune.school.business.CentralPlacementException;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
+import se.idega.idegaweb.commune.school.business.SchoolChoiceMessagePdfHandler;
 import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
+import se.idega.idegaweb.commune.school.data.SchoolChoice;
+import se.idega.idegaweb.commune.school.data.SchoolChoiceHome;
 import se.idega.idegaweb.commune.school.presentation.CentralPlacementEditor;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
@@ -33,7 +45,11 @@ import com.idega.block.school.data.SchoolCategoryHome;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.contact.data.Phone;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.presentation.IWContext;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
@@ -45,7 +61,7 @@ import com.idega.util.IWTimestamp;
  *
  * Business object with helper methods for CentralPlacementEditor
  * 
- * prior part of CentralPlacementBusiness, moved by Thomas to this class
+ * prior part of CentralPlacementBusiness and SchoolChoiceBusiness moved by Thomas to this class
  */
 public class PlacementBusinessBean extends IBOServiceBean  implements PlacementBusiness{
 	
@@ -63,7 +79,10 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 	private static final String KEY_ERROR_STORING_PLACEMENT = KP + "error.saving_placement";
 	private static final String KEY_ERROR_STUDY_PATH = KP + "error.study_path";
 	private static final String KEY_ERROR_PLC_DATE_OUTSIDE_SEASON = KP + "placement_date outside_season";
-
+	
+	public String getBundleIdentifier() {
+		return CommuneBlock.IW_BUNDLE_IDENTIFIER;
+	}
 	
 	/**
 	 * Stores a new placement(SchoolClassMember) with resources and ends the current placement
@@ -97,21 +116,23 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 		// pupil
 		if (childID == -1) {
 			throw new CentralPlacementException(KEY_ERROR_CHILD_ID, "No valid pupil found");
-		} else {
-			studentID = childID;
-			student = getUserBusiness().getUser(studentID);
-			if (student == null) 
-				throw new CentralPlacementException(KEY_ERROR_CHILD_ID, "No valid pupil found");
-			
-			try {
-				chosenSeason = getSchoolChoiceBusiness().getSchoolSeasonHome().
-					findByPrimaryKey(new Integer(getSchoolCommuneSession(iwc).getSchoolSeasonID()));
-			} catch (Exception e1) {}
-			if (chosenSeason == null)
-				throw new CentralPlacementException(KEY_ERROR_SEASON, "Error finding chosen season");
-			
-			latestPlacement = getCentralPlacementBusiness().getLatestPlacementFromElemAndHighSchool(student, chosenSeason);
 		}
+		studentID = childID;
+		student = getUserBusiness().getUser(studentID);
+		if (student == null) 
+			throw new CentralPlacementException(KEY_ERROR_CHILD_ID, "No valid pupil found");
+		
+		try {
+			chosenSeason = getSchoolChoiceBusiness().getSchoolSeasonHome().
+				findByPrimaryKey(new Integer(getSchoolCommuneSession(iwc).getSchoolSeasonID()));
+		} catch (Exception e1) {
+			//empty
+		}
+		if (chosenSeason == null)
+			throw new CentralPlacementException(KEY_ERROR_SEASON, "Error finding chosen season");
+		
+		latestPlacement = getCentralPlacementBusiness().getLatestPlacementFromElemAndHighSchool(student, chosenSeason);
+		
 		
 		// operational field
 		if (iwc.isParameterSet(CentralPlacementEditor.PARAM_SCHOOL_CATEGORY)) {
@@ -119,33 +140,32 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 			if (categoryID.equals("-1")) {
 				throw new CentralPlacementException(KEY_ERROR_CATEGORY_ID, 
 						"You must chose an operational field for the placement");
-			} else {
-				SchoolCategoryHome schCatHome = getSchoolBusiness().getSchoolCategoryHome();
+			} 
+			SchoolCategoryHome schCatHome = getSchoolBusiness().getSchoolCategoryHome();
+		
+			SchoolCategory highSchool;
+			try {
+				highSchool = schCatHome.findHighSchoolCategory();
+				String highSchoolPK = (String) highSchool.getPrimaryKey();
 			
-				SchoolCategory highSchool;
-				try {
-					highSchool = schCatHome.findHighSchoolCategory();
-					String highSchoolPK = (String) highSchool.getPrimaryKey();
-				
-					// Study path
-					if (categoryID.equals(highSchoolPK)) {
-						if (iwc.isParameterSet(CentralPlacementEditor.PARAM_STUDY_PATH)) {
-							String studyPathID = iwc.getParameter(CentralPlacementEditor.PARAM_STUDY_PATH);
-							if (studyPathID.equals("-1")) {
-								throw new CentralPlacementException(KEY_ERROR_STUDY_PATH, 
-										"You must chose a study path, for a high school placement");
-							}						
-						} else {
+				// Study path
+				if (categoryID.equals(highSchoolPK)) {
+					if (iwc.isParameterSet(CentralPlacementEditor.PARAM_STUDY_PATH)) {
+						String studyPathID = iwc.getParameter(CentralPlacementEditor.PARAM_STUDY_PATH);
+						if (studyPathID.equals("-1")) {
 							throw new CentralPlacementException(KEY_ERROR_STUDY_PATH, 
 									"You must chose a study path, for a high school placement");
-							
-						}
+						}						
+					} else {
+						throw new CentralPlacementException(KEY_ERROR_STUDY_PATH, 
+								"You must chose a study path, for a high school placement");
+						
 					}
-				
-				} catch (FinderException e1) {
-					log(e1);
-				}			
-			}
+				}
+			
+			} catch (FinderException e1) {
+				log(e1);
+			}			
 		}
 		// provider
 		if (iwc.isParameterSet(CentralPlacementEditor.PARAM_PROVIDER)) {
@@ -161,9 +181,8 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 			if (typeID.equals("-1")) {
 				throw new CentralPlacementException(KEY_ERROR_SCHOOL_TYPE, 
 																				"You must chose a school type");
-			} else {
-				schoolTypeID = Integer.parseInt(typeID);
-			}
+			} 
+			schoolTypeID = Integer.parseInt(typeID);
 		}
 		// school year
 		if (iwc.isParameterSet(CentralPlacementEditor.PARAM_SCHOOL_YEAR)) {
@@ -171,9 +190,8 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 			if (yearID.equals("-1")) {
 				throw new CentralPlacementException(KEY_ERROR_SCHOOL_YEAR, 
 																				"You must chose a school year");
-			} else {
-				schoolYearID = Integer.parseInt(yearID);
-			}
+			} 
+			schoolYearID = Integer.parseInt(yearID);
 		}
 		
 		// language
@@ -187,9 +205,8 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 			if (groupID.equals("-1")) {
 				throw new CentralPlacementException(KEY_ERROR_SCHOOL_GROUP, 
 																				"You must chose a school group");
-			} else {
-				schoolClassID = Integer.parseInt(groupID);
-			}
+			} 
+			schoolClassID = Integer.parseInt(groupID);
 		}
 		
 		// registerDate
@@ -269,8 +286,7 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 			// Start transaction
 			trans.begin();
 			// Create new placement
-			newPlacement = getSchoolBusiness().storeNewSchoolClassMember(studentID, schoolClassID, 
-														schoolYearID, schoolTypeID, registerStamp, registrator, notes, sLanguage);
+			newPlacement = getSchoolBusiness().storeNewSchoolClassMember(studentID, schoolClassID, schoolYearID, schoolTypeID, registerStamp, registrator, notes, sLanguage);
 			if (newPlacement != null) {
 			// *** START - Store the rest of the parameters ***
 				newPlacementID = ((Integer) newPlacement.getPrimaryKey()).intValue(); // test
@@ -389,6 +405,105 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 		return newPlacement; 
 		
 	}
+
+	// methods needed by SchoolAdminOverview
+	
+	public void rejectApplication(int applicationID, int seasonID, User performer, String messageSubject, String messageBody) throws RemoteException {
+		rejectApplication(applicationID,seasonID,performer,messageSubject,messageBody,SchoolChoiceMessagePdfHandler.CODE_APPLICATION_REJECT);
+	}
+	
+	
+	private void rejectApplication(int applicationID, int seasonID, User performer, String messageSubject, String messageBody,String code) throws RemoteException {
+		try {
+			SchoolChoiceBusiness schoolChoiceBusiness = getSchoolChoiceBusiness();
+			SchoolChoice choice = this.getSchoolChoiceHome().findByPrimaryKey(new Integer(applicationID));
+			User child = choice.getChild();
+			String status = choice.getCaseStatus().toString();
+			schoolChoiceBusiness.changeCaseStatus(choice, schoolChoiceBusiness.getCaseStatusDenied().getStatus(), performer);
+			choice.store();
+
+			if (!status.equalsIgnoreCase(schoolChoiceBusiness.getCaseStatusMoved().getStatus())) {
+				Collection coll = schoolChoiceBusiness.findByStudentAndSeason(choice.getChildId(), seasonID);
+				Iterator iter = coll.iterator();
+				while (iter.hasNext()) {
+					SchoolChoice element = (SchoolChoice) iter.next();
+					if (element.getChoiceOrder() == (choice.getChoiceOrder() + 1) && !element.getCaseStatus().equals("AVSL")) {
+						schoolChoiceBusiness.changeCaseStatus(element, schoolChoiceBusiness.getCaseStatusPreliminary().getStatus(), performer);
+						schoolChoiceBusiness.sendMessageToParents(element, schoolChoiceBusiness.getPreliminaryMessageSubject(), schoolChoiceBusiness.getPreliminaryMessageBody(element),code, schoolChoiceBusiness.getPreliminaryMessageSubject(),schoolChoiceBusiness.getPreliminaryMessageBody(element),code,false);
+						continue;						
+					}
+				}
+			}
+
+			schoolChoiceBusiness.sendMessageToParents(choice, messageSubject, messageBody,code,messageSubject, messageBody,code,false);
+			rejectAfterSchoolApplication(choice.getChildId(), choice.getChosenSchoolId(), seasonID, performer);
+
+			if (choice.getChoiceOrder() == 3) {
+				ViewpointBusiness vpb = (ViewpointBusiness) getServiceInstance(ViewpointBusiness.class);
+				SubCategory subCategory = vpb.findSubCategory("Skolval");
+				if (subCategory != null) {
+					try {
+						Phone phone = getCommuneUserBusiness().getChildHomePhone(child);
+
+						StringBuffer body = new StringBuffer();
+						//body.append(child.getNameLastFirst(true)).append(" - ").append(child.getPersonalID());
+						body.append(child.getName()).append(" - ").append(child.getPersonalID());
+						if (phone != null) {
+							body.append("\ntel: ").append(phone.getNumber());
+						}
+						vpb.createViewpoint(performer, messageSubject, body.toString(), subCategory.getName(), getCommuneUserBusiness().getRootAdministratorGroupID(), -1);
+					}
+					catch (CreateException ce) {
+						ce.printStackTrace();
+					}
+				}
+			}
+		}
+		catch (FinderException fe) {
+			// empty
+		}
+	}
+	
+	private AfterSchoolChoice findChoicesByChildAndProviderAndSeason(int childID, int providerID, int seasonID) throws FinderException, RemoteException {
+		String[] caseStatus = { getSchoolChoiceBusiness().getCaseStatusPreliminary().getStatus() };
+		return getAfterSchoolChoiceHome().findByChildAndProviderAndSeason(childID, providerID, seasonID, caseStatus);
+	}
+	
+	private AfterSchoolChoiceHome getAfterSchoolChoiceHome() {
+		try {
+			return (AfterSchoolChoiceHome) IDOLookup.getHome(AfterSchoolChoice.class);
+		}
+		catch (IDOLookupException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+	
+	private boolean rejectAfterSchoolApplication(int childID, int providerID, int seasonID, User user) throws RemoteException {
+		try {
+			AfterSchoolChoice choice = findChoicesByChildAndProviderAndSeason(childID, providerID, seasonID);
+			if (choice != null) {
+				String subject = this.getLocalizedString("after_school.application_rejected_subject", "After school application rejected");
+				String message = this.getLocalizedString("after_school.application_rejected_body", "Your after school application for {0}, {2}, to provider {1} has been rejected. Your next selected will be made active.");
+				getChildCareBusiness().rejectApplication(choice, subject, message, user);
+			}
+			return true;
+		}
+		catch (FinderException e) {
+			return false;
+		}
+	}
+	
+	private CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
+		return (CommuneUserBusiness) this.getIDOHome(CommuneUserBusiness.class);
+	}
+
+	private SchoolChoiceHome getSchoolChoiceHome() throws java.rmi.RemoteException {
+		return (SchoolChoiceHome) this.getIDOHome(SchoolChoice.class);
+	}
+	
+	private ChildCareBusiness getChildCareBusiness() throws RemoteException {
+		return (ChildCareBusiness) getServiceInstance(ChildCareBusiness.class);
+	}
 	
 	private CentralPlacementBusiness getCentralPlacementBusiness() throws RemoteException {
 		return (CentralPlacementBusiness) getServiceInstance(CentralPlacementBusiness.class);
@@ -416,5 +531,17 @@ public class PlacementBusinessBean extends IBOServiceBean  implements PlacementB
 	
 	private SchoolCommuneSession getSchoolCommuneSession(IWContext iwc) throws RemoteException {
 		return (SchoolCommuneSession) IBOLookup.getSessionInstance(iwc, SchoolCommuneSession.class);	
+	}
+	
+	private Locale getDefaultLocale() {
+		return getIWApplicationContext().getIWMainApplication().getSettings().getDefaultLocale();
+	}
+
+	private String getLocalizedString(String key, String defaultValue) {
+		return getLocalizedString(key, defaultValue, this.getDefaultLocale());
+	}
+	
+	private String getLocalizedString(String key, String defaultValue, Locale locale) {
+		return getBundle().getResourceBundle(locale).getLocalizedString(key, defaultValue);
 	}
 }
