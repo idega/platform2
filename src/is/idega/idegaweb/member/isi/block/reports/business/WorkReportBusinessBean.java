@@ -909,7 +909,63 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			return ListUtil.getEmptyList();
 		}
 	}
-	
+  
+  /**
+   * Changes the WorkReportGroup of the specified member, that is the member is removed from the specified current group 
+   * and added to the specified new group.
+   * If the name of the current group is null the member will only be added to the specified new group.
+   * If the name of the new group is null the member will only be removed from the specified current group.
+   * But if one of the groups could not be found nothing happens and false is returned.
+   * If both specified names are null, nothing happens and true is returned.
+   * If the complete operation was successful true is returned else false.
+   * @param nameOldGroup
+   * @param yearOldGroup
+   * @param nameNewGroup
+   * @param yearNewGroup
+   * @param member
+   * @return true if successful else false.
+   */
+  
+  public boolean changeWorkReportGroupOfMember(String nameOldGroup, int yearOldGroup, String nameNewGroup, int yearNewGroup, WorkReportMember member)  {
+    WorkReportGroup oldGroup = null;
+    WorkReportGroup newGroup = null;
+    // try to find work groups
+    WorkReportGroupHome home = getWorkReportGroupHome();
+    if (nameOldGroup != null) {
+      try {
+        oldGroup = home.findWorkReportGroupByNameAndYear(nameOldGroup, yearOldGroup);
+      }
+      catch (FinderException ex)  {
+        System.err.println("[WorkReportBusiness] Could not find old WorkReportGroup (name: "+ nameOldGroup+" , year: "+ yearOldGroup+" ) Message is: "+ ex.getMessage());
+        ex.printStackTrace(System.err);
+        return false;
+      }
+    }
+    if (nameNewGroup != null) {
+      try {
+        newGroup = home.findWorkReportGroupByNameAndYear(nameNewGroup, yearNewGroup);
+      }
+      catch (FinderException ex)  {
+        System.err.println("[WorkReportBusiness] Could not find new WorkReportGroup (name: "+ nameNewGroup+" , year: "+ yearNewGroup+" ) Message is: "+ ex.getMessage());
+        ex.printStackTrace(System.err);
+        return false;
+      }
+    }
+    return changeWorkReportGroupOfMember(oldGroup, newGroup, member);
+  }
+        
+  /**
+   * Changes the WorkReportGroup of the specified member, that is the member is removed from the specified current group 
+   * and added to the specified new group.
+   * If the specified current group is null the member will only be added to the specified new group.
+   * If the specified new group is null the member will only be removed from the specified current group.
+   * If both specified groups are null nothing happens and true is returned.
+   * If the complete operation was successful true is returned else false.
+   * @param oldGroup
+   * @param newGroup
+   * @param member
+   * @return true if successful else false.
+   */
   public boolean changeWorkReportGroupOfMember(WorkReportGroup oldGroup, WorkReportGroup newGroup, WorkReportMember member)  {
     TransactionManager manager = com.idega.transaction.IdegaTransactionManager.getInstance();
     try {
