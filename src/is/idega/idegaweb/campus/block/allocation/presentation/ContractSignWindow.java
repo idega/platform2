@@ -54,6 +54,7 @@ public class ContractSignWindow extends Window{
   private boolean print = false;
   private SystemProperties SysProps = null;
   private GenericGroup eGroup = null;
+  public static final String prmAdmin = "is_camp_csat";
 
   /*
     Blár litur í topp # 27324B
@@ -308,7 +309,7 @@ public class ContractSignWindow extends Window{
 
   public void main(IWContext iwc){
     //isStaff = com.idega.core.accesscontrol.business.AccessControl
-    isAdmin = iwc.hasEditPermission(this);
+    isAdmin = iwc.isParameterSet(prmAdmin);
     control(iwc);
   }
 }

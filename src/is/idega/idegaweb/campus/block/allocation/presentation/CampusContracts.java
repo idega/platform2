@@ -439,10 +439,13 @@ public class CampusContracts extends Block{
 
 
 
-  public static Link getSignedLink(PresentationObject MO,int contractId){
+  public Link getSignedLink(PresentationObject MO,int contractId){
     Link L = new Link(MO);
     L.setWindowToOpen(ContractSignWindow.class);
     L.addParameter("signed_id",contractId);
+    if(isAdmin){
+      L.addParameter(ContractSignWindow.prmAdmin,"true");
+    }
     return L;
   }
 

@@ -256,11 +256,7 @@ public class ContractReSignWindow extends Window{
 
   public void main(IWContext iwc) throws Exception {
     eUser = iwc.getUser();
-    //isStaff = com.idega.core.accesscontrol.business.AccessControl
-/*    isAdmin = iwc.isParameterSet(prmAdmin );
-    System.out.println("gummi = " + iwc.getAccessController().isAdmin(iwc));
-    System.out.println("Is admin in main thingie = " + isAdmin);*/
-    isAdmin = iwc.getAccessController().isAdmin(iwc);
+    isAdmin = iwc.isParameterSet(prmAdmin);
     isLoggedOn = com.idega.block.login.business.LoginBusiness.isLoggedOn(iwc);
     control(iwc);
   }
