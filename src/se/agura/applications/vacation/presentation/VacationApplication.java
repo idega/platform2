@@ -330,6 +330,7 @@ public class VacationApplication extends VacationBlock {
 				else if (type.equals("com.idega.presentation.ui.TextInput")) {
 					TextInput input = (TextInput) getInput(new TextInput(key));
 					input.setAsNotEmpty(getResourceBundle().getLocalizedString("vacation.text_area_not_empty","This field may not be empty!"));
+					input.setAsIntegers(getResourceBundle().getLocalizedString("vacation.text_input_only_allows_integers","Text input only allows integers!"));
 					reasonTable.add(input, 2, row);
 				}
 				else if (type.equals("com.idega.presentation.ui.RadioButton")) {
@@ -568,6 +569,7 @@ public class VacationApplication extends VacationBlock {
 						}
 						else if (metaType.equals("com.idega.block.media.presentation.FileChooser")) {
 							Link link = getLink(getResourceBundle().getLocalizedString("vacation_request.attachment", "Attachment"));
+							link.setTarget(Link.TARGET_NEW_WINDOW);
 							link.setFile(Integer.parseInt(value));
 							table.add(link, 2, row);
 						}

@@ -254,6 +254,7 @@ public abstract class VacationBlock extends Block {
 						}
 						else if (metaType.equals("com.idega.block.media.presentation.FileChooser")) {
 							Link link = getLink(getResourceBundle().getLocalizedString("vacation_request.attachment", "Attachment"));
+							link.setTarget(Link.TARGET_NEW_WINDOW);
 							link.setFile(Integer.parseInt(value));
 							table.add(link, 2, row);
 						}
