@@ -16,10 +16,10 @@ import se.idega.idegaweb.commune.report.business.Fetcher;
 /**
  * IdegaWeb presentation class for wizard input of a new Report Generator
  * <p>
- * Last modified: $Date: 2003/03/17 09:25:43 $ by $Author: staffan $
+ * Last modified: $Date: 2003/03/24 10:57:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see com.idega.block.reports.data.Report
  */
 public class ReportLink extends CommuneBlock {
@@ -246,7 +246,6 @@ public class ReportLink extends CommuneBlock {
                         = ReportEntityHandler.findReports (categoryId);
                 if (reports.length > 0) {
                     // at least one report was found in this category
-                    System.err.println ("reports=" + Arrays.asList (reports));
                     result = reports [0];
                     session.setAttribute (CURRENT_REPORT_KEY + objectInstanceId,
                                           result);
@@ -264,7 +263,6 @@ public class ReportLink extends CommuneBlock {
         ICCategory result = null;
         final List categoryList = ReportFinder.listOfEntityForObjectInstanceId
                 (objectInstanceId);
-        System.err.println ("categories=" + categoryList);
         if (categoryList != null && categoryList.size () > 0) {
             result = (ICCategory) categoryList.iterator ().next ();
         }
@@ -276,7 +274,8 @@ public class ReportLink extends CommuneBlock {
      */
     private Table getFetchTable (final String sql)
         throws Fetcher.FetchException {
-        final String [][] data = Fetcher.fetchFromDatabase (sql, 5);
+        final Fetcher.FetchResult result = Fetcher.fetchFromDatabase (sql, 5);
+        final String [][] data = result.getData ();
         final int rowCount = data.length;
         final int colCount = data [0].length;
         final Table table = new Table ();
@@ -286,22 +285,22 @@ public class ReportLink extends CommuneBlock {
         table.setWidth(getWidth());
         
         // show headers and column name inputs
-        table.setRowColor (2, getHeaderColor());
+        table.setRowColor (1, getHeaderColor());
+        final String [] columnLabels = result.getColumnLabels ();
         for (int col = 0; col < colCount; col++) {
-            final TextInput textInput = (TextInput) getStyledInterface
-                    (new TextInput(COLUMN_NAME_KEY + col));
-            textInput.setContent (data [1][col]);
-            table.add (textInput, col + 1, 1);
-            table.add (getSmallHeader (data [0][col]), col + 1, 2);
+            final HiddenInput hidden = new HiddenInput (COLUMN_NAME_KEY + col,
+                                                        columnLabels [col]);
+            table.add (hidden, col + 1, 1);
+            table.add (getSmallHeader (columnLabels [col]), col + 1, 1);
         }
         
         // show fetched content
-        for (int row = 2; row < rowCount; row++) {
-            table.setRowColor(row + 1, row % 2 == 0
+        for (int row = 0; row < rowCount; row++) {
+            table.setRowColor(row + 2, row % 2 == 0
                               ? getZebraColor1() : getZebraColor2());
             for (int col = 0; col < colCount; col++) {
                 table.add (getSmallText(data [row][col]), col + 1,
-                           row + 1);
+                           row + 2);
             }
         }
         return table;

@@ -8,10 +8,10 @@ import java.util.*;
  * Fetches data dynamically from the IdegaWeb database using a jdbc connection
  * retreived from IdegaWeb's {@link com.idega.util.database.ConnectionBroker}.
  * <p>
- * Last modified: $Date: 2003/03/17 11:01:37 $ by $Author: staffan $
+ * Last modified: $Date: 2003/03/24 10:57:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @see java.sql
  * @see se.idega.idegaweb.commune.report.business.Fetcher.FetcherException
  */
@@ -28,7 +28,7 @@ public class Fetcher {
      * @throws Fetcher.FetchException if the sql doesn't start with 'select' or if an
      * exception occurs during database communication
      */
-    public static String [][] fetchFromDatabase (final String sql)
+    public static FetchResult fetchFromDatabase (final String sql)
         throws FetchException {
         return fetchFromDatabase (sql, true, 0); // zero is a dummy - not used
     }
@@ -46,7 +46,7 @@ public class Fetcher {
      * @throws Fetcher.FetchException if the sql doesn't start with 'select' or if an
      * exception occurs during database communication
      */
-    public static String [][] fetchFromDatabase
+    public static FetchResult fetchFromDatabase
         (final String sql, final int maxRows) throws FetchException {
 
         return fetchFromDatabase (sql, false, maxRows);
@@ -65,53 +65,53 @@ public class Fetcher {
      * @throws FetchException if the sql doesn't start with 'select' or if an
      * exception occurs during database communication
      */
-    private static String [][] fetchFromDatabase
+    private static FetchResult fetchFromDatabase
         (final String sql, final boolean fetchAllRows, final int maxRows)
         throws FetchException {
         Connection connection = null;
-        String [][] result = new String [0][0];
 
         if (!sql.trim ().toLowerCase ().startsWith ("select")) {
             throw new FetchException
                     ("Only queries starting with 'select' are allowed here");
         }
-        
         try {
             connection = ConnectionBroker.getConnection ();
             final Statement statement = connection.createStatement ();
             final ResultSet resultSet = statement.executeQuery (sql);
             final ResultSetMetaData metaData = resultSet.getMetaData ();
             final int columnCount = metaData.getColumnCount ();
-            final java.util.List [] data = new java.util.List [columnCount];
-            for (int i = 0; i < columnCount; i++) {
-                data [i] = new ArrayList ();
-                data [i].add (metaData.getColumnLabel (i + 1));
-                data [i].add (metaData.getColumnName (i + 1));
+            final String [] columnLabels = new String [columnCount];
+            final java.util.List [] columns = new java.util.List [columnCount];
+            for (int col = 0; col < columnCount; col++) {
+                columnLabels [col] = metaData.getColumnLabel (col + 1);
+                columns [col] = new ArrayList ();
             }
+
             for (int row = 0;
                  resultSet.next () && (fetchAllRows || row < maxRows); row++) {
-                for (int i = 0; i < columnCount; i++) {
-                    data [i].add (resultSet.getString (i + 1));
+                for (int col = 0; col < columnCount; col++) {
+                    final String value = resultSet.getString (col + 1);
+                    columns [col].add (value);
                 }
             }
-            resultSet.close ();
-            statement.close ();
-            final int rowCount = data [0].size ();
-            result = new String [rowCount][columnCount];
+            if (resultSet != null) resultSet.close ();
+            if (statement != null) statement.close ();
+            final int rowCount = columns [0].size ();
+            final String [][] data = new String [rowCount][columnCount];
             for (int col = 0; col < columnCount; col++) {
                 int row = 0;
-                for (Iterator i = data [col].iterator (); i.hasNext (); row++) {
+                for (Iterator i = columns [col].iterator (); i.hasNext ();
+                     row++) {
                     final String cell = (String) i.next ();
-                    result [row][col] = cell != null ? cell.trim () : "(null)";
+                    data [row][col] = cell != null ? cell.trim () : "(null)";
                 }
             }
+            return new FetchResult (data, null, columnLabels);
         } catch (SQLException e) {
             throw new FetchException (e.getMessage ());
         } finally {
             ConnectionBroker.freeConnection (connection);
         }
-        
-        return result;
     }
 
     /**
@@ -120,14 +120,39 @@ public class Fetcher {
      * not to throw any {@link java.sql.SQLException} to clients, since they are
      * at wrong abstraction level.
      * <p>
-     * Last modified: $Date: 2003/03/17 11:01:37 $ by $Author: staffan $
+     * Last modified: $Date: 2003/03/24 10:57:35 $ by $Author: staffan $
      *
      * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
-     * @version $Revision: 1.2 $
+     * @version $Revision: 1.3 $
      */
     public static class FetchException extends Exception {
         public FetchException (final String message) {
             super (message);
+        }
+    }
+
+    public static class FetchResult {
+        final private String [][] data;
+        final private String [] warnings;
+        final private String [] columnLabels;
+
+        private FetchResult (final String [][] data, final String [] warnings,
+                             final String [] columnLabels) {
+            this.data = data;
+            this.warnings = warnings;
+            this.columnLabels = columnLabels;
+        }
+
+        public String [][] getData () {
+            return data;
+        }
+
+        public String [] getWarnings () {
+            return warnings;
+        }
+
+        public String [] getColumnLabels () {
+            return columnLabels;
         }
     }
 }
