@@ -852,8 +852,8 @@ public abstract class BookingForm extends TravelManager{
 		int min = 0;
 		
 		try {
-    	max = getTravelStockroomBusiness(iwc).getMaxBookings(_product, _stamp);
-    	min = getTravelStockroomBusiness(iwc).getMinBookings(_product, _stamp);
+    	max = getServiceBusiness(iwc, _product).getMaxBookings(_product, _stamp);
+    	min = getServiceBusiness(iwc, _product).getMinBookings(_product, _stamp);
 //			ServiceDayHome sDayHome = (ServiceDayHome) IDOLookup.getHome(ServiceDay.class);
 //			ServiceDay sDay;// = sDayHome.create();
 //			sDay = sDayHome.findByServiceAndDay(this._productId, _stamp.getDayOfWeek());
