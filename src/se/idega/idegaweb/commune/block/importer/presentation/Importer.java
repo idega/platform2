@@ -1,5 +1,6 @@
 package se.idega.idegaweb.commune.block.importer.presentation;
 
+import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWResourceBundle;
 import java.io.File;
 import com.idega.presentation.*;
@@ -128,20 +129,32 @@ public class Importer extends Block {
 
     }
     else if( importFiles ){
-      add(iwrb.getLocalizedString("importer.importing","importing..."));
+      add(iwrb.getLocalizedString("importer.done.importing","Done importing:"));
       NackaImportFile file;
 
-      String[] values = iwc.getParameterValues(this.IMPORT_FILE_PATHS);
-      for (int i = 0; i < values.length; i++) {
-        file = new NackaImportFile(new File(values[i]));
-        file.parse();
-        add(values[i]);
-        addBreak();
-      }
+      String[] values = iwc.getParameterValues(IMPORT_FILE_PATHS);
+      ImportBusinessBean biz = (ImportBusinessBean) IBOLookup.getServiceInstance(iwc,ImportBusiness.class);
 
+      for (int i = 0; i < values.length; i++) {
       /** @todo make a dropdown of possible importers and support for uploaded files
        *
        */
+        ImportFile importFile = new NackaImportFile(new File(values[i]));
+        boolean success = biz.importRecords(importFile);
+        addBreak();
+
+        String status = (success)? iwrb.getLocalizedString("importer.success","finished!") : iwrb.getLocalizedString("importer.failure","failed!!");
+
+        Text fileStatus = new Text(values[i]+" : "+status);
+        fileStatus.setBold();
+
+        add(fileStatus);
+
+
+        addBreak();
+      }
+
+
 
 
 
