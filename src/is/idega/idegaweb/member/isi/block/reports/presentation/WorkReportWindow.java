@@ -348,7 +348,7 @@ public class WorkReportWindow extends IWAdminWindow {
 
 			if (!WorkReportConstants.WR_USER_TYPE_CLUB.equals(type)  || iwc.isSuperAdmin()) {
 				menu.add(statistics, 1, 12);
-				menu.setRowColor(11, COLOR_MIDDLE);
+				menu.setRowColor(12, COLOR_MIDDLE);
 				menu.add(statsList, 1, 13);
 			}
 			
