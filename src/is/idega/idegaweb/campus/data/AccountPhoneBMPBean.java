@@ -3,17 +3,17 @@
 <<<<<<< AccountPhoneBMPBean.java
 <<<<<<< AccountPhoneBMPBean.java
  * 
- * $Id: AccountPhoneBMPBean.java,v 1.10 2004/07/15 15:29:48 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.11 2004/07/21 11:17:43 aron Exp $
  * Copyright (C) 2001 Idega hf. All Rights Reserved. This software is the
  * proprietary information of Idega hf. Use is subject to license terms.
  *  
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.10 2004/07/15 15:29:48 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.11 2004/07/21 11:17:43 aron Exp $
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.10 2004/07/15 15:29:48 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.11 2004/07/21 11:17:43 aron Exp $
 >>>>>>> 1.3
 =======
- * $Id: AccountPhoneBMPBean.java,v 1.10 2004/07/15 15:29:48 aron Exp $
+ * $Id: AccountPhoneBMPBean.java,v 1.11 2004/07/21 11:17:43 aron Exp $
 >>>>>>> 1.4
  * 
  * Copyright (C) 2001-2004 Idega hf. All Rights Reserved.
@@ -182,6 +182,11 @@ public class AccountPhoneBMPBean
 	
 	public Collection ejbFindByPhoneNumber(String number)throws FinderException{
 		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEqualsQuoted(getColumnNamePhoneNumber(),number));
+	}
+	
+	public Collection ejbFindByPhoneNumberAndPhonedDate(String number,Date phonedDate)throws FinderException{
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEqualsQuoted(getColumnNamePhoneNumber(),number)
+				.appendAnd().appendLessThanOrEqualsSign().append(getColumnNameValidTo()).appendAnd().append(getColumnNameValidFrom()));
 	}
 	
 	public Collection ejbFindAll()throws FinderException{

@@ -79,4 +79,14 @@ public class AccountPhoneHomeImpl extends com.idega.data.IDOFactory implements A
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+	/* (non-Javadoc)
+	 * @see is.idega.idegaweb.campus.data.AccountPhoneHome#findByPhoneNumberAndPhonedDate(java.lang.String, java.sql.Date)
+	 */
+	public Collection findByPhoneNumberAndPhonedDate(String number,
+			Date phonedDate) throws FinderException {
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((AccountPhoneBMPBean)entity).ejbFindByPhoneNumberAndPhonedDate(number,phonedDate);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
 }

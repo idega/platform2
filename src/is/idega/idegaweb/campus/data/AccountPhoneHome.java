@@ -19,4 +19,5 @@ public interface AccountPhoneHome extends com.idega.data.IDOHome
  */
 public Collection findAll()throws FinderException;
 public Collection findValid(Date toDate)throws FinderException;
+public Collection findByPhoneNumberAndPhonedDate(String number,Date phonedDate)throws FinderException;
 }
