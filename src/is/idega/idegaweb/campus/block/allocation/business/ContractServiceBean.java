@@ -1,5 +1,5 @@
 /*
- * $Id: ContractServiceBean.java,v 1.10 2004/06/09 17:07:36 aron Exp $
+ * $Id: ContractServiceBean.java,v 1.11 2004/06/14 15:54:55 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -157,12 +157,8 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		group.addGroup(user);
 	}
 	public void changeApplicationStatus(Contract eContract) throws Exception {
-		List L = null;
-		L =
-			EntityFinder.getInstance().findAllByColumn(
-				Application.class,
-				ApplicationBMPBean.getApplicantIdColumnName(),
-				eContract.getApplicantId().intValue());
+		
+		Collection L = getApplicationService().getApplicationHome().findByApplicantID(eContract.getApplicantId());
 		if (L != null) {
 			Iterator I = L.iterator();
 			while (I.hasNext()) {

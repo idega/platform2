@@ -57,7 +57,7 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
   private final String sessCx = "s_clx",sessBu = "s_bu",sessFl = "s_fl",sessCt="s_ct",sessTp="s_tp",sessOrder="s_or";
   private String[] prmArray = { prmCx ,prmBu ,prmFl,prmCt,prmTp,prmOrder};
   private String[] sessArray = {sessCx ,sessBu ,sessFl,sessCt,sessTp,sessOrder};
-  private Integer[] iValues = {Integer.valueOf(sCLBU),Integer.valueOf(sCLFL),Integer.valueOf(sCLCX),Integer.valueOf(sCLCT),Integer.valueOf(sCLTP)};
+  private Integer[] iValues = {Integer.valueOf(sCLBU),Integer.valueOf(sCLFL),Integer.valueOf(sCLCX),Integer.valueOf(sCLCT),Integer.valueOf(sCLTP),Integer.valueOf(sORDER)};
   protected boolean isAdmin = false;
   private boolean fetch = false;
 
@@ -124,12 +124,12 @@ public class CampusPhones extends CampusBlock implements IWPageEventListener{
   private Form statusForm()throws RemoteException,FinderException{
     Form myForm = new Form();
 
-    DropdownMenu complex = drpLodgings(((ComplexHome)IDOLookup.getHome(Complex.class)).findAll(),prmArray[0],"--",iValues[0].toString());
-    DropdownMenu building = drpLodgings(((BuildingHome)IDOLookup.getHome(Building.class)).findAll(),prmArray[1],"--",iValues[1].toString());
-    DropdownMenu floor = drpFloors(prmArray[2],"--",iValues[2].toString(),true);
-    DropdownMenu cat = drpLodgings(((ApartmentCategoryHome)IDOLookup.getHome(ApartmentCategory.class)).findAll(),prmArray[3],"--",iValues[3].toString());
-    DropdownMenu type = drpLodgings(((ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class)).findAll(),prmArray[4],"--",iValues[4].toString());
-    DropdownMenu order = orderDrop(prmArray[5],"--",iValues[5].toString());
+    DropdownMenu complex = drpLodgings(((ComplexHome)IDOLookup.getHome(Complex.class)).findAll(),prmCx,"--",this.sCLCX.toString());
+    DropdownMenu building = drpLodgings(((BuildingHome)IDOLookup.getHome(Building.class)).findAll(),prmBu,"--",this.sCLBU.toString());
+    DropdownMenu floor = drpFloors(prmFl,"--",this.sCLFL.toString(),true);
+    DropdownMenu cat = drpLodgings(((ApartmentCategoryHome)IDOLookup.getHome(ApartmentCategory.class)).findAll(),prmCt,"--",this.sCLCT.toString());
+    DropdownMenu type = drpLodgings(((ApartmentTypeHome)IDOLookup.getHome(ApartmentType.class)).findAll(),prmTp,"--",this.sCLTP.toString());
+    DropdownMenu order = orderDrop(prmOrder,"--",this.sORDER.toString());
 
     //Edit.setStyle(status);
     

@@ -115,7 +115,7 @@ public class ContractSignWindow extends CampusWindow {
 				CampusSettings settings = getCampusSettings(iwc);
 				if(settings!=null){
 					try {
-						getUserService(iwc).getGroupHome().findByPrimaryKey(settings.getTenantGroupID());
+						eGroup = getUserService(iwc).getGroupHome().findByPrimaryKey(settings.getTenantGroupID());
 					} catch (RemoteException e2) {
 						e2.printStackTrace();
 					} catch (FinderException e2) {

@@ -3,8 +3,12 @@ package is.idega.idegaweb.campus.presentation;
 import is.idega.idegaweb.campus.business.CampusSettings;
 
 import java.rmi.RemoteException;
-import java.sql.SQLException;
+import java.util.Collection;
 
+import javax.ejb.FinderException;
+
+import com.idega.block.finance.presentation.Finance;
+import com.idega.core.category.business.CategoryBusiness;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.DataTable;
 import com.idega.presentation.ui.DateInput;
@@ -62,7 +66,7 @@ public class SysPropsSetter extends CampusBlock{
 	    DropdownMenu TI = intDrp("contract_years",10);
 	    DropdownMenu term = termDrp("term");
 	    TextInput termOfNotice = getTextInput("term_of_notice","",4);
-	    termOfNotice.setAsIntegers();
+	    termOfNotice.setAsIntegers(localize("please_use_only_integers","Please use only integers"));
 	    termOfNotice.setLength(4);
 	    TextInput adminEmail = getTextInput("admin_email");
 	    TextInput emailHost = getTextInput("email_host");
@@ -71,23 +75,24 @@ public class SysPropsSetter extends CampusBlock{
 	    try {
 	      String[] filter = new String[1];
 	      filter[0] = com.idega.core.accesscontrol.data.PermissionGroupBMPBean.getStaticPermissionGroupInstance().getGroupTypeValue();
-	      groups = new DropdownMenu(com.idega.core.data.GenericGroupBMPBean.getAllGroups(filter,true),"def_group");
+	      java.util.Collection permissionGroups = getUserService(iwc).getGroupHome().findAllGroups(filter,true);
+	      groups = new DropdownMenu(permissionGroups,"def_group");
 	    }
-	    catch (SQLException ex) {
+	    catch (Exception ex) {
 	      groups = new DropdownMenu("def_group");
 	    }
 	    groups.addMenuElementFirst("-1",localize("group","Group"));
 	    
 	    DropdownMenu financeCategories = new DropdownMenu("finance_category");
 	    financeCategories.addMenuElement("-1",localize("category","Category"));
-	   /* try {
+	    try {
 			Collection coll = CategoryBusiness.getInstance().getCategoryHome().findRootsByType(Finance.CATEGORY_TYPE);
 			financeCategories.addMenuElements(coll);
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		} catch (FinderException e) {
 			e.printStackTrace();
-		}*/
+		}
 	    int row = 1;
 	    /*
 	    T.add(Edit.formatText(iwrb.getLocalizedString("contract_date","Contract date")),1,row);

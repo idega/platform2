@@ -44,7 +44,7 @@ import com.idega.util.database.ConnectionBroker;
     sql.append(" and b.bu_complex_id = x.bu_complex_id");
     sql.append(" and c.rented = 'Y'");
     sql.append(" group by x.name,b.name");
-    sql.append(" order by b.bu_complex_id");
+    //sql.append(" order by b.bu_complex_id");
     return sql.toString();
   }
 

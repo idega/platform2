@@ -67,11 +67,20 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 	
 	public void storeSettings(CampusSettings settings){
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(CampusSettings.IW_BUNDLE_IDENTIFIER);
-		bundle.setProperty(CampusSettings.PROPERTY_ADMIN_EMAIL,settings.getAdminEmail());
-		bundle.setProperty(CampusSettings.PROPERTY_SMTP_SERVER, settings.getSmtpServer());
-		bundle.setProperty(CampusSettings.PROPERTY_TERM_OF_NOTICE,settings.getTermOfNoticeDays().toString());
-		bundle.setProperty(CampusSettings.PROPERTY_TENANT_GROUP, settings.getTenantGroupID().toString());
-		bundle.setProperty(CampusSettings.PROPERTY_FINANCE_CATEGORY,settings.getFinanceCategoryID().toString());
+		setBundleProperty(bundle,CampusSettings.PROPERTY_ADMIN_EMAIL,settings.getAdminEmail());
+		setBundleProperty(bundle,CampusSettings.PROPERTY_SMTP_SERVER, settings.getSmtpServer());
+		if(settings.getTermOfNoticeDays()!=null)
+			setBundleProperty(bundle,CampusSettings.PROPERTY_TERM_OF_NOTICE,settings.getTermOfNoticeDays().toString());
+		if(settings.getTenantGroupID()!=null)
+			setBundleProperty(bundle,CampusSettings.PROPERTY_TENANT_GROUP, settings.getTenantGroupID().toString());
+		if(settings.getFinanceCategoryID()!=null)
+			setBundleProperty(bundle,CampusSettings.PROPERTY_FINANCE_CATEGORY,settings.getFinanceCategoryID().toString());
+	}
+	
+	private  void setBundleProperty(IWBundle bundle,String propertyKey,String propertyValue){
+		if(propertyValue!=null)
+			bundle.setProperty(propertyKey,propertyValue);
+		
 	}
 	
 	public ContractService getContractService()throws RemoteException{
