@@ -94,6 +94,8 @@ public class CommuneForum extends Forum {
 					topicLink.addParameter(ForumBusiness.PARAMETER_TOPIC_ID, topic.getID());
 					topicLink.addParameter(ForumBusiness.PARAMETER_STATE, ForumBusiness.FORUM_THREADS);
 					topicLink.addParameter(ForumBusiness.PARAMETER_OBJECT_INSTANCE_ID, _objectID);
+					if (getPage() != null)
+						topicLink.setPage(getPage());
 
 					int numberOfThreads = forumBusiness.getNumberOfThreads(topic);
 					numberOfThreadsText = formatText(String.valueOf(numberOfThreads), _textStyle);
