@@ -38,7 +38,7 @@ public class ContentBMPBean extends com.idega.data.GenericEntity implements com.
     addAttribute(getColumnNamePublishFrom(), "Publish from", true, true, java.sql.Timestamp.class);
     addAttribute(getColumnNamePublishTo(), "Publish to", true, true, java.sql.Timestamp.class);
     addManyToManyRelationShip(LocalizedText.class);
-    addManyToManyRelationShip(com.idega.core.file.data.ICFile.class);
+    addManyToManyRelationShip(ICFile.class,"TX_CONTENT_IC_FILE");
   }
 
 	public String getLocalizedTextMiddleTableName(IDOLegacyEntity returning,IDOLegacyEntity from){
