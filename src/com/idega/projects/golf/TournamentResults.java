@@ -270,7 +270,7 @@ private String groupSQLString = "";
         myTable.setCellpadding(3);
         myTable.setCellspacing(1);
 
-      DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"strokes_without_handicap");
+      DisplayScores[] strokesScores = TournamentController.getDisplayScores("tournament_id = "+tournament_id+" "+groupSQLString,"difference");
 
       if ( numberOfGolfers == 0 || numberOfGolfers > strokesScores.length ) {
         numberOfGolfers = strokesScores.length;
