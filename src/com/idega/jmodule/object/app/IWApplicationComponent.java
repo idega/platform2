@@ -53,7 +53,8 @@ public class IWApplicationComponent extends Page {
     return iwacTable;
   }
 
-  public void main(ModuleInfo modinfo){
+  public void _main(ModuleInfo modinfo) throws Exception {
+    super._main(modinfo);
     setImages(modinfo);
   }
 

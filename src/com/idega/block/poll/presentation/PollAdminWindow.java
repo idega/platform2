@@ -156,7 +156,7 @@ public PollAdminWindow(){
 
     String pollQuestionID = (String) modinfo.getApplicationAttribute(PollQuestionChooser.prmQuestions);
     if ( pollQuestionID != null ) {
-      modinfo.removeApplicationAttribute(PollQuestionChooser.prmQuestions);
+      //modinfo.removeApplicationAttribute(PollQuestionChooser.prmQuestions);
       try {
         _pollQuestionID = Integer.parseInt(pollQuestionID);
       }
