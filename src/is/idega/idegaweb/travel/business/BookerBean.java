@@ -58,20 +58,20 @@ public class BookerBean extends IBOServiceBean implements Booker{
   public BookerBean() {
   }
 
-  public  int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment);
+  public  int BookBySupplier(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code) throws RemoteException, CreateException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment, code);
   }
 
-  public  int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
-    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId, comment);
+  public  int Book(int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code) throws RemoteException, CreateException {
+    return Book(-1, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId, comment, code);
   }
 
-  public  int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
-    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId, addressId, comment);
+  public  int updateBooking(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment, String code) throws RemoteException, CreateException {
+    return Book(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, -1, postalCode, paymentType, userId, ownerId, addressId, comment, code);
   }
 
-  private int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment) throws RemoteException, CreateException {
-    Booking booking = null;
+  private int Book(int bookingId, int serviceId, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentTypeId, int userId, int ownerId, int addressId, String comment, String code) throws RemoteException, CreateException {
+    GeneralBooking booking = null;
     int returner = bookingId;
     address = TextSoap.findAndReplace(address, "'", "´");
     name = TextSoap.findAndReplace(name, "'", "´");
@@ -104,6 +104,9 @@ public class BookerBean extends IBOServiceBean implements Booker{
           }else {
             booking.setComment(comment);
           }
+          if (code != null) {
+          	booking.setCode(code);
+          }
         booking.store();
 
         returner =  booking.getID();
@@ -130,6 +133,9 @@ public class BookerBean extends IBOServiceBean implements Booker{
           }else {
             booking.setComment(comment);
           }
+					if (code != null) {
+					  booking.setCode(code);
+					}
         booking.store();
 
         /** @todo fixa þetta getStaticInstance() crap */
