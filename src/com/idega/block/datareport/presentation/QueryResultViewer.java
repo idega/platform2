@@ -212,7 +212,8 @@ public class QueryResultViewer extends Block {
 	  
 	  private void showInputFields(SQLQuery query, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
 	  	String name = query.getName();
-	  	PresentationObject presentationObject = getInputFields(name, identifierValueMap, identifierInputDescriptionMap, resourceBundle, iwc);
+	  	String description = query.getQueryDescription();
+	  	PresentationObject presentationObject = getInputFields(name, description, identifierValueMap, identifierInputDescriptionMap, resourceBundle, iwc);
 	  	Form form = new Form();
 	  	form.addParameter(QUERY_ID_KEY, Integer.toString(queryId));
 	  	form.addParameter(DESIGN_ID_KEY, Integer.toString(designId));
@@ -221,16 +222,32 @@ public class QueryResultViewer extends Block {
 	  	add(form);
 	}
 
-  private PresentationObject getInputFields(String queryName, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
+  private PresentationObject getInputFields(String queryName, String queryDescription, Map identifierValueMap, Map identifierInputDescriptionMap, IWResourceBundle resourceBundle, IWContext iwc)	{
 
   	// create a nice headline for the confused user
-  	String currentQuery = resourceBundle.getLocalizedString("ro_current_query", "Current Query");
-  	StringBuffer buffer = new StringBuffer(currentQuery);
-  	buffer.append(": ").append(queryName);
-  	Text text = new Text(buffer.toString());
+  	String currentQuery = resourceBundle.getLocalizedString("ro_current_query", "Current Query") + ":";
+  	Text currentQueryHeader = new Text(currentQuery);
+  	currentQueryHeader.setBold();
+  	add(currentQueryHeader);
+  	add(Text.getBreak());
+   	Text text = new Text(queryName);
   	text.setBold();
   	add(text);
 
+  	if (queryDescription != null) {
+  		add(Text.getBreak());
+  		
+  		String descriptionHeader = resourceBundle.getLocalizedString("ro_query_description", "Query description") + ":";
+  		Text descriptionHeaderText = new Text(descriptionHeader);
+  		descriptionHeaderText.setBold();
+  		add(descriptionHeaderText);
+  		add(Text.getBreak());
+  		
+  		Text queryDescriptionText = new Text(queryDescription);
+  		queryDescriptionText.setBold();
+  		add(queryDescriptionText);
+  	}	
+  	
   	Table table = new Table (2, identifierValueMap.size() + 1);
   	Iterator iterator = identifierValueMap.entrySet().iterator();
   	int i = 1;

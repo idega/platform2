@@ -13,6 +13,7 @@ import java.util.List;
 
 import com.idega.block.dataquery.data.Query;
 import com.idega.data.GenericEntity;
+import com.idega.util.StringHandler;
 import com.idega.util.datastructures.HashMatrix;
 import com.idega.xml.XMLAttribute;
 import com.idega.xml.XMLDocument;
@@ -43,6 +44,7 @@ public class QueryHelper {
 	private QueryBooleanExpressionPart booleanExpression = null;
 	private int step = 0;
 	private boolean selectDistinct = true;
+	private String description = null;
 	private boolean isTemplate = false;
 	private boolean entitiesLock = false;
 	private boolean fieldsLock = false;
@@ -103,6 +105,8 @@ public class QueryHelper {
 				List fields = sqlPart.getFields( name);
 				listOfFields.addAll(fields);
 			}
+			// description
+			description = root.getTextTrim(QueryXMLConstants.DESCRIPTION);
 			// distinct
 			String distinct = root.getTextTrim(QueryXMLConstants.DISTINCT);
 			selectDistinct = Boolean.valueOf(distinct).booleanValue();
@@ -218,6 +222,12 @@ public class QueryHelper {
 		// check for direct sql
 		if (sqlPart != null)	{
 			root.addContent(sqlPart.getQueryElement());
+		}
+		// add description 
+		if (description != null && description.length() > 0) {
+			XMLElement xmlDescription = new XMLElement(QueryXMLConstants.DESCRIPTION);
+			xmlDescription.addContent(description);
+			root.addContent(xmlDescription);
 		}
 		// add distinct
 		XMLElement distinct = new XMLElement(QueryXMLConstants.DISTINCT);
@@ -809,6 +819,20 @@ public class QueryHelper {
 	 */
 	public void setSelectDistinct(boolean selectDistinct) {
 		this.selectDistinct = selectDistinct;
+	}
+
+	/**
+	 * @return Returns the description.
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description The description to set.
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

@@ -43,6 +43,7 @@ import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Link;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.texteditor.TextEditor;
 import com.idega.presentation.ui.AbstractTreeViewer;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DropdownMenu;
@@ -100,8 +101,9 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_COND_FIELD = "field";
 	private static final String PARAM_DISTINCT = "distinct";
+	private static final String PARAM_QUERY_DESCRIPTION = "query_description";
 	//private static final String PARAM_COND_ENTITY = "entity";
-	private static final String PARAM_COND_DESCRIPTION = "description";
+	private static final String PARAM_COND_DESCRIPTION = "cond_description";
 	private static final String PARAM_BOOLEAN_EXPRESSION = "booleanExpression";
 	public static final String PARAM_QUERY_FOLDER_ID = "qb_fid";
 	public static final String PARAM_LAYOUT_FOLDER_ID ="qb_layoutId";
@@ -350,6 +352,8 @@ public class ReportQueryBuilder extends Block {
 			}
 		}
 		else if (iwc.isParameterSet(PARAM_SAVE)) {
+			String description = iwc.getParameter(PARAM_QUERY_DESCRIPTION);
+			helper.setDescription(description);
 			helper.setTemplate(iwc.isParameterSet(PARAM_ASTEMPLATE));
 			String name = iwc.getParameter(PARAM_QUERY_NAME);
 			boolean isPrivate = PRIVATE.equals(iwc.getParameter(PARAM_IS_PRIVATE_QUERY));
@@ -1350,14 +1354,22 @@ public class ReportQueryBuilder extends Block {
 		if (this.queryID > 0) {
 			ICFile currentFile = sessionBean.getXMLFile(queryID);
 			queryNameInput.setContent(currentFile.getName().toString());
-			table.add(iwrb.getLocalizedString("step_5_change_queryname", "Change query name"), 1, row);
+			table.add(iwrb.getLocalizedString("step_5_change_queryname", "Change query name"), 1, row++);
 		}
 		else {
 			queryNameInput.setContent(iwrb.getLocalizedString("step_5_default_queryname", "My query"));
-			table.add(iwrb.getLocalizedString("step_5_set_queryname", "Set query name"), 1, row);
+			table.add(iwrb.getLocalizedString("step_5_set_queryname", "Set query name"), 1, row++);
 		}
-		table.add(queryNameInput, 2, row);
-		row++;
+		table.add(queryNameInput, 1 , row++);
+		// description
+		table.add(iwrb.getLocalizedString("step_5_set_query_description", "Query description"), 1, row++);
+		table.setAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
+		String descriptionText = helper.getDescription();
+		descriptionText = (descriptionText == null) ? "" : descriptionText;
+		TextEditor descriptionEditor = new TextEditor(PARAM_QUERY_DESCRIPTION, descriptionText );
+		descriptionEditor.setWidth("30");
+		descriptionEditor.setHeight("20");
+		table.add(descriptionEditor, 1, row++);
 //		if (this.queryFolderID > 0) {
 //			ICFile currentFolder = sessionBean.getXMLFile(queryFolderID);
 //			folderChooser.setSelectedFile(currentFolder);
@@ -1378,7 +1390,7 @@ public class ReportQueryBuilder extends Block {
 		radioGroup.setWidth(1);
 		radioGroup.addRadioButton(PRIVATE, new Text(iwrb.getLocalizedString("step_5_private_query", "private")), true);
 		radioGroup.addRadioButton(PUBLIC, new Text(iwrb.getLocalizedString("step_5_public_query", "public")));
-		table.add(radioGroup, 2, row);
+		table.add(radioGroup, 1, row);
 		return table;
 	}
 

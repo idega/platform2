@@ -47,6 +47,8 @@ public class SQLQuery implements DynamicExpression {
   
   private String postStatement = null;
   
+  private String queryDescription = null;
+  
   // tablename : path : number
   private HashMatrix aliasMatrix = new HashMatrix();
   private int counter = 0;
@@ -115,6 +117,7 @@ public class SQLQuery implements DynamicExpression {
   	this.counter = counter;
   	this.uniqueIdentifier = uniqueIdentifier;
   	name = queryHelper.getName();
+  	queryDescription = queryHelper.getDescription();
   	// add all already existing table names
   	beanClassNameTableNameMap.putAll(queryTablesNames);
   	entityQueryEntity.putAll(entityQueryEntityMap);
@@ -527,4 +530,11 @@ public class SQLQuery implements DynamicExpression {
 	}
 		
 		
+	/**
+	 * @return Returns the queryDescription.
+	 */
+	public String getQueryDescription() {
+		return queryDescription;
+	}
+
 }
