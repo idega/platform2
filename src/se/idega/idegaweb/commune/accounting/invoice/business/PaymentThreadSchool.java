@@ -68,11 +68,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/01/12 11:03:52 $ by $Author: joakim $
+ * Last modified: $Date: 2004/01/12 11:36:16 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.98 $
+ * @version $Revision: 1.99 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -129,12 +129,21 @@ public abstract class PaymentThreadSchool extends BillingThread {
 //					school = getSchoolHome().findByPrimaryKey(new Integer(8));
 					errorRelated = new ErrorLogger();
 					errorRelated.append("School " + school.getName(),1);
-					Provider provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
-					//Only look at those not "payment by invoice"
-					//Check if it is private or in Nacka
-					errorRelated.append("School commune: " + school.getCommune().getCommuneName());
-					final boolean schoolIsInDefaultCommune = school.getCommune().getIsDefault();
-					final boolean schoolIsPrivate = provider.getProviderTypeId() == privateType;
+					final boolean schoolIsInDefaultCommune;
+					final boolean schoolIsPrivate;
+					Provider provider = null;
+					try{
+						provider = new Provider(((Integer) school.getPrimaryKey()).intValue());
+						//Only look at those not "payment by invoice"
+						//Check if it is private or in Nacka
+						errorRelated.append("School commune: " + school.getCommune().getCommuneName());
+						schoolIsInDefaultCommune = school.getCommune().getIsDefault();
+						schoolIsPrivate = provider.getProviderTypeId() == privateType;
+					}
+					catch (NullPointerException e) {
+						errorRelated.append(e);
+						throw new SchoolMissingVitalDataException("");
+					}
 					errorRelated.logToConsole();
 					if ((schoolIsInDefaultCommune || schoolIsPrivate) && !provider.getPaymentByInvoice()) {
 						ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated.toString());
@@ -215,6 +224,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 					else {
 						createNewErrorMessage("invoice.school", "invoice.CouldNotFindContractForSchool");
 					}
+				}
+				catch (SchoolMissingVitalDataException e) {
+					e.printStackTrace();
+					createNewErrorMessage(errorRelated, "invoice.SchoolMissingVitalData");
 				}
 				catch (NullPointerException e) {
 					e.printStackTrace();
