@@ -1,5 +1,9 @@
 package com.idega.block.trade.data;
 
+import java.rmi.RemoteException;
+import java.util.Iterator;
+import javax.ejb.FinderException;
+import java.util.Collection;
 import com.idega.data.*;
 import java.sql.SQLException;
 
@@ -53,7 +57,22 @@ public class CurrencyBMPBean extends com.idega.data.GenericEntity implements com
     setColumn(getColumnNameCurrencyAbbreviation(), abbreviation);
   }
 
+  public Collection ejbHomeGetCurrenciesByAbbreviation(String currencyAbbreviation) throws FinderException{
+    return this.idoFindAllIDsByColumnBySQL(getColumnNameCurrencyAbbreviation(), currencyAbbreviation);
+  }
 
+  public Currency ejbHomeGetCurrencyByAbbreviation(String currencyAbbreviation) throws FinderException, RemoteException {
+    Collection coll = this.idoFindAllIDsByColumnOrderedBySQL(getColumnNameCurrencyAbbreviation(), currencyAbbreviation, getColumnNameCurrencyAbbreviation() + " desc");
+    Iterator iter = coll.iterator();
+    if (iter.hasNext()) {
+      return getHome().findByPrimaryKey(iter.next());
+    }
+    return null;
+  }
+
+  private CurrencyHome getHome() throws RemoteException{
+    return (CurrencyHome) IDOLookup.getHome(Currency.class);
+  }
 
   public static String getColumnNameCurrencyID(){return "TR_CURRENCY_ID";}
   public static String getColumnNameCurrencyName(){return"CURRENCY_NAME";}

@@ -11,6 +11,7 @@ package com.idega.block.trade.business;
  * @version 1.0
  */
 
+import java.rmi.RemoteException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import com.idega.idegaweb.IWBundleStartable;
@@ -42,6 +43,8 @@ public static final String IW_CURRENCY_TIMER = "iw_currency_timer";
     }
     catch(com.idega.data.IDONoDatastoreError error){
       System.err.println("TradeBundleStarter.actionPerformed() Error: "+error.getMessage());
+    }catch (RemoteException re) {
+      System.err.println("TradeBundleStarter.actionPerformed() Error: "+re.getMessage());
     }
   }
 
