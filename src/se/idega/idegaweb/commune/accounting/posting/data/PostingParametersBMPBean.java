@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.3 2003/08/18 13:23:21 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.4 2003/08/20 11:52:22 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -8,14 +8,13 @@
  * 
  */
 package se.idega.idegaweb.commune.accounting.posting.data;
-    
-import java.sql.Date;
+        
 import java.util.Collection;
+import java.sql.Date;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 
 import se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
@@ -25,29 +24,49 @@ import se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingTyp
 
 /**
  * PostingParameters Holds information about default posting info.
+ * It is used to match a posting and get its posting accounts etc
  * 
  * @see se.idega.idegaweb.commune.accounting.regulations.data.ActivityType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.3 2003/08/18 13:23:21 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.4 2003/08/20 11:52:22 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
-public class PostingParametersBMPBean extends GenericEntity implements PostingParameters, IDOLegacyEntity
-{
+public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
+	
 	private static final String ENTITY_NAME = "cacc_posting_parameters";
 
 	private static final String COLUMN_PERIODE_FROM = "periode_from";
 	private static final String COLUMN_PERIODE_TO = "periode_to";
-	private static final String COLUMN_ACTIVITY = "activity";
-	private static final String COLUMN_REG_SPEC_TYPE = "reg_spec_type";
-	private static final String COLUMN_COMPANY_TYPE = "company_type";
-	private static final String COLUMN_COMMUNE_BELONGING = "commune_belonging";
-	private static final String COLUMN_OWN_ENTRY = "own_entry";
-	private static final String COLUMN_DOUBLE_ENTRY = "double_entry";
+	private static final String COLUMN_CHANGED_DATE = "changed_date";
+	private static final String COLUMN_CHANGED_SIGN = "changed_sign";
+
+	private static final String COLUMN_ACTIVITY_ID = "activity_id";
+	private static final String COLUMN_REG_SPEC_TYPE_ID = "reg_spec_type_id";
+	private static final String COLUMN_COMPANY_TYPE_ID = "company_type_id";
+	private static final String COLUMN_COMMUNE_BELONGING_ID = "commune_belonging_id";
+	
+	private static final String COLUMN_OWN_ACCOUNT = "own_account";
+	private static final String COLUMN_OWN_LIABILITY = "own_liability";
+	private static final String COLUMN_OWN_RESOURCE = "own_resource";
+	private static final String COLUMN_OWN_ACTIVITY_CODE = "own_activity_code";
+	private static final String COLUMN_OWN_DOUBLE_ENTRY = "own_double_entry";
+	private static final String COLUMN_OWN_ACTIVITY = "own_activity";
+	private static final String COLUMN_OWN_PROJECT = "own_project";
+	private static final String COLUMN_OWN_OBJECT = "own_object";
+
+	private static final String COLUMN_DOUBLE_ACCOUNT = "double_account";
+	private static final String COLUMN_DOUBLE_LIABILITY = "double_liability";
+	private static final String COLUMN_DOUBLE_RESOURCE = "double_resource";
+	private static final String COLUMN_DOUBLE_ACTIVITY_CODE = "double_activity_code";
+	private static final String COLUMN_DOUBLE_DOUBLE_ENTRY = "double_double_entry";
+	private static final String COLUMN_DOUBLE_ACTIVITY = "double_activity";
+	private static final String COLUMN_DOUBLE_PROJECT = "double_project";
+	private static final String COLUMN_DOUBLE_OBJECT = "double_object";
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -56,87 +75,142 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		
-		addAttribute(COLUMN_PERIODE_FROM, "Period from", true, true, String.class);
-		addAttribute(COLUMN_PERIODE_TO, "Period  tom", true, true, String.class);
-
-		addAttribute(COLUMN_ACTIVITY, "Verksamhet", true, true, 
+		addAttribute(COLUMN_PERIODE_FROM, "Period from", true, true, Date.class);
+		addAttribute(COLUMN_PERIODE_TO, "Period  tom", true, true, Date.class);
+		addAttribute(COLUMN_CHANGED_DATE, "Ändrings datum", true, true, Date.class);
+		addAttribute(COLUMN_CHANGED_SIGN, "Ändrings sign", true, true, String.class);
+		
+		addAttribute(COLUMN_ACTIVITY_ID, "Verksamhet", true, true, 
 						Integer.class, "many-to-one", ActivityType.class);
 						
-		addAttribute(COLUMN_REG_SPEC_TYPE, "Regelspecificationstyp", true, true, 
+		addAttribute(COLUMN_REG_SPEC_TYPE_ID, "Regelspecificationstyp", true, true, 
 						Integer.class, "many-to-one", RegulationSpecType.class);
 						
-		addAttribute(COLUMN_COMPANY_TYPE, "Bolagstyp", true, true, 
+		addAttribute(COLUMN_COMPANY_TYPE_ID, "Bolagstyp", true, true, 
 						Integer.class, "many-to-one", CompanyType.class);
 		
-		addAttribute(COLUMN_COMMUNE_BELONGING, "Kommuntillhörighet", true, true, 
+		addAttribute(COLUMN_COMMUNE_BELONGING_ID, "Kommuntillhörighet", true, true, 
 						Integer.class, "many-to-one", CommuneBelongingType.class);
 
-		addAttribute(COLUMN_OWN_ENTRY, "Egen kontering", true, true, String.class);
-		addAttribute(COLUMN_DOUBLE_ENTRY, "Mot kontering", true, true, String.class);
+		addAttribute(COLUMN_OWN_ACCOUNT, "Eget konto", true, true, String.class);
+		addAttribute(COLUMN_OWN_LIABILITY, "Eget answer", true, true, String.class);
+		addAttribute(COLUMN_OWN_RESOURCE, "Egen resurs", true, true, String.class);
+		addAttribute(COLUMN_OWN_ACTIVITY_CODE, "Egen Verksamhetskod", true, true, String.class);
+		addAttribute(COLUMN_OWN_DOUBLE_ENTRY, "Egen motpart", true, true, String.class);
+		addAttribute(COLUMN_OWN_ACTIVITY, "Egen aktivitet", true, true, String.class);
+		addAttribute(COLUMN_OWN_PROJECT, "Egen project", true, true, String.class);
+		addAttribute(COLUMN_OWN_OBJECT, "Egen objekt", true, true, String.class);
+
+		addAttribute(COLUMN_DOUBLE_ACCOUNT, "Mot konto", true, true, String.class);
+		addAttribute(COLUMN_DOUBLE_LIABILITY, "Mot answer", true, true, String.class);
+		addAttribute(COLUMN_DOUBLE_RESOURCE, "Mot resurs", true, true, String.class);
+		addAttribute(COLUMN_DOUBLE_ACTIVITY_CODE, "Mot verksamhetskod", true, true, String.class);
+		addAttribute(COLUMN_DOUBLE_DOUBLE_ENTRY, "Motpart", true, true, String.class);
+		addAttribute(COLUMN_DOUBLE_ACTIVITY, "Mot aktivitet", true, true, String.class);
+		addAttribute(COLUMN_DOUBLE_PROJECT, "Mot project", true, true, String.class);
+		addAttribute(COLUMN_DOUBLE_OBJECT, "Mot objekt", true, true, String.class);
 
 	}
+	
+	public String getPostingAccount() {return (String) getStringColumnValue(COLUMN_OWN_ACCOUNT);}
+	public String getPostingLiability() {return (String) getStringColumnValue(COLUMN_OWN_LIABILITY);}
+	public String getPostingResource() {return (String) getStringColumnValue(COLUMN_OWN_RESOURCE);}
+	public String getPostingActivityCode() {return (String) getStringColumnValue(COLUMN_OWN_ACTIVITY_CODE);}
+	public String getPostingDoubleEntry() {return (String) getStringColumnValue(COLUMN_OWN_DOUBLE_ENTRY);}
+	public String getPostingActivity() {return (String) getStringColumnValue(COLUMN_OWN_ACTIVITY);}
+	public String getPostingProject() {return (String) getStringColumnValue(COLUMN_OWN_PROJECT);}
+	public String getPostingObject() {return (String) getStringColumnValue(COLUMN_OWN_OBJECT);}
 
-	public void setPeriodeFrom(String periode) { 
+	public String getDoublePostingAccount() {return (String) getStringColumnValue(COLUMN_DOUBLE_ACCOUNT);}
+	public String getDoublePostingLiability() {return (String) getStringColumnValue(COLUMN_DOUBLE_LIABILITY);}
+	public String getDoublePostingResource() {return (String) getStringColumnValue(COLUMN_DOUBLE_RESOURCE);}
+	public String getDoublePostingActivityCode() {return (String) getStringColumnValue(COLUMN_DOUBLE_ACTIVITY_CODE);}
+	public String getDoublePostingDoubleEntry() {return (String) getStringColumnValue(COLUMN_DOUBLE_DOUBLE_ENTRY);}
+	public String getDoublePostingActivity() {return (String) getStringColumnValue(COLUMN_DOUBLE_ACTIVITY);}
+	public String getDoublePostingProject() {return (String) getStringColumnValue(COLUMN_DOUBLE_PROJECT);}
+	public String getDoublePostingObject() {return (String) getStringColumnValue(COLUMN_DOUBLE_OBJECT);}
+
+	public void setPostingAccount(String data) {setColumn(COLUMN_OWN_ACCOUNT, data); }
+	public void setPostingLiability(String data) {setColumn(COLUMN_OWN_LIABILITY, data); }
+	public void setPostingResource(String data) {setColumn(COLUMN_OWN_RESOURCE, data); }
+	public void setPostingActivityCode(String data) {setColumn(COLUMN_OWN_ACTIVITY_CODE, data); }
+	public void setPostingDoubleEntry(String data) {setColumn(COLUMN_OWN_DOUBLE_ENTRY, data); }
+	public void setPostingActivity(String data) {setColumn(COLUMN_OWN_ACTIVITY, data); }
+	public void setPostingProject(String data) {setColumn(COLUMN_OWN_PROJECT, data); }
+	public void setPostingObject(String data) {setColumn(COLUMN_OWN_OBJECT, data); }
+
+	public void setDoublePostingAccount(String data) {setColumn(COLUMN_DOUBLE_ACCOUNT, data); }
+	public void setDoublePostingLiability(String data) {setColumn(COLUMN_DOUBLE_LIABILITY, data); }
+	public void setDoublePostingResource(String data) {setColumn(COLUMN_DOUBLE_RESOURCE, data); }
+	public void setDoublePostingActivityCode(String data) {setColumn(COLUMN_DOUBLE_ACTIVITY_CODE, data); }
+	public void setDoublePostingDoubleEntry(String data) {setColumn(COLUMN_DOUBLE_DOUBLE_ENTRY, data); }
+	public void setDoublePostingActivity(String data) {setColumn(COLUMN_DOUBLE_ACTIVITY, data); }
+	public void setDoublePostingProject(String data) {setColumn(COLUMN_DOUBLE_PROJECT, data); }
+	public void setDoublePostingObject(String data) {setColumn(COLUMN_DOUBLE_OBJECT, data); }
+
+
+	public Date getChangedDate() {
+		return (Date)getColumnValue(COLUMN_CHANGED_DATE);
+	}
+
+	public void setUpdatedDate(Date changedDate) {
+		setColumn(COLUMN_CHANGED_DATE, changedDate);
+	}
+
+	public String getChangedSign() {
+		return (String) getColumnValue(COLUMN_CHANGED_SIGN);
+	}
+
+	public void setChangedSign(String sign) {
+		setColumn(COLUMN_CHANGED_SIGN, sign);
+	}
+
+	public void setPeriodeFrom(Date periode) { 
 		setColumn(COLUMN_PERIODE_FROM, periode); 
 	}
 	
-	public void setPeriodeTo(String periode) { 
-		setColumn(COLUMN_PERIODE_FROM, periode); 
+	public void setPeriodeTo(Date periode) { 
+		setColumn(COLUMN_PERIODE_TO, periode); 
 	}
 	
-	public void setActivity(int data) { 
-		setColumn(COLUMN_ACTIVITY, data); 
+	public void setActivity(int id) { 
+		setColumn(COLUMN_ACTIVITY_ID, id); 
 	}
 	
-	public void setRegSpecType(int data) { 
-		setColumn(COLUMN_REG_SPEC_TYPE, data); 
+	public void setRegSpecType(int id) { 
+		setColumn(COLUMN_REG_SPEC_TYPE_ID, id); 
 	}
 	
-	public void setCompanyType(int data) { 
-		setColumn(COLUMN_COMPANY_TYPE, data); 
+	public void setCompanyType(int id) { 
+		setColumn(COLUMN_COMPANY_TYPE_ID, id); 
 	}
 	
-	public void setCommuneBelonging(int data) { 
-		setColumn(COLUMN_COMMUNE_BELONGING, data); 
+	public void setCommuneBelonging(int id) { 
+		setColumn(COLUMN_COMMUNE_BELONGING_ID, id); 
 	}
 	
-	public void setOwnEntry(String data) { 
-		setColumn(COLUMN_OWN_ENTRY, data); 
-	}
-	public void setDoubleEntry(String data) { 
-		setColumn(COLUMN_DOUBLE_ENTRY, data); 
+	public Date getPeriodeFrom() {
+		return (Date) getColumnValue(COLUMN_PERIODE_FROM);
 	}
 
-	public String getPeriodeFrom() {
-		return (String) getStringColumnValue(COLUMN_PERIODE_FROM);
-	}
-
-	public String getPeriodeTo() {
-		return (String) getStringColumnValue(COLUMN_PERIODE_TO);
+	public Date getPeriodeTo() {
+		return (Date) getColumnValue(COLUMN_PERIODE_TO);
 	}
 
 	public ActivityType getActivity() {
-		return (ActivityType) getColumnValue(COLUMN_ACTIVITY);
+		return (ActivityType) getColumnValue(COLUMN_ACTIVITY_ID);
 	}
 
 	public RegulationSpecType getRegSpecType() {
-		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE);
+		return (RegulationSpecType) getColumnValue(COLUMN_REG_SPEC_TYPE_ID);
 	}
 	
 	public CompanyType getCompanyType() {
-		return (CompanyType) getColumnValue(COLUMN_COMPANY_TYPE);
+		return (CompanyType) getColumnValue(COLUMN_COMPANY_TYPE_ID);
 	}
-	
+
 	public CommuneBelongingType getCommuneBelonging() {
-			return (CommuneBelongingType) getColumnValue(COLUMN_COMMUNE_BELONGING);
-	}
-
-	public String getOwnEntry() {
-		return (String) getStringColumnValue(COLUMN_OWN_ENTRY);
-	}
-
-	public String getDoubleEntry() {
-		return (String) getStringColumnValue(COLUMN_DOUBLE_ENTRY);
+			return (CommuneBelongingType) getColumnValue(COLUMN_COMMUNE_BELONGING_ID);
 	}
 	
 	public Collection ejbFindPostingParametersByPeriode(String from, String to) throws FinderException {
@@ -158,12 +232,18 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 
 	public Object ejbFindPostingParameter(int act, int reg, int comt, int comb ) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_ACTIVITY, act);
-		sql.appendEquals(COLUMN_REG_SPEC_TYPE, reg);
-		sql.appendEquals(COLUMN_COMPANY_TYPE, comt);
-		sql.appendEquals(COLUMN_COMMUNE_BELONGING, comb);
-			
-		return (Integer) idoFindOnePKByQuery(sql);
+		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_ACTIVITY_ID, act);
+		sql.appendEquals(COLUMN_REG_SPEC_TYPE_ID, reg);
+		sql.appendEquals(COLUMN_COMPANY_TYPE_ID, comt);
+		sql.appendEquals(COLUMN_COMMUNE_BELONGING_ID, comb);
+		return idoFindOnePKByQuery(sql);
 	}
+
+	public Object ejbFindPostingParameter(int id) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this).appendWhereEquals(getIDColumnName(), id);
+		return idoFindOnePKByQuery(sql);
+	}
+
 
 }

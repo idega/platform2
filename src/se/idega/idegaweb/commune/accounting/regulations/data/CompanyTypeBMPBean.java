@@ -1,5 +1,5 @@
 /*
- * $Id: CompanyTypeBMPBean.java,v 1.4 2003/08/19 10:17:27 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.5 2003/08/20 11:50:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,13 +9,11 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.data;
     
-import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDOLookup;
 
@@ -25,10 +23,10 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: CompanyTypeBMPBean.java,v 1.4 2003/08/19 10:17:27 kjell Exp $
+ * $Id: CompanyTypeBMPBean.java,v 1.5 2003/08/20 11:50:34 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 	
@@ -68,10 +66,18 @@ public class CompanyTypeBMPBean extends GenericEntity implements CompanyType {
 		return (String) getStringColumnValue(COLUMN_COMPANY_TYPE);
 	}
 
+	public void setTextKey(String type) { 
+		setColumn(COLUMN_COMPANY_TYPE, type); 
+	}
+	
+	public String getTextKey() {
+		return (String) getStringColumnValue(COLUMN_COMPANY_TYPE);
+	}
+
+
 	public Collection ejbFindAllCompanyTypes() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.append(getEntityName());
 		return idoFindPKsBySQL(sql.toString());
 	}
 

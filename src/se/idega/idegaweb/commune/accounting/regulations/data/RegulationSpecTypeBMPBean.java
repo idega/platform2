@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationSpecTypeBMPBean.java,v 1.5 2003/08/19 10:17:27 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.6 2003/08/20 11:50:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,13 +9,11 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.data;
     
-import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDOLookup;
 
@@ -23,10 +21,10 @@ import com.idega.data.IDOLookup;
  * Regulation spec types ("check", "modersmal", "blabla") etc. Used for the posting.
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean 
  * <p>
- * $Id: RegulationSpecTypeBMPBean.java,v 1.5 2003/08/19 10:17:27 kjell Exp $
+ * $Id: RegulationSpecTypeBMPBean.java,v 1.6 2003/08/20 11:50:34 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class RegulationSpecTypeBMPBean extends GenericEntity implements RegulationSpecType {
 	
@@ -67,10 +65,17 @@ public class RegulationSpecTypeBMPBean extends GenericEntity implements Regulati
 		return (String) getStringColumnValue(COLUMN_REG_SPEC_TYPE);
 	}
 
+	public void setTextKey(String type) { 
+		setColumn(COLUMN_REG_SPEC_TYPE, type); 
+	}
+	
+	public String getTextKey() {
+		return (String) getStringColumnValue(COLUMN_REG_SPEC_TYPE);
+	}
+
 	public Collection ejbFindAllRegulationSpecTypes() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.append(getEntityName());
 		return idoFindPKsBySQL(sql.toString());
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.4 2003/08/19 10:17:27 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.5 2003/08/20 11:50:34 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -9,13 +9,11 @@
  */
 package se.idega.idegaweb.commune.accounting.regulations.data;
     
-import java.sql.Date;
 import java.util.Collection;
 
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
 import com.idega.data.IDOQuery;
 import com.idega.data.IDOLookup;
 
@@ -24,15 +22,15 @@ import com.idega.data.IDOLookup;
  * 
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParametersBMPBean
  * <p>
- * $Id: CommuneBelongingTypeBMPBean.java,v 1.4 2003/08/19 10:17:27 kjell Exp $
+ * $Id: CommuneBelongingTypeBMPBean.java,v 1.5 2003/08/20 11:50:34 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CommuneBelongingTypeBMPBean extends GenericEntity implements CommuneBelongingType {
 	
-	private static final String ENTITY_NAME = "cacc_commune_belonging_type";
-	private static final String COLUMN_COMMUNE_BELONGING_TYPE = "commune_belonging_type";
+	private static final String ENTITY_NAME = "cacc_commune_belong_type";
+	private static final String COLUMN_COMMUNE_BELONGING_TYPE = "commune_belong_type";
 
 	public String getEntityName() {
 		return ENTITY_NAME;
@@ -67,10 +65,17 @@ public class CommuneBelongingTypeBMPBean extends GenericEntity implements Commun
 		return (String) getStringColumnValue(COLUMN_COMMUNE_BELONGING_TYPE);
 	}
 
+	public void setTextKey(String type) { 
+		setColumn(COLUMN_COMMUNE_BELONGING_TYPE, type); 
+	}
+	
+	public String getTextKey() {
+		return (String) getStringColumnValue(COLUMN_COMMUNE_BELONGING_TYPE);
+	}
+
 	public Collection ejbFindAllCommuneBelongingTypes() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
-		sql.append(getEntityName());
 		return idoFindPKsBySQL(sql.toString());
 	}
 
