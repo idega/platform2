@@ -78,7 +78,7 @@ public class CampusServiceBean extends IBOServiceBean implements CampusService {
 			settings.setSystemLocale(locale);
 		}
 		catch(Exception e){
-			
+			settings.setSystemLocale(getIWApplicationContext().getApplicationSettings().getDefaultLocale());
 		}
 		
 		return settings;	
