@@ -51,13 +51,13 @@ public class GolfLogin extends GolfBlock {
 			myForm.setMethod("post");
 			myForm.maintainAllParameters();
 	
-			Table myTable = new Table(6,1);
+			Table myTable = new Table(5,1);
 			myTable.setCellpadding(0);
 			myTable.setCellspacing(0);
-			myTable.setCellpaddingRight(1, 1, 3);
-			myTable.setCellpaddingRight(2, 1, 5);
-			myTable.setCellpaddingRight(3, 1, 3);
-			myTable.setCellpaddingRight(4, 1, 5);
+			myTable.setCellpaddingRight(1, 1, 5);
+			myTable.setCellpaddingRight(2, 1, 10);
+			myTable.setCellpaddingRight(3, 1, 5);
+			myTable.setCellpaddingRight(4, 1, 10);
 			myTable.setCellpaddingRight(5, 1, 5);
 	
 			Text loginTexti = getStyleText(userText, STYLENAME_TEMPLATE_HEADER2);
@@ -81,12 +81,9 @@ public class GolfLogin extends GolfBlock {
 			}
 			myTable.add(passw, 4, 1);
 	
-			Text spacer = getStyleText("|", this.STYLENAME_TEMPLATE_HEADER2);
-			myTable.add(spacer, 5, 1);
-			
 			Link loginLink = getStyleLink(localize("login.login","Login"), this.STYLENAME_TEMPLATE_HEADER_LINK2);
 			loginLink.setToFormSubmit(myForm);
-			myTable.add(loginLink, 6, 1);
+			myTable.add(loginLink, 5, 1);
 			
 			myTable.add(new Parameter(GolfLoginBusiness.LoginStateParameter, "login"));
 			myForm.add(myTable);
