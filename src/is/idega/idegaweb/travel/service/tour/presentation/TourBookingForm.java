@@ -1625,6 +1625,7 @@ public class TourBookingForm extends TravelManager {
 
       boolean displayFormInternal = false;
 
+      debug("SaveSan 1");
       try {
         int[] manys = new int[pPrices.length];
         for (int i = 0; i < manys.length; i++) {
@@ -1678,6 +1679,7 @@ public class TourBookingForm extends TravelManager {
 
         int[] bookingIds = new int[betw];
 
+      debug("SaveSan 2");
         for (int i = 0; i < betw; i++) {
           if (iBookingId == -1) {
             if (i != 0) {
@@ -1687,15 +1689,18 @@ public class TourBookingForm extends TravelManager {
                 _fromDate.addDays(1);
               }
             }
+      debug("SaveSan 3");
             lbookingId = getTourBooker(iwc).Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
           }else {
             //handle multiple...
             List tempBookings = getTourBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
             if (tempBookings == null || tempBookings.size() < 2) {
               lbookingId = getTourBooker(iwc).updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
+      debug("SaveSan 4");
             }else {
               GeneralBooking gBooking;
               for (int j = 0; j < tempBookings.size(); j++) {
+      debug("SaveSan 5");
                 gBooking = (GeneralBooking) tempBookings.get(j);
                 getTourBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, new idegaTimestamp(gBooking.getBookingDate()), iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId, comment);
               }
@@ -1751,6 +1756,7 @@ public class TourBookingForm extends TravelManager {
           }
         }
 
+      debug("SaveSan 6");
         returner = lbookingId;
 
         for (int k = 0; k < bookingIds.length; k++) {
@@ -1799,6 +1805,7 @@ public class TourBookingForm extends TravelManager {
         }
 
 
+      debug("SaveSan 7");
 
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
