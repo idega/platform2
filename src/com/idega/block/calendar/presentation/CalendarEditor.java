@@ -162,7 +162,7 @@ public CalendarEditor(){
   private void initializeFields(int iLocaleId,int iCategoryId) {
     CalendarEntry entry = null;
     if ( _update )
-      entry = CalendarFinder.getEntry(_entryID);
+      entry = CalendarFinder.getInstance().getEntry(_entryID);
 
     String[] locTexts = null;
     if ( entry != null )
