@@ -9,7 +9,9 @@ public interface ExportDataMapping extends com.idega.data.IDOEntity
  public boolean getCashFlowOut();
  public java.lang.String getCounterAccount();
  public java.lang.String getCustomerClaimAccount();
+ public java.lang.String getFileCreationFolder();
  public java.lang.String getIDColumnName();
+ public java.lang.String getIFSFileFolder();
  public java.lang.String getJournalNumber();
  public com.idega.block.school.data.SchoolCategory getOperationalField();
  public java.lang.String getPayableAccount();
@@ -23,6 +25,8 @@ public interface ExportDataMapping extends com.idega.data.IDOEntity
  public void setCashFlowOut(boolean p0);
  public void setCounterAccount(java.lang.String p0);
  public void setCustomerClaimAccount(java.lang.String p0);
+ public void setFileCreationFolder(java.lang.String p0);
+ public void setIFSFileFolder(java.lang.String p0);
  public void setJournalNumber(java.lang.String p0);
  public void setOperationalField(java.lang.String p0);
  public void setOperationalField(com.idega.block.school.data.SchoolCategory p0);

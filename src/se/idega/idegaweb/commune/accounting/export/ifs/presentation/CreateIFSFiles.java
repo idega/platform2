@@ -126,8 +126,9 @@ public class CreateIFSFiles extends AccountingBlock {
 		}
 
 		DateInput date = new DateInput();
+		date.setToCurrentDate();
 		if (paymentDate != -1)
-			date.setDay(paymentDate-1);
+			date.setDay(paymentDate);
 		TextInput period = getTextInput(PARAM_PERIOD_TEXT,"");
 		period.setMaxlength(20);
 		period.setSize(20);

@@ -31,6 +31,8 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 	private static final String COLUMN_CASH_FLOW_OUT = "cash_flow_out";
 	private static final String COLUMN_PROVIDER_AUTHORIZATION = "provider_authorization";
 	private static final String COLUMN_STANDARD_PAYMENT_DAY = "standard_payment_day";
+	private static final String COLUMN_FILE_CREATION_FOLDER = "file_folder";
+	private static final String COLUMN_IFS_FILE_FOLDER = "ifs_file_folder";
 
 	/* (non-Javadoc)
 	 * @see com.idega.data.GenericEntity#getEntityName()
@@ -72,6 +74,9 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		addAttribute(COLUMN_CASH_FLOW_IN, "Has cash flow in", Boolean.class);
 		addAttribute(COLUMN_CASH_FLOW_OUT, "Has cash flow out", Boolean.class);
 		addAttribute(COLUMN_PROVIDER_AUTHORIZATION, "Requires provider authorization", Boolean.class);
+		
+		addAttribute(COLUMN_FILE_CREATION_FOLDER,"Folder to create files for this type in", String.class,255);
+		addAttribute(COLUMN_IFS_FILE_FOLDER,"Folder where IFS reads files for this type", String.class,255);
 	}
 	
 	
@@ -120,6 +125,13 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		return getBooleanColumnValue(COLUMN_PROVIDER_AUTHORIZATION, false);
 	}
 	
+	public String getFileCreationFolder() {
+		return getStringColumnValue(COLUMN_FILE_CREATION_FOLDER);
+	}
+	
+	public String getIFSFileFolder() {
+		return getStringColumnValue(COLUMN_IFS_FILE_FOLDER);
+	}
 	
 	//Setters
 	public void setOperationalField(String operationalField) {
@@ -170,6 +182,13 @@ public class ExportDataMappingBMPBean extends GenericEntity implements ExportDat
 		setColumn(COLUMN_PROVIDER_AUTHORIZATION, providerAuthorization);
 	}
 	
+	public void setFileCreationFolder(String folder) {
+		setColumn(COLUMN_FILE_CREATION_FOLDER,folder);
+	}
+	
+	public void setIFSFileFolder(String folder) {
+		setColumn(COLUMN_IFS_FILE_FOLDER,folder);
+	}
 	
 	//Find methods
 	public Collection ejbFindAll() throws FinderException {

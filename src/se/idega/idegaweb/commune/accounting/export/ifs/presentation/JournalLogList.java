@@ -88,7 +88,7 @@ public class JournalLogList extends AccountingBlock {
 				while (iter.hasNext()) {
 					JournalLog log = (JournalLog) iter.next();
 					list.add(localize(log.getLocalizedEventKey(),log.getLocalizedEventKey()));
-					list.add(log.getEventDate());
+					list.add(log.getEventDate().toString());
 					list.add(log.getUser().getNameLastFirst());
 				}
 			}
