@@ -266,7 +266,7 @@ public class ReportQueryBuilder extends Block {
 				table.setWidth("300");
 				table.setBorder(tableBorder);
 				table.setColor(stepTableColor);
-				table.setStyleClass(stepTableStyle);
+				//table.setStyleClass(stepTableStyle);
 				table.setColor(1, 1, "#FFFFFF");
 
 				Table headerTable = new Table(2, 2);
@@ -1625,34 +1625,35 @@ public class ReportQueryBuilder extends Block {
 
 	private Table getButtons(int currentStep) {
 		Table T = new Table(4, 1);
-		T.setWidth(getWidth());
-		T.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
-		T.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_LEFT);
-		//T.setAlignment(T.HORIZONTAL_ALIGN_CENTER);
-		if (currentStep < 6) {
-			SubmitButton next =
-				new SubmitButton(iwrb.getLocalizedImageButton("btn_next", "next >>"), PARAM_NEXT, "true");
-			T.add(next, 2, 1);
-		}
+		// T.setWidth("300");
+		// T.setAlignment(1, 1, Table.HORIZONTAL_ALIGN_RIGHT);
+		// T.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_LEFT);
+		// T.setAlignment(T.HORIZONTAL_ALIGN_CENTER);
+		int column = 1;
 		if (currentStep > 1) {
 			SubmitButton last =
 				new SubmitButton(iwrb.getLocalizedImageButton("btn_previous", "<< previous"), PARAM_LAST, "true");
-			T.add(last, 1, 1);
+			T.add(last, column++, 1);
 		}
-		if (currentStep > 0) {
-			SubmitButton cancel =
-				new SubmitButton(iwrb.getLocalizedImageButton("btn_cancel", "cancel"), PARAM_CANCEL, "true");
-			T.add(cancel, 4, 1);
+		if (currentStep < 6) {
+			SubmitButton next =
+				new SubmitButton(iwrb.getLocalizedImageButton("btn_next", "next >>"), PARAM_NEXT, "true");
+			T.add(next, column++, 1);
 		}
 		if (currentStep == 3 || currentStep ==  4 ||  currentStep == 5) {
 			SubmitButton finish =
 				new SubmitButton(iwrb.getLocalizedImageButton("btn_finish", "finish"), PARAM_FINAL, "true");
 
-			T.add(finish, 3, 1);
+			T.add(finish, column++, 1);
 		}
 		if (currentStep > 5) {
 			SubmitButton save = new SubmitButton(iwrb.getLocalizedImageButton("btn_save", "Save"), PARAM_SAVE, "true");
-			T.add(save, 3, 1);
+			T.add(save, column++, 1);
+		}
+		if (currentStep > 0) {
+			SubmitButton cancel =
+				new SubmitButton(iwrb.getLocalizedImageButton("btn_cancel", "cancel"), PARAM_CANCEL, "true");
+			T.add(cancel, column++, 1);
 		}
 		// thomas: removed
 //		if (currentStep > 4) {
