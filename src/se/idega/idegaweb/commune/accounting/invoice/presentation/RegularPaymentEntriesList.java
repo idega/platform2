@@ -118,7 +118,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private static final String KEY_DAY_REGULATED = "day_regulated";	
 	private static final String KEY_SIGNATURE = "signature";	
 	
-	private static final String LOC_KEY_SELECT=LOCALIZER_PREFIX+"select";
+	private static final String KEY_SELECT="select";
 	
 	
 	private static final String PAR_AMOUNT_PR_MONTH = KEY_AMOUNT_PR_MONTH;
@@ -526,7 +526,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		t1.setCellpadding(getCellpadding());
 		t1.setCellspacing(getCellspacing());
 
-		t1.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, 1);
+
 		
 		Collection vatRuleRegulations = new ArrayList();
 		try {
@@ -547,6 +547,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 		form.add(getDetailPanel(iwc, entry, vatRuleRegulations, errorMessages));
 		
+		t1.mergeCells(1, 2, 20, 2);		
 		t1.add(form, 1, 2);
 		add(t1);
 	}
@@ -567,55 +568,52 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	
 	private Table getEntryListPage(IWContext iwc, Collection entries, School school, Date fromDate, Date toDate, String errorMessage){
 		
-		Table t1 = new Table();
-		t1.setCellpadding(getCellpadding());
-		t1.setCellspacing(getCellspacing());
+		Table maninTbl = new Table();
+		maninTbl.setCellpadding(getCellpadding());
+		maninTbl.setCellspacing(getCellspacing());
 		
-		int row = 1;
-		t1.add(getOperationalFieldPanel(PAR_OPFIELD_MAINSCREEN), 1, row++); 
-				
-		addPeriodeForm(iwc, t1, fromDate, toDate, errorMessage, row++);
+		Table opfieldTbl = new Table();		
+		addOperationalFieldPanel(opfieldTbl, 1, PAR_OPFIELD_MAINSCREEN);
+		maninTbl.add(opfieldTbl, 1, 1);
+		
+		int row = 1;				
+		addPeriodeForm(iwc, maninTbl, fromDate, toDate, errorMessage, row++);
 			
-		Table t2 = new Table();				
-		t2.add(getPaymentsList(entries, school, fromDate, toDate), 1, 1);
+		maninTbl.add(getPaymentsList(entries, school, fromDate, toDate), 1, row++);
 	
 		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PAR_NEW, KEY_NEW, "New");
-		t2.add(bp, 1, 2);
+		maninTbl.add(bp, 1, row++);
 
-
-//		form.add(t2);	
-		t1.mergeCells(1, row, 10, row);	
-		t1.add(t2, 1, row);		
 		Form form = new Form();		
 		form.maintainAllParameters();		
 		form.add(new HiddenInput(PAR_DELETE_PK, "-1"));
-		form.add(t1);
-//		t1.add(form, 1, row++);	
+		form.add(maninTbl);
 
-		Table t0 = new Table();
-		t0.add(form);
+		Table formTbl = new Table();
+		formTbl.add(form);
 
-		return t0;		
+		return formTbl;		
 	}
 	
 
-	private Table getOperationalFieldPanel(String actionCommand) {
-		
-		Table inner = new Table();
-
-		inner.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, 1);
-		OperationalFieldsMenu ofm = new OperationalFieldsMenu();
-		ofm.setParameter(actionCommand, " ");
-		ofm.maintainParameter(PAR_SEEK_TO);
-		ofm.maintainParameter(PAR_SEEK_FROM);
-		ofm.maintainParameter(PAR_USER_SSN);	
 	
-		inner.add(ofm, 2, 1);
-		inner.setColumnWidth(1, "" + MIN_LEFT_COLUMN_WIDTH);		
-//		inner.add(new HiddenInput(actionCommand, " ")); //to make it return to the right page
-		return inner;
-	}	
+	
+	private int addOperationalFieldPanel(Table table, int row, String actionCommand) {
+		
+		table.add(getLocalizedLabel(KEY_OPERATIONAL_FIELD, "Huvudverksamhet"), 1, row);
+		OperationalFieldsMenu ofm = new OperationalFieldsMenu();
+		ofm.setParameter(actionCommand, " ");		
+		ofm.maintainParameter(PAR_SEEK_FROM);
+		ofm.maintainParameter(PAR_SEEK_TO);
+		ofm.maintainParameter(PAR_USER_SSN);			
+	
+		table.add(ofm, 2, row);
+
+//		table.add(new HiddenInput(actionCommand, " "), 3, row); //to make it return to the right page
+		return row + 1;
+	}
+		
 
 	private UserSearcher getUserSearcher(IWContext iwc, User user){
 		
@@ -770,10 +768,10 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
 		int row = 1;
-//		table.mergeCells(1,1,3,1);
-//		table.add(getOperationalFieldPanel(PAR_OPFIELD_DETAILSCREEN), 1, row++);
-//		
-//			
+		
+		row = addOperationalFieldPanel(table, row, PAR_OPFIELD_DETAILSCREEN);
+				
+		
 //		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		if (errorMessages.get(ERROR_NO_USER_SESSION) != null){
 			table.add(getErrorText((String) errorMessages.get(ERROR_NO_USER_SESSION)), 1, row++);			
@@ -803,7 +801,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 
 		
 		regSearchPanel.setParameter(PAR_EDIT_FROM_SCREEN, " ");
-		table.mergeCells(1, row, 10, row);
+		table.mergeCells(1, row, 20, row);
 		table.add(regSearchPanel, 1, row++); 
 
 		Regulation reg = regSearchPanel.getRegulation(); 
@@ -909,6 +907,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 		
 //		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 //		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
+
 		
 		addDropDownLocalized(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRuleRegulationId(),  "getName", 1, row++);
 		
@@ -1208,7 +1207,7 @@ public class RegularPaymentEntriesList extends AccountingBlock {
 	private Table addDropDownLocalized(Table table, String parameter, String key, Collection options, int selected, String method, int col, int row) {
 		DropdownMenu dropDown = getDropdownMenuLocalized(parameter, options, method);
 		dropDown.setSelectedElement(selected);
-		String selectString = this.getResourceBundle().getLocalizedString(LOC_KEY_SELECT,"Select:");
+		String selectString = this.getResourceBundle().getLocalizedString(KEY_SELECT,"Select:");
 		dropDown.addFirstOption(new SelectOption(selectString,""));
 		return addWidget(table, key, dropDown, col, row);		
 	}
