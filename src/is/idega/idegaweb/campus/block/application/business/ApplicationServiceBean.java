@@ -54,7 +54,6 @@ import com.idega.block.application.data.Status;
 import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.business.BuildingService;
 import com.idega.block.building.data.ComplexTypeView;
-import com.idega.business.IBOServiceBean;
 import com.idega.data.IDOEntityDefinition;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
