@@ -179,7 +179,7 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 	 * @throws EJBException
 	 * @throws FinderException
 	 */
-	public Collection ejbFindByStatusAndSchoolId(String status, int schoolID) throws IDOLookupException, EJBException, FinderException {
+	public Collection ejbFindByStatusAndSchoolId(char status, int schoolID) throws IDOLookupException, EJBException, FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEquals(COLUMN_STATUS, status);
