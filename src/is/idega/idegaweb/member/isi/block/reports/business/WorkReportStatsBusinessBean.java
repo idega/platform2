@@ -2991,6 +2991,15 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Map regionalUnionsStatsMap = new TreeMap();
 		//Iterating through workreports and creating report data 
 		Iterator iter = clubs.iterator();
+		int totalDone = 0;
+		int totalNotDone = 0;
+		int totalSomeDone = 0;
+		int totalInactive = 0;
+		int totalMembersThisYear = 0;
+		int totalMembersLastYear = 0;
+		int totalPlayersThisYear = 0;
+		int totalPlayersLastYear = 0;
+		DecimalFormat format = new DecimalFormat("##0.#");
 		while (iter.hasNext()) {
 			//the club
 			WorkReport report = (WorkReport) iter.next();
@@ -3030,10 +3039,13 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			ReportableField toAddTo = null;
 			if(WorkReportConstants.WR_STATUS_DONE.equals(reportStatus)) {
 				toAddTo = clubCountDone;
+				totalDone++;
 			} else if(WorkReportConstants.WR_STATUS_NOT_DONE.equals(reportStatus)) {
 				toAddTo = clubCountNotDone;
+				totalNotDone++;
 			} else if(WorkReportConstants.WR_STATUS_SOME_DONE.equals(reportStatus)) {
 				toAddTo = clubCountSomeDone;
+				totalSomeDone++;
 			}
 			if(toAddTo!=null) {
 				regData = addToIntegerCount(toAddTo, regData, 1);
@@ -3041,19 +3053,23 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			
 			if(report.isInActive()) {
 				regData = addToIntegerCount(clubCountInactive, regData, 1);
+				totalInactive++;
 			}
 			int done = ((Integer)regData.getFieldValue(clubCountDone)).intValue();
 			int notDone = ((Integer)regData.getFieldValue(clubCountNotDone)).intValue();
 			//int change = ((done+notDone)==0)?-1:((100*done)/(done+notDone));
-			double change = (
+			/*double change = (
 			                  ((double) done) /
 			                  ((double) (notDone>0?notDone:(done!=0?done:1)))
 			                ) * 100.0 
-			                  * (((done!=0 && notDone!=0) && (done>=notDone))?1.0:-1.0);
-			regData.addData(percentReportsDone, (new DecimalFormat("##0.#")).format(change));
+			                  * (((done!=0 && notDone!=0) && (done>=notDone))?1.0:-1.0);*/
+			double change = (done+notDone)==0?1.0:(done/(done+notDone));
+			regData.addData(percentReportsDone, format.format(change));
 			
 			int mThisYear = getWorkReportBusiness().getCountOfMembersByWorkReport(report);
 			int mLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfMembersByWorkReport(lastYearReport);
+			totalMembersThisYear += mThisYear;
+			totalMembersLastYear += mLastYear;
 			regData = addToIntegerCount(membersThisYear, regData, mThisYear);
 			regData = addToIntegerCount(membersLastYear, regData, mLastYear);
 			int now = ((Integer)regData.getFieldValue(membersThisYear)).intValue();
@@ -3064,10 +3080,12 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			          ((double) (last>0?last:(now!=0?now:1)))
 			         ) * 100.0 
 			           * (((now!=0 && last!=0) && (now>=last))?1.0:-1.0);
-			regData.addData(membersAnnualChangePercent, (new DecimalFormat("##0.#")).format(change));
+			regData.addData(membersAnnualChangePercent, format.format(change));
 						
 			int pThisYear = getWorkReportBusiness().getCountOfPlayersByWorkReport(report);
 			int pLastYear = lastYearReport==null?0:getWorkReportBusiness().getCountOfPlayersByWorkReport(lastYearReport);
+			totalPlayersThisYear += pThisYear;
+			totalPlayersLastYear += pLastYear;
 			regData = addToIntegerCount(playersThisYear, regData, pThisYear);
 			regData = addToIntegerCount(playersLastYear, regData, pLastYear);
 			now = ((Integer)regData.getFieldValue(playersThisYear)).intValue();
@@ -3078,7 +3096,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			          ((double) (last>0?last:(now!=0?now:1)))
 			         ) * 100.0 
 			           * (((now!=0 && last!=0) && (now>=last))?1.0:-1.0);
-			regData.addData(playersAnnualChangePercent, (new DecimalFormat("##0.#")).format(change));
+			regData.addData(playersAnnualChangePercent, format.format(change));
 		}
 
 		// iterate through the ordered map and ordered lists and add to the final collection
@@ -3088,6 +3106,35 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		Comparator comparator = new FieldsComparator(sortFields);
 		Collections.sort(reportCollection, comparator);
 
+		ReportableData regData = new ReportableData();
+		regData.addData(regionalUnionName, _iwrb.getLocalizedString(LOCALIZED_TOTAL, "TOTAL"));
+		regData.addData(clubCountDone, new Integer(totalDone));
+		regData.addData(clubCountNotDone, new Integer(totalNotDone));
+		regData.addData(clubCountSomeDone, new Integer(totalSomeDone));
+		regData.addData(clubCountInactive, new Integer(totalInactive));
+		double change = (totalDone+totalNotDone)==0?1.0:(totalDone/(totalDone+totalNotDone));
+		regData.addData(percentReportsDone, format.format(change));
+		
+		regData.addData(membersThisYear, new Integer(totalMembersThisYear));
+		regData.addData(membersLastYear, new Integer(totalMembersLastYear));
+		change = (
+		          ((double) totalMembersThisYear) /
+		          ((double) (totalMembersLastYear>0?totalMembersLastYear:(totalMembersThisYear!=0?totalMembersThisYear:1)))
+		         ) * 100.0
+		           * (((totalMembersThisYear!=0 && totalMembersLastYear!=0) && (totalMembersThisYear>=totalMembersLastYear))?1.0:-1.0);
+		regData.addData(membersAnnualChangePercent, format.format(change));
+
+		regData.addData(playersThisYear, new Integer(totalPlayersThisYear));
+		regData.addData(playersLastYear, new Integer(totalPlayersLastYear));
+		change = (
+		          ((double) totalPlayersThisYear) /
+		          ((double) (totalPlayersLastYear>0?totalPlayersLastYear:(totalPlayersThisYear!=0?totalPlayersThisYear:1)))
+				 ) * 100.0
+				   * (((totalPlayersThisYear!=0 && totalPlayersLastYear!=0) && (totalPlayersThisYear>=totalPlayersLastYear))?1.0:-1.0);
+		regData.addData(playersAnnualChangePercent, format.format(change));
+		
+		reportCollection.add(regData);
+		
 		//finished return the collection
 		return reportCollection;
 	}
@@ -3242,36 +3289,9 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		
 		int mChangeTotal = mThisYearTotal - mLastYearTotal;
 		int pChangeTotal = pThisYearTotal - pLastYearTotal;
-		int mChangeTotalPercent = (mLastYearTotal==0)?-1:((100*mThisYearTotal)/(mLastYearTotal));
-		int pChangeTotalPercent = (pLastYearTotal==0)?-1:((100*pThisYearTotal)/(pLastYearTotal));
-		
-	//	new DecimalFormat("##0.#").format( ((($V{AllSum}!=null && $V{AllSum}.floatValue()>0)? $V{AllSum}.floatValue() : 0 )/( ($V{AllSumLastYear}!=null && $V{AllSumLastYear}.floatValue()>0)? $V{AllSumLastYear}.floatValue() : (($V{AllSum}!=null && $V{AllSum}.floatValue()>0)? $V{AllSum}.floatValue() : 1 ))) * 100.0 * ( (($V{AllSum}!=null && $V{AllSumLastYear}!=null) && ($V{AllSum}.intValue()>= $V{AllSumLastYear}.intValue()) ) ? 1.0 : -1.0 ) )
-		
-	//	int mWeirdNumber = mChangeTotal/mLastYearTotal;
-	//	int pWeirdNumber = pChangeTotal/pLastYearTotal;
-		
-		double mWeirdNumber = (
-											((double) mChangeTotal) /
-											((double) (mLastYearTotal>0?mLastYearTotal:(mChangeTotal!=0?mChangeTotal:1)))
-										) * 100.0 
-											* (((mChangeTotal!=0 && mLastYearTotal!=0) && (mChangeTotal>=mLastYearTotal))?1.0:-1.0);
-											new DecimalFormat("##0.#").format(mWeirdNumber);
-//		regData.addData(percentReportsDone, (new DecimalFormat("##0.#")).format(mWeirdNumber));
-		double pWeirdNumber = (
-											((double) pChangeTotal) /
-											((double) (pLastYearTotal>0?pLastYearTotal:(pChangeTotal!=0?pChangeTotal:1)))
-										) * 100.0 
-											* (((pChangeTotal!=0 && pLastYearTotal!=0) && (pChangeTotal>=pLastYearTotal))?1.0:-1.0);
-										new DecimalFormat("##0.#").format(mWeirdNumber);
-//		regData.addData(percentReportsDone, (new DecimalFormat("##0.#")).format(mWeirdNumber));
-
-		
-		
 		// get the percentage from total and create last row
 		Iterator rData = regDataCollection.iterator();
-		java.text.DecimalFormat format = new java.text.DecimalFormat();
-		format.setMaximumFractionDigits(1);
-		format.setMinimumFractionDigits(1);
+		DecimalFormat format = new DecimalFormat("##0.#");
 		double macptTotal = 0;
 		double pacptTotal = 0;
 		while(rData.hasNext()) {
@@ -3289,17 +3309,20 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 			pacptTotal += pwn;
 		}
 		
+		double mChangeTotalPercent = (mLastYearTotal==0)?-1:((100*((double)mThisYearTotal))/((double)mLastYearTotal));
+		double pChangeTotalPercent = (pLastYearTotal==0)?-1:((100*((double)pThisYearTotal))/((double)pLastYearTotal));
+		
 		ReportableData regData = new ReportableData();
 		regData.addData(regionalUnionName, _iwrb.getLocalizedString(LOCALIZED_TOTAL, "TOTAL"));
 		regData.addData(membersThisYear, new Integer(mThisYearTotal));
 		regData.addData(membersLastYear, new Integer(mLastYearTotal));
 		regData.addData(membersAnnualChange, new Integer(mChangeTotal));
-		regData.addData(membersAnnualChangePercent, (mChangeTotalPercent==-1)?"":Integer.toString(mChangeTotalPercent));
+		regData.addData(membersAnnualChangePercent, (mChangeTotalPercent<0.0)?"":format.format(mChangeTotalPercent));
 		regData.addData(membersAnnualChangePercentOfTotal, format.format(macptTotal));
 		regData.addData(playersThisYear, new Integer(pThisYearTotal));
 		regData.addData(playersLastYear, new Integer(pLastYearTotal));
 		regData.addData(playersAnnualChange, new Integer(pChangeTotal));
-		regData.addData(playersAnnualChangePercent, (pChangeTotalPercent==-1)?"":Integer.toString(pChangeTotalPercent));
+		regData.addData(playersAnnualChangePercent, (pChangeTotalPercent<0.0)?"":format.format(pChangeTotalPercent));
 		regData.addData(playersAnnualChangePercentOfTotal, format.format(pacptTotal));
 		
 		reportCollection.add(regData);
