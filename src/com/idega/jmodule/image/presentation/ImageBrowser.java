@@ -40,7 +40,7 @@ private boolean refresh = false;
 
   private Form getBrowserTable(ModuleInfo modinfo) throws SQLException {
 
-    String mode = modinfo.getRequest().getParameter("mode");
+    String mode = modinfo.getParameter("mode");
       if ( mode == null ) { mode = "image"; }
 
     Form categoryForm = new Form();
@@ -166,12 +166,12 @@ private boolean refresh = false;
     boolean isQuery = true;
     boolean allCategories = false;
 
-    String category_id = modinfo.getRequest().getParameter("catagory_id");
+    String category_id = modinfo.getParameter("catagory_id");
       if ( category_id.equalsIgnoreCase("0") ) {
         allCategories = true;
       }
 
-    String searchString = modinfo.getRequest().getParameter("searchString");
+    String searchString = modinfo.getParameter("searchString");
       if ( searchString == null || searchString.equalsIgnoreCase("") ) {
         searchString = "";
         isQuery = false;
@@ -221,7 +221,7 @@ private boolean refresh = false;
       }
       else {
         Text noQuery = new Text("Ekkert fannst...");
-          noQuery.setFontColor("#FFFFFF");
+        noQuery.setFontColor("#FFFFFF");
 
         myTable.add(noQuery,1,1);
       }
@@ -230,7 +230,7 @@ private boolean refresh = false;
 
     else {
       Text noQuery = new Text("Engin leitarskilyrði valin...");
-        noQuery.setFontColor("#FFFFFF");
+      noQuery.setFontColor("#FFFFFF");
 
       myTable.add(noQuery,1,1);
     }
