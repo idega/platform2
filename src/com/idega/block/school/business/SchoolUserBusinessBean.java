@@ -396,7 +396,6 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 			if (category.equals(getSchoolBusiness().getElementarySchoolSchoolCategory()) || category.equals("BOTH")) {
 				userTypes.add(new String[] {"school.headmaster", "Headmaster", Integer.toString(USER_TYPE_HEADMASTER) });
 				userTypes.add(new String[] {"school.assistant_headmaster", "Assistant headmaster", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
-				userTypes.add(new String[] {"school.assistant_headmaster_abbrev", "Ass. headmaster", Integer.toString(USER_TYPE_ASSISTANT_HEADMASTER) });
 				userTypes.add(new String[] {"school.web_administrators", "Web administrators", Integer.toString(USER_TYPE_WEB_ADMIN) });
 				userTypes.add(new String[] {"school.teachers", "Teachers", Integer.toString(USER_TYPE_TEACHER) });
 				userTypes.add(new String[] {"school.ib_coordinator", "IB-coordinator", Integer.toString(USER_TYPE_IB_COORDINATOR) });
