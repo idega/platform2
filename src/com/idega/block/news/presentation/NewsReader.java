@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.75 2002/03/08 11:26:05 aron Exp $
+ * $Id: NewsReader.java,v 1.76 2002/03/08 12:39:28 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -36,12 +36,13 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.core.data.ICFile;
 import java.text.DateFormat;
 import com.idega.util.text.TextStyler;
+import com.idega.block.presentation.CategoryBlock;
 
 /**
  * @author <a href="mailto:aron@idega.is">Aron Birkir</a>
  * @version 1.1
  */
-public class NewsReader extends Block implements IWBlock {
+public class NewsReader extends CategoryBlock implements IWBlock {
   private final static String IW_BUNDLE_IDENTIFIER = "com.idega.block.news";
   private boolean isAdmin = false;
   private int iCategoryId = -1;
@@ -138,6 +139,14 @@ public class NewsReader extends Block implements IWBlock {
     this();
     this.iCategoryId=iCategoryId;
     this.showAll = false;
+  }
+
+  public boolean getMultible(){
+    return true;
+  }
+
+  public String getCategoryType(){
+    return "news";
   }
 
   private void init(){
@@ -282,7 +291,8 @@ public class NewsReader extends Block implements IWBlock {
 
 
   private PresentationObject getCategoryList(ICCategory newsCategory,Locale locale,IWContext iwc){
-    List L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),50,locale);
+    int ids[] = {newsCategory.getID()};
+    List L = NewsFinder.listOfAllNewsHelpersInCategory(ids,50,locale);
     Table T = new Table();
     int row = 1;
     if(L != null){
@@ -417,10 +427,10 @@ public class NewsReader extends Block implements IWBlock {
   private PresentationObject publishNews(IWContext iwc ,ICCategory newsCategory,Locale locale,boolean collection){
     List L = null;
     if(iLayout == COLLECTION_LAYOUT || collection){
-      L = NewsFinder.listOfAllNewsHelpersInCategory(newsCategory.getID(),numberOfCollectionNews,locale);
+      L = NewsFinder.listOfAllNewsHelpersInCategory(getCategoryIds(),numberOfCollectionNews,locale);
     }
     else{
-      L = NewsFinder.listOfNewsHelpersInCategory(newsCategory.getID(),numberOfDisplayedNews,locale );
+      L = NewsFinder.listOfNewsHelpersInCategory(getCategoryIds(),numberOfDisplayedNews,locale );
   }
     NewsTable T = new NewsTable(NewsTable.NEWS_SITE_LAYOUT ,cellPadding,cellSpacing,firstTableColor,secondTableColor);
     int count = NewsFinder.countNewsInCategory(newsCategory.getID());
