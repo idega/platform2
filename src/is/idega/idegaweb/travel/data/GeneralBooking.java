@@ -220,7 +220,12 @@ public class GeneralBooking extends GenericEntity implements Booking{
 
   public void insert() throws SQLException {
     CypherText cyph = new CypherText();
-    String key = cyph.getKey(16);
+    String key = cyph.getKey(8);
+    GeneralBooking[] bookings = (GeneralBooking[]) findAllByColumn(getReferenceNumberColumnName(), key);
+    while (bookings.length > 0) {
+      key = cyph.getKey(8);
+      bookings = (GeneralBooking[]) findAllByColumn(getReferenceNumberColumnName(), key);
+    }
     setReferenceNumber(key);
     super.insert();
   }

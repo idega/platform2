@@ -178,32 +178,47 @@ public class Inquirer {
         Inquery inquery = new Inquery(inquiryId);
         Booking booking = inquery.getBooking();
         Service tempService = booking.getService();
+        List inquiries = getMultibleInquiries(inquery);
 
         responseString.append(iwrb.getLocalizedString("travel.dear","Dear"));
         responseString.append(" "+inquery.getName()+",\n\n");
         responseString.append(iwrb.getLocalizedString("travel.regarding_you_inquiry_about","Regarding your inquiry about"));
         responseString.append(" "+inquery.getNumberOfSeats()+" ");
-        responseString.append(iwrb.getLocalizedString("travel.seats_for_the_tour","seats for the tour"));
+        responseString.append(iwrb.getLocalizedString("travel.spaces_for_the_service","spaces for the service"));
         responseString.append(" \""+tempService.getName()+"\" ");
-        responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
-        responseString.append(" "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
+        if (inquiries.size() == 1) {
+          responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
+          responseString.append(" "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
+        }else {
+          booking = ((Inquery) inquiries.get(0)).getBooking();
+          Booking booking2 = ((Inquery) inquiries.get(inquiries.size()-1)).getBooking();
+          responseString.append(new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+" - "+new idegaTimestamp(booking2.getBookingDate()).getLocaleDate(iwc));
+        }
         responseString.append("\n\n");
-/**
- * @todo hondlar svara inquiry sem er hluti af grúbbu....
- */
+
+        /**
+         * @todo hondlar svara inquiry sem er hluti af grúbbu....
+         */
 
 
         if (book == false) {
             responseString.append(iwrb.getLocalizedString("travel.request_is_denied","Request is denied."));
         }else if (book == true) {
             responseString.append(iwrb.getLocalizedString("travel.request_is_granted_booking_confirmed","Request is granted. Booking has been confimed"));
-              booking.setIsValid(true);
-            booking.update();
         }
 
-        inquery.setAnswered(true);
-        inquery.setAnswerDate(idegaTimestamp.getTimestampRightNow());
-        inquery.update();
+        for (int i = 0; i < inquiries.size(); i++) {
+          inquery = (Inquery) inquiries.get(i);
+          inquery.setAnswered(true);
+          inquery.setAnswerDate(idegaTimestamp.getTimestampRightNow());
+          inquery.update();
+          if (book) {
+            booking = inquery.getBooking();
+            booking.setIsValid(true);
+            booking.update();
+          }
+        }
+
 
         Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) Reseller.getStaticInstance(Reseller.class));
         try {
@@ -214,12 +229,20 @@ public class Inquirer {
                 responseString = new StringBuffer();
                 responseString.append(iwrb.getLocalizedString("travel.regarding_you_inquiry_about","Regarding your inquiry about"));
                 responseString.append(" "+inquery.getNumberOfSeats()+" ");
-                responseString.append(iwrb.getLocalizedString("travel.seats_for_the_tour","seats for the tour"));
+                responseString.append(iwrb.getLocalizedString("travel.spaces_for_the_service","spaces for the service"));
                 responseString.append(" \""+tempService.getName()+"\" ");
                 responseString.append(iwrb.getLocalizedString("travel.for","for"));
                 responseString.append(" "+inquery.getName()+",\n\n");
-                responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
-                responseString.append(" "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
+                if (inquiries.size() == 1) {
+                  responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
+                  responseString.append(" "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
+                }else {
+                  booking = ((Inquery) inquiries.get(0)).getBooking();
+                  Booking booking2 = ((Inquery) inquiries.get(inquiries.size()-1)).getBooking();
+                  responseString.append(new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+" - "+new idegaTimestamp(booking2.getBookingDate()).getLocaleDate(iwc));
+                }
+//                responseString.append(iwrb.getLocalizedString("travel.on_the","on the"));
+//                responseString.append(" "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc));
                 responseString.append("\n\n");
                 if (book == false) {
                     responseString.append(iwrb.getLocalizedString("travel.request_is_denied","Request is denied."));

@@ -486,7 +486,7 @@ public class Booking extends TravelManager {
           table.setAlignment(2,row,"right");
 
           if (supplier != null) {
-              answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking","Confirm booking"));
+              answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking","Confirm_booking"));
                 answerYes.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
                 answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
@@ -494,7 +494,7 @@ public class Booking extends TravelManager {
                 answerYes.addParameter("month",this.stamp.getMonth());
                 answerYes.addParameter("day",this.stamp.getDay());
 
-              answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking","Reject booking"));
+              answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking","Reject_booking"));
                 answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
                 answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
@@ -506,7 +506,7 @@ public class Booking extends TravelManager {
               table.add("&nbsp;&nbsp;",2,row);
               table.add(answerNo,2,row);
           }else if (reseller != null) {
-              answerNo = new Link("T - Ógilda fyrirspurn");
+              answerNo = new Link(iwrb.getLocalizedImageButton("travel.cancel_inquiry","Cancel_inquiry"));
                 answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
                 answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);

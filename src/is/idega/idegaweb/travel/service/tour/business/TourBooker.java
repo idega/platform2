@@ -41,7 +41,16 @@ public class TourBooker extends Booker {
 
   private static int Book(int bookingId, int hotelPickupPlaceId, String roomNumber) throws SQLException {
     try {
-      TourBooking booking = new TourBooking(bookingId);
+      boolean update = false;
+      TourBooking booking = null;
+      try {
+        booking = new TourBooking(bookingId);
+        update = true;
+      }catch (SQLException sql) {
+        booking = new TourBooking();
+        booking.setColumn(booking.getIDColumnName(), bookingId);
+      }
+
       if (hotelPickupPlaceId != -1) {
         booking.setHotelPickupPlaceID(hotelPickupPlaceId);
         if (roomNumber != null) {
@@ -55,10 +64,18 @@ public class TourBooker extends Booker {
           booking.setRoomNumber(roomNumber);
         }
       }
+
+      if (update)
       booking.update();
+      else
+      booking.insert();
 
       return bookingId;
     }catch (SQLException s) {
+
+
+
+
       s.printStackTrace(System.err);
       return bookingId;
     }

@@ -510,7 +510,7 @@ public class PublicBooking extends Block  {
     String depAddressId = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
 
     String fromDate = iwc.getParameter(TourBookingForm.parameterFromDate);
-    String toDate = iwc.getParameter(TourBookingForm.parameterToDate);
+    String manyDays = iwc.getParameter(TourBookingForm.parameterManyDays);
 
     String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
     String ccMonth = iwc.getParameter(TourBookingForm.parameterCCMonth);
@@ -549,9 +549,19 @@ public class PublicBooking extends Block  {
       table.setAlignment(2,row,"left");
 
       idegaTimestamp fromStamp = new idegaTimestamp(fromDate);
-      idegaTimestamp toStamp = new idegaTimestamp(toDate);
+      try {
+        int iManyDays = Integer.parseInt(manyDays);
+        idegaTimestamp toStamp = new idegaTimestamp(fromStamp);
+        if (iManyDays > 1) {
+          toStamp.addDays(iManyDays);
+          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)+ " - "+toStamp.getLocaleDate(iwc)),2,row);
+        }else {
+          table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)),2,row);
+        }
+      }catch (NumberFormatException n) {
+        table.add(star, 2,row);
+      }
       table.add(getTextWhite(iwrb.getLocalizedString("travel.date","Date")),1,row);
-      table.add(getBoldTextWhite(fromStamp.getLocaleDate(iwc)+ " - "+toStamp.getLocaleDate(iwc)),2,row);
 
       ++row;
       table.setAlignment(1,row,"right");
@@ -644,7 +654,9 @@ public class PublicBooking extends Block  {
           if (i == 0)
           currency = new Currency(pPrices[i].getCurrencyId());
           price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddressId));
-        }catch (SQLException sql) {}
+          price *= Integer.parseInt(manyDays);
+        }catch (SQLException sql) {
+        }catch (NumberFormatException n) {}
 
         table.add(getTextWhite(pPrices[i].getPriceCategory().getName()),1,row);
         table.add(getBoldTextWhite(Integer.toString(current)),2,row);
@@ -691,13 +703,42 @@ public class PublicBooking extends Block  {
         table.add(ccError, 1, row);
       }
 
+      Text bookingsError = getBoldText(iwrb.getLocalizedString("travel.some_days_are_not_available","Some of the selected days are not available"));
+        bookingsError.setFontColor(errorColor);
+      try {
+        TourBookingForm tbf = new TourBookingForm(iwc, product);
+        int id = tbf.checkBooking(iwc, false);
+        if (id != TourBookingForm.errorTooMany) {
+        }else {
+          ++row;
+          table.mergeCells(1, row, 2, row);
+          table.add(bookingsError, 1, row);
+          List errorDays = tbf.getErrorDays();
+          Text dayText;
+          if (errorDays != null) {
+            valid = false;
+            for (int i = 0; i < errorDays.size(); i++) {
+              ++row;
+              dayText = getBoldText(((idegaTimestamp) errorDays.get(i)).getLocaleDate(iwc));
+                dayText.setFontColor(errorColor);
+              table.add(dayText, 2, row);
+            }
+          }
+
+        }
+      }catch (Exception e) {
+        valid = false;
+        table.mergeCells(1, row, 2, row);
+        table.add(bookingsError, 1, row);
+        e.printStackTrace(System.err);
+      }
+
       ++row;
       table.setAlignment(1,row,"left");
       table.setAlignment(2,row,"right");
       table.add(no,1,row);
       if (valid)
       table.add(yes,2,row);
-
 
 
     return table;
@@ -720,24 +761,30 @@ public class PublicBooking extends Block  {
         int current = 0;
         Currency currency = null;
 
+        int days = Integer.parseInt(iwc.getParameter(TourBookingForm.parameterManyDays));
+
         ProductPrice[] pPrices = {};
         Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
         if (tFrame != null) {
           pPrices = ProductPrice.getProductPrices(product.getID(), tFrame.getID(), Integer.parseInt(depAddr), true);
         }
 
-        for (int i = 0; i < pPrices.length; i++) {
-          try {
-            current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
-          }catch (NumberFormatException n) {
-            current = 0;
+        for (int j = 0; j < days; j++) {
+
+          for (int i = 0; i < pPrices.length; i++) {
+            try {
+              current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+            }catch (NumberFormatException n) {
+              current = 0;
+            }
+
+            total += current;
+
+            price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
+
           }
-
-          total += current;
-
-          price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
-
         }
+
 
         System.out.println("Starting TPOS test : "+idegaTimestamp.RightNow().toString());
         com.idega.block.tpos.business.TPosClient t = new com.idega.block.tpos.business.TPosClient(iwc);
@@ -781,12 +828,13 @@ public class PublicBooking extends Block  {
             break;
           case 7:
           case 37:
+          case 69:
           case 75:
             display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
             break;
-          case 69:
+          /*case 69:
             display.setText(e.getErrorMessage());
-            break;
+            break;*/
           case 20:
           case 31:
             display.setText(iwrb.getLocalizedString("travel.transaction_not_permitted","Transaction not permitted"));
@@ -802,8 +850,11 @@ public class PublicBooking extends Block  {
         display.addToText(" ( "+e.getErrorNumber()+" )");
       }
       catch (Exception e) {
-        //success = true;
-        //debug("error : success er on");
+        /**
+         * @todo commenta út success= true
+         */
+        success = true;
+        debug("error : success er on");
         //display.addToText("error : success er on");
         e.printStackTrace(System.err);
       }
@@ -813,7 +864,6 @@ public class PublicBooking extends Block  {
           int bookingId = -1;
           TourBookingForm tbf = new TourBookingForm(iwc,product);
           bookingId = tbf.handleInsert(iwc);
-          debug("er her 2b ");
 
           GeneralBooking gBooking = new GeneralBooking(bookingId);
 

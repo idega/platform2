@@ -36,6 +36,7 @@ public class Voucher extends TravelManager {
   private IWBundle _bundle;
 
   private Booking _booking;
+  private List _bookings;
   private BookingEntry[] _entries;
   private Service _service;
   private Product _product;
@@ -56,12 +57,13 @@ public class Voucher extends TravelManager {
     _iwc = iwc;
     try {
       _booking = booking;
+      GeneralBooking gBooking = new GeneralBooking(_booking.getID());
+      _bookings = Booker.getMultibleBookings(gBooking);
       _service = _booking.getService();
       _product = _service.getProduct();
       _entries = _booking.getBookingEntries();
       _supplier = new Supplier(_product.getSupplierId());
       _timeframe = ProductBusiness.getTimeframe(_product, new idegaTimestamp(_booking.getBookingDate()));
-      GeneralBooking gBooking = new GeneralBooking(_booking.getID());
       TravelAddress[] addresses = (TravelAddress[]) gBooking.findRelated(TravelAddress.getStaticInstance(TravelAddress.class));
       _address = addresses[addresses.length - 1];
     }catch (SQLException sql) {
@@ -202,9 +204,15 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
         table.add(getText(ProductBusiness.getProductName(_product)),1,2);
         table.add(Text.BREAK,1,2);
-        table.add(getText(new idegaTimestamp(_booking.getBookingDate()).getLocaleDate(_iwc)),1,2);
-        //table.add(getText(" "+_iwrb.getLocalizedString("travel.at","at"))+" ",1,2);
-        //table.add(getText(new idegaTimestamp(_service.getDepartureTime()).toSQLTimeString().substring(0,5)),1,2);
+        if (_bookings.size() > 0) {
+          idegaTimestamp fromStamp = new idegaTimestamp(((Booking)_bookings.get(0)).getBookingDate());
+          if (_bookings.size() < 2) {
+            table.add(getText(fromStamp.getLocaleDate(_iwc)),1,2);
+          }else {
+            idegaTimestamp toStamp = new idegaTimestamp(((Booking)_bookings.get(_bookings.size()-1)).getBookingDate());
+            table.add(getText(fromStamp.getLocaleDate(_iwc)+" - "+toStamp.getLocaleDate(iwc)),1,2);
+          }
+        }
         table.add(Text.BREAK,1,2);
         if (_address != null) {
           table.add(_iwrb.getLocalizedString("travel.departure_place","Departure place"), 1,2);
@@ -239,7 +247,8 @@ public class Voucher extends TravelManager {
         table.add(Text.BREAK,1,2);
         table.add(getText(_iwrb.getLocalizedString("travel.amount_paid_lg","AMOUNT PAID")),1,2);
         table.add(getText(" : "),1,2);
-        table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
+//        table.add(getText(df.format(Booker.getBookingPrice(iwc, _booking))),1,2);
+        table.add(getText(df.format(Booker.getBookingPrice(iwc, (GeneralBooking[]) _bookings.toArray(new GeneralBooking[]{})))),1,2);
         table.add(getText(" "),1,2);
         Currency currency = Booker.getCurrency(_booking);
         if (currency != null)

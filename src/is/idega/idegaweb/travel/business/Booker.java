@@ -56,7 +56,7 @@ public class Booker {
 
     if (type != null)
     if (bookingId == -1) {
-      if (type instanceof Tour) booking = new TourBooking();
+      if (type instanceof Tour) booking = new GeneralBooking();
         booking.setServiceID(serviceId);
         booking.setAddress(address);
         booking.setBookingDate(date.getTimestamp());
@@ -76,7 +76,7 @@ public class Booker {
 
       returner =  booking.getID();
     }else {
-      if (type instanceof Tour) booking = new TourBooking(bookingId);
+      if (type instanceof Tour) booking = new GeneralBooking(bookingId);
         booking.setServiceID(serviceId);
         booking.setAddress(address);
         booking.setBookingDate(date.getTimestamp());
@@ -422,6 +422,16 @@ public class Booker {
       return total;
   }
 
+  public static float getBookingPrice(IWContext iwc, GeneralBooking[] bookings) {
+    float price = 0;
+    System.err.println("bookings.length = "+bookings.length);
+    for (int i = 0; i < bookings.length; i++) {
+      price += getBookingPrice(iwc, (Booking) bookings[i]);
+      System.err.println("price now = "+price);
+    }
+    return price;
+  }
+
   public static float getBookingPrice(IWContext iwc, Booking[] bookings) {
     float price = 0;
     for (int i = 0; i < bookings.length; i++) {
@@ -525,7 +535,7 @@ public class Booker {
 
       return currency;
   }
-
+/*
   public static List getMultibleBookings(Booking booking) {
     List list = new Vector();
     try {
@@ -534,7 +544,7 @@ public class Booker {
       sql.printStackTrace(System.err);
     }
     return list;
-  }
+  }*/
 
   public static List getMultibleBookings(GeneralBooking booking) {
     List list = new Vector();

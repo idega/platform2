@@ -70,6 +70,7 @@ public class TourBooking extends GenericEntity implements Booking{
 
   public void insert() throws SQLException {
     super.insert();
+    _booking.setColumn(this.getIDColumnName(), super.getID());
     _booking.insert();
   }
 

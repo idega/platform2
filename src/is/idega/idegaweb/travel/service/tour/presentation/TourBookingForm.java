@@ -65,12 +65,12 @@ public class TourBookingForm extends TravelManager {
   public static String sAction = "bookingFormAction";
   public static String parameterSaveBooking = "bookingFormSaveBooking";
 
-  public static String parameterFromDate = "tempFromDate";
-  public static String parameterToDate = "tempToDate";
+  public static String parameterFromDate = "bookingFromDate";
+  public static String parameterManyDays = "bookingManyDays";
 
 
   public static final int errorTooMany = -1;
-  private List errDays = new Vector();
+  public List errorDays = new Vector();
 
 
   public TourBookingForm(IWContext iwc, Product product) throws Exception{
@@ -138,12 +138,14 @@ public class TourBookingForm extends TravelManager {
               fromDate.setYear(_stamp.getYear());
               //fromDate.setDisabled(true);
 
-            idegaTimestamp tempStamp = new idegaTimestamp(_stamp);
-              tempStamp.addDays(1);
-            DateInput toDate = new DateInput(parameterToDate);
-              toDate.setDay(tempStamp.getDay());
-              toDate.setMonth(tempStamp.getMonth());
-              toDate.setYear(tempStamp.getYear());
+            //idegaTimestamp tempStamp = new idegaTimestamp(_stamp);
+              //tempStamp.addDays(1);
+            TextInput manyDays = new TextInput(parameterManyDays);
+              manyDays.setSize(5);
+              manyDays.setContent("1");
+              //toDate.setDay(tempStamp.getDay());
+              //toDate.setMonth(tempStamp.getMonth());
+              //toDate.setYear(tempStamp.getYear());
 
           // TEMP ENDAR :::
 
@@ -167,8 +169,8 @@ public class TourBookingForm extends TravelManager {
               depPlaceText.setText(iwrb.getLocalizedString("travel.departure_place","Departure place"));
           Text fromText = (Text) theText.clone();
               fromText.setText(iwrb.getLocalizedString("travel.from","From"));
-          Text toText = (Text) theText.clone();
-              toText.setText(iwrb.getLocalizedString("travel.to","To"));
+          Text manyDaysText = (Text) theText.clone();
+              manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_days","Number of days"));
 
           DropdownMenu depAddr = new DropdownMenu(addresses, this.parameterDepartureAddressId);
             depAddr.setToSubmit();
@@ -290,8 +292,8 @@ public class TourBookingForm extends TravelManager {
             table.add(fromDate, 2, row);
 
             ++row;
-            table.add(toText, 1, row);
-            table.add(toDate, 2, row);
+            table.add(manyDaysText, 1, row);
+            table.add(manyDays, 2, row);
           }
 
           Text pPriceCatNameText;
@@ -358,10 +360,11 @@ public class TourBookingForm extends TravelManager {
                     }
                   }
 
-
-                  pPriceText.add(pPriceMany,"*"+price);
+                  pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
+                  pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
                   TotalPassTextInput.add(pPriceMany);
-                  TotalTextInput.add(pPriceMany,"*"+price);
+                  TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
+                  TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
 
 
                   table.add(pPriceCatNameText, 1,row);
@@ -524,12 +527,10 @@ public class TourBookingForm extends TravelManager {
 
       isDay = TourBusiness.getIfDay(iwc, _tour, stamp, false);
 
-      debug("isDay : "+isDay);
       if (isDay) {
         if (_tour.getTotalSeats() > 0)
         if (_tour.getTotalSeats() <= Booker.getNumberOfBookings(_tour.getID(), stamp) ) {
           isDay = false;
-          debug("isDay : "+isDay+", because of totalseats...");
         }
       }
 
@@ -614,8 +615,8 @@ public class TourBookingForm extends TravelManager {
               depPlaceText.setText(iwrb.getLocalizedString("travel.departure_place","Departure place"));
           Text fromText = (Text) theText.clone();
               fromText.setText(iwrb.getLocalizedString("travel.from","From"));
-          Text toText = (Text) theText.clone();
-              toText.setText(iwrb.getLocalizedString("travel.to","To"));
+          Text manyDaysText = (Text) theText.clone();
+              manyDaysText.setText(iwrb.getLocalizedString("travel.number_of_days","Number of days"));
 
           DropdownMenu depAddr = new DropdownMenu(addresses, this.parameterDepartureAddressId);
             depAddr.setToSubmit();
@@ -650,14 +651,16 @@ public class TourBookingForm extends TravelManager {
               fromDate.setDay(_stamp.getDay());
               fromDate.setMonth(_stamp.getMonth());
               fromDate.setYear(_stamp.getYear());
-              //fromDate.setDisabled(true);
+              fromDate.setDisabled(true);
 
-            idegaTimestamp tempStamp = new idegaTimestamp(_stamp);
-              tempStamp.addDays(1);
-            DateInput toDate = new DateInput(parameterToDate);
-              toDate.setDay(tempStamp.getDay());
-              toDate.setMonth(tempStamp.getMonth());
-              toDate.setYear(tempStamp.getYear());
+            //idegaTimestamp tempStamp = new idegaTimestamp(_stamp);
+              //tempStamp.addDays(1);
+            TextInput manyDays = new TextInput(parameterManyDays);
+              manyDays.setContent("1");
+              manyDays.setSize(5);
+              //toDate.setDay(tempStamp.getDay());
+              //toDate.setMonth(tempStamp.getMonth());
+              //toDate.setYear(tempStamp.getYear());
 
           // TEMP ENDAR :::
 
@@ -690,8 +693,8 @@ public class TourBookingForm extends TravelManager {
           table.setAlignment(2,row,"left");
           table.mergeCells(2,row,6,row);
           ++row;
-          table.add(toText, 1, row);
-          table.add(toDate, 2, row);
+          table.add(manyDaysText, 1, row);
+          table.add(manyDays, 2, row);
           table.setAlignment(1,row,"right");
           table.setAlignment(2,row,"left");
           table.mergeCells(2,row,6,row);
@@ -861,8 +864,6 @@ public class TourBookingForm extends TravelManager {
 
                   pPriceMany = new TextInput("priceCategory"+i ,"0");
                     pPriceMany.setSize(5);
-                    pPriceMany.setAsNotEmpty("T - Ekki tómt");
-                    pPriceMany.setAsIntegers("T - Bara tölur takk");
 
                   if (_booking != null) {
                     if (entries != null) {
@@ -883,9 +884,11 @@ public class TourBookingForm extends TravelManager {
                   }
 
 
-                  pPriceText.add(pPriceMany,"*"+price);
+                  pPriceText.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
+                  pPriceText.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
                   TotalPassTextInput.add(pPriceMany);
-                  TotalTextInput.add(pPriceMany,"*"+price);
+                  TotalTextInput.add(pPriceMany,ResultOutput.OPERATOR_MULTIPLY+price);
+                  TotalTextInput.add(manyDays, ResultOutput.OPERATOR_MULTIPLY, null);
 
 
                   table.add(pPriceCatNameText, 1,row);
@@ -1103,48 +1106,39 @@ public class TourBookingForm extends TravelManager {
         form.maintainParameter("priceCategory"+i);
       }
       form.maintainParameter(this.parameterFromDate);
-      form.maintainParameter(this.parameterToDate);
+      form.maintainParameter(this.parameterManyDays);
 
     return form;
   }
 
+  public List getErrorDays() {
+    return errorDays;
+  }
 
-  private int checkBooking(IWContext iwc) throws Exception {
+  public int checkBooking(IWContext iwc, boolean saveBookingIfValid) throws Exception {
     boolean tooMany = false;
     String sAvailable = iwc.getParameter("available");
 
-    int iAvailable = available;
     int iMany = 0;
 
     String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
     int iAddressId = Integer.parseInt(sAddressId);
     Timeframe tFrame = ProductBusiness.getTimeframe(_product, _stamp);
 
-    if (sAvailable != null)
-      iAvailable = Integer.parseInt(sAvailable);
-
-    if (iAvailable != this.availableIfNoLimit) {
-      String many;
-      ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, false);
-      int[] manys = new int[pPrices.length];
-      for (int i = 0; i < manys.length; i++) {
-          many = iwc.getParameter("priceCategory"+i);
-          if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
-              manys[i] = Integer.parseInt(many);
-              iMany += Integer.parseInt(many);
-          }else {
-              manys[i] = 0;
-          }
+    ProductPrice[] pPrices = ProductPrice.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, false);
+    int current = 0;
+    for (int i = 0; i < pPrices.length; i++) {
+      try {
+        current = Integer.parseInt(iwc.getParameter("priceCategory"+i));
+      }catch (NumberFormatException n) {
+        current = 0;
       }
-
-
+      iMany += current;
     }
-
-
 
     int serviceId = _service.getID();
     String fromDate = iwc.getParameter(this.parameterFromDate);
-    String toDate = iwc.getParameter(this.parameterToDate);
+    String manyDays = iwc.getParameter(this.parameterManyDays);
     idegaTimestamp fromStamp = null;
     idegaTimestamp toStamp = null;
     int betw = 1;
@@ -1152,16 +1146,18 @@ public class TourBookingForm extends TravelManager {
 
     try {
       fromStamp = new idegaTimestamp(fromDate);
-      toStamp = new idegaTimestamp(toDate);
-      betw = idegaTimestamp.getDaysBetween(fromStamp, toStamp);
+      int iManyDays = Integer.parseInt(manyDays);
+      if (iManyDays < 1) betw = 1;
+      else betw = iManyDays;
     }catch (Exception e) {}
 
+    int iAvailable;
     if (totalSeats > 0) {
       if (betw == 1) {
         iAvailable = totalSeats - TourBooker.getNumberOfBookings(serviceId, _stamp);
         if (iMany > iAvailable) {
           tooMany = true;
-          errDays.add(fromStamp);
+          errorDays.add(fromStamp);
         }
       }else {
         for (int r = 0; r < betw ; r++) {
@@ -1174,7 +1170,7 @@ public class TourBookingForm extends TravelManager {
           iAvailable = totalSeats - TourBooker.getNumberOfBookings(serviceId, fromStamp);
           if (iMany > iAvailable) {
               tooMany = true;
-              errDays.add(fromStamp);
+              errorDays.add(fromStamp);
           }
         }
       }
@@ -1183,7 +1179,11 @@ public class TourBookingForm extends TravelManager {
     if (tooMany) {
       return this.errorTooMany;
     }else {
-      return saveBooking(iwc);
+      if (saveBookingIfValid) {
+        return saveBooking(iwc);
+      }else {
+        return 0;
+      }
     }
 
   }
@@ -1202,7 +1202,7 @@ public class TourBookingForm extends TravelManager {
 
   private Form getTooManyForm(IWContext iwc) {
     /**
-     * @todo gera fínna (þeas meira fínt
+     * @todo gera fínna (þeas meira fínt)
      */
 
     Form form = getFormMaintainingAllParameters(false);
@@ -1212,9 +1212,9 @@ public class TourBookingForm extends TravelManager {
       idegaTimestamp temp;
 
       table.add(iwrb.getLocalizedString("travel.unavailable_days","Unavailable days"), 1,row);
-      for (int i = 0; i < errDays.size(); i++) {
+      for (int i = 0; i < errorDays.size(); i++) {
         ++row;
-        temp = new idegaTimestamp((idegaTimestamp)errDays.get(i));
+        temp = new idegaTimestamp((idegaTimestamp)errorDays.get(i));
         table.add(temp.getLocaleDate(iwc), 1,row);
       }
 
@@ -1236,13 +1236,14 @@ public class TourBookingForm extends TravelManager {
     return form;
   }
 
+
   public int handleInsert(IWContext iwc) throws Exception{
     String check = iwc.getParameter(sAction);
     String action = iwc.getParameter(this.BookingAction);
     if (check.equals(this.parameterSaveBooking)) {
       if (action != null) {
         if (action.equals(this.BookingParameter)) {
-          return checkBooking(iwc);
+          return checkBooking(iwc, true);
         }else if (action.equals(this.parameterBookAnyway)) {
           return saveBooking(iwc);
         }else if (action.equals(this.parameterSendInquery)) {
@@ -1292,19 +1293,16 @@ public class TourBookingForm extends TravelManager {
 
       //TEMP BEGINS
         String fromDate = iwc.getParameter(this.parameterFromDate);
-        String toDate = iwc.getParameter(this.parameterToDate);
-        idegaTimestamp _fromDate = null;
-        idegaTimestamp _toDate = null;
+        String manyDays = iwc.getParameter(this.parameterManyDays);
       //TEMP ENDS
 
 
       try {
         _stamp = new idegaTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
-        _fromDate = new idegaTimestamp(fromDate);
-        _toDate = new idegaTimestamp(toDate);
       }catch (NumberFormatException n) {
         n.printStackTrace(System.err);
       }
+      idegaTimestamp _fromDate = new idegaTimestamp(_stamp);
 
       String sBookingId = iwc.getParameter(this.parameterBookingId);
 
@@ -1369,16 +1367,17 @@ public class TourBookingForm extends TravelManager {
 
         int betw = 1;
         try {
-          betw = idegaTimestamp.getDaysBetween(_fromDate, _toDate);
-        }catch (Exception e) {
+          betw = Integer.parseInt(manyDays);
+        }catch (NumberFormatException e) {
           e.printStackTrace(System.err);
         }
 
-        for (int i = 1; i <= betw; i++) {
+        int[] bookingIds = new int[betw];
+
+        for (int i = 0; i < betw; i++) {
           if (iBookingId == -1) {
-            if (i != 1) {
+            if (i != 0) {
               if (_tour != null) {
-                // Test should already been done here... (OR ELSE ..%&!@"@&%)
                 _fromDate = new idegaTimestamp(TourBusiness.getNextAvailableDay(iwc, _tour, _product, _fromDate));
               }else {
                 _fromDate.addDays(1);
@@ -1388,75 +1387,54 @@ public class TourBookingForm extends TravelManager {
           }else {
             lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, paymentType, Integer.parseInt(sUserId), super.userId, iAddressId);
           }
+          bookingIds[i] = lbookingId;
         }
 
-        /*
-        if (supplier != null) {
-          if (iBookingId == -1) {
-            lbookingId = TourBooker.BookBySupplier(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
-          }else {
-            lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_NO_PAYMENT);
-          }
-            displayFormInternal = true;
-        }else if (_reseller != null) {
-            if (_reseller.getReferenceNumber().equals(referenceNumber)) {
-              if (iBookingId == -1) {
-                lbookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING ,areaCode, Booking.PAYMENT_TYPE_ID_VOUCHER);
-              }else {
-                lbookingId = TourBooker.updateBooking(iBookingId, _service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, areaCode, Booking.PAYMENT_TYPE_ID_VOUCHER);
-              }
-              _reseller.addTo(GeneralBooking.class, iBookingId);
-              displayFormInternal= true;
-            }
-        }else if ((supplier == null) && (_reseller == null) ) {
-            // if (Median.isCCValid(ccNumber,ccMonth, ccYear));
-          if (supplierId == null) {
-            iBookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_ONLINE_BOOKING ,areaCode, Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
-          }else { // Supplier booked with cc number :)
-            iBookingId = TourBooker.Book(_service.getID(), iHotelId, roomNumber, country, surname+" "+lastname, address, city, phone, email, _stamp, iMany, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING ,areaCode, Booking.PAYMENT_TYPE_ID_CREDIT_CARD);
-          }
-        }
-        */
+
         if (_reseller != null) {
-          _reseller.addTo(GeneralBooking.class, lbookingId);
+          for (int i = 0; i < bookingIds.length; i++) {
+            _reseller.addTo(GeneralBooking.class, bookingIds[i]);
+          }
         }
 
         returner = lbookingId;
 
-        if (lbookingId != -1) {
-          if (iBookingId == -1) {
-            BookingEntry bEntry;
-            for (int i = 0; i < pPrices.length; i++) {
-              if (manys[i] != 0) {
-                bEntry = new BookingEntry();
-                  bEntry.setProductPriceId(pPrices[i].getID());
-                  bEntry.setBookingId(lbookingId);
-                  bEntry.setCount(manys[i]);
-                bEntry.insert();
-              }
-            }
-          }else {
-            BookingEntry bEntry;
-            ProductPrice price;
-            boolean done = false;
-            BookingEntry[] entries = TourBooker.getBookingEntries(new TourBooking(iBookingId));
-              if (entries == null) entries = new BookingEntry[]{};
-            for (int i = 0; i < pPrices.length; i++) {
-              done = false;
-              for (int j = 0; j < entries.length; j++) {
-                if (pPrices[i].getID() == entries[j].getProductPriceId()) {
-                  done = true;
-                  entries[j].setCount(manys[i]);
-                  entries[j].update();
-                  break;
+        for (int k = 0; k < bookingIds.length; k++) {
+          if (bookingIds[k] != -1) {
+            if (iBookingId == -1) {
+              BookingEntry bEntry;
+              for (int i = 0; i < pPrices.length; i++) {
+                if (manys[i] != 0) {
+                  bEntry = new BookingEntry();
+                    bEntry.setProductPriceId(pPrices[i].getID());
+                    bEntry.setBookingId(bookingIds[k]);
+                    bEntry.setCount(manys[i]);
+                  bEntry.insert();
                 }
               }
-              if (!done) {
-                bEntry = new BookingEntry();
-                  bEntry.setProductPriceId(pPrices[i].getID());
-                  bEntry.setBookingId(lbookingId);
-                  bEntry.setCount(manys[i]);
-                bEntry.insert();
+            }else {
+              BookingEntry bEntry;
+              ProductPrice price;
+              boolean done = false;
+              BookingEntry[] entries = TourBooker.getBookingEntries(new TourBooking(iBookingId));
+                if (entries == null) entries = new BookingEntry[]{};
+              for (int i = 0; i < pPrices.length; i++) {
+                done = false;
+                for (int j = 0; j < entries.length; j++) {
+                  if (pPrices[i].getID() == entries[j].getProductPriceId()) {
+                    done = true;
+                    entries[j].setCount(manys[i]);
+                    entries[j].update();
+                    break;
+                  }
+                }
+                if (!done) {
+                  bEntry = new BookingEntry();
+                    bEntry.setProductPriceId(pPrices[i].getID());
+                    bEntry.setBookingId(bookingIds[k]);
+                    bEntry.setCount(manys[i]);
+                  bEntry.insert();
+                }
               }
             }
           }
@@ -1478,7 +1456,7 @@ public class TourBookingForm extends TravelManager {
       return returner;
   }
 
-  private int sendInquery(IWContext iwc) throws Exception {
+  public int sendInquery(IWContext iwc) throws Exception {
     String surname = iwc.getParameter("surname");
     String lastname = iwc.getParameter("lastname");
     String address = iwc.getParameter("address");
@@ -1492,11 +1470,17 @@ public class TourBookingForm extends TravelManager {
 
     String referenceNumber = iwc.getParameter("reference_number");
     String fromDate = iwc.getParameter(parameterFromDate);
-    String toDate = iwc.getParameter(parameterToDate);
+    String manyDays = iwc.getParameter(parameterManyDays);
 
     try {
+      int iManyDays = 1;
+      if ( Integer.parseInt(manyDays) > 1) {
+        iManyDays = Integer.parseInt(manyDays);
+      }
+
       idegaTimestamp fromStamp = new idegaTimestamp(fromDate);
-      idegaTimestamp toStamp = new idegaTimestamp(toDate);
+      idegaTimestamp toStamp = new idegaTimestamp(fromStamp);
+        toStamp.addDays(iManyDays);
 
       int bookingId = saveBooking(iwc);
 
