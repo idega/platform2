@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountApplication.java,v 1.46 2003/01/11 11:28:19 staffan Exp $
+ * $Id: CitizenAccountApplication.java,v 1.47 2003/01/14 08:22:59 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -32,11 +32,11 @@ import se.idega.util.PIDChecker;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/01/11 11:28:19 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/14 08:22:59 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.46 $
+ * @version $Revision: 1.47 $
  */
 public class CitizenAccountApplication extends CommuneBlock {
 	private final static int ACTION_VIEW_FORM = 0;
@@ -234,22 +234,22 @@ public class CitizenAccountApplication extends CommuneBlock {
 		int row = table.getRows() + 1;
 
 		table.add(getHeader(FIRST_NAME_KEY, FIRST_NAME_DEFAULT), 1, row);
-		table.add(getSingleInput(iwc, FIRST_NAME_KEY, 40, false), 3, row++);
+		table.add(getSingleInput(iwc, FIRST_NAME_KEY, 40, true), 3, row++);
 
 		table.add(getHeader(LAST_NAME_KEY, LAST_NAME_DEFAULT), 1, row);
-		table.add(getSingleInput(iwc, LAST_NAME_KEY, 40, false), 3, row++);
+		table.add(getSingleInput(iwc, LAST_NAME_KEY, 40, true), 3, row++);
 
 		table.add(getHeader(STREET_KEY, STREET_DEFAULT), 1, row);
-		table.add(getSingleInput(iwc, STREET_KEY, 40, false), 3, row++);
+		table.add(getSingleInput(iwc, STREET_KEY, 40, true), 3, row++);
 
 		table.add(getHeader(ZIP_CODE_KEY, ZIP_CODE_DEFAULT), 1, row);
-		table.add(getSingleInput(iwc, ZIP_CODE_KEY, 5, false), 3, row++);
+		table.add(getSingleInput(iwc, ZIP_CODE_KEY, 5, true), 3, row++);
 
 		table.add(getHeader(CITY_KEY, CITY_DEFAULT), 1, row);
-		table.add(getSingleInput(iwc, CITY_KEY, 40, false), 3, row++);
+		table.add(getSingleInput(iwc, CITY_KEY, 40, true), 3, row++);
 
 		table.add(getHeader(CIVIL_STATUS_KEY, CIVIL_STATUS_DEFAULT), 1, row);
-		table.add(getSingleInput(iwc, CIVIL_STATUS_KEY, 20, false), 3, row++);
+		table.add(getSingleInput(iwc, CIVIL_STATUS_KEY, 20, true), 3, row++);
 
 		table.setHeight(row++, 6);
 		table.mergeCells(1, row, 3, row);
@@ -261,7 +261,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		table.setHeight(row++, 6);
 		table.add(getHeader(CHILDREN_COUNT_KEY, CHILDREN_COUNT_DEFAULT), 1, row);
-		table.add(getSingleInput(iwc, CHILDREN_COUNT_KEY, 2, false), 3, row++);
+		table.add(getSingleInput(iwc, CHILDREN_COUNT_KEY, 2, true), 3, row++);
 
 		table.setHeight(row++, 6);
 		table.mergeCells(1, row, 3, row);
@@ -280,8 +280,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
 	private void submitUnknownCitizenForm1(final IWContext iwc) {
-		final Collection mandatoryParameterNames
-                = Collections.singleton(SSN_KEY);
+		final Collection mandatoryParameterNames = Arrays.asList (new String []
+            {SSN_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, CIVIL_STATUS_KEY,
+             STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CHILDREN_COUNT_KEY});
 		final Collection stringParameterNames = Arrays.asList(new String[] {
             EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY,
             LAST_NAME_KEY, STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CIVIL_STATUS_KEY,
@@ -291,6 +292,10 @@ public class CitizenAccountApplication extends CommuneBlock {
             CHILDREN_COUNT_KEY });
 
 		try {
+            if (!(iwc.isParameterSet (PHONE_HOME_KEY)
+                  || iwc.isParameterSet (PHONE_WORK_KEY))) {
+                throw new ParseException (getResourceBundle(), PHONE_HOME_KEY);
+            }
 			final Map parameters = parseParameters(getResourceBundle(), iwc, mandatoryParameterNames, stringParameterNames, ssnParameterNames, integerParameters);
 			viewUnknownCitizenApplicationForm2(iwc);
 
@@ -329,15 +334,15 @@ public class CitizenAccountApplication extends CommuneBlock {
 			table.mergeCells(1, row, 3, row);
 			table.add(cohabitantHeader, 1, row++);
 			table.add(getHeader(FIRST_NAME_KEY, FIRST_NAME_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, FIRST_NAME_KEY + COHABITANT_KEY, 40, false), 3, row++);
+			table.add(getSingleInput(iwc, FIRST_NAME_KEY + COHABITANT_KEY, 40, true), 3, row++);
 			table.add(getHeader(LAST_NAME_KEY, LAST_NAME_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, LAST_NAME_KEY + COHABITANT_KEY, 40, false), 3, row++);
+			table.add(getSingleInput(iwc, LAST_NAME_KEY + COHABITANT_KEY, 40, true), 3, row++);
 			table.add(getHeader(SSN_KEY, SSN_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, SSN_KEY + COHABITANT_KEY, 12, false), 3, row++);
+			table.add(getSingleInput(iwc, SSN_KEY + COHABITANT_KEY, 12, true), 3, row++);
 			table.add(getHeader(CIVIL_STATUS_KEY, CIVIL_STATUS_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, CIVIL_STATUS_KEY + COHABITANT_KEY, 20, false), 3, row++);
+			table.add(getSingleInput(iwc, CIVIL_STATUS_KEY + COHABITANT_KEY, 20, true), 3, row++);
 			table.add(getHeader(PHONE_WORK_KEY, PHONE_WORK_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, PHONE_WORK_KEY + COHABITANT_KEY, 20, false), 3, row++);
+			table.add(getSingleInput(iwc, PHONE_WORK_KEY + COHABITANT_KEY, 20, true), 3, row++);
 		}
 
 		final int childrenCount = getIntParameter(iwc, CHILDREN_COUNT_KEY);
@@ -352,14 +357,14 @@ public class CitizenAccountApplication extends CommuneBlock {
 				table.add (getHeader (FIRST_NAME_KEY, FIRST_NAME_DEFAULT), 1,
                            row);
 				table.add (getSingleInput (iwc, FIRST_NAME_KEY + CHILDREN_KEY
-                                           + i, 40, false), 3, row++);
+                                           + i, 40, true), 3, row++);
 				table.add (getHeader (LAST_NAME_KEY, LAST_NAME_DEFAULT), 1,
                            row);
 				table.add (getSingleInput (iwc, LAST_NAME_KEY + CHILDREN_KEY
-                                           + i, 40, false), 3, row++);
+                                           + i, 40, true), 3, row++);
 				table.add (getHeader (SSN_KEY, SSN_DEFAULT), 1, row);
 				table.add (getSingleInput (iwc, SSN_KEY + CHILDREN_KEY + i, 12,
-                                           false), 3, row++);
+                                           true), 3, row++);
 			}
 		}
 
@@ -372,9 +377,9 @@ public class CitizenAccountApplication extends CommuneBlock {
 			table.add(movingToNackaHeader, 1, row++);
 
 			table.add(getHeader(MOVING_IN_ADDRESS_KEY, MOVING_IN_ADDRESS_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, MOVING_IN_ADDRESS_KEY, 40, false), 3, row++);
+			table.add(getSingleInput(iwc, MOVING_IN_ADDRESS_KEY, 40, true), 3, row++);
 			table.add(getHeader(MOVING_IN_DATE_KEY, MOVING_IN_DATE_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, MOVING_IN_DATE_KEY, 20, false), 3, row++);
+			table.add(getSingleInput(iwc, MOVING_IN_DATE_KEY, 20, true), 3, row++);
             table.mergeCells(1, row, 3, row);
 			table.add(getRadioButton(HOUSING_TYPE_KEY, TENANCY_AGREEMENT_KEY, TENANCY_AGREEMENT_DEFAULT, false), 1, row++);
 			table.mergeCells(1, row, 3, row);
@@ -399,7 +404,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 			table.mergeCells(1, row, 3, row);
 			table.add(putChildrenInNackaHeader, 1, row++);
 			table.add(getHeader(CURRENT_KOMMUN_KEY, CURRENT_KOMMUN_DEFAULT), 1, row);
-			table.add(getSingleInput(iwc, CURRENT_KOMMUN_KEY, 30, false), 3, row++);
+			table.add(getSingleInput(iwc, CURRENT_KOMMUN_KEY, 30, true), 3, row++);
 		}
 
 		table.setHeight(row++, 12);
@@ -409,8 +414,10 @@ public class CitizenAccountApplication extends CommuneBlock {
 	}
 
 	private void submitUnknownCitizenForm2(final IWContext iwc) {
-		final Collection mandatoryParameterNames
-                = Collections.singleton(SSN_KEY);
+		final Collection mandatoryParameterNames = new ArrayList();
+        mandatoryParameterNames.addAll (Arrays.asList (new String []
+            {SSN_KEY, FIRST_NAME_KEY, LAST_NAME_KEY, CIVIL_STATUS_KEY,
+             STREET_KEY, ZIP_CODE_KEY, CITY_KEY, CHILDREN_COUNT_KEY}));
 		final Collection stringParameterNames = new ArrayList();
 		stringParameterNames.addAll(Arrays.asList(new String[] {
             EMAIL_KEY, PHONE_HOME_KEY, PHONE_WORK_KEY, FIRST_NAME_KEY,
@@ -437,18 +444,22 @@ public class CitizenAccountApplication extends CommuneBlock {
 		if (hasCohabitant) {
 			stringParameterNames.addAll(Arrays.asList(new String[] { FIRST_NAME_KEY + COHABITANT_KEY, LAST_NAME_KEY + COHABITANT_KEY, CIVIL_STATUS_KEY + COHABITANT_KEY, PHONE_WORK_KEY + COHABITANT_KEY }));
 			ssnParameterNames.add(SSN_KEY + COHABITANT_KEY);
+            mandatoryParameterNames.addAll (Arrays.asList(new String[] { FIRST_NAME_KEY + COHABITANT_KEY, LAST_NAME_KEY + COHABITANT_KEY, SSN_KEY + COHABITANT_KEY, CIVIL_STATUS_KEY + COHABITANT_KEY, PHONE_WORK_KEY + COHABITANT_KEY }));
 		}
 
 		final int childrenCount = getIntParameter(iwc, CHILDREN_COUNT_KEY);
 		for (int i = 0; i < childrenCount; i++) {
 			stringParameterNames.addAll(Arrays.asList(new String[] { FIRST_NAME_KEY + CHILDREN_KEY + i, LAST_NAME_KEY + CHILDREN_KEY + i }));
 			ssnParameterNames.add(SSN_KEY + CHILDREN_KEY + i);
+            mandatoryParameterNames.addAll(Arrays.asList(new String[] { FIRST_NAME_KEY + CHILDREN_KEY + i, LAST_NAME_KEY + CHILDREN_KEY + i, SSN_KEY + CHILDREN_KEY + i }));
 		}
 
 		final String applicationReason = iwc.getParameter(APPLICATION_REASON_KEY);
 		if (applicationReason.equals(CitizenAccount.MOVING_TO_NACKA_KEY)) {
 			stringParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY, PROPERTY_TYPE_KEY, LANDLORD_NAME_KEY, LANDLORD_PHONE_KEY, LANDLORD_ADDRESS_KEY }));
+			mandatoryParameterNames.addAll(Arrays.asList(new String[] { MOVING_IN_ADDRESS_KEY, MOVING_IN_DATE_KEY, HOUSING_TYPE_KEY }));
 		} else if (applicationReason.equals(CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY)) {
+            mandatoryParameterNames.add (CURRENT_KOMMUN_KEY);
 			stringParameterNames.add(CURRENT_KOMMUN_KEY);
 		}
 
@@ -617,7 +628,12 @@ public class CitizenAccountApplication extends CommuneBlock {
             final String fieldCanNotBeEmpty = localize
                     (ERROR_FIELD_CAN_NOT_BE_EMPTY_KEY,
                      ERROR_FIELD_CAN_NOT_BE_EMPTY_DEFAULT);
-            final String name = localize(paramId, paramId);
+            String name = localize(paramId, paramId);
+			if ((name == null || name.trim().length() == 0 || name.equals (paramId)) && paramId.lastIndexOf("caa_") > 1) {
+				final int secondIndex = paramId.indexOf("caa_", 2);
+				final String shortKey = paramId.substring(0, secondIndex);
+				name = localize(shortKey, shortKey);
+			}
  			textInput.setAsNotEmpty(fieldCanNotBeEmpty + ": " + name);
         }
 		String param = iwc.getParameter(paramId);
@@ -780,7 +796,7 @@ public class CitizenAccountApplication extends CommuneBlock {
 
 		static String createMessage(final IWResourceBundle bundle, final String key) {
 			String displayName = bundle.getLocalizedString(key);
-			if ((displayName == null || displayName.trim().length() == 0) && key.lastIndexOf("caa_") > 0) {
+			if ((displayName == null || displayName.trim().length() == 0) && key.lastIndexOf("caa_") > 1) {
 				final int secondIndex = key.indexOf("caa_", 2);
 				final String shortKey = key.substring(0, secondIndex);
 				displayName = bundle.getLocalizedString(shortKey);
