@@ -227,6 +227,30 @@ public class UnionCorrect extends Editor {
       unies[i].update();
     }
   }
+   
+   public void setMemberInactiveInAllSubUnions(Member member) throws SQLException {
+
+    UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn("member_id",member.getID());
+
+    for (int i = 0; i < unies.length; i++) {
+    		if("sub".equals(unies[i].getMembershipType())){
+    	        unies[i].setMemberStatus("I");
+    	        unies[i].update();
+    		}
+    }
+  }
+   
+   public void setMemberInactiveInMainUnion(Member member) throws SQLException {
+
+    UnionMemberInfo[] unies = (UnionMemberInfo[]) ((UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class)).findAllByColumn("member_id",member.getID());
+
+    for (int i = 0; i < unies.length; i++) {
+    		if("main".equals(unies[i].getMembershipType())){
+    	        unies[i].setMemberStatus("I");
+    	        unies[i].update();
+    		}
+    }
+  }
 
   public void makeNewUMI(Member eMember){
     UnionMemberInfo umi = (UnionMemberInfo) IDOLookup.instanciateEntity(UnionMemberInfo.class);
