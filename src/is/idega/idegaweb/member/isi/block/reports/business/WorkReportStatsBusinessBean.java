@@ -3595,6 +3595,16 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		reportCollection.addField(email);
 		
 		
+		ReportableData regData = new ReportableData();
+		regData.addData(personName, "Birna Spyrna");
+		
+		regData.addData(phone, "123-4567");
+		regData.addData(address, "Spyrnugata 1234564322434");
+		regData.addData(postalCode, "2");
+		regData.addData(email, "birna@spyrna.is");
+		
+		reportCollection.add(regData);
+
 		//finished return the collection
 		return reportCollection;
 	}
@@ -3636,6 +3646,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		email.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_EMAIL, "Single Division Players"), currentLocale);
 		reportCollection.addField(email);
 		
+		ReportableData regData = new ReportableData();
+		regData.addData(personName, "Birna Spyrna");
+		
+		regData.addData(address, "Spyrnugata 1234564322434b");
+		regData.addData(postalCode, "2");
+		regData.addData(email, "birna@spyrna.is");
+		
+		reportCollection.add(regData);
 		
 		//finished return the collection
 		return reportCollection;
