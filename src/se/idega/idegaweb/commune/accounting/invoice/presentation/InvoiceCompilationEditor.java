@@ -77,10 +77,10 @@ import com.lowagie.text.pdf.PdfWriter;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/11/30 14:09:56 $ by $Author: laddi $
+ * Last modified: $Date: 2003/11/30 20:21:09 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.69 $
+ * @version $Revision: 1.70 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -575,7 +575,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         inputs.put (SEARCH_RULE_TEXT_KEY, getSubmitButton
                     (ACTION_SHOW_NEW_RECORD_FORM, SEARCH_RULE_TEXT_KEY,
                      SEARCH_RULE_TEXT_DEFAULT));
-        inputs.put (PLACEMENT_KEY, getPlacementDropdown (context, header));
+        inputs.put (PLACEMENT_KEY, getPlacementsDropdown (context, header));
         renderRecordDetailsOrForm (context, inputs);
     }
 
@@ -2090,9 +2090,36 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return dropdown;
     }
 
-    private PresentationObject getPlacementDropdown
-        (final IWContext context, final InvoiceHeader header) {
+    private PresentationObject getPlacementsDropdown
+        (final IWContext context, final InvoiceHeader header)
+        throws RemoteException {
+        PresentationObject result = getSmallText ("");
+        final InvoiceBusiness business = (InvoiceBusiness) IBOLookup
+                .getServiceInstance (context, InvoiceBusiness.class);
+        final SchoolClassMember [] placements
+                = business.getSchoolClassMembers (header);
 
+        if (1 == placements.length) {
+            final Table table = createTable (1);
+            final SchoolClassMember placement = placements [0];
+            table.add (new HiddenInput (PLACEMENT_KEY,
+                                        placement.getPrimaryKey () + ""), 1, 1);
+            addSmallText (table, getProviderName (placement), 1, 1);
+            result = table;
+        } else if (1 < placements.length) {
+            final DropdownMenu dropdown = (DropdownMenu) getStyledInterface
+                    (new DropdownMenu (PLACEMENT_KEY));
+            for (int i = 0; i < placements.length; i++) {
+                final SchoolClassMember placement = placements [i];
+                dropdown.addMenuElement (placement.getPrimaryKey () + "",
+                                         getProviderName (placement));
+            }
+            result = dropdown;
+        }
+
+        return result;
+
+        /*
         PresentationObject result = getSmallText ("");
         try {
             // get business objects
@@ -2134,6 +2161,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             // do nothing, ok to return the dropdown as empty as might be
         }
         return result;
+        */
     }
 
     private PresentationObject getInCustodyOfDropdown

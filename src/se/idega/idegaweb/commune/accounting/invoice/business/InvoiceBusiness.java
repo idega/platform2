@@ -28,4 +28,5 @@ public interface InvoiceBusiness extends com.idega.business.IBOService
  public void removePreliminaryInvoice(se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0)throws javax.ejb.RemoveException, java.rmi.RemoteException;
  public void removePreliminaryInvoice(java.sql.Date p0,java.lang.String p1)throws javax.ejb.RemoveException, java.rmi.RemoteException;
  public void startPostingBatch(java.sql.Date p0,java.sql.Date p1,java.lang.String p2,com.idega.presentation.IWContext p3)throws com.idega.data.IDOLookupException,javax.ejb.FinderException,se.idega.idegaweb.commune.accounting.invoice.business.SchoolCategoryNotFoundException, java.rmi.RemoteException;
+    com.idega.block.school.data.SchoolClassMember [] getSchoolClassMembers (se.idega.idegaweb.commune.accounting.invoice.data.InvoiceHeader p0)throws java.rmi.RemoteException;
 }

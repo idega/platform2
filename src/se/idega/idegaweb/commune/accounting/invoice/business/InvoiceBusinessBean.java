@@ -55,11 +55,11 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/27 20:31:33 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/30 20:21:09 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.56 $
+ * @version $Revision: 1.57 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -456,6 +456,43 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
             e.printStackTrace ();
             throw new CreateException (e.getMessage ());
         }
+    }
+
+
+    public SchoolClassMember [] getSchoolClassMembers
+        (final InvoiceHeader header) {
+        final Collection allPlacements = new ArrayList ();
+        try {
+            final MemberFamilyLogic familyBusiness = (MemberFamilyLogic)
+                    IBOLookup.getServiceInstance (getIWApplicationContext(),
+                                                  MemberFamilyLogic.class);
+            final Collection children = familyBusiness.getChildrenInCustodyOf
+                    (header.getCustodian ());
+            final SchoolClassMemberHome placementHome = (SchoolClassMemberHome)
+                    IDOLookup.getHome (SchoolClassMember.class);
+            final SchoolCategory category =  header.getSchoolCategory ();
+            final Date period = header.getPeriod ();
+            for (Iterator i = children.iterator (); i.hasNext ();) {
+                final User child = (User) i.next ();
+                try {
+                    final Collection childsPlacements = placementHome
+                            .findAllByUserAndPeriodAndSchoolCategory
+                            (child, period, category);
+                    if (null != childsPlacements) {
+                        allPlacements.addAll (childsPlacements);
+                    }
+                } catch (FinderException e) {
+                    // no problem, try next child instead
+                }
+            }
+        } catch (FinderException e) {
+            // no problem, return an empty list
+        } catch (Exception e) {
+            e.printStackTrace ();
+        }
+
+        return (SchoolClassMember []) allPlacements.toArray
+                (new SchoolClassMember [0]);
     }
 
     public RegulationSpecType [] getAllRegulationSpecTypes ()

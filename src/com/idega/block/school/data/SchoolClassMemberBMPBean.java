@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/30 12:02:40 $ by $Author: laddi $
- * @version $Revision: 1.75 $
+ * Last modified: $Date: 2003/11/30 20:21:37 $ by $Author: staffan $
+ * @version $Revision: 1.76 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -962,6 +962,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return -1;
 	}
 	 
+    public Collection ejbFindAllByUserAndPeriodAndSchoolCategory
+        (User child, Date period, SchoolCategory category) {
+        log ("child = " + child.getPersonalID ());
+        log ("period = " + period);
+        log ("category = " + (category == null ? "" : category.getLocalizedKey ()));
+        return new java.util.ArrayList ();
+    }
+
 	 /**
 	  * This method returns a Collection with the domain of allowed values (types) 
 	  * for the invoice_int column 
