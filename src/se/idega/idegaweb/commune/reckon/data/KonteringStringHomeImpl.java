@@ -20,6 +20,13 @@ public java.util.Collection findKonterignStrings()throws javax.ejb.FinderExcepti
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public KonteringString findKonteringStringByDate(java.sql.Date p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((KonteringStringBMPBean)entity).ejbFindKonteringStringByDate(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
  public KonteringString findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
   return (KonteringString) super.findByPrimaryKeyIDO(pk);
  }

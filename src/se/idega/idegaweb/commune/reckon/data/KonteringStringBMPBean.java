@@ -1,5 +1,5 @@
 /*
- * $Id: KonteringStringBMPBean.java,v 1.1 2003/07/09 14:04:10 joakim Exp $
+ * $Id: KonteringStringBMPBean.java,v 1.2 2003/07/15 09:56:37 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -15,6 +15,7 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 /**
  * Holds information about when ceratin file format strings for sending accounting data as a string are valid.
@@ -61,6 +62,16 @@ public class KonteringStringBMPBean extends GenericEntity implements KonteringSt
 
 	public Date getValidTo() {
 		return (Date) getColumnValue(COLUMN_VALID_TO);
+	}
+	
+	public Integer ejbFindKonteringStringByDate(Date date) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhere(COLUMN_VALID_FROM);
+		sql.appendLessThanOrEqualsSign().append("'"+date+"'");
+		sql.appendAnd().append(COLUMN_VALID_TO);
+		sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
+		return (Integer) idoFindOnePKByQuery(sql);
 	}
 	
 	public Collection ejbFindKonterignStrings() throws FinderException {

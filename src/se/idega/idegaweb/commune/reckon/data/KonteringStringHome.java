@@ -6,5 +6,6 @@ public interface KonteringStringHome extends com.idega.data.IDOHome
  public KonteringString create() throws javax.ejb.CreateException;
  public KonteringString findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findKonterignStrings()throws javax.ejb.FinderException;
+ public KonteringString findKonteringStringByDate(java.sql.Date p0)throws javax.ejb.FinderException;
 
 }

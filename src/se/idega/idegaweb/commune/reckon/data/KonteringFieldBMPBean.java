@@ -1,5 +1,5 @@
 /*
- * $Id: KonteringFieldBMPBean.java,v 1.1 2003/07/09 14:09:49 joakim Exp $
+ * $Id: KonteringFieldBMPBean.java,v 1.2 2003/07/15 09:56:37 joakim Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -9,7 +9,12 @@
  */
 package se.idega.idegaweb.commune.reckon.data;
 
+import java.util.Collection;
+
+import javax.ejb.FinderException;
+
 import com.idega.data.GenericEntity;
+import com.idega.data.IDOQuery;
 
 /**
  * Holds information about fields in strings holding accounting information, sent to external accounting systems
@@ -30,6 +35,9 @@ public class KonteringFieldBMPBean extends GenericEntity implements KonteringFie
 	private static final String COLUMN_JUSTIFICATION = "justification";
 	private static final String COLUMN_MANDATORY = "mandatory";
 	private static final String COLUMN_PAD_CHAR = "pad_char";
+	
+	public static final int JUSTIFY_LEFT = 0;
+	public static final int JUSTIFY_RIGHT = 1;
 
 	/**
 	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
@@ -117,4 +125,14 @@ public class KonteringFieldBMPBean extends GenericEntity implements KonteringFie
 	public void setPadChar(char padChar) {
 		setColumn(COLUMN_PAD_CHAR, padChar);
 	}
+	
+	public Collection ejbFindAllFieldsByKonteringString(int KonteringStringId) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CP_KONTERING_STRING_ID, KonteringStringId);
+		sql.appendOrderBy(COLUMN_ORDER);
+
+		return idoFindPKsByQuery(sql);
+	}		
+	
 }
