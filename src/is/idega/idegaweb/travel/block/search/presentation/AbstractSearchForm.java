@@ -674,12 +674,14 @@ public abstract class AbstractSearchForm extends Block{
 						  table.add(textReader,1,row);
 						  table.mergeCells(1, row, 2, row);
 						} else {
+							/*
 							try {
-							sendErrorEmail(product);
+								sendErrorEmail(product);
 							} catch (TPosException t) {
 								System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail NOT sent : error = "+t.getMessage()+")");
 							}
 							System.out.println("[ServiceSearch] Product \""+product.getProductName(iwc.getCurrentLocaleId())+"\" has no Text to use with the search (mail sent)");
+							*/
 						}
 						
 						if (addresses == null || addresses.isEmpty()) {
