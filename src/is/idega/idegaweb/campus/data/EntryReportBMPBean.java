@@ -190,12 +190,12 @@ public class EntryReportBMPBean implements EntryReport{
     sql.append(" count(acc.fin_account_id) number ");
     sql.append(" from ");
     sql.append(" bu_apartment a,bu_building b,bu_floor f, ic_user u ,  ");
-    sql.append(" cam_contract c,fin_account acc,fin_acc_entry e,fin_acc_key k ");
+    sql.append(" fin_account acc,fin_acc_entry e,fin_acc_key k,cam_aprt_acc_entry ce");
     sql.append(" where b.bu_building_id = f.bu_building_id ");
     sql.append(" and f.bu_floor_id = a.bu_floor_id ");
-    sql.append(" and a.bu_apartment_id = c.bu_apartment_id ");
-    sql.append(" and c.ic_user_id = acc.ic_user_id ");
+    sql.append(" and a.bu_apartment_id = ce.aprt_id ");
     sql.append(" and u.ic_user_id  = acc.ic_user_id ");
+    sql.append(" and ce.entry_id = e.fin_acc_entry_id ");
     sql.append(" and e.fin_account_id = acc.fin_account_id ");
     sql.append(" and k.fin_acc_key_id = e.fin_acc_key_id ");
 
@@ -224,7 +224,7 @@ public class EntryReportBMPBean implements EntryReport{
 
     sql.append(" group by b.bu_building_id,b.name,k.fin_acc_key_id,k.name,k.info ");
     sql.append(" order by b.bu_building_id ");
-    //System.out.println(sql.toString());
+    System.out.println(sql.toString());
     return sql.toString();
   }
 

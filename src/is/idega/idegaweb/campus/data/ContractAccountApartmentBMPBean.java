@@ -1,5 +1,5 @@
 /*
- * $Id: ContractAccountApartmentBMPBean.java,v 1.3 2004/03/13 18:38:06 aron Exp $
+ * $Id: ContractAccountApartmentBMPBean.java,v 1.4 2004/03/29 18:59:27 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -276,6 +276,14 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getApartmentIdColumnName(),apartmentID));
 	}
 	
+	public Object ejbFindByAccount(Integer accountID)throws FinderException{
+		return super.idoFindOnePKByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountIdColumnName(),accountID));
+	}
+	
+	public Object ejbFindByUser(Integer userID)throws FinderException{
+		return super.idoFindOnePKByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountIdColumnName(),userID));
+	}
+	
 	public Collection ejbFindByType(String type)throws FinderException{
 		return super.idoFindPKsByQuery(super.idoQueryGetSelect().appendWhereEquals(getAccountTypeColumnName(),type));
 	}
@@ -291,7 +299,7 @@ public class ContractAccountApartmentBMPBean extends GenericEntity implements Co
 			return super.idoFindPKsByQuery(query);
 	}
 	
-	public Collection ejbFindByAssessmentRount(Integer roundID)throws FinderException{
+	public Collection ejbFindByAssessmentRound(Integer roundID)throws FinderException{
 		StringBuffer sql = new StringBuffer("select distinct v.* from V_CONT_ACCT_APRT v");
 	    sql.append(" where v.fin_account_id in ( ");
 	    sql.append(" select a.fin_account_id ");

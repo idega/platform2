@@ -120,6 +120,7 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
       RS.close();
     }
     catch(SQLException ex){
+    	ex.printStackTrace();
       throw new SQLException("SQL : "+sql);
     }
     finally{
@@ -146,27 +147,51 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
     
     StringBuffer sql = new StringBuffer();
     
-    sql.append(" select a.FIN_ACCOUNT_ID ACC_ID,b.BU_BUILDING_ID BUILD_ID,b.NAME BUILDING, ");
+    /*
+	 select a.FIN_ACCOUNT_ID ACC_ID,b.BU_BUILDING_ID BUILD_ID,b.NAME BUILDING,
+	ap.bu_apartment_id APRT_ID,ap.NAME APARTMENT,
+	u.FIRST_NAME,u.MIDDLE_NAME,u.LAST_NAME,u.PERSONAL_ID, k.fin_acc_key_id KEYID,
+	k.NAME KEYCODE,k.INFO KEYINFO ,sum(e.TOTAL) TOTAL 
+	from FIN_ACC_ENTRY e, FIN_ACCOUNT a,IC_USER u, FIN_ACC_KEY k,FIN_TARIFF_KEY tk ,
+	CAM_APRT_ACC_ENTRY ce,BU_APARTMENT ap, BU_FLOOR f,BU_BUILDING b
+	where e.FIN_ACCOUNT_ID = a.FIN_ACCOUNT_ID  
+	and a.IC_USER_ID = u.IC_USER_ID  
+	and k.FIN_ACC_KEY_ID = e.FIN_ACC_KEY_ID  
+	and k.FIN_TARIFF_KEY_ID = tk.FIN_TARIFF_KEY_ID 
+	and e.payment_date >= '2004-03-01' 
+	and e.payment_date <= '2004-04-16'  
+	and e.fin_acc_entry_id = ce.entry_id
+	and ce.APRT_ID = ap.BU_APARTMENT_ID
+	and ap.BU_FLOOR_ID = f.BU_FLOOR_ID
+	and f.bu_building_id = b.bu_building_id
+	and b.BU_BUILDING_ID = 2
+	group by a.FIN_ACCOUNT_ID,b.BU_BUILDING_ID,b.name,ap.bu_apartment_id,ap.NAME
+	,u.FIRST_NAME, u.MIDDLE_NAME, u.LAST_NAME, u.PERSONAL_ID, k.fin_acc_key_id, k.NAME ,k.INFO
+    
+    */
+    sql.append("  select a.FIN_ACCOUNT_ID ACC_ID,b.BU_BUILDING_ID BUILD_ID,b.NAME BUILDING, ");
+    sql.append(" ap.BU_APARTMENT_ID APRT_ID,ap.NAME APARTMENT, ");
     sql.append(" u.FIRST_NAME,u.MIDDLE_NAME,u.LAST_NAME,u.PERSONAL_ID, ");
+    sql.append(" ");
     if(!byAccountKeyCode)
-    	sql.append(" k.fin_acc_key_id KEYID,k.NAME KEYCODE,k.INFO KEYINFO ");
+    	sql.append(" k.FIN_ACC_KEY_ID KEYID,k.NAME KEYCODE,k.INFO KEYINFO ");
     else
-    	sql.append(" tk.fin_tariff_key_id  KEYID,tk.NAME KEYCODE,tk.INFO KEYINFO ");
+    	sql.append(" tk.FIN_TARIFF_KEY_ID  KEYID,tk.NAME KEYCODE,tk.INFO KEYINFO ");
     sql.append( ",sum(e.TOTAL) TOTAL "); 
-    sql.append(" from FIN_ACC_ENTRY e, FIN_ACCOUNT a,IC_USER u, FIN_ACC_KEY k,FIN_TARIFF_KEY tk, ");
-	sql.append(" BU_APARTMENT ap,BU_BUILDING b,BU_FLOOR f,CAM_CONTRACT c ");
-	sql.append(" where  b.BU_BUILDING_ID = f.BU_BUILDING_ID ");
-	sql.append(" and f.BU_FLOOR_ID = ap.BU_FLOOR_ID ");
-	sql.append(" and ap.BU_APARTMENT_ID = c.BU_APARTMENT_ID ");
-	sql.append(" and c.IC_USER_ID = a.IC_USER_ID ");
-	sql.append(" and e.FIN_ACCOUNT_ID = a.FIN_ACCOUNT_ID ");
+    sql.append(" from FIN_ACC_ENTRY e, FIN_ACCOUNT a,IC_USER u, FIN_ACC_KEY k,FIN_TARIFF_KEY tk , ");
+	sql.append(" CAM_APRT_ACC_ENTRY ce,BU_APARTMENT ap, BU_FLOOR f,BU_BUILDING b ");
+	sql.append(" where  e.FIN_ACCOUNT_ID = a.FIN_ACCOUNT_ID ");
 	sql.append(" and a.IC_USER_ID = u.IC_USER_ID ");
 	sql.append(" and k.FIN_ACC_KEY_ID = e.FIN_ACC_KEY_ID ");
 	sql.append(" and k.FIN_TARIFF_KEY_ID = tk.FIN_TARIFF_KEY_ID ");
+	sql.append(" and e.FIN_ACC_ENTRY_ID = ce.ENTRY_ID ");
+	sql.append(" and ce.APRT_ID = ap.BU_APARTMENT_ID ");
+	sql.append(" and ap.BU_FLOOR_ID = f.BU_FLOOR_ID ");
+	sql.append(" and f.BU_BUILDING_ID = b.BU_BUILDING_ID ");
 	
     boolean and = false;
 
-    if(buildingId !=null){
+    if(buildingId !=null && buildingId.intValue() >0){
       sql.append(" and ");
       sql.append(" b.bu_building_id ");
       sql.append( " = ");
@@ -189,12 +214,12 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
       sql.append("'");
     }
 
-    sql.append(" group by a.FIN_ACCOUNT_ID,b.BU_BUILDING_ID,b.NAME, ");
+    sql.append(" group by a.FIN_ACCOUNT_ID,b.BU_BUILDING_ID,b.name,ap.bu_apartment_id,ap.NAME, ");
 	sql.append(" u.FIRST_NAME,u.MIDDLE_NAME,u.LAST_NAME,u.PERSONAL_ID, ");
 
 	sql.append(!byAccountKeyCode?" k.fin_acc_key_id,k.NAME,k.INFO ":"tk.fin_tariff_key_id,tk.NAME,tk.INFO");
 	sql.append(" order by u.FIRST_NAME,u.LAST_NAME,a.FIN_ACCOUNT_ID ");
-	//System.out.println(sql.toString());
+	System.out.println(sql.toString());
     return sql.toString();
   }
   

@@ -20,6 +20,13 @@ public java.util.Collection findAll()throws javax.ejb.FinderException{
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
+public ContractAccountApartment findByAccount(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ContractAccountApartmentBMPBean)entity).ejbFindByAccount(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
+}
+
 public java.util.Collection findByApartment(java.lang.Integer p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByApartment(p0);
@@ -27,9 +34,9 @@ public java.util.Collection findByApartment(java.lang.Integer p0)throws javax.ej
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
 
-public java.util.Collection findByAssessmentRount(java.lang.Integer p0)throws javax.ejb.FinderException{
+public java.util.Collection findByAssessmentRound(java.lang.Integer p0)throws javax.ejb.FinderException{
 	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByAssessmentRount(p0);
+	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByAssessmentRound(p0);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
 }
@@ -46,6 +53,13 @@ public java.util.Collection findByTypeAndStatusAndOverlapPeriod(java.lang.String
 	java.util.Collection ids = ((ContractAccountApartmentBMPBean)entity).ejbFindByTypeAndStatusAndOverlapPeriod(p0,p1,p2,p3);
 	this.idoCheckInPooledEntity(entity);
 	return this.getEntityCollectionForPrimaryKeys(ids);
+}
+
+public ContractAccountApartment findByUser(java.lang.Integer p0)throws javax.ejb.FinderException{
+	com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+	Object pk = ((ContractAccountApartmentBMPBean)entity).ejbFindByUser(p0);
+	this.idoCheckInPooledEntity(entity);
+	return this.findByPrimaryKey(pk);
 }
 
  public ContractAccountApartment findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
