@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
@@ -214,11 +215,16 @@ public abstract class BillingThread extends Thread{
 					postingStrings = this.getPostingBusiness().getPostingStrings(category,sType,regSpecTypeId,provider,startPeriod.getDate(),schoolYearId);
 				}
 				catch (RemoteException e) {
-					// TODO Auto-generated catch block
+					createNewErrorMessage(errorRelated,"invoice.RemoteException");
 					e.printStackTrace();
 				}
 				catch (PostingException e) {
-					// TODO Auto-generated catch block
+					errorRelated.append("Category:"+category);
+					errorRelated.append("School Type:"+sType);
+					errorRelated.append("Provider:"+provider);
+					errorRelated.append("Period:"+startPeriod.getDate());
+					errorRelated.append("SchoolYear:"+sYear.getName());
+					createNewErrorMessage(errorRelated,"invoice.PostingException");
 					e.printStackTrace();
 				}	
 				
@@ -503,6 +509,15 @@ public abstract class BillingThread extends Thread{
 			batchRunLogger.store();
 		}
 	}
+
+	/**
+	 * Adds to the condition ArrayList according to the schoolClassMemeber
+	 * Default is no change. Overridden by PymentThreadHighSchool
+	 * 
+	 * @param schoolClassMember
+	 * @param conditions
+	 */
+	abstract protected void setStudyPath(SchoolClassMember schoolClassMember, ArrayList conditions);
 	
 	protected void finalizeBatchRunLogger(){
 		batchRunLogger.setEnd(IWTimestamp.getTimestampRightNow());

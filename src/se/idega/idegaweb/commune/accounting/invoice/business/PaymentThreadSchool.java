@@ -50,8 +50,6 @@ import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolSeasonHome;
-import com.idega.block.school.data.SchoolStudyPath;
-import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
 import com.idega.block.school.data.SchoolYear;
@@ -71,11 +69,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2004/02/12 14:21:27 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/13 14:55:56 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.118 $
+ * @version $Revision: 1.119 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -267,11 +265,14 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				}
 				catch (NullPointerException e) {
 					e.printStackTrace();
+/*
 					java.io.StringWriter sw = new java.io.StringWriter();
 					e.printStackTrace(new java.io.PrintWriter(sw, true));
 					errorRelated.append("</br>" + sw + "</br>");
 					if (errorRelated.toString().length() > 900)
 						errorRelated = new ErrorLogger(errorRelated.toString().substring(1, 900));
+*/
+					errorRelated.append(e);
 					createNewErrorMessage(errorRelated, "invoice.NullpointerException");
 				}
 				if(!running){
@@ -401,7 +402,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			//Get all the resources for the child
 			Collection resources = getResourceBusiness().getResourcePlacementsByMemberId((Integer) schoolClassMember.getPrimaryKey());
 // 			errorRelated.append("Found " + resources.size() + " resources");
-			ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated.toString());
+			ErrorLogger tmpErrorRelated = new ErrorLogger(errorRelated);
 			for (Iterator i = resources.iterator(); i.hasNext();) {
 				ResourceClassMember resource = (ResourceClassMember) i.next();
 				errorRelated = new ErrorLogger(tmpErrorRelated);
@@ -465,24 +466,24 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			return resourceConditions;
 		}
 		if(null!=schoolClassMember.getSchoolType()){
-			errorRelated.append("SchoolType "+schoolClassMember.getSchoolType().getName());
+//			errorRelated.append("SchoolType:"+schoolClassMember.getSchoolType().getName());
 		}else{
 			createNewErrorMessage(errorRelated, "invoice.NullpointerInSchoolType");
 			return resourceConditions;
 		}
 		if(null!=resource.getResource()){
-			errorRelated.append("Resource "+resource.getResource().getResourceName());
+			errorRelated.append("Resource:"+resource.getResource().getResourceName());
 		}else{
 			createNewErrorMessage(errorRelated, "invoice.NullpointerInResource");
 			return resourceConditions;
 		}
 		if(null!=schoolClassMember.getSchoolYear()){
-			errorRelated.append("SchoolYear "+schoolClassMember.getSchoolYear().getName());
+			errorRelated.append("SchoolYear:"+schoolClassMember.getSchoolYear().getName());
 		}else{
 			createNewErrorMessage(errorRelated, "invoice.NullpointerInSchoolYear");
 			return resourceConditions;
 		}
-		errorRelated.append("Statsbidrag "+provider.getStateSubsidyGrant());
+//		errorRelated.append("Statsbidrag "+provider.getStateSubsidyGrant());
 
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_RESOURCE, resource.getResource().getResourceName()));
@@ -512,7 +513,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		for (Iterator i = regulationForResourceArray.iterator(); i.hasNext();) {
 			try {
 				Regulation regulation = (Regulation) i.next();
-				errorRelated.append("Regulation "+regulation.getName());
+				errorRelated.append("Regulation:"+regulation.getName());
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
@@ -533,7 +534,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		School school = schoolClassMember.getSchoolClass().getSchool();
 
 		//Try to figure out the schoolyear stuff for fritidsklubb. Not sure this is right...
-		String schoolYearName = schoolClassMember.getSchoolClass().getName();
+		String schoolYearName = schoolClassMember.getSchoolYear().getName();
 		int len = schoolYearName.length();
 		String schoolYearCM = schoolYearName.substring(len-1,len);
 //		System.out.println("SchoolYear:"+schoolYearName+"  or "+schoolYearCM);
@@ -567,7 +568,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			null, oppenConditions
 		);
 		if(regulationForTypeArray.size()!=1){
-			errorRelated.append("Number of regulations found for fritidsklubb "+regulationForTypeArray.size());
+			errorRelated.append("Number of regulations found for fritidsklubb:"+regulationForTypeArray.size());
 			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForFritidsklubbNotCorrect");
 		}
 		for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
@@ -576,8 +577,8 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				PostingDetail postingDetail = regBus.getPostingDetailForPlacement(0.0f, schoolClassMember, regulation, calculationDate, conditions, placementTimes);
 //				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				RegulationSpecType regSpecType = regulation.getRegSpecType();
-				errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType());
-				errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey());
+//				errorRelated.append("RegSpecType from regulation "+regulation.getRegSpecType());
+//				errorRelated.append("RegSpecType from posting detail"+(getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType())).getLocalizationKey());
 				if(!regulation.getRegSpecType().getLocalizationKey().equalsIgnoreCase(
 						(getRegulationSpecTypeHome().findByRegulationSpecType(
 								postingDetail.getRuleSpecType())).getLocalizationKey())){
@@ -587,11 +588,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				schoolYearName = schoolClassMember.getSchoolYear().getName();
 				len = schoolYearName.length();
 				try {
-					errorRelated.append("Schoolyear" + schoolYearName);
+//					errorRelated.append("Schoolyear:" + schoolYearName);
 					int schoolYearInt = Integer.parseInt(schoolYearName.substring(len-1,len));
 					SchoolYear schoolYear = ((SchoolYearHome) IDOLookup.getHome(SchoolYear.class)).
 							findByYearName(FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
-					errorRelated.append("Fritidsklubb schoolyear" + FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
+					errorRelated.append("Fritidsklubb schoolyear:" + FRITIDSKLUBB_YEAR_PREFIX + schoolYearInt);
 					
 					String[] postings =  getPostingStrings(category, schoolType, 
 							((Integer) regSpecType.getPrimaryKey()).intValue(), provider, calculationDate, 
@@ -599,7 +600,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				
 					PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], 
 							placementTimes.getMonths(), school);
-					errorRelated.append("created payment info for fritidsklubb " + schoolClassMember.getStudent().getName());
+					errorRelated.append("created payment info for fritidsklubb:" + schoolClassMember.getStudent().getName());
 					createVATPaymentRecord(record,postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 					createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 				} catch (FinderException e1) {
@@ -631,7 +632,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			null, oppenConditions //The conditions that need to fulfilled
 		);
 		if(regulationForTypeArray.size()!=1){
-			errorRelated.append("Number of regulations found for oppen verksamhet "+regulationForTypeArray.size());
+			errorRelated.append("Number of regulations found for oppen verksamhet:"+regulationForTypeArray.size());
 			createNewErrorMessage(errorRelated, "invoice.NumberOfRegulationsForOppenVerksamhetNotCorrect");
 		}
 		for (Iterator i = regulationForTypeArray.iterator(); i.hasNext();) {
@@ -643,7 +644,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
 				createVATPaymentRecord(record, postingDetail,placementTimes.getMonths(),school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
-				errorRelated.append("created payment info for Oppen verksamhet" + schoolClassMember.getStudent().getName());
+				errorRelated.append("created payment info for Oppen verksamhet:" + schoolClassMember.getStudent().getName());
 				createInvoiceRecord(record, schoolClassMember, postingDetail, placementTimes);
 			}
 			catch (BruttoIncomeException e) {
@@ -704,10 +705,10 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			//Go through all the regular payments
 			while (regularPaymentIter.hasNext()) {
 				RegularPaymentEntry regularPaymentEntry = (RegularPaymentEntry) regularPaymentIter.next();
-				errorRelated = new ErrorLogger("RegularPaymentEntry ID " + regularPaymentEntry.getPrimaryKey());
-				errorRelated.append("Placing " + regularPaymentEntry.getPlacing());
-				errorRelated.append("Amount " + regularPaymentEntry.getAmount());
-				errorRelated.append("School " + regularPaymentEntry.getSchool());
+				errorRelated = new ErrorLogger("RegularPaymentEntry ID:" + regularPaymentEntry.getPrimaryKey());
+				errorRelated.append("Placing:" + regularPaymentEntry.getPlacing());
+				errorRelated.append("Amount:" + regularPaymentEntry.getAmount());
+				errorRelated.append("School:" + regularPaymentEntry.getSchool());
 				postingDetail = new PostingDetail(regularPaymentEntry);
 				school = regularPaymentEntry.getSchool();
 				placementTimes = calculateTime(regularPaymentEntry.getFrom(), regularPaymentEntry.getTo());
@@ -752,22 +753,17 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SCHOOL_YEAR, schoolClassMember.getSchoolYear().getName()));
 		conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STADSBIDRAG, new Boolean(provider.getStateSubsidyGrant())));
-		errorRelated.append("SchoolType " + schoolClassMember.getSchoolType().getName());
-		errorRelated.append("School Year " + schoolClassMember.getSchoolYear().getName());
-		errorRelated.append("StateSubsidyGrant " + provider.getStateSubsidyGrant());
-		int studyPathId = schoolClassMember.getStudyPathId();
-		if (studyPathId != -1) {
-			conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(studyPathId)));
-//			errorRelated.append("Study path ID " + schoolClassMember.getStudyPathId());
-			try {
-				SchoolStudyPath schoolStudyPath = ((SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class)).findByPrimaryKey(new Integer(schoolClassMember.getStudyPathId()));
-				errorRelated.append("Study path code " + schoolStudyPath.getCode());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		if(null!=schoolClassMember){
+			errorRelated.append("SchoolType:" + schoolClassMember.getSchoolType().getName());
+			errorRelated.append("School Year:" + schoolClassMember.getSchoolYear().getName());
 		}
+		if(null!=provider){
+			errorRelated.append("StateSubsidyGrant:" + provider.getStateSubsidyGrant());
+		}
+		setStudyPath(schoolClassMember, conditions);
 		return conditions;
 	}
+	
 /*
 	//Temporary code to meassure the performance of the batchrun
 	long start, stop, time;
@@ -785,6 +781,12 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		stop = t;
 	}
 */
+	/**
+	 * Do nothing
+	 */
+	protected void setStudyPath(SchoolClassMember schoolClassMember, ArrayList conditions){
+	}
+	
 	private ExportDataMapping getCategoryPosting() throws FinderException, IDOLookupException, EJBException {
 		return (ExportDataMapping) IDOLookup.getHome(ExportDataMapping.class).findByPrimaryKeyIDO(category.getPrimaryKey());
 	}

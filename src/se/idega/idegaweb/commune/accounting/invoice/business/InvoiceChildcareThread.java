@@ -76,10 +76,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/02/12 14:21:27 $ by $Author: joakim $
+ * Last modified: $Date: 2004/02/13 14:55:56 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.125 $
+ * @version $Revision: 1.126 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -904,6 +904,12 @@ public class InvoiceChildcareThread extends BillingThread{
 		return invoiceRecord;
 	}
 
+	/**
+	 * Do nothing
+	 */
+	protected void setStudyPath(SchoolClassMember schoolClassMember, ArrayList conditions){
+	}
+	
 	private CommuneHome getCommuneHome() throws RemoteException {
 		return (CommuneHome) IDOLookup.getHome (Commune.class);
 	}

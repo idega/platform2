@@ -19,6 +19,8 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
 
 import com.idega.block.school.data.SchoolCategory;
 import com.idega.block.school.data.SchoolClassMember;
+import com.idega.block.school.data.SchoolStudyPath;
+import com.idega.block.school.data.SchoolStudyPathHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.core.location.data.Commune;
 import com.idega.data.IDOLookup;
@@ -154,5 +156,28 @@ public class PaymentThreadHighSchool extends PaymentThreadSchool {
 		}else {
 			return getPostingBusiness().getPostingStrings(category, schoolType, regSpecTypeId, provider, calculationDate, schoolYearId);
 		}
-	}	
+	}
+	
+	/**
+	 * Adds to the condition ArrayList according to the schoolClassMemeber
+	 * Default is no change. Overridden by PymentThreadHighSchool
+	 * 
+	 * @param schoolClassMember
+	 * @param conditions
+	 */
+	protected void setStudyPath(SchoolClassMember schoolClassMember, ArrayList conditions){
+		int studyPathId = schoolClassMember.getStudyPathId();
+		if (studyPathId != -1) {
+			conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_STUDY_PATH, new Integer(studyPathId)));
+			try {
+				SchoolStudyPath schoolStudyPath = ((SchoolStudyPathHome) IDOLookup.getHome(SchoolStudyPath.class)).findByPrimaryKey(new Integer(schoolClassMember.getStudyPathId()));
+				errorRelated.append("Study path code " + schoolStudyPath.getCode());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+		 createNewErrorMessage(errorRelated, "invoice.StudypathMissing");
+		 }
+	}
 }
