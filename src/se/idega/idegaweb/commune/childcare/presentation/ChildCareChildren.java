@@ -76,7 +76,9 @@ public class ChildCareChildren extends ChildCareBlock {
 					if (this.isCheckRequired()) {
 						try {
 							check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
-							createLink = true;
+							if (check != null) {
+								createLink = true;
+							}
 						}
 						catch (RemoteException e) {
 						}
