@@ -21,6 +21,7 @@ import com.idega.business.IBOService;
 import com.idega.core.location.data.PostalCode;
 import com.idega.presentation.PresentationObject;
 import com.idega.user.business.UserBusiness;
+import com.idega.user.business.UserGroupPlugInBusiness;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
 
@@ -32,7 +33,7 @@ import com.idega.user.data.User;
  * @author <a href="mailto:Joakim@idega.com">Joakim</a>
  * @version $Revision$
  */
-public interface NationalRegisterBusiness extends IBOService {
+public interface NationalRegisterBusiness extends IBOService , UserGroupPlugInBusiness {
 
 	/**
 	 * @see is.idega.block.nationalregister.business.NationalRegisterBusinessBean#getEntryBySSN
