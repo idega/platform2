@@ -148,21 +148,12 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 	
 	
-	/**
-	 * Returns the number of players that are equal or older than age 
-	 * and registered to a league(WRGroup) for the specified club(WR) 
-	 *	
-	 **/
-	public int getCountOfPlayersOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(int age, WorkReport report , WorkReportGroup wrGroup){
-		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,wrGroup);
-	}
+
 	
 	//any age
 	public int getCountOfPlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
 		return getWorkReportMemberHome().getCountOfPlayersByWorkReportAndWorkReportGroup(report,league);
 	}
-	
-	
 	
 	public int getCountOfMalePlayersByWorkReportAndWorkReportGroup(WorkReport report,WorkReportGroup league) {
 		return getWorkReportMemberHome().getCountOfMalePlayersByWorkReportAndWorkReportGroup(report,league);
@@ -185,15 +176,27 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 	
 	public int getCountOfPlayersByWorkReport(WorkReport report) {
-		return getWorkReportMemberHome().getCountOfPlayersByWorkReport(report);
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfPlayersByWorkReport(report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfPlayersByWorkReportAndWorkReportGroup(report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);	
 	}
 
 	public int getCountOfMalePlayersByWorkReport(WorkReport report) {
-		return getWorkReportMemberHome().getCountOfMalePlayersByWorkReport(report);
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfMalePlayersByWorkReport(report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfMalePlayersByWorkReportAndWorkReportGroup(report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);
 	}
 
 	public int getCountOfFemalePlayersByWorkReport(WorkReport report) {
-		return getWorkReportMemberHome().getCountOfFemalePlayersByWorkReport(report);
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfFemalePlayersByWorkReport(report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfFemalePlayersByWorkReportAndWorkReportGroup(report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);
 	}
 		
 	//equal
@@ -242,15 +245,28 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	}
 	
 	public int getCountOfPlayersEqualOrOlderThanAgeAndByWorkReport(int age, WorkReport report) {
-		return getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeByWorkReport(age, report);
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeByWorkReport(age, report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfPlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);
 	}
 
 	public int getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReport(int age, WorkReport report) {
-		return getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeByWorkReport(age, report);
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeByWorkReport(age, report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfMalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);
 	}
 
 	public int getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReport(int age, WorkReport report) {
-		return getWorkReportMemberHome().getCountOfFemaleMembersEqualOrOlderThanAgeByWorkReport(age, report);
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeByWorkReport(age, report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfFemalePlayersEqualOrOlderThanAgeAndByWorkReportAndWorkReportGroup(age,report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);
+		
 	}
 	
 	
@@ -282,15 +298,28 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 	
 	
 	public int getCountOfPlayersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
-		return getWorkReportMemberHome().getCountOfPlayersOfYoungerAgeByWorkReport(age, report);
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfPlayersOfYoungerAgeByWorkReport(age, report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfPlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age,report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);
 	}
 
 	public int getCountOfMalePlayersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
-		return getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeByWorkReport(age, report);
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeByWorkReport(age, report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfMalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age,report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);
 	}
 
 	public int getCountOfFemalePlayersOfYoungerAgeAndByWorkReport(int age, WorkReport report) {
-		return getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeByWorkReport(age, report);
+
+		//The main board connection that is neccesery for the member editor makes the final count wrong, here we correct that
+		int everyOneWithMainBoardStats = getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeByWorkReport(age, report);
+		int mainBoardStats = getWorkReportMemberHome().getCountOfFemalePlayersOfYoungerAgeAndByWorkReportAndWorkReportGroup(age,report,getMainBoardWorkReportGroup(report.getYearOfReport().intValue()));
+		
+		return (everyOneWithMainBoardStats-mainBoardStats);
 	}
 
 	/**
