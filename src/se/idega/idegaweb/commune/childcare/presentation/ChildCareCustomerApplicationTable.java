@@ -22,11 +22,12 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.InterfaceObject;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.util.IWTimestamp;
 
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.8 2003/04/02 16:45:53 laddi Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.9 2003/04/02 17:55:51 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -153,7 +154,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		//cancelBtn.setName(CANCEL[0] + PAGE_1);
 		cancelBtn.setAsImageButton(true);	
 		
-		layoutTbl.add(s + "<p>", 1, 2);
+		layoutTbl.add(new Text(s + "<p>"), 1, 2);
 		layoutTbl.add(submitBtn, 1, 3);
 		layoutTbl.add(cancelBtn, 1, 3);
 		layoutTbl.setAlignment(1, 3, "right");
@@ -295,7 +296,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 			_status = status;
 			if (day != null && month != null && year != null) {
 				try{
-					_date = new java.sql.Date(Integer.parseInt(year) - 1900, Integer.parseInt(month) - 1, Integer.parseInt(day));
+					IWTimestamp stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
+					_date = stamp.getDate();
 				}catch(IllegalArgumentException ex){
 					_date = new Date(0); /**@TODO: IS THIS OK?*/
 				}

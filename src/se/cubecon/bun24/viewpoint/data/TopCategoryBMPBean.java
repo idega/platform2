@@ -7,10 +7,10 @@ import javax.ejb.FinderException;
 import com.idega.data.IDOLookup;
 
 /**
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 17:55:51 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class TopCategoryBMPBean extends GenericEntity implements TopCategory {
 
@@ -54,6 +54,6 @@ public class TopCategoryBMPBean extends GenericEntity implements TopCategory {
     }
 
     public Collection ejbFindAll () throws FinderException, RemoteException {
-        return idoFindIDsBySQL ("select * from " + ENTITY_NAME);
+        return idoFindPKsBySQL ("select * from " + ENTITY_NAME);
     }
 }

@@ -2,7 +2,7 @@ package se.idega.idegaweb.commune.presentation;
 import com.idega.business.IBOLookup;
 import com.idega.core.data.Address;
 import com.idega.core.data.PostalCode;
-import com.idega.core.user.data.User;
+import com.idega.user.data.User;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
@@ -27,7 +27,7 @@ public class CitizenAddressInfo extends PresentationObjectContainer
 		String postalCodeString = null;
 		String addressHeader = iwrb.getLocalizedString("citizen_addr_info.addr_header","Delivery address");
 		String postalCodeHeader = iwrb.getLocalizedString("citizen_addr_info.postal_code_header","Postal code and area");
-		User user = iwc.getUser();
+		User user = iwc.getCurrentUser();
 		if (user == null)
 		{
 			addressString = "-";
@@ -39,9 +39,8 @@ public class CitizenAddressInfo extends PresentationObjectContainer
 			//System.out.println("User!=null");
 			try
 			{
-				com.idega.user.data.User newUser = com.idega.user.Converter.convertToNewUser(user);
 				//int userID = ((Integer) user.getPrimaryKey()).intValue();
-				Address addr = getUserBusiness(iwc).getUsersMainAddress(newUser);
+				Address addr = getUserBusiness(iwc).getUsersMainAddress(user);
 				PostalCode code = null;
 				if (addr != null)
 				{

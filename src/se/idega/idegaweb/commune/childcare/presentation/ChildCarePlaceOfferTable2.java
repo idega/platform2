@@ -89,9 +89,9 @@ class ChildCarePlaceOfferTable2 extends Table{
 	private void addToTable(int row, String id, String name, String status, String prognosis, boolean offer) {
 		int index = row - 1; //row=2 for first row because of heading is in row 1
 		add(new HiddenInput(CCConstants.APPID + index, id)); 
-		add(name, 1, row);
-		add(status, 2, row);
-		add(prognosis, 3, row);
+		add(new Text(name), 1, row);
+		add(new Text(status), 2, row);
+		add(new Text(prognosis), 3, row);
 			
 		RadioButton rb1 = new RadioButton(CCConstants.KEEP_IN_QUEUE + index, CCConstants.YES);
 		RadioButton rb2 = new RadioButton(CCConstants.KEEP_IN_QUEUE + index, CCConstants.NO);

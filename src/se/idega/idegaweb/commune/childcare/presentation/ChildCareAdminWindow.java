@@ -227,7 +227,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String message = MessageFormat.format(localize("child_care.priority_message", "Because of special circumstances, {0} has been granted priority in our queue for a childcare placing.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
 		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_PRIORITY_MESSAGE, message));
 		textArea.setWidth(Table.HUNDRED_PERCENT);
-		textArea.setHeight(7);
+		textArea.setRows(7);
 		textArea.setAsNotEmpty(localize("child_care.priority_message_required","You must fill in the message."));
 
 		table.add(getSmallHeader(localize("child_care.priority_message_info", "The following message will be sent to BUN.")), 1, row++);
@@ -235,7 +235,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton grantPriority = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.grant_priority", "Grant priority"), PARAMETER_ACTION, String.valueOf(ACTION_GRANT_PRIORITY)));
 		table.add(grantPriority, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -253,7 +253,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String message = MessageFormat.format(localize("child_care.offer_message", "We can offer {0} a placing in our childcare from {4}.\n\nRegards,\n{1}\n{2}\n{3}"), getArguments(iwc));
 		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_OFFER_MESSAGE, message));
 		textArea.setWidth(Table.HUNDRED_PERCENT);
-		textArea.setHeight(7);
+		textArea.setRows(7);
 		textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
 
 		table.add(getSmallHeader(localize("child_care.offer_message_info", "The following message will be sent to the child's parents.")), 1, row++);
@@ -269,7 +269,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton reject = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.make_offer", "Make offer"), PARAMETER_ACTION, String.valueOf(ACTION_OFFER)));
 		table.add(reject, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -295,7 +295,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton reject = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.change_date", "Change date"), PARAMETER_ACTION, String.valueOf(ACTION_CHANGE_DATE)));
 		table.add(reject, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -328,7 +328,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.place_in_group", "Place in group"), PARAMETER_ACTION, String.valueOf(ACTION_PLACE_IN_GROUP)));
 		table.add(placeInGroup, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -361,7 +361,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.alter_care_time", "Alter care time"), PARAMETER_ACTION, String.valueOf(ACTION_ALTER_CARE_TIME)));
 		table.add(placeInGroup, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -392,7 +392,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		
 		TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_CANCEL_MESSAGE));
 		textArea.setWidth(Table.HUNDRED_PERCENT);
-		textArea.setHeight(4);
+		textArea.setRows(4);
 		textArea.setAsNotEmpty(localize("child_care.offer_message_required","You must fill in the message."));
 		textArea.keepStatusOnAction(true);
 
@@ -411,7 +411,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
 		table.add(placeInGroup, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -447,7 +447,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton createGroup = (SubmitButton) getStyledInterface(new SubmitButton(localized, PARAMETER_ACTION, String.valueOf(ACTION_CREATE_GROUP)));
 		table.add(createGroup, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -473,7 +473,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton placeInGroup = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.move_group", "Move to group"), PARAMETER_ACTION, String.valueOf(ACTION_MOVE_TO_GROUP)));
 		table.add(placeInGroup, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -517,7 +517,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		SubmitButton updatePrognosis = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_prognosis", "Set prognosis"), PARAMETER_ACTION, String.valueOf(ACTION_UPDATE_PROGNOSIS)));
 		table.add(updatePrognosis, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close, 1, row);
 		table.mergeCells(1, row, 2, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);

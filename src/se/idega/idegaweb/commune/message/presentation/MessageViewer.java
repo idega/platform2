@@ -141,7 +141,7 @@ public class MessageViewer extends CommuneBlock {
 		if (msg.getSenderID() != -1) {
 			SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.Reply", "Reply"), PARAMETER_METHOD, String.valueOf(METHOD_REPLY_MESSAGE)));
 			table.add(reply, 1, row);
-			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
 			form.addParameter(PARAMETER_SENDER_ID, msg.getSenderID());
 		}
 
@@ -194,7 +194,7 @@ public class MessageViewer extends CommuneBlock {
 
 		SubmitButton reply = (SubmitButton) getStyledInterface(new SubmitButton(localize("message.reply", "Reply"), PARAMETER_ACTION, String.valueOf(ACTION_REPLY_MESSAGE)));
 		table.add(reply, 1, row);
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(close,1,row);
 		table.mergeCells(1, row, 2, row);
 		table.setHeight(row,Table.HUNDRED_PERCENT);

@@ -77,7 +77,7 @@ public class SchoolFreeTimeList extends SchoolCommuneBlock {
 		Link excelLink = getXLSLink(SchoolFreetimeWriter.class,getBundle().getImage("shared/xls.gif"));
 		excelLink.addParameter(SchoolFreetimeWriter.prmSchoolId, getSchoolID());
 		excelLink.addParameter(SchoolFreetimeWriter.prmSchoolSeasonID, getSchoolSeasonID());
-		table.add(Text.NON_BREAKING_SPACE, 1, row);
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(excelLink, 1, row++);
 
 		table.setRowColor(row, getHeaderColor());

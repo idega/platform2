@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.18 2003/04/02 16:12:22 laddi Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.19 2003/04/02 17:55:51 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -33,7 +33,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
-import com.idega.user.Converter;
 import com.idega.util.PersonalIDFormatter;
 
 /**
@@ -43,11 +42,11 @@ import com.idega.util.PersonalIDFormatter;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/04/02 16:12:22 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/02 17:55:51 $ by $Author: laddi $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -272,8 +271,8 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			table.add(getSmallHeader(localize(MESSAGE_KEY, MESSAGE_DEFAULT)), 1, row);
 			table.add(new Break(), 1, row);
 			TextArea area = new TextArea(MESSAGE_KEY);
-			area.setHeight(7);
-			area.setWidth(40);
+			area.setRows(7);
+			area.setColumns(40);
 			table.add(area, 1, row++);
 
 			SubmitButton approve = (SubmitButton) getButton(new SubmitButton(localize(PARAM_FORM_APPROVE, "Godkänn"), PARAM_FORM_APPROVE, idAsString));
@@ -285,11 +284,11 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			table.mergeCells(1, row, table.getColumns(), row);
 
 			table.add(approve, 1, row);
-			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(reject, 1, row);
-			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(remove, 1, row);
-			table.add(Text.NON_BREAKING_SPACE, 1, row);
+			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(cancel, 1, row);
 		}
 		catch (final Exception e) {
@@ -331,7 +330,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 		try {
 			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
 			if (iwc.isParameterSet(MESSAGE_KEY)) {
-				business.rejectApplication(new Integer(id).intValue(), Converter.convertToNewUser(iwc.getUser()), iwc.getParameter(MESSAGE_KEY));
+				business.rejectApplication(new Integer(id).intValue(), iwc.getCurrentUser(), iwc.getParameter(MESSAGE_KEY));
 			form.add(getText(localize("caa_rej_application", "Rejected application number : ") + id));
 			} else {
                 form.add (getText(localize("caa_rej_no_message", "Du måste fylla i fältet 'Meddelande/Orsak'")));
@@ -354,7 +353,7 @@ public class CitizenAccountAdmin extends CommuneBlock {
 
 		try {
 			CitizenAccountBusiness business = (CitizenAccountBusiness) IBOLookup.getServiceInstance(iwc, CitizenAccountBusiness.class);
-            business.removeApplication(new Integer(id).intValue(), Converter.convertToNewUser(iwc.getUser()));
+            business.removeApplication(new Integer(id).intValue(), iwc.getCurrentUser());
 			form.add(getText(localize("caa_rem_application", "Tog bort ansökan nummer: ") + id));
 		} catch (Exception e) {
 			e.printStackTrace();

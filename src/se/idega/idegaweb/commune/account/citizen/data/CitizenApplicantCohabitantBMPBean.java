@@ -7,10 +7,10 @@ import javax.ejb.FinderException;
 import com.idega.data.GenericEntity;
 
 /**
- * Last modified: $Date: 2003/04/02 16:45:53 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/02 17:55:51 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class CitizenApplicantCohabitantBMPBean extends GenericEntity
     implements CitizenApplicantCohabitant {
@@ -103,6 +103,6 @@ public class CitizenApplicantCohabitantBMPBean extends GenericEntity
         throws FinderException {
         final String sql = "select * from " + ENTITY_NAME
                 + " where " + COLUMN_APPLICATION_ID + " = " + applicationId;
-        return idoFindIDsBySQL (sql);
+        return idoFindPKsBySQL (sql);
     }
 }

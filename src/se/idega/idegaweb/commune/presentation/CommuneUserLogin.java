@@ -153,7 +153,7 @@ public class CommuneUserLogin extends CommuneBlock {
 						radio.setSelected();
 					
 					table.add(radio, 1, row);
-					table.add(Text.NON_BREAKING_SPACE, 1, row);
+					table.add(Text.getNonBrakingSpace(), 1, row);
 					table.add(getSmallText(user.getNameLastFirst(true)), 1, row);
 					table.add(getSmallText(" ("), 1, row);
 					table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())+")"), 1, row++);

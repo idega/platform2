@@ -182,7 +182,7 @@ public class ComplaintBMPBean extends AbstractCaseBMPBean implements Complaint,C
 	 * @throws FinderException
 	 */
 	public Collection ejbFindAllComplaints() throws FinderException {
-		return this.idoFindIDsBySQL("select * from "+getEntityName());
+		return this.idoFindPKsBySQL("select * from "+getEntityName());
 	}
 	
 	/**
@@ -215,7 +215,7 @@ public class ComplaintBMPBean extends AbstractCaseBMPBean implements Complaint,C
 	 * @throws RemoteException
 	 */
 	public Collection ejbFindAllComplaintsByManager(User user) throws FinderException,RemoteException {
-		return this.idoFindIDsBySQL("select * from "+getEntityName()+" where "+COLUMN_MANAGER_ID+" = "+(user.getPrimaryKey()).toString());	
+		return this.idoFindPKsBySQL("select * from "+getEntityName()+" where "+COLUMN_MANAGER_ID+" = "+(user.getPrimaryKey()).toString());	
 	}
 
 	/**
@@ -226,6 +226,6 @@ public class ComplaintBMPBean extends AbstractCaseBMPBean implements Complaint,C
 	 * @throws RemoteException
 	 */
 	public Collection ejbFindAllComplaintsByType(CaseCode type) throws FinderException,RemoteException {
-		return this.idoFindIDsBySQL("select * from "+getEntityName()+" where "+COLUMN_COMPLAINT_TYPE+" = "+(type.getPrimaryKey()).toString());	
+		return this.idoFindPKsBySQL("select * from "+getEntityName()+" where "+COLUMN_COMPLAINT_TYPE+" = "+(type.getPrimaryKey()).toString());	
 	}
 }

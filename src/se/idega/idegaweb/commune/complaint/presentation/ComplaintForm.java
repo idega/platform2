@@ -11,7 +11,6 @@ import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
 import com.idega.presentation.ui.TextInput;
-import com.idega.user.Converter;
 
 import se.idega.idegaweb.commune.complaint.business.ComplaintBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
@@ -119,7 +118,7 @@ public class ComplaintForm extends CommuneBlock {
 		String complaint = iwc.getParameter(PARAM_COMPLAINT);
 		String description = iwc.getParameter(PARAM_DESCRIPTION);
 
-		getComplaintBusiness(iwc).createComplaint(complaint, description, complaintType, Converter.convertToNewUser(iwc.getUser()));	
+		getComplaintBusiness(iwc).createComplaint(complaint, description, complaintType, iwc.getCurrentUser());	
 		add(this.getLocalizedHeader("complaint.complaint_submitted", "Complaint sent"));
 		add(new Break(2));
 		

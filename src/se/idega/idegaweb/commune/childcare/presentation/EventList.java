@@ -43,7 +43,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.10 2003/04/02 16:12:22 laddi Exp $
+ * @version $Id: EventList.java,v 1.11 2003/04/02 17:55:51 laddi Exp $
  * @since 17.3.2003 
  */
 
@@ -274,7 +274,7 @@ public class EventList extends CommuneBlock {
 				localize(LOCALE_EVENT, "Event") + ":",
 				msg.getSubject(),
 				row++);
-			message.add("", 1, row++);
+			message.add(new Text(""), 1, row++);
 			//Body
 			message.mergeCells(1, row, 2, row);
 			message.add(getSmallText(msg.getBody()), 1, row++);
@@ -368,8 +368,8 @@ public class EventList extends CommuneBlock {
 		to = (DateInput) getStyledInterface(to);
 		to.setYearRange(today.getYear() - 5, today.getYear() + 2);
 
-		from.setDate(uFrom.getSQLDate());
-		to.setDate(uTo.getSQLDate());
+		from.setDate(uFrom.getDate());
+		to.setDate(uTo.getDate());
 
 		TextInput msgid = new TextInput(PRM_MSGID);
 		msgid = (TextInput) getStyledInterface(msgid);

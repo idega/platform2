@@ -7,10 +7,10 @@ import java.util.*;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2002/11/29 12:17:48 $ by $Author: staffan $
+ * Last modified: $Date: 2003/04/02 17:55:51 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class ViewpointBMPBean extends AbstractCaseBMPBean
     implements Viewpoint, Case {
@@ -134,7 +134,7 @@ public class ViewpointBMPBean extends AbstractCaseBMPBean
             sql.append ("proc_case.handler_group_id = '" + groupId + "'");
         }
         sql.append (")");
-        final Collection viewpoints = idoFindIDsBySQL (sql.toString ());
+        final Collection viewpoints = idoFindPKsBySQL (sql.toString ());
         return viewpoints;
     }
 }

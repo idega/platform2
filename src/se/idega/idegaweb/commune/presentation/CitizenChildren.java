@@ -69,7 +69,7 @@ public class CitizenChildren extends CommuneBlock {
 					T.add(getChildLink(child), col, row);
 				}
 				catch (javax.ejb.FinderException fix) {
-					T.add(fix.getMessage(), col, row);
+					T.add(new Text(fix.getMessage()), col, row);
 				}
 				row++;
 			}
@@ -141,7 +141,7 @@ public class CitizenChildren extends CommuneBlock {
 				++row;
 				while(iter2.hasNext()){
 					child = (User) iter2.next();
-					T.add(child.getName(),1,row++);
+					T.add(new Text(child.getName()),1,row++);
 				}
 			}
 

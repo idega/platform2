@@ -1,6 +1,6 @@
 package se.idega.idegaweb.commune.presentation;
 
-import com.idega.core.user.data.User;
+import com.idega.user.data.User;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.text.Text;
 
@@ -15,7 +15,7 @@ public class CitizenPageHeader extends Text
 	public void main(IWContext iwc){
 	
 		String userString;
-		User user = iwc.getUser();
+		User user = iwc.getCurrentUser();
 		if(user==null){
 			userString = "";
 		}

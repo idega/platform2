@@ -167,11 +167,11 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 			while (it.hasNext()) {
 				application = (ChildCareApplication)it.next();
 				User child = application.getChild();
-				data.add(child.getName(),1,row);
-				data.add(child.getPersonalID(),2,row);					
-				data.add(application.getQueueDate().toString(),3,row);
-				data.add(Integer.toString(application.getCheckId()),4,row);
-				data.add(application.getFromDate().toString(),6,row);
+				data.add(new Text(child.getName()),1,row);
+				data.add(new Text(child.getPersonalID()),2,row);					
+				data.add(new Text(application.getQueueDate().toString()),3,row);
+				data.add(new Text(Integer.toString(application.getCheckId())),4,row);
+				data.add(new Text(application.getFromDate().toString()),6,row);
 
 				String id = null;;
 				//try {

@@ -405,8 +405,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		to = (DateInput) getStyledInterface(to);
 		to.setYearRange(today.getYear() - 5, today.getYear() + 2);
 
-		from.setDate(pFrom.getSQLDate());
-		to.setDate(pTo.getSQLDate());
+		from.setDate(pFrom.getDate());
+		to.setDate(pTo.getDate());
 		SubmitButton search =
 			new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch", "Fetch"));
 		search = (SubmitButton) getButton(search);
@@ -466,8 +466,8 @@ public class PrintDocumentsViewer extends CommuneBlock {
 		DateInput to = new DateInput(PRM_STAMP_U_TO, true);
 		to = (DateInput) getStyledInterface(to);
 		to.setYearRange(today.getYear() - 5, today.getYear() + 2);
-		from.setDate(uFrom.getSQLDate());
-		to.setDate(uTo.getSQLDate());
+		from.setDate(uFrom.getDate());
+		to.setDate(uTo.getDate());
 		SubmitButton search =
 			new SubmitButton(getResourceBundle().getLocalizedString("printdoc.fetch", "Fetch"));
 		search = (SubmitButton) getButton(search);

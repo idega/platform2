@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderAccountApplicationView.java,v 1.4 2003/04/02 16:12:22 laddi Exp $
+ * $Id: ProviderAccountApplicationView.java,v 1.5 2003/04/02 17:55:51 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -135,7 +135,7 @@ public class ProviderAccountApplicationView extends ProviderAccountApplication
 			int applicationID=this.getApplicationID();
 			int userID;
 			try{
-				userID = ((Integer)iwc.getUser().getPrimaryKey()).intValue();
+				userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
 			}
 			catch(NullPointerException ne){
 				throw new Exception(localize("paa_not_logged_on","You are not logged on"));
@@ -155,7 +155,7 @@ public class ProviderAccountApplicationView extends ProviderAccountApplication
 			int applicationID=this.getApplicationID();
 			int userID;
 			try{
-				userID = ((Integer)iwc.getUser().getPrimaryKey()).intValue();
+				userID = ((Integer)iwc.getCurrentUser().getPrimaryKey()).intValue();
 			}
 			catch(NullPointerException ne){
 				throw new Exception(localize("paa_not_logged_on","You are not logged on"));

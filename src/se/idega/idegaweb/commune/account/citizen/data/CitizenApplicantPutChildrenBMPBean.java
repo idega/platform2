@@ -5,10 +5,10 @@ import java.util.Collection;
 import javax.ejb.FinderException;
 
 /**
- * Last modified: $Date: 2003/04/02 16:45:53 $ by $Author: laddi $
+ * Last modified: $Date: 2003/04/02 17:55:51 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CitizenApplicantPutChildrenBMPBean extends GenericEntity
     implements CitizenApplicantPutChildren {
@@ -58,6 +58,6 @@ public class CitizenApplicantPutChildrenBMPBean extends GenericEntity
         final StringBuffer sql = new StringBuffer ();
         sql.append ("select * from " + ENTITY_NAME);
         sql.append (" where " + COLUMN_APPLICATION_ID + " = " + applicationId);
-        return idoFindIDsBySQL (sql.toString ());
+        return idoFindPKsBySQL (sql.toString ());
     }
 }
