@@ -37,7 +37,7 @@ public class PrintStatus extends GolfBlock {
     String sTournamentId = modinfo.getParameter("tournament_id");
     int tournament_id = getTournamentSession(modinfo).getTournamentID();
     if(tournament_id==-1) {
-    		Integer.parseInt(sTournamentId);
+    		tournament_id = Integer.parseInt(sTournamentId);
     }
 	if (excel == null) {
 	  ResultsViewer results = new ResultsViewer(tournament_id);
@@ -50,7 +50,7 @@ public class PrintStatus extends GolfBlock {
       try{
         String file = filepath+fileName;
         FileWriter out = new FileWriter(file);
-
+        
         char[] c  = null;
 
 
