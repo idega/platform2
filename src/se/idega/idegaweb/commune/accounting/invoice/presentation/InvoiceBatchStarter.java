@@ -13,6 +13,7 @@ import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.presentation.ExceptionWrapper;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
@@ -35,7 +36,8 @@ public class InvoiceBatchStarter extends AccountingBlock{
 	private static String PARAM_READ_DATE=PREFIX+"read_date";
 	DateInput monthInput;
 	DateInput dateInput;
-	DateInput readDateInput;	
+	DateInput readDateInput;
+	private String link=null;
 
 	public void init(IWContext iwc){
 	
@@ -110,8 +112,33 @@ public class InvoiceBatchStarter extends AccountingBlock{
 				readDate = new IWTimestamp(iwc.getParameter(PARAM_READ_DATE)).getDate();
 			}
 			invoiceBusiness.startPostingBatch(month, readDate, schoolCategory, iwc);
+			add(getLocalizedLabel("invbr.batchrun_started._click_link_to_see_progress","Batchrun started. Click link to see progress."));
+			if(link!=null)
+			{
+				Link uiLink = new Link();
+				uiLink.setText(getLocalizedLabel("invbr.progress","Progress"));
+				uiLink.setTarget(link);
+				add(uiLink);
+			} else {
+				System.out.println("WARNING need to set the Link property for invoice batch start block!");
+			}
 		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}
 	}
+	
+	/**
+	 * @return
+	 */
+	public String getLink() {
+		return link;
+	}
+
+	/**
+	 * @param string
+	 */
+	public void setLink(String page) {
+		link = page;
+	}
+
 }
