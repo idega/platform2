@@ -149,10 +149,10 @@ public class BankInfoBMPBean extends GenericEntity implements BankInfo {
       setColumn(getColumnNamePassword(), pwd);
     }
 	}
-	public BankInfo ejbFindByGroupId(int groupId) throws FinderException{
+	public Integer ejbFindByGroupId(int groupId) throws FinderException{
 		IDOQuery query = idoQueryGetSelect();
 		query.appendWhereEquals(getColumnNameGroupId(), groupId);
-		return (BankInfo)idoFindOnePKByQuery(query);
+		return (Integer)idoFindOnePKByQuery(query);
 	}
 	public Collection ejbFindAllByClub(Group club) throws FinderException {
 		IDOQuery query = idoQuery();
