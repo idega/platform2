@@ -2,6 +2,7 @@ package com.idega.block.school.data;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -551,6 +552,21 @@ public class SchoolBMPBean extends GenericEntity  implements School, IDOLegacyEn
 
 	public Collection findRelatedSchoolTypes() throws com.idega.data.IDORelationshipException {
 		return super.idoGetRelatedEntities(SchoolType.class);
+	}
+	
+	public Collection findRelatedSchoolTypes(SchoolCategory category) throws IDORelationshipException {
+		Collection coll = findRelatedSchoolTypes();
+		Collection types = new ArrayList();
+		if (coll != null) {
+			Iterator iter = coll.iterator();
+			while (iter.hasNext()) {
+				SchoolType type = (SchoolType) iter.next();
+				if (type.getSchoolCategory().equals(category.getCategory())) {
+					types.add(type);
+				}
+			}
+		}
+		return types;
 	}
 
 	public Collection findRelatedSchoolYears() throws com.idega.data.IDORelationshipException {
