@@ -895,15 +895,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, User user, Locale locale) throws RemoteException {
+	public boolean placeApplication(int applicationID, String subject, String body, int childCareTime, int groupID, int schoolTypeID, User user, Locale locale) throws RemoteException {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 			alterValidFromDate(application, application.getFromDate(), locale, user);
 			if (groupID != -1) {
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-				int schoolTypeID = getSchoolBusiness().getSchoolTypeIdFromSchoolClass(groupID);
-				getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
+				SchoolClassMember mbr = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), ((Integer)user.getPrimaryKey()).intValue());
 				sendMessageToParents(application, subject, body);
 			}
 		}

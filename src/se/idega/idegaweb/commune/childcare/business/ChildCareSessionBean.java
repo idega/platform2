@@ -19,6 +19,7 @@ import com.idega.util.IWTimestamp;
 public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSession {
 
 	protected static final String PARAMETER_CHILD_CARE_ID = "cc_c_c_id";
+	protected static final String PARAMETER_SCHOOL_TYPE_ID = "cc_school_type_id";	
 	protected static final String PARAMETER_GROUP_ID = "cc_group_id";
 	protected static final String PARAMETER_USER_ID = "cc_user_id";
 	protected static final String PARAMETER_CHECK_ID = "cc_check_id";
@@ -33,6 +34,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected int _userID = -1;
 	protected int _childID = -1;
 	protected int _applicationID = -1;
+	protected int _schoolTypeID = -1;
 	protected int _groupID = -1;
 	protected int _checkID = -1;
 	protected int _seasonID = -1;
@@ -183,6 +185,14 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	/**
 	 * @return String
 	 */
+	public String getParameterSchoolTypeID() {
+		return PARAMETER_SCHOOL_TYPE_ID;
+	}
+
+
+	/**
+	 * @return String
+	 */
 	public String getParameterGroupID() {
 		return PARAMETER_GROUP_ID;
 	}
@@ -316,6 +326,22 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 			this.toTimestamp = new IWTimestamp(timestamp);
 		else
 			this.toTimestamp = null;
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public int getSchoolTypeID() {
+		return _schoolTypeID;
+	}
+
+	/**
+	 * Sets the groupID.
+	 * @param groupID The groupID to set
+	 */
+	public void setSchoolTypeID(int schTypeID) {
+		_schoolTypeID = schTypeID;
 	}
 
 	/**
