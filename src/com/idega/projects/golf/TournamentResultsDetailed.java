@@ -338,7 +338,7 @@ public class TournamentResultsDetailed extends JModuleObject {
       Vector ids = new Vector();
       for (int i = 0; i < rounds.length; i++) {
         if (rounds[i].getRoundNumber() <= tRound.getRoundNumber()) {
-          ids.add(rounds[i].getID());
+          ids.add(new Integer(rounds[i].getID()));
         }
       }
 
@@ -346,7 +346,7 @@ public class TournamentResultsDetailed extends JModuleObject {
       if (ids != null) {
           tournamentRounds_ = new int[ids.size()];
           for (int i = 0; i < ids.size(); i++) {
-              tournamentRounds_[i] = (int) ids.get(i);
+              tournamentRounds_[i] = ((Integer) ids.get(i)).intValue();
           }
       }else {
           //int[]
