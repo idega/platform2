@@ -79,6 +79,7 @@ public class QueryBuilder extends Block {
 	private static final String PARAM_CONDITION = "field_pattern";
 	private static final String PARAM_COND_TYPE = "field_type";
 	private static final String PARAM_COND_FIELD = "field";
+	private static final String PARAM_COND_ENTITY = "entity";
 	private static final String PARAM_FOLDER_ID = "qb_fid";
 	public static final String PARAM_QUERY_ID = "qb_qid";
 	public static final String PARAM_QUERY_NAME = "q_name";
@@ -201,11 +202,13 @@ public class QueryBuilder extends Block {
 			processFunction(iwc);
 		}
 		else if (iwc.isParameterSet(PARAM_ADD)) {
-			String name = iwc.getParameter(PARAM_COND_FIELD);
+			
+			String field = iwc.getParameter(PARAM_COND_FIELD);
 			String equator = iwc.getParameter(PARAM_COND_TYPE);
 			String pattern = iwc.getParameter(PARAM_CONDITION);
-			if (!"".equals(pattern)){	
-				QueryConditionPart part = new QueryConditionPart(name, equator, pattern);
+			if (!"".equals(pattern)){
+				QueryFieldPart fieldPart = QueryFieldPart.decode(field);
+				QueryConditionPart part = new QueryConditionPart(fieldPart.getEntity(),fieldPart.getName(), equator, pattern);
 				part.setLocked(iwc.isParameterSet(PARAM_LOCK));
 				part.setDynamic(iwc.isParameterSet(PARAM_DYNAMIC));
 				helper.addCondition(part);
