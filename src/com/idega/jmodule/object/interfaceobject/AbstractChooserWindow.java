@@ -35,13 +35,13 @@ public abstract class AbstractChooserWindow extends Window {
     String prefix = modinfo.getParameter(SCRIPT_PREFIX_PARAMETER);
     String suffix = modinfo.getParameter(SCRIPT_SUFFIX_PARAMETER);
     String displayString = modinfo.getParameter(DISPLAYSTRING_PARAMETER_NAME);
+
     String valueString = modinfo.getParameter(VALUE_PARAMETER_NAME);
 
     //script.addFunction(SELECT_FUNCTION_NAME,"function "+SELECT_FUNCTION_NAME+"(displaystring,value){ "+AbstractChooser.DISPLAYSTRING_PARAMETER_NAME+".value=displaystring;"+AbstractChooser.VALUE_PARAMETER_NAME+".value=value;window.close();return false }");
     script.addFunction(SELECT_FUNCTION_NAME,"function "+SELECT_FUNCTION_NAME+"(displaystring,value){"+prefix+displayString+"."+suffix+"=displaystring;"+prefix+valueString+".value=value;window.close();return false;}");
 
     displaySelection(modinfo);
-
   }
 
   public abstract void displaySelection(ModuleInfo modinfo);
