@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberLogBMPBean.java,v 1.6 2005/02/16 14:54:29 anders Exp $
+ * $Id: SchoolClassMemberLogBMPBean.java,v 1.7 2005/02/16 15:33:34 anders Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,10 +27,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/02/16 14:54:29 $ by $Author: anders $
+ * Last modified: $Date: 2005/02/16 15:33:34 $ by $Author: anders $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class SchoolClassMemberLogBMPBean extends GenericEntity  implements SchoolClassMemberLog{
 
@@ -190,10 +190,10 @@ public class SchoolClassMemberLogBMPBean extends GenericEntity  implements Schoo
 		Table table = new Table(this);
 		
 		SelectQuery query = new SelectQuery(table);
-		query.addColumn(new Column(table, getIDColumnName()));
+		query.addColumn(new Column(getIDColumnName()));
 		query.addCriteria(new MatchCriteria(table, SCHOOLCLASSMEMBER, MatchCriteria.EQUALS, member));
-		query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.GREATEREQUAL, date));	
-		Criteria a = new MatchCriteria(table, END_DATE, MatchCriteria.LESSEQUAL, date);
+		query.addCriteria(new MatchCriteria(table, START_DATE, MatchCriteria.LESSEQUAL, date));	
+		Criteria a = new MatchCriteria(table, END_DATE, MatchCriteria.GREATEREQUAL, date);
 		Criteria b = new MatchCriteria(table, END_DATE, MatchCriteria.IS, MatchCriteria.NULL);
 		query.addCriteria(new OR(a, b));
 		query.addOrder(new Order(new Column(table, START_DATE), true));
