@@ -725,8 +725,15 @@ public abstract class AbstractSearchForm extends Block{
 	}
 
 	protected void addInputLine(String[] text, PresentationObject[] object) {
+		addInputLine(text, object, false);
+	}	
+	protected void addInputLine(String[] text, PresentationObject[] object, boolean useHeaderText) {
 		for (int i = 0; i < text.length; i++) {
-			formTable.add(getText(text[i]), i+1, row);
+			if (useHeaderText) {
+				formTable.add(getHeaderText(text[i]), i+1, row);
+			} else {
+				formTable.add(getText(text[i]), i+1, row);
+			}
 		}
 		++row;
 		String value;
