@@ -31,21 +31,6 @@ public class CarRentalBookerBean extends BookerBean implements CarRentalBooker {
   private Booker getBooker() throws RemoteException {
 		return (Booker) IBOLookup.getServiceInstance(getIWApplicationContext(), Booker.class);
   }	
-  /*
-  public int BookBySupplier(int serviceId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException, RemoteException, CreateException {
-		int _bookingId = getBooker().Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING, postalCode, paymentType, userId, ownerId, addressId, comment);
-		return Book(_bookingId, pickupPlaceId, pickupTime, dropoffPlaceId, dropoffTime);
-  }
-
-  public int Book(int serviceId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, int bookingType, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException, RemoteException, CreateException {
-		int _bookingId = getBooker().Book(serviceId, country, name, address, city, telephoneNumber, email, date, totalCount, bookingType, postalCode, paymentType, userId, ownerId, addressId, comment);
-		return Book(_bookingId, pickupPlaceId, pickupTime, dropoffPlaceId, dropoffTime);
-  }
-
-  public int updateBooking(int bookingId, int serviceId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime, String country, String name, String address, String city, String telephoneNumber, String email, IWTimestamp date, int totalCount, String postalCode, int paymentType, int userId, int ownerId, int addressId, String comment) throws SQLException, RemoteException, CreateException {
-		int _bookingId = getBooker().updateBooking(bookingId, serviceId, country, name, address, city, telephoneNumber, email, date, totalCount,  postalCode, paymentType, userId, ownerId, addressId, comment);
-		return Book(_bookingId, pickupPlaceId, pickupTime, dropoffPlaceId, dropoffTime);
-  }*/
 
   public int book(int bookingId, int pickupPlaceId, IWTimestamp pickupTime, int dropoffPlaceId, IWTimestamp dropoffTime) throws IDOException, RemoteException {
 		try {

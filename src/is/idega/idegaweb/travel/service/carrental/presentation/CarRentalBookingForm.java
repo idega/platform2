@@ -73,9 +73,9 @@ public class CarRentalBookingForm extends BookingForm {
 
 	private CarRental _carRental;
 	//private String PARAMETER_PICKUP_PLACE = "crbf_ppp";
-	private String PARAMETER_DROPOFF_PLACE = "crbf_pdp";
-	private String PARAMETER_PICKUP_TIME = "crbf_ppt";
-	private String PARAMETER_DROPOFF_TIME = "crbf_pdt";
+	public static String PARAMETER_DROPOFF_PLACE = "crbf_pdp";
+	public static String PARAMETER_PICKUP_TIME = "crbf_ppt";
+	public static String PARAMETER_DROPOFF_TIME = "crbf_pdt";
 
   public CarRentalBookingForm(IWContext iwc, Product product) throws Exception{
     super(iwc, product);
@@ -1713,320 +1713,9 @@ public class CarRentalBookingForm extends BookingForm {
 		getCarRentalBooker(iwc).book(bookingId, iPickupId, pickupStamp, iDropoffId, dropoffStamp);		
   	
   }
- /*
-  public int saveBooking(IWContext iwc) throws RemoteException, CreateException, RemoveException, FinderException, SQLException, TPosException {
-	  String surname = iwc.getParameter("surname");
-	  String lastname = iwc.getParameter("lastname");
-	  String address = iwc.getParameter("address");
-	  String areaCode = iwc.getParameter("area_code");
-	  String email = iwc.getParameter("e-mail");
-	  String phone = iwc.getParameter("telephone_number");
-
-	  String city = iwc.getParameter("city");
-	  String country = iwc.getParameter("country");
-	  String hotelPickupPlaceId = iwc.getParameter(parameterPickupId);
-	  String roomNumber = iwc.getParameter(parameterPickupInf);
-	  String sPaymentType = iwc.getParameter("payment_type");
-	  String comment = iwc.getParameter("comment");
-
-	  String sAddressId = iwc.getParameter(this.parameterDepartureAddressId);
-	  int iAddressId = Integer.parseInt(sAddressId);
-	  
-	  String pickupPlaceId = iwc.getParameter( PARAMETER_PICKUP_PLACE );
-	  String pickupTime = iwc.getParameter( PARAMETER_PICKUP_TIME );
-	  String dropoffPlaceId = iwc.getParameter( PARAMETER_DROPOFF_PLACE );
-	  String dropoffTime = iwc.getParameter( PARAMETER_DROPOFF_TIME );
-	  int iPickupId = -1;
-	  IWTimestamp pickupStamp = null;
-	  int iDropoffId = -1;
-	  IWTimestamp dropoffStamp = null;
-
-	  String sUserId = iwc.getParameter("ic_user");
-	  if (sUserId == null) sUserId = "-1";
-
-
-	  String ccNumber = iwc.getParameter(this.parameterCCNumber);
-	  String ccMonth = iwc.getParameter(this.parameterCCMonth);
-	  String ccYear = iwc.getParameter(this.parameterCCYear);
-
-	  String year = iwc.getParameter(CalendarBusiness.PARAMETER_YEAR);
-	  String month = iwc.getParameter(CalendarBusiness.PARAMETER_MONTH);
-	  String day = iwc.getParameter(CalendarBusiness.PARAMETER_DAY);
-
-	  String supplierId = iwc.getParameter(this.parameterSupplierId);
-
-	  //TEMP BEGINS
-		String fromDate = iwc.getParameter(this.parameterFromDate);
-	  String manyDays = iwc.getParameter(this.parameterManyDays);
-	  //TEMP ENDS
-
-
-	  try {
-		_stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
-	  }catch (NumberFormatException n) {
-		n.printStackTrace(System.err);
-	  }
-	  IWTimestamp _fromDate = new IWTimestamp(fromDate);
-//		IWTimestamp _fromDate = new IWTimestamp(_stamp);
-
-		int betw = 1;
-		try {
-		  betw = Integer.parseInt(manyDays);
-		  if (betw < 1) {
-			  betw = 1;			
-		  }
-		  System.out.println("[CarRentalBookingForm] betw = "+betw);
-		}catch (NumberFormatException e) {
-			e.printStackTrace(System.err);
-		}
-
-		try {
-		  iPickupId = Integer.parseInt(pickupPlaceId);
-		  pickupStamp = new IWTimestamp(_fromDate.toSQLDateString()+" "+pickupTime);	
-		}catch (Exception e) {
-			e.printStackTrace(System.err);	
-		}
-		try {
-			IWTimestamp tempS = new IWTimestamp(_fromDate);
-			tempS.addDays(betw);
-		  iDropoffId = Integer.parseInt(dropoffPlaceId);
-		  dropoffStamp = new IWTimestamp(tempS.toSQLDateString()+" "+dropoffTime);	
-		}catch (Exception e) {
-			System.out.println("[CarRentalBookingForm] pickupTime = "+pickupTime);
-			e.printStackTrace(System.err);	
-		}
-
-
-	  String sBookingId = iwc.getParameter(this.parameterBookingId);
-
-	  int iBookingId = -1;
-	  if (sBookingId != null) iBookingId = Integer.parseInt(sBookingId);
-
-	  int returner = 0;
-
-	  String many;
-	  int iMany = 0;
-
-
-	  String sOnline = iwc.getParameter(this.parameterOnlineBooking);
-	  boolean onlineOnly = false;
-	  if (sOnline != null && sOnline.equals("true")) {
-		onlineOnly = true;
-	  }else if (sOnline != null && sOnline.equals("false")) {
-		onlineOnly = false;
-	  }
-
-//		ProductPrice[] pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), false);
-	  ProductPrice[] pPrices = {};
-	  ProductPrice[] misc = {};
-	  Timeframe tFrame = getProductBusiness(iwc).getTimeframe(_product, _stamp, iAddressId);
-	  if (tFrame != null) {
-		pPrices = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getProductPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
-		misc = com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getMiscellaneousPrices(_service.getID(), tFrame.getID(), iAddressId, onlineOnly);
-	  }
-	  int lbookingId = -1;
-
-	  boolean displayFormInternal = false;
-	  PriceCategory pCat;
-
-	  try {
-		int[] manys = new int[pPrices.length];
-		int[] manyMiscs = new int[misc.length];
-		for (int i = 0; i < manys.length; i++) {
-		  many = iwc.getParameter("priceCategory"+pPrices[i].getID());
-		  if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
-			manys[i] = Integer.parseInt(many);
-			iMany += Integer.parseInt(many);
-		  }else {
-			manys[i] = 0;
-		  }
-		}
-		for (int i = 0; i < manyMiscs.length; i++) {
-		  many = iwc.getParameter("miscPriceCategory"+misc[i].getID());
-		  if ( (many != null) && (!many.equals("")) && (!many.equals("0"))) {
-			manyMiscs[i] = Integer.parseInt(many);
-		  }else {
-			manyMiscs[i] = 0;
-		  }
-		}
-
-		int paymentType = Booking.PAYMENT_TYPE_ID_NO_PAYMENT;
-		try {
-		  paymentType = Integer.parseInt(sPaymentType);
-		}catch (NumberFormatException nfe) {}
-		int bookingType = Booking.BOOKING_TYPE_ID_ONLINE_BOOKING;
-
-		if (supplier != null) {
-		  bookingType = Booking.BOOKING_TYPE_ID_SUPPLIER_BOOKING;
-		}else if (_reseller != null) {
-		  displayFormInternal= true;
-		  bookingType = Booking.BOOKING_TYPE_ID_THIRD_PARTY_BOOKING;
-		}else {
-		  bookingType = Booking.BOOKING_TYPE_ID_ONLINE_BOOKING;
-		}
-
-
-		int[] bookingIds = new int[betw];
-		
-		System.out.println("[CarRentalBookingForm] betw = "+betw);
-
-		for (int i = 0; i < betw; i++) {
-		  if (iBookingId == -1) {
-				if (i != 0) {
-					_fromDate.addDays(1);
-				}
-				lbookingId = getCarRentalBooker(iwc).Book(_service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, bookingType, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
-		  }else {
-			//handle multiple...
-				List tempBookings = getCarRentalBooker(iwc).getMultibleBookings(((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
-				if (tempBookings == null || tempBookings.size() < 2) {
-				  lbookingId = getCarRentalBooker(iwc).updateBooking(iBookingId, _service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
-				}else {
-				  GeneralBooking gBooking;
-				  for (int j = 0; j < tempBookings.size(); j++) {
-						gBooking = (GeneralBooking) tempBookings.get(j);
-						getCarRentalBooker(iwc).updateBooking(gBooking.getID(), _service.getID(), iPickupId, pickupStamp, iDropoffId, dropoffStamp, country, surname+" "+lastname, address, city, phone, email, _fromDate, iMany, areaCode, paymentType, Integer.parseInt(sUserId), getUserId(), iAddressId, comment);
-				  }
-				  lbookingId = iBookingId;
-				}
-		  }
-		  bookingIds[i] = lbookingId;
-		}
-
-
-		
-		// removing booking from resellers...
-		 
-		for (int o = 0; o < bookingIds.length; o++) {
-		  try {
-			GeneralBooking gBook = ((is.idega.idegaweb.travel.data.GeneralBookingHome)com.idega.data.IDOLookup.getHome(GeneralBooking.class)).findByPrimaryKey(new Integer(bookingIds[o]));
-			gBook.removeFromAllResellers();
-			//gBook.removeFrom(Reseller.class);
-		  }catch (FinderException sql) {debug(sql.getMessage());}
-		  catch (IDORemoveRelationshipException sql) {debug(sql.getMessage());}
-		}
-
-		
-		 // adding booking to reseller if resellerUser is chosen from dropdown...
-		 
-		int resId = -7;
-		try {
-		  if (!sUserId.equals("-1")) {
-			User user = ((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).findByPrimaryKeyLegacy(Integer.parseInt(sUserId));
-			Reseller res = null;
-			if (user != null) {
-			  res = ResellerManager.getReseller(user);
-			}
-			if (res != null) {
-			  resId = res.getID();
-			  for (int i = 0; i < bookingIds.length; i++) {
-				try {
-				  res.addTo(GeneralBooking.class, bookingIds[i]);
-				}catch (SQLException sql) {debug(sql.getMessage());}
-			  }
-			}
-		  }
-		}catch (SQLException sql) {
-		  sql.printStackTrace(System.err);
-		}
-
-		if (_reseller != null) {
-		  if (_resellerId != resId) {
-			for (int i = 0; i < bookingIds.length; i++) {
-			  try {
-				_reseller.addTo(GeneralBooking.class, bookingIds[i]);
-			  }catch (SQLException sql) {debug(sql.getMessage());}
-			}
-		  }
-		}
-
-		returner = lbookingId;
-
-		for (int k = 0; k < bookingIds.length; k++) {
-		  if (bookingIds[k] != -1) {
-			if (iBookingId == -1) {
-			  BookingEntry bEntry;
-			  for (int i = 0; i < pPrices.length; i++) {
-				if (manys[i] != 0) {
-				  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
-					bEntry.setProductPriceId(pPrices[i].getID());
-					bEntry.setBookingId(bookingIds[k]);
-					bEntry.setCount(manys[i]);
-				  bEntry.store();
-				}
-			  }
-			  for (int i = 0; i < misc.length; i++) {
-				if (manyMiscs[i] != 0) {
-				  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
-					bEntry.setProductPriceId(misc[i].getID());
-					bEntry.setBookingId(bookingIds[k]);
-					bEntry.setCount(manyMiscs[i]);
-				  bEntry.store();
-				}
-			  }
-			}else {
-			  BookingEntry bEntry;
-			  ProductPrice price;
-			  boolean done = false;
-			  BookingEntry[] entries = getCarRentalBooker(iwc).getBookingEntries(((CarRentalBookingHome)com.idega.data.IDOLookup.getHome(CarRentalBooking.class)).findByPrimaryKey(new Integer(iBookingId)));
-			  for (int i = 0; i < entries.length; i++) {
-				entries[i].remove();
-			  }
-			  //if (entries == null)
-			  entries = new BookingEntry[]{};
-			  for (int i = 0; i < pPrices.length; i++) {
-				done = false;
-				for (int j = 0; j < entries.length; j++) {
-				  if (pPrices[i].getID() == entries[j].getProductPriceId()) {
-					done = true;
-					entries[j].setCount(manys[i]);
-					entries[j].store();
-					break;
-				  }
-				}
-				if (!done && manys[i] != 0) {
-				  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
-					bEntry.setProductPriceId(pPrices[i].getID());
-					bEntry.setBookingId(bookingIds[k]);
-					bEntry.setCount(manys[i]);
-				  bEntry.store();
-				}
-			  }
-			  for (int i = 0; i < misc.length; i++) {
-				done = false;
-				for (int j = 0; j < entries.length; j++) {
-				  if (misc[i].getID() == entries[j].getProductPriceId()) {
-					done = true;
-					entries[j].setCount(manyMiscs[i]);
-					entries[j].store();
-					break;
-				  }
-				}
-				if (!done && manyMiscs[i] != 0) {
-				  bEntry = ((is.idega.idegaweb.travel.data.BookingEntryHome)com.idega.data.IDOLookup.getHome(BookingEntry.class)).create();
-					bEntry.setProductPriceId(misc[i].getID());
-					bEntry.setBookingId(bookingIds[k]);
-					bEntry.setCount(manyMiscs[i]);
-				  bEntry.store();
-				}
-			  }
-			}
-		  }
-		}
-        
-        
-				handleCreditcardForBooking(iwc, returner, ccNumber, ccMonth, ccYear);
-
-	  }catch (NumberFormatException n) {
-		n.printStackTrace(System.err);
-	  }
-
-	  return returner;
-  }
-*/
-
+ 
   private CarRentalBooker getCarRentalBooker(IWApplicationContext iwac) throws RemoteException {
-  	return (CarRentalBooker) IBOLookup.getServiceInstance(iwac, CarRentalBooker.class);
+  		return (CarRentalBooker) IBOLookup.getServiceInstance(iwac, CarRentalBooker.class);
   }
 
 	private CarRentalBusiness getCarRentalBusiness(IWContext iwc) throws RemoteException{
@@ -2042,7 +1731,7 @@ public class CarRentalBookingForm extends BookingForm {
 	}
     
   private PickupPlaceHome getPickupPlaceHome() throws IDOLookupException {
-  	return (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);	
+  		return (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);	
   }
 
 	public Form getFormMaintainingAllParameters( IWContext iwc,	boolean withBookingAction, boolean withSAction) {
@@ -2054,4 +1743,7 @@ public class CarRentalBookingForm extends BookingForm {
 		return form;
 	}
 
+	public String getPriceCategorySearchKey() {
+		return CarRentalSetup.CAR_RENTAL_SEARCH_PRICE_CATEGORY_KEY;
+	}
 }
