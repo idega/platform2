@@ -4,6 +4,7 @@ package com.idega.block.text.data;
 import java.sql.*;
 import com.idega.data.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.util.text.TextSoap;
 
 public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implements com.idega.block.text.data.LocalizedText {
 
@@ -64,7 +65,7 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
     return getStringColumnValue(getColumnNameBody());
   }
   public void setBody(String body){
-    setColumn(getColumnNameBody(), body);
+    setColumn(getColumnNameBody(), addBreaks(body));
   }
   public java.sql.Timestamp getCreated(){
     return (java.sql.Timestamp) getColumnValue(getColumnNameCreated());
@@ -77,6 +78,11 @@ public class LocalizedTextBMPBean extends com.idega.data.GenericEntity implement
   }
   public void setUpdated(java.sql.Timestamp stamp){
     setColumn(getColumnNameUpdated(), stamp);
+  }
+
+  private String addBreaks(String text){
+    //replace with local bean method? and a none html specific xml
+    return TextSoap.findAndReplace(text,"\r\n","<br>");
   }
 
 }
