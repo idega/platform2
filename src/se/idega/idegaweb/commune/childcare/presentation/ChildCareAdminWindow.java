@@ -777,7 +777,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			
 			if (!types.isEmpty()) {
 				SchoolCommuneBusiness sb = (SchoolCommuneBusiness) IBOLookup.getServiceInstance(iwc,SchoolCommuneBusiness.class);
-				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), false);
+				Map typeGroupMap = sb.getSchoolTypeClassMap(types,application.getProviderId() , getSession().getSeasonID(), false,true);
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
@@ -797,6 +797,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, -1);
 		employmentTypes.setAsNotEmpty(localize("child_care.must_select_employment_type","You must select employment type."), "-1");
+		employmentTypes = (DropdownMenu) getStyledInterface(employmentTypes);
 		
 		table.add(getSmallText(localize("child_care.employment_type", "Employment type")+":"), 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
