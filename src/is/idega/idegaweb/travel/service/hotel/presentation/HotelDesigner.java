@@ -3,6 +3,9 @@ package is.idega.idegaweb.travel.service.hotel.presentation;
 import is.idega.idegaweb.travel.service.hotel.data.HotelHome;
 import is.idega.idegaweb.travel.service.hotel.data.Hotel;
 import java.rmi.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.*;
 
@@ -51,6 +54,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
   private String PARAMETER_DISCOUNT_TYPE   = "hd_par_disc";
   private String PARAMETER_DESIGN_IMAGE_ID = "hd_par_des_img_id";
   private String PARAMETER_USE_IMAGE_ID    = "hd_par_use_img_id";
+  private String PARAMETER_PICKUP_ID       = "hd_par_pick_id";
 
 
   public HotelDesigner(IWContext iwc) throws Exception {
@@ -95,7 +99,7 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
     String maxPerUnit = iwc.getParameter(PARAMETER_MAX_PER_UNIT );
     String useImageId = iwc.getParameter( PARAMETER_USE_IMAGE_ID );
     String discountType = iwc.getParameter( PARAMETER_DISCOUNT_TYPE );
-
+		String[] pickupIds = iwc.getParameterValues( PARAMETER_PICKUP_ID );
 
     int iDiscountType = com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT;
     if ( discountType != null ) {
@@ -143,10 +147,21 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
         if ( useImageId == null ) {
           ProductEditorBusiness.getInstance().dropImage( _product, true );
         }
-
       }
 
-
+			if (pickupIds != null && returner > 0) {
+		  	Service service = ((ServiceHome) IDOLookup.getHome(Service.class)).findByPrimaryKey(returner);
+        for (int i = 0; i < pickupIds.length; i++) {
+          if (!pickupIds[i].equals("-1")) {
+	          try{
+	            ((is.idega.idegaweb.travel.data.PickupPlaceHome)com.idega.data.IDOLookup.getHome(PickupPlace.class)).findByPrimaryKey(new Integer(pickupIds[i])).addToService(service);
+	//                service.addTo(((is.idega.idegaweb.travel.data.HotelPickupPlaceHome)com.idega.data.IDOLookup.getHome(HotelPickupPlace.class)).findByPrimaryKey(new Integer(hotelPickupPlaceIds[i])));
+	          }catch (IDOAddRelationshipException sql) {
+	          }catch (NumberFormatException nfe) {
+	          }
+	        }
+				}
+			}
 
     } catch ( Exception e ) {
       e.printStackTrace( System.err );
@@ -205,6 +220,10 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       discountType.addMenuElement( com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_AMOUNT, _iwrb.getLocalizedString( "travel.amount", "Amount" ) );
       discountType.addMenuElement( com.idega.block.trade.stockroom.data.ProductBMPBean.DISCOUNT_TYPE_ID_PERCENT, _iwrb.getLocalizedString( "travel.percent", "Percent" ) );
 
+      PickupPlaceHome ppHome = (PickupPlaceHome) IDOLookup.getHome(PickupPlace.class);
+      Collection pickupCollection = ppHome.findHotelPickupPlaces(this._supplier);
+      List pps = ListUtil.convertCollectionToList(pickupCollection);
+      SelectionBox pickups = new SelectionBox( pps );
 
       ++row;
       Text nameText = ( Text ) theBoldText.clone();
@@ -257,6 +276,10 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
           imageInserter.setImageId( _product.getFileId() );
           imageInserter.setSelected( true );
         }
+        Iterator iter = pickupCollection.iterator();
+        while (iter.hasNext()) {
+          pickups.setSelectedElement(iter.next().toString());
+        }
       }
 
 
@@ -274,6 +297,19 @@ public class HotelDesigner extends TravelManager implements DesignerForm {
       tfToText.setText( _iwrb.getLocalizedString( "travel.to", "to" ) );
       Text tfYearlyText = ( Text ) smallText.clone();
       tfYearlyText.setText( _iwrb.getLocalizedString( "travel.yearly", "yearly" ) );
+
+      ++row;
+      Text pickupText = ( Text ) theBoldText.clone();
+      pickupText.setText( _iwrb.getLocalizedString( "travel.pickup", "Pickup" ) );
+//      HotelPickupPlace[] hpps = (HotelPickupPlace[]) coll.toArray(new HotelPickupPlace[]{});
+      pickups.setName(PARAMETER_PICKUP_ID);
+      pickups.keepStatusOnAction();
+
+      table.add( pickupText, 1, row );
+      table.add( pickups, 2, row );
+
+      table.setVerticalAlignment( 1, row, "top" );
+      table.setVerticalAlignment( 2, row, "top" );
 
       ++row;
       Text noUnitsText = ( Text ) theBoldText.clone();
