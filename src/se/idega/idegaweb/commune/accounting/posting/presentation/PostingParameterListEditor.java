@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterListEditor.java,v 1.4 2003/08/20 14:57:29 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.5 2003/08/20 15:04:59 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -38,10 +38,10 @@ import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
  * It handles posting variables for both own and double entry accounting
  *  
  * <p>
- * $Id: PostingParameterListEditor.java,v 1.4 2003/08/20 14:57:29 kjell Exp $
+ * $Id: PostingParameterListEditor.java,v 1.5 2003/08/20 15:04:59 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class PostingParameterListEditor extends AccountingBlock {
 
@@ -178,13 +178,13 @@ public class PostingParameterListEditor extends AccountingBlock {
 		Date dd = Date.valueOf("2003-01-01");
 		
 		table.add(getFormLabel(KEY_FROM_DATE, "Från datum"),1 ,1);
-		table.add(getSmallText(formatDate(pp != null ? pp.getPeriodeFrom() : dd, 4)), 2, 1);
+		table.add(getSmallText(formatDateTemp(pp != null ? pp.getPeriodeFrom() : dd, 4)), 2, 1);
 	
 		table.add(getFormLabel(KEY_TO_DATE, "Tom datum"),3 ,1);
-		table.add(getSmallText(formatDate(pp != null ? pp.getPeriodeTo(): dd, 4)), 4, 1);
+		table.add(getSmallText(formatDateTemp(pp != null ? pp.getPeriodeTo(): dd, 4)), 4, 1);
 
 		table.add(getFormLabel(KEY_CHANGE_DATE, "Ändringsdatum"),1 ,2);
-		table.add(getSmallText(formatDate(pp != null ? pp.getChangedDate(): dd, 6)), 2, 2);
+		table.add(getSmallText(formatDateTemp(pp != null ? pp.getChangedDate(): dd, 6)), 2, 2);
 	
 		table.add(getFormLabel(KEY_CHANGE_SIGN, "Ändringssignatur"),3 ,2);
 		table.add(getSmallText(pp != null ? pp.getChangedSign(): ""), 4, 2);
@@ -199,7 +199,7 @@ public class PostingParameterListEditor extends AccountingBlock {
 	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
 	 * @return formated date in String format
 	 */
-	private String formatDate(Date dt, int len) {
+	private String formatDateTemp(Date dt, int len) {
 		String ret = "";
 		String y = ("00" + dt.getYear()).substring(2);
 		String year = y.substring(y.length()-2);

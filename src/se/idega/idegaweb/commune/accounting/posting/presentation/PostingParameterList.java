@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParameterList.java,v 1.3 2003/08/20 14:57:12 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.4 2003/08/20 15:04:41 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -42,10 +42,10 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters;
  * @see se.idega.idegaweb.commune.accounting.posting.data.PostingString;
  * <p>
- * $Id: PostingParameterList.java,v 1.3 2003/08/20 14:57:12 kjell Exp $
+ * $Id: PostingParameterList.java,v 1.4 2003/08/20 15:04:41 kjell Exp $
  *
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class PostingParameterList extends AccountingBlock {
 
@@ -221,8 +221,8 @@ public class PostingParameterList extends AccountingBlock {
 
 	private Table getFromToDatePanel(String param_from, Date date_from, String param_to, Date date_to) {
 		Table table = new Table();
-		TextInput fromDate = getFormTextInput(param_from, formatDate(date_from, 6),  100, 10);
-		TextInput toDate = getFormTextInput(param_from, formatDate(date_to, 6),  100, 10);
+		TextInput fromDate = getFormTextInput(param_from, formatDateTemp(date_from, 6),  100, 10);
+		TextInput toDate = getFormTextInput(param_from, formatDateTemp(date_to, 6),  100, 10);
 		table.add(fromDate, 1, 1);
 		table.add(new String("-"), 2, 1);
 		table.add(toDate, 3, 1);
@@ -236,7 +236,7 @@ public class PostingParameterList extends AccountingBlock {
 	 * @see se.idega.idegaweb.commune.accounting.posting.data.PostingParameters
 	 * @return formated date in String format
 	 */
-	private String formatDate(Date dt, int len) {
+	private String formatDateTemp(Date dt, int len) {
 		if (dt == null) {
 			return "";
 		}
