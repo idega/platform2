@@ -6,7 +6,6 @@ public interface SchoolStudyPathHome extends com.idega.data.IDOHome
  public SchoolStudyPath create() throws javax.ejb.CreateException;
  public SchoolStudyPath findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
  public java.util.Collection findAllStudyPaths()throws javax.ejb.FinderException;
-    // public java.util.Collection findAllStudyPathsByMemberId(int p0)throws javax.ejb.FinderException;
  public SchoolStudyPath findByCode(java.lang.String p0)throws javax.ejb.FinderException;
  public SchoolStudyPath findByCodeAndSchoolType(java.lang.String p0,int p1)throws javax.ejb.FinderException;
  public java.util.Collection findBySchoolType(int p0)throws javax.ejb.FinderException;

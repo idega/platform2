@@ -140,7 +140,7 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		if (useTypes) {
 			IDOQuery query = idoQuery();
 			query.append("Select s.* from ").append(getEntityName())
-			.append(" s,sch_study_path_sch_school r")
+			.append(" s,sch_school_sch_study_path r")
 			.append(" where s.").append(COLUMN_SCHOOL_TYPE).append(" in ( ");
 			Iterator iter = schoolTypePKs.iterator();
 			while (iter.hasNext()) {
@@ -154,6 +154,8 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 			.append(" AND r." + getIDColumnName() + " = s." + getIDColumnName())
 			.append(" AND (s.").append(COLUMN_IS_VALID).append(" is null")
 			.append(" OR s.").append(COLUMN_IS_VALID).append(" = 'Y')");
+			
+			System.out.println("*** FindStudypaths: " + query.toString());
 			
 			return this.idoFindPKsByQuery(query);
 		} else {
