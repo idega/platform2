@@ -983,8 +983,8 @@ private String DatastoreType;
 	Link link;
 
 
-	Table myTable = new Table();
-	//Table myTable = new Table(7,10);
+	//Table myTable = new Table();
+	Table myTable = new Table(7,20);
 		myTable.setAlignment(table_alignment);
 		myTable.setHorizontalZebraColored(color_1,color_2);
 		myTable.setCellpadding(0);
