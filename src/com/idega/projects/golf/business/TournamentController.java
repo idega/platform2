@@ -874,7 +874,7 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
       order = "12";
     }
     if ( order.equalsIgnoreCase("total_points") ) {
-      order = "13";
+      order = "13 desc";
     }
     if ( order.equalsIgnoreCase("difference") ) {
       order = "14";
@@ -906,8 +906,8 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     if ( order.equalsIgnoreCase("strokes_with_handicap") ) {
       order = "16";
     }
-    if ( order.equalsIgnoreCase("total_points desc") ) {
-      order = "18 desc";
+    if ( order.equalsIgnoreCase("total_par") ) {
+      order = "18";
     }
     if ( order.equalsIgnoreCase("difference") ) {
       order = "19";
