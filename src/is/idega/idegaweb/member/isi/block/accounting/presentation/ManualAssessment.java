@@ -161,7 +161,6 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 		t.add(selectUser, 2, row);
 		
 		t.setAlignment(2, row, "RIGHT");
-
 		
 		if (getUser() != null) {
 			String selectedGroup = iwc.getParameter(LABEL_USERS_GROUPS);
@@ -264,7 +263,9 @@ public class ManualAssessment extends CashierSubWindowTemplate {
 			inputTable.add(submit, 4, row++);	
 			
 			try {
-				Collection entries = getFinanceEntryHome().findAllByUser(getClub(), getDivision(), getUser());
+			    IWTimestamp now = IWTimestamp.RightNow();
+			    now.addYears(-1);
+				Collection entries = getFinanceEntryHome().findAllAssessmentByUser(getClub(), getDivision(), getUser(), now);
 				if (entries != null && !entries.isEmpty()) {
 					Text labelDivision = new Text(iwrb.getLocalizedString(LABEL_DIVISION, "Division"));
 					labelDivision.setFontStyle(IWConstants.BUILDER_FONT_STYLE_LARGE);

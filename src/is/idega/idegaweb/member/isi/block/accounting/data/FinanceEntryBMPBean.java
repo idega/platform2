@@ -21,6 +21,7 @@ import com.idega.data.IDOUtil;
 import com.idega.data.PrimaryKey;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
+import com.idega.util.IWTimestamp;
 
 /**
  * @author palli
@@ -373,6 +374,42 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		return idoFindPKsByQuery(sql);		
 	}
 
+	public Collection ejbFindAllAssessmentByUser(Group club, Group division, User user) throws FinderException {
+		return ejbFindAllAssessmentByUser(club, division, user, null);		
+	}
+
+	public Collection ejbFindAllAssessmentByUser(Group club, Group division, User user, IWTimestamp entriesAfter) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		sql.appendWhereEquals(COLUMN_CLUB_ID, club);
+		if (division != null) {
+			sql.appendAnd();
+			sql.appendEquals(COLUMN_DIVISION_ID, division);
+		}
+		sql.appendAnd();
+		sql.appendEquals(COLUMN_USER_ID, user);
+		sql.appendAnd();
+		sql.append(COLUMN_TYPE);
+		sql.append(" in ('");
+		sql.append(TYPE_ASSESSMENT);
+		sql.append("', '");
+		sql.append(TYPE_MANUAL);
+		sql.append("') ");
+		if (entriesAfter != null) {
+		    sql.appendAnd();
+		    sql.append(COLUMN_DATE_OF_ENTRY);
+		    sql.appendGreaterThanOrEqualsSign();
+		    sql.append(entriesAfter.getDate());
+		}
+		sql.appendOrderBy();
+		sql.append(getIDColumnName());
+		sql.appendDescending();
+		
+		System.out.println("sql = " + sql.toString());
+		
+		return idoFindPKsByQuery(sql);		
+	}
+
 	public Collection ejbFindAllPaymentsByUser(Group club, Group division, User user) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
@@ -384,7 +421,7 @@ public class FinanceEntryBMPBean extends GenericEntity implements FinanceEntry, 
 		sql.appendAnd();
 		sql.appendEquals(COLUMN_USER_ID, user);
 		sql.appendAnd();
-		sql.appendEquals(COLUMN_TYPE, TYPE_PAYMENT);
+		sql.appendEqualsQuoted(COLUMN_TYPE, TYPE_PAYMENT);
 		sql.appendOrderBy();
 		sql.append(getIDColumnName());
 		sql.appendDescending();

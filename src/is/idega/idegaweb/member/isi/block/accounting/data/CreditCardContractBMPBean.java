@@ -160,7 +160,11 @@ public class CreditCardContractBMPBean extends GenericEntity implements CreditCa
 		sql.append(COLUMN_DELETED);
 		sql.append(" is null");
 		sql.appendRightParenthesis();
-		
+		sql.appendOrderBy();
+		sql.append(COLUMN_DIVISION);
+		sql.append(", ");
+		sql.append(COLUMN_GROUP);
+
 		return idoFindPKsByQuery(sql);
 	}	
 }
