@@ -463,7 +463,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
           }
         }        
         Iterator nameIterator = names.iterator();
-        while (collIterator.hasNext())  {
+        while (nameIterator.hasNext())  {
           String name = (String) nameIterator.next();
           String display = resourceBundle.getLocalizedString(name, name);
           optionMap.put(name, display);
