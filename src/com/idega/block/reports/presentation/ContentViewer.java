@@ -123,7 +123,12 @@ public class ContentViewer extends PresentationObjectContainer{
 
       if(iwc.getParameter(prmStart+iInstId)!=null){
         listStart = Integer.parseInt(iwc.getParameter(prmStart+iInstId));
+				iwc.setSessionAttribute(prmStart+iInstId,String.valueOf(listStart));
       }
+			else if(iwc.getSessionAttribute(prmStart+iInstId)!=null){
+			  listStart = Integer.parseInt((String) iwc.getSessionAttribute(prmStart+iInstId));
+			}
+
       iwc.setSessionAttribute(prmListStart+iInstId,new Integer(listStart));
 
       if(iwc.getParameter(sAction+iInstId) != null){
@@ -403,6 +408,15 @@ public class ContentViewer extends PresentationObjectContainer{
   }
 
   public void main(IWContext iwc){
+		/* debug
+		java.util.Enumeration E = iwc.getParameterNames();
+		System.err.println(" ContentViewer parameters :");
+		while(E.hasMoreElements()){
+			String prm = (String) E.nextElement();
+			System.err.println(prm + "\t :"+ iwc.getParameter(prm));
+		}
+		System.err.println();
+		*/
     control(iwc);
   }
 
