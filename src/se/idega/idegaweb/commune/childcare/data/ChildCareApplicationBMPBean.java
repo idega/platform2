@@ -266,7 +266,8 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 	}
 	
 	public void setFromDate(Date date) {
-		setColumn(FROM_DATE,date);
+	    if(date!=null)
+	        setColumn(FROM_DATE,date);
 	}
 	
 	public void setChildId(int id) {
