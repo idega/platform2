@@ -128,19 +128,19 @@ public class IWMarathonConstants {
   public static final String MALE_50_59 = "male_50_59";
   public static final String MALE_60 = "male_60";
   
-  public static final int MAX_NUMBER_DISTANCE_55 = 999;
+  public static final int MAX_NUMBER_DISTANCE_55 = 499;
   public static final int MIN_NUMBER_DISTANCE_55 = 1;
-  public static final int MAX_NUMBER_DISTANCE_42 = 999;
+  public static final int MAX_NUMBER_DISTANCE_42 = 499;
   public static final int MIN_NUMBER_DISTANCE_42 = 1;
-  public static final int MAX_NUMBER_DISTANCE_21 = 1999;
+  public static final int MAX_NUMBER_DISTANCE_21 = 1699;
   public static final int MIN_NUMBER_DISTANCE_21 = 1000;
-  public static final int MAX_NUMBER_DISTANCE_10 = 3999;
+  public static final int MAX_NUMBER_DISTANCE_10 = 2999;
   public static final int MIN_NUMBER_DISTANCE_10 = 2000;
-  public static final int MAX_NUMBER_DISTANCE_7 = 4999;
+  public static final int MAX_NUMBER_DISTANCE_7 = 4599;
   public static final int MIN_NUMBER_DISTANCE_7 = 4000;
   public static final int MAX_NUMBER_DISTANCE_5 = 1999;
   public static final int MIN_NUMBER_DISTANCE_5 = 1;
-  public static final int MAX_NUMBER_DISTANCE_3 = 9999;
+  public static final int MAX_NUMBER_DISTANCE_3 = 6999;
   public static final int MIN_NUMBER_DISTANCE_3 = 5000;
   
   public static final String PROPERTY_SEND_EMAILS = "send_emails";
