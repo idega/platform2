@@ -11,6 +11,7 @@ import is.idega.idegaweb.member.presentation.UserFamilyTab;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.repository.data.ImplementorRepository;
+import com.idega.user.business.UserConstants;
 import com.idega.user.handler.UserNationalRegisterFileImportHandler;
 import com.idega.user.handler.UserNationalRegisterImportFile;
 import com.idega.user.handler.UserPinLookupToGroupImportHandler;
@@ -19,7 +20,6 @@ import com.idega.user.presentation.UserCashierWindow;
 import com.idega.user.presentation.UserClubMemberExchangeWindow;
 import com.idega.user.presentation.UserUpdateClubDivisionTemplate;
 import com.idega.user.presentation.UserWorkReportWindow;
-import com.idega.user.util.ICUserConstants;
 
 /**
  * <p>Title: idegaWeb</p>
@@ -34,7 +34,7 @@ public class IWBundleStarter implements IWBundleStartable {
 
 	public void start(IWBundle starterBundle) {
 		// changing constants, setting the right help bundle in the com.idega.user bundle
-		ICUserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
+		UserConstants.HELP_BUNDLE_IDENTFIER = "is.idega.idegaweb.member.isi";
 		// add implementors for the com.idega.user bundle
 		ImplementorRepository repository =  ImplementorRepository.getInstance();
 		repository.addImplementor(FamilyTab.class, UserFamilyTab.class);
