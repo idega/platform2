@@ -20,6 +20,7 @@ public class ClassIntrospector {
   BeanInfo info;
   private static String INITIALIZE_ATTRIBUTES="initializeAttributes";
   private static String GET_ENTITY_NAME="getEntityName";
+  private static String GET_ID_COLUMN_NAME="getIDColumnName";
   //private static String DELETE="delete";
   private static String UPDATE="update";
   private static String INSERT="insert";
@@ -77,7 +78,7 @@ public class ClassIntrospector {
         if(methodName.equals(this.INITIALIZE_ATTRIBUTES)){
           //v.add(m);
         }
-        if(methodName.equals(this.SET_DEFAULT_VALUES)){
+        else if(methodName.equals(this.SET_DEFAULT_VALUES)){
           //v.add(m);
         }
         else if(methodName.equals(this.INSERT_START_DATA)){
@@ -100,6 +101,9 @@ public class ClassIntrospector {
         }
         else if(methodName.equals(this.GET_NAME_OF_MIDDLE_TABLE)){
           //v.add(m);
+        }
+        else if(methodName.equals(this.GET_ID_COLUMN_NAME)){
+        	//v.add(m);
         }
         else if(methodName.startsWith(this.EJB_START)){
           //v.add(m);
