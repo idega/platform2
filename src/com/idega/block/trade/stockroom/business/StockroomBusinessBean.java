@@ -88,7 +88,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
   }
 
   public  float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time) throws SQLException  {
-    return getPrice(productPriceId, productId, priceCategoryId, currencyId,time, -1, -1);
+    return getPrice(productPriceId, productId, priceCategoryId, time, -1, -1);
   }
 
   public  ProductPrice getPrice(Product product) throws RemoteException {
@@ -117,10 +117,16 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
     return null;
   }
 
+  public float getPrice(int productPriceId, int productId, int priceCategoryId, Timestamp time, int timeframeId, int addressId) throws SQLException  {
+    return getPrice(productPriceId, productId, priceCategoryId, -1, time, timeframeId, addressId);
+  }
+
+  /**
+   * @deprecated
+   */
   public float getPrice(int productPriceId, int productId, int priceCategoryId, int currencyId, Timestamp time, int timeframeId, int addressId) throws SQLException  {
     /**@todo: Implement this com.idega.block.trade.stockroom.business.SupplyManager method*/
     /*skila verði ef PRICETYPE_PRICE annars verði með tilliti til afsláttar*/
-
     try {
         PriceCategory cat = ((com.idega.block.trade.stockroom.data.PriceCategoryHome)com.idega.data.IDOLookup.getHomeLegacy(PriceCategory.class)).findByPrimaryKeyLegacy(priceCategoryId);
         ProductPrice ppr = ((ProductPrice)com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getStaticInstance(ProductPrice.class));
@@ -161,8 +167,8 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
             buffer.append(" and ");
             buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceCategoryId()+" = "+priceCategoryId);
             buffer.append(" and ");
-            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameCurrencyId()+" = "+currencyId);
-            buffer.append(" and ");
+//            buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNameCurrencyId()+" = "+currencyId);
+//            buffer.append(" and ");
             buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceDate()+" <= '"+time.toString()+"'");
             buffer.append(" and ");
             buffer.append("p."+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.getColumnNamePriceType()+" = "+com.idega.block.trade.stockroom.data.ProductPriceBMPBean.PRICETYPE_PRICE);
@@ -218,7 +224,7 @@ public class StockroomBusinessBean extends IBOServiceBean implements StockroomBu
           }
 
           float pr = getPrice(-1, productId,cat.getParentId(),currencyId,time, timeframeId, addressId);
-          //System.err.println("Parent price : "+pr);
+          System.err.println("Parent price : "+pr);
           return pr*((100-disc) /100);
         }else{
           throw new ProductPriceException("No Price Was Found");

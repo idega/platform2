@@ -146,7 +146,11 @@ public class OnlineBookingReport extends TravelManager implements Report, Admini
     for (int i = 0; i < bookings.length; i++) {
       ++row;
       gBooking = (GeneralBooking) bookings[i];
-      stamp = new IWTimestamp(gBooking.getBookingDate());
+      if (this.searchByDateOfBooking) {
+        stamp = new IWTimestamp(gBooking.getDateOfBooking());
+      }else {
+        stamp = new IWTimestamp(gBooking.getBookingDate());
+      }
       count = bookings[i].getTotalCount();
       tCount += count;
       price = getBooker(iwc).getBookingPrice(iwc, bookings[i]);
