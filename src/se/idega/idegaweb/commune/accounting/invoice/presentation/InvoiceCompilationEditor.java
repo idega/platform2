@@ -6,6 +6,8 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.data.Address;
+import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryOutputStream;
 import com.idega.presentation.IWContext;
@@ -55,6 +57,8 @@ import se.idega.idegaweb.commune.accounting.posting.data.PostingField;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
+import se.idega.idegaweb.commune.accounting.regulations.data.Regulation;
+import se.idega.idegaweb.commune.accounting.regulations.data.RegulationHome;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
 import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
 
@@ -71,10 +75,10 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRule;
  * <li>Amount VAT = Momsbelopp i kronor
  * </ul>
  * <p>
- * Last modified: $Date: 2003/12/01 08:22:28 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 09:55:55 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.72 $
+ * @version $Revision: 1.73 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -229,7 +233,8 @@ public class InvoiceCompilationEditor extends AccountingBlock {
             ACTION_SHOW_EDIT_RECORD_FORM = 8,
             ACTION_SAVE_RECORD = 9,
             ACTION_SHOW_NEW_RECORD_FORM = 10,
-            ACTION_GENERATE_COMPILATION_PDF = 11;
+            ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT = 11,
+            ACTION_GENERATE_COMPILATION_PDF = 12;
 
     private static final SimpleDateFormat periodFormatter
         = new SimpleDateFormat ("yyMM");
@@ -286,6 +291,7 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     break;
 
                 case ACTION_SHOW_NEW_RECORD_FORM:
+                case ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT:
                     showNewRecordForm (context);
                     break;
 
@@ -377,14 +383,6 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         viewLink.setTarget ("letter_window_" + docId);
         add (createMainTable (INVOICE_COMPILATION_KEY,
                               INVOICE_COMPILATION_DEFAULT, viewLink));
-    }
-
-    private int dayDiff (final Date date1, final Date date2) {
-        long millis1 = date1.getTime ();
-        long millis2 = date2.getTime ();
-        long millisDiff = millis2 - millis1;
-        return 0 <= millisDiff
-                ? 1 + (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
     }
 
     private void newRecord (final IWContext context)
@@ -527,11 +525,37 @@ public class InvoiceCompilationEditor extends AccountingBlock {
     }
 
     private void showNewRecordForm (final IWContext context)
-        throws RemoteException, FinderException {
+        throws RemoteException, FinderException, IDOLookupException {
         final java.util.Map inputs = new java.util.HashMap ();
         final String nowPeriod = periodFormatter.format (new Date ());
         final InvoiceHeader header = getInvoiceHeader (context);
         final User custodian = header.getCustodian ();
+        final Integer actionId = getIntegerParameter (context, ACTION_KEY);
+        final InvoiceBusiness business = getInvoiceBusiness (context);
+        final String searchString = context.getParameter (RULE_TEXT_KEY);
+        final java.sql.Date period = header.getPeriod ();
+        final String categoryId =  header.getSchoolCategoryID ();
+        if (null != searchString && null != period && null != categoryId
+            && actionId.intValue ()
+            == ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT) {
+            final RegulationHome home = getRegulationHome ();
+            final Collection regulations
+                    = home.findRegulationsByNameNoCaseDateAndCategory
+                    (searchString, period, categoryId);
+            add ("regulations=" + regulations);
+        } else {
+            inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY));
+            inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
+            inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
+            inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
+                        (business.getAllRegulationSpecTypes ()));
+            inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
+                        (business.getAllVatRules ()));
+            inputs.put (OWN_POSTING_KEY, getPostingParameterForm
+                        (context, OWN_POSTING_KEY));
+            inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
+                    (context, DOUBLE_POSTING_KEY));
+        }
         inputs.put (INVOICE_RECEIVER_KEY, getSmallText (getUserInfo
                                                         (custodian)));
         inputs.put (INVOICE_TEXT_KEY, getStyledInput (INVOICE_TEXT_KEY));
@@ -543,27 +567,15 @@ public class InvoiceCompilationEditor extends AccountingBlock {
                     (PLACEMENT_START_PERIOD_KEY, nowPeriod));
         inputs.put (PLACEMENT_END_PERIOD_KEY, getStyledInput
                     (PLACEMENT_END_PERIOD_KEY, nowPeriod));
-        inputs.put (AMOUNT_KEY, getStyledInput (AMOUNT_KEY));
-        inputs.put (VAT_AMOUNT_KEY, getStyledInput (VAT_AMOUNT_KEY));
         inputs.put (NOTE_KEY, getStyledInput (NOTE_KEY));
-        final InvoiceBusiness business = getInvoiceBusiness (context);
-        inputs.put (REGULATION_SPEC_TYPE_KEY, getLocalizedDropdown
-                    (business.getAllRegulationSpecTypes ()));
-        inputs.put (OWN_POSTING_KEY, getPostingParameterForm (context,
-                                                              OWN_POSTING_KEY));
-        inputs.put (DOUBLE_POSTING_KEY, getPostingParameterForm
-                    (context, DOUBLE_POSTING_KEY));
-        inputs.put (VAT_RULE_KEY,  getLocalizedDropdown
-                    (business.getAllVatRules ()));
         inputs.put (ACTION_KEY, getSubmitButton
                     (ACTION_NEW_RECORD, CREATE_INVOICE_RECORD_KEY,
                      CREATE_INVOICE_RECORD_DEFAULT));
         inputs.put (HEADER_KEY, localize (CREATE_INVOICE_RECORD_KEY,
                                           CREATE_INVOICE_RECORD_DEFAULT));
-        inputs.put (RULE_TEXT_KEY, getStyledInput (RULE_TEXT_KEY));
         inputs.put (SEARCH_RULE_TEXT_KEY, getSubmitButton
-                    (ACTION_SHOW_NEW_RECORD_FORM, SEARCH_RULE_TEXT_KEY,
-                     SEARCH_RULE_TEXT_DEFAULT));
+                    (ACTION_SHOW_NEW_RECORD_FORM_AND_SEARCH_RULE_TEXT,
+                     SEARCH_RULE_TEXT_KEY, SEARCH_RULE_TEXT_DEFAULT));
         inputs.put (PLACEMENT_KEY, getPlacementsDropdown (context, header));
         renderRecordDetailsOrForm (context, inputs);
     }
@@ -1220,6 +1232,14 @@ public class InvoiceCompilationEditor extends AccountingBlock {
 		table.getDefaultCell ().setHorizontalAlignment (Element.ALIGN_LEFT);
 		addPhrase (table, record.getNotes ());
 	}
+
+    private int dayDiff (final Date date1, final Date date2) {
+        long millis1 = date1.getTime ();
+        long millis2 = date2.getTime ();
+        long millisDiff = millis2 - millis1;
+        return 0 <= millisDiff
+                ? 1 + (int) (millisDiff / (1000 * 60 * 60 * 24)) : 0;
+    }
 
 	private static float mmToPoints (final float mm) {
 		return mm*72/25.4f;
@@ -2102,27 +2122,32 @@ public class InvoiceCompilationEditor extends AccountingBlock {
         return dropdown;
     }
 
-	private SchoolBusiness getSchoolBusiness
+    private static RegulationHome getRegulationHome ()
+        throws IDOLookupException {
+        return (RegulationHome) IDOLookup.getHome (Regulation.class);
+    }
+
+	private static SchoolBusiness getSchoolBusiness
         (final IWContext context) throws RemoteException {
-		return (SchoolBusiness) IBOLookup.getSessionInstance
+		return (SchoolBusiness) IBOLookup.getServiceInstance
                 (context, SchoolBusiness.class);	
 	}
 
-	private MemberFamilyLogic getMemberFamilyLogic
+	private static MemberFamilyLogic getMemberFamilyLogic
         (final IWContext context) throws RemoteException {
-		return (MemberFamilyLogic) IBOLookup.getSessionInstance
+		return (MemberFamilyLogic) IBOLookup.getServiceInstance
                 (context, MemberFamilyLogic.class);	
 	}
 
-	private InvoiceBusiness getInvoiceBusiness
+	private static InvoiceBusiness getInvoiceBusiness
         (final IWContext context) throws RemoteException {
-		return (InvoiceBusiness) IBOLookup.getSessionInstance
+		return (InvoiceBusiness) IBOLookup.getServiceInstance
                 (context, InvoiceBusiness.class);	
 	}
 
-	private PostingBusiness getPostingBusiness
+	private static PostingBusiness getPostingBusiness
         (final IWContext context) throws RemoteException {
-		return (PostingBusiness) IBOLookup.getSessionInstance
+		return (PostingBusiness) IBOLookup.getServiceInstance
                 (context, PostingBusiness.class);	
 	}
 }

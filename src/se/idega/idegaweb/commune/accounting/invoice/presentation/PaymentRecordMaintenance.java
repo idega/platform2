@@ -50,11 +50,11 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneSession;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2003/12/01 08:22:29 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/01 09:55:55 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -1418,25 +1418,25 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 
 	private SchoolCommuneSession getSchoolCommuneSession
         (final IWContext context) throws RemoteException {
-		return (SchoolCommuneSession) IBOLookup.getSessionInstance
+		return (SchoolCommuneSession) IBOLookup.getServiceInstance
                 (context, SchoolCommuneSession.class);	
 	}
 
 	private SchoolBusiness getSchoolBusiness
         (final IWContext context) throws RemoteException {
-		return (SchoolBusiness) IBOLookup.getSessionInstance
+		return (SchoolBusiness) IBOLookup.getServiceInstance
                 (context, SchoolBusiness.class);	
 	}
 
 	private PostingBusiness getPostingBusiness
         (final IWContext context) throws RemoteException {
-		return (PostingBusiness) IBOLookup.getSessionInstance
+		return (PostingBusiness) IBOLookup.getServiceInstance
                 (context, PostingBusiness.class);	
 	}
 
 	private InvoiceBusiness getInvoiceBusiness
         (final IWContext context) throws RemoteException {
-		return (InvoiceBusiness) IBOLookup.getSessionInstance
+		return (InvoiceBusiness) IBOLookup.getServiceInstance
                 (context, InvoiceBusiness.class);	
 	}
 }
