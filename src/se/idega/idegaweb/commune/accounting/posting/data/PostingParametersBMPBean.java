@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.22 2003/12/03 18:02:10 joakim Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.23 2003/12/08 16:13:56 staffan Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -40,10 +40,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.22 2003/12/03 18:02:10 joakim Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.23 2003/12/08 16:13:56 staffan Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -350,8 +350,16 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 
 		sql.appendSelectAllFrom(this);
 
+        boolean sqlHasWhere = false;
+
 		if (date != null) {
-			sql.appendWhere(COLUMN_PERIODE_FROM);
+            if (sqlHasWhere) {
+                sql.appendAnd ();
+            } else {
+                sql.appendWhere ();
+                sqlHasWhere = true;
+            }
+			sql.append(COLUMN_PERIODE_FROM);
 			sql.appendLessThanOrEqualsSign().append("'"+date+"'");
 			sql.appendAnd().append(COLUMN_PERIODE_TO);
 			sql.appendGreaterThanOrEqualsSign().append("'"+date+"'");
@@ -360,30 +368,59 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		}
 
 		if (act_id > 0) {
-			sql.appendAndEquals(COLUMN_ACTIVITY_ID, act_id);
+            if (sqlHasWhere) {
+                sql.appendAnd ();
+            } else {
+                sql.appendWhere ();
+                sqlHasWhere = true;
+            }
+			sql.appendEquals(COLUMN_ACTIVITY_ID, act_id);
 		}
 
 		if (reg_id > 0) {
-			sql.appendAndEquals(COLUMN_REG_SPEC_TYPE_ID, reg_id);
+            if (sqlHasWhere) {
+                sql.appendAnd ();
+            } else {
+                sql.appendWhere ();
+                sqlHasWhere = true;
+            }
+			sql.appendEquals(COLUMN_REG_SPEC_TYPE_ID, reg_id);
 		}
 
 		if (com_id != null) {
 			if (com_id.length() != 0) {
-				sql.appendAndEqualsQuoted(COLUMN_COMPANY_TYPE, com_id);
+                if (sqlHasWhere) {
+                    sql.appendAnd ();
+                } else {
+                    sql.appendWhere ();
+                    sqlHasWhere = true;
+                }
+				sql.appendEqualsQuoted(COLUMN_COMPANY_TYPE, com_id);
 			}
 		}
 
 		if (com_bel_id > 0) {
-			sql.appendAndEquals(COLUMN_COMMUNE_BELONGING_ID, com_bel_id);
+            if (sqlHasWhere) {
+                sql.appendAnd ();
+            } else {
+                sql.appendWhere ();
+                sqlHasWhere = true;
+            }
+			sql.appendEquals(COLUMN_COMMUNE_BELONGING_ID, com_bel_id);
 		}
 
 		if (school_year > 0) {
-			sql.appendWhere(COLUMN_SCHOOL_YEAR1_ID);
+            if (sqlHasWhere) {
+                sql.appendAnd ();
+            } else {
+                sql.appendWhere ();
+                sqlHasWhere = true;
+            }
+			sql.append(COLUMN_SCHOOL_YEAR1_ID);
 			sql.appendLessThanOrEqualsSign().append("'"+school_year+"'");
 			sql.appendAnd().append(COLUMN_SCHOOL_YEAR2_ID);
 			sql.appendGreaterThanOrEqualsSign().append("'"+school_year+"'");
 		}
-
 		return idoFindOnePKByQuery(sql);
 	}
 

@@ -57,7 +57,11 @@ import com.idega.util.IWTimestamp;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * @author Joakim
+ * Last modified: $Date: 2003/12/08 16:13:56 $ by $Author: staffan $
+ *
+ * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @version $Revision: 1.35 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
