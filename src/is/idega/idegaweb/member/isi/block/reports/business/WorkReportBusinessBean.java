@@ -1926,6 +1926,10 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 			while (divs.hasNext()) {
 				Group group = (Group) divs.next();
 				WorkReportGroup workReportGroup = getLeagueFromClubDivision(group, year);
+				if(workReportGroup==null){
+					System.err.println("[WorkReportBusiness] The club division "+group.getName()+" is not connected to a league!!");
+					continue;
+				}
 				//3.
 				Collection playerGroups = groupBusiness.getChildGroupsRecursiveResultFiltered(group, playerType, true);
 				if (playerGroups != null && !playerGroups.isEmpty()) {
