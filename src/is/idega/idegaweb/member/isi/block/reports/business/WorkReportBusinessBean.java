@@ -1062,6 +1062,14 @@ public class WorkReportBusinessBean extends MemberUserBusinessBean implements Me
 		return true;
 	}
 
+	/**
+	 * A method to import the account part of the ISI workreports. A bit of a hack, since the format 
+	 * of the Excel file is "constant", and so this import assumes that the positions of the keys won't 
+	 * change. This cou
+	 */
+	public int exportToExcel(int regionalUnionId, int year, int templateId) throws WorkReportImportException {
+		return -1;
+	}
 
 	/**
 	 * @param year of report

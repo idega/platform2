@@ -318,7 +318,6 @@ public class WorkReportWindow extends IWAdminWindow {
 			menu.add(editList, 1, 7);
 
 			//insert ugly hax
-
 			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
 				menu.add(reportsOverview, 1, 8);
 			}
@@ -335,7 +334,7 @@ public class WorkReportWindow extends IWAdminWindow {
 				menu.add(statsList, 1, 12);
 			}
 			
-//			if (WorkReportConstants.WR_USER_TYPE_REGIONAL_UNION.equals(type) || WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
+//			if (WorkReportConstants.WR_USER_TYPE_FEDERATION.equals(type)) {
 				menu.add(createReports, 1, 13);
 //			}
 		}
