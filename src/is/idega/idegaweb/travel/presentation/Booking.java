@@ -73,6 +73,7 @@ public class Booking extends TravelManager {
 
   private idegaTimestamp stamp;
   private int iMax = 0;
+  private int iMin = 0;
   private int iBookings = 0;
 
   public Booking() {
@@ -366,9 +367,15 @@ public class Booking extends TravelManager {
           sDay = sDay.getServiceDay(this.productId, stamp.getDayOfWeek());
 
           if ((this.iMax <= this.iBookings) && (this.iMax > 0)) {
-            table.add(super.getHeaderText(iwrb.getLocalizedString("travel.note_fully_booked","NOTE!!! Fully booked")), 1, row);
+            table.add(super.getHeaderText(iwrb.getLocalizedString("travel.attention_fully_booked","Attention! Fully booked")), 1, row);
             table.add(Text.BREAK ,1,row);
           }
+
+          if ((this.iMin > this.iBookings) && (this.iMin > 0)) {
+            table.add(super.getHeaderText(iwrb.getLocalizedString("travel.attention_under_booked","Attention! Booked seats are fewer than the service minimum.")), 1, row);
+            table.add(Text.BREAK ,1,row);
+          }
+
 
           table.add(Text.BREAK ,1,row);
           table.add(getBookingForm(iwc),1,row);
@@ -589,6 +596,7 @@ public class Booking extends TravelManager {
       int iBooked =0;
       int iInquery=0;
       int iAvailable=0;
+      int iMin = 0;
 
 
       Text dateText = (Text) theBoldText.clone();
@@ -681,11 +689,16 @@ public class Booking extends TravelManager {
               sDay = sDay.getServiceDay(this.productId, stamp.getDayOfWeek());
               if (sDay != null) {
                 iCount = sDay.getMax();
+                iMin = sDay.getMin();
                 if (iCount < 1) {
                   iCount = tour.getTotalSeats();
                 }
+                if (iMin < 1) {
+                  iMin = tour.getMinimumSeats();
+                }
               }else {
                 iCount = tour.getTotalSeats();
+                iMin = tour.getMinimumSeats();
               }
             }catch (Exception e) {
               e.printStackTrace(System.err);
@@ -721,6 +734,7 @@ public class Booking extends TravelManager {
 
       this.iMax = iCount;
       this.iBookings = iBooked;
+      this.iMin = iMin;
 
       table.add(dateText,1,row);
 
