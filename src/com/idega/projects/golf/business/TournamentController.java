@@ -496,8 +496,8 @@ public class TournamentController{
             if (useBorder) {
                 table.setBorder(0);
             }
-            table.setWidth("90%");
-            table.setCellpadding(2);
+            table.setWidth("100%");
+            table.setCellpadding(1);
             table.setCellspacing(1);
         form.add(table);
         int row = 1;
@@ -665,9 +665,10 @@ public class TournamentController{
 				time = new com.idega.jmodule.object.Image("http://clarke.idega.is/time.swt?type=gif&grc=true&time="+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()),extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute()));
 				table.add(time,1,row);
                                 table.setAlignment(1,row,"center");
+                                table.setVerticalAlignment(1,row,"middle");
 //				table.add("<b>&nbsp;"+extraZero.format(startHour.getHour())+":"+extraZero.format(startHour.getMinute())+"</b>",1,row);
 				table.mergeCells(1,row,1,row + (numberInGroup -1));
-				table.setVerticalAlignment(1,row,"top");
+//				table.setVerticalAlignment(1,row,"top");
 
 				sView = TournamentController.getStartingtimeView(tournamentRound.getID(),"startingtime_date","'"+startHour.toSQLDateString()+"'","grup_num",groupCounter+"",tee_number,"");
 				//sView = (StartingtimeView[]) (new StartingtimeView()).findAll("Select sv.* from startingtime_view sv, tournament_round_startingtime trs where sv.startingtime_id = trs.startingtime_id AND trs.tournament_id = "+tournamentRound.getID()+" AND sv.startingtime_date = '" +startHour.toSQLDateString()+"' AND sv.grup_num ="+groupCounter );
