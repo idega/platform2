@@ -20,6 +20,7 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.CloseButton;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.Parameter;
@@ -193,9 +194,14 @@ public class UserRelationConnector extends Window {
 
 			mainTable.add(Text.getNonBrakingSpace(), 1, row);
 			mainTable.add(getActionButton(relatedUser, user, type), 1, row);
-
+			row++;
 			mainTable.add(searcher.getUniqueUserParameter((Integer) relatedUser.getPrimaryKey()));
 		}
+		
+		CloseButton cancelButton = new CloseButton(iwrb.getLocalizedString("cancel","Cancel"));
+		cancelButton.setStyleAttribute(buttonStyle);
+		
+		mainTable.add(cancelButton,1,row);
 
 		Form form = new Form();
 		//if (user != null)
@@ -244,6 +250,7 @@ public class UserRelationConnector extends Window {
 protected SubmitButton getActionButton(String display, int action, String warningMsg) {
 	SubmitButton btnAction = new SubmitButton(display, PARAM_ACTION, Integer.toString(action));
 	btnAction.setOnClickConfirm(warningMsg);
+	btnAction.setStyleAttribute(buttonStyle);
 	return btnAction;
 }
 
