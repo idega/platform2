@@ -1,5 +1,5 @@
 /*
- * $Id: DocumentServiceBean.java,v 1.2 2004/11/16 08:22:39 aron Exp $
+ * $Id: DocumentServiceBean.java,v 1.3 2004/12/05 09:50:32 laddi Exp $
  * Created on 15.10.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -18,7 +18,6 @@ import java.util.Iterator;
 
 import javax.ejb.CreateException;
 
-import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.MessageConstants;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
@@ -45,10 +44,10 @@ import com.lowagie.text.pdf.PdfReader;
 
 /**
  * 
- *  Last modified: $Date: 2004/11/16 08:22:39 $ by $Author: aron $
+ *  Last modified: $Date: 2004/12/05 09:50:32 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DocumentServiceBean extends IBOServiceBean  implements DocumentService{
     
@@ -301,9 +300,4 @@ public class DocumentServiceBean extends IBOServiceBean  implements DocumentServ
     public MessageBusiness getMessageService()throws IBOLookupException {
         return (MessageBusiness) getServiceInstance(MessageBusiness.class);
 	}
-    
-    private CommuneUserBusiness getUserService() throws IBOLookupException{
-        return (CommuneUserBusiness) getServiceInstance(CommuneUserBusiness.class);
-        
-    }
 }
