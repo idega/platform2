@@ -4,12 +4,11 @@ package is.idega.idegaweb.campus.presentation;
 
 import is.idega.idegaweb.campus.presentation.Edit;
 import is.idega.idegaweb.campus.data.SystemProperties;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import java.util.List;
 import java.sql.SQLException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.DropdownMenu;
@@ -34,7 +33,7 @@ import com.idega.idegaweb.IWResourceBundle;
  * @version 1.0
  */
 
-public class SysPropsSetter extends PresentationObjectContainer{
+public class SysPropsSetter extends Block{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
   protected IWResourceBundle iwrb;
@@ -47,6 +46,14 @@ public class SysPropsSetter extends PresentationObjectContainer{
 
   public SysPropsSetter() {
 
+  }
+
+  public String getLocalizedNameKey(){
+    return "systemproperties";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Properties";
   }
 
   public String getBundleIdentifier(){

@@ -20,7 +20,7 @@ import com.idega.block.building.business.ApartmentTypeComplexHelper;
 import com.idega.block.building.data.*;
 import com.idega.core.user.data.User;
 import com.idega.data.EntityFinder;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idega.idegaweb.campus.block.application.business.CampusApplicationFinder;
@@ -50,7 +50,7 @@ import java.sql.SQLException;
  * @version 1.0
  */
 
-public class CampusAllocator extends PresentationObjectContainer{
+public class CampusAllocator extends Block{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
@@ -74,8 +74,12 @@ public class CampusAllocator extends PresentationObjectContainer{
   protected boolean fontBold = false;
   protected String styleAttribute = "font-size: 8pt";
 
-  public CampusAllocator(String sHeader) {
-    this();
+  public String getLocalizedNameKey(){
+    return "allocator";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Allocator";
   }
 
   public CampusAllocator() {

@@ -10,7 +10,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.Image;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.util.idegaTimestamp;
 import com.idega.util.idegaCalendar;
@@ -36,7 +36,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 
 
-public class CampusApprover extends PresentationObjectContainer{
+public class CampusApprover extends Block{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
@@ -56,8 +56,12 @@ public class CampusApprover extends PresentationObjectContainer{
   Auka litur örlítið dekkri (í lagi að nota líka) # CBCFD3
   */
 
-  public CampusApprover() {
+  public String getLocalizedNameKey(){
+    return "approver";
+  }
 
+  public String getLocalizedNameValue(){
+    return "Approver";
   }
 
   protected void control(IWContext iwc){

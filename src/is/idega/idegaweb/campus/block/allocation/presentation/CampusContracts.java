@@ -8,7 +8,7 @@ import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
 import com.idega.block.finance.presentation.*;
 import com.idega.core.user.data.User;
@@ -41,7 +41,7 @@ import java.util.List;
  * @version 1.0
  */
 
-public class CampusContracts extends PresentationObjectContainer{
+public class CampusContracts extends Block{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
@@ -63,8 +63,12 @@ public class CampusContracts extends PresentationObjectContainer{
   private String conPrm = "contract_status";
   private String sessConPrm = "sess_con_status";
 
-  public CampusContracts() {
-    super();
+  public String getLocalizedNameKey(){
+    return "contracts";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Contracts";
   }
 
   protected void control(IWContext iwc){

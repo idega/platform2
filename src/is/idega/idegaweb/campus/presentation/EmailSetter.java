@@ -25,7 +25,7 @@ import com.idega.data.EntityFinder;
  * @version 1.0
  */
 
-public class EmailSetter extends PresentationObjectContainer{
+public class EmailSetter extends Block{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.emails";
   protected IWResourceBundle iwrb;
@@ -34,8 +34,12 @@ public class EmailSetter extends PresentationObjectContainer{
   private String localesParameter="iw_locales";
   private boolean isAdmin = false;
 
-  public EmailSetter() {
+  public String getLocalizedNameKey(){
+    return "emails";
+  }
 
+  public String getLocalizedNameValue(){
+    return "Emails";
   }
 
   public String getBundleIdentifier(){

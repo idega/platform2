@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import com.idega.presentation.IWContext;
 import is.idega.idegaweb.campus.presentation.Edit;
 import com.idega.presentation.PresentationObject;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.TextInput;
 import com.idega.presentation.ui.DropdownMenu;
@@ -34,13 +34,21 @@ import is.idega.idegaweb.campus.presentation.CampusLinkFactory;
  * @version 1.0
  */
 
-public class AprtTypePeriodMaker extends PresentationObjectContainer{
+public class AprtTypePeriodMaker extends Block{
 
   private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
   private boolean isAdmin = false;
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
 
+
+  public String getLocalizedNameKey(){
+    return "periods";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Periods";
+  }
 
   public String getBundleIdentifier(){
     return IW_BUNDLE_IDENTIFIER;

@@ -5,7 +5,7 @@ import is.idega.idegaweb.campus.presentation.Edit;
 import com.idega.presentation.text.*;
 import com.idega.presentation.ui.*;
 import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.presentation.PresentationObject;
 import com.idega.presentation.IWContext;
 import com.idega.idegaweb.IWBundle;
@@ -27,7 +27,7 @@ import java.util.List;
  */
 
 
-public class SubjectMaker extends PresentationObjectContainer{
+public class SubjectMaker extends Block{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final String strAction = "fin_action";
@@ -37,8 +37,12 @@ public class SubjectMaker extends PresentationObjectContainer{
   protected IWBundle iwb;
 
 
-  public SubjectMaker() {
+  public String getLocalizedNameKey(){
+    return "subjects";
+  }
 
+  public String getLocalizedNameValue(){
+    return "Subjects";
   }
 
   protected void control(IWContext iwc){

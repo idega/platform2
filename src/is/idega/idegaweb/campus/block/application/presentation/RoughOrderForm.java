@@ -10,7 +10,7 @@ import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.Table;
-import com.idega.presentation.PresentationObjectContainer;
+import com.idega.presentation.Block;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.core.accesscontrol.business.AccessControl;
 import java.util.List;
@@ -21,11 +21,19 @@ import java.sql.SQLException;
  * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
-public class RoughOrderForm extends PresentationObjectContainer {
+public class RoughOrderForm extends Block {
   private final int statusEnteringPage_ = 0;
   private final int statusSubject_ = 1;
   private boolean isAdmin_ = false;
   private static final String IW_RESOURCE_BUNDLE = "is.idega.idegaweb.campus";
+
+  public String getLocalizedNameKey(){
+    return "roughorder";
+  }
+
+  public String getLocalizedNameValue(){
+    return "Roughorder";
+  }
 
   protected IWResourceBundle iwrb_;
 
