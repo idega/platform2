@@ -89,7 +89,6 @@ public class CampusMenu extends Block implements Campus{
     int iHeight = 18;
 
     int row = 1;
-    CampusLinkFactory CF = new CampusLinkFactory();
 
     Image office = (iAct != ACT2?iwrb.getImage("/menu/office.gif","/menu/office_o.gif","Office",iWidth,iHeight):iwrb.getImage("/menu/office1.gif",iWidth,iHeight));
     Link lOffice = new Link(office);

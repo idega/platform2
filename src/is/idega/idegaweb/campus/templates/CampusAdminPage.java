@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAdminPage.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: CampusAdminPage.java,v 1.2 2002/01/17 18:06:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -29,9 +29,9 @@ public class CampusAdminPage extends AdminPage{
     InsertBottomLogo();
 
     addMenuTitle(new TitleIcons(TitleIcons.MAINMENU));
-    addTopLeft(new Menu());
+    addTopLeft(new CampusMenu());
     addMainTitle(new Title());
-    addTabs(new Tabber());
+    addTabs(new CampusTabber());
 
   }
 }

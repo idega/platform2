@@ -8,11 +8,11 @@ import java.util.Vector;
 import com.idega.util.idegaTimestamp;
 
 /**
- * Title:
+ * Title:   idegaclasses
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
 

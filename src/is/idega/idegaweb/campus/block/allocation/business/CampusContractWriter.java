@@ -17,7 +17,7 @@ import is.idega.idegaweb.campus.block.allocation.data.Contract;
 import is.idega.idegaweb.campus.block.allocation.data.ContractText;
 /** @todo  */
 // get rid of this interconnection
-import is.idega.idegaweb.campus.block.finance.data.TariffIndex;
+import com.idega.block.finance.data.TariffIndex;
 import java.io.FileOutputStream;
 import java.util.List;
 import java.util.StringTokenizer;

@@ -27,7 +27,7 @@ import java.sql.SQLException;
 
 public class ApartmentSerie extends PresentationObjectContainer {
   protected boolean isAdmin = false;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.building";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   public ApartmentSerie() {

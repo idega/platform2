@@ -28,7 +28,7 @@ import com.idega.data.EntityFinder;
 
 public class ContractTextSetter extends com.idega.presentation.Block{
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   private final static String IS ="IS";
   private final static String EN ="EN";
   private final static String TIS ="TIS";

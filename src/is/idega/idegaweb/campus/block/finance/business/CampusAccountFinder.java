@@ -10,7 +10,7 @@ import java.util.Vector;
 import com.idega.data.EntityFinder;
 import is.idega.idegaweb.campus.data.ContractAccountApartment;
 import is.idega.idegaweb.campus.data.ContractAccounts;
-import is.idega.idegaweb.campus.block.finance.data.TariffIndex;
+import com.idega.block.finance.data.TariffIndex;
 
 /**
  *

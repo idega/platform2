@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocation.java,v 1.4 2002/01/10 01:06:18 aron Exp $
+ * $Id: CampusAllocation.java,v 1.5 2002/01/17 18:06:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -43,7 +43,7 @@ import com.idega.idegaweb.IWResourceBundle;
  */
 public class CampusAllocation extends Block{
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   public final static String FRAME_NAME = "cal_rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;

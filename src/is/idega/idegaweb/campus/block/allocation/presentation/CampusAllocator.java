@@ -41,19 +41,20 @@ import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
 import java.sql.SQLException;
+
 /**
- * Title:
+ * Title:   idegaclasses
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
 
 public class CampusAllocator extends Block{
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private String redColor = "#942829";
@@ -101,6 +102,7 @@ public class CampusAllocator extends Block{
   }
 
   protected void control(IWContext iwc){
+    debugParameters(iwc);
     iwrb = getResourceBundle(iwc);
     iwb = getBundle(iwc);
     this.fontSize = 1;
@@ -770,8 +772,10 @@ public class CampusAllocator extends Block{
         contractDateTo = new idegaTimestamp();
         contractDateFrom = new idegaTimestamp();
       }
-      if(from != null)
+      if(from != null){
         contractDateFrom = from;
+        T.add(new HiddenInput("from",from.toString()));
+      }
 
        int year =  idegaTimestamp.RightNow().getYear();
       dateFrom.setYearRange(year-2,year+5);
@@ -854,12 +858,18 @@ public class CampusAllocator extends Block{
     String sApplicantId = iwc.getParameter("applicantid");
     String sDateFrom = iwc.getParameter("contract_date_from");
     String sDateTo = iwc.getParameter("contract_date_to");
+    String sMustFrom = iwc.getParameter("from");
+    idegaTimestamp mustBeFrom = sMustFrom !=null ? new idegaTimestamp(sMustFrom):null;
+
     if( sDateFrom!=null && sDateTo!=null){
+      idegaTimestamp from = new idegaTimestamp(sDateFrom);
+      idegaTimestamp to = new idegaTimestamp(sDateTo);
+      if(mustBeFrom!=null && mustBeFrom.isLaterThanOrEquals(from))
+        return false;
       if(sApplicantId !=null && sApartmentId!=null ){
         int iApartmentId = Integer.parseInt(sApartmentId);
         int iApplicantId = Integer.parseInt(sApplicantId);
-        idegaTimestamp from = new idegaTimestamp(sDateFrom);
-        idegaTimestamp to = new idegaTimestamp(sDateTo);
+
         Applicant eApplicant = null;
         try{
           eApplicant = new Applicant(iApplicantId);
@@ -877,8 +887,6 @@ public class CampusAllocator extends Block{
       else if(sContractId !=null){
 
         int iContractId = Integer.parseInt(sContractId);
-        idegaTimestamp from = new idegaTimestamp(sDateFrom);
-        idegaTimestamp to = new idegaTimestamp(sDateTo);
         Contract eContract = null;
         try{
           eContract = new Contract(iContractId);

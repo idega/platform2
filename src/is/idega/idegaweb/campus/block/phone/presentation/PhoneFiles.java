@@ -16,7 +16,9 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.block.finance.data.AccountPhoneEntry;
 import com.idega.block.finance.business.FinanceObject;
+import com.idega.util.idegaTimestamp;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Hashtable;
@@ -36,7 +38,7 @@ public class PhoneFiles extends Block {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String sAction = "cam.ph.file.action";
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.phone";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   protected boolean isAdmin = false;
@@ -59,7 +61,7 @@ public class PhoneFiles extends Block {
     T.setCellspacing(0);
     T.setWidth("100%");
     if(isAdmin){
-      T.add(Edit.headerText(iwrb.getLocalizedString("phone_files","Phone Files"),3),1,1);
+      //T.add(Edit.headerText(iwrb.getLocalizedString("phone_files","Phone Files"),3),1,1);
       T.add(makeLinkTable(  1),1,2);
       int iAction = 0;
       if(iwc.getParameter(sAction )!= null){
@@ -129,20 +131,30 @@ public class PhoneFiles extends Block {
     return getFileTable(iwc);
   }
 
+  private class PhoneFilenameFilter implements FilenameFilter {
+
+    public boolean accept(File dir,String name){
+      return (name.endsWith(".del"));
+    }
+  }
+
   private PresentationObject getFileTable(IWContext iwc){
-    Table T = new Table();
-    T.setCellpadding(0);
-    T.setCellspacing(0);
+    DataTable T = new DataTable();
+    T.addTitle(iwrb.getLocalizedString("phone_files","Phone files"));
+    T.setTitlesHorizontal(true);
     T.add(Edit.formatText(iwrb.getLocalizedString("files","Files")),1,1);
     T.add(Edit.formatText(iwrb.getLocalizedString("status","Status")),2,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("time_read","Time read")),3,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("line_count","Line Count")),4,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("phone_numbers","PhoneNumbers")),5,1);
-    T.add(Edit.formatText(iwrb.getLocalizedString("amount_read","Amount read")),6,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("size","Size")),1,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("updated","Updated")),2,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("time_read","Read")),5,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("line_count","Count")),6,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("phone_numbers","Numbers")),7,1);
+    T.add(Edit.formatText(iwrb.getLocalizedString("amount_read","Amount")),8,1);
     Map M = mapOfReadFilesByFileName() ;
     try{
       File F = new File(iwc.getApplication().getRealPath("/phone/upload"));
-      File[] Fs = F.listFiles();
+      PhoneFilenameFilter filter = new PhoneFilenameFilter();
+      File[] Fs = F.listFiles(filter);
       if(Fs.length > 0){
         String name;
         PhoneFileInfo info;
@@ -154,11 +166,11 @@ public class PhoneFiles extends Block {
           if(M!= null && M.containsKey(name)){
             info = (PhoneFileInfo) M.get(name);
             T.add(Edit.formatText(name),1,row);
-            T.add(Edit.formatText(iwrb.getLocalizedString("read","Read")),2,row);
-            T.add(Edit.formatText(info.getReadTime().toString()),3,row);
-            T.add(Edit.formatText(info.getLineCount()),4,row);
-            T.add(Edit.formatText(info.getNumberCount()),5,row);
-            T.add(Edit.formatText(NF.format(info.getTotalAmount())),6,row);
+            T.add(Edit.formatText(iwrb.getLocalizedString("read","Read")),4,row);
+            T.add(Edit.formatText(info.getReadTime().toString()),5,row);
+            T.add(Edit.formatText(info.getLineCount()),6,row);
+            T.add(Edit.formatText(info.getNumberCount()),7,row);
+            T.add(Edit.formatText(NF.format(info.getTotalAmount())),8,row);
           }
           else{
             Link L = new Link(name);
@@ -166,8 +178,10 @@ public class PhoneFiles extends Block {
             L.addParameter("filename",name);
             L.setFontSize(Edit.textFontSize);
             T.add(L,1,row);
-            T.add(Edit.formatText(iwrb.getLocalizedString("unread","Unread")),2,row);
+            T.add(Edit.formatText(iwrb.getLocalizedString("unread","Unread")),4,row);
           }
+          T.add(Edit.formatText(Long.toString(Fs[i].length()/1000)+" KB"),2,row);
+          T.add(Edit.formatText(new idegaTimestamp(Fs[i].lastModified()).getDateString(true,iwc)),3,row);
           row++;
         }
       }
@@ -178,17 +192,17 @@ public class PhoneFiles extends Block {
     catch(Exception e){
       e.printStackTrace();
     }
+    /*
     T.setColumnAlignment(4,"right");
     T.setColumnAlignment(5,"right");
     T.setColumnAlignment(6,"right");
+    */
     T.setWidth("100%");
-    T.setCellpadding(2);
-    T.setCellspacing(1);
-    T.setHorizontalZebraColored(Edit.colorLight,Edit.colorWhite);
-    T.setRowColor(1,Edit.colorMiddle);
 
     return T;
   }
+
+
 
   private Map mapOfReadFilesByFileName(){
     List L = null;
@@ -218,3 +232,5 @@ public class PhoneFiles extends Block {
   }
 
 }
+
+

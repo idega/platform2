@@ -65,7 +65,7 @@ public class EmailSetter extends Block{
         iwb.reloadBundle();
         iwrb = iwb.getResourceBundle(LocaleUtil.getLocale(iwc.getParameter(localesParameter)));
       }
-      add(getHomeLink());
+
       add(getSetupForm(iwc));
     }
     else
@@ -120,9 +120,6 @@ public class EmailSetter extends Block{
     }
   }
 
-  private Link getHomeLink(){
-		return CampusLinkFactory.getLink(iwb.getImage("list.gif"),CampusLinkFactory.ADM_ALLOCATION);
-  }
 
   private TextArea getTextArea(String name,String content){
     TextArea TA = new TextArea(name,content);

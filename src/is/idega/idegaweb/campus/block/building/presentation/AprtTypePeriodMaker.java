@@ -24,19 +24,19 @@ import com.idega.data.EntityFinder;
 import java.util.Hashtable;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
-import is.idega.idegaweb.campus.presentation.CampusLinkFactory;
+
 /**
- * Title:
+ * Title:   idegaclasses
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
 
 public class AprtTypePeriodMaker extends Block{
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   private boolean isAdmin = false;
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
@@ -133,7 +133,7 @@ public class AprtTypePeriodMaker extends Block{
     }
     else
       T.add("No data");
-    F.add(getHomeLink());
+
     F.add(T);
     return F;
   }
@@ -229,8 +229,5 @@ public class AprtTypePeriodMaker extends Block{
     control(iwc);
   }
 
-  private Link getHomeLink(){
-		return CampusLinkFactory.getLink(iwb.getImage("list.gif"),CampusLinkFactory.ADM_ALLOCATION);
-  }
 
 }

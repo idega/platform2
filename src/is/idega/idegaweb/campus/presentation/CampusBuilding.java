@@ -1,5 +1,5 @@
 /*
- * $Id: CampusBuilding.java,v 1.2 2001/11/19 00:28:35 aron Exp $
+ * $Id: CampusBuilding.java,v 1.3 2002/01/17 18:06:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -31,7 +31,7 @@ import is.idega.idegaweb.campus.block.building.presentation.*;
  */
 public class CampusBuilding extends Block {
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.building";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   public final static String FRAME_NAME = "cbu_rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;

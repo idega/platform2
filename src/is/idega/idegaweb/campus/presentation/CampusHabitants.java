@@ -27,7 +27,7 @@ import com.idega.presentation.IWContext;
 
  public class CampusHabitants extends Block {
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.finance";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   public final static String FRAME_NAME = "fin_rightFrame";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
@@ -89,7 +89,6 @@ import com.idega.presentation.IWContext;
   public PresentationObject getLinkTable(){
       Table FL = new Table();
       //FL.setListpadding(1);
-      FL.add(getLink(CampusHabitantsLister.class,iwrb.getLocalizedString("lister","Lister"),CampusFinance.FRAME_NAME),1,1);
       return FL;
   }
 

@@ -1,5 +1,5 @@
 /*
- * $Id: CampusTabber.java,v 1.2 2001/12/05 20:33:16 aron Exp $
+ * $Id: CampusTabber.java,v 1.3 2002/01/17 18:06:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,7 +23,6 @@ import java.io.IOException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import is.idega.idegaweb.campus.presentation.CampusAllocation;
-import is.idega.idegaweb.campus.presentation.CampusFinance;
 import is.idega.idegaweb.campus.templates.*;
 import com.idega.idegaweb.IWMainApplication;
 import java.util.List;
@@ -130,7 +129,7 @@ public class CampusTabber extends Block implements Campus {
       LinkTable.setAlignment("right");
 
 
-      CampusLinkFactory CF = new CampusLinkFactory();
+
 
       Image finance = iwrb.getImage(iAct == ACT20?"/tabs/finance.gif":"/tabs/finance1.gif");
       Link Link1 = new Link(finance);
@@ -144,7 +143,7 @@ public class CampusTabber extends Block implements Campus {
 
       Image allocation = iwrb.getImage(iAct == ACT22?"/tabs/allocate.gif":"/tabs/allocate1.gif");
       Link Link3 = new Link(allocation);
-      Link3.addParameter(getParameter(CF.ADM_ALLOCATION));
+      Link3.addParameter(getParameter(ADM_ALLOCATION));
       Link3.addParameter(strAction,ACT22);
 
       Image apartments = iwrb.getImage(iAct == ACT23?"/tabs/apartments.gif":"/tabs/apartments1.gif");

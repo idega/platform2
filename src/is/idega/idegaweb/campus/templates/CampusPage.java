@@ -1,5 +1,5 @@
 /*
- * $Id: CampusPage.java,v 1.1 2001/11/08 14:43:05 aron Exp $
+ * $Id: CampusPage.java,v 1.2 2002/01/17 18:06:17 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -17,9 +17,9 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.ui.Window;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.text.Link;
-import is.idega.idegaweb.campus.presentation.Menu;
+import is.idega.idegaweb.campus.presentation.CampusMenu;
 import is.idega.idegaweb.campus.presentation.Title;
-import is.idega.idegaweb.campus.presentation.Tabber;
+import is.idega.idegaweb.campus.presentation.CampusTabber;
 import is.idega.idegaweb.campus.presentation.TitleIcons;
 import com.idega.idegaweb.IWBundle;
 
@@ -96,14 +96,14 @@ public class CampusPage extends MainPage{
 
     addMenuTitle(new TitleIcons(TitleIcons.MAINMENU));
     addRightTitle(new TitleIcons(TitleIcons.LOGIN));
-    addTopLeft(new Menu());
+    addTopLeft(new CampusMenu());
     addTopRight(login);
     addTopRightDivider();
     addTopRight(ref);
     addTopRightDivider();
     addTopRight(idegaLink);
     addMainTitle(new Title());
-    addTabs(new Tabber());
+    addTabs(new CampusTabber());
   }
 
 }

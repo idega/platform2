@@ -36,7 +36,7 @@ public class PhoneAssessment extends PresentationObjectContainer {
 
   protected final int ACT1 = 1,ACT2 = 2, ACT3 = 3,ACT4  = 4,ACT5 = 5;
   private final static String sAction = "cam.ph.file.action";
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.phone";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   protected boolean isAdmin = false;

@@ -25,17 +25,17 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 
 /**
- * Title:
+ * Title:   idegaclasses
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
 
 public class SysPropsSetter extends Block{
 
-  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus.block.allocation";
+  private final static String IW_BUNDLE_IDENTIFIER="is.idega.idegaweb.campus";
   protected IWResourceBundle iwrb;
   protected IWBundle iwb;
   private static String propParameter = SystemProperties.getEntityTableName();
@@ -77,7 +77,7 @@ public class SysPropsSetter extends Block{
         add(iwrb.getLocalizedString("no_sys_props","No System properties in database"));
       }
     }
-    //add(getHomeLink());
+
     if(SysProps !=null)
       add(getProperties(SysProps));
 
@@ -120,10 +120,6 @@ public class SysPropsSetter extends Block{
       ex.printStackTrace();
     }
     return SysProps;
-  }
-
-  private Link getHomeLink(){
-		return CampusLinkFactory.getLink(iwb.getImage("list.gif"),CampusLinkFactory.ADM_ALLOCATION);
   }
 
   private PresentationObject getProperties(SystemProperties SysProps){

@@ -1,12 +1,3 @@
-/*
- * $Id: ContractFinder.java,v 1.5 2001/12/28 15:32:36 laddi Exp $
- *
- * Copyright (C) 2001 Idega hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
- *
- */
 package is.idega.idegaweb.campus.block.allocation.business;
 
 
@@ -25,10 +16,14 @@ import com.idega.block.building.data.Apartment;
 import com.idega.block.building.business.BuildingCacher;
 
 /**
- *
- * @author <a href="mailto:palli@idega.is">Pall Helgason</a>
+ * Title:   idegaclasses
+ * Description:
+ * Copyright:    Copyright (c) 2001
+ * Company:
+ * @author  <a href="mailto:aron@idega.is">aron@idega.is
  * @version 1.0
  */
+
 public abstract class ContractFinder {
    public final  static int NAME = 0,SSN=1,APARTMENT = 2,FLOOR=3,BUILDING=4,
       COMPLEX=5,CATEGORY=6,TYPE=7,CONTRACT = 8,APPLICANT = 9;

@@ -1,6 +1,6 @@
 package is.idega.idegaweb.campus.block.phone.business;
 
-import is.idega.idegaweb.campus.block.finance.business.CampusAccountFinder;
+
 import com.idega.block.finance.business.FinanceHandler;
 import com.idega.block.finance.business.FinanceFinder;
 import com.idega.block.finance.business.AccountManager;
@@ -94,9 +94,18 @@ public class PhoneFinanceHandler implements FinanceHandler{
     return false;
   }
 
+  public static List listOfContractAccounts(){
+   try {
+     return com.idega.data.EntityFinder.findAll(new ContractAccounts());
+   }
+   catch (SQLException ex) {
+    ex.printStackTrace();
+    return null;
+   }
+  }
 
   public boolean executeAssessment(int iCategoryId,int iTariffGroupId,String roundName,int iCashierId,int iAccountKeyId,idegaTimestamp paydate){
-    List listOfAccounts = CampusAccountFinder.listOfContractAccounts();
+    List listOfAccounts = listOfContractAccounts();
     if(listOfAccounts != null){
       //System.err.println("phoneaccounts :"+listOfUsers.size());
 
