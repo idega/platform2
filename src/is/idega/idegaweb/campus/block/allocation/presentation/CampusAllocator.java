@@ -374,7 +374,7 @@ public class CampusAllocator extends Block implements Campus{
       Frame.add(registerImage,col++,row);
       //Frame.add(formatText(iwrb.getLocalizedString("application","Application")),col++,row);
 
-    java.util.Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId,"A");
+    java.util.Collection L = CampusApplicationFinder.listOfWaitinglist(aprtTypeId,cmplxId,null);
     Hashtable HT = ContractFinder.hashOfApplicantsContracts();
     boolean bcontracts = false;
     Contract C;
