@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.5 2003/09/02 13:58:05 anders Exp $
+ * $Id: AgeEditor.java,v 1.6 2003/09/02 15:46:46 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -17,6 +17,8 @@ import java.rmi.RemoteException;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ExceptionWrapper;
+import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.text.Link;
 
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
@@ -31,10 +33,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/09/02 13:58:05 $ by $Author: anders $
+ * Last modified: $Date: 2003/09/02 15:46:46 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -44,8 +46,8 @@ public class AgeEditor extends AccountingBlock {
 	private final static int ACTION_NEW = 3;
 	private final static int ACTION_OPEN = 4;
 	private final static int ACTION_SAVE = 5;
-	private final static int ACTION_DELETE_CONFIRM = 6;
-	private final static int ACTION_DELETE = 7;
+//	private final static int ACTION_DELETE_CONFIRM = 6;
+	private final static int ACTION_DELETE = 6;
 	
 	private final static String PP = "cacc_age_"; // Parameter prefix 
 
@@ -58,12 +60,13 @@ public class AgeEditor extends AccountingBlock {
 	private final static String PARAMETER_DESCRIPTION = PP + "description";
 	private final static String PARAMETER_CUT_DATE = PP + "cut_date";
 	private final static String PARAMETER_AGE_REGULATION_ID = PP + "age_regulation_id";
+	private final static String PARAMETER_DELETE_ID = PP + "delete_id";
 	private final static String PARAMETER_SEARCH = PP + "search";
 	private final static String PARAMETER_NEW = PP + "new";
 	private final static String PARAMETER_SAVE = PP + "save";
 	private final static String PARAMETER_CANCEL = PP + "cancel";
-	private final static String PARAMETER_DELETE_CONFIRM = PP + "delete_confirm";
-	private final static String PARAMETER_DELETE = PP + "delete";
+//	private final static String PARAMETER_DELETE_CONFIRM = PP + "delete_confirm";
+//	private final static String PARAMETER_DELETE = PP + "delete";
 	private final static String PARAMETER_EDIT = PP + "edit";
 	
 	private final static String KP = "age_editor."; // key prefix 
@@ -85,8 +88,9 @@ public class AgeEditor extends AccountingBlock {
 	private final static String KEY_SAVE = KP + "save";
 	private final static String KEY_CANCEL = KP + "cancel";
 	private final static String KEY_DELETE = KP + "delete";
-	private final static String KEY_DELETE_YES = KP + "delete_yes";
-	private final static String KEY_DELETE_CONFIRM_MESSAGE = KP + "delete_confirm_message";
+//	private final static String KEY_DELETE_YES = KP + "delete_yes";
+//	private final static String KEY_DELETE_CONFIRM_MESSAGE = KP + "delete_confirm_message";
+	private final static String KEY_DELETE_CONFIRM = KP + "delete_confirm_message";
 	private final static String KEY_BUTTON_EDIT = KP + "button_edit";
 	private final static String KEY_BUTTON_DELETE = KP + "button_delete";	
 
@@ -117,9 +121,9 @@ public class AgeEditor extends AccountingBlock {
 				case ACTION_SAVE:
 					handleSaveAction(iwc);
 					break;
-				case ACTION_DELETE_CONFIRM:
-					handleDeleteConfirmAction(iwc);
-					break;
+//				case ACTION_DELETE_CONFIRM:
+//					handleDeleteConfirmAction(iwc);
+//					break;
 				case ACTION_DELETE:
 					handleDeleteAction(iwc);
 					break;
@@ -145,9 +149,9 @@ public class AgeEditor extends AccountingBlock {
 			action = ACTION_NEW;
 		} else if (iwc.isParameterSet(PARAMETER_SAVE)) {
 			action = ACTION_SAVE;
-		} else if (iwc.isParameterSet(PARAMETER_DELETE_CONFIRM)) {
-			action = ACTION_DELETE_CONFIRM;
-		} else if (iwc.isParameterSet(PARAMETER_DELETE)) {
+//		} else if (iwc.isParameterSet(PARAMETER_DELETE_CONFIRM)) {
+//			action = ACTION_DELETE_CONFIRM;
+		} else if (iwc.isParameterSet(PARAMETER_DELETE_ID)) {
 			action = ACTION_DELETE;
 		} else if (iwc.isParameterSet(PARAMETER_AGE_REGULATION_ID)) {
 			action = ACTION_OPEN;
@@ -272,6 +276,7 @@ public class AgeEditor extends AccountingBlock {
 	/*
 	 * Handles the delete confirm action for this block.
 	 */	
+/*
 	private void handleDeleteConfirmAction(IWContext iwc) {		
 		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_DELETE_CONFIRM, "Ta bort Œldersregel");
@@ -315,7 +320,8 @@ public class AgeEditor extends AccountingBlock {
 		app.addHiddenInput(PARAMETER_AGE_REGULATION_ID, getParameter(iwc, PARAMETER_AGE_REGULATION_ID));
 		add(app);
 	}
-
+	*/
+	
 	/*
 	 * Handles the delete action for this block.
 	 */	
@@ -323,7 +329,7 @@ public class AgeEditor extends AccountingBlock {
 		String errorMessage = null;
 		try {
 			AgeBusiness ab = getAgeBusiness(iwc);
-			ab.deleteAgeRegulation(getIntParameter(iwc, PARAMETER_AGE_REGULATION_ID));
+			ab.deleteAgeRegulation(getIntParameter(iwc, PARAMETER_DELETE_ID));
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 		} catch (AgeException e) {
@@ -408,20 +414,27 @@ public class AgeEditor extends AccountingBlock {
 //				list.add(getLink(ar.getDescription(), PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString()));
 				list.add(formatDate(ar.getCutDate(), 4));
 
-				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera")));
+				Link edit = new Link(getEditIcon(localize(KEY_BUTTON_EDIT, "Redigera denna Œldersregel")));
 				edit.addParameter(PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString());
 				list.add(edit);
 
-				Link delete = new Link(getDeleteIcon(localize(KEY_BUTTON_DELETE, "Ta bort")));
-				delete.addParameter(PARAMETER_DELETE_CONFIRM, "true");
-				delete.addParameter(PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString());
+				SubmitButton delete = new SubmitButton(getDeleteIcon(localize(KEY_DELETE, "Radera")));
+				delete.setDescription(localize(KEY_BUTTON_DELETE, "Klicka här för att ta bort denna Œldersregel"));
+				delete.setValueOnClick(PARAMETER_DELETE_ID, ar.getPrimaryKey().toString());
+				delete.setSubmitConfirm(localize(KEY_DELETE_CONFIRM, "Vill du verkligen ta bort denna Œldersregel?"));
 				list.add(delete);
+
+//				Link delete = new Link(getDeleteIcon(localize(KEY_BUTTON_DELETE, "Ta bort")));
+//				delete.addParameter(PARAMETER_DELETE_CONFIRM, "true");
+//				delete.addParameter(PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString());
+//				list.add(delete);
 			}
 		}
 
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
 		mainPanel.setCellspacing(0);
+		mainPanel.add(new HiddenInput(PARAMETER_DELETE_ID, "-1"));
 	
 		if (errorMessage != null) {
 			Table t = new Table();
