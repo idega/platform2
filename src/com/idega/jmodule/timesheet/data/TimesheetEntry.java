@@ -26,7 +26,7 @@ public class TimesheetEntry extends GenericEntity{
 		addAttribute("timesheet_entry_date","date",true,true,"java.sql.Timestamp");
 		addAttribute("member_id","member_id",true,true,"java.lang.Integer","many-to-one","com.idega.data.genericentity.Member");
 		addAttribute("resource_id","resource_id",true,true,"java.lang.Integer","many-to-one","com.idega.jmodule.timesheet.data.Resource");
-                addAttribute("project_id","númer verkefnis",true,true,"java.lang.Integer","many-to-one","com.idega.jmodule.timesheet.data.Project");
+                addAttribute("project_id","númer verkefnis",true,true,"java.lang.Integer","many-to-one","com.idega.jmodule.projectmanager.data.Project");
 		addAttribute("how_many","fjoldi",true,true,"java.lang.Double");
 		addAttribute("description","stutt lýsing",true,true,"java.lang.String");
 		addAttribute("booked","bókað",true,true,"java.lang.Boolean");

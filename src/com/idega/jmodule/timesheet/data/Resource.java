@@ -22,7 +22,7 @@ public class Resource extends GenericEntity{
 		addAttribute(getIDColumnName());
 		addAttribute("resource_name","nafn",true,true,"java.lang.String");
         	addAttribute("resource_type","týpa",true,true,"java.lang.String");
-                addAttribute("project_id","númer verkefnis",true,true,"java.lang.Integer","many-to-one","com.idega.jmodule.timesheet.data.Project");
+                addAttribute("project_id","númer verkefnis",true,true,"java.lang.Integer","many-to-one","com.idega.jmodule.projectmanager.data.Project");
                 addAttribute("division_id","númer deildar",true,true,"java.lang.Integer");
 //              addAttribute("division_id","númer deildar", true, true,"java.lang.Integer","many-to-one","com.idega.jmodule.timesheet.data.Division");
                 addAttribute("unit_name","eining",true,true,"java.lang.String");
