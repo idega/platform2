@@ -598,8 +598,10 @@ private int _layout = RADIO_BUTTON_VIEW;
     return obj;
   }
 
-  private String getCacheState(IWContext iwc){
-    return String.valueOf(PollBusiness.canVote(iwc,_pollID));
+  private String getCacheState(IWContext iwc, String cacheStatePrefix, String locale, boolean edit){
+    String returnString = iwc.getParameter(PollBusiness._PARAMETER_POLL_VOTER);
+    if( returnString == null ) returnString = cacheStatePrefix+String.valueOf(PollBusiness.canVote(iwc,_pollID));
+    else returnString+=cacheStatePrefix+String.valueOf(PollBusiness.canVote(iwc,_pollID));
+    return returnString;
   }
-
 }
