@@ -39,7 +39,9 @@ import com.idega.util.ListUtil;
 
 public class GolferTab extends UserTab {
 	
-private static final String NO_MAIN_CLUB = "   ";
+	private static final String NO_MAIN_CLUB = "   ";
+	private static final String NO_MAIN_CLUB_KEY = "no_m_cl";
+
 	protected static final String IW_BUNDLE_IDENTIFIER = "is.idega.idegaweb.golf";
 	protected static final String TAB_NAME = "golfer_info_tab";
 	protected static final String DEFAULT_TAB_NAME = "Golfer Info";
@@ -50,7 +52,6 @@ private static final String NO_MAIN_CLUB = "   ";
 	private String mainClubAbbrFromRequest;
 	private String[] subClubsAbbrFromRequest;
 	private SelectOption noMainClub = null;
-	private boolean hasNotAddedNoMainClub = true;
 	
 	public GolferTab() {
 		super();
@@ -59,13 +60,6 @@ private static final String NO_MAIN_CLUB = "   ";
 		setName(iwrb.getLocalizedString(TAB_NAME, DEFAULT_TAB_NAME));
 	}
 	
-	public void init(){
-		hasNotAddedNoMainClub = true;
-		noMainClub = new SelectOption(NO_MAIN_CLUB,NO_MAIN_CLUB);
-		
-		super.init();
-	}
-
 	public void initializeFieldNames() {}
 	public void initializeFieldValues() {}
 
@@ -76,7 +70,7 @@ private static final String NO_MAIN_CLUB = "   ";
 		User user = getUser();
 		String mainClubAbbreviation = (mainClubAbbrFromRequest!=null)?mainClubAbbrFromRequest : user.getMetaData(GolfConstants.MAIN_CLUB_META_DATA_KEY);
 		List mainSelected = new ArrayList();
-		if(mainClubAbbreviation!=null){
+		if(mainClubAbbreviation!=null && !"".equals(mainClubAbbreviation)){
 			mainSelected.add(mainClubAbbreviation);
 		}
 		
@@ -84,7 +78,7 @@ private static final String NO_MAIN_CLUB = "   ";
 		//sub clubs
 		if(subClubsAbbrFromRequest==null){
 			String subClubAbbreviations = user.getMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY);
-			if(subClubAbbreviations!=null){
+			if(subClubAbbreviations!=null && !"".equals(subClubAbbreviations)){
 				subClubSelected = getListFromSubClubsString(subClubAbbreviations);
 				subClubSelected.add(subClubAbbreviations);
 			}
@@ -93,9 +87,9 @@ private static final String NO_MAIN_CLUB = "   ";
 			subClubSelected = ListUtil.convertStringArrayToList(subClubsAbbrFromRequest);
 		}
 		
-		getFilledGenericSelect(GolfConstants.MAIN_CLUB_META_DATA_KEY,mainSelected);
+		getFilledGenericSelect(GolfConstants.MAIN_CLUB_META_DATA_KEY,mainSelected,true);
 
-		getFilledGenericSelect(GolfConstants.SUB_CLUBS_META_DATA_KEY,subClubSelected);
+		getFilledGenericSelect(GolfConstants.SUB_CLUBS_META_DATA_KEY,subClubSelected,false);
 		
 	}
 
@@ -135,7 +129,7 @@ private static final String NO_MAIN_CLUB = "   ";
 	 * @param selectedValues
 	 * @return
 	 */
-	protected GenericSelect getFilledGenericSelect(String key, List selectedValues) {
+	protected GenericSelect getFilledGenericSelect(String key, List selectedValues, boolean addEmptyValue) {
 		GenericSelect keySelect = (GenericSelect) fieldValues.get(key);
 		
 		try {
@@ -143,12 +137,19 @@ private static final String NO_MAIN_CLUB = "   ";
 			
 			Collection clubs = getGolfUserPluginBusiness().getGolfClubs();
 			if(!clubs.isEmpty()){
+				if(addEmptyValue){
+					noMainClub = new SelectOption(NO_MAIN_CLUB,NO_MAIN_CLUB_KEY);
+					noMainClub.setSelected(true);
+					keySelect.addOption(noMainClub);
+				}
+				
 				Iterator iter = clubs.iterator();
 				while (iter.hasNext()) {
 					Group group = (Group) iter.next();
 					String abbr = group.getAbbrevation();
+					String abbrAndName = abbr+" - "+group.getName();
 					if(abbr!=null){
-						SelectOption option = new SelectOption(abbr,abbr);
+						SelectOption option = new SelectOption(abbrAndName,abbr);
 						keySelect.addOption(option);
 						if(selectedValues.contains(abbr)){
 							keySelect.setSelectedOption(abbr);
@@ -169,10 +170,6 @@ private static final String NO_MAIN_CLUB = "   ";
 	 */
 	protected GenericSelect getMainClubDropDown() {
 		SelectDropdown mainClubInput = new SelectDropdown(GolfConstants.MAIN_CLUB_META_DATA_KEY);	
-		if(hasNotAddedNoMainClub){
-			mainClubInput.addOption(noMainClub);
-			hasNotAddedNoMainClub = false;
-		}
 		return mainClubInput;
 	}
 
@@ -247,12 +244,13 @@ private static final String NO_MAIN_CLUB = "   ";
 	public boolean collect(IWContext iwc) {
 		if (iwc != null) {
 			mainClubAbbrFromRequest = iwc.getParameter(GolfConstants.MAIN_CLUB_META_DATA_KEY);
-			if(NO_MAIN_CLUB.equals(mainClubAbbrFromRequest)){
+			if(NO_MAIN_CLUB_KEY.equals(mainClubAbbrFromRequest)){
 				mainClubAbbrFromRequest = null;
 			}
 			subClubsAbbrFromRequest = iwc.getParameterValues(GolfConstants.SUB_CLUBS_META_DATA_KEY);
+			
 			this.updateFieldsDisplayStatus();
-
+			
 			return true;
 		}
 		return false;
@@ -271,8 +269,13 @@ private static final String NO_MAIN_CLUB = "   ";
 				abbrList.remove(mainClubAbbrFromRequest);
 			}
 			
-			String commaSeparated = ListUtil.convertListOfStringsToCommaseparatedString(abbrList);
-			user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, commaSeparated);
+			if(abbrList.isEmpty()){
+				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, null);
+			}
+			else{
+				String commaSeparated = ListUtil.convertListOfStringsToCommaseparatedString(abbrList);
+				user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY, commaSeparated);
+			}
 		}else{
 			user.setMetaData(GolfConstants.SUB_CLUBS_META_DATA_KEY,null);
 		}
@@ -280,9 +283,9 @@ private static final String NO_MAIN_CLUB = "   ";
 		user.store();
 		mainClubAbbrFromRequest = null;
 		subClubsAbbrFromRequest = null;
-
-		updateFieldsDisplayStatus();
 		
+		this.updateFieldsDisplayStatus();
+
 		return true;
 	}
 	
