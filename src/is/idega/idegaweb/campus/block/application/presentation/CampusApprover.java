@@ -1,5 +1,5 @@
 /*
- * $Id: CampusApprover.java,v 1.35 2002/07/03 10:53:26 palli Exp $
+ * $Id: CampusApprover.java,v 1.36 2002/07/03 23:27:48 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1413,9 +1413,9 @@ public class CampusApprover extends Block {
     if (comment != null)
       eCampusApplication.setOtherInfo(comment);
 
-    String key1 = (String)iwc.getParameter("drp_one");
-    String key2 = (String)iwc.getParameter("drp_two");
-    String key3 = (String)iwc.getParameter("drp_three");
+    String key1 = (String)iwc.getParameter("drp_one").trim();
+    String key2 = (String)iwc.getParameter("drp_two").trim();
+    String key3 = (String)iwc.getParameter("drp_three").trim();
     if(key1!=null && key2!=null && key3!=null){
       Applied applied1 = null;
       Applied applied2 = null;
@@ -1431,12 +1431,12 @@ public class CampusApprover extends Block {
       int type = ApartmentTypeComplexHelper.getPartKey(key1,1);
       int complex = ApartmentTypeComplexHelper.getPartKey(key1,2);
       applied1.setApartmentTypeId(type);
-			applied1.setApplicationId(eCampusApplication.getID());
+      applied1.setApplicationId(eCampusApplication.getID());
       applied1.setComplexId(complex);
       applied1.setOrder(1);
-			V.add(applied1);
 
-      if ((key2 != null) && (!key2.equalsIgnoreCase("-1"))) {
+
+      if ((key2 != null)) {
 	if(lApplied.size() >= 2){
 	  applied2 = (Applied) lApplied.get(1);
 	}
@@ -1446,13 +1446,13 @@ public class CampusApprover extends Block {
 	type = ApartmentTypeComplexHelper.getPartKey(key2,1);
 	complex = ApartmentTypeComplexHelper.getPartKey(key2,2);
 	applied2.setApartmentTypeId(type);
-				applied2.setApplicationId(eCampusApplication.getID());
+        applied2.setApplicationId(eCampusApplication.getID());
 	applied2.setComplexId(complex);
 	applied2.setOrder(2);
-				V.add(applied2);
+
       }
 
-      if ((key3 != null) && (!key3.equalsIgnoreCase("-1"))) {
+      if ((key3 != null)) {
 	if(lApplied.size() >= 3){
 	  applied3 = (Applied) lApplied.get(2);
 	}
@@ -1462,19 +1462,61 @@ public class CampusApprover extends Block {
 	type = ApartmentTypeComplexHelper.getPartKey(key3,1);
 	complex = ApartmentTypeComplexHelper.getPartKey(key3,2);
 	applied3.setApartmentTypeId(type);
-				applied3.setApplicationId(eCampusApplication.getID());
+        applied3.setApplicationId(eCampusApplication.getID());
 	applied3.setComplexId(complex);
 	applied3.setOrder(3);
-				V.add(applied3);
 
       }
 
+
+      /*
       if(applied3 == null && lApplied != null && lApplied.size() >= 3){
 	((Applied)lApplied.get(2)).setID(-3);
       }
       if(applied2 == null && lApplied != null && lApplied.size() >= 2){
 	((Applied)lApplied.get(1)).setID(-3);
       }
+      */
+      if(applied1 !=null && "-1".equals(key1)){
+        System.err.println("deleting 1");
+        try{
+        applied1.delete();
+        }
+        catch(SQLException ex){ex.printStackTrace();}
+        applied1 = null;
+        if(applied2!=null){
+          applied2.setOrder(1);
+        }
+        if(applied3!=null){
+          applied3.setOrder(2);
+        }
+
+      }
+      if(applied2 !=null && "-1".equals(key2)){
+        System.err.println("deleting 2");
+         try{
+          applied2.delete();
+        }
+        catch(SQLException ex){ex.printStackTrace();}
+        applied2 = null;
+        if(applied3!=null)
+          applied3.setOrder(1);
+      }
+      if(applied3 !=null && "-1".equals(key3)){
+      System.err.println("deleting 3");
+        try{
+        applied3.delete();
+        }
+        catch(SQLException ex){ex.printStackTrace();}
+        applied3 = null;
+      }
+      if(applied1!=null)
+      V.add(applied1);
+      if(applied2!=null)
+      V.add(applied2);
+      if(applied3!=null)
+      V.add(applied3);
+
     }
     else{
       System.err.println("no key parameters for apartment");
