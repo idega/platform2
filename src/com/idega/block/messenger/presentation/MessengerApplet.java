@@ -95,6 +95,7 @@ public class MessengerApplet extends Applet implements Runnable{
       test.setWindowToOpen(new Dialog(new Frame(),"test1"));
       if( lb!= null ) test.add(lb);
       test.add(new Label("RAPPERS"));
+      test.setSize(16,100);
       add(test);
 
 
