@@ -318,7 +318,7 @@ public static void makeDefaultSizes(IWContext modinfo){
 
   public static ImageProperties doUpload(IWContext modinfo) throws Exception{
     String IW_BUNDLE_IDENTIFIER="com.idega.block.image";
-    IWBundle iwb = IWBundle.getBundle(IW_BUNDLE_IDENTIFIER,modinfo.getIWMainApplication());
+    IWBundle iwb = modinfo.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
     String sep = System.getProperty("file.separator");
     String path = sep+"temp"+sep;
     String realPath = iwb.getResourcesRealPath()+path;
