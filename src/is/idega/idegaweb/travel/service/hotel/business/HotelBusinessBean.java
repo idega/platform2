@@ -36,11 +36,11 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
   public HotelBusinessBean() {
   }
 
-  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId, int roomTypeId) throws Exception{
-    return updateHotel(-1, supplierId, fileId, name, number, description, numberOfUnits, maxPerUnit, isValid, discountTypeId, roomTypeId);
+  public int createHotel(int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId, int[] roomTypeIds, int[] hotelTypeIds, Float rating) throws Exception{
+    return updateHotel(-1, supplierId, fileId, name, number, description, numberOfUnits, maxPerUnit, isValid, discountTypeId, roomTypeIds, hotelTypeIds, rating);
   }
 
-  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId, int roomTypeId) throws Exception{
+  public int updateHotel(int serviceId, int supplierId, Integer fileId, String name, String number, String description, int numberOfUnits, int maxPerUnit, boolean isValid, int discountTypeId, int[] roomTypeIds, int[] hotelTypeIds, Float rating) throws Exception{
     int productId = -1;
     boolean isUpdate = (serviceId > -1);
 
@@ -57,9 +57,13 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       hotel = hHome.findByPrimaryKey(new Integer(productId));
       hotel.setNumberOfUnits(numberOfUnits);
       hotel.setMaxPerUnit( maxPerUnit );
-      if (roomTypeId > 0) {
-      	hotel.setRoomTypeId(roomTypeId);
-      }
+	  	hotel.setRoomTypeIds(roomTypeIds);
+      hotel.setHotelTypeIds(hotelTypeIds);
+	  	if (rating != null) {
+	  		hotel.setRating(rating.floatValue());
+	  	} else {
+	  		hotel.setRating(-1);
+	  	}
       hotel.store();
     }catch (FinderException fe) {
       /** create hotel */
@@ -67,8 +71,12 @@ public class HotelBusinessBean extends TravelStockroomBusinessBean implements Ho
       hotel.setPrimaryKey(new Integer(productId));
       hotel.setNumberOfUnits(numberOfUnits);
       hotel.setMaxPerUnit( maxPerUnit );
-		  if (roomTypeId > 0) {
-				hotel.setRoomTypeId(roomTypeId);
+			hotel.setRoomTypeIds(roomTypeIds);
+      hotel.setHotelTypeIds(hotelTypeIds);
+	  	if (rating != null) {
+	  		hotel.setRating(rating.floatValue());
+	  	} else {
+	  		hotel.setRating(-1);
 	  	}
       hotel.store();
     }
