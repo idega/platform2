@@ -56,7 +56,6 @@ public abstract class ContractFinder {
     sql.append(" where u.ic_user_id = c.ic_user_id ");
     sql.append(" and c.bu_apartment_id = ");
     sql.append(iApartmentId );
-    System.err.println(sql.toString());
     try {
       return EntityFinder.findAll(((com.idega.core.user.data.UserHome)com.idega.data.IDOLookup.getHomeLegacy(User.class)).createLegacy(),sql.toString());
     }
@@ -482,7 +481,6 @@ public abstract class ContractFinder {
   public static Map mapOfAvailableApartmentContracts(int iApartmentTypeId, int iComplexId){
     List L = listOfAvailable(CONTRACT ,iApartmentTypeId ,iComplexId ) ;
     if(L!= null){
-      System.out.println("L != null");
       Hashtable H = new Hashtable();
       Iterator I = L.iterator();
       Integer aprtId;
@@ -503,8 +501,6 @@ public abstract class ContractFinder {
       }
       return H;
     }
-    else
-      System.out.println("L == null");
 
     return null;
   }
@@ -569,7 +565,6 @@ public abstract class ContractFinder {
       sql.append(" and a.bu_aprt_type_id = ");
       sql.append(iApartmentTypeId);
     }
-    System.err.println(sql.toString());
     try{
       List L = null;
       if(entity == CONTRACT)
@@ -582,8 +577,6 @@ public abstract class ContractFinder {
         if(A != null)
           L.addAll(A);
       }*/
-
-      System.out.println("L = " + L);
 
       return L;
     }

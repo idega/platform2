@@ -353,8 +353,8 @@ public class BuildingFinder {
     List L = null;
     StringBuffer sql = new StringBuffer("select bu_apartment.* ");
     sql.append("from bu_apartment,bu_floor,bu_building,bu_aprt_type,bu_complex ");
-    sql.append("where bu_apartment.bu_aprt_type_id = bu_aprt_type_id ");
-    sql.append("and bu_apartment.bu_floor_id = bu_floor_id ");
+    sql.append("where bu_apartment.bu_aprt_type_id = bu_aprt_type.bu_aprt_type_id ");
+    sql.append("and bu_apartment.bu_floor_id = bu_floor.bu_floor_id ");
     sql.append("and bu_building.bu_building_id = bu_floor.bu_building_id ");
     sql.append("and bu_building.bu_complex_id = bu_complex.bu_complex_id ");
     sql.append("and bu_complex.bu_complex_id = ");
@@ -366,7 +366,9 @@ public class BuildingFinder {
     try{
       L = EntityFinder.findAll(A,sql.toString());
     }
-    catch(SQLException ex){}
+    catch(SQLException ex){
+      ex.printStackTrace();
+    }
     return L;
   }
 
