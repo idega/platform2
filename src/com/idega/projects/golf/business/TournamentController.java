@@ -152,12 +152,13 @@ public class TournamentController{
 
     public static List getMembersInTournamentGroup(Tournament tournament, TournamentGroup tourGroup, com.idega.projects.golf.entity.Member[] members_to_check) throws SQLException{
         com.idega.projects.golf.entity.Member[] membersToCheck = members_to_check;
-        Vector tournamentGroupMembers = new Vector();
+        List tournamentGroupMembers = new Vector();
         for (int i = 0; i < membersToCheck.length; i++) {
             try {
-                if (isMemberInTournamentGroup(membersToCheck[i], tourGroup)) {
-                    tournamentGroupMembers.addElement(membersToCheck[i]);
-                }
+                tournamentGroupMembers = EntityFinder.findAll(new com.idega.projects.golf.entity.Member(),"SELECT member.* from member, tournament_member where member.member_id = tournament_member.member_id and tournament_member.tournament_id = "+tournament.getID()+" AND tournament_member.tournament_group_id = "+tourGroup.getID());
+//                if (isMemberInTournamentGroup(membersToCheck[i], tourGroup)) {
+//                    tournamentGroupMembers.addElement(membersToCheck[i]);
+//                }
             }
             catch (Exception e) {
                 e.printStackTrace(System.err);
@@ -244,13 +245,10 @@ public class TournamentController{
     public static boolean isMemberAllowedToRegister(com.idega.projects.golf.entity.Member member,Tournament tournament)throws SQLException{
 
             boolean theReturn = false;
-            /**
-             * TODO: Testa betur
-             */
-
+/*
             if (member.getMainUnionID() != 1) {
                 TournamentGroup[] groups = tournament.getTournamentGroups();
-                if (tournament.getIfOpenTournament()){
+//                if (tournament.getIfOpenTournament()){
                                 if (tournament.getIfGroupTournament()){
                                         //Check if member is in the tournament group
                                         for (int i = 0 ; i < groups.length; i++){
@@ -281,6 +279,22 @@ public class TournamentController{
             }
             else {
             }
+*/
+
+            if (tournament.getIfGroupTournament()){
+                TournamentGroup[] groups = tournament.getTournamentGroups();
+                for (int i = 0 ; i < groups.length; i++){
+                    if (TournamentController.isMemberInTournamentGroup(member, groups[i])) {
+                        theReturn = true;
+                        break;
+                    }
+                }
+            }
+            else{
+                theReturn=true;
+            }
+
+
 
             return theReturn;
     }
@@ -292,7 +306,7 @@ public class TournamentController{
 
         boolean returner = false;
 
-        if (!TournamentController.isMemberRegisteredInTournament(tournament,tourDay, howManyEachGroup, member)) {
+//        if (!TournamentController.isMemberRegisteredInTournament(tournament,tourDay, howManyEachGroup, member)) {
             Startingtime startingtime = new Startingtime();
                 startingtime.setFieldID(tournament.getFieldId());
                 startingtime.setMemberID(member.getID());
@@ -308,6 +322,17 @@ public class TournamentController{
             returner = true;
             //add( member.getName() +" skráður í holl ");
             //add(startingGroup +"<br>");
+//        }
+
+        return returner;
+
+    }
+
+    public static boolean isMemberRegisteredInTournament(Tournament tournament, com.idega.projects.golf.entity.Member member) throws SQLException {
+        boolean returner = false;
+        List listi = EntityFinder.findAll(new com.idega.projects.golf.entity.Member(),"Select member.* from member,tournament_member where member.member_id = tournament_member.member_id AND member.member_id = "+member.getID()+" AND tournament_member.tournament_id = "+tournament.getID()+"");
+        if (listi != null) {
+            returner = true;
         }
 
         return returner;
