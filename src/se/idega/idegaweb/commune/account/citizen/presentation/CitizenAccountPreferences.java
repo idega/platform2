@@ -330,23 +330,41 @@ public class CitizenAccountPreferences extends CommuneBlock {
 		Text tMessagesViaEmail = getSmallText(" " + localize(KEY_MESSAGES_VIA_EMAIL, DEFAULT_MESSAGES_VIA_EMAIL));
 //		TextInput tiLogin = (TextInput) getStyledInterface(new TextInput(PARAMETER_LOGIN));		
 		TextInput tiEmail = (TextInput) getStyledInterface(new TextInput(PARAMETER_EMAIL));
-		tiEmail.setValue(valueEmail);		
+		if(valueEmail!=null){
+			tiEmail.setValue(valueEmail);
+		}		
 		TextInput tiPhoneHome = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_HOME));
-		tiPhoneHome.setValue(valuePhoneHome);		
+		if(valuePhoneHome!=null){
+			tiPhoneHome.setValue(valuePhoneHome);		
+		}
 		TextInput tiPhoneWork = (TextInput) getStyledInterface(new TextInput(PARAMETER_PHONE_WORK));		
-		tiPhoneWork.setValue(valuePhoneWork);		
+		if(valuePhoneWork!=null){
+			tiPhoneWork.setValue(valuePhoneWork);
+		}
 		TextInput tiCOStreetAddress = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_STREET_ADDRESS));		
-		tiCOStreetAddress.setValue(valueCOStreetAddress);		
-		TextInput tiCOPostalCode = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_POSTAL_CODE));		
-		tiCOPostalCode.setValue(valueCOPostalCode);		
-		TextInput tiCOCity = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_CITY));		
-		tiCOCity.setValue(valueCOCity);		
+		if(valueCOStreetAddress!=null){
+			tiCOStreetAddress.setValue(valueCOStreetAddress);
+		}
+		TextInput tiCOPostalCode = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_POSTAL_CODE));
+		if(valueCOPostalCode!=null){
+			tiCOPostalCode.setValue(valueCOPostalCode);
+		}
+		TextInput tiCOCity = (TextInput) getStyledInterface(new TextInput(PARAMETER_CO_CITY));
+		if(valueCOCity!=null){
+			tiCOCity.setValue(valueCOCity);
+		}
 		PasswordInput tiCurrentPassword = (PasswordInput) getStyledInterface(new PasswordInput(PARAMETER_CURRENT_PASSWORD));	
-		tiCurrentPassword.setValue(valueCurrentPassword);		
+		if(valueCurrentPassword!=null){
+			tiCurrentPassword.setValue(valueCurrentPassword);
+		}
 		PasswordInput tiNewPassword = (PasswordInput) getStyledInterface(new PasswordInput(PARAMETER_NEW_PASSWORD));
-		tiNewPassword.setValue(valueNewPassword);		
+		if(valueNewPassword!=null){
+			tiNewPassword.setValue(valueNewPassword);
+		}
 		PasswordInput tiNewPasswordRepeated = (PasswordInput) getStyledInterface(new PasswordInput(PARAMETER_NEW_PASSWORD_REPEATED));
-		tiNewPasswordRepeated.setValue(valueNewPasswordRepeated);		
+		if(valueNewPasswordRepeated!=null){
+			tiNewPasswordRepeated.setValue(valueNewPasswordRepeated);
+		}
 		CheckBox cbCOAddressSelect = getCheckBox(PARAMETER_CO_ADDRESS_SELECT, "true");
 		if (valueCOAddressSelect != null) {
 			cbCOAddressSelect.setChecked(true);
