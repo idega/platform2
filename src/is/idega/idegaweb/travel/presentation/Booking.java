@@ -107,10 +107,10 @@ public class Booking extends TravelManager {
         /** Backwards comp... */
 				String baction = iwc.getParameter(BookingForm.BookingAction);
 				if (baction != null && baction.equals(this.parameterUpdateBooking)) {
-					System.out.println("[Booking] baction = "+baction);
+					//System.out.println("[Booking] baction = "+baction);
 					action = baction;					
 				}
-			System.out.println("[Booking] action = "+action);
+			//System.out.println("[Booking] action = "+action);
 				
         if (action == null) {action = "";}
 
@@ -119,7 +119,7 @@ public class Booking extends TravelManager {
         }else if (action.equals(parameterRespondInquery)) {
           inqueryResponse(iwc);
         }else if (action.equals(this.parameterUpdateBooking)){
-        	System.out.println("[Booking] updateBooking :D");
+        	//System.out.println("[Booking] updateBooking :D");
           this.updateBooking(iwc);
         }else {
           handleInsert(iwc, true);
