@@ -51,7 +51,7 @@ import java.util.Iterator;
 import java.util.Set;
 import javax.ejb.FinderException;
 import se.idega.idegaweb.commune.accounting.export.business.ExportBusiness;
-import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
+//import se.idega.idegaweb.commune.accounting.export.data.ExportDataMapping;
 import se.idega.idegaweb.commune.accounting.invoice.business.BillingThread;
 import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
 import se.idega.idegaweb.commune.accounting.invoice.business.PaymentSummary;
@@ -79,11 +79,11 @@ import se.idega.idegaweb.commune.accounting.school.data.Provider;
  * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
  * and edit payment records.
  * <p>
- * Last modified: $Date: 2004/01/15 12:28:57 $ by $Author: staffan $
+ * Last modified: $Date: 2004/01/16 14:00:35 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.74 $
+ * @version $Revision: 1.75 $
  * @see com.idega.presentation.IWContext
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
  * @see se.idega.idegaweb.commune.accounting.invoice.data
@@ -357,7 +357,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		}
 		outerTable.addCell (table);
 		addPhrase (outerTable, "\n");
-		final PdfPTable summaryTable = getRecordsSummaryPdfTable(context, records);
+		final PdfPTable summaryTable = getRecordsSummaryPdfTable(records);
 		outerTable.addCell (summaryTable);
 		addPhrase (outerTable, "\n");
 		addPhrase (outerTable,
@@ -486,7 +486,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 	}
 	
 	private PdfPTable getRecordsSummaryPdfTable
-		(final IWContext context, PaymentRecord [] records) throws RemoteException,
+		(PaymentRecord [] records) throws RemoteException,
 																															 FinderException {
 		final PdfPTable summaryTable
 				= new PdfPTable (new float [] { 7.0f, 3.6f, 3.0f });
@@ -868,7 +868,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 				 (localize (PAYMENT_HEADER_KEY, PAYMENT_HEADER_DEFAULT),
 					outerTable));
 	}
-
+/*
 	private boolean hasCurrentSchoolCategoryFlowInAndFlowOut
 		(final IWContext context) throws RemoteException, FinderException {
 		final String schoolCategory = getSession().getOperationalField ();
@@ -878,7 +878,7 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		if (null == mapping) return false;
 		return mapping.getCashFlowIn () && mapping.getCashFlowOut ();
 	}
-
+*/
 	private Table getDetailedPaymentRecordListTable
 		(final IWContext context, final Collection invoiceRecords)
 		throws RemoteException, FinderException {
@@ -1111,10 +1111,10 @@ public class PaymentRecordMaintenance extends AccountingBlock {
 		final String [][] showDetailsLinkParameters
 				= {{ ACTION_KEY, ACTION_SHOW_RECORD_DETAILS + "" },
 					 { PAYMENT_RECORD_KEY, recordId }};
-		final String regSpecType = record.getRuleSpecType ();
+		//final String regSpecType = record.getRuleSpecType ();
 		final boolean userIsSchoolManager = null != getSchool (context);
-		final boolean isFlowInAndOut
-				= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
+		//final boolean isFlowInAndOut
+		//		= hasCurrentSchoolCategoryFlowInAndFlowOut (context);
 		final boolean isRecordEditAllowed = !userIsSchoolManager;
 		//final boolean isRecordEditAllowed = isManualRecord (record)
 		//&& !(isFlowInAndOut && isCheck (regSpecType)) && !userIsSchoolManager;
