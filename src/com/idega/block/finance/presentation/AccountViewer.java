@@ -170,17 +170,13 @@ public class AccountViewer extends com.idega.presentation.PresentationObjectCont
     T.add(formatText(iwrb.getLocalizedString("to","To")),3,row);
     T.add(formatText(iwrb.getLocalizedString("special","Special")),4,row);
 
-    Link AT = new Link("AT");
-    AT.setWindowToOpen(AccountTarifferWindow.class);
-    AT.addParameter(Finance.getCategoryParameter(1));
-
     row++;
     T.add(drpAccounts,1,row);
     T.add(tiFromDate,2,row);
     T.add(tiToDate,3,row);
     T.add(specialCheck,4,row);
     T.add(fetch,5,row);
-    T.add(AT,5,row);
+
     T.setWidth(6,row,"100%");
 
     myForm.add(new HiddenInput(IWMainApplication.classToInstanciateParameter,"com.idega.block.finance.presentation.AccountViewer"));
