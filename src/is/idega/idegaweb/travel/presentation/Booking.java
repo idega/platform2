@@ -65,6 +65,7 @@ public class Booking extends TravelManager {
   private static String parameterRespondInquery = "bookingRespondInquery";
   private static String parameterRespondYes = "bookingYes";
   private static String parameterRespondNo = "bookingNo";
+  private static String parameterRespondDel = "inquiryDel";
 
   public static String parameterUpdateBooking = "bookinUpdateBooking";
 
@@ -335,6 +336,28 @@ public class Booking extends TravelManager {
           table.setColor(1,row,super.backgroundColor );
           table.mergeCells(6,1,6,row);
           table.add(Text.BREAK ,1,row);
+
+          // Warning if no seats are available
+          if (this.tour != null) {
+            int seats = tour.getTotalSeats();
+            boolean addWarning = false;
+            if (supplier != null) {
+              if (seats > 0 && seats <= Booker.getNumberOfBookings(productId, stamp) ) {
+                addWarning = true;
+              }
+            }else if (reseller != null) {
+              if (seats > 0 && seats <= Booker.getNumberOfBookings(new int[]{resellerId},productId, stamp) ) {
+                addWarning = true;
+              }
+            }
+            if (addWarning) {
+              Text overBookingWarning = (Text)super.theBoldText.clone();
+                overBookingWarning.setText(iwrb.getLocalizedString("travel.there_are_no_available_seats_on_the_selected_day","There are no available seats on the selected day"));
+              table.add(overBookingWarning, 1, row);
+            }
+          }
+
+
           table.add(Text.BREAK ,1,row);
           table.add(getBookingForm(iwc),1,row);
 
@@ -440,6 +463,7 @@ public class Booking extends TravelManager {
       idegaTimestamp theStamp;
       Link answerYes;
       Link answerNo;
+      Link answerDel;
 
       List groupInq;
       idegaTimestamp tempStamp;
@@ -488,7 +512,7 @@ public class Booking extends TravelManager {
           table.setAlignment(2,row,"right");
 
           if (supplier != null) {
-              answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking","Confirm_booking"));
+              answerYes = new Link(iwrb.getLocalizedImageButton("travel.confirm_booking","Confirm booking"));
                 answerYes.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerYes.addParameter(this.parameterRespondInquery, this.parameterRespondYes);
                 answerYes.addParameter(this.BookingAction, this.parameterRespondInquery);
@@ -496,7 +520,7 @@ public class Booking extends TravelManager {
                 answerYes.addParameter("month",this.stamp.getMonth());
                 answerYes.addParameter("day",this.stamp.getDay());
 
-              answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking","Reject_booking"));
+              answerNo = new Link(iwrb.getLocalizedImageButton("travel.reject_booking","Reject booking"));
                 answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
                 answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
@@ -508,13 +532,22 @@ public class Booking extends TravelManager {
               table.add("&nbsp;&nbsp;",2,row);
               table.add(answerNo,2,row);
           }else if (reseller != null) {
-              answerNo = new Link(iwrb.getLocalizedImageButton("travel.cancel_inquiry","Cancel_inquiry"));
+              answerNo = new Link(iwrb.getLocalizedImageButton("travel.cancel_inquiry","Cancel sinquiry"));
                 answerNo.addParameter(this.parameterInqueryId,inqueries[i].getID());
                 answerNo.addParameter(this.parameterRespondInquery, this.parameterRespondNo);
                 answerNo.addParameter(this.BookingAction, this.parameterRespondInquery);
 
               table.add(answerNo,2,row);
           }
+          answerDel = new Link(iwrb.getLocalizedImageButton("travel.delete_inquiry","Delete inquiry"));
+            answerDel.addParameter(this.parameterInqueryId,inqueries[i].getID());
+            answerDel.addParameter(this.parameterRespondInquery, this.parameterRespondDel);
+            answerDel.addParameter(this.BookingAction, this.parameterRespondInquery);
+            answerDel.addParameter("year",this.stamp.getYear());
+            answerDel.addParameter("month",this.stamp.getMonth());
+            answerDel.addParameter("day",this.stamp.getDay());
+          table.add("&nbsp;&nbsp;",2,row);
+          table.add(answerDel,2,row);
       }
 
       return table;
@@ -759,16 +792,17 @@ public class Booking extends TravelManager {
 
       int returner = tbf.handleInsert(iwc);
 
-      if (returner < 0) {
-        displayForm(iwc, tbf.getErrorForm(iwc, returner));
+      if (returner == tbf.inquirySent) {
+        /** @todo Cleara form eftir að inquiry hefur att ser stad  */
+        displayForm(iwc);
       }else if (returner == 0) {
         displayForm(iwc);
-      }else if (displayForm) {
+      }else if (returner > 1) {
         add(Text.BREAK);
         add(bookingInformation(iwc, returner));
-//        displayForm(iwc, );
+      }else {
+        displayForm(iwc, tbf.getErrorForm(iwc, returner));
       }
-
       return returner;
     }catch (Exception e) {
       e.printStackTrace(System.err);
@@ -776,6 +810,7 @@ public class Booking extends TravelManager {
       return -1;
     }
   }
+
 
   private Table bookingInformation(IWContext iwc, int bookingId) {
     try {
@@ -856,16 +891,28 @@ public class Booking extends TravelManager {
       if (yesNo.equals(this.parameterRespondNo)) book = new Boolean(false);
     }
 
-    if (book != null && sInqueryId != null) {
-        int inqueryId = Integer.parseInt(sInqueryId);
-        int errorMessage = Inquirer.inquiryResponse(iwc, iwrb, inqueryId, book.booleanValue(), this.supplier);
+    if (sInqueryId != null) {
+      if (book != null) {
+          int inqueryId = Integer.parseInt(sInqueryId);
+          int errorMessage = Inquirer.inquiryResponse(iwc, iwrb, inqueryId, book.booleanValue(), this.supplier);
 
-        switch (errorMessage) {
-          case 0 : displayForm(iwc);
-            break;
-          case 1 : displayForm(iwc, Inquirer.getInquiryResponseError(iwrb));
-            break;
-        }
+          switch (errorMessage) {
+            case 0 : displayForm(iwc);
+              break;
+            case 1 : displayForm(iwc, Inquirer.getInquiryResponseError(iwrb));
+              break;
+          }
+      }else if (yesNo != null && yesNo.equals(this.parameterRespondDel)) {
+          int inqueryId = Integer.parseInt(sInqueryId);
+          int errorMessage = Inquirer.inquiryResponse(iwc, iwrb, inqueryId, false, false, this.supplier);
+
+          switch (errorMessage) {
+            case 0 : displayForm(iwc);
+              break;
+            case 1 : displayForm(iwc, Inquirer.getInquiryResponseError(iwrb));
+              break;
+          }
+      }
     }
 
   }

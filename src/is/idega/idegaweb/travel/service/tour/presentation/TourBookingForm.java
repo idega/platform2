@@ -71,6 +71,7 @@ public class TourBookingForm extends TravelManager {
 
 
   public static final int errorTooMany = -1;
+  public static final int inquirySent = -10;
   public List errorDays = new Vector();
 
 
@@ -1148,6 +1149,7 @@ public class TourBookingForm extends TravelManager {
       }
       form.maintainParameter(this.parameterFromDate);
       form.maintainParameter(this.parameterManyDays);
+      form.maintainParameter("ic_user");
 
     return form;
   }
@@ -1206,7 +1208,6 @@ public class TourBookingForm extends TravelManager {
     }catch (Exception e) {}
 
     iMany -= previousBookings;
-    debug("removing "+previousBookings+" from iMany ");
 
     int iAvailable;
     if (totalSeats > 0) {
@@ -1299,7 +1300,7 @@ public class TourBookingForm extends TravelManager {
 
 
   /**
-   * return bookingId, 0 if nothing is done
+   * return bookingId, 0 if nothing is done,  -10 if inquiry is sent
    */
   public int handleInsert(IWContext iwc) throws Exception{
     String check = iwc.getParameter(sAction);
@@ -1311,7 +1312,11 @@ public class TourBookingForm extends TravelManager {
         }else if (action.equals(this.parameterBookAnyway)) {
           return saveBooking(iwc);
         }else if (action.equals(this.parameterSendInquery)) {
-          return sendInquery(iwc);
+          if (sendInquery(iwc) > 0) {
+            return this.inquirySent;
+          }else {
+            return -1;
+          }
         }else {
           return -1;
         }
@@ -1478,7 +1483,6 @@ public class TourBookingForm extends TravelManager {
         for (int o = 0; o < bookingIds.length; o++) {
           try {
             GeneralBooking gBook = new GeneralBooking(bookingIds[o]);
-            debug("detaching booking from reseller");
             gBook.removeFrom(Reseller.class);
           }catch (SQLException sql) {debug(sql.getMessage());}
         }
@@ -1601,10 +1605,6 @@ public class TourBookingForm extends TravelManager {
       GeneralBooking gBooking = new GeneralBooking(bookingId);
       List bookings = Booker.getMultibleBookings(gBooking);
       Booking booking = null;
-
-
-
-
 
       int numberOfSeats = gBooking.getTotalCount();
       int counter = 0;

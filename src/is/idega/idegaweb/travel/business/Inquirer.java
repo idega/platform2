@@ -162,10 +162,18 @@ public class Inquirer {
   }
 
   public static int inquiryResponse(IWContext iwc, IWResourceBundle iwrb, int inquiryId, boolean book, Supplier supplier) {
-    return inquiryResponse(iwc, iwrb, inquiryId, book, supplier, null);
+    return inquiryResponse(iwc, iwrb, inquiryId, book, true, supplier, null);
+  }
+
+  public static int inquiryResponse(IWContext iwc, IWResourceBundle iwrb, int inquiryId, boolean book, boolean sendMail, Supplier supplier) {
+    return inquiryResponse(iwc, iwrb, inquiryId, book, sendMail ,supplier, null);
   }
 
   public static int inquiryResponse(IWContext iwc, IWResourceBundle iwrb, int inquiryId, boolean book, Supplier supplier, Reseller reseller) {
+    return inquiryResponse(iwc, iwrb, inquiryId, book, true, supplier, reseller);
+  }
+
+  public static int inquiryResponse(IWContext iwc, IWResourceBundle iwrb, int inquiryId, boolean book, boolean sendMail, Supplier supplier, Reseller reseller) {
     String mailHost = "mail.idega.is";
 
     String mailSubject = "NAT "+iwrb.getLocalizedString("travel.idega.inquiry","Inquiry");
@@ -223,7 +231,9 @@ public class Inquirer {
         Reseller[] resellers = (Reseller[]) inquery.findRelated((Reseller) Reseller.getStaticInstance(Reseller.class));
         try {
           if (supplier != null) {
-            sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
+            if (sendMail) {
+              sm.send(supplier.getEmail().getEmailAddress(),inquery.getEmail(), "","",mailHost,mailSubject,responseString.toString());
+            }
             if (reseller == null) {  // if this is not a reseller deleting his own inquiry
               if (resellers != null) { // if there was a reseller who send the inquiry
                 responseString = new StringBuffer();
@@ -252,9 +262,11 @@ public class Inquirer {
 
                 //responseString.append("T - Svar við fyrirspurn varðandi "+inquery.getNumberOfSeats()+" sæti fyrir \""+inquery.getName()+"\" í ferðina \""+tempService.getName()+"\" þann "+new idegaTimestamp(booking.getBookingDate()).getLocaleDate(iwc)+"\n");
                 for (int i = 0; i < resellers.length; i++) {
-                  if (resellers[i].getEmail() != null)
-                  sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
-
+                  if (resellers[i].getEmail() != null) {
+                    if (sendMail) {
+                      sm.send(supplier.getEmail().getEmailAddress(),resellers[i].getEmail().getEmailAddress(), "","",mailHost,mailSubject,responseString.toString());
+                    }
+                  }
                 }
               }
             }
