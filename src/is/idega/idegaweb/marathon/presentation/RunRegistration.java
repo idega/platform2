@@ -611,7 +611,7 @@ public class RunRegistration extends Block {
 		t.setWidth(Table.HUNDRED_PERCENT);
 		int row = 1;
 
-		t.setHeight(row++, 24);
+		t.setHeight(row++, 12);
 		t.add(iwrb.getLocalizedString("registration_received", "Your registration has been received."), 1, row++);
 		t.setHeight(row++, 8);
 
