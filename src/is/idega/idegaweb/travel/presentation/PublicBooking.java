@@ -162,6 +162,14 @@ public class PublicBooking extends Block  {
       table.add(leftBottom(iwc),1,3);
       table.add(rightTop(iwc),2,2);
       table.add(rightBottom(iwc),2,3);
+      Image image = bundle.getImage("verisignseals/verisign_logo.gif");
+        image.setWidth(100);
+        image.setHeight(42);
+      Link verisign = new Link(image, "https://digitalid.verisign.com/as2/3537e1357d56f9db899a65d84e97d2c9");
+        verisign.setTarget(Link.TARGET_NEW_WINDOW);
+      table.add(verisign, 2,4);
+      table.setAlignment(2,4, "center");
+      table.setVerticalAlignment(2, 4, "bottom");
 
       add(table);
   }
@@ -188,7 +196,7 @@ public class PublicBooking extends Block  {
   }
 
   private Table rightBottom(IWContext iwc)  {
-    Table table = new Table(1,1);
+    Table table = new Table(1,2);
       table.setAlignment(1,1,"center");
       table.setVerticalAlignment(1,1,"top");
 
@@ -208,6 +216,7 @@ public class PublicBooking extends Block  {
         ch.sm.T.setBorder(0);
         ch.sm.T.setCellspacing(2);
       table.add(ch.getCalendarTable(iwc),1,1);
+
     }catch (Exception e) {
       e.printStackTrace(System.err);
     }
@@ -253,6 +262,7 @@ public class PublicBooking extends Block  {
       Currency currency;
 
       Text nameText = getText(iwrb.getLocalizedString("travel.name","Name"));
+      Text daysText = getText(iwrb.getLocalizedString("travel.active_days","Active days"));
       Text timeframeText = getText(iwrb.getLocalizedString("travel.timeframe","Timeframe"));
       Text supplierText = getText(iwrb.getLocalizedString("travel.supplier","Supplier"));
       Text departureFromText = getText(iwrb.getLocalizedString("travel.departure_from","Departure from"));
@@ -271,6 +281,7 @@ public class PublicBooking extends Block  {
 
 
       Text nameTextBold = getBoldText("");
+      Text daysTextBold = getBoldText("");
       Text supplierTextBold = getBoldText("");
       Text departureFromTextBold = getBoldText("");
       Text departureTimeTextBold = getBoldText("");
@@ -284,11 +295,28 @@ public class PublicBooking extends Block  {
       departureFromTextBold.setText(depAddress.getStreetName());
       departureTimeTextBold.setText(TextSoap.addZero(depTimeStamp.getHour())+":"+TextSoap.addZero(depTimeStamp.getMinute()));
 
+      String[] dayOfWeekName = new String[8];
+      idegaCalendar cal = new idegaCalendar();
+        dayOfWeekName[ServiceDay.SUNDAY] = cal.getNameOfDay(ServiceDay.SUNDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.MONDAY] = cal.getNameOfDay(ServiceDay.MONDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.TUESDAY] = cal.getNameOfDay(ServiceDay.TUESDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.WEDNESDAY] = cal.getNameOfDay(ServiceDay.WEDNESDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,iwc).substring(0,3);
+        dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,iwc).substring(0,3);
+      int[] days = ServiceDay.getDaysOfWeek(product.getID());
+      if (days.length == 7) {
+        daysTextBold.setText(iwrb.getLocalizedString("travel.daily","daily"));
+      }else {
+        for (int j = 0; j < days.length; j++) {
+          if (j > 0) daysTextBold.addToText(", ");
+          daysTextBold.addToText(dayOfWeekName[days[j]]);
+        }
+      }
 
       table.add(nameText,1,1);
       table.add(space,1,1);
       table.add(nameTextBold,1,1);
-
 
       table.add(supplierText,1,2);
       table.add(space,1,2);
@@ -306,7 +334,11 @@ public class PublicBooking extends Block  {
       table.add(space,2,2);
       table.add(departureTimeTextBold,2,2);
 
-      table.add(Text.NON_BREAKING_SPACE,2,3);
+      table.add(daysText,2,3);
+      table.add(space,2,3);
+      table.add(daysTextBold,2,3);
+
+//      table.add(Text.NON_BREAKING_SPACE,2,3);
 
       String stampTxt1 = iwrb.getLocalizedString("travel.not_configured","Not configured");
       String stampTxt2 = iwrb.getLocalizedString("travel.not_configured","Not configured");
@@ -366,21 +398,23 @@ public class PublicBooking extends Block  {
       pTable.setColumnAlignment(5,"left");
       pTable.setHorizontalZebraColored("#FFFFFF","#F1F1F1");
 
-      table.add(pTable,2,3);
+      table.add(pTable,2,4);
 //      table.setAlignment(2,4,"right");
 
       table.setAlignment(2,1,"right");
       table.setAlignment(2,2,"right");
       table.setAlignment(2,3,"right");
+      table.setAlignment(2,4,"right");
       table.setVerticalAlignment(1,3,"top");
+      table.setVerticalAlignment(1,4,"top");
       table.mergeCells(1,1,2,1);
 //      table.mergeCells(1,2,2,2);
-//      table.mergeCells(1,3,1,5);
-      table.mergeCells(2,3,2,4);
+      table.mergeCells(1,3,1,5);
+      table.mergeCells(2,4,2,5);
 //      table.setWidth(1,"138");
 //      table.setWidth(3,"350");
 //      table.setWidth(2,"350");
-//        table.setBorder(1);
+//      table.setBorder(1);
 
 
     }catch (Exception e) {
@@ -482,6 +516,16 @@ public class PublicBooking extends Block  {
     String room_number = iwc.getParameter("room_number");
     String depAddressId = iwc.getParameter(TourBookingForm.parameterDepartureAddressId);
 
+    String ccNumber = iwc.getParameter(TourBookingForm.parameterCCNumber);
+    String ccMonth = iwc.getParameter(TourBookingForm.parameterCCMonth);
+    String ccYear = iwc.getParameter(TourBookingForm.parameterCCYear);
+
+    boolean valid = true;
+    String errorColor = "YELLOW";
+    Text star = new Text(Text.NON_BREAKING_SPACE+"*");
+      star.setFontColor(errorColor);
+
+
 //    ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
     ProductPrice[] pPrices = {};
     Timeframe tFrame = ProductBusiness.getTimeframe(this.product, stamp);
@@ -521,30 +565,50 @@ public class PublicBooking extends Block  {
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.name","Name")),1,row);
       table.add(getBoldTextWhite(surname+" "+lastname),2,row);
+      if (surname.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
 
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.address","Address")),1,row);
       table.add(getBoldTextWhite(address),2,row);
+      if (address.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
 
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.area_code","Area code")),1,row);
       table.add(getBoldTextWhite(area_code),2,row);
+      if (area_code.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
 
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.city","City")),1,row);
       table.add(getBoldTextWhite(city),2,row);
+      if (city.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
 
       ++row;
       table.setAlignment(1,row,"right");
       table.setAlignment(2,row,"left");
       table.add(getTextWhite(iwrb.getLocalizedString("travel.country","Country")),1,row);
       table.add(getBoldTextWhite(country),2,row);
+      if (country.length() < 1) {
+        valid = false;
+        table.add(star, 2, row);
+      }
 
       ++row;
       table.setAlignment(1,row,"right");
@@ -605,15 +669,21 @@ public class PublicBooking extends Block  {
       Link no = new Link(iwrb.getImage("buttons/no.gif"),"#");
           no.setAttribute("onClick","history.go(-1)");
 
-//        return backLink;
 
-  //    SubmitButton no = new SubmitButton(iwrb.getImage("buttons/no.gif"),this.sAction, "");
+      if ( ccNumber.length() < 13 || ccNumber.length() > 19 || ccMonth.length() != 2 || ccYear.length() != 2) {
+        valid = false;
+        Text ccError = getBoldText(iwrb.getLocalizedString("travel.creditcard_information_incorrect","Creditcard information is incorrect"));
+          ccError.setFontColor(errorColor);
+        ++row;
+        table.mergeCells(1, row, 2, row);
+        table.add(ccError, 1, row);
+      }
 
       ++row;
-//      table.setWidth(1,"20%");
       table.setAlignment(1,row,"left");
       table.setAlignment(2,row,"right");
       table.add(no,1,row);
+      if (valid)
       table.add(yes,2,row);
 
 
@@ -636,6 +706,7 @@ public class PublicBooking extends Block  {
         float price = 0;
         int total = 0;
         int current = 0;
+        Currency currency = null;
 
         //ProductPrice[] pPrices = ProductPrice.getProductPrices(this.product.getID(), true);
         ProductPrice[] pPrices = {};
@@ -652,7 +723,7 @@ public class PublicBooking extends Block  {
           }
 
           total += current;
-          if (i == 0)
+
           price += current * TravelStockroomBusiness.getPrice(pPrices[i].getID() ,this.productId,pPrices[i].getPriceCategoryID(), pPrices[i].getCurrencyId() ,idegaTimestamp.getTimestampRightNow(), tFrame.getID(), Integer.parseInt(depAddr));
 
         }
@@ -669,8 +740,12 @@ public class PublicBooking extends Block  {
         System.out.println("TPOS errormessage = " + e.getErrorMessage());
         System.out.println("number = " + e.getErrorNumber());
         System.out.println("display = " + e.getDisplayError());
-        //display.setText(e.getDisplayError());
-        display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
+        int number = Integer.parseInt(e.getErrorNumber());
+        if (number != 48 && number != 49 && number != 50 && number != 56 && number != 57 && number != 58) {
+          display.setText(iwrb.getLocalizedString("travel.creditcard_autorization_failed","Authorization failed"));
+        }else {
+          display.setText(iwrb.getLocalizedString("travel.cannot_connect_to_cps","Could not connect to Central Payment Server"));
+        }
       }
       catch (Exception e) {
         e.printStackTrace(System.err);

@@ -322,7 +322,8 @@ public class TourBookingForm extends TravelManager {
 
                   txtPrice = (Text) theText.clone();
                     txtPrice.setText(Integer.toString(price));
-                  //table.add(txtPrice,3,row);
+                  table.add(Text.NON_BREAKING_SPACE,2,row);
+                  table.add(txtPrice,2,row);
                   //table.add(txtPerPerson,4,row);
 
 
@@ -541,7 +542,7 @@ public class TourBookingForm extends TravelManager {
               areaCodeText.setText(star);
               areaCodeText.addToText(iwrb.getLocalizedString("travel.area_code","area code"));
           Text emailText = (Text) theText.clone();
-              emailText.setText(star);
+              //emailText.setText(star);
               emailText.addToText(iwrb.getLocalizedString("travel.email","e-mail"));
           Text telNumberText = (Text) theText.clone();
               telNumberText.setText(iwrb.getLocalizedString("travel.telephone_number","telephone number"));

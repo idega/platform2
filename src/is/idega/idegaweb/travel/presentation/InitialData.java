@@ -207,6 +207,8 @@ public class InitialData extends TravelManager {
               e.printStackTrace(System.err);
               form = new Form();
             }
+          }else if (selected.equals(this.parameterVoucher)) {
+            form = VoucherWindow.getReferenceNumberForm(iwrb);
           }else {
             form = new Form();
           }

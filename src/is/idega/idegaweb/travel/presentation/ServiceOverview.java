@@ -509,40 +509,20 @@ public class ServiceOverview extends TravelManager {
         contentTable.setRowColor(contRow, super.GRAY);
 
         dayOfWeek = ServiceDay.getDaysOfWeek(service.getID());
-        for (int j = 0; j < dayOfWeek.length; j++) {
-          if (j > 0) actDays.addToText(", ");
-          actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
+        if (dayOfWeek.length == 7) {
+          actDays.setText(iwrb.getLocalizedString("travel.daily","daily"));
+        }else {
+          for (int j = 0; j < dayOfWeek.length; j++) {
+            if (j > 0) actDays.addToText(", ");
+            actDays.addToText(dayOfWeekName[dayOfWeek[j]]);
+          }
         }
 
         contentTable.add(activeDaysText,4,contRow);
         contentTable.add(actDays,5,contRow);
 
         ++contRow;
-        contentTable.setVerticalAlignment(2,contRow,"top");
-        contentTable.setVerticalAlignment(3,contRow,"top");
-        contentTable.setVerticalAlignment(4,contRow,"top");
-        contentTable.setVerticalAlignment(5,contRow,"top");
-        contentTable.add(arrivalFromText,2,contRow);
-        contentTable.add(arrivalTimeText,4,contRow);
-        contentTable.setAlignment(2,contRow,"right");
-        contentTable.setAlignment(3,contRow,"left");
-        contentTable.setAlignment(4,contRow,"right");
-        contentTable.setAlignment(5,contRow,"left");
-        contentTable.add(arrFrom,3,contRow);
-        contentTable.add(arrTime,5,contRow);
-        contentTable.setRowColor(contRow, super.GRAY);
 
-        ++contRow;
-/*        contentTable.setVerticalAlignment(2,contRow,"top");
-        contentTable.setVerticalAlignment(3,contRow,"top");
-        contentTable.setAlignment(2,contRow,"right");
-        contentTable.setAlignment(3,contRow,"left");
-        contentTable.setRowColor(contRow, super.GRAY);
-        contentTable.add(timeframeText,2,contRow);
-          ++contRow;
-*/
-//        contentTable.mergeCells(2,contRow,2,(contRow+prices.length-1));
-//        contentTable.mergeCells(3,contRow,3,(contRow+prices.length-1));
         for (int l = 0; l < depAddresses.length; l++) {
           depFrom = (Text) theBoldText.clone();
             depFrom.setFontColor(super.BLACK);
@@ -663,6 +643,20 @@ public class ServiceOverview extends TravelManager {
 
           }
         }
+//        ++contRow;
+        contentTable.setVerticalAlignment(2,contRow,"top");
+        contentTable.setVerticalAlignment(3,contRow,"top");
+        contentTable.setVerticalAlignment(4,contRow,"top");
+        contentTable.setVerticalAlignment(5,contRow,"top");
+        contentTable.add(arrivalFromText,2,contRow);
+        contentTable.add(arrivalTimeText,4,contRow);
+        contentTable.setAlignment(2,contRow,"right");
+        contentTable.setAlignment(3,contRow,"left");
+        contentTable.setAlignment(4,contRow,"right");
+        contentTable.setAlignment(5,contRow,"left");
+        contentTable.add(arrFrom,3,contRow);
+        contentTable.add(arrTime,5,contRow);
+        contentTable.setRowColor(contRow, super.GRAY);
 
 
 

@@ -152,15 +152,36 @@ public class Voucher extends TravelManager {
         table.setAlignment(3,1,"right");
 
         table.add(Text.BREAK,1,2);
-        table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO :")),1,2);
+        table.add(getText(_iwrb.getLocalizedString("travel.to_lg","TO")+" : "),1,2);
         table.add(getText(_supplier.getName()),1,2);
         table.add(Text.BREAK,1,2);
 
-        table.add(getText(_iwrb.getLocalizedString("travel.address_lg","ADDRESS :")),1,2);
+        table.add(getText(_iwrb.getLocalizedString("travel.address_lg","ADDRESS")+" : "),1,2);
         Address address = _supplier.getAddress();
         table.add(getText(address.getStreetName()),1,2);
+        table.add(Text.BREAK,1,2);
+
+        Phone phone;
+
+        table.add(getText(_iwrb.getLocalizedString("travel.telephone_number_lg","PHONE")+" : "), 1, 2);
+        List hPhone = _supplier.getHomePhone();
+        if (hPhone != null)
+        for (int i = 0; i < hPhone.size(); i++) {
+          if (i != 0) table.add(getText(", "), 1, 2);
+          phone = (Phone) hPhone.get(i);
+          table.add(getText(phone.getNumber()), 1,2);
+        }
+        table.add(Text.BREAK,1,2);
+
+        table.add(getText(_iwrb.getLocalizedString("travel.fax_lg","FAX")+" : "), 1, 2);
+        List fPhone = _supplier.getFaxPhone();
+        if (fPhone != null)
+        for (int i = 0; i < fPhone.size(); i++) {
+          if (i != 0) table.add(getText(", "), 1, 2);
+          phone = (Phone) fPhone.get(i);
+          table.add(getText(phone.getNumber()), 1,2);
+        }
         table.add(Text.BREAK,1,2);
 
         table.add(Text.BREAK,1,2);
