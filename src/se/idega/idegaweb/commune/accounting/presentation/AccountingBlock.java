@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import se.idega.idegaweb.commune.accounting.business.AccountingBusiness;
 import se.idega.idegaweb.commune.accounting.business.AccountingSession;
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.business.IBOLookup;
@@ -472,6 +473,15 @@ public abstract class AccountingBlock extends CommuneBlock {
 	protected AccountingSession getAccountingSession(IWUserContext iwuc) {
 		try {
 			return (AccountingSession) IBOLookup.getSessionInstance(iwuc, AccountingSession.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	protected CommuneUserBusiness getUserBusiness(IWApplicationContext iwac) {
+		try {
+			return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwac, CommuneUserBusiness.class);
 		}
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
