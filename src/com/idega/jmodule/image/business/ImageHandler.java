@@ -19,7 +19,7 @@ import com.idega.data.BlobInputStream;
 import com.idega.data.GenericEntity;
 import com.idega.util.database.ConnectionBroker;
 import com.idega.data.BlobWrapper;
-import com.idega.jmodule.client.imageModule;
+//import com.idega.jmodule.client.imageModule;
 import com.idega.jmodule.image.data.*;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.IWCoreServlet;
