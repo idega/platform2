@@ -1,11 +1,11 @@
 package is.idega.idegaweb.travel.block.search.data;
 
 import java.util.Collection;
-
+import java.util.Iterator;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
 import com.idega.block.trade.stockroom.data.Supplier;
+import com.idega.core.location.data.Country;
 import com.idega.data.GenericEntity;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDORelationshipException;
@@ -29,6 +29,7 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	private static String COLUMN_IS_VALID = "IS_VALID";
 	private static String COLUMN_GROUP_ID = "GROUP_ID";
 	private static String MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE = "sr_supplier_service_engine";
+	private static String MIDDLE_TABLE_COUNTRY_SEARCH_ENGINE = "tb_service_engine_country";
 	private static String COLUMN_SUPPLIER_MANAGER_ID = "SUPPLIER_MANAGER_ID";
 	
 	public String getEntityName() {
@@ -43,12 +44,14 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 //		addAttribute(COLUMN_GROUP_ID, "staff group Id");
 		addAttribute(COLUMN_GROUP_ID, "staff group Id", true, true, Integer.class, super.ONE_TO_ONE, ServiceSearchEngineStaffGroup.class);
 		addAttribute(COLUMN_SUPPLIER_MANAGER_ID, "supplier manager", true, true, Integer.class, MANY_TO_ONE, Group.class);
+
 		this.setUnique(COLUMN_NAME, true);
 		this.setNullable(COLUMN_NAME, false);
 		this.setUnique(COLUMN_BOOKING_CODE, true);
 		this.setNullable(COLUMN_BOOKING_CODE, false);
 		this.addManyToManyRelationShip(Supplier.class, MIDDLE_TABLE_SUPPLIER_SEARCH_ENGINE);
-		
+
+		this.addManyToManyRelationShip(Country.class, MIDDLE_TABLE_COUNTRY_SEARCH_ENGINE);
 	}
 	
 	public void setDefaultValues() {
@@ -92,13 +95,6 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 	}
 	
 	public void removeAllSuppliers() throws IDORemoveRelationshipException {
-		/*
-		try {
-			this.removeFrom(Supplier.class);
-		} catch (SQLException sql) {
-			throw new IDORemoveRelationshipException(sql.getMessage());
-		}
-		*/
 		this.idoRemoveFrom(Supplier.class);
 	}
 
@@ -149,8 +145,26 @@ public class ServiceSearchEngineBMPBean extends GenericEntity implements Service
 		query.addOrder(order);
 		
 		return this.idoFindPKsByQuery(query);
-		
-//		return this.idoFindAllIDsByColumnOrderedBySQL(this.getColumnNameIsValid(), "'Y'", getColumnNameName());
+	}
+	
+	public Collection getCountries() throws IDORelationshipException {
+		return this.idoGetRelatedEntities(Country.class);
+	}
+	
+	/**
+	 * Removes the countries already connected and sets the countries as the new ones
+	 * @param countries
+	 * @throws IDORemoveRelationshipException
+	 * @throws IDOAddRelationshipException
+	 */
+	public void setCountries(Collection countries) throws IDORemoveRelationshipException, IDOAddRelationshipException {
+		this.idoRemoveFrom(Country.class);
+		if (countries != null) {
+			Iterator iter = countries.iterator();
+			while (iter.hasNext()) {
+				this.idoAddTo((Country) iter.next());
+			}
+		}
 	}
 	
 	public void remove() throws RemoveException {

@@ -3,14 +3,16 @@ package is.idega.idegaweb.travel.block.search.presentation;
 import is.idega.idegaweb.travel.block.search.business.ServiceSearchBusiness;
 import is.idega.idegaweb.travel.block.search.data.ServiceSearchEngine;
 import is.idega.idegaweb.travel.presentation.TravelManager;
-
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
+import java.util.Vector;
 import com.idega.block.trade.stockroom.data.Supplier;
 import com.idega.block.trade.stockroom.data.SupplierHome;
 import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.Country;
+import com.idega.core.location.data.CountryHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
@@ -282,14 +284,39 @@ public class ServiceSearchEditor extends TravelManager {
 			try {
 				String checkSupp;
 				Supplier supp;
+				Collection addrs;
+				Address address;
+				Vector postalCodes = new Vector();
 				engine.removeAllSuppliers();
 				for (int i = 0; i < suppIDs.length; i++) {
 					checkSupp = iwc.getParameter(PARAMETER_IN_USE+suppIDs[i]);
 					if (checkSupp != null) {
 						supp = getSupplierHome().findByPrimaryKey(new Integer(suppIDs[i]));
 						engine.addSupplier(supp);
+						
+						// Finding postalCodes to use in finding the countries to be used with the engine
+						addrs = supp.getAddresses();
+						if (addrs != null) {
+							Iterator iter = addrs.iterator();
+							while (iter.hasNext()) {
+								address = (Address) iter.next();
+								if (address != null) {
+									if (address.getPostalCodeID() > 0) {
+										postalCodes.add(address.getPostalCode());
+									
+									}
+								}
+							}
+						}
+						// Finding postalCodes done
+						
 					}
 				}
+				
+				CountryHome cHome = (CountryHome) IDOLookup.getHome(Country.class);
+				Collection countries = cHome.findAllFromPostalCodes(postalCodes);
+
+				engine.setCountries(countries);
 			}catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
