@@ -19,6 +19,8 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.text.TextSoap;
+import com.idega.presentation.Page;
+import com.idega.presentation.Script;
 
 /**
  * @author Laddi
@@ -56,6 +58,11 @@ public class MessageViewer extends CommuneBlock {
 		getParentPage().setAllMargins(0);
 		setResourceBundle(getResourceBundle(iwc));
 		parse(iwc);
+		Page p = this.getParentPage();
+		if (p != null) {
+			Script S = p.getAssociatedScript();
+			S.addFunction("openChildcareParentWindow", getOpenInParentPage());
+		}
 		
 		switch (_action) {
 			case ACTION_CLOSE :
@@ -68,6 +75,18 @@ public class MessageViewer extends CommuneBlock {
 		
 		if (_method != -1)
 			drawForm(iwc);
+	}
+	
+	//open childcare overview in parent window
+	//link set in childcareAdminWindow
+	public String getOpenInParentPage(){
+		StringBuffer s = new StringBuffer();
+		s.append("\nfunction openChildcareParentWindow(link){\n\t");
+		
+		s.append("opener.window.parent.location.href=link;");
+		s.append("\n\t }");
+		
+		return s.toString();
 	}
 	
 	private void drawForm(IWContext iwc) throws Exception {
