@@ -15,7 +15,6 @@ import com.idega.util.text.*;
 public class ImageViewer extends JModuleObject{
 
 private int categoryId = -1;
-private int numberOfImages=3;
 private boolean limitNumberOfImages=true;
 private int numberOfDisplayedImages=9;
 private int iNumberInRow = 3; //iXXXX for int
@@ -30,9 +29,10 @@ private String outerTableWidth = "100%";
 private String outerTableHeight = "100%";
 private String headerFooterColor = "#8AA7D6";
 private String textColor = "#FFFFFF";
+private String headerText = "";
 private Image footerBackgroundImage;
 private Image headerBackgroundImage;
-
+private ImageEntity[] entities;
 
 
 private Text textProxy = new Text();
@@ -58,6 +58,10 @@ public ImageViewer(){
 
 public ImageViewer(int categoryId){
   this.categoryId=categoryId;
+}
+
+public ImageViewer(ImageEntity[] entities){
+  this.entities=entities;
 }
 
 
@@ -154,64 +158,77 @@ public void main(ModuleInfo modinfo)throws Exception{
   else{
 
     try{
-      if ( imageCategoryId != null )
-        categoryId = Integer.parseInt(imageCategoryId);
-      if( categoryId != -1 ){
-        ImageCatagory category = new ImageCatagory(categoryId);
-        ImageEntity[] imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
-
-        Text categoryName = new Text(category.getName());
-        categoryName.setBold();
-        categoryName.setFontColor(textColor);
-        categoryName.setFontSize(3);
-        outerTable.add(categoryName,1,1);
-
+      if ( (imageCategoryId != null) || (entities!=null) ){
+        ImageEntity[] imageEntity;
         String sFirst = modinfo.getParameter("iv_first");//browsing from this image
         if (sFirst!=null) ifirst = Integer.parseInt(sFirst);
 
-        outerTable.add(displayCatagory(imageEntity),1,2);
-        if( limitNumberOfImages ) {
-          String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages)+" af "+(imageEntity.length-1);
-          Text middleText = new Text(middle);
-          middleText.setBold();
-          middleText.setFontColor(textColor);
+        if ( imageCategoryId != null){
 
-          Text leftText = new Text("Fyrri myndir <<");
-          leftText.setBold();
+          categoryId = Integer.parseInt(imageCategoryId);
+          ImageCatagory category = new ImageCatagory(categoryId);
+          imageEntity = (ImageEntity[]) category.findRelated(new ImageEntity());
+          Text categoryName = new Text(category.getName());
+          categoryName.setBold();
+          categoryName.setFontColor(textColor);
+          categoryName.setFontSize(3);
+          outerTable.add(categoryName,1,1);
 
-          Link back = new Link(leftText);
-          back.setFontColor(textColor);
-          ifirst = ifirst-numberOfDisplayedImages;
-          if( ifirst<0 ) ifirst = 0;
-          back.addParameter("iv_first",ifirst);
-          back.addParameter("image_catagory_id",category.getID());
+          if( limitNumberOfImages ) {
+            String middle = (ifirst+1)+" til "+(ifirst+numberOfDisplayedImages)+" af "+(imageEntity.length-1);
+            Text middleText = new Text(middle);
+            middleText.setBold();
+            middleText.setFontColor(textColor);
 
-          Text rightText = new Text(">> Næstu myndir");
-          rightText.setBold();
+            Text leftText = new Text("Fyrri myndir <<");
+            leftText.setBold();
 
-          Link forward = new Link(rightText);
-          forward.setFontColor(textColor);
+            Link back = new Link(leftText);
+            back.setFontColor(textColor);
+            ifirst = ifirst-numberOfDisplayedImages;
+            if( ifirst<0 ) ifirst = 0;
+            back.addParameter("iv_first",ifirst);
+            back.addParameter("image_catagory_id",category.getID());
 
-          int inext = ifirst+numberOfDisplayedImages;
-          if( inext > imageEntity.length) inext = imageEntity.length-numberOfDisplayedImages;
-          forward.addParameter("iv_first",inext);
-          forward.addParameter("image_catagory_id",category.getID());
+            Text rightText = new Text(">> Næstu myndir");
+            rightText.setBold();
 
-          Table links = new Table(3,1);
+            Link forward = new Link(rightText);
+            forward.setFontColor(textColor);
 
-          links.setWidth("100%");
-          links.setCellpadding(0);
-          links.setCellspacing(0);
-          links.setAlignment(1,1,"left");
-          links.setAlignment(2,1,"center");
-          links.setAlignment(3,1,"right");
+            int inext = ifirst+numberOfDisplayedImages;
+            if( inext > imageEntity.length) inext = imageEntity.length-numberOfDisplayedImages;
+            forward.addParameter("iv_first",inext);
+            forward.addParameter("image_catagory_id",category.getID());
 
-          links.add(back,1,1);
-          links.add(middleText,2,1);
-          links.add(forward,3,1);
-          outerTable.add(links,1,3);
+            Table links = new Table(3,1);
 
+            links.setWidth("100%");
+            links.setCellpadding(0);
+            links.setCellspacing(0);
+            links.setAlignment(1,1,"left");
+            links.setAlignment(2,1,"center");
+            links.setAlignment(3,1,"right");
+
+            links.add(back,1,1);
+            links.add(middleText,2,1);
+            links.add(forward,3,1);
+            outerTable.add(links,1,3);
+
+          }
         }
+        else{
+        //for searches
+
+          Text header = new Text(headerText);
+          header.setBold();
+          header.setFontColor(textColor);
+          header.setFontSize(3);
+          outerTable.add(header,1,1);
+          imageEntity=entities;
+        }
+
+        outerTable.add(displayCatagory(imageEntity),1,2);
         add(outerTable);
 
       }
@@ -260,12 +277,23 @@ private Table displayImage( ImageEntity image ) throws SQLException
   }
 
   if(isAdmin) {
+    String adminPage="/image/imageadmin.jsp";//change to same page and object
     Table editTable = new Table(5,1);
-    Link imageEdit = new Link(delete,"/image/imageadmin.jsp?image_id="+imageId+"&action=delete");
-    Link imageEdit2 = new Link(cut,"/image/imageadmin.jsp?image_id="+imageId+"&action=cut");
-    Link imageEdit3 = new Link(copy,"/image/imageadmin.jsp?image_id="+imageId+"&action=copy");
-    Link imageEdit4 = new Link(view,"/image/imageadmin.jsp?image_id="+imageId);
-    Link imageEdit5 = new Link(use,"/image/imageadmin.jsp?image_id="+imageId+"&action=use");
+    Link imageEdit = new Link(delete,adminPage);
+    imageEdit.addParameter("image_id",imageId);
+    imageEdit.addParameter("action","delete");
+    Link imageEdit2 = new Link(cut,adminPage);
+    imageEdit2.addParameter("image_id",imageId);
+    imageEdit2.addParameter("action","cut");
+    Link imageEdit3 = new Link(copy,adminPage);
+    imageEdit3.addParameter("image_id",imageId);
+    imageEdit3.addParameter("action","copy");
+    Link imageEdit4 = new Link(view,adminPage);
+    imageEdit4.addParameter("image_id",imageId);
+    Link imageEdit5 = new Link(use,adminPage);
+    imageEdit5.addParameter("image_id",imageId);
+    imageEdit5.addParameter("action","use");
+
 
     editTable.add(imageEdit,1,1);
     editTable.add(imageEdit2,2,1);
@@ -348,6 +376,10 @@ public void setNumberOfDisplayedImages(int numberOfDisplayedImages){
 
 public void setNumberInRow(int NumberOfImagesInOneRow){
   this.iNumberInRow = NumberOfImagesInOneRow;
+}
+
+public void setHeaderText(String headerText){
+  this.headerText = headerText;
 }
 
 public void setHeaderFooterColor(String headerFooterColor){
