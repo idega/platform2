@@ -214,4 +214,5 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public Collection getPreSchoolTypes() throws java.rmi.RemoteException;
  public Collection getFamilyDayCareTypes() throws java.rmi.RemoteException;
  public Collection getFamilyAfterSchoolTypes() throws java.rmi.RemoteException;
+ public boolean wasRejectedByParent(se.idega.idegaweb.commune.childcare.data.ChildCareApplication application) throws java.rmi.RemoteException;
 }

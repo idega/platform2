@@ -170,16 +170,18 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 							Iterator iterator = rejected.iterator();
 							while (iterator.hasNext()) {
 								ChildCareApplication rejectedApplication = (ChildCareApplication) iterator.next();
-								provider = rejectedApplication.getProvider();
-								queue = new IWTimestamp(rejectedApplication.getQueueDate());
-								placement = new IWTimestamp(rejectedApplication.getFromDate());
-
-								data = new ReportableData();
-								data.addData(providers, provider.getSchoolName());
-								data.addData(status, getChildCareBusiness().getStatusString(rejectedApplication.getApplicationStatus()));
-								data.addData(queueDate, queue.getLocaleDate(currentLocale, IWTimestamp.SHORT));
-								data.addData(placementDate, placement.getLocaleDate(currentLocale, IWTimestamp.SHORT));
-								reportCollection.add(data);
+								if (getChildCareBusiness().wasRejectedByParent(rejectedApplication)) {
+									provider = rejectedApplication.getProvider();
+									queue = new IWTimestamp(rejectedApplication.getQueueDate());
+									placement = new IWTimestamp(rejectedApplication.getFromDate());
+	
+									data = new ReportableData();
+									data.addData(providers, provider.getSchoolName());
+									data.addData(status, getChildCareBusiness().getStatusString(rejectedApplication.getApplicationStatus()));
+									data.addData(queueDate, queue.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+									data.addData(placementDate, placement.getLocaleDate(currentLocale, IWTimestamp.SHORT));
+									reportCollection.add(data);
+								}
 							}
 						}
 						catch (FinderException fex) {
