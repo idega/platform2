@@ -7,6 +7,7 @@ package com.idega.block.dataquery.presentation;
 //import java.awt.Color;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,10 +17,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
+import com.idega.block.dataquery.data.UserQuery;
 import com.idega.block.dataquery.data.xml.QueryBooleanExpressionPart;
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
 import com.idega.block.dataquery.data.xml.QueryEntityPart;
@@ -34,8 +38,8 @@ import com.idega.business.IBOLookup;
 import com.idega.business.InputHandler;
 import com.idega.core.data.ICTreeNode;
 import com.idega.core.data.IWTreeNode;
-import com.idega.core.file.data.ICFile;
 import com.idega.data.EntityRepresentation;
+import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.Block;
 import com.idega.presentation.IWContext;
@@ -67,10 +71,9 @@ import com.idega.user.business.UserBusiness;
  */
 public class ReportQueryBuilder extends Block {
 	private static final String PARAM_ASTEMPLATE = "astemplate";
-	//private IWBundle iwb = null;
-	private IWResourceBundle iwrb = null;
+	protected IWResourceBundle iwrb = null;
 	//private static final String IWBUNDLE_IDENTIFIER = "com.idega.block.dataquery";
-	private QueryHelper helper = null;
+	protected QueryHelper helper = null;
 	private boolean hasEditPermission = false, hasTemplatePermission = false, hasCreatePermission = false;
 	
 	//thomas added:
@@ -85,12 +88,13 @@ public class ReportQueryBuilder extends Block {
 	private static final String PARAM_FINAL = "final";
 	public static final String PARAM_CANCEL = "cancel";
 	public static final String PARAM_SAVE = "save";
+	public static final String PARAM_SAVE_MODE ="save_mode";
 	private static final String PARAM_ADD = "add";
 	private static final String PARAM_DROP = "drop";
 	private static final String PARAM_SET_EXPRESSION = "setExpression";
 	private static final String PARAM_SET_HANDLER = "setHandler";
 	private static final String PARAM_DYNAMIC = "dynamic";
-	public static final String PARAM_QUIT = "quit";
+//public static final String PARAM_QUIT = "quit";
 	private static final String PARAM_QUERY_AS_SOURCE = "source_query";
 	private static final String PARAM_SOURCE = "source_entity";
 	private static final String PARAM_RELATED = "related_entity";
@@ -105,7 +109,7 @@ public class ReportQueryBuilder extends Block {
 	//private static final String PARAM_COND_ENTITY = "entity";
 	private static final String PARAM_COND_DESCRIPTION = "cond_description";
 	private static final String PARAM_BOOLEAN_EXPRESSION = "booleanExpression";
-	public static final String PARAM_QUERY_FOLDER_ID = "qb_fid";
+//	public static final String PARAM_QUERY_FOLDER_ID = "qb_fid";
 	public static final String PARAM_LAYOUT_FOLDER_ID ="qb_layoutId";
 	public static final String PARAM_QUERY_ID = "qb_qid";
 	public static final String PARAM_QUERY_NAME = "q_name";
@@ -113,20 +117,21 @@ public class ReportQueryBuilder extends Block {
 	private static final String PERM_CREATE = "create";
 	private static final String PARAM_LOCK = "lock";
 	private static final String PARAM_FUNCTION = "mkfunction";
-	//private static final String PARAM_FUNC_TYPE = "mkfunctype";
 	
-	private static final String FORM_NAME = "reportQueryBuilderForm";
+	public static final int MAX_INVESTIGATIONS_LEVEL = 6;
 	
 	private static final String PARAM_IS_PRIVATE_QUERY = "param_private_query";
 	
 	private static final String PRIVATE = "private";
 	private static final String PUBLIC = "public";
+	private static final String SAVE_AS_NEW_QUERY = "save_as_new_query";
+	private static final String OVERWRITE_QUERY = "overwrite_query";
 	
 	private int heightOfStepTable = 300;
 	private int step = 1;
 	private int queryFolderID = -1;
 	private String layoutFolderID;
-	private int queryID = -1;
+	private int userQueryID = -1;
 	// thomas: not used
 	//private int relationDepth = 4;
 	private int investigationLevel = 6;
@@ -176,26 +181,33 @@ public class ReportQueryBuilder extends Block {
 	}
 	
 	
-	public void control(IWContext iwc) {
+	public void control(IWContext iwc) throws IDOStoreException, CreateException, SQLException, FinderException {
 		if (hasEditPermission || hasTemplatePermission || hasCreatePermission) {
 			try {
-				if (iwc.isParameterSet(SHOW_WIZARD))	{
-					investigationLevel = Integer.parseInt(iwc.getParameter(SHOW_WIZARD));
-					expertMode = (investigationLevel > -1);
-				}
 
-				if (iwc.isParameterSet(PARAM_QUERY_FOLDER_ID)) {
-					queryFolderID = Integer.parseInt(iwc.getParameter(PARAM_QUERY_FOLDER_ID));
-				}
 				if (iwc.isParameterSet(PARAM_QUERY_ID)) {
-					queryID = Integer.parseInt(iwc.getParameter(PARAM_QUERY_ID));
+					userQueryID = Integer.parseInt(iwc.getParameter(PARAM_QUERY_ID));
 				}
 
 				sessionBean = (QuerySession) IBOLookup.getSessionInstance(iwc, QuerySession.class);
-				if (queryID > 0)
-					sessionBean.setXmlFileID(queryID);
-				helper = sessionBean.getQueryHelper();
+				if (userQueryID > 0) {
+					sessionBean.setUserQueryID(userQueryID);
+				}
+				helper = sessionBean.getQueryHelper(iwc);
+				if (iwc.isParameterSet(SHOW_WIZARD))	{
+					investigationLevel = Integer.parseInt(iwc.getParameter(SHOW_WIZARD));
+					// if we are editing an existing query that has an entity choose the maximum investigation level
+					if (helper.hasSourceEntity()) {
+						investigationLevel = MAX_INVESTIGATIONS_LEVEL;
+					}
+					expertMode = (investigationLevel > -1);
+				}
 
+				
+				
+				
+				step = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
+/*---------------------------------------------------------------------------------------------------
 				// if not moving around we stay at entity tree
 				if (iwc.isParameterSet("tree_action"))
 					step = 2;
@@ -205,7 +217,7 @@ public class ReportQueryBuilder extends Block {
 							? Integer.parseInt(iwc.getParameter(PARAM_STEP))
 							: helper.getStep();
 				step = step == 0 ? 1 : step;
-				
+------------------------------------------------------------------------------------------------------*/				
 				//System.err.println("djokid");
 				//System.err.println("helper step is " + helper.getStep());
 				//System.err.println("this step is before process" + step);+
@@ -213,14 +225,11 @@ public class ReportQueryBuilder extends Block {
 				//System.err.println("this step is after process" + step);
 				Table table = new Table(1, 3);
 				Form form = new Form();
-				form.setName(FORM_NAME);
 				// thomas changed: queryFolder  id is always set
 				// if (queryFolderID > 0 && step < 5)
-				if (queryFolderID > 0) {
-					form.addParameter(PARAM_QUERY_FOLDER_ID, queryFolderID);
+				if (userQueryID > 0) {
+					form.addParameter(PARAM_QUERY_ID, userQueryID);
 				}
-				if (queryID > 0)
-					form.addParameter(PARAM_QUERY_ID, queryID);
 				table.add(getButtons(step), 1, 3);
 				form.addParameter(PARAM_STEP, step);
 				// thomas added:
@@ -274,7 +283,7 @@ public class ReportQueryBuilder extends Block {
 			add(iwrb.getLocalizedString("no_permission", "You don't have permission !!"));
 		}
 	}
-	private void processForm(IWContext iwc) throws IOException {
+	private void processForm(IWContext iwc) throws IDOStoreException, IOException, CreateException, SQLException, RemoteException, FinderException {
 		// first of all set new handler classes
 		if (iwc.isParameterSet(PARAM_SET_HANDLER)) {
 			String handlerClass = InputHandlerChooser.parseInputHandler(iwc);
@@ -284,22 +293,24 @@ public class ReportQueryBuilder extends Block {
 				helper.setInputHandler(fieldPart.getPath(), fieldPart.getName(), handlerClass);
 			}
 		}
-		//		destroy sessionbean and close window if set
-		if (iwc.isParameterSet(PARAM_QUIT)) {
-			//if(closeParentWindow)
-			// try to close parent window
-			// thomas: replaced by staic method
-			// IBOLookup.removeSessionInstance(iwc, QuerySession.class);
-			ReportQueryBuilder.cleanSession(iwc);
-			step = 1;
-		}
-		else if (iwc.isParameterSet(PARAM_CANCEL)) {
+//		//		destroy sessionbean and close window if set
+//		if (iwc.isParameterSet(PARAM_QUIT)) {
+//			//if(closeParentWindow)
+//			// try to close parent window
+//			// thomas: replaced by staic method
+//			// IBOLookup.removeSessionInstance(iwc, QuerySession.class);
+//			ReportQueryBuilder.cleanSession(iwc);
+//			step = 1;
+//		}
+		if (iwc.isParameterSet(PARAM_CANCEL)) {
 			helper.clearAll();
 			step = 1;
 		}
 		else if (iwc.isParameterSet(PARAM_FINAL)) {
-			processNextStep(iwc);
-			step = 5;
+			boolean proceed = processNextStep(iwc);
+			if (proceed) {
+				step = 6;
+			}
 		}
 		else if (iwc.isParameterSet(PARAM_FUNCTION)){
 			processFunction(iwc);
@@ -356,22 +367,25 @@ public class ReportQueryBuilder extends Block {
 			helper.setDescription(description);
 			helper.setTemplate(iwc.isParameterSet(PARAM_ASTEMPLATE));
 			String name = iwc.getParameter(PARAM_QUERY_NAME);
+			String saveMode = iwc.getParameter(PARAM_SAVE_MODE);
 			boolean isPrivate = PRIVATE.equals(iwc.getParameter(PARAM_IS_PRIVATE_QUERY));
-			if (name == null)
+			boolean overwriteQuery = OVERWRITE_QUERY.equals(saveMode);
+			if (name == null) {
 				name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
-			ICFile q = sessionBean.storeQuery(name, queryFolderID, isPrivate);
-			if (q != null) {
-				queryID = ((Integer) q.getPrimaryKey()).intValue();
-				//add("Query was saved with ID: "+queryID  );
 			}
-			//else
-			//add("Query was not saved");
+			UserQuery userQuery = sessionBean.storeQuery(name, isPrivate, overwriteQuery);
+			if (userQuery != null) {
+				userQueryID = ((Integer) userQuery.getPrimaryKey()).intValue();
+				helper.setUserQuery(userQuery);
+			}
 		}
 		else if (iwc.isParameterSet(PARAM_NEXT)) {
 			boolean proceed = processNextStep(iwc);
 			if (proceed) {
 				// in the simple mode skip the second step
-				if (! expertMode && step == 1) {
+				// in the expert mode skip the second step when no source entity was chosen
+				if ((! expertMode && step == 1) || 
+						(expertMode && step == 1 && ! helper.hasSourceEntity())) {
 					step = 3;
 				}
 				else {
@@ -385,23 +399,15 @@ public class ReportQueryBuilder extends Block {
 		else if (iwc.isParameterSet(PARAM_LAST)) {
 			processPreviousStep(iwc);
 		}
-		else if (iwc.isParameterSet(PARAM_CANCEL)) {
-			helper.clearAll();
-			step = 1;
-		}
-		else if (iwc.isParameterSet(PARAM_FINAL)) {
-			processNextStep(iwc);
-			step = 5;
-		}
-		else if (iwc.isParameterSet(PARAM_SAVE)) {
-			processStep5(iwc);
-			//else
-			//add("Query was not saved");
-		}
+//		else if (iwc.isParameterSet(PARAM_SAVE)) {
+//			processStep5(iwc);
+//			//else
+//			//add("Query was not saved");
+//		}
 
 	}
 
-	private boolean processNextStep(IWContext iwc) throws RemoteException  {
+	private boolean processNextStep(IWContext iwc) throws RemoteException, FinderException  {
 		int currentStep = iwc.isParameterSet(PARAM_STEP) ? Integer.parseInt(iwc.getParameter(PARAM_STEP)) : 1;
 		//System.out.println("current processing step " + currentStep);
 		switch (currentStep) {
@@ -483,11 +489,13 @@ public class ReportQueryBuilder extends Block {
 		else
 			return helper.hasSourceEntity();
 	}
-	private boolean processStep1(IWContext iwc) throws RemoteException{
+	private boolean processStep1(IWContext iwc) throws RemoteException, FinderException {
 		if (iwc.isParameterSet(PARAM_QUERY_AS_SOURCE))	{
-			String queryId = iwc.getParameter(PARAM_QUERY_AS_SOURCE);
-			QueryHelper queryHelperAsSource = sessionBean.getQueryService().getQueryHelper(Integer.parseInt(queryId));
-			helper.addQuery(queryHelperAsSource);
+			String[] userQueryId = iwc.getParameterValues(PARAM_QUERY_AS_SOURCE);
+			for (int i = 0; i < userQueryId.length; i++) {
+				QueryHelper queryHelperAsSource = sessionBean.getQueryService().getQueryHelper(Integer.parseInt(userQueryId[i]), iwc);
+				helper.addQuery(queryHelperAsSource);
+			}
 		}
 		// do not use else if 
 		if (iwc.isParameterSet(PARAM_SOURCE)) {
@@ -511,10 +519,10 @@ public class ReportQueryBuilder extends Block {
 		}
 		// either an entity as source or a query as source
 		if (expertMode) {
-			return helper.hasSourceEntity();
+			return helper.hasSourceEntity()  || helper.hasPreviousQuery();
 		}
 		else {
-		 return helper.hasSourceEntity() || helper.hasPreviousQuery();
+		 return helper.hasPreviousQuery();
 		}
 	}
 	
@@ -658,9 +666,10 @@ public class ReportQueryBuilder extends Block {
 				break;
 			case 3 :
 			// added by thomas
-			// skip the second step
+			// in the simple mode skip the second step
+			// in the expert mode skip the second step when no source entity was chosen	
 				processStep3(iwc);
-				if (! expertMode) {
+				if (! expertMode || (expertMode && ! helper.hasSourceEntity())) {
 					step--;
 				}
 				//helper.clearRelatedEntities();
@@ -681,7 +690,7 @@ public class ReportQueryBuilder extends Block {
 		step--;
 		//step = helper.getStep()-1;
 	}
-	public PresentationObject getStep(IWContext iwc) throws RemoteException {
+	public PresentationObject getStep(IWContext iwc) throws RemoteException, FinderException {
 		switch (step) {
 			case 1 :
 				return getStep1(iwc);
@@ -726,7 +735,7 @@ public class ReportQueryBuilder extends Block {
 		return T;
 	}
 
-	public PresentationObject getStep1(IWContext iwc) throws RemoteException {
+	public PresentationObject getStep1(IWContext iwc) throws RemoteException, FinderException {
 
 		Table table = getStepTable();
 		int row = 1;
@@ -768,6 +777,7 @@ public class ReportQueryBuilder extends Block {
 		}
 		if (showQueries)	{
 			SelectionBox select = new SelectionBox(PARAM_QUERY_AS_SOURCE);
+			select.setMultiple(true);
 			select.setMaximumChecked(1, iwrb.getLocalizedString("maximum_select_msg", "Select only one"));
 			select.setHeight("20");
 			select.setWidth("300");
@@ -788,9 +798,15 @@ public class ReportQueryBuilder extends Block {
 				select.addMenuElement(id, displayName.toString());				
 			}
   		if (helper.hasPreviousQuery()) {
-  			String id = helper.previousQuery().getId();
-  			if (id != null) {
-  				select.setSelectedElement(id);
+  			List previousQueries = helper.previousQueries();
+  			Iterator previousIterator = previousQueries.iterator();
+  			while (previousIterator.hasNext()) {
+  				QueryHelper previousQuery = (QueryHelper) previousIterator.next();
+  				UserQuery userQuery = previousQuery.getUserQuery();
+  				if (userQuery != null) {
+  					String id = userQuery.getPrimaryKey().toString();
+  					select.setSelectedElement(id);
+  				}
   			}
   		}
 			table.add(select, 1, (row == 1) ? 1 : row - 1 );
@@ -815,12 +831,10 @@ public class ReportQueryBuilder extends Block {
 		Link treeLink = new Link();
 		treeLink.addParameter(PARAM_STEP, step);
 		treeLink.addParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
-		treeLink.addParameter(PARAM_QUERY_FOLDER_ID, queryFolderID);
 		treeLink.addParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
 		tree.setLinkOpenClosePrototype(treeLink);
 		tree.addOpenCloseParameter(PARAM_STEP, Integer.toString(step));
 		tree.addOpenCloseParameter(SHOW_WIZARD, Integer.toString(investigationLevel));
-		tree.addOpenCloseParameter(PARAM_QUERY_FOLDER_ID, Integer.toString(queryFolderID));
 		tree.addOpenCloseParameter(PARAM_LAYOUT_FOLDER_ID, layoutFolderID);
 		tree.setInitOpenLevel();
 		tree.setNestLevelAtOpen(1);
@@ -1025,42 +1039,6 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 
-//	// fills the right and the left list of the specified box depending on values set in fieldMap
-//	// values are retrieved from the specified entityPart
-//	private void fillFieldSelectionBoxForOrder(
-//		QueryService service,
-//		QueryEntityPart entityPart,
-//		Map fieldMap,
-//		SelectionDoubleBox box)
-//		throws RemoteException {
-//		//System.out.println("filling box with fields from " + entityPart.getName());
-//		Iterator iter = service.getListOfOrderConditionParts(iwrb, entityPart, expertMode).iterator();
-//		while (iter.hasNext()) {
-//			QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
-//			//System.out.println(" " + part.getName());
-//			String enc = part.encode();
-//			if (fieldMap.containsKey(enc)) {
-////				StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
-////				buffer.append(' ');
-////				if (part.isAscendant()) {
-////					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_ASCENDANT, QueryXMLConstants.TYPE_ASCENDANT));
-////				}
-////				else {
-////					buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
-////				}
-////				box.getRightBox().addElement(
-////					part.encode(),
-////					buffer.toString());
-////					fieldMap.remove(enc);
-//			}
-//			else {
-//				box.getLeftBox().addElement(
-//					part.encode(),
-//					iwrb.getLocalizedString(entityPart.getName(), entityPart.getName()) + " -> " + part.getDisplay());
-//			}
-//		}
-//	}
-	
 	// fills the right and the left list of the specified box depending on values set in fieldMap
 	// values are retrieved from the specified choiceFields
 	private void fillFieldSelectionBox(
@@ -1090,7 +1068,7 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 	
-	
+		// used by step 4 (order by)
 	private void fillFieldSelectionBoxForOrder(
 		List choiceFields,
 		SelectionDoubleBox box) {
@@ -1099,7 +1077,11 @@ public class ReportQueryBuilder extends Block {
 		while (iter.hasNext()) {
 			QueryOrderConditionPart part = (QueryOrderConditionPart) iter.next();
 			//System.out.println(" " + part.getName());
-			StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(part.getEntity(), part.getEntity()) + " -> " + part.getField());
+			String entityName = part.getEntity();
+			String fieldName = part.getField();
+			StringBuffer buffer = new StringBuffer(iwrb.getLocalizedString(entityName, entityName));
+			buffer.append(" -> ");
+			buffer.append(iwrb.getLocalizedString(fieldName, fieldName));
 			buffer.append(' ');
 			if (part.isDescendant()) {
 				buffer.append(iwrb.getLocalizedString(QueryXMLConstants.TYPE_DESCENDANT, QueryXMLConstants.TYPE_DESCENDANT));
@@ -1219,7 +1201,7 @@ public class ReportQueryBuilder extends Block {
 
 		DropdownMenu equators = getConditionTypeDropdown();
 		DropdownMenu chosenFields = getAvailableFieldsDropdown(iwc);//getFieldDropdown();
-		chosenFields.setOnChange(FORM_NAME + ".submit()");//was set onclick
+		chosenFields.setOnChange("this.form.submit()");//was set onclick
 		// set the prior selected field
 		String fieldPartCode = iwc.getParameter(PARAM_COND_FIELD);
 		QueryFieldPart fieldPart = null;
@@ -1257,7 +1239,7 @@ public class ReportQueryBuilder extends Block {
 			booleanExpressionPart.getBadSyntaxBooleanExpression();
 		}
 		TextInput textInput = new TextInput(PARAM_BOOLEAN_EXPRESSION, booleanExpression);
-		textInput.setLength(140);
+		textInput.setLength(100);
 		row++;
 		table.mergeCells(4, row, 7, row);
 		table.add(textInput, 4 , row); 
@@ -1283,7 +1265,7 @@ public class ReportQueryBuilder extends Block {
 		return table;
 	}
 
-	public PresentationObject getStep6() throws RemoteException {
+	public PresentationObject getStep6() {
 		Table table = getStepTable();
 		int row = 1;
 		// thomas changed: do not use the FileChooser 
@@ -1294,9 +1276,9 @@ public class ReportQueryBuilder extends Block {
 		
 		
 		queryNameInput.setLength(20);
-		if (this.queryID > 0) {
-			ICFile currentFile = sessionBean.getXMLFile(queryID);
-			queryNameInput.setContent(currentFile.getName().toString());
+		if (this.userQueryID > 0) {
+			String queryName = helper.getUserQuery().getName();
+			queryNameInput.setContent(queryName);
 			table.add(iwrb.getLocalizedString("step_5_change_queryname", "Change query name"), 1, row++);
 		}
 		else {
@@ -1313,18 +1295,6 @@ public class ReportQueryBuilder extends Block {
 		descriptionEditor.setWidth("250");
 		descriptionEditor.setHeight("60");
 		table.add(descriptionEditor, 1, row++);
-//		if (this.queryFolderID > 0) {
-//			ICFile currentFolder = sessionBean.getXMLFile(queryFolderID);
-//			folderChooser.setSelectedFile(currentFolder);
-//			table.add(iwrb.getLocalizedString("step_5_change_folder", "New folder"), 1, row);
-//		}
-//		else {
-//			table.add(iwrb.getLocalizedString("step_5_choose_folder", "Choose folder to save in"), 1, row);
-//		}
-//		table.add(folderChooser, 2, row);
-//		row++;
-//		CheckBox templateCheck = new CheckBox(PARAM_ASTEMPLATE, "true");
-//		templateCheck.setChecked(helper.isTemplate());
 //LOCK		table.add(iwrb.getLocalizedString("step_5_check_template", "Save as template query ?"), 1, row);
 //LOCK		table.add(templateCheck, 2, row);
 		// add checkbox private or public
@@ -1334,6 +1304,15 @@ public class ReportQueryBuilder extends Block {
 		radioGroup.addRadioButton(PRIVATE, new Text(iwrb.getLocalizedString("step_5_private_query", "private")), true);
 		radioGroup.addRadioButton(PUBLIC, new Text(iwrb.getLocalizedString("step_5_public_query", "public")));
 		table.add(radioGroup, 1, row);
+		row++;
+		if (userQueryID > 0) {
+			RadioGroup radioGroupCopy = new RadioGroup(PARAM_SAVE_MODE);
+			radioGroupCopy.setWidth(1);
+			radioGroupCopy.addRadioButton(SAVE_AS_NEW_QUERY, new Text(iwrb.getLocalizedString("step_5_save_query_as_new", "save as new query")), true);
+			radioGroupCopy.addRadioButton(OVERWRITE_QUERY, new Text(iwrb.getLocalizedString("step_5_overwrite_query", "overwrite existing one")));
+			table.add(radioGroupCopy, 1, row);
+		}
+
 		return table;
 	}
 
@@ -1358,7 +1337,7 @@ public class ReportQueryBuilder extends Block {
 				new SubmitButton(iwrb.getLocalizedImageButton("btn_cancel", "cancel"), PARAM_CANCEL, "true");
 			T.add(cancel, 4, 1);
 		}
-		if (currentStep < 6) {
+		if (currentStep == 3 || currentStep ==  4 ||  currentStep == 5) {
 			SubmitButton finish =
 				new SubmitButton(iwrb.getLocalizedImageButton("btn_finish", "finish"), PARAM_FINAL, "true");
 
@@ -1483,7 +1462,7 @@ public class ReportQueryBuilder extends Block {
 	}
 
 	public int getQueryId()	{
-		return queryID;
+		return userQueryID;
 	}
 
 
@@ -1503,36 +1482,28 @@ public class ReportQueryBuilder extends Block {
 		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
 
 		if (helper.hasPreviousQuery())	{
-			QueryHelper previousQuery = helper.previousQuery();
-			String previousQueryName = previousQuery.getName();
-			List fields = previousQuery.getListOfVisibleFields();
-			Iterator fieldIterator = fields.iterator();
-			while (fieldIterator.hasNext())	{
-				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
-				String display = fieldPart.getDisplay();
-				String type = fieldPart.getTypeClass();
-							
-				QueryFieldPart newFieldPart = 
-					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
-				drpMap.put(newFieldPart.encode(), newFieldPart);
-				addMenuElement(drp, newFieldPart);
+			List previousQueries = helper.previousQueries();
+			Iterator iterator = previousQueries.iterator();
+			while (iterator.hasNext()) {
+				QueryHelper previousQuery = (QueryHelper) iterator.next();
+				String previousQueryName = previousQuery.getName();
+				String previousQueryPath = previousQuery.getPath();
+				List fields = previousQuery.getListOfVisibleFields();
+				Iterator fieldIterator = fields.iterator();
+				while (fieldIterator.hasNext())	{
+					QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+					String display = fieldPart.getDisplay();
+					String type = fieldPart.getTypeClass();
+					String handlerClass = fieldPart.getHandlerClass();
+					String handlerDescription = fieldPart.getHandlerDescription();
+					QueryFieldPart newFieldPart = 
+						new QueryFieldPart(display, previousQueryName, previousQueryPath, display, null, display, type, handlerClass, handlerDescription);
+					drpMap.put(newFieldPart.encode(), newFieldPart);
+					addMenuElement(drp, newFieldPart);
+				}
 			}
 		}
 
-//		wrong and old
-//		
-//		if (helper.hasPreviousQuery())	{
-//			QueryHelper previousQuery = helper.previousQuery();
-//			List fields = previousQuery.getListOfVisibleFields();
-//			Iterator iterator = fields.iterator();
-//			while (iterator.hasNext())	{
-//				QueryFieldPart part = (QueryFieldPart) iterator.next();
-//				drpMap.put(part.encode(), part);
-//				addMenuElement(drp, part);
-//			}
-//		}
-
-		
 		List entities = helper.getListOfRelatedEntities();
 		if (entities == null)
 			entities = new Vector();
@@ -1741,64 +1712,29 @@ public class ReportQueryBuilder extends Block {
 		}
 	}
 	
+	// used by step 3 (field choice) and 4 (order by)
 	private  void fillFieldsFromPreviousQuery(Map fieldMap, SelectionDoubleBox box) {
 		if (helper.hasPreviousQuery())	{
-			List resultFields = new ArrayList();
-			QueryHelper previousQuery = helper.previousQuery();
-			String previousQueryName = previousQuery.getName();
-			List fields = previousQuery.getListOfVisibleFields();
-			Iterator fieldIterator = fields.iterator();
-			while (fieldIterator.hasNext())	{
-				QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
-				String display = fieldPart.getDisplay();
-				String type = fieldPart.getTypeClass();
-							
-				QueryFieldPart newFieldPart = 
-					new QueryFieldPart(display, previousQueryName, previousQueryName, display, null, display, type);
-				resultFields.add(newFieldPart);
-			}
-			fillFieldSelectionBox(resultFields, fieldMap,box);
-		}
-	}
-	
-	/* start of unused method
-	
-  private ICFile getFile(int fileId) throws FinderException {
-    try {
-      ICFileHome home = (ICFileHome) IDOLookup.getHome(ICFile.class);
-      ICFile file = (ICFile) home.findByPrimaryKey(new Integer(fileId));
-      return file;
-    }
-    catch(RemoteException ex){
-      throw new RuntimeException("[ReportBusiness]: Message was: " + ex.getMessage());
-    }
-  }     
-
-	private DropdownMenu getFieldDropdown() {
-		DropdownMenu drp = new DropdownMenu(PARAM_COND_FIELD);
-		if (helper.hasFields()) {
-			List fields = helper.getListOfVisibleFields();
-			for (Iterator iter = fields.iterator(); iter.hasNext();) {
-				QueryFieldPart element = (QueryFieldPart) iter.next();
-				drp.addMenuElement(element.getName(), element.getDisplay());
+			List previousQueries = helper.previousQueries();
+			Iterator iterator = previousQueries.iterator();
+			while (iterator.hasNext()) {
+				List resultFields = new ArrayList();
+				QueryHelper previousQuery = (QueryHelper) iterator.next();
+				String previousQueryName = previousQuery.getName();
+				String previousQueryPath = previousQuery.getPath();
+				List fields = previousQuery.getListOfVisibleFields();
+				Iterator fieldIterator = fields.iterator();
+				while (fieldIterator.hasNext())	{
+					QueryFieldPart fieldPart = (QueryFieldPart) fieldIterator.next();
+					String display = fieldPart.getDisplay();
+					String type = fieldPart.getTypeClass();
+					QueryFieldPart newFieldPart = 
+						new QueryFieldPart(display, previousQueryName, previousQueryPath, display, null, display, type, null, null);
+					resultFields.add(newFieldPart);
+				}
+				fillFieldSelectionBox(resultFields, fieldMap,box);
 			}
 		}
-		return drp;
 	}
-
-	private boolean processStep6(IWContext iwc) throws IOException	{
-		helper.setTemplate(true);
-		String name = iwc.getParameter(PARAM_QUERY_NAME);
-		if (name == null) {
-			name = iwrb.getLocalizedString("step_5_default_queryname", "My query");
-		}
-		ICFile q = sessionBean.storeQuery(name, queryFolderID);
-		if (q != null) {
-			queryID = ((Integer) q.getPrimaryKey()).intValue();
-		}
-		return true;
-	}		
-
-	*/
 
 }
