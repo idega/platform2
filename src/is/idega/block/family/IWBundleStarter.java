@@ -2,9 +2,6 @@ package is.idega.block.family;
 
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import is.idega.block.family.business.FamilyLogicBean;
-import is.idega.block.nationalregister.business.FamilyLogic;
-import com.idega.business.IBOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
@@ -23,8 +20,6 @@ import com.idega.user.data.GroupRelationTypeHome;
 public class IWBundleStarter implements IWBundleStartable {
 
 	public void start(IWBundle starterBundle) {
-		// services registration
-		IBOLookup.registerImplementationForBean(FamilyLogic.class, FamilyLogicBean.class);
 		insertStartData();
 	}
 	
