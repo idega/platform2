@@ -880,8 +880,8 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
       order = "14";
     }
 
-    String queryString = "select m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, t.tournament_id, tm.tournament_group_id, sum(cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0))) / count(tournament_round_id) as tournament_handicap, count(stroke_count) as holes_played, sum(stroke_count) as strokes_without_handicap, sum(stroke_count) - (sum(cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0))) / count(stroke_count) * count(distinct tournament_round_id)) as strokes_with_handicap, sum(point_count) as total_points, sum(stroke_count) - sum(hole_par) as difference from scorecard s, stroke str, tournament_round tr, tournament t, field f, member m, union_ u, tournament_member tm"+
-    " where s.scorecard_id = str.scorecard_id and s.tournament_round_id = tr.tournament_round_id and tr.tournament_id = t.tournament_id and s.field_id = f.field_id and s.member_id = m.member_id and s.member_id = tm.member_id and t.tournament_id = tm.tournament_id and tm.union_id = u.union_id"+
+    String queryString = "select m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, t.tournament_id, tm.tournament_group_id, sum(cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0))) / count(tournament_round_id) as tournament_handicap, count(stroke_count) as holes_played, sum(stroke_count) as strokes_without_handicap, sum(stroke_count) - (sum(cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par )) as numeric (4,0))) / count(stroke_count) * count(distinct tournament_round_id)) as strokes_with_handicap, sum(point_count) as total_points, sum(stroke_count) - sum(hole_par) as difference from scorecard s ,stroke str, tournament_round tr, tournament t, field f, member m, union_ u, tournament_member tm"+
+    " where s.tournament_round_id = tr.tournament_round_id and str.scorecard_id = s.scorecard_id and tr.tournament_id = t.tournament_id and t.field_id = f.field_id and s.member_id = m.member_id and m.member_id = tm.member_id and t.tournament_id = tm.tournament_id and tm.union_id = u.union_id"+
     " and "+SQLConditions+
     " group by m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, t.tournament_id, tm.tournament_group_id, s.handicap_before, s.slope, s.course_rating, f.field_par "+
     having+" order by "+order;
@@ -920,11 +920,11 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     " sum(str.stroke_count) strokes_without_handicap, sum(str.stroke_count) - cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par ))as numeric (4,0)) strokes_with_handicap,"+
     " s.total_points, sum(str.hole_par) total_par, sum(str.stroke_count) - sum(str.hole_par) difference, tg.name as group_name"+
     " from tournament_round tr,"+
-    " member_info mi, member m, field f, union_ u, tournament_member tm, tournament t, tournament_group tg,"+
+    " member m, field f, union_ u, tournament_member tm, tournament t, tournament_group tg,"+
     " scorecard s left join stroke str on str.scorecard_id = s.scorecard_id"+
     " where s.tournament_round_id = tr.tournament_round_id and tr.tournament_id = t.tournament_id"+
-    " and tm.union_id = u.union_id and t.tournament_id = tm.tournament_id and tm.tournament_group_id = tg.tournament_group_id and tm.member_id = mi.member_id"+
-    " and mi.member_id = s.member_id and s.member_id = m.member_id and s.field_id = f.field_id"+
+    " and tm.union_id = u.union_id and t.tournament_id = tm.tournament_id and tm.tournament_group_id = tg.tournament_group_id and tm.member_id = m.member_id"+
+    " and s.member_id = m.member_id and t.field_id = f.field_id"+
     " and "+column_name+" = "+column_value+
     " group by m.member_id, m.social_security_number, m.first_name, m.middle_name, m.last_name, u.abbrevation, tm.tournament_id, tm.tournament_group_id,s.scorecard_id, s.scorecard_date, f.field_par,tr.tournament_round_id, tr.round_number, s.total_points, s.handicap_before, s.slope, s.course_rating, tg.name"+
     " order by "+order;
@@ -963,11 +963,11 @@ public static void createScorecardForMember(com.idega.projects.golf.entity.Membe
     " sum(str.stroke_count) as strokes_without_handicap, sum(str.stroke_count) - cast((( s.handicap_before * s.slope / 113 ) + ( s.course_rating - f.field_par ))as numeric (4,0)) as strokes_with_handicap,"+
     " s.total_points, sum(str.hole_par) as total_par, sum(str.stroke_count) - sum(str.hole_par) as difference, start.grup_num, tg.name as group_name"+
     " from tournament_round tr,"+
-    " member_info mi, member m, field f, union_ u, tournament_member tm, tournament t,tournament_group tg, startingtime start, tournament_startingtime ts,"+
+    " member m, field f, union_ u, tournament_member tm, tournament t,tournament_group tg, startingtime start, tournament_startingtime ts,"+
     " scorecard s left join stroke str on str.scorecard_id = s.scorecard_id"+
     " where s.tournament_round_id = tr.tournament_round_id and tr.tournament_id = t.tournament_id"+
-    " and tm.union_id = u.union_id and t.tournament_id = tm.tournament_id and tm.member_id = mi.member_id"+
-    " and mi.member_id = s.member_id and s.member_id = m.member_id and s.field_id = f.field_id"+
+    " and tm.union_id = u.union_id and t.tournament_id = tm.tournament_id and tm.member_id = m.member_id"+
+    " and s.member_id = m.member_id and t.field_id = f.field_id"+
     " AND t.tournament_id = ts.tournament_id AND ts.startingtime_id = start.startingtime_id"+
     " AND start.field_id = t.field_id AND start.startingtime_date >= cast (tr.round_date as date)"+
     " AND start.startingtime_date <= cast (tr.round_end_date as date) AND m.member_id = start.member_id and tm.tournament_group_id = tg.tournament_group_id"+
