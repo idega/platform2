@@ -105,6 +105,16 @@ public class SchoolStudyPathBMPBean extends GenericEntity implements SchoolStudy
 		return idoFindPKsByQuery(query);
 	}
 
+	public Collection ejbFindAllStudyPathsByCodeLength(int codeLength) throws FinderException {
+		IDOQuery query = idoQuery();
+		query.appendSelectAllFrom(this);
+		query.append(" WHERE ").append(COLUMN_IS_VALID).append(" is null");
+		query.append(" OR ").append(COLUMN_IS_VALID).append(" = 'Y'");
+		query.appendAnd().append("length(").append(COLUMN_CODE).append(") = ").append(codeLength);
+		query.appendOrderBy(COLUMN_CODE);
+		return idoFindPKsByQuery(query);
+	}
+
 	public Integer ejbFindByCode(String code) throws FinderException {
 		IDOQuery query = idoQuery();
 		query.appendSelectAllFrom(this);
