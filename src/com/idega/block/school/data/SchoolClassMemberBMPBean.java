@@ -26,8 +26,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2003/11/12 10:40:54 $ by $Author: goranb $
- * @version $Revision: 1.68 $
+ * Last modified: $Date: 2003/11/13 15:27:17 $ by $Author: goranb $
+ * @version $Revision: 1.69 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -386,7 +386,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.appendOr()
 		.append("cl." + SchoolClassBMPBean.COLUMN_VALID)
 		.append(" is null)")
-		
+
 		.appendAnd()
 		.append(" mb." + SCHOOLCLASS)
 		.appendEqualSign()
@@ -408,7 +408,14 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		
 		return (Integer)this.idoFindOnePKBySQL(sql.toString());
 	}
-
+	
+	/**
+	 * Gets latest placement for user in school_categories elementary and high school.
+	 * Checks that removed_date is after register_date, otherwise the placement is invalid.
+	 * @param user
+	 * @return
+	 * @throws FinderException
+	 */
 	public Integer ejbFindLatestFromElemAndHighSchoolByUser(User user) 
 																					throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -432,12 +439,17 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append(" is null)")
 		
 		.appendAnd()
+		.append("mb." + REMOVED_DATE)
+		.appendGreaterThanSign()
+		.append("mb." + REGISTER_DATE)
+		
+		.appendAnd()
 		.append(" mb." + SCHOOLCLASS)
 		.appendEqualSign()
 		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
 
 		.appendAnd()
-		.append("cl." + SchoolClassBMPBean.SCHOOLTYPE)
+		.append("mb." + SCHOOL_TYPE)
 		.appendEqualSign()
 		.append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
 		
@@ -490,7 +502,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
 
 		.appendAnd()
-		.append("cl." + SchoolClassBMPBean.SCHOOLTYPE)
+		.append("mb." + SCHOOL_TYPE)
 		.appendEqualSign()
 		.append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
 		
@@ -538,7 +550,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		.append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id")
 
 		.appendAnd()
-		.append("cl." + SchoolClassBMPBean.SCHOOLTYPE)
+		.append("mb." + SCHOOL_TYPE)
 		.appendEqualSign()
 		.append("tp." + SchoolTypeBMPBean.SCHOOLTYPE + "_id")
 		
