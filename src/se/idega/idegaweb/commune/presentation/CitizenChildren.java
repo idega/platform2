@@ -7,7 +7,14 @@ import com.idega.presentation.ui.*;
 import com.idega.presentation.text.*;
 import com.idega.presentation.*;
 import com.idega.builder.data.IBPage;
+
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoChildrenFound;
+
+import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Vector;
+
 import com.idega.user.data.User;
 import com.idega.user.data.UserHome;
 import com.idega.user.business.UserBusiness;
@@ -29,6 +36,7 @@ public class CitizenChildren extends CommuneBlock {
   private IWBundle iwb;
   private IWResourceBundle iwrb;
   private int userID;
+  private User user;
   private Text buttonLabel;
   private Text ssnLabel;
   private static final String prmChildId = "comm_child_id";
@@ -44,6 +52,7 @@ public class CitizenChildren extends CommuneBlock {
     iwb  = getBundle(iwc);
     iwrb = getResourceBundle(iwc);
     userID = iwc.getUserId();
+    user =( (UserBusiness) IBOLookup.getServiceInstance (iwc,UserBusiness.class)).getUser(userID);
     Table T = new Table();
     int row = 1;
     int col = 1;
@@ -85,7 +94,7 @@ public class CitizenChildren extends CommuneBlock {
     Form f = new Form();
     Table T = new Table();
     int row = 1;
-      Collection childs = getChilds(this.userID);
+      Collection childs = getChilds(iwc,this.user);
       if(!childs.isEmpty()){
 	java.util.Iterator iter = childs.iterator();
 	User user;
@@ -130,9 +139,16 @@ public class CitizenChildren extends CommuneBlock {
     throw new javax.ejb.FinderException("No user with that ssn");
   }
 
-  private Collection getChilds(int userID){
+  private Collection getChilds(IWContext iwc,User user) throws RemoteException{
     /** @todo familymethods from usersystem */
-    return new java.util.Vector();
-
+    MemberFamilyLogic ml = (MemberFamilyLogic) IBOLookup.getServiceInstance(iwc,MemberFamilyLogic.class);
+    try {
+			return ml.getChildrenFor(user);
+		}
+		catch (RemoteException e) {
+		}
+		catch (NoChildrenFound e) {
+		}
+	return new Vector();
   }
 }
