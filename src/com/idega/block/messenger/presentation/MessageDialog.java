@@ -44,10 +44,10 @@ public class MessageDialog extends Dialog implements ActionListener{
 
 
   void jbInit() throws Exception {
-    URL url = MessageDialog.class.getResource("/com/idega/block/messenger/presentation/idegalogo.gif");
+    /*URL url = MessageDialog.class.getResource("/com/idega/block/messenger/presentation/idegalogo.gif");
     Image img=Toolkit.getDefaultToolkit().getImage(url);
     if(img!=null) logo = new ImageLabel(img);
-    else System.err.println("MessageDialog: image is NULL");
+    else System.err.println("MessageDialog: image is NULL");*/
 
     recipientName = message.getRecipientName();
     panel.setBackground(Color.white);
@@ -72,10 +72,13 @@ public class MessageDialog extends Dialog implements ActionListener{
     sendButton.setLabel("Send");
     sendButton.setBounds(new Rectangle(206, 222, 79, 31));
     sendButton.addActionListener(this);*/
+    /*
     if(logo!=null){
       logo.setBounds(new Rectangle(6, 0, 126, 52));
       panel.add(logo, null);
-    }
+    }*/
+
+
     panel.add(replyMessage, null);
     panel.add(messageArea, null);
     panel.add(senderNameLabel, null);
