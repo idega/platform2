@@ -324,8 +324,8 @@ public class TournamentResults extends JModuleObject {
       }
       myTable.setAlignment(2,1,"center");
       myTable.setHorizontalZebraColored("#DCEFDE","#EAFAEC");
-      myTable.setRowColor(1,"#336661");
-      myTable.setRowColor(2,"#336661");
+      myTable.setRowColor(1,"#2C4E3B");
+      myTable.setRowColor(2,"#2C4E3B");
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
