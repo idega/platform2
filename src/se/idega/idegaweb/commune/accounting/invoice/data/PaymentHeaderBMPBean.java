@@ -190,6 +190,27 @@ public class PaymentHeaderBMPBean extends GenericEntity implements PaymentHeader
 		return idoFindPKsBySQL(sql.toString());
 	}
 
+    public Collection ejbFindBySchoolCategoryAndSchoolAndPeriod
+        (final String schoolCategory, final Integer providerId,
+         final Date startPeriod, final Date endPeriod) throws FinderException {
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (this)
+                .appendWhereEquals(COLUMN_SCHOOL_ID, providerId + "")
+                .appendAndEqualsQuoted (COLUMN_SCHOOL_CATEGORY_ID,
+                                        schoolCategory);
+        if (null != startPeriod) {
+            sql.appendAnd ()
+                    .append (COLUMN_PERIOD)
+                    .appendGreaterThanOrEqualsSign ()
+                    .append (startPeriod);
+        }
+        if (null != endPeriod) {
+            sql.appendAnd ()
+                    .append (endPeriod)
+                    .appendGreaterThanOrEqualsSign ()
+                    .append (COLUMN_PERIOD);
+        }
 
-
+        return idoFindPKsBySQL (sql.toString ());
+    }
 }

@@ -2,6 +2,7 @@ package se.idega.idegaweb.commune.accounting.invoice.data;
 
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.ejb.FinderException;
 
@@ -189,6 +190,25 @@ public class PaymentRecordBMPBean  extends GenericEntity implements PaymentRecor
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(COLUMN_PAYMENT_HEADER, paymentHeader.getPrimaryKey());
 		return idoFindPKsByQuery(sql);
+	}
+	
+	public Collection ejbFindByPaymentHeaders (final Collection headers)
+        throws FinderException {
+		final IDOQuery sql = idoQuery ();
+		sql.appendSelectAllFrom (this);
+        boolean isFirstHeader = true;
+        for (Iterator i = headers.iterator (); i.hasNext ();) {
+            final PaymentHeader header = (PaymentHeader) i.next ();
+            if (isFirstHeader) {
+                sql.appendWhereEquals (COLUMN_PAYMENT_HEADER,
+                                       header.getPrimaryKey());
+                isFirstHeader = false;
+            } else {
+                sql.appendOrEquals (COLUMN_PAYMENT_HEADER,
+                                    header.getPrimaryKey());
+            }
+        }
+        return idoFindPKsByQuery (sql);
 	}
 	
 	/**

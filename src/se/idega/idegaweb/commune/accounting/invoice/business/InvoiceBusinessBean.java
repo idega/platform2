@@ -46,10 +46,10 @@ import com.idega.user.data.User;
  * base for invoicing and payment data, that is sent to external finance system.
  * Now moved to InvoiceThread
  * <p>
- * Last modified: $Date: 2003/11/11 10:35:27 $ by $Author: staffan $
+ * Last modified: $Date: 2003/11/11 18:42:23 $ by $Author: staffan $
  *
  * @author Joakim
- * @version $Revision: 1.40 $
+ * @version $Revision: 1.41 $
  * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceThread
  */
 public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusiness {
@@ -279,6 +279,27 @@ public class InvoiceBusinessBean extends IBOServiceBean implements InvoiceBusine
 		PaymentHeader paymentHeader =
 			getPaymentHeaderHome().findBySchoolCategorySchoolPeriod(provider, category, period);
 		return getPaymentRecordHome().findByPaymentHeader(paymentHeader);
+	}
+
+	public PaymentRecord []
+        getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
+        (final String schoolCategory, final Integer providerId,
+         final Date startPeriod, final Date endPeriod) throws RemoteException {
+        final PaymentRecord [] recordArray = new PaymentRecord [0];
+        try {
+            final Collection paymentHeaders = getPaymentHeaderHome ()
+                    .findBySchoolCategoryAndSchoolAndPeriod
+                    (schoolCategory, providerId, startPeriod, endPeriod);
+            if (null == paymentHeaders || paymentHeaders.isEmpty ()) {
+                return recordArray;
+            }
+            final Collection paymentRecords = getPaymentRecordHome ()
+                    .findByPaymentHeaders (paymentHeaders);
+            return null == paymentRecords ? recordArray
+                    : (PaymentRecord []) paymentRecords.toArray (recordArray);
+        } catch (FinderException e) {
+            return recordArray;
+        }            
 	}
 
 	/**

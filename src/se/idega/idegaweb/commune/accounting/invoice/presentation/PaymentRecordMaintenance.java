@@ -1,151 +1,371 @@
 package se.idega.idegaweb.commune.accounting.invoice.presentation;
 
-import java.rmi.RemoteException;
-import java.sql.Date;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
-import se.idega.idegaweb.commune.accounting.posting.business.PostingBusiness;
-import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
-import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-
+import com.idega.presentation.Image;
+import java.util.Calendar;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
-import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.IWContext;
+import com.idega.presentation.PresentationObject;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
-import com.idega.presentation.ui.InputContainer;
 import com.idega.presentation.ui.SubmitButton;
+import com.idega.presentation.ui.TextInput;
+import java.rmi.RemoteException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Iterator;
+import se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.PaymentRecord;
+import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
+import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
 
 /**
- * @author Joakim
+ * PaymentRecordMaintenance is an IdegaWeb block were the user can search, view
+ * and edit payment records.
+ * <p>
+ * Last modified: $Date: 2003/11/11 18:42:23 $ by $Author: staffan $
  *
+ * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
+ * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
+ * @version $Revision: 1.6 $
+ * @see com.idega.presentation.IWContext
+ * @see se.idega.idegaweb.commune.accounting.invoice.business.InvoiceBusiness
+ * @see se.idega.idegaweb.commune.accounting.invoice.data
+ * @see se.idega.idegaweb.commune.accounting.presentation.AccountingBlock
  */
-public class PaymentRecordMaintenance extends AccountingBlock{
-	private static String PREFIX="cacc_payment_record_";
-	private static String PARAM_PERIOD=PREFIX+"period";
-	private static String PARAM_NAME=PREFIX+"name";
-	private static String PARAM_PROVIDER=PREFIX+"provider";
-	private static String PARAM_SEARCH=PREFIX+"search";
-	
-	public void init(IWContext iwc){
-		Form form = new Form();
-		Table table = new Table(2,4);
-		OperationalFieldsMenu opFields = new OperationalFieldsMenu();  
-		
+public class PaymentRecordMaintenance extends AccountingBlock {
+    private static final String PREFIX = "cacc_payrec_";
+
+    private static final String DELETE_ROW_DEFAULT = "Ta bort post";
+    private static final String DELETE_ROW_KEY = PREFIX + "delete_invoice_compilation";
+    private static final String EDIT_ROW_DEFAULT = "Ändra post";
+    private static final String EDIT_ROW_KEY = PREFIX + "edit_row";
+    private static final String END_PERIOD_KEY = PREFIX + "end_period";
+    private static final String MAIN_ACTIVITY_DEFAULT = "Huvudverksamhet";
+    private static final String MAIN_ACTIVITY_KEY = PREFIX + "main_activity";
+    private static final String NOTE_DEFAULT = "Anmärkning";
+    private static final String NOTE_KEY = PREFIX + "note";
+    private static final String NO_OF_PLACEMENTS_DEFAULT = "Antal plac";
+    private static final String NO_OF_PLACEMENTS_KEY = PREFIX + "no_of_placements";
+    private static final String PAYMENT_DEFAULT = "Utbetalning";
+    private static final String PAYMENT_KEY = PREFIX + "payment";
+    private static final String PERIOD_DEFAULT = "Period";
+    private static final String PERIOD_KEY = PREFIX + "period";
+    private static final String PLACEMENT_DEFAULT = "Placering";
+    private static final String PLACEMENT_KEY = PREFIX + "placement";
+    private static final String PROVIDER_DEFAULT = "Anordnare";
+    private static final String PROVIDER_KEY = PREFIX + "provider";
+    private static final String SEARCH_DEFAULT = "Sök";
+    private static final String SEARCH_KEY = PREFIX + "search";
+    private static final String START_PERIOD_KEY = PREFIX + "start_period";
+    private static final String STATUS_DEFAULT = "Status";
+    private static final String STATUS_KEY = PREFIX + "status";
+    private static final String TOTAL_AMOUNT_DEFAULT = "Totalbelopp";
+    private static final String TOTAL_AMOUNT_KEY  = PREFIX + "total_amount";
+
+    private static final String ACTION_KEY = PREFIX + "action_key";
+	private static final int ACTION_SHOW_PAYMENT = 0;
+
+    private static final SimpleDateFormat periodFormatter
+        = new SimpleDateFormat ("yyMM");
+
+	/**
+	 * Init is the event handler of InvoiceCompilationEditor
+	 *
+	 * @param context session data like user info etc.
+	 */
+	public void init (final IWContext context) {
 		try {
-			handleAction(iwc);
-		
-			DropdownMenu providerDropdown = new DropdownMenu("provider_dropdown");
-			providerDropdown.addMenuElementFirst("",localize(PARAM_NAME,"Name"));
-			String schoolCategory = getSession().getOperationalField();
-			Iterator schoolIter = getSchoolBusiness(iwc).findAllSchoolsByCategory(schoolCategory).iterator();
-			while (schoolIter.hasNext()) {
-				School school = (School) schoolIter.next();
-				providerDropdown.addMenuElement(((Integer)school.getPrimaryKey()).intValue(),school.getName());
+            int actionId = ACTION_SHOW_PAYMENT;
+            try {
+                actionId = Integer.parseInt (context.getParameter (ACTION_KEY));
+            } catch (final Exception dummy) {
+                // do nothing, actionId is default
+            }
+
+			switch (actionId) {
+                default:
+                    showPayment (context);
+					break;					
 			}
-			InputContainer provider = getInputContainer(PARAM_PROVIDER,"provider",providerDropdown);
-			
-			DateInput monthInput = new DateInput(PARAM_PERIOD,true);
-			monthInput.setToCurrentDate();
-			monthInput.setToShowDay(false);
-			InputContainer month = getInputContainer(PARAM_PERIOD,"Period", monthInput);
-			
-			table.add(opFields,1,1);
-			table.add(provider,1,2);
-			table.add(month,1,3);
 
-			GenericButton search = new SubmitButton(PARAM_SEARCH,localize(PARAM_SEARCH,"Search"));
-			table.add(search,2,2);
-			add(form);
-			
-
-			form.add(table);
-			
-			//Middle section with the payment list
-			try{
-				
-				Table paymentTable = new Table();
-
-				int row = 2;
-				
-				Collection paymentColl = getInvoiceBusiness(iwc).getPaymentRecordsByCategoryProviderAndPeriod(schoolCategory,iwc.getParameter("provider_dropdown"),new Date(System.currentTimeMillis()));
-				System.out.println("Size of payment list "+paymentColl.size());
-				//TODO (JJ) 
-				Iterator paymentIter = paymentColl.iterator();
-				if(paymentIter.hasNext()){
-					paymentTable.add(getLocalizedLabel(PREFIX+"status","Status"),1,1);
-					paymentTable.add(getLocalizedLabel(PREFIX+"period","Period"),2,1);
-					paymentTable.add(getLocalizedLabel(PREFIX+"placedd","Placed"),3,1);
-					paymentTable.add(getLocalizedLabel(PREFIX+"nr_of_placements","Nr of placements"),4,1);
-					paymentTable.add(getLocalizedLabel(PREFIX+"tot_sum","Total sum"),5,1);
-					paymentTable.add(getLocalizedLabel(PREFIX+"notes","notes"),6,1);
-				
-					while(paymentIter.hasNext()){
-						PaymentRecord paymentRecord = (PaymentRecord)paymentIter.next();
-						paymentTable.add(new Text(""+paymentRecord.getStatus()),1,row);
-						paymentTable.add(new Text(""+paymentRecord.getDateCreated()),2,row);
-						paymentTable.add(new Text(paymentRecord.getPaymentText()),3,row);
-						paymentTable.add(new Text(""+paymentRecord.getPlacements()),4,row);
-						paymentTable.add(new Text(""+paymentRecord.getTotalAmount()),5,row);
-						if(paymentRecord.getNotes()!=null){
-							paymentTable.add(new Text(paymentRecord.getNotes()),6,row);
-						}
-						row++;
-					}
-					add(paymentTable);
-				} else {
-					add(getLocalizedSmallHeader(PREFIX+"no_payment_records_found","No payment records found."));
-				}
-			}catch(FinderException e){
-				add(getLocalizedSmallHeader(PREFIX+"no_payment_records_found","No payment records found."));
-				e.printStackTrace();
-				System.out.println("Problems finding payment records!!!");
-			}
-			
-		} catch (Exception e) {
-			add(getLocalizedSmallHeader("invbr.error_occured","Error occured"));
-			e.printStackTrace();
+		} catch (Exception exception) {
+            logUnexpectedException (context, exception);
 		}
 	}
-	
-	/**
-	 * @param iwc
-	 */
-	private void handleAction(IWContext iwc) {
-		if(iwc.isParameterSet(PARAM_SEARCH)){
-			handleSearch(iwc);
-		}
-	}
-	
-	/**
-	 * @param iwc
-	 */
-	private void handleSearch(IWContext iwc) {
-		//TODO (JJ) create
-		System.out.println("Handle search "+iwc.getCurrentUserId());
+
+    private void showPayment (final IWContext context) throws RemoteException {
+        final Table table = createTable (3);
+        setColumnWidthsEqual (table);
+        int row = 2; // first row is reserved for setting column widths
+        addOperationFieldDropdown (table, row++);
+        addProviderDropdown (context, table, row++);
+        addPeriodForm (table, row);
+        table.setAlignment (table.getColumns (), row,
+                            Table.HORIZONTAL_ALIGN_RIGHT);
+        table.add (getSubmitButton (ACTION_SHOW_PAYMENT + "",
+                                    SEARCH_KEY, SEARCH_DEFAULT),
+                   table.getColumns (), row++);
+        final String schoolCategory = getSession().getOperationalField ();
+        final String providerId = context.getParameter (PROVIDER_KEY);
+        if (null != schoolCategory && null != providerId
+            && 0 < providerId.length ()) {
+            table.mergeCells (1, row, table.getColumns (), row);
+            table.add (getPaymentRecordListTable (context), 1, row++);
+        }
+        final Form form = new Form ();
+        form.setOnSubmit("return checkInfoForm()");
+        form.add (table);
+        final Table outerTable = createTable (1);
+        outerTable.add (form, 1, 1);
+        add (createMainTable (localize (PAYMENT_KEY, PAYMENT_DEFAULT),
+                              outerTable));
+    }
+
+    private Table getPaymentRecordListTable (final IWContext context)
+        throws RemoteException {
+        // set up header row
+        final String [][] columnNames =
+                {{ STATUS_KEY, STATUS_DEFAULT }, { PERIOD_KEY, PERIOD_DEFAULT },
+                 { PLACEMENT_KEY, PLACEMENT_DEFAULT },
+                 { NO_OF_PLACEMENTS_KEY, NO_OF_PLACEMENTS_DEFAULT },
+                 { TOTAL_AMOUNT_KEY, TOTAL_AMOUNT_DEFAULT },
+                 { NOTE_KEY, NOTE_DEFAULT }, {"", ""}, {"", ""}};
+        final Table table = createTable (columnNames.length);
+        table.setColumns (columnNames.length);
+        setIconColumnWidth (table);
+        int row = 1;
+        table.setRowColor(row, getHeaderColor ());
+        for (int i = 0; i < columnNames.length; i++) {
+            addSmallHeader (table, i + 1, row, columnNames [i][0],
+                            columnNames [i][1]);
+        }
+        row++;
+
+        // get payment records
+        final String schoolCategory = getSession().getOperationalField ();
+        final Integer providerId
+                = new Integer (context.getParameter (PROVIDER_KEY));
+        final Date startPeriod = getPeriodParameter (context, START_PERIOD_KEY);
+        final Date endPeriod = getPeriodParameter (context, END_PERIOD_KEY);
+        final InvoiceBusiness business = (InvoiceBusiness)
+                IBOLookup.getServiceInstance(context, InvoiceBusiness.class);
+        final PaymentRecord [] records
+                = business.getPaymentRecordsBySchoolCategoryAndProviderAndPeriod
+                (schoolCategory, providerId,
+                 new java.sql.Date (startPeriod.getTime ()),
+                 new java.sql.Date (endPeriod.getTime ()));
+
+        // show each payment record in a row
+        for (int i = 0; i < records.length; i++) {
+			showPaymentRecordOnARow (table, row++, records [i]);
+        }
+        
+        return table;
+    }
+
+	private void showPaymentRecordOnARow
+        (final Table table, final int row, final PaymentRecord record) {
+		int col = 1;
+		table.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
+		                   : getZebraColor2 ());
+		final char status = record.getStatus ();
+        final Date period = record.getPeriod ();
+        final String periodText = null != period
+                ? periodFormatter.format (period) : "?";
+        final String paymentText = record.getPaymentText ();
+        final int placements = record.getPlacements();
+        final long  totalAmount = (long) record.getTotalAmount ();
+        final String note = record.getNotes ();
+
+		table.add (status + "", col++, row);
+		table.add (periodText, col++, row);
+		table.add (paymentText, col++, row);
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add (placements + "", col++, row);
+        table.setAlignment (col, row, Table.HORIZONTAL_ALIGN_RIGHT);
+		table.add (totalAmount + "", col++, row);
+		table.add (note, col++, row);
 	}
 
-	protected PostingBusiness getPostingBusiness(IWApplicationContext iwc) throws RemoteException {
-		return (PostingBusiness) IBOLookup.getServiceInstance(iwc, PostingBusiness.class);
-	}	
-	
-	protected InvoiceBusiness getInvoiceBusiness(IWApplicationContext iwc) throws RemoteException {
-		return (InvoiceBusiness) IBOLookup.getServiceInstance(iwc, InvoiceBusiness.class);
-	}	
-	
-	protected SchoolBusiness getSchoolBusiness(IWApplicationContext iwc) throws RemoteException {
-		return (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
-	}	
-	
+    private Image getEditIcon () {
+        return getEditIcon (localize (EDIT_ROW_KEY, EDIT_ROW_DEFAULT));
+    }
+
+    private Image getDeleteIcon () {
+        return getDeleteIcon (localize (DELETE_ROW_KEY, DELETE_ROW_DEFAULT));
+    }
+
+    private void addSmallHeader (final Table table, final int col,
+                                 final int row, final String key,
+                                 final String defaultString) {
+        addSmallHeader (table, col, row, key, defaultString, "");
+    }
+
+    private void setIconColumnWidth (final Table table) {
+        final int columnCount = table.getColumns ();
+        table.setColumnWidth (columnCount - 1, getEditIcon ().getWidth ());
+        table.setColumnWidth (columnCount, getDeleteIcon ().getWidth ());
+    }
+
+    /**
+     * Returns a date from a parameter string of type "YYMM". The date
+     * represents the first day of that month. If the input string is unparsable
+     * for this format then null is returned.
+     *
+     * @param context session data
+     * @param key key to lookup in context to retreive the actual value
+     * @return date from the first of this particular month or null on failure
+     */
+    private static Date getPeriodParameter (final IWContext context,
+                                            final String key) {
+        final String rawString = context.getParameter (key);
+        if (null == rawString || rawString.length () != 4) return null;
+        try {
+            final int year = Integer.parseInt (rawString.substring (0, 2))
+                    + 2000;
+            final int month = Integer.parseInt (rawString.substring (2, 4))
+                    + Calendar.JANUARY - 1;
+            final Calendar calendar = Calendar.getInstance ();
+            calendar.set (year, month, 1, 0, 0);
+            return new Date (calendar.getTimeInMillis ());
+        } catch (final NumberFormatException exception) {
+            return null;
+        }
+    }
+
+	/**
+	 * Returns a styled table with content placed properly
+	 *
+	 * @param content the page unique content
+     * @return Table to add to output
+	 */
+    private Table createMainTable
+        (final String header, final PresentationObject content)
+        throws RemoteException {
+        final Table mainTable = createTable (1);
+        mainTable.setCellpadding (getCellpadding ());
+        mainTable.setCellspacing (getCellspacing ());
+        mainTable.setWidth (Table.HUNDRED_PERCENT);
+        int row = 1;
+        mainTable.setRowColor (row, getHeaderColor ());
+        mainTable.setRowAlignment(row, Table.HORIZONTAL_ALIGN_CENTER) ;
+        mainTable.add (getSmallHeader (header), 1, row++);
+        mainTable.add (content, 1, row++);
+        return mainTable;
+    }
+
+    private void addPeriodForm (final Table table, final int row) {
+        int col = 1;
+        addSmallHeader (table, col++, row, PERIOD_KEY, PERIOD_DEFAULT, ":");
+        final Date now = new Date (System.currentTimeMillis ());
+        table.add (getStyledInput (START_PERIOD_KEY, periodFormatter.format
+                                   (now)), col, row);
+        table.add (new Text (" - "), col, row);
+        table.add (getStyledInput (END_PERIOD_KEY, periodFormatter.format
+                                   (now)), col, row);
+    }
+
+    private void addProviderDropdown
+        (final IWContext context, final Table table, final int row)
+        throws RemoteException {
+        int col = 1;
+        addSmallHeader (table, col++, row, PROVIDER_KEY, PROVIDER_DEFAULT, ":");
+        final String schoolCategory = getSession().getOperationalField ();
+        final DropdownMenu providerDropdown = (DropdownMenu)
+                getStyledInterface (new DropdownMenu (PROVIDER_KEY));
+        if (null != schoolCategory) {
+            final SchoolBusiness business = (SchoolBusiness) IBOLookup
+                    .getServiceInstance (context, SchoolBusiness.class);
+            final Collection schools
+                    = business.findAllSchoolsByCategory (schoolCategory);
+            final String oldProviderId = context.getParameter (PROVIDER_KEY)
+                    + "";
+            for (Iterator i = schools.iterator (); i.hasNext ();) {
+                final School school = (School) i.next ();
+                final String primaryKey = school.getPrimaryKey ().toString ();
+                final String name = school.getName ();
+                providerDropdown.addMenuElement (primaryKey, name);
+                if (primaryKey.equals (oldProviderId)) {
+                    providerDropdown.setSelectedElement (primaryKey);
+                }
+            }
+        } else {
+            providerDropdown.addMenuElement ("", localize (PROVIDER_KEY,
+                                                           PROVIDER_DEFAULT));
+        }
+        table.add (providerDropdown, col++, row);
+    }
+
+    private void addOperationFieldDropdown
+        (final Table table, final int row) throws RemoteException {
+        int col = 1;
+        addSmallHeader (table, col++, row, MAIN_ACTIVITY_KEY,
+                        MAIN_ACTIVITY_DEFAULT, ":");
+        String operationalField = getSession ().getOperationalField();
+        operationalField = operationalField == null ? "" : operationalField;
+        table.mergeCells (col, row, table.getColumns (), row);
+        table.add (new OperationalFieldsMenu (), col++, row);
+    }
+
+    private Table createTable (final int columnCount) {
+        final Table table = new Table();
+        table.setCellpadding (getCellpadding ());
+        table.setCellspacing (getCellspacing ());
+        table.setWidth (Table.HUNDRED_PERCENT);
+        table.setColumns (columnCount);
+        return table;
+    }
+
+    private void logUnexpectedException (final IWContext context,
+                                         final Exception exception) {
+        System.err.println ("Exception caught in " + getClass ().getName ()
+                            + " " + (new java.util.Date ()));
+        System.err.println ("Parameters:");
+        final java.util.Enumeration enum = context.getParameterNames ();
+        while (enum.hasMoreElements ()) {
+            final String key = (String) enum.nextElement ();
+            System.err.println ('\t' + key + "='"
+                                + context.getParameter (key) + "'");
+        }
+        exception.printStackTrace ();
+        add ("Det inträffade ett fel. Försök igen senare.");
+    }
+
+    private static void setColumnWidthsEqual (final Table table) {
+        final int columnCount = table.getColumns ();
+        final int percentageInt = 100 / columnCount;
+        final String percentageString = percentageInt + "%";
+        for (int i = 1; i <= columnCount; i++) {
+            table.setColumnWidth (i, percentageString);
+        }
+    }
+
+    private TextInput getStyledInput (final String key, final String value) {
+        final TextInput input = (TextInput) getStyledInterface
+                (new TextInput (key));
+        input.setLength (12);
+        if (null != value) {
+            input.setValue (value);
+        }
+        return input;
+    }
+
+    private void addSmallHeader
+        (final Table table, final int col, final int row, final String key,
+         final String defaultString, final String suffix) {
+        final String localizedString = localize (key, defaultString) + suffix;
+        table.add (getSmallHeader (localizedString), col, row);
+    }
+
+    private SubmitButton getSubmitButton (final String action, final String key,
+                                          final String defaultName) {
+        return (SubmitButton) getButton (new SubmitButton
+                                         (localize (key, defaultName),
+                                          ACTION_KEY, action));
+    }
 }

@@ -229,7 +229,7 @@ public class InvoiceHeaderBMPBean extends GenericEntity implements InvoiceHeader
         if (null != toPeriod) {
             sql.appendAnd ()
                     .append (toPeriod)
-                    .appendGreaterThanSign ()
+                    .appendGreaterThanOrEqualsSign ()
                     .append (H_ + COLUMN_PERIOD);
         }
         sql.appendOrderBy (U_ + User.FIELD_PERSONAL_ID);

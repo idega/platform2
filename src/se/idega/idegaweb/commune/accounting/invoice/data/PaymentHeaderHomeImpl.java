@@ -46,5 +46,10 @@ public int getProviderCountForSchoolCategoryAndPeriod(java.lang.String p0,java.s
 	return theReturn;
 }
 
-
+    public java.util.Collection findBySchoolCategoryAndSchoolAndPeriod (String schoolCategory, Integer providerId, java.sql.Date startPeriod, java.sql.Date endPeriod) throws javax.ejb.FinderException {
+        com.idega.data.IDOEntity entity = idoCheckOutPooledEntity();
+        java.util.Collection ids = ((PaymentHeaderBMPBean)entity).ejbFindBySchoolCategoryAndSchoolAndPeriod(schoolCategory, providerId, startPeriod, endPeriod);
+        idoCheckInPooledEntity(entity);
+        return getEntityCollectionForPrimaryKeys(ids);
+    }
 }
