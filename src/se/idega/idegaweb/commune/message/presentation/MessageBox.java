@@ -52,6 +52,9 @@ public class MessageBox extends CommuneBlock {
 	private int _numberPerPage = 10;
 	private int _start = 0;
 	
+	private boolean useStyleNames = false;
+	private int firstColumnPadding = 12;
+	
 	public MessageBox() {
 	}
 
@@ -93,7 +96,13 @@ public class MessageBox extends CommuneBlock {
 
 
 		addTableHeader(messageTable, row);
-		messageTable.setRowColor(row++, getHeaderColor());
+		if (useStyleNames) {
+			messageTable.setCellpaddingLeft(getMessageNumberColumn(), row, firstColumnPadding);
+			messageTable.setRowStyleClass(row++, getStyleName(STYLENAME_HEADER_ROW));
+		}
+		else {
+			messageTable.setRowColor(row++, getHeaderColor());
+		}
 		boolean hasMessages = false;
 
 		if (iwc.isLoggedOn()) {
@@ -123,10 +132,23 @@ public class MessageBox extends CommuneBlock {
 					
 					addMessageToTable(iwc, messageTable, msg, row, dateFormat, messageNumber++);
 
-					if (row % 2 == 0)
-						messageTable.setRowColor(row++, getZebraColor1());
-					else
-						messageTable.setRowColor(row++, getZebraColor2());
+					if (useStyleNames) {
+						messageTable.setCellpaddingLeft(getMessageNumberColumn(), row, firstColumnPadding);
+						if (row % 2 == 0) {
+							messageTable.setRowStyleClass(row++, getStyleName(STYLENAME_LIGHT_ROW));
+						}
+						else {
+							messageTable.setRowStyleClass(row++, getStyleName(STYLENAME_DARK_ROW));
+						}
+					}
+					else {
+						if (row % 2 == 0) {
+							messageTable.setRowColor(row++, getZebraColor1());
+						}
+						else {
+							messageTable.setRowColor(row++, getZebraColor2());
+						}
+					}
 				}
 			}
 
@@ -293,5 +315,17 @@ public class MessageBox extends CommuneBlock {
 	 */
 	public void setNumberPerPage(int numberPerPage) {
 		this._numberPerPage = numberPerPage;
+	}
+	/**
+	 * @param useStyleNames The useStyleNames to set.
+	 */
+	public void setUseStyleNames(boolean useStyleNames) {
+		this.useStyleNames = useStyleNames;
+	}
+	/**
+	 * @param firstColumnPadding The firstColumnPadding to set.
+	 */
+	public void setFirstColumnPadding(int firstColumnPadding) {
+		this.firstColumnPadding = firstColumnPadding;
 	}
 }
