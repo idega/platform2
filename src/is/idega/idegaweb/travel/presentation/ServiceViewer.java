@@ -1,5 +1,8 @@
 package is.idega.idegaweb.travel.presentation;
 
+import java.util.*;
+import com.idega.util.*;
+import com.idega.core.localisation.business.LocaleSwitcher;
 import com.idega.presentation.Block;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
@@ -14,8 +17,6 @@ import com.idega.block.trade.data.Currency;
 import is.idega.idegaweb.travel.data.*;
 import com.idega.core.data.*;
 
-import com.idega.util.idegaTimestamp;
-import com.idega.util.idegaCalendar;
 import com.idega.util.text.TextSoap;
 
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
@@ -28,8 +29,6 @@ import com.idega.block.text.data.*;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 import java.text.DecimalFormat;
 
 /**
@@ -113,6 +112,15 @@ public class ServiceViewer extends Window {
     dayOfWeekName[ServiceDay.THURSDAY] = cal.getNameOfDay(ServiceDay.THURSDAY ,iwc).substring(0,3);
     dayOfWeekName[ServiceDay.FRIDAY] = cal.getNameOfDay(ServiceDay.FRIDAY ,iwc).substring(0,3);
     dayOfWeekName[ServiceDay.SATURDAY] = cal.getNameOfDay(ServiceDay.SATURDAY ,iwc).substring(0,3);
+
+    String languageString = iwc.getParameter(LocaleSwitcher.languageParameterString);
+    if(languageString!=null){
+      Locale locale = LocaleUtil.getLocale(languageString);
+      if(locale!=null){
+	iwc.setCurrentLocale(locale);
+      }
+    }
+
   }
 
   public void main(IWContext iwc) throws Exception{
@@ -313,7 +321,7 @@ public class ServiceViewer extends Window {
 
     try {
       int y = 1;
-      Product product = new Product(service.getID());
+      Product product = ProductBusiness.getProduct(service.getID());
       //number
       Text numberAndName = (Text) text.clone();
       numberAndName.setText(product.getNumber()+" - "+ProductBusiness.getProductName(product));
@@ -457,7 +465,7 @@ public class ServiceViewer extends Window {
 
     Text nameOfCategory = getText("");
 
-    Product product = new Product(service.getID());
+    Product product = ProductBusiness.getProduct(service.getID());
     TravelAddress[] depAddresses = ProductBusiness.getDepartureAddresses(product);
     Timeframe[] timeframes = product.getTimeframes();
     ProductPrice[] prices = null;
