@@ -270,6 +270,9 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 							val = c.getNumericCellValue();
 						}
+
+						totalIncome[i] += val;
+
 					} else {
 						val = incomeSubSum[i];
 					}
@@ -278,7 +281,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							.get(new Integer(leaguesStartColumn + i));
 
 					if (val != 0.0) {
-						totalIncome[i] += val;
 
 						if (currRow >= 7 && currRow <= 9) {
 							incomeSubSum[i] += val;
@@ -346,6 +348,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 							val = c.getNumericCellValue();
 						}
+						totalExpenses[i] += val;
 					} else {
 						if (currRow == 21) {
 							val = expensesSubSum[i];
@@ -360,7 +363,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							.get(new Integer(leaguesStartColumn + i));
 
 					if (val != 0.0) {
-						totalExpenses[i] += val;
 
 						if (currRow >= 18 && currRow <= 20) {
 							expensesSubSum[i] += val;
@@ -416,17 +418,16 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 				for (int i = 0; i < numberOfLeagues; i++) {
 					double val = 0.0;
 
-						HSSFCell c = row
-								.getCell((short) (leaguesStartColumn + i));
-						if (c != null) {
-							if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
-								throw new WorkReportImportException(
-										"workreportimportexception.formula_in_sheet",
-										row.getRowNum(), c.getCellNum(), null);
-							}
-
-							val = c.getNumericCellValue();
+					HSSFCell c = row.getCell((short) (leaguesStartColumn + i));
+					if (c != null) {
+						if (c.getCellType() == HSSFCell.CELL_TYPE_FORMULA) {
+							throw new WorkReportImportException(
+									"workreportimportexception.formula_in_sheet",
+									row.getRowNum(), c.getCellNum(), null);
 						}
+
+						val = c.getNumericCellValue();
+					}
 
 					WorkReportGroup league = (WorkReportGroup) leaguesMap
 							.get(new Integer(leaguesStartColumn + i));
@@ -496,6 +497,7 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 							val = c.getNumericCellValue();
 						}
+						totalDebt[i] += val;
 					} else {
 						val = debtSubSum[i];
 					}
@@ -504,7 +506,6 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 							.get(new Integer(leaguesStartColumn + i));
 
 					if (val != 0.0) {
-						totalDebt[i] += val;
 
 						if (currRow >= 41 && currRow <= 42) {
 							debtSubSum[i] += val;
@@ -536,8 +537,8 @@ public class WorkReportImportBusinessBean extends MemberUserBusinessBean
 
 			for (int nol = 0; nol < numberOfLeagues; nol++) {
 				if (totalAsset[nol] != totalDebt[nol]) {
-					throw new WorkReportImportException(	
-						"workreportimportexception.asset_and_dept_not_the_same");
+					throw new WorkReportImportException(
+							"workreportimportexception.asset_and_dept_not_the_same");
 				}
 			}
 
