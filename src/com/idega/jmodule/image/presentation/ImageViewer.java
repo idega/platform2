@@ -18,6 +18,7 @@ import com.idega.jmodule.object.textObject.*;
 import	com.idega.jmodule.object.*;
 import	com.idega.jmodule.object.interfaceobject.*;
 import	com.idega.jmodule.image.data.*;
+import	com.idega.jmodule.image.business.*;
 import	com.idega.data.*;
 import com.idega.util.text.*;
 import com.idega.jmodule.image.business.*;
@@ -32,6 +33,7 @@ private int iNumberInRow = 3; //iXXXX for int
 private int ifirst = 0;
 private int maxImageWidth =100;
 private boolean limitImageWidth=true;
+private String callingModule = "";
 
 private boolean backbutton = false;
 private boolean refresh = false;
@@ -511,6 +513,146 @@ public void refresh(boolean refresh){
 }
 
 
+public void setCallingModule(String callingModule){
+  this.callingModule = callingModule;
+}
+
+
+public Form getEditorForm(ImageHandler handler, String ImageId, ModuleInfo modinfo) throws Throwable{
+
+  Table toolbarBelow = new Table(4,2);
+  Table toolbarRight = new Table(2,5);
+  Table imageTable = new Table(2,2);
+  Form form = new Form();
+  form.setMethod("GET");
+
+  Link delete = new Link(new Image("/pics/jmodules/image/buttons/delete.gif","Delete the image"));
+  delete.addParameter("action","delete");
+  toolbarBelow.add(delete,1,1);
+
+  Link gray = new Link(new Image("/pics/jmodules/image/buttons/grayscale.gif","Convert the image to grayscale"));
+  gray.addParameter("action","Grayscale");
+  toolbarBelow.add(gray,1,1);
+  Link emboss = new Link(new Image("/pics/jmodules/image/buttons/emboss.gif","Emboss the image"));
+  emboss.addParameter("action","emboss");
+  toolbarBelow.add(emboss,1,1);
+  Link sharpen = new Link(new Image("/pics/jmodules/image/buttons/sharpen.gif","Sharpen the image"));
+  sharpen.addParameter("action","sharpen");
+  toolbarBelow.add(sharpen,1,1);
+  Link invert = new Link(new Image("/pics/jmodules/image/buttons/invert.gif","Invert the image"));
+  invert.addParameter("action","Invert");
+  toolbarBelow.add(invert,1,1);
+
+  Text widthtext = new Text("Width:<br>");
+  widthtext.setFontSize(1);
+  toolbarBelow.add(widthtext,1,2);
+  TextInput widthInput = new TextInput("width",""+handler.getModifiedWidth());
+  widthInput.setSize(5);
+  toolbarBelow.add(widthInput,1,2);
+  Text heighttext = new Text("Height:<br>");
+  heighttext.setFontSize(1);
+  toolbarBelow.add(heighttext,2,2);
+  TextInput heightInput = new TextInput("height",""+handler.getModifiedHeight());
+  heightInput.setSize(5);
+  toolbarBelow.add(heightInput,2,2);
+  Text con = new Text("<br>Constrain?");
+  con.setFontSize(1);
+  toolbarBelow.add(con,3,2);
+  CheckBox constrained = new CheckBox("constraint","true");
+  constrained.setChecked(true);
+  toolbarBelow.add(constrained,3,2);
+  toolbarBelow.add(new SubmitButton(new Image("/pics/jmodules/image/buttons/scale.gif"),"scale","true"),4,2);
+
+  Link undo = new Link(new Image("/pics/jmodules/image/buttons/undo.gif","Undo the last changes"));
+  undo.addParameter("action","undo");
+  toolbarBelow.add(undo,3,1);
+  Link save = new Link(new Image("/pics/jmodules/image/buttons/save.gif","Save the Image"));
+  save.addParameter("action","save");
+  toolbarBelow.add(save,4,1);
+
+/*
+  Link brightness = new Link(new Image("/pics/jmodules/image/buttons/brightness.gif","Adjust the brightness of the image"));
+  brightness.addParameter("action","brightness");
+  toolbarRight.add(brightness,1,1);
+
+  Link contrast = new Link(new Image("/pics/jmodules/image/buttons/contrast.gif","Adjust the contrast of the image"));
+  contrast.addParameter("action","contrast");
+  toolbarRight.add(contrast,1,2);
+
+  Link color = new Link(new Image("/pics/jmodules/image/buttons/color.gif","Adjust the color of the image"));
+  color.addParameter("action","color");
+  toolbarRight.add(color,1,3);
+
+  Link quality = new Link(new Image("/pics/jmodules/image/buttons/quality.gif","Adjust the quality of the image"));
+  quality.addParameter("action","quality");//quality( + _low/_med/_high/_max)
+  toolbarRight.add(quality,1,4);
+
+  Link revert = new Link(new Image("/pics/jmodules/image/buttons/revert.gif","Revert to the last saved version of the image"));
+  revert.addParameter("action","revert");
+  toolbarRight.add(revert,2,1);
+
+  Link rotate = new Link(new Image("/pics/jmodules/image/buttons/rotate.gif","Rotate the image CCW/CW"));
+  rotate.addParameter("action","rotate");
+  toolbarRight.add(rotate,2,2);
+
+  Link horizontal = new Link(new Image("/pics/jmodules/image/buttons/horizontal.gif","Flip the image horizontaly"));
+  horizontal.addParameter("action","horizontal");
+  toolbarRight.add(horizontal,2,3);
+
+  Link vertical = new Link(new Image("/pics/jmodules/image/buttons/vertical.gif","Flip the image verticaly"));
+  vertical.addParameter("action","vertical");
+  toolbarRight.add(vertical,2,4);
+
+
+  imageTable.add(toolbarRight,2,1);*/
+  //ShadowBox below = new ShadowBox();
+ // below.add(toolbarBelow);
+  imageTable.add(toolbarBelow,1,2);
+  imageTable.mergeCells(1,2,2,2);
+
+  //ShadowBox box = new ShadowBox();
+  //box.add(new Text("<nobr>"));
+  if( handler != null) {
+
+    Image myndin = handler.getModifiedImageAsImageObject(modinfo);
+    int percent = 100;
+    String percent2  = modinfo.getParameter("percent");
+    if (percent2!=null) percent = Integer.parseInt(percent2);
+
+    myndin.setWidth( (myndin.getWidth()* percent)/100  );
+    myndin.setHeight( (myndin.getHeight()* percent)/100 );
+
+    imageTable.add( myndin ,1,1);
+
+    Text percentText = new Text("<br>Percent:<br>");
+    percentText.setFontSize(1);
+    imageTable.add(percentText,1,1);
+    TextInput percentInput = new TextInput("percent",""+percent);
+    percentInput.setSize(4);
+    imageTable.add(percentInput,1,1);
+
+
+
+  }
+
+  toolbarBelow.mergeCells(1,1,2,1);
+
+  toolbarBelow.setAlignment(1,1,"center");
+  toolbarBelow.setAlignment(1,2,"left");
+  toolbarBelow.setAlignment(2,2,"left");
+  toolbarBelow.setAlignment(3,2,"left");
+  toolbarBelow.setAlignment(4,2,"left");
+  toolbarBelow.setAlignment(3,1,"right");
+  toolbarBelow.setAlignment(4,1,"right");
+  imageTable.setVerticalAlignment(2,1,"bottom");
+
+  ShadowBox box2 = new ShadowBox();
+  box2.add(imageTable);
+  form.add(box2);
+
+  return form;
+  }
+
 private Form getEditForm(){
   Form frameForm = new Form();
   Table frameTable = new Table(1,2);
@@ -562,8 +704,14 @@ private Form getEditForm(){
   //Buttons ends
 
   return frameForm;
+
 }
 
 
 
-} // Class ImageVeiwer ends
+
+
+
+
+
+}

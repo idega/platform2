@@ -48,10 +48,10 @@ public class ImageCatagory extends GenericEntity{
         public int getParentId() {
           return getIntColumnValue(getParentIdColumnName());
         }
-
+/*
         public static ImageCatagory getStaticImageCatagoryInstance(){
           return (ImageCatagory)ImageCatagory.getStaticInstance("com.idega.jmodule.image.data.ImageCatagory");
         }
-
+*/
 
 }
