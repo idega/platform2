@@ -123,8 +123,10 @@ public class UserCreditcard extends CashierSubWindowTemplate {
 			
 			inputTable.add(labelDivision, 1, row);
 			inputTable.add(labelCardType, 2, row);
-			inputTable.add(labelCardType, 2, row);
-
+			inputTable.add(labelCardNumber, 3, row);
+			inputTable.add(labelExpMonth, 4, row);
+			inputTable.add(labelExpYear, 5, row++);
+			
 			Collection userCreditCards = null;
 			Collection types = null;
 			try {
@@ -174,41 +176,42 @@ public class UserCreditcard extends CashierSubWindowTemplate {
 			inputTable.add(submit, 6, row);
 
 			row = 1;
-			t.add(labelDivision, 2, row);
-			t.add(labelCardType, 3, row);
-			t.add(labelCardNumber, 4, row);
-			t.add(labelExpMonth, 5, row);
-			t.add(labelExpYear, 6, row++);
+			dataTable.add(labelDivision, 2, row);
+			dataTable.add(labelCardType, 3, row);
+			dataTable.add(labelCardNumber, 4, row);
+			dataTable.add(labelExpMonth, 5, row);
+			dataTable.add(labelExpYear, 6, row++);
 			
 			if (userCreditCards != null && !userCreditCards.isEmpty()) {
 				Iterator it = userCreditCards.iterator();
 				while (it.hasNext()) {
 					UserCreditCard credit = (UserCreditCard) it.next();
 					CheckBox delete = new CheckBox(LABEL_DELETE, credit.getPrimaryKey().toString());
-					t.add(delete, 1, row);
+					dataTable.add(delete, 1, row);
 					Group div = credit.getDivision();
 					if (div != null)
-						t.add(div.getName(), 2, row);
+						dataTable.add(div.getName(), 2, row);
 					else
-						t.add(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"), 2, row);
-					t.add(credit.getCardType().getName(), 3, row);
-					t.add(credit.getCardNumber(), 4, row);
-					t.add(credit.getExpirationMonth(), 5, row);
-					t.add(credit.getExpirationYear(), 6, row++);
+						dataTable.add(iwrb.getLocalizedString(ELEMENT_ALL_DIVISIONS, "All divisions"), 2, row);
+					dataTable.add(credit.getCardType().getName(), 3, row);
+					dataTable.add(credit.getCardNumber(), 4, row);
+					dataTable.add(credit.getExpirationMonth(), 5, row);
+					dataTable.add(credit.getExpirationYear(), 6, row++);
 				}
 
 				SubmitButton delete = new SubmitButton(iwrb.getLocalizedString(ACTION_DELETE, "Delete"), ACTION_DELETE, "delete");
 				delete.setToEnableWhenChecked(LABEL_DELETE);
-				t.add(delete, 6, row);
-				t.setAlignment(6, row, "RIGHT");
+				dataTable.add(delete, 6, row);
+				dataTable.setAlignment(6, row, "RIGHT");
 			}
 		}
 		else {
 			t.add(iwrb.getLocalizedString(ERROR_NO_SELECTED_USER, "No user selected. Please select a user in the Select user tab.."), 1, row);
 		}
 		
-		f.add(inputTable);
 		f.add(t);
+		f.add(inputTable);
+		f.add(dataTable);
 		f.maintainParameter(CashierWindow.ACTION);
 		f.maintainParameter(CashierWindow.PARAMETER_GROUP_ID);
 		f.maintainParameter(CashierWindow.PARAMETER_DIVISION_ID);
