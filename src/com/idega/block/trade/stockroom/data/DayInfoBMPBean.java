@@ -25,7 +25,7 @@ public class DayInfoBMPBean extends GenericEntity implements DayInfo{
 	}
 	
 	public static String getEntityTableName() { return "sr_day_info"; }
-	public static String getColumnNameDayInfoId() { return "day_info_id"; }
+	public static String getColumnNameDayInfoId() { return "sr_day_info_id"; }
 	public static String getColumnNameSupplyPoolId() { return "sr_supply_pool_id"; }
 	public static String getColumnNameDayInfoDate() { return "day_info_date"; }
 	public static String getColumnNameDayInfoCount() { return "day_info_count"; }
