@@ -36,6 +36,8 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   private static final String LOWER_AGE_LIMIT_META_DATA_KEY = "lowerAgeLimit";
   private static final String UPPER_AGE_LIMIT_META_DATA_KEY = "upperAgeLimit";
   private static final String GENDER_META_DATA_KEY = "gender";
+  private static final String AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY = "ageLimitIsStringentCondition";
+  private static final String KEY_DATE_FOR_AGE_META_DATA_KEY = "keyDateForAge";
   
   private static final int FEMALE = 0;
   private static final int MALE = 1;
@@ -115,6 +117,21 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
     return MALE == getGender(group);
   }
   
+  public void setAgeLimitIsStringentCondition(Group group, boolean ageLimitIsStringentCondition) {
+    if (ageLimitIsStringentCondition)
+      group.setMetaData( AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY, new Boolean(true).toString());
+    else
+      // remove meta data does not work, set false
+      group.setMetaData( AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY, new Boolean(false).toString());
+  }
+  
+  public boolean isAgeLimitStringentCondition(Group group) {
+    String ageLimitIsStringentConditionString = (String) group.getMetaData(AGE_LIMIT_IS_STRINGENT_CONDITION_META_DATA_KEY);
+    return !(ageLimitIsStringentConditionString == null || 
+              NULL.equals(ageLimitIsStringentConditionString) ||
+              ! (new Boolean(ageLimitIsStringentConditionString).booleanValue()));
+  }
+    
   public void setLowerAgeLimit(Group group, int lowerAgeLimit)  {
     if (lowerAgeLimit == LOWER_AGE_LIMIT_DEFAULT)
       // remove meta data does not work
@@ -155,6 +172,22 @@ public class AgeGenderPluginBusinessBean extends IBOServiceBean implements  AgeG
   public int getUpperAgeLimitDefault()  {
     return UPPER_AGE_LIMIT_DEFAULT;
   }
+  
+  public void setKeyDateForAge(Group group, String keyDateForAge)  {
+    if (keyDateForAge == null || keyDateForAge.length() == 0)
+      // remove does not work
+      group.setMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY, NULL);
+    else 
+      group.setMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY, keyDateForAge);   
+  }
+  
+  public String getKeyDateForAge(Group group)  {
+    String keyDateForAgeString = (String) group.getMetaData(KEY_DATE_FOR_AGE_META_DATA_KEY);
+    if (keyDateForAgeString == null || NULL.equals(keyDateForAgeString))
+      return "";
+    else
+      return keyDateForAgeString; 
+  }  
   
 	/**
 	 * @see com.idega.user.business.UserGroupPlugInBusiness#afterGroupCreate(com.idega.user.data.Group)

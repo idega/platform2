@@ -132,10 +132,10 @@ public class GroupAgeGenderTab extends UserGroupTab {
     StringTokenizer keyDate = new StringTokenizer((String)fieldValues.get(keyDateForAgeFieldName)," -");  
 
     if(keyDate.hasMoreTokens()){
-      keyDateForAgeField.setMonth(keyDate.nextToken());
+      keyDateForAgeField.setMonth(Integer.parseInt(keyDate.nextToken()));
     }
     if(keyDate.hasMoreTokens()){
-      keyDateForAgeField.setDay(keyDate.nextToken());
+      keyDateForAgeField.setDay(Integer.parseInt(keyDate.nextToken()));
     }
     // error fields
     lowerAgeTooSmallField.setText((String) fieldValues.get(lowerAgeTooSmallFieldName));
@@ -231,9 +231,9 @@ public class GroupAgeGenderTab extends UserGroupTab {
       
       String keyDate = iwc.getParameter(keyDateForAgeFieldName);
       // only store key date if month and day is set by the user
-      // that is e.g: "1 - 01 - 11"
-      if ( (keyDate != null) && (keyDate.indexOf("-") != keyDate.lastIndexOf("-")) )   {
-        int i = keyDate.indexOf("-");
+      // that is e.g: "-1 - 01 - 11"
+      if ( (keyDate != null) && (keyDate.length() != 0))   {
+        int i = keyDate.indexOf("-",1);
         keyDate = keyDate.substring(++i);
         fieldValues.put(keyDateForAgeFieldName, keyDate);
       }
@@ -307,7 +307,13 @@ public class GroupAgeGenderTab extends UserGroupTab {
       else
         // male and female are either both true or both false 
         ageGenderPluginBusiness.setNeuter(group);
+      
+      boolean ageLimitIsStringentCondition = ((Boolean) fieldValues.get(ageLimitIsStringentConditionFieldName)).booleanValue();
+      ageGenderPluginBusiness.setAgeLimitIsStringentCondition(group, ageLimitIsStringentCondition);  
 
+      String keyDateForAge = (String) fieldValues.get(keyDateForAgeFieldName);
+      ageGenderPluginBusiness.setKeyDateForAge(group, keyDateForAge);
+      
       group.store();
     }
     catch (RemoteException e) {
@@ -356,6 +362,13 @@ public class GroupAgeGenderTab extends UserGroupTab {
       // get upper age limit 
       int upperAgeLimit = ageGenderPluginBusiness.getUpperAgeLimit(group);
       fieldValues.put(upperAgeLimitFieldName, new Integer(upperAgeLimit));
+      
+      boolean ageLimitIsStringentCondition = ageGenderPluginBusiness.isAgeLimitStringentCondition(group);
+      fieldValues.put(ageLimitIsStringentConditionFieldName, new Boolean(ageLimitIsStringentCondition));
+      
+      String keyDateForAge = ageGenderPluginBusiness.getKeyDateForAge(group);
+      fieldValues.put(keyDateForAgeFieldName, keyDateForAge);
+      
     }
     catch (RemoteException e) {
       System.err.println("[GeneralGroupInfoTab] remote error initFieldContents, GroupId : " + getGroupId());
