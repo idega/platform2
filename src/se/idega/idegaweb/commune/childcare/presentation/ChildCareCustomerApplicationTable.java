@@ -33,7 +33,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.33 2003/05/26 17:20:03 roar Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.34 2003/05/26 17:48:52 roar Exp $
  * @since 12.2.2003 
  */
 
@@ -52,7 +52,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 		REQUEST_CONFIRM = {"ccot_request_sent_confirm", "Your request has been sent."},
 		NO_APPLICATION = {"ccot_no_application", "No application found"},
 		NEW_CARETIME = {"ccot_new_caretime", "New caretime"},
-		END_CARETIME = {"ccot_end_caretime", "Avsluta kontrakt"};
+		END_CARETIME = {"ccot_end_caretime", "Avsluta kontrakt"},
+		MY_PAGE = {"ccot_return_to_my_page", "Return to My Page"};
 
 	public final static int PAGE_1 = 1;
 	public final static int PAGE_2 = 2;
@@ -139,6 +140,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 				form.setOnSubmit(
 					createPagePhase1(iwc, layoutTbl, applications));
 
+				break;
+			
+			case CCConstants.ACTION_SUBMIT_CONFIRM:
+				iwc.forwardToIBPage(getParentPage(), getEndPage());			
 				break;
 
 			default :
@@ -452,9 +457,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock {
 
 	private void createRequestInfoConfirmPage(Table layoutTbl)
 		throws RemoteException {
+			
 		SubmitButton submitBtn =
 			new SubmitButton(
-				localize(SUBMIT),
+				localize(MY_PAGE),
 				CCConstants.ACTION,
 				new Integer(CCConstants.ACTION_SUBMIT_CONFIRM).toString());
 		//		submitBtn.setName(SUBMIT[0] + PAGE_1);
