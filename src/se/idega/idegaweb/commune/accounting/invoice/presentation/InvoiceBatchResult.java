@@ -65,13 +65,15 @@ public class InvoiceBatchResult extends AccountingBlock{
 			IWTimestamp end = null;
 			if(batchRun.getEnd()!=null){
 				end = new IWTimestamp(batchRun.getEnd());
-			}else{
-				end = new IWTimestamp();
 			}
 
 			table.add(period.getDateString("MMM yyyy"),2,1);
 			table.add(start.getDateString("yyyy-MM-dd kk:mm:ss"),2,2);
-			table.add(end.getDateString("yyyy-MM-dd kk:mm:ss"),2,3);
+			if(end!=null){
+				table.add(end.getDateString("yyyy-MM-dd kk:mm:ss"),2,3);
+			} else {
+				table.add(getLocalizedSmallText("invbr.not_finished","Not finished"),2,3);
+			}
 			table.add(""+invoiceBusiness.getNoProviders(batchRun),2,4);
 			table.add(""+invoiceBusiness.getNoPlacements(batchRun),2,5);
 			table.add(""+invoiceBusiness.getTotAmountWithoutVAT(batchRun),2,6);
