@@ -22,6 +22,7 @@ import com.idega.util.IWTimestamp;
 public class BatchRunQueue {
 	//The queue holding the list of batch runs waiing to get executed. Holds objects of type BatchRunObject
 	private static ArrayList queue = new ArrayList();
+	private static BillingThread runningThread = null;
 	
 	private static Logger log = Logger.getLogger("BatchRunQueue");
 
@@ -54,6 +55,34 @@ public class BatchRunQueue {
 	}
 
 	/**
+	 * 
+	 * @param s
+	 */
+	public static void removeBatchRunFromQueue(String s){
+		boolean running = true;
+		Iterator iter = queue.iterator();
+		while(iter.hasNext()){
+			BatchRunObject batchRunObject = (BatchRunObject)iter.next();
+			if(batchRunObject.toString().equalsIgnoreCase(s)){
+				if(running){
+					System.out.println("Removing current thread "+s);
+					if(runningThread!=null){
+						runningThread.terminate();
+						queue.remove(batchRunObject);
+						runningThread = null;
+						return;
+					}
+				}else{
+					System.out.println("Removing queue object "+s);
+					queue.remove(batchRunObject);
+					return;
+				}
+			}
+			running = false;
+		}
+	}
+	
+	/**
 	 * Calling this lets the queue know that it is possible to start another batch
 	 */
 	public static void BatchRunDone(){
@@ -83,19 +112,22 @@ public class BatchRunQueue {
 		SchoolCategoryHome sch = (SchoolCategoryHome) IDOLookup.getHome(SchoolCategory.class);
 		if (sch.findChildcareCategory().getCategory().equals(batchRunObject.schoolCategory)) {
 			if(BatchRunSemaphore.getChildcareRunSemaphore()){
-				new InvoiceChildcareThread(batchRunObject.month, batchRunObject.iwc).start();
+				runningThread = new InvoiceChildcareThread(batchRunObject.month, batchRunObject.iwc);
+				runningThread.start();
 			}else{
 				throw new BatchAlreadyRunningException("Childcare");
 			}
 		} else if (sch.findElementarySchoolCategory().getCategory().equals(batchRunObject.schoolCategory)) {
 			if(BatchRunSemaphore.getElementaryRunSemaphore()){
-				new PaymentThreadElementarySchool(batchRunObject.month, batchRunObject.iwc).start();
+				runningThread = new PaymentThreadElementarySchool(batchRunObject.month, batchRunObject.iwc);
+				runningThread.start();
 			}else{
 				throw new BatchAlreadyRunningException("ElementarySchool");
 			}
 		} else if (sch.findHighSchoolCategory().getCategory().equals(batchRunObject.schoolCategory)) {
 			if(BatchRunSemaphore.getHighRunSemaphore()){
-				new PaymentThreadHighSchool(batchRunObject.readDate, batchRunObject.iwc).start();
+				runningThread = new PaymentThreadHighSchool(batchRunObject.readDate, batchRunObject.iwc);
+				runningThread.start();
 			}else{
 				throw new BatchAlreadyRunningException("HighSchool");
 			}
@@ -123,8 +155,16 @@ public class BatchRunQueue {
 		}
 		
 		public String toString(){
-			IWTimestamp m = new IWTimestamp(month);
-			return schoolCategory+" "+m.getDateString("MMM yyyy");
+			IWTimestamp m=null;
+			if(month!=null){
+				m = new IWTimestamp(month);
+			}else if(readDate!=null){
+				m = new IWTimestamp(readDate);
+			}
+			if(m!=null){
+				return schoolCategory+" "+m.getDateString("MMM yyyy");
+			}
+			return schoolCategory;
 		}
 	}
 }
