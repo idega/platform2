@@ -2062,7 +2062,7 @@ public abstract class BookingForm extends TravelManager{
 				gBooking.store();
 		  
 			}catch(com.idega.block.tpos.business.TPosException e) {
-				e.printStackTrace(System.err);
+				//e.printStackTrace(System.err);
 				sendErrorEmail("Online booking failed ("+e.getLocalizedMessage(iwrb)+")","Creditcard authorization failed.", e);
 				throw new TPosException(e.getLocalizedMessage(iwrb));
 			}catch (Exception e) {
