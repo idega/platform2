@@ -25,8 +25,10 @@ import com.idega.block.entity.data.EntityPathValueContainer;
 import com.idega.block.entity.data.EntityValueHolder;
 import com.idega.block.entity.presentation.EntityBrowser;
 import com.idega.block.entity.presentation.converters.CheckBoxConverter;
+import com.idega.block.entity.presentation.converters.ConverterConstants;
 import com.idega.block.entity.presentation.converters.DropDownMenuConverter;
 import com.idega.block.entity.presentation.converters.DropDownPostalCodeConverter;
+import com.idega.block.entity.presentation.converters.EditOkayButtonConverter;
 import com.idega.block.entity.presentation.converters.OptionProvider;
 import com.idega.block.entity.presentation.converters.TextEditorConverter;
 import com.idega.data.EntityRepresentation;
@@ -160,14 +162,45 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
       board.store();
     }  
     // does the user want to modify an existing entity?
-    EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByParsing(iwc);
-    EntityPathValueContainer entityPathValueContainerFromDropDownMenu = DropDownMenuConverter.getResultByParsing(iwc);
-    if (entityPathValueContainerFromTextEditor.isValid()) {
-      updateWorkReportDivisionBoard(entityPathValueContainerFromTextEditor, iwc);
-    }
-    if (entityPathValueContainerFromDropDownMenu.isValid()) {
-      updateWorkReportDivisionBoard(entityPathValueContainerFromDropDownMenu, iwc);
-    }
+    if (iwc.isParameterSet(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY)) {
+      WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwc);
+      String id = iwc.getParameter(ConverterConstants.EDIT_ENTITY_SUBMIT_KEY);
+      Integer primaryKey = null;
+      try {
+        primaryKey = new Integer(id);
+      }
+      catch (NumberFormatException ex)  {
+        System.err.println("[WorkReportBoardMemberEditor] Wrong primary key. Message is: " +
+          ex.getMessage());
+        ex.printStackTrace(System.err);
+      }
+      WorkReportDivisionBoard board = findWorkReportDivisionBoard(primaryKey, iwc);
+            Iterator iterator = FIELD_LIST.iterator();
+      while (iterator.hasNext())  {
+        String field = (String) iterator.next();
+        EntityPathValueContainer entityPathValueContainerFromTextEditor = 
+          TextEditorConverter.getResultByEntityIdAndEntityPathShortKey(primaryKey, field, iwc);
+        EntityPathValueContainer entityPathValueContainerFromDropDownMenu = 
+          DropDownMenuConverter.getResultByEntityIdAndEntityPathShortKey(primaryKey, field, iwc);
+        if (entityPathValueContainerFromTextEditor.isValid()) {
+          setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromTextEditor, board, workReportBusiness);
+        }
+        if (entityPathValueContainerFromDropDownMenu.isValid()) {
+          setValuesOfWorkReportDivisionBoard(entityPathValueContainerFromDropDownMenu, board, workReportBusiness);
+        }
+      }
+      board.store();
+      return action;
+    }  
+//    // does the user want to modify an existing entity?
+//    EntityPathValueContainer entityPathValueContainerFromTextEditor = TextEditorConverter.getResultByParsing(iwc);
+//    EntityPathValueContainer entityPathValueContainerFromDropDownMenu = DropDownMenuConverter.getResultByParsing(iwc);
+//    if (entityPathValueContainerFromTextEditor.isValid()) {
+//      updateWorkReportDivisionBoard(entityPathValueContainerFromTextEditor, iwc);
+//    }
+//    if (entityPathValueContainerFromDropDownMenu.isValid()) {
+//      updateWorkReportDivisionBoard(entityPathValueContainerFromDropDownMenu, iwc);
+//    }
     return action;
   }
   
@@ -304,6 +337,7 @@ public class WorkReportDivisionBoardEditor extends WorkReportSelector {
     
     // define path short keys and map corresponding converters
     Object[] columns = {
+      "okay", new EditOkayButtonConverter(),
       CHECK_BOX, checkBoxConverter,
       LEAGUE, leagueDropDownMenuConverter,
       HOME_PAGE, textEditorConverter,
