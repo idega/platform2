@@ -367,6 +367,7 @@ public class Calendar extends CategoryBlock implements Builderaware {
 					}
 
 					ypos++;
+					entriesTable.setHeight(ypos++, 12);
 				}
 			}
 		}
