@@ -76,7 +76,8 @@ public class ProductViewer extends Block {
 
 	boolean _showMetaData = true;
 
-	private boolean _showFromParameter = true;
+	boolean _showFromParameter = true;
+	boolean _showBorder = true;
 
 	/**
 	 * @param showFromParameter
@@ -364,4 +365,11 @@ public class ProductViewer extends Block {
 	private ProductBusiness getProductBusiness(IWContext iwc) throws RemoteException {
 		return (ProductBusiness) IBOLookup.getServiceInstance(iwc, ProductBusiness.class);
 	}
+	/**
+	 * @param showBorder
+	 */
+	public void setShowBorder(boolean showBorder) {
+		_showBorder = showBorder;
+	}
+
 }

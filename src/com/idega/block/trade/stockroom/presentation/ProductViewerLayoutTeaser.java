@@ -85,7 +85,7 @@ public class ProductViewerLayoutTeaser extends AbstractProductViewerLayout {
 		table.setHeight(row++, "6");
 
 		ProductItemThumbnail thumb = new ProductItemThumbnail(_product);
-		thumb.setAddBorder(true);
+		thumb.setAddBorder(productViewer._showBorder);
 		if (productViewer._imageWidth != null) {
 			try {
 				thumb.setWidth(Integer.parseInt(productViewer._imageWidth));
