@@ -10,6 +10,7 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolHome;
 import com.idega.block.school.data.SchoolUser;
 import com.idega.block.school.data.SchoolUserBMPBean;
 import com.idega.block.school.data.SchoolUserHome;
@@ -74,6 +75,10 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 				sUser.remove();
 			}
 		}
+	}
+
+	public Collection getTeachers(int schoolID) throws RemoteException, FinderException {
+		return getTeachers(getSchoolHome().findByPrimaryKey(new Integer(schoolID)));	
 	}
 
 	public Collection getTeachers(School school) throws RemoteException, FinderException{
@@ -173,6 +178,10 @@ public class SchoolUserBusinessBean extends IBOServiceBean implements SchoolUser
 
 	public SchoolUserHome getSchoolUserHome() throws RemoteException {
 		return (SchoolUserHome) IDOLookup.getHome(SchoolUser.class);
+	}
+	
+	public SchoolHome getSchoolHome() throws RemoteException {
+		return (SchoolHome) IDOLookup.getHome(School.class);	
 	}
 
 }

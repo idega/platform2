@@ -4,8 +4,11 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.school.event.SchoolEventListener;
 
+import com.idega.block.school.business.SchoolUserBusiness;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.business.IBOLookup;
 import com.idega.presentation.IWContext;
@@ -17,6 +20,7 @@ import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextInput;
 import com.idega.user.business.UserBusiness;
 import com.idega.user.data.User;
+import com.idega.user.presentation.UserChooser;
 
 /**
  * @author Laddi
@@ -119,12 +123,22 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 					TextInput nameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CLASS_NAME));
 					nameInput.setValue(element.getName());
 					
-					TextInput teacherInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_TEACHER_ID));
-					teacherInput.setValue(localize("school.disabled","disabled"));
-					teacherInput.setDisabled(true);
+					Collection users;
+					try {
+						users = getSchoolUserBusiness(iwc).getTeachers(getSchoolID());
+						UserChooser uc = new UserChooser(PARAMETER_TEACHER_ID);
+						uc.setValidUserPks(users);
+						table.add(uc,2,row);
+					} catch (FinderException e) {
+						e.printStackTrace(System.err);
+					}
+//					contTable.add(uc, 1, 7);
+//					TextInput teacherInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_TEACHER_ID));
+//					teacherInput.setValue(localize("school.disabled","disabled"));
+//					teacherInput.setDisabled(true);
 					
 					table.add(nameInput,1,row);
-					table.add(teacherInput,2,row);
+//					table.add(teacherInput,2,row);
 					table.add(new HiddenInput(getSession().getParameterSchoolClassID(),element.getPrimaryKey().toString()),3,row++);
 				}
 				else {
@@ -140,12 +154,22 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 		if (action == ACTION_NEW) {
 			TextInput nameInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_CLASS_NAME));
 			
-			TextInput teacherInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_TEACHER_ID));
-			teacherInput.setValue(localize("school.disabled","disabled"));
-			teacherInput.setDisabled(true);
+			Collection users;
+			try {
+				users = getSchoolUserBusiness(iwc).getTeachers(getSchoolID());
+				UserChooser uc = new UserChooser(PARAMETER_TEACHER_ID);
+				uc.setValidUserPks(users);
+				table.add(uc,2,row);
+			} catch (FinderException e) {
+				e.printStackTrace(System.err);
+			}
+//			TextInput teacherInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_TEACHER_ID));
+//			teacherInput.setValue(localize("school.disabled","disabled"));
+//			teacherInput.setDisabled(true);
 			
 			table.add(nameInput,1,row);
-			table.add(teacherInput,2,row++);
+//			table.add(teacherInput,2,row++);
+			++row;
 		}
 		
 		table.setHeight(row++, 6);
@@ -170,4 +194,9 @@ public class SchoolClassBuilder extends SchoolCommuneBlock {
 	private UserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
 		return (UserBusiness) IBOLookup.getServiceInstance(iwc, UserBusiness.class);	
 	}	
+
+	private SchoolUserBusiness getSchoolUserBusiness(IWContext iwc) throws RemoteException {
+		return (SchoolUserBusiness) IBOLookup.getServiceInstance(iwc, SchoolUserBusiness.class);
+	}
+	
 }
