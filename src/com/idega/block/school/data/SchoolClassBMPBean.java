@@ -300,7 +300,9 @@ public class SchoolClassBMPBean extends GenericEntity implements SchoolClass{
 	 * @throws FinderException
 	 */
 	public Collection ejbFindAll() throws FinderException{
-		return ejbFindAll();
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this);
+		return idoFindPKsByQuery(sql);
 	}
 
 	public Collection findRelatedUsers() throws com.idega.data.IDORelationshipException {
