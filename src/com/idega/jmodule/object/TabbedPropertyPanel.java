@@ -8,6 +8,8 @@ import com.idega.util.datastructures.Collectable;
 import com.idega.event.IWSubmitEvent;
 import com.idega.event.IWSubmitListener;
 import com.idega.jmodule.object.interfaceobject.SubmitButton;
+import com.idega.event.IWModuleEvent;
+import com.idega.event.IWEventException;
 //import com.idega.jmodule.object.interfaceobject.ResetButton;
 
 /**
@@ -30,6 +32,7 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
   private String attributeString;
   private boolean justConstructed = true;
   private boolean first = true;
+  private boolean stateChanged = false;
 
   private SubmitButton ok;
   private SubmitButton cancel;
@@ -44,7 +47,6 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
 //    this.setMethod("get");
 //    frameTable.setBorder(1);  // temp
     tpane = IWTabbedPane.getInstance(key,modinfo);
-    System.err.println("addChangeListener ;");
     tpane.addChangeListener(this);
     tpane.setTabsToFormSubmit(this);
     this.add(frameTable);
@@ -114,14 +116,15 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
 
   public void stateChanged(ChangeEvent e){
     if(useCollector && !first){
-      collector.setSelectedIndex(tpane.getSelectedIndex(),((ModuleObject)e.getSource()).getEventModuleInfo());
+      stateChanged = true;
+      //collector.setSelectedIndex(tpane.getSelectedIndex(),((IWModuleEvent)e).getModuleInfo());
     }
     first = false;
   }
 
   public void actionPerformed(IWSubmitEvent e){
     if(e.getSource() == ok || e.getSource() == apply){
-      collector.storeAll(this.getEventModuleInfo());
+      collector.storeAll(e.getModuleInfo());
     }
 
     if(e.getSource() == cancel){
@@ -188,14 +191,21 @@ public class TabbedPropertyPanel extends Form implements ChangeListener, IWSubmi
     frameTable.setAlignment(1,2,"right");
 
   }
-/*
+
   public void main(ModuleInfo modinfo) {
-    if(this.justConstructed()){
+
+    if(stateChanged){
+      collector.setSelectedIndex(tpane.getSelectedIndex(),modinfo);
+      stateChanged = false;
+    }
+
+/*    if(this.justConstructed()){
       lineUpButtons();
       ok.addIWSubmitListener(this, this,modinfo);
       apply.addIWSubmitListener(this, this,modinfo);
     }
-  }
 */
+  }
+
 
 }

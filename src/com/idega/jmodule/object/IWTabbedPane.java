@@ -136,12 +136,10 @@ public class IWTabbedPane extends Table implements SwingConstants {
     }
 
     protected class LinkListener implements IWLinkListener {
-        public void actionPerformed(IWLinkEvent e) {
-            System.err.println(this.getClass().getName() + " : setSelectedIndex begins eventsource = " + e.getSource().getClass().getName() + " at index : " + getUI().getTabPresentation().getAddedTabs().indexOf(e.getSource()) );
-            setSelectedIndex(getUI().getTabPresentation().getAddedTabs().indexOf(e.getSource()));
-            System.err.println(this.getClass().getName() + " : setSelectedIndex ends");
-            //fireStateChanged();
-        }
+      public void actionPerformed(IWLinkEvent e) {
+        setSelectedIndex(getUI().getTabPresentation().getAddedTabs().indexOf(e.getSource()));
+        //fireStateChanged();
+      }
     }
 
 
@@ -157,26 +155,25 @@ public class IWTabbedPane extends Table implements SwingConstants {
     }
 
     public void addChangeListener(ChangeListener l) {
-        listenerList.add(ChangeListener.class, l);
+        getEventListenerList().add(ChangeListener.class, l);
     }
 
     public void removeChangeListener(ChangeListener l) {
-        listenerList.remove(ChangeListener.class, l);
+        getEventListenerList().remove(ChangeListener.class, l);
     }
 
     protected void fireStateChanged() {
         // Guaranteed to return a non-null array
-        Object[] listeners = listenerList.getListenerList();
+        Object[] listeners = getEventListenerList().getListenerList();
         // Process the listeners last to first, notifying
         // those that are interested in this event
         for (int i = listeners.length-2; i>=0; i-=2) {
             if (listeners[i]==ChangeListener.class) {
                 // Lazily create the event:
-                if (changeEvent == null)
-                    changeEvent = new ChangeEvent(this);
-                System.err.println("ChangeListener : 1 "+((ChangeListener)listeners[i+1]).getClass().getName() + " : length -> " + listeners.length);
+                if (changeEvent == null){
+                  changeEvent = new ChangeEvent(this);
+                }
                 ((ChangeListener)listeners[i+1]).stateChanged(changeEvent);
-                System.err.println("ChangeListener : 2 "+((ChangeListener)listeners[i+1]).getClass().getName());
             }
         }
     }

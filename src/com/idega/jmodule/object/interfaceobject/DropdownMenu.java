@@ -157,7 +157,14 @@ public void setDisabled(String ElementValue){
 	getMenuElement(ElementValue).setDisabled(true);
 }
 
+private void deselectElements(){
+  for (Enumeration e = theElements.elements(); e.hasMoreElements(); ){
+    ((MenuElement)e.nextElement()).setSelected(false);
+  }
+}
+
 public void setSelectedElement(String ElementValue){
+        deselectElements();
 	getMenuElement(ElementValue).setSelected(true);
 	selectedElementValue=ElementValue;
 }

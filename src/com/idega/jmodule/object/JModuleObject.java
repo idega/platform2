@@ -102,7 +102,11 @@ public class JModuleObject extends ModuleObjectContainer{
   }
 
   String[] getPermissionKeys(JModuleObject obj){
-    Map m = (Map)getPermissionKeyMap().get(this.getClass());
+    return getPermissionKeys(obj.getClass());
+  }
+
+  String[] getPermissionKeys(Class jModuleObjectClass){
+    Map m = (Map)getPermissionKeyMap().get(jModuleObjectClass);
     if(m!=null){
       return (String[])m.keySet().toArray(new String[0]);
     }

@@ -1,5 +1,5 @@
 /*
- * $Id: DateInput.java,v 1.16 2001/08/16 00:50:06 bjarni Exp $
+ * $Id: DateInput.java,v 1.17 2001/08/23 20:43:49 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -250,6 +250,22 @@ public void setToSubmit(){
 
 public void setYear(int year){
 	setCheck=true;
+        if(fromYear > toYear){
+          if(fromYear < year){
+            fromYear = year;
+          }
+          if(toYear > year){
+            toYear = year;
+          }
+        } else{
+          if(fromYear > year){
+            fromYear = year;
+          }
+          if(toYear < year){
+            toYear = year;
+          }
+        }
+        /*
         if(!(year>fromYear && year<toYear) || !(year<fromYear && year>toYear)){
           if(year<fromYear){
             fromYear=year;
@@ -258,6 +274,7 @@ public void setYear(int year){
             toYear=year;
           }
         }
+        */
 	//theYear.setSelectedElement(Integer.toString(year));
         selectedYear=year;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ModuleObject.java,v 1.17 2001/08/16 19:40:28 bjarni Exp $
+ * $Id: ModuleObject.java,v 1.18 2001/08/23 20:43:49 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -26,6 +26,8 @@ import com.idega.event.IWSubmitListener;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.data.EntityFinder;
+import com.idega.exception.ICObjectNotInstalledException;
 
 
 /**
@@ -431,31 +433,35 @@ public class ModuleObject extends Object implements Cloneable {
    * owerwrite in module
    */
 
-  /**
-   * @deprecated Replaced with getICObjectInstanceID()
-   */
   public int getICObjectInstanceID(ModuleInfo modinfo) throws SQLException {
-    return this.ib_object_instance_id;
+    return getICObjectInstanceID();
   }
 
   public int getICObjectInstanceID(){
     return this.ib_object_instance_id;
   }
 
-  /**
-   * @deprecated Replaced with getICObjectInstance()
-   */
   public ICObjectInstance getICObjectInstance(ModuleInfo modinfo) throws SQLException {
-    return new ICObjectInstance(getICObjectInstanceID(modinfo));
+    return getICObjectInstance();
   }
 
-  public ICObjectInstance getICObjectInstance()throws Exception{
+  public ICObjectInstance getICObjectInstance()throws SQLException{
     return new ICObjectInstance(getICObjectInstanceID());
   }
 
   public ICObject getICObject() throws SQLException {
-    return (ICObject)(new ICObject()).findAllByColumn("class_name",this.getClass().getName())[0];
+    return this.getICObject(this.getClass());
   }
+
+  protected ICObject getICObject(Class c) throws SQLException {
+    List result = EntityFinder.findAllByColumn(ICObject.getStaticInstance(ICObject.class),"class_name",c.getName());
+    if(result != null && result.size() > 0){
+      return (ICObject)result.get(0);
+    }else{
+      throw new ICObjectNotInstalledException(this.getClass().getName());
+    }
+  }
+
 
   public ICObjectInstance getICInstance(ModuleInfo modinfo) throws IWException {
     try {
@@ -469,24 +475,15 @@ public class ModuleObject extends Object implements Cloneable {
 
   public void addIWLinkListener(IWLinkListener l,ModuleInfo modinfo) {
     //System.err.println(this.getClass().getName() + " : listener added of type -> " + l.getClass().getName());
-    if (listenerList == null){
-      listenerList = new EventListenerList();
-    }
-    listenerList.add(IWLinkListener.class,l);
+    getEventListenerList().add(IWLinkListener.class,l);
   }
 
   public IWLinkListener[] getIWLinkListeners() {
-    if (listenerList == null){
-      listenerList = new EventListenerList();
-    }
-    return (IWLinkListener[])listenerList.getListeners(IWLinkListener.class);
+    return (IWLinkListener[])getEventListenerList().getListeners(IWLinkListener.class);
   }
 
   public void addIWSubmitListener(IWSubmitListener l,ModuleInfo modinfo){
-    if (listenerList == null){
-      listenerList = new EventListenerList();
-    }
-    listenerList.add(IWSubmitListener.class,l);
+    getEventListenerList().add(IWSubmitListener.class,l);
   }
 
     public IWSubmitListener[] getIWSubmitListeners(){
@@ -580,6 +577,16 @@ public class ModuleObject extends Object implements Cloneable {
     eventModuleInfo = modinfo;
   }
 
+  public EventListenerList getEventListenerList(){
+    if (listenerList == null){
+        listenerList = new EventListenerList();
+    }
+    return listenerList;
+  }
+
+  /**
+   * @deprecated Do not use this function, it is not safe
+   */
   public ModuleInfo getEventModuleInfo(){
     return eventModuleInfo;
   }

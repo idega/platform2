@@ -76,41 +76,6 @@ public class TravelStockroomBusiness extends StockroomBusiness {
     }
   }
 
-  public void setPrice(int productId, int priceCategoryId, Integer currnecyId, float price, int priceType, Timestamp time) throws Exception {
-    ProductPrice prPrice = new ProductPrice();
-
-    prPrice.setProductId(productId);
-    prPrice.setPriceCategoryID(priceCategoryId);
-
-
-    if(currnecyId != null){
-      prPrice.setCurrencyId(currnecyId);
-    }
-
-    prPrice.setPrice(price);
-    prPrice.setPriceType(priceType);
-    prPrice.setPriceDate(time);
-
-    prPrice.insert();
-
-  }
-
-  public float getPrice(int productId, int priceCategoryId, Integer currencyId, Date date) throws Exception {
-    ProductPrice pr = (ProductPrice)ProductPrice.getStaticInstance(ProductPrice.class);
-    List result = null;
-    if(currencyId != null){
-      result = EntityFinder.findAll(pr,"SELECT * FROM "+pr.getEntityName()+" WHERE "+ProductPrice.getColumnNameProductId()+" LIKE '"+productId+"' AND "+ProductPrice.getColumnNamePriceCategoryId()+" LIKE '"+priceCategoryId+"' AND "+ProductPrice.getColumnNameCurrencyId()+" LIKE '"+currencyId+"' AND "+ProductPrice.getColumnNamePriceDate()+" <= '"+date.toString()+"' ORDER BY "+ProductPrice.getColumnNamePriceDate() , 1);
-    }else{
-      result = EntityFinder.findAll(pr,"SELECT * FROM "+pr.getEntityName()+" WHERE "+ProductPrice.getColumnNameProductId()+" LIKE '"+productId+"' AND "+ProductPrice.getColumnNamePriceCategoryId()+" LIKE '"+priceCategoryId+"' AND "+ProductPrice.getColumnNamePriceDate()+" <= '"+date.toString()+"' ORDER BY "+ProductPrice.getColumnNamePriceDate() , 1);
-    }
-
-    if(result != null && result.size() > 0){
-      return ((ProductPrice)result.get(0)).getPrice();
-    }else{
-      throw  new RuntimeException("Price not set");
-    }
-  }
-
 
 
   public int createPriceCategory(int supplierId, String name, String description, String type, String extraInfo) throws Exception {
