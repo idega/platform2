@@ -23,6 +23,7 @@ import com.idega.user.data.User;
 public interface RegularPaymentEntry extends IDOEntity {
 	
 	School getSchool(); 
+	int getSchoolId(); 	
 	String getPlacing();	
 	Date getFrom();
 	Date getTo();	
@@ -32,6 +33,7 @@ public interface RegularPaymentEntry extends IDOEntity {
 	String getOwnPosting();
 	String getDoublePosting();
 	VATRegulation getVatRegulation();	
+	int getVatRegulationId();	
 	User getUser();	
 	
 	void setSchoolId(int schoolId);

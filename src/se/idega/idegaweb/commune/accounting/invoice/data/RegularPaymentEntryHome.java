@@ -16,9 +16,9 @@ import javax.ejb.FinderException;
 public interface RegularPaymentEntryHome extends com.idega.data.IDOHome{
 	RegularPaymentEntry create() throws javax.ejb.CreateException;
 		
-	Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId) throws FinderException;
+	Collection findRegularPaymentsForPeriodeAndUser(Date from, Date to, int userId) throws FinderException;
 
-	Collection findRegularInvoicesForPeriode(Date from, Date to);
+	Collection findRegularPaymentsForPeriode(Date from, Date to);
 	
 	RegularPaymentEntry findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
 	

@@ -28,14 +28,14 @@ public class RegularPaymentEntryHomeImpl  extends com.idega.data.IDOFactory impl
 	 return (RegularPaymentEntry) super.createIDO();
 	}	
 	
-	public Collection findRegularInvoicesForPeriodeAndUser(Date from, Date to, int userId) throws FinderException{
+	public Collection findRegularPaymentsForPeriodeAndUser(Date from, Date to, int userId) throws FinderException{
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
-		java.util.Collection ids = ((RegularInvoiceEntryBMPBean)entity).ejbFindByPeriodeAndUser(from, to, userId);
+		java.util.Collection ids = ((RegularPaymentEntryBMPBean)entity).ejbFindByPeriodeAndUser(from, to, userId);
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
-	public Collection findRegularInvoicesForPeriode(Date from, Date to){
+	public Collection findRegularPaymentsForPeriode(Date from, Date to){
 		
 		return null;		
 	}

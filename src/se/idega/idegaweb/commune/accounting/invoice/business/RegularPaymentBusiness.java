@@ -27,12 +27,12 @@ public interface RegularPaymentBusiness extends com.idega.business.IBOService {
 	 * @param userId
 	 * @return Collection of RegularPaymentEntry
 	 */
-	Collection findRegularPayementsForPeriodeAndUser(Date from, Date to, int userId) throws IDOLookupException, FinderException;
+	Collection findRegularPaymentsForPeriodeAndUser(Date from, Date to, int userId) throws IDOLookupException, FinderException;
 	/**
 	 * 
 	 * @param from
 	 * @param to
 	 * @return Collection of RegularPaymentEntry
 	 */
-	Collection findRegularPayementsForPeriode(Date from, Date to);
+	Collection findRegularPaymentsForPeriode(Date from, Date to);
 }

@@ -45,14 +45,13 @@ import com.idega.presentation.ui.TextInput;
 import com.idega.user.data.User;
 
 
-import se.idega.idegaweb.commune.accounting.invoice.business.RegularInvoiceBusiness;
-import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntry;
-import se.idega.idegaweb.commune.accounting.invoice.data.RegularInvoiceEntryHome;
+import se.idega.idegaweb.commune.accounting.invoice.business.RegularPaymentBusiness;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntry;
+import se.idega.idegaweb.commune.accounting.invoice.data.RegularPaymentEntryHome;
 import se.idega.idegaweb.commune.accounting.presentation.AccountingBlock;
 import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
 import se.idega.idegaweb.commune.accounting.presentation.ListTable;
 import se.idega.idegaweb.commune.accounting.presentation.OperationalFieldsMenu;
-import se.idega.idegaweb.commune.accounting.regulations.business.RegulationException;
 import se.idega.idegaweb.commune.accounting.regulations.business.RegulationsBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.VATBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.data.RegulationSpecType;
@@ -64,19 +63,17 @@ import se.idega.idegaweb.commune.accounting.regulations.data.VATRegulation;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class RegularInvoiceEntriesList extends AccountingBlock {
+public class RegularPaymentEntriesList extends AccountingBlock {
 
-	private String LOCALIZER_PREFIX = "regular_invoice_entries_list.";
+	private String LOCALIZER_PREFIX = "regular_payment_entries_list.";
 	
 	private static final String KEY_OPERATIONAL_FIELD = "operational_field";
 	private static final String KEY_AMOUNT_PR_MONTH = "amount_pr_month";
 	private static final String KEY_AMOUNT = "amount";
 	private static final String KEY_CANCEL = "cancel";
-	private static final String KEY_DAY_CREATED = "day_created";
-	private static final String KEY_DAY_REGULATED = "day_regulated";
 	private static final String KEY_DOUBLE_ENTRY_ACCOUNT = "double_entry_account";
 	private static final String KEY_FROM = "from";
-	private static final String KEY_INVOICE_PERIODE = "invoice_periode";
+	private static final String KEY_PAYMENT_PERIODE = "payment_periode";
 	private static final String KEY_NEW = "new";
 	private static final String KEY_EDIT_TOOLTIP = "edit";	
 	private static final String KEY_DELETE_TOOLTIP = "delete";		
@@ -89,7 +86,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	private static final String KEY_REMARK = "remark";
 	private static final String KEY_SAVE = "save";
 	private static final String KEY_SEARCH = "search";
-	private static final String KEY_SIGNATURE = "signature";
 	private static final String KEY_SSN = "ssn";	
 	private static final String KEY_TO = "to";
 	private static final String KEY_VALID_DATE = "valid_date";
@@ -127,7 +123,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		ACTION_DELETE = 2, 
 		ACTION_CANCEL = 3,
 		ACTION_EDIT = 4, 
-		ACTION_SEARCH_INVOICE = 5,
+		ACTION_SEARCH_PAYMENTS = 5,
 		ACTION_SEARCH_REGULATION = 6,
 		ACTION_SAVE = 7,
 		ACTION_CANCEL_NEW_EDIT = 8,
@@ -140,7 +136,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		PAR_DELETE = PAR + ACTION_DELETE, 
 		PAR_CANCEL = PAR + ACTION_CANCEL,
 		PAR_EDIT = PAR + ACTION_EDIT, 
-		PAR_SEARCH_INVOICE = PAR + ACTION_SEARCH_INVOICE,
+		PAR_SEARCH_PAYMENTS = PAR + ACTION_SEARCH_PAYMENTS,
 		PAR_SEARCH_REGULATION = PAR + ACTION_SEARCH_REGULATION,
 		PAR_SAVE = PAR + ACTION_SAVE,
 		PAR_CANCEL_NEW_EDIT = PAR + ACTION_CANCEL_NEW_EDIT,
@@ -184,7 +180,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 					// TODO implement
 					break;
 				case ACTION_CANCEL_NEW_EDIT:				
-				case ACTION_SEARCH_INVOICE:		
+				case ACTION_SEARCH_PAYMENTS:		
 				case ACTION_OPFIELD_MAINSCREEN:
 					handleDefaultAction(iwc, user, fromDate, toDate);
 					break;
@@ -213,15 +209,15 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	/**
 	 * @param iwc
 	 */
-	private Collection doInvoiceSearch(IWContext iwc, User user, Date from, Date to) {
-		Collection invoices = new ArrayList();		
+	private Collection doPaymentsSearch(IWContext iwc, User user, Date from, Date to) {
+		Collection payments = new ArrayList();		
 		if (user != null && from != null && to != null){
 
-			RegularInvoiceBusiness invoiceBusiness = getRegularInvoiceBusiness(iwc);
+			RegularPaymentBusiness paymentsBusiness = getRegularPaymentBusiness(iwc);
 
 			if (user != null){
 				try{
-					invoices = invoiceBusiness.findRegularInvoicesForPeriodeAndUser(from, to, user.getNodeID());
+					payments = paymentsBusiness.findRegularPaymentsForPeriodeAndUser(from, to, user.getNodeID());
 				}catch(FinderException ex){
 					ex.printStackTrace(); 
 				}catch(IDOLookupException ex){
@@ -230,7 +226,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			}
 		}
 
-		return invoices;
+		return payments;
 	}
 	
 	private User getUser(IWContext iwc){
@@ -262,7 +258,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 
 	private void handleDeleteAction(IWContext iwc){
-		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
+		RegularPaymentEntry entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
 		try{
 			entry.delete();
 		} catch(SQLException ex){
@@ -270,36 +266,30 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		}
 	}
 	
-	private RegularInvoiceBusiness getRegularInvoiceBusiness(IWContext iwc){
-		RegularInvoiceBusiness invoiceBusiness = null;
+	private RegularPaymentBusiness getRegularPaymentBusiness(IWContext iwc){
+		RegularPaymentBusiness paymentsBusiness = null;
 		try{
-			invoiceBusiness = (RegularInvoiceBusiness)IBOLookup.getServiceInstance(iwc, RegularInvoiceBusiness.class);
+			paymentsBusiness = (RegularPaymentBusiness)IBOLookup.getServiceInstance(iwc, RegularPaymentBusiness.class);
 		}catch(RemoteException ex){
 			ex.printStackTrace();	
 			return null;		
 		}		
-		return invoiceBusiness;
+		return paymentsBusiness;
 	}
 
 		
 	
 	private void handleSaveAction(IWContext iwc, User user){
-		RegularInvoiceEntry entry = getRegularInvoiceEntry(iwc.getParameter(PAR_PK));
+		RegularPaymentEntry entry = getRegularPaymentEntry(iwc.getParameter(PAR_PK));
 		
 		if (entry == null){
 			try{
-				entry = getRegularInvoiceEntryHome().create();
-				entry.setCreatedDate(new Date(new java.util.Date().getTime()));
-				entry.setCreatedSign(iwc.getCurrentUser().getName());				
+				entry = getRegularPaymentEntryHome().create();
 			}catch(CreateException ex2){
 				ex2.printStackTrace();
 				return;
 			}			
-		}else{
-			entry.setEditDate(new Date(new java.util.Date().getTime()));
-			entry.setEditSign(iwc.getCurrentUser().getName());
 		}
-		
 		entry.setAmount(new Float(iwc.getParameter(PAR_AMOUNT_PR_MONTH)).floatValue());
 		Date from = parseDate(iwc.getParameter(PAR_FROM));
 		Date to = parseDate(iwc.getParameter(PAR_TO));
@@ -313,7 +303,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		if (iwc.getParameter(PAR_PROVIDER) != null){
 			entry.setSchoolId(new Integer(iwc.getParameter(PAR_PROVIDER)).intValue());
 		}
-		entry.setRegSpecTypeId(new Integer(iwc.getParameter(PAR_REGULATION_TYPE)).intValue());
 		entry.setUser(user);
 		entry.setVatRegulationId(new Integer(iwc.getParameter(PAR_VAT_TYPE)).intValue());
 		entry.setOwnPosting(iwc.getParameter(PAR_OWN_POSTING));
@@ -327,9 +316,9 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		}
 	}
 
-	private RegularInvoiceEntry getRegularInvoiceEntry(String pk) {
-		RegularInvoiceEntryHome home = getRegularInvoiceEntryHome();
-		RegularInvoiceEntry entry = null;
+	private RegularPaymentEntry getRegularPaymentEntry(String pk) {
+		RegularPaymentEntryHome home = getRegularPaymentEntryHome();
+		RegularPaymentEntry entry = null;
 		if (home != null){
 			try{
 				entry = home.findByPrimaryKey(pk);
@@ -340,10 +329,10 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		return entry;
 	}
 
-	private RegularInvoiceEntryHome getRegularInvoiceEntryHome() {
-		RegularInvoiceEntryHome home = null;
+	private RegularPaymentEntryHome getRegularPaymentEntryHome() {
+		RegularPaymentEntryHome home = null;
 		try{
-			home = (RegularInvoiceEntryHome) IDOLookup.getHome(RegularInvoiceEntry.class);
+			home = (RegularPaymentEntryHome) IDOLookup.getHome(RegularPaymentEntry.class);
 			
 		}catch(IDOLookupException ex){
 			ex.printStackTrace();			
@@ -356,13 +345,13 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 				
 	}
 	private void handleEditAction(IWContext iwc, User user, String errorMessage){
-		RegularInvoiceEntry entry = null;
+		RegularPaymentEntry entry = null;
 				
 		if (errorMessage != null){
 			entry = getNotStoredEntry(iwc);
 		}
 		
-		RegularInvoiceEntryHome home = getRegularInvoiceEntryHome();
+		RegularPaymentEntryHome home = getRegularPaymentEntryHome();
 		if (home != null){
 			try{
 				entry = home.findByPrimaryKey(iwc.getParameter(PAR_PK));
@@ -374,18 +363,15 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	}
 
 
-	private void handleEditAction(IWContext iwc, RegularInvoiceEntry entry, User user){
+	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, User user){
 		handleEditAction(iwc, entry, user, null);
 	}
 
 			
-	private void handleEditAction(IWContext iwc, RegularInvoiceEntry entry, User user, String errorMessage){
-		Collection regTypes = new ArrayList(), vatTypes = new ArrayList();
+	private void handleEditAction(IWContext iwc, RegularPaymentEntry entry, User user, String errorMessage){
+		Collection vatTypes = new ArrayList();
 		try {
-			regTypes = getRegulationsBusiness(iwc.getApplicationContext()).findAllRegulationSpecTypes();
 			vatTypes = getVATBusiness(iwc.getApplicationContext()).findAllVATRegulations();				
-		} catch (RegulationException e1) {
-			e1.printStackTrace();
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 		}	
@@ -415,18 +401,18 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			ex.printStackTrace();
 		}
 		
-		form.add(getDetailPanel(iwc, user, entry, providers, regTypes, vatTypes, errorMessage));
+		form.add(getDetailPanel(iwc, user, entry, providers, vatTypes, errorMessage));
 		
 		add(form);
 	}
 
 		
 	private void handleDefaultAction(IWContext iwc, User user, Date fromDate, Date toDate, String errorMessage){
-		add(getEntryListPage(doInvoiceSearch(iwc, user, fromDate, toDate), user, fromDate, toDate, errorMessage));
+		add(getEntryListPage(doPaymentsSearch(iwc, user, fromDate, toDate), user, fromDate, toDate, errorMessage));
 	}
 			
 	private void handleDefaultAction(IWContext iwc, User user, Date fromDate, Date toDate){
-		add(getEntryListPage(doInvoiceSearch(iwc, user, fromDate, toDate), user, fromDate, toDate));
+		add(getEntryListPage(doPaymentsSearch(iwc, user, fromDate, toDate), user, fromDate, toDate));
 	}
 
 	
@@ -449,7 +435,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			addPeriodeForm(t1, user, fromDate, toDate, errorMessage, row);
 				
 			Table t2 = new Table();				
-			t2.add(getInvoiceList(entries, user, fromDate, toDate), 1, 1);
+			t2.add(getPaymentsList(entries, user, fromDate, toDate), 1, 1);
 		
 			ButtonPanel bp = new ButtonPanel(this);
 			bp.addLocalizedButton(PAR_NEW, KEY_NEW, "New");
@@ -528,7 +514,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		formTable.add(getText(" - "), 2, 2);	
 		formTable.add(to, 2, 2);			
 
-		formTable.add(getLocalizedButton(PAR_SEARCH_INVOICE, KEY_SEARCH, "Search"), 10, 2);
+		formTable.add(getLocalizedButton(PAR_SEARCH_PAYMENTS, KEY_SEARCH, "Search"), 10, 2);
 		if (user != null) {
 			formTable.add(new HiddenInput(PAR_USER_SSN, user.getPersonalID()));		
 		}
@@ -539,20 +525,20 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 	}	
 	
 	
-	private ListTable getInvoiceList(Collection invoices, User user, Date fromDate, Date toDate) {
+	private ListTable getPaymentsList(Collection payments, User user, Date fromDate, Date toDate) {
 		
 		ListTable list = new ListTable(this, 6);
 		
-		list.setLocalizedHeader(KEY_INVOICE_PERIODE, "Invoice periode", 1);
+		list.setLocalizedHeader(KEY_PAYMENT_PERIODE, "Payment periode", 1);
 		list.setLocalizedHeader(KEY_PLACING, "Placing", 2);
 		list.setLocalizedHeader(KEY_AMOUNT, "Amount", 3);
 		list.setLocalizedHeader(KEY_NOTE, "Note", 4);
 		
 		try {
-			if (invoices != null) {
-				Iterator i = invoices.iterator();
+			if (payments != null) {
+				Iterator i = payments.iterator();
 				while (i.hasNext()) {
-					RegularInvoiceEntry entry = (RegularInvoiceEntry) i.next();
+					RegularPaymentEntry entry = (RegularPaymentEntry) i.next();
 					list.add(getText(""+entry.getFrom() + " - " + entry.getTo()));
 					
 					Link link = getLink(entry.getPlacing(), PAR_PK, "" + entry.getPrimaryKey());
@@ -591,7 +577,7 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		return list;
 	}
 	
-	private Table getDetailPanel(IWContext iwc, User user, RegularInvoiceEntry entry, Collection providers, Collection regTypes, Collection vatTypes, String errorMessage){
+	private Table getDetailPanel(IWContext iwc, User user, RegularPaymentEntry entry, Collection providers, Collection vatTypes, String errorMessage){
 				
 		final int EMPTY_ROW_HEIGHT = 8;
 		Table table = new Table();
@@ -631,11 +617,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 		
-		addField(table, KEY_DAY_CREATED, formatDate(entry.getCreatedDate(), 6), 1, row);
-		addField(table, KEY_SIGNATURE, entry.getCreatedName(), 4, row++);
-		addField(table, KEY_DAY_REGULATED, formatDate(entry.getEditDate(), 6), 1, row);
-		addField(table, KEY_SIGNATURE, entry.getEditName(), 4, row++);
-
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
 		addFloatField(table, PAR_AMOUNT_PR_MONTH, KEY_AMOUNT_PR_MONTH, ""+entry.getAmount(), 1, row++);
@@ -647,7 +628,6 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 
 		table.setHeight(row++, EMPTY_ROW_HEIGHT);
 
-		addDropDown(table, PAR_REGULATION_TYPE, KEY_REGULATION_TYPE, regTypes, entry.getRegSpecTypeId(), "getRegSpecType", 1, row++);
 		addField(table, PAR_OWN_POSTING, KEY_OWN_POSTING, entry.getOwnPosting(), 1, row++);
 		addField(table, PAR_DOUBLE_ENTRY_ACCOUNT, KEY_DOUBLE_ENTRY_ACCOUNT, entry.getDoublePosting(), 1, row++);
 		addDropDown(table, PAR_VAT_TYPE, KEY_VAT_TYPE, vatTypes, entry.getVatRegulationId(),  "getCategory", 1, row++);
@@ -662,14 +642,14 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 		return table;
 	}
 
-	private RegularInvoiceEntry getEmptyEntry() {
+	private RegularPaymentEntry getEmptyEntry() {
 		return getNotStoredEntry(null);		
 	}
 	
-	private RegularInvoiceEntry getNotStoredEntry(IWContext iwc) {
+	private RegularPaymentEntry getNotStoredEntry(IWContext iwc) {
 		final IWContext _iwc = iwc;
 		
-		return new RegularInvoiceEntry() {
+		return new RegularPaymentEntry() {
 		
 			public Date getFrom() {
 				return getDateValue(PAR_FROM);
@@ -775,20 +755,13 @@ public class RegularInvoiceEntriesList extends AccountingBlock {
 			public void setTo(Date to) {}
 			public void setPlacing(String plascint) {}
 			public void setUser(User user) {}
-			public void setRegSpecType(RegulationSpecType regType) {}
-			public void setRegSpecTypeId(int regTypeId) {}
 			public void setSchoolId(int schoolId) {}
 			public void setAmount(float amount) {}
 			public void setVAT(float vat) {}
-			public void setVatRegulation(VATRegulation vatRegulation) {}
 			public void setVatRegulationId(int vatRegId) {}
 			public void setNote(String note) {}
 			public void setOwnPosting(String ownPosting) {}
 			public void setDoublePosting(String doublePosting) {}
-			public void setCreatedDate(Date date) {}
-			public void setCreatedSign(String name) {}
-			public void setEditDate(Date date) {}
-			public void setEditSign(String name) {}
 			public void delete() throws SQLException {}
 			public void store() throws IDOStoreException {}
 			public IDOEntityDefinition getEntityDefinition() {return null;}
