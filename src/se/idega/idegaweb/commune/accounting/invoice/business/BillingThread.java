@@ -158,34 +158,44 @@ public abstract class BillingThread extends Thread{
 	
 	protected InvoiceRecord createInvoiceRecord
 		(final PaymentRecord paymentRecord, final SchoolClassMember placement,
-		 final PostingDetail postingDetail, PlacementTimes placementTimes)
+		 final PostingDetail postingDetail, PlacementTimes checkPeriod)
+		throws RemoteException, CreateException {
+		Date startDate = null != placement	&& null != placement.getRegisterDate ()
+				? new Date (placement.getRegisterDate ().getTime ()) : null;
+		Date endDate = null != placement && null != placement.getRemovedDate ()
+				? new Date (placement.getRemovedDate ().getTime ()) : null;
+		return createInvoiceRecord (paymentRecord, placement, postingDetail,
+																checkPeriod, startDate, endDate);
+	}
+
+	protected InvoiceRecord createInvoiceRecord
+		(final PaymentRecord paymentRecord, final SchoolClassMember placement,
+		 final PostingDetail postingDetail, PlacementTimes checkPeriod,
+		 final Date startPlacementDate, final Date endPlacementDate)
 		throws RemoteException, CreateException {
 		final InvoiceRecord result = getInvoiceRecordHome ().create ();
-		result.setAmount (placementTimes.getMonths () * postingDetail.getAmount ());
+		result.setAmount (checkPeriod.getMonths () * postingDetail.getAmount ());
 		result.setCreatedBy (BATCH_TEXT);
 		result.setDateCreated (new Date (System.currentTimeMillis ()));
-		result.setDays (placementTimes.getDays ());
+		result.setDays (checkPeriod.getDays ());
 		if (null != paymentRecord) {
 			result.setPaymentRecord (paymentRecord);
 		}
 		if (null != postingDetail.getTerm()) {
 			result.setRuleText (postingDetail.getTerm());
 		}
-		result.setPeriodStartCheck (placementTimes.getFirstCheckDay ().getDate ());
-		result.setPeriodEndCheck (placementTimes.getLastCheckDay ().getDate ());
+		result.setPeriodStartCheck (checkPeriod.getFirstCheckDay ().getDate ());
+		result.setPeriodEndCheck (checkPeriod.getLastCheckDay ().getDate ());
 		if (null != placement) {
 			result.setSchoolClassMember (placement);
-			final Timestamp startPlacementDate = placement.getRegisterDate ();
-			final Timestamp endPlacementDate = placement.getRemovedDate ();
-			if (null != startPlacementDate) {
-				result.setPeriodStartPlacement
-						(new Date (startPlacementDate.getTime ()));
-			}
-			if (null != endPlacementDate) {
-				result.setPeriodEndPlacement (new Date (endPlacementDate.getTime ()));
-			}
 			final SchoolType schoolType = placement.getSchoolType ();
 			if (null != schoolType) result.setSchoolType (schoolType);
+		}
+		if (null != startPlacementDate) {
+			result.setPeriodStartPlacement (startPlacementDate);
+		}
+		if (null != endPlacementDate) {
+			result.setPeriodEndPlacement (endPlacementDate);
 		}
 		try {
 			final RegulationSpecType regSpecType

@@ -58,11 +58,11 @@ import com.idega.user.data.User;
 /**
  * Abstract class that holds all the logic that is common for the shool billing
  * 
- * Last modified: $Date: 2003/12/15 10:41:08 $ by $Author: staffan $
+ * Last modified: $Date: 2003/12/15 14:42:07 $ by $Author: staffan $
  *
  * @author <a href="mailto:joakim@idega.com">Joakim Johnson</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.53 $
+ * @version $Revision: 1.54 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool
@@ -299,7 +299,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 			for (Iterator i = resources.iterator(); i.hasNext();) {
 				ResourceClassMember resource = (ResourceClassMember) i.next();
 				try {
-					createPaymentsForResource(regBus, provider, schoolClassMember, conditions, resource, placementTimes);
+					createPaymentsForResource(regBus, provider, schoolClassMember, conditions, resource);
 				} catch (NullPointerException e) {
 					e.printStackTrace();
 					errorRelated = new StringBuffer ();
@@ -318,9 +318,11 @@ public abstract class PaymentThreadSchool extends BillingThread {
 		}
 	}
 
-	private void createPaymentsForResource(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, ResourceClassMember resource, PlacementTimes placementTimes)
+	private void createPaymentsForResource(RegulationsBusiness regBus, Provider provider, SchoolClassMember schoolClassMember, ArrayList conditions, ResourceClassMember resource)
 			throws EJBException, RemoteException, FinderException, PostingException, CreateException, IDOLookupException {
-
+		final Date startDate = resource.getStartDate();
+		final Date endDate = resource.getEndDate ();
+		final PlacementTimes placementTimes = calculateTime (startDate, endDate);
 		School school = schoolClassMember.getSchoolClass().getSchool();
 		Collection resourceConditions = new ArrayList();
 		resourceConditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_OPERATION, schoolClassMember.getSchoolType().getLocalizationKey()));
@@ -343,7 +345,7 @@ public abstract class PaymentThreadSchool extends BillingThread {
 				RegulationSpecType regSpecType = getRegulationSpecTypeHome().findByRegulationSpecType(postingDetail.getRuleSpecType());
 				String[] postings = getPostingStrings(provider, schoolClassMember, regSpecType);
 				PaymentRecord record = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);
-				createInvoiceRecord (record, schoolClassMember, postingDetail, placementTimes);
+				createInvoiceRecord (record, schoolClassMember, postingDetail, placementTimes, startDate, endDate);
 			} catch (BruttoIncomeException e) {
 				//Who cares!!!
 			} catch (LowIncomeException e) {
