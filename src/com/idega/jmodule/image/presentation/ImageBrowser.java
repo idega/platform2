@@ -89,10 +89,13 @@ private boolean refresh = false;
 
     if ( mode.equalsIgnoreCase("image") ) {
       ImageViewer viewer = new ImageViewer();
-        viewer.limitImageWidth(true);
-        viewer.setNumberOfDisplayedImages(9);
-        viewer.setHeaderFooterColor("#336699");
-        viewer.setFooterBackgroundImage("/pics/jmodules/image/myndamodule/footer/foottiler.gif");
+      if ( refresh ) {
+        viewer.refresh(true);
+      }
+      viewer.limitImageWidth(true);
+      viewer.setNumberOfDisplayedImages(9);
+      viewer.setHeaderFooterColor("#336699");
+      viewer.setFooterBackgroundImage("/pics/jmodules/image/myndamodule/footer/foottiler.gif");
       imageTable.add(viewer,3,1);
     }
     else {
@@ -129,14 +132,15 @@ private boolean refresh = false;
    Image searchWord = new Image("/pics/jmodules/image/myndamodule/topp/topp3.gif");
 
    DropdownMenu categoryMenu = new DropdownMenu(category,"catagory_id");
+    categoryMenu.addMenuElement(0,"Allir myndaflokkar");
     categoryMenu.setSelectedElement("0");
     categoryMenu.keepStatusOnAction();
     categoryMenu.setAttribute("style","font-size: 7pt");
-    categoryMenu.addMenuElement(0,"Allir myndaflokkar");
 
    TextInput searchText = new TextInput("searchString");
     searchText.setAttribute("style","font-size: 7pt");
     searchText.setLength(40);
+    searchText.keepStatusOnAction();
 
    Text spacer = new Text("&nbsp;&nbsp;&nbsp;");
 
