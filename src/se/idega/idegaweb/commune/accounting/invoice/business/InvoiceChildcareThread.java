@@ -330,16 +330,13 @@ public class InvoiceChildcareThread extends BillingThread{
 						category, schoolClassMember.getSchoolType(), ((Integer)regSpecType.getPrimaryKey()).intValue(), provider,calculationDate);
 					String[] checkPost = getPostingBusiness().getPostingStrings(
 						category, schoolClassMember.getSchoolType(), ((Integer)getRegulationSpecTypeHome().findByRegulationSpecType(RegSpecConstant.CHECKTAXA).getPrimaryKey()).intValue(), provider,calculationDate);
-					log.info("About to create payment record check");
 					PaymentRecord paymentRecord = createPaymentRecord(postingDetail, postings[0], postings[1], placementTimes.getMonths(), school);			//MUST create payment record first, since it is used in invoice record
 					PaymentRecord vatPaymentRecord = createVATPaymentRecord(paymentRecord, school,schoolClassMember.getSchoolType(),schoolClassMember.getSchoolYear());
 
-					log.info("created payment record, Now creating invoice record");
 					// **Create the invoice record
 					invoiceRecord = createInvoiceRecordForCheck(invoiceHeader, 
 							CHECK+school.getName(),contract.getChild().getFirstName()+", "+hours+" "+HOURS_PER_WEEK+ placementTimes.getDays()+DAYS, paymentRecord, 
 							checkPost[0], checkPost[1], placementTimes, school, contract);
-					log.info("created invoice record");
 
  					totalSum = AccountingUtil.roundAmount(postingDetail.getAmount()*placementTimes.getMonths());
 					int siblingOrder;
@@ -353,7 +350,7 @@ public class InvoiceChildcareThread extends BillingThread{
 					}
 					conditions.add(new ConditionParameter(RuleTypeConstant.CONDITION_ID_SIBLING_NR,
 							new Integer(siblingOrder)));
-					errorRelated.append(" Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
+					errorRelated.append("Sibling order set to: "+siblingOrder+" for "+schoolClassMember.getStudent().getName());
 
 					//Get all the rules for this contract
 					regulationArray = regBus.getAllRegulationsByOperationFlowPeriodConditionTypeRegSpecType(
