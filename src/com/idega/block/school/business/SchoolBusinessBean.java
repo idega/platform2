@@ -25,12 +25,16 @@ import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolSeasonHome;
 import com.idega.block.school.data.SchoolType;
 import com.idega.block.school.data.SchoolTypeHome;
+import com.idega.block.school.data.SchoolUser;
 import com.idega.block.school.data.SchoolYear;
 import com.idega.block.school.data.SchoolYearHome;
 import com.idega.block.school.data.SchoolYearPlaces;
 import com.idega.block.school.data.SchoolYearPlacesHome;
+import com.idega.block.text.data.LocalizedText;
+import com.idega.block.text.data.TxText;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOServiceBean;
+import com.idega.core.data.ICFile;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
@@ -96,15 +100,35 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			school.addSchoolTypesRemoveOther(new int[0]);
 			school.addSchoolYearsRemoveOther(new int[0]);
 			try {
-				school.removeFromClass(User.class);
+				school.removeFromClass(ICFile.class);
 			} catch (IDORemoveRelationshipException e) {
-				System.err.println("Cannot remove school from users");
+				System.err.println("Cannot remove file from school");
 			}
 			try {
-				school.removeFromClass(Group.class);
+				school.removeFromClass(TxText.class);
 			} catch (IDORemoveRelationshipException e) {
-				System.err.println("Cannot remove school from groups");
+				System.err.println("Cannot remove text from school");
 			}
+			try {
+				school.removeFromClass(LocalizedText.class);
+			} catch (IDORemoveRelationshipException e) {
+				System.err.println("Cannot remove text from school");
+			}
+			
+			try {
+				Collection coll = getSchoolUserBusiness().getSchoolUserHome().findBySchool(school);
+				SchoolUser sUser;
+				if (coll != null && !coll.isEmpty()) {
+					Iterator iter = coll.iterator();
+					while (iter.hasNext()) {
+						sUser = getSchoolUserBusiness().getSchoolUserHome().findByPrimaryKey(iter.next());
+						sUser.remove();	
+					}	
+				}
+			}catch (Exception e){
+				e.printStackTrace(System.err);
+			}
+			
 			school.remove();
 		}
 		catch (RemoveException re) {
@@ -1261,5 +1285,9 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		newArea.setSchoolAreaInfo(info);
 		newArea.setSchoolAreaName(name);
 		newArea.store();
+	}
+	
+	public SchoolUserBusiness getSchoolUserBusiness() throws RemoteException{
+		return (SchoolUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolUserBusiness.class);	
 	}
 }
