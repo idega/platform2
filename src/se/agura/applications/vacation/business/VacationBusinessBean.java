@@ -295,7 +295,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 			
 			StringBuffer hoursAndDays = new StringBuffer();
 			if (times.size() > 0) {
-				hoursAndDays.append(getLocalizedString("vacation.time.week", "Week")).append("\t");
+				hoursAndDays.append(getLocalizedString("vacation.time.week", "Week")).append("\t\t");
 				hoursAndDays.append(getLocalizedString("vacation.time.monday", "Mo")).append("\t");
 				hoursAndDays.append(getLocalizedString("vacation.time.tuesday", "Tu")).append("\t");
 				hoursAndDays.append(getLocalizedString("vacation.time.wednesday", "We")).append("\t");
@@ -347,7 +347,7 @@ public void approveApplication(VacationRequest vacation, User performer, String 
 					MessageFormat.format(
 							getLocalizedString(
 									"vacation_application.accepted_body",
-									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5},\nAttested by:\t {11}\n\nThe vacation period is:\nfrom\t {3}\n to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\n{10}"),
+									"A vacation application has been accepted for:\nName:\t {0},\nPersonal number:\t {1},\nParish:\t {5},\nAttested by:\t {11}\n\nThe vacation period is:\nfrom\t {3} to\t{4}\n\n{6}\n\nVacation type:\t{2}\n{9}\nMotivation:\t{7}\nRequested vacation date:\t{8}\n{10}"),
 							arguments), attachment);
 		}
 	}	public void rejectApplication(VacationRequest vacation, User performer, String comment) {
