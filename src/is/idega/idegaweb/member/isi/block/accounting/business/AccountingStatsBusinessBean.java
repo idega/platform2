@@ -89,10 +89,8 @@ public class AccountingStatsBusinessBean extends IBOSessionBean implements Accou
 		//PARAMETES
 		//Add extra...because the inputhandlers supply the basic header texts
 		reportCollection.addExtraHeaderParameter(
-		 "accountingreport",
-		 _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
-		 "label",
-		 TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale),"GMT"));
+		 "accountingreport", _iwrb.getLocalizedString(LOCALIZED_LABEL, "Current date"),
+		 "label", TextSoap.findAndCut((new IWTimestamp()).getLocaleDateAndTime(currentLocale, IWTimestamp.LONG,IWTimestamp.SHORT),"GMT"));
 		 
 		 //PARAMETERS that are also FIELDS
 		 //data from entity columns, can also be defined with an entity definition, see getClubMemberStatisticsForRegionalUnions method
