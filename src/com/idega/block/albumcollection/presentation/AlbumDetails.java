@@ -38,20 +38,20 @@ public class AlbumDetails extends Block {
   private Link deleteTrackLinkTemplate;
 
   public AlbumDetails() {
-    trackNameTemplate = new Text();
-    trackNumberTemplate= new Text();
+    trackNameTemplate = AlbumCollectionBusiness.getMainTextClone();
+    trackNumberTemplate= AlbumCollectionBusiness.getMainTextClone();
 
-    setLyricLinkTemplate = new Link();
+    setLyricLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
     setLyricLinkTemplate.setWindowToOpen(InsertLyric.class);
 
-    lyricViewerLinkTemplate = new Link();
+    lyricViewerLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
     lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
 
-    updateTrackLinkTemplate = new Link("Breyta");
+    updateTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Breyta");
     updateTrackLinkTemplate.setWindowToOpen(AddTrack.class);
     updateTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
 
-    deleteTrackLinkTemplate = new Link("Eyða");
+    deleteTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Eyða");
     deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
     deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_TRACK);
 
@@ -64,11 +64,12 @@ public class AlbumDetails extends Block {
     if(albumId != null && !"".equals(albumId)){
       Album album = AlbumCollectionBusiness.getAlbum(Integer.parseInt(albumId));
       if(album != null){
-        contentTable.add(album.getName(),1,1);
+        contentTable.add(AlbumCollectionBusiness.getHeaderTextClone(album.getName()),1,1);
         contentTable.add(Text.getBreak(),1,1);
         int imageId = album.getFrontCoverFileId();
         if(imageId > 0){
           Image fCover = new Image(imageId,album.getName());
+          fCover.setAlignment("right");
           contentTable.add(fCover,1,1);
         }
         contentTable.add(Text.getBreak(),1,1);
@@ -89,9 +90,9 @@ public class AlbumDetails extends Block {
       if(tracks != null && tracks.size() > 0){
         trackTable = new Table(5,tracks.size()+1);
         int index=1;
-        trackTable.add(new Text("Númer"),1,index);
-        trackTable.add(new Text("Heiti"),2,index);
-        trackTable.add(new Text("Texti"),5,index);
+        trackTable.add(AlbumCollectionBusiness.getMainTextClone("Númer"),1,index);
+        trackTable.add(AlbumCollectionBusiness.getMainTextClone("Heiti"),2,index);
+        trackTable.add(AlbumCollectionBusiness.getMainTextClone("Texti"),5,index);
         index++;
         Iterator iter = tracks.iterator();
         while (iter.hasNext()) {
@@ -148,7 +149,7 @@ public class AlbumDetails extends Block {
 
     lineUpElements(iwc);
 
-    Link addTrackLink = new Link("add track");
+    Link addTrackLink = AlbumCollectionBusiness.getMainLinkClone("add track");
     //addTrackLink.setFontColor("#EEEEEE");
     addTrackLink.setBold();
     addTrackLink.setWindowToOpen(AddTrack.class);

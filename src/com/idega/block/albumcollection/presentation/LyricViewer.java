@@ -24,11 +24,9 @@ public class LyricViewer extends Block {
   private Text mainText;
 
   public LyricViewer() {
-    headingText = new Text();
-    headingText.setFontSize(3);
-    headingText.setBold();
+    headingText = AlbumCollectionBusiness.getHeaderTextClone();
 
-    mainText = new Text();
+    mainText = AlbumCollectionBusiness.getMainTextClone();
 
   }
 
@@ -52,14 +50,14 @@ public class LyricViewer extends Block {
         this.add(Text.getBreak());
 
         if(hasEditPermission()){
-          Link updateLyricLink = new Link("Breyta");
+          Link updateLyricLink = AlbumCollectionBusiness.getMainLinkClone("Breyta");
           updateLyricLink.setWindowToOpen(InsertLyric.class);
           updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
           updateLyricLink.addParameter(AlbumCollectionBusiness._PRM_LYRIC_ID,lyric.getID());
 
           this.add(updateLyricLink);
 
-          Link deleteTrackLinkTemplate = new Link("Eyða");
+          Link deleteTrackLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Eyða");
           deleteTrackLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
           deleteTrackLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_LYRIC);
           deleteTrackLinkTemplate.addParameter(DeleteConfirmWindow._PRM_ID,lyric.getID());
@@ -68,10 +66,10 @@ public class LyricViewer extends Block {
         }
 
       } else {
-        this.add("Texti finnst ekki");
+        this.add(AlbumCollectionBusiness.getMainTextClone("Texti finnst ekki"));
       }
     } else {
-      this.add("Texti finnst ekki");
+      this.add(AlbumCollectionBusiness.getMainTextClone("Texti finnst ekki"));
     }
 
     this.add(Text.getBreak());

@@ -27,13 +27,13 @@ public class AlbumList extends Block {
   Link deleteAlbumLinkTemplate;
 
   public AlbumList() {
-    albumLinkTemplate = new Link();
+    albumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
     //albumLinkTemplate.setFontColor("#FFFFFF");
-    updateAlbumLinkTemplate = new Link("Breyta");
+    updateAlbumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Breyta");
     updateAlbumLinkTemplate.setWindowToOpen(com.idega.block.albumcollection.presentation.CreateAlbum.class);
     updateAlbumLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_UPDATE,"true");
 
-    deleteAlbumLinkTemplate = new Link("Eyða");
+    deleteAlbumLinkTemplate = AlbumCollectionBusiness.getMainLinkClone("Eyða");
     deleteAlbumLinkTemplate.setWindowToOpen(DeleteConfirmWindow.class);
     deleteAlbumLinkTemplate.addParameter(AlbumCollectionBusiness._PRM_DELETE,AlbumCollectionBusiness._CONST_ALBUM);
   }
@@ -45,7 +45,7 @@ public class AlbumList extends Block {
     if(albumList != null){
       Table contentTable = new Table(3,albumList.size()+1);
       int index = 1;
-      Text t = new Text("Titill");
+      Text t = AlbumCollectionBusiness.getMainTextClone("Titill");
       //t.setFontColor("#FFFFFF");
       contentTable.add(t,1,index++);
       Iterator iter = albumList.iterator();
@@ -73,7 +73,7 @@ public class AlbumList extends Block {
     }
 
     if(hasEditPermission()){
-      Link createAlbumLink = new Link("create album");
+      Link createAlbumLink = AlbumCollectionBusiness.getMainLinkClone("create album");
       //createAlbumLink.setFontColor("#EEEEEE");
       createAlbumLink.setBold();
       createAlbumLink.setWindowToOpen(com.idega.block.albumcollection.presentation.CreateAlbum.class);

@@ -25,7 +25,7 @@ public class LyricList extends Block {
   private Link lyricViewerLinkTemplate;
 
   public LyricList() {
-    lyricViewerLinkTemplate = new Link();
+    lyricViewerLinkTemplate = AlbumCollectionBusiness.getMainLinkClone();
     lyricViewerLinkTemplate.addParameter(AlbumCollection._PRM_STATE,AlbumCollection._STATE_LYRIC);
   }
 
@@ -34,7 +34,7 @@ public class LyricList extends Block {
     if(lyrics != null && lyrics.size() > 0){
       Table contentTable = new Table(1,lyrics.size()+1);
       int index = 1;
-      Text t = new Text("Titill");
+      Text t = AlbumCollectionBusiness.getMainTextClone("Titill");
       //t.setFontColor("#FFFFFF");
       contentTable.add(t,1,index++);
       Iterator iter = lyrics.iterator();
@@ -47,7 +47,7 @@ public class LyricList extends Block {
       }
       this.add(contentTable);
     } else {
-      this.add("Engir textar fundust");
+      this.add(AlbumCollectionBusiness.getMainTextClone("Engir textar fundust"));
     }
 
   }

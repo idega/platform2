@@ -3,6 +3,8 @@ package com.idega.block.albumcollection.business;
 import com.idega.data.EntityFinder;
 import com.idega.block.albumcollection.data.*;
 import com.idega.util.idegaTimestamp;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.text.Link;
 
 import java.util.List;
 import java.util.Iterator;
@@ -29,8 +31,86 @@ public class AlbumCollectionBusiness {
   public final static int _CONST_TRACK = 1;
   public final static int _CONST_LYRIC = 2;
 
+
+  private static Text header;
+  private static Text text;
+  private static Link link;
+
+  static{
+    header = new Text();
+    header.setFontColor("#FFFFFF");
+    header.setFontFace(Text.FONT_FACE_ARIAL);
+    header.setFontSize(Text.FONT_SIZE_14_HTML_4);
+    text = new Text();
+    text.setFontColor("#FFFFFF");
+    text.setFontFace(Text.FONT_FACE_ARIAL);
+    text.setFontSize(Text.FONT_SIZE_10_HTML_2);
+    text.setBold();
+    link = new Link();
+    link.setFontColor("#FFFFFF");
+    link.setFontFace(Text.FONT_FACE_ARIAL);
+    link.setFontSize(Text.FONT_SIZE_10_HTML_2);
+
+
+  }
+
   public AlbumCollectionBusiness() {
   }
+
+  public static Text getHeaderTextClone(){
+    if(header == null){
+      header = new Text();
+      header.setFontColor("#FFFFFF");
+      header.setFontFace(Text.FONT_FACE_ARIAL);
+      header.setFontSize(Text.FONT_SIZE_14_HTML_4);
+    }
+    return (Text)header.clone();
+  }
+
+  public static Text getMainTextClone(){
+    if(text == null){
+      text = new Text();
+      text.setFontColor("#FFFFFF");
+      text.setFontFace(Text.FONT_FACE_ARIAL);
+      text.setFontSize(Text.FONT_SIZE_10_HTML_2);
+      text.setBold();
+    }
+    return (Text)text.clone();
+  }
+
+  public static Link getMainLinkClone(){
+    if(link == null){
+      link = new Link();
+      link.setFontColor("#FFFFFF");
+      link.setFontFace(Text.FONT_FACE_ARIAL);
+      link.setFontSize(Text.FONT_SIZE_10_HTML_2);
+    }
+    return (Link)link.clone();
+  }
+
+
+
+  public static Text getHeaderTextClone(String text){
+    Text t = getHeaderTextClone();
+    t.setText(text);
+    return t;
+  }
+
+  public static Text getMainTextClone(String text){
+    Text t = getMainTextClone();
+    t.setText(text);
+    return t;
+  }
+
+  public static Link getMainLinkClone(String text){
+    Link l = getMainLinkClone();
+    l.setText(text);
+    return l;
+  }
+
+
+
+
 
 
   public static List getAuthors() throws SQLException{
