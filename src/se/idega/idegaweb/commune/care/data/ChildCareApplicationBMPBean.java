@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareApplicationBMPBean.java,v 1.12 2005/02/03 09:29:38 anders Exp $
+ * $Id: ChildCareApplicationBMPBean.java,v 1.13 2005/02/03 09:55:45 anders Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -1409,11 +1409,13 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		
 		if (contract != null) {
 			if (contract.getValidTo() != null) {
-				if (contract.getValidFrom().compareTo(today) <= 0 && contract.getValidTo().compareTo(today) >= 0 && contract.isSigned()) {
+//				if (contract.getValidFrom().compareTo(today) <= 0 && contract.getValidTo().compareTo(today) >= 0 && contract.isSigned()) {
+				if (contract.getValidFrom().compareTo(today) <= 0 && contract.getValidTo().compareTo(today) >= 0) {
 					return true;
 				}
 			} else {
-				if (contract.getValidFrom().compareTo(today) <= 0 && contract.isSigned()) {
+//				if (contract.getValidFrom().compareTo(today) <= 0 && contract.isSigned()) {
+				if (contract.getValidFrom().compareTo(today) <= 0) {
 					return true;
 				}
 			}
