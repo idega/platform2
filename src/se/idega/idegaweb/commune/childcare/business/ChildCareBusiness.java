@@ -133,5 +133,6 @@ public interface ChildCareBusiness extends com.idega.business.IBOService, CaseBu
  public se.idega.idegaweb.commune.childcare.data.ChildCareApplication getAcceptedApplicationsByChild(int childID) throws java.rmi.RemoteException;
  public int getNumberOfApplicationsForChild(int childID) throws java.rmi.RemoteException;
  public int getNumberOfApplicationsForChildNotInactive(int childID) throws java.rmi.RemoteException;
+ public int getNumberOfFirstHandChoicesByProvider(int providerID) throws java.rmi.RemoteException;
  public boolean importChildToProvider(int childID, int providerID, int groupID, int careTime, com.idega.util.IWTimestamp fromDate, com.idega.util.IWTimestamp toDate, java.util.Locale locale, com.idega.user.data.User parent, com.idega.user.data.User admin) throws java.rmi.RemoteException;
 }

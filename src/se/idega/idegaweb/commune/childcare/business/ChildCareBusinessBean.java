@@ -670,6 +670,16 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 	
+	public int getNumberOfFirstHandChoicesByProvider(int providerID) {
+		try {
+			return getChildCareApplicationHome().getNumberOfApplicationsByProviderAndChoiceNumber(providerID, 1);
+		} catch (IDOException ie) {
+			return 0;
+		} catch (RemoteException re) {
+			return 0;
+		}
+	}
+	
 	public int getNumberInQueue(ChildCareApplication application) {
 		try {
 			String[] caseStatus = { getCaseStatusInactive().getStatus(), getCaseStatusCancelled().getStatus(), getCaseStatusReady().getStatus() };

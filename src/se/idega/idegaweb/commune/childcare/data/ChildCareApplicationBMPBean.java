@@ -786,8 +786,14 @@ public class ChildCareApplicationBMPBean extends AbstractCaseBMPBean implements 
 		return idoGetNumberOfRecords(sql);
 	}
 	
+	public int ejbHomeGetNumberOfApplicationsByProviderAndChoiceNumber(int providerID, int choiceNumber) throws IDOException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectCountFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
+		sql.appendAndEquals(CHOICE_NUMBER, choiceNumber);
+		return idoGetNumberOfRecords(sql);
+	}
 	
-	public boolean isAcceptedByParent() throws RemoteException{
+		public boolean isAcceptedByParent() throws RemoteException{
 		return 	getStatus().equals("PREL") && //CaseBMPBean.CASE_STATUS_PRELIMINARY_KEY (make public...?)
 			getApplicationStatus() == 'D'; //ChildCareBusinessBean.STATUS_PARENTS_ACCEPT (make public...?)
 	}
