@@ -3131,7 +3131,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableField annualReportStatus = new ReportableField(FIELD_NAME_ANNUAL_REPORT_STATUS, String.class);
 		annualReportStatus.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ANNUAL_REPORT_STATUS, "Annual Report Status"), currentLocale);
 		reportCollection.addField(annualReportStatus);
-	
+		
 		// Fields for member stats
 		ReportableField womenMembersUnderAge = new ReportableField(FIELD_NAME_WOMEN_MEMBERS_UNDER_AGE, Integer.class);
 		womenMembersUnderAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
@@ -3160,6 +3160,35 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		ReportableField bothGendersMembersAllAge = new ReportableField(FIELD_NAME_ALL_MEMBERS_AGES, Integer.class);
 		bothGendersMembersAllAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
 		reportCollection.addField(bothGendersMembersAllAge);
+		
+		// Fields for member stats totals
+		ReportableField womenMembersUnderAgeTot = new ReportableField(FIELD_NAME_WOMEN_MEMBERS_UNDER_AGE + "_tot", Integer.class);
+		womenMembersUnderAgeTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
+		reportCollection.addField(womenMembersUnderAgeTot);
+
+		ReportableField womenMembersOverOrEqualAgeLimitTot = new ReportableField(FIELD_NAME_WOMEN_MEMBERS_OVER_OR_EQUAL_AGE + "_tot", Integer.class);
+		womenMembersOverOrEqualAgeLimitTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(womenMembersOverOrEqualAgeLimitTot);
+
+		ReportableField menMembersUnderAgeTot = new ReportableField(FIELD_NAME_MEN_MEMBERS_UNDER_AGE + "_tot", Integer.class);
+		menMembersUnderAgeTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
+		reportCollection.addField(menMembersUnderAgeTot);
+
+		ReportableField menMembersOverOrEqualAgeLimitTot = new ReportableField(FIELD_NAME_MEN_MEMBERS_OVER_OR_EQUAL_AGE + "_tot", Integer.class);
+		menMembersOverOrEqualAgeLimitTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"),currentLocale);
+		reportCollection.addField(menMembersOverOrEqualAgeLimitTot);
+
+		ReportableField bothGendersMembersUnderAgeTot = new ReportableField(FIELD_NAME_ALL_MEMBERS_UNDER_AGE + "_tot", Integer.class);
+		bothGendersMembersUnderAgeTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age),currentLocale);
+		reportCollection.addField(bothGendersMembersUnderAgeTot);
+
+		ReportableField bothGendersMembersEqualOrOverTot = new ReportableField(FIELD_NAME_ALL_MEMBERS_OVER_OR_EQUAL_AGE + "_tot", Integer.class);
+		bothGendersMembersEqualOrOverTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"),currentLocale);
+		reportCollection.addField(bothGendersMembersEqualOrOverTot);
+
+		ReportableField bothGendersMembersAllAgeTot = new ReportableField(FIELD_NAME_ALL_MEMBERS_AGES + "_tot", Integer.class);
+		bothGendersMembersAllAgeTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(bothGendersMembersAllAgeTot);
 		
 		// Fields for player stats
 		ReportableField womenPlayersUnderAge = new ReportableField(FIELD_NAME_WOMEN_UNDER_AGE, Integer.class);
@@ -3190,6 +3219,34 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 		bothGendersPlayersAllAge.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
 		reportCollection.addField(bothGendersPlayersAllAge);
 		
+		// Fields for player stats totals
+		ReportableField womenPlayersUnderAgeTot = new ReportableField(FIELD_NAME_WOMEN_UNDER_AGE + "_tot", Integer.class);
+		womenPlayersUnderAgeTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_UNDER+age, "women -"+age), currentLocale);
+		reportCollection.addField(womenPlayersUnderAgeTot);
+		
+		ReportableField womenPlayersOverOrEqualAgeLimitTot = new ReportableField(FIELD_NAME_WOMEN_OVER_OR_EQUAL_AGE + "_tot", Integer.class);
+		womenPlayersOverOrEqualAgeLimitTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_WOMEN_OVER_OR_EQUAL+age, "women "+age+"+"),currentLocale);
+		reportCollection.addField(womenPlayersOverOrEqualAgeLimitTot);
+		
+		ReportableField menPlayersUnderAgeTot = new ReportableField(FIELD_NAME_MEN_UNDER_AGE + "_tot", Integer.class);
+		menPlayersUnderAgeTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_UNDER+age, "men -"+age), currentLocale);
+		reportCollection.addField(menPlayersUnderAgeTot);
+		
+		ReportableField menPlayersOverOrEqualAgeLimitTot = new ReportableField(FIELD_NAME_MEN_OVER_OR_EQUAL_AGE + "_tot", Integer.class);
+		menPlayersOverOrEqualAgeLimitTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_MEN_OVER_OR_EQUAL+age, "men "+age+"+"),currentLocale);
+		reportCollection.addField(menPlayersOverOrEqualAgeLimitTot);
+		
+		ReportableField bothGendersPlayersUnderAgeTot = new ReportableField(FIELD_NAME_ALL_UNDER_AGE + "_tot", Integer.class);
+		bothGendersPlayersUnderAgeTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_UNDER+age, "all -"+age),currentLocale);
+		reportCollection.addField(bothGendersPlayersUnderAgeTot);
+		
+		ReportableField bothGendersPlayersEqualOrOverTot = new ReportableField(FIELD_NAME_ALL_OVER_OR_EQUAL_AGE + "_tot", Integer.class);
+		bothGendersPlayersEqualOrOverTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL_EQUAL_OR_OVER+age, "all "+age+"+"),currentLocale);
+		reportCollection.addField(bothGendersPlayersEqualOrOverTot);
+		
+		ReportableField bothGendersPlayersAllAgeTot = new ReportableField(FIELD_NAME_ALL_AGES + "_tot", Integer.class);
+		bothGendersPlayersAllAgeTot.setLocalizedName(_iwrb.getLocalizedString(LOCALIZED_ALL, "all"), currentLocale);
+		reportCollection.addField(bothGendersPlayersAllAgeTot);
 		
 		WorkReportGroup mainBoardGroup = getWorkReportBusiness().getMainBoardWorkReportGroup(year.intValue());
 		Integer mbId = mainBoardGroup.getGroupId();
@@ -3278,6 +3335,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						regData.addData(bothGendersMembersUnderAge, new Integer(membersUnder));
 						regData.addData(bothGendersMembersEqualOrOver, new Integer(membersEqualOrOver));
 						regData.addData(bothGendersMembersAllAge, new Integer(allMembers));
+						
+						regData.addData(womenMembersUnderAgeTot, new Integer(0));
+						regData.addData(womenMembersOverOrEqualAgeLimitTot, new Integer(0));
+						regData.addData(menMembersUnderAgeTot, new Integer(0));
+						regData.addData(menMembersOverOrEqualAgeLimitTot, new Integer(0));
+						regData.addData(bothGendersMembersUnderAgeTot, new Integer(0));
+						regData.addData(bothGendersMembersEqualOrOverTot, new Integer(0));
+						regData.addData(bothGendersMembersAllAgeTot, new Integer(0));
 					}
 					
 					// fetch player stats for this division
@@ -3313,6 +3378,14 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 						regData.addData(bothGendersPlayersUnderAge, new Integer(playersUnder));
 						regData.addData(bothGendersPlayersEqualOrOver, new Integer(playersEqualOrOver));
 						regData.addData(bothGendersPlayersAllAge, new Integer(allPlayers));
+						
+						regData.addData(womenPlayersUnderAgeTot, new Integer(0));
+						regData.addData(womenPlayersOverOrEqualAgeLimitTot, new Integer(0));
+						regData.addData(menPlayersUnderAgeTot, new Integer(0));
+						regData.addData(menPlayersOverOrEqualAgeLimitTot, new Integer(0));
+						regData.addData(bothGendersPlayersUnderAgeTot, new Integer(0));
+						regData.addData(bothGendersPlayersEqualOrOverTot, new Integer(0));
+						regData.addData(bothGendersPlayersAllAgeTot, new Integer(0));
 					}
 					if(showAll) {
 						reportCollection.add(regData);
@@ -3325,6 +3398,7 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				totals.addData(orderField, "b");
 				totals.addData(divisionName, "");
 				totals.addData(annualReportStatus, _iwrb.getLocalizedString(LOCALIZED_TOTAL, "TOTAL"));
+				
 				totals.addData(womenMembersUnderAge, new Integer(totalWomenMembersUnder));
 				totals.addData(womenMembersOverOrEqualAgeLimit, new Integer(totalWomenMembersEqualOrOver));
 				totals.addData(menMembersUnderAge, new Integer(totalMenMembersUnder));
@@ -3339,6 +3413,21 @@ public class WorkReportStatsBusinessBean extends IBOSessionBean implements WorkR
 				totals.addData(bothGendersPlayersUnderAge, new Integer(totalPlayersUnder));
 				totals.addData(bothGendersPlayersEqualOrOver, new Integer(totalPlayersEqualOrOver));
 				totals.addData(bothGendersPlayersAllAge, new Integer(totalAllPlayers));
+				
+				totals.addData(womenMembersUnderAgeTot, new Integer(totalWomenMembersUnder));
+				totals.addData(womenMembersOverOrEqualAgeLimitTot, new Integer(totalWomenMembersEqualOrOver));
+				totals.addData(menMembersUnderAgeTot, new Integer(totalMenMembersUnder));
+				totals.addData(menMembersOverOrEqualAgeLimitTot, new Integer(totalMenMembersEqualOrOver));
+				totals.addData(bothGendersMembersUnderAgeTot, new Integer(totalMembersUnder));
+				totals.addData(bothGendersMembersEqualOrOverTot, new Integer(totalMembersEqualOrOver));
+				totals.addData(bothGendersMembersAllAgeTot, new Integer(totalAllMembers));
+				totals.addData(womenPlayersUnderAgeTot, new Integer(totalWomenPlayersUnder));
+				totals.addData(womenPlayersOverOrEqualAgeLimitTot, new Integer(totalWomenPlayersEqualOrOver));
+				totals.addData(menPlayersUnderAgeTot, new Integer(totalMenPlayersUnder));
+				totals.addData(menPlayersOverOrEqualAgeLimitTot, new Integer(totalMenPlayersEqualOrOver));
+				totals.addData(bothGendersPlayersUnderAgeTot, new Integer(totalPlayersUnder));
+				totals.addData(bothGendersPlayersEqualOrOverTot, new Integer(totalPlayersEqualOrOver));
+				totals.addData(bothGendersPlayersAllAgeTot, new Integer(totalAllPlayers));
 				
 				reportCollection.add(totals);
 			} catch(Exception e) {
