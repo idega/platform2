@@ -28,8 +28,8 @@ import com.idega.user.data.User;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/02/18 10:46:40 $ by $Author: staffan $
- * @version $Revision: 1.90 $
+ * Last modified: $Date: 2004/02/19 09:27:25 $ by $Author: laddi $
+ * @version $Revision: 1.91 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -793,8 +793,20 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 	}
 
 	public Integer ejbFindByUserAndSchoolAndSeason(int userID, int schoolID, int seasonID) throws FinderException {
+		return ejbFindByUserAndSchoolAndSeason(userID, schoolID, seasonID, null);
+	}
+	
+	public Integer ejbFindByUserAndSchoolAndSeason(int userID, int schoolID, int seasonID, Collection schoolTypes) throws FinderException {
 		IDOQuery sql = idoQuery();
-		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl").appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID).appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID).appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl");
+		sql.appendWhere().append(" mb." + MEMBER).appendEqualSign().append(userID);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SEASON).appendEqualSign().append(seasonID);
+		sql.appendAnd().append("cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID);
+		sql.appendAnd().append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID).append(" is null)");
+		sql.appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		if (schoolTypes != null) {
+			sql.appendAnd().append(this.SCHOOL_TYPE).appendInCollection(schoolTypes);
+		}
 		return (Integer)idoFindOnePKBySQL(sql.toString());
 	}
 
