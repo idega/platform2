@@ -6,6 +6,7 @@ import is.idega.idegaweb.member.isi.block.reports.business.WorkReportBusiness;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReport;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportBoardMember;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoard;
+import is.idega.idegaweb.member.isi.block.reports.data.WorkReportDivisionBoardHome;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportGroup;
 import is.idega.idegaweb.member.isi.block.reports.data.WorkReportMember;
 import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
@@ -95,10 +96,15 @@ public class WorkReportMemberEditor extends WorkReportSelector {
   private boolean memberAlreadyExist = false;
   private boolean editable = true;
   
+  private boolean updateWorkReportData = false;
+  
   // key: member id, value: collection of league names, to that the member belongs
   private Map memberLeaguesMap = null;
   // key: league name, int number of members that belong to that league 
   private SortedMap leagueCountMap = null;
+  private int playersCount; 
+  private int membersTotalSum;
+  
   private String newMemberMessage = null;
     
   public WorkReportMemberEditor() {
@@ -184,6 +190,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         // !! do nothing else !!
         // do not modify entry
         // do not create an entry
+        updateWorkReportData = true;
         return action;
       }
     }
@@ -207,6 +214,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
           buffer.append(": ");
           buffer.append(ssn);
           newMemberMessage = buffer.toString();
+          updateWorkReportData = true;
         }
       }
     }  
@@ -272,6 +280,7 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         }
       }
       member.store();
+      updateWorkReportData = true;
       return action;
     }
     return action;
@@ -315,12 +324,18 @@ public class WorkReportMemberEditor extends WorkReportSelector {
     }
     // create map: member as key, leagues as value 
     memberLeaguesMap = new HashMap();
+    playersCount = 0;
+    membersTotalSum = members.size();
     Iterator membersIterator = members.iterator();
     while (membersIterator.hasNext())  {
       WorkReportMember member = (WorkReportMember) membersIterator.next();
       try {
         Iterator leagues = member.getLeaguesForMember().iterator();
         List leaguesList = new ArrayList();
+        // if there is at least one league the member is a player
+        if (leagues.hasNext())  {
+          playersCount++;
+        }
         while (leagues.hasNext()) {
           WorkReportGroup league = (WorkReportGroup) leagues.next();
           String leagueName = league.getName();
@@ -338,6 +353,18 @@ public class WorkReportMemberEditor extends WorkReportSelector {
         ex.printStackTrace(System.err);
       }
     }
+    if (updateWorkReportData) {
+      try {
+        updateWorkReportDataAndBoardData(iwc);
+      }
+      catch (Exception ex) {
+        String message =
+          "[WorkReportBoardMemberEditor]: Can't update work report.";
+        System.err.println(message + " Message is: " + ex.getMessage());
+        ex.printStackTrace(System.err);
+      }
+    }
+      
     EntityBrowser browser = getEntityBrowser(members, resourceBundle, form, iwc);
     // get new entry message 
     if (newMemberMessage != null) {
@@ -589,6 +616,29 @@ public class WorkReportMemberEditor extends WorkReportSelector {
       throw new RuntimeException("[WorkReportMemberEditor]: Can't retrieve WorkReportBusiness.");
     }
     return null;
+  }
+  
+  private void updateWorkReportDataAndBoardData(IWApplicationContext iwac) 
+      throws RemoteException, FinderException, IDOException{
+    WorkReportBusiness workReportBusiness = getWorkReportBusiness(iwac);
+    WorkReport workReport = workReportBusiness.getWorkReportById(getWorkReportId());
+    
+    workReport.setNumberOfMembers(membersTotalSum);
+    workReport.setNumberOfPlayers(playersCount);
+    workReport.store();
+    
+    WorkReportDivisionBoardHome home = workReportBusiness.getWorkReportDivisionBoardHome();
+    Collection boards = home.findAllWorkReportDivisionBoardByWorkReportId(getWorkReportId());
+    
+    Iterator iterator = boards.iterator();
+    while (iterator.hasNext())  {
+      WorkReportDivisionBoard board = (WorkReportDivisionBoard) iterator.next();
+      WorkReportGroup workReportGroup = board.getLeague();
+      String leagueName = workReportGroup.getName();
+      Integer number = (Integer) leagueCountMap.get(leagueName);
+      board.setNumberOfPlayers(number.intValue());
+      board.store();
+    }
   }
 
   private void setValuesOfWorkReportMember(EntityPathValueContainer valueContainer, WorkReportMember member, WorkReportBusiness workReportBusiness, IWApplicationContext iwac)  {
