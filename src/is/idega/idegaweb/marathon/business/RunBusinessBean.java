@@ -459,10 +459,10 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			return runHome.findByUserIDandDistanceID(userID,distanceID);
 		}
 		catch (RemoteException e) {
-			e.printStackTrace();
+			log(e);
 		}
 		catch (FinderException e) {
-			e.printStackTrace();
+			log(e);
 		}
 		 
 		return null;
@@ -994,5 +994,26 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 			return IWMarathonConstants.MIN_NUMBER_DISTANCE_3;
 		}
 		return 0;
+	}
+	
+	public Country getCountryByNationality(Object nationality) {
+		Country country = null;
+		try {
+			CountryHome home = (CountryHome) getIDOHome(Country.class);
+			try {
+				int countryPK = Integer.parseInt(nationality.toString());
+				country = home.findByPrimaryKey(new Integer(countryPK));
+			}
+			catch (NumberFormatException nfe) {
+				country = home.findByIsoAbbreviation(nationality.toString());
+			}
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
+		catch (RemoteException re) {
+			log(re);
+		}
+		return country;
 	}
 }

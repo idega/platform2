@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import com.idega.core.location.data.Country;
 import com.idega.presentation.IWContext;
 import com.idega.user.data.Group;
 import com.idega.user.data.User;
@@ -31,4 +33,5 @@ public interface RunBusiness extends com.idega.business.IBOService{
   	public Group getDistanceByUserID(int userID);
   	public void savePaymentByUserID(int userID, String payMethod, String amount);
   	public void updateParticipantAndChip(int userID,String partiNr, String chipNr);
+  	public Country getCountryByNationality(Object nationality) throws RemoteException;
 }
