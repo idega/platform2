@@ -381,11 +381,11 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 	public UserQuery storeOrUpdateQuery(String name, QueryHelper queryHelper, boolean isPrivate, boolean overwriteQuery, IWUserContext iwuc) 
 			throws IDOStoreException, IOException, CreateException, SQLException, FinderException {
 		Group group = getTopGroupForCurrentUser(iwuc);
-		name = modifyNameIfNameAlreadyExists(name, group);
 		// get user query, get xml data
 		XMLData data = null;
 		UserQuery userQuery = queryHelper.getUserQuery();
 		if (userQuery !=null  && overwriteQuery) {
+			name = modifyNameIfNameAlreadyExistsIgnoreUserQuery(userQuery,name, group);
 			// case: query is modified and should be overwritten
 			data = XMLData.getInstanceForFile(userQuery.getSource());
 			// update user query and data
@@ -399,6 +399,7 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		}
 		else {
 			// case: brand new query
+			name = modifyNameIfNameAlreadyExists(name, group);
 			userQuery = getUserQueryHome().create();
 			// store to be sure that the primary key is set !
 			data = XMLData.getInstanceWithoutExistingFile();
@@ -454,20 +455,29 @@ public class QueryServiceBean extends IBOServiceBean implements QueryService  {
 		return userQuery;
 	}
 
-		
-		
-	
 	private String modifyNameIfNameAlreadyExists(String name, Group group) throws FinderException {
+		return modifyNameIfNameAlreadyExistsIgnoreUserQuery(null, name, group );
+	}
+	
+	
+	private String modifyNameIfNameAlreadyExistsIgnoreUserQuery(UserQuery ignoredUserQuery, String name, Group group) throws FinderException {
 		if (name == null || name.length() ==0) {
 			name = DEFAULT_QUERY_NAME;
+		}
+		String ignoredId = null;
+		if (ignoredUserQuery != null) {
+			ignoredId = ignoredUserQuery.getPrimaryKey().toString();
 		}
 		Collection coll = getUserQueriesByGroup(group);
 		Iterator iterator = coll.iterator();
 		while (iterator.hasNext()) {
 			UserQuery userQuery = (UserQuery) iterator.next();
-			String alreadyExistingName = userQuery.getName();
-			if (alreadyExistingName.equals(name)) {
-				return StringHandler.addOrIncreaseCounter(name, COUNTER_TOKEN);
+			String id = userQuery.getPrimaryKey().toString();
+			if (! id.equals(ignoredId)) {
+				String alreadyExistingName = userQuery.getName();
+				if (alreadyExistingName.equals(name)) {
+					return StringHandler.addOrIncreaseCounter(name, COUNTER_TOKEN);
+				}
 			}
 		}
 		return name;
