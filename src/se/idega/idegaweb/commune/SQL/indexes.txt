@@ -17,6 +17,7 @@ commit;
 create index IDX_IC_USER_4 on IC_USER(PERSONAL_ID);
 commit;
 create index IDX_IC_USER_5 on IC_USER(USER_REPRESENTATIVE);
+commit;
 
 
 
