@@ -48,13 +48,14 @@ public class BruttoIncomeEditor extends AccountingBlock {
 	private static String localizePrefix = "brutto_income.";
 	private User user = null;
 	private Integer userID = null;
+	private String registerErrorMsg = null;
 	private boolean showCancelCloseButton = true;
 	private ApplicationForm appForm = null;
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#main(com.idega.presentation.IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		debugParameters(iwc);
+		//debugParameters(iwc);
 		init(iwc);
 		process(iwc);
 		presentate(iwc);
@@ -76,11 +77,30 @@ public class BruttoIncomeEditor extends AccountingBlock {
 				Float income = Float.valueOf(iwc.getParameter("brt_income_amount"));
 				IWTimestamp validFrom = new IWTimestamp(iwc.getParameter("brt_valid_from"));
 				try {
-					getUserInfoService(iwc).createBruttoIncome(
-						userID,
-						income,
-						validFrom.getDate(),
-						new Integer(iwc.getCurrentUserId()));
+					UserInfoService infoService = getUserInfoService(iwc);
+					boolean validDate =true;
+					try {
+						// check if no from date is the same
+						Collection incomes = infoService.getBruttoIncomeHome().findByUser(userID);
+						if(incomes!=null && !incomes.isEmpty()){
+							Iterator iter = incomes.iterator();
+							while (iter.hasNext()) {
+								BruttoIncome element = (BruttoIncome) iter.next();
+								if(validFrom.isEqualTo(new IWTimestamp(element.getValidFrom()))){
+									validDate = false;
+									break;
+								}
+							}
+						}
+								
+					}
+					catch (FinderException e1) {
+						
+					}
+					if(validDate)
+						infoService.createBruttoIncome(userID,income,	validFrom.getDate(),new Integer(iwc.getCurrentUserId()));
+					else
+						registerErrorMsg = localize("error_same_from_date","Can't register same from date more than once");
 				}
 				catch (RemoteException e) {
 					e.printStackTrace();
@@ -140,7 +160,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		}
 	}
 	protected boolean isCreateView(IWContext iwc) {
-		return iwc.isParameterSet(PRM_CREATE);
+		return iwc.isParameterSet(PRM_CREATE) || registerErrorMsg!=null ;
 	}
 	protected boolean isListView(IWContext iwc) {
 		return !isCreateView(iwc);
@@ -242,6 +262,7 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		table.add(getHeader(localize("valid_from_date", "Valid from")), 1, 3);
 		table.setColor(1, 3, getHeaderColor());
 		TextInput incomeInput = new TextInput("brt_income_amount");
+		incomeInput.keepStatusOnAction(true);
 		incomeInput.setAsIntegers(localize("warning.please_enter_number", "Please enter a valid number"));
 		setStyle(incomeInput, STYLENAME_INTERFACE);
 		table.add(incomeInput, 2, 2);
@@ -253,6 +274,12 @@ public class BruttoIncomeEditor extends AccountingBlock {
 		validFromInput.setYearRange(currentYear - 5, currentYear + 5);
 		setStyle(validFromInput, STYLENAME_INTERFACE);
 		table.add(validFromInput, 2, 3);
+		if(registerErrorMsg!=null){
+			
+			table.mergeCells(1,5,2,5);
+			table.add(getErrorText(registerErrorMsg),1,5);
+			
+		}
 		//SubmitButton btnSave = new SubmitButton(localize("save","Save"),PRM_SAVE,"true");
 		//SubmitButton btnCancel = new SubmitButton(localize("cancel","Cancel"),PRM_CANCEL,"true");
 		appForm.maintainParameter(PRM_USER_ID);
