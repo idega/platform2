@@ -29,8 +29,15 @@ public class PaymentComparator implements Comparator {
 			compareString2 = ((PaymentHeader) o2).getSchool().getName();
 		}
 		else if (o1 instanceof PaymentRecord) {
-			compareString1 = String.valueOf(((PaymentRecord) o1).getOrderId());
-			compareString2 = String.valueOf(((PaymentRecord) o2).getOrderId());
+			int int1 = ((PaymentRecord) o1).getOrderId();
+			int int2 = ((PaymentRecord) o2).getOrderId();
+			
+			if (int1 == int2)
+				return 0;
+			else if (int1 < int2)
+				return -1;
+			else 
+				return 1;
 		}
 		return collator.compare(compareString1, compareString2);
 	}
