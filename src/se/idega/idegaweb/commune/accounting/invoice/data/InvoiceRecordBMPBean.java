@@ -332,6 +332,7 @@ public class InvoiceRecordBMPBean extends GenericEntity implements InvoiceRecord
 		start.setDay(1);
 		IWTimestamp end = new IWTimestamp(start);
 		end.addMonths(1);
+		end.addDays(-1);
 		
 		IDOQuery sql = idoQuery();
 		sql.append("select count(r.cacc_invoice_record_id) from "+getEntityName());
