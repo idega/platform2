@@ -157,6 +157,10 @@ public class NwNewsBMPBean extends com.idega.data.GenericEntity implements com.i
     setColumn(getColumnNameSource(), source);
 
   }
+  
+  public Content getContent(){
+  	return (Content) this.getColumnValue(getColumnNameContentId());
+  }
 
 
 

@@ -1,10 +1,13 @@
 package com.idega.block.news.data;
 
+import com.idega.block.text.data.Content;
+
 
 public interface NwNews extends com.idega.data.IDOLegacyEntity
 {
  public java.lang.String getAuthor();
  public int getContentId();
+ public Content getContent();
  public int getNewsCategoryId();
  public java.util.Collection getRelatedFiles()throws com.idega.data.IDORelationshipException;
  public java.lang.String getSource();
