@@ -4,9 +4,6 @@ import java.rmi.RemoteException;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
-import com.idega.data.GenericEntity;
-import com.idega.data.IDOLegacyEntity;
-
 import javax.ejb.FinderException;
 
 import is.idega.idegaweb.member.business.plugins.AgeGenderPluginBusiness;
@@ -19,9 +16,6 @@ import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.IntegerInput;
-import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.RadioGroup;
-import com.idega.user.data.GenderBMPBean;
 import com.idega.user.data.Group;
 import com.idega.user.data.GroupHome;
 import com.idega.user.presentation.UserGroupTab;
@@ -186,7 +180,7 @@ public class GroupAgeGenderTab extends UserGroupTab {
     
     ageLimitIsStringentConditionField = new CheckBox(ageLimitIsStringentConditionFieldName);
     
-    keyDateForAgeField = new DateInput(keyDateForAgeFieldName);
+    keyDateForAgeField = new DateInput(keyDateForAgeFieldName, false, false);
     // do not show the year
     keyDateForAgeField.setToShowYear(false);
 
