@@ -675,7 +675,6 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 	 * @author Borgman
 	 */
 	public Collection findAllSchClMemberInvoiceIntervalTypes() throws RemoteException {
-		Collection coll = null;
 		return getSchoolClassMemberHome().getInvoiceIntervalTypes();		
 	}
 
