@@ -164,7 +164,7 @@ public class RegionalUnionAndYearSelector extends Block {
 		IWTimestamp stamp = IWTimestamp.RightNow();
 		
 		int currentYear = stamp.getYear();
-		int beginningYear = currentYear - 5;
+		int beginningYear = 2004;
 		
 		for (int i = beginningYear; i <= currentYear; i++) {
 			dateSelector.addMenuElement(i,Integer.toString(i));
