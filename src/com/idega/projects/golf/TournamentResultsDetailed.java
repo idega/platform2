@@ -118,12 +118,10 @@ public class TournamentResultsDetailed extends JModuleObject {
       ResultDataHandler handler = new ResultDataHandler(tournamentId_,ResultComparator.TOTALSTROKES,tournamentGroupId_,pastTournamentRounds_,r.getMemberId());
       Vector v = handler.getTournamentMembers();
       if (v != null) {
-        System.err.println("V != null");
         if (v.size() > 0) {
-            System.err.println("V > 0");
             ResultsCollector rip = (ResultsCollector) v.get(0);
             if (rip != null) {
-                System.err.println("Rip != null");
+                System.err.println("Rip != null.....DIFF = "+rip.getDifference());
                 difference = rip.getDifference();
             }else {System.err.println("Rip == null");}
         }else {System.err.println("V.size = 0");}
