@@ -1,10 +1,10 @@
 package is.idega.idegaweb.member.presentation;
 
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.idegaweb.member.business.NoChildrenFound;
-import is.idega.idegaweb.member.business.NoCustodianFound;
-import is.idega.idegaweb.member.business.NoSiblingFound;
-import is.idega.idegaweb.member.business.NoSpouseFound;
+import is.idega.block.family.business.NoChildrenFound;
+import is.idega.block.family.business.NoCustodianFound;
+import is.idega.block.family.business.NoSiblingFound;
+import is.idega.block.family.business.NoSpouseFound;
 
 import java.rmi.RemoteException;
 import java.util.Collection;

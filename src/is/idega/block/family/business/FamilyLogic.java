@@ -1,5 +1,5 @@
 /*
- * $Id: FamilyLogic.java,v 1.1 2004/08/27 16:15:24 joakim Exp $
+ * $Id: FamilyLogic.java,v 1.2 2004/08/27 19:22:55 joakim Exp $
  * Created on 27.8.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -9,12 +9,6 @@
  */
 package is.idega.block.family.business;
 
-import is.idega.idegaweb.member.business.NoChildrenFound;
-import is.idega.idegaweb.member.business.NoCohabitantFound;
-import is.idega.idegaweb.member.business.NoCustodianFound;
-import is.idega.idegaweb.member.business.NoParentFound;
-import is.idega.idegaweb.member.business.NoSiblingFound;
-import is.idega.idegaweb.member.business.NoSpouseFound;
 import java.rmi.RemoteException;
 import java.util.*;
 import javax.ejb.*;
@@ -24,10 +18,10 @@ import com.idega.user.data.*;
 
 /**
  * 
- *  Last modified: $Date: 2004/08/27 16:15:24 $ by $Author: joakim $
+ *  Last modified: $Date: 2004/08/27 19:22:55 $ by $Author: joakim $
  * 
  * @author <a href="mailto:Joakim@idega.com">Joakim</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface FamilyLogic {
 

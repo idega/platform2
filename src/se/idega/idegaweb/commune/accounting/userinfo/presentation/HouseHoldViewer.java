@@ -3,9 +3,9 @@
  */
 package se.idega.idegaweb.commune.accounting.userinfo.presentation;
 
-import is.idega.idegaweb.member.business.NoCohabitantFound;
-import is.idega.idegaweb.member.business.NoCustodianFound;
-import is.idega.idegaweb.member.business.NoSpouseFound;
+import is.idega.block.family.business.NoCohabitantFound;
+import is.idega.block.family.business.NoCustodianFound;
+import is.idega.block.family.business.NoSpouseFound;
 import is.idega.idegaweb.member.presentation.UserSearcher;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;

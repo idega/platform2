@@ -1,7 +1,7 @@
 package se.idega.idegaweb.commune.accounting.invoice.business;
 
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.idegaweb.member.business.NoCustodianFound;
+import is.idega.block.family.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
@@ -77,10 +77,10 @@ import com.idega.util.CalendarMonth;
  * base for invoicing  and payment data, that is sent to external finance
  * system.
  * <p>
- * Last modified: $Date: 2004/08/27 16:12:54 $ by $Author: joakim $
+ * Last modified: $Date: 2004/08/27 19:22:53 $ by $Author: joakim $
  *
  * @author <a href="mailto:joakim@idega.is">Joakim Johnson</a>
- * @version $Revision: 1.147 $
+ * @version $Revision: 1.148 $
  * 
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadElementarySchool
  * @see se.idega.idegaweb.commune.accounting.invoice.business.PaymentThreadHighSchool

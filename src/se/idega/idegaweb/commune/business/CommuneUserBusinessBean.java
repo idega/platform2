@@ -1,7 +1,7 @@
 package se.idega.idegaweb.commune.business;
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.idegaweb.member.business.NoChildrenFound;
-import is.idega.idegaweb.member.business.NoCustodianFound;
+import is.idega.block.family.business.NoChildrenFound;
+import is.idega.block.family.business.NoCustodianFound;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;

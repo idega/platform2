@@ -1,4 +1,4 @@
-package is.idega.idegaweb.member.business;
+package is.idega.block.family.business;
 
 /**
  * Title:        idegaWeb User Subsystem

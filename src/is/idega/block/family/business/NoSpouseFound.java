@@ -1,4 +1,4 @@
-package is.idega.idegaweb.member.business;
+package is.idega.block.family.business;
 
 /**
  * Title:        idegaWeb User Subsystem
@@ -9,9 +9,9 @@ package is.idega.idegaweb.member.business;
  * @version 1.0
  */
 
-public class NoSiblingFound extends javax.ejb.FinderException {
+public class NoSpouseFound extends javax.ejb.FinderException {
 
-  public NoSiblingFound(String UserName) {
-      super("No siblings found for user "+UserName);
+  public NoSpouseFound(String UserName) {
+      super("No spouse found for user "+UserName);
   }
 }

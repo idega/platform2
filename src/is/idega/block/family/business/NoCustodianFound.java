@@ -1,4 +1,4 @@
-package is.idega.idegaweb.member.business;
+package is.idega.block.family.business;
 
 /**
  * Title:        idegaWeb User Subsystem
@@ -9,9 +9,9 @@ package is.idega.idegaweb.member.business;
  * @version 1.0
  */
 
-public class NoParentFound extends javax.ejb.FinderException {
+public class NoCustodianFound extends javax.ejb.FinderException {
 
-  public NoParentFound(String UserName) {
-      super("No parent found for user "+UserName);
+  public NoCustodianFound(String UserName) {
+      super("No custodian found for user "+UserName);
   }
 }

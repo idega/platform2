@@ -1,5 +1,5 @@
 /*
- * $Id: RegulationsBusinessBean.java,v 1.127 2004/08/27 16:12:55 joakim Exp $
+ * $Id: RegulationsBusinessBean.java,v 1.128 2004/08/27 19:22:53 joakim Exp $
  * 
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  * 
@@ -11,7 +11,7 @@
 package se.idega.idegaweb.commune.accounting.regulations.business;
 
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.idegaweb.member.business.NoCustodianFound;
+import is.idega.block.family.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.sql.Date;

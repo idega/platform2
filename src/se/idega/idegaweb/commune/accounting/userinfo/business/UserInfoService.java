@@ -3,7 +3,7 @@ package se.idega.idegaweb.commune.accounting.userinfo.business;
 import java.rmi.RemoteException;
 
 import com.idega.user.data.User;
-import is.idega.idegaweb.member.business.NoCustodianFound;
+import is.idega.block.family.business.NoCustodianFound;
 import se.idega.idegaweb.commune.accounting.userinfo.data.HouseHoldFamily;
 
 

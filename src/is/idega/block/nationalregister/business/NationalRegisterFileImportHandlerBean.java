@@ -2,12 +2,12 @@ package is.idega.block.nationalregister.business;
 
 import is.idega.block.family.business.FamilyLogic;
 import is.idega.block.family.business.FamilyLogicBean;
+import is.idega.block.family.business.NoChildrenFound;
+import is.idega.block.family.business.NoCustodianFound;
+import is.idega.block.family.business.NoParentFound;
+import is.idega.block.family.business.NoSiblingFound;
+import is.idega.block.family.business.NoSpouseFound;
 import is.idega.block.nationalregister.data.NationalRegister;
-import is.idega.idegaweb.member.business.NoChildrenFound;
-import is.idega.idegaweb.member.business.NoCustodianFound;
-import is.idega.idegaweb.member.business.NoParentFound;
-import is.idega.idegaweb.member.business.NoSiblingFound;
-import is.idega.idegaweb.member.business.NoSpouseFound;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;

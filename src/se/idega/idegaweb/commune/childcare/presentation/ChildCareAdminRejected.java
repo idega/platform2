@@ -4,7 +4,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import is.idega.block.family.business.FamilyLogic;
-import is.idega.idegaweb.member.business.NoCustodianFound;
+import is.idega.block.family.business.NoCustodianFound;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
