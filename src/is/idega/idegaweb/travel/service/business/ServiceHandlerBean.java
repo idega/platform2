@@ -5,6 +5,8 @@ import is.idega.idegaweb.travel.service.carrental.presentation.*;
 import is.idega.idegaweb.travel.service.fishing.business.FishingBusiness;
 import is.idega.idegaweb.travel.service.fishing.presentation.*;
 import com.idega.data.IDOLookup;
+import com.idega.idegaweb.IWResourceBundle;
+
 import java.rmi.*;
 import java.sql.*;
 import java.util.*;
@@ -15,6 +17,7 @@ import com.idega.block.trade.stockroom.business.*;
 import com.idega.block.trade.stockroom.data.*;
 import com.idega.business.*;
 import com.idega.presentation.*;
+import com.idega.presentation.text.Link;
 import com.idega.util.*;
 
 import is.idega.idegaweb.travel.business.TravelStockroomBusiness;
@@ -251,6 +254,14 @@ public class ServiceHandlerBean extends IBOServiceBean implements ServiceHandler
     getProductBusiness().clearProductCache(supplierId);
     iwc.getApplication().getIWCacheManager().invalidateCache(ServiceViewer.CACHE_KEY+""+supplierId);
   }
+
+	public List getServiceLinks(IWResourceBundle iwrb) {
+		List list = new Vector();
+		
+		Link hotelLink = new Link(iwrb.getLocalizedString("travel.hotel_setup","Hotel setup"), HotelSetup.class);
+		list.add(hotelLink);
+		return list;	
+	}
 
   public ProductBusiness getProductBusiness() throws RemoteException {
     return (ProductBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ProductBusiness.class);
