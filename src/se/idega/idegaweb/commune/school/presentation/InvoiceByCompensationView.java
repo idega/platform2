@@ -19,10 +19,10 @@ import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
  * edit the factoring by compensation field of school members in the current
  * season.
  * <p>
- * Last modified: $Date: 2004/02/25 10:12:43 $ by $Author: staffan $
+ * Last modified: $Date: 2004/03/17 13:38:12 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -38,6 +38,8 @@ public class InvoiceByCompensationView extends AccountingBlock {
         = "Ersättning mot faktura";
     private static final String COMPENSATIONBYINVOICE_KEY
         = PREFIX + "compensationByInvoice";
+    private static final String ENDDATE_DEFAULT = "Avslutad";
+    private static final String ENDDATE_KEY = PREFIX + "endDate";
     private static final String INVOICEINTERVAL_DEFAULT = "Fakturaintervall";
     private static final String INVOICEINTERVAL_KEY
         = PREFIX + "invoiceInterval";
@@ -54,7 +56,8 @@ public class InvoiceByCompensationView extends AccountingBlock {
     private static final String PROVIDER_KEY = PREFIX + "provider";
     private static final String SAVE_DEFAULT = "Spara";
     private static final String SAVE_KEY = PREFIX + "save";
-    private static final String SCHOOL_KEY = PREFIX + "school";
+    private static final String SCHOOLTYPE_KEY = PREFIX + "schoolType";
+    private static final String SCHOOLTYPE_DEFAULT = "Verksamhet";
     private static final String SSN_DEFAULT = "Personnummer";
     private static final String SSN_KEY = PREFIX + "ssn";
     private static final String WRONGDATEFORMAT_DEFAULT
@@ -119,6 +122,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
         final String [][] columnNames =
                 {{ SSN_KEY, SSN_DEFAULT }, { NAME_KEY, NAME_DEFAULT },
                  { PROVIDER_KEY, PROVIDER_DEFAULT },
+                 { ENDDATE_KEY, ENDDATE_DEFAULT },
                  { INVOICEINTERVAL_KEY, INVOICEINTERVAL_DEFAULT },
                  { LATESTINVOICEDATE_KEY, LATESTINVOICEDATE_DEFAULT }};
         final Table studentTable = new Table();
@@ -137,10 +141,6 @@ public class InvoiceByCompensationView extends AccountingBlock {
         final SchoolCommuneBusiness communeBusiness = (SchoolCommuneBusiness)
                 IBOLookup.getServiceInstance (context,
                                               SchoolCommuneBusiness.class);
-        final SchoolBusiness schoolBusiness
-                = communeBusiness.getSchoolBusiness ();
-        final SchoolClassHome classHome = schoolBusiness.getSchoolClassHome ();
-        final SchoolHome schoolHome = schoolBusiness.getSchoolHome ();
         
         // search the database for students to display
         final String operationalField = getSession ().getOperationalField ();
@@ -151,8 +151,7 @@ public class InvoiceByCompensationView extends AccountingBlock {
         for (int i = 0; i < students.length; i++) {
 			final SchoolClassMember student = students [i];
             int row = i + 2;
-			showStudentInTableRow (studentTable, classHome, schoolHome, student,
-                                   row);
+			showStudentInTableRow (studentTable, student, row);
         }
         
         // add to output
@@ -164,41 +163,60 @@ public class InvoiceByCompensationView extends AccountingBlock {
      * table.
      *
      * @param studentTable table to put row in
-     * @param classHome home object for school class entities
-     * @param schoolHome home class for school entities
-     * @param student student to display
+     * @param member member to display
      * @param row the table row to use
      * @param FinderException if one of the entities are missing
      */
 	private void showStudentInTableRow
-        (final Table studentTable, final SchoolClassHome classHome,
-         final SchoolHome schoolHome, final SchoolClassMember student,
+        (final Table studentTable, final SchoolClassMember member,
          int row) throws FinderException {
 		int col = 1;
 		studentTable.setRowColor (row, (row % 2 == 0) ? getZebraColor1 ()
                                   : getZebraColor2 ());
-		final User user = student.getStudent ();
+		final User user = member.getStudent ();
 		final String ssn = user.getPersonalID ();
 		final Link ssnLink = getSmallLink (ssn);
-		final Object studentId = student.getPrimaryKey ();
-		final String userName = user.getFirstName () + " "
-		        + user.getLastName ();
-		final String schoolName
-		        = getSchoolNameFromStudent (student, classHome, schoolHome);
+		final String userName = getName (user);
+		final String schoolName = getSchoolName (member);
+		final String endDate = getEndDate (member);
 		ssnLink.addParameter (ACTION_KEY, ACTION_SHOWUSER_KEY);
-		ssnLink.addParameter (MEMBERID_KEY, studentId.toString ());
-		ssnLink.addParameter (SSN_KEY, ssn);
-		ssnLink.addParameter (NAME_KEY, userName);
-		ssnLink.addParameter (SCHOOL_KEY, schoolName);
+		ssnLink.addParameter (MEMBERID_KEY, member.getPrimaryKey () + "");
 		studentTable.add (ssnLink, col++, row);
 		studentTable.add (new Text(userName), col++, row);
 		studentTable.add (new Text(schoolName), col++, row);
-		studentTable.add (new Text(getIntervalString (student)), col++, row);
-		final Date latestInvoiceDate = student.getLatestInvoiceDate ();
+		studentTable.add (new Text(endDate), col++, row);
+		studentTable.add (new Text(getIntervalString (member)), col++, row);
+		final Date latestInvoiceDate = member.getLatestInvoiceDate ();
 		if (null != latestInvoiceDate) {
 		    studentTable.add (new Text(dateFormatter.format
                                        (latestInvoiceDate)), col++, row);
 		}
+	}
+
+	private static String getEndDate (final SchoolClassMember member) {
+		if (null == member || null == member.getRemovedDate ()) return "";
+		return dateFormatter.format (member.getRemovedDate ());
+	}
+
+	private static String getSchoolName (final SchoolClassMember member) {
+		final SchoolClass group = null != member ? member.getSchoolClass () : null;
+		final School school = null !=  group ? group.getSchool () : null;
+		final String groupName = null != group ? group.getName () : "";
+		final String schoolName = null != group ? school.getSchoolName (): "";
+		return schoolName + '/' + groupName;
+	}
+
+	private static String getSchoolTypeName (final SchoolClassMember member) {
+		final SchoolType type = null != member ? member.getSchoolType () : null;
+		return null != type ? type.getSchoolTypeName () : "";
+	}
+
+	private static String getName (final User user) {
+		if (null == user) return "";
+		final String firstName = user.getFirstName ();
+		final String lastName = user.getLastName ();
+		return (firstName != null ? firstName + " " : "")
+				+ (lastName != null ? lastName : "");
 	}
 
 	private String getIntervalString (final SchoolClassMember student) {
@@ -228,17 +246,20 @@ public class InvoiceByCompensationView extends AccountingBlock {
         // get student info
         final Integer studentId
                 = new Integer (context.getParameter (MEMBERID_KEY));
-        final SchoolClassMember student
+        final SchoolClassMember member
                 = memberHome.findByPrimaryKey (studentId);
-        final String ssn = context.getParameter (SSN_KEY);
-        final String studentName = context.getParameter (NAME_KEY);
-        final String schoolName = context.getParameter (SCHOOL_KEY);
-        final Date latestInvoiceDate = student.getLatestInvoiceDate ();
+				final User user = member.getStudent ();
+				final String ssn = user.getPersonalID ();
+				final String userName = getName (user);
+				final String schoolName = getSchoolName (member);
+				final String endDate = getEndDate (member);
+				final String schoolTypeName = getSchoolTypeName (member);
+        final Date latestInvoiceDate = member.getLatestInvoiceDate ();
         
         // display student info
         final Table studentTable = getStudentInfoTable
-                (ssn,  studentName, schoolName, latestInvoiceDate,
-                 getIntervalString (student));
+                (ssn,  userName, schoolTypeName, schoolName, endDate,
+								 latestInvoiceDate, getIntervalString (member));
         
         // display buttons
         final Table buttonTable = getSaveButtonTable ();
@@ -286,8 +307,10 @@ public class InvoiceByCompensationView extends AccountingBlock {
      * @param intervalString key for term, year etc.
      */
 	private Table getStudentInfoTable
-        (final String ssn, final String studentName, final String schoolName,
-         final Date latestInvoiceDate, final String intervalString) {
+        (final String ssn, final String studentName,
+				 final String schoolTypeName, final String schoolName,
+				 final String endDate, final Date latestInvoiceDate,
+				 final String intervalString) {
         final Table studentTable = new Table ();
 		studentTable.setCellpadding (getCellpadding ());
 		studentTable.setCellspacing (getCellspacing ());
@@ -295,7 +318,9 @@ public class InvoiceByCompensationView extends AccountingBlock {
 		final String [][] cells =
 		        {{ SSN_KEY, SSN_DEFAULT,  ssn },
 		         { NAME_KEY, NAME_DEFAULT, studentName },
+		         { SCHOOLTYPE_KEY, SCHOOLTYPE_DEFAULT, schoolTypeName },
 		         { PROVIDER_KEY, PROVIDER_DEFAULT, schoolName },
+		         { ENDDATE_KEY, ENDDATE_DEFAULT, endDate },
 		         { INVOICEINTERVAL_KEY, INVOICEINTERVAL_DEFAULT,
 		           intervalString }};
 		final TextInput textInput = (TextInput) getStyledInterface
@@ -401,25 +426,6 @@ public class InvoiceByCompensationView extends AccountingBlock {
         mainTable.add (innerTable, 1, 2);
         mainTable.add (content, 1, 3);
         return mainTable;
-    }
-    
-	/**
-	 * Returns name of the school that the school class member is member of
-	 *
-	 * @param student The person that is member of a school class
-	 * @param classHome home object of school class beans
-	 * @param schoolHome home object of school beans
-     * @return String with school name
-     * @exception FinderException if the school class wasn't found
-	 */
-    static private String getSchoolNameFromStudent
-        (final SchoolClassMember student, final SchoolClassHome classHome,
-         final SchoolHome schoolHome) throws FinderException {
-        final Integer classId = new Integer (student.getSchoolClassId ());
-        final SchoolClass schoolClass = classHome.findByPrimaryKey(classId);
-        final Integer schoolId = new Integer (schoolClass.getSchoolId ());
-        final School school = schoolHome.findByPrimaryKey (schoolId);
-        return school.getName ();
     }
     
     private static Date getDateFromString (final String rawInput) {

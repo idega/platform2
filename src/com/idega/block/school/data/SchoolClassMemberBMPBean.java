@@ -27,8 +27,8 @@ import com.idega.user.data.UserBMPBean;
  * <p>Copyright: Copyright (c) 2002</p>
  * <p>Company: </p>
  * @author <br><a href="mailto:aron@idega.is">Aron Birkir</a><br>
- * Last modified: $Date: 2004/03/10 10:03:41 $ by $Author: staffan $
- * @version $Revision: 1.99 $
+ * Last modified: $Date: 2004/03/17 13:38:25 $ by $Author: staffan $
+ * @version $Revision: 1.100 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -838,7 +838,7 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendAndEquals (M_ + SCHOOLCLASS,
 												 C_ + SchoolClassBMPBean.SCHOOLCLASS + "_id");
 		
-		// AND ((c.sch_school_season_id IS NULL  AND m.removed_date IS NULL )
+		// AND ((c.sch_school_season_id IS NULL AND m.removed_date IS NULL )
 		// OR c.sch_school_season_id in
 		//  (SELECT sch_school_season_id FROM sch_school_season 
 		//   WHERE season_start in
@@ -865,14 +865,16 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		sql.appendRightParenthesis ().appendRightParenthesis ();
 
 		// AND (m.invoice_int in (...) 
+		// OR m.comp_by_agreement = true
 		// OR c.school_id in (...))
 
 		sql.appendAnd ().appendLeftParenthesis();
 		sql.append (M_ + INVOICE_INTERVAL).append (" in ").appendLeftParenthesis ();
 		sql.appendCommaDelimitedWithinSingleQuotes
 				(ejbHomeGetInvoiceIntervalTypes ());
-		sql.appendRightParenthesis ().appendOr ();
-		sql.append(C_ + SchoolClassBMPBean.SCHOOL).append(" in ");
+		sql.appendRightParenthesis ();
+		sql.appendOrEquals (M_ + COMPENSATION_BY_AGREEMENT, true);
+		sql.appendOr ().append(C_ + SchoolClassBMPBean.SCHOOL).append(" in ");
 		sql.appendLeftParenthesis().appendCommaDelimited (schools);
 		sql.appendRightParenthesis ().appendRightParenthesis ();
 
