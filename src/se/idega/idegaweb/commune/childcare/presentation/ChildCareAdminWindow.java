@@ -1759,10 +1759,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		_submitButton = submit;
 		_child = application.getChild();
 		_addCareTimeScript = isUsePredefinedCareTimeValues();
-		form.setToDisableOnSubmit(submit, true);
-		layoutTbl.add(submit, 1, row);
-		layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
+		layoutTbl.mergeCells(1, row, layoutTbl.getColumns(), row);
 		layoutTbl.add(close, 1, row);
+		layoutTbl.add(Text.getNonBrakingSpace(), 1, row);
+		layoutTbl.add(submit, 1, row);
+		form.setToDisableOnSubmit(submit, true);
 		layoutTbl.setHeight(row, Table.HUNDRED_PERCENT);
 		layoutTbl.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
 
