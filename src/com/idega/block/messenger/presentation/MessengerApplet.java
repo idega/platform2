@@ -187,7 +187,7 @@ public class MessengerApplet extends Applet implements Runnable{
       }
   }
 
-  public synchronized void getMessagesFromDialog(MessageDialog dialog){
+  public void getMessagesFromDialog(MessageDialog dialog){
     if( packetToServlet == null ){
       packetToServlet = new Packet();
       packetToServlet.setSender(sessionId);
