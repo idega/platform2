@@ -20,6 +20,7 @@ import se.idega.idegaweb.commune.message.business.MessageComparator;
 import se.idega.idegaweb.commune.message.data.Message;
 import se.idega.idegaweb.commune.message.data.PrintMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
+import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.presentation.ColumnList;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import se.idega.idegaweb.commune.printing.business.DocumentBusiness;
@@ -54,7 +55,7 @@ import com.idega.util.IWTimestamp;
  * Copyright:    Copyright idega Software (c) 2002
  * Company:	idega Software
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: EventList.java,v 1.2 2003/03/21 18:39:53 roar Exp $
+ * @version $Id: EventList.java,v 1.3 2003/03/23 11:42:25 laddi Exp $
  * @since 17.3.2003 
  */
 
@@ -546,7 +547,7 @@ RS*/
 	int childCareId = getChildCareSession(iwc).getChildCareID();
 	uForm.add(new Text("ChildcareId:" + childCareId));
 	//Collection unprintedLetters = getMessageBusiness(iwc).getUnPrintedLetterMessagesByType(currentType,uFrom,uTo);
-	Collection unprintedLetters = getChildCareApplication(iwc).findAllChildCasesByProvider(childCareId);
+	Collection unprintedLetters = getPrintedLetter(iwc).findLetterByChildcare(childCareId);
 	
 /*RS	uT.add(getLocalizedHeader("printdoc.unprinted_letters", "Letters for printing"),1,urow++);  RS*/
 	uT.add(getUnPrintedDatesForm(iwc),1,urow++);
@@ -753,6 +754,15 @@ RS*/
 private ChildCareApplicationHome getChildCareApplication(IWContext iwc) {
 	try {
 		return (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+	}
+	catch (RemoteException e) { 
+		return null;
+	}
+}
+
+private PrintedLetterMessageHome getPrintedLetter(IWContext iwc) {
+	try {
+		return (PrintedLetterMessageHome) IDOLookup.getHome(PrintedLetterMessageHome.class);
 	}
 	catch (RemoteException e) { 
 		return null;

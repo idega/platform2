@@ -522,6 +522,14 @@ public class PrintedLetterMessageBMPBean extends AbstractCaseBMPBean implements 
 	public String[] ejbHomeGetPrintMessageTypes(){
 		return ejbHomeGetLetterTypes();
 	}
-
-
+	
+	//TODO Handle this in more general way...
+	public Collection ejbFindLettersByChildcare(int providerID) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getEntityName()+" m, proc_case p, comm_childcare c");
+		sql.appendWhereEquals("m.msg_letter_message_id","p.proc_case_id");
+		sql.appendAndEquals("p.parent_case_id", "c.comm_childcare_id");
+		sql.appendAndEquals("c.provider_id", providerID);
+		return this.idoFindPKsByQuery(sql);
+	}
 }

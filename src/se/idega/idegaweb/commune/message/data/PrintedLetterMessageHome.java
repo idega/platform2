@@ -34,5 +34,6 @@ public interface PrintedLetterMessageHome extends PrintMessageHome
  public int getNumberOfUnprintedLettersByType(String letterType);
  public int getNumberOfPrintedLettersByType(String letterType);
  public String[] getPrintMessageTypes();
+ public java.util.Collection findLetterByChildcare(int p0)throws javax.ejb.FinderException;
 
 }
