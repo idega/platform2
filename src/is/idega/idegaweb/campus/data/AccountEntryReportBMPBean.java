@@ -98,17 +98,17 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
 
         if(tempObj != null){
           String columnName = null;
-          tempObj.setAccountID(new Integer(RS.getInt(COLUMN_ACCOUNT_ID)));
-          tempObj.setBuildingId(new Integer(RS.getInt(COLUMN_BUILDING_ID)));
-          tempObj.setBuilding(RS.getString(COLUMN_BUILDING));
-          tempObj.setFirstName(RS.getString(COLUMN_FIRST_NAME));
-          tempObj.setMiddleName(RS.getString(COLUMN_MIDDLE_NAME));
-          tempObj.setLastName(RS.getString(COLUMN_LAST_NAME));
-          tempObj.setPersonalID(RS.getString(COLUMN_PERSONAL_ID));
-          tempObj.setKeyID(new Integer(RS.getInt(COLUMN_KEYID)));
-          tempObj.setKeyCode(RS.getString(COLUMN_KEYCODE));
-          tempObj.setKeyInfo(RS.getString(COLUMN_KEYINFO));
-          tempObj.setTotal(new Float(RS.getFloat(COLUMN_TOTAL)));
+          tempObj.setAccountID(new Integer(RS.getInt(1)));//COLUMN_ACCOUNT_ID)));
+          tempObj.setBuildingId(new Integer(RS.getInt(2)));//COLUMN_BUILDING_ID)));
+          tempObj.setBuilding(RS.getString(3));//COLUMN_BUILDING));
+          tempObj.setFirstName(RS.getString(4));//COLUMN_FIRST_NAME));
+          tempObj.setMiddleName(RS.getString(5));//COLUMN_MIDDLE_NAME));
+          tempObj.setLastName(RS.getString(6));//COLUMN_LAST_NAME));
+          tempObj.setPersonalID(RS.getString(7));//COLUMN_PERSONAL_ID));
+          tempObj.setKeyID(new Integer(RS.getInt(8)));//RS.getInt(COLUMN_KEYID)));
+          tempObj.setKeyCode(RS.getString(9));//COLUMN_KEYCODE));
+          tempObj.setKeyInfo(RS.getString(10));//COLUMN_KEYINFO));
+          tempObj.setTotal(new Float(11));//RS.getFloat(COLUMN_TOTAL)));
         
         }
         if(vector==null){
@@ -148,7 +148,7 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
     StringBuffer sql = new StringBuffer();
     
     /*
-	 select a.FIN_ACCOUNT_ID ACC_ID,b.BU_BUILDING_ID BUILD_ID,b.NAME BUILDING,
+	 select a.FIN_ACCOUNT_ID ACC_ID ,b.BU_BUILDING_ID BUILD_ID,b.NAME BUILDING,
 	ap.bu_apartment_id APRT_ID,ap.NAME APARTMENT,
 	u.FIRST_NAME,u.MIDDLE_NAME,u.LAST_NAME,u.PERSONAL_ID, k.fin_acc_key_id KEYID,
 	k.NAME KEYCODE,k.INFO KEYINFO ,sum(e.TOTAL) TOTAL 
@@ -170,7 +170,7 @@ public class AccountEntryReportBMPBean implements AccountEntryReport{
     
     */
     sql.append("  select a.FIN_ACCOUNT_ID ACC_ID,b.BU_BUILDING_ID BUILD_ID,b.NAME BUILDING, ");
-    sql.append(" ap.BU_APARTMENT_ID APRT_ID,ap.NAME APARTMENT, ");
+    sql.append("  ");
     sql.append(" u.FIRST_NAME,u.MIDDLE_NAME,u.LAST_NAME,u.PERSONAL_ID, ");
     sql.append(" ");
     if(!byAccountKeyCode)
