@@ -1,6 +1,6 @@
 /**
 *
-* This is a collection of temporary sql fixes.
+* This is a collection of "temporary" sql fixes.
 *
 *
 **/
