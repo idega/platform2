@@ -6,10 +6,10 @@ import javax.ejb.*;
 import java.rmi.RemoteException;
 
 /**
- * Last modified: $Date: 2002/10/23 10:00:36 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/28 11:52:17 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class SubCategoryHomeImpl extends IDOFactory implements SubCategoryHome {
     public SubCategory create () throws CreateException{
@@ -29,6 +29,13 @@ public class SubCategoryHomeImpl extends IDOFactory implements SubCategoryHome {
         idoCheckInPooledEntity (entity);
         return (SubCategory []) getEntityCollectionForPrimaryKeys(ids).toArray
                 (new SubCategory [0]);
+    }
+    
+    public SubCategory findSubCategoryByName(String name) throws FinderException {
+		IDOEntity entity = idoCheckOutPooledEntity();
+		Integer id = ((SubCategoryBMPBean)entity).ejbFindSubCategoryByName(name);
+		idoCheckInPooledEntity(entity);
+		return (SubCategory) findByPrimaryKeyIDO(id);
     }
 
     protected Class getEntityInterfaceClass() {

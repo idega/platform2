@@ -13,10 +13,10 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.idegaweb.commune.message.data.Message;
 
 /**
- * Last modified: $Date: 2002/11/28 08:31:41 $ by $Author: staffan $
+ * Last modified: $Date: 2002/12/28 11:52:17 $ by $Author: laddi $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class ViewpointBusinessBean extends CaseBusinessBean
     implements ViewpointBusiness {
@@ -145,5 +145,15 @@ public class ViewpointBusinessBean extends CaseBusinessBean
         final SubCategoryHome home
                 = (SubCategoryHome) IDOLookup.getHome (SubCategory.class);
 		return home.findByPrimaryKey (new Integer (subCategoryID));
+	}
+	
+	public SubCategory findSubCategory(String name) throws RemoteException {
+		try {
+			final SubCategoryHome subCategoryHome = (SubCategoryHome) IDOLookup.getHome (SubCategory.class);
+			return subCategoryHome.findSubCategoryByName(name);
+		}
+		catch (FinderException fe) {
+			return null;
+		}
 	}
 }
