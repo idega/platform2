@@ -75,7 +75,6 @@ import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
-import com.idega.data.IDOEntity;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
@@ -577,9 +576,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					User parent = (User) iter.next();
 					if (!getUserBusiness().haveSameAddress(parent, appParent)) {
 						getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), true);
-					} else if (!parent.equals((IDOEntity)appParent)) {
-						getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), false);
 					}
+					/*else if (!parent.equals((IDOEntity)appParent)) {
+						getMessageBusiness().createUserMessage(application, parent, subject, MessageFormat.format(body, arguments), false);
+					}*/
 				}
 			}
 			catch (NoCustodianFound ncf) {
