@@ -158,7 +158,7 @@ public class GroupMemberList extends Block {
 		boolean isTrainer = false;
 		try {
 			int user_id = Integer.parseInt(trainer.getPrimaryKey().toString());
-			int group_id = Integer.parseInt(trainer.getPrimaryKey().toString());
+			int group_id = Integer.parseInt(flock.getPrimaryKey().toString());
 			int status_id = getUserStatusBusiness(iwc).getUserGroupStatus(user_id,group_id);
 			if(status_id != -1) {
 				Status st = (Status) IDOLookup.findByPrimaryKey(Status.class, status_id);
