@@ -1,5 +1,5 @@
 /*
- * $Id: PersonalNumberSearch.java,v 1.3 2003/11/21 19:01:27 tryggvil Exp $
+ * $Id: PersonalNumberSearch.java,v 1.4 2004/03/14 18:45:42 aron Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -90,6 +90,7 @@ public class PersonalNumberSearch extends Block {
     }
     numberTable.setCellpadding(0);
     numberTable.setCellspacing(0);
+    //if(!"".equals(_backgroundImageUrl))
     numberTable.setBackgroundImage(new Image(_backgroundImageUrl));
 
     HelpButton helpButton = new HelpButton(_iwrb.getLocalizedString("help_headline","Personal number"),_iwrb.getLocalizedString("personal_number_help","Help"));
