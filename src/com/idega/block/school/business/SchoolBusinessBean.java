@@ -1529,6 +1529,15 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 			return new Vector();
 		}
 	}
+	
+	public Collection findStudentsInSchoolByDateChildcare(int schoolID, int schoolClassID, String schoolCategory, java.sql.Date date, boolean showNotYetActive){
+		try {
+			return getSchoolClassMemberHome().findBySchoolChildcare(schoolID, schoolClassID, schoolCategory, date, showNotYetActive);
+		}
+		catch (FinderException e) {
+			return new Vector();
+		}
+	}
 
 	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, java.sql.Date date) {
 		return findStudentsInSchoolByDate(schoolID, schoolClassID, null, date);

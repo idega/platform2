@@ -51,8 +51,8 @@ import com.idega.util.IWTimestamp;
  * 
  * @author <br>
  *         <a href="mailto:aron@idega.is">Aron Birkir </a> <br>
- *         Last modified: $Date: 2005/01/04 13:52:24 $ by $Author: laddi $
- * @version $Revision: 1.124 $
+ *         Last modified: $Date: 2005/01/07 07:42:21 $ by $Author: malin $
+ * @version $Revision: 1.125 $
  */
 
 public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolClassMember {
@@ -1032,6 +1032,35 @@ public class SchoolClassMemberBMPBean extends GenericEntity implements SchoolCla
 		return super.idoFindPKsBySQL(sql.toString());
 	}
 
+	public Collection ejbFindBySchoolChildcare(int schoolID, int schoolClassID, Date date, boolean showNotYetActive) throws FinderException {
+		return ejbFindBySchool(schoolID, schoolClassID, null, date, showNotYetActive);
+	}
+	
+	public Collection ejbFindBySchoolChildcare(int schoolID, int schoolClassID, String schoolCategory, Date date, boolean showNotYetActive) throws FinderException {
+		IDOQuery sql = idoQuery();
+		sql.appendSelectAllFrom(this.getTableName() + " mb" + "," + SchoolClassBMPBean.SCHOOLCLASS + " cl, sch_school_type t, ic_user u, comm_childcare_archive cca ").appendWhere();
+		sql.append(" cl." + SchoolClassBMPBean.SCHOOL).appendEqualSign().append(schoolID).appendAndEquals("u.ic_user_id", "mb." + MEMBER).appendAnd();
+		sql.append("(cl." + SchoolClassBMPBean.COLUMN_VALID).appendEqualSign().appendWithinSingleQuotes("Y").appendOr().append("cl." + SchoolClassBMPBean.COLUMN_VALID);
+		sql.append(" is null)").appendAnd().append(" mb." + SCHOOLCLASS).appendEqualSign().append("cl." + SchoolClassBMPBean.SCHOOLCLASS + "_id");
+		sql.appendAndEquals("mb." + SCHOOL_TYPE, "t.sch_school_type_id");
+		sql.appendAndEquals("mb." + SCHOOLCLASSMEMBERID, "cca." + SCHOOLCLASSMEMBERID);
+		if (schoolCategory != null)
+			sql.appendAndEqualsQuoted("t.school_category", schoolCategory);
+		if (schoolClassID != -1)
+			sql.appendAndEquals("mb." + SCHOOLCLASS, schoolClassID);
+		if (showNotYetActive) {
+			//sql.appendAnd().append(REGISTER_DATE).appendGreaterThanSign().append(date);
+			sql.appendAnd().append("cca.VALID_FROM_DATE").appendGreaterThanSign().append(date);
+		}
+		else {
+			sql.appendAnd().append(REGISTER_DATE).appendLessThanOrEqualsSign().append(date);
+			sql.appendAnd().append("cca.VALID_FROM_DATE").appendLessThanOrEqualsSign().append(date);
+		}
+		sql.appendAnd().appendLeftParenthesis().append(REMOVED_DATE).appendGreaterThanOrEqualsSign().append(date).appendOr().append(REMOVED_DATE).append(" is null").appendRightParenthesis();
+		sql.appendOrderBy("u.last_name, u.first_name, u.middle_name");
+		return super.idoFindPKsBySQL(sql.toString());
+	}
+	
 	public Collection ejbFindAllLastYearStudentsBySeasonAndMaximumAge(SchoolSeason season, int maxAge) throws FinderException {
 		return ejbFindAllLastYearStudentsBySeasonAndYearAndMaximumAge(season, null, maxAge);
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolClassMemberHomeImpl.java,v 1.64 2005/01/04 13:52:24 laddi Exp $
+ * $Id: SchoolClassMemberHomeImpl.java,v 1.65 2005/01/07 07:42:21 malin Exp $
  * Created on 29.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -22,10 +22,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/04 13:52:24 $ by $Author: laddi $
+ * Last modified: $Date: 2005/01/07 07:42:21 $ by $Author: malin $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.64 $
+ * @version $Revision: 1.65 $
  */
 public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClassMemberHome {
 
@@ -398,6 +398,19 @@ public class SchoolClassMemberHomeImpl extends IDOFactory implements SchoolClass
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
 
+	public Collection findBySchoolChildcare(int schoolID, int schoolClassID, Date date, boolean showNotYetActive) throws FinderException{
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolChildcare(schoolID, schoolClassID, date, showNotYetActive);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	public Collection findBySchoolChildcare(int schoolID, int schoolClassID, String schoolCategory, Date date, boolean showNotYetActive) throws FinderException{
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindBySchoolChildcare(schoolID, schoolClassID, schoolCategory, date, showNotYetActive);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	}
+	
 	public Collection findAllLastYearStudentsBySeasonAndMaximumAge(SchoolSeason season, int maxAge) throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
 		java.util.Collection ids = ((SchoolClassMemberBMPBean) entity).ejbFindAllLastYearStudentsBySeasonAndMaximumAge(season, maxAge);

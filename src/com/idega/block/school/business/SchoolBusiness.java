@@ -1,5 +1,5 @@
 /*
- * $Id: SchoolBusiness.java,v 1.86 2005/01/04 19:57:31 malin Exp $
+ * $Id: SchoolBusiness.java,v 1.87 2005/01/07 07:42:57 malin Exp $
  * Created on 27.12.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -52,10 +52,10 @@ import com.idega.user.data.User;
 
 
 /**
- * Last modified: $Date: 2005/01/04 19:57:31 $ by $Author: malin $
+ * Last modified: $Date: 2005/01/07 07:42:57 $ by $Author: malin $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.86 $
+ * @version $Revision: 1.87 $
  */
 public interface SchoolBusiness extends IBOService {
 
@@ -619,6 +619,11 @@ public interface SchoolBusiness extends IBOService {
 	 * @see com.idega.block.school.business.SchoolBusinessBean#findStudentsInSchoolByDate
 	 */
 	public Collection findStudentsInSchoolByDate(int schoolID, int schoolClassID, String schoolCategory, java.sql.Date date, boolean showNotYetActive) throws java.rmi.RemoteException;
+	
+	/**
+	 * @see com.idega.block.school.business.SchoolBusinessBean#findStudentsInSchoolByDateChildcare
+	 */
+	public Collection findStudentsInSchoolByDateChildcare(int schoolID, int schoolClassID, String schoolCategory, java.sql.Date date, boolean showNotYetActive) throws java.rmi.RemoteException;
 
 	/**
 	 * @see com.idega.block.school.business.SchoolBusinessBean#findStudentsInSchoolByDate
