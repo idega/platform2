@@ -139,6 +139,7 @@ public class ProductCatalogLayoutWineList extends AbstractProductCatalogLayout {
 			ProductItemTeaser teaser = new ProductItemTeaser(product);
 			ProductItemPrice price = new ProductItemPrice(product);
 			price.setShowCurrency(true);
+			price.setShowLocalized(true);
 			Hashtable metadata = product.getMetaDataAttributes();
 			if (metadata == null)
 				metadata = new Hashtable();
