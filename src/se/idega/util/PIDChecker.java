@@ -66,10 +66,8 @@ public class PIDChecker {
 		if (personalID.length() != 10)
 			return false;
 
-		if (allowTemporary) {
-			if (personalID.indexOf("TF") != -1)
+		if (allowTemporary && personalID.indexOf("TF") != -1){
 				return true;
-			return false;
 		}
 		else {
 			int values[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
