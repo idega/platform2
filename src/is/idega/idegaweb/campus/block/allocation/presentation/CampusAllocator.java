@@ -1,5 +1,5 @@
 /*
- * $Id: CampusAllocator.java,v 1.53 2003/08/08 11:26:58 aron Exp $
+ * $Id: CampusAllocator.java,v 1.54 2003/08/11 10:33:35 aron Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -749,6 +749,7 @@ public class CampusAllocator extends Block implements Campus {
 		L.addParameter("change", contractID.toString());
 		L.addParameter("applicant", waitingList.getApplicantId().toString());
 		L.setToolTip(iwrb.getLocalizedString("tooltip_alloc_change","Change"));
+		L.addParameter("wl_id",waitingList.getPrimaryKey().toString());
 		if (pTypeId != null && pComplexId != null) {
 			L.addParameter(pTypeId);
 			L.addParameter(pComplexId);
@@ -1202,18 +1203,21 @@ public class CampusAllocator extends Block implements Campus {
 			//T.add(delete, 1, row);
 			T.addButton(delete);
 			T.add(new HiddenInput("contract_id", C.getPrimaryKey().toString()));
-			CheckBox incrementRejections = new CheckBox("increment_rejections");
+			CheckBox incrementRejections = new CheckBox("increment_rejections","true");
 			incrementRejections.setChecked(true);
+			
 			if(waitingList!=null){
+				T.add(new HiddenInput("wl_id",waitingList.getPrimaryKey().toString()));
 				if(waitingList.getRejectFlag()){
 					T.add(new HiddenInput("reset_reject_flag","true"));
 					incrementRejections.setChecked(false);	
 				}
-				T.add(new HiddenInput("wl_id",waitingList.getPrimaryKey().toString()));
+				T.add(formatText(iwrb.getLocalizedString("increment_rejections","Increment rejections")),1,row);
+				T.add(incrementRejections,3,row);
+				
 			}
 			
-			T.add(formatText(iwrb.getLocalizedString("increment_rejections","Increment rejections")),1,row);
-			T.add(incrementRejections,3,row);
+			
 			
 		}
 		//T.add(save, 3, row);
@@ -1480,7 +1484,7 @@ public class CampusAllocator extends Block implements Campus {
 
 	public void main(IWContext iwc) {
 		//isStaff = com.idega.core.accesscontrol.business.AccessControl
-		//this.debugParameters(iwc);
+		//debugParameters(iwc);
 		isAdmin = iwc.hasEditPermission(this);
 		control(iwc);
 	}
