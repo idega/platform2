@@ -24,8 +24,14 @@ import com.idega.projects.golf.*;
 import com.idega.data.*;
 import com.idega.projects.golf.service.*;
 import com.idega.projects.golf.entity.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 public class ResultsViewer extends JModuleObject {
+
+private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+protected IWResourceBundle iwrb;
+protected IWBundle iwb;
 
 private int tournamentID = 0;
 private int tournamentGroupID = -1;
@@ -47,6 +53,7 @@ private Table resultTable;
 
   public void main(ModuleInfo modinfo) {
     try {
+      iwrb = getResourceBundle(modinfo);
       tournament = new Tournament(tournamentID);
       add(getResult(modinfo));
     }
@@ -167,15 +174,15 @@ private Table resultTable;
 
     DropdownMenu genderMenu = new DropdownMenu("gender");
       genderMenu.setAttribute("style",getStyle());
-      genderMenu.addMenuElement("","- Kyn -");
-      genderMenu.addMenuElement("M","Karlar");
-      genderMenu.addMenuElement("F","Konur");
-      genderMenu.addMenuElement("B","Bæði");
+      genderMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.genders","Genders")+" -");
+      genderMenu.addMenuElement("M",iwrb.getLocalizedString("tournament.males","Male"));
+      genderMenu.addMenuElement("F",iwrb.getLocalizedString("tournament.females","Female"));
+      genderMenu.addMenuElement("B",iwrb.getLocalizedString("tournament.both","Both"));
       genderMenu.keepStatusOnAction();
 
     DropdownMenu groupsMenu = new DropdownMenu("tournament_group_id");
       groupsMenu.setAttribute("style",getStyle());
-      groupsMenu.addMenuElement("","- Flokkar -");
+      groupsMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.groups","Groups")+" -");
 
       TournamentGroup[] groups = null;
       try {
@@ -188,44 +195,44 @@ private Table resultTable;
         e.printStackTrace(System.err);
       }
 
-      groupsMenu.addMenuElement("0","Allir");
+      groupsMenu.addMenuElement("0",iwrb.getLocalizedString("tournament.all","All"));
       groupsMenu.keepStatusOnAction();
 
     DropdownMenu roundsMenu = new DropdownMenu("tournament_round_id");
       roundsMenu.setAttribute("style",getStyle());
-      roundsMenu.addMenuElement("","- Hringir -");
+      roundsMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.rounds","Rounds")+" -");
 
       TournamentRound[] rounds = null;
       try {
         rounds = tournament.getTournamentRounds();
         for ( int a = 0; a < rounds.length; a++ ) {
-          roundsMenu.addMenuElement(rounds[a].getID(),Integer.toString(a+1)+". hringur");
+          roundsMenu.addMenuElement(rounds[a].getID(),Integer.toString(a+1)+". "+iwrb.getLocalizedString("tournament.round","Round"));
         }
       }
       catch (Exception e) {
         e.printStackTrace(System.err);
       }
 
-      roundsMenu.addMenuElement("0","Allir");
+      roundsMenu.addMenuElement("0",iwrb.getLocalizedString("tournament.all","All"));
       roundsMenu.keepStatusOnAction();
 
     DropdownMenu scoreMenu = new DropdownMenu("sort");
       scoreMenu.setAttribute("style",getStyle());
-      scoreMenu.addMenuElement("","- Skor -");
-      scoreMenu.addMenuElement(ResultComparator.TOTALSTROKES,"Högg án forgjafar");
-      scoreMenu.addMenuElement(ResultComparator.TOTALSTROKESWITHHANDICAP,"Högg með forgjöf");
-      scoreMenu.addMenuElement(ResultComparator.TOTALPOINTS,"Punktar");
+      scoreMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.score","Score")+" -");
+      scoreMenu.addMenuElement(ResultComparator.TOTALSTROKES,iwrb.getLocalizedString("tournament.strokes_without_handicap","Strokes"));
+      scoreMenu.addMenuElement(ResultComparator.TOTALSTROKESWITHHANDICAP,iwrb.getLocalizedString("tournament.strokes_with_handicap","Strokes w/handicap"));
+      scoreMenu.addMenuElement(ResultComparator.TOTALPOINTS,iwrb.getLocalizedString("tournament.points","Points"));
       scoreMenu.keepStatusOnAction();
 
     DropdownMenu orderMenu = new DropdownMenu("order");
       orderMenu.setAttribute("style",getStyle());
-      orderMenu.addMenuElement("","- Röðun -");
-      orderMenu.addMenuElement(0,"Eftir skori");
-      orderMenu.addMenuElement(ResultComparator.NAME,"Eftir nafni");
-      orderMenu.addMenuElement(ResultComparator.ABBREVATION,"Eftir klúbbi");
+      orderMenu.addMenuElement("","- "+iwrb.getLocalizedString("tournament.order","Order")+" -");
+      orderMenu.addMenuElement(0,iwrb.getLocalizedString("tournament.by_score","By score"));
+      orderMenu.addMenuElement(ResultComparator.NAME,iwrb.getLocalizedString("tournament.by_name","By name"));
+      orderMenu.addMenuElement(ResultComparator.ABBREVATION,iwrb.getLocalizedString("tournament.by_club","By club"));
       orderMenu.keepStatusOnAction();
 
-    SubmitButton submit = new SubmitButton(new Image("/pics/formtakks/saekja.gif","",76,19));
+    SubmitButton submit = new SubmitButton(iwrb.getImage("buttons/get.gif","",76,19));
 
     formTable.add(genderMenu,1,1);
     formTable.add(groupsMenu,2,1);
@@ -293,6 +300,10 @@ private Table resultTable;
 
   public void addHiddenInput(String name, String value) {
     myForm.add(new HiddenInput(name,value));
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
 }

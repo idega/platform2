@@ -21,8 +21,14 @@ import com.idega.jmodule.object.interfaceobject.*;
 import com.idega.projects.golf.*;
 import com.idega.projects.golf.business.*;
 import com.idega.projects.golf.entity.*;
+import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.IWBundle;
 
 public class TournamentResults extends JModuleObject {
+
+  private final static String IW_BUNDLE_IDENTIFIER="com.idega.idegaweb.golf";
+  protected IWResourceBundle iwrb;
+  protected IWBundle iwb;
 
   private int tournamentId_ = -1;
   private int tournamentGroupId_ = -1;
@@ -102,6 +108,8 @@ public class TournamentResults extends JModuleObject {
 
   public void main(ModuleInfo modinfo) throws SQLException {
     try {
+      iwrb = getResourceBundle(modinfo);
+      iwb = getBundle(modinfo);
       tournament = new Tournament(tournamentId_);
       numberOfRounds = tournament.getNumberOfRounds();
       getMemberVector();
@@ -137,7 +145,7 @@ public class TournamentResults extends JModuleObject {
         myTable.setWidth("100%");
         myTable.setBorder(0);
 
-      String[] headers = { "Sæti","Kylfingur","Klúbbur","Fgj." };
+      String[] headers = { iwrb.getLocalizedString("tournament.position","Position"),iwrb.getLocalizedString("tournament.golfer","Member"),iwrb.getLocalizedString("tournament.club","Club"),iwrb.getLocalizedString("tournament.handicap_short","Hcp.") };
       for ( int a = 0; a < headers.length; a++ ) {
         if ( a == 0 && ( this.sortBy == ResultComparator.NAME || this.sortBy == ResultComparator.ABBREVATION ) ) {
           addHeaders("",a+1,1);
@@ -172,9 +180,10 @@ public class TournamentResults extends JModuleObject {
 
         Text memberText = new Text(collector.getName());
           memberText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        Window scoreWindow = new Window("Skoryfirlit",650,650,"/tournament/handicap_skor.jsp");
-        Image linkImage = new Image("/pics/handicap/pad.gif","Skoða skorkort",11,13);
+        Window scoreWindow = new Window(iwrb.getLocalizedString("tournament.scorecard","Scorecard"),650,650,"/tournament/handicap_skor.jsp");
+        Image linkImage = iwb.getImage("shared/view.gif",iwrb.getLocalizedString("tournament.view_scorecard","View scorecards"),9,18);
           linkImage.setHorizontalSpacing(4);
+          linkImage.setAttribute("align","absmiddle");
         Link seeScores = new Link(linkImage,scoreWindow);
                 seeScores.addParameter("member_id",collector.getMemberId());
                 seeScores.addParameter("tournament_id",tournamentId_);
@@ -353,11 +362,11 @@ public class TournamentResults extends JModuleObject {
 
   private void getTotalHeaders() {
     try {
-      String frontNine = "F9";
-      String backNine = "S9";
-      String total = "Sam";
-      String netto = "Net";
-      String difference = "Staða";
+      String frontNine = iwrb.getLocalizedString("tournament.front_nine","F9");
+      String backNine = iwrb.getLocalizedString("tournament.back_nine","B9");
+      String total = iwrb.getLocalizedString("tournament.total","Total");
+      String netto = iwrb.getLocalizedString("tournament.net","Net");
+      String difference = iwrb.getLocalizedString("tournament.difference","Difference");
 
       int firstColumn = 6;
       int column = firstColumn;
@@ -370,14 +379,14 @@ public class TournamentResults extends JModuleObject {
           addHeaders(difference,column+3,2);
           column += 4;
           for ( int a = 0; a < numberOfRounds; a++ ) {
-            addHeaders("H"+Integer.toString(a+1),column+a,2);
+            addHeaders(iwrb.getLocalizedString("tournament.round_short","R")+Integer.toString(a+1),column+a,2);
           }
           myTable.mergeCells(column,1,column+numberOfRounds-1,1);
-          addHeaders("Hringir",column,1);
+          addHeaders(iwrb.getLocalizedString("tournament.rounds","Rounds"),column,1);
           addHeaders(total,column+numberOfRounds,2);
           addHeaders(difference,column+numberOfRounds+1,2);
           myTable.mergeCells(column+numberOfRounds,1,column+numberOfRounds+1,1);
-          addHeaders("Samtals",column+numberOfRounds,1);
+          addHeaders(iwrb.getLocalizedString("tournament.total","Total"),column+numberOfRounds,1);
         break;
 
         case ResultComparator.TOTALSTROKESWITHHANDICAP :
@@ -389,37 +398,41 @@ public class TournamentResults extends JModuleObject {
             myTable.mergeCells(roundColumn,1,roundColumn+1,1);
             addHeaders(total,roundColumn,2);
             addHeaders(netto,roundColumn+1,2);
-            addHeaders("H"+Integer.toString(a+1),roundColumn,1);
+            addHeaders(iwrb.getLocalizedString("tournament.round_short","R")+Integer.toString(a+1),roundColumn,1);
             roundColumn += 2;
           }
           addHeaders(total,roundColumn,2);
           addHeaders(netto,roundColumn+1,2);
           myTable.mergeCells(roundColumn,1,roundColumn+1,1);
-          addHeaders("Samtals",roundColumn,1);
+          addHeaders(iwrb.getLocalizedString("tournament.total","Total"),roundColumn,1);
         break;
 
         case ResultComparator.TOTALPOINTS :
           addHeaders(total,column+2,2);
           column += 3;
           for ( int a = 0; a < numberOfRounds; a++ ) {
-            addHeaders("H"+Integer.toString(a+1),column+a,2);
+            addHeaders(iwrb.getLocalizedString("tournament.round_short","R")+Integer.toString(a+1),column+a,2);
           }
           myTable.mergeCells(column,1,column+numberOfRounds-1,1);
-          addHeaders("Hringir",column,1);
+          addHeaders(iwrb.getLocalizedString("tournament.rounds","Rounds"),column,1);
           myTable.mergeCells(column+numberOfRounds,1,column+numberOfRounds,2);
-          addHeaders("Samtals",column+numberOfRounds,1);
+          addHeaders(iwrb.getLocalizedString("tournament.total","Total"),column+numberOfRounds,1);
         break;
       }
 
       myTable.mergeCells(firstColumn-1,1,column-1,1);
-      addHeaders("Hola",firstColumn-1,2);
-      addHeaders("Í dag",firstColumn-1,1);
+      addHeaders(iwrb.getLocalizedString("tournament.hole","Hole"),firstColumn-1,2);
+      addHeaders(iwrb.getLocalizedString("tournament.last_round","Last round"),firstColumn-1,1);
 
       numberOfColumns = myTable.getColumns();
     }
     catch (Exception e) {
       e.printStackTrace(System.err);
     }
+  }
+
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
   }
 
 }

@@ -54,27 +54,28 @@ private Form myForm;
   }
 
   public void main(ModuleInfo modinfo) throws Exception {
-     iwrb = getResourceBundle(modinfo);
-        this.isAdmin=isAdministrator(modinfo);
+    iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
+    this.isAdmin=isAdministrator(modinfo);
 
+    if ( member_id == null ) {
+      member_id = modinfo.getRequest().getParameter("member_id");
+    }
+    if ( member_id == null ) {
+      member_id = (String) modinfo.getSession().getAttribute("member_id");
         if ( member_id == null ) {
-          member_id = modinfo.getRequest().getParameter("member_id");
-        }
-	if ( member_id == null ) {
-          member_id = (String) modinfo.getSession().getAttribute("member_id");
-            if ( member_id == null ) {
-              Member memberinn = (Member) modinfo.getSession().getAttribute("member_login");
-                if ( memberinn != null ) {
-                  member_id = String.valueOf(memberinn.getID());
-                    if ( member_id == null ) {
-                      member_id = "1";
-                    }
-                }
-                else {
-                        member_id = "1";
-                }
-            }
+          Member memberinn = (Member) modinfo.getSession().getAttribute("member_login");
+          if ( memberinn != null ) {
+            member_id = String.valueOf(memberinn.getID());
+              if ( member_id == null ) {
+                member_id = "1";
+              }
           }
+          else {
+            member_id = "1";
+          }
+        }
+      }
 
       Member member = new Member(Integer.parseInt(member_id));
 
@@ -103,7 +104,7 @@ private Form myForm;
       }
   }
 
-private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
+  private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
 
       Member memberInfo = new Member(Integer.parseInt(member_id));
       float forgjof = memberInfo.getHandicap();
@@ -111,15 +112,13 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
       String gender = memberInfo.getGender();
 
       String field_id = (String) modinfo.getSession().getAttribute("field_id");
-              if ( field_id == null ) {
-                      Field[] field = (Field[]) (new Field()).findAllByColumn("union_id",String.valueOf(union_id));
-
-                      if ( union_id > 3 && field.length > 0 ) {
-                              field_id = String.valueOf(field[0].getID());
-                      }
-
-                      else { field_id = "49"; }
-              }
+      if ( field_id == null ) {
+        Field[] field = (Field[]) (new Field()).findAllByColumn("union_id",String.valueOf(union_id));
+          if ( union_id > 3 && field.length > 0 ) {
+            field_id = String.valueOf(field[0].getID());
+          }
+          else field_id = "49";
+      }
 
       HiddenInput fieldID = new HiddenInput("field_id",field_id);
       myForm.add(fieldID);
@@ -128,109 +127,94 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
 
       idegaCalendar dagatal = new idegaCalendar();
 
-              String month = String.valueOf(dagatal.getMonth());
-              String year = String.valueOf(dagatal.getYear());
-              String day = String.valueOf(dagatal.getDay());
+      String month = String.valueOf(dagatal.getMonth());
+      String year = String.valueOf(dagatal.getYear());
+      String day = String.valueOf(dagatal.getDay());
 
       String tee_number = "1";
-          if ( String.valueOf(memberInfo.getHandicap()) != null && memberInfo.getGender() != null ) {
-              if ( forgjof >= 28.1 && gender.equals("M") ) { tee_number = "6"; }
-              else if ( forgjof >= 10.5 && gender.equals("F") ) { tee_number = "4"; }
-              else if ( forgjof <= 10.4 && gender.equals("F") ) { tee_number = "3"; }
-              else if ( forgjof <= 28.0 && forgjof >= 4.5 && gender.equals("M") ) { tee_number = "2"; }
-              else if ( forgjof <= 4.4 && gender.equals("M") ) { tee_number = "1"; }
-          }
+      if ( String.valueOf(memberInfo.getHandicap()) != null && memberInfo.getGender() != null ) {
+        if ( forgjof >= 28.1 && gender.equals("M") ) { tee_number = "6"; }
+        else if ( forgjof >= 10.5 && gender.equals("F") ) { tee_number = "4"; }
+        else if ( forgjof <= 10.4 && gender.equals("F") ) { tee_number = "3"; }
+        else if ( forgjof <= 28.0 && forgjof >= 4.5 && gender.equals("M") ) { tee_number = "2"; }
+        else if ( forgjof <= 4.4 && gender.equals("M") ) { tee_number = "1"; }
+      }
 
       DropdownMenu select_tee = new DropdownMenu("tee_number");
 
       DropdownMenu select_holes = new DropdownMenu("number_of_holes");
-
-              select_holes.addMenuElement("18",iwrb.getLocalizedString("handicap.18_holes","18 holes"));
-              select_holes.addMenuElement("1",iwrb.getLocalizedString("handicap.first_9_holes","first 9 holes"));
-              select_holes.addMenuElement("10",iwrb.getLocalizedString("handicap.last_9_holes","last 9 holes"));
-              select_holes.keepStatusOnAction();
+        select_holes.addMenuElement("18",iwrb.getLocalizedString("handicap.18_holes","18 holes"));
+        select_holes.addMenuElement("1",iwrb.getLocalizedString("handicap.first_9_holes","First 9 holes"));
+        select_holes.addMenuElement("10",iwrb.getLocalizedString("handicap.last_9_holes","Last 9 holes"));
+        select_holes.keepStatusOnAction();
 
       DropdownMenu select_stats = new DropdownMenu("statistics");
-
-              select_stats.addMenuElement("0",iwrb.getLocalizedString("handicap.nostatistics","no statistics"));
-              select_stats.addMenuElement("1",iwrb.getLocalizedString("handicap.file_statistics","file statistics"));
-              select_stats.keepStatusOnAction();
+        select_stats.addMenuElement("0",iwrb.getLocalizedString("handicap.nostatistics","No statistics"));
+        select_stats.addMenuElement("1",iwrb.getLocalizedString("handicap.file_statistics","Register statistics"));
+        select_stats.keepStatusOnAction();
 
       DropdownMenu select_month = new DropdownMenu("month");
-
-              for ( int m = 1 ; m <= 12 ; m++ ) {
-
-                      select_month.addMenuElement(String.valueOf(m),dagatal.getNameOfMonth(m).toLowerCase());
-
-              }
-
-              select_month.setSelectedElement(month);
-              select_month.keepStatusOnAction();
+        for ( int m = 1 ; m <= 12 ; m++ ) {
+          select_month.addMenuElement(String.valueOf(m),dagatal.getNameOfMonth(m,modinfo).toLowerCase());
+        }
+        select_month.setSelectedElement(month);
+        select_month.keepStatusOnAction();
 
       DropdownMenu select_year = new DropdownMenu("year");
+        for ( int y = 2001 ; y <= dagatal.getYear() ; y++ ) {
+          select_year.addMenuElement(String.valueOf(y),String.valueOf(y));
+        }
 
-              for ( int y = 2001 ; y <= dagatal.getYear() ; y++ ) {
-
-                      select_year.addMenuElement(String.valueOf(y),String.valueOf(y));
-
-              }
-
-              select_year.setSelectedElement(year);
-              select_year.keepStatusOnAction();
+        select_year.setSelectedElement(year);
+        select_year.keepStatusOnAction();
 
       DropdownMenu select_day = new DropdownMenu("day");
+        for ( int d = 1 ; d <= 31 ; d++ ) {
+          select_day.addMenuElement(String.valueOf(d),String.valueOf(d)+".");
+        }
 
-              for ( int d = 1 ; d <= 31 ; d++ ) {
-
-                      select_day.addMenuElement(String.valueOf(d),String.valueOf(d)+".");
-
-              }
-
-              select_day.setSelectedElement(day);
-              select_day.keepStatusOnAction();
+        select_day.setSelectedElement(day);
+        select_day.keepStatusOnAction();
 
       Tee[] teeID = (Tee[]) (new Tee()).findAll("select distinct tee_color_id from tee where field_id='"+field_id+"'");
 
       for ( int a = 0; a < teeID.length; a++ ) {
-
-              int teeColorID = teeID[a].getIntColumnValue("tee_color_id");
-
-              select_tee.addMenuElement(String.valueOf(teeColorID),(new TeeColor(teeColorID)).getStringColumnValue("tee_color_name"));
-
+        int teeColorID = teeID[a].getIntColumnValue("tee_color_id");
+        select_tee.addMenuElement(String.valueOf(teeColorID),(new TeeColor(teeColorID)).getStringColumnValue("tee_color_name"));
       }
-              select_tee.keepStatusOnAction();
-              select_tee.setSelectedElement(tee_number);
+        select_tee.keepStatusOnAction();
+        select_tee.setSelectedElement(tee_number);
 
       Window memberWindow = new Window("",400,220,"/handicap/select_member.jsp?");
       Image selectMemberImage = iwrb.getImage("buttons/search_for_member.gif","handicap.select","Select member");
         selectMemberImage.setAttribute("hspace","10");
       Link selectMember = new Link(selectMemberImage,memberWindow);
-              selectMember.clearParameters();
+        selectMember.clearParameters();
 
       Window fieldWindow = new Window("",400,220,"/handicap/select_field.jsp?");
       Image selectFieldImage =  iwrb.getImage("buttons/choose.gif","handicap.select_course","Select course");
         selectFieldImage.setAttribute("hspace","10");
       Link selectField = new Link(selectFieldImage,fieldWindow);
-              selectField.clearParameters();
+        selectField.clearParameters();
 
       SubmitButton writeScore = new SubmitButton(iwrb.getImage("buttons/register.gif"));
 
       Text member = new Text(iwrb.getLocalizedString("handicap.member","Member")+":" );
-              member.setFontSize(1);
+        member.setFontSize(1);
       Text memberText = new Text(memberInfo.getName());
-              memberText.setFontSize(2);
+        memberText.setFontSize(2);
       Text field = new Text(iwrb.getLocalizedString("handicap.course","Course")+":" );
-              field.setFontSize(1);
+        field.setFontSize(1);
       Text fieldText = new Text(fieldName.getName());
-              fieldText.setFontSize(2);
+        fieldText.setFontSize(2);
       Text tees = new Text(iwrb.getLocalizedString("handicap.tees","Tees")+":" );
-              tees.setFontSize(1);
+        tees.setFontSize(1);
       Text date = new Text(iwrb.getLocalizedString("handicap.day","Day")+":" );
-              date.setFontSize(1);
+        date.setFontSize(1);
       Text numberOfHoles = new Text(iwrb.getLocalizedString("handicap.number_of_holes","Number of holes")+":" );
-              numberOfHoles.setFontSize(1);
+        numberOfHoles.setFontSize(1);
       Text statistics = new Text(iwrb.getLocalizedString("handicap.statistics","Statistics")+":");
-              statistics.setFontSize(1);
+        statistics.setFontSize(1);
 
       outerTable = new Table(2,1);
         outerTable.setCellspacing(6);
@@ -239,11 +223,11 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
         outerTable.setAlignment(1,1,"center");
 
       Table myTable = new Table(2,7);
-              myTable.setBorder(0);
-              myTable.setCellpadding(8);
-              myTable.setCellspacing(0);
-              myTable.setAlignment("center");
-              myTable.setColumnAlignment(1,"right");
+        myTable.setBorder(0);
+        myTable.setCellpadding(8);
+        myTable.setCellspacing(0);
+        myTable.setAlignment("center");
+        myTable.setColumnAlignment(1,"right");
 
       myTable.add(member,1,1);
       myTable.add(field,1,2);
@@ -274,22 +258,20 @@ private void drawTable(ModuleInfo modinfo) throws IOException,SQLException {
         myTable.addText(iwrb.getLocalizedString("handicap.no_tees","No tees registered")+":",2,3);
       }
 
-      Image swingImage = new Image("/pics/handicap/swing.gif","",161,300);
+      Image swingImage = iwb.getImage("shared/swing.gif","",161,300);
 
       outerTable.add(myTable,1,1);
       outerTable.add(swingImage,2,1);
 
-}
+  }
 
-private void getForm() {
+  private void getForm() {
+    Window skraWindow = new Window("",600,600,"/handicap/handicap.jsp");
+    myForm = new Form(skraWindow);
+      myForm.add(new HiddenInput("member_id",member_id));
+  }
 
-      Window skraWindow = new Window("",600,600,"/handicap/handicap.jsp");
-      myForm = new Form(skraWindow);
-        myForm.add(new HiddenInput("member_id",member_id));
-
-}
-
-public String getBundleIdentifier(){
-  return IW_BUNDLE_IDENTIFIER;
-}
+  public String getBundleIdentifier(){
+    return IW_BUNDLE_IDENTIFIER;
+  }
 }

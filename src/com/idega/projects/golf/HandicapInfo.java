@@ -54,6 +54,7 @@ private Table myTable;
 
   public void main(ModuleInfo modinfo) throws Exception {
     iwrb = getResourceBundle(modinfo);
+    iwb = getBundle(modinfo);
 
         this.isAdmin=isAdministrator(modinfo);
 
@@ -64,10 +65,10 @@ private Table myTable;
         if ( member_id == null ) {
           member_id = modinfo.getRequest().getParameter("member_id");
         }
-	if ( member_id == null ) {
+        if ( member_id == null ) {
           member_id = (String) modinfo.getSession().getAttribute("member_id");
         }
-	if ( member_id == null ) {
+        if ( member_id == null ) {
                Member memberinn = (Member) modinfo.getSession().getAttribute("member_login");
                 if ( memberinn != null ) {
                   member_id = String.valueOf(memberinn.getID());
@@ -285,7 +286,7 @@ private Table myTable;
           memberImage.setAttribute("alt",memberInfo.getName());
           memberImage.setAttribute("align","absmiddle");
 
-        Image swingImage = new Image("/pics/handicap/swing.gif","",161,300);
+        Image swingImage = iwb.getImage("shared/swing.gif","",161,300);
 
         imageTable.add(memberImage);
 
