@@ -59,7 +59,7 @@ public class TravelWindow extends Window {
 
   private void setTemplate(IWContext iwc) {
     //iwrb = super.getResourceBundle(iwc);
-    iwb = super.getBundle(iwc);
+    iwb = getBundle(iwc);
     iwrb = iwb.getResourceBundle(iwc);
 
     table.setWidth("100%");
