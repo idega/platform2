@@ -79,7 +79,7 @@ public class WorkReportWindow extends IWAdminWindow {
 		//table.mergeCells(1,2,3,1);
 		table.setWidthAndHeightToHundredPercent();
 		table.setColumnColor(1,this.MENU_COLOR);
-		table.setColumnWidth(1,"200");
+		table.setColumnWidth(1,"250");
 		table.setVerticalAlignment(1,1,Table.VERTICAL_ALIGN_TOP);
 		table.setVerticalAlignment(2,1,Table.VERTICAL_ALIGN_TOP);
 		
