@@ -44,8 +44,11 @@ public class LoginPage extends TravelManager {
   protected static Login getLoginObject(IWContext iwc, IWResourceBundle iwrb) {
     Login login = new Login();
       login.setColor(GRAY);
+      login.setLoginAlignment("center");
       login.setUserTextColor(TravelManager.BLACK);
       login.setPasswordTextColor(TravelManager.BLACK);
+      login.setTextStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; color: #000000");
+//      login.setStyle("font-face: Verdana, Helvetica, sans-serif; font-size: 1; color: #000000");
       if (iwrb != null) {
         login.setPasswordText(iwrb.getLocalizedString("travel.password","Password "));
         login.setUserText(iwrb.getLocalizedString("travel.username","Username "));
@@ -53,7 +56,7 @@ public class LoginPage extends TravelManager {
     return login;
   }
 
-  protected static Table getLoginTable(IWContext iwc, IWBundle bundle, IWResourceBundle iwrb) {
+  protected Table getLoginTable(IWContext iwc, IWBundle bundle, IWResourceBundle iwrb) {
     Table bigTable = new Table(1,1);
         bigTable.setCellspacing(40);
         bigTable.setCellpadding(0);
@@ -93,11 +96,9 @@ public class LoginPage extends TravelManager {
           fexTable.setWidth("300");
           fexTable.setBorder(0);
 
-          Text leText = new Text();
-            leText.setFontFace(Text.FONT_FACE_VERDANA);
-            leText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-            leText.setBold();
+          Text leText = (Text) theBigBoldText.clone();
             leText.setText(iwrb.getLocalizedString("travel.please_select_language","Please select language"));
+            leText.setFontColor(super.BLACK);
 
           fexTable.add(leText);
           fexTable.add(getLocaleSwitcherForm(iwc),2,1);
@@ -114,11 +115,12 @@ public class LoginPage extends TravelManager {
         innerTable.setWidth(1,2,"337");
 //        innerTable.setHeight(1,1,"180");
 
-        Text middleHeader = new Text(iwrb.getLocalizedString("travel.welcome","Welcome"));
-          middleHeader.setBold();
-          middleHeader.setFontSize(Text.FONT_SIZE_10_HTML_2);
-        Text middleContent = new Text(iwrb.getLocalizedString("travel.please_enter_your_username_and_password","Please enter your username and password"));
-          middleContent.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        Text middleHeader = (Text) theBigBoldText.clone();
+          middleHeader.setText(iwrb.getLocalizedString("travel.welcome","Welcome"));
+          middleHeader.setFontColor(super.BLACK);
+        Text middleContent = (Text) theText.clone();
+          middleContent.setText(iwrb.getLocalizedString("travel.please_enter_your_username_and_password","Please enter your username and password"));
+          middleContent.setFontColor(super.BLACK);
 
         Table middleTextTable = new Table(1,2);
           middleTextTable.setWidth("80%");
@@ -134,10 +136,12 @@ public class LoginPage extends TravelManager {
         innerTable.setAlignment(2,2,"center");
 
 
-        Text rightHeader = new Text(iwrb.getLocalizedString("travel.usage_rules_header","Usage rules"));
-          rightHeader.setBold();
-          rightHeader.setFontSize(Text.FONT_SIZE_10_HTML_2);
-        Text rightContent = new Text(iwrb.getLocalizedString("travel.usage_rules_1","Kerfi þetta er einungi heimilað aðilum innan ferðaþjónustu."));
+        Text rightHeader = (Text) super.theBigBoldText.clone();
+          rightHeader.setText(iwrb.getLocalizedString("travel.usage_rules_header","Usage rules"));
+          rightHeader.setFontColor(super.BLACK);
+        Text rightContent = (Text) theText.clone();
+          rightContent.setFontColor(super.BLACK);
+          rightContent.setText(iwrb.getLocalizedString("travel.usage_rules_1","Kerfi þetta er einungi heimilað aðilum innan ferðaþjónustu."));
           rightContent.addBreak();
           rightContent.addBreak();
           String string = iwrb.getLocalizedString("travel.usage_rules_2","Misnotkun varðar lög blablabla");
@@ -156,7 +160,6 @@ public class LoginPage extends TravelManager {
           if (string.length() > 1) {
           rightContent.addToText(string);
           }
-          rightContent.setFontSize(Text.FONT_SIZE_7_HTML_1);
 
         Table rightTextTable = new Table(1,2);
           rightTextTable.setWidth("100%");

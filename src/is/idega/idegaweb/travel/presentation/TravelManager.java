@@ -27,6 +27,7 @@ public class TravelManager extends Block {
 
     protected Text theText = new Text();
     protected Text theBoldText = new Text();
+    protected Text theBigBoldText = new Text();
     protected Text smallText = new Text();
     protected Text theSmallBoldText = new Text();
 
@@ -117,11 +118,13 @@ public class TravelManager extends Block {
     }
 
     protected Table getLogin(IWContext iwc) {
-      return LoginPage.getLoginTable(iwc, bundle, iwrb);
+      LoginPage lp = new LoginPage();
+      return lp.getLoginTable(iwc, bundle, iwrb);
     }
 
     protected Table getLoggedOffTable(IWContext iwc) {
-      return LoginPage.getLoginTable(iwc, bundle, iwrb);
+      LoginPage lp = new LoginPage();
+      return lp.getLoginTable(iwc, bundle, iwrb);
     }
 
     public void draw(IWContext iwc) {
@@ -290,20 +293,26 @@ public class TravelManager extends Block {
         catch (Exception e) {
         }
 
-
-        theText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        theText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
+        //theText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        //theText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         theText.setFontColor(this.textColor);
-        theBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        theBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
-        theBoldText.setBold();
+        //theBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        //theBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
+        //theBoldText.setBold();
+        theBigBoldText.setFontColor(this.textColor);
+        theBigBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_10_STYLE_TAG+"; font-weight: bold;");
         theBoldText.setFontColor(this.textColor);
-        smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        smallText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
+        theText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+";");
+        theBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; font-weight: bold;");
+        smallText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+";");
+        theSmallBoldText.setFontStyle("font-face: Verdana, Helvetica, sans-serif; font-size: "+Text.FONT_SIZE_7_STYLE_TAG+"; font-weight: bold;");
+
+        //smallText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        //smallText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
         smallText.setFontColor(this.textColor);
-        theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
-        theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
-        theSmallBoldText.setBold();
+        //theSmallBoldText.setFontFace(Text.FONT_FACE_VERDANA+", Helvetiva, sans-serif");
+        //theSmallBoldText.setFontSize(Text.FONT_SIZE_7_HTML_1);
+        //theSmallBoldText.setBold();
         theSmallBoldText.setFontColor(this.textColor);
     }
 

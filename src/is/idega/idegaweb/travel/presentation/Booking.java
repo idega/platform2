@@ -1202,6 +1202,13 @@ public class Booking extends TravelManager {
       String month = iwc.getParameter("month");
       String day = iwc.getParameter("day");
 
+      String IWCalendar_year = iwc.getParameter("IWCalendar_year");
+      String IWCalendar_month = iwc.getParameter("IWCalendar_month");
+      String IWCalendar_day = iwc.getParameter("IWCalendar_day");
+      if (IWCalendar_year != null) year = IWCalendar_year;
+      if (IWCalendar_month != null) month = IWCalendar_month;
+      if (IWCalendar_day != null) day = IWCalendar_day;
+
       String dateStr = iwc.getParameter("booking_date");
 
       if (dateStr == null) {
