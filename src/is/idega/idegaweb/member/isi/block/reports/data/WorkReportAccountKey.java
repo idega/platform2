@@ -6,6 +6,7 @@ public interface WorkReportAccountKey extends com.idega.data.IDOEntity
  public java.lang.String getKeyName();
  public java.lang.String getKeyNumber();
  public java.lang.String getKeyType();
+ public java.lang.String getParentKeyNumber();
  public void initializeAttributes();
  public boolean isCredit();
  public boolean isDebet();
@@ -14,4 +15,5 @@ public interface WorkReportAccountKey extends com.idega.data.IDOEntity
  public void setKeyName(java.lang.String p0);
  public void setKeyNumber(java.lang.String p0);
  public void setKeyType(java.lang.String p0);
+ public void setParentKeyNumber(java.lang.String p0);
 }

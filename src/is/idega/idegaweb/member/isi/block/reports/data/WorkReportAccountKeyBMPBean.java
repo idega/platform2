@@ -19,6 +19,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	protected final static String ENTITY_NAME = "ISI_WR_ACCOUNT_KEY";
 	protected final static String COLUMN_NAME_KEY_NAME = "KEY_NAME";
 	protected final static String COLUMN_NAME_KEY_NUMBER = "KEY_NUMBER";
+  protected final static String COLUMN_NAME_PARENT_KEY_NUMBER = "PARENT_KEY_NUMBER";
 	protected final static String COLUMN_NAME_KEY_TYPE = "KEY_TYPE";
 	protected final static String COLUMN_NAME_DEBET_OR_CREDIT = "DEB_OR_CRED";//values d/c
 	
@@ -36,6 +37,7 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 		addAttribute(getIDColumnName());
 		addAttribute(COLUMN_NAME_KEY_NAME,"Account key name",true,true,String.class);
 		addAttribute(COLUMN_NAME_KEY_NUMBER,"Account key number ",true,true,String.class);
+    addAttribute(COLUMN_NAME_PARENT_KEY_NUMBER, "Account key number of the parent", true, true, String.class);
 		addAttribute(COLUMN_NAME_KEY_TYPE,"Account key type",true,true,String.class);
 		addAttribute(COLUMN_NAME_DEBET_OR_CREDIT,"Debet or Credit (d/c)",true,true,String.class);
 	}
@@ -86,6 +88,15 @@ public class WorkReportAccountKeyBMPBean extends GenericEntity implements WorkRe
 	public void setKeyNumber(String keyNumber) {
 		setColumn(COLUMN_NAME_KEY_NUMBER,keyNumber);
 	}
+
+  public String getParentKeyNumber()  {
+    return getStringColumnValue(COLUMN_NAME_PARENT_KEY_NUMBER);
+  }
+  
+  public void setParentKeyNumber(String parentKeyNumber) {
+    setColumn(COLUMN_NAME_PARENT_KEY_NUMBER, parentKeyNumber);
+  }
+
 
 	public String getKeyType() {
 		return getStringColumnValue(COLUMN_NAME_KEY_TYPE);
