@@ -4,10 +4,14 @@ import is.idega.idegaweb.member.isi.block.reports.util.WorkReportConstants;
 import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 import javax.ejb.FinderException;
 
@@ -76,6 +80,42 @@ public class PlayerSelectionBox extends GroupSelectionBox  {
 				Group child = (Group)it.next();
 				getClubPlayers(divisions, child);
 			}
+		}
+	}
+
+	protected void sortList(IWContext iwc, List groups) throws RemoteException {
+		PlayerComparator playerComparator = new PlayerComparator(iwc.getCurrentLocale());
+		Collections.sort(groups, playerComparator);//sort alphabetically
+	}
+
+	class PlayerComparator implements Comparator {
+		
+		private Locale _locale;
+		
+		public PlayerComparator(Locale locale) {
+			_locale = locale;	
+		}
+		
+		public int compare(Object arg0, Object arg1) {
+			int comp = 0;
+			try {
+				Collator collator = Collator.getInstance(_locale);
+				Group group0 = (Group) arg0;
+				Group group1 = (Group) arg1;
+				String parentNode0 = group0.getParentNode().getNodeName();
+				String parentNode1 = group1.getParentNode().getNodeName();
+				comp = collator.compare(parentNode0, parentNode1);
+								
+				if(comp == 0) {
+					String groupName0 = getNameForGroup(group0);
+					String groupName1 = getNameForGroup(group1);
+					comp = collator.compare(groupName0, groupName1);
+				}
+			} 
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			return comp;
 		}
 	}
 }

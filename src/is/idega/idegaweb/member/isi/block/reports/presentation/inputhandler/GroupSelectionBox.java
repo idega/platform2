@@ -105,9 +105,7 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 			if (groupCollection != null && !groupCollection.isEmpty()) {
 				//stupid but neccesary
 				List groups = ListUtil.convertCollectionToList(groupCollection);
-				GroupComparator groupComparator = new GroupComparator(iwc.getCurrentLocale());
-				groupComparator.setGroupBusiness(this.getGroupBusiness(iwc));
-				Collections.sort(groups, groupComparator);//sort alphabetically
+				sortList(iwc, groups);
 				
 				Iterator iter = groups.iterator();
 				int size = groups.size();
@@ -138,6 +136,12 @@ public class GroupSelectionBox extends SelectionBox implements InputHandler {
 			isInitialized = false;
 			e.printStackTrace();
 		}
+	}
+
+	protected void sortList(IWContext iwc, List groups) throws RemoteException {
+		GroupComparator groupComparator = new GroupComparator(iwc.getCurrentLocale());
+		groupComparator.setGroupBusiness(this.getGroupBusiness(iwc));
+		Collections.sort(groups, groupComparator);//sort alphabetically
 	}
 
 	protected Collection getGroups(IWContext iwc) throws RemoteException {
