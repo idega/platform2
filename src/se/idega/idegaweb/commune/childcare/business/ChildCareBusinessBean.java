@@ -1825,19 +1825,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return null;
 		}
 	}
-//Malin
-	public Collection getAcceptedApplicationsByProvider(int providerID, Date date, boolean showNotYetActive, int schoolClassID, int sort) {
-		try {
-			String[] caseStatus = { getCaseStatusReady().getStatus(), getCaseStatusCancelled().getStatus()};
-			if (sort == -1)
-				date = null;
-			return getChildCareApplicationHome().findApplicationsByProviderAndStatus(providerID, caseStatus, date, showNotYetActive, schoolClassID, sort);
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+
 	
 	public Collection getAcceptedApplicationsByProvider(int providerID) {
 		try {
@@ -3212,7 +3200,28 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			return new ArrayList();
 		}
 	}
-
+//Malin
+	public ChildCareContract getValidContractForChild(int childID) {
+		IWTimestamp stamp = new IWTimestamp();
+		return getValidContractForChild(childID, stamp.getDate());
+	}
+	
+	public ChildCareContract getValidContractForChild(int childID, Date validDate) {
+		try {
+			//return getChildCareContractArchiveHome().findValidContractBySchoolClassMemberID(schClassMemberID, validDate);
+			return getChildCareContractArchiveHome().findValidContractByChild(childID);
+		}
+		catch (FinderException fe) {
+			try {
+				return getContractFile(getApplication(childID).getContractFileId());
+			}
+			catch (NullPointerException e) {
+				return null;
+			}
+		}
+	}
+	
+//end malin
 	public ChildCareContract getValidContract(int applicationID) {
 		IWTimestamp stamp = new IWTimestamp();
 		return getValidContract(applicationID, stamp.getDate());
