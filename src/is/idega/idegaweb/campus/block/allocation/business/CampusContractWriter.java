@@ -167,19 +167,14 @@ public class CampusContractWriter{
           }
         }
 
-				try {
-					pdfFile = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
-					//System.err.println("available "+mis.available());
-					pdfFile.setFileValue(mis);
-					pdfFile.setMimeType("application/pdf");
-					pdfFile.setName(fileName+".pdf");
-					pdfFile.setFileSize(buffer.length());
-					pdfFile.insert();
-					returner = pdfFile.getID();
-				}
-				catch (SQLException ex) {
-				  ex.printStackTrace();
-				}
+				pdfFile = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+				//System.err.println("available "+mis.available());
+				pdfFile.setFileValue(mis);
+				pdfFile.setMimeType("application/pdf");
+				pdfFile.setName(fileName+".pdf");
+				pdfFile.setFileSize(buffer.length());
+				pdfFile.store();
+				returner = ((Integer)pdfFile.getPrimaryKey()).intValue();
 
 				if(eContract !=null && returner > 0){
           try {

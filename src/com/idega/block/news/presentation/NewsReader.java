@@ -1,5 +1,5 @@
 /*
- * $Id: NewsReader.java,v 1.116 2003/05/19 12:23:15 aron Exp $
+ * $Id: NewsReader.java,v 1.117 2003/07/01 14:07:20 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -1207,7 +1207,7 @@ public class NewsReader extends CategoryBlock implements Builderaware {
 			try{
 				//Table imageTable = new Table(1, 2);
 				ICFile imagefile = (ICFile)files.get(0);
-				int imid = imagefile.getID();
+				int imid = ((Integer)imagefile.getPrimaryKey()).intValue();
 				String att = imagefile.getMetaData(NewsEditorWindow.imageAttributeKey);
 
 				Image newsImage = new Image(imid);

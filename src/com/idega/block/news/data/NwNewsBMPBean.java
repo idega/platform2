@@ -5,9 +5,12 @@ package com.idega.block.news.data;
 //import java.util.*;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 import com.idega.block.text.data.Content;
 import com.idega.core.data.ICCategory;
+import com.idega.core.data.ICFile;
+import com.idega.data.IDORelationshipException;
 
 
 
@@ -153,6 +156,12 @@ public class NwNewsBMPBean extends com.idega.data.GenericEntity implements com.i
 
     setColumn(getColumnNameSource(), source);
 
+  }
+
+
+
+  public Collection getRelatedFiles() throws IDORelationshipException{
+  	return idoGetRelatedEntities(ICFile.class);
   }
 
 

@@ -241,7 +241,7 @@ public class SchoolContentEditor extends IWAdminWindow{
 					Iterator iter = files.iterator();
 					/**  Only using one image ... altough School supports more. */
 					ICFile file = (ICFile) iter.next();
-					imageInserter.setImageId( file.getID());
+					imageInserter.setImageId( ((Integer)file.getPrimaryKey()).intValue());
 				}
 		} catch (IDORelationshipException e) {
 			e.printStackTrace(System.err);

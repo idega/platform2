@@ -4,7 +4,6 @@ package com.idega.block.banner.presentation;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.block.banner.business.BannerBusiness;
 import com.idega.block.banner.business.BannerFinder;
 import com.idega.block.banner.data.AdEntity;
@@ -14,6 +13,7 @@ import com.idega.core.accesscontrol.business.LoginBusinessBean;
 import com.idega.core.data.ICFile;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.idegaweb.block.presentation.Builderaware;
 import com.idega.idegaweb.presentation.IWAdminWindow;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Image;
@@ -258,7 +258,7 @@ public BannerEditorWindow(){
 
         for ( int a = 0; a < files.length; a++ ) {
           try {
-            fileImage = new Image(files[a].getID());
+            fileImage = new Image(((Integer)files[a].getPrimaryKey()).intValue());
           }
           catch (Exception e) {
             fileImage = new Image();
@@ -269,7 +269,7 @@ public BannerEditorWindow(){
           deleteFile = new Link(_deleteImage);
             deleteFile.addParameter(BannerBusiness.PARAMETER_BANNER_ID,_bannerID);
             deleteFile.addParameter(BannerBusiness.PARAMETER_AD_ID,_adID);
-            deleteFile.addParameter(BannerBusiness.PARAMETER_FILE_ID,files[a].getID());
+            deleteFile.addParameter(BannerBusiness.PARAMETER_FILE_ID,files[a].getPrimaryKey().toString());
             deleteFile.addParameter(BannerBusiness.PARAMETER_DELETE_FILE,BannerBusiness.PARAMETER_TRUE);
 
           filesTable.add(deleteFile,1,a+1);

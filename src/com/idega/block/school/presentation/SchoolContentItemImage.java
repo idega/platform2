@@ -39,7 +39,7 @@ public class SchoolContentItemImage extends SchoolContentItem {
 				while (iter.hasNext()) {
 					file = (ICFile) iter.next();
 					try {
-						image = new Image(file.getID());
+						image = new Image(((Integer)file.getPrimaryKey()).intValue());
 						setupImage(image);
 						
 						++rowCounter;

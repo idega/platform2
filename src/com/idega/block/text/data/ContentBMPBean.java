@@ -3,8 +3,13 @@ package com.idega.block.text.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
 
+import com.idega.core.data.ICFile;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 
 /**
  * Title:
@@ -85,4 +90,17 @@ public class ContentBMPBean extends com.idega.data.GenericEntity implements com.
   public void setPublishTo(Timestamp publish_to){
     setColumn(getColumnNamePublishTo(),publish_to);
   }
+  
+  public Collection getContentFiles() throws IDORelationshipException{
+  	return idoGetRelatedEntities(ICFile.class);
+  }
+  
+  public void addFileToContent(ICFile file) throws IDOAddRelationshipException{
+  	idoAddTo(file);
+  }
+  
+  public void removeFileFromContent(ICFile file) throws IDORemoveRelationshipException{
+	idoRemoveFrom(file);
+  }
+  
 }

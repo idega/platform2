@@ -7,10 +7,10 @@ import java.util.Locale;
 
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
-import com.idega.core.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
 import com.idega.data.IDOLegacyEntity;
+import com.idega.data.IDORelationshipException;
 
 /**
  * Title:
@@ -170,11 +170,11 @@ public class ContentFinder {
 
   public static List listOfContentFiles(Content content){
     try {
-      return EntityFinder.findRelated(content,((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy());
+      return (List)content.getContentFiles();  // EntityFinder.findRelated(content,((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy());
     }
-    catch (SQLException ex) {
-
-    }
+    catch (IDORelationshipException e) {
+		e.printStackTrace();
+	}
     return null;
   }
 

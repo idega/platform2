@@ -347,12 +347,12 @@ private IWResourceBundle iwrb;
       if(iImageId > 0){
         try {
           /** @todo  use finder */
-          F = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iImageId);
+          F = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iImageId));
           V = new Vector(1);
           V.add(F);
         }
         catch (Exception ex) {
-
+			ex.printStackTrace();
         }
       }
 
@@ -650,21 +650,21 @@ private IWResourceBundle iwrb;
       imageTable.mergeCells(1,row,3,row);
       imageTable.add( formatText(iwrb.getLocalizedString("newsimages","News images :")),1,row++);
       ICFile file1 = (ICFile) files.get(0);
-      imageInsert.setImageId(file1.getID());
+      imageInsert.setImageId(((Integer)file1.getPrimaryKey()).intValue());
 
       Iterator I = files.iterator();
       while(I.hasNext()){
         try {
 
           ICFile f = (ICFile) I.next();
-          Image immi = new Image(f.getID());
+          Image immi = new Image(((Integer)f.getPrimaryKey()).intValue());
           immi.setMaxImageWidth(50);
 
           imageTable.add(immi,1,row);
           //Link edit = new Link(iwb.getImage("/shared/edit.gif"));
-          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),file1.getID(),imageAttributeKey);
+          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),((Integer)file1.getPrimaryKey()).intValue(),imageAttributeKey);
           Link delete = new Link(core.getImage("/shared/delete.gif"));
-          delete.addParameter(prmDeleteFile,f.getID());
+          delete.addParameter(prmDeleteFile,f.getPrimaryKey().toString());
           delete.addParameter(prmNwNewsId,nwNews.getID());
           delete.addParameter(getParameterSaveNews());
           imageTable.add(edit,2,row);

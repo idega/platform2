@@ -53,6 +53,7 @@ import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
 
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
+import com.idega.block.contract.data.ContractHome;
 import com.idega.block.pdf.ITextXMLHandler;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
@@ -1371,9 +1372,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							ContractService service = (ContractService) getServiceInstance(ContractService.class);
 							Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),validFrom,null,"C",contractText);
 							int contractID = ((Integer)contract.getPrimaryKey()).intValue();
-							contractFile.addTo(Contract.class,contractID);
+							
+							//contractFile.addTo(Contract.class,contractID);
+							contract.addFileToContract(contractFile);
 			
-		
 						application.setContractId(contractID);
 						application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());
 			
@@ -2537,7 +2539,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				ContractService service = (ContractService) getServiceInstance(ContractService.class);
 				Contract contract = service.getContractHome().create(((Integer)application.getOwner().getPrimaryKey()).intValue(),getContractCategory(),fromDate,toDate,"C",contractText);
 				int contractID = ((Integer)contract.getPrimaryKey()).intValue();
-				contractFile.addTo(Contract.class,contractID);
+				
+				//contractFile.addTo(Contract.class,contractID);
+				contract.addFileToContract(contractFile);
 			
 				application.setContractId(contractID);
 				application.setContractFileId(((Integer)contractFile.getPrimaryKey()).intValue());

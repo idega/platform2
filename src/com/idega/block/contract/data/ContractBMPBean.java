@@ -1,5 +1,5 @@
 /*
- * $Id: ContractBMPBean.java,v 1.13 2003/06/11 15:46:26 roar Exp $
+ * $Id: ContractBMPBean.java,v 1.14 2003/07/01 14:07:18 gummi Exp $
  *
  * Copyright (C) 2001 Idega hf. All Rights Reserved.
  *
@@ -23,10 +23,12 @@ import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 
 import com.idega.core.data.ICFile;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.data.IDOStoreException;
 import com.idega.util.IWTimestamp;
 import com.idega.xml.XMLDocument;
@@ -105,22 +107,8 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	}
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
-		addAttribute(
-			category_,
-			"Category",
-			true,
-			true,
-			java.lang.Integer.class,
-			"many-to-one",
-			com.idega.block.contract.data.ContractCategory.class);
-		addAttribute(
-			userId_,
-			"Contract maker",
-			true,
-			true,
-			java.lang.Integer.class,
-			"one-to-many",
-			com.idega.core.user.data.User.class);
+		addAttribute(category_, "Category", true, true, java.lang.Integer.class, "many-to-one", com.idega.block.contract.data.ContractCategory.class);
+		addAttribute(userId_, "Contract maker", true, true, java.lang.Integer.class, "one-to-many", com.idega.core.user.data.User.class);
 		addAttribute(validFrom_, "Valid from", true, true, java.sql.Date.class);
 		addAttribute(validTo_, "Valid to", true, true, java.sql.Date.class);
 		addAttribute(statusDate_, "Status changed", true, true, java.sql.Date.class);
@@ -146,35 +134,35 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	public Integer getUserId() {
 		return (getIntegerColumnValue(userId_));
 	}
-	public void setSignedBy(Integer id){
+	public void setSignedBy(Integer id) {
 		setColumn(signedBy_, id);
 	}
-	public Integer getSignedBy(Integer id){
+	public Integer getSignedBy(Integer id) {
 		return (getIntegerColumnValue(signedBy_));
-	}	
+	}
 	public void setValidFrom(Date date) {
 		setColumn(validFrom_, date);
 	}
 	public Date getValidFrom() {
-		return ((Date) getColumnValue(validFrom_));
+		return ((Date)getColumnValue(validFrom_));
 	}
 	public void setValidTo(Date date) {
 		setColumn(validTo_, date);
 	}
 	public Date getValidTo() {
-		return ((Date) getColumnValue(validTo_));
+		return ((Date)getColumnValue(validTo_));
 	}
 	public void setCreationDate(Date date) {
 		setColumn(created_, date);
 	}
 	public Date getCreationDate() {
-		return (Date) getColumnValue(created_);
+		return (Date)getColumnValue(created_);
 	}
 	public void setStatusDate(Date date) {
 		setColumn(statusDate_, date);
 	}
 	public Date getStatusDate() {
-		return (Date) getColumnValue(statusDate_);
+		return (Date)getColumnValue(statusDate_);
 	}
 	public void setCategoryId(int id) {
 		setColumn(category_, id);
@@ -186,21 +174,14 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		return getIntegerColumnValue(category_);
 	}
 	public void setStatus(String status) throws IllegalStateException {
-		if ((status.equalsIgnoreCase(statusCreated))
-			|| (status.equalsIgnoreCase(statusEnded))
-			|| (status.equalsIgnoreCase(statusRejected))
-			|| (status.equalsIgnoreCase(statusSigned))
-			|| (status.equalsIgnoreCase(statusTerminated))
-			|| (status.equalsIgnoreCase(statusResigned))
-			|| (status.equalsIgnoreCase(statusPrinted))) {
+		if ((status.equalsIgnoreCase(statusCreated)) || (status.equalsIgnoreCase(statusEnded)) || (status.equalsIgnoreCase(statusRejected)) || (status.equalsIgnoreCase(statusSigned)) || (status.equalsIgnoreCase(statusTerminated)) || (status.equalsIgnoreCase(statusResigned)) || (status.equalsIgnoreCase(statusPrinted))) {
 			setColumn(status_, status);
 			setStatusDate(IWTimestamp.RightNow().getSQLDate());
-		}
-		else
+		} else
 			throw new IllegalStateException("Undefined state : " + status);
 	}
 	public String getStatus() {
-		return ((String) getColumnValue(status_));
+		return ((String)getColumnValue(status_));
 	}
 	public void setStatusCreated() {
 		setStatus(statusCreated);
@@ -230,13 +211,13 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		setColumn(text_, text);
 	}
 	public java.lang.String getXmlSignedData() {
-		return ((String) getColumnValue(signedData_));
+		return ((String)getColumnValue(signedData_));
 	}
 	public java.lang.String getText() {
-		return ((String) getColumnValue(text_));
+		return ((String)getColumnValue(text_));
 	}
 	public java.lang.Boolean getSignedFlag() {
-		return ((Boolean) getColumnValue(signedFlag_));
+		return ((Boolean)getColumnValue(signedFlag_));
 	}
 	public void setSignedFlag(java.lang.Boolean p0) {
 		setColumn(signedFlag_, p0);
@@ -248,75 +229,69 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 		setColumn(signedDate_, time);
 	}
 	public Date getSignedDate() {
-		return (Date) getColumnValue(signedDate_);
+		return (Date)getColumnValue(signedDate_);
 	}
-	
+
 	/**
 	 * Returns all xml fields in the contract text that have not yet got a value.
 	 */
-	public Set getUnsetFields(){
+	public Set getUnsetFields() {
 		Set fields = new HashSet();
 		try {
 			XMLParser parser = new XMLParser();
 			XMLDocument document = parser.parse(new StringReader("<dummy>" + getText() + "</dummy>"));
-		
+
 			XMLElement root = document.getRootElement();
 			List xmlFields = root.getChildren();
 			Iterator i = xmlFields.iterator();
-			while (i.hasNext()){
-				fields.add(((XMLElement) i.next()).getName());
-			}			
-			
-		}catch (XMLException ex){
+			while (i.hasNext()) {
+				fields.add(((XMLElement)i.next()).getName());
+			}
+
+		} catch (XMLException ex) {
 			ex.printStackTrace();
 		}
-		
+
 		return fields;
 	}
-	
+
 	/**
 	 * Gives value to xml-fields in the contract text. The xml field is substituted with the text value.
 	 * If no value is given in the fieldValues parameter, the xml field is left unchanged.
 	 */
-	public void setUnsetFields(Map fieldValues){
+	public void setUnsetFields(Map fieldValues) {
 		StringBuffer merged = new StringBuffer();
-		
+
 		try {
 			XMLParser parser = new XMLParser();
 			XMLDocument document = parser.parse(new StringReader("<dummy>" + getText() + "</dummy>"));
-		
+
 			XMLElement root = document.getRootElement();
 			Iterator it = root.getContent().iterator();
-			while (it.hasNext()){
+			while (it.hasNext()) {
 				Object obj = it.next();
 				if (obj instanceof XMLElement) {
-					String name = ((XMLElement) obj).getName();
-					String value = (String) fieldValues.get(name);
+					String name = ((XMLElement)obj).getName();
+					String value = (String)fieldValues.get(name);
 					System.out.println("name: " + name + " value: " + value);
-					
-					merged.append(value != null ? value : "<"+name+"/>");
+
+					merged.append(value != null ? value : "<" + name + "/>");
 				}
-//				else if (obj instanceof XMLCDATA) { ignore	}
+				//				else if (obj instanceof XMLCDATA) { ignore	}
 				else if (obj instanceof String) {
-					merged.append((String) obj);			
+					merged.append((String)obj);
 				}
 				setText(merged.toString());
 				store();
-			}	
-		}catch (XMLException ex){
+			}
+		} catch (XMLException ex) {
 			ex.printStackTrace();
 		}
 	}
-	
-	public Contract ejbHomeCreate(
-		int userID,
-		int iCategoryId,
-		IWTimestamp ValFrom,
-		IWTimestamp ValTo,
-		String sStatus,
-		Map map) {
+
+	public Contract ejbHomeCreate(int userID, int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map) {
 		try {
-			Contract C = ((ContractHome) IDOLookup.getHome(Contract.class)).create();
+			Contract C = ((ContractHome)IDOLookup.getHome(Contract.class)).create();
 			C.setStatus(sStatus);
 			C.setValidFrom(ValFrom.getSQLDate());
 			if (userID != -1)
@@ -328,24 +303,20 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 			if (map != null) {
 				it = map.entrySet().iterator();
 				while (it.hasNext()) {
-					Map.Entry me = (Map.Entry) it.next();
+					Map.Entry me = (Map.Entry)it.next();
 					C.setMetaData(me.getKey().toString(), me.getValue().toString());
 				}
 			}
 			C.store();
 			//	ContractWriter.writeText(C.getID(), iCategoryId);
 			return C;
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
-		}
-		catch (IDOStoreException e) {
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
-		}
-		catch (IllegalStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
-		}
-		catch (CreateException e) {
+		} catch (CreateException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -353,15 +324,9 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	public Contract ejbHomeCreate(int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, Map map) {
 		return ejbHomeCreate(-1, iCategoryId, ValFrom, ValTo, sStatus, map);
 	}
-	public Contract ejbHomeCreate(
-		int userId,
-		int iCategoryId,
-		IWTimestamp ValFrom,
-		IWTimestamp ValTo,
-		String sStatus,
-		String text) {
+	public Contract ejbHomeCreate(int userId, int iCategoryId, IWTimestamp ValFrom, IWTimestamp ValTo, String sStatus, String text) {
 		try {
-			Contract C = ((ContractHome) IDOLookup.getHome(Contract.class)).create();
+			Contract C = ((ContractHome)IDOLookup.getHome(Contract.class)).create();
 			C.setStatus(sStatus);
 			C.setText(text);
 			C.setValidFrom(ValFrom.getSQLDate());
@@ -372,40 +337,31 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 			C.store();
 			//				ContractWriter.writeText(C.getID(), iCategoryId);
 			return C;
-		}
-		catch (IDOLookupException e) {
+		} catch (IDOLookupException e) {
 			e.printStackTrace();
-		}
-		catch (IDOStoreException e) {
+		} catch (IDOStoreException e) {
 			e.printStackTrace();
-		}
-		catch (IllegalStateException e) {
+		} catch (IllegalStateException e) {
 			e.printStackTrace();
-		}
-		catch (EJBException e) {
+		} catch (EJBException e) {
 			e.printStackTrace();
-		}
-		catch (CreateException e) {
+		} catch (CreateException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	public Collection ejbFindAllByCategory(int iCategoryID) throws FinderException {
-		return super.idoFindPKsByQuery(
-			idoQueryGetSelect().appendWhereEquals(this.getColumnNameCategoryId(), iCategoryID));
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(this.getColumnNameCategoryId(), iCategoryID));
 	}
-	
+
 	public Collection ejbFindAllByUser(int userID) throws FinderException {
-			return super.idoFindPKsByQuery(
-				idoQueryGetSelect().appendWhereEquals(this.getColumnNameUserId(), userID));
-		}
-	public Collection ejbFindAllByCategoryAndStatus(int iCategoryID,String status) throws FinderException {
-		return super.idoFindPKsByQuery(
-			idoQueryGetSelect().appendWhereEquals(this.getColumnNameCategoryId(), iCategoryID)
-			.appendAndEquals(getColumnNameStatus(),status ));
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(this.getColumnNameUserId(), userID));
+	}
+	public Collection ejbFindAllByCategoryAndStatus(int iCategoryID, String status) throws FinderException {
+		return super.idoFindPKsByQuery(idoQueryGetSelect().appendWhereEquals(this.getColumnNameCategoryId(), iCategoryID).appendAndEquals(getColumnNameStatus(), status));
 	}
 	public boolean ejbHomeSetStatus(int conID, String status) throws FinderException, IDOLookupException {
-		Contract C = ((ContractHome) IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(conID));
+		Contract C = ((ContractHome)IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(conID));
 		C.setStatus(status);
 		C.store();
 		return true;
@@ -413,8 +369,16 @@ public class ContractBMPBean extends com.idega.data.GenericEntity implements com
 	public int ejbHomeGetCountByCategory(int catID) throws IDOException {
 		return this.idoGetNumberOfRecords(idoQueryGetSelectCount().appendWhereEquals(getColumnNameCategoryId(), catID));
 	}
-	
-	public Collection ejbHomeFindFiles(int contractID)throws FinderException,IDORelationshipException{
+
+	public Collection ejbHomeFindFiles(int contractID) throws FinderException, IDORelationshipException {
 		return idoGetRelatedEntities(ICFile.class);
+	}
+
+	public void addFileToContract(ICFile file) throws IDOAddRelationshipException {
+		idoAddTo(file);
+	}
+	
+	public void removeFileFromContract(ICFile file) throws IDORemoveRelationshipException{
+		idoRemoveFrom(file);
 	}
 }

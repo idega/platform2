@@ -7,9 +7,11 @@ public class NwNewsHomeImpl extends com.idega.data.IDOFactory implements NwNewsH
   return NwNews.class;
  }
 
+
  public NwNews create() throws javax.ejb.CreateException{
-  return (NwNews) super.idoCreate();
+  return (NwNews) super.createIDO();
  }
+
 
  public NwNews createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class NwNewsHomeImpl extends com.idega.data.IDOFactory implements NwNewsH
 
  }
 
- public NwNews findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (NwNews) super.idoFindByPrimaryKey(id);
- }
 
  public NwNews findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (NwNews) super.idoFindByPrimaryKey(pk);
+  return (NwNews) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public NwNews findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (NwNews) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public NwNews findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class NwNewsHomeImpl extends com.idega.data.IDOFactory implements NwNewsH
 	}
 
  }
+
 
 
 }

@@ -8,8 +8,10 @@ package com.idega.block.banner.data;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import com.idega.core.data.ICFile;
+import com.idega.data.IDORelationshipException;
 
 
 
@@ -276,6 +278,12 @@ public class AdEntityBMPBean extends com.idega.data.GenericEntity implements com
     super.delete();
 
   }
+  
+  
+  public Collection getRelatedFiles() throws IDORelationshipException{
+  	return this.idoGetRelatedEntities(ICFile.class);
+  }
+  
 
 }
 

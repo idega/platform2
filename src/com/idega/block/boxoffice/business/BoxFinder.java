@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import javax.ejb.CreateException;
+import javax.ejb.FinderException;
+
 import com.idega.block.boxoffice.data.BoxCategory;
 import com.idega.block.boxoffice.data.BoxEntity;
 import com.idega.block.boxoffice.data.BoxLink;
@@ -13,6 +16,7 @@ import com.idega.core.business.ICObjectBusiness;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookupException;
 
 /**
  * Title:
@@ -36,10 +40,20 @@ public class BoxFinder {
 
 	public static ICFile getFile(int fileID) {
 		try {
-			return ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(fileID);
-		}
-		catch (SQLException e) {
-			return ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+			return ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(fileID));
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+			return null;
+		} catch (FinderException e) {
+			try {
+				return ((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).create();
+			} catch (IDOLookupException e1) {
+				e1.printStackTrace();
+				return null;
+			} catch (CreateException e1) {
+				e1.printStackTrace();
+				return null;
+			}
 		}
 	}
 

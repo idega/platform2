@@ -3,7 +3,6 @@ package com.idega.block.banner.data;
 
 public interface AdEntity extends com.idega.data.IDOLegacyEntity
 {
- public void delete()throws java.sql.SQLException;
  public java.lang.String getAdName();
  public java.sql.Timestamp getBeginDate();
  public java.sql.Timestamp getEndDate();
@@ -12,8 +11,10 @@ public interface AdEntity extends com.idega.data.IDOLegacyEntity
  public int getImpressions();
  public int getMaxHits();
  public int getMaxImpressions();
+ public java.util.Collection getRelatedFiles()throws com.idega.data.IDORelationshipException;
  public java.lang.String getURL();
  public int getUserID();
+ public void initializeAttributes();
  public void setAdName(java.lang.String p0);
  public void setBeginDate(java.sql.Timestamp p0);
  public void setEndDate(java.sql.Timestamp p0);

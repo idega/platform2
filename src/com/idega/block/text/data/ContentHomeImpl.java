@@ -7,9 +7,11 @@ public class ContentHomeImpl extends com.idega.data.IDOFactory implements Conten
   return Content.class;
  }
 
+
  public Content create() throws javax.ejb.CreateException{
-  return (Content) super.idoCreate();
+  return (Content) super.createIDO();
  }
+
 
  public Content createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class ContentHomeImpl extends com.idega.data.IDOFactory implements Conten
 
  }
 
- public Content findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (Content) super.idoFindByPrimaryKey(id);
- }
 
  public Content findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (Content) super.idoFindByPrimaryKey(pk);
+  return (Content) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public Content findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (Content) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public Content findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class ContentHomeImpl extends com.idega.data.IDOFactory implements Conten
 	}
 
  }
+
 
 
 }

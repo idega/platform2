@@ -159,9 +159,10 @@ public class ContractWriter
 				file.setMimeType("application/x-pdf");
 				file.setName(fileName + ".pdf");
 				file.setFileSize(buffer.length());
-				file.insert();
-				file.addTo(Contract.class,ids[0]);
-				id = file.getID();
+				file.store();
+				//file.addTo(Contract.class,ids[0]);
+				C.addFileToContract(file);
+				id = ((Integer)file.getPrimaryKey()).intValue();
 				C.setText(dbContractText.toString());
 				C.store();
 			}

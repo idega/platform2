@@ -543,7 +543,7 @@ private IWResourceBundle iwrb;
 		Link L = new Link(iwb.getImage("pdf.gif"));
 		L.setURL("/servlet/MediaServlet");
 		//MediaServlet.debug = true;
-		L.addParameter(MediaServlet.getParameter(file.getID()));
+		L.addParameter(MediaServlet.getParameter(((Integer)file.getPrimaryKey()).intValue()));
 		return L;
 
 	}
@@ -552,7 +552,7 @@ private IWResourceBundle iwrb;
 		Link L = new Link(core.getImage("/shared/delete.gif"));
 		L.addParameter(prmCategory,iCategoryId);
 		L.addParameter(prmContractId,iContractId);
-		L.addParameter("deletefile",file.getID());
+		L.addParameter("deletefile",file.getPrimaryKey().toString());
 		return L;
 
 	}

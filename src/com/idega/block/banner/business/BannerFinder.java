@@ -3,12 +3,15 @@ package com.idega.block.banner.business;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.banner.data.AdEntity;
 import com.idega.block.banner.data.BannerEntity;
 import com.idega.core.business.ICObjectBusiness;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDOLookupException;
 
 /**
  * Title:
@@ -107,11 +110,14 @@ public class BannerFinder {
 
   public static ICFile getFile(int ICFileID) {
     try {
-      return ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(ICFileID);
+      return ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(ICFileID));
     }
-    catch (SQLException e) {
-      return null;
-    }
+    catch (IDOLookupException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
+	}
+	return null;
   }
 
   public static ICFile[] getFilesInAd(AdEntity ad) {

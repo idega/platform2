@@ -1,5 +1,5 @@
 /*
- * $Id: Report.java,v 1.1 2003/05/16 16:38:48 joakim Exp $
+ * $Id: Report.java,v 1.2 2003/07/01 14:07:24 gummi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -68,7 +68,7 @@ public class Report
 					reportFolder = fileHome.create();
 					reportFolder.setName("Reports");
 					reportFolder.setMimeType("application/vnd.iw-folder");
-					reportFolder.insert();
+					reportFolder.store();
 					root.addChild(reportFolder);
 					System.out.println("Reports folder created");
 				} catch (FinderException e1) {
@@ -85,7 +85,7 @@ public class Report
 			
 		ICFile reportFile;
 		try {
-			reportFile = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy();
+			reportFile = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).create();
 			byte[] bytes = text.toString().getBytes();
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
@@ -105,7 +105,7 @@ public class Report
 			}
 			reportFile.setName(filename+".report");
 			reportFile.setFileSize(text.length());
-			reportFile.insert();
+			reportFile.store();
 			if(reportFolder!=null)
 			{
 				reportFolder.addChild(reportFile);
@@ -114,6 +114,10 @@ public class Report
 		}
 		catch (SQLException ex) {
 		  ex.printStackTrace();
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (CreateException e) {
+			e.printStackTrace();
 		}
 	}
 }

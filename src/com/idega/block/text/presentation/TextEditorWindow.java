@@ -13,6 +13,7 @@ import com.idega.core.data.ICFile;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.core.localisation.presentation.ICLocalePresentation;
 import com.idega.core.user.data.User;
+import com.idega.data.IDOLookupException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
@@ -32,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+
+import javax.ejb.FinderException;
 
 /**
  * Title:
@@ -295,21 +298,21 @@ public class TextEditorWindow extends AbstractChooserWindow{
         imageTable.mergeCells(1,row,3,row);
         imageTable.add( formatText(iwrb.getLocalizedString("textimages","Text images :")),1,row++);
         ICFile file1 = (ICFile) files.get(0);
-        imageInsert.setImageId(file1.getID());
+        imageInsert.setImageId(((Integer)file1.getPrimaryKey()).intValue());
 
         Iterator I = files.iterator();
         while(I.hasNext()){
           try {
 
           ICFile f = (ICFile) I.next();
-          Image immi = new Image(f.getID());
+          Image immi = new Image(((Integer)f.getPrimaryKey()).intValue());
           immi.setMaxImageWidth(50);
 
           imageTable.add(immi,1,row);
           //Link edit = new Link(iwb.getImage("/shared/edit.gif"));
-          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),f.getID(),imageAttributeKey);
+          Link edit = com.idega.block.image.presentation.ImageAttributeSetter.getLink(iwb.getImage("/shared/edit.gif"),((Integer)f.getPrimaryKey()).intValue(),imageAttributeKey);
           Link delete = new Link(core.getImage("/shared/delete.gif"));
-          delete.addParameter(prmDeleteFile,f.getID());
+          delete.addParameter(prmDeleteFile,((Integer)f.getPrimaryKey()).intValue());
           delete.addParameter(prmUsedTextId,txText.getID());
           imageTable.add(edit,2,row);
           imageTable.add(delete,3,row);
@@ -385,12 +388,14 @@ public class TextEditorWindow extends AbstractChooserWindow{
       Vector files = null;
 
       try {
-        ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iImageId);
+        ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iImageId));
         files = new Vector();
         files.add(file);
-      }
-      catch (SQLException ex) {
-      }
+      }catch (IDOLookupException e) {
+		e.printStackTrace();
+	  } catch (FinderException e) {
+		e.printStackTrace();
+	  }
 
       TxText tx = TextBusiness.saveText(iTxTextId,iLocalizedTextId,iLocaleId,iUserId,iObjInsId,null,null,sHeadline,"",sBody,sAttribute,files);
       sTextId = String.valueOf(tx.getID());

@@ -1,8 +1,9 @@
 package com.idega.block.forum.data;
 
+import com.idega.data.IDOLegacyEntity;
 import com.idega.data.TreeableEntity;
 
-public interface ForumData extends TreeableEntity
+public interface ForumData extends TreeableEntity,IDOLegacyEntity
 {
  public void setThreadDate(java.sql.Timestamp p0);
  public boolean isValid();

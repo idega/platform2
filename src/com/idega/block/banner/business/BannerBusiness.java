@@ -1,6 +1,7 @@
 package com.idega.block.banner.business;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import com.idega.block.banner.data.AdEntity;
@@ -230,7 +231,8 @@ public static final String COOKIE_NAME = "idegaAD_";
       ICFile file = BannerFinder.getFile(ICFileID);
 
       if ( ad != null && file != null ) {
-        file.removeFrom(ad);
+      	ad.removeFrom(ICFile.class,((Integer)file.getPrimaryKey()).intValue());
+
       }
     }
     catch (SQLException e) {
@@ -274,9 +276,9 @@ public static final String COOKIE_NAME = "idegaAD_";
       ICFile file = BannerFinder.getFile(ICFileID);
       if ( ad != null ) {
         if ( file != null ) {
-          ICFile[] files = (ICFile[]) ad.findRelated(file);
-          if ( files == null || files.length == 0 ) {
-            ad.addTo(file);
+          Collection files = ad.getRelatedFiles();
+          if ( files == null || files.size() == 0 ) {
+            ad.addTo(ICFile.class, ((Integer)file.getPrimaryKey()).intValue());
           }
         }
       }
@@ -358,7 +360,7 @@ public static final String COOKIE_NAME = "idegaAD_";
         ICFile[] files = BannerFinder.getFilesInAd(ad);
         if ( files != null ) {
           int random = (int) Math.round(Math.random() * (files.length - 1));
-          return files[random].getID();
+          return ((Integer)files[random].getPrimaryKey()).intValue();
         }
         return -1;
       }

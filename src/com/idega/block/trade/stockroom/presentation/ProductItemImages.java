@@ -93,7 +93,7 @@ public class ProductItemImages extends ProductItem {
     try {
       for (int i = 0; i < images.size(); i++) {
 	file = (ICFile) images.get(i);
-	image = new Image(file.getID());
+	image = new Image(((Integer)file.getPrimaryKey()).intValue());
 	String att = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 
 	if(att != null) {

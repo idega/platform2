@@ -12,10 +12,10 @@ import com.idega.block.text.business.ContentHelper;
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.business.CategoryFinder;
-import com.idega.core.data.ICFile;
 import com.idega.core.data.ICObjectInstance;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.data.EntityFinder;
+import com.idega.data.IDORelationshipException;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -311,11 +311,11 @@ public class NewsFinder {
 
   public static List listOfNewsFiles(NwNews nwNews){
     try {
-      return EntityFinder.findRelated(nwNews,((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).createLegacy());
+      return (List)nwNews.getRelatedFiles();
     }
-    catch (SQLException ex) {
-
-    }
+    catch (IDORelationshipException e) {
+		e.printStackTrace();
+	}
     return null;
   }
 

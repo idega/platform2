@@ -79,7 +79,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	    product.setFileId(newThumbId);
 	    product.store();
             ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
-            ICFile file = fileHome.findByPrimaryKey(newThumbId);
+            ICFile file = fileHome.findByPrimaryKey(new Integer(newThumbId));
             product.removeICFile(file);
 	    //product.removeFrom(ICFile.class, newThumbId);
 	  }
@@ -88,7 +88,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	if (perform) {
 	  if (oldThumbId != -1) {
             ICFileHome fileHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
-            ICFile file = fileHome.findByPrimaryKey(oldThumbId);
+            ICFile file = fileHome.findByPrimaryKey(new Integer(oldThumbId));
             product.addICFile(file);
 //	    product.addTo(ICFile.class, oldThumbId);
 	  }
@@ -189,11 +189,13 @@ public class ProductEditorBusiness extends IBOServiceBean{
       int imageId = product.getFileId();
       if (imageId != -1) {
 	try {
-	  if (!files.contains(((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(imageId))) {
-	    files.add(0, ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(imageId));
+	  if (!files.contains(((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(imageId)))) {
+	    files.add(0, ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(imageId)));
 	  }
-	}catch (SQLException sql){
-	  sql.printStackTrace(System.err);
+	}catch (IDOLookupException e) {
+		e.printStackTrace();
+	} catch (FinderException e) {
+		e.printStackTrace();
 	}
       }
     }
@@ -205,7 +207,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
     if (imageId != -1 && product != null) {
       try {
         ICFileHome fHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
-        product.addICFile(fHome.findByPrimaryKey(imageId));
+        product.addICFile(fHome.findByPrimaryKey(new Integer(imageId)));
 //	product.addTo(ICFile.class, imageId);
       }catch (IDOAddRelationshipException re){
 	//sql.printStackTrace(System.err);
@@ -221,7 +223,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
 	  product.store();
 	}else {
           ICFileHome fHome = (ICFileHome) IDOLookup.getHome(ICFile.class);
-          product.removeICFile(fHome.findByPrimaryKey(imageId));
+          product.removeICFile(fHome.findByPrimaryKey(new Integer(imageId)));
 //	  product.removeFrom(ICFile.class, imageId);
 	}
       }catch (IDOException ido){
@@ -243,7 +245,7 @@ public class ProductEditorBusiness extends IBOServiceBean{
   public Image getImage(Object object) throws SQLException{
     if (object instanceof ICFile) {
       ICFile f = (ICFile) object;
-      return new Image(f.getID());
+      return new Image(((Integer)f.getPrimaryKey()).intValue());
     }else {
       return null;
     }

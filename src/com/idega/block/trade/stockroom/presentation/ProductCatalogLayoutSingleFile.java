@@ -100,7 +100,7 @@ public class ProductCatalogLayoutSingleFile extends AbstractProductCatalogLayout
 		table.setWidth(1, row, "100%");
 	    if (productCatalog._showThumbnail) {
 	      if (fileId != -1) {
-			ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(fileId);
+			ICFile file = ((com.idega.core.data.ICFileHome)com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(fileId));
 			String attributes = file.getMetaData(ProductEditorWindow.imageAttributeKey);
 			image = new Image(fileId);
 			if ( attributes != null )

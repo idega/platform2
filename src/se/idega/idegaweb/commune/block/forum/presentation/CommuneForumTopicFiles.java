@@ -197,7 +197,7 @@ public class CommuneForumTopicFiles extends Window {
 
 					if (canEdit) {
 						link = getLink(iwrb.getLocalizedImageButton("delete", "delete"));
-						link.addParameter(prmRmFil, file.getID());
+						link.addParameter(prmRmFil, file.getPrimaryKey().toString());
 						t.add(link, 2, row);
 					}
 					++row;

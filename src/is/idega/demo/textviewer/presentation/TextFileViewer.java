@@ -61,7 +61,7 @@ public class TextFileViewer extends Block {
             ICFile file = (ICFile)iter.next();
             Link link = new Link(file.getName());
             link.addParameter(PARAM_VIEW_FILE,"Y");
-            link.addParameter(PARAM_VIEW_FILE_ID,file.getID());
+            link.addParameter(PARAM_VIEW_FILE_ID,file.getPrimaryKey().toString());
             add(link);
           }
         }

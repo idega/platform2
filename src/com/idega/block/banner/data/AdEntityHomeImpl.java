@@ -7,9 +7,11 @@ public class AdEntityHomeImpl extends com.idega.data.IDOFactory implements AdEnt
   return AdEntity.class;
  }
 
+
  public AdEntity create() throws javax.ejb.CreateException{
-  return (AdEntity) super.idoCreate();
+  return (AdEntity) super.createIDO();
  }
+
 
  public AdEntity createLegacy(){
 	try{
@@ -21,13 +23,16 @@ public class AdEntityHomeImpl extends com.idega.data.IDOFactory implements AdEnt
 
  }
 
- public AdEntity findByPrimaryKey(int id) throws javax.ejb.FinderException{
-  return (AdEntity) super.idoFindByPrimaryKey(id);
- }
 
  public AdEntity findByPrimaryKey(Object pk) throws javax.ejb.FinderException{
-  return (AdEntity) super.idoFindByPrimaryKey(pk);
+  return (AdEntity) super.findByPrimaryKeyIDO(pk);
  }
+
+
+ public AdEntity findByPrimaryKey(int id) throws javax.ejb.FinderException{
+  return (AdEntity) super.findByPrimaryKeyIDO(id);
+ }
+
 
  public AdEntity findByPrimaryKeyLegacy(int id) throws java.sql.SQLException{
 	try{
@@ -38,6 +43,7 @@ public class AdEntityHomeImpl extends com.idega.data.IDOFactory implements AdEnt
 	}
 
  }
+
 
 
 }

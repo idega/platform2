@@ -5,9 +5,14 @@ import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.ejb.FinderException;
+
 import com.idega.block.text.data.Content;
 import com.idega.block.text.data.LocalizedText;
 import com.idega.core.data.ICFile;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDOLookupException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -27,22 +32,35 @@ public class ContentBusiness {
 
 	public static boolean addFileToContent(int iContentId, int iICFileId) {
 		try {
-
-			((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iICFileId).addTo(((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId));
+			Content content = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
+			content.addFileToContent((ICFile)((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey( new Integer(iICFileId)));
 			return true;
 		}
-		catch (SQLException ex) {
-
+		catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IDOAddRelationshipException e) {
+			e.printStackTrace();
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
 
 	public static boolean removeFileFromContent(int iContentId, int iICFileId) {
 		try {
-			((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHomeLegacy(ICFile.class)).findByPrimaryKeyLegacy(iICFileId).removeFrom(((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId));
-		}
-		catch (Exception ex) {
-
+			Content content = ((com.idega.block.text.data.ContentHome) com.idega.data.IDOLookup.getHomeLegacy(Content.class)).findByPrimaryKeyLegacy(iContentId);
+			content.removeFileFromContent(((com.idega.core.data.ICFileHome) com.idega.data.IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iICFileId)));
+			return true;
+		} catch (IDORemoveRelationshipException e) {
+			e.printStackTrace();
+		} catch (IDOLookupException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (FinderException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -67,7 +85,8 @@ public class ContentBusiness {
 				ICFile file;
 				for (int i = 0; i < L.size(); i++) {
 					file = (ICFile) L.get(i);
-					file.removeFrom(eContent);
+					eContent.removeFileFromContent(file);
+					//file.removeFrom(eContent);
 					//file.delete();
 				}
 			}
@@ -179,12 +198,7 @@ public class ContentBusiness {
 				Iterator I = listOfFiles.iterator();
 				while (I.hasNext()) {
 					ICFile file = (ICFile) I.next();
-					try {
-						file.addTo(eContent);
-					}
-					catch (SQLException ex) {
-
-					}
+					eContent.addFileToContent(file);
 				}
 			}
 

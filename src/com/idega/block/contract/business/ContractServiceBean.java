@@ -5,7 +5,6 @@
  * Window>Preferences>Java>Code Generation>Code Template
  */
 package com.idega.block.contract.business;
-import java.sql.SQLException;
 import java.util.Map;
 
 import javax.ejb.EJBException;
@@ -16,12 +15,12 @@ import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractCategory;
 import com.idega.block.contract.data.ContractCategoryHome;
 import com.idega.block.contract.data.ContractHome;
-
 import com.idega.business.IBOServiceBean;
 import com.idega.core.data.ICFile;
 import com.idega.core.data.ICFileHome;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.util.IWTimestamp;
 
 /**
@@ -36,7 +35,9 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 	public boolean removeContractFile(int iFileId, int iContractID) {
 		try {
 			ICFile file = ((ICFileHome) IDOLookup.getHome(ICFile.class)).findByPrimaryKey(new Integer(iFileId));
-			file.removeFrom(Contract.class,iContractID);
+			Contract contract = ((ContractHome) IDOLookup.getHome(Contract.class)).findByPrimaryKey(new Integer(iContractID));
+			contract.removeFileFromContract(file);
+			//file.removeFrom(Contract.class,iContractID);
 			file.remove();
 			return true;
 		}
@@ -49,10 +50,9 @@ public class ContractServiceBean extends IBOServiceBean implements ContractServi
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
 		catch (RemoveException e) {
+			e.printStackTrace();
+		} catch (IDORemoveRelationshipException e) {
 			e.printStackTrace();
 		}
 		return false;

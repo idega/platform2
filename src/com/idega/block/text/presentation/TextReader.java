@@ -207,13 +207,13 @@ public class TextReader extends Block implements Builderaware {
 
 		///////////////// Image /////////////////////
 		List files = contentHelper.getFiles();
-		if (files != null) {
+		if (files != null && files.size()>0) {
 			//Iterator iter = files.iterator();
 			//while (iter.hasNext()) {
 			try {
 				//ICFile imagefile = (ICFile)iter.next();
 				ICFile imagefile = (ICFile) files.get(0);
-				int imid = imagefile.getID();
+				int imid = ((Integer)imagefile.getPrimaryKey()).intValue();
 				String att = imagefile.getMetaData(TextEditorWindow.imageAttributeKey);
 
 				Image textImage = new Image(imid);

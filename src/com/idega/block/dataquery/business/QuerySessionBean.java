@@ -74,7 +74,7 @@ public class QuerySessionBean extends IBOSessionBean implements QuerySession {
 	
 	public ICFile getXMLFile(int id)throws RemoteException{
 		try {
-			return ((ICFileHome) this.getIDOHome(ICFile.class)).findByPrimaryKey(id);
+			return ((ICFileHome) this.getIDOHome(ICFile.class)).findByPrimaryKey(new Integer(id));
 		}
 		catch (FinderException e) {
 			throw new RemoteException(e.getMessage());
