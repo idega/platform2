@@ -8,6 +8,7 @@ package is.idega.idegaweb.member.presentation;
 
 import is.idega.idegaweb.member.business.MemberUserBusiness;
 import is.idega.idegaweb.member.business.plugins.ClubInformationPluginBusiness;
+import is.idega.idegaweb.member.util.IWMemberConstants;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
@@ -263,7 +264,7 @@ public class ClubDivisionTab extends UserGroupTab {
 
 			
 
-			group.setMetaData("CLUBDIV_BOARD", board);
+			group.setMetaData(IWMemberConstants.META_DATA_DIVISION_BOARD, board);
 			
 			group.store();
 		}
