@@ -26,4 +26,8 @@ public interface RunBusiness extends com.idega.business.IBOService{
   	public boolean isRegisteredInRun(int runID, String personalID) throws RemoteException;
   	public int getAgeFromPersonalID(String personalID) throws RemoteException;
   	public void setParticipantNumber(Run participant);
+  	public Run getRunObjByUserIDandDistanceID(int userID, int distanceID);
+  	public Group getDistanceByUserID(int userID);
+  	public void savePaymentByUserID(int userID, String payMethod, String amount);
+  	public void updateParticipantAndChip(int userID,String partiNr, String chipNr);
 }

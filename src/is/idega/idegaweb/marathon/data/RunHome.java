@@ -21,6 +21,7 @@ public interface RunHome extends IDOHome {
 	public Run findByPrimaryKey(Object pk) throws javax.ejb.FinderException;
 	
 	public Collection findRunByUserIDandDistanceID(int userID,int distanceID) throws javax.ejb.FinderException;
+	public Collection findByUserID(int userID) throws javax.ejb.FinderException;
 
 	/**
 	 * @see is.idega.idegaweb.marathon.data.RunBMPBean#ejbFindAll

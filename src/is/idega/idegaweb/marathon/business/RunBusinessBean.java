@@ -38,6 +38,7 @@ import com.idega.core.location.data.PostalCode;
 import com.idega.core.location.data.PostalCodeHome;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
+import com.idega.data.IDOStoreException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.idegaweb.UnavailableIWContext;
@@ -375,6 +376,93 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
+	}
+	public void savePaymentByUserID(int userID, String payMethod, String amount) {
+		try {
+			try {
+				RunHome runHome = (RunHome) getIDOHome(Run.class);
+				Collection runObjs = runHome.findByUserID(userID);
+				if(runObjs != null) {
+					Iterator runIt = runObjs.iterator();
+					while(runIt.hasNext()) {
+						Run run = (Run) runIt.next();
+						if(run != null) {
+							run.setPayMethod(payMethod);
+							run.setPayedAmount(amount);
+							run.store();
+						}
+					}
+				
+				}
+			}
+			catch (IDOStoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			catch (FinderException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		} 
+	}
+	public void updateParticipantAndChip(int userID,String partiNr, String chipNr) {
+		try {
+			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			Collection runObjs = runHome.findByUserID(userID);
+			if(runObjs != null) {
+				Iterator runIt = runObjs.iterator();
+				while(runIt.hasNext()) {
+					Run run = (Run) runIt.next();
+					if(run != null) {
+						run.setParticipantNumber(Integer.parseInt(partiNr));
+						run.setChipNumber(chipNr);
+						run.store();
+					}
+				}
+			
+			}
+		}
+		catch (IDOStoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public Run getRunObjByUserIDandDistanceID(int userID, int distanceID) {
+		Run run = null;
+		try {
+			RunHome runHome = (RunHome) getIDOHome(Run.class);
+			Collection runObjs = runHome.findRunByUserIDandDistanceID(userID,distanceID);
+			if(runObjs != null) {
+				Iterator runIt = runObjs.iterator();
+				while(runIt.hasNext()) {
+					Run r = (Run) runIt.next();
+					if(r != null) {
+						Group g = getGroupBiz().getGroupByGroupID(r.getRunID());
+						if(g.getName().equals("Rvk Marathon"))
+							run = r;
+					}
+				}
+			}
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		 
+		return run;
 	}
 	
 	public void setParticipantNumber(Run participant) {
@@ -758,6 +846,51 @@ public class RunBusinessBean extends IBOServiceBean implements RunBusiness {
 		}
 		Collections.sort(distances, new RunDistanceComparator());
 		return distances;
+	}
+	public Group getDistanceByUserID(int userID) {
+		Group dis = null;
+		Collection groups = null;
+		String[] type = { IWMarathonConstants.GROUP_TYPE_RUN_DISTANCE };
+		try {
+			groups = getUserBiz().getUserGroups(getUserBiz().getUser(userID),type,true);
+		}
+		catch (IBOLookupException e) {
+			e.printStackTrace();
+			groups = null;
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+			groups = null;
+		}
+		if(groups != null) {
+			Iterator i = groups.iterator();
+			while(i.hasNext()) {
+				Group g = (Group) i.next();
+				dis = g;/*
+				Group g = (Group) i.next();
+				Collection parentGr = null;
+				try {
+					parentGr = getGroupBiz().getParentGroups(g);
+				}
+				catch (IBOLookupException e1) {
+					e1.printStackTrace();
+				}
+				catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
+				if(parentGr != null) {
+					Iterator j = parentGr.iterator();
+					while(j.hasNext()) {
+						Group pg = (Group) j.next();
+						if(pg.getName().equals("Rvk Marathon")) {
+							dis = g;
+						}
+					}
+				}
+			*/}
+		}
+		return dis;
+		
 	}
 
 	/**

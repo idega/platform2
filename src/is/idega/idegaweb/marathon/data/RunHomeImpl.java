@@ -33,6 +33,14 @@ public class RunHomeImpl extends IDOFactory implements RunHome {
 		this.idoCheckInPooledEntity(entity);
 		return this.getEntityCollectionForPrimaryKeys(ids);
 	}
+	public Collection findByUserID(int userID) throws javax.ejb.FinderException{
+
+		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();
+		java.util.Collection ids = ((RunBMPBean) entity).ejbFindByUserID(userID);
+		this.idoCheckInPooledEntity(entity);
+		return this.getEntityCollectionForPrimaryKeys(ids);
+	
+	}
 
 	public Collection findAll() throws FinderException {
 		com.idega.data.IDOEntity entity = this.idoCheckOutPooledEntity();

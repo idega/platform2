@@ -58,6 +58,9 @@ public class IWMarathonConstants {
   public static final String PARAMETER_AGREEMENT = "prm_agreement";
   public static final String PARAMETER_AGREE = Boolean.TRUE.toString();
   public static final String PARAMETER_DISAGREE = Boolean.FALSE.toString();
+  public static final String PARAMETER_PAY_METHOD = "prm_pay_method";
+  public static final String PARAMETER_AMOUNT = "prm_amount";
+  public static final String PARAMETER_PARTICIPANT_NUMBER = "prm_parti_nr";
   
   //localized strings
   public static final String RR_INFO_RED_STAR = "run_reg.info_red_star";
