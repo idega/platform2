@@ -1,5 +1,5 @@
 /*
- * $Id: PostingParametersBMPBean.java,v 1.27 2003/12/14 14:45:46 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.28 2004/01/05 11:12:09 kjell Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -43,10 +43,10 @@ import com.idega.block.school.data.SchoolStudyPath;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CompanyType;
  * @see se.idega.idegaweb.commune.accounting.regulations.data.CommuneBelongingType;
  * <p>
- * $Id: PostingParametersBMPBean.java,v 1.27 2003/12/14 14:45:46 kjell Exp $
+ * $Id: PostingParametersBMPBean.java,v 1.28 2004/01/05 11:12:09 kjell Exp $
  * 
  * @author <a href="http://www.lindman.se">Kjell Lindman</a>
- * @version $Revision: 1.27 $
+ * @version $Revision: 1.28 $
  */
 public class PostingParametersBMPBean extends GenericEntity implements PostingParameters {
 	
@@ -139,7 +139,8 @@ public class PostingParametersBMPBean extends GenericEntity implements PostingPa
 		setColumn(COLUMN_PERIOD_FROM, period); 
 	}
 	
-	public void setPeriodTo(Date period) { 
+	public void setPeriodTo(Date period) {
+		period = getEndOfMonth(period);   
 		setColumn(COLUMN_PERIOD_TO, period); 
 	}
 	
