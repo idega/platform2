@@ -198,7 +198,7 @@ public class ContractSigner extends ModuleObjectContainer{
         UserBusiness.addNewUserEmail(iUserId,sEmail);
       }
       if(sAccount != null){
-        AccountManager.makeNewAccount(iUserId,String.valueOf(iUserId),"",1);
+        AccountManager.makeNewFinanceAccount(iUserId,String.valueOf(iUserId),"",1);
       }
       if(sCreateLogin != null){
         try {
