@@ -24,6 +24,7 @@ import is.idega.idegaweb.travel.business.TravelStockroomBusiness.*;
 import is.idega.idegaweb.travel.service.tour.business.TourBusiness;
 import com.idega.block.trade.stockroom.business.ProductBusiness;
 import com.idega.block.text.business.TextFinder;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -178,6 +179,8 @@ public class ServiceViewer extends Block {
       int y = 1;
       Service serv = null;
 
+      /** @todo header localized for the table**/
+
        while( (iter!=null) && iter.hasNext() ) {
         Product prod = (Product) iter.next();
         try{
@@ -248,7 +251,7 @@ public class ServiceViewer extends Block {
     try {
       Product product = new Product(service.getID());
       content.add(product.getNumber()+" - "+ProductBusiness.getProductName(product),1,1);
-      content.add(new TextReader(TextFinder.getLocalizedText(product,ProductBusiness.getSelectedLocaleId(iwc)).getID()),1,2);//insert a textreader
+      content.add(new TextReader(TextFinder.getLocalizedText(product,ICLocaleBusiness.getLocaleId(iwc.getCurrentLocale())).getID()),1,2);//insert a textreader
       //ProductBusiness.getProductDescription(product),1,2);//insert a textreader
       content.add("META DATA",1,3);
       Link buy = LinkGenerator.getLink(iwc,service.getID());
@@ -256,7 +259,7 @@ public class ServiceViewer extends Block {
       content.add(buy,1,3);
     }
     catch (Exception ex) {
-      ex.printStackTrace();
+      ex.printStackTrace(System.err);
     }
 
     return content;
