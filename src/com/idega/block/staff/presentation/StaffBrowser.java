@@ -72,6 +72,7 @@ public class StaffBrowser extends Block implements Builderaware {
 	private boolean _showListWorkPhone;
 	private boolean _showMobilePhone;
 	private boolean _showEmail;
+	private boolean _allowUserEdit= false;
 
 	private String _imageWidth;
 	private String _imageHeight;
@@ -238,10 +239,11 @@ public class StaffBrowser extends Block implements Builderaware {
 					table.add(emailLink, column++, staffRow);
 				}
 
-				if (_isAdmin) {
+				if (_isAdmin || (_allowUserEdit && iwc.getUserId() == holder.getUserID())) {
 					table.setAlignment(column, staffRow, Table.HORIZONTAL_ALIGN_RIGHT);
 					table.add(getEditLink(holder.getUserID()), column, staffRow);
-					table.add(getDeleteLink(holder.getUserID()), column, staffRow);
+					if(_isAdmin)
+						table.add(getDeleteLink(holder.getUserID()), column, staffRow);
 				}
 
 				staffRow++;
@@ -334,8 +336,9 @@ public class StaffBrowser extends Block implements Builderaware {
 				userTable.add(image, 1, 1);
 			}
 		}
-
+		int userid = -1000;
 		if (holder != null) {
+			userid = holder.getUserID();
 			Text name = new Text(_iwrb.getLocalizedString("user_name", "Name") + ":");
 			name.setFontStyle(_headlineStyle);
 			Text nameText = new Text(holder.getName());
@@ -530,7 +533,7 @@ public class StaffBrowser extends Block implements Builderaware {
 
 		_myTable.add(userTable, 1, row);
 
-		if (_isAdmin) {
+		if (_isAdmin || (_allowUserEdit && iwc.getUserId()==userid)) {
 			_myTable.add(getEditLink(_userID), 1, row + 1);
 		}
 	}
@@ -968,5 +971,11 @@ public class StaffBrowser extends Block implements Builderaware {
 	 */
 	public void setSortNamesBy(int sortNamesBy) {
 		this._sortNamesBy = sortNamesBy;
+	}
+	/**
+	 * @param userEdit The _allowUserEdit to set.
+	 */
+	public void setAllowUserEdit(boolean userEdit) {
+		_allowUserEdit = userEdit;
 	}
 }
