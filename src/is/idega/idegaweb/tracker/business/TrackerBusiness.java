@@ -187,6 +187,23 @@ public class TrackerBusiness {
     return list;
   }
 
+  public static ArrayList getAgentArrayListSortedBySessions(){
+    AgentComparator comparer = new AgentComparator(AgentComparator.ORDER_BY_SESSIONS);
+    return comparer.sortedArrayList(getAgentArrayList());
+  }
+
+  public static ArrayList getAgentArrayListReverseSortedBySessions(){
+    AgentComparator comparer = new AgentComparator(AgentComparator.REVERSE_ORDER_BY_SESSIONS);
+    return comparer.sortedArrayList(getAgentArrayList());
+  }
+
+  public static ArrayList getAgentArrayListSortedByURL(){
+    AgentComparator comparer = new AgentComparator(AgentComparator.ORDER_BY_URL);
+    return comparer.sortedArrayList(getAgentArrayList());
+  }
+
+
+
   public static void handleUserAgentStats(IWContext iwc){
     String userAgent = iwc.getUserAgent();
     if( agents == null ){ agents = new Hashtable();}
