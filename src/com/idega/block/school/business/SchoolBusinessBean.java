@@ -2707,12 +2707,12 @@ public class SchoolBusinessBean extends IBOServiceBean implements SchoolBusiness
 		}
 	}
 	
-	public boolean hasActivePlacement(int studentId, int schoolId, SchoolCategory category) {
+	public boolean hasActivePlacement(int studentId, int schoolId, SchoolSeason season, SchoolCategory category) {
 		SchoolClassMember placement = null;
 		try {
 			SchoolClassMemberHome home = getSchoolClassMemberHome();
-			placement = home.findNotTerminatedByStudentSeasonSchoolAndCategory(studentId, getCurrentSchoolSeason(), schoolId, category);
-		} catch (FinderException e) {}
+			placement = home.findNotTerminatedByStudentSeasonSchoolAndCategory(studentId, season, schoolId, category);
+		} catch (Exception e) {}
 		return placement != null;
 	}
 
