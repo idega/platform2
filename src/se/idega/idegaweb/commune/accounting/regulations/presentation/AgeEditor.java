@@ -1,5 +1,5 @@
 /*
- * $Id: AgeEditor.java,v 1.1 2003/08/25 19:37:10 anders Exp $
+ * $Id: AgeEditor.java,v 1.2 2003/08/25 21:54:35 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -8,7 +8,7 @@
  *
  */
 package se.idega.idegaweb.commune.accounting.regulations.presentation;
-
+ 
 import java.util.Collection;
 import java.util.Iterator;
 import java.sql.Date;
@@ -30,10 +30,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.AgeException;
  * AgeEditor is an idegaWeb block that handles age values and
  * age regulations for children in childcare.
  * <p>
- * Last modified: $Date: 2003/08/25 19:37:10 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/25 21:54:35 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AgeEditor extends AccountingBlock {
 
@@ -157,7 +157,7 @@ public class AgeEditor extends AccountingBlock {
 	 * Handles the default action for this block.
 	 */	
 	private void handleDefaultAction(IWContext iwc) {
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Regelverk beräkna ålder");
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getSearchList(iwc, false));
@@ -169,7 +169,7 @@ public class AgeEditor extends AccountingBlock {
 	 * Handles the search action for this block.
 	 */	
 	private void handleSearchAction(IWContext iwc) {		
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_SEARCH, "Regelverk beräkna ålder - sökresultat");
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getSearchList(iwc, true));
@@ -239,7 +239,7 @@ public class AgeEditor extends AccountingBlock {
 					iwc.getParameter(PARAMETER_AGE_TO),
 					iwc.getParameter(PARAMETER_DESCRIPTION),
 					parseDate(iwc.getParameter(PARAMETER_CUT_DATE)),
-					iwc.getParameter(PARAMETER_PERIOD_TO));
+					iwc.getParameter(PARAMETER_CUT_DATE));
 		} catch (RemoteException e) {
 			add(new ExceptionWrapper(e));
 			return;
@@ -270,7 +270,7 @@ public class AgeEditor extends AccountingBlock {
 	 * Handles the delete confirm action for this block.
 	 */	
 	private void handleDeleteConfirmAction(IWContext iwc) {		
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_DELETE_CONFIRM, "Ta bort åldersregel");
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
@@ -282,7 +282,7 @@ public class AgeEditor extends AccountingBlock {
 			table.add(getText(formatDate(ar.getPeriodFrom(), 4) + " - " + formatDate(ar.getPeriodTo(), 4)), 2, 1);
 			table.add(getLocalizedLabel(KEY_AGE_FROM, "Ålder från"), 1, 2);
 			table.add(getText("" + ar.getAgeFrom()), 2, 2);
-			table.add(getLocalizedLabel(KEY_AGE_FROM, "Ålder till"), 1, 3);
+			table.add(getLocalizedLabel(KEY_AGE_TO, "Ålder till"), 1, 3);
 			table.add(getText("" + ar.getAgeTo()), 2, 3);
 			table.add(getLocalizedLabel(KEY_DESCRIPTION, "Benämning"), 1, 4);
 			table.add(getText(ar.getDescription()), 2, 4);
@@ -304,7 +304,7 @@ public class AgeEditor extends AccountingBlock {
 			add(new ExceptionWrapper(e));
 			return;
 		}
-		ButtonPanel bp = new ButtonPanel();
+		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_DELETE, KEY_DELETE_YES, "Ja");
 		bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
 		app.setButtonPanel(bp);
@@ -328,14 +328,14 @@ public class AgeEditor extends AccountingBlock {
 		}
 
 		if (errorMessage != null) {
-			ApplicationForm app = new ApplicationForm();
+			ApplicationForm app = new ApplicationForm(this);
 			app.setLocalizedTitle(KEY_TITLE_DELETE_CONFIRM, "Ta bort åldersregel");
 			Table table = new Table();
 			table.setCellpadding(getCellpadding());
 			table.setCellspacing(getCellspacing());
 			table.add(getErrorText(errorMessage), 1, 1);
 			app.setMainPanel(table);
-			ButtonPanel bp = new ButtonPanel();
+			ButtonPanel bp = new ButtonPanel(this);
 			bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
 			app.setButtonPanel(bp);
 			add(app);		
@@ -387,10 +387,10 @@ public class AgeEditor extends AccountingBlock {
 			return t;
 		}
 
-		ListTable list = new ListTable(5);
+		ListTable list = new ListTable(this, 5);
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_AGE_FROM, "Ålder från", 2);
-		list.setLocalizedHeader(KEY_AGE_FROM, "Ålder till", 3);
+		list.setLocalizedHeader(KEY_AGE_TO, "Ålder till", 3);
 		list.setLocalizedHeader(KEY_DESCRIPTION, "Regel", 4);
 		list.setLocalizedHeader(KEY_CUT_DATE, "Brytdatum", 5);
 
@@ -401,7 +401,7 @@ public class AgeEditor extends AccountingBlock {
 				list.add(formatDate(ar.getPeriodFrom(), 4) + " - " + formatDate(ar.getPeriodTo(), 4));
 				list.add(ar.getAgeFrom());
 				list.add(ar.getAgeTo());
-				list.add(ar.getDescription());
+				list.add(getLink(ar.getDescription(), PARAMETER_AGE_REGULATION_ID, ar.getPrimaryKey().toString()));
 				list.add(formatDate(ar.getCutDate(), 4));
 			}
 		}
@@ -428,7 +428,7 @@ public class AgeEditor extends AccountingBlock {
 	 * Returns the default button panel for this block.
 	 */
 	private ButtonPanel getButtonPanel() {
-		ButtonPanel bp = new ButtonPanel();
+		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "Ny");
 		return bp;
 	}
@@ -447,7 +447,7 @@ public class AgeEditor extends AccountingBlock {
 			String cutDate,
 			String errorMessage,
 			boolean isNew) {
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		if (isNew) {
 			app.setLocalizedTitle(KEY_TITLE_ADD, "Skapa ny åldersregel");
 		} else {
@@ -463,12 +463,12 @@ public class AgeEditor extends AccountingBlock {
 		table.add(getTextInput(PARAMETER_PERIOD_TO, periodTo, 60), 2, 1);
 		table.add(getLocalizedLabel(KEY_AGE_FROM, "Ålder från"), 1, 2);
 		table.add(getTextInput(PARAMETER_AGE_FROM, ageFrom, 30), 2, 2);
-		table.add(getLocalizedLabel(KEY_AGE_FROM, "Ålder till"), 1, 3);
-		table.add(getTextInput(PARAMETER_AGE_FROM, ageTo, 30), 2, 3);
+		table.add(getLocalizedLabel(KEY_AGE_TO, "Ålder till"), 1, 3);
+		table.add(getTextInput(PARAMETER_AGE_TO, ageTo, 30), 2, 3);
 		table.add(getLocalizedLabel(KEY_DESCRIPTION, "Regel"), 1, 4);
 		table.add(getTextInput(PARAMETER_DESCRIPTION, description, 200), 2, 4);
 		table.add(getLocalizedLabel(KEY_CUT_DATE, "Brytdatum"), 1, 5);
-		table.add(getTextInput(PARAMETER_PERIOD_FROM, periodFrom, 60), 2, 5);
+		table.add(getTextInput(PARAMETER_CUT_DATE, cutDate, 60), 2, 5);
 
 		Table mainPanel = new Table();
 		mainPanel.setCellpadding(0);
@@ -490,7 +490,7 @@ public class AgeEditor extends AccountingBlock {
 		}
 		app.setMainPanel(mainPanel);	
 		
-		ButtonPanel bp = new ButtonPanel();
+		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_SAVE, KEY_SAVE, "Spara");
 		if (!isNew) {
 			bp.addLocalizedButton(PARAMETER_DELETE_CONFIRM, KEY_DELETE, "Ta bort");

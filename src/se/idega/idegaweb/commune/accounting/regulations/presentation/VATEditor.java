@@ -1,5 +1,5 @@
 /*
- * $Id: VATEditor.java,v 1.12 2003/08/25 18:50:48 anders Exp $
+ * $Id: VATEditor.java,v 1.13 2003/08/25 21:54:35 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -34,10 +34,10 @@ import se.idega.idegaweb.commune.accounting.regulations.business.VATException;
  * VATEditor is an idegaWeb block that handles VAT values and
  * VAT regulations for providers.
  * <p>
- * Last modified: $Date: 2003/08/25 18:50:48 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/25 21:54:35 $ by $Author: anders $
  *
  * @author Anders Lindman
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class VATEditor extends AccountingBlock {
 
@@ -163,7 +163,7 @@ public class VATEditor extends AccountingBlock {
 	 * Handles the default action for this block.
 	 */	
 	private void handleDefaultAction(IWContext iwc) {
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Momssats");
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getSearchList(iwc, false));
@@ -175,7 +175,7 @@ public class VATEditor extends AccountingBlock {
 	 * Handles the search action for this block.
 	 */	
 	private void handleSearchAction(IWContext iwc) {		
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_SEARCH, "Momssats - sökresultat");
 		app.setSearchPanel(getSearchPanel(iwc));
 		app.setMainPanel(getSearchList(iwc, true));
@@ -275,7 +275,7 @@ public class VATEditor extends AccountingBlock {
 	 * Handles the delete confirm action for this block.
 	 */	
 	private void handleDeleteConfirmAction(IWContext iwc) {		
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE_DELETE_CONFIRM, "Ta bort momssats");
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
@@ -311,7 +311,7 @@ public class VATEditor extends AccountingBlock {
 			add(new ExceptionWrapper(e));
 			return;
 		}
-		ButtonPanel bp = new ButtonPanel();
+		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_DELETE, KEY_DELETE_YES, "Ja");
 		bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
 		app.setButtonPanel(bp);
@@ -335,14 +335,14 @@ public class VATEditor extends AccountingBlock {
 		}
 
 		if (errorMessage != null) {
-			ApplicationForm app = new ApplicationForm();
+			ApplicationForm app = new ApplicationForm(this);
 			app.setLocalizedTitle(KEY_TITLE_DELETE_CONFIRM, "Ta bort momssats");
 			Table table = new Table();
 			table.setCellpadding(getCellpadding());
 			table.setCellspacing(getCellspacing());
 			table.add(getErrorText(errorMessage), 1, 1);
 			app.setMainPanel(table);
-			ButtonPanel bp = new ButtonPanel();
+			ButtonPanel bp = new ButtonPanel(this);
 			bp.addLocalizedButton(PARAMETER_CANCEL, KEY_CANCEL, "Avbryt");
 			app.setButtonPanel(bp);
 			add(app);		
@@ -394,7 +394,7 @@ public class VATEditor extends AccountingBlock {
 			return t;
 		}
 
-		ListTable list = new ListTable(5);
+		ListTable list = new ListTable(this, 5);
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_DESCRIPTION, "Benämning", 2);
 		list.setLocalizedHeader(KEY_VAT_PERCENT, "Procentsats", 3);
@@ -438,7 +438,7 @@ public class VATEditor extends AccountingBlock {
 	 * Returns the default button panel for this block.
 	 */
 	private ButtonPanel getButtonPanel() {
-		ButtonPanel bp = new ButtonPanel();
+		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_NEW, KEY_NEW, "Ny");
 //		bp.addLocalizedButton(PARAMETER_DELETE, KEY_DELETE, "Ta bort");
 
@@ -465,7 +465,7 @@ public class VATEditor extends AccountingBlock {
 			int providerTypeId, 
 			String errorMessage,
 			boolean isNew) {
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		if (isNew) {
 			app.setLocalizedTitle(KEY_TITLE_ADD, "Skapa ny momssats");
 		} else {
@@ -508,7 +508,7 @@ public class VATEditor extends AccountingBlock {
 		}
 		app.setMainPanel(mainPanel);	
 		
-		ButtonPanel bp = new ButtonPanel();
+		ButtonPanel bp = new ButtonPanel(this);
 		bp.addLocalizedButton(PARAMETER_SAVE, KEY_SAVE, "Spara");
 		if (!isNew) {
 			bp.addLocalizedButton(PARAMETER_DELETE_CONFIRM, KEY_DELETE, "Ta bort");

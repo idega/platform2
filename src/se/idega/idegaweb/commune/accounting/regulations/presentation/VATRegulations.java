@@ -1,5 +1,5 @@
 /*
- * $Id: VATRegulations.java,v 1.8 2003/08/24 06:50:02 anders Exp $
+ * $Id: VATRegulations.java,v 1.9 2003/08/25 21:54:35 anders Exp $
  *
  * Copyright (C) 2003 Agura IT. All Rights Reserved.
  *
@@ -22,10 +22,10 @@ import se.idega.idegaweb.commune.accounting.presentation.ButtonPanel;
  * VAT regulations for providers. 
  * This class is replaced by VATEditor.
  * <p>
- * Last modified: $Date: 2003/08/24 06:50:02 $ by $Author: anders $
+ * Last modified: $Date: 2003/08/25 21:54:35 $ by $Author: anders $
  *
  * @author <a href="http://www.ncmedia.com">Anders Lindman</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class VATRegulations extends AccountingBlock {
 
@@ -72,7 +72,7 @@ public class VATRegulations extends AccountingBlock {
 	 * Adds the default form to the block.
 	 */	
 	private void viewDefaultForm(IWContext iwc) {
-		ApplicationForm app = new ApplicationForm();
+		ApplicationForm app = new ApplicationForm(this);
 		app.setLocalizedTitle(KEY_TITLE, "Momssats");
 		app.setMainPanel(getVATList());
 		app.setButtonPanel(getButtonPanel());
@@ -83,7 +83,7 @@ public class VATRegulations extends AccountingBlock {
 	 * Returns the VATList
 	 */
 	private ListTable getVATList() {
-		ListTable list = new ListTable(5);
+		ListTable list = new ListTable(this, 5);
 		list.setLocalizedHeader(KEY_PERIOD, "Period", 1);
 		list.setLocalizedHeader(KEY_DESCRIPTION, "Benämning", 2);
 		list.setLocalizedHeader(KEY_VAT_PERCENT, "Procentsats", 3);
@@ -113,7 +113,7 @@ public class VATRegulations extends AccountingBlock {
 	 * Returns the button panel for this block
 	 */
 	private ButtonPanel getButtonPanel() {
-		ButtonPanel bp = new ButtonPanel();
+		ButtonPanel bp = new ButtonPanel(this);
 		return bp;
 	}
 }
