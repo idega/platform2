@@ -24,6 +24,7 @@ import javax.ejb.RemoveException;
 import com.idega.block.dataquery.business.QueryService;
 import com.idega.block.dataquery.business.QuerySession;
 import com.idega.block.dataquery.data.QueryConstants;
+import com.idega.block.dataquery.data.QueryRepresentation;
 import com.idega.block.dataquery.data.UserQuery;
 import com.idega.block.dataquery.data.xml.QueryBooleanExpressionPart;
 import com.idega.block.dataquery.data.xml.QueryConditionPart;
@@ -33,7 +34,6 @@ import com.idega.block.dataquery.data.xml.QueryHelper;
 import com.idega.block.dataquery.data.xml.QueryOrderConditionPart;
 import com.idega.block.dataquery.data.xml.QueryPart;
 import com.idega.block.dataquery.data.xml.QueryXMLConstants;
-import com.idega.block.datareport.presentation.ReportQueryOverview;
 import com.idega.business.IBOLookup;
 import com.idega.business.InputHandler;
 import com.idega.core.data.ICTreeNode;
@@ -172,6 +172,7 @@ public class ReportQueryBuilder extends Block {
 	private boolean showQueries = true;
 	private boolean allowFunctions = true;
 	private int editId = NEW_INSTANCE;
+	private QueryService queryService = null;
 	private QuerySession sessionBean;
 	private Form form = null;
 
@@ -901,15 +902,15 @@ public class ReportQueryBuilder extends Block {
 			select.setHeight("20");
 			select.setWidth("300");
 			// get queries
-			Collection queries = ReportQueryOverview.getQueries(iwc);
+			Collection queries = getQueryService(iwc).getQueries(iwc);
 			Iterator iterator = queries.iterator();
 			while (iterator.hasNext()) {
 				EntityRepresentation representation = (EntityRepresentation) iterator.next();
 				String id = representation.getPrimaryKey().toString();
-				String name = (String) representation.getColumnValue(ReportQueryOverview.NAME_KEY);
-				String groupName = (String) representation.getColumnValue(ReportQueryOverview.GROUP_NAME_KEY);
+				String name = (String) representation.getColumnValue(QueryRepresentation.NAME_KEY);
+				String groupName = (String) representation.getColumnValue(QueryRepresentation.GROUP_NAME_KEY);
 				StringBuffer displayName = new StringBuffer(groupName).append(" - ").append(name);
-				String isPrivate = (String) representation.getColumnValue(ReportQueryOverview.IS_PRIVATE_KEY);
+				String isPrivate = (String) representation.getColumnValue(QueryRepresentation.IS_PRIVATE_KEY);
 				if (isPrivate.length() != 0) {
 					displayName.append(" - ");
 					displayName.append(iwrb.getLocalizedString("query_builder_private", "private"));
@@ -1711,8 +1712,11 @@ public class ReportQueryBuilder extends Block {
 //		hasCreatePermission = hasPermission(this.PERM_CREATE, this, iwc);
 		control(iwc);
 	}
-	public QueryService getQueryService(IWContext iwc) throws RemoteException {
-		return (QueryService) IBOLookup.getServiceInstance(iwc, QueryService.class);
+	private QueryService getQueryService(IWContext iwc) throws RemoteException {
+		if (queryService == null) {
+			queryService = (QueryService) IBOLookup.getServiceInstance(iwc, QueryService.class);
+		}
+		return queryService;
 	}
 	public String getBundleIdentifier() {
 		return QueryConstants.QUERY_BUNDLE_IDENTIFIER;
