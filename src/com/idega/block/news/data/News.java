@@ -17,15 +17,15 @@ public class News extends GenericEntity{
   }
   public void initializeAttributes(){
     addAttribute(getIDColumnName());
-    addAttribute(getNewsCategoryIdColumnName(), "Category", true, true, "java.lang.Integer", "many-to-one","com.idega.jmodule.news.data.NewsCategory");
-    addAttribute(getHeadLineColumnName(), "Headline", true, true, "java.lang.String");
-    addAttribute(getNewsTextColumnName(), "Text", true, true, "java.lang.String",4000);
-    addAttribute(getIncludeImageColumnName(), "Photo Included", true, true, "java.lang.String");
-    addAttribute(getImageIdColumnName(), "Photo", true, true, "java.lang.Integer");
-    addAttribute(getNewsDateColumnName(), "Date", true, true, "java.sql.Timestamp");
-    addAttribute(getAuthorColumnName(), "Author", true, true, "java.lang.String");
-    addAttribute(getSourceColumnName(), "Source", true, true, "java.lang.String");
-    addAttribute(getDaysShownColumnName(), "Days shown", true, true, "java.lang.Integer");
+    addAttribute(getNewsCategoryIdColumnName(), "Category", true, true, Integer.class, "many-to-one",NewsCategory.class);
+    addAttribute(getHeadLineColumnName(), "Headline", true, true, String.class);
+    addAttribute(getNewsTextColumnName(), "Text", true, true, String.class,4000);
+    addAttribute(getIncludeImageColumnName(), "Photo Included", true, true, String.class);
+    addAttribute(getImageIdColumnName(), "Photo", true, true, Integer.class);
+    addAttribute(getNewsDateColumnName(), "Date", true, true, java.sql.Timestamp.class);
+    addAttribute(getAuthorColumnName(), "Author", true, true, String.class);
+    addAttribute(getSourceColumnName(), "Source", true, true, String.class);
+    addAttribute(getDaysShownColumnName(), "Days shown", true, true, String.class);
   }
   public String getEntityName(){
     return getNewsTableName();
