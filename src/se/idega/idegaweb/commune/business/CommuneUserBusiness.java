@@ -33,6 +33,11 @@ public interface CommuneUserBusiness extends com.idega.business.IBOService, User
  public com.idega.user.data.Group getRootSchoolAdministratorGroup()throws javax.ejb.CreateException,javax.ejb.FinderException,java.rmi.RemoteException, java.rmi.RemoteException;
  public boolean hasCitizenAccount(com.idega.user.data.User user)throws RemoteException;
  public boolean hasCitizenAccount(int userID)throws RemoteException;
+ public com.idega.core.data.Phone getChildHomePhone(User child) throws RemoteException;
+ public java.util.Collection getParentsForChild(User child) throws RemoteException;
+ public java.util.Collection getChildrenForUser(User user) throws RemoteException;
+ public is.idega.idegaweb.member.business.MemberFamilyLogic getMemberFamilyLogic() throws RemoteException;
+ public boolean getIfUserAddressesMatch(com.idega.core.data.Address userAddress, com.idega.core.data.Address userAddressToCompare) throws RemoteException;
  public Group getRootSpecialCitizenGroup() throws CreateException, FinderException, RemoteException;
  public User createSpecialCitizenByPersonalIDIfDoesNotExist(
 	 String firstName,

@@ -4,13 +4,22 @@ import com.idega.block.school.data.School;
 import com.idega.business.*;
 import com.idega.core.accesscontrol.business.LoginCreateException;
 import com.idega.core.accesscontrol.data.LoginTable;
+import com.idega.core.data.Address;
+import com.idega.core.data.Phone;
 import com.idega.data.*;
 import com.idega.idegaweb.*;
 import com.idega.user.business.*;
 import com.idega.user.data.*;
 import com.idega.util.IWTimestamp;
+import com.idega.util.text.TextSoap;
+
+import is.idega.idegaweb.member.business.MemberFamilyLogic;
+import is.idega.idegaweb.member.business.NoChildrenFound;
+import is.idega.idegaweb.member.business.NoCustodianFound;
+
 import java.rmi.RemoteException;
 import java.util.*;
+
 import javax.ejb.*;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 /**
@@ -457,5 +466,65 @@ public class CommuneUserBusinessBean extends UserBusinessBean implements Commune
 	}
 	public SchoolBusiness getSchoolBusiness() throws RemoteException {
 		return (SchoolBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), SchoolBusiness.class);
+	}
+	
+	public Phone getChildHomePhone(User child) throws RemoteException {
+		Address childAddress = getUsersMainAddress(child);
+		Collection parents = getParentsForChild(child);
+		if (parents !=null) {
+			Address parentAddress;
+			Iterator iter = parents.iterator();
+			while (iter.hasNext()) {
+				User parent = (User) iter.next();
+				parentAddress = getUsersMainAddress(parent);
+				if (childAddress != null && parentAddress != null){
+					if (getIfUserAddressesMatch(childAddress, parentAddress)) {
+						try {
+							return this.getUsersHomePhone(parent);
+						}
+						catch (NoPhoneFoundException npfe) {
+						}
+					}
+				}
+			}
+		}
+		
+		return null;
+	}
+	
+	public boolean getIfUserAddressesMatch(Address userAddress, Address userAddressToCompare) throws RemoteException {
+		if (((Integer)userAddress.getPrimaryKey()).intValue() == ((Integer)userAddressToCompare.getPrimaryKey()).intValue())
+			return true;
+		
+		String address1 = userAddress.getStreetAddress().toUpperCase();
+		String address2 = userAddressToCompare.getStreetAddress().toUpperCase();
+		
+		if (TextSoap.findAndCut(address1," ").equalsIgnoreCase(TextSoap.findAndCut(address2," "))) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public Collection getParentsForChild(User child) throws RemoteException {
+		try {
+			return getMemberFamilyLogic().getCustodiansFor(child);
+		}
+		catch (NoCustodianFound ncf) {
+			return null;
+		}
+	}
+	
+	public Collection getChildrenForUser(User user) throws RemoteException {
+		try {
+			return getMemberFamilyLogic().getChildrenFor(user);
+		}
+		catch (NoChildrenFound ncf) {
+			return null;
+		}
+	}
+	
+	public MemberFamilyLogic getMemberFamilyLogic() throws RemoteException {
+		return (MemberFamilyLogic) IBOLookup.getServiceInstance(getIWApplicationContext(), MemberFamilyLogic.class);
 	}
 }
