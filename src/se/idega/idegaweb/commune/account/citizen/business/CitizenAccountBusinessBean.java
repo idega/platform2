@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountBusinessBean.java,v 1.46 2003/01/11 09:04:44 staffan Exp $
+ * $Id: CitizenAccountBusinessBean.java,v 1.47 2003/01/14 14:19:37 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -35,11 +35,11 @@ import se.idega.idegaweb.commune.message.business.MessageBusiness;
 import se.idega.util.PIDChecker;
 
 /**
- * Last modified: $Date: 2003/01/11 09:04:44 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/14 14:19:37 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan N?teberg</a>
- * @version $Revision: 1.46 $
+ * @version $Revision: 1.47 $
  */
 public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
   implements CitizenAccountBusiness, AccountBusiness 
@@ -255,7 +255,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                 = (CitizenApplicantPutChildrenHome) IDOLookup.getHome
                 (CitizenApplicantPutChildren.class);
 		return (CitizenApplicantPutChildren) home.findByApplicationId
-                (applicationId).toArray () [0];
+                (applicationId);
     }
 
     public CitizenApplicantChildren [] findCitizenApplicantChildren
@@ -281,7 +281,7 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                 = (CitizenApplicantMovingToHome) IDOLookup.getHome
                 (CitizenApplicantMovingTo.class);
 		return (CitizenApplicantMovingTo) home.findByApplicationId
-                (applicationId).toArray () [0];
+                (applicationId);
     }
 
 	public User getUser(String ssn) {
@@ -389,35 +389,39 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
 	public void acceptApplication
         (final int applicationID, final User performer)
         throws RemoteException, CreateException, FinderException {
-        final CitizenAccount applicant = getAccount (applicationID);
-        final String name = applicant.getApplicantName();
-        final int spaceIndex = name != null ? name.indexOf(" ") : -1;
-		final String firstName
-                = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
-		final String lastName = spaceIndex != -1
-                ? name.substring(spaceIndex + 1, name.length ())
-                : (name != null ? name : "");
-        final String ssn = applicant.getSsn ();
-        final GenderHome genderHome
-                = (GenderHome) IDOLookup.getHome(Gender.class);
-        final PIDChecker pidChecker = PIDChecker.getInstance ();
-        final Gender gender = pidChecker.isFemale (ssn)
-                ? genderHome.getFemaleGender () : genderHome.getMaleGender ();
-        final Date birthDate = pidChecker.getDateFromPersonalID (ssn);
-        final IWTimestamp timestamp = birthDate != null
-                ? new IWTimestamp (birthDate.getTime ()) : null;
-        final CommuneUserBusiness userBusiness = getUserBusiness ();
-        final String applicationReason = applicant.getApplicationReason();
-        final boolean notNackaResident = applicationReason != null
-                && applicationReason.equals
-                (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY);
-        final User user = notNackaResident ?
-                userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
-                (firstName, "", lastName, ssn, gender, timestamp)
-                : userBusiness.createCitizenByPersonalIDIfDoesNotExist
-                (firstName, "", lastName, ssn, gender, timestamp);
-        
+        UserTransaction transaction = null;
         try {
+            transaction = getSessionContext ().getUserTransaction ();
+            transaction.begin ();
+            final CitizenAccount applicant = getAccount (applicationID);
+            final String name = applicant.getApplicantName();
+            final int spaceIndex = name != null ? name.indexOf(" ") : -1;
+            final String firstName
+                    = spaceIndex != -1 ? name.substring(0, spaceIndex) : "";
+            final String lastName = spaceIndex != -1
+                    ? name.substring(spaceIndex + 1, name.length ())
+                    : (name != null ? name : "");
+            final String ssn = applicant.getSsn ();
+            final GenderHome genderHome
+                    = (GenderHome) IDOLookup.getHome(Gender.class);
+            final PIDChecker pidChecker = PIDChecker.getInstance ();
+            final Gender gender = pidChecker.isFemale (ssn)
+                    ? genderHome.getFemaleGender ()
+                    : genderHome.getMaleGender ();
+            final Date birthDate = pidChecker.getDateFromPersonalID (ssn);
+            final IWTimestamp timestamp = birthDate != null
+                    ? new IWTimestamp (birthDate.getTime ()) : null;
+            final CommuneUserBusiness userBusiness = getUserBusiness ();
+            final String applicationReason = applicant.getApplicationReason();
+            final boolean notNackaResident = applicationReason != null
+                    && applicationReason.equals
+                    (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY);
+            final User user = notNackaResident ?
+                    userBusiness.createSpecialCitizenByPersonalIDIfDoesNotExist
+                    (firstName, "", lastName, ssn, gender, timestamp)
+                    : userBusiness.createCitizenByPersonalIDIfDoesNotExist
+                    (firstName, "", lastName, ssn, gender, timestamp);
+            
             final String streetName = applicant.getStreet ();
             final String postalCode = applicant.getZipCode ();
             final String postalName = applicant.getCity ();
@@ -488,7 +492,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                             = cohabitantBirth != null
                             ? new IWTimestamp (cohabitantBirth.getTime ())
                             : null;
-                    final User cohabitantUser = userBusiness
+                    final User cohabitantUser = notNackaResident ?
+                            userBusiness
+                            .createSpecialCitizenByPersonalIDIfDoesNotExist
+                            (cohabitant.getFirstName (), "",
+                             cohabitant.getLastName (), cohabitantSsn,
+                             cohabitantGender, cohabitantTimestamp)
+                            : userBusiness
                             .createCitizenByPersonalIDIfDoesNotExist
                             (cohabitant.getFirstName (), "",
                              cohabitant.getLastName (), cohabitantSsn,
@@ -524,7 +534,13 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                                 = childrenBirth != null
                                 ? new IWTimestamp (childrenBirth.getTime ())
                                 : null;
-                        final User childrenUser = userBusiness
+                        final User childrenUser = notNackaResident ?
+                                userBusiness
+                                .createSpecialCitizenByPersonalIDIfDoesNotExist
+                                (children [i].getFirstName (), "",
+                                 children [i].getLastName (), childrenSsn,
+                                 childrenGender, childrenTimestamp)
+                                :userBusiness
                                 .createCitizenByPersonalIDIfDoesNotExist
                                 (children [i].getFirstName (), "",
                                  children [i].getLastName (), childrenSsn,
@@ -536,15 +552,26 @@ public class CitizenAccountBusinessBean extends AccountApplicationBusinessBean
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace ();
-            throw new CreateException(e.getMessage());
-        }
+            applicant.setOwner (user);
+            applicant.store ();
+            super.acceptApplication (applicationID, performer);
+            transaction.commit ();
+		} catch (Exception e) {
+            if (transaction != null) {
+                try {
+                    transaction.rollback ();
+                } catch (SystemException se) {
+                    se.printStackTrace ();
+                } 
+            }
 
-		applicant.setOwner (user);
-        applicant.store ();
-		super.acceptApplication (applicationID, performer);
-		
+            if (e instanceof UserHasLoginException) {
+                throw (UserHasLoginException) e;
+            } else {
+                e.printStackTrace ();
+                throw new CreateException(e.getMessage());
+            }
+        }		
 	}
 
 	public void rejectApplication(int applicationID, User performer, String reasonDescription) throws RemoteException, CreateException, FinderException {

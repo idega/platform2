@@ -6,10 +6,10 @@ import java.util.*;
 import javax.ejb.*;
 
 /**
- * Last modified: $Date: 2002/11/22 12:58:04 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/14 14:19:37 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CitizenApplicantCohabitantHomeImpl extends IDOFactory
     implements CitizenApplicantCohabitantHome {
@@ -28,11 +28,11 @@ public class CitizenApplicantCohabitantHomeImpl extends IDOFactory
         final Collection ids = ((CitizenApplicantCohabitantBMPBean) entity)
                 .ejbFindByApplicationId(applicationId);
         idoCheckInPooledEntity (entity);
-        final Collection cohabitants = getEntityCollectionForPrimaryKeys (ids);
-        if (cohabitants.size () < 1) {
+        if (ids == null || ids.isEmpty ()) {
             throw new FinderException ("Couldn't find cohabitant with "
                                        + "application id " + applicationId);
         }
+        final Collection cohabitants = getEntityCollectionForPrimaryKeys (ids);
         return (CitizenApplicantCohabitant) cohabitants.iterator ().next ();
     }
 }

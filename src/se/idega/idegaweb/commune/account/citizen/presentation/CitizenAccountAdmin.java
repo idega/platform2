@@ -1,5 +1,5 @@
 /*
- * $Id: CitizenAccountAdmin.java,v 1.15 2003/01/11 08:00:22 staffan Exp $
+ * $Id: CitizenAccountAdmin.java,v 1.16 2003/01/14 14:19:37 staffan Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -10,6 +10,7 @@
 package se.idega.idegaweb.commune.account.citizen.presentation;
 
 import com.idega.business.IBOLookup;
+import com.idega.core.accesscontrol.business.UserHasLoginException;
 import com.idega.core.data.Address;
 import com.idega.presentation.*;
 import com.idega.presentation.text.*;
@@ -18,6 +19,7 @@ import com.idega.user.Converter;
 import com.idega.user.data.*;
 import com.idega.util.PersonalIDFormatter;
 import java.rmi.RemoteException;
+import javax.ejb.FinderException;
 import java.util.*;
 import se.idega.idegaweb.commune.account.citizen.business.CitizenAccountBusiness;
 import se.idega.idegaweb.commune.account.citizen.data.*;
@@ -30,11 +32,11 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
  * {@link se.idega.idegaweb.commune.account.citizen.business} and entity ejb
  * classes in {@link se.idega.idegaweb.commune.account.citizen.business.data}.
  * <p>
- * Last modified: $Date: 2003/01/11 08:00:22 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/14 14:19:37 $ by $Author: staffan $
  *
  * @author <a href="mail:palli@idega.is">Pall Helgason</a>
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class CitizenAccountAdmin extends CommuneBlock {
 	private final static int ACTION_VIEW_LIST = 0;
@@ -54,6 +56,9 @@ public class CitizenAccountAdmin extends CommuneBlock {
 	private final static String PARAM_FORM_DETAILS = "caa_adm_details";
 	private final static String PARAM_FORM_CANCEL = "caa_adm_cancel";
 	private final static String PARAM_FORM_LIST = "caa_adm_list";
+
+    private final static String USER_ALLREADY_HAS_A_LOGIN_KEY = "caa_adm_user_has_login";
+    private final static String USER_ALLREADY_HAS_A_LOGIN_DEFAULT = "Användaren har redan ett konto";
 
 	public void main(IWContext iwc) {
 		setResourceBundle(getResourceBundle(iwc));
@@ -210,23 +215,31 @@ public class CitizenAccountAdmin extends CommuneBlock {
 				table.add(getSmallText(applicationReason), 3, row++);
 
                 if (applicant.getApplicationReason().equals (CitizenAccount.PUT_CHILDREN_IN_NACKA_KEY)) {
-                    table.add(getSmallHeader(localize(CitizenAccountApplication.CURRENT_KOMMUN_KEY, CitizenAccountApplication.CURRENT_KOMMUN_DEFAULT)), 1, row);
-                    final CitizenApplicantPutChildren capc = business.findCitizenApplicantPutChildren (id);
-                    table.add(getSmallText(capc.getCurrentKommun ()), 3, row++);
+                    try {
+                        final CitizenApplicantPutChildren capc = business.findCitizenApplicantPutChildren (id);
+                        table.add(getSmallHeader(localize(CitizenAccountApplication.CURRENT_KOMMUN_KEY, CitizenAccountApplication.CURRENT_KOMMUN_DEFAULT)), 1, row);
+                        table.add(getSmallText(capc.getCurrentKommun ()), 3, row++);
+                    } catch (FinderException e) {
+                        System.err.println (e.getMessage ());
+                    }
                 } else if (applicant.getApplicationReason().equals
                            (CitizenAccount.MOVING_TO_NACKA_KEY)) {
-                    final CitizenApplicantMovingTo camt
-                            = business.findCitizenApplicantMovingTo (id);
-                    table.add(getSmallHeader(localize(CitizenAccountApplication.MOVING_IN_ADDRESS_KEY, CitizenAccountApplication.MOVING_IN_ADDRESS_DEFAULT)), 1, row);
-                    table.add(getSmallText(camt.getAddress ()), 3, row++);
-                    table.add(getSmallHeader(localize(CitizenAccountApplication.MOVING_IN_DATE_KEY, CitizenAccountApplication.MOVING_IN_DATE_DEFAULT)), 1, row);
-                    table.add(getSmallText(camt.getMovingInDate ()), 3, row++);
-                    if (camt.getHousingType ().equals (CitizenAccountApplication.TENANCY_AGREEMENT_KEY)) {
-                        table.add(getSmallHeader(localize(CitizenAccountApplication.LANDLORD_KEY, CitizenAccountApplication.LANDLORD_DEFAULT)), 1, row);
-                        table.add(getSmallText(camt.getLandlord ()), 3, row++);
-                    } else if (camt.getHousingType ().equals (CitizenAccountApplication.DETACHED_HOUSE_KEY)) {
-                        table.add(getSmallHeader(localize(CitizenAccountApplication.PROPERTY_TYPE_KEY, CitizenAccountApplication.PROPERTY_TYPE_DEFAULT)), 1, row);
-                        table.add(getSmallText(camt.getPropertyType ()), 3, row++);
+                    try {
+                        final CitizenApplicantMovingTo camt
+                                = business.findCitizenApplicantMovingTo (id);
+                        table.add(getSmallHeader(localize(CitizenAccountApplication.MOVING_IN_ADDRESS_KEY, CitizenAccountApplication.MOVING_IN_ADDRESS_DEFAULT)), 1, row);
+                        table.add(getSmallText(camt.getAddress ()), 3, row++);
+                        table.add(getSmallHeader(localize(CitizenAccountApplication.MOVING_IN_DATE_KEY, CitizenAccountApplication.MOVING_IN_DATE_DEFAULT)), 1, row);
+                        table.add(getSmallText(camt.getMovingInDate ()), 3, row++);
+                        if (camt.getHousingType ().equals (CitizenAccountApplication.TENANCY_AGREEMENT_KEY)) {
+                            table.add(getSmallHeader(localize(CitizenAccountApplication.LANDLORD_KEY, CitizenAccountApplication.LANDLORD_DEFAULT)), 1, row);
+                            table.add(getSmallText(camt.getLandlord ()), 3, row++);
+                        } else if (camt.getHousingType ().equals (CitizenAccountApplication.DETACHED_HOUSE_KEY)) {
+                            table.add(getSmallHeader(localize(CitizenAccountApplication.PROPERTY_TYPE_KEY, CitizenAccountApplication.PROPERTY_TYPE_DEFAULT)), 1, row);
+                            table.add(getSmallText(camt.getPropertyType ()), 3, row++);
+                        }
+                    } catch (FinderException e) {
+                        System.err.println (e.getMessage ());
                     }
                 }
 			}
@@ -271,8 +284,10 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			business.acceptApplication(new Integer(id).intValue(), iwc.getCurrentUser());
 
 			form.add(getText(localize("caa_acc_application", "Godkänd ansökan: ") + id));
-		}
-		catch (Exception e) {
+		} catch (UserHasLoginException uhle) {
+			form.add (getText (localize(USER_ALLREADY_HAS_A_LOGIN_KEY,
+                                       USER_ALLREADY_HAS_A_LOGIN_DEFAULT)));
+		} catch (Exception e) {
 			e.printStackTrace();
 			form.add(getText(localize("caa_acc_application_failed", "Ett fel inträffade vid godkännade av ansökan: ") + id));
 		}
@@ -293,7 +308,6 @@ public class CitizenAccountAdmin extends CommuneBlock {
 			if (iwc.isParameterSet(MESSAGE_KEY)) {
 				business.rejectApplication(new Integer(id).intValue(), Converter.convertToNewUser(iwc.getUser()), iwc.getParameter(MESSAGE_KEY));
 			}
-
 			form.add(getText(localize("caa_rej_application", "Rejected application number : ") + id));
 		}
 		catch (Exception e) {

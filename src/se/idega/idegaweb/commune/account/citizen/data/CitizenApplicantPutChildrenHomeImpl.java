@@ -6,10 +6,10 @@ import java.util.*;
 import javax.ejb.*;
 
 /**
- * Last modified: $Date: 2002/12/11 12:50:49 $ by $Author: staffan $
+ * Last modified: $Date: 2003/01/14 14:19:37 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CitizenApplicantPutChildrenHomeImpl extends IDOFactory
     implements CitizenApplicantPutChildrenHome {
@@ -22,10 +22,14 @@ public class CitizenApplicantPutChildrenHomeImpl extends IDOFactory
         return (CitizenApplicantPutChildren) super.createIDO();
     }
 
-    public Collection findByApplicationId (int applicationId) throws FinderException {
+    public CitizenApplicantPutChildren findByApplicationId (int applicationId) throws FinderException {
         IDOEntity entity = idoCheckOutPooledEntity();
         Collection ids = ((CitizenApplicantPutChildrenBMPBean)entity).ejbFindByApplicationId(applicationId);
         idoCheckInPooledEntity(entity);
-        return getEntityCollectionForPrimaryKeys(ids);
+        if (ids == null || ids.isEmpty ()) {
+            throw new FinderException ("Couldn't find CitizenApplicantPutChildren object with application id " + applicationId);
+        }
+        final Collection collection = getEntityCollectionForPrimaryKeys(ids);
+        return (CitizenApplicantPutChildren) collection.iterator ().next ();
     }
 }
