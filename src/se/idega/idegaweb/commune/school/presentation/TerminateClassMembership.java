@@ -1,49 +1,30 @@
 package se.idega.idegaweb.commune.school.presentation;
 
+import com.idega.block.school.business.SchoolBusiness;
+import com.idega.block.school.data.*;
+import com.idega.business.IBOLookup;
+import com.idega.core.location.data.Address;
+import com.idega.presentation.*;
+import com.idega.presentation.text.Text;
+import com.idega.presentation.ui.*;
+import com.idega.user.data.User;
 import is.idega.idegaweb.member.presentation.UserSearcher;
-
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Iterator;
-
+import java.util.*;
 import javax.ejb.FinderException;
 import javax.servlet.http.HttpSession;
-
 import se.idega.idegaweb.commune.school.business.SchoolCommuneBusiness;
-
-import com.idega.block.school.business.SchoolBusiness;
-import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolClass;
-import com.idega.block.school.data.SchoolClassHome;
-import com.idega.block.school.data.SchoolClassMember;
-import com.idega.block.school.data.SchoolHome;
-import com.idega.block.school.data.SchoolYear;
-import com.idega.block.school.data.SchoolYearHome;
-import com.idega.business.IBOLookup;
-import com.idega.core.location.data.Address;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.PresentationObject;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextInput;
-import com.idega.user.data.User;
 
 /**
  * TerminateClassMembership is an IdegaWeb block were the user can terminate a
  * membership in a school class. 
  * <p>
- * Last modified: $Date: 2003/10/09 14:54:15 $ by $Author: laddi $
+ * Last modified: $Date: 2003/10/09 20:11:54 $ by $Author: staffan $
  *
  * @author <a href="http://www.staffannoteberg.com">Staffan Nöteberg</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  * @see com.idega.block.school.data.SchoolClassMember
  * @see se.idega.idegaweb.commune.school.businessSchoolCommuneBusiness
  * @see javax.ejb
@@ -210,8 +191,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         throws RemoteException {
         // set up searcher
         final UserSearcher searcher = createSearcher ();
-        final int usersFoundCount
-                = fillSearcherWithStudents (context, searcher);
+        fillSearcherWithStudents (context, searcher);
+        final User foundUser = searcher.getUser ();
 
         // output result
         final Table table = new Table ();
@@ -220,9 +201,8 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
         searchForm.add (searcher);
         table.add (searchForm, 1, 1);
 
-        if (usersFoundCount == 1) {
+        if (null != foundUser) {
             // exactly one user found - display user and termination form
-            final User foundUser = searcher.getUser ();
             final Table terminateTable = new Table ();
             terminateTable.add (getStudentTable (context, foundUser), 1, 2);
             terminateTable.add (getSubmitButton
@@ -244,16 +224,21 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
      * @return number of users found
      * @exception RemoteException if exception happens in lower layer
      */
-    private int fillSearcherWithStudents (final IWContext context,
+    private void fillSearcherWithStudents (final IWContext context,
                                            final UserSearcher searcher)
         throws RemoteException {
         final Collection students = new ArrayList ();
         try {
             // 1. start with a raw search
             searcher.process (context);
-            final Collection usersFound = searcher.getUsersFound ();
+            Collection usersFound = searcher.getUsersFound ();
             if (null == usersFound) {
-                throw new FinderException ();
+                final User singleUser = searcher.getUser ();
+                if (null != singleUser) {
+                    usersFound = Collections.singleton (singleUser);
+                } else {
+                    throw new FinderException ();
+                }
             }
 
             // 2. filter out students that are placed and that the logged on
@@ -284,8 +269,17 @@ public class TerminateClassMembership extends SchoolCommuneBlock {
             // no students found or too many students found
             // Collection 'students' will have the right members anyway
         }
-        searcher.setUsersFound (students);
-        return students.size ();
+
+        // 3. Set up search result for display
+        if (students.isEmpty ()) {
+            searcher.setUser (null);
+            searcher.setUsersFound (null);
+        } else if (1 == students.size ()) {
+            searcher.setUser ((User) students.toArray () [0]);
+            searcher.setUsersFound (null);
+        } else {
+            searcher.setUsersFound (students);
+        }
     }
 
     /**
